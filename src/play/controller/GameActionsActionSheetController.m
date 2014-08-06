@@ -107,7 +107,7 @@ enum ActionSheetButton
 /// @brief Reacts to a tap gesture on the "Action" button. Displays an action
 /// sheet with actions that are not used very often during a game.
 // -----------------------------------------------------------------------------
-- (void) showActionSheetFromView:(UIView*)view
+- (void) showActionSheetFromRect:(CGRect)rect inView:(UIView*)view
 {
   // TODO iPad: Modify this to not include a cancel button (see HIG).
   UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"Game actions"
@@ -220,17 +220,16 @@ enum ActionSheetButton
   }
   actionSheet.cancelButtonIndex = [actionSheet addButtonWithTitle:@"Cancel"];
 
-  // Showing the acton sheet based on a view generates much smoother animations,
-  // at least with the view setup in this app, than based on a bar button item.
-  // TODO iPad: The action sheet "base" needs to be re-evaluated on the iPad
-  // because there we can have pop-overs. Some historical notes on the bar
-  // button item "base": Using this "base" apparently does not disable
-  // the other buttons on the toolbar, i.e. the user can still tap other buttons
-  // in the toolbar such as "Pass". Review whether this is true, and if it is
-  // make sure that the sheet is dismissed if a button from the toolbar is
-  // tapped. For details about this, see the UIActionSheet class reference,
-  // specifically the documentation for showFromBarButtonItem:animated:().
-  [actionSheet showInView:view];
+  // It's important that we do NOT use showFromBarButtonItem:animated:(), for
+  // two reasons:
+  // 1) On the iPad this would allow other buttons in the bar button item's
+  //    parent navigation bar to be tapped without dismissing the action sheet.
+  //    This would be bad because the app logic requires that in certain app
+  //    states the functions from the "Game Actions" menu must not be available.
+  // 2) On the iPhone, showFromBarButtonItem:animated:() simply seems to not
+  //    work properly - items in the action sheet cannot be selected when that
+  //    method is used.
+  [actionSheet showFromRect:rect inView:view animated:YES];
   [actionSheet release];
 }
 
