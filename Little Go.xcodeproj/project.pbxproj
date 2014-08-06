@@ -398,6 +398,8 @@
 		CDEE1A181946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A161946124E00DF2389 /* TerritoryLayerDelegate.m */; };
 		CDEE1A1D19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A1A19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m */; };
 		CDEE1A1E19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE1A1A19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m */; };
+		CDEECC6C1992923000BC89F2 /* ArchiveUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEECC6B1992923000BC89F2 /* ArchiveUtility.m */; };
+		CDEECC6D1992923000BC89F2 /* ArchiveUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEECC6B1992923000BC89F2 /* ArchiveUtility.m */; };
 		CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
 		CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
 		CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3C76140A69A2002D9C1C /* UIDebugging.m */; };
@@ -896,6 +898,8 @@
 		CDEE1A161946124E00DF2389 /* TerritoryLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerritoryLayerDelegate.m; sourceTree = "<group>"; };
 		CDEE1A1919464B7C00DF2389 /* CrossHairLinesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrossHairLinesLayerDelegate.h; sourceTree = "<group>"; };
 		CDEE1A1A19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrossHairLinesLayerDelegate.m; sourceTree = "<group>"; };
+		CDEECC6A1992923000BC89F2 /* ArchiveUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveUtility.h; sourceTree = "<group>"; };
+		CDEECC6B1992923000BC89F2 /* ArchiveUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveUtility.m; sourceTree = "<group>"; };
 		CDEF3BAD140A192F002D9C1C /* GtpEngineProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfile.h; sourceTree = "<group>"; };
 		CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfile.m; sourceTree = "<group>"; };
 		CDEF3C75140A69A2002D9C1C /* UIDebugging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDebugging.h; sourceTree = "<group>"; };
@@ -1475,6 +1479,8 @@
 			children = (
 				CDFABB861416DD880065C93B /* ArchiveGame.h */,
 				CDFABB871416DD880065C93B /* ArchiveGame.m */,
+				CDEECC6A1992923000BC89F2 /* ArchiveUtility.h */,
+				CDEECC6B1992923000BC89F2 /* ArchiveUtility.m */,
 				CDD48C81141034F000188B6A /* ArchiveViewController.h */,
 				CDD48C82141034F000188B6A /* ArchiveViewController.m */,
 				CDD48C8E141036D200188B6A /* ArchiveViewModel.h */,
@@ -2213,6 +2219,7 @@
 				CD3591CA17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */,
 				CD3591DA1735A711000E2963 /* BoardPositionModel.m in Sources */,
 				CD3592021735A757000E2963 /* PlayTabController.m in Sources */,
+				CDEECC6C1992923000BC89F2 /* ArchiveUtility.m in Sources */,
 				CD3592041735A757000E2963 /* PlayTabControllerPad.m in Sources */,
 				CD3592061735A757000E2963 /* PlayTabControllerPhone.m in Sources */,
 				CDEE19F319433EAC00DF2389 /* BoardView.m in Sources */,
@@ -2249,6 +2256,7 @@
 				CD85B5981401C1B7001715B8 /* GoMove.m in Sources */,
 				CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
 				CDFD9F7E18F1D5DF0031CBCF /* CrashReportingSettingsController.m in Sources */,
+				CDEECC6D1992923000BC89F2 /* ArchiveUtility.m in Sources */,
 				CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */,
 				CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */,
 				CD85B5A41401C1F0001715B8 /* GoPoint.m in Sources */,

@@ -18,6 +18,7 @@
 // Project includes
 #import "ViewGameController.h"
 #import "ArchiveGame.h"
+#import "ArchiveUtility.h"
 #import "ArchiveViewModel.h"
 #import "../go/GoGame.h"
 #import "../command/game/RenameGameCommand.h"
@@ -271,6 +272,12 @@ enum GameAttributesSectionItem
 // -----------------------------------------------------------------------------
 - (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text
 {
+  enum ArchiveGameNameValidationResult validationResult = [ArchiveUtility validateGameName:text];
+  if (ArchiveGameNameValidationResultValid != validationResult)
+  {
+    [ArchiveUtility showAlertForFailedGameNameValidation:validationResult];
+    return false;
+  }
   ArchiveGame* aGame = [self.model gameWithName:text];
   if (nil == aGame)
     return true;  // ok, no game with the new name exists

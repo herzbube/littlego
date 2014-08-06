@@ -21,6 +21,7 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
+#import "../../archive/ArchiveUtility.h"
 #import "../../archive/ArchiveViewModel.h"
 #import "../../command/backup/BackupGameToSgfCommand.h"
 #import "../../command/backup/CleanBackupSgfCommand.h"
@@ -464,40 +465,16 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text
 {
-  // TODO Change this check for illegal characters to also use NSPredicate.
-  // Note that in a first attempt, the following predicate format string did
-  // not work: @"SELF MATCHES '[/\\\\|]+'"
-  NSString* illegalCharacterString = @"/\\|";
-  NSCharacterSet* illegalCharacterSet = [NSCharacterSet characterSetWithCharactersInString:@"/\\|"];
-  NSRange range = [text rangeOfCharacterFromSet:illegalCharacterSet];
-  if (range.location != NSNotFound)
+  enum ArchiveGameNameValidationResult validationResult = [ArchiveUtility validateGameName:text];
+  if (ArchiveGameNameValidationResultValid == validationResult)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"The name you entered contains one or more of the following illegal characters: %@. Please remove the character(s) and try again.", illegalCharacterString];
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Illegal characters in game name"
-                                                    message:errorMessage
-                                                   delegate:nil
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:@"Ok", nil];
-    alert.tag = AlertViewTypeSaveGame;
-    [alert show];
-    [alert release];
+    return true;
+  }
+  else
+  {
+    [ArchiveUtility showAlertForFailedGameNameValidation:validationResult];
     return false;
   }
-  NSString* predicateFormatString = [NSString stringWithFormat:@"SELF MATCHES '^(\\\\.|\\\\.\\\\.|%@)$'", inboxFolderName];
-  NSPredicate* predicateReservedWords = [NSPredicate predicateWithFormat:predicateFormatString];
-  if ([predicateReservedWords evaluateWithObject:text])
-  {
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Illegal game name"
-                                                    message:@"The name you entered is a reserved word and cannot be used for saving games."
-                                                   delegate:nil
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:@"Ok", nil];
-    alert.tag = AlertViewTypeSaveGame;
-    [alert show];
-    [alert release];
-    return false;
-  }
-  return true;
 }
 
 // -----------------------------------------------------------------------------

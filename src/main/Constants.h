@@ -120,13 +120,6 @@ enum AlertViewButtonType
   AlertViewButtonTypeYes = 1  ///< @brief Used as the first "other" button in a Yes/No alert view
 };
 
-/// @brief Enumerates the supported sort criteria on the Archive view.
-enum ArchiveSortCriteria
-{
-  ArchiveSortCriteriaFileName,
-  ArchiveSortCriteriaFileDate
-};
-
 /// @brief Enumerates the types of information that the Info view can display.
 enum InfoType
 {
@@ -631,6 +624,23 @@ enum AdditiveKnowledgeType
 //@{
 extern NSString* sgfMimeType;
 extern NSString* sgfUTI;
+extern NSString* illegalArchiveGameNameCharacters;
+
+/// @brief Enumerates the supported sort criteria on the Archive tab.
+enum ArchiveSortCriteria
+{
+  ArchiveSortCriteriaFileName,
+  ArchiveSortCriteriaFileDate
+};
+
+/// @brief Enumerates possible results of validating the name of an archived
+/// game.
+enum ArchiveGameNameValidationResult
+{
+  ArchiveGameNameValidationResultValid,              ///< @brief The name is valid.
+  ArchiveGameNameValidationResultIllegalCharacters,  ///< @brief The name contains illegal characters.
+  ArchiveGameNameValidationResultReservedWord        ///< @brief The name consists of a reserved word.
+};
 //@}
 
 // -----------------------------------------------------------------------------

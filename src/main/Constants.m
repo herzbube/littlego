@@ -131,6 +131,7 @@ NSString* defaultGtpEngineProfileUUID = @"5154D01A-1292-453F-B767-BE7389E3589F";
 // Archive view constants
 NSString* sgfMimeType = @"application/x-go-sgf";  // this is not officially registered with IANA, but seems to be in wide use
 NSString* sgfUTI = @"com.red-bean.sgf";
+NSString* illegalArchiveGameNameCharacters = @"/\\|";
 
 // Diagnostics view settings default values
 const int gtpLogSizeMinimum = 5;
