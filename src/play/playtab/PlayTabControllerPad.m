@@ -20,6 +20,7 @@
 #import "../controller/NavigationBarController.h"
 #import "../splitview/LeftPaneViewController.h"
 #import "../splitview/RightPaneViewController.h"
+#import "../splitview/SplitViewController.h"
 #import "../../ui/AutoLayoutUtility.h"
 
 
@@ -29,7 +30,7 @@
 @interface PlayTabControllerPad()
 // Cannot name this property splitViewController, there already is a property
 // of that name in UIViewController, and it has a different meaning
-@property(nonatomic, retain) UISplitViewController* splitViewControllerChild;
+@property(nonatomic, retain) SplitViewController* splitViewControllerChild;
 @property(nonatomic, retain) LeftPaneViewController* leftPaneViewController;
 @property(nonatomic, retain) RightPaneViewController* rightPaneViewController;
 @end
@@ -70,7 +71,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  self.splitViewControllerChild = [[[UISplitViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+  self.splitViewControllerChild = [[[SplitViewController alloc] init] autorelease];
 
   // These are not direct child controllers. We are setting them up on behalf
   // of UISplitViewController because we don't want to create a
@@ -79,9 +80,6 @@
   self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
   self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
 
-  // Must assign a delegate, otherwise UISplitViewController will not react to
-  // swipe gestures (tested in 5.1 and 6.0 simulator; 5.0 does not support the
-  // swipe anyway). Reported to Apple with problem ID 13133575.
   self.splitViewControllerChild.delegate = self.rightPaneViewController.navigationBarController;
 }
 
@@ -99,7 +97,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Private setter implementation.
 // -----------------------------------------------------------------------------
-- (void) setSplitViewControllerChild:(UISplitViewController*)splitViewControllerChild
+- (void) setSplitViewControllerChild:(SplitViewController*)splitViewControllerChild
 {
   if (_splitViewControllerChild == splitViewControllerChild)
     return;

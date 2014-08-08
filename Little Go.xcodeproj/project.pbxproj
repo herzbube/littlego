@@ -185,6 +185,8 @@
 		CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA415A891B8004A7096 /* BugReportUtilities.m */; };
 		CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A715A0A3E400439B4E /* PathUtilities.m */; };
 		CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFA329A159FA0F400439B4E /* libz.dylib */; };
+		CD4F94DB1993EDE500455798 /* SplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4F94DA1993EDE500455798 /* SplitViewController.m */; };
+		CD4F94DC1993EDE500455798 /* SplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4F94DA1993EDE500455798 /* SplitViewController.m */; };
 		CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
@@ -669,6 +671,8 @@
 		CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportUserDefaultsCommand.m; sourceTree = "<group>"; };
 		CD48ADA315A891B7004A7096 /* BugReportUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BugReportUtilities.h; sourceTree = "<group>"; };
 		CD48ADA415A891B8004A7096 /* BugReportUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BugReportUtilities.m; sourceTree = "<group>"; };
+		CD4F94D91993EDE500455798 /* SplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitViewController.h; sourceTree = "<group>"; };
+		CD4F94DA1993EDE500455798 /* SplitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitViewController.m; sourceTree = "<group>"; };
 		CD613D98143CD1B70002759E /* GtpCommandModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandModel.h; sourceTree = "<group>"; };
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
@@ -1094,6 +1098,8 @@
 				CD05199416B1C09B002771F7 /* LeftPaneViewController.m */,
 				CD05199716B1C29B002771F7 /* RightPaneViewController.h */,
 				CD05199816B1C29B002771F7 /* RightPaneViewController.m */,
+				CD4F94D91993EDE500455798 /* SplitViewController.h */,
+				CD4F94DA1993EDE500455798 /* SplitViewController.m */,
 			);
 			name = splitview;
 			path = src/play/splitview;
@@ -2106,6 +2112,7 @@
 				CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */,
 				CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */,
 				CDFABCA814194A420065C93B /* ViewGameController.m in Sources */,
+				CD4F94DB1993EDE500455798 /* SplitViewController.m in Sources */,
 				CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */,
 				CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */,
 				CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */,
@@ -2256,9 +2263,11 @@
 				CD85B5981401C1B7001715B8 /* GoMove.m in Sources */,
 				CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
 				CDFD9F7E18F1D5DF0031CBCF /* CrashReportingSettingsController.m in Sources */,
+				CD4F94DC1993EDE500455798 /* SplitViewController.m in Sources */,
 				CDEECC6D1992923000BC89F2 /* ArchiveUtility.m in Sources */,
 				CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */,
 				CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */,
+				CDEECC711992B54C00BC89F2 /* CurrentBoardPositionViewControllerPad.m in Sources */,
 				CD85B5A41401C1F0001715B8 /* GoPoint.m in Sources */,
 				CDEE1A0C1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,
 				CDEE19FA19433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */,

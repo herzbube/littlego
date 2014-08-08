@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GameActionsActionSheetController.h"
+#import "../splitview/SplitViewController.h"
 
 // Forward declarations
 @class CommandBase;
@@ -56,7 +57,7 @@
 @interface NavigationBarController : UIViewController <UINavigationControllerDelegate,
                                                        GameActionsActionSheetDelegate,
                                                        UIAlertViewDelegate,
-                                                       UISplitViewControllerDelegate>
+                                                       SplitViewControllerDelegate>
 {
 }
 

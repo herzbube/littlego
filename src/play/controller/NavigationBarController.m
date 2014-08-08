@@ -448,12 +448,14 @@
   [controller release];
 }
 
-#pragma mark - UISplitViewControllerDelegate overrides
+#pragma mark - SplitViewControllerDelegate overrides
 
 // -----------------------------------------------------------------------------
-/// @brief UISplitViewControllerDelegate protocol method.
+/// @brief SplitViewControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) splitViewController:(UISplitViewController*)svc willHideViewController:(UIViewController*)aViewController withBarButtonItem:(UIBarButtonItem*)barButtonItem forPopoverController:(UIPopoverController*)pc
+- (void) splitViewController:(UISplitViewController*)svc
+      willHideViewController:(UIViewController*)aViewController
+           withBarButtonItem:(UIBarButtonItem*)barButtonItem
 {
   self.barButtonItemForShowingTheHiddenViewController = barButtonItem;
   barButtonItem.title = @"Moves";
@@ -462,9 +464,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UISplitViewControllerDelegate protocol method.
+/// @brief SplitViewControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) splitViewController:(UISplitViewController*)svc willShowViewController:(UIViewController*)aViewController invalidatingBarButtonItem:(UIBarButtonItem*)button
+- (void) splitViewController:(UISplitViewController*)svc
+      willShowViewController:(UIViewController*)aViewController
+   invalidatingBarButtonItem:(UIBarButtonItem*)button
 {
   self.barButtonItemForShowingTheHiddenViewController = nil;
   self.navigationBarNeedsPopulation = true;
