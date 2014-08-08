@@ -473,8 +473,6 @@
 {
   if (! self.leftPaneIsShownInOverlay)
     return;
-  self.leftPaneIsShownInOverlay = false;
-
   [UIView animateWithDuration:0.2
                    animations:^{
                      self.leftPaneLeftEdgeConstraint.constant = -320;
@@ -491,6 +489,10 @@
 // -----------------------------------------------------------------------------
 - (void) dismissLeftPaneInOverlay
 {
+  if (! self.leftPaneIsShownInOverlay)
+    return;
+  self.leftPaneIsShownInOverlay = false;
+
   UIView* leftPaneView = [self leftPaneView];
   if (! leftPaneView)
     return;
