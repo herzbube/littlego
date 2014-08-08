@@ -113,7 +113,7 @@
   {
     // Automatically calls willMoveToParentViewController:
     [self addChildViewController:splitViewControllerChild];
-    [_splitViewControllerChild didMoveToParentViewController:self];
+    [splitViewControllerChild didMoveToParentViewController:self];
     [splitViewControllerChild retain];
     _splitViewControllerChild = splitViewControllerChild;
   }

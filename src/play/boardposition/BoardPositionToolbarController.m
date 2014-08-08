@@ -137,7 +137,7 @@ enum NavigationDirection
   {
     // Automatically calls willMoveToParentViewController:
     [self addChildViewController:boardPositionListViewController];
-    [_boardPositionListViewController didMoveToParentViewController:self];
+    [boardPositionListViewController didMoveToParentViewController:self];
     [boardPositionListViewController retain];
     _boardPositionListViewController = boardPositionListViewController;
   }
@@ -162,7 +162,7 @@ enum NavigationDirection
   {
     // Automatically calls willMoveToParentViewController:
     [self addChildViewController:currentBoardPositionViewController];
-    [_currentBoardPositionViewController didMoveToParentViewController:self];
+    [currentBoardPositionViewController didMoveToParentViewController:self];
     [currentBoardPositionViewController retain];
     _currentBoardPositionViewController = currentBoardPositionViewController;
   }

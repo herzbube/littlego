@@ -111,7 +111,7 @@
   {
     // Automatically calls willMoveToParentViewController:
     [self addChildViewController:navigationBarController];
-    [_navigationBarController didMoveToParentViewController:self];
+    [navigationBarController didMoveToParentViewController:self];
     [navigationBarController retain];
     _navigationBarController = navigationBarController;
   }

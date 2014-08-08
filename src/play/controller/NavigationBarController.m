@@ -144,7 +144,7 @@
   {
     // Automatically calls willMoveToParentViewController:
     [self addChildViewController:statusViewController];
-    [_statusViewController didMoveToParentViewController:self];
+    [statusViewController didMoveToParentViewController:self];
     [statusViewController retain];
     _statusViewController = statusViewController;
   }

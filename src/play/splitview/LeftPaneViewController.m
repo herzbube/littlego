@@ -91,7 +91,7 @@
   {
     // Automatically calls willMoveToParentViewController:
     [self addChildViewController:boardPositionToolbarController];
-    [_boardPositionToolbarController didMoveToParentViewController:self];
+    [boardPositionToolbarController didMoveToParentViewController:self];
     [boardPositionToolbarController retain];
     _boardPositionToolbarController = boardPositionToolbarController;
   }
@@ -116,7 +116,7 @@
   {
     // Automatically calls willMoveToParentViewController:
     [self addChildViewController:boardPositionTableListViewController];
-    [_boardPositionTableListViewController didMoveToParentViewController:self];
+    [boardPositionTableListViewController didMoveToParentViewController:self];
     [boardPositionTableListViewController retain];
     _boardPositionTableListViewController = boardPositionTableListViewController;
   }
