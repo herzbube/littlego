@@ -302,26 +302,27 @@
   if (self.crossHairInformation)
   {
     GoPoint* crossHairPoint = [self.crossHairInformation objectAtIndex:0];
-    statusText = crossHairPoint.vertex.string;
     bool crossHairPointIsLegalMove = [[self.crossHairInformation objectAtIndex:1] boolValue];
-    if (! crossHairPointIsLegalMove)
+    if (crossHairPointIsLegalMove)
+    {
+      statusText = crossHairPoint.vertex.string;
+    }
+    else
     {
       enum GoMoveIsIllegalReason isIllegalReason = [[self.crossHairInformation objectAtIndex:2] intValue];
       switch (isIllegalReason)
       {
-        case GoMoveIsIllegalReasonSuicide:
-        case GoMoveIsIllegalReasonSimpleKo:
-        case GoMoveIsIllegalReasonSuperko:
-        case GoMoveIsIllegalReasonUnknown:
+        case GoMoveIsIllegalReasonIntersectionOccupied:
         {
-          NSString* isIllegalReasonString = [NSString stringWithMoveIsIllegalReason:isIllegalReason];
-          statusText = [statusText stringByAppendingString:@" - Cannot play: "];
-          statusText = [statusText stringByAppendingString:isIllegalReasonString];
+          // No special message if intersection is occupied, that's too basic
+          statusText = crossHairPoint.vertex.string;
           break;
         }
         default:
         {
-          // No special message if intersection is occupied, that's too basic
+          NSString* isIllegalReasonString = [NSString stringWithMoveIsIllegalReason:isIllegalReason];
+          statusText = [statusText stringByAppendingString:@" - Cannot play: "];
+          statusText = [statusText stringByAppendingString:isIllegalReasonString];
           break;
         }
       }
@@ -332,37 +333,27 @@
     GoGame* game = [GoGame sharedGame];
     if (game.isComputerThinking)
     {
-      switch (game.state)
+      switch (game.reasonForComputerIsThinking)
       {
-        case GoGameStateGameHasStarted:
-        case GoGameStateGameIsPaused:          // although game is paused, computer may still be thinking
+        case GoGameComputerIsThinkingReasonComputerPlay:
         {
-          switch (game.reasonForComputerIsThinking)
-          {
-            case GoGameComputerIsThinkingReasonComputerPlay:
-            {
-              NSString* playerName = game.currentPlayer.player.name;
-              if (game.isComputerPlayersTurn)
-                statusText = [playerName stringByAppendingString:@" is thinking..."];
-              else
-                statusText = [NSString stringWithFormat:@"Computer is playing for %@...", playerName];
-              break;
-            }
-            case GoGameComputerIsThinkingReasonPlayerInfluence:
-            {
-              statusText = @"Updating player influence...";
-              break;
-            }
-            default:
-            {
-              assert(0);
-              break;
-            }
-          }
+          NSString* playerName = game.currentPlayer.player.name;
+          if (game.isComputerPlayersTurn)
+            statusText = [playerName stringByAppendingString:@" is thinking..."];
+          else
+            statusText = [NSString stringWithFormat:@"Computer is playing for %@...", playerName];
+          break;
+        }
+        case GoGameComputerIsThinkingReasonPlayerInfluence:
+        {
+          statusText = @"Updating player influence...";
           break;
         }
         default:
+        {
+          assert(0);
           break;
+        }
       }
     }
     else
