@@ -53,6 +53,7 @@
 
 - (id) initWithModalMaster:(UIViewController*)aController delegate:(id<GameActionsActionSheetDelegate>)aDelegate;
 - (void) showActionSheetFromRect:(CGRect)rect inView:(UIView*)view;
+- (void) cancelActionSheet;
 
 /// @brief This is the delegate that will be informed when
 /// GameActionsActionSheetController has finished its task.

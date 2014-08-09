@@ -39,6 +39,7 @@
 @interface NavigationBarController()
 @property(nonatomic, retain) UINavigationBar* navigationBar;
 @property(nonatomic, assign) GameInfoViewController* gameInfoViewController;
+@property(nonatomic, retain) GameActionsActionSheetController* gameActionsActionSheetController;
 @property(nonatomic, assign) bool navigationBarNeedsPopulation;
 @property(nonatomic, assign) bool statusViewSizeNeedsUpdate;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
@@ -100,6 +101,7 @@
 {
   self.navigationBar = nil;
   self.gameInfoViewController = nil;
+  self.gameActionsActionSheetController = nil;
   self.computerPlayButton = nil;
   self.passButton = nil;
   self.discardBoardPositionButton = nil;
@@ -184,6 +186,23 @@
   // For now, fix the frame by calling our updater.
   self.statusViewSizeNeedsUpdate = true;
   [self updateStatusViewSize];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+  [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+  {
+    if (self.gameActionsActionSheetController)
+    {
+      // Dismiss the popover that displays the action sheet because the popover
+      // will be wrongly positioned after the interface has rotated
+      [self.gameActionsActionSheetController cancelActionSheet];
+    }
+  }
 }
 
 #pragma mark - Private helpers for view setup
@@ -396,8 +415,8 @@
   }
   if (rightMostSubview)
   {
-    GameActionsActionSheetController* controller = [[GameActionsActionSheetController alloc] initWithModalMaster:self.parentViewController delegate:self];
-    [controller showActionSheetFromRect:rightMostSubview.bounds inView:rightMostSubview];
+    self.gameActionsActionSheetController = [[[GameActionsActionSheetController alloc] initWithModalMaster:self.parentViewController delegate:self] autorelease];
+    [self.gameActionsActionSheetController showActionSheetFromRect:rightMostSubview.bounds inView:rightMostSubview];
   }
 }
 
@@ -445,7 +464,7 @@
 // -----------------------------------------------------------------------------
 - (void) gameActionsActionSheetControllerDidFinish:(GameActionsActionSheetController*)controller
 {
-  [controller release];
+  self.gameActionsActionSheetController = nil;
 }
 
 #pragma mark - SplitViewControllerDelegate overrides

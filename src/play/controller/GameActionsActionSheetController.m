@@ -58,6 +58,7 @@ enum ActionSheetButton
 /// GameActionsActionSheetController.
 // -----------------------------------------------------------------------------
 @interface GameActionsActionSheetController()
+@property(nonatomic, assign) UIActionSheet* actionSheet;
 @property(nonatomic, retain) NSString* saveGameName;
 @end
 
@@ -82,12 +83,11 @@ enum ActionSheetButton
   self = [super init];
   if (! self)
     return nil;
-
   self.delegate = aDelegate;
+  self.actionSheet = nil;
   self.saveGameName = nil;
   self.modalMaster = aController;
   self.buttonIndexes = [NSMutableDictionary dictionaryWithCapacity:MaxButton];
-
   return self;
 }
 
@@ -98,6 +98,7 @@ enum ActionSheetButton
 - (void) dealloc
 {
   self.delegate = nil;
+  self.actionSheet = nil;
   self.saveGameName = nil;
   self.modalMaster = nil;
   self.buttonIndexes = nil;
@@ -110,12 +111,11 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) showActionSheetFromRect:(CGRect)rect inView:(UIView*)view
 {
-  // TODO iPad: Modify this to not include a cancel button (see HIG).
-  UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:@"Game actions"
-                                                           delegate:self
-                                                  cancelButtonTitle:nil
-                                             destructiveButtonTitle:nil
-                                                  otherButtonTitles:nil];
+  self.actionSheet = [[UIActionSheet alloc] initWithTitle:@"Game actions"
+                                                 delegate:self
+                                        cancelButtonTitle:nil
+                                   destructiveButtonTitle:nil
+                                        otherButtonTitles:nil];
 
   // Add buttons in the order that they appear in the ActionSheetButton enum
   GoGame* game = [GoGame sharedGame];
@@ -215,11 +215,15 @@ enum ActionSheetButton
         break;
       }
     }
-    NSInteger buttonIndex = [actionSheet addButtonWithTitle:title];
+    NSInteger buttonIndex = [self.actionSheet addButtonWithTitle:title];
     [self.buttonIndexes setObject:[NSNumber numberWithInt:iterButtonIndex]
                            forKey:[NSNumber numberWithInt:buttonIndex]];
   }
-  actionSheet.cancelButtonIndex = [actionSheet addButtonWithTitle:@"Cancel"];
+
+  // On the iPad the cancel button is not displayed, but if the user taps
+  // outside of the popover to cancel the action sheet, the action sheet
+  // notifies the delegate with the button index stored in cancelButtonIndex
+  self.actionSheet.cancelButtonIndex = [self.actionSheet addButtonWithTitle:@"Cancel"];
 
   // It's important that we do NOT use showFromBarButtonItem:animated:(), for
   // two reasons:
@@ -230,8 +234,8 @@ enum ActionSheetButton
   // 2) On the iPhone, showFromBarButtonItem:animated:() simply seems to not
   //    work properly - items in the action sheet cannot be selected when that
   //    method is used.
-  [actionSheet showFromRect:rect inView:view animated:YES];
-  [actionSheet release];
+  [self.actionSheet showFromRect:rect inView:view animated:YES];
+  [self.actionSheet release];
 }
 
 // -----------------------------------------------------------------------------
@@ -244,6 +248,7 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) actionSheet:(UIActionSheet*)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
+  self.actionSheet = nil;
   if (actionSheet.cancelButtonIndex == buttonIndex)
   {
     [self.delegate gameActionsActionSheetControllerDidFinish:self];
@@ -279,6 +284,18 @@ enum ActionSheetButton
       assert(0);
       break;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Cancels the action sheet if it is currently displayed.
+// -----------------------------------------------------------------------------
+- (void) cancelActionSheet
+{
+  if (! self.actionSheet)
+    return;
+  [self.actionSheet dismissWithClickedButtonIndex:self.actionSheet.cancelButtonIndex animated:NO];
+  // Don't do anything else, the above line caused this
+  // GameActionsActionSheetController to be deallocated
 }
 
 // -----------------------------------------------------------------------------
