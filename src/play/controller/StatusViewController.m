@@ -36,14 +36,12 @@
 /// @brief Class extension with private properties for StatusViewController.
 // -----------------------------------------------------------------------------
 @interface StatusViewController()
-/// @name Privately declared properties
-//@{
-@property(nonatomic, assign) UILabel* statusLabel;
-@property(nonatomic, assign) UIActivityIndicatorView* activityIndicator;
+@property(nonatomic, retain) UILabel* statusLabel;
+@property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
 @property(nonatomic, assign) bool activityIndicatorNeedsUpdate;
 @property(nonatomic, assign) bool statusLabelNeedsUpdate;
 @property(nonatomic, retain) NSArray* crossHairInformation;
-//@}
+@property(nonatomic, assign) bool shouldDisplayActivityIndicator;
 @end
 
 
@@ -65,6 +63,7 @@
   [self releaseObjects];
   self.activityIndicatorNeedsUpdate = false;
   self.statusLabelNeedsUpdate = false;
+  self.shouldDisplayActivityIndicator = false;
   return self;
 }
 
@@ -96,9 +95,9 @@
 - (void) loadView
 {
   [self createViews];
-  [self setupViewHierarchy];
+  [self updateViewHierarchy];
   [self configureViews];
-  [self setupAutoLayoutConstraints];
+  [self updateAutoLayoutConstraints];
   [self setupNotificationResponders];
 }
 
@@ -117,10 +116,19 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) setupViewHierarchy
+- (void) updateViewHierarchy
 {
   [self.view addSubview:self.statusLabel];
-  [self.view addSubview:self.activityIndicator];
+  if (self.shouldDisplayActivityIndicator)
+  {
+    if (! self.activityIndicator.superview)
+      [self.view addSubview:self.activityIndicator];
+  }
+  else
+  {
+    if (self.activityIndicator.superview)
+      [self.activityIndicator removeFromSuperview];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -139,33 +147,42 @@
   self.statusLabel.textAlignment = NSTextAlignmentCenter;
 
   self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
-  self.activityIndicator.hidden = YES;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) setupAutoLayoutConstraints
+- (void) updateAutoLayoutConstraints
 {
+  [self.view removeConstraints:self.view.constraints];
+
   self.statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
 
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.statusLabel, @"statusLabel",
-                                   self.activityIndicator, @"activityIndicator",
-                                   nil];
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            // Default spacing is not sufficient, use experimentally determined custom spacing
-                            @"H:|-0-[statusLabel]-15-[activityIndicator]-0-|",
-                            @"V:|-0-[statusLabel]-0-|",
-                            nil];
-  [AutoLayoutUtility installVisualFormats:visualFormats
-                                withViews:viewsDictionary
-                                   inView:self.view];
-  [AutoLayoutUtility alignFirstView:self.activityIndicator
-                     withSecondView:self.statusLabel
-                        onAttribute:NSLayoutAttributeCenterY
-                   constraintHolder:self.view];
+  if (self.shouldDisplayActivityIndicator)
+  {
+    NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                     self.statusLabel, @"statusLabel",
+                                     self.activityIndicator, @"activityIndicator",
+                                     nil];
+    NSArray* visualFormats = [NSArray arrayWithObjects:
+                              // Default spacing is not sufficient, use experimentally
+                              // determined custom spacing
+                              @"H:|-0-[statusLabel]-15-[activityIndicator]-0-|",
+                              @"V:|-0-[statusLabel]-0-|",
+                              nil];
+    [AutoLayoutUtility installVisualFormats:visualFormats
+                                  withViews:viewsDictionary
+                                     inView:self.view];
+    [AutoLayoutUtility alignFirstView:self.activityIndicator
+                       withSecondView:self.statusLabel
+                          onAttribute:NSLayoutAttributeCenterY
+                     constraintHolder:self.view];
+  }
+  else
+  {
+    [AutoLayoutUtility fillSuperview:self.view withSubview:self.statusLabel];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -243,38 +260,32 @@
   self.activityIndicatorNeedsUpdate = false;
 
   GoGame* game = [GoGame sharedGame];
-  bool activityIndicatorShouldAnimate = false;
+  bool shouldDisplayActivityIndicator = false;
   if (game.score.scoringEnabled)
   {
     if (game.score.askGtpEngineForDeadStonesInProgress)
-      activityIndicatorShouldAnimate = true;
+      shouldDisplayActivityIndicator = true;
     else
-      activityIndicatorShouldAnimate = false;
+      shouldDisplayActivityIndicator = false;
   }
   else
   {
     if ([game isComputerThinking])
-      activityIndicatorShouldAnimate = true;
+      shouldDisplayActivityIndicator = true;
     else
-      activityIndicatorShouldAnimate = false;
+      shouldDisplayActivityIndicator = false;
   }
 
-  if (activityIndicatorShouldAnimate)
-  {
-    if (! self.activityIndicator.isAnimating)
-    {
-      [self.activityIndicator startAnimating];
-      self.activityIndicator.hidden = NO;
-    }
-  }
+  if (shouldDisplayActivityIndicator == self.shouldDisplayActivityIndicator)
+    return;  // activity indicator already has desired state
+  self.shouldDisplayActivityIndicator = shouldDisplayActivityIndicator;
+
+  [self updateViewHierarchy];
+  [self updateAutoLayoutConstraints];
+  if (shouldDisplayActivityIndicator)
+    [self.activityIndicator startAnimating];
   else
-  {
-    if (self.activityIndicator.isAnimating)
-    {
-      [self.activityIndicator stopAnimating];
-      self.activityIndicator.hidden = YES;
-    }
-  }
+    [self.activityIndicator stopAnimating];
 }
 
 // -----------------------------------------------------------------------------
