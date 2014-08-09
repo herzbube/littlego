@@ -24,6 +24,7 @@
 /// @brief Class extension with private properties for SplitViewController.
 // -----------------------------------------------------------------------------
 @interface SplitViewController()
+@property (nonatomic, retain) UIView* dividerView;
 @property (nonatomic, retain) UIBarButtonItem* barButtonItemLeftPane;
 @property (nonatomic, assign) bool leftPaneIsShownInOverlay;
 @property (nonatomic, retain) UIView* overlayView;
@@ -48,6 +49,7 @@
     return nil;
   self.viewControllers = [NSArray array];
   self.delegate = nil;
+  self.dividerView = nil;
   self.barButtonItemLeftPane = nil;
   self.leftPaneIsShownInOverlay = false;
   self.overlayView = nil;
@@ -62,6 +64,7 @@
 {
   self.viewControllers = nil;
   self.delegate = nil;
+  self.dividerView = nil;
   self.barButtonItemLeftPane = nil;
   self.overlayView = nil;
   self.leftPaneLeftEdgeConstraint = nil;
@@ -203,15 +206,13 @@
 - (void) loadView
 {
   [super loadView];
+  self.view.backgroundColor = [UIColor clearColor];
+  self.dividerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  self.dividerView.backgroundColor = [UIColor blackColor];
 
   [self updateViewHierarchyForInterfaceOrientation:self.interfaceOrientation];
   [self updateAutoLayoutConstraintsForInterfaceOrientation:self.interfaceOrientation];
   [self updateBarButtonItemForInterfaceOrientation:self.interfaceOrientation];
-
-  // Background forms the divider between left/right pane
-  // TODO This is a cheap hack that will not work if the left/right pane do
-  // not fill the view of this split view controller
-  self.view.backgroundColor = [UIColor blackColor];
 }
 
 // -----------------------------------------------------------------------------
@@ -270,6 +271,8 @@
   bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
   if (isPortraitOrientation)
   {
+    if (self.dividerView.superview)
+      [self.dividerView removeFromSuperview];
     if (leftPaneView.superview)
       [leftPaneView removeFromSuperview];
     if (! rightPaneView.superview)
@@ -277,6 +280,8 @@
   }
   else
   {
+    if (! self.dividerView.superview)
+      [self.view addSubview:self.dividerView];
     if (! leftPaneView.superview)
       [self.view addSubview:leftPaneView];
     if (! rightPaneView.superview)
@@ -308,10 +313,12 @@
 
   [self.view removeConstraints:self.view.constraints];
 
+  self.dividerView.translatesAutoresizingMaskIntoConstraints = NO;
   leftPaneView.translatesAutoresizingMaskIntoConstraints = NO;
   rightPaneView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.dividerView, @"dividerView",
                                    leftPaneView, @"leftPaneView",
                                    rightPaneView, @"rightPaneView",
                                    nil];
@@ -328,7 +335,8 @@
   else
   {
     NSArray* visualFormats = [NSArray arrayWithObjects:
-                              @"H:|-0-[leftPaneView(==320)]-1-[rightPaneView]-0-|",
+                              @"H:|-0-[leftPaneView(==320)]-0-[dividerView(==1)]-0-[rightPaneView]-0-|",
+                              @"V:|-0-[dividerView]-0-|",
                               @"V:|-0-[leftPaneView]-0-|",
                               @"V:|-0-[rightPaneView]-0-|",
                               nil];
