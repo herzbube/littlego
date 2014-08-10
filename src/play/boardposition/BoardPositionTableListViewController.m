@@ -586,7 +586,7 @@
 // -----------------------------------------------------------------------------
 - (BOOL) tableView:(UITableView*)tableView shouldHighlightRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  if (tableView == self.boardPositionListTableView && self.tappingEnabled)
+  if (tableView == self.boardPositionListTableView && self.tappingEnabled && ! tableView.tracking)
     return YES;
   else
     return NO;
