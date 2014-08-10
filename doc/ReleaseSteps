@@ -28,11 +28,8 @@ Before the release
 - Make sure that no debugging stuff has been forgotten in the code (e.g. search
   for "xxx")
 - Update the ChangeLog
-  - The main source for this is the git commit log
-  - The bug tracker may also have useful information. For instance, run the
-    following query to see the bugs that were fixed for milestone 1 (where
-    milestone 1 might correspond to release 0.9.1):
-    https://github.com/herzbube/littlego/issues?milestone=1&page=1&state=closed
+  - The main source for this are the issues on the bug tracker
+  - The git commit log may also have useful information
   - Also add notes about changes to the user defaults, especially if some of
     the user's preferences are clobbered by UserDefaultsUpdater
 - Replace the "Changes in this release" section of README.md with a collection

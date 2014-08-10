@@ -5,7 +5,7 @@ This document has notes about the project's build process.
 
 Xcode version
 -------------
-The current build should work out of the box for
+Since version 1.1.0, the current build should work out of the box for
 
   Xcode 5.1.1
   iOS base SDK 7.1
@@ -32,8 +32,14 @@ list of configurations that have worked in the past:
 - Xcode 5.0.2, iOS base SDK 6.1, available since 1.0.0
 
 
-Setting up Xcode 5.1.1 with iOS base SDK 6.1
---------------------------------------------
+Setting up Xcode with an older iOS base SDK
+-------------------------------------------
+When Apple releases a new version of Xcode, it always bundles the application
+with a certain version of the iOS base SDK. Sometimes you want to use the new
+version of Xcode, but continue to develop with an older version of the iOS base
+SDK. These steps are an example how this can be achieved for Xcode 5.1.1 and
+iOS base SDK 6.1 (Xcode 5.1.1 comes bundled with iOS base SDK 7.1).
+
 1. Log in as a user with administrator privileges
 2. Install both Xcode 5.1.1 and 4.6.3. You will work with Xcode 5.1.1, you need
    Xcode 4.6.3 solely as a source for the iOS 6.1 SDK.
@@ -51,14 +57,13 @@ Xcode build system configuration
 Important configuration settings in Xcode (both for the "Little Go" and the
 "Unit tests" targets):
 - IPHONEOS_DEPLOYMENT_TARGET = 7.0
-- ARCHS = armv7
-  - The original value is $(ARCHS_STANDARD_32_BIT)
-  - Xcode 4.5 resolves this to "armv7 armv7s", but the 3rd party software build
-    currently does not support armv7s
-  - armv7s therefore needs to be removed, otherwise a linker error occurs
-  - An interesting article with background information, and also with some
-    reassurance why we don't need armv7s at the moment, can be found here:
-    http://www.galloway.me.uk/2012/09/hacking-up-an-armv7s-library/
+- ARCHS = $(ARCHS_STANDARD_32_BIT)
+  - The default for Xcode 5.1.1 is "armv7 armv7s arm64", i.e. it includes a
+    64-bit architecture
+  - However, not all 3rd party software builds currently support arm64, so
+    arm64 must be removed
+  - Instead of explicitly enumerating the architecture, we use the variable
+    $(ARCHS_STANDARD_32_BIT)
 - HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
 - LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
 - OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lLumberjack -ltouchzipkit -ObjC
@@ -92,20 +97,20 @@ Xcode project itself. [1] has the answer how to achieve this. The following is
 a short overview of how I configured those schemes:
 - Let Xcode autocreate schemes. This results in one scheme for each of the
   project's targets.
-- Rename the "Little Go" scheme to "Little Go Debug", add the unit test target
-  to the scheme, and disable the "Archive" command. Also make sure that all
-  actions except "Profile" use the "Debug" build configuration.
-- Duplicate "Little Go Debug", naming the new scheme "Little Go Release". Leave
-  the "Archive" action disabled. Change all actions to use the "Release" build
-  configuration.
-- Duplicate "Little Go Debug", naming the new scheme "Little Go AdHoc
+- Rename the "Little Go" scheme to "Little Go Debug"
+- Add the unit test target to the "Little Go Debug" scheme
+- Enable the "Run" action for the unit test target.
+- Make sure that the checkbox "Test" is checked only for the unit test target,
+  but not for the main target. This allows to run the test action (Command + U)
+  for the main target.
+- Make sure that the "Profile" and "Archive" actions use the "Release" build
+  configuration, and all other actions use the "Debug" build configuration
+- Disable the "Archive" action
+- Duplicate the "Little Go Debug" scheme, naming the new scheme "Little Go AdHoc
   Distribution". Enable the "Archive" command. Change all actions to use the
   "Distribute_AdHoc" build configuration.
 - Ditto, but name the new scheme "Little Go AppStore Distribution" and let the
   actions use the "Distribute_AppStore" build configuration.
-- In all schemes, make sure that the checkbox "Test" is checked only for the
-  unit test target (but not for the main target). This allows to run the test
-  action (Command + U) for the main target.
 
 [1] http://stackoverflow.com/questions/7144316/adding-xcode-workspace-schemes-to-version-control
 
@@ -114,8 +119,9 @@ Platform notes
 --------------
 - The Xcode project is prepared to build Little Go both for iOS and for the
   iPhone Simulator.
-- The base SDK is "Latest iOS", which means that the project is set up with a
-  moving target SDK.
+- The base SDK is "iOS 7.1". I prefer setting an explicit base SDK over setting
+  "Latest iOS", which would mean that the project is set up with a moving
+  target SDK.
 - The deployment target is set to 7.0 so that the application keeps running on
   iOS 7.0 devices.
 
@@ -135,7 +141,7 @@ the development machine:
 
 Compilation command
 -------------------
-TODO: Update this section for Xcode 4.
+TODO: Update this section for Xcode 5.
 
 The following lines represent the command used by Xcode 3 to compile a single
 .cpp file in Debug configuration for the iPhoneSimulator platform. Every line

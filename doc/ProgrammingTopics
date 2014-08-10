@@ -92,6 +92,12 @@ is documented in [21]. Information about Uniform Type Identifiers (UTI) can be
 found in [29] and [30], while [31] lists the System-Declared Uniform Type
 Identifiers.
 
+The Auto Layout system introduced with iOS 6 can be a bit tricky sometimes, but
+overall it is a much simpler and more expressive way to specify the layout of
+the view hierarchy than manually calculating view frames. [32] is both an
+introductory guide and a reference for the visual format used to specify
+Auto Layout constraints.
+
 Unless otherwise noted, the base for all of the following references is the
 "iOS Developer Library", found under this URL:
 https://developer.apple.com/library/ios/navigation/.
@@ -127,3 +133,4 @@ https://developer.apple.com/library/ios/navigation/.
 [29] iOS Developer Library > Guides > Uniform Type Identifiers Overview
 [30] iOS Developer Library > Reference > Uniform Type Identifiers Reference
 [31] http://developer.apple.com/library/ios/#documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
+[32] iOS Developer Library > Guides > Auto Layout Guide

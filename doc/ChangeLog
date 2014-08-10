@@ -1,3 +1,53 @@
+Sun August 10 2014   "Patrick Näf" <herzbube@herzbube.ch>
+- Release of version 1.1.0
+- Improvements and changes
+  - The app's user interface has been updated to the iOS 7 look & feel (#204)
+  - The "maximum zoom" user preference has been removed (#217)
+  - iPad: The "Game Actions" menu is now displayed in a popover (#232)
+  - The name of the "iPhone 4S" demo profile has been changed to "Strong" (#210)
+  - The "long press" gesture for placing a stone now has a slightly longer
+    delay (#241). This should make it less likely that the user places a stone
+    when instead she wanted to scroll.
+- Bugfixes
+  - Drawing for Retina displays has been fixed (#205). Many thanks to
+    Eric O. Lebigot for reporting the issue and giving me the necessary KITB to
+    investigate the problem.
+  - The app no longer crashes when the "Score" segment is visible on the
+    "Game Info" screen and player/profile information is edited (#225)
+  - The app no longer crashes when a player is viewed on the "Game" segment of
+    the "Game Info" screen and the game ends (#226)
+  - The app no longer crashes when a saved game is renamed and the new name
+    contains illegal characters (#235)
+  - iPad: The list of board positions now shows the correct move after
+    discard & play (#233)
+  - iPhone: Potential app crash eliminated if user taps an entry in the list of
+    board positions (#229)
+  - Handicap compensation is now shown in the "Game info" screen even if scoring
+    mode is not enabled (#220)
+  - The "Minimum number of games" setting in the resign behaviour advanced
+    settings screen is no longer editable if the "Auto-select" setting is turned
+    on (#207)
+  - When the board is zoomed in or out, the internally managed zoom scale can no
+    longer become lower/higher than the intended minimum/maximum (#139)
+- Regressions
+  - The "Load" button on the Archive tab is now disabled again while the
+    computer is thinking (#227). This was broken when document interaction was
+    introduced in 0.11.0.
+- Technical changes
+  - Memory usage during zooming has been greatly reduced (#212, #214, #215)
+  - Memory usage for wooden background image has been reduced (#216)
+  - The project has been upgraded to the iOS 7 SDK (#204) and Xcode Xcode 5.1.1
+  - Support for iOS 6 has been dropped, the minimum required version is now iOS
+    7.0. Devices that are no longer supported are the iPhone 3GS and the
+    iPod Touch 4th generation.
+  - The user interface now uses Auto Layout instead of manually calculated
+    frames (#206)
+  - Unit tests were migrated from SenTestingKit/OCUnit to XCTest (#222)
+  - No longer use any .xib files, the entire UI is now set up programmatically
+- A list of all issues closed for this release is available on GitHub:
+  https://github.com/herzbube/littlego/issues?q=milestone%3A1.1.0+is%3Aclosed
+
+
 Mon January 06 2014   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 1.0.0
 - Features
