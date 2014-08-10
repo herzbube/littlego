@@ -36,6 +36,8 @@ enum BoardViewLayerDelegateEvent
   /// mechanism reuses a tile to display content at a different position on the
   /// canvas.
   BVLDEventInvalidateContent,
+  /// @brief Is sent whenever the board position changes. In some scenarios,
+  /// multiple board position changes are coalesced into a single event.
   BVLDEventBoardPositionChanged,
   BVLDEventNumberOfBoardPositionsChanged,
   BVLDEventMarkLastMoveChanged,

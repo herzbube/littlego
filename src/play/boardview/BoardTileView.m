@@ -47,6 +47,7 @@
 /// so we are playing it safe. Also, we guard against future implementation
 /// changes.
 @property(nonatomic, assign) bool notificationRespondersAreSetup;
+@property(nonatomic, assign) bool currentBoardPositionChangedWasDelayed;
 @property(nonatomic, assign) bool drawLayersWasDelayed;
 @property(nonatomic, retain) NSArray* layerDelegates;
 @property(nonatomic, assign) GridLayerDelegate* gridLayerDelegate;
@@ -85,6 +86,7 @@
   self.row = -1;
   self.column = -1;
   self.notificationRespondersAreSetup = false;
+  self.currentBoardPositionChangedWasDelayed = false;
   self.drawLayersWasDelayed = false;
   return self;
 }
@@ -408,6 +410,12 @@
     return;
   self.drawLayersWasDelayed = false;
 
+  if (self.currentBoardPositionChangedWasDelayed)
+  {
+    self.currentBoardPositionChangedWasDelayed = false;
+    [self notifyLayerDelegates:BVLDEventBoardPositionChanged eventInfo:nil];
+  }
+
   for (id<BoardViewLayerDelegate> layerDelegate in self.layerDelegates)
     [layerDelegate drawLayer];
 }
@@ -608,7 +616,11 @@
   {
     if ([keyPath isEqualToString:@"currentBoardPosition"])
     {
-      [self notifyLayerDelegates:BVLDEventBoardPositionChanged eventInfo:nil];
+      // The board position changes many times when a game is loaded from the
+      // archive. We don't want to notify our delegates each time because this
+      // triggers expensive calculations, instead we coalesce multiple board
+      // position changes into a single notification
+      self.currentBoardPositionChangedWasDelayed = true;
       [self delayedDrawLayers];
     }
     else if ([keyPath isEqualToString:@"numberOfBoardPositions"])
