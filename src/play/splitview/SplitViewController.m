@@ -427,14 +427,14 @@
 
   // The overlay view makes sure that no touches get through to the right pane
   // covered by the overlay.
-  self.overlayView = [[UIView alloc] initWithFrame:self.view.bounds];
+  self.overlayView = [[[UIView alloc] initWithFrame:self.view.bounds] autorelease];
   [self.view addSubview:self.overlayView];
 
   // A transparent view is laid out to the right of the left pane. A gesture
   // recognizer makes sure that tap gestures trigger dismissal of the overlay
   // view
-  UIView* transparentRightPaneView = [[UIView alloc] initWithFrame:CGRectZero];
-  UIGestureRecognizer* tapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)];
+  UIView* transparentRightPaneView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  UIGestureRecognizer* tapGestureRecognizer = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTapFrom:)] autorelease];
   [transparentRightPaneView addGestureRecognizer:tapGestureRecognizer];
 
   [self.overlayView addSubview:leftPaneView];
