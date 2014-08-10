@@ -141,7 +141,7 @@ enum DiscardFutureMovesAlertSectionItem
   switch (section)
   {
     case DiscardFutureMovesAlertSection:
-      return @"If you make or discard a move while you are looking at a board position in the middle of the game, all moves that have been made after this position will be discarded. If this option is turned off you will NOT be alerted that this is going to happen.";
+      return @"If you make or discard a move while you are viewing a board position in the middle of the game, all moves that have been made after this position will be discarded. If this option is turned off you will NOT be alerted that this is going to happen.";
     default:
       break;
   }

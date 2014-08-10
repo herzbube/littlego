@@ -140,9 +140,9 @@ enum ActionType
     }
     NSString* formatString;
     if (boardPosition.isFirstPosition)
-      formatString = @"You are looking at the board position at the beginning of the game. %@ all moves of the entire game will be discarded.\n\nDo you want to continue?";
+      formatString = @"You are viewing the board position at the beginning of the game. %@ all moves of the entire game will be discarded.\n\nDo you want to continue?";
     else
-      formatString = @"You are looking at a board position in the middle of the game. %@ all moves that have been made after this position will be discarded.\n\nDo you want to continue?";
+      formatString = @"You are viewing a board position in the middle of the game. %@ all moves that have been made after this position will be discarded.\n\nDo you want to continue?";
     NSString* messageString = [NSString stringWithFormat:formatString, actionDescription];
     UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Future moves will be discarded"
                                                     message:messageString

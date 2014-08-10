@@ -236,6 +236,7 @@
       return @"Ko";
     case GoMoveIsIllegalReasonSuperko:
       return @"Superko";
+    case GoMoveIsIllegalReasonUnknown:
     default:
       return @"Unknown reason";
   }
