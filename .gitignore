@@ -6,4 +6,5 @@ doxygen/
 dist/
 crash/
 bugreport/
+Little Go.xcodeproj/
 .DS_Store
