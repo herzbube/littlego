@@ -1,3 +1,9 @@
+Fri August 15 2014   "Patrick Näf" <herzbube@herzbube.ch>
+- Release of version 1.1.1
+- Bugfixes
+  - App (hopefully) no longer crashes while stone is dragged around the board
+    (#242)
+
 Sun August 10 2014   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 1.1.0
 - Improvements and changes

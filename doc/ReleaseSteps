@@ -52,9 +52,11 @@ Before the release
 - Remove the build directory to make sure that subsequent test and distribution
   builds are clean.
     rm -rf DerivedData
-  This is important especially when resources have changed because Xcode has
-  been known to leave old resource files in the build folder, which could lead
-  to unexpected results.
+  As a side-effect, this also guarantees that the build date provided by
+  VersionInfoUtilities is up to date. Last but not least, this is is also
+  important after resources have changed, because Xcode has been known to leave
+  old resource files in the build folder, which could lead to unexpected
+  results.
 - In Xcode select the "Little Go AdHoc Distribution" scheme (because this uses
   the Release configuration), then make a build for the simulator and for all
   target devices. If there are any warnings, fix them.

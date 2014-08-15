@@ -9,7 +9,9 @@ Little Go is released under the [Apache License](http://www.apache.org/licenses/
 
 ## Changes in this release
 
-This is the Little Go technical release 1.1.0. A selection of the most important changes are:
+This is the Little Go bugfix release 1.1.1. It contains an urgent fix for a crash that sometimes occurs while a stone is dragged around the board (#242).
+
+The previous release was the Little Go technical release 1.1.0. A selection of the most important changes are:
 
 * The app's user interface has been updated to the iOS 7 look & feel (#204)
 * Drawing for Retina displays has been fixed (#205). Many thanks to Eric O. Lebigot for reporting the issue and giving me the necessary KITB to investigate the problem.
