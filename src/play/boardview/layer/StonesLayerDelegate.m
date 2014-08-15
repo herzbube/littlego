@@ -19,6 +19,7 @@
 #import "StonesLayerDelegate.h"
 #import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
+#import "../Tile.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
@@ -160,41 +161,87 @@
     }
     case BVLDEventCrossHairChanged:
     {
-      GoPoint* previousCrossHairPoint = self.currentCrossHairPoint;
-      self.currentCrossHairPoint = eventInfo;
-      if (previousCrossHairPoint == self.currentCrossHairPoint)
+      GoPoint* oldCrossHairPoint = self.currentCrossHairPoint;
+      GoPoint* newCrossHairPoint = eventInfo;
+      if (oldCrossHairPoint == newCrossHairPoint)
         break;
       CGRect oldDrawingRect = self.drawingRectForCrossHairPoint;
-      CGRect newDrawingRect = [self calculateDrawingRectangleForCrossHairPoint:self.currentCrossHairPoint];
+      CGRect newDrawingRect = [self calculateDrawingRectangleForCrossHairPoint:newCrossHairPoint];
       // We need to compare the drawing rectangles, not the cross-hair points.
       // The points may have changed, but if BOTH the old and the new point are
       // not on this tile, the old and the new drawing rectangle have NOT
       // changed - which is exactly what we want.
       if (CGRectEqualToRect(oldDrawingRect, newDrawingRect))
         break;
-      // Ok, so we need to redraw something
+      // Change both member variables together and without intervening logic so
+      // that they cannot get out of sync
+      self.currentCrossHairPoint = newCrossHairPoint;
       self.drawingRectForCrossHairPoint = newDrawingRect;
       self.dirty = true;
       if (CGRectIsEmpty(newDrawingRect))
       {
-        // The cross-hair stone is no longer visible on this tile (we don't
-        // care if moved to a different tile, or if it is gone entirely), so
-        // we need to clear the stone from the previous drawing cycle
-        self.dirtyRectForCrossHairPoint = oldDrawingRect;
-        self.dirtyPointsForCrossHairPoint = [NSArray arrayWithObject:previousCrossHairPoint];
+        if (oldCrossHairPoint)
+        {
+          // The cross-hair stone is no longer visible on this tile (we don't
+          // care if moved to a different tile, or if it is gone entirely), so
+          // we need to clear the stone from the previous drawing cycle
+          self.dirtyRectForCrossHairPoint = oldDrawingRect;
+          self.dirtyPointsForCrossHairPoint = [NSArray arrayWithObject:oldCrossHairPoint];
+        }
+        else
+        {
+          // The condition that leads to this branch was implemented as part of
+          // the attempt to fix issue 242, where without the condition we had a
+          // crash because oldCrossHairPoint was nil and we tried to initialize
+          // an array with a nil object. Despite extensive code analysis, I did
+          // not find out how oldCrossHairPoint can be nil at this point. Though
+          // I feel bad about it, I decided to add a bit of defensive
+          // programming here, just to make 100% sure that the crash no longer
+          // occurs and I can make a quick bugfix release that will make the
+          // masses happy.
+          // TODO Try to find out how oldCrossHairPoint could be nil at this
+          // point. Check the original source (!) because this bit of defensive
+          // programming was not the only change. Remove the defensive
+          // programming bit if it can be proven that oldCrossHairPoint can
+          // never be nil at this point.
+          assert(false);
+          DDLogError(@"%@: Re-draw entire tile (%d, %d) to clear previous cross-hair point; oldDrawingRect = %@, newDrawingRect = %@",
+                     self,
+                     self.tile.row,
+                     self.tile.column,
+                     NSStringFromCGRect(oldDrawingRect),
+                     NSStringFromCGRect(newDrawingRect));
+          self.dirtyRectForCrossHairPoint = CGRectZero;
+        }
       }
       else if (CGRectIsEmpty(oldDrawingRect))
       {
-        // The cross-hair stone was not visible on this tile in the previous
-        // drawing cycle, but now it is
-        self.dirtyRectForCrossHairPoint = newDrawingRect;
-        self.dirtyPointsForCrossHairPoint = [NSArray arrayWithObject:self.currentCrossHairPoint];
+        if (newCrossHairPoint)
+        {
+          // The cross-hair stone was not visible on this tile in the previous
+          // drawing cycle, but now it is
+          self.dirtyRectForCrossHairPoint = newDrawingRect;
+          self.dirtyPointsForCrossHairPoint = [NSArray arrayWithObject:newCrossHairPoint];
+        }
+        else
+        {
+          // This is part of the attempt to fix issue 242. The extensive comment
+          // above has the details.
+          assert(false);
+          DDLogError(@"%@: Re-draw entire tile (%d, %d) to draw current cross-hair point; oldDrawingRect = %@, newDrawingRect = %@",
+                     self,
+                     self.tile.row,
+                     self.tile.column,
+                     NSStringFromCGRect(oldDrawingRect),
+                     NSStringFromCGRect(newDrawingRect));
+          self.dirtyRectForCrossHairPoint = CGRectZero;  // re-draw the entire tile
+        }
       }
       else
       {
         // The cross-hair stone was and still is visible on this tile
         self.dirtyRectForCrossHairPoint = CGRectUnion(oldDrawingRect, newDrawingRect);
-        self.dirtyPointsForCrossHairPoint = [GoUtilities pointsInRectangleDelimitedByCornerPoint:previousCrossHairPoint
+        self.dirtyPointsForCrossHairPoint = [GoUtilities pointsInRectangleDelimitedByCornerPoint:oldCrossHairPoint
                                                                              oppositeCornerPoint:self.currentCrossHairPoint
                                                                                           inGame:[GoGame sharedGame]];
       }
