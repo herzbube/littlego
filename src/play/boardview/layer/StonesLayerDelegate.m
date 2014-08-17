@@ -97,11 +97,13 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invalidates the drawing rectangle.
+/// @brief Invalidates the cross-hair point.
 // -----------------------------------------------------------------------------
-- (void) invalidateDrawingRectForCrossHairPoint
+- (void) invalidateCrossHairPoint
 {
+  self.currentCrossHairPoint = nil;
   self.drawingRectForCrossHairPoint = CGRectZero;
+  self.dirtyPointsForCrossHairPoint = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -123,9 +125,8 @@
     case BVLDEventBoardSizeChanged:
     {
       [self invalidateLayers];
-      self.currentCrossHairPoint = nil;
+      [self invalidateCrossHairPoint];
       [self invalidateDirtyRectForCrossHairPoint];
-      self.dirtyPointsForCrossHairPoint = nil;
       self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
@@ -133,18 +134,16 @@
     case BVLDEventGoGameStarted:  // place handicap stones
     case BVLDEventInvalidateContent:
     {
-      self.currentCrossHairPoint = nil;
+      [self invalidateCrossHairPoint];
       [self invalidateDirtyRectForCrossHairPoint];
-      self.dirtyPointsForCrossHairPoint = nil;
       self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
     }
     case BVLDEventBoardPositionChanged:
     {
-      self.currentCrossHairPoint = nil;
+      [self invalidateCrossHairPoint];
       [self invalidateDirtyRectForCrossHairPoint];
-      self.dirtyPointsForCrossHairPoint = nil;
       NSMutableDictionary* oldDrawingPoints = self.drawingPoints;
       NSMutableDictionary* newDrawingPoints = [self calculateDrawingPoints];
       // The dictionary must contain the intersection state so that the
@@ -212,6 +211,7 @@
                      NSStringFromCGRect(oldDrawingRect),
                      NSStringFromCGRect(newDrawingRect));
           self.dirtyRectForCrossHairPoint = CGRectZero;
+          self.dirtyPointsForCrossHairPoint = nil;
         }
       }
       else if (CGRectIsEmpty(oldDrawingRect))
@@ -235,6 +235,7 @@
                      NSStringFromCGRect(oldDrawingRect),
                      NSStringFromCGRect(newDrawingRect));
           self.dirtyRectForCrossHairPoint = CGRectZero;  // re-draw the entire tile
+          self.dirtyPointsForCrossHairPoint = nil;
         }
       }
       else
@@ -242,7 +243,7 @@
         // The cross-hair stone was and still is visible on this tile
         self.dirtyRectForCrossHairPoint = CGRectUnion(oldDrawingRect, newDrawingRect);
         self.dirtyPointsForCrossHairPoint = [GoUtilities pointsInRectangleDelimitedByCornerPoint:oldCrossHairPoint
-                                                                             oppositeCornerPoint:self.currentCrossHairPoint
+                                                                             oppositeCornerPoint:newCrossHairPoint
                                                                                           inGame:[GoGame sharedGame]];
       }
       break;
