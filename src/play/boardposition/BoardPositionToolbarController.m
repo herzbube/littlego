@@ -20,10 +20,12 @@
 #import "BoardPositionListViewController.h"
 #import "BoardPositionView.h"
 #import "CurrentBoardPositionViewController.h"
+#import "../model/BoardViewModel.h"
 #import "../../command/boardposition/ChangeBoardPositionCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
 
@@ -276,6 +278,8 @@ enum NavigationDirection
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
+  [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
+  [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -343,6 +347,24 @@ enum NavigationDirection
 /// @brief Responds to the #goScoreCalculationEnds notifications.
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
+{
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewWillDisplayCrossHair notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
+{
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewWillHideCrossHair notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewWillHideCrossHair:(NSNotification*)notification
 {
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
@@ -419,7 +441,9 @@ enum NavigationDirection
   self.buttonStatesNeedUpdate = false;
 
   GoGame* game = [GoGame sharedGame];
-  if (game.isComputerThinking || game.score.scoringInProgress)
+  if (game.isComputerThinking ||
+      game.score.scoringInProgress ||
+      [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
     for (UIBarButtonItem* item in self.navigationBarButtonItems)
       item.enabled = NO;

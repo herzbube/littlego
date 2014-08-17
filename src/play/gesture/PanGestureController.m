@@ -18,10 +18,12 @@
 // Project includes
 #import "PanGestureController.h"
 #import "../boardview/BoardView.h"
+#import "../model/BoardViewModel.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
+#import "../../main/ApplicationDelegate.h"
 
 
 // -----------------------------------------------------------------------------
@@ -165,7 +167,10 @@
     case UIGestureRecognizerStateChanged:
     {
       if (UIGestureRecognizerStateBegan == recognizerState)
+      {
+        [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair = true;
         [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillDisplayCrossHair object:nil];
+      }
 
       [self.boardView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
       NSArray* crossHairInformation;
@@ -186,6 +191,7 @@
     }
     case UIGestureRecognizerStateEnded:
     {
+      [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair = false;
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
       [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewDidChangeCrossHair object:[NSArray array]];
@@ -200,6 +206,7 @@
     // being handled, or if the gesture recognizer was disabled.
     case UIGestureRecognizerStateCancelled:
     {
+      [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair = false;
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
       [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewDidChangeCrossHair object:[NSArray array]];

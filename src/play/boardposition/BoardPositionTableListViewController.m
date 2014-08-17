@@ -17,6 +17,7 @@
 
 // Project includes
 #import "BoardPositionTableListViewController.h"
+#import "../model/BoardViewModel.h"
 #import "../../command/boardposition/ChangeBoardPositionCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -26,6 +27,7 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
 #import "../../go/GoVertex.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
@@ -220,6 +222,8 @@
   [center addObserver:self selector:@selector(computerPlayerThinkingStops:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
+  [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
+  [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -310,6 +314,24 @@
 /// @brief Responds to the #goScoreCalculationEnds notifications.
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
+{
+  self.tappingEnabledNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewWillDisplayCrossHair notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
+{
+  self.tappingEnabledNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewWillHideCrossHair notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewWillHideCrossHair:(NSNotification*)notification
 {
   self.tappingEnabledNeedsUpdate = true;
   [self delayedUpdate];
@@ -478,10 +500,16 @@
     return;
   self.tappingEnabledNeedsUpdate = false;
   GoGame* game = [GoGame sharedGame];
-  if (game.isComputerThinking || game.score.scoringInProgress)
+  if (game.isComputerThinking ||
+      game.score.scoringInProgress ||
+      [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
+  {
     self.tappingEnabled = false;
+  }
   else
+  {
     self.tappingEnabled = true;
+  }
 }
 
 #pragma mark - UITableViewDataSource overrides

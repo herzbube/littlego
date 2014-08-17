@@ -118,6 +118,11 @@ Basic game play functionality
 - The stone must appear immediately.
   - iPhone: The stone must appear some distance above the fingertip location
   - iPad: The stone must appear directly under the fingertip
+- All interactive UI elements must be disabled while the gesture is in progress
+  - iPhone: Navigation bar buttons, current board position view, board
+    position navigation buttons, board position list view
+  - iPad: Navigation bar buttons, board position navigation buttons, board
+    position table view
 - Drag the cross-hair around the board: The status view must continuously be
   updated to show the coordinates of the current position
 - Move the stone outside of the board area, then release the finger: No stone

@@ -19,8 +19,8 @@
 #import "NavigationBarController.h"
 #import "GameInfoViewController.h"
 #import "StatusViewController.h"
+#import "../model/BoardViewModel.h"
 #import "../model/ScoringModel.h"
-#import "../../main/ApplicationDelegate.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
@@ -28,6 +28,7 @@
 #import "../../command/boardposition/ChangeAndDiscardCommand.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../command/game/PauseGameCommand.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../utility/UIDeviceAdditions.h"
@@ -272,6 +273,8 @@
   [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
+  [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
+  [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -602,6 +605,24 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewWillDisplayCrossHair notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
+{
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewWillHideCrossHair notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewWillHideCrossHair:(NSNotification*)notification
+{
+  self.buttonStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -805,7 +826,8 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.scoringEnabled)
+  if (! game.score.scoringEnabled &&
+      ! [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
     switch (game.type)
     {
@@ -839,7 +861,8 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.scoringEnabled)
+  if (! game.score.scoringEnabled &&
+      ! [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
     switch (game.type)
     {
@@ -878,7 +901,11 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (game.score.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
+  {
+    // always disabled
+  }
+  else if (game.score.scoringEnabled)
   {
     if (! game.score.scoringInProgress)
       enabled = YES;
@@ -898,7 +925,8 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.scoringEnabled)
+  if (! game.score.scoringEnabled &&
+      ! [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
     switch (game.type)
     {
@@ -928,7 +956,8 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.scoringEnabled)
+  if (! game.score.scoringEnabled &&
+      ! [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
     switch (game.type)
     {
@@ -958,7 +987,11 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (game.score.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
+  {
+    // always disabled
+  }
+  else if (game.score.scoringEnabled)
   {
     if (game.score.scoringInProgress)
       enabled = YES;
@@ -978,7 +1011,11 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (game.score.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
+  {
+    // always disabled
+  }
+  else if (game.score.scoringEnabled)
   {
     if (! game.score.scoringInProgress)
       enabled = YES;
@@ -1010,7 +1047,11 @@
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (game.score.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
+  {
+    // always disabled
+  }
+  else if (game.score.scoringEnabled)
   {
     if (! game.score.scoringInProgress)
       enabled = YES;

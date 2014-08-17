@@ -41,6 +41,7 @@
   self.vibrate = false;
   self.stoneDistanceFromFingertip = stoneDistanceFromFingertipDefault;
   self.infoTypeLastSelected = ScoreInfoType;
+  self.boardViewDisplaysCrossHair = false;
   return self;
 }
 
