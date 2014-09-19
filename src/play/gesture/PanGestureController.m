@@ -311,6 +311,7 @@
     self.panningEnabled = false;
     return;
   }
+  GoBoardPosition* boardPosition = game.boardPosition;
 
   if (game.score.scoringEnabled)
   {
@@ -324,23 +325,29 @@
     return;
   }
 
-  switch (game.state)
+  if (GoGameStateGameHasEnded == game.state)
   {
-    case GoGameStateGameHasStarted:
-      if (game.isComputerThinking)
-        self.panningEnabled = false;
-      else
-      {
-        GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-        if (boardPosition.isComputerPlayersTurn)
-          self.panningEnabled = false;
-        else
-          self.panningEnabled = true;
-      }
-      break;
-    default:  // specifically GoGameStateGameHasEnded
+    if (boardPosition.isLastPosition)
+    {
       self.panningEnabled = false;
-      break;
+      return;
+    }
+  }
+
+  // We get here in two cases
+  // 1) The game is still in progress
+  // 2) The game has ended, but the user is viewing an old board position
+  if (game.isComputerThinking)
+  {
+    self.panningEnabled = false;
+  }
+  else
+  {
+    GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+    if (boardPosition.isComputerPlayersTurn)
+      self.panningEnabled = false;
+    else
+      self.panningEnabled = true;
   }
 }
 
