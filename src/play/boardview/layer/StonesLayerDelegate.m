@@ -203,6 +203,8 @@
           // programming was not the only change. Remove the defensive
           // programming bit if it can be proven that oldCrossHairPoint can
           // never be nil at this point.
+          // TODO The scenario described in issue 245 caused this code path to
+          // be executed. The issue has been fixed.
           assert(false);
           DDLogError(@"%@: Re-draw entire tile (%d, %d) to clear previous cross-hair point; oldDrawingRect = %@, newDrawingRect = %@",
                      self,
@@ -227,6 +229,8 @@
         {
           // This is part of the attempt to fix issue 242. The extensive comment
           // above has the details.
+          // TODO The scenario described in issue 245 did NOT cause this code
+          // path to be executed.
           assert(false);
           DDLogError(@"%@: Re-draw entire tile (%d, %d) to draw current cross-hair point; oldDrawingRect = %@, newDrawingRect = %@",
                      self,
@@ -409,7 +413,11 @@
   CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:crossHairPoint
                                                                metrics:self.boardViewMetrics];
   CGRect drawingRectForCrossHairPoint = CGRectIntersection(tileRect, stoneRect);
-  if (CGRectIsNull(drawingRectForCrossHairPoint))
+  // Rectangles that are adjacent and share a side *do* intersect: The
+  // intersection rectangle has either zero width or zero height, depending on
+  // which side the two intersecting rectangles share. For this reason, we
+  // must check CGRectIsEmpty() in addition to CGRectIsNull().
+  if (CGRectIsNull(drawingRectForCrossHairPoint) || CGRectIsEmpty(drawingRectForCrossHairPoint))
   {
     drawingRectForCrossHairPoint = CGRectZero;
   }

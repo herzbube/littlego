@@ -97,7 +97,11 @@
   {
     CGRect lineRect = [lineRectValue CGRectValue];
     CGRect drawingRect = CGRectIntersection(tileRect, lineRect);
-    if (CGRectIsNull(drawingRect))
+    // Rectangles that are adjacent and share a side *do* intersect: The
+    // intersection rectangle has either zero width or zero height, depending on
+    // which side the two intersecting rectangles share. For this reason, we
+    // must check CGRectIsEmpty() in addition to CGRectIsNull().
+    if (CGRectIsNull(drawingRect) || CGRectIsEmpty(drawingRect))
       continue;
     drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRect
                                                      inTileWithRect:tileRect];
