@@ -24,7 +24,6 @@ Before the release
     up to date
   - Make sure that all license files and the content of the NOTICE file are
     up to date
-- Make sure that the TTY logger is disabled in ApplicationDelegate setupLogging
 - Make sure that no debugging stuff has been forgotten in the code (e.g. search
   for "xxx")
 - Update the ChangeLog
