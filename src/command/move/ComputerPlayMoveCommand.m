@@ -104,11 +104,7 @@
                                          responseTarget:self
                                                selector:@selector(gtpResponseReceived:)];
   [command submit];
-
-  // Thinking state must change after any of the other things; this order is
-  // important for observer notifications
   self.game.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonComputerPlay;
-
   return true;
 }
 

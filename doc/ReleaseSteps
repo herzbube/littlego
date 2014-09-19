@@ -148,6 +148,8 @@ Make the release
 - Write a release note blog post on the website
 - Close tickets that are not yet closed in the issue tracker, then close the
   milestone
+- Create a new release on GitHub that references the git tag. Copy ChangeLog
+  content into the release description.
 - Change the QuincyKit status of the new version to "Available" and the status
   of the old version to "Discontinued"
 - Cleanup the Trello board

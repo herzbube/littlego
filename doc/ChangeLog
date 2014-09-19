@@ -1,3 +1,20 @@
+Fri September 19 2014   "Patrick Näf" <herzbube@herzbube.ch>
+- Release of version 1.1.2
+- Bugfixes
+  - Interactive UI elements are now disabled while a stone-placing gesture is in
+    progress (#243). This closes a loop hole that may have been the source for
+    a number of crashes in the past (e.g. the crash described in #244)
+  - Stones no longer temporarily disappear from view while dragging a new stone
+    (#245). Thanks to stfiend for reporting this bug.
+  - Fixed a potential crash if the computer player starts playing immediately
+    after a game is loaded from the archive (#247).
+- Regressions
+  - It is now possible again to make a move when viewing an old board position
+    while the game has already ended (#246). This will resume the game, discard
+    all board positions beyond the one that the user is currently viewing, and
+    then play the desired move.
+
+
 Fri August 15 2014   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 1.1.1
 - Bugfixes

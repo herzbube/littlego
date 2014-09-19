@@ -9,7 +9,7 @@ Little Go is released under the [Apache License](http://www.apache.org/licenses/
 
 ## Changes in this release
 
-This is the Little Go bugfix release 1.1.1. It contains an urgent fix for a crash that sometimes occurs while a stone is dragged around the board (#242).
+This is the Little Go bugfix release 1.1.2. It contains a couple of fixes for potential crashes (#243, #247), one drawing bug (#245) and one regression (#246).
 
 The previous release was the Little Go technical release 1.1.0. A selection of the most important changes are:
 
