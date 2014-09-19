@@ -378,7 +378,10 @@ static const int maxStepsForReplayMoves = 10;
     [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
   }
   [GtpUtilities setupComputerPlayer];
-  [self triggerComputerPlayer];
+  [self performSelector:@selector(triggerComputerPlayerOnMainThread)
+               onThread:[NSThread mainThread]
+             withObject:nil
+          waitUntilDone:YES];
 }
 
 // -----------------------------------------------------------------------------
@@ -639,8 +642,24 @@ static const int maxStepsForReplayMoves = 10;
 
 // -----------------------------------------------------------------------------
 /// @brief Triggers the computer player to make a move, if it is his turn.
+///
+/// This method, and with it ComputerPlayMoveCommand, must be executed on the
+/// main thread. Reason:
+/// - When ComputerPlayMoveCommand receives the GTP response with the computer
+///   player's move, it triggers various UIKit updates
+/// - These updates must happen on the main thread because UIKit drawing must
+///   happen on the main thread
+/// - ComputerPlayMoveCommand receives the GTP response in the same thread
+///   context that it is executed in. So for the GTP response to be received
+///   on the main thread, ComputerPlayMoveCommand itself must also be executed
+///   on the main thread.
+///
+/// LoadGameCommand's long-running action cannot help us delay UIKit updates in
+/// this scenario, because by the time that ComputerPlayMoveCommand receives its
+/// GTP response, LoadGameCommand has long since terminated its long-running
+/// action.
 // -----------------------------------------------------------------------------
-- (void) triggerComputerPlayer
+- (void) triggerComputerPlayerOnMainThread
 {
   GoGame* game = [GoGame sharedGame];
   if ([game isComputerPlayersTurn])
