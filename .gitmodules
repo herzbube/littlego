@@ -3,7 +3,7 @@
 	url = git@github.com:herzbube/fuego-on-ios.git
 [submodule "3rdparty/src/CocoaLumberjack"]
 	path = 3rdparty/src/CocoaLumberjack
-	url = git@github.com:robbiehanson/CocoaLumberjack.git
+	url = git@github.com:CocoaLumberjack/CocoaLumberjack.git
 [submodule "3rdparty/src/QuincyKit"]
 	path = 3rdparty/src/QuincyKit
 	url = git@github.com:TheRealKerni/QuincyKit.git
