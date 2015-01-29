@@ -331,7 +331,6 @@ static ApplicationDelegate* sharedDelegate = nil;
   [sharedQuincyManager setDelegate:self];
   // Default is NO (QuincyKit docs claim the default is YES)
   sharedQuincyManager.showAlwaysButton = YES;
-  sharedQuincyManager.feedbackActivated = YES;
   // sharedQuincyManager.appIdentifier must not be set, otherwise no crash
   // reports are sent to the submission URL.
 }
