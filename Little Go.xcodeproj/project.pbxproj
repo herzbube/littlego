@@ -1924,7 +1924,7 @@
 			name = "Unit tests";
 			productName = "Unit tests";
 			productReference = CDA595AF1401383E00B250D8 /* Unit tests.xctest */;
-			productType = "com.apple.product-type.bundle";
+			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
 
@@ -2503,7 +2503,7 @@
 					"-lMBProgressHUD",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos7.1;
+				SDKROOT = iphoneos8.1;
 			};
 			name = Debug;
 		};
@@ -2537,7 +2537,7 @@
 					"-lMBProgressHUD",
 					"-ObjC",
 				);
-				SDKROOT = iphoneos7.1;
+				SDKROOT = iphoneos8.1;
 			};
 			name = Release;
 		};
@@ -2592,7 +2592,7 @@
 					"-ObjC",
 				);
 				PROVISIONING_PROFILE = "455BE5A6-BFAA-4AC3-832B-E56866A6F28D";
-				SDKROOT = iphoneos7.1;
+				SDKROOT = iphoneos8.1;
 			};
 			name = Distribute_AppStore;
 		};
@@ -2805,7 +2805,7 @@
 					"-ObjC",
 				);
 				PROVISIONING_PROFILE = "CDCE12DF-4A1E-4D19-A8D6-4B37A1695A16";
-				SDKROOT = iphoneos7.1;
+				SDKROOT = iphoneos8.1;
 			};
 			name = Distribute_AdHoc;
 		};
