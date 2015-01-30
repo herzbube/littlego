@@ -187,10 +187,10 @@
 		CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFA329A159FA0F400439B4E /* libz.dylib */; };
 		CD4D44701A79CEC200272579 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD4D446C1A79CEC200272579 /* CrashReporter.framework */; };
 		CD4D44721A79CEC200272579 /* Quincy.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CD4D446E1A79CEC200272579 /* Quincy.bundle */; };
-		CD4D44731A79D08C00272579 /* BWQuincyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D446B1A79CEC200272579 /* BWQuincyManager.m */; };
-		CD4D44741A79D08F00272579 /* BWQuincyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D446B1A79CEC200272579 /* BWQuincyManager.m */; };
-		CD4D44751A79D0A400272579 /* BWCrashReportTextFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D44681A79CE5800272579 /* BWCrashReportTextFormatter.m */; };
-		CD4D44761A79D0A600272579 /* BWCrashReportTextFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D44681A79CE5800272579 /* BWCrashReportTextFormatter.m */; };
+		CD4D44731A79D08C00272579 /* BWQuincyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D446B1A79CEC200272579 /* BWQuincyManager.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		CD4D44741A79D08F00272579 /* BWQuincyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D446B1A79CEC200272579 /* BWQuincyManager.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		CD4D44751A79D0A400272579 /* BWCrashReportTextFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D44681A79CE5800272579 /* BWCrashReportTextFormatter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
+		CD4D44761A79D0A600272579 /* BWCrashReportTextFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D44681A79CE5800272579 /* BWCrashReportTextFormatter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		CD4F94DB1993EDE500455798 /* SplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4F94DA1993EDE500455798 /* SplitViewController.m */; };
 		CD4F94DC1993EDE500455798 /* SplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4F94DA1993EDE500455798 /* SplitViewController.m */; };
 		CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
