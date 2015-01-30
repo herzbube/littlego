@@ -215,7 +215,10 @@
 // -----------------------------------------------------------------------------
 - (int) itemCount
 {
-  return _itemList.count;
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31) log
+  // items.
+  return (int)_itemList.count;
 }
 
 // -----------------------------------------------------------------------------
@@ -274,7 +277,10 @@
 // -----------------------------------------------------------------------------
 - (void) trimLog
 {
-  int numberOfItemsToDiscard = _itemList.count - self.gtpLogSize;
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31) log
+  // items.
+  int numberOfItemsToDiscard = (int)_itemList.count - self.gtpLogSize;
   if (numberOfItemsToDiscard <= 0)
     return;
 

@@ -208,7 +208,10 @@ enum TwoAndMoreHandicapSectionItem
     }
     case TwoAndMoreHandicapSection:
     {
-      handicapValue = MinimumHandicapItem + indexPath.row;
+      // Cast is required because NSInteger and int differ in size in 64-bit.
+      // Cast is safe because the number of handicap choices never exceeds
+      // pow(2, 31).
+      handicapValue = MinimumHandicapItem + (int)indexPath.row;
       assert(handicapValue >= MinimumHandicapItem && handicapValue <= self.maximumHandicap);
       break;
     }

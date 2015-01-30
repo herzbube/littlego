@@ -183,7 +183,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoBoardRegion(%p): point count = %d", self, _points.count];
+  return [NSString stringWithFormat:@"GoBoardRegion(%p): point count = %lu", self, _points.count];
 }
 
 // -----------------------------------------------------------------------------
@@ -194,7 +194,9 @@
 {
   if (_scoringMode)
     return _cachedSize;
-  return [_points count];
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because a region can never have more than pow(2, 32) points
+  return (int)[_points count];
 }
 
 // -----------------------------------------------------------------------------
@@ -405,7 +407,9 @@
         [libertyPoints addObject:neighbour];
     }
   }
-  return [libertyPoints count];
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because a region's liberties can never exceed pow(2, 32).
+  return (int)[libertyPoints count];
 }
 
 // -----------------------------------------------------------------------------

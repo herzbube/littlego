@@ -119,7 +119,10 @@
   }
   else
   {
-    NSInteger tabType = self.contextTabBarItem.tag;
+    // Cast is required because NSInteger and int (the underlying type for
+    // enums) differ in size in 64-bit. Cast is safe because the tab bar items
+    // are designed to match the enumeration.
+    enum TabType tabType = (enum TabType)self.contextTabBarItem.tag;
     NSString* resourceNameForTabType = [appDelegate.tabBarController resourceNameForTabType:tabType];
     NSString* resourceContent = [appDelegate contentOfTextResource:resourceNameForTabType];
     switch (tabType)

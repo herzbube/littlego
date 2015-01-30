@@ -69,7 +69,10 @@
   if (_documentGenerator)
     return _documentGenerator;
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  NSInteger tabType = self.contextTabBarItem.tag;
+  // Cast is required because NSInteger and int (the underlying type for
+  // enums) differ in size in 64-bit. Cast is safe because the tab bar items
+  // are designed to match the enumeration.
+  enum TabType tabType = (enum TabType)self.contextTabBarItem.tag;
   NSString* resourceName = [appDelegate.tabBarController resourceNameForTabType:tabType];
   NSString* resourceContent = [appDelegate contentOfTextResource:resourceName];
   switch (tabType)
@@ -100,7 +103,10 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return [self.documentGenerator numberOfSectionsInGroup:section];
+  // Cast is required because NSInteger and int differ in size in 64-bit. Cast
+  // is safe because this controller was not made to handle more than pow(2, 31)
+  // sections.
+  return [self.documentGenerator numberOfSectionsInGroup:(int)section];
 }
 
 // -----------------------------------------------------------------------------
@@ -108,7 +114,10 @@
 // -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section
 {
-  return [self.documentGenerator titleForGroup:section];
+  // Cast is required because NSInteger and int differ in size in 64-bit. Cast
+  // is safe because this controller was not made to handle more than pow(2, 31)
+  // groups.
+  return [self.documentGenerator titleForGroup:(int)section];
 }
 
 // -----------------------------------------------------------------------------
@@ -117,7 +126,10 @@
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-  cell.textLabel.text = [self.documentGenerator titleForSection:indexPath.row inGroup:indexPath.section];
+  // Cast is required because NSInteger and int differ in size in 64-bit. Cast
+  // is safe because this controller was not made to handle more than pow(2, 31)
+  // sections and groups.
+  cell.textLabel.text = [self.documentGenerator titleForSection:(int)indexPath.row inGroup:(int)indexPath.section];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
   return cell;
 }
@@ -159,8 +171,11 @@
 // -----------------------------------------------------------------------------
 - (void) viewSectionAtIndexPath:(NSIndexPath*)indexPath
 {
-  NSString* sectionTitle = [self.documentGenerator titleForSection:indexPath.row inGroup:indexPath.section];
-  NSString* sectionContent = [self.documentGenerator contentForSection:indexPath.row inGroup:indexPath.section];
+  // Cast is required because NSInteger and int differ in size in 64-bit. Cast
+  // is safe because this controller was not made to handle more than pow(2, 31)
+  // sections and groups.
+  NSString* sectionTitle = [self.documentGenerator titleForSection:(int)indexPath.row inGroup:(int)indexPath.section];
+  NSString* sectionContent = [self.documentGenerator contentForSection:(int)indexPath.row inGroup:(int)indexPath.section];
   DocumentViewController* controller = [DocumentViewController controllerWithTitle:sectionTitle htmlString:sectionContent];
   [self.navigationController pushViewController:controller animated:YES];
 }

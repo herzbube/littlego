@@ -54,7 +54,9 @@
 - (void) readUserDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  self.selectedTabIndex = [userDefaults integerForKey:selectedTabIndexKey];
+  // Cast is required because NSInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31) tabs.
+  self.selectedTabIndex = (int)[userDefaults integerForKey:selectedTabIndexKey];
   self.tabOrder = [userDefaults arrayForKey:tabOrderKey];
 }
 

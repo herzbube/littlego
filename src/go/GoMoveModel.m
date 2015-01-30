@@ -96,7 +96,9 @@
 {
   [_moveList addObject:move];
   self.game.document.dirty = true;
-  self.numberOfMoves = _moveList.count;  // triggers KVO observers
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31) moves.
+  self.numberOfMoves = (int)_moveList.count;  // triggers KVO observers
 }
 
 // -----------------------------------------------------------------------------
@@ -108,7 +110,9 @@
 // -----------------------------------------------------------------------------
 - (void) discardLastMove
 {
-  [self discardMovesFromIndex:(_moveList.count - 1)];  // raises exception and posts notification for us
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31) moves.
+  [self discardMovesFromIndex:((int)_moveList.count - 1)];  // raises exception and posts notification for us
 }
 
 // -----------------------------------------------------------------------------
@@ -133,7 +137,7 @@
   }
   if (index >= _moveList.count)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Index %d must not exceed number of moves %d", index, _moveList.count];
+    NSString* errorMessage = [NSString stringWithFormat:@"Index %d must not exceed number of moves %ld", index, _moveList.count];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSRangeException
                                                      reason:errorMessage
@@ -141,7 +145,7 @@
     @throw exception;
   }
 
-  int numberOfMovesToDiscard = _moveList.count - index;
+  NSUInteger numberOfMovesToDiscard = _moveList.count - index;
   while (numberOfMovesToDiscard > 0)
   {
     [_moveList removeLastObject];
@@ -149,7 +153,9 @@
   }
 
   self.game.document.dirty = true;
-  self.numberOfMoves = _moveList.count;  // triggers KVO observers
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31) moves.
+  self.numberOfMoves = (int)_moveList.count;  // triggers KVO observers
 }
 
 // -----------------------------------------------------------------------------

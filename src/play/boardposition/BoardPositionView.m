@@ -187,7 +187,7 @@ static UIImage* whiteStoneImage = nil;
   GoMove* move = nil;
   if (0 == self.boardPosition)
   {
-    self.boardPositionLabel.text = [NSString stringWithFormat:@"H: %1d", game.handicapPoints.count];
+    self.boardPositionLabel.text = [NSString stringWithFormat:@"H: %1ld", game.handicapPoints.count];
     NSString* komiString = [NSString stringWithKomi:game.komi numericZeroValue:true];
     self.intersectionLabel.text = [NSString stringWithFormat:@"K: %@", komiString];
     self.stoneImageView.image = nil;
@@ -245,10 +245,10 @@ static UIImage* whiteStoneImage = nil;
 {
   if (GoMoveTypePass == move.type)
     return nil;
-  int numberOfCapturedStones = move.capturedStones.count;
+  NSUInteger numberOfCapturedStones = move.capturedStones.count;
   if (0 == numberOfCapturedStones)
     return nil;
-  return [NSString stringWithFormat:@"%d", numberOfCapturedStones];
+  return [NSString stringWithFormat:@"%ld", numberOfCapturedStones];
 }
 
 // -----------------------------------------------------------------------------

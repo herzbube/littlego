@@ -31,7 +31,7 @@
 // -----------------------------------------------------------------------------
 + (void) inspect:(UIView*)view
 {
-  DDLogInfo(@"Inspecting view %x: %@", (unsigned int)view, view.description);
+  DDLogInfo(@"Inspecting view %p: %@", view, view.description);
 }
 
 // -----------------------------------------------------------------------------
@@ -42,7 +42,7 @@
 {
   [self inspect:view];
   NSArray* subviews = view.subviews;
-  DDLogInfo(@"Inspecting %d subviews of view %x", subviews.count, (unsigned int)view);
+  DDLogInfo(@"Inspecting %lu subviews of view %p", subviews.count, view);
   for (UIView* subview in subviews)
     [self inspect:subview];
 }
@@ -55,7 +55,7 @@
 {
   [self inspect:view];
   NSArray* subviews = view.subviews;
-  DDLogInfo(@"Inspecting %d subviews of view %x", subviews.count, (unsigned int)view);
+  DDLogInfo(@"Inspecting %lu subviews of view %p", subviews.count, view);
   for (UIView* subview in subviews)
     [self inspectWithTree:subview];
 }

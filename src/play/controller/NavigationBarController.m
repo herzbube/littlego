@@ -785,7 +785,10 @@
   int maximumNumberOfButtons = 8;
   if (self.barButtonItemForShowingTheHiddenViewController)
     maximumNumberOfButtons++;
-  int numberOfUnusedButtons = maximumNumberOfButtons - self.navigationBar.topItem.leftBarButtonItems.count;
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this controller was not made to handle more than pow(2, 31)
+  // buttons.
+  int numberOfUnusedButtons = maximumNumberOfButtons - (int)self.navigationBar.topItem.leftBarButtonItems.count;
   int statusViewMinimumWidth;
   if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
     statusViewMinimumWidth = 60;

@@ -469,8 +469,8 @@
 - (void) updateCurrentBoardPositionInBoardPositionListTableView
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  int newCurrentBoardPosition = boardPosition.currentBoardPosition;
-  int numberOfRowsInTableView = [self.boardPositionListTableView numberOfRowsInSection:0];
+  NSInteger newCurrentBoardPosition = boardPosition.currentBoardPosition;
+  NSInteger numberOfRowsInTableView = [self.boardPositionListTableView numberOfRowsInSection:0];
   if (newCurrentBoardPosition < numberOfRowsInTableView)
   {
     NSIndexPath* indexPathForNewCurrentBoardPosition = [NSIndexPath indexPathForRow:newCurrentBoardPosition inSection:0];
@@ -486,7 +486,7 @@
   }
   else
   {
-    DDLogError(@"%@: Unexpected new current board position %d, number of rows in table view = %d", self, newCurrentBoardPosition, numberOfRowsInTableView);
+    DDLogError(@"%@: Unexpected new current board position %ld, number of rows in table view = %ld", self, newCurrentBoardPosition, numberOfRowsInTableView);
     assert(0);
   }
 }
@@ -588,7 +588,10 @@
   }
   else
   {
-    boardPositionOfCell = indexPath.row;
+    // Cast is required because NSInteger and int differ in size in 64-bit. Cast
+    // is safe because this app was not made to handle more than pow(2, 31)
+    // board positions.
+    boardPositionOfCell = (int)indexPath.row;
     if (0 == boardPositionOfCell)
       move = nil;
     else
@@ -636,7 +639,10 @@
     DDLogWarn(@"%@: Ignoring board position change", self);
     return;
   }
-  int newBoardPosition = indexPath.row;
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31) board
+  // positions.
+  int newBoardPosition = (int)indexPath.row;
   [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
 }
 
@@ -682,16 +688,16 @@
   {
     GoGame* game = [GoGame sharedGame];
     NSString* komiString = [NSString stringWithKomi:game.komi numericZeroValue:true];
-    return [NSString stringWithFormat:@"Handicap: %1d, Komi: %@", game.handicapPoints.count, komiString];
+    return [NSString stringWithFormat:@"Handicap: %1ld, Komi: %@", game.handicapPoints.count, komiString];
   }
   else
   {
     int moveNumber = boardPosition;
     NSString* labelText = [NSString stringWithFormat:@"Move %d", moveNumber];
-    int numberOfCapturedStones = move.capturedStones.count;
+    NSUInteger numberOfCapturedStones = move.capturedStones.count;
     if (numberOfCapturedStones > 0)
     {
-      labelText = [NSString stringWithFormat:@"%@, captures %d stone", labelText, numberOfCapturedStones];
+      labelText = [NSString stringWithFormat:@"%@, captures %ld stone", labelText, numberOfCapturedStones];
       if (numberOfCapturedStones > 1)
         labelText = [labelText stringByAppendingString:@"s"];  // plural
     }

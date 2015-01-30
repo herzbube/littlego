@@ -179,7 +179,7 @@
 - (void) initializeRegions
 {
   NSArray* allRegions = self.game.board.regions;
-  DDLogVerbose(@"%@: initializing GoBoardRegion objects, number of regions = %d", self, allRegions.count);
+  DDLogVerbose(@"%@: initializing GoBoardRegion objects, number of regions = %lu", self, allRegions.count);
   for (GoBoardRegion* region in allRegions)
   {
     region.territoryColor = GoColorNone;
@@ -198,7 +198,7 @@
 - (void) uninitializeRegions
 {
   NSArray* allRegions = self.game.board.regions;
-  DDLogVerbose(@"%@: uninitializing GoBoardRegion objects, number of regions = %d", self, allRegions.count);
+  DDLogVerbose(@"%@: uninitializing GoBoardRegion objects, number of regions = %lu", self, allRegions.count);
   for (GoBoardRegion* region in allRegions)
     region.scoringMode = false;  // forget cached values
 }
@@ -944,13 +944,23 @@
         if (moveByBlack)
         {
           if (loopHasPassedCurrentBoardPosition)
-            self.capturedByBlack += move.capturedStones.count;
+          {
+            // Cast is required because NSUInteger and int differ in size in
+            // 64-bit. Cast is safe because the number of captured stones can
+            // never exceed pow(2, 32).
+            self.capturedByBlack += (int)move.capturedStones.count;
+          }
           self.stonesPlayedByBlack++;
         }
         else
         {
           if (loopHasPassedCurrentBoardPosition)
-            self.capturedByWhite += move.capturedStones.count;
+          {
+            // Cast is required because NSUInteger and int differ in size in
+            // 64-bit. Cast is safe because the number of captured stones can
+            // never exceed pow(2, 32).
+            self.capturedByWhite += (int)move.capturedStones.count;
+          }
           self.stonesPlayedByWhite++;
         }
         break;
@@ -1036,7 +1046,10 @@
   }
 
   // Handicap
-  int numberOfHandicapStones = self.game.handicapPoints.count;
+  // Cast is required because NSUInteger and int differ in size in 64-bit.
+  // Cast is safe because the number of handicap stones never exceeds
+  // pow(2, 31).
+  int numberOfHandicapStones = (int)self.game.handicapPoints.count;
   if (numberOfHandicapStones > 0)
   {
     self.handicapCompensationWhite = numberOfHandicapStones;

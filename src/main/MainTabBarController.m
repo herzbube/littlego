@@ -227,7 +227,7 @@
 {
   ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
   NSArray* tabOrder = applicationDelegate.uiSettingsModel.tabOrder;
-  int tabOrderCount = tabOrder.count;
+  NSUInteger tabOrderCount = tabOrder.count;
   if (tabOrderCount == self.viewControllers.count)
   {
     NSMutableArray* tabControllers = [NSMutableArray array];
@@ -338,7 +338,9 @@
 - (void) tabControllerSelectionDidChange
 {
   ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-  applicationDelegate.uiSettingsModel.selectedTabIndex = self.selectedIndex;
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31) tabs.
+  applicationDelegate.uiSettingsModel.selectedTabIndex = (int)self.selectedIndex;
   [applicationDelegate writeUserDefaults];
 }
 

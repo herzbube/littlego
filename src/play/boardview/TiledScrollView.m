@@ -18,6 +18,7 @@
 // Project includes
 #import "TiledScrollView.h"
 
+#include <math.h>
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for TiledScrollView.
@@ -56,10 +57,10 @@
   self.tileSize = CGSizeZero;
   self.annotateTiles = false;
   self.reusableTiles = [[[NSMutableSet alloc] init] autorelease];
-  self.indexOfFirstVisibleRow = NSIntegerMax;
-  self.indexOfFirstVisibleColumn = NSIntegerMax;
-  self.indexOfLastVisibleRow = NSIntegerMin;
-  self.indexOfLastVisibleColumn  = NSIntegerMin;
+  self.indexOfFirstVisibleRow = pow(2, 31);     // just any number higher than can ever occur in reality
+  self.indexOfFirstVisibleColumn = pow(2, 31);  // ditto
+  self.indexOfLastVisibleRow = -1;              // just any number lower than can ever occur in reality
+  self.indexOfLastVisibleColumn  = -1;          // ditto
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
   return self;
 }
@@ -121,10 +122,10 @@
     [self.reusableTiles addObject:tile];
     [tile removeFromSuperview];
   }
-  self.indexOfFirstVisibleRow = NSIntegerMax;
-  self.indexOfFirstVisibleColumn = NSIntegerMax;
-  self.indexOfLastVisibleRow = NSIntegerMin;
-  self.indexOfLastVisibleColumn  = NSIntegerMin;
+  self.indexOfFirstVisibleRow = pow(2, 31);     // just any number higher than can ever occur in reality
+  self.indexOfFirstVisibleColumn = pow(2, 31);  // ditto
+  self.indexOfLastVisibleRow = -1;              // just any number lower than can ever occur in reality
+  self.indexOfLastVisibleColumn  = -1;          // ditto
   [self setNeedsLayout];
 }
 

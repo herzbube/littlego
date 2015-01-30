@@ -75,7 +75,10 @@
 // -----------------------------------------------------------------------------
 - (int) numberOfGroups
 {
-  return self.sectionIndexPaths.count;
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this generator was not made to handle more than pow(2, 31)
+  // groups.
+  return (int)self.sectionIndexPaths.count;
 }
 
 // -----------------------------------------------------------------------------
@@ -94,7 +97,10 @@
 - (int) numberOfSectionsInGroup:(int)groupIndex
 {
   NSArray* sectionIndexList = [self.sectionIndexPaths objectAtIndex:groupIndex];
-  return sectionIndexList.count;
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this generator was not made to handle more than pow(2, 31)
+  // sections.
+  return (int)sectionIndexList.count;
 }
 
 // -----------------------------------------------------------------------------
@@ -122,7 +128,10 @@
 - (int) addGroup
 {
   [self.sectionIndexPaths addObject:[NSMutableArray arrayWithCapacity:0]];
-  return (self.sectionIndexPaths.count - 1);
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this generator was not made to handle more than pow(2, 31)
+  // groups.
+  return ((int)self.sectionIndexPaths.count - 1);
 }
 
 // -----------------------------------------------------------------------------
@@ -277,7 +286,10 @@
             NSString* sectionContent = [self parseSectionContentLines:sectionContentLines];
             [self.sectionContents addObject:sectionContent];
             // Add section to group
-            int sectionID = self.sectionTitles.count - 1;  // section ID is actually the index of the section title that we just added
+            // Cast is required because NSUInteger and int differ in size in
+            // 64-bit. Cast is safe because this generator was not made to
+            // handle more than pow(2, 31) sections.
+            int sectionID = (int)self.sectionTitles.count - 1;  // section ID is actually the index of the section title that we just added
             [self addSectionID:sectionID toGroup:groupIndex];
           }
           // Prepare for next section
@@ -305,7 +317,10 @@
     [self.sectionTitles addObject:sectionTitle];
     NSString* sectionContent = [self parseSectionContentLines:sectionContentLines];
     [self.sectionContents addObject:sectionContent];
-    int sectionID = self.sectionTitles.count - 1;
+    // Cast is required because NSUInteger and int differ in size in 64-bit.
+    // Cast is safe because this generator was not made to handle more than
+    // pow(2, 31) sections.
+    int sectionID = (int)self.sectionTitles.count - 1;
     [self addSectionID:sectionID toGroup:groupIndex];
   }
 }

@@ -58,13 +58,6 @@ Xcode build system configuration
 Important configuration settings in Xcode (both for the "Little Go" and the
 "Unit tests" targets):
 - IPHONEOS_DEPLOYMENT_TARGET = 7.0
-- ARCHS = $(ARCHS_STANDARD_32_BIT)
-  - The default for Xcode 5.1.1 is "armv7 armv7s arm64", i.e. it includes a
-    64-bit architecture
-  - However, not all 3rd party software builds currently support arm64, so
-    arm64 must be removed
-  - Instead of explicitly enumerating the architecture, we use the variable
-    $(ARCHS_STANDARD_32_BIT)
 - HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
 - LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
 - OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -lLumberjack -ltouchzipkit -ObjC

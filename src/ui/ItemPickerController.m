@@ -168,8 +168,11 @@
 {
   // Deselect the row that was just selected
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
+  // Cast is required because NSInteger and int differ in size in 64-bit. Cast
+  // is safe because this controller was not made to handle more than pow(2, 31)
+  // items.
+  int indexOfNewSelectedItem = (int)indexPath.row;
   // Do nothing if the selection did not change
-  int indexOfNewSelectedItem = indexPath.row;
   if (self.indexOfSelectedItem == indexOfNewSelectedItem)
     return;
   // Remove the checkmark from the previously selected cell

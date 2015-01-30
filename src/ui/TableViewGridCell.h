@@ -33,7 +33,7 @@ enum GridCellColumnStyle
 /// delegate of TableViewGridCell.
 // -----------------------------------------------------------------------------
 @protocol TableViewGridCellDelegate
-- (NSInteger) numberOfColumnsInGridCell:(TableViewGridCell*)gridCell;
+- (int) numberOfColumnsInGridCell:(TableViewGridCell*)gridCell;
 - (enum GridCellColumnStyle) gridCell:(TableViewGridCell*)gridCell styleInColumn:(NSInteger)column;
 - (NSString*) gridCell:(TableViewGridCell*)gridCell textForColumn:(NSInteger)column;
 @end

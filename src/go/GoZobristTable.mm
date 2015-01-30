@@ -97,7 +97,12 @@
 // -----------------------------------------------------------------------------
 - (void) fillZobristTableWithRandomNumbers
 {
-  srand(time(NULL));
+  // Cast is required because time_t (the result of time()) and unsigned (the
+  // parameter of srand()) differ in size in 64-bit. Cast is safe because we
+  // don't care about the exact time_t value, we just want a number that is
+  // not always the same to initialize the random number generator so that we
+  // won't get the same sequence of random numbers every time.
+  srand((unsigned)time(NULL));
   for (int vertexX = 0; vertexX < _boardSize; ++vertexX)
   {
     for (int vertexY = 0; vertexY < _boardSize; ++vertexY)

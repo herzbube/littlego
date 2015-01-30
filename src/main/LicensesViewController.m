@@ -108,7 +108,7 @@ enum LicensesSectionItem
 /// @brief Displays DocumentViewController with the content of the section at
 /// index position @a sectionIndex.
 // -----------------------------------------------------------------------------
-- (void) viewLicenseForRow:(int)row
+- (void) viewLicenseForRow:(NSInteger)row
 {
   NSString* licenseTitle = [self licenseTitleForRow:row];
   NSString* licenseResourceName = [self licenseResourceNameForRow:row];
@@ -123,7 +123,7 @@ enum LicensesSectionItem
 /// @brief Returns a title string that describes the license displayed in table
 /// view row @a row.
 // -----------------------------------------------------------------------------
-- (NSString*) licenseTitleForRow:(int)row
+- (NSString*) licenseTitleForRow:(NSInteger)row
 {
   switch (row)
   {
@@ -190,7 +190,7 @@ enum LicensesSectionItem
 /// @brief Returns a title string that describes the license displayed in table
 /// view row @a row.
 // -----------------------------------------------------------------------------
-- (NSString*) licenseResourceNameForRow:(int)row
+- (NSString*) licenseResourceNameForRow:(NSInteger)row
 {
   switch (row)
   {

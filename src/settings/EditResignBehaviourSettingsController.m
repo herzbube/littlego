@@ -199,7 +199,10 @@ enum ResignMinGamesCategory
     case ResignThresholdSection:
     {
       cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
-      enum GoBoardSize boardSize = (GoBoardSizeMin + 2 * indexPath.row);
+      // Cast is required because NSInteger and int differ in size in 64-bit.
+      // Cast is safe because this controller was not made to handle more than
+      // pow(2, 31) resign thresholds.
+      enum GoBoardSize boardSize = (GoBoardSizeMin + 2 * (int)indexPath.row);
       cell.textLabel.text = [NSString stringWithFormat:@"%dx%d boards", boardSize, boardSize];
       int resignThreshold = [self.profile resignThresholdForBoardSize:boardSize];
       cell.detailTextLabel.text = [NSString stringWithFormat:@"%d%%", resignThreshold];
@@ -279,7 +282,10 @@ enum ResignMinGamesCategory
     controller.delegate = self;
     controller.title = @"Resign threshold";
     controller.descriptionLabelText = @"Resign threshold (in %)";
-    enum GoBoardSize boardSize = GoBoardSizeMin + 2 * indexPath.row;
+    // Cast is required because NSInteger and int differ in size in 64-bit. Cast
+    // is safe because this controller was not made to handle more than
+    // pow(2, 31) resign thresholds.
+    enum GoBoardSize boardSize = GoBoardSizeMin + 2 * (int)indexPath.row;
     int resignThreshold = [self.profile resignThresholdForBoardSize:boardSize];
     controller.value = resignThreshold;
     controller.minimumValue = 0;
@@ -338,7 +344,10 @@ enum ResignMinGamesCategory
 - (void) didDismissSliderInputController:(SliderInputController*)controller
 {
   NSIndexPath* indexPath = controller.context;
-  enum GoBoardSize boardSize = GoBoardSizeMin + 2 * indexPath.row;
+  // Cast is required because NSInteger and int differ in size in 64-bit. Cast
+  // is safe because this controller was not made to handle more than pow(2, 31)
+  // resign thresholds.
+  enum GoBoardSize boardSize = GoBoardSizeMin + 2 * (int)indexPath.row;
   int newResignThreshold = controller.value;
   int oldResignThreshold = [self.profile resignThresholdForBoardSize:boardSize];
   if (oldResignThreshold != newResignThreshold)

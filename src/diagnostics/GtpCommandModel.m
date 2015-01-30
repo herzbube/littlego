@@ -82,7 +82,10 @@
 // -----------------------------------------------------------------------------
 - (int) commandCount
 {
-  return _commandList.count;
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31)
+  // commands.
+  return (int)_commandList.count;
 }
 
 // -----------------------------------------------------------------------------

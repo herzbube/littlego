@@ -283,7 +283,10 @@ enum ResetToDefaultsSectionItem
       // players
       if (indexPath.row < self.playerModel.playerCount)
       {
-        cell.textLabel.text = [self.playerModel playerNameAtIndex:indexPath.row];
+        // Cast is required because NSInteger and int differ in size in 64-bit.
+        // Cast is safe because this app was not made to handle more than
+        // pow(2, 31) players.
+        cell.textLabel.text = [self.playerModel playerNameAtIndex:(int)indexPath.row];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       }
       else if (indexPath.row == self.playerModel.playerCount)
@@ -303,7 +306,10 @@ enum ResetToDefaultsSectionItem
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       if (indexPath.row < self.gtpEngineProfileModel.profileCount)
       {
-        cell.textLabel.text = [self.gtpEngineProfileModel profileNameAtIndex:indexPath.row];
+        // Cast is required because NSInteger and int differ in size in 64-bit.
+        // Cast is safe because this app was not made to handle more than
+        // pow(2, 31) profiles.
+        cell.textLabel.text = [self.gtpEngineProfileModel profileNameAtIndex:(int)indexPath.row];
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       }
       else if (indexPath.row == self.gtpEngineProfileModel.profileCount)
@@ -711,12 +717,12 @@ enum ResetToDefaultsSectionItem
       NSMutableArray* indexPathsToReload = [NSMutableArray array];
       if (oldProfile)
       {
-        int row = [self.gtpEngineProfileModel.profileList indexOfObject:oldProfile];
+        NSUInteger row = [self.gtpEngineProfileModel.profileList indexOfObject:oldProfile];
         [indexPathsToReload addObject:[NSIndexPath indexPathForRow:row inSection:GtpEngineProfilesSection]];
       }
       if (newProfile)
       {
-        int row = [self.gtpEngineProfileModel.profileList indexOfObject:newProfile];
+        NSUInteger row = [self.gtpEngineProfileModel.profileList indexOfObject:newProfile];
         [indexPathsToReload addObject:[NSIndexPath indexPathForRow:row inSection:GtpEngineProfilesSection]];
       }
       [self.tableView reloadRowsAtIndexPaths:indexPathsToReload
@@ -725,14 +731,14 @@ enum ResetToDefaultsSectionItem
   }
   else if ([object isKindOfClass:[GtpEngineProfile class]])
   {
-    int row = [self.gtpEngineProfileModel.profileList indexOfObject:object];
+    NSUInteger row = [self.gtpEngineProfileModel.profileList indexOfObject:object];
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row inSection:GtpEngineProfilesSection];
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:UITableViewRowAnimationNone];
   }
   else if ([object isKindOfClass:[Player class]])
   {
-    int row = [self.playerModel.playerList indexOfObject:object];
+    NSUInteger row = [self.playerModel.playerList indexOfObject:object];
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row inSection:PlayersSection];
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:UITableViewRowAnimationNone];

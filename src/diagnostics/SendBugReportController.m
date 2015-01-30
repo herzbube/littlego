@@ -239,7 +239,7 @@
     }
     case MFMailComposeResultFailed:
     {
-      NSString* logMessage = [NSString stringWithFormat:@"SendBugReportController: Sending bug report failed. Error code = %d, error description = %@",
+      NSString* logMessage = [NSString stringWithFormat:@"SendBugReportController: Sending bug report failed. Error code = %ld, error description = %@",
                               [error code],
                               [error localizedDescription]];
       DDLogError(@"%@", logMessage);

@@ -63,7 +63,9 @@
     [player autorelease];
     [localPlayerList addObject:player];
   }
-  self.playerCount = [localPlayerList count];
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because we can never have more than pow(2, 32) players
+  self.playerCount = (int)[localPlayerList count];
   // Completely replace the previous player list to trigger the
   // key-value-observing mechanism.
   self.playerList = localPlayerList;
@@ -113,7 +115,9 @@
 {
   NSMutableArray* localPlayerList = (NSMutableArray*)self.playerList;
   [localPlayerList addObject:player];
-  self.playerCount = [localPlayerList count];
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because we can never have more than pow(2, 32) players
+  self.playerCount = (int)[localPlayerList count];
 }
 
 // -----------------------------------------------------------------------------
@@ -123,7 +127,9 @@
 {
   NSMutableArray* localPlayerList = (NSMutableArray*)self.playerList;
   [localPlayerList removeObject:player];
-  self.playerCount = [localPlayerList count];
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because we can never have more than pow(2, 32) players
+  self.playerCount = (int)[localPlayerList count];
 }
 
 // -----------------------------------------------------------------------------

@@ -111,7 +111,9 @@
 // -----------------------------------------------------------------------------
 - (int) gameCount
 {
-  return self.gameList.count;
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31) files.
+  return (int)self.gameList.count;
 }
 
 // -----------------------------------------------------------------------------

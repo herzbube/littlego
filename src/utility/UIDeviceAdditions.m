@@ -79,7 +79,12 @@
 + (int) physicalMemoryMegabytes
 {
   unsigned long long physicalMemoryBytes = [NSProcessInfo processInfo].physicalMemory;
-  return (physicalMemoryBytes / 1024 / 1024);
+  unsigned long long physicalMemoryMegaBytes = (physicalMemoryBytes / 1024 / 1024);
+  // Cast is required because unsigned long long and int differ in size in
+  // 64-bit. Cast is safe because it is extremely unlikely that a device will
+  // have more than pow(2, 31) Megabytes of memory (= 2048 Gigabytes) in the
+  // foreseeable future.
+  return (int)physicalMemoryMegaBytes;
 }
 
 @end

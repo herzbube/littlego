@@ -217,7 +217,7 @@ enum ActionSheetButton
     }
     NSInteger buttonIndex = [self.actionSheet addButtonWithTitle:title];
     [self.buttonIndexes setObject:[NSNumber numberWithInt:iterButtonIndex]
-                           forKey:[NSNumber numberWithInt:buttonIndex]];
+                           forKey:[NSNumber numberWithInteger:buttonIndex]];
   }
 
   // On the iPad the cancel button is not displayed, but if the user taps
@@ -254,7 +254,7 @@ enum ActionSheetButton
     [self.delegate gameActionsActionSheetControllerDidFinish:self];
     return;
   }
-  id object = [self.buttonIndexes objectForKey:[NSNumber numberWithInt:buttonIndex]];
+  id object = [self.buttonIndexes objectForKey:[NSNumber numberWithInteger:buttonIndex]];
   enum ActionSheetButton button = [object intValue];
   switch (button)
   {
@@ -451,7 +451,7 @@ enum ActionSheetButton
           self.saveGameName = nil;
           break;
         default:
-          DDLogError(@"%@: Dismissing alert view with unexpected button type %d", self, buttonIndex);
+          DDLogError(@"%@: Dismissing alert view with unexpected button type %ld", self, buttonIndex);
           assert(0);
           break;
       }

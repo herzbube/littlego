@@ -292,7 +292,9 @@ static const int maxStepsForReplayMoves = 10;
   // Not terribly sophisticated, but I have not found a better, or more
   // reliable way to query for board size.
   NSArray* responseLines = [command.response.parsedResponse componentsSeparatedByString:@"\n"];
-  m_boardSize = responseLines.count;
+  // Cast is required because NSUInteger and int (the underlying type of enums)
+  // differ in size in 64-bit.
+  m_boardSize = (enum GoBoardSize)responseLines.count;
   return true;
 }
 
@@ -527,7 +529,7 @@ static const int maxStepsForReplayMoves = 10;
   GoBoard* board = game.board;
 
   float movesPerStep;
-  int remainingNumberOfSteps;
+  NSUInteger remainingNumberOfSteps;
   if (moveList.count <= maxStepsForReplayMoves)
   {
     movesPerStep = 1;

@@ -452,7 +452,7 @@ enum PlayerListSectionItem
                                                                             delegate:self] retain];
     editTextController.title = @"Edit name";
     editTextController.acceptEmptyText = false;
-    editTextController.context = [NSNumber numberWithInt:indexPath.section];
+    editTextController.context = [NSNumber numberWithInteger:indexPath.section];
     UINavigationController* navigationController = [[UINavigationController alloc]
                                                     initWithRootViewController:editTextController];
     navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -481,7 +481,7 @@ enum PlayerListSectionItem
                                                                                        title:@"Playing strength"
                                                                           indexOfDefaultItem:indexOfDefaultPlayingStrength
                                                                                     delegate:self];
-        modalController.context = [NSNumber numberWithInt:PlayingStrengthSection];
+        modalController.context = [NSNumber numberWithInteger:indexPath.section];
         UINavigationController* navigationController = [[UINavigationController alloc]
                                                         initWithRootViewController:modalController];
         navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -524,7 +524,7 @@ enum PlayerListSectionItem
                                                                                        title:@"Resign behaviour"
                                                                           indexOfDefaultItem:indexOfDefaultResignBehaviour
                                                                                     delegate:self];
-        modalController.context = [NSNumber numberWithInt:ResignBehaviourSection];
+        modalController.context = [NSNumber numberWithInteger:indexPath.section];
         UINavigationController* navigationController = [[UINavigationController alloc]
                                                         initWithRootViewController:modalController];
         navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -554,7 +554,7 @@ enum PlayerListSectionItem
                                                                             delegate:self] retain];
     editTextController.title = @"Edit notes";
     editTextController.acceptEmptyText = true;
-    editTextController.context = [NSNumber numberWithInt:indexPath.section];
+    editTextController.context = [NSNumber numberWithInteger:indexPath.section];
     UINavigationController* navigationController = [[UINavigationController alloc]
                                                     initWithRootViewController:editTextController];
     navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -584,7 +584,7 @@ enum PlayerListSectionItem
     if (editTextController.textHasChanged)
     {
       NSNumber* context = editTextController.context;
-      int sectionFromContext = [context intValue];
+      NSInteger sectionFromContext = [context integerValue];
       NSIndexPath* indexPathToReload = nil;
       switch (sectionFromContext)
       {
@@ -611,7 +611,7 @@ enum PlayerListSectionItem
         }
         default:
         {
-          DDLogError(@"%@: Unexpected section %d", self, sectionFromContext);
+          DDLogError(@"%@: Unexpected section %ld", self, sectionFromContext);
           assert(0);
           break;
         }
@@ -638,8 +638,9 @@ enum PlayerListSectionItem
   {
     if (controller.indexOfDefaultItem != controller.indexOfSelectedItem)
     {
-      NSUInteger sectionIndex = [controller.context intValue];
-      NSUInteger rowIndex;
+      NSNumber* context = controller.context;
+      NSInteger sectionIndex = [context integerValue];
+      NSInteger rowIndex;
       if (PlayingStrengthSection == sectionIndex)
       {
         self.profile.playingStrength = (minimumPlayingStrength + controller.indexOfSelectedItem);

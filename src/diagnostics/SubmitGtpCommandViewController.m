@@ -198,7 +198,10 @@
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-  cell.textLabel.text = [self.model commandStringAtIndex:indexPath.row];
+  // Cast is required because NSInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31)
+  // commands.
+  cell.textLabel.text = [self.model commandStringAtIndex:(int)indexPath.row];
   return cell;
 }
 
@@ -210,7 +213,10 @@
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-  self.textField.text = [self.model commandStringAtIndex:indexPath.row];
+  // Cast is required because NSInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31)
+  // commands.
+  self.textField.text = [self.model commandStringAtIndex:(int)indexPath.row];
   self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:self.textField.text];
 }
 

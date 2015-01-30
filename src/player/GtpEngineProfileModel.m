@@ -68,7 +68,10 @@
     [profile autorelease];
     [localProfileList addObject:profile];
   }
-  self.profileCount = [localProfileList count];
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31)
+  // profiles.
+  self.profileCount = (int)[localProfileList count];
   // Completely replace the previous profile list to trigger the
   // key-value-observing mechanism.
   self.profileList = localProfileList;
@@ -116,7 +119,10 @@
 {
   NSMutableArray* localProfileList = (NSMutableArray*)self.profileList;
   [localProfileList addObject:profile];
-  self.profileCount = [localProfileList count];
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31)
+  // profiles.
+  self.profileCount = (int)[localProfileList count];
 }
 
 // -----------------------------------------------------------------------------
@@ -126,7 +132,10 @@
 {
   NSMutableArray* localProfileList = (NSMutableArray*)self.profileList;
   [localProfileList removeObject:profile];
-  self.profileCount = [localProfileList count];
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31)
+  // profiles.
+  self.profileCount = (int)[localProfileList count];
 }
 
 // -----------------------------------------------------------------------------

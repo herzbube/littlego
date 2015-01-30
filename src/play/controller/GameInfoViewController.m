@@ -634,11 +634,11 @@ enum BoardPositionSectionItem
         case HandicapItem:
         {
           cell.textLabel.text = @"Handicap";
-          int handicapValue = game.handicapPoints.count;
+          NSUInteger handicapValue = game.handicapPoints.count;
           if (0 == handicapValue)
             cell.detailTextLabel.text = @"No handicap";
           else
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", handicapValue];
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu", handicapValue];
           break;
         }
         case BoardSizeItem:
@@ -903,7 +903,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 /// @brief TableViewGridCellDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (NSInteger) numberOfColumnsInGridCell:(TableViewGridCell*)gridCell
+- (int) numberOfColumnsInGridCell:(TableViewGridCell*)gridCell
 {
   return MaxScoreSectionColumn;
 }
@@ -1204,7 +1204,10 @@ enum BoardPositionSectionItem
 - (void) infoTypeChanged:(id)sender
 {
   UISegmentedControl* segmentedControl = (UISegmentedControl*)sender;
-  self.boardViewModel.infoTypeLastSelected = segmentedControl.selectedSegmentIndex;
+  // Cast is required because NSInteger and int (the type underlying enums)
+  // differ in size in 64-bit. Cast is safe because the segments are designed
+  // to match the enumeration.
+  self.boardViewModel.infoTypeLastSelected = (enum InfoType)segmentedControl.selectedSegmentIndex;
   [self.tableView reloadData];
   if (GameInfoType == self.boardViewModel.infoTypeLastSelected)
     [self setupKVONotificationResponders];

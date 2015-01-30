@@ -351,10 +351,10 @@
   // Setup handicap only if there is one. The GTP command "fixed_handicap"
   // accepts only values >= 2. This should not be a problem since our own
   // handicap selection screen does not offer to select handicap 1.
-  int handicap = game.handicapPoints.count;
+  NSUInteger handicap = game.handicapPoints.count;
   if (handicap >= 2)
   {
-    GtpCommand* commandFixedHandicap = [GtpCommand command:[NSString stringWithFormat:@"fixed_handicap %d", handicap]];
+    GtpCommand* commandFixedHandicap = [GtpCommand command:[NSString stringWithFormat:@"fixed_handicap %lu", handicap]];
     [commandFixedHandicap submit];
     assert(commandFixedHandicap.response.status);
   }

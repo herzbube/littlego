@@ -251,7 +251,10 @@ enum DeleteAllSectionItem
     case GamesSection:
     {
       cell = [TableViewCellFactory cellWithType:SubtitleCellType tableView:tableView];
-      ArchiveGame* game = [self.archiveViewModel gameAtIndex:indexPath.row];
+      // Cast is required because NSInteger and int differ in size in 64-bit.
+      // Cast is safe because this app was not made to handle more than
+      // pow(2, 31) files.
+      ArchiveGame* game = [self.archiveViewModel gameAtIndex:(int)indexPath.row];
       cell.textLabel.text = game.name;
       cell.detailTextLabel.text = [@"Last saved: " stringByAppendingString:game.fileDate];
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
@@ -283,11 +286,14 @@ enum DeleteAllSectionItem
   assert(editingStyle == UITableViewCellEditingStyleDelete);
   if (editingStyle != UITableViewCellEditingStyleDelete)
   {
-    DDLogError(@"%@: Unexpected editingStyle %d", self, editingStyle);
+    DDLogError(@"%@: Unexpected editingStyle %ld", self, editingStyle);
     return;
   }
 
-  ArchiveGame* game = [self.archiveViewModel gameAtIndex:indexPath.row];
+  // Cast is required because NSInteger and int differ in size in 64-bit.
+  // Cast is safe because this app was not made to handle more than
+  // pow(2, 31) files.
+  ArchiveGame* game = [self.archiveViewModel gameAtIndex:(int)indexPath.row];
   DeleteGameCommand* command = [[[DeleteGameCommand alloc] initWithGame:game] autorelease];
   // Temporarily disable KVO observer mechanism so that no table view update
   // is triggered during command execution. Purpose: In a minute, we are going
@@ -313,7 +319,10 @@ enum DeleteAllSectionItem
   {
     case GamesSection:
     {
-      [self viewGame:[self.archiveViewModel gameAtIndex:indexPath.row]];
+      // Cast is required because NSInteger and int differ in size in 64-bit.
+      // Cast is safe because this app was not made to handle more than
+      // pow(2, 31) files.
+      [self viewGame:[self.archiveViewModel gameAtIndex:(int)indexPath.row]];
       break;
     }
     case DeleteAllSection:

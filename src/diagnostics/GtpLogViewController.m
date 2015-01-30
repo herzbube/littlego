@@ -327,7 +327,10 @@
   }
 
   int lastRow = self.model.itemCount - 1;  // -1 because table view rows are zero-based
-  int row = indexPath.row;
+  // Cast is required because NSInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31) log
+  // items.
+  int row = (int)indexPath.row;
   if (lastRow == row)
     self.lastRowIsVisible = true;
 
@@ -349,7 +352,10 @@
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-  [self viewLogItem:[self.model itemAtIndex:indexPath.row]];
+  // Cast is required because NSInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31) log
+  // items.
+  [self viewLogItem:[self.model itemAtIndex:(int)indexPath.row]];
 }
 
 #pragma mark - Notification responders

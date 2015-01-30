@@ -1141,7 +1141,7 @@ enum GameRulesSectionItem
 /// Raises an @e NSInvalidArgumentException if @a segmentIndex is not
 /// recognized.
 // -----------------------------------------------------------------------------
-+ (enum GoGameType) gameTypeForSegmentIndex:(int)segmentIndex
++ (enum GoGameType) gameTypeForSegmentIndex:(NSInteger)segmentIndex
 {
   switch (segmentIndex)
   {
@@ -1153,7 +1153,7 @@ enum GameRulesSectionItem
       return GoGameTypeComputerVsComputer;
     default:
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Invalid segment index: %d", segmentIndex];
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid segment index: %ld", segmentIndex];
       DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                        reason:errorMessage
