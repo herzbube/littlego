@@ -137,7 +137,7 @@
   }
   if (index >= _moveList.count)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Index %d must not exceed number of moves %ld", index, _moveList.count];
+    NSString* errorMessage = [NSString stringWithFormat:@"Index %d must not exceed number of moves %lu", index, (unsigned long)_moveList.count];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSRangeException
                                                      reason:errorMessage

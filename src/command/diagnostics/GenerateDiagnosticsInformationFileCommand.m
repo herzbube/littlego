@@ -330,7 +330,7 @@
                                       usingResourceFork:NO];
   if (result != zkSucceeded)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Failed to create logs archive file from folder %@, error code is %ld", logFolder, result];
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to create logs archive file from folder %@, error code is %ld", logFolder, (long)result];
     DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
                                                      reason:errorMessage
@@ -353,7 +353,7 @@
                                       usingResourceFork:NO];
   if (result != zkSucceeded)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Failed to create diagnostics information file from folder %@, error code is %ld", self.diagnosticsInformationFolderPath, result];
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to create diagnostics information file from folder %@, error code is %ld", self.diagnosticsInformationFolderPath, (long)result];
     DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
                                                      reason:errorMessage

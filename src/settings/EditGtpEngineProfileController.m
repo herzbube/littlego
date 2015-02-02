@@ -611,7 +611,7 @@ enum PlayerListSectionItem
         }
         default:
         {
-          DDLogError(@"%@: Unexpected section %ld", self, sectionFromContext);
+          DDLogError(@"%@: Unexpected section %ld", self, (long)sectionFromContext);
           assert(0);
           break;
         }

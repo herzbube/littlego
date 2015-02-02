@@ -286,7 +286,7 @@ enum DeleteAllSectionItem
   assert(editingStyle == UITableViewCellEditingStyleDelete);
   if (editingStyle != UITableViewCellEditingStyleDelete)
   {
-    DDLogError(@"%@: Unexpected editingStyle %ld", self, editingStyle);
+    DDLogError(@"%@: Unexpected editingStyle %d", self, (int)editingStyle);
     return;
   }
 

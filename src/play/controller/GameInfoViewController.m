@@ -638,7 +638,7 @@ enum BoardPositionSectionItem
           if (0 == handicapValue)
             cell.detailTextLabel.text = @"No handicap";
           else
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu", handicapValue];
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)handicapValue];
           break;
         }
         case BoardSizeItem:

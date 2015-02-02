@@ -1153,7 +1153,7 @@ enum GameRulesSectionItem
       return GoGameTypeComputerVsComputer;
     default:
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Invalid segment index: %ld", segmentIndex];
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid segment index: %ld", (long)segmentIndex];
       DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                        reason:errorMessage

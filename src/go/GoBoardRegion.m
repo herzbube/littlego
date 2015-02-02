@@ -183,7 +183,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoBoardRegion(%p): point count = %lu", self, _points.count];
+  return [NSString stringWithFormat:@"GoBoardRegion(%p): point count = %lu", self, (unsigned long)_points.count];
 }
 
 // -----------------------------------------------------------------------------

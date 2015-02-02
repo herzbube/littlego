@@ -486,7 +486,7 @@
   }
   else
   {
-    DDLogError(@"%@: Unexpected new current board position %ld, number of rows in table view = %ld", self, newCurrentBoardPosition, numberOfRowsInTableView);
+    DDLogError(@"%@: Unexpected new current board position %ld, number of rows in table view = %ld", self, (long)newCurrentBoardPosition, (long)numberOfRowsInTableView);
     assert(0);
   }
 }
@@ -688,7 +688,7 @@
   {
     GoGame* game = [GoGame sharedGame];
     NSString* komiString = [NSString stringWithKomi:game.komi numericZeroValue:true];
-    return [NSString stringWithFormat:@"Handicap: %1ld, Komi: %@", game.handicapPoints.count, komiString];
+    return [NSString stringWithFormat:@"Handicap: %1lu, Komi: %@", (unsigned long)game.handicapPoints.count, komiString];
   }
   else
   {
@@ -697,7 +697,7 @@
     NSUInteger numberOfCapturedStones = move.capturedStones.count;
     if (numberOfCapturedStones > 0)
     {
-      labelText = [NSString stringWithFormat:@"%@, captures %ld stone", labelText, numberOfCapturedStones];
+      labelText = [NSString stringWithFormat:@"%@, captures %lu stone", labelText, (unsigned long)numberOfCapturedStones];
       if (numberOfCapturedStones > 1)
         labelText = [labelText stringByAppendingString:@"s"];  // plural
     }

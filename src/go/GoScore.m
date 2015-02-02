@@ -179,7 +179,7 @@
 - (void) initializeRegions
 {
   NSArray* allRegions = self.game.board.regions;
-  DDLogVerbose(@"%@: initializing GoBoardRegion objects, number of regions = %lu", self, allRegions.count);
+  DDLogVerbose(@"%@: initializing GoBoardRegion objects, number of regions = %lu", self, (unsigned long)allRegions.count);
   for (GoBoardRegion* region in allRegions)
   {
     region.territoryColor = GoColorNone;
@@ -198,7 +198,7 @@
 - (void) uninitializeRegions
 {
   NSArray* allRegions = self.game.board.regions;
-  DDLogVerbose(@"%@: uninitializing GoBoardRegion objects, number of regions = %lu", self, allRegions.count);
+  DDLogVerbose(@"%@: uninitializing GoBoardRegion objects, number of regions = %lu", self, (unsigned long)allRegions.count);
   for (GoBoardRegion* region in allRegions)
     region.scoringMode = false;  // forget cached values
 }

@@ -90,7 +90,7 @@
   NSUInteger handicap = game.handicapPoints.count;
   if (0 == handicap)
     return true;
-  GtpCommand* commandFixedHandicap = [GtpCommand command:[NSString stringWithFormat:@"fixed_handicap %ld", handicap]];
+  GtpCommand* commandFixedHandicap = [GtpCommand command:[NSString stringWithFormat:@"fixed_handicap %lu", (unsigned long)handicap]];
   [commandFixedHandicap submit];
   assert(commandFixedHandicap.response.status);
   return commandFixedHandicap.response.status;

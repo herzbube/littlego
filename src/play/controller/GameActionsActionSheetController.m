@@ -451,7 +451,7 @@ enum ActionSheetButton
           self.saveGameName = nil;
           break;
         default:
-          DDLogError(@"%@: Dismissing alert view with unexpected button type %ld", self, buttonIndex);
+          DDLogError(@"%@: Dismissing alert view with unexpected button type %ld", self, (long)buttonIndex);
           assert(0);
           break;
       }
