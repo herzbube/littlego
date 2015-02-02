@@ -35,6 +35,7 @@ const enum GoBoardSize gDefaultBoardSize = GoBoardSize19;
 const int gNumberOfBoardSizes = (GoBoardSizeMax - GoBoardSizeMin) / 2 + 1;
 const bool gDefaultComputerPlaysWhite = true;
 const int gDefaultHandicap = 0;
+const enum GoScoringSystem gDefaultScoringSystem = GoScoringSystemAreaScoring;
 const double gDefaultKomiAreaScoring = 7.5;
 const double gDefaultKomiTerritoryScoring = 6.5;
 

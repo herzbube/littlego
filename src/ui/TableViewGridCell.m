@@ -144,7 +144,7 @@ static NSString* gridLineColor = @"A9ABAD";
   NSString* visualFormatHorizontal = visualFormatHorizontalPrefix;
   NSString* visualFormatVerticalTemplate = [NSString stringWithFormat:@"V:|-%f-[%%@]-%f-|", [AutoLayoutUtility verticalSpacingTableViewCell], [AutoLayoutUtility verticalSpacingTableViewCell]];
 
-  NSString* visualFormatReferenceLabelName;
+  NSString* visualFormatReferenceLabelName = nil;
   for (int column = 0; column < numberOfColumns; ++column)
   {
     UILabel* label = nil;

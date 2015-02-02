@@ -289,7 +289,6 @@ enum GoScoringSystem
   GoScoringSystemAreaScoring,
   GoScoringSystemTerritoryScoring,
   GoScoringSystemMax = GoScoringSystemTerritoryScoring,
-  GoScoringSystemDefault = GoScoringSystemAreaScoring
 };
 
 /// @brief Enumerates the states that a stone group can have during scoring.
@@ -313,6 +312,7 @@ extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
 extern const bool gDefaultComputerPlaysWhite;
 extern const int gDefaultHandicap;
+extern const enum GoScoringSystem gDefaultScoringSystem;
 extern const double gDefaultKomiAreaScoring;
 extern const double gDefaultKomiTerritoryScoring;
 //@}

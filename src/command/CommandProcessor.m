@@ -265,7 +265,7 @@ static CommandProcessor* sharedProcessor = nil;
   NSTimer* distantFutureTimer = [[NSTimer alloc] initWithFireDate:distantFuture
                                                          interval:1.0
                                                            target:self
-                                                         selector:@selector(dealloc:)   // pseudo selector
+                                                         selector:@selector(dealloc)   // pseudo selector
                                                          userInfo:nil
                                                           repeats:NO];
   [[NSRunLoop currentRunLoop] addTimer:distantFutureTimer forMode:NSDefaultRunLoopMode];

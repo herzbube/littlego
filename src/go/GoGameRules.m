@@ -33,7 +33,7 @@
   if (! self)
     return nil;
   self.koRule = GoKoRuleDefault;
-  self.scoringSystem = GoScoringSystemDefault;
+  self.scoringSystem = gDefaultScoringSystem;
   return self;
 }
 
