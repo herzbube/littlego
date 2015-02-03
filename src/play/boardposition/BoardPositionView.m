@@ -93,8 +93,16 @@ static UIImage* whiteStoneImage = nil;
 // -----------------------------------------------------------------------------
 - (id) initOffscreenView
 {
+  // The frame for the off-screen view can be pretty much any size, the view
+  // will be resized by setupStaticViewMetrics to UILayoutFittingCompressedSize
+  // anyway. There is one restriction though: The frame must be large enough to
+  // accomodate all spacings set up by setupAutoLayoutConstraints(). If the
+  // frame is not large enough (e.g. CGRectZero) Auto Layout will print a
+  // warning to the debug console, but continue by breaking one of the
+  // constraints.
+  CGRect frame = CGRectMake(0, 0, 100, 100);
   // Call designated initializer of superclass (UIView)
-  self = [super initWithFrame:CGRectZero];
+  self = [super initWithFrame:frame];
   if (! self)
     return nil;
   self.offscreenMode = true;
