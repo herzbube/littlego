@@ -71,6 +71,11 @@ Important configuration settings in Xcode (both for the "Little Go" and the
 - libz.dylib has been added to the "Build Phases" section "Link Binary with
   Libraries". This is required to satisfy the dependencies of ZipKit and
   QuincyKit.
+- CLANG_ENABLE_MODULES = YES
+  This is enabled project-wide so that #import statements for system frameworks
+  automatically result in the respective framework being linked against. As a
+  result the project no longer contains a "Framework" group, and there are far
+  less entries in the "Link Binary with Libraries" build phase.
 - GCC_PREPROCESSOR_DEFINITIONS = NDEBUG,LITTLEGO_NDEBUG (Release and Distribute_* configurations)
   GCC_PREPROCESSOR_DEFINITIONS = NDEBUG                 (Debug configuration)
   Note: The NDEBUG macro is required even for a debug build because the project
@@ -91,6 +96,9 @@ Important configuration settings in Xcode (both for the "Little Go" and the
   change is made to one of the three configurations, the other two
   configurations must be kept in sync!
 
+Configuration settings for the "Unit tests" target
+- See the section "Automated unit tests" in the TESTING document
+
 
 Xcode schemes
 -------------
@@ -99,6 +107,7 @@ Xcode project itself. [1] has the answer how to achieve this. The following is
 a short overview of how I configured those schemes:
 - Let Xcode autocreate schemes. This results in one scheme for each of the
   project's targets.
+- Remove the "Unit tests" scheme
 - Rename the "Little Go" scheme to "Little Go Debug"
 - Add the unit test target to the "Little Go Debug" scheme
 - Enable the "Run" action for the unit test target.
@@ -121,9 +130,8 @@ Platform notes
 --------------
 - The Xcode project is prepared to build Little Go both for iOS and for the
   iPhone Simulator.
-- The base SDK is "iOS 8.1". I prefer setting an explicit base SDK over setting
-  "Latest iOS", which would mean that the project is set up with a moving
-  target SDK.
+- The base SDK is "Latest" so that a simple rebuild is sufficient after an
+  Xcode upgrade.
 - The deployment target is set to 7.0 so that the application keeps running on
   iOS 7.0 devices.
 
