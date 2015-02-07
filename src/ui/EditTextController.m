@@ -18,6 +18,7 @@
 // Project includes
 #import "EditTextController.h"
 #import "../ui/AutoLayoutUtility.h"
+#import "../ui/UiElementMetrics.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -169,12 +170,12 @@
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             @"H:|-[textField]-|",
-                            // In iOS 8 the default vertical spacing to the
-                            // superview edge is 0. This looks bad, so we use
-                            // the vertical spacing between siblings instead.
-                            // In iOS 7 this would not be necessary, but it
-                            // doesn't look bad and is easier to code.
-                            [NSString stringWithFormat:@"V:|-%f-[textField]", 2 * [AutoLayoutUtility verticalSpacingSiblings]],
+                            // We want the text field to be offset from the
+                            // superview's top edge. We can't use AutoLayout's
+                            // default (i.e. visual format "V:|-[textField]")
+                            // for this because starting with iOS 8 this default
+                            // has become 0.
+                            [NSString stringWithFormat:@"V:|-%f-[textField]", [UiElementMetrics verticalSpacingSuperview]],
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary

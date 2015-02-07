@@ -74,7 +74,7 @@
       // The label shares the cell with a UISwitch
       labelWidth = ([UiElementMetrics tableViewCellContentViewAvailableWidth]
                     - [UiElementMetrics switchWidth]
-                    - [UiElementMetrics spacingHorizontal]);
+                    - [UiElementMetrics horizontalSpacingSiblings]);
       break;
     }
     default:

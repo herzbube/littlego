@@ -48,7 +48,10 @@
 + (int) screenWidthLandscape;
 + (CGRect) applicationFrame;
 + (int) statusBarHeight;
-+ (int) spacingHorizontal;
++ (CGFloat) horizontalSpacingSiblings;
++ (CGFloat) verticalSpacingSiblings;
++ (CGFloat) horizontalSpacingSuperview;
++ (CGFloat) verticalSpacingSuperview;
 + (int) switchWidth;
 + (int) tableViewCellWidth;
 + (int) tableViewCellMarginHorizontal;

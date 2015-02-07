@@ -76,9 +76,34 @@ static UIViewController* m_interfaceOrientationSource;
   return MIN(statusbarFrame.size.width, statusbarFrame.size.height);
 }
 
-+ (int) spacingHorizontal
++ (CGFloat) horizontalSpacingSiblings
 {
-  return 8;
+  // This hard-coded value was experimentally determined in iOS 7 using Auto
+  // Layout, with this visual format "H:[view1]-[view2]"
+  return 8.0f;
+}
+
++ (CGFloat) verticalSpacingSiblings
+{
+  // This hard-coded value was experimentally determined in iOS 7 using Auto
+  // Layout, with this visual format "V:[view1]-[view2]"
+  return 8.0f;
+}
+
++ (CGFloat) horizontalSpacingSuperview
+{
+  // This hard-coded value was experimentally determined in iOS 7 using Auto
+  // Layout, with this visual format "H:|-[subview]". In iOS 8, Auto Layout
+  // returns 0 for the same visual format.
+  return 20.0f;
+}
+
++ (CGFloat) verticalSpacingSuperview
+{
+  // This hard-coded value was experimentally determined in iOS 7 using Auto
+  // Layout, with this visual format "V:|-[subview]" In iOS 8, Auto Layout
+  // returns 0 for the same visual format.
+  return 20.0f;
 }
 
 + (int) switchWidth

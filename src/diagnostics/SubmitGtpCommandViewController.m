@@ -23,6 +23,7 @@
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
 #import "../utility/UIColorAdditions.h"
 
@@ -165,9 +166,14 @@
                                    self.tableView, @"tableView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-5-[textField]-5-|",
-                            @"H:|[tableView]|",
-                            @"V:|-[textField]-[tableView]-|",
+                            @"H:|-[textField]-|",
+                            @"H:|-0-[tableView]-0-|",
+                            // We want the text field to be offset from the
+                            // superview's top edge. We can't use AutoLayout's
+                            // default (i.e. visual format "V:|-[textField]")
+                            // for this because starting with iOS 8 this default
+                            // has become 0.
+                            [NSString stringWithFormat:@"V:|-%f-[textField]-[tableView]-|", [UiElementMetrics verticalSpacingSuperview]],
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary

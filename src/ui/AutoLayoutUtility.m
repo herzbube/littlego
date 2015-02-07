@@ -209,6 +209,7 @@
   UIView* superview = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   UIView* view = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   [superview addSubview:view];
+  view.translatesAutoresizingMaskIntoConstraints = NO;
   NSArray* constraints = [NSLayoutConstraint constraintsWithVisualFormat:visualFormat
                                                                  options:0
                                                                  metrics:nil

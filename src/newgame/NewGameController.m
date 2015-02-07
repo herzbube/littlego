@@ -18,11 +18,6 @@
 // Project includes
 #import "NewGameController.h"
 #import "NewGameModel.h"
-#import "../ui/AutoLayoutUtility.h"
-#import "../ui/TableViewCellFactory.h"
-#import "../ui/UIUtilities.h"
-#import "../utility/NSStringAdditions.h"
-#import "../utility/UIColorAdditions.h"
 #import "../go/GoGame.h"
 #import "../go/GoGameDocument.h"
 #import "../go/GoBoard.h"
@@ -30,6 +25,12 @@
 #import "../main/ApplicationDelegate.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
+#import "../ui/AutoLayoutUtility.h"
+#import "../ui/TableViewCellFactory.h"
+#import "../ui/UiElementMetrics.h"
+#import "../ui/UiUtilities.h"
+#import "../utility/NSStringAdditions.h"
+#import "../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -246,7 +247,12 @@ enum GameRulesSectionItem
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             @"H:|-[segmentedControl]-|",
                             @"H:|-0-[tableView]-0-|",
-                            @"V:|-[segmentedControl]-[tableView]-|",
+                            // We want the segmented control to be offset from
+                            // the superview top edge. We can't use AutoLayout's
+                            // default (i.e. visual format
+                            // "V:|-[segmentedControl]") for this because
+                            // starting with iOS 8 this default has become 0.
+                            [NSString stringWithFormat:@"V:|-%f-[segmentedControl]-[tableView]-|", [UiElementMetrics verticalSpacingSuperview]],
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 }
