@@ -29,6 +29,7 @@
 @property (nonatomic, assign) bool leftPaneIsShownInOverlay;
 @property (nonatomic, retain) UIView* overlayView;
 @property (nonatomic, retain) NSLayoutConstraint* leftPaneLeftEdgeConstraint;
+@property (nonatomic, assign) bool viewsAreInPortraitOrientation;
 @end
 
 
@@ -54,6 +55,7 @@
   self.leftPaneIsShownInOverlay = false;
   self.overlayView = nil;
   self.leftPaneLeftEdgeConstraint = nil;
+  self.viewsAreInPortraitOrientation = true;
   return self;
 }
 
@@ -118,6 +120,7 @@
     [self updateViewHierarchyForInterfaceOrientation:self.interfaceOrientation];
     [self updateAutoLayoutConstraintsForInterfaceOrientation:self.interfaceOrientation];
     [self updateBarButtonItemForInterfaceOrientation:self.interfaceOrientation];
+    [self viewLayoutDidChangeToInterfaceOrientation:self.interfaceOrientation];
   }
 }
 
@@ -213,15 +216,59 @@
   [self updateViewHierarchyForInterfaceOrientation:self.interfaceOrientation];
   [self updateAutoLayoutConstraintsForInterfaceOrientation:self.interfaceOrientation];
   [self updateBarButtonItemForInterfaceOrientation:self.interfaceOrientation];
+  [self viewLayoutDidChangeToInterfaceOrientation:self.interfaceOrientation];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
-- (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+- (void) viewWillLayoutSubviews
 {
-  [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+  if ([self isViewLayoutChangeRequiredForInterfaceOrientation:self.interfaceOrientation])
+  {
+    [self prepareForInterfaceOrientationChange:self.interfaceOrientation];
+    [self completeInterfaceOrientationChange:self.interfaceOrientation];
+    [self viewLayoutDidChangeToInterfaceOrientation:self.interfaceOrientation];
+  }
+}
 
+#pragma mark - Interface orientation change handling
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if rotating to the specified interface orientation
+/// requires a change to the view layout of this SplitViewController.
+// -----------------------------------------------------------------------------
+- (bool) isViewLayoutChangeRequiredForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  bool newOrientationIsPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  return (self.viewsAreInPortraitOrientation != newOrientationIsPortraitOrientation);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the internal state of this SplitViewController to remember
+/// that the current view layout now matches @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (void) viewLayoutDidChangeToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  self.viewsAreInPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Prepares this SplitViewController for an upcoming interface
+/// orientation change. The new orientation is @a interfaceOrientation.
+///
+/// This method should only be invoked if
+/// isViewLayoutChangeRequiredForInterfaceOrientation:() returns true for the
+/// specified interface orientation.
+///
+/// This method was originally invoked by
+/// willRotateToInterfaceOrientation:duration:() as the first step of a two-step
+/// orientation change. Clients that invoke this method must also call
+/// completeInterfaceOrientationChange:() to perform the second step of the
+/// orientation change.
+// -----------------------------------------------------------------------------
+- (void) prepareForInterfaceOrientationChange:(UIInterfaceOrientation)interfaceOrientation
+{
   // Dismiss the left pane if it is currently shown in an overlay. This is
   // important so that the left pane view can be integrated into the regular
   // landscape view herarchy.
@@ -230,7 +277,7 @@
 
   // Invoke this so that the delegate is notified before the left pane is
   // actually shown/hidden
-  [self updateBarButtonItemForInterfaceOrientation:toInterfaceOrientation];
+  [self updateBarButtonItemForInterfaceOrientation:interfaceOrientation];
 
   // Remove constraints before views are resized (at the time
   // willAnimateRotationToInterfaceOrientation:duration:() is invoked it is too
@@ -244,13 +291,22 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UIViewController method.
+/// @brief Completes the interface orientation change that was begun when
+/// prepareForInterfaceOrientationChange:() was invoked. The new orientation is
+/// @a interfaceOrientation.
+///
+/// This method should only be invoked if
+/// isViewLayoutChangeRequiredForInterfaceOrientation:() returns true for the
+/// specified interface orientation.
+///
+/// This method was originally invoked by
+/// willAnimateRotationToInterfaceOrientation:duration:() as the second step of
+/// a two-step orientation change. Clients that invoke this method must have
+/// previously also called prepareForInterfaceOrientationChange:() to perform
+/// the first step of the orientation change.
 // -----------------------------------------------------------------------------
-- (void) willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-                                          duration:(NSTimeInterval)duration
+- (void) completeInterfaceOrientationChange:(UIInterfaceOrientation)interfaceOrientation
 {
-  [super willAnimateRotationToInterfaceOrientation:interfaceOrientation duration:duration];
-
   [self updateViewHierarchyForInterfaceOrientation:interfaceOrientation];
   [self updateAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
 }
