@@ -391,7 +391,7 @@
   else
   {
     NSArray* visualFormats = [NSArray arrayWithObjects:
-                              @"H:|-0-[leftPaneView(==320)]-0-[dividerView(==1)]-0-[rightPaneView]-0-|",
+                              @"H:|-0-[leftPaneView(==320)]-0-[dividerView(==0)]-0-[rightPaneView]-0-|",
                               @"V:|-0-[dividerView]-0-|",
                               @"V:|-0-[leftPaneView]-0-|",
                               @"V:|-0-[rightPaneView]-0-|",

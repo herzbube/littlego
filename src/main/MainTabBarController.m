@@ -150,23 +150,9 @@
     self.tabBar.tintColor = [UIColor bleuDeFranceColor];
   }
 
-  // Place an application-wide black background behind the status bar. Requires
-  // that the status bar style is set to UIStatusBarStyleLightContent. This
-  // happens in the project's Info.plist, by using the UIStatusBarStyle key. In
-  // order for that key to take effect, another key named
-  // UIViewControllerBasedStatusBarAppearance must also be set in the
-  // Info.plist.
-  // Note: This method of making the status bar background black is a bit
-  // hack'ish, especially because the background view does not participate in
-  // the view layout process (instead it is simply created with a fixed frame
-  // that is wide enough for landscape), but I simply cannot be bothered with
-  // all the "extended layout" mumbo jumbo that Apple introduced in iOS 7.
-  CGRect backgroundViewFrame = CGRectZero;
-  backgroundViewFrame.size.width = [UiElementMetrics screenWidthLandscape];
-  backgroundViewFrame.size.height = [UiElementMetrics statusBarHeight];
-  UIView* backgroundView = [[[UIView alloc] initWithFrame:backgroundViewFrame] autorelease];
-  [self.view addSubview:backgroundView];
-  backgroundView.backgroundColor = [UIColor blackColor];
+  // TODO xxx We should not fake this color, we should somehow get a real
+  // navigation bar to place itself behind the statusbar.
+  self.view.backgroundColor = [UIColor navigationbarBackgroundColor];
 }
 
 // -----------------------------------------------------------------------------
