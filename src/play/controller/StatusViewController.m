@@ -42,6 +42,8 @@
 @property(nonatomic, assign) bool statusLabelNeedsUpdate;
 @property(nonatomic, retain) NSArray* crossHairInformation;
 @property(nonatomic, assign) bool shouldDisplayActivityIndicator;
+@property(nonatomic, retain) NSLayoutConstraint* activityIndicatorWidthConstraint;
+@property(nonatomic, retain) NSLayoutConstraint* activityIndicatorSpacingConstraint;
 @end
 
 
@@ -64,6 +66,8 @@
   self.activityIndicatorNeedsUpdate = false;
   self.statusLabelNeedsUpdate = false;
   self.shouldDisplayActivityIndicator = false;
+  self.activityIndicatorWidthConstraint = nil;
+  self.activityIndicatorSpacingConstraint = nil;
   return self;
 }
 
@@ -85,6 +89,8 @@
   self.statusLabel = nil;
   self.activityIndicator = nil;
   self.crossHairInformation = nil;
+  self.activityIndicatorWidthConstraint = nil;
+  self.activityIndicatorSpacingConstraint = nil;
 }
 
 #pragma mark - UIViewController overrides
@@ -95,8 +101,9 @@
 - (void) loadView
 {
   [self createViews];
-  [self updateViewHierarchy];
+  [self setupViewHierarchy];
   [self configureViews];
+  [self setupAutoLayoutConstraints];
   [self updateAutoLayoutConstraints];
   [self setupNotificationResponders];
 }
@@ -116,19 +123,10 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) updateViewHierarchy
+- (void) setupViewHierarchy
 {
   [self.view addSubview:self.statusLabel];
-  if (self.shouldDisplayActivityIndicator)
-  {
-    if (! self.activityIndicator.superview)
-      [self.view addSubview:self.activityIndicator];
-  }
-  else
-  {
-    if (self.activityIndicator.superview)
-      [self.activityIndicator removeFromSuperview];
-  }
+  [self.view addSubview:self.activityIndicator];
 }
 
 // -----------------------------------------------------------------------------
@@ -152,36 +150,60 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
-- (void) updateAutoLayoutConstraints
+- (void) setupAutoLayoutConstraints
 {
-  [self.view removeConstraints:self.view.constraints];
-
   self.statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
 
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.statusLabel, @"statusLabel",
+                                   self.activityIndicator, @"activityIndicator",
+                                   nil];
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-0-[statusLabel]",
+                            @"H:[activityIndicator]-0-|",
+                            @"V:|-0-[statusLabel]-0-|",
+                            nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats
+                                withViews:viewsDictionary
+                                   inView:self.view];
+  [AutoLayoutUtility alignFirstView:self.activityIndicator
+                     withSecondView:self.statusLabel
+                        onAttribute:NSLayoutAttributeCenterY
+                   constraintHolder:self.view];
+  self.activityIndicatorWidthConstraint = [NSLayoutConstraint constraintWithItem:self.activityIndicator
+                                                                       attribute:NSLayoutAttributeWidth
+                                                                       relatedBy:NSLayoutRelationEqual
+                                                                          toItem:nil
+                                                                       attribute:NSLayoutAttributeNotAnAttribute
+                                                                      multiplier:1.0f
+                                                                        constant:0.0f];
+  self.activityIndicatorSpacingConstraint = [NSLayoutConstraint constraintWithItem:self.activityIndicator
+                                                                         attribute:NSLayoutAttributeLeft
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.statusLabel
+                                                                         attribute:NSLayoutAttributeRight
+                                                                        multiplier:1.0f
+                                                                          constant:0.0f];
+  [self.view addConstraint:self.activityIndicatorWidthConstraint];
+  [self.view addConstraint:self.activityIndicatorSpacingConstraint];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) updateAutoLayoutConstraints
+{
   if (self.shouldDisplayActivityIndicator)
   {
-    NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                     self.statusLabel, @"statusLabel",
-                                     self.activityIndicator, @"activityIndicator",
-                                     nil];
-    NSArray* visualFormats = [NSArray arrayWithObjects:
-                              // Default spacing is not sufficient, use experimentally
-                              // determined custom spacing
-                              @"H:|-0-[statusLabel]-15-[activityIndicator]-0-|",
-                              @"V:|-0-[statusLabel]-0-|",
-                              nil];
-    [AutoLayoutUtility installVisualFormats:visualFormats
-                                  withViews:viewsDictionary
-                                     inView:self.view];
-    [AutoLayoutUtility alignFirstView:self.activityIndicator
-                       withSecondView:self.statusLabel
-                          onAttribute:NSLayoutAttributeCenterY
-                     constraintHolder:self.view];
+    // Experimentally determined custom spacing
+    self.activityIndicatorSpacingConstraint.constant = 15.0f;
+    self.activityIndicatorWidthConstraint.constant = self.activityIndicator.intrinsicContentSize.width;
   }
   else
   {
-    [AutoLayoutUtility fillSuperview:self.view withSubview:self.statusLabel];
+    self.activityIndicatorSpacingConstraint.constant = 0.0f;
+    self.activityIndicatorWidthConstraint.constant = 0.0f;
   }
 }
 
@@ -280,8 +302,8 @@
     return;  // activity indicator already has desired state
   self.shouldDisplayActivityIndicator = shouldDisplayActivityIndicator;
 
-  [self updateViewHierarchy];
   [self updateAutoLayoutConstraints];
+
   if (shouldDisplayActivityIndicator)
     [self.activityIndicator startAnimating];
   else
