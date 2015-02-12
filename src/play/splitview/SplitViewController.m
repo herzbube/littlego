@@ -30,6 +30,7 @@
 @property (nonatomic, retain) UIView* overlayView;
 @property (nonatomic, retain) NSLayoutConstraint* leftPaneLeftEdgeConstraint;
 @property (nonatomic, assign) bool viewsAreInPortraitOrientation;
+@property (nonatomic, retain) NSArray* autoLayoutConstraints;
 @end
 
 
@@ -56,6 +57,7 @@
   self.overlayView = nil;
   self.leftPaneLeftEdgeConstraint = nil;
   self.viewsAreInPortraitOrientation = true;
+  self.autoLayoutConstraints = nil;
   return self;
 }
 
@@ -70,6 +72,7 @@
   self.barButtonItemLeftPane = nil;
   self.overlayView = nil;
   self.leftPaneLeftEdgeConstraint = nil;
+  self.autoLayoutConstraints = nil;
   [super dealloc];
 }
 
@@ -367,7 +370,13 @@
   if (! leftPaneView || ! rightPaneView)
     return;
 
-  [self.view removeConstraints:self.view.constraints];
+  // Only remove constraints that we generated. UIKit may also have generated
+  // some constraints, those we must not touch.
+  if (self.autoLayoutConstraints)
+  {
+    [self.view removeConstraints:self.autoLayoutConstraints];
+    self.autoLayoutConstraints = nil;
+  }
 
   self.dividerView.translatesAutoresizingMaskIntoConstraints = NO;
   leftPaneView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -386,7 +395,9 @@
                               @"H:|-0-[rightPaneView]-0-|",
                               @"V:|-0-[rightPaneView]-0-|",
                               nil];
-    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+    self.autoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
+                                                               withViews:viewsDictionary
+                                                                  inView:self.view];
   }
   else
   {
@@ -396,7 +407,9 @@
                               @"V:|-0-[leftPaneView]-0-|",
                               @"V:|-0-[rightPaneView]-0-|",
                               nil];
-    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+    self.autoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
+                                                               withViews:viewsDictionary
+                                                                  inView:self.view];
   }
 }
 
@@ -406,7 +419,13 @@
 // -----------------------------------------------------------------------------
 - (void) removeAutoLayoutConstraints
 {
-  [self.view removeConstraints:self.view.constraints];
+  // Only remove constraints that we generated. UIKit may also have generated
+  // some constraints, those we must not touch.
+  if (self.autoLayoutConstraints)
+  {
+    [self.view removeConstraints:self.autoLayoutConstraints];
+    self.autoLayoutConstraints = nil;
+  }
 }
 
 #pragma mark - Bar button item handling
@@ -520,7 +539,7 @@
   [self.overlayView addConstraint:self.leftPaneLeftEdgeConstraint];
 
   // First layout pass that will place the left pane outside of the visible
-  // areay
+  // area
   [self.view layoutIfNeeded];
   // Second layout pass slides in the left pane
   [UIView animateWithDuration:0.2 animations:^{

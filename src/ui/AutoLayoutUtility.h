@@ -26,20 +26,20 @@
 {
 }
 
-+ (void) fillSuperview:(UIView*)superview withSubview:(UIView*)subview;
-+ (void) fillAreaBetweenGuidesOfViewController:(UIViewController*)viewController
-                                   withSubview:(UIView*)subview;
-+ (void) centerSubview:(UIView*)subview inSuperview:(UIView*)superview;
-+ (void) centerSubview:(UIView*)subview
-           inSuperview:(UIView*)superview
-                onAxis:(UILayoutConstraintAxis)axis;
-+ (void) alignFirstView:(UIView*)firstView
-         withSecondView:(UIView*)secondView
-            onAttribute:(NSLayoutAttribute)attribute
-       constraintHolder:(UIView*)constraintHolder;
-+ (void) installVisualFormats:(NSArray*)visualFormats
-                    withViews:(NSDictionary*)viewsDictionary
-                       inView:(UIView*)view;
++ (NSArray*) fillSuperview:(UIView*)superview withSubview:(UIView*)subview;
++ (NSArray*) fillAreaBetweenGuidesOfViewController:(UIViewController*)viewController
+                                       withSubview:(UIView*)subview;
++ (NSArray*) centerSubview:(UIView*)subview inSuperview:(UIView*)superview;
++ (NSLayoutConstraint*) centerSubview:(UIView*)subview
+                          inSuperview:(UIView*)superview
+                               onAxis:(UILayoutConstraintAxis)axis;
++ (NSLayoutConstraint*) alignFirstView:(UIView*)firstView
+                        withSecondView:(UIView*)secondView
+                           onAttribute:(NSLayoutAttribute)attribute
+                      constraintHolder:(UIView*)constraintHolder;
++ (NSArray*) installVisualFormats:(NSArray*)visualFormats
+                        withViews:(NSDictionary*)viewsDictionary
+                           inView:(UIView*)view;
 + (CGFloat) horizontalSpacingSiblings;
 + (CGFloat) verticalSpacingSiblings;
 + (CGFloat) horizontalSpacingSuperview;

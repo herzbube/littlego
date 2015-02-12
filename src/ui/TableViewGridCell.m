@@ -47,7 +47,15 @@ static NSString* gridLineColor = @"A9ABAD";
 - (id) initWithFrame:(CGRect)frame;
 - (void) dealloc;
 - (void) drawRect:(CGRect)rect;
-@property(nonatomic, assign) int numberOfColumns;
+@property (nonatomic, assign) int numberOfColumns;
+@end
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for TableViewGridCell.
+// -----------------------------------------------------------------------------
+@interface TableViewGridCell()
+@property (nonatomic, retain) NSArray* gridCellContentViewConstraints;
 @end
 
 
@@ -78,6 +86,7 @@ static NSString* gridLineColor = @"A9ABAD";
               reuseIdentifier:reuseIdentifier];
   if (! self)
     return nil;
+  self.gridCellContentViewConstraints = nil;
   return self;
 }
 
@@ -86,6 +95,7 @@ static NSString* gridLineColor = @"A9ABAD";
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.gridCellContentViewConstraints = nil;
   [super dealloc];
 }
 
@@ -114,17 +124,23 @@ static NSString* gridLineColor = @"A9ABAD";
   // c) columnWidth
   // d) [AutoLayoutUtility horizontalSpacingSiblings] / 2
 
-  // Remove the old content view and constraints
+  // Cell reuse handling: Remove the old content view and constraints
   UIView* oldGridCellContentView = [self.contentView viewWithTag:GridCellContentViewTag];
   if (oldGridCellContentView)
     [oldGridCellContentView removeFromSuperview];
-  for (id constraint in self.contentView.constraints)
-    [self.contentView removeConstraint:constraint];
+  // Only remove constraints that we generated. UIKit also generated some
+  // constraints, those we must not touch.
+  if (self.gridCellContentViewConstraints)
+  {
+    [self.contentView removeConstraints:self.gridCellContentViewConstraints];
+    self.gridCellContentViewConstraints = nil;
+  }
 
   GridCellContentView* gridCellContentView = [self gridCellContentView];
   [self.contentView addSubview:gridCellContentView];
   gridCellContentView.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutUtility fillSuperview:self.contentView withSubview:gridCellContentView];
+  // Remember constraints so that we can remove them if the cell is reused
+  self.gridCellContentViewConstraints = [AutoLayoutUtility fillSuperview:self.contentView withSubview:gridCellContentView];
 
   int numberOfColumns = [self.delegate numberOfColumnsInGridCell:self];
   gridCellContentView.numberOfColumns = numberOfColumns;
