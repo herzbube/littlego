@@ -331,13 +331,13 @@
     }
     else
     {
+      statusText = crossHairPoint.vertex.string;
       enum GoMoveIsIllegalReason isIllegalReason = [[self.crossHairInformation objectAtIndex:2] intValue];
       switch (isIllegalReason)
       {
         case GoMoveIsIllegalReasonIntersectionOccupied:
         {
           // No special message if intersection is occupied, that's too basic
-          statusText = crossHairPoint.vertex.string;
           break;
         }
         default:
