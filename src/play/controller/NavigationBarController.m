@@ -31,6 +31,7 @@
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../shared/ApplicationStateManager.h"
+#import "../../ui/AutoLayoutUtility.h"
 #import "../../utility/UIDeviceAdditions.h"
 
 
@@ -38,11 +39,14 @@
 /// @brief Class extension with private properties for NavigationBarController.
 // -----------------------------------------------------------------------------
 @interface NavigationBarController()
-@property(nonatomic, retain) UINavigationBar* navigationBar;
+@property(nonatomic, retain) UINavigationBar* leftNavigationBar;
+@property(nonatomic, retain) UINavigationBar* centerNavigationBar;
+@property(nonatomic, retain) UINavigationBar* rightNavigationBar;
+@property(nonatomic, retain) NSLayoutConstraint* leftNavigationBarWidthConstraint;
+@property(nonatomic, retain) NSLayoutConstraint* rightNavigationBarWidthConstraint;
 @property(nonatomic, assign) GameInfoViewController* gameInfoViewController;
 @property(nonatomic, retain) GameActionsActionSheetController* gameActionsActionSheetController;
-@property(nonatomic, assign) bool navigationBarNeedsPopulation;
-@property(nonatomic, assign) bool statusViewSizeNeedsUpdate;
+@property(nonatomic, assign) bool navigationBarsNeedsPopulation;
 @property(nonatomic, assign) bool buttonStatesNeedUpdate;
 @property(nonatomic, retain) UIBarButtonItem* computerPlayButton;
 @property(nonatomic, retain) UIBarButtonItem* passButton;
@@ -50,13 +54,10 @@
 @property(nonatomic, retain) UIBarButtonItem* pauseButton;
 @property(nonatomic, retain) UIBarButtonItem* continueButton;
 @property(nonatomic, retain) UIBarButtonItem* interruptButton;
-@property(nonatomic, retain) UIBarButtonItem* flexibleSpaceButtonLeft;
-@property(nonatomic, retain) UIBarButtonItem* flexibleSpaceButtonRight;
 @property(nonatomic, assign) UIBarButtonItem* barButtonItemForShowingTheHiddenViewController;
 @property(nonatomic, retain) UIBarButtonItem* gameInfoButton;
 @property(nonatomic, retain) UIBarButtonItem* gameActionsButton;
 @property(nonatomic, retain) UIBarButtonItem* doneButton;
-@property(nonatomic, retain) UIBarButtonItem* statusViewButton;
 @end
 
 
@@ -77,8 +78,7 @@
     return nil;
   [self releaseObjects];
   [self setupChildControllers];
-  self.navigationBarNeedsPopulation = false;
-  self.statusViewSizeNeedsUpdate = false;
+  self.navigationBarsNeedsPopulation = false;
   self.buttonStatesNeedUpdate = false;
   return self;
 }
@@ -100,7 +100,11 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
-  self.navigationBar = nil;
+  self.leftNavigationBar = nil;
+  self.centerNavigationBar = nil;
+  self.rightNavigationBar = nil;
+  self.leftNavigationBarWidthConstraint = nil;
+  self.rightNavigationBarWidthConstraint = nil;
   self.gameInfoViewController = nil;
   self.gameActionsActionSheetController = nil;
   self.computerPlayButton = nil;
@@ -109,13 +113,10 @@
   self.pauseButton = nil;
   self.continueButton = nil;
   self.interruptButton = nil;
-  self.flexibleSpaceButtonLeft = nil;
-  self.flexibleSpaceButtonRight = nil;
   self.barButtonItemForShowingTheHiddenViewController = nil;
   self.gameInfoButton = nil;
   self.gameActionsButton = nil;
   self.doneButton = nil;
-  self.statusViewButton = nil;
 }
 
 #pragma mark - Container view controller handling
@@ -160,33 +161,18 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.navigationBar = [[[UINavigationBar alloc] initWithFrame:CGRectZero] autorelease];
-  self.view = self.navigationBar;
-
-  UINavigationItem* navigationItem = [[[UINavigationItem alloc] initWithTitle:@""] autorelease];
-  [self.navigationBar pushNavigationItem:navigationItem animated:NO];
-
-  [self setupButtons];
+  [self createViews];
+  [self setupViewHierarchy];
+  [self setupAutoLayoutConstraints];
   [self setupNotificationResponders];
 
-  self.navigationBarNeedsPopulation = true;
+  self.navigationBarsNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
 
   // We need to be the Play tab navigation controller's delegate so that we
   // can properly push/pop the "Game Info" view controller
   self.navigationController.delegate = self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-// -----------------------------------------------------------------------------
-- (void) viewWillLayoutSubviews
-{
-  // TODO: Find out why interface rotation is messing up the status view frame.
-  // For now, fix the frame by calling our updater.
-  self.statusViewSizeNeedsUpdate = true;
-  [self updateStatusViewSize];
 }
 
 // -----------------------------------------------------------------------------
@@ -206,12 +192,108 @@
   }
 }
 
-#pragma mark - Private helpers for view setup
+#pragma mark - Private helpers for loadView
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) createViews
+{
+  [super loadView];
+  self.leftNavigationBar = [[[UINavigationBar alloc] initWithFrame:CGRectZero] autorelease];
+  self.centerNavigationBar = [[[UINavigationBar alloc] initWithFrame:CGRectZero] autorelease];
+  self.rightNavigationBar = [[[UINavigationBar alloc] initWithFrame:CGRectZero] autorelease];
+  [self.leftNavigationBar pushNavigationItem:[[[UINavigationItem alloc] initWithTitle:@""] autorelease]
+                                    animated:NO];
+  [self.centerNavigationBar pushNavigationItem:[[[UINavigationItem alloc] initWithTitle:@""] autorelease]
+                                      animated:NO];
+  [self.rightNavigationBar pushNavigationItem:[[[UINavigationItem alloc] initWithTitle:@""] autorelease]
+                                     animated:NO];
+  [self createButtons];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupViewHierarchy
+{
+  [self.view addSubview:self.leftNavigationBar];
+  [self.view addSubview:self.centerNavigationBar];
+  [self.view addSubview:self.rightNavigationBar];
+  [self.view addSubview:self.statusViewController.view];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraints
+{
+  self.leftNavigationBar.translatesAutoresizingMaskIntoConstraints = NO;
+  self.centerNavigationBar.translatesAutoresizingMaskIntoConstraints = NO;
+  self.rightNavigationBar.translatesAutoresizingMaskIntoConstraints = NO;
+  self.statusViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.leftNavigationBar, @"leftNavigationBar",
+                                   self.centerNavigationBar, @"centerNavigationBar",
+                                   self.rightNavigationBar, @"rightNavigationBar",
+                                   self.statusViewController.view, @"statusView",
+                                   nil];
+  // Some notes:
+  // - On the iPad we simply give each navigation bar the same width.
+  // - On the iPhone there is not enough horizontal space to do the same, so
+  //   further down we set up some width constraints, which will then be managed
+  //   dynamically each time after the navigation bars are populated with
+  //   buttons.
+  // - Furthermore, we only need the center navigation bar to get the same
+  //   translucent background for the status view, so we set up the status view
+  //   to "hover" over the center navigation bar. In iOS 8 it would be possible
+  //   achieve this simply by making the status view a subview of the center
+  //   navigation bar and fill up the entirety of its superview. But in iOS 7
+  //   the Auto Layout engine can't handle this for some reason. Since we still
+  //   support iOS 7 we must therefore fall back to the solution of making the
+  //   status view a subview of the main view and provide constraints that let
+  //   the status view use the exact same position and size as the navigation
+  //   bar over which it must "hover".
+  NSArray* visualFormats = [NSArray arrayWithObjects:
+                            (([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+                             ? @"H:|-0-[leftNavigationBar]-0-[centerNavigationBar]-0-[rightNavigationBar]-0-|"
+                             : @"H:|-0-[leftNavigationBar]-0-[centerNavigationBar(==leftNavigationBar)]-0-[rightNavigationBar(==leftNavigationBar)]-0-|"),
+                            @"H:[leftNavigationBar]-0-[statusView(==centerNavigationBar)]",
+                            @"V:|-0-[leftNavigationBar]-0-|",
+                            @"V:|-0-[centerNavigationBar]-0-|",
+                            @"V:|-0-[rightNavigationBar]-0-|",
+                            @"V:|-0-[statusView]-0-|",
+                            nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats
+                                withViews:viewsDictionary
+                                   inView:self.view];
+
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  {
+    self.leftNavigationBarWidthConstraint = [NSLayoutConstraint constraintWithItem:self.leftNavigationBar
+                                                                         attribute:NSLayoutAttributeWidth
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.view
+                                                                         attribute:NSLayoutAttributeWidth
+                                                                        multiplier:0.0f
+                                                                          constant:0.0f];
+    [self.view addConstraint:self.leftNavigationBarWidthConstraint];
+    self.rightNavigationBarWidthConstraint = [NSLayoutConstraint constraintWithItem:self.rightNavigationBar
+                                                                          attribute:NSLayoutAttributeWidth
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.view
+                                                                          attribute:NSLayoutAttributeWidth
+                                                                         multiplier:0.0f
+                                                                           constant:0.0f];
+    [self.view addConstraint:self.rightNavigationBarWidthConstraint];
+  }
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper.
 // -----------------------------------------------------------------------------
-- (void) setupButtons
+- (void) createButtons
 {
   self.computerPlayButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:computerPlayButtonIconResource]
                                                               style:UIBarButtonItemStyleBordered
@@ -249,13 +331,6 @@
                                                                    target:self
                                                                    action:@selector(done:)] autorelease];
   self.doneButton.style = UIBarButtonItemStyleBordered;
-  self.flexibleSpaceButtonLeft = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                                                target:nil
-                                                                                action:nil] autorelease];
-  self.flexibleSpaceButtonRight = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                                                 target:nil
-                                                                                 action:nil] autorelease];
-  self.statusViewButton = [[[UIBarButtonItem alloc] initWithCustomView:self.statusViewController.view] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -404,7 +479,7 @@
   // the representing view by examining the frames of all navigation bar
   // subviews.
   UIView* rightMostSubview = nil;
-  for (UIView* subview in self.navigationBar.subviews)
+  for (UIView* subview in self.rightNavigationBar.subviews)
   {
     if (rightMostSubview)
     {
@@ -430,6 +505,15 @@
 - (void) done:(id)sender
 {
   [GoGame sharedGame].score.scoringEnabled = false;  // triggers notification to which this controller reacts
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if taps on bar button items should currently be
+/// ignored.
+// -----------------------------------------------------------------------------
+- (bool) shouldIgnoreTaps
+{
+  return [GoGame sharedGame].isComputerThinking;
 }
 
 #pragma mark - UINavigationControllerDelegate overrides
@@ -475,25 +559,25 @@
 // -----------------------------------------------------------------------------
 /// @brief SplitViewControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) splitViewController:(UISplitViewController*)svc
+- (void) splitViewController:(SplitViewController*)svc
       willHideViewController:(UIViewController*)aViewController
            withBarButtonItem:(UIBarButtonItem*)barButtonItem
 {
   self.barButtonItemForShowingTheHiddenViewController = barButtonItem;
   barButtonItem.title = @"Moves";
-  self.navigationBarNeedsPopulation = true;
+  self.navigationBarsNeedsPopulation = true;
   [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief SplitViewControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) splitViewController:(UISplitViewController*)svc
+- (void) splitViewController:(SplitViewController*)svc
       willShowViewController:(UIViewController*)aViewController
    invalidatingBarButtonItem:(UIBarButtonItem*)button
 {
   self.barButtonItemForShowingTheHiddenViewController = nil;
-  self.navigationBarNeedsPopulation = true;
+  self.navigationBarsNeedsPopulation = true;
   [self delayedUpdate];
 }
 
@@ -523,7 +607,7 @@
   GoBoardPosition* boardPosition = newGame.boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
-  self.navigationBarNeedsPopulation = true;
+  self.navigationBarsNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
 }
@@ -533,7 +617,7 @@
 // -----------------------------------------------------------------------------
 - (void) goGameStateChanged:(NSNotification*)notification
 {
-  self.navigationBarNeedsPopulation = true;
+  self.navigationBarsNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
   GoGame* game = [GoGame sharedGame];
@@ -559,7 +643,7 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingChanged:(NSNotification*)notification
 {
-  self.navigationBarNeedsPopulation = true;
+  self.navigationBarsNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
 }
@@ -569,7 +653,7 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreScoringEnabled:(NSNotification*)notification
 {
-  self.navigationBarNeedsPopulation = true;
+  self.navigationBarsNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
 }
@@ -580,7 +664,7 @@
 - (void) goScoreScoringDisabled:(NSNotification*)notification
 {
   [[ApplicationStateManager sharedManager] applicationStateDidChange];
-  self.navigationBarNeedsPopulation = true;
+  self.navigationBarsNeedsPopulation = true;
   self.buttonStatesNeedUpdate = true;
   [self delayedUpdate];
 }
@@ -648,22 +732,13 @@
     }
     else if ([keyPath isEqualToString:@"numberOfBoardPositions"])
     {
-      self.navigationBarNeedsPopulation = true;
+      self.navigationBarsNeedsPopulation = true;
     }
     [self delayedUpdate];
   }
 }
 
-#pragma mark - Private helpers
-
-// -----------------------------------------------------------------------------
-/// @brief Returns true if taps on bar button items should currently be
-/// ignored.
-// -----------------------------------------------------------------------------
-- (bool) shouldIgnoreTaps
-{
-  return [GoGame sharedGame].isComputerThinking;
-}
+#pragma mark - Delayed updating
 
 // -----------------------------------------------------------------------------
 /// @brief Internal helper that correctly handles delayed updates. See class
@@ -673,45 +748,40 @@
 {
   if ([LongRunningActionCounter sharedCounter].counter > 0)
     return;
-  [self populateNavigationBar];
+  [self populateNavigationBars];
   [self updateButtonStates];
-  [self updateStatusViewSize];
 }
 
+#pragma mark - Navigation bar population
+
 // -----------------------------------------------------------------------------
-/// @brief Populates the navigation bar with buttons that are appropriate for
+/// @brief Populates the navigation bars with buttons that are appropriate for
 /// the #GoGameType currently in progress.
 // -----------------------------------------------------------------------------
-- (void) populateNavigationBar
+- (void) populateNavigationBars
 {
-  if (! self.navigationBarNeedsPopulation)
+  if (! self.navigationBarsNeedsPopulation)
     return;
-  self.navigationBarNeedsPopulation = false;
+  self.navigationBarsNeedsPopulation = false;
 
-  NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
-  [barButtonItems addObjectsFromArray:[self leftBarButtonItems]];
-  [barButtonItems addObject:self.flexibleSpaceButtonLeft];
-  [barButtonItems addObject:self.statusViewButton];
-  [barButtonItems addObject:self.flexibleSpaceButtonRight];
-  [barButtonItems addObjectsFromArray:[self rightBarButtonItems]];
-  self.navigationBar.topItem.leftBarButtonItems = barButtonItems;
-  self.navigationBar.topItem.rightBarButtonItems = nil;
-
-  self.statusViewSizeNeedsUpdate = true;
+  [self populateLeftNavigationBar];
+  [self populateRightNavigationBar];
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    [self updateNavigationBarWidths];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by populateNavigationBar().
+/// @brief This is an internal helper invoked by populateNavigationBars().
 // -----------------------------------------------------------------------------
-- (NSArray*) leftBarButtonItems
+- (void) populateLeftNavigationBar
 {
-  NSMutableArray* leftBarButtonItems = [NSMutableArray arrayWithCapacity:0];
+  NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
   if (game.score.scoringEnabled)
   {
-    [leftBarButtonItems addObject:self.doneButton];
-    [leftBarButtonItems addObject:self.discardBoardPositionButton];
+    [barButtonItems addObject:self.doneButton];
+    [barButtonItems addObject:self.discardBoardPositionButton];
   }
   else
   {
@@ -722,85 +792,103 @@
         if (GoGameStateGameIsPaused == game.state)
         {
           if (GoGameComputerIsThinkingReasonPlayerInfluence != game.reasonForComputerIsThinking)
-            [leftBarButtonItems addObject:self.continueButton];
+            [barButtonItems addObject:self.continueButton];
         }
         else
         {
           if (GoGameStateGameHasEnded != game.state)
-            [leftBarButtonItems addObject:self.pauseButton];
+            [barButtonItems addObject:self.pauseButton];
         }
         if (game.isComputerThinking)
-          [leftBarButtonItems addObject:self.interruptButton];
+          [barButtonItems addObject:self.interruptButton];
         else
         {
           if (boardPosition.numberOfBoardPositions > 1)
-            [leftBarButtonItems addObject:self.discardBoardPositionButton];
+            [barButtonItems addObject:self.discardBoardPositionButton];
         }
         break;
       }
       default:
       {
         if (game.isComputerThinking)
-          [leftBarButtonItems addObject:self.interruptButton];
+          [barButtonItems addObject:self.interruptButton];
         else
         {
           if (GoGameStateGameHasEnded != game.state)
           {
-            [leftBarButtonItems addObject:self.computerPlayButton];
-            [leftBarButtonItems addObject:self.passButton];
+            [barButtonItems addObject:self.computerPlayButton];
+            [barButtonItems addObject:self.passButton];
           }
           if (boardPosition.numberOfBoardPositions > 1)
-            [leftBarButtonItems addObject:self.discardBoardPositionButton];
+            [barButtonItems addObject:self.discardBoardPositionButton];
         }
         break;
       }
     }
   }
-  return leftBarButtonItems;
+  self.leftNavigationBar.topItem.leftBarButtonItems = barButtonItems;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief This is an internal helper invoked by populateNavigationBar().
+/// @brief This is an internal helper invoked by populateNavigationBars().
 // -----------------------------------------------------------------------------
-- (NSArray*) rightBarButtonItems
+- (void) populateRightNavigationBar
 {
-  NSMutableArray* rightBarButtonItems = [NSMutableArray arrayWithCapacity:0];
+  NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
+  [barButtonItems addObject:self.gameActionsButton];
+  [barButtonItems addObject:self.gameInfoButton];
   if (self.barButtonItemForShowingTheHiddenViewController)
-    [rightBarButtonItems addObject:self.barButtonItemForShowingTheHiddenViewController];
-  [rightBarButtonItems addObject:self.gameInfoButton];
-  [rightBarButtonItems addObject:self.gameActionsButton];
-  return rightBarButtonItems;
+    [barButtonItems addObject:self.barButtonItemForShowingTheHiddenViewController];
+  self.rightNavigationBar.topItem.rightBarButtonItems = barButtonItems;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the size of the status view depending on how much width there
-/// is left, and the current height of the navigation bar.
+/// @brief This is an internal helper invoked by populateNavigationBars().
 // -----------------------------------------------------------------------------
-- (void) updateStatusViewSize
+- (void) updateNavigationBarWidths
 {
-  if (! self.statusViewSizeNeedsUpdate)
-    return;
-  self.statusViewSizeNeedsUpdate = false;
+  // This method is only called on the iPhone. We know that on the iPhone we can
+  // never have more than 5 buttons that are simultaneously shown. With 16% per
+  // button the following calculations leave 100 - (5 * 16) = 20% width for the
+  // status view. This has has been experimentally determined to be sufficient
+  // for all texts that can appear in the 5-button scenario.
+  CGFloat widthPercentagePerButton = 0.16f;
+  CGFloat leftNavigationBarWidthPercentage = (self.leftNavigationBar.topItem.leftBarButtonItems.count
+                                              * widthPercentagePerButton);
+  CGFloat rightNavigationBarWidthPercentage = (self.rightNavigationBar.topItem.rightBarButtonItems.count
+                                               * widthPercentagePerButton);
 
-  int maximumNumberOfButtons = 8;
-  if (self.barButtonItemForShowingTheHiddenViewController)
-    maximumNumberOfButtons++;
-  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
-  // is safe because this controller was not made to handle more than pow(2, 31)
-  // buttons.
-  int numberOfUnusedButtons = maximumNumberOfButtons - (int)self.navigationBar.topItem.leftBarButtonItems.count;
-  int statusViewMinimumWidth;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    statusViewMinimumWidth = 60;
-  else
-    statusViewMinimumWidth = 100;
-  int widthPerUnusedButton = 20;
-  CGSize statusViewSize;
-  statusViewSize.width = (statusViewMinimumWidth
-                          + (widthPerUnusedButton * numberOfUnusedButtons));
-  statusViewSize.height = self.view.bounds.size.height;
-  [self.statusViewController setStatusViewSize:statusViewSize];
+  NSMutableArray* constraintsToRemove = [NSMutableArray array];
+  NSMutableArray* constraintsToAdd = [NSMutableArray array];
+  if (self.leftNavigationBarWidthConstraint.multiplier != leftNavigationBarWidthPercentage)
+  {
+    [constraintsToRemove addObject:self.leftNavigationBarWidthConstraint];
+    self.leftNavigationBarWidthConstraint = [NSLayoutConstraint constraintWithItem:self.leftNavigationBar
+                                                                         attribute:NSLayoutAttributeWidth
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.view
+                                                                         attribute:NSLayoutAttributeWidth
+                                                                        multiplier:leftNavigationBarWidthPercentage
+                                                                          constant:0.0f];
+    [constraintsToAdd addObject:self.leftNavigationBarWidthConstraint];
+  }
+  if (self.rightNavigationBarWidthConstraint.multiplier != rightNavigationBarWidthPercentage)
+  {
+    [constraintsToRemove addObject:self.rightNavigationBarWidthConstraint];
+    self.rightNavigationBarWidthConstraint = [NSLayoutConstraint constraintWithItem:self.rightNavigationBar
+                                                                          attribute:NSLayoutAttributeWidth
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.view
+                                                                          attribute:NSLayoutAttributeWidth
+                                                                         multiplier:rightNavigationBarWidthPercentage
+                                                                           constant:0.0f];
+    [constraintsToAdd addObject:self.rightNavigationBarWidthConstraint];
+  }
+  [self.view removeConstraints:constraintsToRemove];
+  [self.view addConstraints:constraintsToAdd];
 }
+
+#pragma mark - Button state updating
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the enabled state of all buttons in the navigation bar.

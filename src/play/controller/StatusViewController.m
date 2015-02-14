@@ -240,18 +240,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the status view with a new size.
-// -----------------------------------------------------------------------------
-- (void) setStatusViewSize:(CGSize)statusViewSize;
-{
-  CGRect bounds = self.view.bounds;
-  bounds.size = statusViewSize;
-  self.view.bounds = bounds;
-  [self.view setNeedsLayout];
-  [self.view layoutIfNeeded];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Internal helper that correctly handles delayed updates. See class
 /// documentation for details.
 // -----------------------------------------------------------------------------

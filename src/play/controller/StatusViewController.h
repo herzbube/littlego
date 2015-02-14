@@ -30,6 +30,4 @@
 {
 }
 
-- (void) setStatusViewSize:(CGSize)statusViewSize;
-
 @end

@@ -53,6 +53,19 @@
 /// - React to the user tapping on buttons
 /// - Integrate the status view provided by the StatusViewController child view
 ///   controller into the navigation bar
+///
+/// The navigation bar that the user sees actually consists of 3 different
+/// UINavigationBar instances:
+/// - Left side: Contains some buttons
+/// - Center: Contains the status view
+/// - Right side: Contains more buttons
+///
+/// The center UINavigationBar is used only to provide the status view with the
+/// standard translucent background appearance, making it appear to the user as
+/// if there were a single navigation bar. On the iPhone the widths of the three
+/// UINavigationBar views are dynamically calculated, to make room for longer
+/// texts that can appear in the status view. This is necessary because the
+/// screen width is so limited.
 // -----------------------------------------------------------------------------
 @interface NavigationBarController : UIViewController <UINavigationControllerDelegate,
                                                        GameActionsActionSheetDelegate,
