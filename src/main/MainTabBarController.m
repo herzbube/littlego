@@ -31,6 +31,16 @@
 #import "../utility/UIColorAdditions.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for MainTabBarController.
+// -----------------------------------------------------------------------------
+@interface MainTabBarController()
+/// @brief Set this to true to create a fake UI that can be used to take
+/// screenshots that serve as the basis for launch images.
+@property(nonatomic, assign) bool launchImageMode;
+@end
+
+
 @implementation MainTabBarController
 
 #pragma mark - Initialization and deallocation
@@ -48,85 +58,160 @@
     return nil;
   self.delegate = self;
   self.moreNavigationController.delegate = self;
+  self.launchImageMode = false;
   [self setupTabControllers];
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for setupGui.
+/// @brief Private helper for the initializer.
 // -----------------------------------------------------------------------------
 - (void) setupTabControllers
 {
   NSMutableArray* tabControllers = [NSMutableArray array];
 
-  NSString* playTitleString = @"Play";
-  UIViewController* rootControllerPlayTab = [PlayTabController playTabController];
-  UINavigationController* playTabController = [[[UINavigationController alloc] initWithRootViewController:rootControllerPlayTab] autorelease];
-  [playTabController setNavigationBarHidden:YES animated:NO];
-  playTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:playTitleString image:[UIImage imageNamed:playTabIconResource] tag:TabTypePlay] autorelease];
-  [tabControllers addObject:playTabController];
+  if (self.launchImageMode)
+  {
+    [self createTabControllerForTabType:TabTypeSettings tabControllers:tabControllers];
+    self.viewControllers = tabControllers;
+    return;
+  }
 
-  NSString* settingsTitleString = @"Settings";
-  SettingsViewController* rootControllerSettingsTab = [SettingsViewController controller];
-  rootControllerSettingsTab.title = settingsTitleString;
-  UINavigationController* settingsTabController = [[[UINavigationController alloc] initWithRootViewController:rootControllerSettingsTab] autorelease];
-  settingsTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:settingsTitleString image:[UIImage imageNamed:settingsTabIconResource] tag:TabTypeSettings] autorelease];
-  [tabControllers addObject:settingsTabController];
+  [self createTabControllerForTabType:TabTypePlay tabControllers:tabControllers];
+  [self createTabControllerForTabType:TabTypeSettings tabControllers:tabControllers];
+  [self createTabControllerForTabType:TabTypeArchive tabControllers:tabControllers];
+  [self createTabControllerForTabType:TabTypeHelp tabControllers:tabControllers];
+  [self createTabControllerForTabType:TabTypeDiagnostics tabControllers:tabControllers];
+  [self createTabControllerForTabType:TabTypeAbout tabControllers:tabControllers];
+  [self createTabControllerForTabType:TabTypeSourceCode tabControllers:tabControllers];
+  [self createTabControllerForTabType:TabTypeLicenses tabControllers:tabControllers];
+  [self createTabControllerForTabType:TabTypeCredits tabControllers:tabControllers];
 
-  NSString* archiveTitleString = @"Archive";
-  ArchiveViewController* rootControllerArchiveTab = [[[ArchiveViewController alloc] init] autorelease];
-  rootControllerArchiveTab.title = archiveTitleString;
-  UINavigationController* archiveTabController = [[[UINavigationController alloc] initWithRootViewController:rootControllerArchiveTab] autorelease];
-  archiveTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:archiveTitleString image:[UIImage imageNamed:archiveTabIconResource] tag:TabTypeArchive] autorelease];
-  [tabControllers addObject:archiveTabController];
-
-  NSString* helpTitleString = @"Help";
-  SectionedDocumentViewController* rootControllerHelpTab = [[[SectionedDocumentViewController alloc] init] autorelease];
-  rootControllerHelpTab.title = helpTitleString;
-  UINavigationController* helpTabController = [[[UINavigationController alloc] initWithRootViewController:rootControllerHelpTab] autorelease];
-  helpTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:helpTitleString image:[UIImage imageNamed:helpTabIconResource] tag:TabTypeHelp] autorelease];
-  rootControllerHelpTab.contextTabBarItem = helpTabController.tabBarItem;
-  [tabControllers addObject:helpTabController];
-
-  NSString* diagnosticsTitleString = @"Diagnostics";
-  DiagnosticsViewController* rootControllerDiagnosticsTab = [DiagnosticsViewController controller];
-  rootControllerDiagnosticsTab.title = diagnosticsTitleString;
-  UINavigationController* diagnosticsTabController = [[[UINavigationController alloc] initWithRootViewController:rootControllerDiagnosticsTab] autorelease];
-  diagnosticsTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:diagnosticsTitleString image:[UIImage imageNamed:diagnosticsTabIconResource] tag:TabTypeDiagnostics] autorelease];
-  [tabControllers addObject:diagnosticsTabController];
-
-  NSString* aboutTitleString = @"About";
-  DocumentViewController* rootControllerAboutTab = [[[DocumentViewController alloc] init] autorelease];
-  rootControllerAboutTab.title = aboutTitleString;
-  UINavigationController* aboutTabController = [[[UINavigationController alloc] initWithRootViewController:rootControllerAboutTab] autorelease];
-  aboutTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:aboutTitleString image:[UIImage imageNamed:aboutTabIconResource] tag:TabTypeAbout] autorelease];
-  rootControllerAboutTab.contextTabBarItem = aboutTabController.tabBarItem;
-  [tabControllers addObject:aboutTabController];
-
-  NSString* sourceCodeTitleString = @"Source Code";
-  DocumentViewController* rootControllerSourceCodeTab = [[[DocumentViewController alloc] init] autorelease];
-  rootControllerSourceCodeTab.title = sourceCodeTitleString;
-  UINavigationController* sourceCodeTabController = [[[UINavigationController alloc] initWithRootViewController:rootControllerSourceCodeTab] autorelease];
-  sourceCodeTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:sourceCodeTitleString image:[UIImage imageNamed:sourceCodeTabIconResource] tag:TabTypeSourceCode] autorelease];
-  rootControllerSourceCodeTab.contextTabBarItem = sourceCodeTabController.tabBarItem;
-  [tabControllers addObject:sourceCodeTabController];
-
-  NSString* licensesTitleString = @"Licenses";
-  LicensesViewController* rootControllerLicensesTab = [[[LicensesViewController alloc] init] autorelease];
-  rootControllerLicensesTab.title = licensesTitleString;
-  UINavigationController* licensesTabController = [[[UINavigationController alloc] initWithRootViewController:rootControllerLicensesTab] autorelease];
-  licensesTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:licensesTitleString image:[UIImage imageNamed:licensesTabIconResource] tag:TabTypeLicenses] autorelease];
-  [tabControllers addObject:licensesTabController];
-
-  NSString* creditsTitleString = @"Credits";
-  DocumentViewController* rootControllerCreditsTab = [[[DocumentViewController alloc] init] autorelease];
-  rootControllerCreditsTab.title = creditsTitleString;
-  UINavigationController* creditsTabController = [[[UINavigationController alloc] initWithRootViewController:rootControllerCreditsTab] autorelease];
-  creditsTabController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:creditsTitleString image:[UIImage imageNamed:creditsTabIconResource] tag:TabTypeCredits] autorelease];
-  rootControllerCreditsTab.contextTabBarItem = creditsTabController.tabBarItem;
-  [tabControllers addObject:creditsTabController];
+  // View controllers on the Play tab create their own navigation bar
+  UINavigationController* playTabRootViewController = [tabControllers firstObject];
+  [playTabRootViewController setNavigationBarHidden:YES animated:NO];
 
   self.viewControllers = tabControllers;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupTabControllers.
+// -----------------------------------------------------------------------------
+- (void) createTabControllerForTabType:(enum TabType)tabType
+                        tabControllers:(NSMutableArray*)tabControllers
+{
+  NSString* titleString = [self titleStringForTabType:tabType];
+  UIViewController* rootViewController = [self rootViewControllerForTabType:tabType];
+  NSString* iconResourceName = [self iconResourceNameForTabType:tabType];
+
+  rootViewController.title = titleString;
+  UINavigationController* tabRootViewController = [[[UINavigationController alloc] initWithRootViewController:rootViewController] autorelease];
+  tabRootViewController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:titleString image:[UIImage imageNamed:iconResourceName] tag:tabType] autorelease];
+  if ([rootViewController respondsToSelector:@selector(setContextTabBarItem:)])
+      [rootViewController performSelector:@selector(setContextTabBarItem:) withObject:tabRootViewController.tabBarItem afterDelay:0];
+  [tabControllers addObject:tabRootViewController];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for createTabControllerForTabType:tabControllers:.
+// -----------------------------------------------------------------------------
+- (NSString*) titleStringForTabType:(enum TabType)tabType
+{
+  if (self.launchImageMode)
+    return @"";
+
+  switch (tabType)
+  {
+    case TabTypePlay:
+      return @"Play";
+    case TabTypeSettings:
+      return @"Settings";
+    case TabTypeArchive:
+      return @"Archive";
+    case TabTypeDiagnostics:
+      return @"Diagnostics";
+    case TabTypeHelp:
+      return @"Help";
+    case TabTypeAbout:
+      return @"About";
+    case TabTypeSourceCode:
+      return @"Source Code";
+    case TabTypeLicenses:
+      return @"Licenses";
+    case TabTypeCredits:
+      return @"Credits";
+    default:
+      return nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for createTabControllerForTabType:tabControllers:.
+// -----------------------------------------------------------------------------
+- (UIViewController*) rootViewControllerForTabType:(enum TabType)tabType
+{
+  if (self.launchImageMode)
+  {
+    UIViewController* rootViewController = [[[UITableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+    return rootViewController;
+  }
+
+  switch (tabType)
+  {
+    case TabTypePlay:
+      return [PlayTabController playTabController];
+    case TabTypeSettings:
+      return [SettingsViewController controller];
+    case TabTypeArchive:
+      return [[[ArchiveViewController alloc] init] autorelease];
+    case TabTypeDiagnostics:
+      return [DiagnosticsViewController controller];
+    case TabTypeHelp:
+      return [[[SectionedDocumentViewController alloc] init] autorelease];
+    case TabTypeAbout:
+      return [[[DocumentViewController alloc] init] autorelease];
+    case TabTypeSourceCode:
+      return [[[DocumentViewController alloc] init] autorelease];
+    case TabTypeLicenses:
+      return [[[LicensesViewController alloc] init] autorelease];
+    case TabTypeCredits:
+      return [[[DocumentViewController alloc] init] autorelease];
+    default:
+      return nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for createTabControllerForTabType:tabControllers:.
+// -----------------------------------------------------------------------------
+- (NSString*) iconResourceNameForTabType:(enum TabType)tabType
+{
+  if (self.launchImageMode)
+    return @"";
+
+  switch (tabType)
+  {
+    case TabTypePlay:
+      return playTabIconResource;
+    case TabTypeSettings:
+      return settingsTabIconResource;
+    case TabTypeArchive:
+      return archiveTabIconResource;
+    case TabTypeDiagnostics:
+      return diagnosticsTabIconResource;
+    case TabTypeHelp:
+      return helpTabIconResource;
+    case TabTypeAbout:
+      return aboutTabIconResource;
+    case TabTypeSourceCode:
+      return sourceCodeTabIconResource;
+    case TabTypeLicenses:
+      return licensesTabIconResource;
+    case TabTypeCredits:
+      return creditsTabIconResource;
+    default:
+      return nil;
+  }
 }
 
 #pragma mark - UIViewController overrides
@@ -160,6 +245,8 @@
 // -----------------------------------------------------------------------------
 - (NSUInteger) supportedInterfaceOrientations
 {
+  if (self.launchImageMode)
+    return UIInterfaceOrientationMaskAll;
   // This implementation exists so that the app can rotate to
   // UIInterfaceOrientationPortraitUpsideDown on the iPhone
   return [UiUtilities supportedInterfaceOrientations];
