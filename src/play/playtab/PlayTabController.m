@@ -19,6 +19,7 @@
 #import "PlayTabController.h"
 #import "PlayTabControllerPad.h"
 #import "PlayTabControllerPhone.h"
+#import "../../shared/LayoutManager.h"
 
 
 @implementation PlayTabController
@@ -30,7 +31,7 @@
 // -----------------------------------------------------------------------------
 + (PlayTabController*) playTabController
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
     return [[[PlayTabControllerPhone alloc] init] autorelease];
   else
     return [[[PlayTabControllerPad alloc] init] autorelease];

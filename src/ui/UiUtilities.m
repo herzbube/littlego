@@ -101,44 +101,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns YES for portrait orientations on iPhone, and for all
-/// orientations on iPad. Returns NO for all other situations.
-///
-/// This method implements application-wide orientation support. It can be
-/// invoked by all view controllers' implementation of
-/// shouldAutorotateToInterfaceOrientation:().
-///
-/// @note shouldAutorotateToInterfaceOrientation:() is relevant for iOS 5 and
-/// earlier.
-// -----------------------------------------------------------------------------
-+ (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-  bool isLandscapeOrientation = UIInterfaceOrientationIsLandscape(interfaceOrientation);
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return isLandscapeOrientation ? NO : YES;
-  else
-    return YES;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the bitmasked value for portrait orientations on iPhone, and
-/// for all orientations on iPad.
-///
-/// This method implements application-wide orientation support. It can be
-/// invoked by all view controllers' implementation of
-/// supportedInterfaceOrientations().
-///
-/// @note supportedInterfaceOrientations:() is relevant for iOS 6 and later.
-// -----------------------------------------------------------------------------
-+ (NSUInteger) supportedInterfaceOrientations
-{
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-    return (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown);
-  else
-    return UIInterfaceOrientationMaskAll;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Creates a new UITableView with style @a tableViewStyle, and
 /// configures the table view to use the supplied object both as delegate and
 /// data source.

@@ -24,10 +24,10 @@
 #import "../archive/ArchiveViewController.h"
 #import "../diagnostics/DiagnosticsViewController.h"
 #import "../play/playtab/PlayTabController.h"
+#import "../shared/LayoutManager.h"
 #import "../settings/SettingsViewController.h"
 #import "../ui/UIElementMetrics.h"
 #import "../ui/UiSettingsModel.h"
-#import "../ui/UiUtilities.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -223,7 +223,7 @@
 {
   [super loadView];
 
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
   {
     // The default bar is translucent, so we see the white background. On the
     // iPhone this does not look good because we have a toolbar stacked on top
@@ -247,9 +247,7 @@
 {
   if (self.launchImageMode)
     return UIInterfaceOrientationMaskAll;
-  // This implementation exists so that the app can rotate to
-  // UIInterfaceOrientationPortraitUpsideDown on the iPhone
-  return [UiUtilities supportedInterfaceOrientations];
+  return [LayoutManager sharedManager].supportedInterfaceOrientations;
 }
 
 #pragma mark - UITabBarControllerDelegate overrides

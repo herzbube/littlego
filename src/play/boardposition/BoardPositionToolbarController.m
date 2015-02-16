@@ -26,6 +26,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
 
@@ -106,7 +107,7 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
   {
     self.boardPositionListViewController = [[[BoardPositionListViewController alloc] init] autorelease];
     self.currentBoardPositionViewController = [[[CurrentBoardPositionViewController alloc] init] autorelease];
@@ -182,7 +183,7 @@ enum NavigationDirection
   self.toolbar.delegate = self;
 
   [self setupBarButtonItems];
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
     [self setupBoardPositionViews];
   [self setupNotificationResponders];
 
@@ -542,7 +543,7 @@ enum NavigationDirection
 // -----------------------------------------------------------------------------
 - (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
     return UIBarPositionBottom;
   else
     return UIBarPositionTop;

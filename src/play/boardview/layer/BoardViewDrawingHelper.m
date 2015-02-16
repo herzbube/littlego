@@ -21,6 +21,7 @@
 #import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
+#import "../../../shared/LayoutManager.h"
 #import "../../../ui/UiUtilities.h"
 
 
@@ -93,7 +94,7 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
 
   // The values assigned here have been determined experimentally
   CGFloat yAxisAdjustmentToVerticallyCenterImageOnIntersection;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
   {
     yAxisAdjustmentToVerticallyCenterImageOnIntersection = 0.5;
   }
@@ -141,7 +142,7 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, B
   layerRect.size.height *= metrics.contentsScale;
   // It looks better if the marker is slightly inset, and on the iPad we can
   // afford to waste the space
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+  if ([LayoutManager sharedManager].uiType != UITypePhonePortraitOnly)
   {
     layerRect.size.width -= 2 * metrics.contentsScale;
     layerRect.size.height -= 2 * metrics.contentsScale;

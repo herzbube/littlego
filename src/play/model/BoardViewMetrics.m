@@ -23,6 +23,7 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../shared/LayoutManager.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/FontRange.h"
 #import "../../utility/UIColorAdditions.h"
@@ -93,18 +94,18 @@
   self.contentsScale = [UIScreen mainScreen].scale;
   self.tileSize = CGSizeMake(128, 128);
   self.minimumAbsoluteZoomScale = 1.0f;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
     self.maximumAbsoluteZoomScale = iPhoneMaximumZoomScale;
   else
     self.maximumAbsoluteZoomScale = iPadMaximumZoomScale;
   self.lineColor = [UIColor blackColor];
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
     self.boundingLineWidth = 2;
   else
     self.boundingLineWidth = 3;
   self.normalLineWidth = 1;
   self.starPointColor = [UIColor blackColor];
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
     self.starPointRadius = 3;
   else
     self.starPointRadius = 5;
@@ -134,7 +135,7 @@
   // The maximum can be any size that still looks good. On the iPad we allow
   // a larger maximum font size because we have more space available.
   int maximumFontSize;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
     maximumFontSize = 30;
   else
     maximumFontSize = 40;

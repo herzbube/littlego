@@ -20,11 +20,12 @@
 #import "ArchiveViewModel.h"
 #import "ArchiveGame.h"
 #import "ViewGameController.h"
+#import "../command/game/DeleteGameCommand.h"
 #import "../main/ApplicationDelegate.h"
+#import "../shared/LayoutManager.h"
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
-#import "../command/game/DeleteGameCommand.h"
 
 
 // -----------------------------------------------------------------------------
@@ -132,7 +133,7 @@ enum DeleteAllSectionItem
   // The following font size factors have been experimentally determined, i.e.
   // what looks good to me on a simulator
   CGFloat fontSizeFactor;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
     fontSizeFactor = 1.5;
   else
     fontSizeFactor = 2.0;

@@ -29,6 +29,7 @@
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../command/game/PauseGameCommand.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../ui/AutoLayoutUtility.h"
@@ -181,7 +182,7 @@
 - (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
   [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad)
+  if ([LayoutManager sharedManager].uiType != UITypePhonePortraitOnly)
   {
     if (self.gameActionsActionSheetController)
     {
@@ -256,7 +257,7 @@
   //   the status view use the exact same position and size as the navigation
   //   bar over which it must "hover".
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            (([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+                            (([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
                              ? @"H:|-0-[leftNavigationBar]-0-[centerNavigationBar]-0-[rightNavigationBar]-0-|"
                              : @"H:|-0-[leftNavigationBar]-0-[centerNavigationBar(==leftNavigationBar)]-0-[rightNavigationBar(==leftNavigationBar)]-0-|"),
                             @"H:[leftNavigationBar]-0-[statusView(==centerNavigationBar)]",
@@ -269,7 +270,7 @@
                                 withViews:viewsDictionary
                                    inView:self.view];
 
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
   {
     self.leftNavigationBarWidthConstraint = [NSLayoutConstraint constraintWithItem:self.leftNavigationBar
                                                                          attribute:NSLayoutAttributeWidth
@@ -766,7 +767,7 @@
 
   [self populateLeftNavigationBar];
   [self populateRightNavigationBar];
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
     [self updateNavigationBarWidths];
 }
 

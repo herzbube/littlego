@@ -27,6 +27,7 @@
 #import "../../go/GoVertex.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../player/Player.h"
+#import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../utility/NSStringAdditions.h"
@@ -136,7 +137,7 @@
 {
   self.statusLabel.numberOfLines = 0;
   CGFloat fontSize;
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
     fontSize = 9.0f;
   else
     fontSize = 10.0f;
