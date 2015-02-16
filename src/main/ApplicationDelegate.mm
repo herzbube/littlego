@@ -55,8 +55,9 @@
 #import "../command/diagnostics/RestoreBugReportUserDefaultsCommand.h"
 #import "../command/game/PauseGameCommand.h"
 #import "../go/GoGame.h"
-#import "../shared/LongRunningActionCounter.h"
 #import "../shared/ApplicationStateManager.h"
+#import "../shared/LayoutManager.h"
+#import "../shared/LongRunningActionCounter.h"
 #import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
 #import "../ui/UiElementMetrics.h"
@@ -153,6 +154,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [CommandProcessor releaseSharedProcessor];
   [LongRunningActionCounter releaseSharedCounter];
   [ApplicationStateManager releaseSharedManager];
+  [LayoutManager releaseSharedManager];
   if (self == sharedDelegate)
     sharedDelegate = nil;
   [super dealloc];

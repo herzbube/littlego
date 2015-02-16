@@ -260,6 +260,8 @@
 		CD9FB5471687E1310042AA89 /* forwardtoend@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD9FB5431687E1310042AA89 /* forwardtoend@2x.png */; };
 		CD9FB5571687E1410042AA89 /* rewindtostart.png in Resources */ = {isa = PBXBuildFile; fileRef = CD9FB54F1687E1410042AA89 /* rewindtostart.png */; };
 		CD9FB5581687E1410042AA89 /* rewindtostart@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD9FB5501687E1410042AA89 /* rewindtostart@2x.png */; };
+		CDA096FB1A915085002FCD78 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FA1A915085002FCD78 /* LayoutManager.m */; };
+		CDA096FC1A915085002FCD78 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FA1A915085002FCD78 /* LayoutManager.m */; };
 		CDA10F17198CCBA70060E934 /* images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD941363198BDBA20001F55A /* images.xcassets */; };
 		CDA10F18198CCBA70060E934 /* images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD941363198BDBA20001F55A /* images.xcassets */; };
 		CDA493A7168F26890076E168 /* BoardPositionSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */; };
@@ -703,6 +705,8 @@
 		CD9FB5431687E1310042AA89 /* forwardtoend@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "forwardtoend@2x.png"; sourceTree = "<group>"; };
 		CD9FB54F1687E1410042AA89 /* rewindtostart.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = rewindtostart.png; sourceTree = "<group>"; };
 		CD9FB5501687E1410042AA89 /* rewindtostart@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rewindtostart@2x.png"; sourceTree = "<group>"; };
+		CDA096F91A915085002FCD78 /* LayoutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutManager.h; sourceTree = "<group>"; };
+		CDA096FA1A915085002FCD78 /* LayoutManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutManager.m; sourceTree = "<group>"; };
 		CDA493A5168F26890076E168 /* BoardPositionSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionSettingsController.h; sourceTree = "<group>"; };
 		CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionSettingsController.m; sourceTree = "<group>"; };
 		CDA595AF1401383E00B250D8 /* Unit tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Unit tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1797,10 +1801,12 @@
 		CDF341C317270D0800AEFB20 /* shared */ = {
 			isa = PBXGroup;
 			children = (
-				CDF341C417270D0800AEFB20 /* LongRunningActionCounter.h */,
-				CDF341C517270D0800AEFB20 /* LongRunningActionCounter.m */,
 				CDF341C81727507900AEFB20 /* ApplicationStateManager.h */,
 				CDF341C91727507900AEFB20 /* ApplicationStateManager.m */,
+				CDA096F91A915085002FCD78 /* LayoutManager.h */,
+				CDA096FA1A915085002FCD78 /* LayoutManager.m */,
+				CDF341C417270D0800AEFB20 /* LongRunningActionCounter.h */,
+				CDF341C517270D0800AEFB20 /* LongRunningActionCounter.m */,
 			);
 			path = shared;
 			sourceTree = "<group>";
@@ -2045,6 +2051,7 @@
 				CD10881913255A4000E83543 /* GoBoard.m in Sources */,
 				CD10881C13255A4700E83543 /* GoGame.m in Sources */,
 				CD10881F13255A6100E83543 /* GoMove.m in Sources */,
+				CDA096FB1A915085002FCD78 /* LayoutManager.m in Sources */,
 				CD10882213255A6B00E83543 /* GoPlayer.m in Sources */,
 				CD10882513255AA600E83543 /* GoPoint.m in Sources */,
 				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
@@ -2293,6 +2300,7 @@
 				CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */,
 				CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */,
 				CD931EE11684E48C002E1262 /* SendBugReportController.m in Sources */,
+				CDA096FC1A915085002FCD78 /* LayoutManager.m in Sources */,
 				CD931EE31684E4A6002E1262 /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
 				CD931EED16851E5C002E1262 /* SaveGameCommand.m in Sources */,
 				CD15A481168CE99100D4472A /* GoMoveModel.m in Sources */,

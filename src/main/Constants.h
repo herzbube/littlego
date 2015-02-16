@@ -56,6 +56,30 @@ extern const int defaultTabOrder[];
 /// anywhere in Apple's documentation.
 extern const int indexOfMoreNavigationController;
 
+/// @brief Enumerates all types of user interfaces supported by the application.
+/// A user interface type encompasses all layouts in all orientations that are
+/// possible for that user interface type.
+///
+/// Before this enumeration existed, the UI idiom was used to distinguish
+/// between the main two user interfaces: One UI for the iPhone, one UI for the
+/// iPad. With the iPhone 6 Plus a new iPhone device appeared which was capable
+/// of supporting a landscape-oriented UI, so the UI idiom was no longer
+/// sufficient. Also, it was impossible to just display the iPad UI on the
+/// iPhone 6 Plus layout, so a third UI type needed to be created. Using an
+/// enumeration allows to support an open-ended number of UI layouts.
+enum UIType
+{
+  /// @brief Portrait-only user interface, used on devices whose UI idiom is
+  /// UIUserInterfaceIdiomPhone.
+  UITypePhonePortraitOnly,
+  /// @brief User interface that can be laid out both in portrait and landscape,
+  /// used on devices whose UI idiom is UIUserInterfaceIdiomPhone.
+  UITypePhone,
+  /// @brief User interface that can be laid out both in portrait and landscape,
+  /// used on devices whose UI idiom is UIUserInterfaceIdiomPad.
+  UITypePad,
+};
+
 /// @brief Enumerates the possible types of mark up to use for inconsistent
 /// territory during scoring.
 enum InconsistentTerritoryMarkupType
