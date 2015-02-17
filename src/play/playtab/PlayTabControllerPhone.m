@@ -179,30 +179,6 @@
   [self setupAutoLayoutConstraints];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-// -----------------------------------------------------------------------------
-- (void) viewDidLayoutSubviews
-{
-  static bool constraintsNotYetInstalled = true;
-  if (constraintsNotYetInstalled)
-  {
-    constraintsNotYetInstalled = false;
-    NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                     self.navigationBarController.view, @"navigationBarView",
-                                     self.boardViewController.view, @"boardView",
-                                     self.boardPositionToolbarController.view, @"boardPositionToolbarView",
-                                     nil];
-    NSArray* visualFormats = [NSArray arrayWithObjects:
-                              @"V:[navigationBarView]-0-[boardView]-0-[boardPositionToolbarView]",
-                              nil];
-    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
-    // We must call this to avoid a crash; this is as per documentation of the
-    // topLayoutGuide and bottomLayoutGuide properties.
-    [self.view layoutSubviews];
-  }
-}
-
 #pragma mark - Private helpers for loadView
 
 // -----------------------------------------------------------------------------
@@ -237,7 +213,7 @@
                             @"H:|-0-[boardView]-0-|",
                             @"H:|-0-[boardPositionToolbarView]-0-|",
                             [NSString stringWithFormat:@"V:|-%d-[navigationBarView]", [UiElementMetrics statusBarHeight]],
-                            @"V:[boardPositionToolbarView]-0-|",
+                            @"V:[navigationBarView]-0-[boardView]-0-[boardPositionToolbarView]-0-|",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 }
