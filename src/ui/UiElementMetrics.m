@@ -17,6 +17,7 @@
 
 // Project includes
 #import "UiElementMetrics.h"
+#import "LayoutManager.h"
 
 
 @implementation UiElementMetrics
@@ -30,6 +31,8 @@ static UIViewController* m_interfaceOrientationSource;
 
 + (int) screenWidth
 {
+  // TODO xxx In iOS 8 we no longer need to look at the interface orientation
+  // ourselves, UIScreen supposedly already does this
   bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
   if (isPortraitOrientation)
     return [UIScreen mainScreen].bounds.size.width;
@@ -39,6 +42,8 @@ static UIViewController* m_interfaceOrientationSource;
 
 + (int) screenHeight
 {
+  // TODO xxx In iOS 8 we no longer need to look at the interface orientation
+  // ourselves, UIScreen supposedly already does this
   bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
   if (isPortraitOrientation)
     return [UIScreen mainScreen].bounds.size.height;
@@ -56,6 +61,8 @@ static UIViewController* m_interfaceOrientationSource;
 /// bar if visible)
 + (CGRect) applicationFrame
 {
+  // TODO xxx In iOS 8 we no longer need to look at the interface orientation
+  // ourselves, UIScreen supposedly already does this
   bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
   if (isPortraitOrientation)
     return [UIScreen mainScreen].applicationFrame;
@@ -163,6 +170,28 @@ static UIViewController* m_interfaceOrientationSource;
 + (int) tableViewCellDisclosureIndicatorWidth
 {
   return 20;
+}
+
++ (int) splitViewControllerLeftPaneWidth
+{
+  switch ([LayoutManager sharedManager].uiType)
+  {
+    case UITypePhonePortraitOnly:
+      return 0;
+    case UITypePhone:
+      return 200;
+    case UITypePad:
+      return 320;
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid UI type %d", [LayoutManager sharedManager].uiType];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
 }
 
 @end

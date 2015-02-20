@@ -18,6 +18,7 @@
 // Project includes
 #import "SplitViewController.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../ui/UiElementMetrics.h"
 
 
 // -----------------------------------------------------------------------------
@@ -402,7 +403,7 @@
   else
   {
     NSArray* visualFormats = [NSArray arrayWithObjects:
-                              @"H:|-0-[leftPaneView(==320)]-0-[dividerView(==0)]-0-[rightPaneView]-0-|",
+                              [NSString stringWithFormat:@"H:|-0-[leftPaneView(==%d)]-0-[dividerView(==0)]-0-[rightPaneView]-0-|", [UiElementMetrics splitViewControllerLeftPaneWidth]],
                               @"V:|-0-[dividerView]-0-|",
                               @"V:|-0-[leftPaneView]-0-|",
                               @"V:|-0-[rightPaneView]-0-|",
@@ -522,7 +523,7 @@
                                    transparentRightPaneView, @"transparentRightPaneView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:[leftPaneView(==320)]-0-[transparentRightPaneView]-0-|",
+                            [NSString stringWithFormat:@"H:[leftPaneView(==%d)]-0-[transparentRightPaneView]-0-|", [UiElementMetrics splitViewControllerLeftPaneWidth]],
                             @"V:|-0-[leftPaneView]-0-|",
                             @"V:|-0-[transparentRightPaneView]-0-|",
                             nil];
@@ -535,7 +536,7 @@
                                                                     toItem:self.overlayView
                                                                  attribute:NSLayoutAttributeLeft
                                                                 multiplier:1.0f
-                                                                  constant:-320.0f];
+                                                                  constant:-[UiElementMetrics splitViewControllerLeftPaneWidth]];
   [self.overlayView addConstraint:self.leftPaneLeftEdgeConstraint];
 
   // First layout pass that will place the left pane outside of the visible
@@ -558,7 +559,7 @@
     return;
   [UIView animateWithDuration:0.2
                    animations:^{
-                     self.leftPaneLeftEdgeConstraint.constant = -320;
+                     self.leftPaneLeftEdgeConstraint.constant = -[UiElementMetrics splitViewControllerLeftPaneWidth];
                      [self.overlayView layoutIfNeeded];
                    }
                    completion:^(BOOL finished){

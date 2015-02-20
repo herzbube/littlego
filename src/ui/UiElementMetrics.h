@@ -61,5 +61,6 @@
 + (int) tableViewCellContentDistanceFromEdgeHorizontal;
 + (int) tableViewCellContentDistanceFromEdgeVertical;
 + (int) tableViewCellDisclosureIndicatorWidth;
++ (int) splitViewControllerLeftPaneWidth;
 
 @end
