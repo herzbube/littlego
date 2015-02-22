@@ -30,6 +30,7 @@
 // Project includes
 #import "ApplicationDelegate.h"
 #import "MainTabBarController.h"
+#import "WindowRootViewController.h"
 #import "../gtp/GtpClient.h"
 #import "../gtp/GtpEngine.h"
 #import "../gtp/GtpUtilities.h"
@@ -194,7 +195,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self setupUserDefaults];
   [self setupSound];
   [self setupFuego];
-  [self setupGUI];  // depends on setupUserDefaults
+  [self setupGUI];  // depends on setupUserDefaults (e.g. MainTabBarController wants to restore tab order)
 
   // Further setup steps are executed in a secondary thread so that we can
   // display a progress HUD
@@ -623,14 +624,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 - (void) setupGUI
 {
   [self setupWindow];
-  [self setupTabBarController];
-
-  [UiElementMetrics setInterfaceOrientationSource:self.tabBarController];
-
-  // Do this before the window becomes visible, otherwise the user will see
-  // the tab bar items shift
-  [self.tabBarController restoreTabBarControllerAppearanceToUserDefaults];
-
+  [self setupWindowRootViewController];
+  [UiElementMetrics setInterfaceOrientationSource:self.window.rootViewController];
   [self.window makeKeyAndVisible];
 }
 
@@ -646,10 +641,10 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupGui.
 // -----------------------------------------------------------------------------
-- (void) setupTabBarController
+- (void) setupWindowRootViewController
 {
-  self.tabBarController = [[[MainTabBarController alloc] init] autorelease];
-  self.window.rootViewController = self.tabBarController;
+  self.windowRootViewController = [[[WindowRootViewController alloc] init] autorelease];
+  self.window.rootViewController = self.windowRootViewController;
   // UIWindow automatically adds the root VC's view as a subview to itself.
   // It also manages the layout of that view, so there is no need to use
   // Auto Layout and install constraints in UIWindow. In fact, doing so causes

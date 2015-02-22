@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,18 +16,17 @@
 
 
 // Project includes
-#import "PlayTabControllerPad.h"
-#import "../controller/NavigationBarController.h"
-#import "../splitview/LeftPaneViewController.h"
-#import "../splitview/RightPaneViewController.h"
-#import "../../ui/AutoLayoutUtility.h"
-#import "../../ui/SplitViewController.h"
+#import "MainNavigationController.h"
+#import "../play/splitview/LeftPaneViewController.h"
+#import "../play/splitview/RightPaneViewController.h"
+#import "../ui/SplitViewController.h"
+#import "../ui/AutoLayoutUtility.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for PlayTabControllerPad.
+/// @brief Class extension with private properties for MainNavigationController.
 // -----------------------------------------------------------------------------
-@interface PlayTabControllerPad()
+@interface MainNavigationController()
 // Cannot name this property splitViewController, there already is a property
 // of that name in UIViewController, and it has a different meaning
 @property(nonatomic, retain) SplitViewController* splitViewControllerChild;
@@ -36,14 +35,14 @@
 @end
 
 
-@implementation PlayTabControllerPad
+@implementation MainNavigationController
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayTabControllerPad object.
+/// @brief Initializes a MainNavigationController object.
 ///
-/// @note This is the designated initializer of PlayTabControllerPad.
+/// @note This is the designated initializer of MainNavigationController.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -56,7 +55,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayTabControllerPad object.
+/// @brief Deallocates memory allocated by this MainNavigationController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -73,14 +72,12 @@
 {
   self.splitViewControllerChild = [[[SplitViewController alloc] init] autorelease];
 
-  // These are not direct child controllers. We are setting them up on behalf
-  // of UISplitViewController because we don't want to create a
-  // UISplitViewController subclass.
+  // These are not child controllers of our own. We are setting them up on
+  // behalf of the generic SplitViewController because we don't want to create a
+  // subclass.
   self.leftPaneViewController = [[[LeftPaneViewController alloc] init] autorelease];
   self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
   self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
-
-  self.splitViewControllerChild.delegate = self.rightPaneViewController.navigationBarController;
 }
 
 // -----------------------------------------------------------------------------

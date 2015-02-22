@@ -38,6 +38,7 @@
 @class LoggingModel;
 @class MainTabBarController;
 @class UiSettingsModel;
+@class WindowRootViewController;
 
 
 // -----------------------------------------------------------------------------
@@ -50,7 +51,7 @@
 /// @note Since this project does not use any .xib files, the party responsible
 /// for creating an instance of ApplicationDelegate is the project's main()
 /// function (actually the main() function informs another global function,
-/// UIApplicationMain(), which type instantiate). The single instance of
+/// UIApplicationMain(), of which type instantiate). The single instance of
 /// ApplicationDelegate then becomes available to clients via the class method
 /// sharedDelegate().
 // -----------------------------------------------------------------------------
@@ -78,6 +79,8 @@
 
 /// @brief The main application window.
 @property(nonatomic, retain) UIWindow* window;
+/// @brief The main application window's root view controller.
+@property(nonatomic, retain) WindowRootViewController* windowRootViewController;
 /// @brief The main application controller.
 @property(nonatomic, retain) MainTabBarController* tabBarController;
 /// @brief Indicates how the application was launched.

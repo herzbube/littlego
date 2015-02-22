@@ -60,6 +60,7 @@
   self.moreNavigationController.delegate = self;
   self.launchImageMode = false;
   [self setupTabControllers];
+  [self restoreTabBarControllerAppearanceToUserDefaults];
   return self;
 }
 
@@ -240,16 +241,6 @@
   self.view.backgroundColor = [UIColor navigationbarBackgroundColor];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method
-// -----------------------------------------------------------------------------
-- (NSUInteger) supportedInterfaceOrientations
-{
-  if (self.launchImageMode)
-    return UIInterfaceOrientationMaskAll;
-  return [LayoutManager sharedManager].supportedInterfaceOrientations;
-}
-
 #pragma mark - UITabBarControllerDelegate overrides
 
 // -----------------------------------------------------------------------------
@@ -290,9 +281,8 @@
 /// @brief Restores the tab bar controller's appearance to the values stored in
 /// the user defaults.
 ///
-/// This method is intended to be invoked during application launch. It should
-/// be invoked before the tab bar controller's view appears, otherwise the user
-/// will be able to see the appearance change.
+/// This method should be invoked before the tab bar controller's view appears,
+/// otherwise the user will be able to see the appearance change.
 // -----------------------------------------------------------------------------
 - (void) restoreTabBarControllerAppearanceToUserDefaults
 {

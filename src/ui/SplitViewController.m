@@ -17,8 +17,8 @@
 
 // Project includes
 #import "SplitViewController.h"
-#import "../../ui/AutoLayoutUtility.h"
-#import "../../ui/UiElementMetrics.h"
+#import "AutoLayoutUtility.h"
+#import "UiElementMetrics.h"
 
 
 // -----------------------------------------------------------------------------
@@ -67,7 +67,16 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.viewControllers = nil;
+  // First, let the property setter get rid of all child view controllers and
+  // their subviews
+  self.viewControllers = [NSArray array];
+  // Second, get rid of the NSArray object. We can't use the property setter
+  // for that because it contains a guard against setting a nil value.
+  if (_viewControllers)
+  {
+    [_viewControllers release];
+    _viewControllers = nil;
+  }
   self.delegate = nil;
   self.dividerView = nil;
   self.barButtonItemLeftPane = nil;
@@ -88,6 +97,9 @@
     return;
   if (! viewControllers)
   {
+    // This check exists because the rest of the implementation of this
+    // controller is simpler if it can rely on the property always containing
+    // a valid NSArray object (even if it is empty)
     NSString* errorMessage = @"viewControllers argument must not be nil";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException

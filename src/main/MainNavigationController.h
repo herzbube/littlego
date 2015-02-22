@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,26 +15,23 @@
 // -----------------------------------------------------------------------------
 
 
-
 // -----------------------------------------------------------------------------
-/// @brief The MainTabBarController class is one of several alternative main
-/// application view controllers. Its responsibility is to let the user navigate
-/// to the different main areas of the application.
+/// @brief The MainNavigationController class is one of several alternative
+/// main application view controllers. Its responsibility is to let the user
+/// navigate to the different main areas of the application.
 ///
-/// MainTabBarController uses a tab bar to provide the user with navigation
-/// capabilities. MainTabBarController displays whichever tab was active when
-/// the application was active the last time.
+/// MainNavigationController by default displays the Go board and various other
+/// views related to playing the game. MainNavigationController also displays a
+/// button in the upper-right corner that floats over the rest of the content.
+/// When the user taps the button, MainNavigationController calls up a
+/// navigation controller that shows entries that the user can select to
+/// navigate to other parts of the application. The Go board is no longer
+/// visible in that case until the user dismisses the navigation controller.
 ///
 /// @see WindowRootViewController
 // -----------------------------------------------------------------------------
-@interface MainTabBarController : UITabBarController <UITabBarControllerDelegate, UINavigationControllerDelegate>
+@interface MainNavigationController : UIViewController
 {
 }
-
-- (void) restoreTabBarControllerAppearanceToUserDefaults;
-- (UIViewController*) tabController:(enum TabType)tabID;
-- (UIView*) tabView:(enum TabType)tabID;
-- (void) activateTab:(enum TabType)tabID;
-- (NSString*) resourceNameForTabType:(enum TabType)tabType;
 
 @end

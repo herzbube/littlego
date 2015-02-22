@@ -184,8 +184,6 @@
 		CD4D44741A79D08F00272579 /* BWQuincyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D446B1A79CEC200272579 /* BWQuincyManager.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		CD4D44751A79D0A400272579 /* BWCrashReportTextFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D44681A79CE5800272579 /* BWCrashReportTextFormatter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		CD4D44761A79D0A600272579 /* BWCrashReportTextFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D44681A79CE5800272579 /* BWCrashReportTextFormatter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		CD4F94DB1993EDE500455798 /* SplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4F94DA1993EDE500455798 /* SplitViewController.m */; };
-		CD4F94DC1993EDE500455798 /* SplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4F94DA1993EDE500455798 /* SplitViewController.m */; };
 		CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
@@ -262,6 +260,12 @@
 		CD9FB5581687E1410042AA89 /* rewindtostart@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD9FB5501687E1410042AA89 /* rewindtostart@2x.png */; };
 		CDA096FB1A915085002FCD78 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FA1A915085002FCD78 /* LayoutManager.m */; };
 		CDA096FC1A915085002FCD78 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FA1A915085002FCD78 /* LayoutManager.m */; };
+		CDA097031A994D01002FCD78 /* WindowRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA097021A994D01002FCD78 /* WindowRootViewController.m */; };
+		CDA097041A994D01002FCD78 /* WindowRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA097021A994D01002FCD78 /* WindowRootViewController.m */; };
+		CDA097071A9954A3002FCD78 /* MainNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA097061A9954A3002FCD78 /* MainNavigationController.m */; };
+		CDA097081A9954A3002FCD78 /* MainNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA097061A9954A3002FCD78 /* MainNavigationController.m */; };
+		CDA0970B1A99F77F002FCD78 /* SplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA0970A1A99F77F002FCD78 /* SplitViewController.m */; };
+		CDA0970C1A99F77F002FCD78 /* SplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA0970A1A99F77F002FCD78 /* SplitViewController.m */; };
 		CDA10F17198CCBA70060E934 /* images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD941363198BDBA20001F55A /* images.xcassets */; };
 		CDA10F18198CCBA70060E934 /* images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CD941363198BDBA20001F55A /* images.xcassets */; };
 		CDA493A7168F26890076E168 /* BoardPositionSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */; };
@@ -654,8 +658,6 @@
 		CD4D446C1A79CEC200272579 /* CrashReporter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CrashReporter.framework; sourceTree = "<group>"; };
 		CD4D446D1A79CEC200272579 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		CD4D446E1A79CEC200272579 /* Quincy.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Quincy.bundle; sourceTree = "<group>"; };
-		CD4F94D91993EDE500455798 /* SplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitViewController.h; sourceTree = "<group>"; };
-		CD4F94DA1993EDE500455798 /* SplitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitViewController.m; sourceTree = "<group>"; };
 		CD613D98143CD1B70002759E /* GtpCommandModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandModel.h; sourceTree = "<group>"; };
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
@@ -707,6 +709,12 @@
 		CD9FB5501687E1410042AA89 /* rewindtostart@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rewindtostart@2x.png"; sourceTree = "<group>"; };
 		CDA096F91A915085002FCD78 /* LayoutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutManager.h; sourceTree = "<group>"; };
 		CDA096FA1A915085002FCD78 /* LayoutManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutManager.m; sourceTree = "<group>"; };
+		CDA097011A994D01002FCD78 /* WindowRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowRootViewController.h; sourceTree = "<group>"; };
+		CDA097021A994D01002FCD78 /* WindowRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WindowRootViewController.m; sourceTree = "<group>"; };
+		CDA097051A9954A3002FCD78 /* MainNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainNavigationController.h; sourceTree = "<group>"; };
+		CDA097061A9954A3002FCD78 /* MainNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainNavigationController.m; sourceTree = "<group>"; };
+		CDA097091A99F77F002FCD78 /* SplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitViewController.h; sourceTree = "<group>"; };
+		CDA0970A1A99F77F002FCD78 /* SplitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SplitViewController.m; sourceTree = "<group>"; };
 		CDA493A5168F26890076E168 /* BoardPositionSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionSettingsController.h; sourceTree = "<group>"; };
 		CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionSettingsController.m; sourceTree = "<group>"; };
 		CDA595AF1401383E00B250D8 /* Unit tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Unit tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1020,12 +1028,16 @@
 				CD00A35C148C2C26004E1A0C /* DocumentViewController.m */,
 				CD00A35D148C2C26004E1A0C /* LicensesViewController.h */,
 				CD00A35E148C2C26004E1A0C /* LicensesViewController.m */,
+				CDA097051A9954A3002FCD78 /* MainNavigationController.h */,
+				CDA097061A9954A3002FCD78 /* MainNavigationController.m */,
 				CD377F0616BD154A00972F04 /* MainTabBarController.h */,
 				CD377F0716BD154A00972F04 /* MainTabBarController.m */,
 				CD00A35F148C2C26004E1A0C /* main.m */,
 				CD00A360148C2C26004E1A0C /* Prefix.pch */,
 				CD00A361148C2C26004E1A0C /* SectionedDocumentViewController.h */,
 				CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */,
+				CDA097011A994D01002FCD78 /* WindowRootViewController.h */,
+				CDA097021A994D01002FCD78 /* WindowRootViewController.m */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -1061,8 +1073,6 @@
 				CD05199416B1C09B002771F7 /* LeftPaneViewController.m */,
 				CD05199716B1C29B002771F7 /* RightPaneViewController.h */,
 				CD05199816B1C29B002771F7 /* RightPaneViewController.m */,
-				CD4F94D91993EDE500455798 /* SplitViewController.h */,
-				CD4F94DA1993EDE500455798 /* SplitViewController.m */,
 			);
 			name = splitview;
 			path = src/play/splitview;
@@ -1780,6 +1790,8 @@
 				CDC4E979167B996C00AFDB51 /* ItemScrollView.m */,
 				CD0AF18E17401C56003BFC21 /* SliderInputController.h */,
 				CD0AF18F17401C56003BFC21 /* SliderInputController.m */,
+				CDA097091A99F77F002FCD78 /* SplitViewController.h */,
+				CDA0970A1A99F77F002FCD78 /* SplitViewController.m */,
 				CDEF3DD6140C55AB002D9C1C /* TableViewCellFactory.h */,
 				CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */,
 				CD72216714633F1D005EAC65 /* TableViewGridCell.h */,
@@ -2052,6 +2064,7 @@
 				CD10881C13255A4700E83543 /* GoGame.m in Sources */,
 				CD10881F13255A6100E83543 /* GoMove.m in Sources */,
 				CDA096FB1A915085002FCD78 /* LayoutManager.m in Sources */,
+				CDA097031A994D01002FCD78 /* WindowRootViewController.m in Sources */,
 				CD10882213255A6B00E83543 /* GoPlayer.m in Sources */,
 				CD10882513255AA600E83543 /* GoPoint.m in Sources */,
 				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
@@ -2077,7 +2090,6 @@
 				CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */,
 				CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */,
 				CDFABCA814194A420065C93B /* ViewGameController.m in Sources */,
-				CD4F94DB1993EDE500455798 /* SplitViewController.m in Sources */,
 				CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */,
 				CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */,
 				CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */,
@@ -2106,6 +2118,7 @@
 				CD0CCC98143140E300A3F869 /* GtpLogItemViewController.m in Sources */,
 				CD0CCEC61439147D00A3F869 /* GtpLogSettingsController.m in Sources */,
 				CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */,
+				CDA097071A9954A3002FCD78 /* MainNavigationController.m in Sources */,
 				CDCBA6D3184228A0003697E2 /* TableViewVariableHeightCell.m in Sources */,
 				CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */,
 				CD8F920B143E655E006351DB /* SubmitGtpCommandViewController.m in Sources */,
@@ -2118,6 +2131,7 @@
 				CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */,
 				CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
 				CDEE19F719433EAC00DF2389 /* BoardViewDrawingHelper.m in Sources */,
+				CDA0970B1A99F77F002FCD78 /* SplitViewController.m in Sources */,
 				CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */,
 				CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */,
 				CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */,
@@ -2228,9 +2242,9 @@
 				CD85B5981401C1B7001715B8 /* GoMove.m in Sources */,
 				CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
 				CDFD9F7E18F1D5DF0031CBCF /* CrashReportingSettingsController.m in Sources */,
-				CD4F94DC1993EDE500455798 /* SplitViewController.m in Sources */,
 				CDEECC6D1992923000BC89F2 /* ArchiveUtility.m in Sources */,
 				CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */,
+				CDA0970C1A99F77F002FCD78 /* SplitViewController.m in Sources */,
 				CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */,
 				CD85B5A41401C1F0001715B8 /* GoPoint.m in Sources */,
 				CDEE1A0C1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,
@@ -2296,6 +2310,7 @@
 				CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CDAF171A1968037700271396 /* BoardViewModel.m in Sources */,
+				CDA097041A994D01002FCD78 /* WindowRootViewController.m in Sources */,
 				CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */,
 				CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */,
 				CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */,
@@ -2386,6 +2401,7 @@
 				CDEE1A101946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */,
 				CD8EAABB1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
 				CD07270F180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */,
+				CDA097081A9954A3002FCD78 /* MainNavigationController.m in Sources */,
 				CD072711180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */,
 				CD072715180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
 				CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */,

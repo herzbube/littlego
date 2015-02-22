@@ -17,7 +17,7 @@
 
 // Project includes
 #import "GameActionsActionSheetController.h"
-#import "../splitview/SplitViewController.h"
+#import "../../ui/SplitViewController.h"
 
 // Forward declarations
 @class CommandBase;
