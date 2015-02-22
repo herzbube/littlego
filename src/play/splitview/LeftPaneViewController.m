@@ -19,6 +19,8 @@
 #import "LeftPaneViewController.h"
 #import "../boardposition/BoardPositionTableListViewController.h"
 #import "../boardposition/BoardPositionToolbarController.h"
+#import "../../shared/LayoutManager.h"
+#import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiUtilities.h"
 #import "../../ui/AutoLayoutUtility.h"
 
@@ -27,6 +29,7 @@
 /// @brief Class extension with private properties for LeftPaneViewController.
 // -----------------------------------------------------------------------------
 @interface LeftPaneViewController()
+@property(nonatomic, assign) bool useBoardPositionToolbar;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 @property(nonatomic, retain) BoardPositionTableListViewController* boardPositionTableListViewController;
 @end
@@ -47,6 +50,7 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+  [self setupUseBoardPositionToolbar];
   [self setupChildControllers];
   return self;
 }
@@ -56,9 +60,31 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.boardPositionToolbarController = nil;
+  if (self.useBoardPositionToolbar)
+    self.boardPositionToolbarController = nil;
   self.boardPositionTableListViewController = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for initializer.
+// -----------------------------------------------------------------------------
+- (void) setupUseBoardPositionToolbar
+{
+  switch ([LayoutManager sharedManager].uiType)
+  {
+    case UITypePhone:
+    {
+      bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
+      self.useBoardPositionToolbar = isPortraitOrientation;
+      break;
+    }
+    default:
+    {
+      self.useBoardPositionToolbar = true;
+      break;
+    }
+  }
 }
 
 #pragma mark - Container view controller handling
@@ -68,7 +94,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
+  if (self.useBoardPositionToolbar)
+    self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
   self.boardPositionTableListViewController = [[[BoardPositionTableListViewController alloc] init] autorelease];
 }
 
@@ -131,23 +158,30 @@
 {
   [super loadView];
 
-  [self.view addSubview:self.boardPositionToolbarController.view];
   [self.view addSubview:self.boardPositionTableListViewController.view];
-
-  self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionTableListViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.boardPositionToolbarController.view, @"boardPositionToolbar",
-                                   self.boardPositionTableListViewController.view, @"boardPositionTableListView",
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                          self.boardPositionTableListViewController.view, @"boardPositionTableListView",
+                                          nil];
+  NSMutableArray* visualFormats = [NSMutableArray arrayWithObjects:
+                                   @"H:|-0-[boardPositionTableListView]-0-|",
                                    nil];
-  // Don't need to specify height value for boardPositionToolbar because
-  // UIToolbar specifies a height value in its intrinsic content size
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[boardPositionToolbar]-0-|",
-                            @"H:|-0-[boardPositionTableListView]-0-|",
-                            @"V:|-0-[boardPositionToolbar]-[boardPositionTableListView]-0-|",
-                            nil];
+
+  if (self.useBoardPositionToolbar)
+  {
+    [self.view addSubview:self.boardPositionToolbarController.view];
+    self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [viewsDictionary setObject:self.boardPositionToolbarController.view forKey:@"boardPositionToolbar"];
+    [visualFormats addObject:@"H:|-0-[boardPositionToolbar]-0-|"];
+    // Don't need to specify a height value for boardPositionToolbar because
+    // UIToolbar specifies a height value in its intrinsic content size
+    [visualFormats addObject:@"V:|-0-[boardPositionToolbar]-0-[boardPositionTableListView]-0-|"];
+  }
+  else
+  {
+    [visualFormats addObject:@"V:|-0-[boardPositionTableListView]-0-|"];
+  }
+
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 
   // Set a color (should be the same as the main window's) because we need to

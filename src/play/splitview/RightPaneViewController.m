@@ -22,6 +22,7 @@
 #import "../controller/NavigationBarController.h"
 #import "../controller/StatusViewController.h"
 #import "../gesture/PanGestureController.h"
+#import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 
 
@@ -29,6 +30,7 @@
 /// @brief Class extension with private properties for RightPaneViewController.
 // -----------------------------------------------------------------------------
 @interface RightPaneViewController()
+@property(nonatomic, assign) bool useNavigationBar;
 @property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @end
@@ -49,6 +51,7 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+  [self setupUseNavigationBar];
   [self setupChildControllers];
   return self;
 }
@@ -58,9 +61,31 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.navigationBarController = nil;
+  if (self.useNavigationBar)
+    self.navigationBarController = nil;
   self.discardFutureMovesAlertController = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for initializer.
+// -----------------------------------------------------------------------------
+- (void) setupUseNavigationBar
+{
+  switch ([LayoutManager sharedManager].uiType)
+  {
+    case UITypePhone:
+    {
+      bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
+      self.useNavigationBar = isPortraitOrientation;
+      break;
+    }
+    default:
+    {
+      self.useNavigationBar = true;
+      break;
+    }
+  }
 }
 
 #pragma mark - Container view controller handling
@@ -70,12 +95,16 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  self.navigationBarController = [[[NavigationBarController alloc] init] autorelease];
+  if (self.useNavigationBar)
+  {
+    self.navigationBarController = [[[NavigationBarController alloc] init] autorelease];
+  }
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
 
   self.boardViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
-  self.navigationBarController.delegate = self.discardFutureMovesAlertController;
+  if (self.useNavigationBar)
+    self.navigationBarController.delegate = self.discardFutureMovesAlertController;
 }
 
 // -----------------------------------------------------------------------------
@@ -148,8 +177,9 @@
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
-  [self.view addSubview:self.navigationBarController.view];
   [self.view addSubview:self.boardViewController.view];
+  if (self.useNavigationBar)
+    [self.view addSubview:self.navigationBarController.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -159,20 +189,28 @@
 {
   self.automaticallyAdjustsScrollViewInsets = NO;
 
-  self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.navigationBarController.view, @"navigationBarView",
-                                   self.boardViewController.view, @"boardView",
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                          self.boardViewController.view, @"boardView",
+                                          nil];
+  NSMutableArray* visualFormats = [NSMutableArray arrayWithObjects:
+                                   @"H:|-0-[boardView]-0-|",
                                    nil];
-  // Don't need to specify height value for navigationBarView because
-  // UINavigationBar specifies a height value in its intrinsic content size
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[navigationBarView]-0-|",
-                            @"H:|-0-[boardView]-0-|",
-                            @"V:|-0-[navigationBarView]-0-[boardView]-0-|",
-                            nil];
+
+  if (self.useNavigationBar)
+  {
+    self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [viewsDictionary setObject:self.navigationBarController.view forKey:@"navigationBarView"];
+    [visualFormats addObject:@"H:|-0-[navigationBarView]-0-|"];
+    // Don't need to specify height value for navigationBarView because
+    // UINavigationBar specifies a height value in its intrinsic content size
+    [visualFormats addObject:@"V:|-0-[navigationBarView]-0-[boardView]-0-|"];
+  }
+  else
+  {
+    [visualFormats addObject:@"V:|-0-[boardView]-0-|"];
+  }
+
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 }
 
