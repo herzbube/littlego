@@ -21,22 +21,17 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardPositionButtonBoxDataSource class is responsible for managing
-/// the toolbar with controls to navigate the game's list of board positions.
+/// @brief The BoardPositionButtonBoxDataSource class acts as a mediator between
+/// BoardPositionNavigationManager (which defines an abstract set of board
+/// position navigation operations), and ButtonBoxController (which provides a
+/// visual representation of those operations in the form of UIButtons).
 ///
-/// BoardPositionButtonBoxDataSource is a container view controller on the iPhone,
-/// and a child view controller on the iPad. It has the following
-/// responsibilities:
-/// - Populate the toolbar with controls. This includes knowledge how the
-///   controls need to be laid out in the toolbar.
-/// - iPhone only: Integrate child view controllers' root views into the toolbar
-///   as subviews and use Auto Layout to place them
-/// - React to taps on bar buttons (only those owned by
-///   BoardPositionButtonBoxDataSource)
+/// BoardPositionButtonBoxDataSource defines the basic grid dimensions of the
+/// "button box", and which buttons occupy which cells in the grid.
+/// BoardPositionButtonBoxDataSource also performs the duties that are expected
+/// by BoardPositionNavigationManager.
 ///
-/// BoardPositionButtonBoxDataSource specifically is @b NOT responsible for
-/// managing user interaction with child view controller's root views - this is
-/// the job of the respective child view controllers.
+/// @see BoardPositionNavigationManager
 // -----------------------------------------------------------------------------
 @interface BoardPositionButtonBoxDataSource : NSObject <ButtonBoxControllerDataSource, BoardPositionNavigationManagerDelegate>
 {

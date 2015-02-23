@@ -39,22 +39,21 @@ enum BoardPositionNavigationDirection
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardPositionButtonBoxDataSource class is responsible for managing
-/// the toolbar with controls to navigate the game's list of board positions.
+/// @brief The BoardPositionNavigationManager class defines an abstract set of
+/// board position navigation operations (e.g. "go to next board position").
+/// BoardPositionNavigationManager also defines the behaviour of these
+/// operations (i.e. what they do) and when they are available.
 ///
-/// BoardPositionButtonBoxDataSource is a container view controller on the iPhone,
-/// and a child view controller on the iPad. It has the following
-/// responsibilities:
-/// - Populate the toolbar with controls. This includes knowledge how the
-///   controls need to be laid out in the toolbar.
-/// - iPhone only: Integrate child view controllers' root views into the toolbar
-///   as subviews and use Auto Layout to place them
-/// - React to taps on bar buttons (only those owned by
-///   BoardPositionButtonBoxDataSource)
+/// BoardPositionNavigationManager requires a third party to provide a visual
+/// representation of the operations. UIControls such as UIButton are commonly
+/// used for this. BoardPositionNavigationManager provides action handler
+/// methods that can easily be connected to the corresponding UIControls'
+/// actions.
 ///
-/// BoardPositionButtonBoxDataSource specifically is @b NOT responsible for
-/// managing user interaction with child view controller's root views - this is
-/// the job of the respective child view controllers.
+/// BoardPositionNavigationManager observes the application state to determine
+/// when the navigation operations should be available.
+/// BoardPositionNavigationManager informs its delegate when a state change
+/// is required.
 // -----------------------------------------------------------------------------
 @interface BoardPositionNavigationManager : NSObject
 {

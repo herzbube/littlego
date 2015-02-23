@@ -171,7 +171,7 @@
     }
     case BoardPositionNavigationDirectionAll:
     {
-      for (UIButton* item in self.navigationButtonsBackward)
+      for (UIButton* item in self.navigationButtons)
         item.enabled = enable;
       break;
     }
