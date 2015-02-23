@@ -198,6 +198,10 @@
 		CD6E847517FF9A3700643576 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E847117FF9A0200643576 /* CrashReporter.framework */; };
 		CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
+		CD7C69B61A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
+		CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
+		CD7C69BA1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B91A9ABDE2009EC5AD /* BoardPositionNavigationManager.m */; };
+		CD7C69BB1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B91A9ABDE2009EC5AD /* BoardPositionNavigationManager.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -260,6 +264,8 @@
 		CD9FB5581687E1410042AA89 /* rewindtostart@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD9FB5501687E1410042AA89 /* rewindtostart@2x.png */; };
 		CDA096FB1A915085002FCD78 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FA1A915085002FCD78 /* LayoutManager.m */; };
 		CDA096FC1A915085002FCD78 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FA1A915085002FCD78 /* LayoutManager.m */; };
+		CDA096FF1A98CD54002FCD78 /* ButtonBoxController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FE1A98CD54002FCD78 /* ButtonBoxController.m */; };
+		CDA097001A98CD54002FCD78 /* ButtonBoxController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FE1A98CD54002FCD78 /* ButtonBoxController.m */; };
 		CDA097031A994D01002FCD78 /* WindowRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA097021A994D01002FCD78 /* WindowRootViewController.m */; };
 		CDA097041A994D01002FCD78 /* WindowRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA097021A994D01002FCD78 /* WindowRootViewController.m */; };
 		CDA097071A9954A3002FCD78 /* MainNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA097061A9954A3002FCD78 /* MainNavigationController.m */; };
@@ -676,6 +682,10 @@
 		CD72216714633F1D005EAC65 /* TableViewGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewGridCell.h; sourceTree = "<group>"; };
 		CD72216814633F1D005EAC65 /* TableViewGridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewGridCell.m; sourceTree = "<group>"; };
 		CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-cocoalumberjack.sh"; sourceTree = "<group>"; };
+		CD7C69B41A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionButtonBoxDataSource.h; sourceTree = "<group>"; };
+		CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionButtonBoxDataSource.m; sourceTree = "<group>"; };
+		CD7C69B81A9ABDE2009EC5AD /* BoardPositionNavigationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionNavigationManager.h; sourceTree = "<group>"; };
+		CD7C69B91A9ABDE2009EC5AD /* BoardPositionNavigationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionNavigationManager.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
@@ -709,6 +719,8 @@
 		CD9FB5501687E1410042AA89 /* rewindtostart@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "rewindtostart@2x.png"; sourceTree = "<group>"; };
 		CDA096F91A915085002FCD78 /* LayoutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutManager.h; sourceTree = "<group>"; };
 		CDA096FA1A915085002FCD78 /* LayoutManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutManager.m; sourceTree = "<group>"; };
+		CDA096FD1A98CD54002FCD78 /* ButtonBoxController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonBoxController.h; sourceTree = "<group>"; };
+		CDA096FE1A98CD54002FCD78 /* ButtonBoxController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonBoxController.m; sourceTree = "<group>"; };
 		CDA097011A994D01002FCD78 /* WindowRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowRootViewController.h; sourceTree = "<group>"; };
 		CDA097021A994D01002FCD78 /* WindowRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WindowRootViewController.m; sourceTree = "<group>"; };
 		CDA097051A9954A3002FCD78 /* MainNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainNavigationController.h; sourceTree = "<group>"; };
@@ -1139,8 +1151,12 @@
 		CD0FE8FD169A122400053671 /* boardposition */ = {
 			isa = PBXGroup;
 			children = (
+				CD7C69B41A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.h */,
+				CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */,
 				CD0FE8FE169A122400053671 /* BoardPositionListViewController.h */,
 				CD0FE8FF169A122400053671 /* BoardPositionListViewController.m */,
+				CD7C69B81A9ABDE2009EC5AD /* BoardPositionNavigationManager.h */,
+				CD7C69B91A9ABDE2009EC5AD /* BoardPositionNavigationManager.m */,
 				CD0519D216B2D23B002771F7 /* BoardPositionTableListViewController.h */,
 				CD0519D316B2D23B002771F7 /* BoardPositionTableListViewController.m */,
 				CD252DA016A4969D00A088D5 /* BoardPositionToolbarController.h */,
@@ -1782,6 +1798,8 @@
 			children = (
 				CDACF0AE19041C1200A0DAD7 /* AutoLayoutUtility.h */,
 				CDACF0AF19041C1200A0DAD7 /* AutoLayoutUtility.m */,
+				CDA096FD1A98CD54002FCD78 /* ButtonBoxController.h */,
+				CDA096FE1A98CD54002FCD78 /* ButtonBoxController.m */,
 				CDFABCAB14194DA00065C93B /* EditTextController.h */,
 				CDFABCAC14194DA00065C93B /* EditTextController.m */,
 				CDDD52591482DD9F0027476B /* ItemPickerController.h */,
@@ -2129,6 +2147,7 @@
 				CDAF1723196CA81900271396 /* GoVertexNumeric.m in Sources */,
 				CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */,
+				CDA096FF1A98CD54002FCD78 /* ButtonBoxController.m in Sources */,
 				CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
 				CDEE19F719433EAC00DF2389 /* BoardViewDrawingHelper.m in Sources */,
 				CDA0970B1A99F77F002FCD78 /* SplitViewController.m in Sources */,
@@ -2172,6 +2191,7 @@
 				CD0FE902169A122400053671 /* BoardPositionListViewController.m in Sources */,
 				CD0FE906169A135400053671 /* BoardPositionView.m in Sources */,
 				CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */,
+				CD7C69BA1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
 				CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */,
 				CD252D9F16A4968E00A088D5 /* CurrentBoardPositionViewController.m in Sources */,
 				CD252DA216A4969D00A088D5 /* BoardPositionToolbarController.m in Sources */,
@@ -2223,6 +2243,7 @@
 				CD072710180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */,
 				CD072714180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
 				CDC97A8A182EEB5F00755EB2 /* GoZobristTable.mm in Sources */,
+				CD7C69B61A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */,
 				CDC97A8E18301CC100755EB2 /* GoGameRules.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2265,6 +2286,7 @@
 				CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */,
 				CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */,
 				CDEE19F619433EAC00DF2389 /* BoardViewController.m in Sources */,
+				CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */,
 				CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */,
 				CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */,
 				CDAF17161967FFD500271396 /* BoardViewMetrics.m in Sources */,
@@ -2295,6 +2317,7 @@
 				CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */,
 				CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */,
 				CD8EFEAB14676C4400A700B1 /* GoScore.m in Sources */,
+				CDA097001A98CD54002FCD78 /* ButtonBoxController.m in Sources */,
 				CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
 				CDEE1A1E19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */,
@@ -2331,6 +2354,7 @@
 				CDFD9F7618F1D39E0031CBCF /* ResetPlayersAndProfilesCommand.m in Sources */,
 				CDFD9F7F18F1D5E20031CBCF /* DiagnosticsViewController.m in Sources */,
 				CD1DB60F170244CF00C2E648 /* HandleDocumentInteractionCommand.m in Sources */,
+				CD7C69BB1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
 				CD1DB610170257C000C2E648 /* NewGameController.m in Sources */,
 				CD1DB611170257F400C2E648 /* HandicapSelectionController.m in Sources */,
 				CDFD9F7D18F1D5AB0031CBCF /* RenameGameCommand.m in Sources */,
@@ -2421,10 +2445,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
 				PRODUCT_NAME = "Little Go";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -2434,10 +2461,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
 				PRODUCT_NAME = "Little Go";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -2614,10 +2644,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
 				PRODUCT_NAME = "Little Go";
+				PROVISIONING_PROFILE = "";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Distribute_AppStore;
@@ -2760,10 +2793,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
 				PRODUCT_NAME = "Little Go";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Distribute_AdHoc;
 		};

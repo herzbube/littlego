@@ -38,12 +38,13 @@
 #import "../player/GtpEngineProfileModel.h"
 #import "../player/GtpEngineProfile.h"
 #import "../player/PlayerModel.h"
+#import "../play/boardposition/BoardPositionNavigationManager.h"
+#import "../play/boardview/layer/BoardViewCGLayerCache.h"
 #import "../play/controller/SoundHandling.h"
 #import "../play/model/BoardPositionModel.h"
 #import "../play/model/BoardViewMetrics.h"
 #import "../play/model/BoardViewModel.h"
 #import "../play/model/ScoringModel.h"
-#import "../play/boardview/layer/BoardViewCGLayerCache.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
 #import "../diagnostics/CrashReportingModel.h"
@@ -151,6 +152,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.loggingModel = nil;
   self.uiSettingsModel = nil;
   self.fileLogger = nil;
+  [BoardPositionNavigationManager releaseSharedNavigationManager];
   [BoardViewCGLayerCache releaseSharedCache];
   [CommandProcessor releaseSharedProcessor];
   [LongRunningActionCounter releaseSharedCounter];
@@ -660,8 +662,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   if (! resourceName)
     return @"";
-  NSURL* resourceURL = [[ApplicationDelegate sharedDelegate].resourceBundle URLForResource:resourceName
-                                                                             withExtension:nil];
+  NSURL* resourceURL = [self.resourceBundle URLForResource:resourceName
+                                             withExtension:nil];
   NSStringEncoding usedEncoding;
   NSError* error;
   return [NSString stringWithContentsOfURL:resourceURL

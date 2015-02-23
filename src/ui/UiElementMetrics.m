@@ -194,4 +194,11 @@ static UIViewController* m_interfaceOrientationSource;
   }
 }
 
++ (CGSize) toolbarIconSize
+{
+  // This is the size (in points) recommended by the HIG for navigation and
+  // toolbar icons
+  return CGSizeMake(22.0f, 22.0f);
+}
+
 @end

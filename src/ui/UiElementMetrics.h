@@ -62,5 +62,6 @@
 + (int) tableViewCellContentDistanceFromEdgeVertical;
 + (int) tableViewCellDisclosureIndicatorWidth;
 + (int) splitViewControllerLeftPaneWidth;
++ (CGSize) toolbarIconSize;
 
 @end

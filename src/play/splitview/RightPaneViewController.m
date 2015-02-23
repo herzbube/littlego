@@ -17,6 +17,8 @@
 
 // Project includes
 #import "RightPaneViewController.h"
+#import "../boardposition/BoardPositionButtonBoxDataSource.h"
+#import "../boardposition/BoardPositionNavigationManager.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/DiscardFutureMovesAlertController.h"
 #import "../controller/NavigationBarController.h"
@@ -24,6 +26,8 @@
 #import "../gesture/PanGestureController.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../ui/ButtonBoxController.h"
+#import "../../utility/UiColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -33,6 +37,8 @@
 @property(nonatomic, assign) bool useNavigationBar;
 @property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
+@property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
+@property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
 @end
 
 
@@ -62,7 +68,14 @@
 - (void) dealloc
 {
   if (self.useNavigationBar)
+  {
     self.navigationBarController = nil;
+  }
+  else
+  {
+    self.boardPositionButtonBoxController = nil;
+    self.boardPositionButtonBoxDataSource = nil;
+  }
   self.discardFutureMovesAlertController = nil;
   [super dealloc];
 }
@@ -96,15 +109,22 @@
 - (void) setupChildControllers
 {
   if (self.useNavigationBar)
-  {
     self.navigationBarController = [[[NavigationBarController alloc] init] autorelease];
-  }
+  else
+    self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] init] autorelease];
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
 
   self.boardViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
   if (self.useNavigationBar)
+  {
     self.navigationBarController.delegate = self.discardFutureMovesAlertController;
+  }
+  else
+  {
+    self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
+    self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -157,6 +177,31 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setBoardPositionButtonBoxController:(ButtonBoxController*)boardPositionButtonBoxController
+{
+  if (_boardPositionButtonBoxController == boardPositionButtonBoxController)
+    return;
+  if (_boardPositionButtonBoxController)
+  {
+    [_boardPositionButtonBoxController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_boardPositionButtonBoxController removeFromParentViewController];
+    [_boardPositionButtonBoxController release];
+    _boardPositionButtonBoxController = nil;
+  }
+  if (boardPositionButtonBoxController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:boardPositionButtonBoxController];
+    [boardPositionButtonBoxController didMoveToParentViewController:self];
+    [boardPositionButtonBoxController retain];
+    _boardPositionButtonBoxController = boardPositionButtonBoxController;
+  }
+}
+
 #pragma mark - UIViewController overrides
 
 // -----------------------------------------------------------------------------
@@ -180,6 +225,8 @@
   [self.view addSubview:self.boardViewController.view];
   if (self.useNavigationBar)
     [self.view addSubview:self.navigationBarController.view];
+  else
+    [self.view addSubview:self.boardPositionButtonBoxController.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -208,7 +255,12 @@
   }
   else
   {
+    self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [viewsDictionary setObject:self.boardPositionButtonBoxController.view forKey:@"buttonBox"];
     [visualFormats addObject:@"V:|-0-[boardView]-0-|"];
+    // TODO xxx proper placement
+    [visualFormats addObject:[NSString stringWithFormat:@"H:|-15-[buttonBox(==%f)]", self.boardPositionButtonBoxController.buttonBoxSize.width]];
+    [visualFormats addObject:[NSString stringWithFormat:@"V:[buttonBox(==%f)]-15-|", self.boardPositionButtonBoxController.buttonBoxSize.height]];
   }
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
@@ -222,6 +274,10 @@
   // Set a color (should be the same as the main window's) because we need to
   // paint over the parent split view background color.
   self.view.backgroundColor = [UIColor whiteColor];
+
+  // TODO xxx proper colors
+  self.boardPositionButtonBoxController.collectionView.backgroundColor = [UIColor navigationbarBackgroundColor];
+  self.boardPositionButtonBoxController.collectionView.layer.borderWidth = 1;
 }
 
 @end
