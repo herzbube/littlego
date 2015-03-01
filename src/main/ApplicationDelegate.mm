@@ -41,6 +41,7 @@
 #import "../play/boardposition/BoardPositionNavigationManager.h"
 #import "../play/boardview/layer/BoardViewCGLayerCache.h"
 #import "../play/controller/SoundHandling.h"
+#import "../play/gameaction/GameActionManager.h"
 #import "../play/model/BoardPositionModel.h"
 #import "../play/model/BoardViewMetrics.h"
 #import "../play/model/BoardViewModel.h"
@@ -153,6 +154,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.uiSettingsModel = nil;
   self.fileLogger = nil;
   [BoardPositionNavigationManager releaseSharedNavigationManager];
+  [GameActionManager releaseSharedGameActionManager];
   [BoardViewCGLayerCache releaseSharedCache];
   [CommandProcessor releaseSharedProcessor];
   [LongRunningActionCounter releaseSharedCounter];

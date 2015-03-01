@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "../../ui/ButtonBoxController.h"
+
 // Forward declarations
 @class NavigationBarController;
 
@@ -27,7 +30,7 @@
 /// RightPaneViewController's is a container view controller. It is used on the
 /// iPad only.
 // -----------------------------------------------------------------------------
-@interface RightPaneViewController : UIViewController
+@interface RightPaneViewController : UIViewController <ButtonBoxControllerDataDelegate>
 {
 }
 

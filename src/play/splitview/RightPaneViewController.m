@@ -23,6 +23,8 @@
 #import "../controller/DiscardFutureMovesAlertController.h"
 #import "../controller/NavigationBarController.h"
 #import "../controller/StatusViewController.h"
+#import "../gameaction/GameActionButtonBoxDataSource.h"
+#import "../gameaction/GameActionManager.h"
 #import "../gesture/PanGestureController.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
@@ -39,6 +41,9 @@
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
 @property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
+@property(nonatomic, retain) ButtonBoxController* gameActionButtonBoxController;
+@property(nonatomic, retain) GameActionButtonBoxDataSource* gameActionButtonBoxDataSource;
+@property(nonatomic, retain) NSArray* gameActionButtonBoxAutoLayoutConstraints;
 @end
 
 
@@ -59,6 +64,7 @@
     return nil;
   [self setupUseNavigationBar];
   [self setupChildControllers];
+  self.gameActionButtonBoxAutoLayoutConstraints = nil;
   return self;
 }
 
@@ -75,6 +81,9 @@
   {
     self.boardPositionButtonBoxController = nil;
     self.boardPositionButtonBoxDataSource = nil;
+    self.gameActionButtonBoxController = nil;
+    self.gameActionButtonBoxDataSource = nil;
+    self.gameActionButtonBoxAutoLayoutConstraints = nil;
   }
   self.discardFutureMovesAlertController = nil;
   [super dealloc];
@@ -109,9 +118,14 @@
 - (void) setupChildControllers
 {
   if (self.useNavigationBar)
+  {
     self.navigationBarController = [[[NavigationBarController alloc] init] autorelease];
+  }
   else
+  {
     self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] init] autorelease];
+    self.gameActionButtonBoxController = [[[ButtonBoxController alloc] init] autorelease];
+  }
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
 
@@ -124,6 +138,11 @@
   {
     self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
     self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;
+    self.gameActionButtonBoxDataSource = [[[GameActionButtonBoxDataSource alloc] init] autorelease];
+    self.gameActionButtonBoxDataSource.buttonBoxController = self.gameActionButtonBoxController;
+    self.gameActionButtonBoxController.buttonBoxControllerDataSource = self.gameActionButtonBoxDataSource;
+    self.gameActionButtonBoxController.buttonBoxControllerDelegate = self;
+    [GameActionManager sharedGameActionManager].commandDelegate = self.discardFutureMovesAlertController;
   }
 }
 
@@ -202,6 +221,31 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setGameActionButtonBoxController:(ButtonBoxController*)gameActionButtonBoxController
+{
+  if (_gameActionButtonBoxController == gameActionButtonBoxController)
+    return;
+  if (_gameActionButtonBoxController)
+  {
+    [_gameActionButtonBoxController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_gameActionButtonBoxController removeFromParentViewController];
+    [_gameActionButtonBoxController release];
+    _gameActionButtonBoxController = nil;
+  }
+  if (gameActionButtonBoxController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:gameActionButtonBoxController];
+    [gameActionButtonBoxController didMoveToParentViewController:self];
+    [gameActionButtonBoxController retain];
+    _gameActionButtonBoxController = gameActionButtonBoxController;
+  }
+}
+
 #pragma mark - UIViewController overrides
 
 // -----------------------------------------------------------------------------
@@ -224,9 +268,14 @@
 {
   [self.view addSubview:self.boardViewController.view];
   if (self.useNavigationBar)
+  {
     [self.view addSubview:self.navigationBarController.view];
+  }
   else
+  {
     [self.view addSubview:self.boardPositionButtonBoxController.view];
+    [self.view addSubview:self.gameActionButtonBoxController.view];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -256,14 +305,37 @@
   else
   {
     self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [viewsDictionary setObject:self.boardPositionButtonBoxController.view forKey:@"buttonBox"];
+    self.gameActionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [viewsDictionary setObject:self.boardPositionButtonBoxController.view forKey:@"boardPositionButtonBox"];
+    [viewsDictionary setObject:self.gameActionButtonBoxController.view forKey:@"gameActionButtonBox"];
     [visualFormats addObject:@"V:|-0-[boardView]-0-|"];
     // TODO xxx proper placement
-    [visualFormats addObject:[NSString stringWithFormat:@"H:|-15-[buttonBox(==%f)]", self.boardPositionButtonBoxController.buttonBoxSize.width]];
-    [visualFormats addObject:[NSString stringWithFormat:@"V:[buttonBox(==%f)]-15-|", self.boardPositionButtonBoxController.buttonBoxSize.height]];
+    [visualFormats addObject:[NSString stringWithFormat:@"H:|-15-[boardPositionButtonBox(==%f)]", self.boardPositionButtonBoxController.buttonBoxSize.width]];
+    [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]-15-|", self.boardPositionButtonBoxController.buttonBoxSize.height]];
+    [visualFormats addObject:@"H:[gameActionButtonBox]-15-|"];
+    [visualFormats addObject:@"V:[gameActionButtonBox]-15-|"];
   }
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+
+  if (! self.useNavigationBar)
+    [self updateGameActionButtonBoxAutoLayoutConstraints];
+}
+
+// TODO xxx document
+- (void) updateGameActionButtonBoxAutoLayoutConstraints
+{
+  if (self.gameActionButtonBoxAutoLayoutConstraints)
+    [self.view removeConstraints:self.gameActionButtonBoxAutoLayoutConstraints];
+
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.gameActionButtonBoxController.view, @"gameActionButtonBox",
+                                   nil];
+  NSMutableArray* visualFormats = [NSMutableArray arrayWithObjects:
+                                   [NSString stringWithFormat:@"H:[gameActionButtonBox(==%f)]", self.gameActionButtonBoxController.buttonBoxSize.width],
+                                   [NSString stringWithFormat:@"V:[gameActionButtonBox(==%f)]", self.gameActionButtonBoxController.buttonBoxSize.height],
+                                   nil];
+  self.gameActionButtonBoxAutoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -276,8 +348,34 @@
   self.view.backgroundColor = [UIColor whiteColor];
 
   // TODO xxx proper colors
-  self.boardPositionButtonBoxController.collectionView.backgroundColor = [UIColor navigationbarBackgroundColor];
-  self.boardPositionButtonBoxController.collectionView.layer.borderWidth = 1;
+  //  self.boardPositionButtonBoxController.view.backgroundColor = [UIColor navigationbarBackgroundColor];
+//  self.boardPositionButtonBoxController.view.backgroundColor = [UIColor whiteColor];
+//  self.boardPositionButtonBoxController.view.layer.borderWidth = 1;
+//  self.boardPositionButtonBoxController.view.alpha = 0.20f;
+  self.boardPositionButtonBoxController.collectionView.backgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  self.boardPositionButtonBoxController.collectionView.backgroundView.backgroundColor = [UIColor whiteColor];
+  self.boardPositionButtonBoxController.collectionView.backgroundView.layer.borderWidth = 1;
+  self.boardPositionButtonBoxController.collectionView.backgroundView.alpha = 0.6f;
+
+//  self.gameActionButtonBoxController.view.backgroundColor = [UIColor navigationbarBackgroundColor];
+//  self.gameActionButtonBoxController.view.backgroundColor = [UIColor whiteColor];
+//  self.gameActionButtonBoxController.view.layer.borderWidth = 1;
+//  self.gameActionButtonBoxController.view.alpha = 0.80f;
+  self.gameActionButtonBoxController.collectionView.backgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  self.gameActionButtonBoxController.collectionView.backgroundView.backgroundColor = [UIColor whiteColor];
+  self.gameActionButtonBoxController.collectionView.backgroundView.layer.borderWidth = 1;
+  self.gameActionButtonBoxController.collectionView.backgroundView.alpha = 0.6f;
+}
+
+#pragma mark - ButtonBoxControllerDataDelegate overrides
+
+// TODO xxx do we really need this? can't we install an auto layout constraint
+// that has flexible height? problem is the border/background of the box that
+// makes it obvious that the box gets too much height. the button box controller
+// view would have to have an intrinsic height.
+- (void) buttonBoxButtonsWillChange
+{
+  [self updateGameActionButtonBoxAutoLayoutConstraints];
 }
 
 @end

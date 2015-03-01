@@ -25,13 +25,27 @@
 // -----------------------------------------------------------------------------
 @protocol ButtonBoxControllerDataSource <NSObject>
 @required
-- (int) numberOfRowsInButtonBoxController:(ButtonBoxController*)buttonBoxController;
-- (int) numberOfColumnsInButtonBoxController:(ButtonBoxController*)buttonBoxController;
+- (int) numberOfSectionsInButtonBoxController:(ButtonBoxController*)buttonBoxController;
+- (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfRowsInSection:(NSInteger)section;
+- (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfColumnsInSection:(NSInteger)section;
 /// @brief The property @e indexPath.row is a one-dimensional index into the
 /// button box grid, indicating which button is requested. Example for a button
 /// box grid with 2 rows and 2 columns: index 0 = row/column 0/0, index 1 =
 /// row/column 0/1, index 2 = row/column 1/0, index 3 = row/column 1/1.
 - (UIButton*) buttonBoxController:(ButtonBoxController*)buttonBoxController buttonAtIndexPath:(NSIndexPath*)indexPath;
+@end
+
+// -----------------------------------------------------------------------------
+/// @brief The delegate of ButtonBoxController must adopt the
+/// ButtonBoxControllerDataDelegate protocol.
+// -----------------------------------------------------------------------------
+@protocol ButtonBoxControllerDataDelegate <NSObject>
+@required
+/// @brief Advises the delegate that the buttons displayed by the
+/// ButtonBoxController view are about to change. The delegate may wish to
+/// requery the controller's @a buttonBoxSize property to update the layout of
+/// the view that integrates the ButtonBoxController view.
+- (void) buttonBoxButtonsWillChange;
 @end
 
 
@@ -47,7 +61,10 @@
 {
 }
 
+- (void) reloadData;
+
 @property(nonatomic, assign) id<ButtonBoxControllerDataSource> buttonBoxControllerDataSource;
+@property(nonatomic, assign) id<ButtonBoxControllerDataDelegate> buttonBoxControllerDelegate;
 @property(nonatomic, assign, readonly) CGSize buttonBoxSize;
 @property(nonatomic, retain) UIColor* buttonTintColor;
 

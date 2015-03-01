@@ -17,6 +17,7 @@
 
 // Project includes
 #import "NavigationBarController.h"
+#import "../gameaction/GameActionManager.h"
 #import "../gesture/PanGestureController.h"
 
 
@@ -27,7 +28,8 @@
 // -----------------------------------------------------------------------------
 @interface DiscardFutureMovesAlertController : NSObject <UIAlertViewDelegate,
                                                          PanGestureControllerDelegate,
-                                                         NavigationBarControllerDelegate>
+                                                         NavigationBarControllerDelegate,
+                                                         GameActionManagerCommandDelegate>
 {
 }
 

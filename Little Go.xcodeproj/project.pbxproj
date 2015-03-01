@@ -202,6 +202,10 @@
 		CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
 		CD7C69BA1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B91A9ABDE2009EC5AD /* BoardPositionNavigationManager.m */; };
 		CD7C69BB1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B91A9ABDE2009EC5AD /* BoardPositionNavigationManager.m */; };
+		CD7C69BF1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69BE1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m */; };
+		CD7C69C01A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69BE1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m */; };
+		CD7C69C31A9D2086009EC5AD /* GameActionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69C21A9D2086009EC5AD /* GameActionManager.m */; };
+		CD7C69C41A9D2086009EC5AD /* GameActionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69C21A9D2086009EC5AD /* GameActionManager.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -686,6 +690,10 @@
 		CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionButtonBoxDataSource.m; sourceTree = "<group>"; };
 		CD7C69B81A9ABDE2009EC5AD /* BoardPositionNavigationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionNavigationManager.h; sourceTree = "<group>"; };
 		CD7C69B91A9ABDE2009EC5AD /* BoardPositionNavigationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionNavigationManager.m; sourceTree = "<group>"; };
+		CD7C69BD1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameActionButtonBoxDataSource.h; sourceTree = "<group>"; };
+		CD7C69BE1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameActionButtonBoxDataSource.m; sourceTree = "<group>"; };
+		CD7C69C11A9D2086009EC5AD /* GameActionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameActionManager.h; sourceTree = "<group>"; };
+		CD7C69C21A9D2086009EC5AD /* GameActionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameActionManager.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
@@ -1264,6 +1272,7 @@
 				CD0FE8FD169A122400053671 /* boardposition */,
 				CDEE19E219433EAC00DF2389 /* boardview */,
 				CD1E9E54171806FE00E1B7D1 /* controller */,
+				CD7C69BC1A9BC7D2009EC5AD /* gameaction */,
 				CD3A0996169389A600ABDB5D /* gesture */,
 				CD1311BC17180AFC006CE699 /* model */,
 				CD3591DC1735A757000E2963 /* playtab */,
@@ -1391,6 +1400,17 @@
 				CD0286271640AEE100CF23A1 /* quincykit */,
 			);
 			name = 3rdparty;
+			sourceTree = "<group>";
+		};
+		CD7C69BC1A9BC7D2009EC5AD /* gameaction */ = {
+			isa = PBXGroup;
+			children = (
+				CD7C69BD1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.h */,
+				CD7C69BE1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m */,
+				CD7C69C11A9D2086009EC5AD /* GameActionManager.h */,
+				CD7C69C21A9D2086009EC5AD /* GameActionManager.m */,
+			);
+			path = gameaction;
 			sourceTree = "<group>";
 		};
 		CDA595BC140142C700B250D8 /* test */ = {
@@ -2229,8 +2249,10 @@
 				CD3592061735A757000E2963 /* PlayTabControllerPhone.m in Sources */,
 				CDEE19F319433EAC00DF2389 /* BoardView.m in Sources */,
 				CDAFAE6E195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
+				CD7C69BF1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */,
 				CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */,
+				CD7C69C31A9D2086009EC5AD /* GameActionManager.m in Sources */,
 				CDEE1A07194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */,
 				CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */,
 				CD0AF19017401C56003BFC21 /* SliderInputController.m in Sources */,
@@ -2278,6 +2300,7 @@
 				CDAF17121967FAF100271396 /* BoardViewIntersection.m in Sources */,
 				CD85B5AF1401C23D001715B8 /* GtpCommand.m in Sources */,
 				CD85B5BC1401C2AD001715B8 /* GtpResponse.m in Sources */,
+				CD7C69C01A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */,
 				CD85B5C41401C338001715B8 /* Player.m in Sources */,
 				CD85B5C51401C338001715B8 /* PlayerModel.m in Sources */,
 				CD85B5C81401C347001715B8 /* NewGameModel.m in Sources */,
@@ -2350,6 +2373,7 @@
 				CD96A44C16C71BBF000C2792 /* SyncGTPEngineCommand.m in Sources */,
 				CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */,
 				CDEE1A08194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */,
+				CD7C69C41A9D2086009EC5AD /* GameActionManager.m in Sources */,
 				CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */,
 				CDFD9F7618F1D39E0031CBCF /* ResetPlayersAndProfilesCommand.m in Sources */,
 				CDFD9F7F18F1D5E20031CBCF /* DiagnosticsViewController.m in Sources */,

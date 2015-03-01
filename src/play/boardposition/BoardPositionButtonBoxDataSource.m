@@ -72,7 +72,15 @@
 // -----------------------------------------------------------------------------
 /// @brief ButtonBoxControllerDataSource method.
 // -----------------------------------------------------------------------------
-- (int) numberOfRowsInButtonBoxController:(ButtonBoxController*)buttonBoxController
+- (int) numberOfSectionsInButtonBoxController:(ButtonBoxController*)buttonBoxController
+{
+  return 1;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief ButtonBoxControllerDataSource method.
+// -----------------------------------------------------------------------------
+- (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfRowsInSection:(NSInteger)section
 {
   return 4;
 }
@@ -80,7 +88,7 @@
 // -----------------------------------------------------------------------------
 /// @brief ButtonBoxControllerDataSource method.
 // -----------------------------------------------------------------------------
-- (int) numberOfColumnsInButtonBoxController:(ButtonBoxController*)buttonBoxController
+- (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfColumnsInSection:(NSInteger)section
 {
   return 1;
 }

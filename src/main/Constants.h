@@ -80,6 +80,39 @@ enum UIType
   UITypePad,
 };
 
+/// @brief Enumerates game-related actions that the user can trigger in the UI.
+enum GameAction
+{
+  /// @brief Generates a "Pass" move for the human player whose turn it
+  /// currently is.
+  GameActionPass,
+  /// @brief Discards the current board position and all positions that follow
+  /// afterwards.
+  GameActionDiscardBoardPosition,
+  /// @brief Causes the computer player to generate a move, either for itself or
+  /// on behalf of the human player whose turn it currently is.
+  GameActionComputerPlay,
+  /// @brief Pauses the game in a computer vs. computer game.
+  GameActionPause,
+  /// @brief Continues the game if it is paused in a computer vs. computer game.
+  GameActionContinue,
+  /// @brief Interrupts the computer while it is thinking (e.g. when calculating
+  /// its next move).
+  GameActionInterrupt,
+  /// @brief Ends the currently active scoring mode and returns to normal play
+  /// mode.
+  GameActionScoringDone,
+  /// @brief Displays the "Game Info" view with information about the game in
+  /// progress.
+  GameActionGameInfo,
+  /// @brief Displays an action sheet with additional game actions.
+  GameActionMoreGameActions,
+  /// @brief Pseudo game action, used as the starting value during a for-loop.
+  GameActionFirst = GameActionPass,
+  /// @brief Pseudo game action, used as the end value during a for-loop.
+  GameActionLast = GameActionMoreGameActions
+};
+
 /// @brief Enumerates the possible types of mark up to use for inconsistent
 /// territory during scoring.
 enum InconsistentTerritoryMarkupType

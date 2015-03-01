@@ -39,6 +39,8 @@ enum ActionType
 
 @implementation DiscardFutureMovesAlertController
 
+#pragma mark - NavigationBarControllerDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief NavigationBarControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -55,6 +57,8 @@ enum ActionType
   [self alertOrAction:ActionTypeDiscard withCommand:command];
 }
 
+#pragma mark - PanGestureControllerDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief PanGestureControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
@@ -62,6 +66,26 @@ enum ActionType
 {
   [self alertOrAction:ActionTypePlay withCommand:command];
 }
+
+#pragma mark - GameActionManagerCommandDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief GameActionManagerCommandDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) gameActionManager:(GameActionManager*)manager playOrAlertWithCommand:(CommandBase*)command
+{
+  [self alertOrAction:ActionTypePlay withCommand:command];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief GameActionManagerCommandDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) gameActionManager:(GameActionManager*)manager discardOrAlertWithCommand:(CommandBase*)command
+{
+  [self alertOrAction:ActionTypeDiscard withCommand:command];
+}
+
+#pragma mark - UIAlertViewDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UIAlertViewDelegate protocol method.
@@ -91,8 +115,8 @@ enum ActionType
 /// @brief Executes @a command, or displays an alert and delays execution until
 /// the alert is dismissed by the user.
 ///
-/// @a actionType is used to tweak the alert message so that contains a useful
-/// description of what the user tries to do.
+/// @a actionType is used to tweak the alert message so that it contains a
+/// useful description of what the user tries to do.
 ///
 /// If the Go board currently displays the last board position of the game,
 /// @a command is executed immediately.
