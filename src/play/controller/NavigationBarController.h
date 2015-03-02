@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,29 +16,11 @@
 
 
 // Project includes
-#import "GameActionsActionSheetController.h"
+#import "GameActionManager.h"
 #import "../../ui/SplitViewController.h"
 
 // Forward declarations
-@class CommandBase;
-@class NavigationBarController;
 @class StatusViewController;
-
-
-// -----------------------------------------------------------------------------
-/// @brief The NavigationBarControllerDelegate protocol must be implemented by
-/// the delegate of NavigationBarController.
-// -----------------------------------------------------------------------------
-@protocol NavigationBarControllerDelegate
-/// @brief This method is invoked when the user attempts to play a move. The
-/// delegate executes @a command, possibly displaying an alert first which the
-/// user must confirm.
-- (void) navigationBarController:(NavigationBarController*)controller playOrAlertWithCommand:(CommandBase*)command;
-/// @brief This method is invoked when the user attempts to discard board
-/// positions. The delegate executes @a command, possibly displaying an alert
-/// first which the user must confirmed.
-- (void) navigationBarController:(NavigationBarController*)controller discardOrAlertWithCommand:(CommandBase*)command;
-@end
 
 
 // -----------------------------------------------------------------------------
@@ -67,14 +49,10 @@
 /// texts that can appear in the status view. This is necessary because the
 /// screen width is so limited.
 // -----------------------------------------------------------------------------
-@interface NavigationBarController : UIViewController <UINavigationControllerDelegate,
-                                                       GameActionsActionSheetDelegate,
-                                                       UIAlertViewDelegate,
-                                                       SplitViewControllerDelegate>
+@interface NavigationBarController : UIViewController <SplitViewControllerDelegate, GameActionManagerUIDelegate>
 {
 }
 
 @property(nonatomic, retain) StatusViewController* statusViewController;
-@property(nonatomic, assign) id<NavigationBarControllerDelegate> delegate;
 
 @end

@@ -39,24 +39,6 @@ enum ActionType
 
 @implementation DiscardFutureMovesAlertController
 
-#pragma mark - NavigationBarControllerDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief NavigationBarControllerDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) navigationBarController:(NavigationBarController*)controller playOrAlertWithCommand:(CommandBase*)command
-{
-  [self alertOrAction:ActionTypePlay withCommand:command];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief NavigationBarControllerDelegateDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) navigationBarController:(NavigationBarController*)controller discardOrAlertWithCommand:(CommandBase*)command
-{
-  [self alertOrAction:ActionTypeDiscard withCommand:command];
-}
-
 #pragma mark - PanGestureControllerDelegate overrides
 
 // -----------------------------------------------------------------------------

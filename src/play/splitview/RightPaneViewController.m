@@ -130,11 +130,7 @@
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
 
   self.boardViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
-  if (self.useNavigationBar)
-  {
-    self.navigationBarController.delegate = self.discardFutureMovesAlertController;
-  }
-  else
+  if (! self.useNavigationBar)
   {
     self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
     self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;
@@ -142,8 +138,8 @@
     self.gameActionButtonBoxDataSource.buttonBoxController = self.gameActionButtonBoxController;
     self.gameActionButtonBoxController.buttonBoxControllerDataSource = self.gameActionButtonBoxDataSource;
     self.gameActionButtonBoxController.buttonBoxControllerDelegate = self;
-    [GameActionManager sharedGameActionManager].commandDelegate = self.discardFutureMovesAlertController;
   }
+  [GameActionManager sharedGameActionManager].commandDelegate = self.discardFutureMovesAlertController;
 }
 
 // -----------------------------------------------------------------------------

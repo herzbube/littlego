@@ -89,7 +89,7 @@
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
 
   self.boardViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
-  self.navigationBarController.delegate = self.discardFutureMovesAlertController;
+  [GameActionManager sharedGameActionManager].commandDelegate = self.discardFutureMovesAlertController;
 }
 
 // -----------------------------------------------------------------------------
