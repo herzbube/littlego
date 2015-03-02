@@ -393,6 +393,33 @@
   button.enabled = enable;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief GameActionManagerUIDelegate method.
+// -----------------------------------------------------------------------------
+- (UIView*) viewForPresentingMoreGameActionsByGameActionManager:(GameActionManager*)manager
+{
+  // We need the view that represents the "Game Actions" bar button item in the
+  // navigation bar so that we can present an action sheet originating from that
+  // view. There is no official API that lets us find the view, but we know that
+  // the button is at the right-most end of the navigation bar, so we can find
+  // the representing view by examining the frames of all navigation bar
+  // subviews.
+  UIView* rightMostSubview = nil;
+  for (UIView* subview in self.rightNavigationBar.subviews)
+  {
+    if (rightMostSubview)
+    {
+      if (subview.frame.origin.x > rightMostSubview.frame.origin.x)
+        rightMostSubview = subview;
+    }
+    else
+    {
+      rightMostSubview = subview;
+    }
+  }
+  return rightMostSubview;
+}
+
 #pragma mark - Private helpers - UIBarButtonItem creation
 
 // -----------------------------------------------------------------------------

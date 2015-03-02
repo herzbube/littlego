@@ -18,7 +18,6 @@
 // Project includes
 #import "GameActionManager.h"
 //#import "GameInfoViewController.h"
-//#import "StatusViewController.h"
 #import "../model/BoardViewModel.h"
 #import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
@@ -29,11 +28,8 @@
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../command/game/PauseGameCommand.h"
 #import "../../main/ApplicationDelegate.h"
-//#import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../shared/ApplicationStateManager.h"
-//#import "../../ui/AutoLayoutUtility.h"
-//#import "../../utility/UIDeviceAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -45,7 +41,7 @@
 @property(nonatomic, assign) bool visibleStatesNeedUpdate;
 @property(nonatomic, assign) bool enabledStatesNeedUpdate;
 //@property(nonatomic, assign) GameInfoViewController* gameInfoViewController;
-//@property(nonatomic, retain) GameActionsActionSheetController* gameActionsActionSheetController;
+@property(nonatomic, retain) GameActionsActionSheetController* gameActionsActionSheetController;
 @end
 
 
@@ -107,6 +103,7 @@ static GameActionManager* sharedGameActionManager = nil;
     [self.enabledStates setObject:[NSNumber numberWithBool:NO] forKey:[NSNumber numberWithInt:gameAction]];
   self.visibleStatesNeedUpdate = false;
   self.enabledStatesNeedUpdate = false;
+  self.gameActionsActionSheetController = nil;
   [self setupNotificationResponders];
   return self;
 }
@@ -119,6 +116,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [self removeNotificationResponders];
   self.visibleGameActions = nil;
   self.enabledStates = nil;
+  self.gameActionsActionSheetController = nil;
   self.uiDelegate = nil;
   self.commandDelegate = nil;
   [super dealloc];
@@ -265,31 +263,14 @@ static GameActionManager* sharedGameActionManager = nil;
     return;
   }
 
-  // We need the view that represents the "Game Actions" bar button item in the
-  // navigation bar so that we can present an action sheet originating from that
-  // view. There is no official API that lets us find the view, but we know that
-  // the button is at the right-most end of the navigation bar, so we can find
-  // the representing view by examining the frames of all navigation bar
-  // subviews.
-  //xxx
-//  UIView* rightMostSubview = nil;
-//  for (UIView* subview in self.rightNavigationBar.subviews)
-//  {
-//    if (rightMostSubview)
-//    {
-//      if (subview.frame.origin.x > rightMostSubview.frame.origin.x)
-//        rightMostSubview = subview;
-//    }
-//    else
-//    {
-//      rightMostSubview = subview;
-//    }
-//  }
-//  if (rightMostSubview)
-//  {
-//    self.gameActionsActionSheetController = [[[GameActionsActionSheetController alloc] initWithModalMaster:self.parentViewController delegate:self] autorelease];
-//    [self.gameActionsActionSheetController showActionSheetFromRect:rightMostSubview.bounds inView:rightMostSubview];
-//  }
+  UIView* viewForPresentingMoreGameActions = [self.uiDelegate viewForPresentingMoreGameActionsByGameActionManager:self];
+  if (viewForPresentingMoreGameActions)
+  {
+    UIViewController* modalMaster = [ApplicationDelegate sharedDelegate].window.rootViewController;
+    self.gameActionsActionSheetController = [[[GameActionsActionSheetController alloc] initWithModalMaster:modalMaster delegate:self] autorelease];
+    [self.gameActionsActionSheetController showActionSheetFromRect:viewForPresentingMoreGameActions.bounds
+                                                            inView:viewForPresentingMoreGameActions];
+  }
 }
 
 #pragma mark - UINavigationControllerDelegate overrides
@@ -326,11 +307,10 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 /// @brief GameActionsActionSheetDelegate protocol method.
 // -----------------------------------------------------------------------------
-// xxx
-//- (void) gameActionsActionSheetControllerDidFinish:(GameActionsActionSheetController*)controller
-//{
-//  self.gameActionsActionSheetController = nil;
-//}
+- (void) gameActionsActionSheetControllerDidFinish:(GameActionsActionSheetController*)controller
+{
+  self.gameActionsActionSheetController = nil;
+}
 
 #pragma mark - Notification responders
 
