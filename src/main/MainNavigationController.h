@@ -30,7 +30,7 @@
 ///
 /// @see WindowRootViewController
 // -----------------------------------------------------------------------------
-@interface MainNavigationController : UIViewController
+@interface MainNavigationController : UINavigationController
 {
 }
 

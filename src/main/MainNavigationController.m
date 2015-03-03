@@ -17,6 +17,7 @@
 
 // Project includes
 #import "MainNavigationController.h"
+#import "../play/gameaction/GameActionManager.h"
 #import "../play/splitview/LeftPaneViewController.h"
 #import "../play/splitview/RightPaneViewController.h"
 #import "../ui/SplitViewController.h"
@@ -50,6 +51,7 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+  self.navigationBarHidden = YES;
   [self setupChildControllers];
   return self;
 }
@@ -59,6 +61,9 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  GameActionManager* gameActionManager = [GameActionManager sharedGameActionManager];
+  if (gameActionManager.navigationController == self)
+    gameActionManager.navigationController = nil;
   [self releaseObjects];
   [super dealloc];
 }
@@ -71,6 +76,7 @@
 - (void) setupChildControllers
 {
   self.splitViewControllerChild = [[[SplitViewController alloc] init] autorelease];
+  [self pushViewController:self.splitViewControllerChild animated:NO];
 
   // These are not child controllers of our own. We are setting them up on
   // behalf of the generic SplitViewController because we don't want to create a
@@ -78,6 +84,8 @@
   self.leftPaneViewController = [[[LeftPaneViewController alloc] init] autorelease];
   self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
   self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
+
+  [GameActionManager sharedGameActionManager].navigationController = self;
 }
 
 // -----------------------------------------------------------------------------
@@ -85,84 +93,9 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
-  self.view = nil;
   self.splitViewControllerChild = nil;
   self.leftPaneViewController = nil;
   self.rightPaneViewController = nil;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
-// -----------------------------------------------------------------------------
-- (void) setSplitViewControllerChild:(SplitViewController*)splitViewControllerChild
-{
-  if (_splitViewControllerChild == splitViewControllerChild)
-    return;
-  if (_splitViewControllerChild)
-  {
-    [_splitViewControllerChild willMoveToParentViewController:nil];
-    // Automatically calls didMoveToParentViewController:
-    [_splitViewControllerChild removeFromParentViewController];
-    [_splitViewControllerChild release];
-    _splitViewControllerChild = nil;
-  }
-  if (splitViewControllerChild)
-  {
-    // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:splitViewControllerChild];
-    [splitViewControllerChild didMoveToParentViewController:self];
-    [splitViewControllerChild retain];
-    _splitViewControllerChild = splitViewControllerChild;
-  }
-}
-
-#pragma mark - UIViewController overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-// -----------------------------------------------------------------------------
-- (void) loadView
-{
-  [super loadView];
-  [self.view addSubview:self.splitViewControllerChild.view];
-
-  // Enabling Auto Layout and installation of constraints is delayed until
-  // viewDidLayoutSubviews because the constraints use topLayoutGuide and
-  // bottomLayoutGuide.
-
-  // Don't change self.splitViewControllerChild.view.backgroundColor because
-  // that color is used for the separator line between the left and right view.
-  // The left and right view must set their own background color.
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-///
-/// We override this method so that we can install Auto Layout constraints that
-/// make use of the topLayoutGuide and bottomLayoutGuide properties of this
-/// UIViewController. We cannot install the constraints in loadView because it
-/// appears that the use of topLayoutGuide/bottomLayoutGuide is restricted to
-/// viewDidLayoutSubviews. Apple's documentation for both the topLayoutGuide and
-/// the bottomLayoutGuide properties says: "Query this property within your
-/// implementation of the viewDidLayoutSubviews method."
-// -----------------------------------------------------------------------------
-- (void) viewDidLayoutSubviews
-{
-  static bool constraintsNotYetInstalled = true;
-  if (constraintsNotYetInstalled)
-  {
-    constraintsNotYetInstalled = false;
-    self.splitViewControllerChild.view.translatesAutoresizingMaskIntoConstraints = NO;
-    // Unfortunately we can't say
-    //   self.edgesForExtendedLayout = UIRectEdgeNone;
-    // because then the split view controller's view extends beneath the status
-    // bar at the top. So instead we ***MUST*** use the VC's layout guides,
-    // which in turn forces us to override viewDidLayoutSubviews.
-    [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self withSubview:self.splitViewControllerChild.view];
-    // We must call this to avoid a crash; this is as per documentation of the
-    // topLayoutGuide and bottomLayoutGuide properties.
-    [self.view layoutSubviews];
-  }
 }
 
 @end

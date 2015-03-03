@@ -23,6 +23,7 @@
 #import "SectionedDocumentViewController.h"
 #import "../archive/ArchiveViewController.h"
 #import "../diagnostics/DiagnosticsViewController.h"
+#import "../play/gameaction/GameActionManager.h"
 #import "../play/playtab/PlayTabController.h"
 #import "../shared/LayoutManager.h"
 #import "../settings/SettingsViewController.h"
@@ -65,6 +66,18 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this MainTabBarController object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  UINavigationController* playTabRootViewController = [self.viewControllers firstObject];
+  GameActionManager* gameActionManager = [GameActionManager sharedGameActionManager];
+  if (gameActionManager.navigationController == playTabRootViewController)
+    gameActionManager.navigationController = nil;
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Private helper for the initializer.
 // -----------------------------------------------------------------------------
 - (void) setupTabControllers
@@ -91,6 +104,8 @@
   // View controllers on the Play tab create their own navigation bar
   UINavigationController* playTabRootViewController = [tabControllers firstObject];
   [playTabRootViewController setNavigationBarHidden:YES animated:NO];
+
+  [GameActionManager sharedGameActionManager].navigationController = playTabRootViewController;
 
   self.viewControllers = tabControllers;
 }

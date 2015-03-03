@@ -90,7 +90,7 @@
 /// the possible display of an alert which the user must confirm before the
 /// command is actually executed.
 // -----------------------------------------------------------------------------
-@interface GameActionManager : NSObject <GameActionsActionSheetDelegate>
+@interface GameActionManager : NSObject <UINavigationControllerDelegate, GameActionsActionSheetDelegate>
 {
 }
 
@@ -109,5 +109,8 @@
 
 @property(nonatomic, assign) id<GameActionManagerUIDelegate> uiDelegate;
 @property(nonatomic, assign) id<GameActionManagerCommandDelegate> commandDelegate;
+/// @brief GameActionManager needs a navigation controller so that it can
+/// push the Game Info view controller.
+@property(nonatomic, assign) UINavigationController* navigationController;
 
 @end

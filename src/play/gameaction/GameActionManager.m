@@ -17,7 +17,7 @@
 
 // Project includes
 #import "GameActionManager.h"
-//#import "GameInfoViewController.h"
+#import "GameInfoViewController.h"
 #import "../model/BoardViewModel.h"
 #import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
@@ -28,8 +28,10 @@
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../command/game/PauseGameCommand.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../shared/LongRunningActionCounter.h"
+#import "../../main/WindowRootViewController.h"
 #import "../../shared/ApplicationStateManager.h"
+#import "../../shared/LongRunningActionCounter.h"
+#import "../../shared/LayoutManager.h"
 
 
 // -----------------------------------------------------------------------------
@@ -40,7 +42,7 @@
 @property(nonatomic, retain) NSMutableDictionary* enabledStates;
 @property(nonatomic, assign) bool visibleStatesNeedUpdate;
 @property(nonatomic, assign) bool enabledStatesNeedUpdate;
-//@property(nonatomic, assign) GameInfoViewController* gameInfoViewController;
+@property(nonatomic, assign) GameInfoViewController* gameInfoViewController;
 @property(nonatomic, retain) GameActionsActionSheetController* gameActionsActionSheetController;
 @end
 
@@ -97,12 +99,14 @@ static GameActionManager* sharedGameActionManager = nil;
     return nil;
   self.uiDelegate = nil;
   self.commandDelegate = nil;
+  self.navigationController = nil;
   self.visibleGameActions = [NSArray array];
   self.enabledStates = [NSMutableDictionary dictionary];
   for (int gameAction = GameActionFirst; gameAction <= GameActionLast; ++gameAction)
     [self.enabledStates setObject:[NSNumber numberWithBool:NO] forKey:[NSNumber numberWithInt:gameAction]];
   self.visibleStatesNeedUpdate = false;
   self.enabledStatesNeedUpdate = false;
+  self.gameInfoViewController = nil;
   self.gameActionsActionSheetController = nil;
   [self setupNotificationResponders];
   return self;
@@ -116,9 +120,11 @@ static GameActionManager* sharedGameActionManager = nil;
   [self removeNotificationResponders];
   self.visibleGameActions = nil;
   self.enabledStates = nil;
+  self.gameInfoViewController = nil;
   self.gameActionsActionSheetController = nil;
   self.uiDelegate = nil;
   self.commandDelegate = nil;
+  self.navigationController = nil;
   [super dealloc];
 }
 
@@ -142,6 +148,8 @@ static GameActionManager* sharedGameActionManager = nil;
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+  [center addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
+
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
@@ -244,12 +252,13 @@ static GameActionManager* sharedGameActionManager = nil;
   GoScore* score = [GoGame sharedGame].score;
   if (! score.scoringEnabled)
     [score calculateWaitUntilDone:true];
-  //xxx
-//  self.gameInfoViewController = [[[GameInfoViewController alloc] init] autorelease];
-//  // We are the navigation controller's delegate. When
-//  // self.gameInfoViewController is pushed/popped we show the navigation
-//  // controller's navigation bar.
-//  [self.navigationController pushViewController:self.gameInfoViewController animated:YES];
+
+  // We need to be the delegate so that we can properly push/pop the "Game Info"
+  // view controller
+  if (! self.navigationController.delegate)
+    self.navigationController.delegate = self;
+  self.gameInfoViewController = [[[GameInfoViewController alloc] init] autorelease];
+  [self.navigationController pushViewController:self.gameInfoViewController animated:YES];
 }
 
 // -----------------------------------------------------------------------------
@@ -266,7 +275,7 @@ static GameActionManager* sharedGameActionManager = nil;
   UIView* viewForPresentingMoreGameActions = [self.uiDelegate viewForPresentingMoreGameActionsByGameActionManager:self];
   if (viewForPresentingMoreGameActions)
   {
-    UIViewController* modalMaster = [ApplicationDelegate sharedDelegate].window.rootViewController;
+    UIViewController* modalMaster = [ApplicationDelegate sharedDelegate].windowRootViewController;
     self.gameActionsActionSheetController = [[[GameActionsActionSheetController alloc] initWithModalMaster:modalMaster delegate:self] autorelease];
     [self.gameActionsActionSheetController showActionSheetFromRect:viewForPresentingMoreGameActions.bounds
                                                             inView:viewForPresentingMoreGameActions];
@@ -278,29 +287,23 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 /// @brief UINavigationControllerDelegate protocol method.
 ///
-/// We are the delegate of the navigation controller on the Play tab. Here we
-/// make sure to show/hide the navigation bar when the "Game Info" view
+/// This override shows/hides the navigation bar when the "Game Info" view
 /// controller is pushed/popped.
-///
-/// @note One interaction that is not obvious is that if the user taps on the
-/// "Play" tab bar icon, the navigation controller will pop the "Game Info" view
-/// controller!
 // -----------------------------------------------------------------------------
-// xxx
-//- (void) navigationController:(UINavigationController*)navigationController
-//       willShowViewController:(UIViewController*)viewController
-//                     animated:(BOOL)animated
-//{
-//  if (viewController == self.gameInfoViewController)
-//  {
-//    self.navigationController.navigationBarHidden = NO;
-//  }
-//  else
-//  {
-//    self.navigationController.navigationBarHidden = YES;
-//    self.gameInfoViewController = nil;
-//  }
-//}
+- (void) navigationController:(UINavigationController*)navigationController
+       willShowViewController:(UIViewController*)viewController
+                     animated:(BOOL)animated
+{
+  if (viewController == self.gameInfoViewController)
+  {
+    navigationController.navigationBarHidden = NO;
+  }
+  else
+  {
+    navigationController.navigationBarHidden = YES;
+    self.gameInfoViewController = nil;
+  }
+}
 
 #pragma mark - GameActionsActionSheetDelegate overrides
 
@@ -321,9 +324,9 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   // Dismiss the "Game Info" view when a new game is about to be started. This
   // typically occurs when a saved game is loaded from the archive.
-  // xxx
-//  if (self.gameInfoViewController)
-//    [self.navigationController popViewControllerAnimated:YES];
+  if (self.gameInfoViewController)
+    [self.navigationController popViewControllerAnimated:YES];
+
   GoGame* oldGame = [notification object];
   GoBoardPosition* boardPosition = oldGame.boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
@@ -444,6 +447,23 @@ static GameActionManager* sharedGameActionManager = nil;
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #UIDeviceOrientationDidChangeNotification
+/// notification.
+// -----------------------------------------------------------------------------
+- (void) deviceOrientationDidChange:(NSNotification*)notification
+{
+  if ([LayoutManager sharedManager].uiType != UITypePhonePortraitOnly)
+  {
+    if (self.gameActionsActionSheetController)
+    {
+      // Dismiss the popover that displays the action sheet because the popover
+      // will be wrongly positioned after the interface has rotated
+      [self.gameActionsActionSheetController cancelActionSheet];
+    }
+  }
 }
 
 #pragma mark - KVO responder

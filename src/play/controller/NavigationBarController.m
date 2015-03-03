@@ -135,29 +135,6 @@
   [self createViews];
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
-
-  // We need to be the Play tab navigation controller's delegate so that we
-  // can properly push/pop the "Game Info" view controller
-  //xxx
-//  self.navigationController.delegate = self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-// -----------------------------------------------------------------------------
-- (void) didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
-{
-  [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
-  //xxx
-//  if ([LayoutManager sharedManager].uiType != UITypePhonePortraitOnly)
-//  {
-//    if (self.gameActionsActionSheetController)
-//    {
-//      // Dismiss the popover that displays the action sheet because the popover
-//      // will be wrongly positioned after the interface has rotated
-//      [self.gameActionsActionSheetController cancelActionSheet];
-//    }
-//  }
 }
 
 #pragma mark - Private helpers for loadView
