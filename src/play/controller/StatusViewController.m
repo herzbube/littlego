@@ -385,22 +385,14 @@
       }
       else
       {
-        if (GoGameStateGameHasStarted == game.state ||
-            (GoGameStateGameHasEnded == game.state && ! game.boardPosition.isLastPosition))
+        enum GoGameState gameState = game.state;
+        if (GoGameStateGameHasStarted == gameState ||
+            GoGameStateGameIsPaused == gameState ||
+            (GoGameStateGameHasEnded == gameState && ! game.boardPosition.isLastPosition))
         {
-          GoMove* move = game.boardPosition.currentMove;
-          if (GoMoveTypePass == move.type)
-          {
-            // TODO fix when GoColor class is added
-            NSString* color;
-            if (move.player.black)
-              color = @"Black";
-            else
-              color = @"White";
-            statusText = [NSString stringWithFormat:@"%@ has passed", color];
-          }
+          statusText = [self statusTextForCurrentAndNextBoardPosition];
         }
-        else if (GoGameStateGameHasEnded == game.state)
+        else if (GoGameStateGameHasEnded == gameState)
         {
           switch (game.reasonForGameHasEnded)
           {
@@ -428,6 +420,63 @@
     }
   }
   self.statusLabel.text = statusText;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for updateStatusLabel.
+// -----------------------------------------------------------------------------
+- (NSString*) statusTextForCurrentAndNextBoardPosition
+{
+  GoGame* game = [GoGame sharedGame];
+  GoBoardPosition* boardPosition = game.boardPosition;
+
+  NSString* colorNextBoardPosition;
+  NSString* colorCurrentBoardPosition;
+  if (boardPosition.currentPlayer.black)
+  {
+    colorNextBoardPosition = @"Black";
+    colorCurrentBoardPosition = @"White";
+  }
+  else
+  {
+    colorNextBoardPosition = @"White";
+    colorCurrentBoardPosition = @"Black";
+  }
+
+  NSString* statusTextCurrentBoardPosition;
+  GoMove* currentMove = boardPosition.currentMove;
+  GoMove* nextMove;
+  if (currentMove)
+  {
+    nextMove = currentMove.next;
+    if (GoMoveTypePlay == currentMove.type)
+      statusTextCurrentBoardPosition = [NSString stringWithFormat:@"%@ played %@", colorCurrentBoardPosition, currentMove.point.vertex.string];
+    else
+      statusTextCurrentBoardPosition = [NSString stringWithFormat:@"%@ passed", colorCurrentBoardPosition];
+  }
+  else
+  {
+    if (boardPosition.isFirstPosition)
+      nextMove = game.firstMove;  // could still be nil if no moves have been made yet
+    else
+      nextMove = nil;
+    statusTextCurrentBoardPosition = @"Game started";
+  }
+
+  NSString* statusTextNextBoardPosition;
+  if (nextMove)
+  {
+    if (GoMoveTypePlay == nextMove.type)
+      statusTextNextBoardPosition = [NSString stringWithFormat:@"%@ will play %@", colorNextBoardPosition, nextMove.point.vertex.string];
+    else
+      statusTextNextBoardPosition = [NSString stringWithFormat:@"%@ will pass", colorNextBoardPosition];
+  }
+  else
+  {
+    statusTextNextBoardPosition = [NSString stringWithFormat:@"%@ to move", colorNextBoardPosition];
+  }
+
+  return [NSString stringWithFormat:@"%@\n%@", statusTextCurrentBoardPosition, statusTextNextBoardPosition];
 }
 
 // -----------------------------------------------------------------------------
