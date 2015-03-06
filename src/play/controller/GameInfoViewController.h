@@ -20,6 +20,20 @@
 #import "../../settings/EditPlayerController.h"
 #import "../../ui/TableViewGridCell.h"
 
+// Forward declarations
+@class GameInfoViewController;
+
+
+// -----------------------------------------------------------------------------
+/// @brief The GameInfoViewControllerCreator protocol is used by
+/// GameInfoViewController to notify its creator when it is about to be
+/// deallocated. The creator thus gets a chance to remove its reference to
+/// the GameInfoViewController object.
+// -----------------------------------------------------------------------------
+@protocol GameInfoViewControllerCreator
+- (void) gameInfoViewControllerWillDeallocate:(GameInfoViewController*)gameInfoViewController;
+@end
+
 
 // -----------------------------------------------------------------------------
 /// @brief The GameInfoViewController class is responsible for managing user
@@ -32,5 +46,7 @@
                                                       EditPlayerDelegate>
 {
 }
+
+@property(nonatomic, assign) id<GameInfoViewControllerCreator> gameInfoViewControllerCreator;
 
 @end

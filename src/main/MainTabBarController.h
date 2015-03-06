@@ -15,7 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-
 // -----------------------------------------------------------------------------
 /// @brief The MainTabBarController class is one of several alternative main
 /// application view controllers. Its responsibility is to let the user navigate

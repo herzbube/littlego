@@ -24,17 +24,93 @@
 
 @implementation PlayTabController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor that returns a device-dependent controller
+/// @brief Convenience constructor that returns a UI type-dependent controller
 /// object that knows how to set up the correct view hierarchy for the current
-/// device.
+/// UI type.
 // -----------------------------------------------------------------------------
 + (PlayTabController*) playTabController
 {
+  PlayTabController* playTabController;
   if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
-    return [[[PlayTabControllerPhone alloc] init] autorelease];
+    playTabController = [[[PlayTabControllerPhone alloc] init] autorelease];
   else
-    return [[[PlayTabControllerPad alloc] init] autorelease];
+    playTabController = [[[PlayTabControllerPad alloc] init] autorelease];
+  return playTabController;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this PlayTabController object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  GameActionManager* gameActionManager = [GameActionManager sharedGameActionManager];
+  if (gameActionManager.gameInfoViewControllerPresenter == self)
+    gameActionManager.gameInfoViewControllerPresenter = nil;
+  [super dealloc];
+}
+
+#pragma mark - UIViewController overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) willMoveToParentViewController:(UIViewController*)parent
+{
+  // We know that our parent must be a UINavigationController. We don't try
+  // to access the property navigationController because we don't know (and
+  // don't try to assume) whether the property has already been set.
+  UINavigationController* parentAsNavigationController = (UINavigationController*)parent;
+  // We need to be the delegate so that we can control navigation bar
+  // visibility. Our willShowViewController... override expects to be called
+  // when we ourselves are pushed to the navigation stack, so the timing for
+  // setting ourselves as the delegate is critical. If we do it in
+  // willMoveToParentViewController:() the timing is right, if we were to do it
+  // in didMoveToParentViewController:() it would be too late.
+  parentAsNavigationController.delegate = self;
+
+  [GameActionManager sharedGameActionManager].gameInfoViewControllerPresenter = self;
+}
+
+#pragma mark - UINavigationControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UINavigationControllerDelegate protocol method.
+///
+/// This override hides the navigation bar when the root view controller is
+/// displayed, and shows the navigation bar when any other view controller is
+/// pushed on the stack.
+// -----------------------------------------------------------------------------
+- (void) navigationController:(UINavigationController*)navigationController
+       willShowViewController:(UIViewController*)viewController
+                     animated:(BOOL)animated
+{
+  if (viewController == self)
+    navigationController.navigationBarHidden = YES;
+  else
+    navigationController.navigationBarHidden = NO;
+}
+
+#pragma mark - GameInfoViewControllerPresenter overrides
+
+// -----------------------------------------------------------------------------
+/// @brief GameInfoViewControllerPresenter protocol method.
+// -----------------------------------------------------------------------------
+- (void) presentGameInfoViewController:(UIViewController*)gameInfoViewController
+{
+  [self.navigationController pushViewController:gameInfoViewController animated:YES];
+
+}
+
+// -----------------------------------------------------------------------------
+/// @brief GameInfoViewControllerPresenter protocol method.
+// -----------------------------------------------------------------------------
+- (void) dismissGameInfoViewController:(UIViewController*)gameInfoViewController
+{
+  if (self.navigationController.visibleViewController == gameInfoViewController)
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 @end

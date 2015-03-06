@@ -162,6 +162,7 @@ enum BoardPositionSectionItem
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+  self.gameInfoViewControllerCreator = nil;
   self.tableView = nil;
   self.boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
   self.kvoNotificationRespondersAreInstalled = false;
@@ -176,6 +177,8 @@ enum BoardPositionSectionItem
   [self removeNotificationResponders];
   self.tableView = nil;
   self.boardViewModel = nil;
+  [self.gameInfoViewControllerCreator gameInfoViewControllerWillDeallocate:self];
+  self.gameInfoViewControllerCreator = nil;
   [super dealloc];
 }
 

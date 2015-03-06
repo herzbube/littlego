@@ -17,7 +17,6 @@
 
 // Project includes
 #import "GameActionManager.h"
-#import "GameInfoViewController.h"
 #import "../model/BoardViewModel.h"
 #import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
@@ -99,7 +98,7 @@ static GameActionManager* sharedGameActionManager = nil;
     return nil;
   self.uiDelegate = nil;
   self.commandDelegate = nil;
-  self.navigationController = nil;
+  self.gameInfoViewControllerPresenter = nil;
   self.visibleGameActions = [NSArray array];
   self.enabledStates = [NSMutableDictionary dictionary];
   for (int gameAction = GameActionFirst; gameAction <= GameActionLast; ++gameAction)
@@ -124,7 +123,7 @@ static GameActionManager* sharedGameActionManager = nil;
   self.gameActionsActionSheetController = nil;
   self.uiDelegate = nil;
   self.commandDelegate = nil;
-  self.navigationController = nil;
+  self.gameInfoViewControllerPresenter = nil;
   [super dealloc];
 }
 
@@ -253,12 +252,15 @@ static GameActionManager* sharedGameActionManager = nil;
   if (! score.scoringEnabled)
     [score calculateWaitUntilDone:true];
 
-  // We need to be the delegate so that we can properly push/pop the "Game Info"
-  // view controller
-  if (! self.navigationController.delegate)
-    self.navigationController.delegate = self;
   self.gameInfoViewController = [[[GameInfoViewController alloc] init] autorelease];
-  [self.navigationController pushViewController:self.gameInfoViewController animated:YES];
+  [self.gameInfoViewControllerPresenter presentGameInfoViewController:self.gameInfoViewController];
+  // Even though we can tell the presenter to dismiss the controller, we are not
+  // in sole control of dismissal, i.e. there are other events that can cause
+  // GameInfoViewController to be dismissed. One known example: The user taps
+  // the "Play" tab bar icon (in layouts where a tab bar is used). When
+  // GameInfoViewController is dismissed it is also deallocated, so we can get
+  // a notification about that from the controller itself.
+  self.gameInfoViewController.gameInfoViewControllerCreator = self;
 }
 
 // -----------------------------------------------------------------------------
@@ -282,29 +284,6 @@ static GameActionManager* sharedGameActionManager = nil;
   }
 }
 
-#pragma mark - UINavigationControllerDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UINavigationControllerDelegate protocol method.
-///
-/// This override shows/hides the navigation bar when the "Game Info" view
-/// controller is pushed/popped.
-// -----------------------------------------------------------------------------
-- (void) navigationController:(UINavigationController*)navigationController
-       willShowViewController:(UIViewController*)viewController
-                     animated:(BOOL)animated
-{
-  if (viewController == self.gameInfoViewController)
-  {
-    navigationController.navigationBarHidden = NO;
-  }
-  else
-  {
-    navigationController.navigationBarHidden = YES;
-    self.gameInfoViewController = nil;
-  }
-}
-
 #pragma mark - GameActionsActionSheetDelegate overrides
 
 // -----------------------------------------------------------------------------
@@ -313,6 +292,16 @@ static GameActionManager* sharedGameActionManager = nil;
 - (void) gameActionsActionSheetControllerDidFinish:(GameActionsActionSheetController*)controller
 {
   self.gameActionsActionSheetController = nil;
+}
+
+#pragma mark - GameInfoViewControllerCreator overrides
+
+// -----------------------------------------------------------------------------
+/// @brief GameInfoViewControllerCreator protocol method.
+// -----------------------------------------------------------------------------
+- (void) gameInfoViewControllerWillDeallocate:(GameInfoViewController*)gameInfoViewController
+{
+  self.gameInfoViewController = nil;
 }
 
 #pragma mark - Notification responders
@@ -325,7 +314,7 @@ static GameActionManager* sharedGameActionManager = nil;
   // Dismiss the "Game Info" view when a new game is about to be started. This
   // typically occurs when a saved game is loaded from the archive.
   if (self.gameInfoViewController)
-    [self.navigationController popViewControllerAnimated:YES];
+    [self.gameInfoViewControllerPresenter dismissGameInfoViewController:self.gameInfoViewController];
 
   GoGame* oldGame = [notification object];
   GoBoardPosition* boardPosition = oldGame.boardPosition;

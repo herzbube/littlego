@@ -16,6 +16,7 @@
 
 
 // Project includes
+#import "GameInfoViewController.h"
 #import "../controller/GameActionsActionSheetController.h"
 
 // Forward declarations
@@ -65,6 +66,21 @@
 - (void) gameActionManager:(GameActionManager*)manager discardOrAlertWithCommand:(CommandBase*)command;
 @end
 
+// -----------------------------------------------------------------------------
+/// @brief The GameInfoViewControllerPresenter protocol lets GameActionManager
+/// delegate the details of presenting and dismissing the
+/// GameInfoViewController, while keeping control over when these operations
+/// take place.
+///
+/// The presenter does not need to know the specific type of the
+/// GameInfoViewController, so GameActionManager uses the base class type
+/// UIViewController to pass the view controller object to the presenter.
+// -----------------------------------------------------------------------------
+@protocol GameInfoViewControllerPresenter
+- (void) presentGameInfoViewController:(UIViewController*)gameInfoViewController;
+- (void) dismissGameInfoViewController:(UIViewController*)gameInfoViewController;
+@end
+
 
 // -----------------------------------------------------------------------------
 /// @brief The GameActionManager class defines an abstract set of game actions
@@ -90,7 +106,7 @@
 /// the possible display of an alert which the user must confirm before the
 /// command is actually executed.
 // -----------------------------------------------------------------------------
-@interface GameActionManager : NSObject <UINavigationControllerDelegate, GameActionsActionSheetDelegate>
+@interface GameActionManager : NSObject <GameActionsActionSheetDelegate, GameInfoViewControllerCreator>
 {
 }
 
@@ -109,8 +125,6 @@
 
 @property(nonatomic, assign) id<GameActionManagerUIDelegate> uiDelegate;
 @property(nonatomic, assign) id<GameActionManagerCommandDelegate> commandDelegate;
-/// @brief GameActionManager needs a navigation controller so that it can
-/// push the Game Info view controller.
-@property(nonatomic, assign) UINavigationController* navigationController;
+@property(nonatomic, assign) id<GameInfoViewControllerPresenter> gameInfoViewControllerPresenter;
 
 @end

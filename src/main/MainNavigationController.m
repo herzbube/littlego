@@ -17,12 +17,9 @@
 
 // Project includes
 #import "MainNavigationController.h"
-#import "../play/gameaction/GameActionManager.h"
 #import "MainTableViewController.h"
 #import "../play/splitview/LeftPaneViewController.h"
-#import "../play/splitview/RightPaneViewController.h"
 #import "../ui/SplitViewController.h"
-#import "../ui/AutoLayoutUtility.h"
 
 
 // -----------------------------------------------------------------------------
@@ -63,8 +60,8 @@
 - (void) dealloc
 {
   GameActionManager* gameActionManager = [GameActionManager sharedGameActionManager];
-  if (gameActionManager.navigationController == self)
-    gameActionManager.navigationController = nil;
+  if (gameActionManager.gameInfoViewControllerPresenter == self)
+    gameActionManager.gameInfoViewControllerPresenter = nil;
   [self releaseObjects];
   [super dealloc];
 }
@@ -96,8 +93,8 @@
   self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
   self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
 
-  [GameActionManager sharedGameActionManager].navigationController = self;
   self.rightPaneViewController.mainMenuPresenter = self;
+  [GameActionManager sharedGameActionManager].gameInfoViewControllerPresenter = self;
 }
 
 #pragma mark - UINavigationControllerDelegate overrides
@@ -117,6 +114,25 @@
     navigationController.navigationBarHidden = YES;
   else
     navigationController.navigationBarHidden = NO;
+}
+
+#pragma mark - GameInfoViewControllerPresenter overrides
+
+// -----------------------------------------------------------------------------
+/// @brief GameInfoViewControllerPresenter protocol method.
+// -----------------------------------------------------------------------------
+- (void) presentGameInfoViewController:(UIViewController*)gameInfoViewController
+{
+  [self pushViewController:gameInfoViewController animated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief GameInfoViewControllerPresenter protocol method.
+// -----------------------------------------------------------------------------
+- (void) dismissGameInfoViewController:(UIViewController*)gameInfoViewController
+{
+  if (self.visibleViewController == gameInfoViewController)
+    [self popViewControllerAnimated:YES];
 }
 
 #pragma mark - MainMenuPresenter overrides

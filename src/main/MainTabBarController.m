@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@
 #import "SectionedDocumentViewController.h"
 #import "../archive/ArchiveViewController.h"
 #import "../diagnostics/DiagnosticsViewController.h"
-#import "../play/gameaction/GameActionManager.h"
 #import "../play/playtab/PlayTabController.h"
 #import "../shared/LayoutManager.h"
 #import "../settings/SettingsViewController.h"
@@ -67,18 +66,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this MainTabBarController object.
-// -----------------------------------------------------------------------------
-- (void) dealloc
-{
-  UINavigationController* playTabRootViewController = [self.viewControllers firstObject];
-  GameActionManager* gameActionManager = [GameActionManager sharedGameActionManager];
-  if (gameActionManager.navigationController == playTabRootViewController)
-    gameActionManager.navigationController = nil;
-  [super dealloc];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Private helper for the initializer.
 // -----------------------------------------------------------------------------
 - (void) setupTabControllers
@@ -101,12 +88,6 @@
   [self createTabControllerForTabType:TabTypeSourceCode tabControllers:tabControllers];
   [self createTabControllerForTabType:TabTypeLicenses tabControllers:tabControllers];
   [self createTabControllerForTabType:TabTypeCredits tabControllers:tabControllers];
-
-  // View controllers on the Play tab create their own navigation bar
-  UINavigationController* playTabRootViewController = [tabControllers firstObject];
-  [playTabRootViewController setNavigationBarHidden:YES animated:NO];
-
-  [GameActionManager sharedGameActionManager].navigationController = playTabRootViewController;
 
   self.viewControllers = tabControllers;
 }

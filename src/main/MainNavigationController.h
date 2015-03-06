@@ -17,6 +17,7 @@
 
 // Project includes
 #import "../play/splitview/RightPaneViewController.h"
+#import "../play/gameaction/GameActionManager.h"
 
 
 // -----------------------------------------------------------------------------
@@ -34,7 +35,7 @@
 ///
 /// @see WindowRootViewController
 // -----------------------------------------------------------------------------
-@interface MainNavigationController : UINavigationController <UINavigationControllerDelegate, MainMenuPresenter>
+@interface MainNavigationController : UINavigationController <UINavigationControllerDelegate, MainMenuPresenter, GameInfoViewControllerPresenter>
 {
 }
 
