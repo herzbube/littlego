@@ -23,6 +23,17 @@
 
 
 // -----------------------------------------------------------------------------
+/// @brief The MainMenuPresenter protocol lets RightPaneViewController delegate
+/// the details of presenting and dismissing the main menu, while keeping
+/// control over when these operations take place.
+// -----------------------------------------------------------------------------
+@protocol MainMenuPresenter
+- (void) presentMainMenu;
+- (void) dismissMainMenu;
+@end
+
+
+// -----------------------------------------------------------------------------
 /// @brief The RightPaneViewController class manages a simple container view
 /// intended to be displayed as the right pane of a split view (i.e. the view
 /// managed by UISplitViewController).
@@ -35,5 +46,6 @@
 }
 
 @property(nonatomic, retain) NavigationBarController* navigationBarController;
+@property(nonatomic, assign) id<MainMenuPresenter> mainMenuPresenter;
 
 @end

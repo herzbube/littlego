@@ -15,6 +15,10 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "../play/splitview/RightPaneViewController.h"
+
+
 // -----------------------------------------------------------------------------
 /// @brief The MainNavigationController class is one of several alternative
 /// main application view controllers. Its responsibility is to let the user
@@ -30,7 +34,7 @@
 ///
 /// @see WindowRootViewController
 // -----------------------------------------------------------------------------
-@interface MainNavigationController : UINavigationController
+@interface MainNavigationController : UINavigationController <UINavigationControllerDelegate, MainMenuPresenter>
 {
 }
 

@@ -20,6 +20,7 @@
 #import "ApplicationDelegate.h"
 #import "DocumentViewController.h"
 #import "LicensesViewController.h"
+#import "MainUtility.h"
 #import "SectionedDocumentViewController.h"
 #import "../archive/ArchiveViewController.h"
 #import "../diagnostics/DiagnosticsViewController.h"
@@ -135,30 +136,8 @@
 {
   if (self.launchImageMode)
     return @"";
-
-  switch (tabType)
-  {
-    case TabTypePlay:
-      return @"Play";
-    case TabTypeSettings:
-      return @"Settings";
-    case TabTypeArchive:
-      return @"Archive";
-    case TabTypeDiagnostics:
-      return @"Diagnostics";
-    case TabTypeHelp:
-      return @"Help";
-    case TabTypeAbout:
-      return @"About";
-    case TabTypeSourceCode:
-      return @"Source Code";
-    case TabTypeLicenses:
-      return @"Licenses";
-    case TabTypeCredits:
-      return @"Credits";
-    default:
-      return nil;
-  }
+  else
+    return [MainUtilty titleStringForTabType:tabType];
 }
 
 // -----------------------------------------------------------------------------
@@ -171,29 +150,9 @@
     UIViewController* rootViewController = [[[UITableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
     return rootViewController;
   }
-
-  switch (tabType)
+  else
   {
-    case TabTypePlay:
-      return [PlayTabController playTabController];
-    case TabTypeSettings:
-      return [SettingsViewController controller];
-    case TabTypeArchive:
-      return [[[ArchiveViewController alloc] init] autorelease];
-    case TabTypeDiagnostics:
-      return [DiagnosticsViewController controller];
-    case TabTypeHelp:
-      return [[[SectionedDocumentViewController alloc] init] autorelease];
-    case TabTypeAbout:
-      return [[[DocumentViewController alloc] init] autorelease];
-    case TabTypeSourceCode:
-      return [[[DocumentViewController alloc] init] autorelease];
-    case TabTypeLicenses:
-      return [[[LicensesViewController alloc] init] autorelease];
-    case TabTypeCredits:
-      return [[[DocumentViewController alloc] init] autorelease];
-    default:
-      return nil;
+    return [MainUtilty rootViewControllerForTabType:tabType];
   }
 }
 
@@ -204,30 +163,8 @@
 {
   if (self.launchImageMode)
     return @"";
-
-  switch (tabType)
-  {
-    case TabTypePlay:
-      return playTabIconResource;
-    case TabTypeSettings:
-      return settingsTabIconResource;
-    case TabTypeArchive:
-      return archiveTabIconResource;
-    case TabTypeDiagnostics:
-      return diagnosticsTabIconResource;
-    case TabTypeHelp:
-      return helpTabIconResource;
-    case TabTypeAbout:
-      return aboutTabIconResource;
-    case TabTypeSourceCode:
-      return sourceCodeTabIconResource;
-    case TabTypeLicenses:
-      return licensesTabIconResource;
-    case TabTypeCredits:
-      return creditsTabIconResource;
-    default:
-      return nil;
-  }
+  else
+    return [MainUtilty iconResourceNameForTabType:tabType];
 }
 
 #pragma mark - UIViewController overrides

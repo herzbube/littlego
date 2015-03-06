@@ -18,6 +18,7 @@
 // Project includes
 #import "MainNavigationController.h"
 #import "../play/gameaction/GameActionManager.h"
+#import "MainTableViewController.h"
 #import "../play/splitview/LeftPaneViewController.h"
 #import "../play/splitview/RightPaneViewController.h"
 #import "../ui/SplitViewController.h"
@@ -51,7 +52,7 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-  self.navigationBarHidden = YES;
+  self.delegate = self;
   [self setupChildControllers];
   return self;
 }
@@ -66,6 +67,16 @@
     gameActionManager.navigationController = nil;
   [self releaseObjects];
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) releaseObjects
+{
+  self.splitViewControllerChild = nil;
+  self.leftPaneViewController = nil;
+  self.rightPaneViewController = nil;
 }
 
 #pragma mark - Container view controller handling
@@ -86,16 +97,50 @@
   self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
 
   [GameActionManager sharedGameActionManager].navigationController = self;
+  self.rightPaneViewController.mainMenuPresenter = self;
+}
+
+#pragma mark - UINavigationControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UINavigationControllerDelegate protocol method.
+///
+/// This override hides the navigation bar when the root view controller is
+/// displayed, and shows the navigation bar when any other view controller is
+/// pushed on the stack.
+// -----------------------------------------------------------------------------
+- (void) navigationController:(UINavigationController*)navigationController
+       willShowViewController:(UIViewController*)viewController
+                     animated:(BOOL)animated
+{
+  if (viewController == self.splitViewControllerChild)
+    navigationController.navigationBarHidden = YES;
+  else
+    navigationController.navigationBarHidden = NO;
+}
+
+#pragma mark - MainMenuPresenter overrides
+
+// -----------------------------------------------------------------------------
+/// @brief MainMenuPresenter protocol method.
+// -----------------------------------------------------------------------------
+- (void) presentMainMenu
+{
+  MainTableViewController* mainTableViewController = [[[MainTableViewController alloc] init] autorelease];
+  [self pushViewController:mainTableViewController animated:YES];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper.
+/// @brief MainMenuPresenter protocol method.
 // -----------------------------------------------------------------------------
-- (void) releaseObjects
+- (void) dismissMainMenu
 {
-  self.splitViewControllerChild = nil;
-  self.leftPaneViewController = nil;
-  self.rightPaneViewController = nil;
+  NSString* errorMessage = @"Not implemented";
+  DDLogError(@"%@: %@", self, errorMessage);
+  NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                   reason:errorMessage
+                                                 userInfo:nil];
+  @throw exception;
 }
 
 @end

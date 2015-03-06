@@ -206,6 +206,16 @@
 		CD7C69C01A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69BE1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m */; };
 		CD7C69C31A9D2086009EC5AD /* GameActionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69C21A9D2086009EC5AD /* GameActionManager.m */; };
 		CD7C69C41A9D2086009EC5AD /* GameActionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69C21A9D2086009EC5AD /* GameActionManager.m */; };
+		CD7C69C91AA66AF6009EC5AD /* main-menu@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C69C81AA66AF6009EC5AD /* main-menu@3x.png */; };
+		CD7C69CA1AA66AF6009EC5AD /* main-menu@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C69C81AA66AF6009EC5AD /* main-menu@3x.png */; };
+		CD7C69DF1AA67C31009EC5AD /* MainUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69DE1AA67C31009EC5AD /* MainUtility.m */; };
+		CD7C69E01AA67C31009EC5AD /* MainUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69DE1AA67C31009EC5AD /* MainUtility.m */; };
+		CD7C69E31AA67EAD009EC5AD /* MainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69E21AA67EAD009EC5AD /* MainTableViewController.m */; };
+		CD7C69E41AA67EAD009EC5AD /* MainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69E21AA67EAD009EC5AD /* MainTableViewController.m */; };
+		CD7C69E71AA9B1B0009EC5AD /* main-menu.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C69E51AA9B1B0009EC5AD /* main-menu.png */; };
+		CD7C69E81AA9B1B0009EC5AD /* main-menu.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C69E51AA9B1B0009EC5AD /* main-menu.png */; };
+		CD7C69E91AA9B1B0009EC5AD /* main-menu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C69E61AA9B1B0009EC5AD /* main-menu@2x.png */; };
+		CD7C69EA1AA9B1B0009EC5AD /* main-menu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C69E61AA9B1B0009EC5AD /* main-menu@2x.png */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -694,6 +704,13 @@
 		CD7C69BE1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameActionButtonBoxDataSource.m; sourceTree = "<group>"; };
 		CD7C69C11A9D2086009EC5AD /* GameActionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameActionManager.h; sourceTree = "<group>"; };
 		CD7C69C21A9D2086009EC5AD /* GameActionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameActionManager.m; sourceTree = "<group>"; };
+		CD7C69C81AA66AF6009EC5AD /* main-menu@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "main-menu@3x.png"; sourceTree = "<group>"; };
+		CD7C69DD1AA67C31009EC5AD /* MainUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainUtility.h; sourceTree = "<group>"; };
+		CD7C69DE1AA67C31009EC5AD /* MainUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainUtility.m; sourceTree = "<group>"; };
+		CD7C69E11AA67EAD009EC5AD /* MainTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainTableViewController.h; sourceTree = "<group>"; };
+		CD7C69E21AA67EAD009EC5AD /* MainTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTableViewController.m; sourceTree = "<group>"; };
+		CD7C69E51AA9B1B0009EC5AD /* main-menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "main-menu.png"; sourceTree = "<group>"; };
+		CD7C69E61AA9B1B0009EC5AD /* main-menu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "main-menu@2x.png"; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
@@ -1052,7 +1069,11 @@
 				CDA097061A9954A3002FCD78 /* MainNavigationController.m */,
 				CD377F0616BD154A00972F04 /* MainTabBarController.h */,
 				CD377F0716BD154A00972F04 /* MainTabBarController.m */,
+				CD7C69E11AA67EAD009EC5AD /* MainTableViewController.h */,
+				CD7C69E21AA67EAD009EC5AD /* MainTableViewController.m */,
 				CD00A35F148C2C26004E1A0C /* main.m */,
+				CD7C69DD1AA67C31009EC5AD /* MainUtility.h */,
+				CD7C69DE1AA67C31009EC5AD /* MainUtility.m */,
 				CD00A360148C2C26004E1A0C /* Prefix.pch */,
 				CD00A361148C2C26004E1A0C /* SectionedDocumentViewController.h */,
 				CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */,
@@ -1593,6 +1614,9 @@
 				CD3982CF192D2F6300F12DCC /* interrupt@2x.png */,
 				CDB0A305152B708B003B2BBF /* licenses.png */,
 				CDB0A306152B708B003B2BBF /* licenses@2x.png */,
+				CD7C69E51AA9B1B0009EC5AD /* main-menu.png */,
+				CD7C69E61AA9B1B0009EC5AD /* main-menu@2x.png */,
+				CD7C69C81AA66AF6009EC5AD /* main-menu@3x.png */,
 				CD3982D2192D2F9700F12DCC /* pass.png */,
 				CD3982D3192D2F9700F12DCC /* pass@2x.png */,
 				CD3982D6192D2FC800F12DCC /* pause.png */,
@@ -2001,6 +2025,7 @@
 				CDE1A17614C1CED200317ECA /* gogrid2x2.png in Resources */,
 				CDE1A17714C1CED200317ECA /* gogrid2x2@2x.png in Resources */,
 				CDE1A17A14C1CED200317ECA /* help.png in Resources */,
+				CD7C69E91AA9B1B0009EC5AD /* main-menu@2x.png in Resources */,
 				CD3982C9192D2ECC00F12DCC /* discard@2x.png in Resources */,
 				CD3982D8192D2FC800F12DCC /* pause.png in Resources */,
 				CDE1A17B14C1CED200317ECA /* help@2x.png in Resources */,
@@ -2039,6 +2064,7 @@
 				CD393F94166EC836009DF814 /* computer-vs-computer.png in Resources */,
 				CD393F95166EC836009DF814 /* computer-vs-computer@2x.png in Resources */,
 				CD3982D0192D2F6300F12DCC /* interrupt.png in Resources */,
+				CD7C69C91AA66AF6009EC5AD /* main-menu@3x.png in Resources */,
 				CD393F96166EC836009DF814 /* human-vs-computer.png in Resources */,
 				CD393F97166EC836009DF814 /* human-vs-computer@2x.png in Resources */,
 				CD393F98166EC836009DF814 /* human-vs-human.png in Resources */,
@@ -2048,6 +2074,7 @@
 				CD9FB5571687E1410042AA89 /* rewindtostart.png in Resources */,
 				CD9FB5581687E1410042AA89 /* rewindtostart@2x.png in Resources */,
 				CD15A476168BA34400D4472A /* back.png in Resources */,
+				CD7C69E71AA9B1B0009EC5AD /* main-menu.png in Resources */,
 				CD15A477168BA34400D4472A /* back@2x.png in Resources */,
 				CD3982C8192D2ECC00F12DCC /* discard.png in Resources */,
 				CD3982D9192D2FC800F12DCC /* pause@2x.png in Resources */,
@@ -2066,7 +2093,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDA10F18198CCBA70060E934 /* images.xcassets in Resources */,
+				CD7C69CA1AA66AF6009EC5AD /* main-menu@3x.png in Resources */,
 				CDE1A19814C1D09A00317ECA /* RegistrationDomainDefaults.plist in Resources */,
+				CD7C69EA1AA9B1B0009EC5AD /* main-menu@2x.png in Resources */,
+				CD7C69E81AA9B1B0009EC5AD /* main-menu.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2093,6 +2123,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD7C69E31AA67EAD009EC5AD /* MainTableViewController.m in Sources */,
 				CDEE1A0B1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,
 				CD1087891323D83F00E83543 /* GtpClient.mm in Sources */,
 				CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */,
@@ -2155,6 +2186,7 @@
 				CD0CCBF214311AD300A3F869 /* GtpLogViewController.m in Sources */,
 				CD0CCC98143140E300A3F869 /* GtpLogItemViewController.m in Sources */,
 				CD0CCEC61439147D00A3F869 /* GtpLogSettingsController.m in Sources */,
+				CD7C69DF1AA67C31009EC5AD /* MainUtility.m in Sources */,
 				CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */,
 				CDA097071A9954A3002FCD78 /* MainNavigationController.m in Sources */,
 				CDCBA6D3184228A0003697E2 /* TableViewVariableHeightCell.m in Sources */,
@@ -2302,6 +2334,7 @@
 				CD85B5BC1401C2AD001715B8 /* GtpResponse.m in Sources */,
 				CD7C69C01A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */,
 				CD85B5C41401C338001715B8 /* Player.m in Sources */,
+				CD7C69E41AA67EAD009EC5AD /* MainTableViewController.m in Sources */,
 				CD85B5C51401C338001715B8 /* PlayerModel.m in Sources */,
 				CD85B5C81401C347001715B8 /* NewGameModel.m in Sources */,
 				CD4D44751A79D0A400272579 /* BWCrashReportTextFormatter.m in Sources */,
@@ -2315,6 +2348,7 @@
 				CDAF17161967FFD500271396 /* BoardViewMetrics.m in Sources */,
 				CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDEF3F4A140D5E4F002D9C1C /* NSStringAdditions.m in Sources */,
+				CD7C69E01AA67C31009EC5AD /* MainUtility.m in Sources */,
 				CDFD9F7018F1D35C0031CBCF /* BoardPositionSettingsController.m in Sources */,
 				CDEE19F419433EAC00DF2389 /* BoardView.m in Sources */,
 				CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */,

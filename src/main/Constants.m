@@ -174,6 +174,7 @@ NSString* manualDocumentResource = @"MANUAL";
 NSString* creditsDocumentResource = @"Credits.html";
 NSString* registrationDomainDefaultsResource = @"RegistrationDomainDefaults.plist";
 NSString* playStoneSoundFileResource = @"wood-on-wood-12.aiff";
+NSString* mainMenuIconResource = @"main-menu.png";
 NSString* playTabIconResource = @"gogrid2x2.png";
 NSString* settingsTabIconResource = @"20-gear-2.png";
 NSString* archiveTabIconResource = @"33-cabinet.png";

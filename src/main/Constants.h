@@ -778,6 +778,7 @@ extern NSString* manualDocumentResource;
 extern NSString* creditsDocumentResource;
 extern NSString* registrationDomainDefaultsResource;
 extern NSString* playStoneSoundFileResource;
+extern NSString* mainMenuIconResource;
 extern NSString* playTabIconResource;
 extern NSString* settingsTabIconResource;
 extern NSString* archiveTabIconResource;

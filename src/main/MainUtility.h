@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,19 +15,20 @@
 // -----------------------------------------------------------------------------
 
 
-// -----------------------------------------------------------------------------
-/// @brief The UIImageAdditions category enhances UIImage by adding convenience
-/// drawing functions that create new images.
-///
-/// @ingroup utility
-// -----------------------------------------------------------------------------
-@interface UIImage(UIImageAdditions)
 
-+ (UIImage*) imageByApplyingUIBarButtonItemStyling:(UIImage*)image;
-- (UIImage*) imageByResizingToSize:(CGSize)newSize;
-+ (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor endColor:(UIColor*)endColor;
-+ (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor middleColor:(UIColor*)middleColor endColor:(UIColor*)endColor;
-+ (UIImage*) gradientImageWithSize:(CGSize)size startColor1:(UIColor*)startColor1 endColor1:(UIColor*)endColor1 startColor2:(UIColor*)startColor2 endColor2:(UIColor*)endColor2;
-+ (UIImage*) paddedImageWithSize:(CGSize)size originalImage:(UIImage*)originalImage;
+// -----------------------------------------------------------------------------
+/// @brief The MainUtilty class is a container for various utility functions
+/// related to managing the main navigation of the application.
+///
+/// All functions in MainUtilty are class methods, so there is no need to create
+/// an instance of MainUtilty.
+// -----------------------------------------------------------------------------
+@interface MainUtilty : NSObject
+{
+}
+
++ (NSString*) titleStringForTabType:(enum TabType)tabType;
++ (NSString*) iconResourceNameForTabType:(enum TabType)tabType;
++ (UIViewController*) rootViewControllerForTabType:(enum TabType)tabType;
 
 @end

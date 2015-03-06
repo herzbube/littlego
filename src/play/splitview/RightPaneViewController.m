@@ -64,6 +64,7 @@
     return nil;
   [self setupUseNavigationBar];
   [self setupChildControllers];
+  self.mainMenuPresenter = nil;
   self.gameActionButtonBoxAutoLayoutConstraints = nil;
   return self;
 }
@@ -85,6 +86,7 @@
     self.gameActionButtonBoxDataSource = nil;
     self.gameActionButtonBoxAutoLayoutConstraints = nil;
   }
+  self.mainMenuPresenter = nil;
   self.discardFutureMovesAlertController = nil;
   [super dealloc];
 }
@@ -253,6 +255,7 @@
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
   [self configureViews];
+  [self setupMainMenuButton];
 }
 
 #pragma mark - Private helpers for loadView
@@ -372,6 +375,49 @@
 - (void) buttonBoxButtonsWillChange
 {
   [self updateGameActionButtonBoxAutoLayoutConstraints];
+}
+
+#pragma mark - Main menu handling
+
+// -----------------------------------------------------------------------------
+/// @brief Creates a button that when tapped causes a main menu to be be
+/// presented that allows the user to navigate away from the Go board to other
+/// main areas of the application.
+// -----------------------------------------------------------------------------
+- (void) setupMainMenuButton
+{
+  if (self.useNavigationBar)
+    return;
+  UIButton* mainMenuButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  [mainMenuButton setImage:[UIImage imageNamed:mainMenuIconResource]
+                  forState:UIControlStateNormal];
+  [mainMenuButton addTarget:self
+                     action:@selector(presentMainMenu:)
+           forControlEvents:UIControlEventTouchUpInside];
+  // TODO xxx same tint as button box
+  mainMenuButton.tintColor = [UIColor blackColor];
+
+  [self.view addSubview:mainMenuButton];
+  mainMenuButton.translatesAutoresizingMaskIntoConstraints = NO;
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+                                          mainMenuButton, @"mainMenuButton",
+                                          nil];
+  // TODO xxx same distances as button box
+  NSMutableArray* visualFormats = [NSMutableArray arrayWithObjects:
+                                   @"H:[mainMenuButton]-15-|",
+                                   @"V:|-15-[mainMenuButton]",
+                                   nil];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+}
+
+
+// -----------------------------------------------------------------------------
+/// @brief Handles a tap on the "main menu" button. Causes the main menu to be
+/// presented.
+// -----------------------------------------------------------------------------
+- (void) presentMainMenu:(id)sender
+{
+  [self.mainMenuPresenter presentMainMenu];
 }
 
 @end
