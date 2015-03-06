@@ -19,10 +19,11 @@
 #import "LeftPaneViewController.h"
 #import "../boardposition/BoardPositionTableListViewController.h"
 #import "../boardposition/BoardPositionToolbarController.h"
+#import "../controller/StatusViewController.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
-#import "../../ui/AutoLayoutUtility.h"
 
 
 // -----------------------------------------------------------------------------
@@ -32,6 +33,7 @@
 @property(nonatomic, assign) bool useBoardPositionToolbar;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 @property(nonatomic, retain) BoardPositionTableListViewController* boardPositionTableListViewController;
+@property(nonatomic, retain) StatusViewController* statusViewController;
 @end
 
 
@@ -62,6 +64,8 @@
 {
   if (self.useBoardPositionToolbar)
     self.boardPositionToolbarController = nil;
+  else
+    self.statusViewController = nil;
   self.boardPositionTableListViewController = nil;
   [super dealloc];
 }
@@ -96,6 +100,8 @@
 {
   if (self.useBoardPositionToolbar)
     self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
+  else
+    self.statusViewController = [[[StatusViewController alloc] init] autorelease];
   self.boardPositionTableListViewController = [[[BoardPositionTableListViewController alloc] init] autorelease];
 }
 
@@ -179,7 +185,27 @@
   }
   else
   {
-    [visualFormats addObject:@"V:|-0-[boardPositionTableListView]-0-|"];
+    UIView* backgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+    [self.view addSubview:backgroundView];
+    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    [viewsDictionary setObject:backgroundView forKey:@"backgroundView"];
+    [visualFormats addObject:@"H:|-0-[backgroundView]-0-|"];
+    // Above the status view there are table view cells. It looks pretty good
+    // if the status view has the same height (although it's a bit wasteful of
+    // vertical space).
+    [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[boardPositionTableListView]-0-[backgroundView(==%d)]-0-|", [UiElementMetrics tableViewCellContentViewHeight]]];
+
+    [backgroundView addSubview:self.statusViewController.view];
+    self.statusViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    UIEdgeInsets margins = UIEdgeInsetsMake(0, [AutoLayoutUtility horizontalSpacingTableViewCell], 0, [AutoLayoutUtility horizontalSpacingTableViewCell]);
+    // The status view does not use margins on its own (because it may also
+    // be displayed in a more space constrained layout), so we need to give it
+    // margins.
+    [AutoLayoutUtility fillSuperview:backgroundView withSubview:self.statusViewController.view margins:margins];
+
+    // Because we want margins we need a background view whose color goes
+    // underneath those margins
+    backgroundView.backgroundColor = [UIColor blackColor];
   }
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];

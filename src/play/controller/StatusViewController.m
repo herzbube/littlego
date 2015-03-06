@@ -30,6 +30,7 @@
 #import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../utility/ExceptionUtility.h"
 #import "../../utility/NSStringAdditions.h"
 
 
@@ -107,6 +108,10 @@
   [self setupAutoLayoutConstraints];
   [self updateAutoLayoutConstraints];
   [self setupNotificationResponders];
+
+  // New controller instances may be created in mid-game after a layout change
+  self.statusLabelNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 #pragma mark - Private helpers for loadView
@@ -136,16 +141,54 @@
 - (void) configureViews
 {
   self.statusLabel.numberOfLines = 0;
+  // Font size must strike a balance between remaining legible and accomodating
+  // the longest possible status text in the most space-constrained application
+  // state. When testing consider this:
+  // - The longest possible status text is the one that includes the player
+  //   name, because that name is variable and can be entered by the user.
+  // - The second-longest status text is the one about the game ending with 2
+  //   pass moves.
+  // - The third-longest status text is the one in scoring mode.
+  // - In layouts where the space available to the status view is fixed: Make
+  //   tests with the player name.
+  // - In layouts where the space available to the status view is variable:
+  //   Make tests both with all three
   CGFloat fontSize;
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
-    fontSize = 9.0f;
-  else
-    fontSize = 10.0f;
+  switch ([LayoutManager sharedManager].uiType)
+  {
+    case UITypePhonePortraitOnly:
+      // Label can have 3 lines. Player names can be somewhat longer than 40
+      // characters but must consist of several words for line breaks.
+      fontSize = 9.0f;
+      break;
+    case UITypePhone:
+      // Portrait: See UITypePhonePortraitOnly.
+      // Landscape: Label can have 3 lines. Player names about 40 characters
+      // long are OK but must consist of several words for line breaks.
+      fontSize = 11.0f;
+      break;
+    case UITypePad:
+      // Label can have 3 lines. Player names can be insanely long and can
+      // even consist of long words.
+      fontSize = 10.0f;
+      break;
+    default:
+      [ExceptionUtility throwInvalidUIType:[LayoutManager sharedManager].uiType];
+  }
   self.statusLabel.font = [UIFont systemFontOfSize:fontSize];
   self.statusLabel.lineBreakMode = NSLineBreakByWordWrapping;
   self.statusLabel.textAlignment = NSTextAlignmentCenter;
 
-  self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+  bool isLandscapeOrientation = UIInterfaceOrientationIsLandscape(self.interfaceOrientation);
+  if ([LayoutManager sharedManager].uiType == UITypePhone && isLandscapeOrientation)
+  {
+    self.statusLabel.textColor = [UIColor whiteColor];
+    self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
+  }
+  else
+  {
+    self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+  }
 }
 
 // -----------------------------------------------------------------------------

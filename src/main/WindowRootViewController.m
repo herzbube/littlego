@@ -21,6 +21,7 @@
 #import "MainTabBarController.h"
 #import "../shared/LayoutManager.h"
 #import "../ui/AutoLayoutUtility.h"
+#import "../utility/ExceptionUtility.h"
 
 
 enum MainApplicationViewControllerType
@@ -106,12 +107,7 @@ enum MainApplicationViewControllerType
     }
     default:
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Unsupported UI type %d", [LayoutManager sharedManager].uiType];
-      DDLogError(@"%@: %@", self, errorMessage);
-      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:errorMessage
-                                                     userInfo:nil];
-      @throw exception;
+      [ExceptionUtility throwInvalidUIType:[LayoutManager sharedManager].uiType];
     }
   }
 }
@@ -136,12 +132,8 @@ enum MainApplicationViewControllerType
     }
     default:
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Unsupported main application view controller type %d", mainApplicationViewControllerType];
-      DDLogError(@"%@: %@", self, errorMessage);
-      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:errorMessage
-                                                     userInfo:nil];
-      @throw exception;
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"Invalid main application view controller type %d"
+                                                  argumentValue:mainApplicationViewControllerType];
     }
   }
 

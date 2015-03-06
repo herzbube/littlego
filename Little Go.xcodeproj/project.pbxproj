@@ -216,6 +216,8 @@
 		CD7C69E81AA9B1B0009EC5AD /* main-menu.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C69E51AA9B1B0009EC5AD /* main-menu.png */; };
 		CD7C69E91AA9B1B0009EC5AD /* main-menu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C69E61AA9B1B0009EC5AD /* main-menu@2x.png */; };
 		CD7C69EA1AA9B1B0009EC5AD /* main-menu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C69E61AA9B1B0009EC5AD /* main-menu@2x.png */; };
+		CD7C69ED1AA9F697009EC5AD /* ExceptionUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69EC1AA9F697009EC5AD /* ExceptionUtility.m */; };
+		CD7C69EE1AA9F697009EC5AD /* ExceptionUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69EC1AA9F697009EC5AD /* ExceptionUtility.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -711,6 +713,8 @@
 		CD7C69E21AA67EAD009EC5AD /* MainTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTableViewController.m; sourceTree = "<group>"; };
 		CD7C69E51AA9B1B0009EC5AD /* main-menu.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "main-menu.png"; sourceTree = "<group>"; };
 		CD7C69E61AA9B1B0009EC5AD /* main-menu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "main-menu@2x.png"; sourceTree = "<group>"; };
+		CD7C69EB1AA9F697009EC5AD /* ExceptionUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExceptionUtility.h; sourceTree = "<group>"; };
+		CD7C69EC1AA9F697009EC5AD /* ExceptionUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExceptionUtility.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
@@ -1674,6 +1678,8 @@
 			children = (
 				CDDD52681485B05B0027476B /* DocumentGenerator.h */,
 				CDDD52691485B05C0027476B /* DocumentGenerator.m */,
+				CD7C69EB1AA9F697009EC5AD /* ExceptionUtility.h */,
+				CD7C69EC1AA9F697009EC5AD /* ExceptionUtility.m */,
 				CD9A49A917107BC9009E7514 /* FontRange.h */,
 				CD9A49AA17107BC9009E7514 /* FontRange.m */,
 				CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */,
@@ -2263,6 +2269,7 @@
 				CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */,
 				CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */,
 				CD1E9E66171806FE00E1B7D1 /* NavigationBarController.m in Sources */,
+				CD7C69ED1AA9F697009EC5AD /* ExceptionUtility.m in Sources */,
 				CDAF171D196869E700271396 /* GameActionsActionSheetController.m in Sources */,
 				CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */,
 				CD1311C217180B45006CE699 /* ScoringModel.m in Sources */,
@@ -2320,6 +2327,7 @@
 				CDEECC6D1992923000BC89F2 /* ArchiveUtility.m in Sources */,
 				CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */,
 				CDA0970C1A99F77F002FCD78 /* SplitViewController.m in Sources */,
+				CD7C69EE1AA9F697009EC5AD /* ExceptionUtility.m in Sources */,
 				CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */,
 				CD85B5A41401C1F0001715B8 /* GoPoint.m in Sources */,
 				CDEE1A0C1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,

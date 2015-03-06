@@ -26,10 +26,15 @@
 {
 }
 
-+ (NSArray*) fillSuperview:(UIView*)superview withSubview:(UIView*)subview;
++ (NSArray*) fillSuperview:(UIView*)superview
+               withSubview:(UIView*)subview;
++ (NSArray*) fillSuperview:(UIView*)superview
+               withSubview:(UIView*)subview
+                   margins:(UIEdgeInsets)margins;
 + (NSArray*) fillAreaBetweenGuidesOfViewController:(UIViewController*)viewController
                                        withSubview:(UIView*)subview;
-+ (NSArray*) centerSubview:(UIView*)subview inSuperview:(UIView*)superview;
++ (NSArray*) centerSubview:(UIView*)subview
+               inSuperview:(UIView*)superview;
 + (NSLayoutConstraint*) centerSubview:(UIView*)subview
                           inSuperview:(UIView*)superview
                                onAxis:(UILayoutConstraintAxis)axis;
