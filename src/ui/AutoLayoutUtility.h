@@ -42,6 +42,11 @@
                         withSecondView:(UIView*)secondView
                            onAttribute:(NSLayoutAttribute)attribute
                       constraintHolder:(UIView*)constraintHolder;
++ (NSLayoutConstraint*) makeSquare:(UIView*)view
+                  constraintHolder:(UIView*)constraintHolder;
++ (NSLayoutConstraint*) setAspectRatio:(CGFloat)multiplier
+                                  view:(UIView*)view
+                      constraintHolder:(UIView*)constraintHolder;
 + (NSArray*) installVisualFormats:(NSArray*)visualFormats
                         withViews:(NSDictionary*)viewsDictionary
                            inView:(UIView*)view;

@@ -26,7 +26,9 @@
 #import "../gesture/TwoFingerTapGestureController.h"
 #import "../model/BoardViewMetrics.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -147,15 +149,8 @@
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
 
-  // The background image is quite large, so we don't use UIImage namedImage:()
-  // because that method caches the image in the background. We don't need
-  // caching because we only load the image once, so not using namedImage:()
-  // saves us quite a bit of valuable memory.
-  NSString* imagePath = [[NSBundle mainBundle] pathForResource:woodenBackgroundImageResource
-                                                        ofType:nil];
-  NSData* imageData = [NSData dataWithContentsOfFile:imagePath];
-  UIImage* image = [UIImage imageWithData:imageData];
-  self.view.backgroundColor = [UIColor colorWithPatternImage:image];
+  if (UITypePhonePortraitOnly == [LayoutManager sharedManager].uiType)
+    self.view.backgroundColor = [UIColor woodenBackgroundColor];
 
   self.boardView.backgroundColor = [UIColor clearColor];
   self.boardView.delegate = self;

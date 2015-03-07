@@ -37,13 +37,18 @@
 // -----------------------------------------------------------------------------
 @interface RightPaneViewController()
 @property(nonatomic, assign) bool useNavigationBar;
+@property(nonatomic, retain) UIView* woodenBackgroundView;
+@property(nonatomic, retain) UIView* leftColumnView;
+@property(nonatomic, retain) UIView* rightColumnView;
 @property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
 @property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
 @property(nonatomic, retain) ButtonBoxController* gameActionButtonBoxController;
 @property(nonatomic, retain) GameActionButtonBoxDataSource* gameActionButtonBoxDataSource;
+@property(nonatomic, retain) NSArray* boardViewAutoLayoutConstraints;
 @property(nonatomic, retain) NSArray* gameActionButtonBoxAutoLayoutConstraints;
+@property(nonatomic, retain) UIButton* mainMenuButton;
 @end
 
 
@@ -65,7 +70,12 @@
   [self setupUseNavigationBar];
   [self setupChildControllers];
   self.mainMenuPresenter = nil;
+  self.woodenBackgroundView = nil;
+  self.leftColumnView = nil;
+  self.rightColumnView = nil;
+  self.boardViewAutoLayoutConstraints = nil;
   self.gameActionButtonBoxAutoLayoutConstraints = nil;
+  self.mainMenuButton = nil;
   return self;
 }
 
@@ -80,14 +90,19 @@
   }
   else
   {
+    self.leftColumnView = nil;
+    self.rightColumnView = nil;
     self.boardPositionButtonBoxController = nil;
     self.boardPositionButtonBoxDataSource = nil;
     self.gameActionButtonBoxController = nil;
     self.gameActionButtonBoxDataSource = nil;
     self.gameActionButtonBoxAutoLayoutConstraints = nil;
+    self.mainMenuButton = nil;
   }
   self.mainMenuPresenter = nil;
+  self.woodenBackgroundView = nil;
   self.discardFutureMovesAlertController = nil;
+  self.boardViewAutoLayoutConstraints = nil;
   [super dealloc];
 }
 
@@ -255,7 +270,6 @@
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
   [self configureViews];
-  [self setupMainMenuButton];
 }
 
 #pragma mark - Private helpers for loadView
@@ -265,15 +279,25 @@
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
-  [self.view addSubview:self.boardViewController.view];
+  self.woodenBackgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.view addSubview:self.woodenBackgroundView];
+  [self.woodenBackgroundView addSubview:self.boardViewController.view];
   if (self.useNavigationBar)
   {
     [self.view addSubview:self.navigationBarController.view];
   }
   else
   {
-    [self.view addSubview:self.boardPositionButtonBoxController.view];
-    [self.view addSubview:self.gameActionButtonBoxController.view];
+    self.leftColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+    [self.woodenBackgroundView addSubview:self.leftColumnView];
+    [self.leftColumnView addSubview:self.boardPositionButtonBoxController.view];
+
+    self.rightColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+    [self.woodenBackgroundView addSubview:self.rightColumnView];
+    [self.rightColumnView addSubview:self.gameActionButtonBoxController.view];
+
+    self.mainMenuButton = [UIButton buttonWithType:UIButtonTypeSystem];
+    [self.rightColumnView addSubview:self.mainMenuButton];
   }
 }
 
@@ -285,47 +309,93 @@
   self.automaticallyAdjustsScrollViewInsets = NO;
 
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                          self.boardViewController.view, @"boardView",
-                                          nil];
-  NSMutableArray* visualFormats = [NSMutableArray arrayWithObjects:
-                                   @"H:|-0-[boardView]-0-|",
-                                   nil];
+  // The board view should be square. This is only the aspect ratio, we still
+  // need the actual dimension.
+  [AutoLayoutUtility makeSquare:self.boardViewController.view constraintHolder:self.woodenBackgroundView];
+  // We determine the dimension of the square dynamically by looking at the size
+  // of the superview
+  [self updateBoardViewAutoLayoutConstraints];
 
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
   if (self.useNavigationBar)
   {
     self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
     [viewsDictionary setObject:self.navigationBarController.view forKey:@"navigationBarView"];
+    [viewsDictionary setObject:self.woodenBackgroundView forKey:@"woodenBackgroundView"];
     [visualFormats addObject:@"H:|-0-[navigationBarView]-0-|"];
+    [visualFormats addObject:@"H:|-0-[woodenBackgroundView]-0-|"];
     // Don't need to specify height value for navigationBarView because
     // UINavigationBar specifies a height value in its intrinsic content size
-    [visualFormats addObject:@"V:|-0-[navigationBarView]-0-[boardView]-0-|"];
+    [visualFormats addObject:@"V:|-0-[navigationBarView]-0-[woodenBackgroundView]-0-|"];
+    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
   }
   else
   {
+    self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    [AutoLayoutUtility fillSuperview:self.view withSubview:self.woodenBackgroundView];
+
+    // The board view is square and horizontally centered, which means that
+    // there is a dynamic amount of width left. We need left/right columns that
+    // can horizontally expand and take up that width. The button boxes have
+    // fixed width, so we need to wrap them in superviews that can expand.
+    self.leftColumnView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.rightColumnView.translatesAutoresizingMaskIntoConstraints = NO;
+    [viewsDictionary setObject:self.leftColumnView forKey:@"leftColumnView"];
+    [viewsDictionary setObject:self.boardViewController.view forKey:@"boardView"];
+    [viewsDictionary setObject:self.rightColumnView forKey:@"rightColumnView"];
+    // The board view is anchored at the horizontal center and has a defined
+    // width. By aligning the column edges with the board view edges and by NOT
+    // specifying any column widths we guarantee that the column views will
+    // horizontally expand.
+    [visualFormats addObject:@"H:|-0-[leftColumnView]-0-[boardView]-0-[rightColumnView]-0-|"];
+    [visualFormats addObject:@"V:|-0-[leftColumnView]-0-|"];
+    [visualFormats addObject:@"V:|-0-[rightColumnView]-0-|"];
+    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.woodenBackgroundView];
+
+    [viewsDictionary removeAllObjects];
+    [visualFormats removeAllObjects];
     self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    self.gameActionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
     [viewsDictionary setObject:self.boardPositionButtonBoxController.view forKey:@"boardPositionButtonBox"];
-    [viewsDictionary setObject:self.gameActionButtonBoxController.view forKey:@"gameActionButtonBox"];
-    [visualFormats addObject:@"V:|-0-[boardView]-0-|"];
     // TODO xxx proper placement
-    [visualFormats addObject:[NSString stringWithFormat:@"H:|-15-[boardPositionButtonBox(==%f)]", self.boardPositionButtonBoxController.buttonBoxSize.width]];
-    [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]-15-|", self.boardPositionButtonBoxController.buttonBoxSize.height]];
+    [visualFormats addObject:@"H:|-15-[boardPositionButtonBox]"];
+    [visualFormats addObject:@"V:[boardPositionButtonBox]-15-|"];
+    [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox(==%f)]", self.boardPositionButtonBoxController.buttonBoxSize.width]];
+    [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]", self.boardPositionButtonBoxController.buttonBoxSize.height]];
+    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.leftColumnView];
+
+    [viewsDictionary removeAllObjects];
+    [visualFormats removeAllObjects];
+    self.mainMenuButton.translatesAutoresizingMaskIntoConstraints = NO;
+    self.gameActionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [viewsDictionary setObject:self.mainMenuButton forKey:@"mainMenuButton"];
+    [viewsDictionary setObject:self.gameActionButtonBoxController.view forKey:@"gameActionButtonBox"];
+    // TODO xxx proper placement
+    [visualFormats addObject:@"V:|-15-[mainMenuButton]"];
     [visualFormats addObject:@"H:[gameActionButtonBox]-15-|"];
     [visualFormats addObject:@"V:[gameActionButtonBox]-15-|"];
+    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.rightColumnView];
+    // The main menu button is not in a box, so has not the same width as the
+    // game action button box. To make it look good we horizontally center it on
+    // the game action button box.
+    [AutoLayoutUtility alignFirstView:self.mainMenuButton
+                       withSecondView:self.gameActionButtonBoxController.view
+                          onAttribute:NSLayoutAttributeCenterX
+                     constraintHolder:self.rightColumnView];
+
+    // Size (specifically height) of gameActionButtonBox is variable,
+    // constraints are managed dynamically
+    [self updateGameActionButtonBoxAutoLayoutConstraints];
   }
 
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
-
-  if (! self.useNavigationBar)
-    [self updateGameActionButtonBoxAutoLayoutConstraints];
 }
 
 // TODO xxx document
 - (void) updateGameActionButtonBoxAutoLayoutConstraints
 {
   if (self.gameActionButtonBoxAutoLayoutConstraints)
-    [self.view removeConstraints:self.gameActionButtonBoxAutoLayoutConstraints];
+    [self.rightColumnView removeConstraints:self.gameActionButtonBoxAutoLayoutConstraints];
 
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.gameActionButtonBoxController.view, @"gameActionButtonBox",
@@ -334,7 +404,80 @@
                                    [NSString stringWithFormat:@"H:[gameActionButtonBox(==%f)]", self.gameActionButtonBoxController.buttonBoxSize.width],
                                    [NSString stringWithFormat:@"V:[gameActionButtonBox(==%f)]", self.gameActionButtonBoxController.buttonBoxSize.height],
                                    nil];
-  self.gameActionButtonBoxAutoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+  self.gameActionButtonBoxAutoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
+                                                                                withViews:viewsDictionary
+                                                                                   inView:self.rightColumnView];
+}
+
+// TODO xxx document
+- (void) updateBoardViewAutoLayoutConstraints
+{
+  if (self.boardViewAutoLayoutConstraints)
+    [self.woodenBackgroundView removeConstraints:self.boardViewAutoLayoutConstraints];
+
+  NSMutableArray* boardViewAutoLayoutConstraints = [NSMutableArray array];
+  
+  CGSize superViewSize = self.woodenBackgroundView.bounds.size;
+  CGFloat dimension = MIN(superViewSize.width, superViewSize.height);
+  bool superviewHasPortraitOrientation = (superViewSize.height > superViewSize.width);
+
+  // todo xxx remove if not needed
+  CGSize destinationSize = CGSizeMake(dimension, dimension);
+  NSLog(@"current size = %@, destination size = %@, bgview size = %@",
+        NSStringFromCGSize(self.boardViewController.view.bounds.size),
+        NSStringFromCGSize(destinationSize),
+        NSStringFromCGSize(superViewSize));
+
+  // Choose whichever is the superview's smaller dimension. We know that the
+  // board view is constrained to be square, so we need to constrain only one
+  // dimension to define the view size.
+  NSLayoutAttribute dimensionToConstrain;
+  // We also need to place the board view. The first part is to align it to one
+  // of the superview edges from which it can freely flow to take up the entire
+  // extent of the superview.
+  NSLayoutAttribute alignConstraintAxis;
+  // The second part of placing the board view is to center it on the axis on
+  // which it won't take up the entire extent of the superview. This evenly
+  // distributes the remaining space not taken up by the board view. Other
+  // content can then be placed into that space.
+  UILayoutConstraintAxis centerConstraintAxis;
+  if (superviewHasPortraitOrientation)
+  {
+    dimensionToConstrain = NSLayoutAttributeWidth;
+    alignConstraintAxis = NSLayoutAttributeLeft;
+    centerConstraintAxis = UILayoutConstraintAxisVertical;
+  }
+  else
+  {
+    dimensionToConstrain = NSLayoutAttributeHeight;
+    alignConstraintAxis = NSLayoutAttributeTop;
+    centerConstraintAxis = UILayoutConstraintAxisHorizontal;
+  }
+
+  NSLayoutConstraint* dimensionConstraint = [AutoLayoutUtility alignFirstView:self.boardViewController.view
+                                                               withSecondView:self.woodenBackgroundView
+                                                                  onAttribute:dimensionToConstrain
+                                                             constraintHolder:self.woodenBackgroundView];
+  [boardViewAutoLayoutConstraints addObject:dimensionConstraint];
+
+  NSLayoutConstraint* alignConstraint = [AutoLayoutUtility alignFirstView:self.boardViewController.view
+                                                           withSecondView:self.woodenBackgroundView
+                                                              onAttribute:alignConstraintAxis
+                                                         constraintHolder:self.woodenBackgroundView];
+  [boardViewAutoLayoutConstraints addObject:alignConstraint];
+
+  NSLayoutConstraint* centerConstraint = [AutoLayoutUtility centerSubview:self.boardViewController.view
+                                                              inSuperview:self.woodenBackgroundView
+                                                                   onAxis:centerConstraintAxis];
+  [boardViewAutoLayoutConstraints addObject:centerConstraint];
+
+  // Remember constraints so that we can remove them when a layout change occurs
+  self.boardViewAutoLayoutConstraints = boardViewAutoLayoutConstraints;
+
+  // BoardViewController relies on viewDidLayoutSubviews to update the content
+  // size of its scroll view
+  // todo xxx remove if not needed
+//  [self.boardViewController.view setNeedsLayout];
 }
 
 // -----------------------------------------------------------------------------
@@ -345,6 +488,7 @@
   // Set a color (should be the same as the main window's) because we need to
   // paint over the parent split view background color.
   self.view.backgroundColor = [UIColor whiteColor];
+  self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
 
   // TODO xxx proper colors
   //  self.boardPositionButtonBoxController.view.backgroundColor = [UIColor navigationbarBackgroundColor];
@@ -364,6 +508,22 @@
   self.gameActionButtonBoxController.collectionView.backgroundView.backgroundColor = [UIColor whiteColor];
   self.gameActionButtonBoxController.collectionView.backgroundView.layer.borderWidth = 1;
   self.gameActionButtonBoxController.collectionView.backgroundView.alpha = 0.6f;
+
+  [self.mainMenuButton setImage:[UIImage imageNamed:mainMenuIconResource]
+                       forState:UIControlStateNormal];
+  [self.mainMenuButton addTarget:self
+                          action:@selector(presentMainMenu:)
+                forControlEvents:UIControlEventTouchUpInside];
+  // TODO xxx same tint as button box
+  self.mainMenuButton.tintColor = [UIColor blackColor];
+}
+
+#pragma mark - UIViewController overrides
+
+/// xxx document
+- (void) viewDidLayoutSubviews
+{
+  [self updateBoardViewAutoLayoutConstraints];
 }
 
 #pragma mark - ButtonBoxControllerDataDelegate overrides
@@ -378,38 +538,6 @@
 }
 
 #pragma mark - Main menu handling
-
-// -----------------------------------------------------------------------------
-/// @brief Creates a button that when tapped causes a main menu to be be
-/// presented that allows the user to navigate away from the Go board to other
-/// main areas of the application.
-// -----------------------------------------------------------------------------
-- (void) setupMainMenuButton
-{
-  if (self.useNavigationBar)
-    return;
-  UIButton* mainMenuButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  [mainMenuButton setImage:[UIImage imageNamed:mainMenuIconResource]
-                  forState:UIControlStateNormal];
-  [mainMenuButton addTarget:self
-                     action:@selector(presentMainMenu:)
-           forControlEvents:UIControlEventTouchUpInside];
-  // TODO xxx same tint as button box
-  mainMenuButton.tintColor = [UIColor blackColor];
-
-  [self.view addSubview:mainMenuButton];
-  mainMenuButton.translatesAutoresizingMaskIntoConstraints = NO;
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                          mainMenuButton, @"mainMenuButton",
-                                          nil];
-  // TODO xxx same distances as button box
-  NSMutableArray* visualFormats = [NSMutableArray arrayWithObjects:
-                                   @"H:[mainMenuButton]-15-|",
-                                   @"V:|-15-[mainMenuButton]",
-                                   nil];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
-}
-
 
 // -----------------------------------------------------------------------------
 /// @brief Handles a tap on the "main menu" button. Causes the main menu to be
