@@ -133,7 +133,7 @@ enum DeleteAllSectionItem
   // The following font size factors have been experimentally determined, i.e.
   // what looks good to me on a simulator
   CGFloat fontSizeFactor;
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+  if ([LayoutManager sharedManager].uiType != UITypePad)
     fontSizeFactor = 1.5;
   else
     fontSizeFactor = 2.0;

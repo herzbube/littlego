@@ -157,7 +157,7 @@
 {
   [super loadView];
 
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+  if ([LayoutManager sharedManager].uiType != UITypePad)
   {
     // The default bar is translucent, so we see the white background. On the
     // iPhone this does not look good because we have a toolbar stacked on top

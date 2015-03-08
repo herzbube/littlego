@@ -111,19 +111,14 @@
 // -----------------------------------------------------------------------------
 - (void) setupUseNavigationBar
 {
-  switch ([LayoutManager sharedManager].uiType)
+  if ([LayoutManager sharedManager].uiType == UITypePhone)
   {
-    case UITypePhone:
-    {
-      bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
-      self.useNavigationBar = isPortraitOrientation;
-      break;
-    }
-    default:
-    {
-      self.useNavigationBar = true;
-      break;
-    }
+    bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
+    self.useNavigationBar = isPortraitOrientation;
+  }
+  else
+  {
+    self.useNavigationBar = true;
   }
 }
 

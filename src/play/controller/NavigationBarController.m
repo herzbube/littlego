@@ -26,6 +26,7 @@
 /// @brief Class extension with private properties for NavigationBarController.
 // -----------------------------------------------------------------------------
 @interface NavigationBarController()
+@property(nonatomic, assign) bool variableNavigationbarWidths;
 @property(nonatomic, retain) NSDictionary* gameActionButtons;
 @property(nonatomic, retain) NSArray* buttonOrderList;
 @property(nonatomic, retain) NSArray* visibleGameActions;
@@ -53,6 +54,10 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+  if ([LayoutManager sharedManager].uiType != UITypePad)
+    self.variableNavigationbarWidths = true;
+  else
+      self.variableNavigationbarWidths = false;
   self.gameActionButtons = [NavigationBarController gameActionButtons];
   self.buttonOrderList = [NavigationBarController buttonOrderList];
   self.visibleGameActions = [NSArray array];
@@ -200,7 +205,7 @@
   //   the status view use the exact same position and size as the navigation
   //   bar over which it must "hover".
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            (([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+                            (self.variableNavigationbarWidths
                              ? @"H:|-0-[leftNavigationBar]-0-[centerNavigationBar]-0-[rightNavigationBar]-0-|"
                              : @"H:|-0-[leftNavigationBar]-0-[centerNavigationBar(==leftNavigationBar)]-0-[rightNavigationBar(==leftNavigationBar)]-0-|"),
                             @"H:[leftNavigationBar]-0-[statusView(==centerNavigationBar)]",
@@ -213,7 +218,7 @@
                                 withViews:viewsDictionary
                                    inView:self.view];
 
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+  if (self.variableNavigationbarWidths)
   {
     self.leftNavigationBarWidthConstraint = [NSLayoutConstraint constraintWithItem:self.leftNavigationBar
                                                                          attribute:NSLayoutAttributeWidth
@@ -269,7 +274,7 @@
 {
   [self populateLeftNavigationBar];
   [self populateRightNavigationBar];
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+  if (self.variableNavigationbarWidths)
     [self updateNavigationBarWidths];
 }
 

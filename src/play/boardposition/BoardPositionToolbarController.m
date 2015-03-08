@@ -88,7 +88,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+  if ([LayoutManager sharedManager].uiType != UITypePad)
   {
     self.boardPositionListViewController = [[[BoardPositionListViewController alloc] init] autorelease];
     self.currentBoardPositionViewController = [[[CurrentBoardPositionViewController alloc] init] autorelease];
@@ -164,7 +164,7 @@
   self.toolbar.delegate = self;
 
   [self setupBarButtonItems];
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+  if ([LayoutManager sharedManager].uiType != UITypePad)
     [self setupBoardPositionViews];
 
   self.toolbarNeedsPopulation = true;
@@ -344,7 +344,7 @@
 // -----------------------------------------------------------------------------
 - (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar
 {
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+  if ([LayoutManager sharedManager].uiType != UITypePad)
     return UIBarPositionBottom;
   else
     return UIBarPositionTop;

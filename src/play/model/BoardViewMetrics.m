@@ -94,18 +94,18 @@
   self.contentsScale = [UIScreen mainScreen].scale;
   self.tileSize = CGSizeMake(128, 128);
   self.minimumAbsoluteZoomScale = 1.0f;
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+  if ([LayoutManager sharedManager].uiType != UITypePad)
     self.maximumAbsoluteZoomScale = iPhoneMaximumZoomScale;
   else
     self.maximumAbsoluteZoomScale = iPadMaximumZoomScale;
   self.lineColor = [UIColor blackColor];
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+  if ([LayoutManager sharedManager].uiType != UITypePad)
     self.boundingLineWidth = 2;
   else
     self.boundingLineWidth = 3;
   self.normalLineWidth = 1;
   self.starPointColor = [UIColor blackColor];
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+  if ([LayoutManager sharedManager].uiType != UITypePad)
     self.starPointRadius = 3;
   else
     self.starPointRadius = 5;
@@ -135,7 +135,7 @@
   // The maximum can be any size that still looks good. On the iPad we allow
   // a larger maximum font size because we have more space available.
   int maximumFontSize;
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+  if ([LayoutManager sharedManager].uiType != UITypePad)
     maximumFontSize = 30;
   else
     maximumFontSize = 40;

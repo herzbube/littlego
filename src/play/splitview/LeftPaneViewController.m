@@ -75,19 +75,14 @@
 // -----------------------------------------------------------------------------
 - (void) setupUseBoardPositionToolbar
 {
-  switch ([LayoutManager sharedManager].uiType)
+  if ([LayoutManager sharedManager].uiType == UITypePhone)
   {
-    case UITypePhone:
-    {
-      bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
-      self.useBoardPositionToolbar = isPortraitOrientation;
-      break;
-    }
-    default:
-    {
-      self.useBoardPositionToolbar = true;
-      break;
-    }
+    bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
+    self.useBoardPositionToolbar = isPortraitOrientation;
+  }
+  else
+  {
+    self.useBoardPositionToolbar = true;
   }
 }
 

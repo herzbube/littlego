@@ -34,10 +34,11 @@
 + (PlayTabController*) playTabController
 {
   PlayTabController* playTabController;
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+  if ([LayoutManager sharedManager].uiType != UITypePad)
     playTabController = [[[PlayTabControllerPhone alloc] init] autorelease];
   else
     playTabController = [[[PlayTabControllerPad alloc] init] autorelease];
+  playTabController.edgesForExtendedLayout = UIRectEdgeNone;
   playTabController.automaticallyAdjustsScrollViewInsets = NO;
   return playTabController;
 }
