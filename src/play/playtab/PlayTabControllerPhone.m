@@ -196,9 +196,6 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.edgesForExtendedLayout = UIRectEdgeNone;
-  self.automaticallyAdjustsScrollViewInsets = NO;
-
   self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;

@@ -38,6 +38,7 @@
     playTabController = [[[PlayTabControllerPhone alloc] init] autorelease];
   else
     playTabController = [[[PlayTabControllerPad alloc] init] autorelease];
+  playTabController.automaticallyAdjustsScrollViewInsets = NO;
   return playTabController;
 }
 

@@ -178,10 +178,6 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  // This is required so that the bottom rows of self.boardPositionListTableView
-  // remain visible after a portrait-to-landscape interface rotation
-  self.automaticallyAdjustsScrollViewInsets = NO;
-
   self.currentBoardPositionTableView.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionListTableView.translatesAutoresizingMaskIntoConstraints = NO;
 

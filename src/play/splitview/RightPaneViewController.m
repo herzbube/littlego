@@ -306,8 +306,6 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.automaticallyAdjustsScrollViewInsets = NO;
-
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   // The board view should be square. This is only the aspect ratio, we still
   // need the actual dimension.
