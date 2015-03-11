@@ -42,6 +42,9 @@
 /// BoardPositionTableListViewController.
 // -----------------------------------------------------------------------------
 @interface BoardPositionTableListViewController()
+/// @brief Prevents unregistering by dealloc if registering hasn't happened
+/// yet. Registering may not happen if the controller's view is never loaded.
+@property(nonatomic, assign) bool notificationRespondersAreSetup;
 @property(nonatomic, retain) UITableView* currentBoardPositionTableView;
 @property(nonatomic, retain) UITableView* boardPositionListTableView;
 @property(nonatomic, assign) bool tappingEnabled;
@@ -73,6 +76,7 @@
   if (! self)
     return nil;
   [self releaseObjects];
+  self.notificationRespondersAreSetup = false;
   self.tappingEnabled = true;
   self.allDataNeedsUpdate = false;
   self.currentBoardPositionNeedsUpdate = false;
@@ -211,6 +215,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
+  if (self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = true;
+  
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
@@ -232,6 +240,10 @@
 // -----------------------------------------------------------------------------
 - (void) removeNotificationResponders
 {
+  if (! self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = false;
+  
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];

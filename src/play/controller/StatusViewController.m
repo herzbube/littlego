@@ -38,6 +38,9 @@
 /// @brief Class extension with private properties for StatusViewController.
 // -----------------------------------------------------------------------------
 @interface StatusViewController()
+/// @brief Prevents unregistering by dealloc if registering hasn't happened
+/// yet. Registering may not happen if the controller's view is never loaded.
+@property(nonatomic, assign) bool notificationRespondersAreSetup;
 @property(nonatomic, retain) UILabel* statusLabel;
 @property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
 @property(nonatomic, assign) bool activityIndicatorNeedsUpdate;
@@ -65,6 +68,7 @@
   if (! self)
     return nil;
   [self releaseObjects];
+  self.notificationRespondersAreSetup = false;
   self.activityIndicatorNeedsUpdate = false;
   self.statusLabelNeedsUpdate = false;
   self.shouldDisplayActivityIndicator = false;
@@ -256,6 +260,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
+  if (self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = true;
+
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
@@ -278,6 +286,10 @@
 // -----------------------------------------------------------------------------
 - (void) removeNotificationResponders
 {
+  if (! self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = false;
+  
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [[ApplicationDelegate sharedDelegate].scoringModel removeObserver:self forKeyPath:@"scoreMarkMode"];
