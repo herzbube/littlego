@@ -27,8 +27,8 @@
 {
 }
 
-+ (NSString*) titleStringForTabType:(enum TabType)tabType;
-+ (NSString*) iconResourceNameForTabType:(enum TabType)tabType;
-+ (UIViewController*) rootViewControllerForTabType:(enum TabType)tabType;
++ (NSString*) titleStringForUIArea:(enum UIArea)uiArea;
++ (NSString*) iconResourceNameForUIArea:(enum UIArea)uiArea;
++ (UIViewController*) rootViewControllerForUIArea:(enum UIArea)uiArea;
 
 @end

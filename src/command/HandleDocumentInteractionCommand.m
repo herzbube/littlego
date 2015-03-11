@@ -34,7 +34,7 @@
   if (success)
   {
     [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
-    [[ApplicationDelegate sharedDelegate].tabBarController activateTab:TabTypeArchive];
+    [[ApplicationDelegate sharedDelegate].tabBarController activateTabForUIArea:UIAreaArchive];
   }
   return success;
 }

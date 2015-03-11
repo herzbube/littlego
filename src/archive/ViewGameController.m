@@ -340,7 +340,7 @@ enum GameAttributesSectionItem
   [self dismissViewControllerAnimated:YES completion:nil];
   if (didStartNewGame)
   {
-    [[ApplicationDelegate sharedDelegate].tabBarController activateTab:TabTypePlay];
+    [[ApplicationDelegate sharedDelegate].tabBarController activateTabForUIArea:UIAreaPlay];
     // No animation necessary, the Play tab is now visible
     [self.navigationController popViewControllerAnimated:NO];
   }

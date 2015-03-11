@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
 // -----------------------------------------------------------------------------
 
 
+// -----------------------------------------------------------------------------
+/// @brief The UIAreaInfo category adds a property to UIViewController that
+/// allows to associate the view controller with an UIArea value.
+// -----------------------------------------------------------------------------
+@interface UIViewController(UIAreaInfo)
 
-// -----------------------------------------------------------------------------
-/// @brief The SectionedDocumentViewController class is responsible for managing
-/// a table view that lists the sections in a structured text file. The text
-/// file is parsed internally by a DocumentGenerator instance.
-// -----------------------------------------------------------------------------
-@interface SectionedDocumentViewController : UITableViewController
-{
-}
+/// @brief The UIArea value associated with this view controller. If not
+/// explicitly set the default value of this property is #UIAreaUnknown.
+@property(nonatomic, assign) enum UIArea uiArea;
 
 @end

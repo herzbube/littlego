@@ -218,6 +218,8 @@
 		CD7C69EA1AA9B1B0009EC5AD /* main-menu@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C69E61AA9B1B0009EC5AD /* main-menu@2x.png */; };
 		CD7C69ED1AA9F697009EC5AD /* ExceptionUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69EC1AA9F697009EC5AD /* ExceptionUtility.m */; };
 		CD7C69EE1AA9F697009EC5AD /* ExceptionUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69EC1AA9F697009EC5AD /* ExceptionUtility.m */; };
+		CD7C69F11AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */; };
+		CD7C69F21AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -715,6 +717,8 @@
 		CD7C69E61AA9B1B0009EC5AD /* main-menu@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "main-menu@2x.png"; sourceTree = "<group>"; };
 		CD7C69EB1AA9F697009EC5AD /* ExceptionUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExceptionUtility.h; sourceTree = "<group>"; };
 		CD7C69EC1AA9F697009EC5AD /* ExceptionUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExceptionUtility.m; sourceTree = "<group>"; };
+		CD7C69EF1AB0F1F3009EC5AD /* UIAreaInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIAreaInfo.h; sourceTree = "<group>"; };
+		CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAreaInfo.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
@@ -1081,6 +1085,8 @@
 				CD00A360148C2C26004E1A0C /* Prefix.pch */,
 				CD00A361148C2C26004E1A0C /* SectionedDocumentViewController.h */,
 				CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */,
+				CD7C69EF1AB0F1F3009EC5AD /* UIAreaInfo.h */,
+				CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */,
 				CDA097011A994D01002FCD78 /* WindowRootViewController.h */,
 				CDA097021A994D01002FCD78 /* WindowRootViewController.m */,
 			);
@@ -2139,6 +2145,7 @@
 				CD10881C13255A4700E83543 /* GoGame.m in Sources */,
 				CD10881F13255A6100E83543 /* GoMove.m in Sources */,
 				CDA096FB1A915085002FCD78 /* LayoutManager.m in Sources */,
+				CD7C69F11AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */,
 				CDA097031A994D01002FCD78 /* WindowRootViewController.m in Sources */,
 				CD10882213255A6B00E83543 /* GoPlayer.m in Sources */,
 				CD10882513255AA600E83543 /* GoPoint.m in Sources */,
@@ -2390,6 +2397,7 @@
 				CD00A36A148C2C6A004E1A0C /* Constants.m in Sources */,
 				CD99EC6314B10749007B3B67 /* GoPointTest.m in Sources */,
 				CDEE19F219433EAC00DF2389 /* BoardTileView.m in Sources */,
+				CD7C69F21AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */,
 				CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */,
 				CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */,
 				CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */,

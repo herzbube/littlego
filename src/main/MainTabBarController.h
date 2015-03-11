@@ -31,9 +31,9 @@
 }
 
 - (void) restoreTabBarControllerAppearanceToUserDefaults;
-- (UIViewController*) tabController:(enum TabType)tabID;
-- (UIView*) tabView:(enum TabType)tabID;
-- (void) activateTab:(enum TabType)tabID;
-- (NSString*) resourceNameForTabType:(enum TabType)tabType;
+- (UIViewController*) tabControllerForUIArea:(enum UIArea)uiArea;
+- (UIView*) tabViewForUIArea:(enum UIArea)uiArea;
+- (void) activateTabForUIArea:(enum UIArea)uiArea;
+- (NSString*) resourceNameForUIArea:(enum UIArea)uiArea;
 
 @end

@@ -17,9 +17,12 @@
 
 // Project includes
 #import "MainNavigationController.h"
+#import "ApplicationDelegate.h"
 #import "MainTableViewController.h"
+#import "UIAreaInfo.h"
 #import "../play/splitview/LeftPaneViewController.h"
 #import "../ui/SplitViewController.h"
+#import "../ui/UiSettingsModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -50,7 +53,18 @@
   if (! self)
     return nil;
   self.delegate = self;
+  // Although we are the delegate, our delegate method is NOT invoked (and the
+  // navigation bar state not set) in the following scenario:
+  // - Interface is in portrait orientation and a modal view controller is
+  //   presented
+  // - User rotates to landscape orientation
+  // - User dismisses modal view controller
+  // This MainNavigationController is now instantiated, but our delegate method
+  // is not invoked for unknown reasons. As a consequence, we have to explicitly
+  // hide the navigation bar state during initialization.
+  self.navigationBarHidden = YES;
   [self setupChildControllers];
+  [self restoreVisibleUIAreaToUserDefaults];
   return self;
 }
 
@@ -84,6 +98,7 @@
 - (void) setupChildControllers
 {
   self.splitViewControllerChild = [[[SplitViewController alloc] init] autorelease];
+  self.splitViewControllerChild.uiArea = UIAreaPlay;
   [self pushViewController:self.splitViewControllerChild animated:NO];
 
   // These are not child controllers of our own. We are setting them up on
@@ -111,9 +126,13 @@
                      animated:(BOOL)animated
 {
   if (viewController == self.splitViewControllerChild)
-    navigationController.navigationBarHidden = YES;
+    self.navigationBarHidden = YES;
   else
-    navigationController.navigationBarHidden = NO;
+    self.navigationBarHidden = NO;
+
+  enum UIArea uiArea = viewController.uiArea;
+  if (uiArea != UIAreaUnknown)
+    [ApplicationDelegate sharedDelegate].uiSettingsModel.visibleUIArea = uiArea;
 }
 
 #pragma mark - GameInfoViewControllerPresenter overrides
@@ -142,8 +161,7 @@
 // -----------------------------------------------------------------------------
 - (void) presentMainMenu
 {
-  MainTableViewController* mainTableViewController = [[[MainTableViewController alloc] init] autorelease];
-  [self pushViewController:mainTableViewController animated:YES];
+  [self presentMainMenuAnimated:YES];
 }
 
 // -----------------------------------------------------------------------------
@@ -157,6 +175,54 @@
                                                    reason:errorMessage
                                                  userInfo:nil];
   @throw exception;
+}
+
+#pragma mark - Managing visible UIArea
+
+// -----------------------------------------------------------------------------
+/// @brief Restores the currently visible UI area to the value stored in the
+/// user defaults.
+///
+/// This method should be invoked before the navigation controller's view
+/// appears, otherwise the user will be able to see the appearance change.
+// -----------------------------------------------------------------------------
+- (void) restoreVisibleUIAreaToUserDefaults
+{
+  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+  enum UIArea visibleUIArea = applicationDelegate.uiSettingsModel.visibleUIArea;
+  switch (visibleUIArea)
+  {
+    case UIAreaPlay:
+    {
+      break;
+    }
+    case UIAreaNavigation:
+    {
+      [self presentMainMenuAnimated:NO];
+      break;
+    }
+    default:
+    {
+      MainTableViewController* mainTableViewController = [self presentMainMenuAnimated:NO];
+      [mainTableViewController presentUIArea:visibleUIArea];
+      break;
+    }
+  }
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Presents the main menu and returns the controller that manages the
+/// menu. The caller decides whether presentation occurs animated or not.
+// -----------------------------------------------------------------------------
+- (MainTableViewController*) presentMainMenuAnimated:(bool)animated
+{
+  MainTableViewController* mainTableViewController = [[[MainTableViewController alloc] init] autorelease];
+  mainTableViewController.uiArea = UIAreaNavigation;
+  BOOL animatedAsBOOL = animated ? YES : NO;
+  [self pushViewController:mainTableViewController animated:animatedAsBOOL];
+  return mainTableViewController;
 }
 
 @end

@@ -21,8 +21,6 @@ const float gDisabledViewAlpha = 0.439216f;
 const float gInfluenceColorAlphaBlack = 0.3;
 const float gInfluenceColorAlphaWhite = 0.6;
 const CFTimeInterval gGoBoardLongPressDelay = 0.15;
-const int indexOfMoreNavigationController = 0x7fffffff;
-const int defaultSelectedTabIndex = 0;
 const int arraySizeDefaultTabOrder = 9;
 const int defaultTabOrder[arraySizeDefaultTabOrder] = {0, 1, 2, 4, 3, 5, 6, 7, 8};
 
@@ -296,7 +294,7 @@ NSString* markNextMoveKey = @"MarkNextMove";
 // Logging settings
 NSString* loggingEnabledKey = @"LoggingEnabled";
 // User interface settings
-NSString* selectedTabIndexKey = @"SelectedTabIndex";
+NSString* visibleUIAreaKey = @"VisibleUIArea";
 NSString* tabOrderKey = @"TabOrder";
 
 // Constants for NSCoding

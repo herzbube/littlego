@@ -20,6 +20,7 @@
 #import "DocumentViewController.h"
 #import "LicensesViewController.h"
 #import "SectionedDocumentViewController.h"
+#import "UIAreaInfo.h"
 #import "../archive/ArchiveViewController.h"
 #import "../diagnostics/DiagnosticsViewController.h"
 #import "../play/playtab/PlayTabController.h"
@@ -30,29 +31,29 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a title string that is appropriate for labelling the
-/// specified tab type.
+/// specified UI area.
 // -----------------------------------------------------------------------------
-+ (NSString*) titleStringForTabType:(enum TabType)tabType
++ (NSString*) titleStringForUIArea:(enum UIArea)uiArea
 {
-  switch (tabType)
+  switch (uiArea)
   {
-    case TabTypePlay:
+    case UIAreaPlay:
       return @"Play";
-    case TabTypeSettings:
+    case UIAreaSettings:
       return @"Settings";
-    case TabTypeArchive:
+    case UIAreaArchive:
       return @"Archive";
-    case TabTypeDiagnostics:
+    case UIAreaDiagnostics:
       return @"Diagnostics";
-    case TabTypeHelp:
+    case UIAreaHelp:
       return @"Help";
-    case TabTypeAbout:
+    case UIAreaAbout:
       return @"About";
-    case TabTypeSourceCode:
+    case UIAreaSourceCode:
       return @"Source Code";
-    case TabTypeLicenses:
+    case UIAreaLicenses:
       return @"Licenses";
-    case TabTypeCredits:
+    case UIAreaCredits:
       return @"Credits";
     default:
       return nil;
@@ -61,29 +62,29 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the name of a resource that can be used to create an icon
-/// image that is appropriate for the specified tab type.
+/// image that is appropriate for the specified UI area.
 // -----------------------------------------------------------------------------
-+ (NSString*) iconResourceNameForTabType:(enum TabType)tabType
++ (NSString*) iconResourceNameForUIArea:(enum UIArea)uiArea
 {
-  switch (tabType)
+  switch (uiArea)
   {
-    case TabTypePlay:
+    case UIAreaPlay:
       return playTabIconResource;
-    case TabTypeSettings:
+    case UIAreaSettings:
       return settingsTabIconResource;
-    case TabTypeArchive:
+    case UIAreaArchive:
       return archiveTabIconResource;
-    case TabTypeDiagnostics:
+    case UIAreaDiagnostics:
       return diagnosticsTabIconResource;
-    case TabTypeHelp:
+    case UIAreaHelp:
       return helpTabIconResource;
-    case TabTypeAbout:
+    case UIAreaAbout:
       return aboutTabIconResource;
-    case TabTypeSourceCode:
+    case UIAreaSourceCode:
       return sourceCodeTabIconResource;
-    case TabTypeLicenses:
+    case UIAreaLicenses:
       return licensesTabIconResource;
-    case TabTypeCredits:
+    case UIAreaCredits:
       return creditsTabIconResource;
     default:
       return nil;
@@ -92,33 +93,46 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a new instance of the root view controller that manages the
-/// view hierarchy for the specified tab type.
+/// view hierarchy for the specified UI area.
 // -----------------------------------------------------------------------------
-+ (UIViewController*) rootViewControllerForTabType:(enum TabType)tabType
++ (UIViewController*) rootViewControllerForUIArea:(enum UIArea)uiArea
 {
-  switch (tabType)
+  UIViewController* rootViewController;
+  switch (uiArea)
   {
-    case TabTypePlay:
-      return [PlayTabController playTabController];
-    case TabTypeSettings:
-      return [SettingsViewController controller];
-    case TabTypeArchive:
-      return [[[ArchiveViewController alloc] init] autorelease];
-    case TabTypeDiagnostics:
-      return [DiagnosticsViewController controller];
-    case TabTypeHelp:
-      return [[[SectionedDocumentViewController alloc] init] autorelease];
-    case TabTypeAbout:
-      return [[[DocumentViewController alloc] init] autorelease];
-    case TabTypeSourceCode:
-      return [[[DocumentViewController alloc] init] autorelease];
-    case TabTypeLicenses:
-      return [[[LicensesViewController alloc] init] autorelease];
-    case TabTypeCredits:
-      return [[[DocumentViewController alloc] init] autorelease];
+    case UIAreaPlay:
+      rootViewController = [PlayTabController playTabController];
+      break;
+    case UIAreaSettings:
+      rootViewController = [SettingsViewController controller];
+      break;
+    case UIAreaArchive:
+      rootViewController = [[[ArchiveViewController alloc] init] autorelease];
+      break;
+    case UIAreaDiagnostics:
+      rootViewController = [DiagnosticsViewController controller];
+      break;
+    case UIAreaHelp:
+      rootViewController = [[[SectionedDocumentViewController alloc] init] autorelease];
+      break;
+    case UIAreaAbout:
+      rootViewController = [[[DocumentViewController alloc] init] autorelease];
+      break;
+    case UIAreaSourceCode:
+      rootViewController = [[[DocumentViewController alloc] init] autorelease];
+      break;
+    case UIAreaLicenses:
+      rootViewController = [[[LicensesViewController alloc] init] autorelease];
+      break;
+    case UIAreaCredits:
+      rootViewController = [[[DocumentViewController alloc] init] autorelease];
+      break;
     default:
       return nil;
   }
+  rootViewController.title = [MainUtilty titleStringForUIArea:uiArea];
+  rootViewController.uiArea = uiArea;
+  return rootViewController;
 }
 
 @end

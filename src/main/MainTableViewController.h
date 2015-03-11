@@ -24,4 +24,6 @@
 {
 }
 
+- (void) presentUIArea:(enum UIArea)uiArea;
+
 @end

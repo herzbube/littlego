@@ -272,7 +272,7 @@
 {
   DDLogVerbose(@"%@: Creating screen shot of Go board", [self shortDescription]);
 
-  UIView* tabView = [[ApplicationDelegate sharedDelegate].tabBarController tabView:TabTypePlay];
+  UIView* tabView = [[ApplicationDelegate sharedDelegate].tabBarController tabViewForUIArea:UIAreaPlay];
   UIImage* image = [UiUtilities captureView:tabView];
   NSData* data = UIImagePNGRepresentation(image);
   NSString* screenshotPath = [self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportScreenshotFileName];

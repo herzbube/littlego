@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,14 +15,30 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "UIAreaInfo.h"
 
-// -----------------------------------------------------------------------------
-/// @brief The SectionedDocumentViewController class is responsible for managing
-/// a table view that lists the sections in a structured text file. The text
-/// file is parsed internally by a DocumentGenerator instance.
-// -----------------------------------------------------------------------------
-@interface SectionedDocumentViewController : UITableViewController
+// System includes
+#import <objc/runtime.h>
+
+// Constants
+NSString* associatedUIAreaObjectKey = @"AssociatedUIAreaObject";
+
+
+@implementation UIViewController(UIAreaInfo)
+
+- (enum UIArea) uiArea
 {
+  NSNumber* uiAreaAsNumber = objc_getAssociatedObject(self, associatedUIAreaObjectKey);
+  if (uiAreaAsNumber)
+    return [uiAreaAsNumber intValue];
+  else
+    return UIAreaUnknown;
+}
+
+- (void) setUiArea:(enum UIArea)uiArea
+{
+  objc_setAssociatedObject(self, associatedUIAreaObjectKey, [NSNumber numberWithInt:uiArea], OBJC_ASSOCIATION_RETAIN);
 }
 
 @end

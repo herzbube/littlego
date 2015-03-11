@@ -17,9 +17,11 @@
 
 // Project includes
 #import "MainTableViewController.h"
+#import "ApplicationDelegate.h"
 #import "MainUtility.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
+#import "../ui/UiSettingsModel.h"
 #import "../utility/UIImageAdditions.h"
 
 
@@ -82,9 +84,9 @@ enum MainTableViewItem
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
 
-  enum TabType tabType = [self tabTypeForTableRow:indexPath.row];
-  cell.imageView.image = [self cellImageForTableType:tabType];
-  cell.textLabel.text = [MainUtilty titleStringForTabType:tabType];
+  enum UIArea uiArea = [self uiAreaForTableRow:indexPath.row];
+  cell.imageView.image = [self cellImageForUIArea:uiArea];
+  cell.textLabel.text = [MainUtilty titleStringForUIArea:uiArea];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
   return cell;
@@ -98,40 +100,51 @@ enum MainTableViewItem
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
-  enum TabType tabType = [self tabTypeForTableRow:indexPath.row];
-  UIViewController* rootViewController = [MainUtilty rootViewControllerForTabType:tabType];
+  enum UIArea uiArea = [self uiAreaForTableRow:indexPath.row];
+  [self presentUIArea:uiArea];
+}
+
+#pragma mark - MainTableViewController overrides
+
+// -----------------------------------------------------------------------------
+/// @brief Presents (i.e. makes visible) the view controller that manages the
+/// view hierarchy for the specified UI area.
+// -----------------------------------------------------------------------------
+- (void) presentUIArea:(enum UIArea)uiArea
+{
+  UIViewController* rootViewController = [MainUtilty rootViewControllerForUIArea:uiArea];
   [self.navigationController pushViewController:rootViewController animated:YES];
 }
 
 #pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a value from the TabType enumeration that matches
+/// @brief Returns a value from the UIArea enumeration that matches
 /// @a tableRow.
 // -----------------------------------------------------------------------------
-- (enum TabType) tabTypeForTableRow:(NSInteger)tableRow
+- (enum UIArea) uiAreaForTableRow:(NSInteger)tableRow
 {
   switch (tableRow)
   {
     case MainTableViewItemSettings:
-      return TabTypeSettings;
+      return UIAreaSettings;
     case MainTableViewItemArchive:
-      return TabTypeArchive;
+      return UIAreaArchive;
     case MainTableViewItemDiagnostics:
-      return TabTypeDiagnostics;
+      return UIAreaDiagnostics;
     case MainTableViewItemHelp:
-      return TabTypeHelp;
+      return UIAreaHelp;
     case MainTableViewItemAbout:
-      return TabTypeAbout;
+      return UIAreaAbout;
     case MainTableViewItemSourceCode:
-      return TabTypeSourceCode;
+      return UIAreaSourceCode;
     case MainTableViewItemLicenses:
-      return TabTypeLicenses;
+      return UIAreaLicenses;
     case MainTableViewItemCredits:
-      return TabTypeCredits;
+      return UIAreaCredits;
     default:
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Invalid table row %ld", tableRow];
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid table row %ld", (long)tableRow];
       DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                        reason:errorMessage
@@ -142,11 +155,11 @@ enum MainTableViewItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns an image that represents @a tabType.
+/// @brief Returns an image that represents @a uiArea.
 // -----------------------------------------------------------------------------
-- (UIImage*) cellImageForTableType:(enum TabType)tabType
+- (UIImage*) cellImageForUIArea:(enum UIArea)uiArea
 {
-  NSString* iconResourceName = [MainUtilty iconResourceNameForTabType:tabType];
+  NSString* iconResourceName = [MainUtilty iconResourceNameForUIArea:uiArea];
   UIImage* image = [UIImage imageNamed:iconResourceName];
   // The original icons are differently sized. For a clean display in the table
   // view we must convert them all to the same uniform size. We use the maximum

@@ -40,9 +40,6 @@ extern const float gInfluenceColorAlphaWhite;
 /// to scroll and zoom, and on the iPad the swipe gesture of the main
 /// UISplitViewController).
 extern const CFTimeInterval gGoBoardLongPressDelay;
-/// @brief The index of the view controller that should be selected by default
-/// in the application's main tab bar controller.
-extern const int defaultSelectedTabIndex;
 /// @brief The size of the array #defaultTabOrder.
 extern const int arraySizeDefaultTabOrder;
 /// @brief The default order in which view controllers should appear in the
@@ -122,18 +119,28 @@ enum InconsistentTerritoryMarkupType
   InconsistentTerritoryMarkupTypeNeutral     ///< @brief Don't mark up territory
 };
 
-/// @brief Enumerates all existing tabs in the GUI.
-enum TabType
+/// @brief Enumerates the main UI areas of the app. These are the areas that
+/// the user can navigate to from the main application view controller that is
+/// currently in use.
+enum UIArea
 {
-  TabTypePlay,
-  TabTypeSettings,
-  TabTypeArchive,
-  TabTypeDiagnostics,
-  TabTypeHelp,
-  TabTypeAbout,
-  TabTypeSourceCode,
-  TabTypeLicenses,
-  TabTypeCredits
+  UIAreaPlay,
+  UIAreaSettings,
+  UIAreaArchive,
+  UIAreaDiagnostics,
+  UIAreaHelp,
+  UIAreaAbout,
+  UIAreaSourceCode,
+  UIAreaLicenses,
+  UIAreaCredits,
+  /// @brief This is a pseudo area that refers to a list of "more UI areas".
+  /// The user selects from that list to navigate to an actual area, the one
+  /// that he selected. For instance, the "More" navigation controller of the
+  /// main tab bar controller, or the menu presented by the main navigation
+  /// controller.m
+  UIAreaNavigation,
+  UIAreaUnknown = -1,
+  UIAreaDefault = UIAreaPlay
 };
 
 /// @brief Enumerates the types of alert views used across the application.
@@ -904,7 +911,7 @@ extern NSString* markNextMoveKey;
 // Logging settings
 extern NSString* loggingEnabledKey;
 // User interface settings
-extern NSString* selectedTabIndexKey;
+extern NSString* visibleUIAreaKey;
 extern NSString* tabOrderKey;
 //@}
 
