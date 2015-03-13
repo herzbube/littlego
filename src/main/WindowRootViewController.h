@@ -34,6 +34,19 @@
 /// orientations are supported on the device, and for handling changes to the
 /// interface orientation. If such a change occurs, WindowRootViewController may
 /// react by installing a different main application view controller.
+///
+/// @attention At the moment the same main application view controller is always
+/// used once a UI type has been determined. The original plan to have different
+/// main application view controllers for different interface orientations had
+/// to be abandoned, at least for the moment, because it turned out to be
+/// unreasonably difficult to return to the same view/view controller after an
+/// interface orientation change. For instance, MainTabBarController is active
+/// and the user is somewhere deep within the view controller hierarchy on the
+/// settings tab. If the device rotates now, not only do we need to replace
+/// MainTabBarController with MainNavigationController, but we also have to
+/// return to the same view controller on the settings tab. This gets even more
+/// complicated if a modal view controller is visible at the time when the
+/// device rotates.
 // -----------------------------------------------------------------------------
 @interface WindowRootViewController : UIViewController
 {

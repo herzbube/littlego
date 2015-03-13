@@ -18,17 +18,10 @@
 // Project includes
 #import "MainTabBarController.h"
 #import "ApplicationDelegate.h"
-#import "DocumentViewController.h"
-#import "LicensesViewController.h"
 #import "MainUtility.h"
-#import "SectionedDocumentViewController.h"
 #import "UIAreaInfo.h"
-#import "../archive/ArchiveViewController.h"
-#import "../diagnostics/DiagnosticsViewController.h"
-#import "../play/playtab/PlayTabController.h"
+#import "../play/playtab/PlayTabNavigationController.h"
 #import "../shared/LayoutManager.h"
-#import "../settings/SettingsViewController.h"
-#import "../ui/UIElementMetrics.h"
 #import "../ui/UiSettingsModel.h"
 #import "../utility/UIColorAdditions.h"
 
@@ -103,7 +96,11 @@
   UIViewController* rootViewController = [self rootViewControllerForUIArea:uiArea];
   NSString* iconResourceName = [self iconResourceNameForUIArea:uiArea];
 
-  UINavigationController* tabRootViewController = [[[UINavigationController alloc] initWithRootViewController:rootViewController] autorelease];
+  UINavigationController* tabRootViewController;
+  if (UIAreaPlay == uiArea)
+    tabRootViewController = [[[PlayTabNavigationController alloc] initWithRootViewController:rootViewController] autorelease];
+  else
+    tabRootViewController = [[[UINavigationController alloc] initWithRootViewController:rootViewController] autorelease];
   tabRootViewController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:rootViewController.title
                                                                     image:[UIImage imageNamed:iconResourceName]
                                                                       tag:0] autorelease];

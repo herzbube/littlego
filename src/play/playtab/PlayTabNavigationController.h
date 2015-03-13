@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,22 +15,17 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "../gameaction/GameActionManager.h"
+
+
 // -----------------------------------------------------------------------------
-/// @brief The PlayTabController class represents the root view controller on
-/// the Play tab of MainTabBarController.
-///
-/// The view hierarchy on the Play tab is laid out differently depending on
-/// the UI type that is effective at runtime. Use the class method
-/// playTabController() to obtain a UI type-dependent controller object that
-/// knows how to set up the correct view hierarchy for the current UI type.
-///
-/// @see LayoutManager
-/// @see MainTabBarController
+/// @brief The PlayTabNavigationController class is a UINavigationController
+/// that handles the special navigational needs of the Play tab of
+/// MainTabBarController.
 // -----------------------------------------------------------------------------
-@interface PlayTabController : UIViewController
+@interface PlayTabNavigationController : UINavigationController <UINavigationControllerDelegate, GameInfoViewControllerPresenter>
 {
 }
-
-+ (PlayTabController*) playTabController;
 
 @end

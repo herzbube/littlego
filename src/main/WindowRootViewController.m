@@ -89,26 +89,13 @@ enum MainApplicationViewControllerType
   switch ([LayoutManager sharedManager].uiType)
   {
     case UITypePhonePortraitOnly:
-    {
       return MainApplicationViewControllerType_MainTabBarController;
-    }
     case UITypePhone:
-    {
-      bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
-      if (isPortraitOrientation)
-        return MainApplicationViewControllerType_MainTabBarController;
-      else
-        return MainApplicationViewControllerType_MainNavigationController;
-      break;
-    }
+      return MainApplicationViewControllerType_MainNavigationController;
     case UITypePad:
-    {
       return MainApplicationViewControllerType_MainTabBarController;
-    }
     default:
-    {
       [ExceptionUtility throwInvalidUIType:[LayoutManager sharedManager].uiType];
-    }
   }
 }
 
@@ -136,7 +123,6 @@ enum MainApplicationViewControllerType
                                                   argumentValue:mainApplicationViewControllerType];
     }
   }
-
   self.currentMainApplicationViewControllerType = mainApplicationViewControllerType;
 }
 

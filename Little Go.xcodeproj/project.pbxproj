@@ -220,6 +220,8 @@
 		CD7C69EE1AA9F697009EC5AD /* ExceptionUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69EC1AA9F697009EC5AD /* ExceptionUtility.m */; };
 		CD7C69F11AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */; };
 		CD7C69F21AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */; };
+		CD7C69F51AB2CB4A009EC5AD /* PlayTabNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F41AB2CB4A009EC5AD /* PlayTabNavigationController.m */; };
+		CD7C69F61AB2CB4A009EC5AD /* PlayTabNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F41AB2CB4A009EC5AD /* PlayTabNavigationController.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -719,6 +721,8 @@
 		CD7C69EC1AA9F697009EC5AD /* ExceptionUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExceptionUtility.m; sourceTree = "<group>"; };
 		CD7C69EF1AB0F1F3009EC5AD /* UIAreaInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIAreaInfo.h; sourceTree = "<group>"; };
 		CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAreaInfo.m; sourceTree = "<group>"; };
+		CD7C69F31AB2CB4A009EC5AD /* PlayTabNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayTabNavigationController.h; sourceTree = "<group>"; };
+		CD7C69F41AB2CB4A009EC5AD /* PlayTabNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayTabNavigationController.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
@@ -1389,6 +1393,8 @@
 				CD3591E01735A757000E2963 /* PlayTabControllerPad.m */,
 				CD3591E11735A757000E2963 /* PlayTabControllerPhone.h */,
 				CD3591E21735A757000E2963 /* PlayTabControllerPhone.m */,
+				CD7C69F31AB2CB4A009EC5AD /* PlayTabNavigationController.h */,
+				CD7C69F41AB2CB4A009EC5AD /* PlayTabNavigationController.m */,
 			);
 			path = playtab;
 			sourceTree = "<group>";
@@ -2254,6 +2260,7 @@
 				CD3A0999169389A600ABDB5D /* PanGestureController.m in Sources */,
 				CD3A09A116939E2200ABDB5D /* TapGestureController.m in Sources */,
 				CD0FE902169A122400053671 /* BoardPositionListViewController.m in Sources */,
+				CD7C69F51AB2CB4A009EC5AD /* PlayTabNavigationController.m in Sources */,
 				CD0FE906169A135400053671 /* BoardPositionView.m in Sources */,
 				CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */,
 				CD7C69BA1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
@@ -2461,6 +2468,7 @@
 				CD9A49EC1712512E009E7514 /* ItemScrollView.m in Sources */,
 				CD9A49F11712515C009E7514 /* InterruptComputerCommand.m in Sources */,
 				CD9A49F21712516D009E7514 /* EditTextController.m in Sources */,
+				CD7C69F61AB2CB4A009EC5AD /* PlayTabNavigationController.m in Sources */,
 				CDFD9F8118F1D5ED0031CBCF /* GtpLogItemViewController.m in Sources */,
 				CDFD9F8418F1D5FF0031CBCF /* SubmitGtpCommandViewController.m in Sources */,
 				CD1311C417180B53006CE699 /* ScoringModel.m in Sources */,

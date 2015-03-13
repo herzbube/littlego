@@ -20,6 +20,7 @@
 #import "ApplicationDelegate.h"
 #import "MainTableViewController.h"
 #import "UIAreaInfo.h"
+#import "../play/playtab/PlayTabController.h"
 #import "../play/splitview/LeftPaneViewController.h"
 #import "../ui/SplitViewController.h"
 #import "../ui/UiSettingsModel.h"
@@ -29,6 +30,8 @@
 /// @brief Class extension with private properties for MainNavigationController.
 // -----------------------------------------------------------------------------
 @interface MainNavigationController()
+@property(nonatomic, assign) bool hasPortraitOrientationViewHierarchy;
+@property(nonatomic, retain) PlayTabController* playTabController;
 // Cannot name this property splitViewController, there already is a property
 // of that name in UIViewController, and it has a different meaning
 @property(nonatomic, retain) SplitViewController* splitViewControllerChild;
@@ -48,21 +51,12 @@
 // -----------------------------------------------------------------------------
 - (id) init
 {
-  // Call designated initializer of superclass (PlayTabController)
+  // Call designated initializer of superclass (UINavigationController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
   self.delegate = self;
-  // Although we are the delegate, our delegate method is NOT invoked (and the
-  // navigation bar state not set) in the following scenario:
-  // - Interface is in portrait orientation and a modal view controller is
-  //   presented
-  // - User rotates to landscape orientation
-  // - User dismisses modal view controller
-  // This MainNavigationController is now instantiated, but our delegate method
-  // is not invoked for unknown reasons. As a consequence, we have to explicitly
-  // hide the navigation bar state during initialization.
-  self.navigationBarHidden = YES;
+  [GameActionManager sharedGameActionManager].gameInfoViewControllerPresenter = self;
   [self setupChildControllers];
   [self restoreVisibleUIAreaToUserDefaults];
   return self;
@@ -85,6 +79,7 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
+  self.playTabController = nil;
   self.splitViewControllerChild = nil;
   self.leftPaneViewController = nil;
   self.rightPaneViewController = nil;
@@ -97,19 +92,88 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  self.splitViewControllerChild = [[[SplitViewController alloc] init] autorelease];
-  self.splitViewControllerChild.uiArea = UIAreaPlay;
-  [self pushViewController:self.splitViewControllerChild animated:NO];
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
+  // This check covers the following scenario: The user temporarily changes the
+  // interface orientation while on a deeper level of the navigation stack, then
+  // changes back to the original interface orientation, then returns to the
+  // root view controller. In this case we don't need to switch out the root
+  // view controller.
+  if (self.viewControllers.count > 0 && isPortraitOrientation == self.hasPortraitOrientationViewHierarchy)
+    return;
+  self.hasPortraitOrientationViewHierarchy = isPortraitOrientation;
 
-  // These are not child controllers of our own. We are setting them up on
-  // behalf of the generic SplitViewController because we don't want to create a
-  // subclass.
-  self.leftPaneViewController = [[[LeftPaneViewController alloc] init] autorelease];
-  self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
-  self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
+  if (0 == self.viewControllers.count)
+  {
+    // We must be able to switch between different root view controllers when
+    // the interface orientation changes because we have entirely different view
+    // hierarchies for each orientation. Unfortunately UINavigationController
+    // does not let us change the root view controller once we have set it up
+    // (i.e. we can't completely empty the navigation stack). For this reason
+    // we set up a dummy root view controller which will remain in place
+    // forever.
+    UIViewController* dummyRootViewController = [[[UIViewController alloc] init] autorelease];
+    [self pushViewController:dummyRootViewController animated:NO];
+  }
+  else
+  {
+    // We temporarily pop back to the dummy root view controller. In a moment
+    // we will push the *real* root view controller onto the stack.
+    [self popToRootViewControllerAnimated:NO];
+  }
 
-  self.rightPaneViewController.mainMenuPresenter = self;
-  [GameActionManager sharedGameActionManager].gameInfoViewControllerPresenter = self;
+  UIViewController* realRootViewController;
+  if (isPortraitOrientation)
+  {
+    self.playTabController = [PlayTabController playTabController];
+    self.playTabController.uiArea = UIAreaPlay;
+    realRootViewController = self.playTabController;
+
+    //xxx
+//    self.playTabController.mainMenuPresenter = self;
+
+    self.splitViewControllerChild = nil;
+    self.leftPaneViewController = nil;
+    self.rightPaneViewController = nil;
+  }
+  else
+  {
+    self.splitViewControllerChild = [[[SplitViewController alloc] init] autorelease];
+    self.splitViewControllerChild.uiArea = UIAreaPlay;
+    realRootViewController = self.splitViewControllerChild;
+
+    // These are not child controllers of our own. We are setting them up on
+    // behalf of the generic SplitViewController.
+    self.leftPaneViewController = [[[LeftPaneViewController alloc] init] autorelease];
+    self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
+    self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
+
+    self.rightPaneViewController.mainMenuPresenter = self;
+
+    self.playTabController = nil;
+  }
+
+  [self pushViewController:realRootViewController animated:NO];
+}
+
+#pragma mark - UIViewController overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method
+///
+/// This override handles interface orientation changes.
+///
+/// @note This override is also called if a view controller is pushed onto, or
+/// popped from the navigation stack.
+// -----------------------------------------------------------------------------
+- (void) viewWillLayoutSubviews
+{
+  // We install a new root view controller only if the root view controller is
+  // actually visible
+  NSUInteger navigationStackSize = self.viewControllers.count;
+  if (navigationStackSize > 2)
+    return;
+  // The method we invoke here detects if no change is necessary
+  [self setupChildControllers];
 }
 
 #pragma mark - UINavigationControllerDelegate overrides
@@ -125,7 +189,15 @@
        willShowViewController:(UIViewController*)viewController
                      animated:(BOOL)animated
 {
-  if (viewController == self.splitViewControllerChild)
+  NSUInteger navigationStackSize = self.viewControllers.count;
+  if (1 == navigationStackSize)
+  {
+    // The dummy root view controller is at the top of the stack. This does not
+    // interest us, we know that the *real* root view controller will be pushed
+    // next, so we wait for that.
+    return;
+  }
+  else if (2 == navigationStackSize)
     self.navigationBarHidden = YES;
   else
     self.navigationBarHidden = NO;
