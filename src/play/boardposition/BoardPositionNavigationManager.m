@@ -293,11 +293,11 @@ static BoardPositionNavigationManager* sharedNavigationManager = nil;
   {
     case BoardPositionNavigationDirectionForward:
     {
-      return (self.isBackwardNavigationEnabled ? YES : NO);
+      return (self.isForwardNavigationEnabled ? YES : NO);
     }
     case BoardPositionNavigationDirectionBackward:
     {
-      return (self.isForwardNavigationEnabled ? YES : NO);
+      return (self.isBackwardNavigationEnabled ? YES : NO);
     }
     default:
     {
@@ -368,8 +368,8 @@ static BoardPositionNavigationManager* sharedNavigationManager = nil;
 #pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
-/// @brief Returns true if taps on bar button items should currently be
-/// ignored.
+/// @brief Returns true if taps that trigger one of the navigation operations
+/// should currently be ignored.
 // -----------------------------------------------------------------------------
 - (bool) shouldIgnoreTaps
 {

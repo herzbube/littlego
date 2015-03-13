@@ -105,23 +105,23 @@
   {
     case 0:
     {
-      imageResourceName = backButtonIconResource;
-      selector = @selector(previousBoardPosition:);
+      imageResourceName = rewindToStartButtonIconResource;
+      selector = @selector(rewindToStart:);
       boardPositionNavigationDirection = BoardPositionNavigationDirectionBackward;
       break;
     }
     case 1:
     {
-      imageResourceName = forwardButtonIconResource;
-      selector = @selector(nextBoardPosition:);
-      boardPositionNavigationDirection = BoardPositionNavigationDirectionForward;
+      imageResourceName = backButtonIconResource;
+      selector = @selector(previousBoardPosition:);
+      boardPositionNavigationDirection = BoardPositionNavigationDirectionBackward;
       break;
     }
     case 2:
     {
-      imageResourceName = rewindToStartButtonIconResource;
-      selector = @selector(rewindToStart:);
-      boardPositionNavigationDirection = BoardPositionNavigationDirectionBackward;
+      imageResourceName = forwardButtonIconResource;
+      selector = @selector(nextBoardPosition:);
+      boardPositionNavigationDirection = BoardPositionNavigationDirectionForward;
       break;
     }
     case 3:

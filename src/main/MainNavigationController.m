@@ -24,6 +24,7 @@
 #import "../play/splitview/LeftPaneViewController.h"
 #import "../ui/SplitViewController.h"
 #import "../ui/UiSettingsModel.h"
+#import "../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -61,6 +62,9 @@
   [self restoreVisibleUIAreaToUserDefaults];
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(statusBarOrientationDidChange:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
+  // TODO xxx We should not fake this color, we should somehow get a real
+  // navigation bar to place itself behind the statusbar.
+  self.view.backgroundColor = [UIColor navigationbarBackgroundColor];
   return self;
 }
 

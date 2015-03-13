@@ -126,6 +126,9 @@
   [self setupAutoLayoutConstraints];
   [self setupNotificationResponders];
   [self setupStoneImages];
+
+  self.currentBoardPositionNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 #pragma mark - Private helpers for loadView
@@ -243,7 +246,7 @@
   if (! self.notificationRespondersAreSetup)
     return;
   self.notificationRespondersAreSetup = false;
-  
+
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
