@@ -74,6 +74,7 @@
   self.navigationBarController = nil;
   self.boardPositionToolbarController = nil;
   self.discardFutureMovesAlertController = nil;
+  self.boardViewController = nil;
 }
 
 #pragma mark - Container view controller handling

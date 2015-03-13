@@ -102,6 +102,7 @@
   self.mainMenuPresenter = nil;
   self.woodenBackgroundView = nil;
   self.discardFutureMovesAlertController = nil;
+  self.boardViewController = nil;
   self.boardViewAutoLayoutConstraints = nil;
   [super dealloc];
 }
