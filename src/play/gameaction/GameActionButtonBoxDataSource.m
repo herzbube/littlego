@@ -47,8 +47,9 @@
     return nil;
   self.gameActionButtons = [GameActionButtonBoxDataSource gameActionButtons];
   self.buttonOrderList = [GameActionButtonBoxDataSource buttonOrderList];
-  self.visibleGameActions = [NSArray array];
   [GameActionManager sharedGameActionManager].uiDelegate = self;
+  NSDictionary* visibleStates = [[GameActionManager sharedGameActionManager] visibleStatesOfGameActions];
+  [self updateForVisibleGameActions:visibleStates];
   return self;
 }
 

@@ -505,6 +505,49 @@ static GameActionManager* sharedGameActionManager = nil;
     return;
   self.visibleStatesNeedUpdate = false;
 
+  NSDictionary* visibleStates = [self visibleStatesOfGameActions];
+
+  // During a long-running operation there may have been several visibility
+  // state changes. Only the final visibility state counts, though, because
+  // intermediate changes were delayed. The final visibility state may be the
+  // same as the original visibility state, and that's what we check here.
+  // In order for the equality check to be reliable, we need the arrays to have
+  // the same sort order
+  NSArray* visibleGameActions = [[visibleStates allKeys] sortedArrayUsingSelector:@selector(compare:)];
+  if ([self.visibleGameActions isEqualToArray:visibleGameActions])
+    return;
+
+  self.visibleGameActions = visibleGameActions;
+  if (self.uiDelegate)
+  {
+    [self.uiDelegate gameActionManager:self
+                   updateVisibleStates:visibleStates];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for updateVisibleStates().
+// -----------------------------------------------------------------------------
+- (void) addGameAction:(enum GameAction)gameAction toVisibleStatesDictionary:(NSMutableDictionary*)visibleStates
+{
+  NSNumber* gameActionAsNumber = [NSNumber numberWithInt:gameAction];
+  NSNumber* enabledAsNumber = self.enabledStates[gameActionAsNumber];
+  visibleStates[gameActionAsNumber] = enabledAsNumber;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an NSDictionary that contains the game actions that are
+/// currently visible, along with their enabled state.
+///
+/// The keys of the dictionary are NSNumber objects whose intValue returns a
+/// value from the GameAction enumeration. They values of the dictionary are
+/// NSNumber objects whose boolValue returns the enabled state of the game
+/// action.
+///
+/// @see GameActionManagerUIDelegate gameActionManager:updateVisibleStates().
+// -----------------------------------------------------------------------------
+- (NSDictionary*) visibleStatesOfGameActions
+{
   NSMutableDictionary* visibleStates = [NSMutableDictionary dictionary];
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
@@ -556,33 +599,7 @@ static GameActionManager* sharedGameActionManager = nil;
       }
     }
   }
-
-  // During a long-running operation there may have been several visibility
-  // state changes. Only the final visibility state counts, though, because
-  // intermediate changes were delayed. The final visibility state may be the
-  // same as the original visibility state, and that's what we check here.
-  // In order for the equality check to be reliable, we need the arrays to have
-  // the same sort order
-  NSArray* visibleGameActions = [[visibleStates allKeys] sortedArrayUsingSelector:@selector(compare:)];
-//  if ([self.visibleGameActions isEqualToArray:visibleGameActions])
-//    return;
-
-  self.visibleGameActions = visibleGameActions;
-  if (self.uiDelegate)
-  {
-    [self.uiDelegate gameActionManager:self
-                   updateVisibleStates:visibleStates];
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for updateVisibleStates().
-// -----------------------------------------------------------------------------
-- (void) addGameAction:(enum GameAction)gameAction toVisibleStatesDictionary:(NSMutableDictionary*)visibleStates
-{
-  NSNumber* gameActionAsNumber = [NSNumber numberWithInt:gameAction];
-  NSNumber* enabledAsNumber = self.enabledStates[gameActionAsNumber];
-  visibleStates[gameActionAsNumber] = enabledAsNumber;
+  return visibleStates;
 }
 
 #pragma mark - Game action enabled state updating

@@ -140,6 +140,7 @@
   [self createViews];
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
+  [self setupGameActions];
 }
 
 #pragma mark - Private helpers for loadView
@@ -237,6 +238,16 @@
                                                                            constant:0.0f];
     [self.view addConstraint:self.rightNavigationBarWidthConstraint];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupGameActions
+{
+  NSDictionary* visibleStates = [[GameActionManager sharedGameActionManager] visibleStatesOfGameActions];
+  [self updateForVisibleGameActions:visibleStates];
+  [self populateNavigationBars];
 }
 
 #pragma mark - SplitViewControllerDelegate overrides

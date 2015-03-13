@@ -32,10 +32,8 @@
 @protocol GameActionManagerUIDelegate
 @required
 /// @brief The delegate must make sure that only those game actions listed in
-/// @a gameActions are visible. The keys of the dictionary are NSNumber objects
-/// whose intValue returns a value from the GameAction enumeration. They values
-/// of the dictionary are NSNumber objects whose boolValue returns the enabled
-/// state of the game action.
+/// @a gameActions are visible. The dictionary has the same structure as the
+/// one returned by GameActionManager's visibleStatesOfGameActions().
 - (void) gameActionManager:(GameActionManager*)manager
        updateVisibleStates:(NSDictionary*)gameActions;
 /// @brief The delegate must enable or disable the UI element that corresponds
@@ -122,6 +120,8 @@
 - (void) scoringDone:(id)sender;
 - (void) gameInfo:(id)sender;
 - (void) moreGameActions:(id)sender;
+
+- (NSDictionary*) visibleStatesOfGameActions;
 
 @property(nonatomic, assign) id<GameActionManagerUIDelegate> uiDelegate;
 @property(nonatomic, assign) id<GameActionManagerCommandDelegate> commandDelegate;
