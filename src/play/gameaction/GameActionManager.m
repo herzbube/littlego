@@ -147,7 +147,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
-  [center addObserver:self selector:@selector(deviceOrientationDidChange:) name:UIDeviceOrientationDidChangeNotification object:nil];
+  [center addObserver:self selector:@selector(statusBarOrientationWillChange:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
 
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -439,17 +439,17 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #UIDeviceOrientationDidChangeNotification
-/// notification.
+/// @brief Responds to the
+/// #UIApplicationWillChangeStatusBarOrientationNotification notification.
 // -----------------------------------------------------------------------------
-- (void) deviceOrientationDidChange:(NSNotification*)notification
+- (void) statusBarOrientationWillChange:(NSNotification*)notification
 {
   if ([LayoutManager sharedManager].uiType != UITypePhonePortraitOnly)
   {
     if (self.gameActionsActionSheetController)
     {
       // Dismiss the popover that displays the action sheet because the popover
-      // will be wrongly positioned after the interface has rotated
+      // will be wrongly positioned after the interface has rotated.
       [self.gameActionsActionSheetController cancelActionSheet];
     }
   }
