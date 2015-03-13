@@ -45,6 +45,8 @@
 {
 }
 
+- (void) removeDynamicConstraints;
+
 @property(nonatomic, retain) NavigationBarController* navigationBarController;
 @property(nonatomic, assign) id<MainMenuPresenter> mainMenuPresenter;
 

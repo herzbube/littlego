@@ -59,6 +59,8 @@
   [GameActionManager sharedGameActionManager].gameInfoViewControllerPresenter = self;
   [self setupChildControllers];
   [self restoreVisibleUIAreaToUserDefaults];
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(statusBarOrientationDidChange:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
   return self;
 }
 
@@ -67,6 +69,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
   GameActionManager* gameActionManager = [GameActionManager sharedGameActionManager];
   if (gameActionManager.gameInfoViewControllerPresenter == self)
     gameActionManager.gameInfoViewControllerPresenter = nil;
@@ -88,38 +91,36 @@
 #pragma mark - Container view controller handling
 
 // -----------------------------------------------------------------------------
-/// This is an internal helper invoked during initialization.
+/// @brief Internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
+  // We must be able to switch between different root view controllers when
+  // the interface orientation changes because we have entirely different view
+  // hierarchies for each orientation. Unfortunately UINavigationController
+  // does not let us change the root view controller once we have set it up
+  // (i.e. we can't completely empty the navigation stack). For this reason
+  // we set up a dummy root view controller which will remain in place
+  // forever.
+  UIViewController* dummyRootViewController = [[[UIViewController alloc] init] autorelease];
+  [self pushViewController:dummyRootViewController animated:NO];
+
+  // Set self.hasPortraitOrientationViewHierarchy to a value that guarantees
+  // that addChildControllersForInterfaceOrientation:() will do something
   bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
-  // This check covers the following scenario: The user temporarily changes the
-  // interface orientation while on a deeper level of the navigation stack, then
-  // changes back to the original interface orientation, then returns to the
-  // root view controller. In this case we don't need to switch out the root
-  // view controller.
-  if (self.viewControllers.count > 0 && isPortraitOrientation == self.hasPortraitOrientationViewHierarchy)
+  self.hasPortraitOrientationViewHierarchy = !isPortraitOrientation;
+  [self addChildControllersForInterfaceOrientation:self.interfaceOrientation];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Adds child controllers that match @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (void) addChildControllersForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  if (isPortraitOrientation == self.hasPortraitOrientationViewHierarchy)
     return;
   self.hasPortraitOrientationViewHierarchy = isPortraitOrientation;
-
-  if (0 == self.viewControllers.count)
-  {
-    // We must be able to switch between different root view controllers when
-    // the interface orientation changes because we have entirely different view
-    // hierarchies for each orientation. Unfortunately UINavigationController
-    // does not let us change the root view controller once we have set it up
-    // (i.e. we can't completely empty the navigation stack). For this reason
-    // we set up a dummy root view controller which will remain in place
-    // forever.
-    UIViewController* dummyRootViewController = [[[UIViewController alloc] init] autorelease];
-    [self pushViewController:dummyRootViewController animated:NO];
-  }
-  else
-  {
-    // We temporarily pop back to the dummy root view controller. In a moment
-    // we will push the *real* root view controller onto the stack.
-    [self popToRootViewControllerAnimated:NO];
-  }
 
   UIViewController* realRootViewController;
   if (isPortraitOrientation)
@@ -130,10 +131,6 @@
 
     //xxx
 //    self.playTabController.mainMenuPresenter = self;
-
-    self.splitViewControllerChild = nil;
-    self.leftPaneViewController = nil;
-    self.rightPaneViewController = nil;
   }
   else
   {
@@ -148,11 +145,53 @@
     self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
 
     self.rightPaneViewController.mainMenuPresenter = self;
-
-    self.playTabController = nil;
   }
 
   [self pushViewController:realRootViewController animated:NO];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes child controllers if the current setup does NOT match
+/// @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (void) removeChildControllersIfNotMatchingInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  if (isPortraitOrientation == self.hasPortraitOrientationViewHierarchy)
+    return;
+
+  // We temporarily pop back to the dummy root view controller. The *real* root
+  // view controllwer will be pushed onto the stack a little later.
+  [self popToRootViewControllerAnimated:NO];
+  if (self.hasPortraitOrientationViewHierarchy)
+  {
+    self.playTabController = nil;
+  }
+  else
+  {
+    // TODO This should be removed, it is a HACK! Reason for the hack:
+    // - The Auto Layout constraints in RightPaneViewController are made so that
+    //   they fit landscape orientation. In portrait orientation the constraints
+    //   cause the Auto Layout engine to print warnings into the Debug console.
+    // - Now here's the strange thing: Despite the fact that here we remove all
+    //   references to the RightPaneViewController object, and that object is
+    //   properly deallocated later on, the deallocation takes place too late
+    //   so that RightPaneViewController's view hierarchy still takes part in
+    //   the view layout process after the interface orientation change.
+    //   Something - presumably it's UINavigationController - keeps
+    //   RightPaneViewController around too long.
+    // - The only way I have found to get rid of the Auto Layout warnings is to
+    //   explicitly tell RightPaneViewController to remove the offending
+    //   constraints NOW!
+    //
+    // Perhaps the hack can be eliminated once we drop iOS 7 support and can
+    // start to work with size classes.
+    [self.rightPaneViewController removeDynamicConstraints];
+
+    self.splitViewControllerChild = nil;
+    self.leftPaneViewController = nil;
+    self.rightPaneViewController = nil;
+  }
 }
 
 #pragma mark - UIViewController overrides
@@ -172,8 +211,37 @@
   NSUInteger navigationStackSize = self.viewControllers.count;
   if (navigationStackSize > 2)
     return;
-  // The method we invoke here detects if no change is necessary
-  [self setupChildControllers];
+
+  // These calls are necessary in case the interface orientation changed while
+  // the user was on a deeper level of the navigation stack, and now returns to
+  // the root view controller level of the navigation stack.
+  [self removeChildControllersIfNotMatchingInterfaceOrientation:self.interfaceOrientation];
+  [self addChildControllersForInterfaceOrientation:self.interfaceOrientation];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the
+/// #UIApplicationDidChangeStatusBarOrientationNotification notification.
+///
+/// This notification handler is required because we can't override
+/// didRotateFromInterfaceOrientation:(). Reason: There appears to be a
+/// bug in iOS 8 which causes that override not to be called for subclasses of
+/// UINavigationController. Experimentally determined: The override is called
+/// correctly in the iOS 7.1 simulator.
+// -----------------------------------------------------------------------------
+- (void) statusBarOrientationDidChange:(NSNotification*)notification
+{
+  // We install a new root view controller only if the root view controller is
+  // actually visible
+  NSUInteger navigationStackSize = self.viewControllers.count;
+  if (navigationStackSize > 2)
+    return;
+
+  // Can't use self.interfaceOrientation, that property does not yet have the
+  // correct value
+  UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
+  [self removeChildControllersIfNotMatchingInterfaceOrientation:interfaceOrientation];
+  [self addChildControllersForInterfaceOrientation:interfaceOrientation];
 }
 
 #pragma mark - UINavigationControllerDelegate overrides
