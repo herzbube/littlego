@@ -35,7 +35,7 @@
 @property(nonatomic, assign) bool playSound;
 @property(nonatomic, assign) bool vibrate;
 /// @brief How far from the fingertip should the cross-hair point be displayed
-/// when placing stones on the Play tab.
+/// when placing stones on the Go board.
 ///
 /// This is a percentage that must be taken into account by whatever algorithm
 /// is used to calculate the actual distance. The minimum value that this

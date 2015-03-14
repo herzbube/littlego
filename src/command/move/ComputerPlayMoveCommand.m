@@ -318,8 +318,8 @@
 - (void) sendBugReport
 {
   // Use the view controller that is currently selected - this may not
-  // always be the Play tab controller, e.g. if the user has switched to
-  // another tab while the computer was thinking
+  // always be the UIAreaPlay root view controller, e.g. if the user has
+  // switched to another UI area while the computer was thinking
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   UIViewController* modalViewControllerParent = appDelegate.tabBarController.selectedViewController;
   SendBugReportController* controller = [SendBugReportController controller];

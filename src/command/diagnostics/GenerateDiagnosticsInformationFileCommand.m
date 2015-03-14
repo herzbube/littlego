@@ -265,8 +265,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates a screenshot of the views visible on the Play tab and
-/// saves that screenshot to file.
+/// @brief Creates a screenshot of the views visible in #UIAreaPlay and saves
+/// that screenshot to file.
 // -----------------------------------------------------------------------------
 - (void) saveBoardScreenshot
 {

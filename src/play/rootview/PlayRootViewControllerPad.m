@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "PlayTabControllerPad.h"
+#import "PlayRootViewControllerPad.h"
 #import "../controller/NavigationBarController.h"
 #import "../splitview/LeftPaneViewController.h"
 #import "../splitview/RightPaneViewController.h"
@@ -25,9 +25,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for PlayTabControllerPad.
+/// @brief Class extension with private properties for
+/// PlayRootViewControllerPad.
 // -----------------------------------------------------------------------------
-@interface PlayTabControllerPad()
+@interface PlayRootViewControllerPad()
 // Cannot name this property splitViewController, there already is a property
 // of that name in UIViewController, and it has a different meaning
 @property(nonatomic, retain) SplitViewController* splitViewControllerChild;
@@ -36,18 +37,18 @@
 @end
 
 
-@implementation PlayTabControllerPad
+@implementation PlayRootViewControllerPad
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayTabControllerPad object.
+/// @brief Initializes a PlayRootViewControllerPad object.
 ///
-/// @note This is the designated initializer of PlayTabControllerPad.
+/// @note This is the designated initializer of PlayRootViewControllerPad.
 // -----------------------------------------------------------------------------
 - (id) init
 {
-  // Call designated initializer of superclass (PlayTabController)
+  // Call designated initializer of superclass (PlayRootViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
@@ -56,7 +57,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayTabControllerPad object.
+/// @brief Deallocates memory allocated by this PlayRootViewControllerPad
+/// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {

@@ -21,7 +21,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The BoardPositionListViewController class is responsible for managing
-/// the "board position list view", i.e. the scroll view on the Play tab that
+/// the "board position list view", which is a scroll view in #UIAreaPlay that
 /// displays the board positions of the current game.
 ///
 /// BoardPositionListViewController is a child view controller. It is used on

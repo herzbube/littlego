@@ -16,17 +16,18 @@
 
 
 // Project includes
-#import "PlayTabNavigationController.h"
+#import "PlayRootViewNavigationController.h"
 
 
-@implementation PlayTabNavigationController
+@implementation PlayRootViewNavigationController
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayTabNavigationController object.
+/// @brief Initializes a PlayRootViewNavigationController object.
 ///
-/// @note This is the designated initializer of PlayTabNavigationController.
+/// @note This is the designated initializer of
+/// PlayRootViewNavigationController.
 // -----------------------------------------------------------------------------
 - (id) initWithRootViewController:(UIViewController*)rootViewController
 {
@@ -40,8 +41,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayTabNavigationController
-/// object.
+/// @brief Deallocates memory allocated by this
+/// PlayRootViewNavigationController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {

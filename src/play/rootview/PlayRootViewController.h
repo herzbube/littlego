@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,20 +15,23 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#include "PlayTabController.h"
-
-
 // -----------------------------------------------------------------------------
-/// @brief The PlayTabControllerPhone class is the root view controller on the
-/// Play tab for the iPhone.
+/// @brief The PlayRootViewController class represents the root view controller
+/// of #UIAreaPlay.
 ///
-/// The PlayTabController class method playTabController() should be used to
-/// create a PlayTabControllerPhone instance.
+/// The view hierarchy of #UIAreaPlay is laid out differently depending on
+/// the UI type that is effective at runtime. Use the class method
+/// playRootViewController() to obtain a UI type-dependent controller object
+/// that knows how to set up the correct view hierarchy for the current UI type.
+///
+/// @see LayoutManager
+/// @see MainTabBarController
+/// @see MainNavigationController
 // -----------------------------------------------------------------------------
-@interface PlayTabControllerPhone : PlayTabController
+@interface PlayRootViewController : UIViewController
 {
 }
 
++ (PlayRootViewController*) playRootViewController;
 
 @end

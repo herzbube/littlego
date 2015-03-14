@@ -20,11 +20,11 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayTabNavigationController class is a UINavigationController
-/// that handles the special navigational needs of the Play tab of
-/// MainTabBarController.
+/// @brief The PlayRootViewNavigationController class is a
+/// UINavigationController that handles the special navigational needs of the
+/// #UIAreaPlay.
 // -----------------------------------------------------------------------------
-@interface PlayTabNavigationController : UINavigationController <UINavigationControllerDelegate, GameInfoViewControllerPresenter>
+@interface PlayRootViewNavigationController : UINavigationController <UINavigationControllerDelegate, GameInfoViewControllerPresenter>
 {
 }
 

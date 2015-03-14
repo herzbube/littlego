@@ -133,12 +133,12 @@
 		CD3591CB17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */; };
 		CD3591DA1735A711000E2963 /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591D91735A711000E2963 /* BoardPositionModel.m */; };
 		CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591D91735A711000E2963 /* BoardPositionModel.m */; };
-		CD3592021735A757000E2963 /* PlayTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591DE1735A757000E2963 /* PlayTabController.m */; };
-		CD3592031735A757000E2963 /* PlayTabController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591DE1735A757000E2963 /* PlayTabController.m */; };
-		CD3592041735A757000E2963 /* PlayTabControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E01735A757000E2963 /* PlayTabControllerPad.m */; };
-		CD3592051735A757000E2963 /* PlayTabControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E01735A757000E2963 /* PlayTabControllerPad.m */; };
-		CD3592061735A757000E2963 /* PlayTabControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E21735A757000E2963 /* PlayTabControllerPhone.m */; };
-		CD3592071735A757000E2963 /* PlayTabControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E21735A757000E2963 /* PlayTabControllerPhone.m */; };
+		CD3592021735A757000E2963 /* PlayRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591DE1735A757000E2963 /* PlayRootViewController.m */; };
+		CD3592031735A757000E2963 /* PlayRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591DE1735A757000E2963 /* PlayRootViewController.m */; };
+		CD3592041735A757000E2963 /* PlayRootViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E01735A757000E2963 /* PlayRootViewControllerPad.m */; };
+		CD3592051735A757000E2963 /* PlayRootViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E01735A757000E2963 /* PlayRootViewControllerPad.m */; };
+		CD3592061735A757000E2963 /* PlayRootViewControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E21735A757000E2963 /* PlayRootViewControllerPhone.m */; };
+		CD3592071735A757000E2963 /* PlayRootViewControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E21735A757000E2963 /* PlayRootViewControllerPhone.m */; };
 		CD36594116931F8600D75466 /* GoBoardPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CD36594016931F8500D75466 /* GoBoardPosition.m */; };
 		CD3659421693533600D75466 /* GoBoardPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CD36594016931F8500D75466 /* GoBoardPosition.m */; };
 		CD377F0816BD154A00972F04 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD377F0716BD154A00972F04 /* MainTabBarController.m */; };
@@ -220,8 +220,8 @@
 		CD7C69EE1AA9F697009EC5AD /* ExceptionUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69EC1AA9F697009EC5AD /* ExceptionUtility.m */; };
 		CD7C69F11AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */; };
 		CD7C69F21AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */; };
-		CD7C69F51AB2CB4A009EC5AD /* PlayTabNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F41AB2CB4A009EC5AD /* PlayTabNavigationController.m */; };
-		CD7C69F61AB2CB4A009EC5AD /* PlayTabNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F41AB2CB4A009EC5AD /* PlayTabNavigationController.m */; };
+		CD7C69F51AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F41AB2CB4A009EC5AD /* PlayRootViewNavigationController.m */; };
+		CD7C69F61AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F41AB2CB4A009EC5AD /* PlayRootViewNavigationController.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -625,12 +625,12 @@
 		CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardFutureMovesAlertController.m; sourceTree = "<group>"; };
 		CD3591D81735A711000E2963 /* BoardPositionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionModel.h; sourceTree = "<group>"; };
 		CD3591D91735A711000E2963 /* BoardPositionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionModel.m; sourceTree = "<group>"; };
-		CD3591DD1735A757000E2963 /* PlayTabController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayTabController.h; sourceTree = "<group>"; };
-		CD3591DE1735A757000E2963 /* PlayTabController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayTabController.m; sourceTree = "<group>"; };
-		CD3591DF1735A757000E2963 /* PlayTabControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayTabControllerPad.h; sourceTree = "<group>"; };
-		CD3591E01735A757000E2963 /* PlayTabControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayTabControllerPad.m; sourceTree = "<group>"; };
-		CD3591E11735A757000E2963 /* PlayTabControllerPhone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayTabControllerPhone.h; sourceTree = "<group>"; };
-		CD3591E21735A757000E2963 /* PlayTabControllerPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayTabControllerPhone.m; sourceTree = "<group>"; };
+		CD3591DD1735A757000E2963 /* PlayRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayRootViewController.h; sourceTree = "<group>"; };
+		CD3591DE1735A757000E2963 /* PlayRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayRootViewController.m; sourceTree = "<group>"; };
+		CD3591DF1735A757000E2963 /* PlayRootViewControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayRootViewControllerPad.h; sourceTree = "<group>"; };
+		CD3591E01735A757000E2963 /* PlayRootViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayRootViewControllerPad.m; sourceTree = "<group>"; };
+		CD3591E11735A757000E2963 /* PlayRootViewControllerPhone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayRootViewControllerPhone.h; sourceTree = "<group>"; };
+		CD3591E21735A757000E2963 /* PlayRootViewControllerPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayRootViewControllerPhone.m; sourceTree = "<group>"; };
 		CD36593F16931F8500D75466 /* GoBoardPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardPosition.h; sourceTree = "<group>"; };
 		CD36594016931F8500D75466 /* GoBoardPosition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardPosition.m; sourceTree = "<group>"; };
 		CD377F0616BD154A00972F04 /* MainTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainTabBarController.h; sourceTree = "<group>"; };
@@ -721,8 +721,8 @@
 		CD7C69EC1AA9F697009EC5AD /* ExceptionUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExceptionUtility.m; sourceTree = "<group>"; };
 		CD7C69EF1AB0F1F3009EC5AD /* UIAreaInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UIAreaInfo.h; sourceTree = "<group>"; };
 		CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAreaInfo.m; sourceTree = "<group>"; };
-		CD7C69F31AB2CB4A009EC5AD /* PlayTabNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayTabNavigationController.h; sourceTree = "<group>"; };
-		CD7C69F41AB2CB4A009EC5AD /* PlayTabNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayTabNavigationController.m; sourceTree = "<group>"; };
+		CD7C69F31AB2CB4A009EC5AD /* PlayRootViewNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayRootViewNavigationController.h; sourceTree = "<group>"; };
+		CD7C69F41AB2CB4A009EC5AD /* PlayRootViewNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayRootViewNavigationController.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
@@ -1310,7 +1310,7 @@
 				CD7C69BC1A9BC7D2009EC5AD /* gameaction */,
 				CD3A0996169389A600ABDB5D /* gesture */,
 				CD1311BC17180AFC006CE699 /* model */,
-				CD3591DC1735A757000E2963 /* playtab */,
+				CD3591DC1735A757000E2963 /* rootview */,
 				CD05199216B1C09B002771F7 /* splitview */,
 			);
 			path = play;
@@ -1384,19 +1384,20 @@
 			path = controller;
 			sourceTree = "<group>";
 		};
-		CD3591DC1735A757000E2963 /* playtab */ = {
+		CD3591DC1735A757000E2963 /* rootview */ = {
 			isa = PBXGroup;
 			children = (
-				CD3591DD1735A757000E2963 /* PlayTabController.h */,
-				CD3591DE1735A757000E2963 /* PlayTabController.m */,
-				CD3591DF1735A757000E2963 /* PlayTabControllerPad.h */,
-				CD3591E01735A757000E2963 /* PlayTabControllerPad.m */,
-				CD3591E11735A757000E2963 /* PlayTabControllerPhone.h */,
-				CD3591E21735A757000E2963 /* PlayTabControllerPhone.m */,
-				CD7C69F31AB2CB4A009EC5AD /* PlayTabNavigationController.h */,
-				CD7C69F41AB2CB4A009EC5AD /* PlayTabNavigationController.m */,
+				CD3591DD1735A757000E2963 /* PlayRootViewController.h */,
+				CD3591DE1735A757000E2963 /* PlayRootViewController.m */,
+				CD3591DF1735A757000E2963 /* PlayRootViewControllerPad.h */,
+				CD3591E01735A757000E2963 /* PlayRootViewControllerPad.m */,
+				CD3591E11735A757000E2963 /* PlayRootViewControllerPhone.h */,
+				CD3591E21735A757000E2963 /* PlayRootViewControllerPhone.m */,
+				CD7C69F31AB2CB4A009EC5AD /* PlayRootViewNavigationController.h */,
+				CD7C69F41AB2CB4A009EC5AD /* PlayRootViewNavigationController.m */,
 			);
-			path = playtab;
+			name = rootview;
+			path = rootview;
 			sourceTree = "<group>";
 		};
 		CD3A0996169389A600ABDB5D /* gesture */ = {
@@ -2260,7 +2261,7 @@
 				CD3A0999169389A600ABDB5D /* PanGestureController.m in Sources */,
 				CD3A09A116939E2200ABDB5D /* TapGestureController.m in Sources */,
 				CD0FE902169A122400053671 /* BoardPositionListViewController.m in Sources */,
-				CD7C69F51AB2CB4A009EC5AD /* PlayTabNavigationController.m in Sources */,
+				CD7C69F51AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */,
 				CD0FE906169A135400053671 /* BoardPositionView.m in Sources */,
 				CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */,
 				CD7C69BA1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
@@ -2296,10 +2297,10 @@
 				CDF341D3172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
 				CD3591CA17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */,
 				CD3591DA1735A711000E2963 /* BoardPositionModel.m in Sources */,
-				CD3592021735A757000E2963 /* PlayTabController.m in Sources */,
+				CD3592021735A757000E2963 /* PlayRootViewController.m in Sources */,
 				CDEECC6C1992923000BC89F2 /* ArchiveUtility.m in Sources */,
-				CD3592041735A757000E2963 /* PlayTabControllerPad.m in Sources */,
-				CD3592061735A757000E2963 /* PlayTabControllerPhone.m in Sources */,
+				CD3592041735A757000E2963 /* PlayRootViewControllerPad.m in Sources */,
+				CD3592061735A757000E2963 /* PlayRootViewControllerPhone.m in Sources */,
 				CDEE19F319433EAC00DF2389 /* BoardView.m in Sources */,
 				CDAFAE6E195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CD7C69BF1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */,
@@ -2468,7 +2469,7 @@
 				CD9A49EC1712512E009E7514 /* ItemScrollView.m in Sources */,
 				CD9A49F11712515C009E7514 /* InterruptComputerCommand.m in Sources */,
 				CD9A49F21712516D009E7514 /* EditTextController.m in Sources */,
-				CD7C69F61AB2CB4A009EC5AD /* PlayTabNavigationController.m in Sources */,
+				CD7C69F61AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */,
 				CDFD9F8118F1D5ED0031CBCF /* GtpLogItemViewController.m in Sources */,
 				CDFD9F8418F1D5FF0031CBCF /* SubmitGtpCommandViewController.m in Sources */,
 				CD1311C417180B53006CE699 /* ScoringModel.m in Sources */,
@@ -2489,9 +2490,9 @@
 				CDFD9F7C18F1D5A30031CBCF /* DeleteGameCommand.m in Sources */,
 				CDFD9F7B18F1D5800031CBCF /* ViewGameController.m in Sources */,
 				CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */,
-				CD3592031735A757000E2963 /* PlayTabController.m in Sources */,
-				CD3592051735A757000E2963 /* PlayTabControllerPad.m in Sources */,
-				CD3592071735A757000E2963 /* PlayTabControllerPhone.m in Sources */,
+				CD3592031735A757000E2963 /* PlayRootViewController.m in Sources */,
+				CD3592051735A757000E2963 /* PlayRootViewControllerPad.m in Sources */,
+				CD3592071735A757000E2963 /* PlayRootViewControllerPhone.m in Sources */,
 				CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CDFD9F7918F1D56A0031CBCF /* SectionedDocumentViewController.m in Sources */,
 				CD2D3A9E174C348C0030EDE4 /* EditGtpEngineProfileController.m in Sources */,

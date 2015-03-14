@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@
 
 
 // Project includes
-#include "PlayTabController.h"
+#include "PlayRootViewController.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayTabControllerPad class is the root view controller on the
-/// Play tab for the iPad.
+/// @brief The PlayRootViewControllerPad class is the root view controller of
+/// #UIAreaPlay for all iPad-related UI types.
 ///
-/// The PlayTabController class method playTabController() should be used to
-/// create a PlayTabControllerPad instance.
+/// The PlayRootViewController class method playRootViewController() should be
+/// used to create a PlayRootViewControllerPad instance.
 // -----------------------------------------------------------------------------
-@interface PlayTabControllerPad : PlayTabController
+@interface PlayRootViewControllerPad : PlayRootViewController
 {
 }
 

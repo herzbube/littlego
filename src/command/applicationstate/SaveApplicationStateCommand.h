@@ -27,8 +27,8 @@
 ///
 /// SaveApplicationStateCommand stores the NSCoding archive in a fixed location
 /// in the application's library folder. Because the file is not in the shared
-/// document folder, it is visible/accessible neither in iTunes, nor on the
-/// in-app tab "Archive".
+/// document folder, it is visible/accessible neither in iTunes, nor in-app in
+/// #UIAreaArchive.
 ///
 /// The NSCoding archive is overwritten if it already exists.
 ///

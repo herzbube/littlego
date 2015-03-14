@@ -82,9 +82,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The GameActionManager class defines an abstract set of game actions
-/// (e.g. "pass"). GameActionManager also defines the behaviour of these
-/// actions (i.e. what they do) and when they are available.
-/// navigation bar above the Go board on the Play tab.
+/// (e.g. "pass"). GameActionManager also defines the behaviour of these actions
+/// (i.e. what they do) and when they are available.
 ///
 /// GameActionManager requires a third party - the so-called "UI delegate" - to
 /// provide a visual representation of the actions it manages. UIControls such

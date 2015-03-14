@@ -742,7 +742,7 @@ extern NSString* bugReportUserDefaultsFileName;
 /// format.
 extern NSString* bugReportCurrentGameFileName;
 /// @brief Name of the bug report file that stores a screenshot of the views
-/// visible on the Play tab.
+/// visible in #UIAreaPlay.
 extern NSString* bugReportScreenshotFileName;
 /// @brief Name of the bug report file that stores a depiction of the board as
 /// it is seen by the GTP engine.
@@ -786,15 +786,15 @@ extern NSString* creditsDocumentResource;
 extern NSString* registrationDomainDefaultsResource;
 extern NSString* playStoneSoundFileResource;
 extern NSString* mainMenuIconResource;
-extern NSString* playTabIconResource;
-extern NSString* settingsTabIconResource;
-extern NSString* archiveTabIconResource;
-extern NSString* helpTabIconResource;
-extern NSString* diagnosticsTabIconResource;
-extern NSString* aboutTabIconResource;
-extern NSString* sourceCodeTabIconResource;
-extern NSString* licensesTabIconResource;
-extern NSString* creditsTabIconResource;
+extern NSString* uiAreaPlayIconResource;
+extern NSString* uiAreaSettingsIconResource;
+extern NSString* uiAreaArchiveIconResource;
+extern NSString* uiAreaHelpIconResource;
+extern NSString* uiAreaDiagnosticsIconResource;
+extern NSString* uiAreaAboutIconResource;
+extern NSString* uiAreaSourceCodeIconResource;
+extern NSString* uiAreaLicensesIconResource;
+extern NSString* uiAreaCreditsIconResource;
 extern NSString* computerPlayButtonIconResource;
 extern NSString* passButtonIconResource;
 extern NSString* discardButtonIconResource;

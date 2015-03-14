@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "PlayTabControllerPhone.h"
+#import "PlayRootViewControllerPhone.h"
 #import "../boardposition/BoardPositionToolbarController.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/DiscardFutureMovesAlertController.h"
@@ -28,9 +28,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for PlayTabControllerPhone.
+/// @brief Class extension with private properties for
+/// PlayRootViewControllerPhone.
 // -----------------------------------------------------------------------------
-@interface PlayTabControllerPhone()
+@interface PlayRootViewControllerPhone()
 @property(nonatomic, retain) NavigationBarController* navigationBarController;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 @property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
@@ -38,18 +39,18 @@
 @end
 
 
-@implementation PlayTabControllerPhone
+@implementation PlayRootViewControllerPhone
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayTabControllerPhone object.
+/// @brief Initializes a PlayRootViewControllerPhone object.
 ///
-/// @note This is the designated initializer of PlayTabControllerPhone.
+/// @note This is the designated initializer of PlayRootViewControllerPhone.
 // -----------------------------------------------------------------------------
 - (id) init
 {
-  // Call designated initializer of superclass (PlayTabController)
+  // Call designated initializer of superclass (PlayRootViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
@@ -58,7 +59,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayTabControllerPhone object.
+/// @brief Deallocates memory allocated by this PlayRootViewControllerPhone
+/// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {

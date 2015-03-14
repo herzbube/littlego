@@ -562,8 +562,8 @@
         {
           // UIKit sometimes crashes if we add coordinate labels while a
           // layouting cycle is in progress. The crash happens if 1) the app
-          // starts up and initially displays some other than the Play tab, then
-          // 2) the user switches to the play tab. At this moment
+          // starts up and initially displays some other than the Play UI area,
+          // the 2) the user switches to the Play UI area. At this moment
           // viewDidLayoutSubviews is executed, it invokes
           // updateBaseSizeInBoardViewMetrics, which in turn triggers this
           // KVO observer. If we now add coordinate labels, the app crashes. The

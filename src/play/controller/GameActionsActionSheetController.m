@@ -35,7 +35,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Enumerates buttons that are displayed when the user taps the
-/// "Game Actions" button on the Play tab.
+/// "Game Actions" button in #UIAreaPlay.
 ///
 /// The order in which buttons are enumerated also defines the order in which
 /// they appear in the UIActionSheet.

@@ -23,7 +23,7 @@
 #import "UIAreaInfo.h"
 #import "../archive/ArchiveViewController.h"
 #import "../diagnostics/DiagnosticsViewController.h"
-#import "../play/playtab/PlayTabController.h"
+#import "../play/rootview/PlayRootViewController.h"
 #import "../settings/SettingsViewController.h"
 
 
@@ -69,23 +69,23 @@
   switch (uiArea)
   {
     case UIAreaPlay:
-      return playTabIconResource;
+      return uiAreaPlayIconResource;
     case UIAreaSettings:
-      return settingsTabIconResource;
+      return uiAreaSettingsIconResource;
     case UIAreaArchive:
-      return archiveTabIconResource;
+      return uiAreaArchiveIconResource;
     case UIAreaDiagnostics:
-      return diagnosticsTabIconResource;
+      return uiAreaDiagnosticsIconResource;
     case UIAreaHelp:
-      return helpTabIconResource;
+      return uiAreaHelpIconResource;
     case UIAreaAbout:
-      return aboutTabIconResource;
+      return uiAreaAboutIconResource;
     case UIAreaSourceCode:
-      return sourceCodeTabIconResource;
+      return uiAreaSourceCodeIconResource;
     case UIAreaLicenses:
-      return licensesTabIconResource;
+      return uiAreaLicensesIconResource;
     case UIAreaCredits:
-      return creditsTabIconResource;
+      return uiAreaCreditsIconResource;
     default:
       return nil;
   }
@@ -101,7 +101,7 @@
   switch (uiArea)
   {
     case UIAreaPlay:
-      rootViewController = [PlayTabController playTabController];
+      rootViewController = [PlayRootViewController playRootViewController];
       break;
     case UIAreaSettings:
       rootViewController = [SettingsViewController controller];

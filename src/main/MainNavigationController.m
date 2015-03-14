@@ -20,7 +20,7 @@
 #import "ApplicationDelegate.h"
 #import "MainTableViewController.h"
 #import "UIAreaInfo.h"
-#import "../play/playtab/PlayTabController.h"
+#import "../play/rootview/PlayRootViewController.h"
 #import "../play/splitview/LeftPaneViewController.h"
 #import "../ui/SplitViewController.h"
 #import "../ui/UiSettingsModel.h"
@@ -32,7 +32,7 @@
 // -----------------------------------------------------------------------------
 @interface MainNavigationController()
 @property(nonatomic, assign) bool hasPortraitOrientationViewHierarchy;
-@property(nonatomic, retain) PlayTabController* playTabController;
+@property(nonatomic, retain) PlayRootViewController* playRootViewController;
 // Cannot name this property splitViewController, there already is a property
 // of that name in UIViewController, and it has a different meaning
 @property(nonatomic, retain) SplitViewController* splitViewControllerChild;
@@ -86,7 +86,7 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
-  self.playTabController = nil;
+  self.playRootViewController = nil;
   self.splitViewControllerChild = nil;
   self.leftPaneViewController = nil;
   self.rightPaneViewController = nil;
@@ -129,12 +129,12 @@
   UIViewController* realRootViewController;
   if (isPortraitOrientation)
   {
-    self.playTabController = [PlayTabController playTabController];
-    self.playTabController.uiArea = UIAreaPlay;
-    realRootViewController = self.playTabController;
+    self.playRootViewController = [PlayRootViewController playRootViewController];
+    self.playRootViewController.uiArea = UIAreaPlay;
+    realRootViewController = self.playRootViewController;
 
     //xxx
-//    self.playTabController.mainMenuPresenter = self;
+//    self.playRootViewController.mainMenuPresenter = self;
   }
   else
   {
@@ -169,7 +169,7 @@
   [self popToRootViewControllerAnimated:NO];
   if (self.hasPortraitOrientationViewHierarchy)
   {
-    self.playTabController = nil;
+    self.playRootViewController = nil;
   }
   else
   {

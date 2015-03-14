@@ -161,7 +161,7 @@ enum DisplayPlayerInfluenceSectionItem
     case DisplayMoveNumbersSection:
       return @"The lowest setting displays no move numbers, the highest setting displays all move numbers. On the iPhone you may need to zoom in to see move numbers.";
     case DisplayPlayerInfluenceSection:
-      return @"After turning this on, the Go board will display player influence as soon as the computer player has made its next move. Turning this on also adds a new entry 'Update player influence' to the actions menu on the Play tab. Select this action to immediately update player influence (useful e.g. after a board position change).";
+      return @"After turning this on, the Go board will display player influence as soon as the computer player has made its next move. Turning this on also adds a new entry 'Update player influence' to the game actions menu. Select this action to immediately update player influence (useful e.g. after a board position change).";
     default:
       break;
   }

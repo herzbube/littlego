@@ -16,13 +16,13 @@
 
 
 // Project includes
-#import "PlayTabController.h"
-#import "PlayTabControllerPad.h"
-#import "PlayTabControllerPhone.h"
+#import "PlayRootViewController.h"
+#import "PlayRootViewControllerPad.h"
+#import "PlayRootViewControllerPhone.h"
 #import "../../shared/LayoutManager.h"
 
 
-@implementation PlayTabController
+@implementation PlayRootViewController
 
 #pragma mark - Initialization and deallocation
 
@@ -31,16 +31,16 @@
 /// object that knows how to set up the correct view hierarchy for the current
 /// UI type.
 // -----------------------------------------------------------------------------
-+ (PlayTabController*) playTabController
++ (PlayRootViewController*) playRootViewController
 {
-  PlayTabController* playTabController;
+  PlayRootViewController* playRootViewController;
   if ([LayoutManager sharedManager].uiType != UITypePad)
-    playTabController = [[[PlayTabControllerPhone alloc] init] autorelease];
+    playRootViewController = [[[PlayRootViewControllerPhone alloc] init] autorelease];
   else
-    playTabController = [[[PlayTabControllerPad alloc] init] autorelease];
-  playTabController.edgesForExtendedLayout = UIRectEdgeNone;
-  playTabController.automaticallyAdjustsScrollViewInsets = NO;
-  return playTabController;
+    playRootViewController = [[[PlayRootViewControllerPad alloc] init] autorelease];
+  playRootViewController.edgesForExtendedLayout = UIRectEdgeNone;
+  playRootViewController.automaticallyAdjustsScrollViewInsets = NO;
+  return playRootViewController;
 }
 
 @end

@@ -15,22 +15,19 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#include "PlayRootViewController.h"
+
+
 // -----------------------------------------------------------------------------
-/// @brief The PlayTabController class represents the root view controller on
-/// the Play tab of MainTabBarController.
+/// @brief The PlayRootViewControllerPhone class is the root view controller of
+/// the #UIAreaPlay for all iPhone-related UI types.
 ///
-/// The view hierarchy on the Play tab is laid out differently depending on
-/// the UI type that is effective at runtime. Use the class method
-/// playTabController() to obtain a UI type-dependent controller object that
-/// knows how to set up the correct view hierarchy for the current UI type.
-///
-/// @see LayoutManager
-/// @see MainTabBarController
+/// The PlayRootViewController class method playRootViewController() should be
+/// used to create a PlayRootViewControllerPhone instance.
 // -----------------------------------------------------------------------------
-@interface PlayTabController : UIViewController
+@interface PlayRootViewControllerPhone : PlayRootViewController
 {
 }
-
-+ (PlayTabController*) playTabController;
 
 @end

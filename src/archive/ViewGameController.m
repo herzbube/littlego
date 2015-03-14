@@ -341,7 +341,7 @@ enum GameAttributesSectionItem
   if (didStartNewGame)
   {
     [[ApplicationDelegate sharedDelegate].tabBarController activateTabForUIArea:UIAreaPlay];
-    // No animation necessary, the Play tab is now visible
+    // No animation necessary, the Play UI area is now visible
     [self.navigationController popViewControllerAnimated:NO];
   }
 }

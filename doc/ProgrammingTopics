@@ -16,7 +16,7 @@ The Fuego engine runs in a secondary thread, and communication with the engine
 also occurs within a secondary thread. Basic understanding of how threading and
 run loops work can be found in [2]. Scheduling with NSTimer is covered by [3].
 
-Little Go is quite configurable and has a preference tab to manage all the
+Little Go is quite configurable and has a preference UI area to manage all the
 settings. This requires the "User Defaults" system (see [4]).
 
 [5] explains the nib object lifecycle. This information is helpful for proper

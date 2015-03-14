@@ -20,7 +20,7 @@
 #import "ApplicationDelegate.h"
 #import "MainUtility.h"
 #import "UIAreaInfo.h"
-#import "../play/playtab/PlayTabNavigationController.h"
+#import "../play/rootview/PlayRootViewNavigationController.h"
 #import "../shared/LayoutManager.h"
 #import "../ui/UiSettingsModel.h"
 #import "../utility/UIColorAdditions.h"
@@ -98,7 +98,7 @@
 
   UINavigationController* tabRootViewController;
   if (UIAreaPlay == uiArea)
-    tabRootViewController = [[[PlayTabNavigationController alloc] initWithRootViewController:rootViewController] autorelease];
+    tabRootViewController = [[[PlayRootViewNavigationController alloc] initWithRootViewController:rootViewController] autorelease];
   else
     tabRootViewController = [[[UINavigationController alloc] initWithRootViewController:rootViewController] autorelease];
   tabRootViewController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:rootViewController.title

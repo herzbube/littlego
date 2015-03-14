@@ -33,11 +33,10 @@
 /// @ingroup go
 ///
 /// GoGame can be viewed as taking the role of a model in an MVC pattern that
-/// includes the views and controllers on the Play tab of the GUI. Clients that
-/// run one of the various commands (e.g. PlayMoveCommand) will trigger updates
-/// in GoGame that can be observed by registering with the default
-/// NSNotificationCenter. See Constants.h for a list of notifications that can
-/// be observed.
+/// includes the views and controllers in #UIAreaPlay. Clients that run one of
+/// the various commands (e.g. #PlayMoveCommand) will trigger updates in GoGame
+/// that can be observed by registering with the default NSNotificationCenter.
+/// See Constants.h for a list of notifications that can be observed.
 ///
 /// Although it is possible to create multiple instances of GoGame, there is
 /// usually no point in doing so, except for unit testing purposes. During the

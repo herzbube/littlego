@@ -37,8 +37,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The GameActionsActionSheetController class is responsible for
-/// managing an action sheet when the user taps the "Game Actions" button in the
-/// navigation bar on the Play tab.
+/// managing an action sheet when the user taps the "Game Actions" button in
+/// #UIAreaPlay.
 ///
 /// Tasks implementend by GameActionsActionSheetController are:
 /// - Displaying the action sheet with buttons that are appropriate to the

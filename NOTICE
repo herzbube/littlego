@@ -2,8 +2,8 @@ Little Go
 Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 
 The information in this file is also available when displaying the "About" and
-the "Licenses" tab from within the running application. The license files are
-located in the source distribution in the subfolder resource/html.
+the "Licenses" UI area from within the running application. The license files
+are located in the source distribution in the subfolder resource/html.
 
 
 This product uses the Go engine and computer player provided by the Fuego
