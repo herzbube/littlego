@@ -645,7 +645,9 @@
     assert(0);
     return;
   }
-  if ([self shouldIgnoreTaps])
+  // TODO: Can we remove this? This check should not be necessary since we also
+  // implement tableView:shouldHighlightRowAtIndexPath:().
+  if (! self.tappingEnabled)
   {
     DDLogWarn(@"%@: Ignoring board position change", self);
     return;
@@ -738,15 +740,6 @@
     return self.alternateCellBackgroundColor1;
   else
     return self.alternateCellBackgroundColor2;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns true if taps on cells in the list of board positions should
-/// currently be ignored.
-// -----------------------------------------------------------------------------
-- (bool) shouldIgnoreTaps
-{
-  return [GoGame sharedGame].isComputerThinking;
 }
 
 @end

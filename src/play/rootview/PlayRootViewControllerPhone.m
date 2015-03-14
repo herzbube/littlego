@@ -17,6 +17,7 @@
 
 // Project includes
 #import "PlayRootViewControllerPhone.h"
+#import "../boardposition/BoardPositionCollectionViewController.h"
 #import "../boardposition/BoardPositionToolbarController.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/AutoLayoutConstraintHelper.h"
@@ -36,6 +37,7 @@
 @interface PlayRootViewControllerPhone()
 @property(nonatomic, retain) UIView* woodenBackgroundView;
 @property(nonatomic, retain) NavigationBarControllerPhone* navigationBarController;
+@property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 @property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
@@ -81,6 +83,7 @@
 {
   self.woodenBackgroundView = nil;
   self.navigationBarController = nil;
+  self.boardPositionCollectionViewController = nil;
   self.boardPositionToolbarController = nil;
   self.discardFutureMovesAlertController = nil;
   self.boardViewController = nil;
@@ -95,12 +98,38 @@
 - (void) setupChildControllers
 {
   self.navigationBarController = [[[NavigationBarControllerPhone alloc] initWithNavigationItem:self.navigationItem] autorelease];
+  self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] init] autorelease];
   self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
 
   self.boardViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
   [GameActionManager sharedGameActionManager].commandDelegate = self.discardFutureMovesAlertController;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setBoardPositionCollectionViewController:(BoardPositionCollectionViewController*)boardPositionCollectionViewController
+{
+  if (_boardPositionCollectionViewController == boardPositionCollectionViewController)
+    return;
+  if (_boardPositionCollectionViewController)
+  {
+    [_boardPositionCollectionViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_boardPositionCollectionViewController removeFromParentViewController];
+    [_boardPositionCollectionViewController release];
+    _boardPositionCollectionViewController = nil;
+  }
+  if (boardPositionCollectionViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:boardPositionCollectionViewController];
+    [boardPositionCollectionViewController didMoveToParentViewController:self];
+    [boardPositionCollectionViewController retain];
+    _boardPositionCollectionViewController = boardPositionCollectionViewController;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -189,6 +218,7 @@
 {
   self.woodenBackgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 
+  [self.view addSubview:self.boardPositionCollectionViewController.view];
   [self.view addSubview:self.woodenBackgroundView];
   [self.view addSubview:self.boardPositionToolbarController.view];
 
@@ -200,17 +230,23 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
+  self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.boardPositionCollectionViewController.view, @"boardPositionCollectionView",
                                    self.woodenBackgroundView, @"woodenBackgroundView",
                                    self.boardPositionToolbarController.view, @"boardPositionToolbarView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
+                            @"H:|-0-[boardPositionCollectionView]-0-|",
                             @"H:|-0-[woodenBackgroundView]-0-|",
                             @"H:|-0-[boardPositionToolbarView]-0-|",
-                            @"V:|-0-[woodenBackgroundView]-0-[boardPositionToolbarView]-0-|",
+                            //xxx spacing
+                            [NSString stringWithFormat:@"V:|-0-[boardPositionCollectionView(==%f)]-0-[woodenBackgroundView]-0-[boardPositionToolbarView]-0-|", [self.boardPositionCollectionViewController boardPositionCollectionViewCellSize].height],
+                            //xxx
+//                            @"V:|-0-[woodenBackgroundView]-0-[boardPositionToolbarView]-0-|",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 

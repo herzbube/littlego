@@ -234,6 +234,10 @@
 		CD7C6A0E1AB47C22009EC5AD /* MainMenuPresenter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A0C1AB47C22009EC5AD /* MainMenuPresenter.m */; };
 		CD7C6A111AB4862E009EC5AD /* AutoLayoutConstraintHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A101AB4862E009EC5AD /* AutoLayoutConstraintHelper.m */; };
 		CD7C6A121AB4862E009EC5AD /* AutoLayoutConstraintHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A101AB4862E009EC5AD /* AutoLayoutConstraintHelper.m */; };
+		CD7C6A151AB49631009EC5AD /* BoardPositionCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A141AB49631009EC5AD /* BoardPositionCollectionViewController.m */; };
+		CD7C6A161AB49631009EC5AD /* BoardPositionCollectionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A141AB49631009EC5AD /* BoardPositionCollectionViewController.m */; };
+		CD7C6A191AB4990D009EC5AD /* BoardPositionCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A181AB4990D009EC5AD /* BoardPositionCollectionViewCell.m */; };
+		CD7C6A1A1AB4990D009EC5AD /* BoardPositionCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A181AB4990D009EC5AD /* BoardPositionCollectionViewCell.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -747,6 +751,10 @@
 		CD7C6A0C1AB47C22009EC5AD /* MainMenuPresenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainMenuPresenter.m; sourceTree = "<group>"; };
 		CD7C6A0F1AB4862E009EC5AD /* AutoLayoutConstraintHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutoLayoutConstraintHelper.h; sourceTree = "<group>"; };
 		CD7C6A101AB4862E009EC5AD /* AutoLayoutConstraintHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutoLayoutConstraintHelper.m; sourceTree = "<group>"; };
+		CD7C6A131AB49631009EC5AD /* BoardPositionCollectionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionCollectionViewController.h; sourceTree = "<group>"; };
+		CD7C6A141AB49631009EC5AD /* BoardPositionCollectionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionCollectionViewController.m; sourceTree = "<group>"; };
+		CD7C6A171AB4990D009EC5AD /* BoardPositionCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionCollectionViewCell.h; sourceTree = "<group>"; };
+		CD7C6A181AB4990D009EC5AD /* BoardPositionCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionCollectionViewCell.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
@@ -1222,6 +1230,10 @@
 			children = (
 				CD7C69B41A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.h */,
 				CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */,
+				CD7C6A171AB4990D009EC5AD /* BoardPositionCollectionViewCell.h */,
+				CD7C6A181AB4990D009EC5AD /* BoardPositionCollectionViewCell.m */,
+				CD7C6A131AB49631009EC5AD /* BoardPositionCollectionViewController.h */,
+				CD7C6A141AB49631009EC5AD /* BoardPositionCollectionViewController.m */,
 				CD0FE8FE169A122400053671 /* BoardPositionListViewController.h */,
 				CD0FE8FF169A122400053671 /* BoardPositionListViewController.m */,
 				CD7C69B81A9ABDE2009EC5AD /* BoardPositionNavigationManager.h */,
@@ -2187,8 +2199,10 @@
 				CD10881C13255A4700E83543 /* GoGame.m in Sources */,
 				CD10881F13255A6100E83543 /* GoMove.m in Sources */,
 				CDA096FB1A915085002FCD78 /* LayoutManager.m in Sources */,
+				CD7C6A191AB4990D009EC5AD /* BoardPositionCollectionViewCell.m in Sources */,
 				CD7C69F11AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */,
 				CDA097031A994D01002FCD78 /* WindowRootViewController.m in Sources */,
+				CD7C6A151AB49631009EC5AD /* BoardPositionCollectionViewController.m in Sources */,
 				CD10882213255A6B00E83543 /* GoPlayer.m in Sources */,
 				CD10882513255AA600E83543 /* GoPoint.m in Sources */,
 				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
@@ -2423,6 +2437,7 @@
 				CDEE19FC19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,
 				CDEE1A0419438AE000DF2389 /* StonesLayerDelegate.m in Sources */,
+				CD7C6A161AB49631009EC5AD /* BoardPositionCollectionViewController.m in Sources */,
 				CD05AB97142516A400214BBE /* GoUtilities.m in Sources */,
 				CD05ACA91425486100214BBE /* NewGameCommand.m in Sources */,
 				CDFD9F7318F1D3740031CBCF /* ScoringSettingsController.m in Sources */,
@@ -2432,6 +2447,7 @@
 				CD4D44741A79D08F00272579 /* BWQuincyManager.m in Sources */,
 				CDFD9F8218F1D5F40031CBCF /* GtpLogSettingsController.m in Sources */,
 				CD05B143142A74ED00214BBE /* LoadGameCommand.m in Sources */,
+				CD7C6A1A1AB4990D009EC5AD /* BoardPositionCollectionViewCell.m in Sources */,
 				CD05B213142BC5A400214BBE /* GtpUtilities.m in Sources */,
 				CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
 				CD0CCB8B142FFAFF00A3F869 /* GtpLogItem.m in Sources */,
