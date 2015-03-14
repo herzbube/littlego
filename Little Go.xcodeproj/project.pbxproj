@@ -232,6 +232,8 @@
 		CD7C6A0A1AB462CB009EC5AD /* NavigationBarButtonModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */; };
 		CD7C6A0D1AB47C22009EC5AD /* MainMenuPresenter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A0C1AB47C22009EC5AD /* MainMenuPresenter.m */; };
 		CD7C6A0E1AB47C22009EC5AD /* MainMenuPresenter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A0C1AB47C22009EC5AD /* MainMenuPresenter.m */; };
+		CD7C6A111AB4862E009EC5AD /* AutoLayoutConstraintHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A101AB4862E009EC5AD /* AutoLayoutConstraintHelper.m */; };
+		CD7C6A121AB4862E009EC5AD /* AutoLayoutConstraintHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A101AB4862E009EC5AD /* AutoLayoutConstraintHelper.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -743,6 +745,8 @@
 		CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationBarButtonModel.m; sourceTree = "<group>"; };
 		CD7C6A0B1AB47C22009EC5AD /* MainMenuPresenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainMenuPresenter.h; sourceTree = "<group>"; };
 		CD7C6A0C1AB47C22009EC5AD /* MainMenuPresenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainMenuPresenter.m; sourceTree = "<group>"; };
+		CD7C6A0F1AB4862E009EC5AD /* AutoLayoutConstraintHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AutoLayoutConstraintHelper.h; sourceTree = "<group>"; };
+		CD7C6A101AB4862E009EC5AD /* AutoLayoutConstraintHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AutoLayoutConstraintHelper.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
@@ -1392,6 +1396,8 @@
 		CD1E9E54171806FE00E1B7D1 /* controller */ = {
 			isa = PBXGroup;
 			children = (
+				CD7C6A0F1AB4862E009EC5AD /* AutoLayoutConstraintHelper.h */,
+				CD7C6A101AB4862E009EC5AD /* AutoLayoutConstraintHelper.m */,
 				CD3591C817346D25000E2963 /* DiscardFutureMovesAlertController.h */,
 				CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */,
 				CDAF171B196869E700271396 /* GameActionsActionSheetController.h */,
@@ -2273,6 +2279,7 @@
 				CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
 				CDFA32A515A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
 				CD7C6A011AB458CE009EC5AD /* NavigationBarControllerPhone.m in Sources */,
+				CD7C6A111AB4862E009EC5AD /* AutoLayoutConstraintHelper.m in Sources */,
 				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
 				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
 				CDEE1A171946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
@@ -2519,6 +2526,7 @@
 				CDFD9F7718F1D5600031CBCF /* DocumentViewController.m in Sources */,
 				CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */,
 				CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */,
+				CD7C6A121AB4862E009EC5AD /* AutoLayoutConstraintHelper.m in Sources */,
 				CD1311D3171B5FFF006CE699 /* LoggingModel.m in Sources */,
 				CDF341C7172742D700AEFB20 /* LongRunningActionCounter.m in Sources */,
 				CDF341CB1727507900AEFB20 /* ApplicationStateManager.m in Sources */,

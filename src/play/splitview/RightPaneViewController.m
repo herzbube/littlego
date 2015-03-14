@@ -20,6 +20,7 @@
 #import "../boardposition/BoardPositionButtonBoxDataSource.h"
 #import "../boardposition/BoardPositionNavigationManager.h"
 #import "../boardview/BoardViewController.h"
+#import "../controller/AutoLayoutConstraintHelper.h"
 #import "../controller/DiscardFutureMovesAlertController.h"
 #import "../controller/NavigationBarController.h"
 #import "../controller/StatusViewController.h"
@@ -47,7 +48,7 @@
 @property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
 @property(nonatomic, retain) ButtonBoxController* gameActionButtonBoxController;
 @property(nonatomic, retain) GameActionButtonBoxDataSource* gameActionButtonBoxDataSource;
-@property(nonatomic, retain) NSArray* boardViewAutoLayoutConstraints;
+@property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
 @property(nonatomic, retain) NSArray* gameActionButtonBoxAutoLayoutConstraints;
 @property(nonatomic, retain) UIButton* mainMenuButton;
 @end
@@ -73,7 +74,7 @@
   self.woodenBackgroundView = nil;
   self.leftColumnView = nil;
   self.rightColumnView = nil;
-  self.boardViewAutoLayoutConstraints = nil;
+  self.boardViewAutoLayoutConstraints = [NSMutableArray array];
   self.gameActionButtonBoxAutoLayoutConstraints = nil;
   self.mainMenuButton = nil;
   return self;
@@ -275,7 +276,9 @@
 // -----------------------------------------------------------------------------
 - (void) viewDidLayoutSubviews
 {
-  [self updateBoardViewAutoLayoutConstraints];
+  [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
+                                              ofBoardView:self.boardViewController.view
+                                         constraintHolder:self.woodenBackgroundView];
 }
 
 #pragma mark - Private helpers for loadView
@@ -313,12 +316,9 @@
 - (void) setupAutoLayoutConstraints
 {
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  // The board view should be square. This is only the aspect ratio, we still
-  // need the actual dimension.
-  [AutoLayoutUtility makeSquare:self.boardViewController.view constraintHolder:self.woodenBackgroundView];
-  // We determine the dimension of the square dynamically by looking at the size
-  // of the superview
-  [self updateBoardViewAutoLayoutConstraints];
+  [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
+                                              ofBoardView:self.boardViewController.view
+                                         constraintHolder:self.woodenBackgroundView];
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
@@ -457,68 +457,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates Auto Layout constraints that manage the size and placement of
-/// the board view. The new constraints use the current size values
-/// provided by the button box controller.
-// -----------------------------------------------------------------------------
-- (void) updateBoardViewAutoLayoutConstraints
-{
-  if (self.boardViewAutoLayoutConstraints)
-    [self.woodenBackgroundView removeConstraints:self.boardViewAutoLayoutConstraints];
-
-  NSMutableArray* boardViewAutoLayoutConstraints = [NSMutableArray array];
-
-  UIView* superviewOfBoardView = self.woodenBackgroundView;
-  CGSize superviewSize = superviewOfBoardView.bounds.size;
-  bool superviewHasPortraitOrientation = (superviewSize.height > superviewSize.width);
-
-  // Choose whichever is the superview's smaller dimension. We know that the
-  // board view is constrained to be square, so we need to constrain only one
-  // dimension to define the view size.
-  NSLayoutAttribute dimensionToConstrain;
-  // We also need to place the board view. The first part is to align it to one
-  // of the superview edges from which it can freely flow to take up the entire
-  // extent of the superview.
-  NSLayoutAttribute alignConstraintAxis;
-  // The second part of placing the board view is to center it on the axis on
-  // which it won't take up the entire extent of the superview. This evenly
-  // distributes the remaining space not taken up by the board view. Other
-  // content can then be placed into that space.
-  UILayoutConstraintAxis centerConstraintAxis;
-  if (superviewHasPortraitOrientation)
-  {
-    dimensionToConstrain = NSLayoutAttributeWidth;
-    alignConstraintAxis = NSLayoutAttributeLeft;
-    centerConstraintAxis = UILayoutConstraintAxisVertical;
-  }
-  else
-  {
-    dimensionToConstrain = NSLayoutAttributeHeight;
-    alignConstraintAxis = NSLayoutAttributeTop;
-    centerConstraintAxis = UILayoutConstraintAxisHorizontal;
-  }
-
-  NSLayoutConstraint* dimensionConstraint = [AutoLayoutUtility alignFirstView:self.boardViewController.view
-                                                               withSecondView:superviewOfBoardView
-                                                                  onAttribute:dimensionToConstrain
-                                                             constraintHolder:superviewOfBoardView];
-  [boardViewAutoLayoutConstraints addObject:dimensionConstraint];
-
-  NSLayoutConstraint* alignConstraint = [AutoLayoutUtility alignFirstView:self.boardViewController.view
-                                                           withSecondView:superviewOfBoardView
-                                                              onAttribute:alignConstraintAxis
-                                                         constraintHolder:superviewOfBoardView];
-  [boardViewAutoLayoutConstraints addObject:alignConstraint];
-
-  NSLayoutConstraint* centerConstraint = [AutoLayoutUtility centerSubview:self.boardViewController.view
-                                                              inSuperview:superviewOfBoardView
-                                                                   onAxis:centerConstraintAxis];
-  [boardViewAutoLayoutConstraints addObject:centerConstraint];
-
-  self.boardViewAutoLayoutConstraints = boardViewAutoLayoutConstraints;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Removes all dynamically managed Auto Layout constraints.
 ///
 /// TODO This should be removed, it is a HACK! See documentation at call site
@@ -527,7 +465,7 @@
 - (void) removeDynamicConstraints
 {
   [self.woodenBackgroundView removeConstraints:self.boardViewAutoLayoutConstraints];
-  self.boardViewAutoLayoutConstraints = nil;
+  [self.boardViewAutoLayoutConstraints removeAllObjects];
   [self.rightColumnView removeConstraints:self.gameActionButtonBoxAutoLayoutConstraints];
   self.gameActionButtonBoxAutoLayoutConstraints = nil;
 }
