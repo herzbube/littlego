@@ -132,7 +132,7 @@
 {
   if (self.useNavigationBar)
   {
-    self.navigationBarController = [[[NavigationBarController alloc] init] autorelease];
+    self.navigationBarController = [NavigationBarController navigationBarController];
   }
   else
   {

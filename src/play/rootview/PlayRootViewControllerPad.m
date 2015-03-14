@@ -82,7 +82,10 @@
   self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
   self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
 
-  self.splitViewControllerChild.delegate = self.rightPaneViewController.navigationBarController;
+  // Cast is safe because we know that the NavigationBarController object
+  // is a subclass of NavigationBarController that adopts the
+  // SplitViewControllerDelegate protocol
+  self.splitViewControllerChild.delegate = (id<SplitViewControllerDelegate>)self.rightPaneViewController.navigationBarController;
 }
 
 // -----------------------------------------------------------------------------

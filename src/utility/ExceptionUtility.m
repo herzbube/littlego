@@ -47,4 +47,30 @@
   @throw exception;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Throws an exception with name "AbstractMethodException".
+///
+/// Since it's not possible in Objective-C to mark a base class method as
+/// "abstract", the base class default implementation can at least throw this
+/// exception.
+// -----------------------------------------------------------------------------
++ (void) throwAbstractMethodException
+{
+  NSException* exception = [NSException exceptionWithName:@"AbstractMethodException"
+                                                   reason:@""
+                                                 userInfo:nil];
+  @throw exception;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Throws an exception with name "NotImplementedException".
+// -----------------------------------------------------------------------------
++ (void) throwNotImplementedException
+{
+  NSException* exception = [NSException exceptionWithName:@"NotImplementedException"
+                                                   reason:@""
+                                                 userInfo:nil];
+  @throw exception;
+}
+
 @end

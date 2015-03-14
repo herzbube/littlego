@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "PlayRootViewControllerPhone.h"
+#import "PlayRootViewControllerPhonePortraitOnly.h"
 #import "../boardposition/BoardPositionToolbarController.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/DiscardFutureMovesAlertController.h"
@@ -29,9 +29,9 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
-/// PlayRootViewControllerPhone.
+/// PlayRootViewControllerPhonePortraitOnly.
 // -----------------------------------------------------------------------------
-@interface PlayRootViewControllerPhone()
+@interface PlayRootViewControllerPhonePortraitOnly()
 @property(nonatomic, retain) NavigationBarController* navigationBarController;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 @property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
@@ -39,14 +39,15 @@
 @end
 
 
-@implementation PlayRootViewControllerPhone
+@implementation PlayRootViewControllerPhonePortraitOnly
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayRootViewControllerPhone object.
+/// @brief Initializes a PlayRootViewControllerPhonePortraitOnly object.
 ///
-/// @note This is the designated initializer of PlayRootViewControllerPhone.
+/// @note This is the designated initializer of
+/// PlayRootViewControllerPhonePortraitOnly.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -59,8 +60,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayRootViewControllerPhone
-/// object.
+/// @brief Deallocates memory allocated by this
+/// PlayRootViewControllerPhonePortraitOnly object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {

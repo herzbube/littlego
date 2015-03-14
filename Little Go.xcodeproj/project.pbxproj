@@ -88,7 +88,7 @@
 		CD10882513255AA600E83543 /* GoPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882413255AA600E83543 /* GoPoint.m */; };
 		CD1311C217180B45006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
 		CD1311C417180B53006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
-		CD1311C717180B67006CE699 /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5C171806FE00E1B7D1 /* NavigationBarController.m */; };
+		CD1311C717180B67006CE699 /* NavigationBarControllerPhonePortraitOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5C171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m */; };
 		CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
 		CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */; };
 		CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311CD17180D57006CE699 /* StatusViewController.m */; };
@@ -112,7 +112,7 @@
 		CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */; };
 		CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */; };
-		CD1E9E66171806FE00E1B7D1 /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5C171806FE00E1B7D1 /* NavigationBarController.m */; };
+		CD1E9E66171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5C171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m */; };
 		CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
 		CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
 		CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
@@ -137,8 +137,8 @@
 		CD3592031735A757000E2963 /* PlayRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591DE1735A757000E2963 /* PlayRootViewController.m */; };
 		CD3592041735A757000E2963 /* PlayRootViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E01735A757000E2963 /* PlayRootViewControllerPad.m */; };
 		CD3592051735A757000E2963 /* PlayRootViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E01735A757000E2963 /* PlayRootViewControllerPad.m */; };
-		CD3592061735A757000E2963 /* PlayRootViewControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E21735A757000E2963 /* PlayRootViewControllerPhone.m */; };
-		CD3592071735A757000E2963 /* PlayRootViewControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E21735A757000E2963 /* PlayRootViewControllerPhone.m */; };
+		CD3592061735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E21735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.m */; };
+		CD3592071735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E21735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.m */; };
 		CD36594116931F8600D75466 /* GoBoardPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CD36594016931F8500D75466 /* GoBoardPosition.m */; };
 		CD3659421693533600D75466 /* GoBoardPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CD36594016931F8500D75466 /* GoBoardPosition.m */; };
 		CD377F0816BD154A00972F04 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD377F0716BD154A00972F04 /* MainTabBarController.m */; };
@@ -222,6 +222,10 @@
 		CD7C69F21AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */; };
 		CD7C69F51AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F41AB2CB4A009EC5AD /* PlayRootViewNavigationController.m */; };
 		CD7C69F61AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F41AB2CB4A009EC5AD /* PlayRootViewNavigationController.m */; };
+		CD7C69F91AB43758009EC5AD /* PlayRootViewControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F81AB43758009EC5AD /* PlayRootViewControllerPhone.m */; };
+		CD7C69FA1AB43758009EC5AD /* PlayRootViewControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F81AB43758009EC5AD /* PlayRootViewControllerPhone.m */; };
+		CD7C69FD1AB43B3F009EC5AD /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69FC1AB43B3F009EC5AD /* NavigationBarController.m */; };
+		CD7C69FE1AB43B3F009EC5AD /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69FC1AB43B3F009EC5AD /* NavigationBarController.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -601,8 +605,8 @@
 		CD1DB60D1702436800C2E648 /* HandleDocumentInteractionCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandleDocumentInteractionCommand.m; sourceTree = "<group>"; };
 		CD1E9E59171806FE00E1B7D1 /* GameInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameInfoViewController.h; sourceTree = "<group>"; };
 		CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameInfoViewController.m; sourceTree = "<group>"; };
-		CD1E9E5B171806FE00E1B7D1 /* NavigationBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationBarController.h; sourceTree = "<group>"; };
-		CD1E9E5C171806FE00E1B7D1 /* NavigationBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationBarController.m; sourceTree = "<group>"; };
+		CD1E9E5B171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationBarControllerPhonePortraitOnly.h; sourceTree = "<group>"; };
+		CD1E9E5C171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationBarControllerPhonePortraitOnly.m; sourceTree = "<group>"; };
 		CD1E9E5F171806FE00E1B7D1 /* SoundHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundHandling.h; sourceTree = "<group>"; };
 		CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundHandling.m; sourceTree = "<group>"; };
 		CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncGTPEngineCommand.h; sourceTree = "<group>"; };
@@ -629,8 +633,8 @@
 		CD3591DE1735A757000E2963 /* PlayRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayRootViewController.m; sourceTree = "<group>"; };
 		CD3591DF1735A757000E2963 /* PlayRootViewControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayRootViewControllerPad.h; sourceTree = "<group>"; };
 		CD3591E01735A757000E2963 /* PlayRootViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayRootViewControllerPad.m; sourceTree = "<group>"; };
-		CD3591E11735A757000E2963 /* PlayRootViewControllerPhone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayRootViewControllerPhone.h; sourceTree = "<group>"; };
-		CD3591E21735A757000E2963 /* PlayRootViewControllerPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayRootViewControllerPhone.m; sourceTree = "<group>"; };
+		CD3591E11735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayRootViewControllerPhonePortraitOnly.h; sourceTree = "<group>"; };
+		CD3591E21735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayRootViewControllerPhonePortraitOnly.m; sourceTree = "<group>"; };
 		CD36593F16931F8500D75466 /* GoBoardPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardPosition.h; sourceTree = "<group>"; };
 		CD36594016931F8500D75466 /* GoBoardPosition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardPosition.m; sourceTree = "<group>"; };
 		CD377F0616BD154A00972F04 /* MainTabBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainTabBarController.h; sourceTree = "<group>"; };
@@ -723,6 +727,10 @@
 		CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIAreaInfo.m; sourceTree = "<group>"; };
 		CD7C69F31AB2CB4A009EC5AD /* PlayRootViewNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayRootViewNavigationController.h; sourceTree = "<group>"; };
 		CD7C69F41AB2CB4A009EC5AD /* PlayRootViewNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayRootViewNavigationController.m; sourceTree = "<group>"; };
+		CD7C69F71AB43758009EC5AD /* PlayRootViewControllerPhone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayRootViewControllerPhone.h; sourceTree = "<group>"; };
+		CD7C69F81AB43758009EC5AD /* PlayRootViewControllerPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayRootViewControllerPhone.m; sourceTree = "<group>"; };
+		CD7C69FB1AB43B3F009EC5AD /* NavigationBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationBarController.h; sourceTree = "<group>"; };
+		CD7C69FC1AB43B3F009EC5AD /* NavigationBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationBarController.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
@@ -1374,8 +1382,10 @@
 				CDAF171C196869E700271396 /* GameActionsActionSheetController.m */,
 				CD1E9E59171806FE00E1B7D1 /* GameInfoViewController.h */,
 				CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */,
-				CD1E9E5B171806FE00E1B7D1 /* NavigationBarController.h */,
-				CD1E9E5C171806FE00E1B7D1 /* NavigationBarController.m */,
+				CD7C69FB1AB43B3F009EC5AD /* NavigationBarController.h */,
+				CD7C69FC1AB43B3F009EC5AD /* NavigationBarController.m */,
+				CD1E9E5B171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.h */,
+				CD1E9E5C171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m */,
 				CD1E9E5F171806FE00E1B7D1 /* SoundHandling.h */,
 				CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */,
 				CD1311CC17180D57006CE699 /* StatusViewController.h */,
@@ -1391,12 +1401,13 @@
 				CD3591DE1735A757000E2963 /* PlayRootViewController.m */,
 				CD3591DF1735A757000E2963 /* PlayRootViewControllerPad.h */,
 				CD3591E01735A757000E2963 /* PlayRootViewControllerPad.m */,
-				CD3591E11735A757000E2963 /* PlayRootViewControllerPhone.h */,
-				CD3591E21735A757000E2963 /* PlayRootViewControllerPhone.m */,
+				CD7C69F71AB43758009EC5AD /* PlayRootViewControllerPhone.h */,
+				CD7C69F81AB43758009EC5AD /* PlayRootViewControllerPhone.m */,
+				CD3591E11735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.h */,
+				CD3591E21735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.m */,
 				CD7C69F31AB2CB4A009EC5AD /* PlayRootViewNavigationController.h */,
 				CD7C69F41AB2CB4A009EC5AD /* PlayRootViewNavigationController.m */,
 			);
-			name = rootview;
 			path = rootview;
 			sourceTree = "<group>";
 		};
@@ -2177,6 +2188,7 @@
 				CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */,
 				CDD48FB01413E95500188B6A /* CommandBase.m in Sources */,
 				CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */,
+				CD7C69FD1AB43B3F009EC5AD /* NavigationBarController.m in Sources */,
 				CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */,
 				CDFABCA814194A420065C93B /* ViewGameController.m in Sources */,
 				CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */,
@@ -2281,9 +2293,10 @@
 				CD30BAA816F7B28A00C95DCF /* TwoFingerTapGestureController.m in Sources */,
 				CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */,
 				CD1DB60E1702436B00C2E648 /* HandleDocumentInteractionCommand.m in Sources */,
+				CD7C69F91AB43758009EC5AD /* PlayRootViewControllerPhone.m in Sources */,
 				CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */,
 				CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */,
-				CD1E9E66171806FE00E1B7D1 /* NavigationBarController.m in Sources */,
+				CD1E9E66171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m in Sources */,
 				CD7C69ED1AA9F697009EC5AD /* ExceptionUtility.m in Sources */,
 				CDAF171D196869E700271396 /* GameActionsActionSheetController.m in Sources */,
 				CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */,
@@ -2300,7 +2313,7 @@
 				CD3592021735A757000E2963 /* PlayRootViewController.m in Sources */,
 				CDEECC6C1992923000BC89F2 /* ArchiveUtility.m in Sources */,
 				CD3592041735A757000E2963 /* PlayRootViewControllerPad.m in Sources */,
-				CD3592061735A757000E2963 /* PlayRootViewControllerPhone.m in Sources */,
+				CD3592061735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.m in Sources */,
 				CDEE19F319433EAC00DF2389 /* BoardView.m in Sources */,
 				CDAFAE6E195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CD7C69BF1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */,
@@ -2440,6 +2453,7 @@
 				CD1DB610170257C000C2E648 /* NewGameController.m in Sources */,
 				CD1DB611170257F400C2E648 /* HandicapSelectionController.m in Sources */,
 				CDFD9F7D18F1D5AB0031CBCF /* RenameGameCommand.m in Sources */,
+				CD7C69FA1AB43758009EC5AD /* PlayRootViewControllerPhone.m in Sources */,
 				CD1DB612170257F900C2E648 /* KomiSelectionController.m in Sources */,
 				CD1DB6131702581100C2E648 /* TableViewCellFactory.m in Sources */,
 				CDAF1724196CA81900271396 /* GoVertexNumeric.m in Sources */,
@@ -2475,7 +2489,7 @@
 				CD1311C417180B53006CE699 /* ScoringModel.m in Sources */,
 				CDCBA6D4184228A7003697E2 /* TableViewVariableHeightCell.m in Sources */,
 				CDFD9F7218F1D3700031CBCF /* DisplaySettingsController.m in Sources */,
-				CD1311C717180B67006CE699 /* NavigationBarController.m in Sources */,
+				CD1311C717180B67006CE699 /* NavigationBarControllerPhonePortraitOnly.m in Sources */,
 				CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */,
 				CDACF0B119041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */,
 				CDFD9F7718F1D5600031CBCF /* DocumentViewController.m in Sources */,
@@ -2492,7 +2506,7 @@
 				CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */,
 				CD3592031735A757000E2963 /* PlayRootViewController.m in Sources */,
 				CD3592051735A757000E2963 /* PlayRootViewControllerPad.m in Sources */,
-				CD3592071735A757000E2963 /* PlayRootViewControllerPhone.m in Sources */,
+				CD3592071735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.m in Sources */,
 				CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CDFD9F7918F1D56A0031CBCF /* SectionedDocumentViewController.m in Sources */,
 				CD2D3A9E174C348C0030EDE4 /* EditGtpEngineProfileController.m in Sources */,
@@ -2506,6 +2520,7 @@
 				CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */,
 				CDEE1A101946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */,
+				CD7C69FE1AB43B3F009EC5AD /* NavigationBarController.m in Sources */,
 				CD8EAABB1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
 				CD07270F180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */,
 				CDA097081A9954A3002FCD78 /* MainNavigationController.m in Sources */,

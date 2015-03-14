@@ -19,7 +19,9 @@
 #import "PlayRootViewController.h"
 #import "PlayRootViewControllerPad.h"
 #import "PlayRootViewControllerPhone.h"
+#import "PlayRootViewControllerPhonePortraitOnly.h"
 #import "../../shared/LayoutManager.h"
+#import "../../utility/ExceptionUtility.h"
 
 
 @implementation PlayRootViewController
@@ -34,10 +36,20 @@
 + (PlayRootViewController*) playRootViewController
 {
   PlayRootViewController* playRootViewController;
-  if ([LayoutManager sharedManager].uiType != UITypePad)
-    playRootViewController = [[[PlayRootViewControllerPhone alloc] init] autorelease];
-  else
-    playRootViewController = [[[PlayRootViewControllerPad alloc] init] autorelease];
+  switch ([LayoutManager sharedManager].uiType)
+  {
+    case UITypePhonePortraitOnly:
+      playRootViewController = [[[PlayRootViewControllerPhonePortraitOnly alloc] init] autorelease];
+      break;
+    case UITypePhone:
+      playRootViewController = [[[PlayRootViewControllerPhone alloc] init] autorelease];
+      break;
+    case UITypePad:
+      playRootViewController = [[[PlayRootViewControllerPad alloc] init] autorelease];
+      break;
+    default:
+      [ExceptionUtility throwInvalidUIType:[LayoutManager sharedManager].uiType];
+  }
   playRootViewController.edgesForExtendedLayout = UIRectEdgeNone;
   playRootViewController.automaticallyAdjustsScrollViewInsets = NO;
   return playRootViewController;

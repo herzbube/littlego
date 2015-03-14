@@ -29,5 +29,7 @@
 + (void) throwInvalidUIType:(enum UIType)uiType;
 + (void) throwInvalidArgumentExceptionWithFormat:(NSString*)format
                                    argumentValue:(int)argumentValue;
++ (void) throwAbstractMethodException;
++ (void) throwNotImplementedException;
 
 @end

@@ -21,7 +21,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayRootViewControllerPad class is the root view controller of
-/// #UIAreaPlay for all iPad-related UI types.
+/// the #UIAreaPlay for #UITypePad.
 ///
 /// The PlayRootViewController class method playRootViewController() should be
 /// used to create a PlayRootViewControllerPad instance.

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,14 +20,13 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayRootViewControllerPhone class is the root view controller of
-/// the #UIAreaPlay for #UITypePhone. It is used only when the UI is in one of
-/// the Portrait orientations.
+/// @brief The PlayRootViewControllerPhonePortraitOnly class is the root view
+/// controller of the #UIAreaPlay for #UITypePhonePortraitOnly.
 ///
 /// The PlayRootViewController class method playRootViewController() should be
-/// used to create a PlayRootViewControllerPhone instance.
+/// used to create a PlayRootViewControllerPhonePortraitOnly instance.
 // -----------------------------------------------------------------------------
-@interface PlayRootViewControllerPhone : PlayRootViewController
+@interface PlayRootViewControllerPhonePortraitOnly : PlayRootViewController
 {
 }
 
