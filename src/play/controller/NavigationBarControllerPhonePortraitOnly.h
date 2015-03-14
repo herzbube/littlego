@@ -19,23 +19,11 @@
 #import "NavigationBarController.h"
 #import "../../ui/SplitViewController.h"
 
-// Forward declarations
-@class StatusViewController;
-
 
 // -----------------------------------------------------------------------------
 /// @brief The NavigationBarControllerPhonePortraitOnly class is responsible for
 /// managing the navigation bar above the Go board in #UIAreaPlay for
-/// #UITypePhonePortraitOnly..
-///
-/// NavigationBarControllerPhonePortraitOnly is a container view controller. Its responsibilities
-/// include:
-/// - Populate the navigation bar with buttons that are appropriate for the
-///   current game state
-/// - Enable/disable buttons
-/// - React to the user tapping on buttons
-/// - Integrate the status view provided by the StatusViewController child view
-///   controller into the navigation bar
+/// #UITypePhonePortraitOnly.
 ///
 /// The navigation bar that the user sees actually consists of 3 different
 /// UINavigationBar instances:
@@ -53,8 +41,5 @@
 @interface NavigationBarControllerPhonePortraitOnly : NavigationBarController <SplitViewControllerDelegate>
 {
 }
-
-// TODO xxx who needs this?
-@property(nonatomic, retain) StatusViewController* statusViewController;
 
 @end

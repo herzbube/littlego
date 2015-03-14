@@ -16,65 +16,64 @@
 
 
 // Project includes
-#import "NavigationBarController.h"
 #import "NavigationBarControllerPhone.h"
-#import "NavigationBarControllerPhonePortraitOnly.h"
 #import "../model/NavigationBarButtonModel.h"
-#import "../../shared/LayoutManager.h"
-#import "../../utility/ExceptionUtility.h"
 
 
-@implementation NavigationBarController
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for
+/// NavigationBarControllerPhone.
+// -----------------------------------------------------------------------------
+@interface NavigationBarControllerPhone()
+@property(nonatomic, assign) UINavigationItem* navigationItem;
+@property(nonatomic, retain) NavigationBarButtonModel* navigationBarButtonModel;
+@end
+
+
+@implementation NavigationBarControllerPhone
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor that returns a UI type-dependent controller
-/// object that knows how to set up the correct view hierarchy for the current
-/// UI type.
-// -----------------------------------------------------------------------------
-+ (NavigationBarController*) navigationBarController
-{
-  NavigationBarController* navigationBarController;
-  switch ([LayoutManager sharedManager].uiType)
-  {
-    case UITypePhonePortraitOnly:
-      navigationBarController = [[[NavigationBarControllerPhonePortraitOnly alloc] init] autorelease];
-      break;
-    case UITypePad:
-      navigationBarController = [[[NavigationBarControllerPhonePortraitOnly alloc] init] autorelease];
-      break;
-    default:
-      [ExceptionUtility throwInvalidUIType:[LayoutManager sharedManager].uiType];
-  }
-  return navigationBarController;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Initializes a NavigationBarController object.
+/// @brief Initializes a NavigationBarControllerPhone object.
 ///
-/// @note This is the designated initializer of NavigationBarController.
+/// @note This is the designated initializer of NavigationBarControllerPhone.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithNavigationItem:(UINavigationItem*)navigationItem
 {
-  // Call designated initializer of superclass (UIViewController)
-  self = [super initWithNibName:nil bundle:nil];
+  // Call designated initializer of superclass (NavigationBarController)
+  self = [super init];
   if (! self)
     return nil;
+  self.navigationItem = navigationItem;
+  self.navigationBar = nil;
   self.navigationBarButtonModel = [[[NavigationBarButtonModel alloc] init] autorelease];
   [GameActionManager sharedGameActionManager].uiDelegate = self;
+  [self setupGameActions];
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this NavigationBarController object.
+/// @brief Deallocates memory allocated by this NavigationBarControllerPhone
+/// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.navigationItem = nil;
+  self.navigationBar = nil;
   self.navigationBarButtonModel = nil;
   if ([GameActionManager sharedGameActionManager].uiDelegate == self)
     [GameActionManager sharedGameActionManager].uiDelegate = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) setupGameActions
+{
+  [self.navigationBarButtonModel updateVisibleGameActions];
+  [self populateNavigationItem];
 }
 
 #pragma mark - GameActionManagerUIDelegate overrides
@@ -86,7 +85,7 @@
        updateVisibleStates:(NSDictionary*)gameActions
 {
   [self.navigationBarButtonModel updateVisibleGameActionsWithVisibleStates:gameActions];
-  [self populateNavigationBar];
+  [self populateNavigationItem];
 }
 
 // -----------------------------------------------------------------------------
@@ -109,11 +108,10 @@
   // We need the view that represents the "More Game Actions" bar button item so
   // that we can present an action sheet originating from that view. There is no
   // official API that lets us find the view, but we know that the button is at
-  // the right-most end of whichever navigation bar the bar button item was
-  // added to, so we can find the representing view by examining the frames of
-  // all navigation bar subviews.
+  // the right-most end of the navigation bar, so we can find the representing
+  // view by examining the frames of all navigation bar subviews.
   UIView* rightMostSubview = nil;
-  for (UIView* subview in [self moreGameActionsNavigationBar].subviews)
+  for (UIView* subview in self.navigationBar.subviews)
   {
     if (rightMostSubview)
     {
@@ -128,31 +126,41 @@
   return rightMostSubview;
 }
 
-#pragma mark - Methods to override by subclasses
+#pragma mark - Navigation item population
 
 // -----------------------------------------------------------------------------
-/// @brief Populates the navigation bar with buttons that are appropriate for
+/// @brief Populates the navigation item with buttons that are appropriate for
 /// the current application state.
-///
-/// This is an "abstract" method, i.e. subclasses MUST override this method. If
-/// invoked the default implementation throws an exception.
 // -----------------------------------------------------------------------------
-- (void) populateNavigationBar
+- (void) populateNavigationItem
 {
-  [ExceptionUtility throwAbstractMethodException];
+  [self populateLeftBarButtonItems];
+  [self populateRightBarButtonItems];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the direct superview of the view that represents the
-/// "More Game Actions" bar button item.
-///
-/// This is an "abstract" method, i.e. subclasses MUST override this method. If
-/// invoked the default implementation throws an exception.
+/// @brief This is an internal helper invoked by populateNavigationBar().
 // -----------------------------------------------------------------------------
-- (UIView*) moreGameActionsNavigationBar
+- (void) populateLeftBarButtonItems
 {
-  [ExceptionUtility throwAbstractMethodException];
-  return nil;  // make compiler happy (compiler does not see the above method throws an exception and we don't really need a return value)
+  NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
+  for (NSNumber* gameActionAsNumber in self.navigationBarButtonModel.visibleGameActions)
+  {
+    UIBarButtonItem* button = self.navigationBarButtonModel.gameActionButtons[gameActionAsNumber];
+    [barButtonItems addObject:button];
+  }
+  self.navigationItem.leftBarButtonItems = barButtonItems;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by populateNavigationBar().
+// -----------------------------------------------------------------------------
+- (void) populateRightBarButtonItems
+{
+  NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
+  [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionMoreGameActions]]];
+  [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionGameInfo]]];
+  self.navigationItem.rightBarButtonItems = barButtonItems;
 }
 
 @end

@@ -20,7 +20,7 @@
 #import "../boardposition/BoardPositionToolbarController.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/DiscardFutureMovesAlertController.h"
-#import "../controller/NavigationBarController.h"
+#import "../controller/NavigationBarControllerPhone.h"
 #import "../controller/StatusViewController.h"
 #import "../gesture/PanGestureController.h"
 #import "../../ui/AutoLayoutUtility.h"
@@ -32,7 +32,7 @@
 /// PlayRootViewControllerPhone.
 // -----------------------------------------------------------------------------
 @interface PlayRootViewControllerPhone()
-@property(nonatomic, retain) NavigationBarController* navigationBarController;
+@property(nonatomic, retain) NavigationBarControllerPhone* navigationBarController;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 @property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
@@ -86,38 +86,13 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  self.navigationBarController = [NavigationBarController navigationBarController];
+  self.navigationBarController = [[[NavigationBarControllerPhone alloc] initWithNavigationItem:self.navigationItem] autorelease];
   self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
 
   self.boardViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
   [GameActionManager sharedGameActionManager].commandDelegate = self.discardFutureMovesAlertController;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
-// -----------------------------------------------------------------------------
-- (void) setNavigationBarController:(NavigationBarController*)navigationBarController
-{
-  if (_navigationBarController == navigationBarController)
-    return;
-  if (_navigationBarController)
-  {
-    [_navigationBarController willMoveToParentViewController:nil];
-    // Automatically calls didMoveToParentViewController:
-    [_navigationBarController removeFromParentViewController];
-    [_navigationBarController release];
-    _navigationBarController = nil;
-  }
-  if (navigationBarController)
-  {
-    // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:navigationBarController];
-    [navigationBarController didMoveToParentViewController:self];
-    [navigationBarController retain];
-    _navigationBarController = navigationBarController;
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -180,6 +155,7 @@
   [super loadView];
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
+  self.navigationBarController.navigationBar = self.navigationController.navigationBar;
 }
 
 #pragma mark - Private helpers for loadView
@@ -189,7 +165,6 @@
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
-  [self.view addSubview:self.navigationBarController.view];
   [self.view addSubview:self.boardPositionToolbarController.view];
   [self.view addSubview:self.boardViewController.view];
 }
@@ -199,21 +174,17 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.navigationBarController.view, @"navigationBarView",
-                                   self.boardPositionToolbarController.view, @"boardPositionToolbarView",
                                    self.boardViewController.view, @"boardView",
+                                   self.boardPositionToolbarController.view, @"boardPositionToolbarView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[navigationBarView]-0-|",
                             @"H:|-0-[boardView]-0-|",
                             @"H:|-0-[boardPositionToolbarView]-0-|",
-                            [NSString stringWithFormat:@"V:|-%d-[navigationBarView]", [UiElementMetrics statusBarHeight]],
-                            @"V:[navigationBarView]-0-[boardView]-0-[boardPositionToolbarView]-0-|",
+                            @"V:|-0-[boardView]-0-[boardPositionToolbarView]-0-|",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 }

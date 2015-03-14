@@ -226,6 +226,10 @@
 		CD7C69FA1AB43758009EC5AD /* PlayRootViewControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F81AB43758009EC5AD /* PlayRootViewControllerPhone.m */; };
 		CD7C69FD1AB43B3F009EC5AD /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69FC1AB43B3F009EC5AD /* NavigationBarController.m */; };
 		CD7C69FE1AB43B3F009EC5AD /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69FC1AB43B3F009EC5AD /* NavigationBarController.m */; };
+		CD7C6A011AB458CE009EC5AD /* NavigationBarControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A001AB458CE009EC5AD /* NavigationBarControllerPhone.m */; };
+		CD7C6A021AB458CE009EC5AD /* NavigationBarControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A001AB458CE009EC5AD /* NavigationBarControllerPhone.m */; };
+		CD7C6A091AB462CB009EC5AD /* NavigationBarButtonModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */; };
+		CD7C6A0A1AB462CB009EC5AD /* NavigationBarButtonModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -731,6 +735,10 @@
 		CD7C69F81AB43758009EC5AD /* PlayRootViewControllerPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayRootViewControllerPhone.m; sourceTree = "<group>"; };
 		CD7C69FB1AB43B3F009EC5AD /* NavigationBarController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationBarController.h; sourceTree = "<group>"; };
 		CD7C69FC1AB43B3F009EC5AD /* NavigationBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationBarController.m; sourceTree = "<group>"; };
+		CD7C69FF1AB458CE009EC5AD /* NavigationBarControllerPhone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationBarControllerPhone.h; sourceTree = "<group>"; };
+		CD7C6A001AB458CE009EC5AD /* NavigationBarControllerPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationBarControllerPhone.m; sourceTree = "<group>"; };
+		CD7C6A071AB462CB009EC5AD /* NavigationBarButtonModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationBarButtonModel.h; sourceTree = "<group>"; };
+		CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationBarButtonModel.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
@@ -1366,6 +1374,8 @@
 				CDAF17141967FFD500271396 /* BoardViewMetrics.m */,
 				CDAF17171968037700271396 /* BoardViewModel.h */,
 				CDAF17181968037700271396 /* BoardViewModel.m */,
+				CD7C6A071AB462CB009EC5AD /* NavigationBarButtonModel.h */,
+				CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */,
 				CD1311BF17180B45006CE699 /* ScoringModel.h */,
 				CD1311C017180B45006CE699 /* ScoringModel.m */,
 			);
@@ -1384,6 +1394,8 @@
 				CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */,
 				CD7C69FB1AB43B3F009EC5AD /* NavigationBarController.h */,
 				CD7C69FC1AB43B3F009EC5AD /* NavigationBarController.m */,
+				CD7C69FF1AB458CE009EC5AD /* NavigationBarControllerPhone.h */,
+				CD7C6A001AB458CE009EC5AD /* NavigationBarControllerPhone.m */,
 				CD1E9E5B171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.h */,
 				CD1E9E5C171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m */,
 				CD1E9E5F171806FE00E1B7D1 /* SoundHandling.h */,
@@ -2199,6 +2211,7 @@
 				CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */,
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
 				CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */,
+				CD7C6A091AB462CB009EC5AD /* NavigationBarButtonModel.m in Sources */,
 				CD4D44761A79D0A600272579 /* BWCrashReportTextFormatter.m in Sources */,
 				CD05AB961425169500214BBE /* GoUtilities.m in Sources */,
 				CDAFAE25195A1DCA00EF84A9 /* TiledScrollView.m in Sources */,
@@ -2253,6 +2266,7 @@
 				CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */,
 				CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
 				CDFA32A515A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
+				CD7C6A011AB458CE009EC5AD /* NavigationBarControllerPhone.m in Sources */,
 				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
 				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
 				CDEE1A171946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
@@ -2348,6 +2362,7 @@
 				CDFD9F7818F1D5640031CBCF /* LicensesViewController.m in Sources */,
 				CDFD9F7518F1D37E0031CBCF /* TouchSettingsController.m in Sources */,
 				CD85B5901401C137001715B8 /* GoGameTest.m in Sources */,
+				CD7C6A0A1AB462CB009EC5AD /* NavigationBarButtonModel.m in Sources */,
 				CD85B5951401C1A5001715B8 /* GoGame.m in Sources */,
 				CD85B5981401C1B7001715B8 /* GoMove.m in Sources */,
 				CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
@@ -2423,6 +2438,7 @@
 				CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */,
 				CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */,
 				CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */,
+				CD7C6A021AB458CE009EC5AD /* NavigationBarControllerPhone.m in Sources */,
 				CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
 				CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,

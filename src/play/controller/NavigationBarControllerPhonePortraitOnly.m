@@ -18,6 +18,7 @@
 // Project includes
 #import "NavigationBarControllerPhonePortraitOnly.h"
 #import "StatusViewController.h"
+#import "../model/NavigationBarButtonModel.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 
@@ -28,6 +29,7 @@
 // -----------------------------------------------------------------------------
 @interface NavigationBarControllerPhonePortraitOnly()
 @property(nonatomic, assign) bool variableNavigationbarWidths;
+@property(nonatomic, retain) StatusViewController* statusViewController;
 @property(nonatomic, retain) UINavigationBar* leftNavigationBar;
 @property(nonatomic, retain) UINavigationBar* centerNavigationBar;
 @property(nonatomic, retain) UINavigationBar* rightNavigationBar;
@@ -59,7 +61,6 @@
       self.variableNavigationbarWidths = false;
   [self releaseObjects];
   [self setupChildControllers];
-  [GameActionManager sharedGameActionManager].uiDelegate = self;
   return self;
 }
 
@@ -71,8 +72,6 @@
 {
   [self releaseObjects];
   self.statusViewController = nil;
-  if ([GameActionManager sharedGameActionManager].uiDelegate == self)
-    [GameActionManager sharedGameActionManager].uiDelegate = nil;
   [super dealloc];
 }
 
@@ -239,7 +238,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupGameActions
 {
-  [self updateVisibleGameActions];
+  [self.navigationBarButtonModel updateVisibleGameActions];
   [self populateNavigationBars];
 }
 
@@ -288,9 +287,9 @@
 - (void) populateLeftNavigationBar
 {
   NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
-  for (NSNumber* gameActionAsNumber in self.visibleGameActions)
+  for (NSNumber* gameActionAsNumber in self.navigationBarButtonModel.visibleGameActions)
   {
-    UIBarButtonItem* button = self.gameActionButtons[gameActionAsNumber];
+    UIBarButtonItem* button = self.navigationBarButtonModel.gameActionButtons[gameActionAsNumber];
     [barButtonItems addObject:button];
   }
   self.leftNavigationBar.topItem.leftBarButtonItems = barButtonItems;
@@ -302,8 +301,8 @@
 - (void) populateRightNavigationBar
 {
   NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
-  [barButtonItems addObject:self.gameActionButtons[[NSNumber numberWithInt:GameActionMoreGameActions]]];
-  [barButtonItems addObject:self.gameActionButtons[[NSNumber numberWithInt:GameActionGameInfo]]];
+  [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionMoreGameActions]]];
+  [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionGameInfo]]];
   if (self.barButtonItemForShowingTheHiddenViewController)
     [barButtonItems addObject:self.barButtonItemForShowingTheHiddenViewController];
   self.rightNavigationBar.topItem.rightBarButtonItems = barButtonItems;

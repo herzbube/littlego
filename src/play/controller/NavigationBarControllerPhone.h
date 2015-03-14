@@ -18,32 +18,26 @@
 // Project includes
 #import "GameActionManager.h"
 
-// Forward declarations
-@class NavigationBarButtonModel;
-
 
 // -----------------------------------------------------------------------------
-/// @brief The NavigationBarController class represents the controller that is
-/// responsible for managing the navigation bar above the Go board in
-/// #UIAreaPlay.
-///
-/// The navigation bar in #UIAreaPlay is managed differently depending on the
-/// UI type that is effective at runtime. Use the class method
-/// navigationBarController() to obtain a UI type-dependent controller object
-/// that knows how to correctly manage the navigation bar for the current UI
-/// type.
+/// @brief The NavigationBarControllerPhone class is responsible for managing
+/// the navigation bar above the Go board in #UIAreaPlay for #UITypePhone.
 // -----------------------------------------------------------------------------
-@interface NavigationBarController : UIViewController <GameActionManagerUIDelegate>
+@interface NavigationBarControllerPhone : NSObject <GameActionManagerUIDelegate>
 {
 }
 
-+ (NavigationBarController*) navigationBarController;
+- (id) initWithNavigationItem:(UINavigationItem*)navigationItem;
 
-// Methods to override by subclasses
-- (void) populateNavigationBar;
-- (UIView*) moreGameActionsNavigationBar;
-
-// Properties for use by subclasses
-@property(nonatomic, retain) NavigationBarButtonModel* navigationBarButtonModel;
+/// @brief The navigation bar that displays the content of the navigation item
+/// specified to the initializer.
+///
+/// This is a separate property because the navigation bar is a view, therefore
+/// it probably is not available yet when this controller is initialized.
+///
+/// Whoever is responsible for setting up this controller must provide the
+/// navigation bar sometime after initialization, but before user interaction
+/// with game action buttons actually becomes possible.
+@property(nonatomic, assign) UINavigationBar* navigationBar;
 
 @end

@@ -221,6 +221,7 @@
   // the root view controller level of the navigation stack.
   [self removeChildControllersIfNotMatchingInterfaceOrientation:self.interfaceOrientation];
   [self addChildControllersForInterfaceOrientation:self.interfaceOrientation];
+  [self updateNavigationBarVisibility];
 }
 
 // -----------------------------------------------------------------------------
@@ -246,6 +247,7 @@
   UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
   [self removeChildControllersIfNotMatchingInterfaceOrientation:interfaceOrientation];
   [self addChildControllersForInterfaceOrientation:interfaceOrientation];
+  [self updateNavigationBarVisibility];
 }
 
 #pragma mark - UINavigationControllerDelegate overrides
@@ -253,7 +255,9 @@
 // -----------------------------------------------------------------------------
 /// @brief UINavigationControllerDelegate protocol method.
 ///
-/// This override hides the navigation bar when the root view controller is
+/// Writes the visible UI area to the user defaults.
+///
+/// In landscape also hides the navigation bar when the root view controller is
 /// displayed, and shows the navigation bar when any other view controller is
 /// pushed on the stack.
 // -----------------------------------------------------------------------------
@@ -269,11 +273,8 @@
     // next, so we wait for that.
     return;
   }
-  else if (2 == navigationStackSize)
-    self.navigationBarHidden = YES;
-  else
-    self.navigationBarHidden = NO;
 
+  [self updateNavigationBarVisibility];
   enum UIArea uiArea = viewController.uiArea;
   if (uiArea != UIAreaUnknown)
     [ApplicationDelegate sharedDelegate].uiSettingsModel.visibleUIArea = uiArea;
@@ -367,6 +368,29 @@
   BOOL animatedAsBOOL = animated ? YES : NO;
   [self pushViewController:mainTableViewController animated:animatedAsBOOL];
   return mainTableViewController;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief In portrait: Always shows the navigation bar. In landscape: Hides the
+/// navigation bar when the root view controller is displayed, and shows the
+/// navigation bar when any other view controller is pushed on the stack.
+// -----------------------------------------------------------------------------
+- (void) updateNavigationBarVisibility
+{
+  // Don't use self.interfaceOrientation, this method may be called at a time
+  // when this property does not have the correct value
+  if (self.hasPortraitOrientationViewHierarchy)
+  {
+    self.navigationBarHidden = NO;
+  }
+  else
+  {
+    NSUInteger navigationStackSize = self.viewControllers.count;
+    if (2 == navigationStackSize)
+      self.navigationBarHidden = YES;
+    else
+      self.navigationBarHidden = NO;
+  }
 }
 
 @end
