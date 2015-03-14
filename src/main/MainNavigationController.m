@@ -22,6 +22,7 @@
 #import "UIAreaInfo.h"
 #import "../play/rootview/PlayRootViewController.h"
 #import "../play/splitview/LeftPaneViewController.h"
+#import "../play/splitview/RightPaneViewController.h"
 #import "../ui/SplitViewController.h"
 #import "../ui/UiSettingsModel.h"
 #import "../utility/UIColorAdditions.h"
@@ -57,6 +58,7 @@
   if (! self)
     return nil;
   self.delegate = self;
+  [MainMenuPresenter sharedPresenter].mainMenuPresenterDelegate = self;
   [GameActionManager sharedGameActionManager].gameInfoViewControllerPresenter = self;
   [self setupChildControllers];
   [self restoreVisibleUIAreaToUserDefaults];
@@ -74,6 +76,9 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  MainMenuPresenter* mainMenuPresenter = [MainMenuPresenter sharedPresenter];
+  if (mainMenuPresenter.mainMenuPresenterDelegate == self)
+    mainMenuPresenter.mainMenuPresenterDelegate = nil;
   GameActionManager* gameActionManager = [GameActionManager sharedGameActionManager];
   if (gameActionManager.gameInfoViewControllerPresenter == self)
     gameActionManager.gameInfoViewControllerPresenter = nil;
@@ -132,9 +137,6 @@
     self.playRootViewController = [PlayRootViewController playRootViewController];
     self.playRootViewController.uiArea = UIAreaPlay;
     realRootViewController = self.playRootViewController;
-
-    //xxx
-//    self.playRootViewController.mainMenuPresenter = self;
   }
   else
   {
@@ -147,8 +149,6 @@
     self.leftPaneViewController = [[[LeftPaneViewController alloc] init] autorelease];
     self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
     self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
-
-    self.rightPaneViewController.mainMenuPresenter = self;
   }
 
   [self pushViewController:realRootViewController animated:NO];

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
 #import "../gameaction/GameActionButtonBoxDataSource.h"
 #import "../gameaction/GameActionManager.h"
 #import "../gesture/PanGestureController.h"
+#import "../../main/MainMenuPresenter.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/ButtonBoxController.h"
@@ -69,7 +70,6 @@
     return nil;
   [self setupUseNavigationBar];
   [self setupChildControllers];
-  self.mainMenuPresenter = nil;
   self.woodenBackgroundView = nil;
   self.leftColumnView = nil;
   self.rightColumnView = nil;
@@ -99,7 +99,6 @@
     self.gameActionButtonBoxAutoLayoutConstraints = nil;
     self.mainMenuButton = nil;
   }
-  self.mainMenuPresenter = nil;
   self.woodenBackgroundView = nil;
   self.discardFutureMovesAlertController = nil;
   self.boardViewController = nil;
@@ -415,7 +414,7 @@
 
   [self.mainMenuButton setImage:[UIImage imageNamed:mainMenuIconResource]
                        forState:UIControlStateNormal];
-  [self.mainMenuButton addTarget:self
+  [self.mainMenuButton addTarget:[MainMenuPresenter sharedPresenter]
                           action:@selector(presentMainMenu:)
                 forControlEvents:UIControlEventTouchUpInside];
   // Same tint as button box
@@ -541,17 +540,6 @@
 - (void) buttonBoxButtonsWillChange
 {
   [self updateGameActionButtonBoxAutoLayoutConstraints];
-}
-
-#pragma mark - Main menu handling
-
-// -----------------------------------------------------------------------------
-/// @brief Handles a tap on the "main menu" button. Causes the main menu to be
-/// presented.
-// -----------------------------------------------------------------------------
-- (void) presentMainMenu:(id)sender
-{
-  [self.mainMenuPresenter presentMainMenu];
 }
 
 @end

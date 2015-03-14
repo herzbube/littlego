@@ -49,7 +49,7 @@
   self.navigationBar = nil;
   self.navigationBarButtonModel = [[[NavigationBarButtonModel alloc] init] autorelease];
   [GameActionManager sharedGameActionManager].uiDelegate = self;
-  [self setupGameActions];
+  [self setupNavigationItem];
   return self;
 }
 
@@ -68,9 +68,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
+/// @brief Private helper for the initializer.
 // -----------------------------------------------------------------------------
-- (void) setupGameActions
+- (void) setupNavigationItem
 {
   [self.navigationBarButtonModel updateVisibleGameActions];
   [self populateNavigationItem];
@@ -158,6 +158,7 @@
 - (void) populateRightBarButtonItems
 {
   NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
+  [barButtonItems addObject:self.navigationBarButtonModel.mainMenuButton];
   [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionMoreGameActions]]];
   [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionGameInfo]]];
   self.navigationItem.rightBarButtonItems = barButtonItems;

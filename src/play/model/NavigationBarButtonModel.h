@@ -29,5 +29,6 @@
 @property(nonatomic, retain, readonly) NSDictionary* gameActionButtons;
 @property(nonatomic, retain, readonly) NSArray* buttonOrderList;
 @property(nonatomic, retain, readonly) NSArray* visibleGameActions;
+@property(nonatomic, retain, readonly) UIBarButtonItem* mainMenuButton;
 
 @end

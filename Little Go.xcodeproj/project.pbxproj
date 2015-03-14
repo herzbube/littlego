@@ -230,6 +230,8 @@
 		CD7C6A021AB458CE009EC5AD /* NavigationBarControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A001AB458CE009EC5AD /* NavigationBarControllerPhone.m */; };
 		CD7C6A091AB462CB009EC5AD /* NavigationBarButtonModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */; };
 		CD7C6A0A1AB462CB009EC5AD /* NavigationBarButtonModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */; };
+		CD7C6A0D1AB47C22009EC5AD /* MainMenuPresenter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A0C1AB47C22009EC5AD /* MainMenuPresenter.m */; };
+		CD7C6A0E1AB47C22009EC5AD /* MainMenuPresenter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A0C1AB47C22009EC5AD /* MainMenuPresenter.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -739,6 +741,8 @@
 		CD7C6A001AB458CE009EC5AD /* NavigationBarControllerPhone.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationBarControllerPhone.m; sourceTree = "<group>"; };
 		CD7C6A071AB462CB009EC5AD /* NavigationBarButtonModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NavigationBarButtonModel.h; sourceTree = "<group>"; };
 		CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationBarButtonModel.m; sourceTree = "<group>"; };
+		CD7C6A0B1AB47C22009EC5AD /* MainMenuPresenter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainMenuPresenter.h; sourceTree = "<group>"; };
+		CD7C6A0C1AB47C22009EC5AD /* MainMenuPresenter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainMenuPresenter.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
@@ -1100,6 +1104,8 @@
 				CD7C69E11AA67EAD009EC5AD /* MainTableViewController.h */,
 				CD7C69E21AA67EAD009EC5AD /* MainTableViewController.m */,
 				CD00A35F148C2C26004E1A0C /* main.m */,
+				CD7C6A0B1AB47C22009EC5AD /* MainMenuPresenter.h */,
+				CD7C6A0C1AB47C22009EC5AD /* MainMenuPresenter.m */,
 				CD7C69DD1AA67C31009EC5AD /* MainUtility.h */,
 				CD7C69DE1AA67C31009EC5AD /* MainUtility.m */,
 				CD00A360148C2C26004E1A0C /* Prefix.pch */,
@@ -2333,6 +2339,7 @@
 				CD7C69BF1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */,
 				CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */,
+				CD7C6A0D1AB47C22009EC5AD /* MainMenuPresenter.m in Sources */,
 				CD7C69C31A9D2086009EC5AD /* GameActionManager.m in Sources */,
 				CDEE1A07194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */,
 				CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */,
@@ -2431,6 +2438,7 @@
 				CDEE1A1E19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */,
 				CD00A369148C2C62004E1A0C /* ApplicationDelegate.mm in Sources */,
 				CD00A36A148C2C6A004E1A0C /* Constants.m in Sources */,
+				CD7C6A0E1AB47C22009EC5AD /* MainMenuPresenter.m in Sources */,
 				CD99EC6314B10749007B3B67 /* GoPointTest.m in Sources */,
 				CDEE19F219433EAC00DF2389 /* BoardTileView.m in Sources */,
 				CD7C69F21AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */,

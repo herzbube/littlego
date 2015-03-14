@@ -29,6 +29,7 @@
 
 // Project includes
 #import "ApplicationDelegate.h"
+#import "MainMenuPresenter.h"
 #import "MainTabBarController.h"
 #import "WindowRootViewController.h"
 #import "../gtp/GtpClient.h"
@@ -153,6 +154,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.loggingModel = nil;
   self.uiSettingsModel = nil;
   self.fileLogger = nil;
+  [MainMenuPresenter releaseSharedPresenter];
   [BoardPositionNavigationManager releaseSharedNavigationManager];
   [GameActionManager releaseSharedGameActionManager];
   [BoardViewCGLayerCache releaseSharedCache];

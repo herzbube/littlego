@@ -18,6 +18,7 @@
 // Project includes
 #import "NavigationBarButtonModel.h"
 #import "../gameaction/GameActionManager.h"
+#import "../../main/MainMenuPresenter.h"
 
 
 // -----------------------------------------------------------------------------
@@ -29,6 +30,7 @@
 @property(nonatomic, retain, readwrite) NSDictionary* gameActionButtons;
 @property(nonatomic, retain, readwrite) NSArray* buttonOrderList;
 @property(nonatomic, retain, readwrite) NSArray* visibleGameActions;
+@property(nonatomic, retain, readwrite) UIBarButtonItem* mainMenuButton;
 //@}
 @end
 
@@ -51,6 +53,7 @@
   self.gameActionButtons = [NavigationBarButtonModel gameActionButtons];
   self.buttonOrderList = [NavigationBarButtonModel buttonOrderList];
   self.visibleGameActions = [NSArray array];
+  self.mainMenuButton = [NavigationBarButtonModel mainMenuButton];
   return self;
 }
 
@@ -62,6 +65,7 @@
   self.gameActionButtons = nil;
   self.buttonOrderList = nil;
   self.visibleGameActions = nil;
+  self.mainMenuButton = nil;
   [super dealloc];
 }
 
@@ -202,6 +206,18 @@
   }
   button.tag = gameAction;
   return button;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a newly instantiated UIBarButtonItem object that represents
+/// the application main menu.
+// -----------------------------------------------------------------------------
++ (UIBarButtonItem*) mainMenuButton
+{
+  return [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:mainMenuIconResource]
+                                           style:UIBarButtonItemStyleBordered
+                                          target:[MainMenuPresenter sharedPresenter]
+                                          action:@selector(presentMainMenu:)] autorelease];
 }
 
 #pragma mark - Private helpers - Button order

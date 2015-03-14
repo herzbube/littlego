@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,17 +23,6 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The MainMenuPresenter protocol lets RightPaneViewController delegate
-/// the details of presenting and dismissing the main menu, while keeping
-/// control over when these operations take place.
-// -----------------------------------------------------------------------------
-@protocol MainMenuPresenter
-- (void) presentMainMenu;
-- (void) dismissMainMenu;
-@end
-
-
-// -----------------------------------------------------------------------------
 /// @brief The RightPaneViewController class manages a simple container view
 /// intended to be displayed as the right pane of a split view (i.e. the view
 /// managed by UISplitViewController).
@@ -48,6 +37,5 @@
 - (void) removeDynamicConstraints;
 
 @property(nonatomic, retain) NavigationBarController* navigationBarController;
-@property(nonatomic, assign) id<MainMenuPresenter> mainMenuPresenter;
 
 @end
