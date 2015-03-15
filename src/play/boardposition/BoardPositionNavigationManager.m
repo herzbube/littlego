@@ -90,7 +90,10 @@ static BoardPositionNavigationManager* sharedNavigationManager = nil;
   self.delegate = nil;
   self.isForwardNavigationEnabled = false;
   self.isBackwardNavigationEnabled = false;
-  self.navigationStatesNeedUpdate = false;
+  // It's possible that this initializer runs rather late, i.e. after the
+  // initial GoGame was created, so we need to schedule an update now
+  self.navigationStatesNeedUpdate = true;
+  [self delayedUpdate];
   [self setupNotificationResponders];
   return self;
 }
@@ -258,26 +261,33 @@ static BoardPositionNavigationManager* sharedNavigationManager = nil;
   self.navigationStatesNeedUpdate = false;
 
   GoGame* game = [GoGame sharedGame];
-  if (game.isComputerThinking ||
+  if (! game ||
+      game.isComputerThinking ||
       game.score.scoringInProgress ||
       [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
     self.isForwardNavigationEnabled = false;
     self.isBackwardNavigationEnabled = false;
-    [self.delegate boardPositionNavigationManager:self
-                                 enableNavigation:NO
-                                      inDirection:BoardPositionNavigationDirectionAll];
+    if (self.delegate)
+    {
+      [self.delegate boardPositionNavigationManager:self
+                                   enableNavigation:NO
+                                        inDirection:BoardPositionNavigationDirectionAll];
+    }
   }
   else
   {
     self.isBackwardNavigationEnabled = !game.boardPosition.isFirstPosition;
     self.isForwardNavigationEnabled = !game.boardPosition.isLastPosition;
-    [self.delegate boardPositionNavigationManager:self
-                                 enableNavigation:(self.isBackwardNavigationEnabled ? YES : NO)
-                                      inDirection:BoardPositionNavigationDirectionBackward];
-    [self.delegate boardPositionNavigationManager:self
-                                 enableNavigation:(self.isForwardNavigationEnabled ? YES : NO)
-                                      inDirection:BoardPositionNavigationDirectionForward];
+    if (self.delegate)
+    {
+      [self.delegate boardPositionNavigationManager:self
+                                   enableNavigation:(self.isBackwardNavigationEnabled ? YES : NO)
+                                        inDirection:BoardPositionNavigationDirectionBackward];
+      [self.delegate boardPositionNavigationManager:self
+                                   enableNavigation:(self.isForwardNavigationEnabled ? YES : NO)
+                                        inDirection:BoardPositionNavigationDirectionForward];
+    }
   }
 }
 
