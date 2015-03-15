@@ -24,6 +24,6 @@
 {
 }
 
-- (CGSize) boardPositionCollectionViewCellSize;
+- (CGFloat) boardPositionCollectionViewHeight;
 
 @end

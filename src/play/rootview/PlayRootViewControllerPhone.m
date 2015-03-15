@@ -234,6 +234,7 @@
   self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
+  CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewHeight];
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.boardPositionCollectionViewController.view, @"boardPositionCollectionView",
                                    self.woodenBackgroundView, @"woodenBackgroundView",
@@ -244,7 +245,8 @@
                             @"H:|-0-[woodenBackgroundView]-0-|",
                             @"H:|-0-[boardPositionToolbarView]-0-|",
                             //xxx spacing
-                            [NSString stringWithFormat:@"V:|-0-[boardPositionCollectionView(==%f)]-0-[woodenBackgroundView]-0-[boardPositionToolbarView]-0-|", [self.boardPositionCollectionViewController boardPositionCollectionViewCellSize].height],
+                            @"V:|-0-[boardPositionCollectionView]-0-[woodenBackgroundView]-0-[boardPositionToolbarView]-0-|",
+                            [NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight],
                             //xxx
 //                            @"V:|-0-[woodenBackgroundView]-0-[boardPositionToolbarView]-0-|",
                             nil];

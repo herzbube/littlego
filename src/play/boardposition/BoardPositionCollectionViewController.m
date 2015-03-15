@@ -57,9 +57,10 @@
 - (id) init
 {
   UICollectionViewFlowLayout* flowLayout = [[[UICollectionViewFlowLayout alloc] init] autorelease];
-  flowLayout.itemSize = [BoardPositionCollectionViewCell boardPositionCollectionViewCellSize];
   flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
   flowLayout.minimumLineSpacing = 0.0f;
+  // Required because we have items that differ in size
+  flowLayout.minimumInteritemSpacing = 0.0f;
 
   // Call designated initializer of superclass (UICollectionViewController)
   self = [super initWithCollectionViewLayout:flowLayout];
@@ -177,6 +178,21 @@
   // positions
   cell.boardPosition = (int)indexPath.row;
   return cell;
+}
+
+#pragma mark - UICollectionViewDelegateFlowLayout overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UICollectionViewDelegateFlowLayout protocol method.
+// -----------------------------------------------------------------------------
+- (CGSize) collectionView:(UICollectionView*)collectionView
+                   layout:(UICollectionViewLayout*)collectionViewLayout
+   sizeForItemAtIndexPath:(NSIndexPath*)indexPath
+{
+  if (0 == indexPath.row)
+    return [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero];
+  else
+    return [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionNonZero];
 }
 
 #pragma mark - UICollectionViewDelegate overrides
@@ -454,11 +470,12 @@
 #pragma mark - Public API
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the static size of cells managed by this controller.
+/// @brief Returns the height of cells managed by this controller.
 // -----------------------------------------------------------------------------
-- (CGSize) boardPositionCollectionViewCellSize
+- (CGFloat) boardPositionCollectionViewHeight
 {
-  return [BoardPositionCollectionViewCell boardPositionCollectionViewCellSize];
+  // Cells for board position 0 and non-zero board positions have the same height
+  return [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero].height;
 }
 
 #pragma mark - Private helpers

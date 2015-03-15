@@ -40,7 +40,8 @@
 {
 }
 
-+ (CGSize) boardPositionCollectionViewCellSize;
++ (CGSize) boardPositionCollectionViewCellSizePositionZero;
++ (CGSize) boardPositionCollectionViewCellSizePositionNonZero;
 
 /// @brief The board position that this cell represents. The default value is
 /// -1, which causes the cell to display nothing.

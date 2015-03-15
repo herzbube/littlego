@@ -30,8 +30,17 @@
 #import "../../utility/UIImageAdditions.h"
 
 
-// This variable must be accessed via [BoardPositionCollectionViewCell boardPositionCollectionViewCellSize]
-static CGSize boardPositionCollectionViewCellSize = { 0.0f, 0.0f };
+enum BoardPositionCollectionViewCellType
+{
+  BoardPositionCollectionViewCellTypePositionZero,
+  BoardPositionCollectionViewCellTypePositionNonZero
+};
+
+
+// This variable must be accessed via [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero]
+static CGSize boardPositionCollectionViewCellSizePositionZero = { 0.0f, 0.0f };
+// This variable must be accessed via [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionNonZero]
+static CGSize boardPositionCollectionViewCellSizePositionNonZero = { 0.0f, 0.0f };
 static int horizontalSpacingSuperview = 0;
 static int horizontalSpacingSiblings = 0;
 static int verticalSpacingSuperview = 0;
@@ -92,9 +101,10 @@ static UIFont* smallFont = nil;
 /// rendered on screen.
 ///
 /// @note This initializer is privately used for the one-time pre-calculation
-/// of the BoardPositionCollectionViewCell size.
+/// of the BoardPositionCollectionViewCell size. The calculated size depends on
+/// @a cellType.
 // -----------------------------------------------------------------------------
-- (id) initOffscreenView
+- (id) initOffscreenViewWithCellType:(enum BoardPositionCollectionViewCellType)cellType
 {
   // The frame for the off-screen view can be pretty much any size, the view
   // will be resized by setupStaticViewMetrics to UILayoutFittingCompressedSize
@@ -109,7 +119,10 @@ static UIFont* smallFont = nil;
   if (! self)
     return nil;
   self.offscreenMode = true;
-  _boardPosition = 0;
+  if (cellType == BoardPositionCollectionViewCellTypePositionZero)
+    _boardPosition = 0;
+  else
+    _boardPosition = 1;
   self.dynamicAutoLayoutConstraints = nil;
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
@@ -169,13 +182,15 @@ static UIFont* smallFont = nil;
                             [NSString stringWithFormat:@"H:|-%d-[stoneImageView]", horizontalSpacingSuperview],
                             [NSString stringWithFormat:@"H:[intersectionLabel]-%d-|", horizontalSpacingSuperview],
                             [NSString stringWithFormat:@"H:[boardPositionLabel]-%d-[capturedStonesLabel]-%d-|", horizontalSpacingSiblings, horizontalSpacingSuperview],
-                            [NSString stringWithFormat:@"V:|-%d-[stoneImageView]-%d-|", verticalSpacingSuperview, verticalSpacingSuperview],
                             [NSString stringWithFormat:@"V:|-%d-[intersectionLabel]-%d-[boardPositionLabel]-%d-|", verticalSpacingSuperview, verticalSpacingSiblings, verticalSpacingSuperview],
                             [NSString stringWithFormat:@"V:[intersectionLabel]-%d-[capturedStonesLabel]-%d-|", verticalSpacingSiblings, verticalSpacingSuperview],
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
                                    inView:self];
+  [AutoLayoutUtility centerSubview:self.stoneImageView
+                       inSuperview:self
+                            onAxis:UILayoutConstraintAxisVertical];
 
   [self updateDynamicAutoLayoutConstraints];
 }
@@ -230,13 +245,23 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 - (void) setupDummyContent
 {
-  self.stoneImageView.image = blackStoneImage;
-  // These must be longest strings that can possibly appear
-  self.intersectionLabel.text = @"Start of the game";
-  self.boardPositionLabel.text = @"Handicap: 9, Komi: 7½";
-  // If there are captured stones, the board position label will have a much
-  // shorter text than what we used above
-  self.capturedStonesLabel.text = @"";
+  if (0 == self.boardPosition)
+  {
+    self.stoneImageView.image = nil;
+    // These must be longest strings that can possibly appear
+    self.intersectionLabel.text = @"Start of the game";
+    self.boardPositionLabel.text = @"Handicap: 9, Komi: 7½";
+    // The captured stones label is irrelevant for board position 0
+    self.capturedStonesLabel.text = @"";
+  }
+  else
+  {
+    self.stoneImageView.image = blackStoneImage;
+    // These must be longest strings that can possibly appear
+    self.intersectionLabel.text = @"Q19";
+    self.boardPositionLabel.text = @"Move 999";
+    self.capturedStonesLabel.text = @"999";
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -345,17 +370,31 @@ static UIFont* smallFont = nil;
 #pragma mark - One-time view size calculation
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the pre-calculated size of all
-/// BoardPositionCollectionViewCell instances.
+/// @brief Returns the pre-calculated size of a BoardPositionCollectionViewCell
+/// instance that represents board position 0.
 ///
 /// When this method is invoked the first time, it performs the necessary size
 /// calculations.
 // -----------------------------------------------------------------------------
-+ (CGSize) boardPositionCollectionViewCellSize
++ (CGSize) boardPositionCollectionViewCellSizePositionZero
 {
-  if (CGSizeEqualToSize(boardPositionCollectionViewCellSize, CGSizeZero))
+  if (CGSizeEqualToSize(boardPositionCollectionViewCellSizePositionZero, CGSizeZero))
     [BoardPositionCollectionViewCell setupStaticViewMetrics];
-  return boardPositionCollectionViewCellSize;
+  return boardPositionCollectionViewCellSizePositionZero;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the pre-calculated size of a BoardPositionCollectionViewCell
+/// instance that represents a non-zero board position.
+///
+/// When this method is invoked the first time, it performs the necessary size
+/// calculations.
+// -----------------------------------------------------------------------------
++ (CGSize) boardPositionCollectionViewCellSizePositionNonZero
+{
+  if (CGSizeEqualToSize(boardPositionCollectionViewCellSizePositionNonZero, CGSizeZero))
+    [BoardPositionCollectionViewCell setupStaticViewMetrics];
+  return boardPositionCollectionViewCellSizePositionNonZero;
 }
 
 // -----------------------------------------------------------------------------
@@ -381,12 +420,21 @@ static UIFont* smallFont = nil;
   capturedStonesLabelBackgroundColor = [[UIColor redColor] retain];
 
   // TODO xxx experiment with font sizes
-  largeFont = [[UIFont systemFontOfSize:14] retain];
-  smallFont = [[UIFont systemFontOfSize:10] retain];
+  // 17/12 = UITableViewCellStyleSubtitle, too large
+  // 17/11 or 16/10 = good ratio
+  // 16/10 = too small
+  largeFont = [[UIFont systemFontOfSize:17] retain];
+  smallFont = [[UIFont systemFontOfSize:11] retain];
 
-  BoardPositionCollectionViewCell* offscreenView = [[[BoardPositionCollectionViewCell alloc] initOffscreenView] autorelease];
+  enum BoardPositionCollectionViewCellType cellType = BoardPositionCollectionViewCellTypePositionZero;
+  BoardPositionCollectionViewCell* offscreenView = [[[BoardPositionCollectionViewCell alloc] initOffscreenViewWithCellType:cellType] autorelease];
   [offscreenView layoutIfNeeded];
-  boardPositionCollectionViewCellSize = [offscreenView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+  boardPositionCollectionViewCellSizePositionZero = [offscreenView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+
+  cellType = BoardPositionCollectionViewCellTypePositionNonZero;
+  offscreenView = [[[BoardPositionCollectionViewCell alloc] initOffscreenViewWithCellType:cellType] autorelease];
+  [offscreenView layoutIfNeeded];
+  boardPositionCollectionViewCellSizePositionNonZero = [offscreenView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
 }
 
 @end
