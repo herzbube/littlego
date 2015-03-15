@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
-#import "../../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -180,27 +179,15 @@
   }
   else
   {
-    UIView* backgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-    [self.view addSubview:backgroundView];
-    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    [viewsDictionary setObject:backgroundView forKey:@"backgroundView"];
-    [visualFormats addObject:@"H:|-0-[backgroundView]-0-|"];
+    [self.view addSubview:self.statusViewController.view];
+    self.statusViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    [viewsDictionary setObject:self.statusViewController.view forKey:@"statusView"];
+    [visualFormats addObject:@"H:|-0-[statusView]-0-|"];
     // Above the status view there are table view cells. It looks pretty good
     // if the status view has the same height (although it's a bit wasteful of
     // vertical space).
-    [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[boardPositionTableListView]-0-[backgroundView(==%d)]-0-|", [UiElementMetrics tableViewCellContentViewHeight]]];
-
-    [backgroundView addSubview:self.statusViewController.view];
-    self.statusViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    UIEdgeInsets margins = UIEdgeInsetsMake(0, [AutoLayoutUtility horizontalSpacingTableViewCell], 0, [AutoLayoutUtility horizontalSpacingTableViewCell]);
-    // The status view does not use margins on its own (because it may also
-    // be displayed in a more space constrained layout), so we need to give it
-    // margins.
-    [AutoLayoutUtility fillSuperview:backgroundView withSubview:self.statusViewController.view margins:margins];
-
-    // Because we want margins we need a background view whose color goes
-    // underneath those margins
-    backgroundView.backgroundColor = [UIColor blackColor];
+    int statusViewHeight = [UiElementMetrics tableViewCellContentViewHeight];
+    [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[boardPositionTableListView]-0-[statusView(==%d)]-0-|", statusViewHeight]];
   }
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];

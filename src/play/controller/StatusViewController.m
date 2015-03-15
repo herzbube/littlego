@@ -183,9 +183,9 @@
   self.statusLabel.lineBreakMode = NSLineBreakByWordWrapping;
   self.statusLabel.textAlignment = NSTextAlignmentCenter;
 
-  bool isLandscapeOrientation = UIInterfaceOrientationIsLandscape(self.interfaceOrientation);
-  if ([LayoutManager sharedManager].uiType == UITypePhone && isLandscapeOrientation)
+  if ([LayoutManager sharedManager].uiType == UITypePhone)
   {
+    self.view.backgroundColor = [UIColor blackColor];
     self.statusLabel.textColor = [UIColor whiteColor];
     self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
   }
@@ -203,13 +203,18 @@
   self.statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
 
+  int horizontalSpacingSuperview;
+  if ([LayoutManager sharedManager].uiType == UITypePhone)
+    horizontalSpacingSuperview = [AutoLayoutUtility horizontalSpacingTableViewCell];
+  else
+    horizontalSpacingSuperview = 0;
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.statusLabel, @"statusLabel",
                                    self.activityIndicator, @"activityIndicator",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[statusLabel]",
-                            @"H:[activityIndicator]-0-|",
+                            [NSString stringWithFormat:@"H:|-%d-[statusLabel]", horizontalSpacingSuperview],
+                            [NSString stringWithFormat:@"H:[activityIndicator]-%d-|", horizontalSpacingSuperview],
                             @"V:|-0-[statusLabel]-0-|",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
