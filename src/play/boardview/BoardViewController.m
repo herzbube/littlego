@@ -149,7 +149,7 @@
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
 
-  if ([LayoutManager sharedManager].uiType != UITypePad)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
     self.view.backgroundColor = [UIColor woodenBackgroundColor];
 
   self.boardView.backgroundColor = [UIColor clearColor];
