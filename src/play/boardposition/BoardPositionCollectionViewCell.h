@@ -27,14 +27,17 @@
 ///
 /// @verbatim
 /// +-------------------------------------------------------------------+
-/// | +-UIImageView-----------+  +-UILabel----------------------------+ |
-/// | |                       |  | Intersection                       | |
-/// | | Stone image           |  +------------------------------------+ |
-/// | | (vertically centered) |  +-UILabel--------+ +-UILabel---------+ |
-/// | |                       |  | Board position | | Captured stones | |
-/// | +-----------------------+  +----------------+ +-----------------+ |
+/// | +-UIImageView-----------+  +-UILabel--------+ +-UILabel---------+ |
+/// | |                       |  | Intersection   | | Captured stones | |
+/// | | Stone image           |  +----------------+ +-----------------+ |
+/// | | (vertically centered) |  +-UILabel----------------------------+ |
+/// | |                       |  | Board position                     | |
+/// | +-----------------------+  +------------------------------------+ |
 /// +-------------------------------------------------------------------+
 /// @endverbatim
+///
+/// The size ratios depicted in the above scheme are incorrect because the
+/// labels have different font sizes.
 // -----------------------------------------------------------------------------
 @interface BoardPositionCollectionViewCell : UICollectionViewCell
 {

@@ -125,9 +125,11 @@ static UIFont* smallFont = nil;
     _boardPosition = 1;
   self.dynamicAutoLayoutConstraints = nil;
   [self setupViewHierarchy];
+  // Setup content first because dynamic Auto Layout constraint calculation
+  // examines the content
+  [self setupDummyContent];
   [self setupAutoLayoutConstraints];
   [self configureView];
-  [self setupDummyContent];
   return self;
 }
 
@@ -180,17 +182,27 @@ static UIFont* smallFont = nil;
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             [NSString stringWithFormat:@"H:|-%d-[stoneImageView]", horizontalSpacingSuperview],
-                            [NSString stringWithFormat:@"H:[intersectionLabel]-%d-|", horizontalSpacingSuperview],
-                            [NSString stringWithFormat:@"H:[boardPositionLabel]-%d-[capturedStonesLabel]-%d-|", horizontalSpacingSiblings, horizontalSpacingSuperview],
+                            // Spacing 0 is OK. In setupDummyContents we reserve space for a
+                            // 3-digit number of captured stones, which is unlikely to occur.
+                            // Numbers with 1 or 2 digits are much more likely, so the space
+                            // reserved for a 2nd and/or 3rd digit acts as spacing (the label
+                            // text is right-aligned). In the unlikely event that there *IS*
+                            // a 3-digit number, spacing 0 is still tolerable.
+                            [NSString stringWithFormat:@"H:[intersectionLabel]-0-[capturedStonesLabel]-%d-|", horizontalSpacingSuperview],
+                            [NSString stringWithFormat:@"H:[boardPositionLabel]-%d-|", horizontalSpacingSuperview],
                             [NSString stringWithFormat:@"V:|-%d-[intersectionLabel]-%d-[boardPositionLabel]-%d-|", verticalSpacingSuperview, verticalSpacingSiblings, verticalSpacingSuperview],
-                            [NSString stringWithFormat:@"V:[intersectionLabel]-%d-[capturedStonesLabel]-%d-|", verticalSpacingSiblings, verticalSpacingSuperview],
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
                                    inView:self];
+
   [AutoLayoutUtility centerSubview:self.stoneImageView
                        inSuperview:self
                             onAxis:UILayoutConstraintAxisVertical];
+  [AutoLayoutUtility alignFirstView:self.capturedStonesLabel
+                     withSecondView:self.intersectionLabel
+                        onAttribute:NSLayoutAttributeCenterY
+                   constraintHolder:self];
 
   [self updateDynamicAutoLayoutConstraints];
 }
@@ -245,19 +257,19 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 - (void) setupDummyContent
 {
+  // Implementation note: Assign the longest strings that can possibly appear.
+
   if (0 == self.boardPosition)
   {
     self.stoneImageView.image = nil;
-    // These must be longest strings that can possibly appear
     self.intersectionLabel.text = @"Start of the game";
     self.boardPositionLabel.text = @"Handicap: 9, Komi: 7½";
-    // The captured stones label is irrelevant for board position 0
-    self.capturedStonesLabel.text = @"";
+    // Dynamic Auto Layout constraint calculation requires that we set nil here
+    self.capturedStonesLabel.text = nil;
   }
   else
   {
     self.stoneImageView.image = blackStoneImage;
-    // These must be longest strings that can possibly appear
     self.intersectionLabel.text = @"Q19";
     self.boardPositionLabel.text = @"Move 999";
     self.capturedStonesLabel.text = @"999";
@@ -288,6 +300,9 @@ static UIFont* smallFont = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupRealContent().
+///
+/// @attention Dynamic Auto Layout constraint calculation requires that we
+/// return nil if @a move did not capture any stones.
 // -----------------------------------------------------------------------------
 - (NSString*) capturedStonesLabelTextForMove:(GoMove*)move
 {
@@ -323,10 +338,18 @@ static UIFont* smallFont = nil;
   bool newPositionIsGreaterThanZero = (newValue > 0);
   _boardPosition = newValue;
 
-  // Optimization: Change Auto Layout constraints only if absolutely necessary
-  if (oldPositionIsGreaterThanZero != newPositionIsGreaterThanZero)
-    [self updateDynamicAutoLayoutConstraints];
+  bool oldPositionHasCapturedStones = (self.capturedStonesLabel.text != nil);
+  // Setup content first because dynamic Auto Layout constraint calculation
+  // examines the content
   [self setupRealContent];
+  bool newPositionHasCapturedStones = (self.capturedStonesLabel.text != nil);
+
+  // Optimization: Change Auto Layout constraints only if absolutely necessary
+  if (oldPositionIsGreaterThanZero != newPositionIsGreaterThanZero ||
+      oldPositionHasCapturedStones != newPositionHasCapturedStones)
+  {
+    [self updateDynamicAutoLayoutConstraints];
+  }
 }
 
 #pragma mark - Dynamic Auto Layout constraints
@@ -344,6 +367,7 @@ static UIFont* smallFont = nil;
                                    self.stoneImageView, @"stoneImageView",
                                    self.intersectionLabel, @"intersectionLabel",
                                    self.boardPositionLabel, @"boardPositionLabel",
+                                   self.capturedStonesLabel, @"capturedStonesLabel",
                                    nil];
   int stoneImageWidth = 0;
   int horizontalSpacingStoneImageView = 0;
@@ -362,6 +386,8 @@ static UIFont* smallFont = nil;
   [visualFormats addObject:[NSString stringWithFormat:@"H:[stoneImageView(==%d)]", stoneImageWidth]];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[stoneImageView]-%d-[intersectionLabel]", horizontalSpacingStoneImageView]];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[stoneImageView]-%d-[boardPositionLabel]", horizontalSpacingStoneImageView]];
+  if (nil == self.capturedStonesLabel.text)
+    [visualFormats addObject:@"H:[capturedStonesLabel(==0)]"];
   self.dynamicAutoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
                                                                     withViews:viewsDictionary
                                                                        inView:self];
