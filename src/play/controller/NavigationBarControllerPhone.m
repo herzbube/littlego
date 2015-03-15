@@ -18,6 +18,7 @@
 // Project includes
 #import "NavigationBarControllerPhone.h"
 #import "../model/NavigationBarButtonModel.h"
+#import "../../ui/UiElementMetrics.h"
 
 
 // -----------------------------------------------------------------------------
@@ -26,6 +27,7 @@
 // -----------------------------------------------------------------------------
 @interface NavigationBarControllerPhone()
 @property(nonatomic, assign) UINavigationItem* navigationItem;
+@property(nonatomic, assign) UIBarButtonItem* spacerButton;
 @property(nonatomic, retain) NavigationBarButtonModel* navigationBarButtonModel;
 @end
 
@@ -46,6 +48,10 @@
   if (! self)
     return nil;
   self.navigationItem = navigationItem;
+  self.spacerButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                                                     target:nil
+                                                                     action:nil] autorelease];
+  self.spacerButton.width = [UiElementMetrics toolbarIconSize].width;
   self.navigationBar = nil;
   self.navigationBarButtonModel = [[[NavigationBarButtonModel alloc] init] autorelease];
   [GameActionManager sharedGameActionManager].uiDelegate = self;
@@ -159,6 +165,7 @@
 {
   NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
   [barButtonItems addObject:self.navigationBarButtonModel.mainMenuButton];
+  [barButtonItems addObject:self.spacerButton];
   [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionMoreGameActions]]];
   [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionGameInfo]]];
   self.navigationItem.rightBarButtonItems = barButtonItems;
