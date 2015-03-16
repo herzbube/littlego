@@ -17,6 +17,7 @@
 
 // Project includes
 #import "PlayRootViewControllerPhone.h"
+#import "../boardposition/BoardPositionButtonBoxDataSource.h"
 #import "../boardposition/BoardPositionCollectionViewController.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/AutoLayoutConstraintHelper.h"
@@ -25,6 +26,7 @@
 #import "../controller/StatusViewController.h"
 #import "../gesture/PanGestureController.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../ui/ButtonBoxController.h"
 #import "../../ui/UiElementMetrics.h"
 #import "../../utility/UiColorAdditions.h"
 
@@ -36,6 +38,8 @@
 @interface PlayRootViewControllerPhone()
 @property(nonatomic, retain) UIView* woodenBackgroundView;
 @property(nonatomic, retain) NavigationBarControllerPhone* navigationBarController;
+@property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
+@property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
 @property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
 @property(nonatomic, retain) StatusViewController* statusViewController;
 @property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
@@ -82,6 +86,8 @@
 {
   self.woodenBackgroundView = nil;
   self.navigationBarController = nil;
+  self.boardPositionButtonBoxController = nil;
+  self.boardPositionButtonBoxDataSource = nil;
   self.boardPositionCollectionViewController = nil;
   self.statusViewController = nil;
   self.discardFutureMovesAlertController = nil;
@@ -97,6 +103,7 @@
 - (void) setupChildControllers
 {
   self.navigationBarController = [[[NavigationBarControllerPhone alloc] initWithNavigationItem:self.navigationItem] autorelease];
+  self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
   self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] init] autorelease];
   self.statusViewController = [[[StatusViewController alloc] init] autorelease];
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
@@ -104,6 +111,34 @@
 
   self.boardViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
   [GameActionManager sharedGameActionManager].commandDelegate = self.discardFutureMovesAlertController;
+
+  self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
+  self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setBoardPositionButtonBoxController:(ButtonBoxController*)boardPositionButtonBoxController
+{
+  if (_boardPositionButtonBoxController == boardPositionButtonBoxController)
+    return;
+  if (_boardPositionButtonBoxController)
+  {
+    [_boardPositionButtonBoxController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_boardPositionButtonBoxController removeFromParentViewController];
+    [_boardPositionButtonBoxController release];
+    _boardPositionButtonBoxController = nil;
+  }
+  if (boardPositionButtonBoxController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:boardPositionButtonBoxController];
+    [boardPositionButtonBoxController didMoveToParentViewController:self];
+    [boardPositionButtonBoxController retain];
+    _boardPositionButtonBoxController = boardPositionButtonBoxController;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -221,6 +256,7 @@
   [self.view addSubview:self.boardPositionCollectionViewController.view];
   [self.view addSubview:self.statusViewController.view];
 
+  [self.woodenBackgroundView addSubview:self.boardPositionButtonBoxController.view];
   [self.woodenBackgroundView addSubview:self.boardViewController.view];
 }
 
@@ -229,25 +265,23 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
   self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   self.statusViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-
   CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewHeight];
   int statusViewHeight = [UiElementMetrics tableViewCellContentViewHeight];
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.boardPositionCollectionViewController.view, @"boardPositionCollectionView",
-                                   self.woodenBackgroundView, @"woodenBackgroundView",
-                                   self.statusViewController.view, @"statusView",
-                                   nil];
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[boardPositionCollectionView]-0-|",
-                            @"H:|-0-[woodenBackgroundView]-0-|",
-                            @"H:|-0-[statusView]-0-|",
-                            @"V:|-0-[woodenBackgroundView]-0-[boardPositionCollectionView]-0-[statusView]-0-|",
-                            [NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight],
-                            [NSString stringWithFormat:@"V:[statusView(==%d)]", statusViewHeight],
-                            nil];
+  viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
+  viewsDictionary[@"woodenBackgroundView"] = self.woodenBackgroundView;
+  viewsDictionary[@"statusView"] = self.statusViewController.view;
+  [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
+  [visualFormats addObject:@"H:|-0-[woodenBackgroundView]-0-|"];
+  [visualFormats addObject:@"H:|-0-[statusView]-0-|"];
+  [visualFormats addObject:@"V:|-0-[woodenBackgroundView]-0-[boardPositionCollectionView]-0-[statusView]-0-|"];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[statusView(==%d)]", statusViewHeight]];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -255,6 +289,18 @@
                                               ofBoardView:self.boardViewController.view
                                          constraintHolder:self.woodenBackgroundView];
 
+  [viewsDictionary removeAllObjects];
+  [visualFormats removeAllObjects];
+  self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  int horizontalSpacingButtonBox = [AutoLayoutUtility horizontalSpacingSiblings];
+  int verticalSpacingButtonBox = [AutoLayoutUtility verticalSpacingSiblings];
+  CGSize buttonBoxSize = self.boardPositionButtonBoxController.buttonBoxSize;
+  viewsDictionary[@"boardPositionButtonBox"] = self.boardPositionButtonBoxController.view;
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[boardPositionButtonBox]", horizontalSpacingButtonBox]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox]-%d-|", verticalSpacingButtonBox]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox(==%f)]", buttonBoxSize.width]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]", buttonBoxSize.height]];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.woodenBackgroundView];
 }
 
 // -----------------------------------------------------------------------------
@@ -265,6 +311,11 @@
   // This view provides a wooden texture background not only for the Go board,
   // but for the entire area in which the Go board resides
   self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
+
+  self.boardPositionButtonBoxController.collectionView.backgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  self.boardPositionButtonBoxController.collectionView.backgroundView.backgroundColor = [UIColor whiteColor];
+  self.boardPositionButtonBoxController.collectionView.backgroundView.layer.borderWidth = 1;
+  self.boardPositionButtonBoxController.collectionView.backgroundView.alpha = 0.6f;
 }
 
 @end

@@ -51,21 +51,98 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The ButtonBoxController class is responsible for displaying a
-/// rectangular box that contains a grid of UIButton objects.
+/// rectangular box that contains a number of sections, each of which displays
+/// a grid of UIButton objects. The button box extends in horizontal or vertical
+/// direction.
 ///
 /// ButtonBoxController expects UIButtons to have a uniform size that is equal
 /// to the standard size for toolbar/navigation bar button icons. Smaller
 /// UIButtons should work, too.
+///
+/// @par The box model
+///
+/// - The button box extends either in horizontal or in vertical direction
+/// - The button box consists of 0-n sections
+/// - Sections are placed one after the other in the direction in which the
+///   button box extends
+/// - Each section consists of a grid of buttons
+/// - Section grids are individually sized, i.e. different sections can have
+///   grids with different sizes
+/// - Each section is a box within the entire button box
+/// - The section box has insets (or margins / padding, if you like)
+/// - The insets are fixed in the direction in which the button box extends, and
+///   variable in the other direction
+/// - Each section is separated from the next by a horizontal or vertical
+///   separator
+///
+/// The following scheme shows an example for a horizontally extending box with
+/// the following characteristics:
+/// - Sections = 2
+/// - Section 1: Rows = 3, columns = 4
+/// - Section 2: Rows = 1, columns = 2
+/// - Left/right insets are fixed for all sections, top/bottom insets are
+///   variable
+///
+/// @verbatim
+/// +---------+-----+
+/// |         |     |
+/// | * * * * |     |
+/// | * * * * | * * |
+/// | * * * * |     |
+/// |         |     |
+/// +---------+-----+
+/// @endverbatim
+///
+/// The following scheme shows an example for a vertically extending box with
+/// the following characteristics:
+/// - Sections = 2
+/// - Section 1: Rows = 3, columns = 5
+/// - Section 2: Rows = 2, columns = 1
+/// - Top/bottom insets are fixed for all sections, left/right insets are
+///   variable
+///
+/// @verbatim
+/// +-----------+
+/// |           |
+/// | * * * * * |
+/// | * * * * * |
+/// | * * * * * |
+/// |           |
+/// +-----------+
+/// |           |
+/// |     *     |
+/// |     *     |
+/// |           |
+/// +-----------+
+/// @endverbatim
+///
+/// @todo ButtonBoxController has not been tested for grids larger than 1 row
+/// (if horizontally extending) or 1 column (if vertically extending). The
+/// current implementation probably does not work as documented by the above
+/// box model because we don't tell the flow layout to generate a "line break"
+/// within a section. Possibly the flow layout API doesn't even provide this
+/// capability?
 // -----------------------------------------------------------------------------
 @interface ButtonBoxController : UICollectionViewController <UICollectionViewDelegateFlowLayout>
 {
 }
 
+- (id) initWithScrollDirection:(UICollectionViewScrollDirection)scrollDirection;
+
 - (void) reloadData;
 
 @property(nonatomic, assign) id<ButtonBoxControllerDataSource> buttonBoxControllerDataSource;
 @property(nonatomic, assign) id<ButtonBoxControllerDataDelegate> buttonBoxControllerDelegate;
+
+/// @brief The direction in which the button box managed by this controller
+/// extends.
+@property(nonatomic, assign, readonly) UICollectionViewScrollDirection scrollDirection;
+
+/// @brief The size of the button box managed by this controller. Accessing this
+/// property will start querying the data source.
 @property(nonatomic, assign, readonly) CGSize buttonBoxSize;
+
+/// @brief The color used to tint buttons. The default is black.
 @property(nonatomic, retain) UIColor* buttonTintColor;
 
 @end

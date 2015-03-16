@@ -18,7 +18,6 @@
 // Project includes
 #import "RightPaneViewController.h"
 #import "../boardposition/BoardPositionButtonBoxDataSource.h"
-#import "../boardposition/BoardPositionNavigationManager.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/AutoLayoutConstraintHelper.h"
 #import "../controller/DiscardFutureMovesAlertController.h"
@@ -136,8 +135,8 @@
   }
   else
   {
-    self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] init] autorelease];
-    self.gameActionButtonBoxController = [[[ButtonBoxController alloc] init] autorelease];
+    self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
+    self.gameActionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
   }
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];

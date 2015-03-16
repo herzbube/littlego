@@ -82,7 +82,10 @@
 // -----------------------------------------------------------------------------
 - (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfRowsInSection:(NSInteger)section
 {
-  return 4;
+  if (buttonBoxController.scrollDirection == UICollectionViewScrollDirectionHorizontal)
+    return 1;
+  else
+    return 4;
 }
 
 // -----------------------------------------------------------------------------
@@ -90,7 +93,10 @@
 // -----------------------------------------------------------------------------
 - (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfColumnsInSection:(NSInteger)section
 {
-  return 1;
+  if (buttonBoxController.scrollDirection == UICollectionViewScrollDirectionHorizontal)
+    return 4;
+  else
+    return 1;
 }
 
 // -----------------------------------------------------------------------------

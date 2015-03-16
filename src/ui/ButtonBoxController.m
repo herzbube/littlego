@@ -18,86 +18,10 @@
 // Project includes
 #import "ButtonBoxController.h"
 #import "AutoLayoutUtility.h"
+#import "ButtonBoxCell.h"
 #import "UiElementMetrics.h"
 #import "UIColorAdditions.h"
 
-
-// TODO xxx
-// - Suppress selections
-// - Suppress highlights
-// - Suppress edit menu
-// (see "Designing Your Data Source and Delegate")
-
-
-#pragma mark - ButtonBoxCell declaration and implementation
-
-// -----------------------------------------------------------------------------
-/// @brief The ButtonBoxCell class is a private class used by
-/// ButtonBoxController to host a single UIButton.
-// -----------------------------------------------------------------------------
-@interface ButtonBoxCell : UICollectionViewCell
-{
-}
-
-@property(nonatomic, retain) UIButton* button;
-@property(nonatomic, retain) NSArray* autoLayoutConstraints;
-
-@end
-
-
-@implementation ButtonBoxCell
-- (id) initWithFrame:(CGRect)rect
-{
-  self = [super initWithFrame:rect];
-  if (! self)
-    return nil;
-  self.button = nil;
-  self.autoLayoutConstraints = nil;
-  return self;
-}
-
-- (void) dealloc
-{
-  [self removeButtonIfSet];
-  [super dealloc];
-}
-
-- (void) setupWithButton:(UIButton*)button
-{
-  self.button = button;
-  [self.contentView addSubview:self.button];
-  self.button.translatesAutoresizingMaskIntoConstraints = false;
-  self.autoLayoutConstraints = [AutoLayoutUtility centerSubview:self.button inSuperview:self.contentView];
-}
-
-- (void) removeButtonIfSet
-{
-  if (self.autoLayoutConstraints)
-  {
-    [self.contentView removeConstraints:self.autoLayoutConstraints];
-    self.autoLayoutConstraints = nil;
-  }
-  if (self.button)
-  {
-    // Button may have already been added as a subview to a different cell, so
-    // we must not remove it from its superview unless it's still associated
-    // with this cell
-    if (self.button.superview == self.contentView)
-      [self.button removeFromSuperview];
-    self.button = nil;
-  }
-}
-
-- (void) prepareForReuse
-{
-  [self removeButtonIfSet];
-  [super prepareForReuse];
-}
-
-@end
-
-
-#pragma mark - ButtonBoxController declaration and implementation
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for ButtonBoxController.
@@ -110,8 +34,7 @@
 @property(nonatomic, assign) CGFloat columnSpacing;
 @property(nonatomic, assign) UIEdgeInsets margins;
 @property(nonatomic, assign) CGSize sectionSeparatorSize;
-@property(nonatomic, assign) CGFloat rowSpacingFactor;
-@property(nonatomic, assign) CGFloat verticalMarginFactor;
+@property(nonatomic, assign) UIEdgeInsets sectionInsets;
 @end
 
 
@@ -120,52 +43,79 @@
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes an ButtonBoxController object.
+/// @brief Initializes an ButtonBoxController object that manages a button box
+/// that extends in @a scrollDirection.
 ///
 /// @note This is the designated initializer of ButtonBoxController.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithScrollDirection:(UICollectionViewScrollDirection)scrollDirection
 {
   UICollectionViewFlowLayout* flowLayout = [[[UICollectionViewFlowLayout alloc] init] autorelease];
+
   // Call designated initializer of superclass (UICollectionViewController)
   self = [super initWithCollectionViewLayout:flowLayout];
   if (! self)
     return nil;
+  _scrollDirection = scrollDirection;
   self.reuseIdentifierCell = @"ButtonBoxCell";
   self.reuseIdentifierSeparatorView = @"ButtonBoxSeparatorView";
   self.buttonBoxControllerDataSource = nil;
   self.buttonBoxControllerDelegate = nil;
-//  self.buttonTintColor = [UIColor blueColor];
-//  self.buttonTintColor = [UIColor darkTangerineColor];
-//  self.buttonTintColor = [UIColor bleuDeFranceColor];
-//  self.buttonTintColor = [UIColor mayaBlueColor];
-//  self.buttonTintColor = [UIColor nonPhotoBlueColor];
   self.buttonTintColor = [UIColor blackColor];
+
+  CGFloat rowSpacingFactor;
+  CGFloat columnSpacingFactor;
+  CGFloat horizontalMarginFactor;
+  CGFloat verticalMarginFactor;
+  if (scrollDirection == UICollectionViewScrollDirectionHorizontal)
+  {
+    rowSpacingFactor = 1.0f;
+    columnSpacingFactor = 2.0f;
+    horizontalMarginFactor = 2.0f;
+    verticalMarginFactor = 1.0f;
+  }
+  else
+  {
+    rowSpacingFactor = 2.0f;
+    columnSpacingFactor = 1.0f;
+    horizontalMarginFactor = 1.0f;
+    verticalMarginFactor = 2.0f;
+  }
 
   // Need to use the same width all the time, otherwise there is no grid effect
   // Height can vary, flow layout will use the largest height for the line.
   self.buttonSize = [UiElementMetrics toolbarIconSize];
-  self.rowSpacing = [UiElementMetrics verticalSpacingSiblings];
-  self.columnSpacing = [UiElementMetrics horizontalSpacingSiblings];
-  self.margins = UIEdgeInsetsMake([UiElementMetrics verticalSpacingSiblings],
-                                  [UiElementMetrics horizontalSpacingSiblings],
-                                  [UiElementMetrics verticalSpacingSiblings],
-                                  [UiElementMetrics horizontalSpacingSiblings]);
-  self.sectionSeparatorSize = CGSizeMake(0, 1);
-  self.rowSpacingFactor = 2.0f;
-  self.verticalMarginFactor = 2.0f;
+  self.rowSpacing = [UiElementMetrics verticalSpacingSiblings] * rowSpacingFactor;
+  self.columnSpacing = [UiElementMetrics horizontalSpacingSiblings] * columnSpacingFactor;
+  self.sectionInsets = UIEdgeInsetsMake([UiElementMetrics verticalSpacingSiblings] * verticalMarginFactor,
+                                        [UiElementMetrics horizontalSpacingSiblings] * horizontalMarginFactor,
+                                        [UiElementMetrics verticalSpacingSiblings] * verticalMarginFactor,
+                                        [UiElementMetrics horizontalSpacingSiblings] * horizontalMarginFactor);
+  self.sectionSeparatorSize = CGSizeMake(1, 1);
 
+  flowLayout.scrollDirection = self.scrollDirection;
   flowLayout.itemSize = self.buttonSize;
-  flowLayout.minimumLineSpacing = self.rowSpacing * self.rowSpacingFactor;
-  flowLayout.minimumInteritemSpacing = self.columnSpacing;
-//  flowLayout.sectionInset = self.margins;
+  if (scrollDirection == UICollectionViewScrollDirectionHorizontal)
+  {
+    // The flow layout switches its interpretation of "lines" when the scroll
+    // direction is horizontal: It uses the "line spacing" to separate what we
+    // think of as "columns" in our box model.
+    flowLayout.minimumLineSpacing = self.columnSpacing;
+    flowLayout.minimumInteritemSpacing = self.rowSpacing;
+  }
+  else
+  {
+    // When the scroll direction is vertical, the flow layout's interpretation
+    // of "lines" is natural, i.e. it matches our own concept of "rows".
+    flowLayout.minimumLineSpacing = self.rowSpacing;
+    flowLayout.minimumInteritemSpacing = self.columnSpacing;
+  }
 
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this ButtonBoxController
-/// object.
+/// @brief Deallocates memory allocated by this ButtonBoxController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -192,7 +142,7 @@
   // Important so that buttons switch to their highlighted appearance
   // immediately
   self.collectionView.delaysContentTouches = NO;
-  // Let external client determine any background colors
+  // Take background color from superview
   self.collectionView.backgroundColor = [UIColor clearColor];
 }
 
@@ -232,7 +182,46 @@
   return cell;
 }
 
-#pragma mark - Getter implementations
+// -----------------------------------------------------------------------------
+/// @brief UICollectionViewDataSource method.
+// -----------------------------------------------------------------------------
+- (UICollectionReusableView*) collectionView:(UICollectionView*)collectionView
+           viewForSupplementaryElementOfKind:(NSString*)kind
+                                 atIndexPath:(NSIndexPath*)indexPath
+{
+  UICollectionReusableView* separatorView = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind
+                                                                                    withReuseIdentifier:self.reuseIdentifierSeparatorView
+                                                                                           forIndexPath:indexPath];
+  separatorView.backgroundColor = [UIColor blackColor];
+  return separatorView;
+}
+
+#pragma mark - UICollectionViewDelegateFlowLayout overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UICollectionViewDelegateFlowLayout method.
+// -----------------------------------------------------------------------------
+- (CGSize) collectionView:(UICollectionView*)collectionView
+                   layout:(UICollectionViewLayout*)collectionViewLayout
+referenceSizeForHeaderInSection:(NSInteger)section
+{
+  if (0 == section)
+    return CGSizeZero;
+  else
+    return self.sectionSeparatorSize;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UICollectionViewDelegateFlowLayout method.
+// -----------------------------------------------------------------------------
+- (UIEdgeInsets) collectionView:(UICollectionView*)collectionView
+                         layout:(UICollectionViewLayout*)collectionViewLayout
+         insetForSectionAtIndex:(NSInteger)section
+{
+  return self.sectionInsets;
+}
+
+#pragma mark - Public API
 
 // -----------------------------------------------------------------------------
 /// @brief Getter implementation for property @e buttonBoxSize.
@@ -254,89 +243,49 @@
   {
     int numberOfRows = [self.buttonBoxControllerDataSource buttonBoxController:self numberOfRowsInSection:section];
     int numberOfColumns = [self.buttonBoxControllerDataSource buttonBoxController:self numberOfColumnsInSection:section];
-    if (flowLayout.scrollDirection == UICollectionViewScrollDirectionVertical)
-    {
-      maximumNumberOfRows += numberOfRows;
-      maximumNumberOfColumns = MAX(numberOfColumns, maximumNumberOfColumns);
-    }
-    else
+    if (flowLayout.scrollDirection == UICollectionViewScrollDirectionHorizontal)
     {
       maximumNumberOfRows = MAX(numberOfRows, maximumNumberOfRows);
       maximumNumberOfColumns += numberOfColumns;
     }
+    else
+    {
+      maximumNumberOfRows += numberOfRows;
+      maximumNumberOfColumns = MAX(numberOfColumns, maximumNumberOfColumns);
+    }
   }
   CGSize buttonBoxSize = CGSizeZero;
-  if (flowLayout.scrollDirection == UICollectionViewScrollDirectionVertical)
+  if (flowLayout.scrollDirection == UICollectionViewScrollDirectionHorizontal)
   {
-    buttonBoxSize.width += (maximumNumberOfColumns * self.buttonSize.width +
-                            (maximumNumberOfColumns - 1) * self.columnSpacing +
-                            self.margins.left + self.margins.right);
-    buttonBoxSize.height += (maximumNumberOfRows * self.buttonSize.height +
-                             (maximumNumberOfRows - numberOfSections) * self.rowSpacing * self.rowSpacingFactor +
-                             numberOfSections * (self.margins.top + self.margins.bottom) * self.verticalMarginFactor +
-                             (numberOfSections - 1) * self.sectionSeparatorSize.height);
+    buttonBoxSize.width += (self.buttonSize.width * maximumNumberOfColumns +
+                            self.columnSpacing * (maximumNumberOfColumns - numberOfSections) +
+                            (self.sectionInsets.left + self.sectionInsets.right) * numberOfSections+
+                            self.sectionSeparatorSize.width * (numberOfSections - 1));
+    buttonBoxSize.height += (self.buttonSize.height * maximumNumberOfRows +
+                             self.rowSpacing * (maximumNumberOfRows - 1) +
+                             self.sectionInsets.top + self.sectionInsets.bottom);
   }
   else
   {
-    buttonBoxSize.width += (maximumNumberOfColumns * self.buttonSize.width +
-                            (maximumNumberOfColumns - numberOfSections) * self.columnSpacing +
-                            numberOfSections * (self.margins.left + self.margins.right) +
-                            (numberOfSections - 1) * self.sectionSeparatorSize.width);
-    buttonBoxSize.height += (maximumNumberOfRows * self.buttonSize.height +
-                             (maximumNumberOfRows - 1) * self.rowSpacing * self.rowSpacingFactor +
-                             (self.margins.top + self.margins.bottom) * self.verticalMarginFactor);
+    buttonBoxSize.width += (self.buttonSize.width * maximumNumberOfColumns +
+                            self.columnSpacing * (maximumNumberOfColumns - 1) +
+                            self.sectionInsets.left + self.sectionInsets.right);
+    buttonBoxSize.height += (self.buttonSize.height * maximumNumberOfRows +
+                             self.rowSpacing * (maximumNumberOfRows - numberOfSections) +
+                             (self.sectionInsets.top + self.sectionInsets.bottom) * numberOfSections +
+                             self.sectionSeparatorSize.height * (numberOfSections - 1));
   }
   return buttonBoxSize;
 }
 
-- (CGSize) collectionView:(UICollectionView*)collectionView
-                   layout:(UICollectionViewLayout*)collectionViewLayout
-referenceSizeForHeaderInSection:(NSInteger)section
-{
-  if (0 == section)
-    return CGSizeZero;
-  else
-    return self.sectionSeparatorSize;
-}
-
-- (UICollectionReusableView*) collectionView:(UICollectionView*)collectionView
-           viewForSupplementaryElementOfKind:(NSString*)kind
-                                 atIndexPath:(NSIndexPath*)indexPath
-{
-  UICollectionReusableView* separatorView = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind
-                                                                                    withReuseIdentifier:self.reuseIdentifierSeparatorView
-                                                                                           forIndexPath:indexPath];
-  separatorView.backgroundColor = [UIColor blackColor];
-  return separatorView;
-}
-
-- (UIEdgeInsets) collectionView:(UICollectionView*)collectionView
-                         layout:(UICollectionViewLayout*)collectionViewLayout
-         insetForSectionAtIndex:(NSInteger)section
-{
-//  int numberOfSections = [self.buttonBoxControllerDataSource numberOfSectionsInButtonBoxController:self];
-  UIEdgeInsets sectionInsets = UIEdgeInsetsZero;
-  sectionInsets = self.margins;
-  sectionInsets.top *= self.verticalMarginFactor;
-  sectionInsets.bottom *= self.verticalMarginFactor;
-
-//  sectionInsets.left = [UiElementMetrics horizontalSpacingSiblings];
-//  sectionInsets.right = [UiElementMetrics horizontalSpacingSiblings];
-//  if (0 == section)
-//    sectionInsets.top = [UiElementMetrics verticalSpacingSiblings];
-//  else
-//    sectionInsets.top = [UiElementMetrics verticalSpacingSiblings];
-//
-//  if ((section + 1) == numberOfSections)
-//    sectionInsets.bottom = [UiElementMetrics verticalSpacingSiblings];
-//  else
-//    sectionInsets.bottom = [UiElementMetrics verticalSpacingSiblings];
-
-  return sectionInsets;
-}
-
-// data source must provide updated values when this method is invoked, so that
-/// buttonBoxSize returns the correct value when the delegate invokes its getter
+// -----------------------------------------------------------------------------
+/// @brief Reloads the data displayed by the button box managed by this
+/// controller.
+///
+/// The data source must provide updated values when this method is invoked, so
+/// that the property @e buttonBoxSize returns the correct value when the
+/// delegate invokes its getter.
+// -----------------------------------------------------------------------------
 - (void) reloadData
 {
   if (self.buttonBoxControllerDelegate)
