@@ -104,7 +104,7 @@
 {
   self.navigationBarController = [[[NavigationBarControllerPhone alloc] initWithNavigationItem:self.navigationItem] autorelease];
   self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
-  self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] init] autorelease];
+  self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
   self.statusViewController = [[[StatusViewController alloc] init] autorelease];
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
@@ -271,13 +271,13 @@
   self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   self.statusViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewHeight];
+  CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewMaximumCellSize].height;
   int statusViewHeight = [UiElementMetrics tableViewCellContentViewHeight];
-  viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
   viewsDictionary[@"woodenBackgroundView"] = self.woodenBackgroundView;
+  viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
   viewsDictionary[@"statusView"] = self.statusViewController.view;
-  [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
   [visualFormats addObject:@"H:|-0-[woodenBackgroundView]-0-|"];
+  [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
   [visualFormats addObject:@"H:|-0-[statusView]-0-|"];
   [visualFormats addObject:@"V:|-0-[woodenBackgroundView]-0-[boardPositionCollectionView]-0-[statusView]-0-|"];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight]];

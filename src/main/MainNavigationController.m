@@ -20,6 +20,7 @@
 #import "ApplicationDelegate.h"
 #import "MainTableViewController.h"
 #import "UIAreaInfo.h"
+#import "../play/boardposition/BoardPositionCollectionViewCell.h"
 #import "../play/rootview/PlayRootViewController.h"
 #import "../play/splitview/LeftPaneViewController.h"
 #import "../play/splitview/RightPaneViewController.h"
@@ -149,6 +150,7 @@
     self.leftPaneViewController = [[[LeftPaneViewController alloc] init] autorelease];
     self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
     self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
+    self.splitViewControllerChild.leftPaneWidth = [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero].width;
   }
 
   [self pushViewController:realRootViewController animated:NO];

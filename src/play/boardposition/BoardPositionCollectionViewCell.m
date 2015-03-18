@@ -461,6 +461,14 @@ static UIFont* smallFont = nil;
   offscreenView = [[[BoardPositionCollectionViewCell alloc] initOffscreenViewWithCellType:cellType] autorelease];
   [offscreenView layoutIfNeeded];
   boardPositionCollectionViewCellSizePositionNonZero = [offscreenView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+
+  // If values with fractions are used there is bound to be a rounding error
+  // at some stage, either when the cell sizes are passed to the collection view
+  // or when the cell sizes are used for Auto Layout constraints.
+  boardPositionCollectionViewCellSizePositionZero = CGSizeMake(ceilf(boardPositionCollectionViewCellSizePositionZero.width),
+                                                               ceilf(boardPositionCollectionViewCellSizePositionZero.height));
+  boardPositionCollectionViewCellSizePositionNonZero = CGSizeMake(ceilf(boardPositionCollectionViewCellSizePositionNonZero.width),
+                                                                  ceilf(boardPositionCollectionViewCellSizePositionNonZero.height));
 }
 
 @end

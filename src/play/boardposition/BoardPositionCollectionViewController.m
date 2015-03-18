@@ -49,15 +49,16 @@
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a BoardPositionCollectionViewController object.
+/// @brief Initializes a BoardPositionCollectionViewController object that
+/// manages a collection view that extends in @a scrollDirection.
 ///
 /// @note This is the designated initializer of
 /// BoardPositionCollectionViewController.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithScrollDirection:(UICollectionViewScrollDirection)scrollDirection
 {
   UICollectionViewFlowLayout* flowLayout = [[[UICollectionViewFlowLayout alloc] init] autorelease];
-  flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+  flowLayout.scrollDirection = scrollDirection;
   flowLayout.minimumLineSpacing = 0.0f;
   // Required because we have items that differ in size
   flowLayout.minimumInteritemSpacing = 0.0f;
@@ -189,10 +190,20 @@
                    layout:(UICollectionViewLayout*)collectionViewLayout
    sizeForItemAtIndexPath:(NSIndexPath*)indexPath
 {
-  if (0 == indexPath.row)
-    return [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero];
+  UICollectionViewFlowLayout* flowLayout = (UICollectionViewFlowLayout*)collectionViewLayout;
+  if (flowLayout.scrollDirection == UICollectionViewScrollDirectionHorizontal)
+  {
+    // Horizontal scroll direction = cells have different sizes
+    if (0 == indexPath.row)
+      return [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero];
+    else
+      return [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionNonZero];
+  }
   else
-    return [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionNonZero];
+  {
+    // Vertical scroll direction = all cells have the same size
+    return [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero];
+  }
 }
 
 #pragma mark - UICollectionViewDelegate overrides
@@ -434,10 +445,17 @@
   NSInteger numberOfItemsInCollectionView = [self.collectionView numberOfItemsInSection:0];
   if (newCurrentBoardPosition < numberOfItemsInCollectionView)
   {
+    UICollectionViewScrollPosition scrollPosition;
+    UICollectionViewFlowLayout* flowLayout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
+    if (flowLayout.scrollDirection == UICollectionViewScrollDirectionHorizontal)
+      scrollPosition = UICollectionViewScrollPositionCenteredHorizontally;
+    else
+      scrollPosition = UICollectionViewScrollPositionCenteredVertically;
+
     NSIndexPath* indexPathForNewCurrentBoardPosition = [NSIndexPath indexPathForRow:newCurrentBoardPosition inSection:0];
     [self.collectionView selectItemAtIndexPath:indexPathForNewCurrentBoardPosition
                                       animated:NO
-                                scrollPosition:UICollectionViewScrollPositionCenteredHorizontally];
+                                scrollPosition:scrollPosition];
   }
   else
   {
@@ -470,12 +488,14 @@
 #pragma mark - Public API
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the height of cells managed by this controller.
+/// @brief Returns the maximum size that a cell managed by this controller can
+/// have.
 // -----------------------------------------------------------------------------
-- (CGFloat) boardPositionCollectionViewHeight
+- (CGSize) boardPositionCollectionViewMaximumCellSize
 {
-  // Cells for board position 0 and non-zero board positions have the same height
-  return [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero].height;
+  // Cells for board position 0 and non-zero board positions have the same
+  // height, but the board position 0 cell has a larger width
+  return [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero];
 }
 
 #pragma mark - Private helpers

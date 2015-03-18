@@ -24,6 +24,8 @@
 {
 }
 
-- (CGFloat) boardPositionCollectionViewHeight;
+- (id) initWithScrollDirection:(UICollectionViewScrollDirection)scrollDirection;
+
+- (CGSize) boardPositionCollectionViewMaximumCellSize;
 
 @end

@@ -71,5 +71,6 @@
 
 @property (nonatomic, copy) NSArray* viewControllers;
 @property (nonatomic, assign) id <SplitViewControllerDelegate> delegate;
+@property (nonatomic, assign) int leftPaneWidth;
 
 @end
