@@ -17,13 +17,13 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The MainUtilty class is a container for various utility functions
+/// @brief The MainUtility class is a container for various utility functions
 /// related to managing the main navigation of the application.
 ///
-/// All functions in MainUtilty are class methods, so there is no need to create
-/// an instance of MainUtilty.
+/// All functions in MainUtility are class methods, so there is no need to
+/// create an instance of MainUtility.
 // -----------------------------------------------------------------------------
-@interface MainUtilty : NSObject
+@interface MainUtility : NSObject
 {
 }
 

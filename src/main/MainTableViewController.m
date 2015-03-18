@@ -86,7 +86,7 @@ enum MainTableViewItem
 
   enum UIArea uiArea = [self uiAreaForTableRow:indexPath.row];
   cell.imageView.image = [self cellImageForUIArea:uiArea];
-  cell.textLabel.text = [MainUtilty titleStringForUIArea:uiArea];
+  cell.textLabel.text = [MainUtility titleStringForUIArea:uiArea];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
   return cell;
@@ -112,7 +112,7 @@ enum MainTableViewItem
 // -----------------------------------------------------------------------------
 - (void) presentUIArea:(enum UIArea)uiArea
 {
-  UIViewController* rootViewController = [MainUtilty rootViewControllerForUIArea:uiArea];
+  UIViewController* rootViewController = [MainUtility rootViewControllerForUIArea:uiArea];
   [self.navigationController pushViewController:rootViewController animated:YES];
 }
 
@@ -159,7 +159,7 @@ enum MainTableViewItem
 // -----------------------------------------------------------------------------
 - (UIImage*) cellImageForUIArea:(enum UIArea)uiArea
 {
-  NSString* iconResourceName = [MainUtilty iconResourceNameForUIArea:uiArea];
+  NSString* iconResourceName = [MainUtility iconResourceNameForUIArea:uiArea];
   UIImage* image = [UIImage imageNamed:iconResourceName];
   // The original icons are differently sized. For a clean display in the table
   // view we must convert them all to the same uniform size. We use the maximum

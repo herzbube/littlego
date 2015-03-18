@@ -27,7 +27,7 @@
 #import "../settings/SettingsViewController.h"
 
 
-@implementation MainUtilty
+@implementation MainUtility
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a title string that is appropriate for labelling the
@@ -130,7 +130,7 @@
     default:
       return nil;
   }
-  rootViewController.title = [MainUtilty titleStringForUIArea:uiArea];
+  rootViewController.title = [MainUtility titleStringForUIArea:uiArea];
   rootViewController.uiArea = uiArea;
   return rootViewController;
 }

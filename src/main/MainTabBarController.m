@@ -116,7 +116,7 @@
   if (self.launchImageMode)
     return @"";
   else
-    return [MainUtilty titleStringForUIArea:uiArea];
+    return [MainUtility titleStringForUIArea:uiArea];
 }
 
 // -----------------------------------------------------------------------------
@@ -131,7 +131,7 @@
   }
   else
   {
-    return [MainUtilty rootViewControllerForUIArea:uiArea];
+    return [MainUtility rootViewControllerForUIArea:uiArea];
   }
 }
 
@@ -143,7 +143,7 @@
   if (self.launchImageMode)
     return @"";
   else
-    return [MainUtilty iconResourceNameForUIArea:uiArea];
+    return [MainUtility iconResourceNameForUIArea:uiArea];
 }
 
 #pragma mark - UIViewController overrides
