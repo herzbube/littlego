@@ -19,7 +19,7 @@
 #import "SectionedDocumentViewController.h"
 #import "ApplicationDelegate.h"
 #import "DocumentViewController.h"
-#import "MainTabBarController.h"
+#import "MainUtility.h"
 #import "UIAreaInfo.h"
 #import "../utility/DocumentGenerator.h"
 #import "../utility/UIColorAdditions.h"
@@ -71,7 +71,7 @@
     return _documentGenerator;
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   enum UIArea uiArea = self.uiArea;
-  NSString* resourceName = [appDelegate.tabBarController resourceNameForUIArea:uiArea];
+  NSString* resourceName = [MainUtility resourceNameForUIArea:uiArea];
   NSString* resourceContent = [appDelegate contentOfTextResource:resourceName];
   switch (uiArea)
   {

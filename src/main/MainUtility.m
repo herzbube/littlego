@@ -17,14 +17,19 @@
 
 // Project includes
 #import "MainUtility.h"
+#import "ApplicationDelegate.h"
 #import "DocumentViewController.h"
 #import "LicensesViewController.h"
+#import "MainNavigationController.h"
+#import "MainTabBarController.h"
 #import "SectionedDocumentViewController.h"
 #import "UIAreaInfo.h"
+#import "WindowRootViewController.h"
 #import "../archive/ArchiveViewController.h"
 #import "../diagnostics/DiagnosticsViewController.h"
 #import "../play/rootview/PlayRootViewController.h"
 #import "../settings/SettingsViewController.h"
+#import "../shared/LayoutManager.h"
 
 
 @implementation MainUtility
@@ -133,6 +138,73 @@
   rootViewController.title = [MainUtility titleStringForUIArea:uiArea];
   rootViewController.uiArea = uiArea;
   return rootViewController;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps the @a uiArea value to a resource file name and returns that
+/// file name. The file name can be used with NSBundle to load the resource
+/// file's content.
+// -----------------------------------------------------------------------------
++ (NSString*) resourceNameForUIArea:(enum UIArea)uiArea
+{
+  NSString* resourceName = nil;
+  switch (uiArea)
+  {
+    case UIAreaHelp:
+      resourceName = manualDocumentResource;
+      break;
+    case UIAreaAbout:
+      resourceName = aboutDocumentResource;
+      break;
+    case UIAreaSourceCode:
+      resourceName = sourceCodeDocumentResource;
+      break;
+    case UIAreaCredits:
+      resourceName = creditsDocumentResource;
+      break;
+    default:
+      break;
+  }
+  return resourceName;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Activates the UI area @a uiArea, making it visible to the user.
+// -----------------------------------------------------------------------------
++ (void) activateUIArea:(enum UIArea)uiArea
+{
+  WindowRootViewController* windowRootViewController = [ApplicationDelegate sharedDelegate].windowRootViewController;
+  UIViewController* mainApplicationViewController = windowRootViewController.mainApplicationViewController;
+  if ([LayoutManager sharedManager].uiType != UITypePhone)
+  {
+    MainTabBarController* tabBarController = (MainTabBarController*)mainApplicationViewController;
+    [tabBarController activateTabForUIArea:uiArea];
+  }
+  else
+  {
+    MainNavigationController* mainNavigationController = (MainNavigationController*)mainApplicationViewController;
+    [mainNavigationController activateUIArea:uiArea];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the root view of the view hierarchy that makes up
+/// #UIAreaPlay.
+// -----------------------------------------------------------------------------
++ (UIView*) rootViewForUIAreaPlay
+{
+  WindowRootViewController* windowRootViewController = [ApplicationDelegate sharedDelegate].windowRootViewController;
+  UIViewController* mainApplicationViewController = windowRootViewController.mainApplicationViewController;
+  if ([LayoutManager sharedManager].uiType != UITypePhone)
+  {
+    MainTabBarController* tabBarController = (MainTabBarController*)mainApplicationViewController;
+    return [tabBarController tabViewForUIArea:UIAreaPlay];
+  }
+  else
+  {
+    MainNavigationController* mainNavigationController = (MainNavigationController*)mainApplicationViewController;
+    return [mainNavigationController rootViewForUIAreaPlay];
+  }
 }
 
 @end

@@ -324,7 +324,7 @@
   @throw exception;
 }
 
-#pragma mark - Managing visible UIArea
+#pragma mark - UIArea management
 
 // -----------------------------------------------------------------------------
 /// @brief Restores the currently visible UI area to the value stored in the
@@ -337,7 +337,16 @@
 {
   ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
   enum UIArea visibleUIArea = applicationDelegate.uiSettingsModel.visibleUIArea;
-  switch (visibleUIArea)
+  [self activateUIArea:visibleUIArea];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Activates the UI area @a uiArea, making it visible to the user.
+// -----------------------------------------------------------------------------
+- (void) activateUIArea:(enum UIArea)uiArea
+{
+  [self popNavigationStackToUIAreaPlay];
+  switch (uiArea)
   {
     case UIAreaPlay:
     {
@@ -351,10 +360,20 @@
     default:
     {
       MainTableViewController* mainTableViewController = [self presentMainMenuAnimated:NO];
-      [mainTableViewController presentUIArea:visibleUIArea];
+      [mainTableViewController presentUIArea:uiArea];
       break;
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the root view of the view hierarchy that makes up
+/// #UIAreaPlay.
+// -----------------------------------------------------------------------------
+- (UIView*) rootViewForUIAreaPlay
+{
+  UIViewController* rootViewControllerForUIAreaPlay = self.viewControllers[1];
+  return rootViewControllerForUIAreaPlay.view;
 }
 
 #pragma mark - Private helpers
@@ -392,6 +411,20 @@
       self.navigationBarHidden = YES;
     else
       self.navigationBarHidden = NO;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Pops the navigation stack back to #UIAreaPlay.
+// -----------------------------------------------------------------------------
+- (void) popNavigationStackToUIAreaPlay
+{
+  while (true)
+  {
+    NSUInteger navigationStackSize = self.viewControllers.count;
+    if (2 == navigationStackSize)
+      break;
+    [self popViewControllerAnimated:NO];
   }
 }
 

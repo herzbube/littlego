@@ -36,7 +36,6 @@ enum MainApplicationViewControllerType
 // -----------------------------------------------------------------------------
 @interface WindowRootViewController()
 @property(nonatomic, assign) enum MainApplicationViewControllerType currentMainApplicationViewControllerType;
-@property(nonatomic, retain) UIViewController* mainApplicationViewController;
 @property(nonatomic, retain) NSArray* autoLayoutConstraints;
 @end
 

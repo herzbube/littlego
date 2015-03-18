@@ -28,7 +28,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/MainTabBarController.h"
+#import "../../main/WindowRootViewController.h"
 #import "../../shared/ApplicationStateManager.h"
 
 
@@ -300,7 +300,7 @@
   // be the UIAreaPlay root view controller, e.g. if the user has switched to
   // another UI area while the computer was thinking
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  UIViewController* modalViewControllerParent = appDelegate.tabBarController.selectedViewController;
+  UIViewController* modalViewControllerParent = appDelegate.windowRootViewController;
   SendBugReportController* controller = [SendBugReportController controller];
   controller.delegate = self;
   controller.bugReportDescription = [NSString stringWithFormat:@"Fuego rejected the move %@ played by me. The reason given was: %@.", self.point.vertex.string, self.failedGtpResponse];

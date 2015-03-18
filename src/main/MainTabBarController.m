@@ -333,33 +333,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Maps UIArea values to resource file names. The name that is returned
-/// can be used with NSBundle to load the resource file's content.
-// -----------------------------------------------------------------------------
-- (NSString*) resourceNameForUIArea:(enum UIArea)uiArea
-{
-  NSString* resourceName = nil;
-  switch (uiArea)
-  {
-    case UIAreaHelp:
-      resourceName = manualDocumentResource;
-      break;
-    case UIAreaAbout:
-      resourceName = aboutDocumentResource;
-      break;
-    case UIAreaSourceCode:
-      resourceName = sourceCodeDocumentResource;
-      break;
-    case UIAreaCredits:
-      resourceName = creditsDocumentResource;
-      break;
-    default:
-      break;
-  }
-  return resourceName;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Synchronizes user defaults in response to a different tab controller
 /// being selected (either by the user, or programmatically). Also writes the
 /// index of the selected tab controller to the user defaults.

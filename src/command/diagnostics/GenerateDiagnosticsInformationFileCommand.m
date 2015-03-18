@@ -25,7 +25,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/MainTabBarController.h"
+#import "../../main/MainUtility.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/PathUtilities.h"
 
@@ -272,8 +272,8 @@
 {
   DDLogVerbose(@"%@: Creating screen shot of Go board", [self shortDescription]);
 
-  UIView* tabView = [[ApplicationDelegate sharedDelegate].tabBarController tabViewForUIArea:UIAreaPlay];
-  UIImage* image = [UiUtilities captureView:tabView];
+  UIView* rootView = [MainUtility rootViewForUIAreaPlay];
+  UIImage* image = [UiUtilities captureView:rootView];
   NSData* data = UIImagePNGRepresentation(image);
   NSString* screenshotPath = [self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportScreenshotFileName];
   BOOL success = [data writeToFile:screenshotPath atomically:YES];

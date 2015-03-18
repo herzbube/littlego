@@ -52,4 +52,6 @@
 {
 }
 
+@property(nonatomic, retain) UIViewController* mainApplicationViewController;
+
 @end

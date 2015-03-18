@@ -39,4 +39,7 @@
 {
 }
 
+- (void) activateUIArea:(enum UIArea)uiArea;
+- (UIView*) rootViewForUIAreaPlay;
+
 @end

@@ -34,6 +34,5 @@
 - (UIViewController*) tabControllerForUIArea:(enum UIArea)uiArea;
 - (UIView*) tabViewForUIArea:(enum UIArea)uiArea;
 - (void) activateTabForUIArea:(enum UIArea)uiArea;
-- (NSString*) resourceNameForUIArea:(enum UIArea)uiArea;
 
 @end

@@ -30,5 +30,8 @@
 + (NSString*) titleStringForUIArea:(enum UIArea)uiArea;
 + (NSString*) iconResourceNameForUIArea:(enum UIArea)uiArea;
 + (UIViewController*) rootViewControllerForUIArea:(enum UIArea)uiArea;
++ (NSString*) resourceNameForUIArea:(enum UIArea)uiArea;
++ (void) activateUIArea:(enum UIArea)uiArea;
++ (UIView*) rootViewForUIAreaPlay;
 
 @end

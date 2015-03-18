@@ -18,7 +18,7 @@
 // Project includes
 #import "DocumentViewController.h"
 #import "ApplicationDelegate.h"
-#import "MainTabBarController.h"
+#import "MainUtility.h"
 #import "UIAreaInfo.h"
 #import "../utility/VersionInfoUtilities.h"
 
@@ -121,7 +121,7 @@
   else
   {
     enum UIArea uiArea = self.uiArea;
-    NSString* resourceNameForUIArea = [appDelegate.tabBarController resourceNameForUIArea:uiArea];
+    NSString* resourceNameForUIArea = [MainUtility resourceNameForUIArea:uiArea];
     NSString* resourceContent = [appDelegate contentOfTextResource:resourceNameForUIArea];
     switch (uiArea)
     {
