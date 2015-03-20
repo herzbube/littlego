@@ -116,6 +116,7 @@
 - (void) pause:(id)sender;
 - (void) continue:(id)sender;
 - (void) interrupt:(id)sender;
+- (void) scoringStart:(id)sender;
 - (void) scoringDone:(id)sender;
 - (void) gameInfo:(id)sender;
 - (void) moreGameActions:(id)sender;

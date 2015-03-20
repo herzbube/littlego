@@ -96,6 +96,8 @@ enum GameAction
   /// @brief Interrupts the computer while it is thinking (e.g. when calculating
   /// its next move).
   GameActionInterrupt,
+  /// @brief Starts scoring mode.
+  GameActionScoringStart,
   /// @brief Ends the currently active scoring mode and returns to normal play
   /// mode.
   GameActionScoringDone,
@@ -802,6 +804,9 @@ extern NSString* pauseButtonIconResource;
 extern NSString* continueButtonIconResource;
 extern NSString* gameInfoButtonIconResource;
 extern NSString* interruptButtonIconResource;
+extern NSString* scoringStartButtonIconResource;
+extern NSString* scoringDoneButtonIconResource;
+extern NSString* moreGameActionsButtonIconResource;
 extern NSString* forwardButtonIconResource;
 extern NSString* forwardToEndButtonIconResource;
 extern NSString* backButtonIconResource;

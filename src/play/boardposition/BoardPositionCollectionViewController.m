@@ -105,8 +105,16 @@
   // also when the collection view bounces on scroll).
   self.collectionView.backgroundColor = [UIColor whiteSmokeColor];
 
-  self.currentBoardPositionNeedsUpdate = true;
-  [self delayedUpdate];
+  // If this controller is instantiated during application startup there is no
+  // game yet, so we don't need this update. If this controller is instantiated
+  // after an interface orientation change, then a game likely exists and we do
+  // need the update.
+  GoGame* game = [GoGame sharedGame];
+  if (game)
+  {
+    self.currentBoardPositionNeedsUpdate = true;
+    [self delayedUpdate];
+  }
 }
 
 #pragma mark - Setup/remove notification responders

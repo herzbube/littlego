@@ -236,6 +236,16 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Handles execution of game action #GameActionScoringStart.
+// -----------------------------------------------------------------------------
+- (void) scoringStart:(id)sender
+{
+  GoScore* score = [GoGame sharedGame].score;
+  score.scoringEnabled = true;
+  [score calculateWaitUntilDone:false];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Handles execution of game action #GameActionScoringDone.
 // -----------------------------------------------------------------------------
 - (void) scoringDone:(id)sender
@@ -568,12 +578,17 @@ static GameActionManager* sharedGameActionManager = nil;
             [self addGameAction:GameActionContinue toVisibleStatesDictionary:visibleStates];
         }
         else
+
         {
-          if (GoGameStateGameHasEnded != game.state)
+          if (GoGameStateGameHasEnded == game.state)
+            [self addGameAction:GameActionScoringStart toVisibleStatesDictionary:visibleStates];
+          else
             [self addGameAction:GameActionPause toVisibleStatesDictionary:visibleStates];
         }
         if (game.isComputerThinking)
+        {
           [self addGameAction:GameActionInterrupt toVisibleStatesDictionary:visibleStates];
+        }
         else
         {
           if (boardPosition.numberOfBoardPositions > 1)
@@ -584,10 +599,16 @@ static GameActionManager* sharedGameActionManager = nil;
       default:
       {
         if (game.isComputerThinking)
+        {
           [self addGameAction:GameActionInterrupt toVisibleStatesDictionary:visibleStates];
+        }
         else
         {
-          if (GoGameStateGameHasEnded != game.state)
+          if (GoGameStateGameHasEnded == game.state)
+          {
+            [self addGameAction:GameActionScoringStart toVisibleStatesDictionary:visibleStates];
+          }
+          else
           {
             [self addGameAction:GameActionComputerPlay toVisibleStatesDictionary:visibleStates];
             [self addGameAction:GameActionPass toVisibleStatesDictionary:visibleStates];
@@ -620,6 +641,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [self updatePauseEnabledState];
   [self updateContinueEnabledState];
   [self updateInterruptEnabledState];
+  [self updateScoringEnabledState];
   [self updateScoringDoneEnabledState];
   [self updateGameInfoEnabledState];
   [self updateMoreGameActionsEnabledState];
@@ -812,6 +834,26 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of game action #GameActionScoringStart.
+// -----------------------------------------------------------------------------
+- (void) updateScoringEnabledState
+{
+  BOOL enabled = NO;
+  GoGame* game = [GoGame sharedGame];
+  if (game.score.scoringEnabled ||
+      game.isComputerThinking ||
+      [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
+  {
+    // always disabled
+  }
+  else
+  {
+    enabled = YES;
+  }
+  [self updateEnabledState:enabled forGameAction:GameActionScoringStart];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Updates the enabled state of game action #GameActionScoringDone.
 // -----------------------------------------------------------------------------
 - (void) updateScoringDoneEnabledState
@@ -869,7 +911,8 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if ([ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
+  if (game.isComputerThinking ||
+      [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
     // always disabled
   }
@@ -880,37 +923,7 @@ static GameActionManager* sharedGameActionManager = nil;
   }
   else
   {
-    switch (game.type)
-    {
-      case GoGameTypeComputerVsComputer:
-      {
-        switch (game.state)
-        {
-          case GoGameStateGameHasEnded:
-            enabled = YES;
-            break;
-          case GoGameStateGameIsPaused:
-            // Computer may still be thinking
-            enabled = ! game.isComputerThinking;
-            break;
-          default:
-            break;
-        }
-        break;
-      }
-      default:
-      {
-        if (game.isComputerThinking)
-          break;
-        switch (game.state)
-        {
-          default:
-            enabled = YES;
-            break;
-        }
-        break;
-      }
-    }
+    enabled = YES;
   }
   [self updateEnabledState:enabled forGameAction:GameActionMoreGameActions];
 }

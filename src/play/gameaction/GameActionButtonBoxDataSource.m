@@ -245,9 +245,15 @@
       selector = @selector(interrupt:);
       break;
     }
+    case GameActionScoringStart:
+    {
+      imageResourceName = scoringStartButtonIconResource;
+      selector = @selector(scoringStart:);
+      break;
+    }
     case GameActionScoringDone:
     {
-      imageResourceName = nil;
+      imageResourceName = scoringDoneButtonIconResource;
       selector = @selector(scoringDone:);
       break;
     }
@@ -259,7 +265,7 @@
     }
     case GameActionMoreGameActions:
     {
-      imageResourceName = nil;
+      imageResourceName = moreGameActionsButtonIconResource;
       selector = @selector(moreGameActions:);
       break;
     }
@@ -271,23 +277,8 @@
 
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
   button.tag = gameAction;
-  if (GameActionScoringDone == gameAction)
-  {
-    // TODO xxx provide an icon
-    [button setTitle:@"Done"
-            forState:UIControlStateNormal];
-  }
-  else if (GameActionMoreGameActions == gameAction)
-  {
-    // TODO xxx provide an icon
-    [button setTitle:@"Act"
-            forState:UIControlStateNormal];
-  }
-  else
-  {
-    [button setImage:[UIImage imageNamed:imageResourceName]
-            forState:UIControlStateNormal];
-  }
+  [button setImage:[UIImage imageNamed:imageResourceName]
+          forState:UIControlStateNormal];
   [button addTarget:[GameActionManager sharedGameActionManager]
              action:selector
    forControlEvents:UIControlEventTouchUpInside];
@@ -305,6 +296,7 @@
 + (NSArray*) buttonOrderList
 {
   NSMutableArray* buttonOrderList = [NSMutableArray array];
+  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionScoringStart]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionScoringDone]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionPass]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionComputerPlay]];

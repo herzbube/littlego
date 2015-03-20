@@ -156,9 +156,15 @@
       selector = @selector(interrupt:);
       break;
     }
+    case GameActionScoringStart:
+    {
+      imageResourceName = scoringStartButtonIconResource;
+      selector = @selector(scoringStart:);
+      break;
+    }
     case GameActionScoringDone:
     {
-      imageResourceName = nil;
+      imageResourceName = scoringDoneButtonIconResource;
       selector = @selector(scoringDone:);
       break;
     }
@@ -170,7 +176,7 @@
     }
     case GameActionMoreGameActions:
     {
-      imageResourceName = nil;
+      imageResourceName = moreGameActionsButtonIconResource;
       selector = @selector(moreGameActions:);
       break;
     }
@@ -180,30 +186,10 @@
     }
   }
 
-  UIBarButtonItem* button;
-  if (GameActionScoringDone == gameAction)
-  {
-    // TODO xxx provide an icon
-    button = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                            target:[GameActionManager sharedGameActionManager]
-                                                            action:selector] autorelease];
-    button.style = UIBarButtonItemStyleBordered;
-  }
-  else if (GameActionMoreGameActions == gameAction)
-  {
-    // TODO xxx provide an icon
-    button = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                                                            target:[GameActionManager sharedGameActionManager]
-                                                            action:selector] autorelease];
-    button.style = UIBarButtonItemStyleBordered;
-  }
-  else
-  {
-    button = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:imageResourceName]
-                                               style:UIBarButtonItemStyleBordered
-                                              target:[GameActionManager sharedGameActionManager]
-                                              action:selector] autorelease];
-  }
+  UIBarButtonItem* button = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:imageResourceName]
+                                                              style:UIBarButtonItemStyleBordered
+                                                             target:[GameActionManager sharedGameActionManager]
+                                                             action:selector] autorelease];
   button.tag = gameAction;
   return button;
 }
@@ -231,6 +217,7 @@
 + (NSArray*) buttonOrderList
 {
   NSMutableArray* buttonOrderList = [NSMutableArray array];
+  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionScoringStart]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionScoringDone]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionPass]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionComputerPlay]];
