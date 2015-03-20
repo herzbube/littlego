@@ -19,6 +19,7 @@
 #import "MainNavigationController.h"
 #import "ApplicationDelegate.h"
 #import "MainTableViewController.h"
+#import "MainUtility.h"
 #import "UIAreaInfo.h"
 #import "../play/boardposition/BoardPositionCollectionViewCell.h"
 #import "../play/rootview/PlayRootViewController.h"
@@ -267,6 +268,7 @@
        willShowViewController:(UIViewController*)viewController
                      animated:(BOOL)animated
 {
+  // The view controller about to be shown is already on the stack
   NSUInteger navigationStackSize = self.viewControllers.count;
   if (1 == navigationStackSize)
   {
@@ -277,6 +279,7 @@
   }
 
   [self updateNavigationBarVisibility];
+  [self updateNavigationItemBackButtonTitle];
   enum UIArea uiArea = viewController.uiArea;
   if (uiArea != UIAreaUnknown)
     [ApplicationDelegate sharedDelegate].uiSettingsModel.visibleUIArea = uiArea;
@@ -385,6 +388,7 @@
 - (MainTableViewController*) presentMainMenuAnimated:(bool)animated
 {
   MainTableViewController* mainTableViewController = [[[MainTableViewController alloc] init] autorelease];
+  mainTableViewController.title = [MainUtility titleStringForUIArea:UIAreaNavigation];
   mainTableViewController.uiArea = UIAreaNavigation;
   BOOL animatedAsBOOL = animated ? YES : NO;
   [self pushViewController:mainTableViewController animated:animatedAsBOOL];
@@ -411,6 +415,29 @@
       self.navigationBarHidden = YES;
     else
       self.navigationBarHidden = NO;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Temporarily assign a title to the #UIAreaPlay root view controller
+/// while the main menu is shown. This causes the back button to display that
+/// title. Remove the title when the navigation stack is popped back to
+/// #UIAreaPlay (there the navigation item shows buttons that don't leave enough
+/// space for a title).
+// -----------------------------------------------------------------------------
+- (void) updateNavigationItemBackButtonTitle
+{
+  NSUInteger navigationStackSize = self.viewControllers.count;
+  switch (navigationStackSize)
+  {
+    case 2:
+      self.topViewController.title = nil;
+      break;
+    case 3:
+      ((UIViewController*)self.viewControllers[1]).title = [MainUtility titleStringForUIArea:UIAreaPlay];
+      break;
+    default:
+      break;
   }
 }
 

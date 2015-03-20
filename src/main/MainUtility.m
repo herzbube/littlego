@@ -60,6 +60,8 @@
       return @"Licenses";
     case UIAreaCredits:
       return @"Credits";
+    case UIAreaNavigation:
+      return @"Main Menu";
     default:
       return nil;
   }
