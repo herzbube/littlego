@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@
 // Project includes
 #import "ApplicationDelegate.h"
 #import "MainMenuPresenter.h"
-#import "MainTabBarController.h"
 #import "WindowRootViewController.h"
 #import "../gtp/GtpClient.h"
 #import "../gtp/GtpEngine.h"
@@ -132,7 +131,6 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.tabBarController = nil;
   self.window = nil;
   self.documentInteractionURL = nil;
   self.gtpClient = nil;

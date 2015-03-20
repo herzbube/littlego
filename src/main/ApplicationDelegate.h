@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@
 @class GtpCommandModel;
 @class CrashReportingModel;
 @class LoggingModel;
-@class MainTabBarController;
 @class UiSettingsModel;
 @class WindowRootViewController;
 
@@ -81,8 +80,6 @@
 @property(nonatomic, retain) UIWindow* window;
 /// @brief The main application window's root view controller.
 @property(nonatomic, retain) WindowRootViewController* windowRootViewController;
-/// @brief The main application controller.
-@property(nonatomic, retain) MainTabBarController* tabBarController;
 /// @brief Indicates how the application was launched.
 ///
 /// This property initially has the value #ApplicationLaunchModeUnknown. At the
