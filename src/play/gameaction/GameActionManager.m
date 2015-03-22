@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GameActionManager.h"
+#import "../controller/DiscardFutureMovesAlertController.h"
 #import "../model/BoardViewModel.h"
 #import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
@@ -43,6 +44,7 @@
 @property(nonatomic, assign) bool enabledStatesNeedUpdate;
 @property(nonatomic, assign) GameInfoViewController* gameInfoViewController;
 @property(nonatomic, retain) GameActionsActionSheetController* gameActionsActionSheetController;
+@property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 @end
 
 
@@ -107,6 +109,8 @@ static GameActionManager* sharedGameActionManager = nil;
   self.enabledStatesNeedUpdate = false;
   self.gameInfoViewController = nil;
   self.gameActionsActionSheetController = nil;
+  self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
+  self.commandDelegate = self.discardFutureMovesAlertController;
   [self setupNotificationResponders];
   return self;
 }
@@ -124,6 +128,7 @@ static GameActionManager* sharedGameActionManager = nil;
   self.uiDelegate = nil;
   self.commandDelegate = nil;
   self.gameInfoViewControllerPresenter = nil;
+  self.discardFutureMovesAlertController = nil;
   [super dealloc];
 }
 
@@ -167,6 +172,21 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 #pragma mark - Game action handlers
+
+// -----------------------------------------------------------------------------
+/// @brief Places a stone on behalf of the player whose turn it currently is,
+/// at the intersection identified by @a point.
+// -----------------------------------------------------------------------------
+- (void) playAtIntersection:(GoPoint*)point
+{
+  if ([self shouldIgnoreUserInteraction])
+  {
+    DDLogWarn(@"%@: Ignoring GameActionPass", self);
+    return;
+  }
+  DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initWithPoint:point] autorelease];
+  [self.commandDelegate gameActionManager:self playOrAlertWithCommand:command];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Handles execution of game action #GameActionPass.

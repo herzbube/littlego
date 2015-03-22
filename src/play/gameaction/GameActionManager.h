@@ -22,6 +22,7 @@
 // Forward declarations
 @class GameActionManager;
 @class CommandBase;
+@class GoPoint;
 
 
 // -----------------------------------------------------------------------------
@@ -110,6 +111,7 @@
 + (GameActionManager*) sharedGameActionManager;
 + (void) releaseSharedGameActionManager;
 
+- (void) playAtIntersection:(GoPoint*)point;
 - (void) pass:(id)sender;
 - (void) discardBoardPosition:(id)sender;
 - (void) computerPlay:(id)sender;

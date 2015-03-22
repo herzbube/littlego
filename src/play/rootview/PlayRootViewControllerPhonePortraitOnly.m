@@ -19,10 +19,8 @@
 #import "PlayRootViewControllerPhonePortraitOnly.h"
 #import "../boardposition/BoardPositionToolbarController.h"
 #import "../boardview/BoardViewController.h"
-#import "../controller/DiscardFutureMovesAlertController.h"
 #import "../controller/NavigationBarController.h"
 #import "../controller/StatusViewController.h"
-#import "../gesture/PanGestureController.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
 
@@ -34,7 +32,6 @@
 @interface PlayRootViewControllerPhonePortraitOnly()
 @property(nonatomic, retain) NavigationBarController* navigationBarController;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
-@property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @end
 
@@ -76,7 +73,6 @@
 {
   self.navigationBarController = nil;
   self.boardPositionToolbarController = nil;
-  self.discardFutureMovesAlertController = nil;
   self.boardViewController = nil;
 }
 
@@ -89,11 +85,7 @@
 {
   self.navigationBarController = [NavigationBarController navigationBarController];
   self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
-  self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
-
-  self.boardViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
-  [GameActionManager sharedGameActionManager].commandDelegate = self.discardFutureMovesAlertController;
 }
 
 // -----------------------------------------------------------------------------

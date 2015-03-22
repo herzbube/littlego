@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,20 +18,6 @@
 // Forward declarations
 @class BoardView;
 @class CommandBase;
-@class PanGestureController;
-
-
-// -----------------------------------------------------------------------------
-/// @brief The PanGestureControllerDelegate protocol must be implemented by the
-/// delegate of PanGestureController.
-// -----------------------------------------------------------------------------
-@protocol PanGestureControllerDelegate
-/// @brief This method is invoked when the user attempts to place a stone. The
-/// delegate executes @a command, possibly displaying an alert first which the
-/// user must confirm.
-- (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(CommandBase*)command;
-@end
-
 
 // -----------------------------------------------------------------------------
 /// @brief The PanGestureController class is responsible for managing the pan
@@ -51,6 +37,5 @@
 }
 
 @property(nonatomic, assign) BoardView* boardView;
-@property(nonatomic, assign) id<PanGestureControllerDelegate> delegate;
 
 @end

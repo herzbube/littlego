@@ -21,10 +21,8 @@
 #import "../boardposition/BoardPositionCollectionViewController.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/AutoLayoutConstraintHelper.h"
-#import "../controller/DiscardFutureMovesAlertController.h"
 #import "../controller/NavigationBarControllerPhone.h"
 #import "../controller/StatusViewController.h"
-#import "../gesture/PanGestureController.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/ButtonBoxController.h"
 #import "../../ui/UiElementMetrics.h"
@@ -42,7 +40,6 @@
 @property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
 @property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
 @property(nonatomic, retain) StatusViewController* statusViewController;
-@property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
 @end
@@ -90,7 +87,6 @@
   self.boardPositionButtonBoxDataSource = nil;
   self.boardPositionCollectionViewController = nil;
   self.statusViewController = nil;
-  self.discardFutureMovesAlertController = nil;
   self.boardViewController = nil;
   self.boardViewAutoLayoutConstraints = nil;
 }
@@ -106,11 +102,7 @@
   self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
   self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
   self.statusViewController = [[[StatusViewController alloc] init] autorelease];
-  self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
-
-  self.boardViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
-  [GameActionManager sharedGameActionManager].commandDelegate = self.discardFutureMovesAlertController;
 
   self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
   self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;

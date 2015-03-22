@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@
 // Project includes
 #import "PanGestureController.h"
 #import "../boardview/BoardView.h"
+#import "../gameaction/GameActionManager.h"
 #import "../model/BoardViewModel.h"
-#import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
@@ -49,7 +49,6 @@
   if (! self)
     return nil;
   self.boardView = nil;
-  self.delegate = nil;
   [self setupLongPressGestureRecognizer];
   [self setupNotificationResponders];
   [self updatePanningEnabled];
@@ -65,7 +64,6 @@
   [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   self.boardView = nil;
   self.longPressRecognizer = nil;
-  self.delegate = nil;
   [super dealloc];
 }
 
@@ -196,10 +194,7 @@
       [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewDidChangeCrossHair object:[NSArray array]];
       if (isLegalMove)
-      {
-        DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initWithPoint:crossHairIntersection.point] autorelease];
-        [self.delegate panGestureController:self playOrAlertWithCommand:command];
-      }
+        [[GameActionManager sharedGameActionManager] playAtIntersection:crossHairIntersection.point];
       break;
     }
     // Occurs, for instance, if an alert is displayed while a gesture is

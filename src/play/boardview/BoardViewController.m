@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2014-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@
 @property(nonatomic, retain) TiledScrollView* coordinateLabelsLetterView;
 @property(nonatomic, retain) TiledScrollView* coordinateLabelsNumberView;
 @property(nonatomic, retain) NSArray* coordinateLabelsViewConstraints;
+@property(nonatomic, retain) PanGestureController* panGestureController;
 @property(nonatomic, retain) TapGestureController* tapGestureController;
 @property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
 @property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
