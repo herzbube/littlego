@@ -407,9 +407,8 @@
   // but for the entire area in which the Go board resides
   self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
 
-  [self configureButtonBoxController:self.boardPositionButtonBoxController];
-  [self configureButtonBoxController:self.gameActionButtonBoxController];
-
+  [self.boardPositionButtonBoxController applyTransparentStyle];
+  [self.gameActionButtonBoxController applyTransparentStyle];
 
   [self.mainMenuButton setImage:[UIImage imageNamed:mainMenuIconResource]
                        forState:UIControlStateNormal];
@@ -418,17 +417,6 @@
                 forControlEvents:UIControlEventTouchUpInside];
   // Same tint as button box
   self.mainMenuButton.tintColor = [UIColor blackColor];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for configureViews.
-// -----------------------------------------------------------------------------
-- (void) configureButtonBoxController:(ButtonBoxController*)buttonBoxController
-{
-  buttonBoxController.collectionView.backgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-  buttonBoxController.collectionView.backgroundView.backgroundColor = [UIColor whiteColor];
-  buttonBoxController.collectionView.backgroundView.layer.borderWidth = 1;
-  buttonBoxController.collectionView.backgroundView.alpha = 0.6f;
 }
 
 #pragma mark - Dynamic Auto Layout constraint handling

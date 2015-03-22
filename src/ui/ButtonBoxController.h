@@ -130,6 +130,7 @@
 - (id) initWithScrollDirection:(UICollectionViewScrollDirection)scrollDirection;
 
 - (void) reloadData;
+- (void) applyTransparentStyle;
 
 @property(nonatomic, assign) id<ButtonBoxControllerDataSource> buttonBoxControllerDataSource;
 @property(nonatomic, assign) id<ButtonBoxControllerDataDelegate> buttonBoxControllerDelegate;

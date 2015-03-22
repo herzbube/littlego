@@ -312,10 +312,7 @@
   // but for the entire area in which the Go board resides
   self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
 
-  self.boardPositionButtonBoxController.collectionView.backgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-  self.boardPositionButtonBoxController.collectionView.backgroundView.backgroundColor = [UIColor whiteColor];
-  self.boardPositionButtonBoxController.collectionView.backgroundView.layer.borderWidth = 1;
-  self.boardPositionButtonBoxController.collectionView.backgroundView.alpha = 0.6f;
+  [self.boardPositionButtonBoxController applyTransparentStyle];
 }
 
 @end
