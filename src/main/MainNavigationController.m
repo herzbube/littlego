@@ -282,7 +282,7 @@
   [self updateNavigationItemBackButtonTitle];
   enum UIArea uiArea = viewController.uiArea;
   if (uiArea != UIAreaUnknown)
-    [ApplicationDelegate sharedDelegate].uiSettingsModel.visibleUIArea = uiArea;
+    [MainUtility mainApplicationViewController:self didDisplayUIArea:uiArea];
 }
 
 #pragma mark - GameInfoViewControllerPresenter overrides

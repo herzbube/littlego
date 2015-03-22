@@ -30,6 +30,7 @@
 #import "../play/rootview/PlayRootViewController.h"
 #import "../settings/SettingsViewController.h"
 #import "../shared/LayoutManager.h"
+#import "../ui/UiSettingsModel.h"
 
 
 @implementation MainUtility
@@ -143,6 +144,26 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the root view of the view hierarchy that makes up
+/// #UIAreaPlay.
+// -----------------------------------------------------------------------------
++ (UIView*) rootViewForUIAreaPlay
+{
+  WindowRootViewController* windowRootViewController = [ApplicationDelegate sharedDelegate].windowRootViewController;
+  UIViewController* mainApplicationViewController = windowRootViewController.mainApplicationViewController;
+  if ([LayoutManager sharedManager].uiType != UITypePhone)
+  {
+    MainTabBarController* tabBarController = (MainTabBarController*)mainApplicationViewController;
+    return [tabBarController tabViewForUIArea:UIAreaPlay];
+  }
+  else
+  {
+    MainNavigationController* mainNavigationController = (MainNavigationController*)mainApplicationViewController;
+    return [mainNavigationController rootViewForUIAreaPlay];
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Maps the @a uiArea value to a resource file name and returns that
 /// file name. The file name can be used with NSBundle to load the resource
 /// file's content.
@@ -190,23 +211,15 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the root view of the view hierarchy that makes up
-/// #UIAreaPlay.
+/// @brief Synchronizes user defaults in response to a different UI area being
+/// displayed by the main application view controller.
 // -----------------------------------------------------------------------------
-+ (UIView*) rootViewForUIAreaPlay
++ (void) mainApplicationViewController:(UIViewController*)viewController didDisplayUIArea:(enum UIArea)uiArea
 {
-  WindowRootViewController* windowRootViewController = [ApplicationDelegate sharedDelegate].windowRootViewController;
-  UIViewController* mainApplicationViewController = windowRootViewController.mainApplicationViewController;
-  if ([LayoutManager sharedManager].uiType != UITypePhone)
-  {
-    MainTabBarController* tabBarController = (MainTabBarController*)mainApplicationViewController;
-    return [tabBarController tabViewForUIArea:UIAreaPlay];
-  }
-  else
-  {
-    MainNavigationController* mainNavigationController = (MainNavigationController*)mainApplicationViewController;
-    return [mainNavigationController rootViewForUIAreaPlay];
-  }
+  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+  UiSettingsModel* uiSettingsModel = applicationDelegate.uiSettingsModel;
+  uiSettingsModel.visibleUIArea = uiArea;
+  [applicationDelegate writeUserDefaults];
 }
 
 @end

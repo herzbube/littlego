@@ -175,18 +175,21 @@
 #pragma mark - UITabBarControllerDelegate overrides
 
 // -----------------------------------------------------------------------------
-/// @brief Synchronizes user defaults in response to the user switching tabs.
-/// Also writes the visible UI area to the user defaults.
+/// @brief UITabBarControllerDelegate protocol method.
+///
+/// Writes the visible UI area to the user defaults.
 // -----------------------------------------------------------------------------
 - (void) tabBarController:(UITabBarController*)tabBarController didSelectViewController:(UIViewController*)viewController
 {
   enum UIArea uiArea = viewController.uiArea;
   if (uiArea != UIAreaUnknown)
-    [self tabControllerSelectionDidChangeToUIArea:uiArea];
+    [MainUtility mainApplicationViewController:self didDisplayUIArea:uiArea];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Writes changed tab order to user defaults (without synchronizing).
+/// @brief UITabBarControllerDelegate protocol method.
+///
+/// Writes changed tab order to user defaults (without synchronizing).
 // -----------------------------------------------------------------------------
 - (void) tabBarController:(UITabBarController*)tabBarController didEndCustomizingViewControllers:(NSArray*)viewControllers changed:(BOOL)changed
 {
@@ -228,14 +231,14 @@
       // The more navigation controller's internal table view controller. We
       // can't use self.selectedViewController, this does not return the more
       // navigation controller.
-      [self tabControllerSelectionDidChangeToUIArea:UIAreaNavigation];
+      [MainUtility mainApplicationViewController:self didDisplayUIArea:UIAreaNavigation];
       break;
     }
     case 2:
     {
       enum UIArea uiArea = viewController.uiArea;
       if (uiArea != UIAreaUnknown)
-        [self tabControllerSelectionDidChangeToUIArea:uiArea];
+        [MainUtility mainApplicationViewController:self didDisplayUIArea:uiArea];
       break;
     }
     default:
@@ -328,21 +331,8 @@
     // The delegate method tabBarController:didSelectViewController:() is not
     // invoked when the selectedViewController property is changed
     // programmatically
-    [self tabControllerSelectionDidChangeToUIArea:uiArea];
+    [MainUtility mainApplicationViewController:self didDisplayUIArea:uiArea];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Synchronizes user defaults in response to a different tab controller
-/// being selected (either by the user, or programmatically). Also writes the
-/// index of the selected tab controller to the user defaults.
-// -----------------------------------------------------------------------------
-- (void) tabControllerSelectionDidChangeToUIArea:(enum UIArea)uiArea
-{
-  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-  UiSettingsModel* uiSettingsModel = applicationDelegate.uiSettingsModel;
-  uiSettingsModel.visibleUIArea = uiArea;
-  [applicationDelegate writeUserDefaults];
 }
 
 @end
