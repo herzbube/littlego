@@ -41,6 +41,7 @@
 @property(nonatomic, assign) bool numberOfItemsNeedsUpdate;
 @property(nonatomic, assign) bool tappingEnabledNeedsUpdate;
 @property(nonatomic, assign) bool ignoreCurrentBoardPositionChange;
+@property(nonatomic, retain) NSIndexPath* indexPathForDelayedSelectItemOperation;
 @end
 
 
@@ -74,6 +75,7 @@
   self.numberOfItemsNeedsUpdate = false;
   self.tappingEnabledNeedsUpdate = false;
   self.ignoreCurrentBoardPositionChange = false;
+  self.indexPathForDelayedSelectItemOperation = nil;
   [self setupNotificationResponders];
   return self;
 }
@@ -85,6 +87,7 @@
 - (void) dealloc
 {
   [self removeNotificationResponders];
+  self.indexPathForDelayedSelectItemOperation = nil;
   [super dealloc];
 }
 
@@ -186,6 +189,16 @@
   // Cast is safe, we know that we cannot have more than pow(2, 31) board
   // positions
   cell.boardPosition = (int)indexPath.row;
+
+  if (self.indexPathForDelayedSelectItemOperation)
+  {
+    // We should not interrupt the data acquisiton process, so we perform the
+    // scrolling operation asynchronously. See the comments in
+    // updateCurrentBoardPosition for an explanation why we do this stuff here.
+    [self performSelector:@selector(selectItemAtIndexPath:) withObject:self.indexPathForDelayedSelectItemOperation afterDelay:0];
+    self.indexPathForDelayedSelectItemOperation = nil;
+  }
+
   return cell;
 }
 
@@ -438,9 +451,9 @@
 // -----------------------------------------------------------------------------
 /// @brief Updater method.
 ///
-/// Updates the table view cells that represent the old and the new current
-/// board position. Also makes sure that the new board position becomes visible
-/// in the board position list table view.
+/// Updates the collection view to display the cell that represents the current
+/// board position. If the collection view is not visible at the moment, the
+/// selection operation is delayed until the collection view becomes visible.
 // -----------------------------------------------------------------------------
 - (void) updateCurrentBoardPosition
 {
@@ -453,23 +466,45 @@
   NSInteger numberOfItemsInCollectionView = [self.collectionView numberOfItemsInSection:0];
   if (newCurrentBoardPosition < numberOfItemsInCollectionView)
   {
-    UICollectionViewScrollPosition scrollPosition;
-    UICollectionViewFlowLayout* flowLayout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
-    if (flowLayout.scrollDirection == UICollectionViewScrollDirectionHorizontal)
-      scrollPosition = UICollectionViewScrollPositionCenteredHorizontally;
-    else
-      scrollPosition = UICollectionViewScrollPositionCenteredVertically;
-
     NSIndexPath* indexPathForNewCurrentBoardPosition = [NSIndexPath indexPathForRow:newCurrentBoardPosition inSection:0];
-    [self.collectionView selectItemAtIndexPath:indexPathForNewCurrentBoardPosition
-                                      animated:NO
-                                scrollPosition:scrollPosition];
+    // If the collection view is not visible (= it's window property is nil)
+    // then it won't perform the desired scrolling operation. When the
+    // collection view becomes visible later on, the item will be selected, but
+    // the UICollectionViewCell won't be visible. This happens in at least two
+    // known scenarios:
+    // - The interface rotates
+    // - The application launches into an UI area that is not UIAreaPlay
+    // The workaround is to delay the scrolling operation until we know that
+    // the collection view has become visible. In this case we have chosen
+    // collectionView:cellForItemAtIndexPath: as a likely trigger because we
+    // can assume that when the collection view starts to acquire data from its
+    // data source, then it will also be visible.
+    if (self.view.window)
+      [self selectItemAtIndexPath:indexPathForNewCurrentBoardPosition];
+    else
+      self.indexPathForDelayedSelectItemOperation = indexPathForNewCurrentBoardPosition;
   }
   else
   {
     DDLogError(@"%@: Unexpected new current board position %ld, number of items in collection view = %ld", self, (long)newCurrentBoardPosition, (long)numberOfItemsInCollectionView);
     assert(0);
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper for updateCurrentBoardPosition.
+// -----------------------------------------------------------------------------
+- (void) selectItemAtIndexPath:(NSIndexPath*)indexPath
+{
+  UICollectionViewScrollPosition scrollPosition;
+  UICollectionViewFlowLayout* flowLayout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
+  if (flowLayout.scrollDirection == UICollectionViewScrollDirectionHorizontal)
+    scrollPosition = UICollectionViewScrollPositionCenteredHorizontally;
+  else
+    scrollPosition = UICollectionViewScrollPositionCenteredVertically;
+  [self.collectionView selectItemAtIndexPath:indexPath
+                                    animated:NO
+                              scrollPosition:scrollPosition];
 }
 
 // -----------------------------------------------------------------------------
