@@ -320,7 +320,9 @@
     offsetForCenteringX += floor((newCanvasSize.width - self.boardSideLength) / 2);
   }
 
-  if (GoBoardSizeUndefined == newBoardSize)
+  // A zero-sized canvas is possible if the application launches with an initial
+  // UI area != UIAreaPlay
+  if (GoBoardSizeUndefined == newBoardSize || CGSizeEqualToSize(newCanvasSize, CGSizeZero))
   {
     // Assign hard-coded values and don't rely on calculations that might
     // produce insane results. This also removes the risk of division by zero
@@ -565,7 +567,7 @@
     }
 
     self.lineRectangles = [self calculateLineRectanglesWithBoardSize:newBoardSize];
-  }  // else [if (GoBoardSizeUndefined == newBoardSize)]
+  }  // else [if (GoBoardSizeUndefined == newBoardSize || CGSizeEqualToSize(newCanvasSize, CGSizeZero))]
 }
 
 // -----------------------------------------------------------------------------
