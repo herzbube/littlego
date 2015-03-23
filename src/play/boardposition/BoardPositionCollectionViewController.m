@@ -35,11 +35,10 @@
 // -----------------------------------------------------------------------------
 @interface BoardPositionCollectionViewController()
 @property(nonatomic, retain) NSString* reuseIdentifierCell;
-@property(nonatomic, assign) bool tappingEnabled;
 @property(nonatomic, assign) bool allDataNeedsUpdate;
 @property(nonatomic, assign) bool currentBoardPositionNeedsUpdate;
 @property(nonatomic, assign) bool numberOfItemsNeedsUpdate;
-@property(nonatomic, assign) bool tappingEnabledNeedsUpdate;
+@property(nonatomic, assign) bool userInteractionEnabledNeedsUpdate;
 @property(nonatomic, assign) bool ignoreCurrentBoardPositionChange;
 @property(nonatomic, retain) NSIndexPath* indexPathForDelayedSelectItemOperation;
 @end
@@ -69,11 +68,10 @@
   if (! self)
     return nil;
   self.reuseIdentifierCell = @"BoardPositionCollectionViewCell";
-  self.tappingEnabled = true;
   self.allDataNeedsUpdate = false;
   self.currentBoardPositionNeedsUpdate = false;
   self.numberOfItemsNeedsUpdate = false;
-  self.tappingEnabledNeedsUpdate = false;
+  self.userInteractionEnabledNeedsUpdate = false;
   self.ignoreCurrentBoardPositionChange = false;
   self.indexPathForDelayedSelectItemOperation = nil;
   [self setupNotificationResponders];
@@ -107,6 +105,13 @@
   // cells to fill the entire horizontal extent of the collection view, but
   // also when the collection view bounces on scroll).
   self.collectionView.backgroundColor = [UIColor whiteSmokeColor];
+
+  // Make sure that the updater does its job the first time that it gets the
+  // chance. This is required because this controller is instantiated after
+  // an interface orientation change, and user interaction might already be
+  // disabled. Example: Computer play game action is executed, then an interface
+  // orientation change is initiated while the computer is still thinking.
+  self.userInteractionEnabledNeedsUpdate = true;
 
   // If this controller is instantiated during application startup there is no
   // game yet, so we don't need this update. If this controller is instantiated
@@ -232,26 +237,6 @@
 // -----------------------------------------------------------------------------
 /// @brief UICollectionViewDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (BOOL) collectionView:(UICollectionView*)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath*)indexPath
-{
-  return (self.tappingEnabled ? YES : NO);
-}
-
-// xxx remove if no longer needed
-- (BOOL) collectionView:(UICollectionView*)collectionView shouldSelectItemAtIndexPath:(NSIndexPath*)indexPath
-{
-  return (self.tappingEnabled ? YES : NO);
-}
-
-// xxx remove if no longer needed
-- (BOOL)collectionView:(UICollectionView *)collectionView shouldDeselectItemAtIndexPath:(NSIndexPath *)indexPath
-{
-  return (self.tappingEnabled ? YES : NO);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UICollectionViewDelegate protocol method.
-// -----------------------------------------------------------------------------
 - (void) collectionView:(UICollectionView*)collectionView didSelectItemAtIndexPath:(NSIndexPath*)indexPath
 {
   // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
@@ -301,7 +286,7 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingStarts:(NSNotification*)notification
 {
-  self.tappingEnabledNeedsUpdate = true;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -310,7 +295,7 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingStops:(NSNotification*)notification
 {
-  self.tappingEnabledNeedsUpdate = true;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -319,7 +304,7 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationStarts:(NSNotification*)notification
 {
-  self.tappingEnabledNeedsUpdate = true;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -328,7 +313,7 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
-  self.tappingEnabledNeedsUpdate = true;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -337,7 +322,7 @@
 // -----------------------------------------------------------------------------
 - (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
 {
-  self.tappingEnabledNeedsUpdate = true;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -346,7 +331,7 @@
 // -----------------------------------------------------------------------------
 - (void) boardViewWillHideCrossHair:(NSNotification*)notification
 {
-  self.tappingEnabledNeedsUpdate = true;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -397,7 +382,7 @@
   [self updateAllData];
   [self updateNumberOfItems];
   [self updateCurrentBoardPosition];
-  [self updateTappingEnabled];
+  [self updateUserInteractionEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -508,23 +493,36 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates whether tapping is enabled.
+/// @brief Updates whether user interaction on the collection view should be
+/// enabled or not.
+///
+/// Although disabling user interaction is a harsh measure (it even disables
+/// scrolling), it is the only RELIABLE way that I have found to prevent the
+/// user from changing the selected cell. I attempted to override various
+/// UICollectionViewDelegate methods for controlling highlighting/selection,
+/// but without success. Notably:
+/// - I implemented the override
+///   collectionView:shouldHighlightItemAtIndexPath:() so that it returns NO
+///   when selection changes should be disabled
+/// - If this override is present and UICollectionView gets NO as a return
+///   value, the collection view immediately de-selects the currently selected
+///   cell!
 // -----------------------------------------------------------------------------
-- (void) updateTappingEnabled
+- (void) updateUserInteractionEnabled
 {
-  if (! self.tappingEnabledNeedsUpdate)
+  if (! self.userInteractionEnabledNeedsUpdate)
     return;
-  self.tappingEnabledNeedsUpdate = false;
+  self.userInteractionEnabledNeedsUpdate = false;
   GoGame* game = [GoGame sharedGame];
   if (game.isComputerThinking ||
       game.score.scoringInProgress ||
       [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
-    self.tappingEnabled = false;
+    self.collectionView.userInteractionEnabled = NO;
   }
   else
   {
-    self.tappingEnabled = true;
+    self.collectionView.userInteractionEnabled = YES;
   }
 }
 
@@ -539,17 +537,6 @@
   // Cells for board position 0 and non-zero board positions have the same
   // height, but the board position 0 cell has a larger width
   return [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero];
-}
-
-#pragma mark - Private helpers
-
-// -----------------------------------------------------------------------------
-/// @brief Returns true if taps on cells in the list of board positions should
-/// currently be ignored.
-// -----------------------------------------------------------------------------
-- (bool) shouldIgnoreTaps
-{
-  return ! self.tappingEnabled;
 }
 
 @end
