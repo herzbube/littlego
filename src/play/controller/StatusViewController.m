@@ -30,6 +30,7 @@
 #import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../utility/ExceptionUtility.h"
 #import "../../utility/NSStringAdditions.h"
 
 
@@ -37,6 +38,9 @@
 /// @brief Class extension with private properties for StatusViewController.
 // -----------------------------------------------------------------------------
 @interface StatusViewController()
+/// @brief Prevents unregistering by dealloc if registering hasn't happened
+/// yet. Registering may not happen if the controller's view is never loaded.
+@property(nonatomic, assign) bool notificationRespondersAreSetup;
 @property(nonatomic, retain) UILabel* statusLabel;
 @property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
 @property(nonatomic, assign) bool activityIndicatorNeedsUpdate;
@@ -64,6 +68,7 @@
   if (! self)
     return nil;
   [self releaseObjects];
+  self.notificationRespondersAreSetup = false;
   self.activityIndicatorNeedsUpdate = false;
   self.statusLabelNeedsUpdate = false;
   self.shouldDisplayActivityIndicator = false;
@@ -107,6 +112,10 @@
   [self setupAutoLayoutConstraints];
   [self updateAutoLayoutConstraints];
   [self setupNotificationResponders];
+
+  // New controller instances may be created in mid-game after a layout change
+  self.statusLabelNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 #pragma mark - Private helpers for loadView
@@ -136,16 +145,54 @@
 - (void) configureViews
 {
   self.statusLabel.numberOfLines = 0;
+  // Font size must strike a balance between remaining legible and accomodating
+  // the longest possible status text in the most space-constrained application
+  // state. When testing consider this:
+  // - The longest possible status text is the one that includes the player
+  //   name, because that name is variable and can be entered by the user.
+  // - The second-longest status text is the one about the game ending with 2
+  //   pass moves.
+  // - The third-longest status text is the one in scoring mode.
+  // - In layouts where the space available to the status view is fixed: Make
+  //   tests with the player name.
+  // - In layouts where the space available to the status view is variable:
+  //   Make tests both with all three
   CGFloat fontSize;
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
-    fontSize = 9.0f;
-  else
-    fontSize = 10.0f;
+  switch ([LayoutManager sharedManager].uiType)
+  {
+    case UITypePhonePortraitOnly:
+      // Label can have 3 lines. Player names can be somewhat longer than 40
+      // characters but must consist of several words for line breaks.
+      fontSize = 9.0f;
+      break;
+    case UITypePhone:
+      // Portrait: See UITypePhonePortraitOnly.
+      // Landscape: Label can have 3 lines. Player names about 40 characters
+      // long are OK but must consist of several words for line breaks.
+      fontSize = 11.0f;
+      break;
+    case UITypePad:
+      // Label can have 3 lines. Player names can be insanely long and can
+      // even consist of long words.
+      fontSize = 10.0f;
+      break;
+    default:
+      [ExceptionUtility throwInvalidUIType:[LayoutManager sharedManager].uiType];
+  }
   self.statusLabel.font = [UIFont systemFontOfSize:fontSize];
   self.statusLabel.lineBreakMode = NSLineBreakByWordWrapping;
   self.statusLabel.textAlignment = NSTextAlignmentCenter;
 
-  self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+  if ([LayoutManager sharedManager].uiType == UITypePhone)
+  {
+    self.view.backgroundColor = [UIColor blackColor];
+    self.statusLabel.textColor = [UIColor whiteColor];
+    self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
+  }
+  else
+  {
+    self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -156,13 +203,18 @@
   self.statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
 
+  int horizontalSpacingSuperview;
+  if ([LayoutManager sharedManager].uiType == UITypePhone)
+    horizontalSpacingSuperview = [AutoLayoutUtility horizontalSpacingTableViewCell];
+  else
+    horizontalSpacingSuperview = 0;
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.statusLabel, @"statusLabel",
                                    self.activityIndicator, @"activityIndicator",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[statusLabel]",
-                            @"H:[activityIndicator]-0-|",
+                            [NSString stringWithFormat:@"H:|-%d-[statusLabel]", horizontalSpacingSuperview],
+                            [NSString stringWithFormat:@"H:[activityIndicator]-%d-|", horizontalSpacingSuperview],
                             @"V:|-0-[statusLabel]-0-|",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
@@ -213,6 +265,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
+  if (self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = true;
+
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
@@ -235,6 +291,10 @@
 // -----------------------------------------------------------------------------
 - (void) removeNotificationResponders
 {
+  if (! self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = false;
+  
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [[ApplicationDelegate sharedDelegate].scoringModel removeObserver:self forKeyPath:@"scoreMarkMode"];
@@ -385,22 +445,14 @@
       }
       else
       {
-        if (GoGameStateGameHasStarted == game.state ||
-            (GoGameStateGameHasEnded == game.state && ! game.boardPosition.isLastPosition))
+        enum GoGameState gameState = game.state;
+        if (GoGameStateGameHasStarted == gameState ||
+            GoGameStateGameIsPaused == gameState ||
+            (GoGameStateGameHasEnded == gameState && ! game.boardPosition.isLastPosition))
         {
-          GoMove* move = game.boardPosition.currentMove;
-          if (GoMoveTypePass == move.type)
-          {
-            // TODO fix when GoColor class is added
-            NSString* color;
-            if (move.player.black)
-              color = @"Black";
-            else
-              color = @"White";
-            statusText = [NSString stringWithFormat:@"%@ has passed", color];
-          }
+          statusText = [self statusTextForCurrentAndNextBoardPosition];
         }
-        else if (GoGameStateGameHasEnded == game.state)
+        else if (GoGameStateGameHasEnded == gameState)
         {
           switch (game.reasonForGameHasEnded)
           {
@@ -428,6 +480,63 @@
     }
   }
   self.statusLabel.text = statusText;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for updateStatusLabel.
+// -----------------------------------------------------------------------------
+- (NSString*) statusTextForCurrentAndNextBoardPosition
+{
+  GoGame* game = [GoGame sharedGame];
+  GoBoardPosition* boardPosition = game.boardPosition;
+
+  NSString* colorNextBoardPosition;
+  NSString* colorCurrentBoardPosition;
+  if (boardPosition.currentPlayer.black)
+  {
+    colorNextBoardPosition = @"Black";
+    colorCurrentBoardPosition = @"White";
+  }
+  else
+  {
+    colorNextBoardPosition = @"White";
+    colorCurrentBoardPosition = @"Black";
+  }
+
+  NSString* statusTextCurrentBoardPosition;
+  GoMove* currentMove = boardPosition.currentMove;
+  GoMove* nextMove;
+  if (currentMove)
+  {
+    nextMove = currentMove.next;
+    if (GoMoveTypePlay == currentMove.type)
+      statusTextCurrentBoardPosition = [NSString stringWithFormat:@"%@ played %@", colorCurrentBoardPosition, currentMove.point.vertex.string];
+    else
+      statusTextCurrentBoardPosition = [NSString stringWithFormat:@"%@ passed", colorCurrentBoardPosition];
+  }
+  else
+  {
+    if (boardPosition.isFirstPosition)
+      nextMove = game.firstMove;  // could still be nil if no moves have been made yet
+    else
+      nextMove = nil;
+    statusTextCurrentBoardPosition = @"Game started";
+  }
+
+  NSString* statusTextNextBoardPosition;
+  if (nextMove)
+  {
+    if (GoMoveTypePlay == nextMove.type)
+      statusTextNextBoardPosition = [NSString stringWithFormat:@"%@ will play %@", colorNextBoardPosition, nextMove.point.vertex.string];
+    else
+      statusTextNextBoardPosition = [NSString stringWithFormat:@"%@ will pass", colorNextBoardPosition];
+  }
+  else
+  {
+    statusTextNextBoardPosition = [NSString stringWithFormat:@"%@ to move", colorNextBoardPosition];
+  }
+
+  return [NSString stringWithFormat:@"%@\n%@", statusTextCurrentBoardPosition, statusTextNextBoardPosition];
 }
 
 // -----------------------------------------------------------------------------

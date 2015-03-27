@@ -32,7 +32,7 @@
   self = [super init];
   if (! self)
     return nil;
-  self.selectedTabIndex = defaultSelectedTabIndex;
+  self.visibleUIArea = UIAreaDefault;
   _tabOrder = [[NSMutableArray arrayWithCapacity:arraySizeDefaultTabOrder] retain];
   for (int arrayIndex = 0; arrayIndex < arraySizeDefaultTabOrder; ++arrayIndex)
     [(NSMutableArray*)_tabOrder addObject:[NSNumber numberWithInt:defaultTabOrder[arrayIndex]]];
@@ -54,9 +54,7 @@
 - (void) readUserDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  // Cast is required because NSInteger and int differ in size in 64-bit. Cast
-  // is safe because this app was not made to handle more than pow(2, 31) tabs.
-  self.selectedTabIndex = (int)[userDefaults integerForKey:selectedTabIndexKey];
+  self.visibleUIArea = (enum UIArea)[[userDefaults valueForKey:visibleUIAreaKey] intValue];
   self.tabOrder = [userDefaults arrayForKey:tabOrderKey];
 }
 
@@ -67,7 +65,7 @@
 - (void) writeUserDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  [userDefaults setInteger:self.selectedTabIndex forKey:selectedTabIndexKey];
+  [userDefaults setValue:[NSNumber numberWithInt:self.visibleUIArea] forKey:visibleUIAreaKey];
   [userDefaults setObject:self.tabOrder forKey:tabOrderKey];
 }
 

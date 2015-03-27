@@ -94,7 +94,7 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
 
   // The values assigned here have been determined experimentally
   CGFloat yAxisAdjustmentToVerticallyCenterImageOnIntersection;
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+  if ([LayoutManager sharedManager].uiType != UITypePad)
   {
     yAxisAdjustmentToVerticallyCenterImageOnIntersection = 0.5;
   }
@@ -142,7 +142,7 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, B
   layerRect.size.height *= metrics.contentsScale;
   // It looks better if the marker is slightly inset, and on the iPad we can
   // afford to waste the space
-  if ([LayoutManager sharedManager].uiType != UITypePhonePortraitOnly)
+  if ([LayoutManager sharedManager].uiType == UITypePad)
   {
     layerRect.size.width -= 2 * metrics.contentsScale;
     layerRect.size.height -= 2 * metrics.contentsScale;

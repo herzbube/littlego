@@ -92,7 +92,7 @@ Basic tab functionality
 
 
 Basic game play functionality
-- Switch back to the Play tab
+- Switch back to the Play UI area
 - The navigation bar at the top displays the following buttons
   - Computer play
   - Pass
@@ -101,7 +101,7 @@ Basic game play functionality
 - All buttons are enabled
 - Tap the "Game info" button
 - The "Game info" view slides into view, covering the entire content of the
-  Play tab
+  Play UI area
   - The navgation bar contains a "back" button and a segmented control with the
     following segments: Score, Game, Board
   - The "Score" segment is selected
@@ -110,7 +110,7 @@ Basic game play functionality
   scoring, black player is "Anonymous", white player is "Fuego", active profile
   is "Default profile".
 - Tap "back" to dismiss the "Game info" view; the view slides away to once more
-  reveal the game board and other UI elements of the Play tab
+  reveal the game board and other UI elements of the Play UI area
 - Tap the "Game info" button
 - Tap the "Play" tab bar button. This must dismiss the "Game info" view, just as
   if the "back" button had been tapped
@@ -549,10 +549,10 @@ Zooming/scrolling, coordinates and move number
 - iPhone: Both move numbers and display coordinates are shown because we are
   now on a 9x9 board.
 - In the "Display" settings, disable coordinate labels
-- Back on the Play tab, coordinate labels are now hidden
+- Back on the Play UI area, coordinate labels are now hidden
 - In the "Display" settings, reduce the move numbers slider to half position
-- Back on the Play tab, move numbers 41-80 are displayed, move numbers 1-40 are
-  not displayed
+- Back on the Play UI area, move numbers 41-80 are displayed, move numbers 1-40
+  are not displayed
 - Go to board position 40
 - Move numbers are displayed for all the stones (move numbers 1-40)
 - Go to board position 41
@@ -562,7 +562,7 @@ Zooming/scrolling, coordinates and move number
 Player influence
 - Start a new computer vs. human game and make a few moves
 - Enable the user preference "Display player influence"
-- No player influence is displayed after you switch back to the Play tab
+- No player influence is displayed after you switch back to the Play UI area
 - Tap the "Game actions" button. The menu that pops up must contain an entry
   "Update player influence"
 - Select the menu entry
@@ -585,7 +585,7 @@ Player influence
 - Tap the "Game actions" button. The menu that pops up must contain the
   "Update player influence" entry
 - Disable the user preference "Display player influence"
-- No player influence is displayed after you switch back to the Play tab
+- No player influence is displayed after you switch back to the Play UI area
 - Tap the "Game actions" button. The menu that pops up must not contain the
   "Update player influence" entry
 
@@ -688,7 +688,7 @@ Archive, document interaction
   correctly restored (handicap, komi, board size, pass and normal moves,
   resignation)
 - Every time a game is loaded, a progress bar must indicate the load status;
-  after the game is loaded the Play tab must be visible
+  after the game is loaded the Play UI area must be visible
 - Use iTunes to upload a file that has the .sgf extension, but is not a game in
   .sgf format
 - Attempt to load a game from this file. An error message must be displayed that
@@ -839,8 +839,8 @@ Interface orientation (iPad only)
 - Launch the app in landscape
 - The board is sized to fit the screen vertically, and is centered horizontally
 - The navigation bar above the board does not contain a "Moves" button
-- On the left of the screen on the Play tab there is a pane that contains the
-  following UI elements:
+- On the left of the screen on the Play UI area there is a pane that contains
+  the following UI elements:
   - Navigation bar wird buttons to select board positions
   - Single-cell table view that displays the current board position
   - Table view with all board positions of the game

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,18 +17,24 @@
 
 // Project includes
 #import "LeftPaneViewController.h"
+#import "../boardposition/BoardPositionCollectionViewController.h"
 #import "../boardposition/BoardPositionTableListViewController.h"
 #import "../boardposition/BoardPositionToolbarController.h"
-#import "../../ui/UiUtilities.h"
+#import "../controller/StatusViewController.h"
+#import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../ui/UiElementMetrics.h"
 
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for LeftPaneViewController.
 // -----------------------------------------------------------------------------
 @interface LeftPaneViewController()
+@property(nonatomic, assign) bool useBoardPositionToolbar;
+@property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 @property(nonatomic, retain) BoardPositionTableListViewController* boardPositionTableListViewController;
+@property(nonatomic, retain) StatusViewController* statusViewController;
 @end
 
 
@@ -47,6 +53,7 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+  [self setupUseBoardPositionToolbar];
   [self setupChildControllers];
   return self;
 }
@@ -56,9 +63,33 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.boardPositionToolbarController = nil;
-  self.boardPositionTableListViewController = nil;
+  if (self.useBoardPositionToolbar)
+  {
+    self.boardPositionToolbarController = nil;
+    self.boardPositionTableListViewController = nil;
+  }
+  else
+  {
+    self.boardPositionCollectionViewController = nil;
+    self.statusViewController = nil;
+  }
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for initializer.
+// -----------------------------------------------------------------------------
+- (void) setupUseBoardPositionToolbar
+{
+  if ([LayoutManager sharedManager].uiType == UITypePhone)
+  {
+    bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
+    self.useBoardPositionToolbar = isPortraitOrientation;
+  }
+  else
+  {
+    self.useBoardPositionToolbar = true;
+  }
 }
 
 #pragma mark - Container view controller handling
@@ -68,8 +99,16 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
-  self.boardPositionTableListViewController = [[[BoardPositionTableListViewController alloc] init] autorelease];
+  if (self.useBoardPositionToolbar)
+  {
+    self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
+    self.boardPositionTableListViewController = [[[BoardPositionTableListViewController alloc] init] autorelease];
+  }
+  else
+  {
+    self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
+    self.statusViewController = [[[StatusViewController alloc] init] autorelease];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -122,6 +161,56 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setBoardPositionCollectionViewController:(BoardPositionCollectionViewController*)boardPositionCollectionViewController
+{
+  if (_boardPositionCollectionViewController == boardPositionCollectionViewController)
+    return;
+  if (_boardPositionCollectionViewController)
+  {
+    [_boardPositionCollectionViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_boardPositionCollectionViewController removeFromParentViewController];
+    [_boardPositionCollectionViewController release];
+    _boardPositionCollectionViewController = nil;
+  }
+  if (boardPositionCollectionViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:boardPositionCollectionViewController];
+    [boardPositionCollectionViewController didMoveToParentViewController:self];
+    [boardPositionCollectionViewController retain];
+    _boardPositionCollectionViewController = boardPositionCollectionViewController;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setStatusViewController:(StatusViewController*)statusViewController
+{
+  if (_statusViewController == statusViewController)
+    return;
+  if (_statusViewController)
+  {
+    [_statusViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_statusViewController removeFromParentViewController];
+    [_statusViewController release];
+    _statusViewController = nil;
+  }
+  if (statusViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:statusViewController];
+    [statusViewController didMoveToParentViewController:self];
+    [statusViewController retain];
+    _statusViewController = statusViewController;
+  }
+}
+
 #pragma mark - UIViewController overrides
 
 // -----------------------------------------------------------------------------
@@ -131,23 +220,40 @@
 {
   [super loadView];
 
-  [self.view addSubview:self.boardPositionToolbarController.view];
-  [self.view addSubview:self.boardPositionTableListViewController.view];
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
 
-  self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  self.boardPositionTableListViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  if (self.useBoardPositionToolbar)
+  {
+    [self.view addSubview:self.boardPositionToolbarController.view];
+    [self.view addSubview:self.boardPositionTableListViewController.view];
+    self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    self.boardPositionTableListViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    viewsDictionary[@"boardPositionToolbar"] = self.boardPositionToolbarController.view;
+    viewsDictionary[@"boardPositionTableListView"] = self.boardPositionTableListViewController.view;
+    [visualFormats addObject:@"H:|-0-[boardPositionToolbar]-0-|"];
+    [visualFormats addObject:@"H:|-0-[boardPositionTableListView]-0-|"];
+    // Don't need to specify a height value for boardPositionToolbar because
+    // UIToolbar specifies a height value in its intrinsic content size
+    [visualFormats addObject:@"V:|-0-[boardPositionToolbar]-0-[boardPositionTableListView]-0-|"];
+  }
+  else
+  {
+    [self.view addSubview:self.boardPositionCollectionViewController.view];
+    [self.view addSubview:self.statusViewController.view];
+    self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    self.statusViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
+    viewsDictionary[@"statusView"] = self.statusViewController.view;
+    [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]"];
+    [visualFormats addObject:@"H:|-0-[statusView]-0-|"];
+    [visualFormats addObject:@"V:|-0-[boardPositionCollectionView]-0-[statusView]-0-|"];
+    CGFloat boardPositionCollectionViewWidth = self.boardPositionCollectionViewController.boardPositionCollectionViewMaximumCellSize.width;
+    [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewWidth]];
+    int statusViewHeight = [UiElementMetrics tableViewCellContentViewHeight];
+    [visualFormats addObject:[NSString stringWithFormat:@"V:[statusView(==%d)]", statusViewHeight]];
+  }
 
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.boardPositionToolbarController.view, @"boardPositionToolbar",
-                                   self.boardPositionTableListViewController.view, @"boardPositionTableListView",
-                                   nil];
-  // Don't need to specify height value for boardPositionToolbar because
-  // UIToolbar specifies a height value in its intrinsic content size
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[boardPositionToolbar]-0-|",
-                            @"H:|-0-[boardPositionTableListView]-0-|",
-                            @"V:|-0-[boardPositionToolbar]-[boardPositionTableListView]-0-|",
-                            nil];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 
   // Set a color (should be the same as the main window's) because we need to

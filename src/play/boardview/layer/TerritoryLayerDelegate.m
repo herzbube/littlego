@@ -316,6 +316,11 @@
         }
         break;
       }
+      case GoStoneGroupStateAlive:
+      {
+        // Don't draw anything for alive groups
+        break;
+      }
       default:
       {
         DDLogError(@"Unknown value %d for property point.region.stoneGroupState", stoneGroupState);

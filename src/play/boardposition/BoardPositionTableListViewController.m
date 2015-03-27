@@ -42,6 +42,9 @@
 /// BoardPositionTableListViewController.
 // -----------------------------------------------------------------------------
 @interface BoardPositionTableListViewController()
+/// @brief Prevents unregistering by dealloc if registering hasn't happened
+/// yet. Registering may not happen if the controller's view is never loaded.
+@property(nonatomic, assign) bool notificationRespondersAreSetup;
 @property(nonatomic, retain) UITableView* currentBoardPositionTableView;
 @property(nonatomic, retain) UITableView* boardPositionListTableView;
 @property(nonatomic, assign) bool tappingEnabled;
@@ -73,6 +76,7 @@
   if (! self)
     return nil;
   [self releaseObjects];
+  self.notificationRespondersAreSetup = false;
   self.tappingEnabled = true;
   self.allDataNeedsUpdate = false;
   self.currentBoardPositionNeedsUpdate = false;
@@ -122,6 +126,9 @@
   [self setupAutoLayoutConstraints];
   [self setupNotificationResponders];
   [self setupStoneImages];
+
+  self.currentBoardPositionNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 #pragma mark - Private helpers for loadView
@@ -178,10 +185,6 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  // This is required so that the bottom rows of self.boardPositionListTableView
-  // remain visible after a portrait-to-landscape interface rotation
-  self.automaticallyAdjustsScrollViewInsets = NO;
-
   self.currentBoardPositionTableView.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionListTableView.translatesAutoresizingMaskIntoConstraints = NO;
 
@@ -215,6 +218,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
+  if (self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = true;
+  
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
@@ -236,6 +243,10 @@
 // -----------------------------------------------------------------------------
 - (void) removeNotificationResponders
 {
+  if (! self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = false;
+
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
@@ -634,7 +645,9 @@
     assert(0);
     return;
   }
-  if ([self shouldIgnoreTaps])
+  // TODO: Can we remove this? This check should not be necessary since we also
+  // implement tableView:shouldHighlightRowAtIndexPath:().
+  if (! self.tappingEnabled)
   {
     DDLogWarn(@"%@: Ignoring board position change", self);
     return;
@@ -727,15 +740,6 @@
     return self.alternateCellBackgroundColor1;
   else
     return self.alternateCellBackgroundColor2;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns true if taps on cells in the list of board positions should
-/// currently be ignored.
-// -----------------------------------------------------------------------------
-- (bool) shouldIgnoreTaps
-{
-  return [GoGame sharedGame].isComputerThinking;
 }
 
 @end

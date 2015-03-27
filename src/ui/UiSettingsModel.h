@@ -27,21 +27,17 @@
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
 
-/// @brief The index of the view controller that is currently selected in the
-/// application's main tab bar controller.
-///
-/// The "more" navigation controller is identified by the special value of the
-/// global constant #indexOfMoreNavigationController.
-@property(nonatomic, assign) int selectedTabIndex;
+/// @brief The UI area that is currently visible.
+@property(nonatomic, assign) enum UIArea visibleUIArea;
 /// @brief The order in which controllers currently appear in the application's
 /// main tab bar controller.
 ///
 /// Each view controller in the application's main tab bar controller has an
 /// associated UITabBarItem object. That object has a @e tag property whose
-/// value is an element from the #TabType enumeration.
+/// value is an element from the #UIArea enumeration.
 ///
 /// Array elements are NSNumber objects with integer values. Integer values
-/// correspond to the #TabType enumeration values and can thus be matched to
+/// correspond to the #UIArea enumeration values and can thus be matched to
 /// a corresponding view controller.
 @property(nonatomic, retain) NSArray* tabOrder;
 

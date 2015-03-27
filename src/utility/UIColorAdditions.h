@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The UIColorAdditions category enhances UIColor by adding string
-/// conversion methods, and a new predefined color "slate blue".
+/// conversion methods and a number of new predefined colors.
 ///
 /// @ingroup utility
 ///
@@ -39,7 +39,6 @@
 - (CGFloat) green;
 - (CGFloat) blue;
 - (CGFloat) alpha;
-
 + (UIColor*) slateBlueColor;
 + (UIColor*) lightBlueColor;
 + (UIColor*) lightBlueGrayColor;
@@ -55,4 +54,5 @@
 + (NSArray*) redButtonTableViewCellSelectedBackgroundGradientColors;
 + (UIColor*) tableViewCellDetailTextLabelColor;
 + (UIColor*) navigationbarBackgroundColor;
++ (UIColor*) woodenBackgroundColor;
 @end

@@ -86,6 +86,7 @@ enum BugReportSectionItem
 /// DiagnosticsViewController.
 // -----------------------------------------------------------------------------
 @interface DiagnosticsViewController()
+@property(nonatomic, assign) bool notificationRespondersAreSetup;
 @property(nonatomic, assign) bool bugReportSectionIsDisabled;
 @property(nonatomic, assign) bool ignoreLoggingEnabledModelUpdate;
 @end
@@ -103,7 +104,12 @@ enum BugReportSectionItem
 {
   DiagnosticsViewController* controller = [[DiagnosticsViewController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
+  {
+    controller.notificationRespondersAreSetup = false;
+    controller.bugReportSectionIsDisabled = false;
+    controller.ignoreLoggingEnabledModelUpdate = false;
     [controller autorelease];
+  }
   return controller;
 }
 
@@ -113,9 +119,7 @@ enum BugReportSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  LoggingModel* loggingModel = [ApplicationDelegate sharedDelegate].loggingModel;
-  [loggingModel removeObserver:self forKeyPath:@"loggingEnabled"];
+  [self removeNotificationResponders];
   [super dealloc];
 }
 
@@ -127,9 +131,20 @@ enum BugReportSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
+  [self setupNotificationResponders];
   self.bugReportSectionIsDisabled = [self shouldDisableBugReportSection];
-  self.ignoreLoggingEnabledModelUpdate = false;
+}
+
+#pragma mark - Setup/remove notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
+  if (self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = true;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
@@ -138,6 +153,20 @@ enum BugReportSectionItem
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   LoggingModel* loggingModel = [ApplicationDelegate sharedDelegate].loggingModel;
   [loggingModel addObserver:self forKeyPath:@"loggingEnabled" options:0 context:NULL];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  if (! self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = false;
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  LoggingModel* loggingModel = [ApplicationDelegate sharedDelegate].loggingModel;
+  [loggingModel removeObserver:self forKeyPath:@"loggingEnabled"];
 }
 
 #pragma mark - UITableViewDataSource overrides

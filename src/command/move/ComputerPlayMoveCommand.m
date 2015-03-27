@@ -32,7 +32,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/MainTabBarController.h"
+#import "../../main/WindowRootViewController.h"
 #import "../../shared/ApplicationStateManager.h"
 
 
@@ -318,10 +318,10 @@
 - (void) sendBugReport
 {
   // Use the view controller that is currently selected - this may not
-  // always be the Play tab controller, e.g. if the user has switched to
-  // another tab while the computer was thinking
+  // always be the UIAreaPlay root view controller, e.g. if the user has
+  // switched to another UI area while the computer was thinking
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  UIViewController* modalViewControllerParent = appDelegate.tabBarController.selectedViewController;
+  UIViewController* modalViewControllerParent = appDelegate.windowRootViewController;
   SendBugReportController* controller = [SendBugReportController controller];
   controller.delegate = self;
   controller.bugReportDescription = [NSString stringWithFormat:@"Little Go claims that the computer player made an illegal move by playing on intersection %@.", self.illegalMove.vertex.string];

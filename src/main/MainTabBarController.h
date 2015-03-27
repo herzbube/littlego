@@ -15,19 +15,24 @@
 // -----------------------------------------------------------------------------
 
 
-
 // -----------------------------------------------------------------------------
-/// @brief The MainTabBarController class is the application window's root
-/// view controller.
+/// @brief The MainTabBarController class is one of several alternative main
+/// application view controllers. Its responsibility is to let the user navigate
+/// to the different main areas of the application.
+///
+/// MainTabBarController uses a tab bar to provide the user with navigation
+/// capabilities. MainTabBarController displays whichever tab was active when
+/// the application was active the last time.
+///
+/// @see WindowRootViewController
 // -----------------------------------------------------------------------------
 @interface MainTabBarController : UITabBarController <UITabBarControllerDelegate, UINavigationControllerDelegate>
 {
 }
 
 - (void) restoreTabBarControllerAppearanceToUserDefaults;
-- (UIViewController*) tabController:(enum TabType)tabID;
-- (UIView*) tabView:(enum TabType)tabID;
-- (void) activateTab:(enum TabType)tabID;
-- (NSString*) resourceNameForTabType:(enum TabType)tabType;
+- (UIViewController*) tabControllerForUIArea:(enum UIArea)uiArea;
+- (UIView*) tabViewForUIArea:(enum UIArea)uiArea;
+- (void) activateTabForUIArea:(enum UIArea)uiArea;
 
 @end

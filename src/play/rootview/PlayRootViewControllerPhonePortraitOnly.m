@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,40 +16,39 @@
 
 
 // Project includes
-#import "PlayTabControllerPhone.h"
+#import "PlayRootViewControllerPhonePortraitOnly.h"
 #import "../boardposition/BoardPositionToolbarController.h"
 #import "../boardview/BoardViewController.h"
-#import "../controller/DiscardFutureMovesAlertController.h"
 #import "../controller/NavigationBarController.h"
 #import "../controller/StatusViewController.h"
-#import "../gesture/PanGestureController.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for PlayTabControllerPhone.
+/// @brief Class extension with private properties for
+/// PlayRootViewControllerPhonePortraitOnly.
 // -----------------------------------------------------------------------------
-@interface PlayTabControllerPhone()
+@interface PlayRootViewControllerPhonePortraitOnly()
 @property(nonatomic, retain) NavigationBarController* navigationBarController;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
-@property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @end
 
 
-@implementation PlayTabControllerPhone
+@implementation PlayRootViewControllerPhonePortraitOnly
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayTabControllerPhone object.
+/// @brief Initializes a PlayRootViewControllerPhonePortraitOnly object.
 ///
-/// @note This is the designated initializer of PlayTabControllerPhone.
+/// @note This is the designated initializer of
+/// PlayRootViewControllerPhonePortraitOnly.
 // -----------------------------------------------------------------------------
 - (id) init
 {
-  // Call designated initializer of superclass (PlayTabController)
+  // Call designated initializer of superclass (PlayRootViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
@@ -58,7 +57,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayTabControllerPhone object.
+/// @brief Deallocates memory allocated by this
+/// PlayRootViewControllerPhonePortraitOnly object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -73,7 +73,7 @@
 {
   self.navigationBarController = nil;
   self.boardPositionToolbarController = nil;
-  self.discardFutureMovesAlertController = nil;
+  self.boardViewController = nil;
 }
 
 #pragma mark - Container view controller handling
@@ -83,13 +83,9 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  self.navigationBarController = [[[NavigationBarController alloc] init] autorelease];
+  self.navigationBarController = [NavigationBarController navigationBarController];
   self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
-  self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
-
-  self.boardViewController.panGestureController.delegate = self.discardFutureMovesAlertController;
-  self.navigationBarController.delegate = self.discardFutureMovesAlertController;
 }
 
 // -----------------------------------------------------------------------------
@@ -196,9 +192,6 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.edgesForExtendedLayout = UIRectEdgeNone;
-  self.automaticallyAdjustsScrollViewInsets = NO;
-
   self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;

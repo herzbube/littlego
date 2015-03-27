@@ -26,7 +26,7 @@
 /// @par Purpose of long-running actions
 ///
 /// A long-running action is an operation that is known to trigger many UI
-/// updates on the Play tab. When a long-running action starts, an interested
+/// updates in #UIAreaPlay. When a long-running action starts, an interested
 /// party may start to delay view updates (or other similar expensive
 /// operations) until the long-running action ends. All UI updates that have
 /// accumulated since the start of the action are then coalesced and performed
@@ -70,7 +70,10 @@
 /// @par Multi-threading
 ///
 /// The #longRunningActionStarts and #longRunningActionEnds notifications are
-/// guaranteed to be delivered in the context of the main thread.
+/// guaranteed to be delivered in the context of the main thread so that UI
+/// updates can be safely made / scheduled in response to the notifications.
+/// "Safely" here relates to the fact that UIKit functions are not safe to be
+/// used outside of the main thread (also callled the UI thread).
 ///
 /// Parties that increment or decrement the counter may do so in the context
 /// of any thread. However, if necessary LongRunningActionCounter will switch

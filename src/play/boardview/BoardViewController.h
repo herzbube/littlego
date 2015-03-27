@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2014-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,6 @@
 
 // Project includes
 #import "TiledScrollView.h"
-
-// Forward declarations
-@class PanGestureController;
 
 
 // -----------------------------------------------------------------------------
@@ -45,7 +42,5 @@
 @interface BoardViewController : UIViewController <TiledScrollViewDataSource, UIScrollViewDelegate>
 {
 }
-
-@property(nonatomic, retain) PanGestureController* panGestureController;
 
 @end

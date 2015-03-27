@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,18 +16,13 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayTabController class represents the root view controller on
-/// the Play tab.
-///
-/// The view hierarchy on the Play tab is laid out differently depending on
-/// the device that runs the application. Use the class method
-/// playTabController() to obtain a device-dependent controller object that
-/// knows how to set up the correct view hierarchy for the current device.
+/// @brief The ButtonBoxCell class is a private class used by
+/// ButtonBoxController to host a single UIButton.
 // -----------------------------------------------------------------------------
-@interface PlayTabController : UIViewController
+@interface ButtonBoxCell : UICollectionViewCell
 {
 }
 
-+ (PlayTabController*) playTabController;
+- (void) setupWithButton:(UIButton*)button;
 
 @end

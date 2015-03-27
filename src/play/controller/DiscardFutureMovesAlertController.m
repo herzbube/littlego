@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,29 +39,25 @@ enum ActionType
 
 @implementation DiscardFutureMovesAlertController
 
+#pragma mark - GameActionManagerCommandDelegate overrides
+
 // -----------------------------------------------------------------------------
-/// @brief NavigationBarControllerDelegate protocol method.
+/// @brief GameActionManagerCommandDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) navigationBarController:(NavigationBarController*)controller playOrAlertWithCommand:(CommandBase*)command
+- (void) gameActionManager:(GameActionManager*)manager playOrAlertWithCommand:(CommandBase*)command
 {
   [self alertOrAction:ActionTypePlay withCommand:command];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief NavigationBarControllerDelegateDelegate protocol method.
+/// @brief GameActionManagerCommandDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) navigationBarController:(NavigationBarController*)controller discardOrAlertWithCommand:(CommandBase*)command
+- (void) gameActionManager:(GameActionManager*)manager discardOrAlertWithCommand:(CommandBase*)command
 {
   [self alertOrAction:ActionTypeDiscard withCommand:command];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief PanGestureControllerDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) panGestureController:(PanGestureController*)controller playOrAlertWithCommand:(CommandBase*)command
-{
-  [self alertOrAction:ActionTypePlay withCommand:command];
-}
+#pragma mark - UIAlertViewDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UIAlertViewDelegate protocol method.
@@ -91,8 +87,8 @@ enum ActionType
 /// @brief Executes @a command, or displays an alert and delays execution until
 /// the alert is dismissed by the user.
 ///
-/// @a actionType is used to tweak the alert message so that contains a useful
-/// description of what the user tries to do.
+/// @a actionType is used to tweak the alert message so that it contains a
+/// useful description of what the user tries to do.
 ///
 /// If the Go board currently displays the last board position of the game,
 /// @a command is executed immediately.

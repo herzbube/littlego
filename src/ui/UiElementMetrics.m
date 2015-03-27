@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 
 // Project includes
 #import "UiElementMetrics.h"
-#import "LayoutManager.h"
 
 
 @implementation UiElementMetrics
@@ -174,24 +173,14 @@ static UIViewController* m_interfaceOrientationSource;
 
 + (int) splitViewControllerLeftPaneWidth
 {
-  switch ([LayoutManager sharedManager].uiType)
-  {
-    case UITypePhonePortraitOnly:
-      return 0;
-    case UITypePhone:
-      return 200;
-    case UITypePad:
-      return 320;
-    default:
-    {
-      NSString* errorMessage = [NSString stringWithFormat:@"Invalid UI type %d", [LayoutManager sharedManager].uiType];
-      DDLogError(@"%@: %@", self, errorMessage);
-      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:errorMessage
-                                                     userInfo:nil];
-      @throw exception;
-    }
-  }
+  return 320;
+}
+
++ (CGSize) toolbarIconSize
+{
+  // This is the size (in points) recommended by the HIG for navigation and
+  // toolbar icons
+  return CGSizeMake(22.0f, 22.0f);
 }
 
 @end

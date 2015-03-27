@@ -18,7 +18,7 @@
 // -----------------------------------------------------------------------------
 /// @brief The StatusViewController class is responsible for displaying status
 /// information about the current game situation in a status view that is
-/// visible on the Play tab.
+/// visible in #UIAreaPlay.
 ///
 /// Most of the time the status view displays textual information, but whenever
 /// the GTP engine is taking a long time to calculate something (e.g. computer

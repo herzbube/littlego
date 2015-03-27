@@ -19,7 +19,8 @@
 #import "SectionedDocumentViewController.h"
 #import "ApplicationDelegate.h"
 #import "DocumentViewController.h"
-#import "MainTabBarController.h"
+#import "MainUtility.h"
+#import "UIAreaInfo.h"
 #import "../utility/DocumentGenerator.h"
 #import "../utility/UIColorAdditions.h"
 #import "../ui/TableViewCellFactory.h"
@@ -69,19 +70,16 @@
   if (_documentGenerator)
     return _documentGenerator;
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  // Cast is required because NSInteger and int (the underlying type for
-  // enums) differ in size in 64-bit. Cast is safe because the tab bar items
-  // are designed to match the enumeration.
-  enum TabType tabType = (enum TabType)self.contextTabBarItem.tag;
-  NSString* resourceName = [appDelegate.tabBarController resourceNameForTabType:tabType];
+  enum UIArea uiArea = self.uiArea;
+  NSString* resourceName = [MainUtility resourceNameForUIArea:uiArea];
   NSString* resourceContent = [appDelegate contentOfTextResource:resourceName];
-  switch (tabType)
+  switch (uiArea)
   {
-    case TabTypeHelp:
+    case UIAreaHelp:
       self.documentGenerator = [[[DocumentGenerator alloc] initWithFileContent:resourceContent] autorelease];
       break;
     default:
-      DDLogError(@"%@: Unexpected tab type %d", self, tabType);
+      DDLogError(@"%@: Unexpected UI area %d", self, uiArea);
       assert(0);
       self.documentGenerator = nil;
   }

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,19 +16,25 @@
 
 
 // Project includes
-#include "PlayTabController.h"
+#import "BoardPositionNavigationManager.h"
+#import "../../ui/ButtonBoxController.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayTabControllerPhone class is the root view controller on the
-/// Play tab for the iPhone.
+/// @brief The BoardPositionButtonBoxDataSource class acts as a mediator between
+/// BoardPositionNavigationManager (which defines an abstract set of board
+/// position navigation operations), and ButtonBoxController (which provides a
+/// visual representation of those operations in the form of UIButtons).
 ///
-/// The PlayTabController class method playTabController() should be used to
-/// create a PlayTabControllerPhone instance.
+/// BoardPositionButtonBoxDataSource defines the basic grid dimensions of the
+/// "button box", and which buttons occupy which cells in the grid.
+/// BoardPositionButtonBoxDataSource also performs the duties that are expected
+/// by BoardPositionNavigationManager.
+///
+/// @see BoardPositionNavigationManager
 // -----------------------------------------------------------------------------
-@interface PlayTabControllerPhone : PlayTabController
+@interface BoardPositionButtonBoxDataSource : NSObject <ButtonBoxControllerDataSource, BoardPositionNavigationManagerDelegate>
 {
 }
-
 
 @end

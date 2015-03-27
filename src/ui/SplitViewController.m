@@ -17,8 +17,8 @@
 
 // Project includes
 #import "SplitViewController.h"
-#import "../../ui/AutoLayoutUtility.h"
-#import "../../ui/UiElementMetrics.h"
+#import "AutoLayoutUtility.h"
+#import "UiElementMetrics.h"
 
 
 // -----------------------------------------------------------------------------
@@ -52,6 +52,7 @@
     return nil;
   self.viewControllers = [NSArray array];
   self.delegate = nil;
+  self.leftPaneWidth = [UiElementMetrics splitViewControllerLeftPaneWidth];
   self.dividerView = nil;
   self.barButtonItemLeftPane = nil;
   self.leftPaneIsShownInOverlay = false;
@@ -67,7 +68,16 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.viewControllers = nil;
+  // First, let the property setter get rid of all child view controllers and
+  // their subviews
+  self.viewControllers = [NSArray array];
+  // Second, get rid of the NSArray object. We can't use the property setter
+  // for that because it contains a guard against setting a nil value.
+  if (_viewControllers)
+  {
+    [_viewControllers release];
+    _viewControllers = nil;
+  }
   self.delegate = nil;
   self.dividerView = nil;
   self.barButtonItemLeftPane = nil;
@@ -88,6 +98,9 @@
     return;
   if (! viewControllers)
   {
+    // This check exists because the rest of the implementation of this
+    // controller is simpler if it can rely on the property always containing
+    // a valid NSArray object (even if it is empty)
     NSString* errorMessage = @"viewControllers argument must not be nil";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
@@ -403,7 +416,7 @@
   else
   {
     NSArray* visualFormats = [NSArray arrayWithObjects:
-                              [NSString stringWithFormat:@"H:|-0-[leftPaneView(==%d)]-0-[dividerView(==0)]-0-[rightPaneView]-0-|", [UiElementMetrics splitViewControllerLeftPaneWidth]],
+                              [NSString stringWithFormat:@"H:|-0-[leftPaneView(==%d)]-0-[dividerView(==0)]-0-[rightPaneView]-0-|", self.leftPaneWidth],
                               @"V:|-0-[dividerView]-0-|",
                               @"V:|-0-[leftPaneView]-0-|",
                               @"V:|-0-[rightPaneView]-0-|",
@@ -523,7 +536,7 @@
                                    transparentRightPaneView, @"transparentRightPaneView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            [NSString stringWithFormat:@"H:[leftPaneView(==%d)]-0-[transparentRightPaneView]-0-|", [UiElementMetrics splitViewControllerLeftPaneWidth]],
+                            [NSString stringWithFormat:@"H:[leftPaneView(==%d)]-0-[transparentRightPaneView]-0-|", self.leftPaneWidth],
                             @"V:|-0-[leftPaneView]-0-|",
                             @"V:|-0-[transparentRightPaneView]-0-|",
                             nil];
@@ -536,7 +549,7 @@
                                                                     toItem:self.overlayView
                                                                  attribute:NSLayoutAttributeLeft
                                                                 multiplier:1.0f
-                                                                  constant:-[UiElementMetrics splitViewControllerLeftPaneWidth]];
+                                                                  constant:-self.leftPaneWidth];
   [self.overlayView addConstraint:self.leftPaneLeftEdgeConstraint];
 
   // First layout pass that will place the left pane outside of the visible
@@ -559,7 +572,7 @@
     return;
   [UIView animateWithDuration:0.2
                    animations:^{
-                     self.leftPaneLeftEdgeConstraint.constant = -[UiElementMetrics splitViewControllerLeftPaneWidth];
+                     self.leftPaneLeftEdgeConstraint.constant = -self.leftPaneWidth;
                      [self.overlayView layoutIfNeeded];
                    }
                    completion:^(BOOL finished){

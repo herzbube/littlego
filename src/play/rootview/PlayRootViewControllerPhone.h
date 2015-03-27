@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,25 +16,19 @@
 
 
 // Project includes
-#import "PlayTabController.h"
-#import "PlayTabControllerPad.h"
-#import "PlayTabControllerPhone.h"
-#import "../../shared/LayoutManager.h"
+#include "PlayRootViewController.h"
 
-
-@implementation PlayTabController
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor that returns a device-dependent controller
-/// object that knows how to set up the correct view hierarchy for the current
-/// device.
+/// @brief The PlayRootViewControllerPhone class is the root view controller of
+/// the #UIAreaPlay for #UITypePhone. It is used only when the UI is in one of
+/// the Portrait orientations.
+///
+/// The PlayRootViewController class method playRootViewController() should be
+/// used to create a PlayRootViewControllerPhone instance.
 // -----------------------------------------------------------------------------
-+ (PlayTabController*) playTabController
+@interface PlayRootViewControllerPhone : PlayRootViewController
 {
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
-    return [[[PlayTabControllerPhone alloc] init] autorelease];
-  else
-    return [[[PlayTabControllerPad alloc] init] autorelease];
 }
 
 @end

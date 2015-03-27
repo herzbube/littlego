@@ -23,8 +23,7 @@
 #import "../go/GoGame.h"
 #import "../command/game/RenameGameCommand.h"
 #import "../command/game/LoadGameCommand.h"
-#import "../main/ApplicationDelegate.h"
-#import "../main/MainTabBarController.h"
+#import "../main/MainUtility.h"
 #import "../ui/TableViewCellFactory.h"
 
 
@@ -340,8 +339,8 @@ enum GameAttributesSectionItem
   [self dismissViewControllerAnimated:YES completion:nil];
   if (didStartNewGame)
   {
-    [[ApplicationDelegate sharedDelegate].tabBarController activateTab:TabTypePlay];
-    // No animation necessary, the Play tab is now visible
+    [MainUtility activateUIArea:UIAreaPlay];
+    // No animation necessary, the Play UI area is now visible
     [self.navigationController popViewControllerAnimated:NO];
   }
 }

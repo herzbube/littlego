@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "../../ui/ButtonBoxController.h"
+
 // Forward declarations
 @class NavigationBarController;
 
@@ -27,9 +30,11 @@
 /// RightPaneViewController's is a container view controller. It is used on the
 /// iPad only.
 // -----------------------------------------------------------------------------
-@interface RightPaneViewController : UIViewController
+@interface RightPaneViewController : UIViewController <ButtonBoxControllerDataDelegate>
 {
 }
+
+- (void) removeDynamicConstraints;
 
 @property(nonatomic, retain) NavigationBarController* navigationBarController;
 

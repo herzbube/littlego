@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2014-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@
 #import "../gesture/TwoFingerTapGestureController.h"
 #import "../model/BoardViewMetrics.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -38,6 +40,7 @@
 @property(nonatomic, retain) TiledScrollView* coordinateLabelsLetterView;
 @property(nonatomic, retain) TiledScrollView* coordinateLabelsNumberView;
 @property(nonatomic, retain) NSArray* coordinateLabelsViewConstraints;
+@property(nonatomic, retain) PanGestureController* panGestureController;
 @property(nonatomic, retain) TapGestureController* tapGestureController;
 @property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
 @property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
@@ -147,15 +150,8 @@
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
 
-  // The background image is quite large, so we don't use UIImage namedImage:()
-  // because that method caches the image in the background. We don't need
-  // caching because we only load the image once, so not using namedImage:()
-  // saves us quite a bit of valuable memory.
-  NSString* imagePath = [[NSBundle mainBundle] pathForResource:woodenBackgroundImageResource
-                                                        ofType:nil];
-  NSData* imageData = [NSData dataWithContentsOfFile:imagePath];
-  UIImage* image = [UIImage imageWithData:imageData];
-  self.view.backgroundColor = [UIColor colorWithPatternImage:image];
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+    self.view.backgroundColor = [UIColor woodenBackgroundColor];
 
   self.boardView.backgroundColor = [UIColor clearColor];
   self.boardView.delegate = self;
@@ -176,7 +172,7 @@
   self.twoFingerTapGestureController.scrollView = self.boardView;
 }
 
-#pragma mark - viewWillLayoutSubviews
+#pragma mark - viewDidLayoutSubviews
 
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
@@ -567,8 +563,8 @@
         {
           // UIKit sometimes crashes if we add coordinate labels while a
           // layouting cycle is in progress. The crash happens if 1) the app
-          // starts up and initially displays some other than the Play tab, then
-          // 2) the user switches to the play tab. At this moment
+          // starts up and initially displays some other than the Play UI area,
+          // the 2) the user switches to the Play UI area. At this moment
           // viewDidLayoutSubviews is executed, it invokes
           // updateBaseSizeInBoardViewMetrics, which in turn triggers this
           // KVO observer. If we now add coordinate labels, the app crashes. The

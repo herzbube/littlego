@@ -23,14 +23,14 @@ If your setup is older and the build does not work, you may find a solution by
 looking at older versions of the build files in the Git repository. Here is a
 list of configurations that have worked in the past:
 - Xcode 3.?, iOS base SDK 4.2, available between 0.1 and 0.5
-- Xcode 4.2, iOS base SDK 5.0, available between 0.6 and 0.7.1
-- Xcode 4.3, iOS base SDK 5.1, available between 0.8.0 and 0.9.2
+- Xcode 4.2, iOS base SDK 5.0, available between 0.6 and 0.7.x
+- Xcode 4.3, iOS base SDK 5.1, available between 0.8.x and 0.9.x
 - Xcode 4.5, iOS base SDK 6.0, available only for a short time during
   development of 0.10.0; the configuration can be found in commit
   2038191682762f8bd815b5ec8580b2d75fcea7f4
-- Xcode 4.6, iOS base SDK 6.1, available since 0.10.0
-- Xcode 5.0.2, iOS base SDK 6.1, available since 1.0.0
-- Xcode 5.1.1, iOS base SDK 7.1, available since 1.1.0
+- Xcode 4.6, iOS base SDK 6.1, available between 0.10.x and 0.12.x
+- Xcode 5.0.2, iOS base SDK 6.1, available in 1.0.x
+- Xcode 5.1.1, iOS base SDK 7.1, available in 1.1.x
 
 
 Setting up Xcode with an older iOS base SDK

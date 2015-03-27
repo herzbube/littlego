@@ -117,35 +117,35 @@ UI for application preferences from the application, though, and therefore
 chose to implement a dedicated Preferences view inside the application.
 
 
-About the Play tab
-------------------
-- The Play tab is the centerpiece of the entire application. It has a large
+About the Play UI area
+----------------------
+- The Play UI area is the centerpiece of the entire application. It has a large
   number of UI elements, many of them interacting with each other, and some of
-  them are not visible all the time. To reduce complexity and keep the Play
-  tab in its entirety in a maintainable state, it is paramount to have many
+  them are not visible all the time. To reduce complexity and keep the Play UI
+  area in its entirety in a maintainable state, it is paramount to have many
   small model and controller classes with clearly assigned responsibilities.
-- Static design: PlayTabController is the tab's root view controller. There
-  are two subclasses, one for each device-specific view hierarchy. With a few
-  exceptions, the view hierarchy is represented by a corresponding hierarchy
-  of container/child UIViewControllers. Not all controller classes are view
-  controllers, though: There are also a number of controllers that manage
-  gesture recognizing, alert views or action sheets.
-- Dynamic design: When the application launches, the app delegate creates an
-  instance of the appropriate PlayTabController subclass. This starts a
-  first cascade of object creation during which all the controller objects are
-  created and the delegate connections are made. A little bit later iOS
-  accesses for the first time the view of the root PlayTabController. This
-  triggers a second cascade of object creation during which all the view
-  objects are created and notification and KVO observing mechanisms are
-  initialized.
+- Static design: PlayRootViewController is the UI area's root view controller.
+  There are several subclasses, one for each distinct UI type-specific view
+  hierarchy. With a few exceptions, the view hierarchy is represented by a
+  corresponding hierarchy of container/child UIViewControllers. Not all
+  controller classes are view controllers, though: There are also a number of
+  controllers that manage gesture recognizing, alert views or action sheets.
+- Dynamic design: When the application launches, the main application view
+  controller creates an instance of the appropriate PlayRootViewController
+  subclass. This starts a first cascade of object creation during which all the
+  controller objects are created and the delegate connections are made. A little
+  bit later iOS accesses for the first time the view of the root
+  PlayRootViewController. This triggers a second cascade of object creation
+  during which all the view objects are created and notification and KVO
+  observing mechanisms are initialized.
 - View sizing and layouting is done via Auto Layout. Once you get over the
   initial stumbling blocks, Auto Layout in general is much easier to understand
-  than manually calculating view frames.
+  and less error prone than manually calculating view frames.
 
 
 UI design
 ---------
-As noted in "About the Play tab", the Play tab has a large number of UI
+As noted in "About the Play UI area", the Play UI area has a large number of UI
 elements, and these must somehow be fitted into the small screeen estate
 available on the iPhone. Here I try to outline the thoughts that went into the
 iPhone UI design:

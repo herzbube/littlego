@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GameActionsActionSheetController.h"
+#import "../gameaction/GameActionManager.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -35,7 +36,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Enumerates buttons that are displayed when the user taps the
-/// "Game Actions" button on the Play tab.
+/// "Game Actions" button in #UIAreaPlay.
 ///
 /// The order in which buttons are enumerated also defines the order in which
 /// they appear in the UIActionSheet.
@@ -126,7 +127,7 @@ enum ActionSheetButton
     {
       case ScoreButton:
       {
-        if (game.score.scoringEnabled)
+        if (game.score.scoringEnabled || GoGameStateGameHasEnded == game.state)
           continue;
         title = @"Score";
         break;
@@ -304,9 +305,7 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) score
 {
-  GoScore* score = [GoGame sharedGame].score;
-  score.scoringEnabled = true;
-  [score calculateWaitUntilDone:false];
+  [[GameActionManager sharedGameActionManager] scoringStart:self];
   [self.delegate gameActionsActionSheetControllerDidFinish:self];
 }
 

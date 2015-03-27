@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -390,6 +390,23 @@
 + (UIColor*) navigationbarBackgroundColor
 {
   return [UIColor colorWithRed:247.0/255.0 green:247.0/255.0 blue:247.0/255.0 alpha:1.0];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object that can be used to display a wooden
+/// background. The UIColor object is actually an image suitable for tiling.
+// -----------------------------------------------------------------------------
++ (UIColor*) woodenBackgroundColor
+{
+  // The background image is quite large, so we don't use UIImage namedImage:()
+  // because that method caches the image in the background. We don't need
+  // caching because we only load the image once, so not using namedImage:()
+  // saves us quite a bit of valuable memory.
+  NSString* imagePath = [[NSBundle mainBundle] pathForResource:woodenBackgroundImageResource
+                                                        ofType:nil];
+  NSData* imageData = [NSData dataWithContentsOfFile:imagePath];
+  UIImage* image = [UIImage imageWithData:imageData];
+  return [UIColor colorWithPatternImage:image];
 }
 
 @end

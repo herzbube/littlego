@@ -18,7 +18,8 @@
 // Project includes
 #import "DocumentViewController.h"
 #import "ApplicationDelegate.h"
-#import "MainTabBarController.h"
+#import "MainUtility.h"
+#import "UIAreaInfo.h"
 #import "../utility/VersionInfoUtilities.h"
 
 
@@ -119,15 +120,12 @@
   }
   else
   {
-    // Cast is required because NSInteger and int (the underlying type for
-    // enums) differ in size in 64-bit. Cast is safe because the tab bar items
-    // are designed to match the enumeration.
-    enum TabType tabType = (enum TabType)self.contextTabBarItem.tag;
-    NSString* resourceNameForTabType = [appDelegate.tabBarController resourceNameForTabType:tabType];
-    NSString* resourceContent = [appDelegate contentOfTextResource:resourceNameForTabType];
-    switch (tabType)
+    enum UIArea uiArea = self.uiArea;
+    NSString* resourceNameForUIArea = [MainUtility resourceNameForUIArea:uiArea];
+    NSString* resourceContent = [appDelegate contentOfTextResource:resourceNameForUIArea];
+    switch (uiArea)
     {
-      case TabTypeAbout:
+      case UIAreaAbout:
         [self showAboutDocument:resourceContent];
         break;
       default:

@@ -2,8 +2,8 @@ Little Go
 Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
 
 The information in this file is also available when displaying the "About" and
-the "Licenses" tab from within the running application. The license files are
-located in the source distribution in the subfolder resource/html.
+the "Licenses" UI area from within the running application. The license files
+are located in the source distribution in the subfolder resource/html.
 
 
 This product uses the Go engine and computer player provided by the Fuego
@@ -44,7 +44,9 @@ code of the three components is available from
   http://code.google.com/p/plcrashreporter/
   http://code.google.com/p/protobuf-c/
 
-The following free icons are all from the Noun Project (http://thenounproject.com/).
+The following icons are all from the Noun Project (http://thenounproject.com/).
+- The main menu button is "Menu by John Caserta"
+  http://thenounproject.com/term/menu/36901/
 - The Computer Play button is a composition of
     "Computer by Edward Boatman"
     (http://thenounproject.com/term/computer/115/
@@ -65,3 +67,7 @@ The following free icons are all from the Noun Project (http://thenounproject.co
   http://thenounproject.com/term/step-forward/45526/
 - The Game Info button is "line chart by Richard Schumann"
   http://thenounproject.com/term/graph/50837/
+- The Scoring button is a modified version of "Abacus by Cris Dobbins"
+  http://thenounproject.com/term/abacus/8926/
+- The More Game Actions button is "Right-Arrow by Icons8"
+  http://thenounproject.com/term/right-arrow/61422/

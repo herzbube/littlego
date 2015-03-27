@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,8 @@
 
 // Project includes
 #import "ApplicationDelegate.h"
-#import "MainTabBarController.h"
+#import "MainMenuPresenter.h"
+#import "WindowRootViewController.h"
 #import "../gtp/GtpClient.h"
 #import "../gtp/GtpEngine.h"
 #import "../gtp/GtpUtilities.h"
@@ -37,12 +38,14 @@
 #import "../player/GtpEngineProfileModel.h"
 #import "../player/GtpEngineProfile.h"
 #import "../player/PlayerModel.h"
+#import "../play/boardposition/BoardPositionNavigationManager.h"
+#import "../play/boardview/layer/BoardViewCGLayerCache.h"
 #import "../play/controller/SoundHandling.h"
+#import "../play/gameaction/GameActionManager.h"
 #import "../play/model/BoardPositionModel.h"
 #import "../play/model/BoardViewMetrics.h"
 #import "../play/model/BoardViewModel.h"
 #import "../play/model/ScoringModel.h"
-#import "../play/boardview/layer/BoardViewCGLayerCache.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
 #import "../diagnostics/CrashReportingModel.h"
@@ -128,7 +131,6 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.tabBarController = nil;
   self.window = nil;
   self.documentInteractionURL = nil;
   self.gtpClient = nil;
@@ -150,6 +152,9 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.loggingModel = nil;
   self.uiSettingsModel = nil;
   self.fileLogger = nil;
+  [MainMenuPresenter releaseSharedPresenter];
+  [BoardPositionNavigationManager releaseSharedNavigationManager];
+  [GameActionManager releaseSharedGameActionManager];
   [BoardViewCGLayerCache releaseSharedCache];
   [CommandProcessor releaseSharedProcessor];
   [LongRunningActionCounter releaseSharedCounter];
@@ -194,7 +199,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self setupUserDefaults];
   [self setupSound];
   [self setupFuego];
-  [self setupGUI];  // depends on setupUserDefaults
+  [self setupGUI];  // depends on setupUserDefaults (e.g. MainTabBarController wants to restore tab order)
 
   // Further setup steps are executed in a secondary thread so that we can
   // display a progress HUD
@@ -623,14 +628,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 - (void) setupGUI
 {
   [self setupWindow];
-  [self setupTabBarController];
-
-  [UiElementMetrics setInterfaceOrientationSource:self.tabBarController];
-
-  // Do this before the window becomes visible, otherwise the user will see
-  // the tab bar items shift
-  [self.tabBarController restoreTabBarControllerAppearanceToUserDefaults];
-
+  [self setupWindowRootViewController];
+  [UiElementMetrics setInterfaceOrientationSource:self.window.rootViewController];
   [self.window makeKeyAndVisible];
 }
 
@@ -646,10 +645,10 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupGui.
 // -----------------------------------------------------------------------------
-- (void) setupTabBarController
+- (void) setupWindowRootViewController
 {
-  self.tabBarController = [[[MainTabBarController alloc] init] autorelease];
-  self.window.rootViewController = self.tabBarController;
+  self.windowRootViewController = [[[WindowRootViewController alloc] init] autorelease];
+  self.window.rootViewController = self.windowRootViewController;
   // UIWindow automatically adds the root VC's view as a subview to itself.
   // It also manages the layout of that view, so there is no need to use
   // Auto Layout and install constraints in UIWindow. In fact, doing so causes
@@ -665,8 +664,8 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   if (! resourceName)
     return @"";
-  NSURL* resourceURL = [[ApplicationDelegate sharedDelegate].resourceBundle URLForResource:resourceName
-                                                                             withExtension:nil];
+  NSURL* resourceURL = [self.resourceBundle URLForResource:resourceName
+                                             withExtension:nil];
   NSStringEncoding usedEncoding;
   NSError* error;
   return [NSString stringWithContentsOfURL:resourceURL

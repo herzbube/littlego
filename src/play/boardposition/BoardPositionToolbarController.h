@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 
 // Project includes
+#import "BoardPositionNavigationManager.h"
 #import "CurrentBoardPositionViewController.h"
 
 // Forward declarations
@@ -23,8 +24,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardPositionToolbarController class is responsible for managing
-/// the toolbar with controls to navigate the game's list of board positions.
+/// @brief The BoardPositionToolbarController class provides a visual
+/// representation of the abstract set of board position navigation operations
+/// defined by BoardPositionNavigationManager. The visual representation is
+/// a toolbar with one button per navigation operation.
 ///
 /// BoardPositionToolbarController is a container view controller on the iPhone,
 /// and a child view controller on the iPad. It has the following
@@ -33,14 +36,16 @@
 ///   controls need to be laid out in the toolbar.
 /// - iPhone only: Integrate child view controllers' root views into the toolbar
 ///   as subviews and use Auto Layout to place them
-/// - React to taps on bar buttons (only those owned by
-///   BoardPositionToolbarController)
 ///
 /// BoardPositionToolbarController specifically is @b NOT responsible for
 /// managing user interaction with child view controller's root views - this is
 /// the job of the respective child view controllers.
+///
+/// @see BoardPositionNavigationManager
 // -----------------------------------------------------------------------------
-@interface BoardPositionToolbarController : UIViewController <UIToolbarDelegate, CurrentBoardPositionViewControllerDelegate>
+@interface BoardPositionToolbarController : UIViewController <UIToolbarDelegate,
+                                                              CurrentBoardPositionViewControllerDelegate,
+                                                              BoardPositionNavigationManagerDelegate>
 {
 }
 

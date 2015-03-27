@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,65 +16,34 @@
 
 
 // Project includes
-#import "GameActionsActionSheetController.h"
-#import "../splitview/SplitViewController.h"
+#import "GameActionManager.h"
 
 // Forward declarations
-@class CommandBase;
-@class NavigationBarController;
-@class StatusViewController;
+@class NavigationBarButtonModel;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NavigationBarControllerDelegate protocol must be implemented by
-/// the delegate of NavigationBarController.
-// -----------------------------------------------------------------------------
-@protocol NavigationBarControllerDelegate
-/// @brief This method is invoked when the user attempts to play a move. The
-/// delegate executes @a command, possibly displaying an alert first which the
-/// user must confirm.
-- (void) navigationBarController:(NavigationBarController*)controller playOrAlertWithCommand:(CommandBase*)command;
-/// @brief This method is invoked when the user attempts to discard board
-/// positions. The delegate executes @a command, possibly displaying an alert
-/// first which the user must confirmed.
-- (void) navigationBarController:(NavigationBarController*)controller discardOrAlertWithCommand:(CommandBase*)command;
-@end
-
-
-// -----------------------------------------------------------------------------
-/// @brief The NavigationBarController class is responsible for managing the
-/// navigation bar above the Go board on the Play tab.
+/// @brief The NavigationBarController class represents the controller that is
+/// responsible for managing the navigation bar above the Go board in
+/// #UIAreaPlay.
 ///
-/// NavigationBarController is a container view controller. Its responsibilities
-/// include:
-/// - Populate the navigation bar with buttons that are appropriate for the
-///   current game state
-/// - Enable/disable buttons
-/// - React to the user tapping on buttons
-/// - Integrate the status view provided by the StatusViewController child view
-///   controller into the navigation bar
-///
-/// The navigation bar that the user sees actually consists of 3 different
-/// UINavigationBar instances:
-/// - Left side: Contains some buttons
-/// - Center: Contains the status view
-/// - Right side: Contains more buttons
-///
-/// The center UINavigationBar is used only to provide the status view with the
-/// standard translucent background appearance, making it appear to the user as
-/// if there were a single navigation bar. On the iPhone the widths of the three
-/// UINavigationBar views are dynamically calculated, to make room for longer
-/// texts that can appear in the status view. This is necessary because the
-/// screen width is so limited.
+/// The navigation bar in #UIAreaPlay is managed differently depending on the
+/// UI type that is effective at runtime. Use the class method
+/// navigationBarController() to obtain a UI type-dependent controller object
+/// that knows how to correctly manage the navigation bar for the current UI
+/// type.
 // -----------------------------------------------------------------------------
-@interface NavigationBarController : UIViewController <UINavigationControllerDelegate,
-                                                       GameActionsActionSheetDelegate,
-                                                       UIAlertViewDelegate,
-                                                       SplitViewControllerDelegate>
+@interface NavigationBarController : UIViewController <GameActionManagerUIDelegate>
 {
 }
 
-@property(nonatomic, retain) StatusViewController* statusViewController;
-@property(nonatomic, assign) id<NavigationBarControllerDelegate> delegate;
++ (NavigationBarController*) navigationBarController;
+
+// Methods to override by subclasses
+- (void) populateNavigationBar;
+- (UIView*) moreGameActionsNavigationBar;
+
+// Properties for use by subclasses
+@property(nonatomic, retain) NavigationBarButtonModel* navigationBarButtonModel;
 
 @end

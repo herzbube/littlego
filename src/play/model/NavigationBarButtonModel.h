@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,19 +15,20 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#include "PlayTabController.h"
-
-
 // -----------------------------------------------------------------------------
-/// @brief The PlayTabControllerPad class is the root view controller on the
-/// Play tab for the iPad.
-///
-/// The PlayTabController class method playTabController() should be used to
-/// create a PlayTabControllerPad instance.
+/// @brief The NavigationBarButtonModel class manages UIBarButtonItems objects
+/// that represent game actions.
 // -----------------------------------------------------------------------------
-@interface PlayTabControllerPad : PlayTabController
+@interface NavigationBarButtonModel : NSObject
 {
 }
+
+- (void) updateVisibleGameActions;
+- (void) updateVisibleGameActionsWithVisibleStates:(NSDictionary*)visibleStates;
+
+@property(nonatomic, retain, readonly) NSDictionary* gameActionButtons;
+@property(nonatomic, retain, readonly) NSArray* buttonOrderList;
+@property(nonatomic, retain, readonly) NSArray* visibleGameActions;
+@property(nonatomic, retain, readonly) UIBarButtonItem* mainMenuButton;
 
 @end

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,18 +16,19 @@
 
 
 // Project includes
-#import "PlayTabControllerPad.h"
+#import "PlayRootViewControllerPad.h"
 #import "../controller/NavigationBarController.h"
 #import "../splitview/LeftPaneViewController.h"
 #import "../splitview/RightPaneViewController.h"
-#import "../splitview/SplitViewController.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../ui/SplitViewController.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for PlayTabControllerPad.
+/// @brief Class extension with private properties for
+/// PlayRootViewControllerPad.
 // -----------------------------------------------------------------------------
-@interface PlayTabControllerPad()
+@interface PlayRootViewControllerPad()
 // Cannot name this property splitViewController, there already is a property
 // of that name in UIViewController, and it has a different meaning
 @property(nonatomic, retain) SplitViewController* splitViewControllerChild;
@@ -36,18 +37,18 @@
 @end
 
 
-@implementation PlayTabControllerPad
+@implementation PlayRootViewControllerPad
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayTabControllerPad object.
+/// @brief Initializes a PlayRootViewControllerPad object.
 ///
-/// @note This is the designated initializer of PlayTabControllerPad.
+/// @note This is the designated initializer of PlayRootViewControllerPad.
 // -----------------------------------------------------------------------------
 - (id) init
 {
-  // Call designated initializer of superclass (PlayTabController)
+  // Call designated initializer of superclass (PlayRootViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
@@ -56,7 +57,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayTabControllerPad object.
+/// @brief Deallocates memory allocated by this PlayRootViewControllerPad
+/// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -80,7 +82,10 @@
   self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
   self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
 
-  self.splitViewControllerChild.delegate = self.rightPaneViewController.navigationBarController;
+  // Cast is safe because we know that the NavigationBarController object
+  // is a subclass of NavigationBarController that adopts the
+  // SplitViewControllerDelegate protocol
+  self.splitViewControllerChild.delegate = (id<SplitViewControllerDelegate>)self.rightPaneViewController.navigationBarController;
 }
 
 // -----------------------------------------------------------------------------
@@ -143,15 +148,11 @@
 ///
 /// We override this method so that we can install Auto Layout constraints that
 /// make use of the topLayoutGuide and bottomLayoutGuide properties of this
-/// UIViewController. We cannot install the constraints in loadView because this
-/// results in weird layout issues (when the app launches in landscape
-/// orientation on the iPad, the split view controller starts out with bounds
-/// that match portrait orientation).
-///
-/// Note that Apple's documentation for both the topLayoutGuide and the
-/// bottomLayoutGuide properties says: "Query this property within your
-/// implementation of the viewDidLayoutSubviews method." So this override
-/// actually does the right thing.
+/// UIViewController. We cannot install the constraints in loadView because it
+/// appears that the use of topLayoutGuide/bottomLayoutGuide is restricted to
+/// viewDidLayoutSubviews. Apple's documentation for both the topLayoutGuide and
+/// the bottomLayoutGuide properties says: "Query this property within your
+/// implementation of the viewDidLayoutSubviews method."
 // -----------------------------------------------------------------------------
 - (void) viewDidLayoutSubviews
 {
@@ -160,11 +161,12 @@
   {
     constraintsNotYetInstalled = false;
     self.splitViewControllerChild.view.translatesAutoresizingMaskIntoConstraints = NO;
-    // Unfortunately we can't say
+    // Unfortunately saying
     //   self.edgesForExtendedLayout = UIRectEdgeNone;
-    // because then the split view controller's view extends beneath the status
-    // bar at the top. So instead we ***MUST*** use the VC's layout guides,
-    // which in turn forces us to override viewDidLayoutSubviews.
+    // is not enough because then the split view controller's view merely
+    // extends beneath the status bar at the top. So instead of setting
+    // self.edgesForExtendedLayout we must use the VC's layout guides, which in
+    // turn forces us to override viewDidLayoutSubviews.
     [AutoLayoutUtility fillAreaBetweenGuidesOfViewController:self withSubview:self.splitViewControllerChild.view];
     // We must call this to avoid a crash; this is as per documentation of the
     // topLayoutGuide and bottomLayoutGuide properties.

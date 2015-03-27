@@ -26,16 +26,26 @@
 {
 }
 
-+ (NSArray*) fillSuperview:(UIView*)superview withSubview:(UIView*)subview;
++ (NSArray*) fillSuperview:(UIView*)superview
+               withSubview:(UIView*)subview;
++ (NSArray*) fillSuperview:(UIView*)superview
+               withSubview:(UIView*)subview
+                   margins:(UIEdgeInsets)margins;
 + (NSArray*) fillAreaBetweenGuidesOfViewController:(UIViewController*)viewController
                                        withSubview:(UIView*)subview;
-+ (NSArray*) centerSubview:(UIView*)subview inSuperview:(UIView*)superview;
++ (NSArray*) centerSubview:(UIView*)subview
+               inSuperview:(UIView*)superview;
 + (NSLayoutConstraint*) centerSubview:(UIView*)subview
                           inSuperview:(UIView*)superview
                                onAxis:(UILayoutConstraintAxis)axis;
 + (NSLayoutConstraint*) alignFirstView:(UIView*)firstView
                         withSecondView:(UIView*)secondView
                            onAttribute:(NSLayoutAttribute)attribute
+                      constraintHolder:(UIView*)constraintHolder;
++ (NSLayoutConstraint*) makeSquare:(UIView*)view
+                  constraintHolder:(UIView*)constraintHolder;
++ (NSLayoutConstraint*) setAspectRatio:(CGFloat)multiplier
+                                  view:(UIView*)view
                       constraintHolder:(UIView*)constraintHolder;
 + (NSArray*) installVisualFormats:(NSArray*)visualFormats
                         withViews:(NSDictionary*)viewsDictionary

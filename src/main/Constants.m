@@ -21,8 +21,6 @@ const float gDisabledViewAlpha = 0.439216f;
 const float gInfluenceColorAlphaBlack = 0.3;
 const float gInfluenceColorAlphaWhite = 0.6;
 const CFTimeInterval gGoBoardLongPressDelay = 0.15;
-const int indexOfMoreNavigationController = 0x7fffffff;
-const int defaultSelectedTabIndex = 0;
 const int arraySizeDefaultTabOrder = 9;
 const int defaultTabOrder[arraySizeDefaultTabOrder] = {0, 1, 2, 4, 3, 5, 6, 7, 8};
 
@@ -106,8 +104,8 @@ const int fuegoThreadCountMinimum = 1;
 const int fuegoThreadCountMaximum = 8;
 const int fuegoThreadCountDefault = 1;
 const bool fuegoPonderingDefault = false;
-const unsigned int fuegoMaxPonderTimeMinimum = 60;     // only values that are full minutes because
-                                                       // Settings tab lets the user pick minute values
+const unsigned int fuegoMaxPonderTimeMinimum = 60;     // assign only values that are full minutes because
+                                                       // the UI lets the user pick minute values
 const unsigned int fuegoMaxPonderTimeMaximum = 3600;   // ditto
 const unsigned int fuegoMaxPonderTimeDefault = 300;    // ditto
 const bool fuegoReuseSubtreeDefault = false;
@@ -174,15 +172,16 @@ NSString* manualDocumentResource = @"MANUAL";
 NSString* creditsDocumentResource = @"Credits.html";
 NSString* registrationDomainDefaultsResource = @"RegistrationDomainDefaults.plist";
 NSString* playStoneSoundFileResource = @"wood-on-wood-12.aiff";
-NSString* playTabIconResource = @"gogrid2x2.png";
-NSString* settingsTabIconResource = @"20-gear-2.png";
-NSString* archiveTabIconResource = @"33-cabinet.png";
-NSString* helpTabIconResource = @"help.png";
-NSString* diagnosticsTabIconResource = @"79-medical-bag.png";
-NSString* aboutTabIconResource = @"42-info.png";
-NSString* sourceCodeTabIconResource = @"162-receipt.png";
-NSString* licensesTabIconResource = @"licenses.png";
-NSString* creditsTabIconResource = @"108-badge.png";
+NSString* mainMenuIconResource = @"main-menu.png";
+NSString* uiAreaPlayIconResource = @"gogrid2x2.png";
+NSString* uiAreaSettingsIconResource = @"20-gear-2.png";
+NSString* uiAreaArchiveIconResource = @"33-cabinet.png";
+NSString* uiAreaHelpIconResource = @"help.png";
+NSString* uiAreaDiagnosticsIconResource = @"79-medical-bag.png";
+NSString* uiAreaAboutIconResource = @"42-info.png";
+NSString* uiAreaSourceCodeIconResource = @"162-receipt.png";
+NSString* uiAreaLicensesIconResource = @"licenses.png";
+NSString* uiAreaCreditsIconResource = @"108-badge.png";
 NSString* computerPlayButtonIconResource = @"computer-play.png";
 NSString* passButtonIconResource = @"pass.png";
 NSString* discardButtonIconResource = @"discard.png";
@@ -190,6 +189,9 @@ NSString* pauseButtonIconResource = @"pause.png";
 NSString* continueButtonIconResource = @"continue.png";
 NSString* gameInfoButtonIconResource = @"gameinfo.png";
 NSString* interruptButtonIconResource = @"interrupt.png";
+NSString* scoringStartButtonIconResource = @"scoring.png";
+NSString* scoringDoneButtonIconResource = @"gogrid2x2.png";
+NSString* moreGameActionsButtonIconResource = @"more-game-actions.png";
 NSString* forwardButtonIconResource = @"forward.png";
 NSString* forwardToEndButtonIconResource = @"forwardtoend.png";
 NSString* backButtonIconResource = @"back.png";
@@ -295,7 +297,7 @@ NSString* markNextMoveKey = @"MarkNextMove";
 // Logging settings
 NSString* loggingEnabledKey = @"LoggingEnabled";
 // User interface settings
-NSString* selectedTabIndexKey = @"SelectedTabIndex";
+NSString* visibleUIAreaKey = @"VisibleUIArea";
 NSString* tabOrderKey = @"TabOrder";
 
 // Constants for NSCoding

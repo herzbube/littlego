@@ -25,8 +25,4 @@
 {
 }
 
-/// @brief The tag of this tab bar item provides this controller with the
-/// context what it is supposed to display.
-@property(nonatomic, assign) UITabBarItem* contextTabBarItem;
-
 @end

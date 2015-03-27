@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>UserDefaultsVersionRegistrationDomain</key>
-	<integer>9</integer>
+	<integer>10</integer>
 	<key>LoggingEnabled</key>
 	<false/>
 	<key>BoardView</key>
@@ -296,8 +296,6 @@
 	<false/>
 	<key>CrashDataContactEmailKey</key>
 	<string></string>
-	<key>SelectedTabIndex</key>
-	<integer>0</integer>
 	<key>TabOrder</key>
 	<array>
 		<integer>0</integer>
@@ -312,5 +310,7 @@
 	</array>
 	<key>AdditiveKnowledgeMemoryThreshold</key>
 	<integer>768</integer>
+	<key>VisibleUIArea</key>
+	<integer>0</integer>
 </dict>
 </plist>

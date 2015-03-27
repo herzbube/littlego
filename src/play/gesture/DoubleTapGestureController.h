@@ -17,8 +17,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The DoubleTapGestureController class is responsible for managing the
-/// double-tap gesture on the Play tab. Double-tapping is used to zoom in on
-/// the Go board.
+/// double-tap gesture in #UIAreaPlay. Double-tapping is used to zoom in on the
+/// Go board.
 ///
 /// Every double-tap performs a 50% zoom-in at the location where the tap
 /// occurred. Repeated double-taps zoom in up to the maximum zoom scale. Once

@@ -40,9 +40,6 @@ extern const float gInfluenceColorAlphaWhite;
 /// to scroll and zoom, and on the iPad the swipe gesture of the main
 /// UISplitViewController).
 extern const CFTimeInterval gGoBoardLongPressDelay;
-/// @brief The index of the view controller that should be selected by default
-/// in the application's main tab bar controller.
-extern const int defaultSelectedTabIndex;
 /// @brief The size of the array #defaultTabOrder.
 extern const int arraySizeDefaultTabOrder;
 /// @brief The default order in which view controllers should appear in the
@@ -80,6 +77,41 @@ enum UIType
   UITypePad,
 };
 
+/// @brief Enumerates game-related actions that the user can trigger in the UI.
+enum GameAction
+{
+  /// @brief Generates a "Pass" move for the human player whose turn it
+  /// currently is.
+  GameActionPass,
+  /// @brief Discards the current board position and all positions that follow
+  /// afterwards.
+  GameActionDiscardBoardPosition,
+  /// @brief Causes the computer player to generate a move, either for itself or
+  /// on behalf of the human player whose turn it currently is.
+  GameActionComputerPlay,
+  /// @brief Pauses the game in a computer vs. computer game.
+  GameActionPause,
+  /// @brief Continues the game if it is paused in a computer vs. computer game.
+  GameActionContinue,
+  /// @brief Interrupts the computer while it is thinking (e.g. when calculating
+  /// its next move).
+  GameActionInterrupt,
+  /// @brief Starts scoring mode.
+  GameActionScoringStart,
+  /// @brief Ends the currently active scoring mode and returns to normal play
+  /// mode.
+  GameActionScoringDone,
+  /// @brief Displays the "Game Info" view with information about the game in
+  /// progress.
+  GameActionGameInfo,
+  /// @brief Displays an action sheet with additional game actions.
+  GameActionMoreGameActions,
+  /// @brief Pseudo game action, used as the starting value during a for-loop.
+  GameActionFirst = GameActionPass,
+  /// @brief Pseudo game action, used as the end value during a for-loop.
+  GameActionLast = GameActionMoreGameActions
+};
+
 /// @brief Enumerates the possible types of mark up to use for inconsistent
 /// territory during scoring.
 enum InconsistentTerritoryMarkupType
@@ -89,18 +121,28 @@ enum InconsistentTerritoryMarkupType
   InconsistentTerritoryMarkupTypeNeutral     ///< @brief Don't mark up territory
 };
 
-/// @brief Enumerates all existing tabs in the GUI.
-enum TabType
+/// @brief Enumerates the main UI areas of the app. These are the areas that
+/// the user can navigate to from the main application view controller that is
+/// currently in use.
+enum UIArea
 {
-  TabTypePlay,
-  TabTypeSettings,
-  TabTypeArchive,
-  TabTypeDiagnostics,
-  TabTypeHelp,
-  TabTypeAbout,
-  TabTypeSourceCode,
-  TabTypeLicenses,
-  TabTypeCredits
+  UIAreaPlay,
+  UIAreaSettings,
+  UIAreaArchive,
+  UIAreaDiagnostics,
+  UIAreaHelp,
+  UIAreaAbout,
+  UIAreaSourceCode,
+  UIAreaLicenses,
+  UIAreaCredits,
+  /// @brief This is a pseudo area that refers to a list of "more UI areas".
+  /// The user selects from that list to navigate to an actual area, the one
+  /// that he selected. For instance, the "More" navigation controller of the
+  /// main tab bar controller, or the menu presented by the main navigation
+  /// controller.m
+  UIAreaNavigation,
+  UIAreaUnknown = -1,
+  UIAreaDefault = UIAreaPlay
 };
 
 /// @brief Enumerates the types of alert views used across the application.
@@ -702,7 +744,7 @@ extern NSString* bugReportUserDefaultsFileName;
 /// format.
 extern NSString* bugReportCurrentGameFileName;
 /// @brief Name of the bug report file that stores a screenshot of the views
-/// visible on the Play tab.
+/// visible in #UIAreaPlay.
 extern NSString* bugReportScreenshotFileName;
 /// @brief Name of the bug report file that stores a depiction of the board as
 /// it is seen by the GTP engine.
@@ -745,15 +787,16 @@ extern NSString* manualDocumentResource;
 extern NSString* creditsDocumentResource;
 extern NSString* registrationDomainDefaultsResource;
 extern NSString* playStoneSoundFileResource;
-extern NSString* playTabIconResource;
-extern NSString* settingsTabIconResource;
-extern NSString* archiveTabIconResource;
-extern NSString* helpTabIconResource;
-extern NSString* diagnosticsTabIconResource;
-extern NSString* aboutTabIconResource;
-extern NSString* sourceCodeTabIconResource;
-extern NSString* licensesTabIconResource;
-extern NSString* creditsTabIconResource;
+extern NSString* mainMenuIconResource;
+extern NSString* uiAreaPlayIconResource;
+extern NSString* uiAreaSettingsIconResource;
+extern NSString* uiAreaArchiveIconResource;
+extern NSString* uiAreaHelpIconResource;
+extern NSString* uiAreaDiagnosticsIconResource;
+extern NSString* uiAreaAboutIconResource;
+extern NSString* uiAreaSourceCodeIconResource;
+extern NSString* uiAreaLicensesIconResource;
+extern NSString* uiAreaCreditsIconResource;
 extern NSString* computerPlayButtonIconResource;
 extern NSString* passButtonIconResource;
 extern NSString* discardButtonIconResource;
@@ -761,6 +804,9 @@ extern NSString* pauseButtonIconResource;
 extern NSString* continueButtonIconResource;
 extern NSString* gameInfoButtonIconResource;
 extern NSString* interruptButtonIconResource;
+extern NSString* scoringStartButtonIconResource;
+extern NSString* scoringDoneButtonIconResource;
+extern NSString* moreGameActionsButtonIconResource;
 extern NSString* forwardButtonIconResource;
 extern NSString* forwardToEndButtonIconResource;
 extern NSString* backButtonIconResource;
@@ -870,7 +916,7 @@ extern NSString* markNextMoveKey;
 // Logging settings
 extern NSString* loggingEnabledKey;
 // User interface settings
-extern NSString* selectedTabIndexKey;
+extern NSString* visibleUIAreaKey;
 extern NSString* tabOrderKey;
 //@}
 

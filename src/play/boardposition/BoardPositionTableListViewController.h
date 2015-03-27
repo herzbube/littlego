@@ -19,7 +19,7 @@
 // -----------------------------------------------------------------------------
 /// @brief The BoardPositionTableListViewController class is responsible for
 /// managing the table views that display the current board position and the
-/// list of all board positions on the Play tab.
+/// list of all board positions in #UIAreaPlay.
 ///
 /// BoardPositionTableListViewController is a child view controller. It is used
 /// on the iPad only where it replaces the iPhone-only subcontrollers

@@ -25,7 +25,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/MainTabBarController.h"
+#import "../../main/MainUtility.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/PathUtilities.h"
 
@@ -265,15 +265,15 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates a screenshot of the views visible on the Play tab and
-/// saves that screenshot to file.
+/// @brief Creates a screenshot of the views visible in #UIAreaPlay and saves
+/// that screenshot to file.
 // -----------------------------------------------------------------------------
 - (void) saveBoardScreenshot
 {
   DDLogVerbose(@"%@: Creating screen shot of Go board", [self shortDescription]);
 
-  UIView* tabView = [[ApplicationDelegate sharedDelegate].tabBarController tabView:TabTypePlay];
-  UIImage* image = [UiUtilities captureView:tabView];
+  UIView* rootView = [MainUtility rootViewForUIAreaPlay];
+  UIImage* image = [UiUtilities captureView:rootView];
   NSData* data = UIImagePNGRepresentation(image);
   NSString* screenshotPath = [self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportScreenshotFileName];
   BOOL success = [data writeToFile:screenshotPath atomically:YES];

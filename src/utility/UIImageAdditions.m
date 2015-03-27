@@ -134,4 +134,30 @@
   return gradientImage;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns an image of size @a size which has @a originalImage at its
+/// center. The original image is expected to have a smaller size than @a size.
+/// The effect is that the original image is padded by a certain amount of
+/// pixels on all 4 sides. The amount of padding depends on the difference in
+/// size of the original and the new image.
+///
+/// One application of this method is to create uniformly sized images from a
+/// number of differently sized original images.
+// -----------------------------------------------------------------------------
++ (UIImage*) paddedImageWithSize:(CGSize)size originalImage:(UIImage*)originalImage
+{
+  CGSize originalImageSize = originalImage.size;
+  CGFloat leftEdgePadding = (size.width - originalImageSize.width) / 2.0f;
+  CGFloat topEdgePadding = (size.height - originalImageSize.height) / 2.0f;
+  CGRect drawingRect = CGRectMake(leftEdgePadding, topEdgePadding, originalImageSize.width, originalImageSize.height);
+
+  BOOL opaque = NO;
+  UIGraphicsBeginImageContextWithOptions(size, opaque, [[UIScreen mainScreen] scale]);
+  [originalImage drawInRect:drawingRect];
+
+  UIImage* paddedImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return paddedImage;
+}
+
 @end

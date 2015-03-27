@@ -60,6 +60,7 @@ NSString* inconsistentTerritoryFillColorAlphaKey = @"InconsistentTerritoryFillCo
 NSString* blackSekiSymbolColorKey = @"BlackSekiSymbolColor";
 NSString* whiteSekiSymbolColorKey = @"WhiteSekiSymbolColor";
 NSString* maximumZoomScaleKey = @"MaximumZoomScale";
+NSString* selectedTabIndexKey = @"SelectedTabIndex";
 //@}
 
 
@@ -641,6 +642,18 @@ NSString* maximumZoomScaleKey = @"MaximumZoomScale";
     }
     [userDefaults setObject:profileListArrayUpgrade forKey:gtpEngineProfileListKey];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs the incremental upgrade to the user defaults format
+/// version 10.
+// -----------------------------------------------------------------------------
++ (void) upgradeToVersion10:(NSDictionary*)registrationDomainDefaults
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  // Just remove the value, we don't bother converting to the new key
+  // "VisibleUIArea"
+  [userDefaults removeObjectForKey:selectedTabIndexKey];
 }
 
 // -----------------------------------------------------------------------------
