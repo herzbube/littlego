@@ -172,7 +172,7 @@
   self.twoFingerTapGestureController.scrollView = self.boardView;
 }
 
-#pragma mark - viewWillLayoutSubviews
+#pragma mark - viewDidLayoutSubviews
 
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.

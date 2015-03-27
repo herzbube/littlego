@@ -44,3 +44,14 @@ UILaunchImageFile~ipad keys in the bundle's Info.plist file. This is no longer
 the case: Launch images are now stored in an asset catalog, and the reference to
 the icons is made in the project file using the setting
 ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME.
+
+
+Device capabilities
+-------------------
+The content of the key UIRequiredDeviceCapabilities lets the App Store know
+which device-related features an app requires in order to run. The App Store
+uses this list to prevent people from installing apps on a device that does not
+support the listed capabilities.
+
+This project lists "armv7" as a capability to indicate that devices which don't
+support this architecture (iPhone 3G and older) cannot run the app.

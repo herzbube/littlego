@@ -62,7 +62,7 @@ enum MainApplicationViewControllerType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayTabControllerPad object.
+/// @brief Deallocates memory allocated by this WindowRootViewController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {

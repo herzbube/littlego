@@ -36,16 +36,58 @@ View layout
 -----------
 This project uses iOS' Auto Layout feature to arrange its views on the screen.
 
-The application has a separate view layout on iPhone and iPad. The decision
-which layout to use is made in a convenience constructor of the
-PlayTabController class. The decision is based on the user interface idiom
-returned by UIDevice.
+The WindowRootViewController class is the application window's root view
+controller. It is responsible for selecting one of several alternative main
+application view controllers and displaying it. The decision is based on the
+"UI type" provided by LayoutManager, which in turn looks at the device type and
+the screen dimensions.
 
-On the iPad, if the user is holding the device in landscape orientation while
-the application is starting up, iOS will first start up in portrait orientation
-and then initiate an auto-rotation to landscape orientation. Auto Layout makes
-sure that the main view and its subviews are resized correctly when they are
-finally displayed.
+The same main application view controller is used throughout the lifetime of the
+app. The original plan to have different main application view controllers for
+different interface orientations had to be abandoned, at least for the moment,
+because it turned out to be unreasonably difficult to return to the same
+position in the logical view controller hierarchy after the interface
+orientation change.
+
+
+iOS 7 and Auto Layout
+---------------------
+In iOS 7 Apple added the concept of translucent / transparent bars (tab bars,
+navigation bars, toolbars, the status bar) and of views that extend behind
+those bars. Despite a variety of APIs that allow the developer to control the
+behaviour of view controllers, I have had a lot of trouble adapting the app to
+the new concept - possibly this has to do with the fact that, personally, I find
+the concept quite silly.
+
+Reasons for the current layout:
+- When not zoomed the Go board is drawn so that it fully fits into the visible
+  area, with no scrolling possible. In this mode it doesn't make sense to let
+  the wooden background extend behind bars.
+- When zoomed the Go board can be scrolled. I have decided that in this mode I
+  also don't want the board to extend behind bars. After all this is a game app,
+  not a document viewing app.
+
+These decisions require a number of view controller configuration steps to make
+the app look right. Here is an overview:
+- To prevent the board from extending behind the status bar, Auto Layout
+  constraints like this have been added in various places:
+    [NSString stringWithFormat:@"V:|-%d-[navigationBarView]", [UiElementMetrics statusBarHeight]],
+  The key too look for is the UiElementMetrics class method statusBarHeight.
+- UIViewController.automaticallyAdjustsScrollViewInsets = NO
+  - Applied to all types of PlayRootViewController
+  - Is required so that BoardView does not allow scrolling when not zoomed (e.g.
+    directly after application launch)
+  - Is required so that the bottom rows of the board position list table view
+    (which is a scroll view) remain visible after a portrait-to-landscape
+    interface rotation
+  - Although PlayRootViewController view controllers do not themselves contain
+    any scroll views, apparently this property is somehow propagated to those
+    child view controllers that *do* have scroll views. Surprisingly (and beyond
+    comprehension) the same propagation mechanism no longer works if
+    automaticallyAdjustsScrollViewInsets is set on the parent view controller
+    of PlayRootViewController. What is the logic behind this? I don't know :-(
+- UIViewController.edgesForExtendedLayout has been set in various places
+  - TODO Where and why?
 
 
 Working with .sgf files

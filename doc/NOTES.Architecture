@@ -130,17 +130,17 @@ About the Play UI area
   corresponding hierarchy of container/child UIViewControllers. Not all
   controller classes are view controllers, though: There are also a number of
   controllers that manage gesture recognizing, alert views or action sheets.
-- Dynamic design: When the application launches, the app delegate creates an
-  instance of the appropriate PlayRootViewController subclass. This starts a
-  first cascade of object creation during which all the controller objects are
-  created and the delegate connections are made. A little bit later iOS
-  accesses for the first time the view of the root PlayRootViewController. This
-  triggers a second cascade of object creation during which all the view
-  objects are created and notification and KVO observing mechanisms are
-  initialized.
+- Dynamic design: When the application launches, the main application view
+  controller creates an instance of the appropriate PlayRootViewController
+  subclass. This starts a first cascade of object creation during which all the
+  controller objects are created and the delegate connections are made. A little
+  bit later iOS accesses for the first time the view of the root
+  PlayRootViewController. This triggers a second cascade of object creation
+  during which all the view objects are created and notification and KVO
+  observing mechanisms are initialized.
 - View sizing and layouting is done via Auto Layout. Once you get over the
   initial stumbling blocks, Auto Layout in general is much easier to understand
-  than manually calculating view frames.
+  and less error prone than manually calculating view frames.
 
 
 UI design

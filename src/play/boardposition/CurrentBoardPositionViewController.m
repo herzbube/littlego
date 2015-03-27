@@ -63,7 +63,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this TapGestureController object.
+/// @brief Deallocates memory allocated by this
+/// CurrentBoardPositionViewController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {

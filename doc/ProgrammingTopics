@@ -98,6 +98,13 @@ the view hierarchy than manually calculating view frames. [32] is both an
 introductory guide and a reference for the visual format used to specify
 Auto Layout constraints.
 
+UICollectionView, introduced in iOS 6, is a welcome addition to the view
+"bestiary" of iOS. It provides a fully flexible solution for displaying custom
+views that scroll horizontally or vertically. After learning the basics by
+reading [33] I am tempted to call UICollectionView the "younger brother" of
+UITableView, because unmistakably the UICollectionView API was inspired by
+UITableView.
+
 Unless otherwise noted, the base for all of the following references is the
 "iOS Developer Library", found under this URL:
 https://developer.apple.com/library/ios/navigation/.
@@ -134,3 +141,4 @@ https://developer.apple.com/library/ios/navigation/.
 [30] iOS Developer Library > Reference > Uniform Type Identifiers Reference
 [31] http://developer.apple.com/library/ios/#documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
 [32] iOS Developer Library > Guides > Auto Layout Guide
+[33] iOS Developer Library > Guides > Collection View Programming Guide for iOS
