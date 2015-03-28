@@ -35,6 +35,28 @@
   if (! self)
     return nil;
   self.magnifiedImage = nil;
+  self.gradientEnabled = true;
+
+  // The amount of alpha that we set here influences how dark the loupe appears.
+  // Alternatively, to make the loupe lighter, we could also start not with
+  // black, but with an intermediate gray (not tested).
+  self.gradientOuterColor = [UIColor colorWithWhite:0.0f alpha:0.1f];
+  // It's important that the we use white, not black, as the second color,
+  // because this makes the fading into nothingness much smoother. If we use
+  // black as the second color then the fading is much more noticeable; it also
+  // causes the loupe to become darker because there is more "blackness".
+  self.gradientInnerColor = [UIColor colorWithWhite:1.0f alpha:0.0f];
+  // The following calculation looks good for size 100.0f. Using a percentage
+  // instead of absolute values hopefully makes the code behave reasonably if
+  // a different size is chosen.
+  self.gradientInnerCircleCenterDistanceFromBottom = floorf(rect.size.height * 0.25f);
+  self.gradientInnerCircleEdgeDistanceFromBottom = floorf(rect.size.height * 0.05f);
+  self.borderEnabled = true;
+  self.borderColor = [UIColor blackColor];
+  self.borderWidth = 1.0f;
+  self.hotspotEnabled = true;
+  self.hotspotColor = [UIColor redColor];
+  self.hotspotRadius = 2.0f;
   return self;
 }
 
@@ -44,6 +66,10 @@
 - (void) dealloc
 {
   self.magnifiedImage = nil;
+  self.gradientOuterColor = nil;
+  self.gradientInnerColor = nil;
+  self.borderColor = nil;
+  self.hotspotColor = nil;
   [super dealloc];
 }
 
@@ -83,9 +109,14 @@
   const CGFloat endRadius = [UiUtilities radians:360];
   const int clockwise = 0;
 
-  // First draw the clipped image
   CGContextRef context = UIGraphicsGetCurrentContext();
+
+  // Save the current state so that we can restore it later to remove the
+  // clipping path we are going to create next
   CGContextSaveGState(context);
+
+  // The clipping path we create here will remain in effect both for drawing
+  // the image with the magnified content, and for the gradient
   CGContextAddArc(context,
                   magnifyingGlassCenter.x,
                   magnifyingGlassCenter.y,
@@ -94,34 +125,71 @@
                   endRadius,
                   clockwise);
   CGContextClip(context);
+
   [_magnifiedImage drawInRect:rect];
+
+  if (self.gradientEnabled)
+  {
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    NSArray* colors = [NSArray arrayWithObjects:(id)self.gradientOuterColor.CGColor, (id)self.gradientInnerColor.CGColor, nil];
+    CGFloat locations[] = { 0.0f, 1.0f };
+    // NSArray is toll-free bridged, so we can simply cast to CGArrayRef
+    CGGradientRef gradient = CGGradientCreateWithColors(colorSpace,
+                                                        (CFArrayRef)colors,
+                                                        locations);
+    CGGradientDrawingOptions gradientOptions = 0;
+    CGPoint gradientOuterCircleCenter = magnifyingGlassCenter;
+    CGFloat gradientOuterCircleRadius = magnifyingGlassRadius;
+
+    CGPoint gradientInnerCircleCenter;
+    gradientInnerCircleCenter.x = magnifyingGlassCenter.x;
+    gradientInnerCircleCenter.y = CGRectGetMaxY(rect) - self.gradientInnerCircleCenterDistanceFromBottom;
+    CGFloat gradientInnerCircleRadius = self.gradientInnerCircleCenterDistanceFromBottom - self.gradientInnerCircleEdgeDistanceFromBottom;
+    CGContextDrawRadialGradient(context,
+                                gradient,
+                                gradientOuterCircleCenter,
+                                gradientOuterCircleRadius,
+                                gradientInnerCircleCenter,
+                                gradientInnerCircleRadius,
+                                gradientOptions);
+
+    CGGradientRelease(gradient);
+    CGColorSpaceRelease(colorSpace);
+  }
+
+  // Restore the state in order to remove the clipping path. Do this only
+  // ***AFTER*** the gradient is drawn. This allows "unusual" gradient
+  // configurations which would cause parts of the gradient to be drawn outside
+  // the clipping path.
   CGContextRestoreGState(context);
 
-  // Next draw the stroked circle
-  CGFloat magnifyingGlassBorderThickness = 1.0f;
-  CGContextAddArc(context,
-                  magnifyingGlassCenter.x,
-                  magnifyingGlassCenter.y,
-                  // Reduce the radius because the circle will be stroked
-                  magnifyingGlassRadius - (magnifyingGlassBorderThickness / 2.0f),
-                  startRadius,
-                  endRadius,
-                  clockwise);
-  CGContextSetStrokeColorWithColor(context, [UIColor blackColor].CGColor);
-  CGContextSetLineWidth(context, magnifyingGlassBorderThickness);
-  CGContextStrokePath(context);
+  if (self.borderEnabled)
+  {
+    CGContextAddArc(context,
+                    magnifyingGlassCenter.x,
+                    magnifyingGlassCenter.y,
+                    // Reduce the radius because the circle will be stroked
+                    magnifyingGlassRadius - (self.borderWidth / 2.0f),
+                    startRadius,
+                    endRadius,
+                    clockwise);
+    CGContextSetStrokeColorWithColor(context, self.borderColor.CGColor);
+    CGContextSetLineWidth(context, self.borderWidth);
+    CGContextStrokePath(context);
+  }
 
-  // Finally draw the hot spot that marks the center of magnification
-  CGFloat hotspotRadius = 2.0f;
-  CGContextAddArc(context,
-                  magnifyingGlassCenter.x,
-                  magnifyingGlassCenter.y,
-                  hotspotRadius,
-                  startRadius,
-                  endRadius,
-                  clockwise);
-  CGContextSetFillColorWithColor(context, [UIColor redColor].CGColor);
-  CGContextFillPath(context);
+  if (self.hotspotEnabled)
+  {
+    CGContextAddArc(context,
+                    magnifyingGlassCenter.x,
+                    magnifyingGlassCenter.y,
+                    self.hotspotRadius,
+                    startRadius,
+                    endRadius,
+                    clockwise);
+    CGContextSetFillColorWithColor(context, self.hotspotColor.CGColor);
+    CGContextFillPath(context);
+  }
 }
 
 @end
