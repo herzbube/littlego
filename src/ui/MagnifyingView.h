@@ -15,28 +15,22 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@protocol MagnifyingGlassOwner;
-
-
 // -----------------------------------------------------------------------------
-/// @brief The MainUtility class is a container for various utility functions
-/// related to managing the main navigation of the application.
+/// @brief The MagnifyingView class draws a provided UIImage so that it appears
+/// as if inside a circular loupe.
 ///
-/// All functions in MainUtility are class methods, so there is no need to
-/// create an instance of MainUtility.
+/// The circular loupe effect is achieved simply by clipping the provided image
+/// to a circular path whose diameter is equal to the size of the
+/// MagnifyingView. If MagnifyingView is rectangular, the lesser dimension of
+/// the rectangle is used as the diameter.
+///
+/// In addition to clipping, MagnifyingView also draws a stroked circle around
+/// the magnified image, to separate the image from its surrounding content.
 // -----------------------------------------------------------------------------
-@interface MainUtility : NSObject
+@interface MagnifyingView : UIView
 {
 }
 
-+ (NSString*) titleStringForUIArea:(enum UIArea)uiArea;
-+ (NSString*) iconResourceNameForUIArea:(enum UIArea)uiArea;
-+ (UIViewController*) rootViewControllerForUIArea:(enum UIArea)uiArea;
-+ (UIView*) rootViewForUIAreaPlay;
-+ (NSString*) resourceNameForUIArea:(enum UIArea)uiArea;
-+ (void) activateUIArea:(enum UIArea)uiArea;
-+ (void) mainApplicationViewController:(UIViewController*)viewController didDisplayUIArea:(enum UIArea)uiArea;
-+ (id<MagnifyingGlassOwner>) magnifyingGlassOwner;
+@property(nonatomic, retain) UIImage* magnifiedImage;
 
 @end

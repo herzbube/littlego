@@ -30,8 +30,11 @@
 ///
 /// Radians are often used by Core Graphics operations, such as drawing arcs
 /// or performing CTM rotations.
+///
+/// Radians describe angles around a circle as a measurement of pi. A full
+/// revolution around a circle is 2 times pi.
 // -----------------------------------------------------------------------------
-+ (double) radians:(double)degrees
++ (CGFloat) radians:(CGFloat)degrees
 {
   return degrees * M_PI / 180;
 }
@@ -246,14 +249,27 @@
 /// @brief Captures the content currently drawn by @a view into an image, then
 /// returns that image.
 ///
+/// Keyword for search: screenshot
+// -----------------------------------------------------------------------------
++ (UIImage*) captureView:(UIView*)view
+{
+  return [UiUtilities captureFrame:view.bounds inView:view];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Captures the content currently drawn by @a view within @a frame into
+/// an image, then returns that image.
+///
 /// The code for this method is based on
 /// http://stackoverflow.com/questions/2200736/how-to-take-a-screenshot-programmatically
 ///
 /// Keyword for search: screenshot
 // -----------------------------------------------------------------------------
-+ (UIImage*) captureView:(UIView*)view
++ (UIImage*) captureFrame:(CGRect)frame inView:(UIView*)view
 {
-  UIGraphicsBeginImageContextWithOptions(view.bounds.size, NO, 0.0f);
+  UIGraphicsBeginImageContextWithOptions(frame.size, NO, 0.0f);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextTranslateCTM(context, -frame.origin.x, -frame.origin.y);
   [view.layer renderInContext:UIGraphicsGetCurrentContext()];
   UIImage* imageCapture = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();

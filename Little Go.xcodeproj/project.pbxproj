@@ -358,6 +358,10 @@
 		CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
+		CDB5AE251AC5A86D0075C8DC /* MagnifyingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */; };
+		CDB5AE261AC5A86D0075C8DC /* MagnifyingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */; };
+		CDB5AE291AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */; };
+		CDB5AE2A1AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */; };
 		CDB684FE161591760038AADE /* EditPlayingStrengthSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */; };
 		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
@@ -862,6 +866,11 @@
 		CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserDefaultsUpdater.m; sourceTree = "<group>"; };
 		CDB457B2147F14480043EDE4 /* UiUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiUtilities.h; sourceTree = "<group>"; };
 		CDB457B3147F14490043EDE4 /* UiUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiUtilities.m; sourceTree = "<group>"; };
+		CDB5AE231AC5A86D0075C8DC /* MagnifyingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagnifyingView.h; sourceTree = "<group>"; };
+		CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagnifyingView.m; sourceTree = "<group>"; };
+		CDB5AE271AC5ABA60075C8DC /* MagnifyingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagnifyingViewController.h; sourceTree = "<group>"; };
+		CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagnifyingViewController.m; sourceTree = "<group>"; };
+		CDB5AE2B1AC5B82A0075C8DC /* MagnifyingGlassOwner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MagnifyingGlassOwner.h; sourceTree = "<group>"; };
 		CDB684FC161591760038AADE /* EditPlayingStrengthSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayingStrengthSettingsController.h; sourceTree = "<group>"; };
 		CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayingStrengthSettingsController.m; sourceTree = "<group>"; };
 		CDBB0359133537C8007C1C3E /* GoBoardRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegion.h; sourceTree = "<group>"; };
@@ -1127,6 +1136,7 @@
 				CD00A35C148C2C26004E1A0C /* DocumentViewController.m */,
 				CD00A35D148C2C26004E1A0C /* LicensesViewController.h */,
 				CD00A35E148C2C26004E1A0C /* LicensesViewController.m */,
+				CDB5AE2B1AC5B82A0075C8DC /* MagnifyingGlassOwner.h */,
 				CDA097051A9954A3002FCD78 /* MainNavigationController.h */,
 				CDA097061A9954A3002FCD78 /* MainNavigationController.m */,
 				CD377F0616BD154A00972F04 /* MainTabBarController.h */,
@@ -1943,6 +1953,10 @@
 				CDDD525A1482DD9F0027476B /* ItemPickerController.m */,
 				CDC4E978167B996C00AFDB51 /* ItemScrollView.h */,
 				CDC4E979167B996C00AFDB51 /* ItemScrollView.m */,
+				CDB5AE231AC5A86D0075C8DC /* MagnifyingView.h */,
+				CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */,
+				CDB5AE271AC5ABA60075C8DC /* MagnifyingViewController.h */,
+				CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */,
 				CD0AF18E17401C56003BFC21 /* SliderInputController.h */,
 				CD0AF18F17401C56003BFC21 /* SliderInputController.m */,
 				CDA097091A99F77F002FCD78 /* SplitViewController.h */,
@@ -2264,6 +2278,7 @@
 				CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */,
 				CDFABCA814194A420065C93B /* ViewGameController.m in Sources */,
 				CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */,
+				CDB5AE291AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */,
 				CD05A8CC1422803B00214BBE /* PlayMoveCommand.m in Sources */,
 				CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */,
 				CDE6C549183D820300186E89 /* SoundSettingsController.m in Sources */,
@@ -2376,6 +2391,7 @@
 				CD7C69ED1AA9F697009EC5AD /* ExceptionUtility.m in Sources */,
 				CDAF171D196869E700271396 /* GameActionsActionSheetController.m in Sources */,
 				CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */,
+				CDB5AE251AC5A86D0075C8DC /* MagnifyingView.m in Sources */,
 				CD1311C217180B45006CE699 /* ScoringModel.m in Sources */,
 				CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */,
 				CDEE1A1D19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */,
@@ -2482,6 +2498,7 @@
 				CD4D44741A79D08F00272579 /* BWQuincyManager.m in Sources */,
 				CDFD9F8218F1D5F40031CBCF /* GtpLogSettingsController.m in Sources */,
 				CD05B143142A74ED00214BBE /* LoadGameCommand.m in Sources */,
+				CDB5AE2A1AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */,
 				CD7C6A1A1AB4990D009EC5AD /* BoardPositionCollectionViewCell.m in Sources */,
 				CD05B213142BC5A400214BBE /* GtpUtilities.m in Sources */,
 				CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
@@ -2553,6 +2570,7 @@
 				CD9A49DF17125095009E7514 /* CurrentBoardPositionViewController.m in Sources */,
 				CD9A49E1171250AA009E7514 /* DoubleTapGestureController.m in Sources */,
 				CD9A49E2171250AE009E7514 /* PanGestureController.m in Sources */,
+				CDB5AE261AC5A86D0075C8DC /* MagnifyingView.m in Sources */,
 				CD9A49E3171250B0009E7514 /* TapGestureController.m in Sources */,
 				CD9A49E4171250B3009E7514 /* TwoFingerTapGestureController.m in Sources */,
 				CD9A49E6171250D4009E7514 /* LeftPaneViewController.m in Sources */,

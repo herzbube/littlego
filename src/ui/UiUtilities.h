@@ -30,7 +30,7 @@
 {
 }
 
-+ (double) radians:(double)degrees;
++ (CGFloat) radians:(CGFloat)degrees;
 + (CGFloat) tableView:(UITableView*)tableView heightForCellOfType:(enum TableViewCellType)type withText:(NSString*)text hasDisclosureIndicator:(bool)hasDisclosureIndicator;
 + (UITableView*) createTableViewWithStyle:(UITableViewStyle)tableViewStyle withDelegateAndDataSource:(id)anObject;
 + (void) addGroupTableViewBackgroundToView:(UIView*)view;
@@ -38,6 +38,7 @@
 + (UIImageView*) redButtonTableViewCellBackground:(bool)selected;
 + (void) drawLinearGradientWithContext:(CGContextRef)context rect:(CGRect)rect startColor:(CGColorRef)startColor endColor:(CGColorRef)endColor;
 + (UIImage*) captureView:(UIView*)view;
++ (UIImage*) captureFrame:(CGRect)frame inView:(UIView*)view;
 + (void) drawRectWithContext:(CGContextRef)context rect:(CGRect)rect fill:(bool)fill color:(UIColor*)color;
 + (void) drawCircleWithContext:(CGContextRef)context center:(CGPoint)center radius:(CGFloat)radius fill:(bool)fill color:(UIColor*)color;
 

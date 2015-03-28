@@ -15,28 +15,17 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@protocol MagnifyingGlassOwner;
-
-
 // -----------------------------------------------------------------------------
-/// @brief The MainUtility class is a container for various utility functions
-/// related to managing the main navigation of the application.
+/// @brief The MagnifyingViewController class is responsible for managing a
+/// MagnifyingView.
 ///
-/// All functions in MainUtility are class methods, so there is no need to
-/// create an instance of MainUtility.
+/// TODO xxx document this
 // -----------------------------------------------------------------------------
-@interface MainUtility : NSObject
+@interface MagnifyingViewController : UIViewController
 {
 }
 
-+ (NSString*) titleStringForUIArea:(enum UIArea)uiArea;
-+ (NSString*) iconResourceNameForUIArea:(enum UIArea)uiArea;
-+ (UIViewController*) rootViewControllerForUIArea:(enum UIArea)uiArea;
-+ (UIView*) rootViewForUIAreaPlay;
-+ (NSString*) resourceNameForUIArea:(enum UIArea)uiArea;
-+ (void) activateUIArea:(enum UIArea)uiArea;
-+ (void) mainApplicationViewController:(UIViewController*)viewController didDisplayUIArea:(enum UIArea)uiArea;
-+ (id<MagnifyingGlassOwner>) magnifyingGlassOwner;
+- (void) updateMagnificationCenter:(CGPoint)magnificationCenter
+                            inView:(UIView*)magnificationCenterView;
 
 @end

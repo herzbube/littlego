@@ -21,6 +21,7 @@
 #import "MainTabBarController.h"
 #import "../shared/LayoutManager.h"
 #import "../ui/AutoLayoutUtility.h"
+#import "../ui/MagnifyingViewController.h"
 #import "../utility/ExceptionUtility.h"
 
 
@@ -37,10 +38,23 @@ enum MainApplicationViewControllerType
 @interface WindowRootViewController()
 @property(nonatomic, assign) enum MainApplicationViewControllerType currentMainApplicationViewControllerType;
 @property(nonatomic, retain) NSArray* autoLayoutConstraints;
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, retain, readwrite) MagnifyingViewController* magnifyingViewController;
+//@}
 @end
 
 
 @implementation WindowRootViewController
+
+#pragma mark - Property synthesizing
+
+// Auto-synthesizing does not work for properties declared in a protocol, so we
+// have to explicitly synthesize the properties declared in the
+// MagnifyingGlassOwner protocol.
+@synthesize magnifyingGlassEnabled = _magnifyingGlassEnabled;
+@synthesize magnifyingViewController = _magnifyingViewController;
+
 
 #pragma mark - Initialization and deallocation
 
@@ -57,6 +71,7 @@ enum MainApplicationViewControllerType
     return nil;
   enum MainApplicationViewControllerType mainApplicationViewControllerType = [self mainApplicationViewControllerTypeForCurrentApplicationState];
   [self setupMainApplicationViewControllerForType:mainApplicationViewControllerType];
+  self.magnifyingGlassEnabled = false;  // initializes self.magnifyingViewController
   self.autoLayoutConstraints = nil;
   return self;
 }
@@ -68,6 +83,7 @@ enum MainApplicationViewControllerType
 {
   self.view = nil;
   self.mainApplicationViewController = nil;
+  self.magnifyingGlassEnabled = false;  // resets self.magnifyingViewController
   self.autoLayoutConstraints = nil;
   [super dealloc];
 }
@@ -202,6 +218,36 @@ enum MainApplicationViewControllerType
 {
   [self.view removeConstraints:self.autoLayoutConstraints];
   [self.mainApplicationViewController.view removeFromSuperview];
+}
+
+#pragma mark - Magnifying glass handling
+
+// -----------------------------------------------------------------------------
+/// @brief Enables/disables the magnifying glass.
+///
+/// Enabling the magnifying glass causes the property
+/// @e magnifyingViewController to be initialized. From now on, clients may use
+/// the MagnifyingControllerView instance to manage the magnified content.
+///
+/// Disabling the magnifying glass causes the property
+/// @e magnifyingViewController to be reset to nil.
+// -----------------------------------------------------------------------------
+- (void) setMagnifyingGlassEnabled:(bool)magnifyingGlassEnabled
+{
+  if (_magnifyingGlassEnabled == magnifyingGlassEnabled)
+    return;
+  _magnifyingGlassEnabled = magnifyingGlassEnabled;
+  if (_magnifyingGlassEnabled)
+  {
+    self.magnifyingViewController = [[[MagnifyingViewController alloc] init] autorelease];
+    // MagnifyingViewController manages the frame
+    [self.view addSubview:self.magnifyingViewController.view];
+  }
+  else
+  {
+    [self.magnifyingViewController.view removeFromSuperview];
+    self.magnifyingViewController = nil;
+  }
 }
 
 @end

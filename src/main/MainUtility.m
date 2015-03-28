@@ -222,4 +222,16 @@
   [applicationDelegate writeUserDefaults];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the owner of the application's magnifying glass
+/// functionality.
+///
+/// If we ever decide to change the owner we only have to modify this method,
+/// client's won't be affected.
+// -----------------------------------------------------------------------------
++ (id<MagnifyingGlassOwner>) magnifyingGlassOwner
+{
+  return [ApplicationDelegate sharedDelegate].windowRootViewController;
+}
+
 @end

@@ -633,6 +633,51 @@ extern const bool markNextMoveDefault;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Constants related to the magnifying glass
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Enumerates the different modes when the magnifying glass is enabled.
+enum MagnifyingGlassEnableMode
+{
+  MagnifyingGlassEnableModeAlwaysOn,    ///< @brief The magnifying glass is always on
+  MagnifyingGlassEnableModeAlwaysOff,   ///< @brief The magnifying glass is always off
+  MagnifyingGlassEnableModeAuto,        ///< @brief The magnifying glass is on if the grid cell size on the board view falls
+                                        ///  below the threshold where it is hard to see the cross-hair stone below the finger
+  MagnifyingGlassEnableModeDefault = MagnifyingGlassEnableModeAuto
+};
+
+/// @brief Enumerates the different directions that the magnifying glass can
+/// veer towards when it reaches the upper border of the screen.
+enum MagnifyingGlassVeerDirection
+{
+  MagnifyingGlassVeerDirectionLeft,    ///< @brief The magnifying glass veers to the left. Useful if the right hand is used for placing stones.
+  MagnifyingGlassVeerDirectionRight,   ///< @brief The magnifying glass veers to the right. Useful if the left hand is used for placing stones.
+  MagnifyingGlassVeerDirectionDefault = MagnifyingGlassVeerDirectionLeft
+};
+
+/// @brief Enumerates the different update modes of the magnifying glass.
+enum MagnifyingGlassUpdateMode
+{
+  MagnifyingGlassUpdateModeSmooth,      ///< @brief The magnifying glass updates continuously with the panning gesture. Nicer but requires more CPU.
+  MagnifyingGlassUpdateModeCrossHair,   ///< @brief The magnifying glass updates only when the cross-hair intersection changes. Requires less CPU.
+  MagnifyingGlassUpdateModeDefault = MagnifyingGlassUpdateModeSmooth
+};
+
+/// @brief The size of the magnifying glass, or rather, of the bounding box
+/// around the magnifying glass. The bounding box is square which is why a
+/// single value is sufficient to define its size.
+extern const CGFloat magnifyingGlassDimension;
+/// @brief The scale factor by which the magnifying glass magnifies the content.
+extern const CGFloat magnifyingGlassMagnification;
+/// @brief If #MagnifyingGlassEnableModeAuto is set, the magnifying glass is
+/// enabled if the grid cell size on the board view falls below this threshold.
+extern const CGFloat gridCellSizeThresholdForAutoMagnifyingGlass;
+/// @brief The distance of the (center of the) magnifying glass from the
+/// center of magnification.
+extern const CGFloat magnifyingGlassDistanceFromMagnificationCenter;
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name GTP engine profile constants
 ///
 /// @brief See GtpEngineProfile for attribute documentation.

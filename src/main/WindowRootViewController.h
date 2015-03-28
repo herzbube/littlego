@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "MagnifyingGlassOwner.h"
+
 
 // -----------------------------------------------------------------------------
 /// @brief The WindowRootViewController class is the application window's root
@@ -48,7 +51,7 @@
 /// complicated if a modal view controller is visible at the time when the
 /// device rotates.
 // -----------------------------------------------------------------------------
-@interface WindowRootViewController : UIViewController
+@interface WindowRootViewController : UIViewController <MagnifyingGlassOwner>
 {
 }
 

@@ -89,6 +89,12 @@ const bool displayPlayerInfluenceDefault = false;
 const bool discardFutureMovesAlertDefault = true;
 const bool markNextMoveDefault = true;
 
+/// Magnifying glass constants
+const CGFloat magnifyingGlassDimension = 100.0f;
+const CGFloat magnifyingGlassMagnification = 1.25f;
+const CGFloat gridCellSizeThresholdForAutoMagnifyingGlass = 30.0f;
+const CGFloat magnifyingGlassDistanceFromMagnificationCenter = 100.0f;
+
 /// GTP engine profile constants
 const int minimumPlayingStrength = 1;
 const int maximumPlayingStrength = 5;

@@ -34,6 +34,9 @@
 @property(nonatomic, assign) float moveNumbersPercentage;
 @property(nonatomic, assign) bool playSound;
 @property(nonatomic, assign) bool vibrate;
+@property(nonatomic, assign) enum MagnifyingGlassEnableMode magnifyingGlassEnableMode;
+@property(nonatomic, assign) enum MagnifyingGlassVeerDirection magnifyingGlassVeerDirection;
+@property(nonatomic, assign) enum MagnifyingGlassUpdateMode magnifyingGlassUpdateMode;
 /// @brief How far from the fingertip should the cross-hair point be displayed
 /// when placing stones on the Go board.
 ///

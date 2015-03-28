@@ -19,11 +19,16 @@
 #import "PanGestureController.h"
 #import "../boardview/BoardView.h"
 #import "../gameaction/GameActionManager.h"
+#import "../model/BoardViewMetrics.h"
 #import "../model/BoardViewModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../main/MainUtility.h"
+#import "../../main/MagnifyingGlassOwner.h"
+#import "../../ui/MagnifyingViewController.h"
+#import "../../utility/ExceptionUtility.h"
 
 
 // -----------------------------------------------------------------------------
@@ -36,6 +41,8 @@
 
 
 @implementation PanGestureController
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a PanGestureController object.
@@ -96,6 +103,8 @@
   [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
 }
 
+#pragma mark - Property setter
+
 // -----------------------------------------------------------------------------
 /// @brief Private setter implementation.
 // -----------------------------------------------------------------------------
@@ -110,9 +119,10 @@
     [_boardView addGestureRecognizer:self.longPressRecognizer];
 }
 
+#pragma mark - UIGestureRecognizerDelegate overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a dragging, or panning, gesture in the view's Go board
-/// area.
+/// @brief UIGestureRecognizerDelegate protocol method.
 // -----------------------------------------------------------------------------
 - (void) handlePanFrom:(UILongPressGestureRecognizer*)gestureRecognizer
 {
@@ -158,6 +168,7 @@
       crossHairIntersection = BoardViewIntersectionNull;
   }
 
+  BoardViewModel* boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
   UIGestureRecognizerState recognizerState = gestureRecognizer.state;
   switch (recognizerState)
   {
@@ -166,7 +177,7 @@
     {
       if (UIGestureRecognizerStateBegan == recognizerState)
       {
-        [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair = true;
+        boardViewModel.boardViewDisplaysCrossHair = true;
         [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillDisplayCrossHair object:nil];
       }
 
@@ -189,7 +200,7 @@
     }
     case UIGestureRecognizerStateEnded:
     {
-      [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair = false;
+      boardViewModel.boardViewDisplaysCrossHair = false;
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
       [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewDidChangeCrossHair object:[NSArray array]];
@@ -201,7 +212,7 @@
     // being handled, or if the gesture recognizer was disabled.
     case UIGestureRecognizerStateCancelled:
     {
-      [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair = false;
+      boardViewModel.boardViewDisplaysCrossHair = false;
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
       [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewDidChangeCrossHair object:[NSArray array]];
@@ -212,6 +223,11 @@
       break;
     }
   }
+
+  // Perform magnifying glass handling only after the Go board graphics changes
+  // have been queued
+  [self handleMagnifyingGlassForPanningLocation:panningLocation
+                          crossHairIntersection:crossHairIntersection];
 }
 
 // -----------------------------------------------------------------------------
@@ -221,6 +237,8 @@
 {
   return (self.isPanningEnabled ? YES : NO);
 }
+
+#pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameWillCreate notification.
@@ -286,14 +304,7 @@
   }
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Cancels a panning gesture that is currently in progress.
-// -----------------------------------------------------------------------------
-- (void) cancelPanningInProgress
-{
-  self.longPressRecognizer.enabled = NO;
-  self.longPressRecognizer.enabled = YES;
-}
+#pragma mark - Updaters
 
 // -----------------------------------------------------------------------------
 /// @brief Updates whether panning is enabled.
@@ -344,6 +355,101 @@
     else
       self.panningEnabled = true;
   }
+}
+
+#pragma mark - Magnifying glass handling
+
+// -----------------------------------------------------------------------------
+/// @brief Performs magnifying glass handling according to the current user
+/// defaults. If the magnifying glass is enabled, the center of magnification is
+/// either at @a panningLocation or at the coordinate represented by
+/// @a crossHairIntersection
+// -----------------------------------------------------------------------------
+- (void) handleMagnifyingGlassForPanningLocation:(CGPoint)panningLocation
+                           crossHairIntersection:(BoardViewIntersection)crossHairIntersection
+{
+  BoardViewModel* boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
+  switch (boardViewModel.magnifyingGlassEnableMode)
+  {
+    case MagnifyingGlassEnableModeAlwaysOn:
+      break;
+    case MagnifyingGlassEnableModeAlwaysOff:
+      return;
+    case MagnifyingGlassEnableModeAuto:
+      if ([ApplicationDelegate sharedDelegate].boardViewMetrics.cellWidth >= gridCellSizeThresholdForAutoMagnifyingGlass)
+        return;
+      break;
+    default:
+      [ExceptionUtility throwNotImplementedException];
+      break;
+  }
+
+  switch (boardViewModel.magnifyingGlassUpdateMode)
+  {
+    case MagnifyingGlassUpdateModeSmooth:
+      if (boardViewModel.boardViewDisplaysCrossHair)
+        [self updateMagnifyingGlassForPanningLocation:panningLocation];
+      else
+        [self disableMagnifyingGlass];
+      break;
+    case MagnifyingGlassUpdateModeCrossHair:
+      if (BoardViewIntersectionIsNullIntersection(crossHairIntersection))
+        [self disableMagnifyingGlass];
+      else
+        [self updateMagnifyingGlassForCrossHairIntersection:crossHairIntersection];
+    default:
+      [ExceptionUtility throwNotImplementedException];
+      break;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Enables the magnifying glass if it is not currently enabled, then
+/// updates the magnifying glass so that it displays the content around the
+/// center of magnification that is equal to @a panningLocation.
+// -----------------------------------------------------------------------------
+- (void) updateMagnifyingGlassForPanningLocation:(CGPoint)panningLocation
+{
+  id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
+  magnifyingGlassOwner.magnifyingGlassEnabled = true;
+  MagnifyingViewController* magnifyingViewController = magnifyingGlassOwner.magnifyingViewController;
+  [magnifyingViewController updateMagnificationCenter:panningLocation inView:self.boardView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Enables the magnifying glass if it is not currently enabled, then
+/// updates the magnifying glass so that it displays the content around the
+/// center of magnification that is at the coordinate represented by
+/// @a crossHairIntersection.
+// -----------------------------------------------------------------------------
+- (void) updateMagnifyingGlassForCrossHairIntersection:(BoardViewIntersection)crossHairIntersection
+{
+  id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
+  magnifyingGlassOwner.magnifyingGlassEnabled = true;
+  MagnifyingViewController* magnifyingViewController = magnifyingGlassOwner.magnifyingViewController;
+  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  CGPoint magnificationCenter = [metrics coordinatesFromPoint:crossHairIntersection.point];
+  [magnifyingViewController updateMagnificationCenter:magnificationCenter inView:self.boardView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Disables (= hides) the magnifying glass.
+// -----------------------------------------------------------------------------
+- (void) disableMagnifyingGlass
+{
+  id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
+  magnifyingGlassOwner.magnifyingGlassEnabled = false;
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Cancels a panning gesture that is currently in progress.
+// -----------------------------------------------------------------------------
+- (void) cancelPanningInProgress
+{
+  self.longPressRecognizer.enabled = NO;
+  self.longPressRecognizer.enabled = YES;
 }
 
 @end

@@ -125,7 +125,8 @@
 - (BoardViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
-  coordinates.y -= self.crossHairPointDistanceFromFinger;
+  // TODO xxx remove
+//  coordinates.y -= self.crossHairPointDistanceFromFinger;
   return [metrics intersectionNear:coordinates];
 }
 
