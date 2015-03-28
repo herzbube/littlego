@@ -27,7 +27,6 @@
 #import "../../main/ApplicationDelegate.h"
 #import "../../main/MainUtility.h"
 #import "../../main/MagnifyingGlassOwner.h"
-#import "../../ui/MagnifyingViewController.h"
 #import "../../utility/ExceptionUtility.h"
 
 
@@ -439,6 +438,17 @@
 {
   id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
   magnifyingGlassOwner.magnifyingGlassEnabled = false;
+}
+
+#pragma mark - MagnifyingViewControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief MagnifyingViewControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (enum MagnifyingGlassVeerDirection) magnifyingViewControllerVeerDirection:(MagnifyingViewController*)magnifyingViewController
+{
+  BoardViewModel* boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
+  return boardViewModel.magnifyingGlassVeerDirection;
 }
 
 #pragma mark - Private helpers

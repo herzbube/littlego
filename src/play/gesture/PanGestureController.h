@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "../../ui/MagnifyingViewController.h"
+
 // Forward declarations
 @class BoardView;
 @class CommandBase;
@@ -32,7 +35,7 @@
 /// be displayed immediately when a fingertip touches the board (or after only
 /// a very short delay).
 // -----------------------------------------------------------------------------
-@interface PanGestureController : NSObject <UIGestureRecognizerDelegate>
+@interface PanGestureController : NSObject <UIGestureRecognizerDelegate, MagnifyingViewControllerDelegate>
 {
 }
 

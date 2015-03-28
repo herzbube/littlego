@@ -19,6 +19,7 @@
 #import "MagnifyingViewController.h"
 #import "MagnifyingView.h"
 #import "UiUtilities.h"
+#import "../utility/ExceptionUtility.h"
 
 
 // -----------------------------------------------------------------------------
@@ -47,6 +48,7 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+  self.magnifyingViewControllerDelegate = nil;
   self.magnifyingViewSize = CGSizeMake(magnifyingGlassDimension, magnifyingGlassDimension);
   self.magnifyingView = nil;
   self.currentMagnificationCenter = CGPointZero;
@@ -59,6 +61,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.magnifyingViewControllerDelegate = nil;
   self.magnifyingView = nil;
   self.currentMagnificationCenterView = nil;
   [super dealloc];
@@ -127,10 +130,61 @@
   magnifyingViewFrame.origin.x = convertedMagnificationCenter.x - (magnifyingViewFrame.size.width / 2.0f);
   magnifyingViewFrame.origin.y = convertedMagnificationCenter.y - (magnifyingViewFrame.size.height / 2.0f);
   magnifyingViewFrame.origin.y -= magnifyingGlassDistanceFromMagnificationCenter;
+  magnifyingViewFrame = [self magnifyingViewFrameByVeeringAwayFromFrame:magnifyingViewFrame
+                                                      inSuperviewBounds:superviewOfMagnifyingView.bounds];
   self.magnifyingView.frame = magnifyingViewFrame;
 
   // Show the magnifying view again after all updates were made
   self.magnifyingView.hidden = NO;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines @a magnifyingViewFrame in the context of @a superviewBounds
+/// to see whether any veering is required. If no veering is required, returns
+/// @a magnifyingViewFrame unchanged. If veering is required, returns a copy of
+/// @a magnifyingViewFrame that is modified according to the veering rules
+/// specified in the class documentation.
+// -----------------------------------------------------------------------------
+- (CGRect) magnifyingViewFrameByVeeringAwayFromFrame:(CGRect)magnifyingViewFrame
+                                   inSuperviewBounds:(CGRect)superviewBounds
+{
+  if (magnifyingViewFrame.origin.y >= 0.0f)
+    return magnifyingViewFrame;
+
+  CGFloat horizontalVeeringDistance = -magnifyingViewFrame.origin.y;
+  magnifyingViewFrame.origin.y = 0.0f;
+  enum MagnifyingGlassVeerDirection veerDirection = [self.magnifyingViewControllerDelegate magnifyingViewControllerVeerDirection:self];
+  switch (veerDirection)
+  {
+    case MagnifyingGlassVeerDirectionLeft:
+    {
+      magnifyingViewFrame.origin.x -= horizontalVeeringDistance;
+      if (magnifyingViewFrame.origin.x < 0.0f)
+      {
+        CGFloat verticalVeeringDistance = -magnifyingViewFrame.origin.x;
+        magnifyingViewFrame.origin.x = 0.0f;
+        magnifyingViewFrame.origin.y += verticalVeeringDistance;
+      }
+      break;
+    }
+    case MagnifyingGlassVeerDirectionRight:
+    {
+      magnifyingViewFrame.origin.x += horizontalVeeringDistance;
+      if (CGRectGetMaxX(magnifyingViewFrame) > CGRectGetMaxX(superviewBounds))
+      {
+        CGFloat verticalVeeringDistance = CGRectGetMaxX(magnifyingViewFrame) - CGRectGetMaxX(superviewBounds);
+        magnifyingViewFrame.origin.x -= verticalVeeringDistance;
+        magnifyingViewFrame.origin.y += verticalVeeringDistance;
+      }
+      break;
+    }
+    default:
+    {
+      [ExceptionUtility throwNotImplementedException];
+      break;
+    }
+  }
+  return magnifyingViewFrame;
 }
 
 @end

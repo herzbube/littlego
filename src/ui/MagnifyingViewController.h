@@ -15,6 +15,19 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class MagnifyingViewController;
+
+
+// -----------------------------------------------------------------------------
+/// @brief The MagnifyingViewControllerDelegate protocol must be implemented by
+/// the delegate of MagnifyingViewController.
+// -----------------------------------------------------------------------------
+@protocol MagnifyingViewControllerDelegate
+- (enum MagnifyingGlassVeerDirection) magnifyingViewControllerVeerDirection:(MagnifyingViewController*)magnifyingViewController;
+@end
+
+
 // -----------------------------------------------------------------------------
 /// @brief The MagnifyingViewController class is responsible for managing a
 /// MagnifyingView.
@@ -27,5 +40,7 @@
 
 - (void) updateMagnificationCenter:(CGPoint)magnificationCenter
                             inView:(UIView*)magnificationCenterView;
+
+@property(nonatomic, assign) id<MagnifyingViewControllerDelegate> magnifyingViewControllerDelegate;
 
 @end
