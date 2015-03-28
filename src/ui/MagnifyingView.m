@@ -110,6 +110,18 @@
   CGContextSetStrokeColorWithColor(context, [UIColor blackColor].CGColor);
   CGContextSetLineWidth(context, magnifyingGlassBorderThickness);
   CGContextStrokePath(context);
+
+  // Finally draw the hot spot that marks the center of magnification
+  CGFloat hotspotRadius = 2.0f;
+  CGContextAddArc(context,
+                  magnifyingGlassCenter.x,
+                  magnifyingGlassCenter.y,
+                  hotspotRadius,
+                  startRadius,
+                  endRadius,
+                  clockwise);
+  CGContextSetFillColorWithColor(context, [UIColor redColor].CGColor);
+  CGContextFillPath(context);
 }
 
 @end

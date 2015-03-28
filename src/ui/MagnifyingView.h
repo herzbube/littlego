@@ -26,6 +26,9 @@
 ///
 /// In addition to clipping, MagnifyingView also draws a stroked circle around
 /// the magnified image, to separate the image from its surrounding content.
+///
+/// Last but not least, MagnifyingView draws a tiny hotspot that marks the
+/// center of magnification.
 // -----------------------------------------------------------------------------
 @interface MagnifyingView : UIView
 {
