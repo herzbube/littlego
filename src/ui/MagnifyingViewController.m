@@ -18,6 +18,7 @@
 // Project includes
 #import "MagnifyingViewController.h"
 #import "MagnifyingView.h"
+#import "MagnifyingViewModel.h"
 #import "UiUtilities.h"
 #import "../utility/ExceptionUtility.h"
 
@@ -26,6 +27,7 @@
 /// @brief Class extension with private properties for MagnifyingViewController.
 // -----------------------------------------------------------------------------
 @interface MagnifyingViewController()
+@property(nonatomic, assign) MagnifyingViewModel* magnifyingViewModel;
 @property(nonatomic, assign) CGSize magnifyingViewSize;
 @property(nonatomic, assign) MagnifyingView* magnifyingView;
 @property(nonatomic, assign) CGPoint currentMagnificationCenter;
@@ -49,7 +51,8 @@
   if (! self)
     return nil;
   self.magnifyingViewControllerDelegate = nil;
-  self.magnifyingViewSize = CGSizeMake(magnifyingGlassDimension, magnifyingGlassDimension);
+  self.magnifyingViewModel = nil;
+  self.magnifyingViewSize = CGSizeZero;
   self.magnifyingView = nil;
   self.currentMagnificationCenter = CGPointZero;
   self.currentMagnificationCenterView = nil;
@@ -62,6 +65,7 @@
 - (void) dealloc
 {
   self.magnifyingViewControllerDelegate = nil;
+  self.magnifyingViewModel = nil;
   self.magnifyingView = nil;
   self.currentMagnificationCenterView = nil;
   [super dealloc];
@@ -74,6 +78,8 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
+  self.magnifyingViewModel = [self.magnifyingViewControllerDelegate magnifyingViewControllerModel:self];
+  self.magnifyingViewSize = CGSizeMake(self.magnifyingViewModel.magnifyingGlassDimension, self.magnifyingViewModel.magnifyingGlassDimension);
   CGRect magnifyingViewFrame = CGRectZero;
   magnifyingViewFrame.size = self.magnifyingViewSize;
   self.magnifyingView = [[[MagnifyingView alloc] initWithFrame:magnifyingViewFrame] autorelease];
@@ -114,8 +120,8 @@
   CGPoint convertedMagnificationCenter = [viewWithContentToMagnify convertPoint:self.currentMagnificationCenter fromView:self.currentMagnificationCenterView];
   // floor-ing prevents potential rounding errors and anti-aliasing
   convertedMagnificationCenter = CGPointMake(floorf(convertedMagnificationCenter.x), floorf(convertedMagnificationCenter.y));
-  CGSize sizeToCapture = CGSizeMake(self.magnifyingViewSize.width / magnifyingGlassMagnification,
-                                    self.magnifyingViewSize.height / magnifyingGlassMagnification);
+  CGSize sizeToCapture = CGSizeMake(self.magnifyingViewSize.width / self.magnifyingViewModel.magnification,
+                                    self.magnifyingViewSize.height / self.magnifyingViewModel.magnification);
   CGRect frameToCapture = CGRectMake(convertedMagnificationCenter.x - (sizeToCapture.width / 2.0f),
                                      convertedMagnificationCenter.y - (sizeToCapture.height / 2.0f),
                                      sizeToCapture.width,
@@ -129,7 +135,7 @@
   CGRect magnifyingViewFrame = self.magnifyingView.frame;
   magnifyingViewFrame.origin.x = convertedMagnificationCenter.x - (magnifyingViewFrame.size.width / 2.0f);
   magnifyingViewFrame.origin.y = convertedMagnificationCenter.y - (magnifyingViewFrame.size.height / 2.0f);
-  magnifyingViewFrame.origin.y -= magnifyingGlassDistanceFromMagnificationCenter;
+  magnifyingViewFrame.origin.y -= self.magnifyingViewModel.distanceFromMagnificationCenter;
   magnifyingViewFrame = [self magnifyingViewFrameByVeeringAwayFromFrame:magnifyingViewFrame
                                                       inSuperviewBounds:superviewOfMagnifyingView.bounds];
   self.magnifyingView.frame = magnifyingViewFrame;
@@ -153,8 +159,7 @@
 
   CGFloat horizontalVeeringDistance = -magnifyingViewFrame.origin.y;
   magnifyingViewFrame.origin.y = 0.0f;
-  enum MagnifyingGlassVeerDirection veerDirection = [self.magnifyingViewControllerDelegate magnifyingViewControllerVeerDirection:self];
-  switch (veerDirection)
+  switch (self.magnifyingViewModel.veerDirection)
   {
     case MagnifyingGlassVeerDirectionLeft:
     {

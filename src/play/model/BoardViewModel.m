@@ -39,9 +39,6 @@
   self.moveNumbersPercentage = 0.0;
   self.playSound = false;
   self.vibrate = false;
-  self.magnifyingGlassEnableMode = MagnifyingGlassEnableModeDefault;
-  self.magnifyingGlassVeerDirection = MagnifyingGlassVeerDirectionDefault;
-  self.magnifyingGlassUpdateMode = MagnifyingGlassUpdateModeDefault;
   self.stoneDistanceFromFingertip = stoneDistanceFromFingertipDefault;
   self.infoTypeLastSelected = ScoreInfoType;
   self.boardViewDisplaysCrossHair = false;
@@ -61,7 +58,6 @@
   self.moveNumbersPercentage = [[dictionary valueForKey:moveNumbersPercentageKey] floatValue];
   self.playSound = [[dictionary valueForKey:playSoundKey] boolValue];
   self.vibrate = [[dictionary valueForKey:vibrateKey] boolValue];
-  // TODO xxx read magnifying glass settings
   self.stoneDistanceFromFingertip = [[dictionary valueForKey:[stoneDistanceFromFingertipKey stringByAppendingDeviceSuffix]] floatValue];
   self.infoTypeLastSelected = [[dictionary valueForKey:infoTypeLastSelectedKey] intValue];
 }
@@ -87,7 +83,6 @@
   [dictionary setValue:[NSNumber numberWithFloat:self.moveNumbersPercentage] forKey:moveNumbersPercentageKey];
   [dictionary setValue:[NSNumber numberWithBool:self.playSound] forKey:playSoundKey];
   [dictionary setValue:[NSNumber numberWithBool:self.vibrate] forKey:vibrateKey];
-  // TODO xxx write magnifying glass settings
   [dictionary setValue:[NSNumber numberWithFloat:self.stoneDistanceFromFingertip] forKey:[stoneDistanceFromFingertipKey stringByAppendingDeviceSuffix]];
   [dictionary setValue:[NSNumber numberWithInt:self.infoTypeLastSelected] forKey:infoTypeLastSelectedKey];
   // Note: NSUserDefaults takes care entirely by itself of writing only changed

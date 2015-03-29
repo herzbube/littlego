@@ -27,6 +27,7 @@
 #import "../../main/ApplicationDelegate.h"
 #import "../../main/MainUtility.h"
 #import "../../main/MagnifyingGlassOwner.h"
+#import "../../ui/MagnifyingViewModel.h"
 #import "../../utility/ExceptionUtility.h"
 
 
@@ -367,15 +368,15 @@
 - (void) handleMagnifyingGlassForPanningLocation:(CGPoint)panningLocation
                            crossHairIntersection:(BoardViewIntersection)crossHairIntersection
 {
-  BoardViewModel* boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
-  switch (boardViewModel.magnifyingGlassEnableMode)
+  MagnifyingViewModel* magnifyingViewModel = [ApplicationDelegate sharedDelegate].magnifyingViewModel;
+  switch (magnifyingViewModel.enableMode)
   {
     case MagnifyingGlassEnableModeAlwaysOn:
       break;
     case MagnifyingGlassEnableModeAlwaysOff:
       return;
     case MagnifyingGlassEnableModeAuto:
-      if ([ApplicationDelegate sharedDelegate].boardViewMetrics.cellWidth >= gridCellSizeThresholdForAutoMagnifyingGlass)
+      if ([ApplicationDelegate sharedDelegate].boardViewMetrics.cellWidth >= magnifyingViewModel.autoThreshold)
         return;
       break;
     default:
@@ -383,10 +384,10 @@
       break;
   }
 
-  switch (boardViewModel.magnifyingGlassUpdateMode)
+  switch (magnifyingViewModel.updateMode)
   {
     case MagnifyingGlassUpdateModeSmooth:
-      if (boardViewModel.boardViewDisplaysCrossHair)
+      if ([ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
         [self updateMagnifyingGlassForPanningLocation:panningLocation];
       else
         [self disableMagnifyingGlass];
@@ -410,7 +411,8 @@
 - (void) updateMagnifyingGlassForPanningLocation:(CGPoint)panningLocation
 {
   id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
-  magnifyingGlassOwner.magnifyingGlassEnabled = true;
+  if (! magnifyingGlassOwner.magnifyingGlassEnabled)
+    [magnifyingGlassOwner enableMagnifyingGlass:self];
   MagnifyingViewController* magnifyingViewController = magnifyingGlassOwner.magnifyingViewController;
   [magnifyingViewController updateMagnificationCenter:panningLocation inView:self.boardView];
 }
@@ -424,7 +426,8 @@
 - (void) updateMagnifyingGlassForCrossHairIntersection:(BoardViewIntersection)crossHairIntersection
 {
   id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
-  magnifyingGlassOwner.magnifyingGlassEnabled = true;
+  if (! magnifyingGlassOwner.magnifyingGlassEnabled)
+    [magnifyingGlassOwner enableMagnifyingGlass:self];
   MagnifyingViewController* magnifyingViewController = magnifyingGlassOwner.magnifyingViewController;
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   CGPoint magnificationCenter = [metrics coordinatesFromPoint:crossHairIntersection.point];
@@ -437,7 +440,8 @@
 - (void) disableMagnifyingGlass
 {
   id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
-  magnifyingGlassOwner.magnifyingGlassEnabled = false;
+  if (magnifyingGlassOwner.magnifyingGlassEnabled)
+    [magnifyingGlassOwner disableMagnifyingGlass];
 }
 
 #pragma mark - MagnifyingViewControllerDelegate overrides
@@ -445,10 +449,9 @@
 // -----------------------------------------------------------------------------
 /// @brief MagnifyingViewControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (enum MagnifyingGlassVeerDirection) magnifyingViewControllerVeerDirection:(MagnifyingViewController*)magnifyingViewController
+- (MagnifyingViewModel*) magnifyingViewControllerModel:(MagnifyingViewController*)magnifyingViewController;
 {
-  BoardViewModel* boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
-  return boardViewModel.magnifyingGlassVeerDirection;
+  return [ApplicationDelegate sharedDelegate].magnifyingViewModel;
 }
 
 #pragma mark - Private helpers

@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class MagnifyingViewController;
+@protocol MagnifyingViewControllerDelegate;
 
 
 // -----------------------------------------------------------------------------
@@ -27,16 +28,9 @@
 @protocol MagnifyingGlassOwner
 
 // -----------------------------------------------------------------------------
-/// @brief Enables/disables the magnifying glass.
-///
-/// Enabling the magnifying glass causes the property
-/// @e magnifyingViewController to be initialized. From now on, clients may use
-/// the MagnifyingControllerView instance to manage the magnified content.
-///
-/// Disabling the magnifying glass causes the property
-/// @e magnifyingViewController to be reset to nil.
+/// @brief Whether the magnifying glass is currently enabled or disabled.
 // -----------------------------------------------------------------------------
-@property(nonatomic, assign) bool magnifyingGlassEnabled;
+@property(nonatomic, assign, readonly) bool magnifyingGlassEnabled;
 
 // -----------------------------------------------------------------------------
 /// @brief Provides the MagnifyingViewController object that clients can use to
@@ -44,5 +38,24 @@
 /// @e magnifyingGlassEnabled is set to true.
 // -----------------------------------------------------------------------------
 @property(nonatomic, retain, readonly) MagnifyingViewController* magnifyingViewController;
+
+
+// -----------------------------------------------------------------------------
+/// @brief Enables the magnifying glass, passing the specified delegate object
+/// to the magnifying glass component.
+///
+/// Enabling the magnifying glass causes the property
+/// @e magnifyingViewController to be initialized. From now on, clients may use
+/// the MagnifyingControllerView instance to manage the magnified content.
+// -----------------------------------------------------------------------------
+- (void) enableMagnifyingGlass:(id<MagnifyingViewControllerDelegate>)magnifyingViewControllerDelegate;
+
+// -----------------------------------------------------------------------------
+/// @brief Disables the magnifying glass.
+///
+/// Disabling the magnifying glass causes the property
+/// @e magnifyingViewController to be reset to nil.
+// -----------------------------------------------------------------------------
+- (void) disableMagnifyingGlass;
 
 @end

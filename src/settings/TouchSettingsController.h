@@ -15,11 +15,15 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "../ui/ItemPickerController.h"
+
+
 // -----------------------------------------------------------------------------
 /// @brief The TouchSettingsController class is responsible for managing user
 /// interaction on the "Touch interaction" user preferences view.
 // -----------------------------------------------------------------------------
-@interface TouchSettingsController : UITableViewController
+@interface TouchSettingsController : UITableViewController <ItemPickerDelegate>
 {
 }
 

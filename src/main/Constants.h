@@ -646,13 +646,48 @@ enum MagnifyingGlassEnableMode
   MagnifyingGlassEnableModeDefault = MagnifyingGlassEnableModeAuto
 };
 
+/// @brief Enumerates the different thresholds for
+/// #MagnifyingGlassEnableModeAuto
+///
+/// The numeric values of these enumeration items are compared with the grid
+/// cell size on the board view. The unit of the numeric values is points (for
+/// drawing in CoreGraphics).
+///
+/// The size of a toolbar button is roughly 20 points as per Apple's HIG. A
+/// fingertip therefore covers at least this area when it touches the screen.
+/// However, when the user places a stone he should still be able to slightly
+/// see the stone peeking out from under his fingertip. A 50% increase of the
+/// standard toolbar button size should be sufficient for our normal use case.
+enum MagnifyingGlassAutoThreshold
+{
+  MagnifyingGlassAutoThresholdLessOften = 25,
+  MagnifyingGlassAutoThresholdNormal = 30,
+  MagnifyingGlassAutoThresholdMoreOften = 35,
+  MagnifyingGlassAutoThresholdDefault = MagnifyingGlassAutoThresholdNormal
+};
+
+/// @brief Enumerates the different distances of the magnifying glass from the
+/// magnification center.
+///
+/// The numeric values of these enumeration items are points (for drawing in
+/// CoreGraphics).
+///
+/// The default value has been determined experimentally.
+enum MagnifyingGlassDistanceFromMagnificationCenter
+{
+  MagnifyingGlassDistanceFromMagnificationCenterCloser = 80,
+  MagnifyingGlassDistanceFromMagnificationCenterNormal = 100,
+  MagnifyingGlassDistanceFromMagnificationCenterFarther = 120,
+  MagnifyingGlassDistanceFromMagnificationCenterDefault = MagnifyingGlassDistanceFromMagnificationCenterNormal
+};
+
 /// @brief Enumerates the different directions that the magnifying glass can
 /// veer towards when it reaches the upper border of the screen.
 enum MagnifyingGlassVeerDirection
 {
   MagnifyingGlassVeerDirectionLeft,    ///< @brief The magnifying glass veers to the left. Useful if the right hand is used for placing stones.
   MagnifyingGlassVeerDirectionRight,   ///< @brief The magnifying glass veers to the right. Useful if the left hand is used for placing stones.
-  MagnifyingGlassVeerDirectionDefault = MagnifyingGlassVeerDirectionLeft
+  MagnifyingGlassVeerDirectionDefault = MagnifyingGlassVeerDirectionLeft   ///< @brief Because most people are right-handed, this is the default.
 };
 
 /// @brief Enumerates the different update modes of the magnifying glass.
@@ -663,18 +698,8 @@ enum MagnifyingGlassUpdateMode
   MagnifyingGlassUpdateModeDefault = MagnifyingGlassUpdateModeSmooth
 };
 
-/// @brief The size of the magnifying glass, or rather, of the bounding box
-/// around the magnifying glass. The bounding box is square which is why a
-/// single value is sufficient to define its size.
-extern const CGFloat magnifyingGlassDimension;
-/// @brief The scale factor by which the magnifying glass magnifies the content.
-extern const CGFloat magnifyingGlassMagnification;
-/// @brief If #MagnifyingGlassEnableModeAuto is set, the magnifying glass is
-/// enabled if the grid cell size on the board view falls below this threshold.
-extern const CGFloat gridCellSizeThresholdForAutoMagnifyingGlass;
-/// @brief The distance of the (center of the) magnifying glass from the
-/// center of magnification.
-extern const CGFloat magnifyingGlassDistanceFromMagnificationCenter;
+extern const CGFloat defaultMagnifyingGlassDimension;
+extern const CGFloat defaultMagnifyingGlassMagnification;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -963,6 +988,11 @@ extern NSString* loggingEnabledKey;
 // User interface settings
 extern NSString* visibleUIAreaKey;
 extern NSString* tabOrderKey;
+// Magnifying glass settings
+extern NSString* magnifyingGlassEnableModeKey;
+extern NSString* magnifyingGlassAutoThresholdKey;
+extern NSString* magnifyingGlassVeerDirectionKey;
+extern NSString* magnifyingGlassDistanceFromMagnificationCenterKey;
 //@}
 
 // -----------------------------------------------------------------------------

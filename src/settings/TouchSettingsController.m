@@ -18,12 +18,10 @@
 // Project includes
 #import "TouchSettingsController.h"
 #import "../main/ApplicationDelegate.h"
-#import "../play/model/BoardViewModel.h"
+#import "../ui/MagnifyingViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
-
-// Constants
-static const float sliderValueFactorForStoneDistanceFromFingertip = 100.0;
+#import "../utility/ExceptionUtility.h"
 
 
 // -----------------------------------------------------------------------------
@@ -32,17 +30,71 @@ static const float sliderValueFactorForStoneDistanceFromFingertip = 100.0;
 // -----------------------------------------------------------------------------
 enum TouchInteractionTableViewSection
 {
-  StoneDistanceFromFingertipSection,
+  EnableModeSection,
+  DistanceFromMagnificationCenterSection,
+  VeerDirectionSection,
   MaxSection
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the StoneDistanceFromFingertipSection.
+/// @brief Enumerates items in the EnableModeSection.
 // -----------------------------------------------------------------------------
-enum StoneDistanceFromFingertipSectionItem
+enum EnableModeSectionItem
 {
-  StoneDistanceFromFingertipItem,
-  MaxStoneDistanceFromFingertipSectionItem
+  EnableModeItem,
+  AutoThresholdItem,
+  MaxEnableModeSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the DistanceFromMagnificationCenterSection.
+// -----------------------------------------------------------------------------
+enum DistanceFromMagnificationCenterSectionItem
+{
+  DistanceFromMagnificationCenterItem,
+  MaxDistanceFromMagnificationCenterSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the VeerDirectionSection.
+// -----------------------------------------------------------------------------
+enum VeerDirectionSectionItem
+{
+  VeerDirectionItem,
+  MaxVeerDirectionSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates how many options we provide the user with to change the
+/// auto threshold size.
+///
+/// The values in this enumeration correspond to those in the global
+/// enumeration #MagnifyingGlassAutoThreshold. The difference is that the
+/// numeric values in #AutoThresholdFrequency are useful as zero-based indexes,
+/// which we need to drive an ItemPickerController.
+// -----------------------------------------------------------------------------
+enum AutoThresholdFrequency
+{
+  AutoThresholdFrequencyLessOften,
+  AutoThresholdFrequencyNormal,
+  AutoThresholdFrequencyMoreOften
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates the settings we provide the user with to change the
+/// distance of the magnifying glass from the magnification center.
+///
+/// The values in this enumeration correspond to those in the global
+/// enumeration #MagnifyingGlassDistanceFromMagnificationCenter. The difference
+/// is that the numeric values in #DistanceFromMagnificationCenterSetting are
+/// useful as zero-based indexes, which we need to drive an
+/// ItemPickerController.
+// -----------------------------------------------------------------------------
+enum DistanceFromMagnificationCenterSetting
+{
+  DistanceFromMagnificationCenterSettingCloser,
+  DistanceFromMagnificationCenterSettingNormal,
+  DistanceFromMagnificationCenterSettingFarther
 };
 
 
@@ -50,7 +102,7 @@ enum StoneDistanceFromFingertipSectionItem
 /// @brief Class extension with private properties for TouchSettingsController.
 // -----------------------------------------------------------------------------
 @interface TouchSettingsController()
-@property(nonatomic, assign) BoardViewModel* boardViewModel;
+@property(nonatomic, assign) MagnifyingViewModel* magnifyingViewModel;
 @end
 
 
@@ -68,7 +120,7 @@ enum StoneDistanceFromFingertipSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
+    controller.magnifyingViewModel = [ApplicationDelegate sharedDelegate].magnifyingViewModel;
   }
   return controller;
 }
@@ -78,7 +130,7 @@ enum StoneDistanceFromFingertipSectionItem
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.boardViewModel = nil;
+  self.magnifyingViewModel = nil;
   [super dealloc];
 }
 
@@ -100,7 +152,10 @@ enum StoneDistanceFromFingertipSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  return MaxSection;
+  if (MagnifyingGlassEnableModeAlwaysOff == self.magnifyingViewModel.enableMode)
+    return 1;
+  else
+    return MaxSection;
 }
 
 // -----------------------------------------------------------------------------
@@ -110,8 +165,15 @@ enum StoneDistanceFromFingertipSectionItem
 {
   switch (section)
   {
-    case StoneDistanceFromFingertipSection:
-      return MaxStoneDistanceFromFingertipSectionItem;
+    case EnableModeSection:
+      if (MagnifyingGlassEnableModeAuto == self.magnifyingViewModel.enableMode)
+        return MaxEnableModeSectionItem;
+      else
+        return (MaxEnableModeSectionItem - 1);
+    case DistanceFromMagnificationCenterSection:
+      return MaxDistanceFromMagnificationCenterSectionItem;
+    case VeerDirectionSection:
+      return MaxVeerDirectionSectionItem;
     default:
       assert(0);
       break;
@@ -122,41 +184,29 @@ enum StoneDistanceFromFingertipSectionItem
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDataSource protocol method.
 // -----------------------------------------------------------------------------
-- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
-{
-  switch (section)
-  {
-    case StoneDistanceFromFingertipSection:
-      return @"Controls how far away from your fingertip the stone appears when you touch the board. The lowest setting places the stone directly under your fingertip.";
-    default:
-      break;
-  }
-  return nil;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDataSource protocol method.
-// -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell = nil;
   switch (indexPath.section)
   {
-    case StoneDistanceFromFingertipSection:
+    case EnableModeSection:
     {
       switch (indexPath.row)
       {
-        case StoneDistanceFromFingertipItem:
+        case EnableModeItem:
         {
-          cell = [TableViewCellFactory cellWithType:SliderWithoutValueLabelCellType tableView:tableView];
-          TableViewSliderCell* sliderCell = (TableViewSliderCell*)cell;
-          [sliderCell setDelegate:self actionValueDidChange:nil actionSliderValueDidChange:@selector(stoneDistanceFromFingertipDidChange:)];
-          sliderCell.descriptionLabel.text = @"Stone distance from fingertip";
-          sliderCell.slider.minimumValue = 0;
-          sliderCell.slider.maximumValue = (1.0
-                                            * sliderValueFactorForStoneDistanceFromFingertip);
-          sliderCell.value = (self.boardViewModel.stoneDistanceFromFingertip
-                              * sliderValueFactorForStoneDistanceFromFingertip);
+          cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+          cell.textLabel.text = @"Show magnifying glass";
+          cell.detailTextLabel.text = [self enableModeName:self.magnifyingViewModel.enableMode];
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          break;
+        }
+        case AutoThresholdItem:
+        {
+          cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+          cell.textLabel.text = @"Auto takes effect";
+          cell.detailTextLabel.text = [self autoThresholdName:self.magnifyingViewModel.autoThreshold];
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         }
         default:
@@ -165,6 +215,22 @@ enum StoneDistanceFromFingertipSectionItem
           break;
         }
       }
+      break;
+    }
+    case DistanceFromMagnificationCenterSection:
+    {
+      cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+      cell.textLabel.text = @"Distance from center";
+      cell.detailTextLabel.text = [self distanceFromMagnificationCenterName:self.magnifyingViewModel.distanceFromMagnificationCenter];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      break;
+    }
+    case VeerDirectionSection:
+    {
+      cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+      cell.textLabel.text = @"Veer direction";
+      cell.detailTextLabel.text = [self veerDirectionName:self.magnifyingViewModel.veerDirection];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
     default:
@@ -182,49 +248,316 @@ enum StoneDistanceFromFingertipSectionItem
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
+- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  CGFloat height = tableView.rowHeight;
+  [tableView deselectRowAtIndexPath:indexPath animated:NO];
+
+  NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
+  NSString* titleString = nil;
+  int indexOfDefaultItem = -1;
+  NSString* footerTitle = nil;
   switch (indexPath.section)
   {
-    case StoneDistanceFromFingertipSection:
+    case EnableModeSection:
     {
       switch (indexPath.row)
       {
-        case StoneDistanceFromFingertipItem:
-          height = [TableViewSliderCell rowHeightInTableView:tableView];
+        case EnableModeItem:
+        {
+          [itemList addObject:[self enableModeName:MagnifyingGlassEnableModeAlwaysOn]];
+          [itemList addObject:[self enableModeName:MagnifyingGlassEnableModeAlwaysOff]];
+          [itemList addObject:[self enableModeName:MagnifyingGlassEnableModeAuto]];
+          indexOfDefaultItem = self.magnifyingViewModel.enableMode;
+          titleString = @"Show magnifying glass";
+          footerTitle = @"Controls if/when the magnifying glass is shown when you place a stone. If set to 'Auto', the app will show the magnifying glass only when intersections become too small to see when the fingertip touches the screen.";
           break;
+        }
+        case AutoThresholdItem:
+        {
+          [itemList addObject:[self autoThresholdName:MagnifyingGlassAutoThresholdLessOften]];
+          [itemList addObject:[self autoThresholdName:MagnifyingGlassAutoThresholdNormal]];
+          [itemList addObject:[self autoThresholdName:MagnifyingGlassAutoThresholdMoreOften]];
+          indexOfDefaultItem = [self autoThresholdFrequency:self.magnifyingViewModel.autoThreshold];
+          titleString = @"Auto takes effect";
+          footerTitle = @"Adjusts how often you want the magnifying glass to pop up in 'Auto' mode. Select 'More often' if you want the magnifying glass to pop up even if intersections are fairly large. Select 'Less often' if you want the magnifying glass to pop up only if intersections are fairly small.";
+          break;
+        }
         default:
-          break;
+        {
+          assert(0);
+          return;
+        }
       }
+      break;
+    }
+    case DistanceFromMagnificationCenterSection:
+    {
+      [itemList addObject:[self distanceFromMagnificationCenterName:MagnifyingGlassDistanceFromMagnificationCenterCloser]];
+      [itemList addObject:[self distanceFromMagnificationCenterName:MagnifyingGlassDistanceFromMagnificationCenterNormal]];
+      [itemList addObject:[self distanceFromMagnificationCenterName:MagnifyingGlassDistanceFromMagnificationCenterFarther]];
+      indexOfDefaultItem = [self distanceFromMagnificationCenterSetting:self.magnifyingViewModel.distanceFromMagnificationCenter];
+      titleString = @"Distance from center";
+      footerTitle = @"Adjusts the vertical distance of the magnifying glass from the center of magnification.";
+      break;
+      break;
+    }
+    case VeerDirectionSection:
+    {
+      [itemList addObject:[self veerDirectionName:MagnifyingGlassVeerDirectionLeft]];
+      [itemList addObject:[self veerDirectionName:MagnifyingGlassVeerDirectionRight]];
+      indexOfDefaultItem = self.magnifyingViewModel.veerDirection;
+      titleString = @"Veer direction";
+      footerTitle = @"Select the horizontal direction in which the magnifying glass veers away when it reaches the top of the screen.";
       break;
     }
     default:
     {
-      break;
+      assert(0);
+      return;
     }
   }
-  return height;
+
+  ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
+                                                                                      title:titleString
+                                                                         indexOfDefaultItem:indexOfDefaultItem
+                                                                                   delegate:self];
+  itemPickerController.itemPickerControllerMode = ItemPickerControllerModeNonModal;
+
+  itemPickerController.context = indexPath;
+  itemPickerController.footerTitle = footerTitle;
+  [self.navigationController pushViewController:itemPickerController animated:YES];
+}
+
+#pragma mark - ItemPickerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief ItemPickerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection
+{
+  bool reloadRowOnly = true;
+  NSIndexPath* indexPath = controller.context;
+  switch (indexPath.section)
+  {
+    case EnableModeSection:
+    {
+      switch (indexPath.row)
+      {
+        case EnableModeItem:
+        {
+          self.magnifyingViewModel.enableMode = controller.indexOfSelectedItem;
+          reloadRowOnly = false;
+          break;
+        }
+        case AutoThresholdItem:
+        {
+          self.magnifyingViewModel.autoThreshold = [self autoThreshold:controller.indexOfSelectedItem];
+          break;
+        }
+        default:
+        {
+          assert(0);
+          return;
+        }
+      }
+      break;
+    }
+    case DistanceFromMagnificationCenterSection:
+    {
+      self.magnifyingViewModel.distanceFromMagnificationCenter = [self magnifyingGlassDistanceFromMagnificationCenter:controller.indexOfSelectedItem];
+      break;
+    }
+    case VeerDirectionSection:
+    {
+      self.magnifyingViewModel.veerDirection = controller.indexOfSelectedItem;
+      break;
+    }
+    default:
+    {
+      assert(0);
+      return;
+    }
+  }
+
+  if (reloadRowOnly)
+  {
+    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                          withRowAnimation:UITableViewRowAnimationNone];
+  }
+  else
+  {
+    [self.tableView reloadData];
+  }
 }
 
 // -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
+/// @brief Returns a string representation of @a enableMode that is suitable for
+/// displaying in the UI.
 // -----------------------------------------------------------------------------
-- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
+- (NSString*) enableModeName:(enum MagnifyingGlassEnableMode)enableMode
 {
-  [tableView deselectRowAtIndexPath:indexPath animated:NO];
+  switch (enableMode)
+  {
+    case MagnifyingGlassEnableModeAlwaysOn:
+      return @"Always";
+    case MagnifyingGlassEnableModeAlwaysOff:
+      return @"Never";
+    case MagnifyingGlassEnableModeAuto:
+      return @"Auto";
+    default:
+      [ExceptionUtility throwNotImplementedException];
+      return nil;
+  }
 }
 
-#pragma mark - Action handlers
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representation of @a autoThreshold that is suitable
+/// for displaying in the UI.
+// -----------------------------------------------------------------------------
+- (NSString*) autoThresholdName:(enum MagnifyingGlassAutoThreshold)autoThreshold
+{
+  switch (autoThreshold)
+  {
+    case MagnifyingGlassAutoThresholdLessOften:
+      return @"Less often";
+    case MagnifyingGlassAutoThresholdNormal:
+      return @"Normal";
+    case MagnifyingGlassAutoThresholdMoreOften:
+      return @"More often";
+    default:
+      [ExceptionUtility throwNotImplementedException];
+      // Pseudo return statement to make the compiler happy (which does not
+      // "see" the exception thrown above)
+      return nil;
+  }
+}
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to the user changing the "stone distance from fingertip"
-/// setting.
+/// @brief Maps @a autoThreshold to a value from the enumeration
+/// #AutoThresholdFrequency.
 // -----------------------------------------------------------------------------
-- (void) stoneDistanceFromFingertipDidChange:(id)sender
+- (enum AutoThresholdFrequency) autoThresholdFrequency:(enum MagnifyingGlassAutoThreshold)autoThreshold
 {
-  TableViewSliderCell* sliderCell = (TableViewSliderCell*)sender;
-  self.boardViewModel.stoneDistanceFromFingertip = (1.0 * sliderCell.value / sliderValueFactorForStoneDistanceFromFingertip);
+  switch (autoThreshold)
+  {
+    case MagnifyingGlassAutoThresholdLessOften:
+      return AutoThresholdFrequencyLessOften;
+    case MagnifyingGlassAutoThresholdNormal:
+      return AutoThresholdFrequencyNormal;
+    case MagnifyingGlassAutoThresholdMoreOften:
+      return AutoThresholdFrequencyMoreOften;
+    default:
+      [ExceptionUtility throwNotImplementedException];
+      // Pseudo return statement to make the compiler happy (which does not
+      // "see" the exception thrown above)
+      return AutoThresholdFrequencyNormal;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps @a autoThresholdFrequency to a value from the enumeration
+/// #MagnifyingGlassAutoThreshold.
+// -----------------------------------------------------------------------------
+- (enum MagnifyingGlassAutoThreshold) autoThreshold:(enum AutoThresholdFrequency)autoThresholdFrequency
+{
+  switch (autoThresholdFrequency)
+  {
+    case AutoThresholdFrequencyLessOften:
+      return MagnifyingGlassAutoThresholdLessOften;
+    case AutoThresholdFrequencyNormal:
+      return MagnifyingGlassAutoThresholdNormal;
+    case AutoThresholdFrequencyMoreOften:
+      return MagnifyingGlassAutoThresholdMoreOften;
+    default:
+      [ExceptionUtility throwNotImplementedException];
+      // Pseudo return statement to make the compiler happy (which does not
+      // "see" the exception thrown above)
+      return MagnifyingGlassAutoThresholdNormal;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representation of @a distanceFromMagnificationCenter
+/// that is suitable for displaying in the UI.
+// -----------------------------------------------------------------------------
+- (NSString*) distanceFromMagnificationCenterName:(enum MagnifyingGlassDistanceFromMagnificationCenter)distanceFromMagnificationCenter
+{
+  switch (distanceFromMagnificationCenter)
+  {
+    case MagnifyingGlassDistanceFromMagnificationCenterCloser:
+      return @"Closer";
+    case MagnifyingGlassDistanceFromMagnificationCenterNormal:
+      return @"Normal";
+    case MagnifyingGlassDistanceFromMagnificationCenterFarther:
+      return @"Farther";
+    default:
+      [ExceptionUtility throwNotImplementedException];
+      // Pseudo return statement to make the compiler happy (which does not
+      // "see" the exception thrown above)
+      return nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps @a distanceFromMagnificationCenter to a value from the
+/// enumeration #DistanceFromMagnificationCenterSetting.
+// -----------------------------------------------------------------------------
+- (enum DistanceFromMagnificationCenterSetting) distanceFromMagnificationCenterSetting:(enum MagnifyingGlassDistanceFromMagnificationCenter)distanceFromMagnificationCenter
+{
+  switch (distanceFromMagnificationCenter)
+  {
+    case MagnifyingGlassDistanceFromMagnificationCenterCloser:
+      return DistanceFromMagnificationCenterSettingCloser;
+    case MagnifyingGlassDistanceFromMagnificationCenterNormal:
+      return DistanceFromMagnificationCenterSettingNormal;
+    case MagnifyingGlassDistanceFromMagnificationCenterFarther:
+      return DistanceFromMagnificationCenterSettingFarther;
+    default:
+      [ExceptionUtility throwNotImplementedException];
+      // Pseudo return statement to make the compiler happy (which does not
+      // "see" the exception thrown above)
+      return DistanceFromMagnificationCenterSettingNormal;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps @a distanceFromMagnificationCenterSetting to a value from the
+/// enumeration #MagnifyingGlassDistanceFromMagnificationCenter.
+// -----------------------------------------------------------------------------
+- (enum MagnifyingGlassDistanceFromMagnificationCenter) magnifyingGlassDistanceFromMagnificationCenter:(enum DistanceFromMagnificationCenterSetting)distanceFromMagnificationCenterSetting
+{
+  switch (distanceFromMagnificationCenterSetting)
+  {
+    case DistanceFromMagnificationCenterSettingCloser:
+      return MagnifyingGlassDistanceFromMagnificationCenterCloser;
+    case DistanceFromMagnificationCenterSettingNormal:
+      return MagnifyingGlassDistanceFromMagnificationCenterNormal;
+    case DistanceFromMagnificationCenterSettingFarther:
+      return MagnifyingGlassDistanceFromMagnificationCenterFarther;
+    default:
+      [ExceptionUtility throwNotImplementedException];
+      // Pseudo return statement to make the compiler happy (which does not
+      // "see" the exception thrown above)
+      return MagnifyingGlassDistanceFromMagnificationCenterNormal;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representation of @a veerDirection that is suitable
+/// for displaying in the UI.
+// -----------------------------------------------------------------------------
+- (NSString*) veerDirectionName:(enum MagnifyingGlassVeerDirection)veerDirection
+{
+  switch (veerDirection)
+  {
+    case MagnifyingGlassVeerDirectionLeft:
+      return @"Left";
+    case MagnifyingGlassVeerDirectionRight:
+      return @"Right";
+    default:
+      [ExceptionUtility throwNotImplementedException];
+      return nil;
+  }
 }
 
 @end

@@ -61,10 +61,11 @@
 #import "../shared/ApplicationStateManager.h"
 #import "../shared/LayoutManager.h"
 #import "../shared/LongRunningActionCounter.h"
-#import "../utility/PathUtilities.h"
-#import "../utility/UserDefaultsUpdater.h"
+#import "../ui/MagnifyingViewModel.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiSettingsModel.h"
+#import "../utility/PathUtilities.h"
+#import "../utility/UserDefaultsUpdater.h"
 
 // Library includes
 #include <lumberjack/DDTTYLogger.h>
@@ -151,6 +152,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.crashReportingModel = nil;
   self.loggingModel = nil;
   self.uiSettingsModel = nil;
+  self.magnifyingViewModel = nil;
   self.fileLogger = nil;
   [MainMenuPresenter releaseSharedPresenter];
   [BoardPositionNavigationManager releaseSharedNavigationManager];
@@ -505,6 +507,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   self.crashReportingModel = [[[CrashReportingModel alloc] init] autorelease];
   self.loggingModel = [[[LoggingModel alloc] init] autorelease];
   self.uiSettingsModel = [[[UiSettingsModel alloc] init] autorelease];
+  self.magnifyingViewModel = [[[MagnifyingViewModel alloc] init] autorelease];
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
@@ -517,6 +520,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.crashReportingModel readUserDefaults];
   [self.loggingModel readUserDefaults];
   [self.uiSettingsModel readUserDefaults];
+  [self.magnifyingViewModel readUserDefaults];
   // Is dependent on some user defaults in BoardViewModel
   self.boardViewMetrics = [[[BoardViewMetrics alloc] init] autorelease];
 }
@@ -549,6 +553,7 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.crashReportingModel writeUserDefaults];
   [self.loggingModel writeUserDefaults];
   [self.uiSettingsModel writeUserDefaults];
+  [self.magnifyingViewModel writeUserDefaults];
 
   [[NSUserDefaults standardUserDefaults] synchronize];
 }

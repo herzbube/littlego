@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class MagnifyingViewController;
+@class MagnifyingViewModel;
 
 
 // -----------------------------------------------------------------------------
@@ -24,7 +25,7 @@
 /// the delegate of MagnifyingViewController.
 // -----------------------------------------------------------------------------
 @protocol MagnifyingViewControllerDelegate
-- (enum MagnifyingGlassVeerDirection) magnifyingViewControllerVeerDirection:(MagnifyingViewController*)magnifyingViewController;
+- (MagnifyingViewModel*) magnifyingViewControllerModel:(MagnifyingViewController*)magnifyingViewController;
 @end
 
 

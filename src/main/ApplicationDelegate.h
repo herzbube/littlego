@@ -38,6 +38,7 @@
 @class LoggingModel;
 @class UiSettingsModel;
 @class WindowRootViewController;
+@class MagnifyingViewModel;
 
 
 // -----------------------------------------------------------------------------
@@ -143,6 +144,9 @@
 /// @brief Model object that stores attributes relating to the general user
 /// interface appearance.
 @property(nonatomic, retain) UiSettingsModel* uiSettingsModel;
+/// @brief Model object that stores attributes relating to the magnifying
+/// glass functionality.
+@property(nonatomic, retain) MagnifyingViewModel* magnifyingViewModel;
 
 @end
 

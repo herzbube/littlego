@@ -40,6 +40,7 @@ enum MainApplicationViewControllerType
 @property(nonatomic, retain) NSArray* autoLayoutConstraints;
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
+@property(nonatomic, assign, readwrite) bool magnifyingGlassEnabled;
 @property(nonatomic, retain, readwrite) MagnifyingViewController* magnifyingViewController;
 //@}
 @end
@@ -220,34 +221,32 @@ enum MainApplicationViewControllerType
   [self.mainApplicationViewController.view removeFromSuperview];
 }
 
-#pragma mark - Magnifying glass handling
+#pragma mark - MagnifyingGlassOwner overrides
 
 // -----------------------------------------------------------------------------
-/// @brief Enables/disables the magnifying glass.
-///
-/// Enabling the magnifying glass causes the property
-/// @e magnifyingViewController to be initialized. From now on, clients may use
-/// the MagnifyingControllerView instance to manage the magnified content.
-///
-/// Disabling the magnifying glass causes the property
-/// @e magnifyingViewController to be reset to nil.
+/// @brief MagnifyingGlassOwner method.
 // -----------------------------------------------------------------------------
-- (void) setMagnifyingGlassEnabled:(bool)magnifyingGlassEnabled
+- (void) enableMagnifyingGlass:(id<MagnifyingViewControllerDelegate>)magnifyingViewControllerDelegate
 {
-  if (_magnifyingGlassEnabled == magnifyingGlassEnabled)
+  if (self.magnifyingGlassEnabled)
     return;
-  _magnifyingGlassEnabled = magnifyingGlassEnabled;
-  if (_magnifyingGlassEnabled)
-  {
-    self.magnifyingViewController = [[[MagnifyingViewController alloc] init] autorelease];
-    // MagnifyingViewController manages the frame
-    [self.view addSubview:self.magnifyingViewController.view];
-  }
-  else
-  {
-    [self.magnifyingViewController.view removeFromSuperview];
-    self.magnifyingViewController = nil;
-  }
+  self.magnifyingGlassEnabled = true;
+  self.magnifyingViewController = [[[MagnifyingViewController alloc] init] autorelease];
+  self.magnifyingViewController.magnifyingViewControllerDelegate = magnifyingViewControllerDelegate;
+  // MagnifyingViewController manages the frame
+  [self.view addSubview:self.magnifyingViewController.view];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief MagnifyingGlassOwner method.
+// -----------------------------------------------------------------------------
+- (void) disableMagnifyingGlass
+{
+  if (! self.magnifyingGlassEnabled)
+    return;
+  self.magnifyingGlassEnabled = false;
+  [self.magnifyingViewController.view removeFromSuperview];
+  self.magnifyingViewController = nil;
 }
 
 @end

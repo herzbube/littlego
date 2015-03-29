@@ -312,5 +312,13 @@
 	<integer>768</integer>
 	<key>VisibleUIArea</key>
 	<integer>0</integer>
+	<key>MagnifyingGlassEnableMode</key>
+	<integer>2</integer>
+	<key>MagnifyingGlassAutoThreshold</key>
+	<integer>30</integer>
+	<key>MagnifyingGlassVeerDirection</key>
+	<integer>0</integer>
+	<key>MagnifyingGlassDistanceFromMagnificationCenter</key>
+	<real>100</real>
 </dict>
 </plist>

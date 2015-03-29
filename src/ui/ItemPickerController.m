@@ -75,14 +75,13 @@
   self = [super initWithStyle:UITableViewStyleGrouped];
   if (! self)
     return nil;
-  
+  self.itemPickerControllerMode = ItemPickerControllerModeModal;
   self.context = nil;
   self.title = nil;
   self.delegate = nil;
   self.indexOfDefaultItem = -1;
   self.indexOfSelectedItem = -1;
   self.itemList = nil;
-
   return self;
 }
 
@@ -108,15 +107,17 @@
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-
-  self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
-                                                                                         target:self
-                                                                                         action:@selector(cancel:)] autorelease];
   self.navigationItem.title = self.title;
-  self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                          target:self
-                                                                                          action:@selector(done:)] autorelease];
-  self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+  if (ItemPickerControllerModeModal == self.itemPickerControllerMode)
+  {
+    self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                                                                                           target:self
+                                                                                           action:@selector(cancel:)] autorelease];
+    self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                                                                                            target:self
+                                                                                            action:@selector(done:)] autorelease];
+    self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+  }
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -187,7 +188,15 @@
   // Last but not least, remember the new selection
   self.indexOfSelectedItem = indexOfNewSelectedItem;
 
-  self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+  if (ItemPickerControllerModeModal == self.itemPickerControllerMode)
+  {
+    self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+  }
+  else
+  {
+    if ([self isSelectionValid])
+      [self.delegate itemPickerController:self didMakeSelection:true];
+  }
 }
 
 #pragma mark - Action handlers

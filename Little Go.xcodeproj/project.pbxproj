@@ -362,6 +362,8 @@
 		CDB5AE261AC5A86D0075C8DC /* MagnifyingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */; };
 		CDB5AE291AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */; };
 		CDB5AE2A1AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */; };
+		CDB5AE2E1AC714CF0075C8DC /* MagnifyingViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE2D1AC714CF0075C8DC /* MagnifyingViewModel.m */; };
+		CDB5AE2F1AC714CF0075C8DC /* MagnifyingViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE2D1AC714CF0075C8DC /* MagnifyingViewModel.m */; };
 		CDB684FE161591760038AADE /* EditPlayingStrengthSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */; };
 		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
@@ -871,6 +873,8 @@
 		CDB5AE271AC5ABA60075C8DC /* MagnifyingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagnifyingViewController.h; sourceTree = "<group>"; };
 		CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagnifyingViewController.m; sourceTree = "<group>"; };
 		CDB5AE2B1AC5B82A0075C8DC /* MagnifyingGlassOwner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MagnifyingGlassOwner.h; sourceTree = "<group>"; };
+		CDB5AE2C1AC714CF0075C8DC /* MagnifyingViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagnifyingViewModel.h; sourceTree = "<group>"; };
+		CDB5AE2D1AC714CF0075C8DC /* MagnifyingViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagnifyingViewModel.m; sourceTree = "<group>"; };
 		CDB684FC161591760038AADE /* EditPlayingStrengthSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayingStrengthSettingsController.h; sourceTree = "<group>"; };
 		CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayingStrengthSettingsController.m; sourceTree = "<group>"; };
 		CDBB0359133537C8007C1C3E /* GoBoardRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegion.h; sourceTree = "<group>"; };
@@ -1957,6 +1961,8 @@
 				CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */,
 				CDB5AE271AC5ABA60075C8DC /* MagnifyingViewController.h */,
 				CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */,
+				CDB5AE2C1AC714CF0075C8DC /* MagnifyingViewModel.h */,
+				CDB5AE2D1AC714CF0075C8DC /* MagnifyingViewModel.m */,
 				CD0AF18E17401C56003BFC21 /* SliderInputController.h */,
 				CD0AF18F17401C56003BFC21 /* SliderInputController.m */,
 				CDA097091A99F77F002FCD78 /* SplitViewController.h */,
@@ -2415,6 +2421,7 @@
 				CD7C69C31A9D2086009EC5AD /* GameActionManager.m in Sources */,
 				CDEE1A07194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */,
 				CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */,
+				CDB5AE2E1AC714CF0075C8DC /* MagnifyingViewModel.m in Sources */,
 				CD0AF19017401C56003BFC21 /* SliderInputController.m in Sources */,
 				CD6C7DBC17512152009FBEC4 /* UiSettingsModel.m in Sources */,
 				CDD7D7E5175257850068CBBA /* ResetPlayersAndProfilesCommand.m in Sources */,
@@ -2511,6 +2518,7 @@
 				CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
 				CDEE1A1E19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */,
+				CDB5AE2F1AC714CF0075C8DC /* MagnifyingViewModel.m in Sources */,
 				CD00A369148C2C62004E1A0C /* ApplicationDelegate.mm in Sources */,
 				CD00A36A148C2C6A004E1A0C /* Constants.m in Sources */,
 				CD7C6A0E1AB47C22009EC5AD /* MainMenuPresenter.m in Sources */,

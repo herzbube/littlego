@@ -90,10 +90,8 @@ const bool discardFutureMovesAlertDefault = true;
 const bool markNextMoveDefault = true;
 
 /// Magnifying glass constants
-const CGFloat magnifyingGlassDimension = 100.0f;
-const CGFloat magnifyingGlassMagnification = 1.25f;
-const CGFloat gridCellSizeThresholdForAutoMagnifyingGlass = 30.0f;
-const CGFloat magnifyingGlassDistanceFromMagnificationCenter = 100.0f;
+const CGFloat defaultMagnifyingGlassDimension = 100.0f;
+const CGFloat defaultMagnifyingGlassMagnification = 1.25f;
 
 /// GTP engine profile constants
 const int minimumPlayingStrength = 1;
@@ -305,6 +303,11 @@ NSString* loggingEnabledKey = @"LoggingEnabled";
 // User interface settings
 NSString* visibleUIAreaKey = @"VisibleUIArea";
 NSString* tabOrderKey = @"TabOrder";
+// Magnifying glass settings
+NSString* magnifyingGlassEnableModeKey = @"MagnifyingGlassEnableMode";
+NSString* magnifyingGlassAutoThresholdKey = @"MagnifyingGlassAutoThreshold";
+NSString* magnifyingGlassVeerDirectionKey = @"MagnifyingGlassVeerDirection";
+NSString* magnifyingGlassDistanceFromMagnificationCenterKey = @"MagnifyingGlassDistanceFromMagnificationCenter";
 
 // Constants for NSCoding
 // General constants
