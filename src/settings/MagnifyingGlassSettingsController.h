@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The TouchSettingsController class is responsible for managing user
-/// interaction on the "Touch interaction" user preferences view.
+/// @brief The MagnifyingGlassSettingsController class is responsible for
+/// managing user interaction on the "Magnifying Glass" user preferences view.
 // -----------------------------------------------------------------------------
-@interface TouchSettingsController : UITableViewController <ItemPickerDelegate>
+@interface MagnifyingGlassSettingsController : UITableViewController <ItemPickerDelegate>
 {
 }
 
-+ (TouchSettingsController*) controller;
++ (MagnifyingGlassSettingsController*) controller;
 
 @end

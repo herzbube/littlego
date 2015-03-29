@@ -378,7 +378,7 @@
 		CDC97A8F18301CC100755EB2 /* GoGameRules.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A8D18301CC100755EB2 /* GoGameRules.m */; };
 		CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A911832E2E700755EB2 /* GoGameRulesTest.m */; };
 		CDC97A951832E52E00755EB2 /* GoZobristTableTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A941832E52D00755EB2 /* GoZobristTableTest.m */; };
-		CDCBA6D0183D8801003697E2 /* TouchSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6CF183D8801003697E2 /* TouchSettingsController.m */; };
+		CDCBA6D0183D8801003697E2 /* MagnifyingGlassSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6CF183D8801003697E2 /* MagnifyingGlassSettingsController.m */; };
 		CDCBA6D3184228A0003697E2 /* TableViewVariableHeightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */; };
 		CDCBA6D4184228A7003697E2 /* TableViewVariableHeightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */; };
 		CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C82141034F000188B6A /* ArchiveViewController.m */; };
@@ -496,7 +496,7 @@
 		CDFD9F7218F1D3700031CBCF /* DisplaySettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525F14840A530027476B /* DisplaySettingsController.m */; };
 		CDFD9F7318F1D3740031CBCF /* ScoringSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD526114840A540027476B /* ScoringSettingsController.m */; };
 		CDFD9F7418F1D37B0031CBCF /* SoundSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE6C548183D820300186E89 /* SoundSettingsController.m */; };
-		CDFD9F7518F1D37E0031CBCF /* TouchSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6CF183D8801003697E2 /* TouchSettingsController.m */; };
+		CDFD9F7518F1D37E0031CBCF /* MagnifyingGlassSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6CF183D8801003697E2 /* MagnifyingGlassSettingsController.m */; };
 		CDFD9F7618F1D39E0031CBCF /* ResetPlayersAndProfilesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */; };
 		CDFD9F7718F1D5600031CBCF /* DocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35C148C2C26004E1A0C /* DocumentViewController.m */; };
 		CDFD9F7818F1D5640031CBCF /* LicensesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35E148C2C26004E1A0C /* LicensesViewController.m */; };
@@ -895,8 +895,8 @@
 		CDC97A911832E2E700755EB2 /* GoGameRulesTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameRulesTest.m; sourceTree = "<group>"; };
 		CDC97A931832E52D00755EB2 /* GoZobristTableTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoZobristTableTest.h; sourceTree = "<group>"; };
 		CDC97A941832E52D00755EB2 /* GoZobristTableTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoZobristTableTest.m; sourceTree = "<group>"; };
-		CDCBA6CE183D8801003697E2 /* TouchSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TouchSettingsController.h; sourceTree = "<group>"; };
-		CDCBA6CF183D8801003697E2 /* TouchSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TouchSettingsController.m; sourceTree = "<group>"; };
+		CDCBA6CE183D8801003697E2 /* MagnifyingGlassSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagnifyingGlassSettingsController.h; sourceTree = "<group>"; };
+		CDCBA6CF183D8801003697E2 /* MagnifyingGlassSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagnifyingGlassSettingsController.m; sourceTree = "<group>"; };
 		CDCBA6D1184228A0003697E2 /* TableViewVariableHeightCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewVariableHeightCell.h; sourceTree = "<group>"; };
 		CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewVariableHeightCell.m; sourceTree = "<group>"; };
 		CDD48C81141034F000188B6A /* ArchiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewController.h; sourceTree = "<group>"; };
@@ -1399,6 +1399,8 @@
 				CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */,
 				CDFE66AC173EC446003D8776 /* EditResignBehaviourSettingsController.h */,
 				CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */,
+				CDCBA6CE183D8801003697E2 /* MagnifyingGlassSettingsController.h */,
+				CDCBA6CF183D8801003697E2 /* MagnifyingGlassSettingsController.m */,
 				CDDCD0A4173BC1F000359DE7 /* MaxMemoryController.h */,
 				CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */,
 				CDDD525C14840A520027476B /* PlayerProfileSettingsController.h */,
@@ -1411,8 +1413,6 @@
 				CDE4057413EB081C0091E719 /* SettingsViewController.m */,
 				CDE6C547183D820300186E89 /* SoundSettingsController.h */,
 				CDE6C548183D820300186E89 /* SoundSettingsController.m */,
-				CDCBA6CE183D8801003697E2 /* TouchSettingsController.h */,
-				CDCBA6CF183D8801003697E2 /* TouchSettingsController.m */,
 			);
 			path = settings;
 			sourceTree = "<group>";
@@ -2305,7 +2305,7 @@
 				CD05B121142A60A700214BBE /* RestoreGameFromSgfCommand.m in Sources */,
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
-				CDCBA6D0183D8801003697E2 /* TouchSettingsController.m in Sources */,
+				CDCBA6D0183D8801003697E2 /* MagnifyingGlassSettingsController.m in Sources */,
 				CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */,
 				CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */,
 				CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */,
@@ -2446,7 +2446,7 @@
 				CDA597521401825600B250D8 /* GoVertex.m in Sources */,
 				CDFD9F8018F1D5E80031CBCF /* GtpCommandViewController.m in Sources */,
 				CDFD9F7818F1D5640031CBCF /* LicensesViewController.m in Sources */,
-				CDFD9F7518F1D37E0031CBCF /* TouchSettingsController.m in Sources */,
+				CDFD9F7518F1D37E0031CBCF /* MagnifyingGlassSettingsController.m in Sources */,
 				CD85B5901401C137001715B8 /* GoGameTest.m in Sources */,
 				CD7C6A0A1AB462CB009EC5AD /* NavigationBarButtonModel.m in Sources */,
 				CD85B5951401C1A5001715B8 /* GoGame.m in Sources */,

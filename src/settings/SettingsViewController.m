@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@
 #import "SettingsViewController.h"
 #import "BoardPositionSettingsController.h"
 #import "DisplaySettingsController.h"
+#import "MagnifyingGlassSettingsController.h"
 #import "PlayerProfileSettingsController.h"
 #import "ScoringSettingsController.h"
 #import "SoundSettingsController.h"
-#import "TouchSettingsController.h"
 #import "../ui/TableViewCellFactory.h"
 
 
@@ -53,7 +53,7 @@ enum ViewSettingsSectionItem
 // -----------------------------------------------------------------------------
 enum TouchAndSoundSettingsSectionItem
 {
-  TouchInteractionItem,
+  MagnifyingGlassItem,
   SoundVibrationItem,
   MaxTouchAndSoundSettingsSectionItem
 };
@@ -149,9 +149,9 @@ enum PlayersProfilesSectionItem
     {
       switch (indexPath.row)
       {
-        case TouchInteractionItem:
+        case MagnifyingGlassItem:
         {
-          cell.textLabel.text = @"Touch interaction";
+          cell.textLabel.text = @"Magnifying Glass";
           break;
         }
         case SoundVibrationItem:
@@ -214,9 +214,9 @@ enum PlayersProfilesSectionItem
     {
       switch (indexPath.row)
       {
-        case TouchInteractionItem:
+        case MagnifyingGlassItem:
         {
-          controller = [TouchSettingsController controller];
+          controller = [MagnifyingGlassSettingsController controller];
           break;
         }
         case SoundVibrationItem:

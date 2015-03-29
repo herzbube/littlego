@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "TouchSettingsController.h"
+#import "MagnifyingGlassSettingsController.h"
 #import "../main/ApplicationDelegate.h"
 #import "../ui/MagnifyingViewModel.h"
 #import "../ui/TableViewCellFactory.h"
@@ -25,10 +25,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "Touch interaction" user
+/// @brief Enumerates the sections presented in the "Magnifying Glass" user
 /// preferences table view.
 // -----------------------------------------------------------------------------
-enum TouchInteractionTableViewSection
+enum MagnifyingGlassTableViewSection
 {
   EnableModeSection,
   DistanceFromMagnificationCenterSection,
@@ -99,24 +99,25 @@ enum DistanceFromMagnificationCenterSetting
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for TouchSettingsController.
+/// @brief Class extension with private properties for
+/// MagnifyingGlassSettingsController.
 // -----------------------------------------------------------------------------
-@interface TouchSettingsController()
+@interface MagnifyingGlassSettingsController()
 @property(nonatomic, assign) MagnifyingViewModel* magnifyingViewModel;
 @end
 
 
-@implementation TouchSettingsController
+@implementation MagnifyingGlassSettingsController
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a TouchSettingsController instance
-/// of grouped style.
+/// @brief Convenience constructor. Creates a MagnifyingGlassSettingsController
+/// instance of grouped style.
 // -----------------------------------------------------------------------------
-+ (TouchSettingsController*) controller
++ (MagnifyingGlassSettingsController*) controller
 {
-  TouchSettingsController* controller = [[TouchSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
+  MagnifyingGlassSettingsController* controller = [[MagnifyingGlassSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
   {
     [controller autorelease];
@@ -126,7 +127,8 @@ enum DistanceFromMagnificationCenterSetting
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this TouchSettingsController object.
+/// @brief Deallocates memory allocated by this
+/// MagnifyingGlassSettingsController object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -142,7 +144,7 @@ enum DistanceFromMagnificationCenterSetting
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-  self.title = @"Touch interaction";
+  self.title = @"Magnifying Glass";
 }
 
 #pragma mark - UITableViewDataSource overrides
