@@ -34,16 +34,6 @@
 @property(nonatomic, assign) float moveNumbersPercentage;
 @property(nonatomic, assign) bool playSound;
 @property(nonatomic, assign) bool vibrate;
-/// @brief How far from the fingertip should the cross-hair point be displayed
-/// when placing stones on the Go board.
-///
-/// This is a percentage that must be taken into account by whatever algorithm
-/// is used to calculate the actual distance. The minimum value that this
-/// property can have is 0: This indicates that the cross-hair point must be
-/// placed directly under the fingertip. The maximum value of this property is
-/// 1.0: This indicates that the algorithm should choose the maximum distance
-/// that is appropriate under the circumstances.
-@property(nonatomic, assign) float stoneDistanceFromFingertip;
 /// @brief Type of information that was selected when the Info view was
 /// displayed the last time.
 @property(nonatomic, assign) enum InfoType infoTypeLastSelected;

@@ -31,11 +31,10 @@
 {
 }
 
-- (BoardViewIntersection) crossHairIntersectionNear:(CGPoint)coordinates;
+- (BoardViewIntersection) intersectionNear:(CGPoint)coordinates;
 - (void) moveCrossHairTo:(GoPoint*)point
              isLegalMove:(bool)isLegalMove
          isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason;
-- (BoardViewIntersection) intersectionNear:(CGPoint)coordinates;
 
 /// @name Cross-hair point properties
 //@{

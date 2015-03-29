@@ -152,15 +152,16 @@
   //    user can see the stone location
 
   CGPoint panningLocation = [gestureRecognizer locationInView:self.boardView];
-  BoardViewIntersection crossHairIntersection = [self.boardView crossHairIntersectionNear:panningLocation];
+  BoardViewIntersection crossHairIntersection = [self.boardView intersectionNear:panningLocation];
 
   bool isLegalMove = false;
   enum GoMoveIsIllegalReason illegalReason = GoMoveIsIllegalReasonUnknown;
   if (! BoardViewIntersectionIsNullIntersection(crossHairIntersection))
   {
     CGRect visibleRect = self.boardView.bounds;
-    // Don't use panningLocation for this check because the cross-hair might
-    // be offset due to the user preference "stoneDistanceFromFingertip"
+    // Don't use panningLocation for this check because the cross-hair center
+    // is offset due to the snapping mechanism of the intersectionNear:()
+    // method
     bool isCrossHairInVisibleRect = CGRectContainsPoint(visibleRect, crossHairIntersection.coordinates);
     if (isCrossHairInVisibleRect)
       isLegalMove = [[GoGame sharedGame] isLegalMove:crossHairIntersection.point isIllegalReason:&illegalReason];

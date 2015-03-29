@@ -625,7 +625,6 @@ extern NSString* territoryStatisticsChanged;
 //@{
 extern const float iPhoneMaximumZoomScale;
 extern const float iPadMaximumZoomScale;
-extern const float stoneDistanceFromFingertipDefault;
 extern const float moveNumbersPercentageDefault;
 extern const bool displayPlayerInfluenceDefault;
 extern const bool discardFutureMovesAlertDefault;
@@ -911,7 +910,6 @@ extern NSString* displayPlayerInfluenceKey;
 extern NSString* moveNumbersPercentageKey;
 extern NSString* playSoundKey;
 extern NSString* vibrateKey;
-extern NSString* stoneDistanceFromFingertipKey;
 extern NSString* infoTypeLastSelectedKey;
 // New game settings
 extern NSString* newGameKey;

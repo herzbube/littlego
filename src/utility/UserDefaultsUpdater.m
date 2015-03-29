@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,6 +61,8 @@ NSString* blackSekiSymbolColorKey = @"BlackSekiSymbolColor";
 NSString* whiteSekiSymbolColorKey = @"WhiteSekiSymbolColor";
 NSString* maximumZoomScaleKey = @"MaximumZoomScale";
 NSString* selectedTabIndexKey = @"SelectedTabIndex";
+NSString* stoneDistanceFromFingertipKey = @"StoneDistanceFromFingertip";
+const float stoneDistanceFromFingertipDefault = 0.5;
 //@}
 
 
@@ -651,9 +653,20 @@ NSString* selectedTabIndexKey = @"SelectedTabIndex";
 + (void) upgradeToVersion10:(NSDictionary*)registrationDomainDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
   // Just remove the value, we don't bother converting to the new key
   // "VisibleUIArea"
   [userDefaults removeObjectForKey:selectedTabIndexKey];
+
+  // Remove obsolete keys from "BoardView" dictionary
+  id boardViewDictionary = [userDefaults objectForKey:boardViewKey];
+  if (boardViewDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* boardViewDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:boardViewDictionary];
+    [UserDefaultsUpdater removeDeviceSpecificKeysForDeviceAgnosticKey:stoneDistanceFromFingertipKey fromDictionary:boardViewDictionaryUpgrade];
+    [userDefaults setObject:boardViewDictionaryUpgrade forKey:boardViewKey];
+  }
+
 }
 
 // -----------------------------------------------------------------------------

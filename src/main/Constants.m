@@ -81,7 +81,6 @@ NSString* boardViewDidChangeCrossHair = @"BoardViewDidChangeCrossHair";
 // Default values for properties that define how the Go board is displayed
 const float iPhoneMaximumZoomScale = 2.5;
 const float iPadMaximumZoomScale = 2.0;
-const float stoneDistanceFromFingertipDefault = 0.5;
 const float moveNumbersPercentageDefault = 0.0;
 const bool displayPlayerInfluenceDefault = false;
 
@@ -226,7 +225,6 @@ NSString* displayPlayerInfluenceKey = @"DisplayPlayerInfluence";
 NSString* moveNumbersPercentageKey = @"MoveNumbersPercentage";
 NSString* playSoundKey = @"PlaySound";
 NSString* vibrateKey = @"Vibrate";
-NSString* stoneDistanceFromFingertipKey = @"StoneDistanceFromFingertip";
 NSString* infoTypeLastSelectedKey = @"InfoTypeLastSelected";
 // New game settings
 NSString* newGameKey = @"NewGame";

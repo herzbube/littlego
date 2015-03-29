@@ -20,10 +20,6 @@
 		<false/>
 		<key>Vibrate</key>
 		<false/>
-		<key>StoneDistanceFromFingertip~iphone</key>
-		<real>1</real>
-		<key>StoneDistanceFromFingertip~ipad</key>
-		<integer>0</integer>
 	</dict>
 	<key>NewGame</key>
 	<dict>
