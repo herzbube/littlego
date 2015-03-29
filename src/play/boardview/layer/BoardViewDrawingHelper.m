@@ -52,8 +52,8 @@ CGLayerRef CreateStarPointLayer(CGContextRef context, BoardViewMetrics* metrics)
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
-  const int startRadius = [UiUtilities radians:0];
-  const int endRadius = [UiUtilities radians:360];
+  const CGFloat startRadius = [UiUtilities radians:0];
+  const CGFloat endRadius = [UiUtilities radians:360];
   const int clockwise = 0;
   CGContextAddArc(layerContext,
                   layerCenter.x,
@@ -248,8 +248,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   if (TerritoryMarkupStyleInconsistentDotSymbol == territoryMarkupStyle)
   {
     CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
-    const int startRadius = [UiUtilities radians:0];
-    const int endRadius = [UiUtilities radians:360];
+    const CGFloat startRadius = [UiUtilities radians:0];
+    const CGFloat endRadius = [UiUtilities radians:360];
     const int clockwise = 0;
     CGContextAddArc(layerContext,
                     layerCenter.x,

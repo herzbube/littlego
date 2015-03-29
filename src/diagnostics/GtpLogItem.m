@@ -129,8 +129,8 @@
     color = [UIColor redColor];
 	CGContextSetFillColorWithColor(context, color.CGColor);
   const CGPoint center = CGPointMake(radius, radius);
-  const int startRadius = [UiUtilities radians:0];
-  const int endRadius = [UiUtilities radians:360];
+  const CGFloat startRadius = [UiUtilities radians:0];
+  const CGFloat endRadius = [UiUtilities radians:360];
   const int clockwise = 0;
   CGContextAddArc(context, center.x, center.y, radius, startRadius, endRadius, clockwise);
   CGContextFillPath(context);

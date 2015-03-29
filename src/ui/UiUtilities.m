@@ -348,8 +348,8 @@
 // -----------------------------------------------------------------------------
 + (void) drawCircleWithContext:(CGContextRef)context center:(CGPoint)center radius:(CGFloat)radius fill:(bool)fill color:(UIColor*)color
 {
-  const int startRadius = [UiUtilities radians:0];
-  const int endRadius = [UiUtilities radians:360];
+  const CGFloat startRadius = [UiUtilities radians:0];
+  const CGFloat endRadius = [UiUtilities radians:360];
   const int clockwise = 0;
 
   CGContextAddArc(context,
