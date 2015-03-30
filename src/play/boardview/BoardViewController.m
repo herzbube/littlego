@@ -400,7 +400,7 @@
 {
   self.coordinateLabelsLetterView.translatesAutoresizingMaskIntoConstraints = NO;
   self.coordinateLabelsNumberView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.coordinateLabelsViewConstraints = [self coordinateLabelsViewConstraints];
+  self.coordinateLabelsViewConstraints = [self createCoordinateLabelsViewConstraints];
   [self.view addConstraints:self.coordinateLabelsViewConstraints];
 }
 
@@ -417,10 +417,10 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns an array of auto layout constraints for layouting coordinate
-/// labels views.
+/// @brief Creates and returns an array of auto layout constraints for
+/// layouting coordinate labels views.
 // -----------------------------------------------------------------------------
-- (NSArray*) coordinateLabelsViewConstraints
+- (NSArray*) createCoordinateLabelsViewConstraints
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   return [NSArray arrayWithObjects:
