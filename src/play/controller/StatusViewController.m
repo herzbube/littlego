@@ -408,7 +408,7 @@
       {
         case GoGameComputerIsThinkingReasonComputerPlay:
         {
-          NSString* playerName = game.currentPlayer.player.name;
+          NSString* playerName = game.nextMovePlayer.player.name;
           if (game.isComputerPlayersTurn)
             statusText = [playerName stringByAppendingString:@" is thinking..."];
           else
@@ -465,7 +465,7 @@
             {
               NSString* color;
               // TODO fix when GoColor class is added
-              if (game.currentPlayer.black)
+              if (game.nextMovePlayer.black)
                 color = @"Black";
               else
                 color = @"White";

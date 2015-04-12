@@ -567,7 +567,7 @@ static const int maxStepsForReplayMoves = 10;
       NSString* expectedColorString;
       NSString* expectedColorName;
       NSString* otherColorName;
-      if ([game currentPlayer].isBlack)
+      if (game.nextMovePlayer.isBlack)
       {
         expectedColorString = @"b";
         expectedColorName = @"Black";

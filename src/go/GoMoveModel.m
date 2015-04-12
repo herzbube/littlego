@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2012-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2012-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,8 @@
 #import "GoMoveModel.h"
 #import "GoGame.h"
 #import "GoGameDocument.h"
-#import "../go/GoMove.h"
+#import "GoPlayer.h"
+#import "GoUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -90,12 +91,16 @@
 ///
 /// Raises @e NSInvalidArgumentException if @a move is nil.
 ///
-/// Invoking this method sets the GoGameDocument dirty flag.
+/// Invoking this method sets the GoGameDocument dirty flag and, if alternating
+/// play is enabled, updates GoGame's @e nextMoveColor property to the
+/// alternating color of the color who made @a move.
 // -----------------------------------------------------------------------------
 - (void) appendMove:(GoMove*)move
 {
   [_moveList addObject:move];
   self.game.document.dirty = true;
+  if (self.game.alternatingPlay)
+    self.game.nextMoveColor = [GoUtilities playerAfter:move inGame:self.game].color;
   // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
   // is safe because this app was not made to handle more than pow(2, 31) moves.
   self.numberOfMoves = (int)_moveList.count;  // triggers KVO observers
@@ -106,7 +111,8 @@
 ///
 /// Raises @e NSRangeException if there are no GoMove objects in this model.
 ///
-/// Invoking this method sets the GoGameDocument dirty flag.
+/// Invoking this method sets the GoGameDocument dirty flag and, if alternating
+/// play is enabled, updates GoGame's @e nextMoveColor property.
 // -----------------------------------------------------------------------------
 - (void) discardLastMove
 {
@@ -122,7 +128,9 @@
 /// Raises @e NSRangeException if @a index is <0 or exceeds the number of
 /// GoMove objects in this model.
 ///
-/// Invoking this method sets the GoGameDocument dirty flag.
+/// Invoking this method sets the GoGameDocument dirty flag and, if alternating
+/// play is enabled, updates GoGame's @e nextMoveColor property to the
+/// alternating color of the player who played the new last move.
 // -----------------------------------------------------------------------------
 - (void) discardMovesFromIndex:(int)index
 {
@@ -153,6 +161,9 @@
   }
 
   self.game.document.dirty = true;
+  if (self.game.alternatingPlay)
+    self.game.nextMoveColor = [GoUtilities playerAfter:self.lastMove inGame:self.game].color;
+
   // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
   // is safe because this app was not made to handle more than pow(2, 31) moves.
   self.numberOfMoves = (int)_moveList.count;  // triggers KVO observers

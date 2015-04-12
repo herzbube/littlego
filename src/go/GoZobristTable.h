@@ -51,9 +51,9 @@
 
 - (long long) hashForBoard:(GoBoard*)board;
 - (long long) hashForMove:(GoMove*)move;
-- (long long) hashForStonePlayedBy:(GoPlayer*)player
-                           atPoint:(GoPoint*)point
-                   capturingStones:(NSArray*)capturedStones
-                         afterMove:(GoMove*)move;
+- (long long) hashForStonePlayedByColor:(enum GoColor)color
+                                atPoint:(GoPoint*)point
+                        capturingStones:(NSArray*)capturedStones
+                              afterMove:(GoMove*)move;
 
 @end

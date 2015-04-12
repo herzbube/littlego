@@ -55,7 +55,9 @@
   XCTAssertEqual(m_game.komi, gDefaultKomiAreaScoring);
   XCTAssertNotNil(m_game.playerBlack);
   XCTAssertNotNil(m_game.playerWhite);
-  XCTAssertEqual(m_game.currentPlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  XCTAssertEqual(m_game.alternatingPlay, true);
   XCTAssertNil(m_game.firstMove);
   XCTAssertNil(m_game.lastMove);
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state, @"game state test failed");
@@ -135,23 +137,178 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the @e currentPlayer property.
+/// @brief Exercises the @e nextMoveColor property.
+///
+/// Tests are almost equivalent to those in testSwitchNextMoveColor().
 // -----------------------------------------------------------------------------
-- (void) testCurrentPlayer
+- (void) testNextMoveColor
 {
-  XCTAssertEqual(m_game.currentPlayer, m_game.playerBlack);
-  m_game.handicapPoints = [GoUtilities pointsForHandicap:2 inGame:m_game];
-  XCTAssertEqual(m_game.currentPlayer, m_game.playerWhite);
-  m_game.handicapPoints = [NSArray array];
-  XCTAssertEqual(m_game.currentPlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.alternatingPlay, true);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
+  // We can force the first move to be by white
+  m_game.nextMoveColor = GoColorWhite;
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
-  XCTAssertEqual(m_game.currentPlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  // We can force two consecutive moves by the same color
+  m_game.nextMoveColor = GoColorWhite;
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   [m_game play:[m_game.board pointAtVertex:@"B1"]];
-  XCTAssertEqual(m_game.currentPlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
+  m_game.alternatingPlay = false;
+  // Pass moves also work
+  m_game.nextMoveColor = GoColorWhite;
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  [m_game pass];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  // Now that alternating play is disabled, we have full control over the
+  // property
+  m_game.nextMoveColor = GoColorBlack;
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  [m_game play:[m_game.board pointAtVertex:@"C1"]];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
+  XCTAssertThrowsSpecificNamed(m_game.nextMoveColor = GoColorNone,
+                               NSException, NSInvalidArgumentException, @"invalid color");
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e nextMovePlayer and @e nextMoveColor properties while
+/// the @e alternatingPlay property is true.
+// -----------------------------------------------------------------------------
+- (void) testAlternatingPlayEnabled
+{
+  XCTAssertEqual(m_game.alternatingPlay, true);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  m_game.handicapPoints = [GoUtilities pointsForHandicap:2 inGame:m_game];
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  m_game.handicapPoints = [NSArray array];
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  [m_game play:[m_game.board pointAtVertex:@"B1"]];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  [m_game pass];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  [m_game play:[m_game.board pointAtVertex:@"C1"]];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  [m_game.moveModel discardLastMove];  // discard play move C1
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  [m_game.moveModel discardLastMove];  // discard pass move
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
+  // The current value of nextMoveColor is not relevant when discarding a move
+  [m_game switchNextMoveColor];
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  [m_game.moveModel discardLastMove];  // discard play move B1 made by white
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+
+  // The color that made the last move is not relevant when playing a move
+  [m_game switchNextMoveColor];
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  [m_game play:[m_game.board pointAtVertex:@"D1"]];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e nextMovePlayer and @e nextMoveColor properties while
+/// the @e alternatingPlay property is false.
+// -----------------------------------------------------------------------------
+- (void) testAlternatingPlayDisabled
+{
+  XCTAssertEqual(m_game.alternatingPlay, true);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
+  m_game.alternatingPlay = false;
+
+  // Alternating play and handicap do not interact, i.e. after setting a
+  // handicap the next move color is always white, after removing the handicap
+  // the next move color is always black
+  m_game.handicapPoints = [GoUtilities pointsForHandicap:3 inGame:m_game];
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  m_game.handicapPoints = [NSArray array];
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
+  // Regular moves respect the disabled alternatingPlay property: the next move
+  // color stays black
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  [m_game pass];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
+  // Switch to white, then test again that the disabled alternatingPlay property
+  // is respected: the next move color stays white
+  m_game.alternatingPlay = true;
+  [m_game play:[m_game.board pointAtVertex:@"B1"]];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  m_game.alternatingPlay = false;
+  [m_game play:[m_game.board pointAtVertex:@"C1"]];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  [m_game pass];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+
+  // Discards also respect the disabled alternatingPlay property: the next move
+  // color stays white, even if it means going back to the start of the game
   [m_game.moveModel discardLastMove];
-  XCTAssertEqual(m_game.currentPlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   [m_game.moveModel discardLastMove];
-  XCTAssertEqual(m_game.currentPlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  [m_game.moveModel discardAllMoves];
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
 }
 
 // -----------------------------------------------------------------------------
@@ -643,6 +800,53 @@
 
   // Currently no more tests possible because we can't simulate
   // computer vs. computer games
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the switchNextMoveColor() method.
+///
+/// Tests are almost equivalent to those in testNextMoveColor().
+// -----------------------------------------------------------------------------
+- (void) testSwitchNextMoveColor
+{
+  XCTAssertEqual(m_game.alternatingPlay, true);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  // We can force the first move to be by white
+  [m_game switchNextMoveColor];
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  // We can force two consecutive moves by the same color
+  [m_game switchNextMoveColor];
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  [m_game play:[m_game.board pointAtVertex:@"B1"]];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
+  m_game.alternatingPlay = false;
+  // Pass moves also work
+  [m_game switchNextMoveColor];
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  [m_game pass];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  // Now that alternating play is disabled, we have full control over the
+  // property
+  [m_game switchNextMoveColor];
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  [m_game play:[m_game.board pointAtVertex:@"C1"]];
+  XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
 }
 
 // -----------------------------------------------------------------------------

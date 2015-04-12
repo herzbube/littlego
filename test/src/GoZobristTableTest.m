@@ -22,6 +22,7 @@
 #import <go/GoBoard.h>
 #import <go/GoGame.h>
 #import <go/GoMove.h>
+#import <go/GoPlayer.h>
 #import <go/GoPoint.h>
 #import <go/GoZobristTable.h>
 
@@ -79,12 +80,12 @@
 
   // Test that we cannot pass a nil object
   XCTAssertThrowsSpecificNamed([zobristTable hashForMove:nil],
-                              NSException, NSGenericException, @"move is nil");
+                              NSException, NSInvalidArgumentException, @"move is nil");
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Exercises the
-/// hashForStonePlayedBy:atPoint:capturingStones:afterMove:() method.
+/// hashForStonePlayedByColor:atPoint:capturingStones:afterMove:() method.
 // -----------------------------------------------------------------------------
 - (void) testHashForStone
 {
@@ -103,13 +104,19 @@
   XCTAssertNotNil(lastMove.capturedStones);
   XCTAssertTrue(lastMove.capturedStones.count > 0);
 
-  long long hashForStone = [zobristTable hashForStonePlayedBy:lastMove.player
-                                                      atPoint:lastMove.point
-                                              capturingStones:lastMove.capturedStones
-                                                    afterMove:passMove];
+  long long hashForStone = [zobristTable hashForStonePlayedByColor:lastMove.player.color
+                                                           atPoint:lastMove.point
+                                                   capturingStones:lastMove.capturedStones
+                                                         afterMove:passMove];
   long long hashForMove = [zobristTable hashForMove:lastMove];
   XCTAssertEqual(hashForStone, hashForMove);
   XCTAssertEqual(hashForStone, lastMove.zobristHash);
+
+  XCTAssertThrowsSpecificNamed([zobristTable hashForStonePlayedByColor:GoColorNone
+                                                               atPoint:lastMove.point
+                                                       capturingStones:lastMove.capturedStones
+                                                             afterMove:passMove],
+                               NSException, NSInvalidArgumentException, @"invalid GoColor argument");
 }
 
 // -----------------------------------------------------------------------------

@@ -35,7 +35,7 @@
   if (! game)
     return false;
   NSString* commandString = @"reg_genmove ";
-  commandString = [commandString stringByAppendingString:game.currentPlayer.colorString];
+  commandString = [commandString stringByAppendingString:game.nextMovePlayer.colorString];
   GtpCommand* command = [GtpCommand asynchronousCommand:commandString
                                          responseTarget:self
                                                selector:@selector(gtpResponseReceived:)];

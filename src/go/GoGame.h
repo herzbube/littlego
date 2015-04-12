@@ -67,8 +67,10 @@
 - (void) pause;
 - (void) continue;
 - (bool) isLegalMove:(GoPoint*)point isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
+- (bool) isLegalMove:(GoPoint*)point byColor:(enum GoColor)color isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isComputerPlayersTurn;
 - (void) revertStateFromEndedToInProgress;
+- (void) switchNextMoveColor;
 
 /// @brief The type of this GoGame object.
 @property(nonatomic, assign) enum GoGameType type;
@@ -77,9 +79,13 @@
 /// @brief List of GoPoint objects with handicap stones.
 ///
 /// Setting this property causes a black stone to be set on the GoPoint objects
-/// in the specified list.
+/// in the specified list. Setting this property also changes the value of the
+/// @e nextMoveColor property (regardless of whether alternating play is enabled
+/// or not): If a non-empty handicap list is set, @e nextMoveColor is set to
+/// #GoColorWhite, if an empty handicap list is set, @e nextMoveColor is set to
+/// #GoColorBlack.
 ///
-/// Raises an @e NSInternalInconsistencyException if this property is set when
+/// The setter raises @e NSInternalInconsistencyException if it is invoked when
 /// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is
 /// in that state but already has moves. Summing it up, this property can be set
 /// only at the start of the game.
@@ -89,16 +95,26 @@
 @property(nonatomic, retain) NSArray* handicapPoints;
 /// @brief The komi used for this game.
 @property(nonatomic, assign) double komi;
-/// @brief The GoPlayer object that plays for black.
+/// @brief The GoPlayer object that plays black.
 @property(nonatomic, retain) GoPlayer* playerBlack;
-/// @brief The GoPlayer object that plays for white.
+/// @brief The GoPlayer object that plays white.
 @property(nonatomic, retain) GoPlayer* playerWhite;
-/// @brief The player whose turn it is now.
+/// @brief The player who will make the next move.
 ///
 /// After the game has ended, querying this property in some cases is a
 /// convenient way to find out who brought about the end of the game. For
 /// instance, if the game was resigned this denotes the player who resigned.
-@property(nonatomic, assign, readonly) GoPlayer* currentPlayer;
+@property(nonatomic, assign, readonly) GoPlayer* nextMovePlayer;
+/// @brief The side who will make the next move.
+///
+/// The setter raises @e NSInvalidArgumentException if a color is set that is
+/// neither black nor white.
+@property(nonatomic, assign) enum GoColor nextMoveColor;
+/// @brief Denotes whether alternating play is enabled or disabled. If
+/// alternating play is enabled, invoking play:() and pass() or modifying the
+/// content of the GoMoveModel object causes the @e nextMovePlayer and
+/// @e nextMovePlayerColor properties to change.
+@property(nonatomic, assign) bool alternatingPlay;
 /// @brief The model object that stores the moves of the game.
 @property(nonatomic, retain) GoMoveModel* moveModel;
 /// @brief The GoMove object that represents the first move of the game. nil if

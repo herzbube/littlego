@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -197,6 +197,17 @@
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
   return [NSString stringWithFormat:@"GoPlayer(%p): isBlack = %d", self, _black];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (enum GoColor) color
+{
+  if (self.black)
+    return GoColorBlack;
+  else
+    return GoColorWhite;
 }
 
 // -----------------------------------------------------------------------------

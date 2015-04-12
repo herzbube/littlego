@@ -554,12 +554,12 @@ enum BoardPositionSectionItem
               }
               case GoGameHasEndedReasonResigned:
               {
-                NSString* colorOfCurrentPlayer;
-                if (game.currentPlayer.isBlack)
-                  colorOfCurrentPlayer = @"Black";
+                NSString* colorOfNextMovePlayer;
+                if (game.nextMovePlayer.isBlack)
+                  colorOfNextMovePlayer = @"Black";
                 else
-                  colorOfCurrentPlayer = @"White";
-                cell.detailTextLabel.text = [colorOfCurrentPlayer stringByAppendingString:@" resigned"];
+                  colorOfNextMovePlayer = @"White";
+                cell.detailTextLabel.text = [colorOfNextMovePlayer stringByAppendingString:@" resigned"];
                 break;
               }
               default:
@@ -601,7 +601,7 @@ enum BoardPositionSectionItem
         {
           cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
           cell.textLabel.text = @"Next move";
-          if (game.currentPlayer.isBlack)
+          if (game.nextMovePlayer.isBlack)
             cell.detailTextLabel.text = @"Black";
           else
             cell.detailTextLabel.text = @"White";

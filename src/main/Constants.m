@@ -309,7 +309,7 @@ NSString* magnifyingGlassDistanceFromMagnificationCenterKey = @"MagnifyingGlassD
 
 // Constants for NSCoding
 // General constants
-const int nscodingVersion = 5;
+const int nscodingVersion = 6;
 NSString* nscodingVersionKey = @"NSCodingVersion";
 // Top-level object keys
 NSString* nsCodingGoGameKey = @"GoGame";
@@ -320,6 +320,8 @@ NSString* goGameHandicapPointsKey = @"HandicapPoints";
 NSString* goGameKomiKey = @"Komi";
 NSString* goGamePlayerBlackKey = @"PlayerBlack";
 NSString* goGamePlayerWhiteKey = @"PlayerWhite";
+NSString* goGameNextMoveColorKey = @"NextMoveColor";
+NSString* goGameAlternatingPlayKey = @"AlternatingPlay";
 NSString* goGameMoveModelKey = @"MoveModel";
 NSString* goGameStateKey = @"State";
 NSString* goGameReasonForGameHasEndedKey = @"ReasonForGameHasEnded";

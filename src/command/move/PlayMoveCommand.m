@@ -120,7 +120,7 @@
 - (bool) doIt
 {
   // Must get this before updating the game model
-  NSString* colorForMove = self.game.currentPlayer.colorString;
+  NSString* colorForMove = self.game.nextMovePlayer.colorString;
 
   NSString* commandString = @"play ";
   commandString = [commandString stringByAppendingString:colorForMove];

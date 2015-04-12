@@ -278,8 +278,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the player whose turn it is after @a move was played. If
-/// @a move is nil the player who plays first in @a game is returned.
+/// @brief Assuming that alternating play is desired, returns the player whose
+/// turn it is after @a move was played. If @a move is nil, returns the player
+/// who plays first in @a game (after taking handicap into consideration).
 // -----------------------------------------------------------------------------
 + (GoPlayer*) playerAfter:(GoMove*)move inGame:(GoGame*)game
 {

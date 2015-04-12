@@ -165,16 +165,28 @@
 ///
 /// If @a move is a pass move, the resulting hash is the same as for the
 /// previous move.
+///
+/// Raises @e NSInvalidArgumentException if @a move is nil.
 // -----------------------------------------------------------------------------
 - (long long) hashForMove:(GoMove*)move
 {
+  if (!move)
+  {
+    NSString* errorMessage = @"Move argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   long long hash;
   if (GoMoveTypePlay == move.type)
   {
-    hash = [self hashForStonePlayedBy:move.player
-                              atPoint:move.point
-                      capturingStones:move.capturedStones
-                            afterMove:move.previous];
+    hash = [self hashForStonePlayedByColor:move.player.color
+                                   atPoint:move.point
+                           capturingStones:move.capturedStones
+                                 afterMove:move.previous];
   }
   else
   {
@@ -188,10 +200,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Generates the Zobrist hash for a hypothetical move played by
-/// @a player on the intersection @a point, after the previous move @a move.
-/// The move would capture the stones in @a capturedStones (array of GoPoint
-/// objects).
+/// @brief Generates the Zobrist hash for a hypothetical move played by @a color
+/// on the intersection @a point, after the previous move @a move. The move
+/// would capture the stones in @a capturedStones (array of GoPoint objects.
 ///
 /// The hash is calculated incrementally from the Zobrist hash of the previous
 /// move @a move:
@@ -199,12 +210,25 @@
 /// - The stone that was added is added to the hash
 ///
 /// If @a move is nil the calculation starts with 0.
+///
+/// Raises @e NSInvalidArgumentException if @a color is neither GoColorBlack
+/// nor GoColorWhite.
 // -----------------------------------------------------------------------------
-- (long long) hashForStonePlayedBy:(GoPlayer*)player
-                           atPoint:(GoPoint*)point
-                   capturingStones:(NSArray*)capturedStones
-                         afterMove:(GoMove*)move
+- (long long) hashForStonePlayedByColor:(enum GoColor)color
+                                atPoint:(GoPoint*)point
+                        capturingStones:(NSArray*)capturedStones
+                              afterMove:(GoMove*)move
 {
+  if (color != GoColorBlack && color != GoColorWhite)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Invalid color argument %d", color];
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   long long hash;
   if (move)
     hash = move.zobristHash;
@@ -215,11 +239,11 @@
   {
     for (GoPoint* capturedStone in capturedStones)
     {
-      int indexCaptured = [self indexForStoneAt:capturedStone capturedBy:player];
+      int indexCaptured = [self indexForStoneAt:capturedStone capturedByColor:color];
       hash ^= _zobristTable[indexCaptured];
     }
   }
-  int indexPlayed = [self indexForStoneAt:point playedBy:player];
+  int indexPlayed = [self indexForStoneAt:point playedByColor:color];
   hash ^= _zobristTable[indexPlayed];
   return hash;
 }
@@ -246,40 +270,39 @@
 // -----------------------------------------------------------------------------
 /// Private helper
 // -----------------------------------------------------------------------------
-- (int) indexForStoneAt:(GoPoint*)point playedBy:(GoPlayer*)player
+- (int) indexForStoneAt:(GoPoint*)point playedByColor:(enum GoColor)color
 {
   struct GoVertexNumeric vertex = point.vertex.numeric;
-  int color = [self colorOfStonePlayedBy:player];
-  return [self indexForVertex:vertex color:color boardSize:_boardSize];
+  int colorOfPlayedStone = [self colorOfStonePlayedByColor:color];
+  return [self indexForVertex:vertex color:colorOfPlayedStone boardSize:_boardSize];
 }
 
 // -----------------------------------------------------------------------------
 /// Private helper
 // -----------------------------------------------------------------------------
-- (int) colorOfStonePlayedBy:(GoPlayer*)player
+- (int) colorOfStonePlayedByColor:(enum GoColor)color
 {
-  int color = player.black ? 0 : 1;
-  return color;
+  // The inverse of colorOfStoneCapturedByColor:()
+  return (GoColorBlack == color ? 0 : 1);
 }
 
 // -----------------------------------------------------------------------------
 /// Private helper
 // -----------------------------------------------------------------------------
-- (int) indexForStoneAt:(GoPoint*)point capturedBy:(GoPlayer*)player
+- (int) indexForStoneAt:(GoPoint*)point capturedByColor:(enum GoColor)color
 {
   struct GoVertexNumeric vertex = point.vertex.numeric;
-  int color = [self colorOfStoneCapturedBy:player];
-  return [self indexForVertex:vertex color:color boardSize:_boardSize];
+  int colorOfCapturedStone = [self colorOfStoneCapturedByColor:color];
+  return [self indexForVertex:vertex color:colorOfCapturedStone boardSize:_boardSize];
 }
 
 // -----------------------------------------------------------------------------
 /// Private helper
 // -----------------------------------------------------------------------------
-- (int) colorOfStoneCapturedBy:(GoPlayer*)player
+- (int) colorOfStoneCapturedByColor:(enum GoColor)color
 {
-  // The inverse of colorOfStonePlayedBy:()
-  int color = player.black ? 1 : 0;
-  return color;
+  // The inverse of colorOfStonePlayedByColor:()
+  return (GoColorBlack == color ? 1 : 0);
 }
 
 // -----------------------------------------------------------------------------

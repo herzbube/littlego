@@ -1009,6 +1009,8 @@ extern NSString* goGameHandicapPointsKey;
 extern NSString* goGameKomiKey;
 extern NSString* goGamePlayerBlackKey;
 extern NSString* goGamePlayerWhiteKey;
+extern NSString* goGameNextMoveColorKey;
+extern NSString* goGameAlternatingPlayKey;
 extern NSString* goGameMoveModelKey;
 extern NSString* goGameStateKey;
 extern NSString* goGameReasonForGameHasEndedKey;

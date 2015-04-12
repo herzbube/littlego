@@ -56,7 +56,7 @@
     return nil;
 
   // Don't use "self" because most properties have non-trivial setter methods
-  // (e.g. notificatins are triggered, but also other stuff)
+  // (e.g. notifications are triggered, but also other stuff)
   _type = GoGameTypeUnknown;
   _board = nil;
   _rules = nil;
@@ -64,6 +64,8 @@
   _komi = 0;
   _playerBlack = nil;
   _playerWhite = nil;
+  _nextMoveColor = GoColorBlack;
+  _alternatingPlay = true;
   _moveModel = [[GoMoveModel alloc] initWithGame:self];
   _state = GoGameStateGameHasStarted;
   _reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
@@ -89,13 +91,15 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
   // Don't use "self" because most properties have non-trivial setter methods
-  // (e.g. notificatins are triggered, but also other stuff)
+  // (e.g. notifications are triggered, but also other stuff)
   _type = [decoder decodeIntForKey:goGameTypeKey];
   _board = [[decoder decodeObjectForKey:goGameBoardKey] retain];
   _handicapPoints = [[decoder decodeObjectForKey:goGameHandicapPointsKey] retain];
   _komi = [decoder decodeDoubleForKey:goGameKomiKey];
   _playerBlack = [[decoder decodeObjectForKey:goGamePlayerBlackKey] retain];
   _playerWhite = [[decoder decodeObjectForKey:goGamePlayerWhiteKey] retain];
+  _nextMoveColor = [decoder decodeIntForKey:goGameNextMoveColorKey];
+  _alternatingPlay = ([decoder decodeBoolForKey:goGameAlternatingPlayKey] == YES);
   _moveModel = [[decoder decodeObjectForKey:goGameMoveModelKey] retain];
   _state = [decoder decodeIntForKey:goGameStateKey];
   _reasonForGameHasEnded = [decoder decodeIntForKey:goGameReasonForGameHasEndedKey];
@@ -163,9 +167,10 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the state of this GoGame and all associated objects in
-/// response to one of the players making a #GoMoveTypePlay.
+/// response to the @e nextMovePlayer making a #GoMoveTypePlay.
 ///
-/// Invoking this method sets the document dirty flag.
+/// Invoking this method sets the document dirty flag and, if alternating play
+/// is enabled, switches the @e nextMovePlayer.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
 /// while this GoGame object is not in state #GoGameStateGameHasStarted or
@@ -175,8 +180,8 @@
 /// player who is thinking at the time the game is paused must be able to
 /// finish its turn.
 ///
-/// Raises @e NSInvalidArgumentException if @a aPoint is nil, if isLegalMove:()
-/// returns false for @a aPoint, or if an exception occurs while actually
+/// Raises @e NSInvalidArgumentException if @a aPoint is nil, if playing on
+/// @a aPoint is not a legal move, or if an exception occurs while actually
 /// playing on @a aPoint.
 // -----------------------------------------------------------------------------
 - (void) play:(GoPoint*)aPoint
@@ -210,7 +215,7 @@
     @throw exception;
   }
 
-  GoMove* move = [GoMove move:GoMoveTypePlay by:self.currentPlayer after:self.lastMove];
+  GoMove* move = [GoMove move:GoMoveTypePlay by:self.nextMovePlayer after:self.lastMove];
   @try
   {
     move.point = aPoint;
@@ -226,14 +231,17 @@
   }
 
   [move doIt];
+  // Sets the document dirty flag and, if alternating play is enabled, switches
+  // the nextMovePlayer
   [self.moveModel appendMove:move];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the state of this GoGame and all associated objects in
-/// response to one of the players making a #GoMoveTypePass.
+/// response to the @e nextMovePlayer making a #GoMoveTypePass.
 ///
-/// Invoking this method sets the document dirty flag.
+/// Invoking this method sets the document dirty flag and, if alternating play
+/// is enabled, switches the @e nextMovePlayer.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
 /// while this GoGame object is not in state #GoGameStateGameHasStarted or
@@ -251,9 +259,11 @@
     @throw exception;
   }
 
-  GoMove* move = [GoMove move:GoMoveTypePass by:self.currentPlayer after:self.lastMove];
+  GoMove* move = [GoMove move:GoMoveTypePass by:self.nextMovePlayer after:self.lastMove];
 
   [move doIt];
+  // Sets the document dirty flag and, if alternating play is enabled, switches
+  // the nextMovePlayer
   [self.moveModel appendMove:move];
 
   // Game state must change after any of the other things; this order is
@@ -303,13 +313,8 @@
 /// @brief Pauses the game if two computer players play against each other.
 ///
 /// The computer player whose turn it is will finish its thinking and play its
-/// move. The game is then paused, i.e. the second computer player's move is
-/// not triggered.
-///
-/// This solution is necessary because there is no way to tell the GTP engine
-/// to stop its thinking once the "genmove" command has been sent. The only
-/// way how to handle this in a graceful way is to let the GTP engine finish
-/// its thinking.
+/// move. If the game is still paused at that time, the second computer player's
+/// move will not be triggered.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
 /// while this GoGame object is not in state #GoGameStateGameHasStarted, or if
@@ -343,7 +348,12 @@
 /// @brief Continues the game if it is paused while two computer players play
 /// against each other.
 ///
-/// Essentially, this method triggers the next computer player move.
+/// If one of the two computer players is still thinking and has not yet played
+/// its move, continuing the game can be seen as "undo pause", i.e. it will be
+/// as if pause() had never been invoked.
+///
+/// However, if none of two computer players is currently thinking, this method
+/// triggers the next computer player move.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
 /// while this GoGame object is not in state #GoGameStateGameIsPaused, or if
@@ -375,20 +385,56 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns true if playing a stone on the intersection represented by
-/// @a point would be legal for the current player in the current board
-/// position. This includes checking for suicide moves and Ko situations.
+/// @a point would be legal for the @e nextMovePlayer in the current board
+/// position. This includes checking for suicide moves and Ko situations, but
+/// not for alternating play.
 ///
 /// If this method returns false, the out parameter @a reason is filled with
 /// the reason why the move is not legal. If this method returns true, the
 /// value of @a reason is undefined.
 ///
+/// Alternating play, if it is desired, must be enforced by the application
+/// logic. This method simply assumes that the @e nextMovePlayer has the right
+/// to move in the current board position.
+///
 /// Raises @e NSInvalidArgumentException if @a aPoint is nil.
 // -----------------------------------------------------------------------------
 - (bool) isLegalMove:(GoPoint*)point isIllegalReason:(enum GoMoveIsIllegalReason*)reason
 {
+  return [self isLegalMove:point byColor:self.nextMoveColor isIllegalReason:reason];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if playing a stone on the intersection represented by
+/// @a point would be legal for the player who plays @a color in the current
+/// board position. This includes checking for suicide moves and Ko situations,
+/// but not for alternating play.
+///
+/// If this method returns false, the out parameter @a reason is filled with
+/// the reason why the move is not legal. If this method returns true, the
+/// value of @a reason is undefined.
+///
+/// Alternating play, if it is desired, must be enforced by the application
+/// logic. This method simply assumes that the player who plays @a color has the
+/// right to move in the current board position.
+///
+/// Raises @e NSInvalidArgumentException if @a aPoint is nil, or if @a color is
+/// neither GoColorBlack nor GoColorWhite.
+// -----------------------------------------------------------------------------
+- (bool) isLegalMove:(GoPoint*)point byColor:(enum GoColor)color isIllegalReason:(enum GoMoveIsIllegalReason*)reason
+{
   if (! point)
   {
     NSString* errorMessage = @"Point argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (color != GoColorBlack && color != GoColorWhite)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Invalid color argument %d", color];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
@@ -413,7 +459,7 @@
   else if ([point liberties] > 0)
   {
     bool isSuperko;
-    bool isKoMove = [self isKoMove:point checkSuperkoOnly:true isSuperko:&isSuperko];
+    bool isKoMove = [self isKoMove:point moveColor:color checkSuperkoOnly:true isSuperko:&isSuperko];
     if (isKoMove)
       *reason = isSuperko ? GoMoveIsIllegalReasonSuperko : GoMoveIsIllegalReasonSimpleKo;
     return !isKoMove;
@@ -421,13 +467,9 @@
   // Point is an empty intersection that is surrounded by stones
   else
   {
-    bool nextMoveIsBlack = self.boardPosition.currentPlayer.isBlack;
-    enum GoColor nextMoveColor = (nextMoveIsBlack ? GoColorBlack : GoColorWhite);
-    enum GoColor nextMoveOpponentColor = (nextMoveIsBlack ? GoColorWhite : GoColorBlack);
-
     // Pass 1: Check if we can connect to a friendly colored stone group
     // without killing it
-    NSArray* neighbourRegionsFriendly = [point neighbourRegionsWithColor:nextMoveColor];
+    NSArray* neighbourRegionsFriendly = [point neighbourRegionsWithColor:color];
     for (GoBoardRegion* neighbourRegion in neighbourRegionsFriendly)
     {
       // If the friendly stone group has more than one liberty, we are sure that
@@ -437,7 +479,7 @@
       if ([neighbourRegion liberties] > 1)
       {
         bool isSuperko;
-        bool isKoMove = [self isKoMove:point checkSuperkoOnly:true isSuperko:&isSuperko];
+        bool isKoMove = [self isKoMove:point moveColor:color checkSuperkoOnly:true isSuperko:&isSuperko];
         if (isKoMove)
           *reason = isSuperko ? GoMoveIsIllegalReasonSuperko : GoMoveIsIllegalReasonSimpleKo;
         return !isKoMove;
@@ -445,7 +487,8 @@
     }
 
     // Pass 2: Check if we can capture opposing stone groups
-    NSArray* neighbourRegionsOpponent = [point neighbourRegionsWithColor:nextMoveOpponentColor];
+    enum GoColor opponentColor = (color == GoColorBlack ? GoColorWhite : GoColorBlack);
+    NSArray* neighbourRegionsOpponent = [point neighbourRegionsWithColor:opponentColor];
     for (GoBoardRegion* neighbourRegion in neighbourRegionsOpponent)
     {
       // If the opposing stone group has only one liberty left we can capture
@@ -455,7 +498,7 @@
         // A simple Ko situation is possible only if we are NOT connecting
         bool isSimpleKoStillPossible = (0 == neighbourRegionsFriendly.count);
         bool isSuperko;
-        bool isKoMove = [self isKoMove:point checkSuperkoOnly:!isSimpleKoStillPossible isSuperko:&isSuperko];
+        bool isKoMove = [self isKoMove:point moveColor:color checkSuperkoOnly:!isSimpleKoStillPossible isSuperko:&isSuperko];
         if (isKoMove)
           *reason = isSuperko ? GoMoveIsIllegalReasonSuperko : GoMoveIsIllegalReasonSimpleKo;
         return !isKoMove;
@@ -473,25 +516,28 @@
 // -----------------------------------------------------------------------------
 /// Private helper
 // -----------------------------------------------------------------------------
-- (bool) isKoMove:(GoPoint*)point checkSuperkoOnly:(bool)checkSuperkoOnly isSuperko:(bool*)isSuperko
+- (bool) isKoMove:(GoPoint*)point
+        moveColor:(enum GoColor)moveColor
+ checkSuperkoOnly:(bool)checkSuperkoOnly
+        isSuperko:(bool*)isSuperko
 {
   enum GoKoRule koRule = self.rules.koRule;
   if (checkSuperkoOnly && GoKoRuleSimple == koRule)
     return false;
   // The algorithm below for finding ko can kick in only if we have at least
-  // two moves. The earliest possible Ko needs even more moves, but optimizing
+  // two moves. The earliest possible ko needs even more moves, but optimizing
   // the algorithm is not worth the trouble.
   GoMove* lastMove = self.lastMove;
   if (! lastMove)
     return false;
-  GoMove* previousMoveOfSamePlayer = lastMove.previous;
-  if (! previousMoveOfSamePlayer)
+  GoMove* previousToLastMove = lastMove.previous;
+  if (! previousToLastMove)
     return false;
 
   // Even if we use one of the superko rules, we still want to check for simple
   // ko first so that we can distinguish between simple ko and superko.
-  long long zobristHashOfHypotheticalMove = [self zobristHashOfHypotheticalMoveAtPoint:point];
-  bool isSimpleKo = (zobristHashOfHypotheticalMove == previousMoveOfSamePlayer.zobristHash);
+  long long zobristHashOfHypotheticalMove = [self zobristHashOfHypotheticalMoveAtPoint:point byColor:moveColor];
+  bool isSimpleKo = (zobristHashOfHypotheticalMove == previousToLastMove.zobristHash);
   if (isSimpleKo)
   {
     *isSuperko = false;
@@ -509,10 +555,11 @@
     case GoKoRuleSuperkoPositional:
     case GoKoRuleSuperkoSituational:
     {
-      GoPlayer* currentPlayer = self.currentPlayer;
-      for (GoMove* move = previousMoveOfSamePlayer.previous; move != nil; move = move.previous)
+      for (GoMove* move = previousToLastMove.previous; move != nil; move = move.previous)
       {
-        if (GoKoRuleSuperkoSituational == koRule && move.player != currentPlayer)
+        // Situational superko only examines board positions that resulted from
+        // moves made by the same color
+        if (GoKoRuleSuperkoSituational == koRule && move.player.color != moveColor)
             continue;
         if (zobristHashOfHypotheticalMove == move.zobristHash)
         {
@@ -535,22 +582,31 @@
 }
 
 // -----------------------------------------------------------------------------
-/// Private helper
+/// @brief Generates the Zobrist hash for a hypothetical move played by @a color
+/// on the intersection @a point. The hypothetical move is played as if it
+/// occurred after the current last move, i.e. after the move which created the
+/// current board position.
+///
+/// This is a private helper.
 // -----------------------------------------------------------------------------
 - (long long) zobristHashOfHypotheticalMoveAtPoint:(GoPoint*)point
+                                           byColor:(enum GoColor)color
 {
-  GoPlayer* currentPlayer = self.currentPlayer;
-  bool nextMoveIsBlack = currentPlayer.isBlack;
-  enum GoColor nextMoveOpponentColor = (nextMoveIsBlack ? GoColorWhite : GoColorBlack);
-  NSArray* stonesWithOneLiberty = [self stonesWithColor:nextMoveOpponentColor withSingleLibertyAt:point];
-  return [self.board.zobristTable hashForStonePlayedBy:currentPlayer
-                                               atPoint:point
-                                       capturingStones:stonesWithOneLiberty
-                                             afterMove:self.lastMove];
+  enum GoColor opponentColor = (color == GoColorBlack ? GoColorWhite : GoColorBlack);
+  NSArray* stonesWithOneLiberty = [self stonesWithColor:opponentColor withSingleLibertyAt:point];
+  return [self.board.zobristTable hashForStonePlayedByColor:color
+                                                    atPoint:point
+                                            capturingStones:stonesWithOneLiberty
+                                                  afterMove:self.lastMove];
 }
 
 // -----------------------------------------------------------------------------
-/// Private helper
+/// @brief Determines stone groups with color @a color that have only a single
+/// liberty, and that liberty is at @a point. Returns an array with all GoPoint
+/// objects that make up those regions. The array is empty if no such stone
+/// groups exist. The array has no particular order.
+///
+/// This is a private helper.
 // -----------------------------------------------------------------------------
 - (NSArray*) stonesWithColor:(enum GoColor)color withSingleLibertyAt:(GoPoint*)point
 {
@@ -569,15 +625,47 @@
 // -----------------------------------------------------------------------------
 - (bool) isComputerPlayersTurn
 {
-  return (! self.currentPlayer.player.isHuman);
+  return (! self.nextMovePlayer.player.isHuman);
 }
 
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
-- (GoPlayer*) currentPlayer
+- (GoPlayer*) nextMovePlayer
 {
-  return [GoUtilities playerAfter:self.lastMove inGame:self];
+  if (GoColorBlack == self.nextMoveColor)
+    return self.playerBlack;
+  else if (GoColorWhite == self.nextMoveColor)
+    return self.playerWhite;
+  else
+    return nil;
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setNextMoveColor:(enum GoColor)nextMoveColor
+{
+  if (_nextMoveColor == nextMoveColor)
+    return;
+  switch (nextMoveColor)
+  {
+    case GoColorBlack:
+    case GoColorWhite:
+    {
+      _nextMoveColor = nextMoveColor;
+      break;
+    }
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid color %d", nextMoveColor];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -651,6 +739,11 @@
       [GoUtilities movePointToNewRegion:point];
     }
   }
+
+  if (_handicapPoints && 0 == _handicapPoints.count)
+    self.nextMoveColor = GoColorBlack;
+  else
+    self.nextMoveColor = GoColorWhite;
 }
 
 // -----------------------------------------------------------------------------
@@ -665,6 +758,8 @@
   [encoder encodeDouble:self.komi forKey:goGameKomiKey];
   [encoder encodeObject:self.playerBlack forKey:goGamePlayerBlackKey];
   [encoder encodeObject:self.playerWhite forKey:goGamePlayerWhiteKey];
+  [encoder encodeInt:self.nextMoveColor forKey:goGameNextMoveColorKey];
+  [encoder encodeBool:(self.alternatingPlay ? YES : NO) forKey:goGameAlternatingPlayKey];
   [encoder encodeObject:self.moveModel forKey:goGameMoveModelKey];
   [encoder encodeInt:self.state forKey:goGameStateKey];
   [encoder encodeInt:self.reasonForGameHasEnded forKey:goGameReasonForGameHasEndedKey];
@@ -721,6 +816,39 @@
     self.state = GoGameStateGameIsPaused;
   else
     self.state = GoGameStateGameHasStarted;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Switches @e nextMoveColor from #GoColorBlack to #GoColorWhite, or
+/// vice versa.
+///
+/// Raises an @e NSInternalInconsistencyException if this method is invoked
+/// while @e nextMoveColor is neither #GoColorBlack nor #GoColorWhite.
+// -----------------------------------------------------------------------------
+- (void) switchNextMoveColor
+{
+  switch (self.nextMoveColor)
+  {
+    case GoColorBlack:
+    {
+      self.nextMoveColor = GoColorWhite;
+      break;
+    }
+    case GoColorWhite:
+    {
+      self.nextMoveColor = GoColorBlack;
+      break;
+    }
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Next move color can only be changed if it is either black or white. Current next move color  = %d", self.nextMoveColor];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
 }
 
 @end

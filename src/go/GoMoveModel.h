@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2012-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2012-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,8 @@
 /// All indexes in GoMoveModel are zero-based.
 ///
 /// Invoking GoMoveModel methods that add or discard moves generally sets the
-/// GoGameDocument dirty flag.
+/// GoGameDocument dirty flag and, if alternating play is enabled, updates
+/// GoGame's @e nextMoveColor property.
 // -----------------------------------------------------------------------------
 @interface GoMoveModel : NSObject <NSCoding>
 {

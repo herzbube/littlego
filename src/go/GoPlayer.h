@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,9 @@
 /// player's identity.
 @property(nonatomic, retain, readonly) Player* player;
 /// @brief The color taken by the player.
+@property(nonatomic, assign, readonly) enum GoColor color;
+/// @brief True if the color taken by the player is black, false if the color
+/// taken by the player is white.
 @property(nonatomic, assign, readonly, getter=isBlack) bool black;
 /// @brief Returns a string that corresponds to the color taken by the
 /// player. "B" for black, "W" for white.

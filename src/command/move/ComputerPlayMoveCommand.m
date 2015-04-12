@@ -99,7 +99,7 @@
   // It's important that we do not wait for the GTP command to complete. This
   // gives the UI the time to update (e.g. status view, activity indicator).
   NSString* commandString = @"genmove ";
-  commandString = [commandString stringByAppendingString:self.game.currentPlayer.colorString];
+  commandString = [commandString stringByAppendingString:self.game.nextMovePlayer.colorString];
   GtpCommand* command = [GtpCommand asynchronousCommand:commandString
                                          responseTarget:self
                                                selector:@selector(gtpResponseReceived:)];
