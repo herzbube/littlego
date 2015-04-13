@@ -561,36 +561,22 @@ static const int maxStepsForReplayMoves = 10;
       NSArray* moveComponents = [move componentsSeparatedByString:@" "];
       NSString* colorString = [[moveComponents objectAtIndex:0] lowercaseString];
       NSString* vertexString = [[moveComponents objectAtIndex:1] lowercaseString];
-
-
-      // Sanitary check 1: Is the move by the correct player?
-      NSString* expectedColorString;
-      NSString* expectedColorName;
-      NSString* otherColorName;
-      if (game.nextMovePlayer.isBlack)
-      {
-        expectedColorString = @"b";
-        expectedColorName = @"Black";
-        otherColorName = @"White";
-      }
+      if ([colorString isEqualToString:@"b"])
+        game.nextMoveColor = GoColorBlack;
+      else if ([colorString isEqualToString:@"w"])
+        game.nextMoveColor = GoColorWhite;
       else
       {
-        expectedColorString = @"w";
-        expectedColorName = @"White";
-        otherColorName = @"Black";
-      }
-      if (! [colorString isEqualToString:expectedColorString])
-      {
-        NSString* errorMessageFormat = @"Game contains a move by the wrong player: Move %d, should have been played by %@, but was played by %@.";
-        NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, (movesReplayed + 1), expectedColorName, otherColorName];
+        NSString* errorMessageFormat = @"Internal error: Unsupported player color, move string = %@";
+        NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, move];
         [self handleCommandFailed:errorMessage];
         return;
       }
-      // End sanitary check 1
 
-      
       if ([vertexString isEqualToString:@"pass"])
+      {
         [game pass];
+      }
       else if ([vertexString isEqualToString:@"resign"])  // not sure if this is ever sent
       {
         [game resign];
@@ -599,18 +585,16 @@ static const int maxStepsForReplayMoves = 10;
       else
       {
         GoPoint* point = [board pointAtVertex:vertexString];
-        
-        // Sanitary check 2: Is the move legal?
         enum GoMoveIsIllegalReason illegalReason;
-        if (! [game isLegalMove:point isIllegalReason:&illegalReason])
+        if (! [game isLegalMove:point byColor:game.nextMoveColor isIllegalReason:&illegalReason])
         {
           NSString* errorMessageFormat = @"Game contains an illegal move: Move %d, played by %@, on intersection %@. Reason: %@.";
           NSString* illegalReasonString = [NSString stringWithMoveIsIllegalReason:illegalReason];
-          NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, (movesReplayed + 1), expectedColorName, [vertexString uppercaseString], illegalReasonString];
+          NSString* colorName = [NSString stringWithGoColor:game.nextMoveColor];
+          NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, (movesReplayed + 1), colorName, [vertexString uppercaseString], illegalReasonString];
           [self handleCommandFailed:errorMessage];
           return;
         }
-        // End sanitary check 2
 
         [game play:point];
       }

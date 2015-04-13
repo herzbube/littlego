@@ -242,4 +242,22 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a color.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithGoColor:(enum GoColor)color
+{
+  switch (color)
+  {
+    case GoColorBlack:
+      return @"Black";
+    case GoColorWhite:
+      return @"White";
+    case GoColorNone:
+      return @"None";
+    default:
+      return @"Unknown";
+  }
+}
+
 @end

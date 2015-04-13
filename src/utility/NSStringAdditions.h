@@ -34,4 +34,5 @@
 + (NSString*) stringWithKoRule:(enum GoKoRule)koRule;
 + (NSString*) stringWithScoringSystem:(enum GoScoringSystem)scoringSystem;
 + (NSString*) stringWithMoveIsIllegalReason:(enum GoMoveIsIllegalReason)reason;
++ (NSString*) stringWithGoColor:(enum GoColor)color;
 @end
