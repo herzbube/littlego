@@ -648,7 +648,7 @@ static const int maxStepsForReplayMoves = 10;
 - (void) triggerComputerPlayerOnMainThread
 {
   GoGame* game = [GoGame sharedGame];
-  if ([game isComputerPlayersTurn])
+  if (game.nextMovePlayerIsComputerPlayer)
   {
     if (self.restoreMode)
     {

@@ -409,7 +409,7 @@
         case GoGameComputerIsThinkingReasonComputerPlay:
         {
           NSString* playerName = game.nextMovePlayer.player.name;
-          if (game.isComputerPlayersTurn)
+          if (game.nextMovePlayerIsComputerPlayer)
             statusText = [playerName stringByAppendingString:@" is thinking..."];
           else
             statusText = [NSString stringWithFormat:@"Computer is playing for %@...", playerName];
@@ -490,25 +490,13 @@
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
 
-  NSString* colorNextBoardPosition;
-  NSString* colorCurrentBoardPosition;
-  if (boardPosition.currentPlayer.black)
-  {
-    colorNextBoardPosition = @"Black";
-    colorCurrentBoardPosition = @"White";
-  }
-  else
-  {
-    colorNextBoardPosition = @"White";
-    colorCurrentBoardPosition = @"Black";
-  }
-
   NSString* statusTextCurrentBoardPosition;
   GoMove* currentMove = boardPosition.currentMove;
   GoMove* nextMove;
   if (currentMove)
   {
     nextMove = currentMove.next;
+    NSString* colorCurrentBoardPosition = [NSString stringWithGoColor:currentMove.player.color];
     if (GoMoveTypePlay == currentMove.type)
       statusTextCurrentBoardPosition = [NSString stringWithFormat:@"%@ played %@", colorCurrentBoardPosition, currentMove.point.vertex.string];
     else
@@ -526,6 +514,7 @@
   NSString* statusTextNextBoardPosition;
   if (nextMove)
   {
+    NSString* colorNextBoardPosition = [NSString stringWithGoColor:nextMove.player.color];
     if (GoMoveTypePlay == nextMove.type)
       statusTextNextBoardPosition = [NSString stringWithFormat:@"%@ will play %@", colorNextBoardPosition, nextMove.point.vertex.string];
     else
@@ -533,6 +522,7 @@
   }
   else
   {
+    NSString* colorNextBoardPosition = [NSString stringWithGoColor:game.nextMoveColor];
     statusTextNextBoardPosition = [NSString stringWithFormat:@"%@ to move", colorNextBoardPosition];
   }
 

@@ -121,6 +121,8 @@
 
   [self updateGoObjectsToNewPosition:newBoardPosition];
   _currentBoardPosition = newBoardPosition;
+  if (self.game.alternatingPlay)
+    self.game.nextMoveColor = [GoUtilities playerAfter:self.currentMove inGame:self.game].color;
 }
 
 // -----------------------------------------------------------------------------
@@ -166,14 +168,6 @@
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
-- (GoPlayer*) currentPlayer
-{
-  return [GoUtilities playerAfter:self.currentMove inGame:self.game];
-}
-
-// -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
 - (bool) isFirstPosition
 {
   return (0 == self.currentBoardPosition);
@@ -188,14 +182,6 @@
   int indexOfLastMove = numberOfMoves - 1;
   int indexOfCurrentMove = self.currentBoardPosition - 1;
   return (indexOfCurrentMove == indexOfLastMove);
-}
-
-// -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
-- (bool) isComputerPlayersTurn
-{
-  return (! self.currentPlayer.player.isHuman);
 }
 
 // -----------------------------------------------------------------------------
@@ -252,10 +238,12 @@
   }
 
   // Don't invoke property's setter since there is no need to update the state
-  // of Go objects. The drawback is that we have to generate KVO notifications
-  // ourselves.
+  // of Go objects. The drawback is that we have to perform some additional
+  // bookkeeping and generate KVO notifications ourselves.
   [self willChangeValueForKey:@"currentBoardPosition"];
   _currentBoardPosition = numberOfMoves;
+  if (self.game.alternatingPlay)
+    self.game.nextMoveColor = [GoUtilities playerAfter:self.currentMove inGame:self.game].color;
   [self didChangeValueForKey:@"currentBoardPosition"];
 }
 

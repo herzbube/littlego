@@ -621,27 +621,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns true if it is the computer player's turn.
-// -----------------------------------------------------------------------------
-- (bool) isComputerPlayersTurn
-{
-  return (! self.nextMovePlayer.player.isHuman);
-}
-
-// -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
-- (GoPlayer*) nextMovePlayer
-{
-  if (GoColorBlack == self.nextMoveColor)
-    return self.playerBlack;
-  else if (GoColorWhite == self.nextMoveColor)
-    return self.playerWhite;
-  else
-    return nil;
-}
-
-// -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
 - (void) setNextMoveColor:(enum GoColor)nextMoveColor
@@ -666,6 +645,27 @@
       @throw exception;
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (GoPlayer*) nextMovePlayer
+{
+  if (GoColorBlack == self.nextMoveColor)
+    return self.playerBlack;
+  else if (GoColorWhite == self.nextMoveColor)
+    return self.playerWhite;
+  else
+    return nil;
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (bool) nextMovePlayerIsComputerPlayer
+{
+  return (! self.nextMovePlayer.player.isHuman);
 }
 
 // -----------------------------------------------------------------------------

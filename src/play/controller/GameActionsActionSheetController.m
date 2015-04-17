@@ -175,7 +175,7 @@ enum ActionSheetButton
           continue;
         if (game.score.scoringEnabled)
           continue;
-        if (game.boardPosition.isComputerPlayersTurn)
+        if (game.nextMovePlayerIsComputerPlayer)
           continue;
         // Resigning the game performs a backup of the game in progress. We
         // can't let that happen if it's not the last board position, otherwise

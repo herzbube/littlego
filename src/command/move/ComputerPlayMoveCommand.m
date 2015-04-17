@@ -368,7 +368,7 @@
     case GoGameStateGameHasEnded:  // game has ended as a result of the last move (e.g. resign, 2x pass)
       break;
     default:
-      if ([self.game isComputerPlayersTurn])
+      if (self.game.nextMovePlayerIsComputerPlayer)
         computerGoesOnPlaying = true;
       break;
   }

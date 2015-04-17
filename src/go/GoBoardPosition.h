@@ -99,12 +99,6 @@
 /// @brief Returns the GoMove object that corresponds to
 /// @e currentBoardPosition. Returns nil for board position 0.
 @property(nonatomic, assign, readonly) GoMove* currentMove;
-/// @brief Returns the player whose turn it is to play in the current board
-/// position.
-@property(nonatomic, assign, readonly) GoPlayer* currentPlayer;
-/// @brief Returns true if it is the computer player's turn to play in the
-/// current board position.
-@property(nonatomic, assign, readonly) bool isComputerPlayersTurn;
 /// @brief Returns true if the current board position is the first position of
 /// the GoGame associated with this GoBoardPosition.
 ///

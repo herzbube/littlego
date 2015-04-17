@@ -201,7 +201,7 @@
     }
     default:
     {
-      if ([self.game isComputerPlayersTurn])
+      if (self.game.nextMovePlayerIsComputerPlayer)
         [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
       break;
     }

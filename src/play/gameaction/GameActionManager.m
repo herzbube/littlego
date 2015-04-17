@@ -689,8 +689,7 @@ static GameActionManager* sharedGameActionManager = nil;
         {
           case GoGameStateGameHasStarted:
           {
-            GoBoardPosition* boardPosition = game.boardPosition;
-            if (boardPosition.isComputerPlayersTurn)
+            if (game.nextMovePlayerIsComputerPlayer)
               enabled = NO;
             else
               enabled = YES;

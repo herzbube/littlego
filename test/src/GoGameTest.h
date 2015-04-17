@@ -33,6 +33,7 @@
 - (void) testBoard;
 - (void) testHandicapPoints;
 - (void) testNextMoveColor;
+- (void) testNextMovePlayerIsComputerPlayer;
 - (void) testAlternatingPlayEnabled;
 - (void) testAlternatingPlayDisabled;
 - (void) testFirstMove;
@@ -47,7 +48,6 @@
 - (void) testIsLegalMove;
 - (void) testIsLegalMovePositionalSuperko;
 - (void) testIsLegalMoveSituationalSuperko;
-- (void) testIsComputerPlayersTurn;
 - (void) testRevertStateFromEndedToInProgress;
 - (void) testSwitchNextMoveColor;
 - (void) testDiscardCausesRegionToFragment;

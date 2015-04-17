@@ -51,8 +51,9 @@
   XCTAssertTrue(boardPosition.isFirstPosition);
   XCTAssertTrue(boardPosition.isLastPosition);
   XCTAssertNil(boardPosition.currentMove);
-  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerBlack);
-  XCTAssertFalse(boardPosition.isComputerPlayersTurn);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertFalse(m_game.nextMovePlayerIsComputerPlayer);
 }
 
 // -----------------------------------------------------------------------------
@@ -65,7 +66,8 @@
 
   GoBoardPosition* boardPosition = m_game.boardPosition;
   XCTAssertNotNil(boardPosition);
-  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
 }
 
 // -----------------------------------------------------------------------------
@@ -84,18 +86,21 @@
   XCTAssertFalse(boardPosition.isFirstPosition);
   XCTAssertTrue(boardPosition.isLastPosition);
   XCTAssertNotNil(boardPosition.currentMove);
-  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerWhite );
-  XCTAssertFalse(boardPosition.isComputerPlayersTurn);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertFalse(m_game.nextMovePlayerIsComputerPlayer);
   // Position is also advanced for passing
   [m_game pass];
   XCTAssertEqual(boardPosition.currentBoardPosition, 2);
   XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
-  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerBlack );
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
   // Resigning is not a move, so no
   [m_game resign];
   XCTAssertEqual(boardPosition.currentBoardPosition, 2);
   XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
-  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerBlack );
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
 }
 
 // -----------------------------------------------------------------------------
@@ -113,28 +118,32 @@
   XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
   XCTAssertFalse(boardPosition.isFirstPosition);
   XCTAssertTrue(boardPosition.isLastPosition);
-  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerBlack );
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
   // Backward, just one position
   boardPosition.currentBoardPosition--;
   XCTAssertEqual(boardPosition.currentBoardPosition, 1);
   XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
   XCTAssertFalse(boardPosition.isFirstPosition);
   XCTAssertFalse(boardPosition.isLastPosition);
-  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerWhite );
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
   // Backward, to the special position zero
   boardPosition.currentBoardPosition--;
   XCTAssertEqual(boardPosition.currentBoardPosition, 0);
   XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
   XCTAssertTrue(boardPosition.isFirstPosition);
   XCTAssertFalse(boardPosition.isLastPosition);
-  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerBlack );
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
   // Forward, more than one position, to the last position
   boardPosition.currentBoardPosition = (boardPosition.numberOfBoardPositions - 1);
   XCTAssertEqual(boardPosition.currentBoardPosition, 2);
   XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
   XCTAssertFalse(boardPosition.isFirstPosition);
   XCTAssertTrue(boardPosition.isLastPosition);
-  XCTAssertEqual(boardPosition.currentPlayer, m_game.playerBlack);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
 }
 
 // -----------------------------------------------------------------------------

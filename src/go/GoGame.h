@@ -68,7 +68,6 @@
 - (void) continue;
 - (bool) isLegalMove:(GoPoint*)point isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isLegalMove:(GoPoint*)point byColor:(enum GoColor)color isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
-- (bool) isComputerPlayersTurn;
 - (void) revertStateFromEndedToInProgress;
 - (void) switchNextMoveColor;
 
@@ -99,17 +98,15 @@
 @property(nonatomic, retain) GoPlayer* playerBlack;
 /// @brief The GoPlayer object that plays white.
 @property(nonatomic, retain) GoPlayer* playerWhite;
-/// @brief The player who will make the next move.
-///
-/// After the game has ended, querying this property in some cases is a
-/// convenient way to find out who brought about the end of the game. For
-/// instance, if the game was resigned this denotes the player who resigned.
-@property(nonatomic, assign, readonly) GoPlayer* nextMovePlayer;
 /// @brief The side who will make the next move.
 ///
 /// The setter raises @e NSInvalidArgumentException if a color is set that is
 /// neither black nor white.
 @property(nonatomic, assign) enum GoColor nextMoveColor;
+/// @brief The player who will make the next move.
+@property(nonatomic, assign, readonly) GoPlayer* nextMovePlayer;
+/// @brief True if the player who makes the next move is a computer player.
+@property(nonatomic, assign, readonly) bool nextMovePlayerIsComputerPlayer;
 /// @brief Denotes whether alternating play is enabled or disabled. If
 /// alternating play is enabled, invoking play:() and pass() or modifying the
 /// content of the GoMoveModel object causes the @e nextMovePlayer and

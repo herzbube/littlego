@@ -371,7 +371,7 @@
 // -----------------------------------------------------------------------------
 - (void) triggerComputerPlayer
 {
-  if ([[GoGame sharedGame] isComputerPlayersTurn])
+  if ([GoGame sharedGame].nextMovePlayerIsComputerPlayer)
     [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
 }
 

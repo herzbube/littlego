@@ -21,9 +21,7 @@
 #import "BoardViewDrawingHelper.h"
 #import "../Tile.h"
 #import "../../../go/GoBoard.h"
-#import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
-#import "../../../go/GoPlayer.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoUtilities.h"
 #import "../../../go/GoVertex.h"
@@ -333,8 +331,7 @@
        }
        else
        {
-         GoBoardPosition* boardPosition = game.boardPosition;
-         if (boardPosition.currentPlayer.isBlack)
+         if (GoColorBlack == game.nextMoveColor)
            stoneLayer = blackStoneLayer;
          else
            stoneLayer = whiteStoneLayer;

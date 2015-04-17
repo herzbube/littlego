@@ -318,7 +318,6 @@
     self.panningEnabled = false;
     return;
   }
-  GoBoardPosition* boardPosition = game.boardPosition;
 
   if (game.score.scoringEnabled)
   {
@@ -334,7 +333,7 @@
 
   if (GoGameStateGameHasEnded == game.state)
   {
-    if (boardPosition.isLastPosition)
+    if (game.boardPosition.isLastPosition)
     {
       self.panningEnabled = false;
       return;
@@ -345,17 +344,11 @@
   // 1) The game is still in progress
   // 2) The game has ended, but the user is viewing an old board position
   if (game.isComputerThinking)
-  {
     self.panningEnabled = false;
-  }
+  else if (game.nextMovePlayerIsComputerPlayer)
+    self.panningEnabled = false;
   else
-  {
-    GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-    if (boardPosition.isComputerPlayersTurn)
-      self.panningEnabled = false;
-    else
-      self.panningEnabled = true;
-  }
+    self.panningEnabled = true;
 }
 
 #pragma mark - Magnifying glass handling

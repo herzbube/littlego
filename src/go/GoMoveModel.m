@@ -19,8 +19,6 @@
 #import "GoMoveModel.h"
 #import "GoGame.h"
 #import "GoGameDocument.h"
-#import "GoPlayer.h"
-#import "GoUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -91,16 +89,12 @@
 ///
 /// Raises @e NSInvalidArgumentException if @a move is nil.
 ///
-/// Invoking this method sets the GoGameDocument dirty flag and, if alternating
-/// play is enabled, updates GoGame's @e nextMoveColor property to the
-/// alternating color of the color who made @a move.
+/// Invoking this method sets the GoGameDocument dirty flag.
 // -----------------------------------------------------------------------------
 - (void) appendMove:(GoMove*)move
 {
   [_moveList addObject:move];
   self.game.document.dirty = true;
-  if (self.game.alternatingPlay)
-    self.game.nextMoveColor = [GoUtilities playerAfter:move inGame:self.game].color;
   // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
   // is safe because this app was not made to handle more than pow(2, 31) moves.
   self.numberOfMoves = (int)_moveList.count;  // triggers KVO observers
@@ -111,8 +105,7 @@
 ///
 /// Raises @e NSRangeException if there are no GoMove objects in this model.
 ///
-/// Invoking this method sets the GoGameDocument dirty flag and, if alternating
-/// play is enabled, updates GoGame's @e nextMoveColor property.
+/// Invoking this method sets the GoGameDocument dirty flag.
 // -----------------------------------------------------------------------------
 - (void) discardLastMove
 {
@@ -128,9 +121,7 @@
 /// Raises @e NSRangeException if @a index is <0 or exceeds the number of
 /// GoMove objects in this model.
 ///
-/// Invoking this method sets the GoGameDocument dirty flag and, if alternating
-/// play is enabled, updates GoGame's @e nextMoveColor property to the
-/// alternating color of the player who played the new last move.
+/// Invoking this method sets the GoGameDocument dirty flag.
 // -----------------------------------------------------------------------------
 - (void) discardMovesFromIndex:(int)index
 {
@@ -161,9 +152,6 @@
   }
 
   self.game.document.dirty = true;
-  if (self.game.alternatingPlay)
-    self.game.nextMoveColor = [GoUtilities playerAfter:self.lastMove inGame:self.game].color;
-
   // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
   // is safe because this app was not made to handle more than pow(2, 31) moves.
   self.numberOfMoves = (int)_moveList.count;  // triggers KVO observers

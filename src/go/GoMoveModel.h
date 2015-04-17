@@ -27,8 +27,7 @@
 /// All indexes in GoMoveModel are zero-based.
 ///
 /// Invoking GoMoveModel methods that add or discard moves generally sets the
-/// GoGameDocument dirty flag and, if alternating play is enabled, updates
-/// GoGame's @e nextMoveColor property.
+/// GoGameDocument dirty flag.
 // -----------------------------------------------------------------------------
 @interface GoMoveModel : NSObject <NSCoding>
 {
