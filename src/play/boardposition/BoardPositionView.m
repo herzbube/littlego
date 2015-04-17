@@ -270,14 +270,7 @@ static UIImage* whiteStoneImage = nil;
   }
   else
   {
-    bool isMoveByBlackPlayer;
-    if (0 == self.boardPosition)
-      isMoveByBlackPlayer = ([GoGame sharedGame].handicapPoints.count > 0);
-    else
-      isMoveByBlackPlayer = move.player.black;
-    // These colors are shown on a very light background (almost white), so
-    // they must have a certain "punch"
-    if (isMoveByBlackPlayer)
+    if (0 == (self.boardPosition % 2))
       self.backgroundColor = [UIColor nonPhotoBlueColor];
     else
       self.backgroundColor = [UIColor mayaBlueColor];
