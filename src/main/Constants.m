@@ -407,4 +407,7 @@ NSString* goGameDocumentDirtyKey = @"Dirty";
 NSString* goGameDocumentDocumentNameKey = @"DocumentName";
 // GoGameRules keys
 NSString* goGameRulesKoRuleKey = @"KoRule";
-NSString* goGameRulesScoringSystemKey = @"GoGameRulesScoringSystem";
+NSString* goGameRulesScoringSystemKey = @"ScoringSystem";
+NSString* goGameRulesLifeAndDeathSettlingRuleKey = @"LifeAndDeathSettlingRule";
+NSString* goGameRulesDisputeResolutionRuleKey = @"DisputeResolutionRule";
+NSString* goGameRulesFourPassesRuleKey = @"FourPassesRule";

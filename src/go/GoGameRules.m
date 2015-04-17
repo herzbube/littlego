@@ -34,6 +34,9 @@
     return nil;
   self.koRule = GoKoRuleDefault;
   self.scoringSystem = gDefaultScoringSystem;
+  self.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleDefault;
+  self.disputeResolutionRule = GoDisputeResolutionRuleDefault;
+  self.fourPassesRule = GoFourPassesRuleDefault;
   return self;
 }
 
@@ -49,6 +52,9 @@
     return nil;
   self.koRule = [decoder decodeIntForKey:goGameRulesKoRuleKey];
   self.scoringSystem = [decoder decodeIntForKey:goGameRulesScoringSystemKey];
+  self.lifeAndDeathSettlingRule = [decoder decodeIntForKey:goGameRulesLifeAndDeathSettlingRuleKey];
+  self.disputeResolutionRule = [decoder decodeIntForKey:goGameRulesDisputeResolutionRuleKey];
+  self.fourPassesRule = [decoder decodeIntForKey:goGameRulesFourPassesRuleKey];
   return self;
 }
 
@@ -60,6 +66,9 @@
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeInt:self.koRule forKey:goGameRulesKoRuleKey];
   [encoder encodeInt:self.scoringSystem forKey:goGameRulesScoringSystemKey];
+  [encoder encodeInt:self.lifeAndDeathSettlingRule forKey:goGameRulesLifeAndDeathSettlingRuleKey];
+  [encoder encodeInt:self.disputeResolutionRule forKey:goGameRulesDisputeResolutionRuleKey];
+  [encoder encodeInt:self.fourPassesRule forKey:goGameRulesFourPassesRuleKey];
 }
 
 @end

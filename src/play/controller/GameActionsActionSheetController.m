@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,10 +18,6 @@
 // Project includes
 #import "GameActionsActionSheetController.h"
 #import "../gameaction/GameActionManager.h"
-#import "../../main/ApplicationDelegate.h"
-#import "../../go/GoBoardPosition.h"
-#import "../../go/GoGame.h"
-#import "../../go/GoScore.h"
 #import "../../archive/ArchiveUtility.h"
 #import "../../archive/ArchiveViewModel.h"
 #import "../../command/backup/BackupGameToSgfCommand.h"
@@ -29,9 +25,15 @@
 #import "../../command/game/SaveGameCommand.h"
 #import "../../command/game/NewGameCommand.h"
 #import "../../command/playerinfluence/GenerateTerritoryStatisticsCommand.h"
+#import "../../go/GoBoardPosition.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoGameRules.h"
+#import "../../go/GoScore.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../play/model/BoardViewModel.h"
 #import "../../play/model/ScoringModel.h"
 #import "../../shared/ApplicationStateManager.h"
+#import "../../utility/NSStringAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -46,6 +48,7 @@ enum ActionSheetButton
   ScoreButton,
   MarkModeButton,
   UpdatePlayerInfluenceButton,
+  SwitchNextMoveColor,
   ResignButton,
   UndoResignButton,
   SaveGameButton,
@@ -167,6 +170,34 @@ enum ActionSheetButton
         title = @"Update player influence";
         break;
       }
+      case SwitchNextMoveColor:
+      {
+        // Currently we only support switching the color to move in order to
+        // settle a life & death dispute, and only if the rules allow
+        // non-alternating play
+        if (game.rules.disputeResolutionRule != GoDisputeResolutionRuleNonAlternatingPlay)
+          continue;
+        // A life & death dispute is only possible if the game has not yet ended
+        if (GoGameStateGameHasEnded == game.state)
+          continue;
+        enum GoColor alternatingNextMoveColor;
+        switch (game.nextMoveColor)
+        {
+          case GoColorBlack:
+            alternatingNextMoveColor = GoColorWhite;
+            break;
+          case GoColorWhite:
+            alternatingNextMoveColor = GoColorBlack;
+            break;
+          default:
+            DDLogWarn(@"%@: Unexpected next move color %d", self, game.nextMoveColor);
+            assert(0);
+            continue;
+        }
+        NSString* alternatingNextMoveColorName = [[NSString stringWithGoColor:alternatingNextMoveColor] lowercaseString];
+        title = [NSString stringWithFormat:@"Set %@ to move", alternatingNextMoveColorName];
+        break;
+      }
       case ResignButton:
       {
         if (GoGameTypeComputerVsComputer == game.type)
@@ -268,6 +299,9 @@ enum ActionSheetButton
     case UpdatePlayerInfluenceButton:
       [self updatePlayerInfluence];
       break;
+    case SwitchNextMoveColor:
+      [self switchNextMoveColor];
+      break;
     case ResignButton:
       [self resign];
       break;
@@ -334,6 +368,7 @@ enum ActionSheetButton
       break;
     }
   }
+  DDLogInfo(@"Mark mode is now %d", model.scoreMarkMode);
 }
 
 // -----------------------------------------------------------------------------
@@ -348,6 +383,28 @@ enum ActionSheetButton
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "xxx" action sheet button. Changes
+/// the side that will play next from Black to White, or vice versa.
+// -----------------------------------------------------------------------------
+- (void) switchNextMoveColor
+{
+  @try
+  {
+    [[ApplicationStateManager sharedManager] beginSavePoint];
+    GoGame* game = [GoGame sharedGame];
+    [game switchNextMoveColor];
+    DDLogInfo(@"Next move color is now %@", [NSString stringWithGoColor:game.nextMoveColor]);
+  }
+  @finally
+  {
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
+    [[ApplicationStateManager sharedManager] commitSavePoint];
+  }
+  [self.delegate gameActionsActionSheetControllerDidFinish:self];
+
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Resign" action sheet button.
 /// Causes the human player whose turn it currently is to resign the game.
 // -----------------------------------------------------------------------------
@@ -356,7 +413,9 @@ enum ActionSheetButton
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
-    [[GoGame sharedGame] resign];
+    GoGame* game = [GoGame sharedGame];
+    DDLogInfo(@"%@ resigns", [NSString stringWithGoColor:game.nextMoveColor]);
+    [game resign];
   }
   @finally
   {
@@ -377,7 +436,9 @@ enum ActionSheetButton
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
-    [[GoGame sharedGame] revertStateFromEndedToInProgress];
+    GoGame* game = [GoGame sharedGame];
+    [game revertStateFromEndedToInProgress];
+    DDLogInfo(@"Undo %@ resignation", [NSString stringWithGoColor:game.nextMoveColor]);
   }
   @finally
   {

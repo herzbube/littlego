@@ -29,5 +29,14 @@
 @property(nonatomic, assign) enum GoKoRule koRule;
 /// @brief The scoring system in effect for the game.
 @property(nonatomic, assign) enum GoScoringSystem scoringSystem;
+/// @brief How many pass moves are required to proceed to the life & death
+/// settling phase of the game.
+@property(nonatomic, assign) enum GoLifeAndDeathSettlingRule lifeAndDeathSettlingRule;
+/// @brief Whether alternating play is enforced or not enforced when the game
+/// is resumed to resolve disputes that arose during the life & death settling
+/// phase.
+@property(nonatomic, assign) enum GoDisputeResolutionRule disputeResolutionRule;
+/// @brief What is the meaning of four consecutive pass moves.
+@property(nonatomic, assign) enum GoFourPassesRule fourPassesRule;
 
 @end

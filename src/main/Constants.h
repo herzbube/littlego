@@ -269,6 +269,7 @@ enum GoGameHasEndedReason
 {
   GoGameHasEndedReasonNotYetEnded,   ///< @brief The game has not yet ended.
   GoGameHasEndedReasonTwoPasses,     ///< @brief The game ended due to two consecutive pass moves.
+  GoGameHasEndedReasonFourPasses,    ///< @brief The game ended due to four consecutive pass moves.
   GoGameHasEndedReasonResigned,      ///< @brief The game ended due to one of the players resigning.
   GoGameHasEndedReasonTimeExceeded   ///< @brief The game ended due to one of the players having no time left.
 };
@@ -333,7 +334,7 @@ enum GoBoardSize
 /// @brief Enumerates the 4 corners of the Go board.
 enum GoBoardCorner
 {
-  GoBoardCornerBottomLeft,   ///< @brief Always A1 on all board sizes
+  GoBoardCornerBottomLeft,   ///< @brief A1 on all board sizes
   GoBoardCornerBottomRight,  ///< @brief T1 on a 19x19 board
   GoBoardCornerTopLeft,      ///< @brief A19 on a 19x19 board
   GoBoardCornerTopRight      ///< @brief T19 on a 19x19 board
@@ -355,6 +356,35 @@ enum GoScoringSystem
   GoScoringSystemAreaScoring,
   GoScoringSystemTerritoryScoring,
   GoScoringSystemMax = GoScoringSystemTerritoryScoring,
+};
+
+/// @brief Enumerates the rules how the game can proceed from normal game play
+/// to the life & death settling phase.
+enum GoLifeAndDeathSettlingRule
+{
+  GoLifeAndDeathSettlingRuleTwoPasses,     ///< @brief The game proceeds to the life & death settling phase after two pass moves.
+  GoLifeAndDeathSettlingRuleThreePasses,   ///< @brief The game proceeds to the life & death settling phase after three pass moves. This is used to implement IGS rules.
+  GoLifeAndDeathSettlingRuleMax = GoLifeAndDeathSettlingRuleThreePasses,
+  GoLifeAndDeathSettlingRuleDefault = GoLifeAndDeathSettlingRuleTwoPasses,
+};
+
+/// @brief Enumerates the rules how play proceeds when the game is resumed to
+/// resolve disputes that arose during the life & death settling phase.
+enum GoDisputeResolutionRule
+{
+  GoDisputeResolutionRuleAlternatingPlay,      ///< @brief The game is resumed, alternating play is enforced.
+  GoDisputeResolutionRuleNonAlternatingPlay,   ///< @brief The game is resumed, alternating play is not enforced.
+  GoDisputeResolutionRuleMax = GoDisputeResolutionRuleNonAlternatingPlay,
+  GoDisputeResolutionRuleDefault = GoDisputeResolutionRuleAlternatingPlay,
+};
+
+/// @brief Enumerates the rules what four consecutive pass moves mean.
+enum GoFourPassesRule
+{
+  GoFourPassesRuleFourPassesHaveNoSpecialMeaning,   ///< @brief Four consecutive pass moves have no special meaning
+  GoFourPassesRuleFourPassesEndTheGame,             ///< @brief Four consecutive pass moves end the game. All stones on the board are deemed alive. This is used to implement AGA rules.
+  GoFourPassesRuleMax = GoFourPassesRuleFourPassesEndTheGame,
+  GoFourPassesRuleDefault = GoFourPassesRuleFourPassesHaveNoSpecialMeaning,
 };
 
 /// @brief Enumerates the states that a stone group can have during scoring.
@@ -1098,4 +1128,7 @@ extern NSString* goGameDocumentDocumentNameKey;
 // GoGameRules keys
 extern NSString* goGameRulesKoRuleKey;
 extern NSString* goGameRulesScoringSystemKey;
+extern NSString* goGameRulesLifeAndDeathSettlingRuleKey;
+extern NSString* goGameRulesDisputeResolutionRuleKey;
+extern NSString* goGameRulesFourPassesRuleKey;
 //@}
