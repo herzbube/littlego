@@ -31,7 +31,8 @@
 @property(nonatomic, retain, readwrite) UILabel* descriptionLabel;
 @property(nonatomic, retain, readwrite) UILabel* valueLabel;
 //@}
-@property(nonatomic, assign) CGFloat totalAmountOfHorizontalSpacing;
+@property(nonatomic, assign) CGFloat leftEdgeSpacing;
+@property(nonatomic, assign) NSLayoutConstraint* rightEdgeSpacingConstraint;
 @end
 
 @implementation TableViewVariableHeightCell
@@ -98,19 +99,24 @@
 
   CGFloat horizontalSpacingTableViewCell = [AutoLayoutUtility horizontalSpacingTableViewCell];
   CGFloat verticalSpacingTableViewCell = [AutoLayoutUtility verticalSpacingTableViewCell];
-  self.totalAmountOfHorizontalSpacing = horizontalSpacingTableViewCell;
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.descriptionLabel, @"descriptionLabel",
                                    self.valueLabel, @"valueLabel",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            [NSString stringWithFormat:@"H:|-%f-[descriptionLabel]-0-[valueLabel]-0-|", horizontalSpacingTableViewCell],
+                            [NSString stringWithFormat:@"H:|-%f-[descriptionLabel]-0-[valueLabel]", horizontalSpacingTableViewCell],
                             [NSString stringWithFormat:@"V:|-%f-[descriptionLabel]-%f-|", verticalSpacingTableViewCell, verticalSpacingTableViewCell],
                             [NSString stringWithFormat:@"V:|-%f-[valueLabel]-%f-|", verticalSpacingTableViewCell, verticalSpacingTableViewCell],
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
                                    inView:self.contentView];
+
+  self.leftEdgeSpacing = horizontalSpacingTableViewCell;
+  NSArray* rightEdgeSpacingConstraints = [AutoLayoutUtility installVisualFormats:[NSArray arrayWithObject:@"H:[valueLabel]-0-|"]
+                                                                       withViews:viewsDictionary
+                                                                          inView:self.contentView];
+  self.rightEdgeSpacingConstraint = [rightEdgeSpacingConstraints firstObject];
 }
 
 #pragma mark - UIView overrides
@@ -120,6 +126,13 @@
 // -----------------------------------------------------------------------------
 - (void) layoutSubviews
 {
+  // If there is no accessory view we have to provide our own spacing at the
+  // right edge
+  if (self.accessoryType == UITableViewCellAccessoryNone)
+    self.rightEdgeSpacingConstraint.constant = self.leftEdgeSpacing;
+  else
+    self.rightEdgeSpacingConstraint.constant = 0;
+
   // The purpose of this first layout pass is that the content view gets its
   // correct width, because we need that width to calculate the description
   // label's preferredMaxLayoutWidth.
@@ -133,9 +146,10 @@
   // not embedded in a view hierarchy and therefore is not constrained by the
   // bounds of a superview.
   CGFloat valueLabelWidth = self.valueLabel.intrinsicContentSize.width;
+  CGFloat totalAmountOfHorizontalSpacing = self.leftEdgeSpacing + self.rightEdgeSpacingConstraint.constant;
   self.descriptionLabel.preferredMaxLayoutWidth = (self.contentView.bounds.size.width
                                                    - valueLabelWidth
-                                                   - self.totalAmountOfHorizontalSpacing);
+                                                   - totalAmountOfHorizontalSpacing);
 
   // This second layout pass is required, obviously, because we just changed one
   // of the layouting properties of one of this cell's subviews.
