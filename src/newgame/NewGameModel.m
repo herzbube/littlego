@@ -48,6 +48,9 @@
     self.komi = gDefaultKomiTerritoryScoring;
   self.koRule = GoKoRuleDefault;
   self.scoringSystem = gDefaultScoringSystem;
+  self.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleDefault;
+  self.disputeResolutionRule = GoDisputeResolutionRuleDefault;
+  self.fourPassesRule = GoFourPassesRuleDefault;
   return self;
 }
 
@@ -84,6 +87,9 @@
   self.komi = [[dictionary valueForKey:komiKey] doubleValue];
   self.koRule = [[dictionary valueForKey:koRuleKey] intValue];
   self.scoringSystem = [[dictionary valueForKey:scoringSystemKey] intValue];
+  self.lifeAndDeathSettlingRule = [[dictionary valueForKey:lifeAndDeathSettlingRuleKey] intValue];
+  self.disputeResolutionRule = [[dictionary valueForKey:disputeResolutionRuleKey] intValue];
+  self.fourPassesRule = [[dictionary valueForKey:fourPassesRuleKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -110,6 +116,9 @@
   [dictionary setValue:[NSNumber numberWithDouble:self.komi] forKey:komiKey];
   [dictionary setValue:[NSNumber numberWithInt:self.koRule] forKey:koRuleKey];
   [dictionary setValue:[NSNumber numberWithInt:self.scoringSystem] forKey:scoringSystemKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.lifeAndDeathSettlingRule] forKey:lifeAndDeathSettlingRuleKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.disputeResolutionRule] forKey:disputeResolutionRuleKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.fourPassesRule] forKey:fourPassesRuleKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:newGameKey];
 }

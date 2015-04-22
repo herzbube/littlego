@@ -124,7 +124,8 @@
   appDelegate.game = newGame;
   DDLogVerbose(@"%@: Assigned game object to app delegate", [self shortDescription]);
 
-  // Configure the new GoGame object (not necessary for pre-fabricated games)
+  // Configure the new GoGame object. A pre-fabricated game must be configured
+  // by the client.
   if (! self.prefabricatedGame)
   {
     NewGameModel* newGameModel = appDelegate.theNewGameModel;
@@ -146,8 +147,25 @@
     newGame.type = newGameModel.gameType;
     newGame.rules.koRule = newGameModel.koRule;
     newGame.rules.scoringSystem = newGameModel.scoringSystem;
+    if (newGameModel.gameType == GoGameTypeComputerVsComputer)
+    {
+      newGame.rules.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleTwoPasses;
+      newGame.rules.disputeResolutionRule = GoDisputeResolutionRuleAlternatingPlay;
+      newGame.rules.fourPassesRule = GoFourPassesRuleFourPassesHaveNoSpecialMeaning;
+    }
+    else
+    {
+      newGame.rules.lifeAndDeathSettlingRule = newGameModel.lifeAndDeathSettlingRule;
+      newGame.rules.disputeResolutionRule = newGameModel.disputeResolutionRule;
+      newGame.rules.fourPassesRule = newGameModel.fourPassesRule;
+    }
   }
-  DDLogVerbose(@"%@: Game object configuration: board = %@, komi = %.1f, handicapPoints = %@, playerBlack = %@ (uuid = %@), playerWhite = %@ (uuid = %@), type = %d, ko rule = %d, scoring = %d",
+  DDLogVerbose((@"%@: Game object configuration: board = %@, "
+                "komi = %.1f, handicapPoints = %@, "
+                "playerBlack = %@ (uuid = %@), playerWhite = %@ (uuid = %@), "
+                "type = %d, "
+                "koRule = %d, scoringSystem = %d, "
+                "lifeAndDeathSettlingRule = %d, disputeResolutionRule = %d, fourPassesRule = %d"),
                [self shortDescription],
                newGame.board,
                newGame.komi,
@@ -158,7 +176,10 @@
                newGame.playerWhite.player.uuid,
                newGame.type,
                newGame.rules.koRule,
-               newGame.rules.scoringSystem);
+               newGame.rules.scoringSystem,
+               newGame.rules.lifeAndDeathSettlingRule,
+               newGame.rules.disputeResolutionRule,
+               newGame.rules.fourPassesRule);
 
   // Send this only after GoGame and its dependents have been fully configured.
   // Receivers will probably want to know stuff like the board size and what

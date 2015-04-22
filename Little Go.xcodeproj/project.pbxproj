@@ -279,6 +279,8 @@
 		CD96A44B16C71BB0000C2792 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
 		CD96A44C16C71BBF000C2792 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
 		CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD96A47F16CD6FD5000C2792 /* GoBoardPositionTest.m */; };
+		CD97FA101AE3D4DD00148C16 /* NewGameAdvancedController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD97FA0F1AE3D4DD00148C16 /* NewGameAdvancedController.m */; };
+		CD97FA111AE3D4DD00148C16 /* NewGameAdvancedController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD97FA0F1AE3D4DD00148C16 /* NewGameAdvancedController.m */; };
 		CD99EC6314B10749007B3B67 /* GoPointTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99EC6214B10747007B3B67 /* GoPointTest.m */; };
 		CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99EC6514B12059007B3B67 /* GoPlayerTest.m */; };
 		CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49AA17107BC9009E7514 /* FontRange.m */; };
@@ -796,6 +798,8 @@
 		CD941363198BDBA20001F55A /* images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = images.xcassets; path = resource/images.xcassets; sourceTree = SOURCE_ROOT; };
 		CD96A47E16CD6FD4000C2792 /* GoBoardPositionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardPositionTest.h; sourceTree = "<group>"; };
 		CD96A47F16CD6FD5000C2792 /* GoBoardPositionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = GoBoardPositionTest.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		CD97FA0E1AE3D4DD00148C16 /* NewGameAdvancedController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameAdvancedController.h; sourceTree = "<group>"; };
+		CD97FA0F1AE3D4DD00148C16 /* NewGameAdvancedController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameAdvancedController.m; sourceTree = "<group>"; };
 		CD99EC6114B10746007B3B67 /* GoPointTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPointTest.h; sourceTree = "<group>"; };
 		CD99EC6214B10747007B3B67 /* GoPointTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPointTest.m; sourceTree = "<group>"; };
 		CD99EC6414B12058007B3B67 /* GoPlayerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPlayerTest.h; sourceTree = "<group>"; };
@@ -1598,6 +1602,8 @@
 				CD9AA70A146028770012C3EA /* HandicapSelectionController.m */,
 				CD9AA70B146028770012C3EA /* KomiSelectionController.h */,
 				CD9AA70C146028770012C3EA /* KomiSelectionController.m */,
+				CD97FA0E1AE3D4DD00148C16 /* NewGameAdvancedController.h */,
+				CD97FA0F1AE3D4DD00148C16 /* NewGameAdvancedController.m */,
 				CDAB5ECF13E483DE00C4A4AA /* NewGameController.h */,
 				CDAB5ED013E483DE00C4A4AA /* NewGameController.m */,
 				CDAB5ECC13E483AA00C4A4AA /* NewGameModel.h */,
@@ -2327,6 +2333,7 @@
 				CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */,
 				CDA096FF1A98CD54002FCD78 /* ButtonBoxController.m in Sources */,
+				CD97FA101AE3D4DD00148C16 /* NewGameAdvancedController.m in Sources */,
 				CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
 				CDEE19F719433EAC00DF2389 /* BoardViewDrawingHelper.m in Sources */,
 				CDA0970B1A99F77F002FCD78 /* SplitViewController.m in Sources */,
@@ -2480,6 +2487,7 @@
 				CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */,
 				CDEE19F619433EAC00DF2389 /* BoardViewController.m in Sources */,
 				CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */,
+				CD97FA111AE3D4DD00148C16 /* NewGameAdvancedController.m in Sources */,
 				CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */,
 				CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */,
 				CDAF17161967FFD500271396 /* BoardViewMetrics.m in Sources */,

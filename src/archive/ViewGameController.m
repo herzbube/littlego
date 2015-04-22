@@ -325,7 +325,7 @@ enum GameAttributesSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief NewGameDelegate protocol method
+/// @brief NewGameControllerDelegate protocol method
 // -----------------------------------------------------------------------------
 - (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame
 {

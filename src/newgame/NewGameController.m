@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,11 @@
 
 // Project includes
 #import "NewGameController.h"
+#import "NewGameAdvancedController.h"
 #import "NewGameModel.h"
 #import "../go/GoGame.h"
 #import "../go/GoGameDocument.h"
+#import "../go/GoGameRules.h"
 #import "../go/GoBoard.h"
 #import "../go/GoUtilities.h"
 #import "../main/ApplicationDelegate.h"
@@ -29,22 +31,31 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
-#import "../utility/NSStringAdditions.h"
-#import "../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "New Game" table view.
+/// @brief Enumerates the sections presented in the "New Game" table view when
+/// not in "load game" mode.
 // -----------------------------------------------------------------------------
 enum NewGameTableViewSection
 {
   PlayersSection,
-  BoardSizeSection,  // doubles as GameRulesSection in "load game" mode
-  MaxSectionLoadGame,
-  // Sections from here on are not displayed in "load game" mode
-  HandicapKomiSection = MaxSectionLoadGame,
-  GameRulesSection,
+  BoardSizeSection,
+  RulesetHandicapSection,
+  AdvancedSection,
   MaxSection
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates the sections presented in the "New Game" table view when
+/// in "load game" mode.
+// -----------------------------------------------------------------------------
+enum NewGameTableViewSection_LoadGame
+{
+  PlayersSection_LoadGame,
+  RulesetHandicapSection_LoadGame,
+  AdvancedSection_LoadGame,
+  MaxSection_LoadGame
 };
 
 // -----------------------------------------------------------------------------
@@ -57,13 +68,16 @@ enum NewGameTableViewSection
 // -----------------------------------------------------------------------------
 enum PlayersSectionItem
 {
+  // Items for game type human vs. computer
   HumanPlayerItem,
   ComputerPlayerItem,
   ComputerPlayerColorItem,
   MaxPlayersSectionItemHumanVsComputer,
+  // Items for game type human vs. human
   BlackPlayerItem = 0,
   WhitePlayerItem,
   MaxPlayersSectionItemHumanVsHuman,
+  // Items for game type computer vs. computer
   SingleComputerPlayerItem = 0,
   MaxPlayersSectionItemComputerVsComputer
 };
@@ -78,32 +92,61 @@ enum BoardSizeSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the HandicapKomiSection.
+/// @brief Enumerates items in the RulesetHandicapSection.
 // -----------------------------------------------------------------------------
-enum HandicapKomiSectionItem
+enum RulesetHandicapSectionItem
 {
-  HandicapItem,
-  KomiItem,
-  MaxHandicapKomiSectionItem
+  RulesetItem,
+  EvenGameItem,  // not shown in "load game" mode
+  HandicapItem,  // not shown in "load game" mode; also not shown in "normal" mode if game is even
+  MaxRulesetHandicapSectionItem_UnevenGame,
+  MaxRulesetHandicapSectionItem_EvenGame = MaxRulesetHandicapSectionItem_UnevenGame - 1,
+  MaxRulesetHandicapSectionItem_LoadGame = MaxRulesetHandicapSectionItem_UnevenGame - 2
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the GameRulesSection.
+/// @brief Enumerates items in the AdvancedSection.
 // -----------------------------------------------------------------------------
-enum GameRulesSectionItem
+enum AdvancedSectionItem
 {
-  KoRuleItem,
-  ScoringSystemItem,
-  MaxGameRulesSectionItem
+  AdvancedItem,
+  MaxAdvancedSectionItem,
+  MaxAdvancedSectionItem_LoadGame = MaxAdvancedSectionItem
 };
 
+// -----------------------------------------------------------------------------
+/// @brief Enumerates all table view cells that can ever appear in the
+/// "New Game" table view, without regard to the conditions under which they
+/// appear.
+///
+/// This enumeration exists to simplify controller logic. Using this enumeration
+/// allows to write a single switch() statement instead of writing complicated
+/// complicated nested switch/if statements.
+// -----------------------------------------------------------------------------
+enum CellID
+{
+  HumanPlayerCellID,
+  ComputerPlayerCellID,
+  ComputerPlayerColorCellID,
+  BlackPlayerCellID,
+  WhitePlayerCellID,
+  SingleComputerPlayerCellID,
+  BoardSizeCellID,
+  RulesetCellID,
+  EvenGameCellID,
+  HandicapCellID,
+  AdvancedCellID
+};
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for NewGameController.
 // -----------------------------------------------------------------------------
 @interface NewGameController()
+@property(nonatomic, assign) id<NewGameControllerDelegate> delegate;
+@property(nonatomic, assign) bool loadGame;
 @property(nonatomic, assign) NewGameModel* theNewGameModel;
 @property(nonatomic, assign) PlayerModel* playerModel;
+@property(nonatomic, assign) bool advancedScreenWasShown;
 @property(nonatomic, assign) UITableView* tableView;
 @property(nonatomic, assign) UISegmentedControl* segmentedControl;
 @end
@@ -123,7 +166,8 @@ enum GameRulesSectionItem
 /// UI elements and trigger different operations when the user finally confirms
 /// starting the new game.
 // -----------------------------------------------------------------------------
-+ (NewGameController*) controllerWithDelegate:(id<NewGameDelegate>)delegate loadGame:(bool)loadGame
++ (NewGameController*) controllerWithDelegate:(id<NewGameControllerDelegate>)delegate
+                                     loadGame:(bool)loadGame
 {
   NewGameController* controller = [[NewGameController alloc] initWithNibName:nil bundle:nil];
   if (controller)
@@ -135,6 +179,7 @@ enum GameRulesSectionItem
     controller.theNewGameModel = theNewGameModel;
     PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
     controller.playerModel = playerModel;
+    controller.advancedScreenWasShown = false;
 
     // Try to find some sensible defaults if player objects could not be
     // determined (e.g. because the UUIDs we remembered are no longer valid).
@@ -210,6 +255,22 @@ enum GameRulesSectionItem
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
   [self configureViews];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) viewWillAppear:(BOOL)animated
+{
+  [super viewWillAppear:animated];
+  if (self.advancedScreenWasShown)
+  {
+    // We get here if the "Advanced settings" screeen is popped from the
+    // navigation stack
+    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:RulesetHandicapSection];
+    [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+    self.advancedScreenWasShown = false;
+  }
 }
 
 #pragma mark - Private helpers for loadView
@@ -357,10 +418,10 @@ enum GameRulesSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  if (! self.loadGame)
-    return MaxSection;
+  if (self.loadGame)
+    return MaxSection_LoadGame;
   else
-    return MaxSectionLoadGame;
+    return MaxSection;
 }
 
 // -----------------------------------------------------------------------------
@@ -368,40 +429,59 @@ enum GameRulesSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  switch (section)
+  if (PlayersSection == section)
   {
-    case PlayersSection:
+    switch (self.theNewGameModel.gameTypeLastSelected)
     {
-      switch (self.theNewGameModel.gameTypeLastSelected)
+      case GoGameTypeComputerVsHuman:
+        return MaxPlayersSectionItemHumanVsComputer;
+      case GoGameTypeHumanVsHuman:
+        return MaxPlayersSectionItemHumanVsHuman;
+      case GoGameTypeComputerVsComputer:
+        return MaxPlayersSectionItemComputerVsComputer;
+      default:
       {
-        case GoGameTypeComputerVsHuman:
-          return MaxPlayersSectionItemHumanVsComputer;
-        case GoGameTypeHumanVsHuman:
-          return MaxPlayersSectionItemHumanVsHuman;
-        case GoGameTypeComputerVsComputer:
-          return MaxPlayersSectionItemComputerVsComputer;
-        default:
-        {
-          NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected];
-          DDLogError(@"%@: %@", self, errorMessage);
-          NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                           reason:errorMessage
-                                                         userInfo:nil];
-          @throw exception;
-        }
+        NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected];
+        DDLogError(@"%@: %@", self, errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
       }
     }
-    case BoardSizeSection:
-    case GameRulesSection:
-      if (! self.loadGame && section != GameRulesSection)
-        return MaxBoardSizeSectionItem;
-      else
-        return MaxGameRulesSectionItem;
-    case HandicapKomiSection:
-      return MaxHandicapKomiSectionItem;
-    default:
-      assert(0);
-      break;
+  }
+  else
+  {
+    if (self.loadGame)
+    {
+      switch (section)
+      {
+        case RulesetHandicapSection_LoadGame:
+          return MaxRulesetHandicapSectionItem_LoadGame;
+        case AdvancedSection_LoadGame:
+          return MaxAdvancedSectionItem_LoadGame;
+        default:
+          break;
+      }
+    }
+    else
+    {
+      switch (section)
+      {
+        case BoardSizeSection:
+          return MaxBoardSizeSectionItem;
+        case RulesetHandicapSection:
+          if ([self isEvenGame])
+            return MaxRulesetHandicapSectionItem_EvenGame;
+          else
+            return MaxRulesetHandicapSectionItem_UnevenGame;
+        case AdvancedSection:
+          return MaxAdvancedSectionItem;
+        default:
+          break;
+      }
+    }
+    assert(0);
   }
   return 0;
 }
@@ -424,24 +504,47 @@ enum GameRulesSectionItem
 - (UITableViewCell*) createCellForTableView:(UITableView*)tableView forRowAtIndexPath:(NSIndexPath*)indexPath
 {
   UITableViewCell* cell;
-  if (PlayersSection == indexPath.section)
+  enum CellID cellID = [self cellIDForIndexPath:indexPath];
+  switch (cellID)
   {
-    if (GoGameTypeComputerVsHuman == self.theNewGameModel.gameTypeLastSelected && ComputerPlayerColorItem == indexPath.row)
-    {
-      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-    }
-    else
+    case HumanPlayerCellID:
+    case ComputerPlayerCellID:
+    case BlackPlayerCellID:
+    case WhitePlayerCellID:
+    case SingleComputerPlayerCellID:
     {
       // Use a non-standard cell identifier because cells with player names can
       // have a non-standard text color for the detail text label
       cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView reusableCellIdentifier:@"PlayerCell"];
-      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      break;
     }
-  }
-  else
-  {
-    cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    case ComputerPlayerColorCellID:
+    {
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      break;
+    }
+    case BoardSizeCellID:
+    case RulesetCellID:
+    case HandicapCellID:
+    {
+      cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+      break;
+    }
+    case EvenGameCellID:
+    {
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      break;
+    }
+    case AdvancedCellID:
+    {
+      cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+      break;
+    }
+    default:
+    {
+      assert(0);
+      break;
+    }
   }
   return cell;
 }
@@ -451,131 +554,85 @@ enum GameRulesSectionItem
 // -----------------------------------------------------------------------------
 - (void) configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  switch (indexPath.section)
+  enum CellID cellID = [self cellIDForIndexPath:indexPath];
+  switch (cellID)
   {
-    case PlayersSection:
+    case HumanPlayerCellID:
     {
-      switch (self.theNewGameModel.gameTypeLastSelected)
-      {
-        case GoGameTypeComputerVsHuman:
-        {
-          switch (indexPath.row)
-          {
-            case HumanPlayerItem:
-              cell.textLabel.text = @"Human";
-              [self updateCell:cell withPlayer:self.theNewGameModel.humanPlayerUUID];
-              break;
-            case ComputerPlayerItem:
-              cell.textLabel.text = @"Computer";
-              [self updateCell:cell withPlayer:self.theNewGameModel.computerPlayerUUID];
-              break;
-            case ComputerPlayerColorItem:
-              cell.textLabel.text = @"Computer plays white";
-              UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-              accessoryView.on = self.theNewGameModel.computerPlaysWhite ? YES : NO;
-              [accessoryView addTarget:self action:@selector(toggleComputerPlaysWhite:) forControlEvents:UIControlEventValueChanged];
-              break;
-            default:
-              assert(0);
-              break;
-          }
-          break;
-        }
-        case GoGameTypeHumanVsHuman:
-        {
-          switch (indexPath.row)
-          {
-            case BlackPlayerItem:
-              cell.textLabel.text = @"Black";
-              [self updateCell:cell withPlayer:self.theNewGameModel.humanBlackPlayerUUID];
-              break;
-            case WhitePlayerItem:
-              cell.textLabel.text = @"White";
-              [self updateCell:cell withPlayer:self.theNewGameModel.humanWhitePlayerUUID];
-              break;
-            default:
-              assert(0);
-              break;
-          }
-          break;
-        }
-        case GoGameTypeComputerVsComputer:
-        {
-          switch (indexPath.row)
-          {
-            case SingleComputerPlayerItem:
-              cell.textLabel.text = @"Computer";
-              [self updateCell:cell withPlayer:self.theNewGameModel.computerPlayerSelfPlayUUID];
-              break;
-            default:
-              assert(0);
-              break;
-          }
-          break;
-        }
-        default:
-        {
-          assert(0);
-          break;
-        }
-      }
+      cell.textLabel.text = @"Human";
+      [self updateCell:cell withPlayer:self.theNewGameModel.humanPlayerUUID];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
-    case BoardSizeSection:
-    case GameRulesSection:
+    case ComputerPlayerCellID:
     {
-      if (! self.loadGame && indexPath.section != GameRulesSection)
-      {
-        cell.textLabel.text = @"Board size";
-        cell.detailTextLabel.text = [GoBoard stringForSize:self.theNewGameModel.boardSize];
-      }
-      else
-      {
-        switch (indexPath.row)
-        {
-          case KoRuleItem:
-          {
-            cell.textLabel.text = @"Ko rule";
-            cell.detailTextLabel.text = [NSString stringWithKoRule:self.theNewGameModel.koRule];
-            break;
-          }
-          case ScoringSystemItem:
-          {
-            cell.textLabel.text = @"Scoring system";
-            cell.detailTextLabel.text = [NSString stringWithScoringSystem:self.theNewGameModel.scoringSystem];
-            break;
-          }
-          default:
-          {
-            assert(0);
-            break;
-          }
-        }
-      }
+      cell.textLabel.text = @"Computer";
+      [self updateCell:cell withPlayer:self.theNewGameModel.computerPlayerUUID];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
-    case HandicapKomiSection:
+    case ComputerPlayerColorCellID:
     {
-      switch (indexPath.row)
-      {
-        case HandicapItem:
-        {
-          cell.textLabel.text = @"Handicap";
-          cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.theNewGameModel.handicap];
-          break;
-        }
-        case KomiItem:
-        {
-          cell.textLabel.text = @"Komi";
-          cell.detailTextLabel.text = [NSString stringWithKomi:self.theNewGameModel.komi numericZeroValue:false];
-          break;
-        }
-        default:
-        {
-          assert(0);
-          break;
-        }
-      }
+      cell.textLabel.text = @"Computer plays white";
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      accessoryView.on = self.theNewGameModel.computerPlaysWhite ? YES : NO;
+      [accessoryView addTarget:self action:@selector(toggleComputerPlaysWhite:) forControlEvents:UIControlEventValueChanged];
+      break;
+    }
+    case BlackPlayerCellID:
+    {
+      cell.textLabel.text = @"Black";
+      [self updateCell:cell withPlayer:self.theNewGameModel.humanBlackPlayerUUID];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      break;
+    }
+    case WhitePlayerCellID:
+    {
+      cell.textLabel.text = @"White";
+      [self updateCell:cell withPlayer:self.theNewGameModel.humanWhitePlayerUUID];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      break;
+    }
+    case SingleComputerPlayerCellID:
+    {
+      cell.textLabel.text = @"Computer";
+      [self updateCell:cell withPlayer:self.theNewGameModel.computerPlayerSelfPlayUUID];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      break;
+    }
+    case BoardSizeCellID:
+    {
+      cell.textLabel.text = @"Board size";
+      cell.detailTextLabel.text = [GoBoard stringForSize:self.theNewGameModel.boardSize];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      break;
+    }
+    case RulesetCellID:
+    {
+      cell.textLabel.text = @"Ruleset";
+      cell.detailTextLabel.text = [NewGameController rulesetName:[self currentRuleset]];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      break;
+    }
+    case EvenGameCellID:
+    {
+      cell.textLabel.text = @"Even game";
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      accessoryView.on = [self isEvenGame];
+      [accessoryView addTarget:self action:@selector(toggleEvenGame:) forControlEvents:UIControlEventValueChanged];
+      break;
+    }
+    case HandicapCellID:
+    {
+      cell.textLabel.text = @"Handicap";
+      cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", self.theNewGameModel.handicap];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      break;
+    }
+    case AdvancedCellID:
+    {
+      cell.textLabel.text = @"Advanced settings";
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
     default:
@@ -596,39 +653,23 @@ enum GameRulesSectionItem
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 
   UIViewController* modalController;
-  switch (indexPath.section)
+  enum CellID cellID = [self cellIDForIndexPath:indexPath];
+  switch (cellID)
   {
-    case PlayersSection:
-    {
-      Player* defaultPlayer = [self playerForRowAtIndexPath:indexPath];
-      bool pickHumanPlayer = [self shouldPickHumanPlayerForRowAtIndexPath:indexPath];
-      NSArray* playerList = [self.playerModel playerListHuman:pickHumanPlayer];
-      NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
-      int indexOfDefaultPlayer = -1;
-      for (int playerIndex = 0; playerIndex < playerList.count; ++playerIndex)
-      {
-        Player* player = [playerList objectAtIndex:playerIndex];
-        [itemList addObject:player.name];
-        if (player == defaultPlayer)
-          indexOfDefaultPlayer = playerIndex;
-      }
-      ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
-                                                                                          title:@"Select player"
-                                                                             indexOfDefaultItem:indexOfDefaultPlayer
-                                                                                       delegate:self];
-      itemPickerController.context = indexPath;
-      modalController = itemPickerController;
-      break;
-    }
-    case BoardSizeSection:
-    case GameRulesSection:
+    case HumanPlayerCellID:
+    case ComputerPlayerCellID:
+    case BlackPlayerCellID:
+    case WhitePlayerCellID:
+    case SingleComputerPlayerCellID:
+    case BoardSizeCellID:
+    case RulesetCellID:
     {
       NSString* title;
       NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
       int indexOfDefaultItem = -1;
-      if (! self.loadGame && indexPath.section != GameRulesSection)
+      if (BoardSizeCellID == cellID)
       {
-        title = @"Board size";
+        title = @"Select board size";
         for (int boardSizeIndex = 0; boardSizeIndex < gNumberOfBoardSizes; ++boardSizeIndex)
         {
           int naturalBoardSize = GoBoardSizeMin + (boardSizeIndex * 2);
@@ -636,63 +677,61 @@ enum GameRulesSectionItem
         }
         indexOfDefaultItem = (self.theNewGameModel.boardSize - GoBoardSizeMin) / 2;
       }
+      else if (RulesetCellID == cellID)
+      {
+        title = @"Select ruleset";
+        for (enum GoRuleset ruleset = GoRulesetMin; ruleset <= GoRulesetMax; ++ruleset)
+          [itemList addObject:[NewGameController rulesetName:ruleset]];
+        // No default selection if the current ruleset is a custom ruleset
+        enum GoRuleset currentRuleset = [self currentRuleset];
+        if (currentRuleset < itemList.count)
+          indexOfDefaultItem = currentRuleset;
+      }
       else
       {
-        if (KoRuleItem == indexPath.row)
+        title = @"Select player";
+        Player* defaultPlayer = [self playerForRowAtIndexPath:indexPath];
+        bool pickHumanPlayer = [self shouldPickHumanPlayerForCellID:cellID];
+        NSArray* playerList = [self.playerModel playerListHuman:pickHumanPlayer];
+        for (int playerIndex = 0; playerIndex < playerList.count; ++playerIndex)
         {
-          title = @"Ko rule";
-          enum GoKoRule defaultKoRule = self.theNewGameModel.koRule;
-          for (int koRule = 0; koRule <= GoKoRuleMax; ++koRule)
-          {
-            NSString* koRuleString = [NSString stringWithKoRule:koRule];
-            [itemList addObject:koRuleString];
-            if (koRule == defaultKoRule)
-              indexOfDefaultItem = koRule;
-          }
-        }
-        else
-        {
-          title = @"Scoring system";
-          enum GoScoringSystem defaultScoringSystem = self.theNewGameModel.scoringSystem;
-          for (int scoringSystem = 0; scoringSystem <= GoScoringSystemMax; ++scoringSystem)
-          {
-            NSString* scoringSystemString = [NSString stringWithScoringSystem:scoringSystem];
-            [itemList addObject:scoringSystemString];
-            if (scoringSystem == defaultScoringSystem)
-              indexOfDefaultItem = scoringSystem;
-          }
+          Player* player = [playerList objectAtIndex:playerIndex];
+          [itemList addObject:player.name];
+          if (player == defaultPlayer)
+            indexOfDefaultItem = playerIndex;
         }
       }
       ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
                                                                                           title:title
                                                                              indexOfDefaultItem:indexOfDefaultItem
                                                                                        delegate:self];
-      itemPickerController.context = indexPath;
+      itemPickerController.context = [NSNumber numberWithInt:cellID];
       modalController = itemPickerController;
       break;
     }
-    case HandicapKomiSection:
+    case HandicapCellID:
     {
-      if (HandicapItem == indexPath.row)
-      {
-        int maximumHandicap = [GoUtilities maximumHandicapForBoardSize:self.theNewGameModel.boardSize];
-        modalController = [HandicapSelectionController controllerWithDelegate:self
-                                                              defaultHandicap:self.theNewGameModel.handicap
-                                                              maximumHandicap:maximumHandicap];
-      }
-      else
-      {
-        modalController = [KomiSelectionController controllerWithDelegate:self
-                                                              defaultKomi:self.theNewGameModel.komi];
-      }
+      int maximumHandicap = [GoUtilities maximumHandicapForBoardSize:self.theNewGameModel.boardSize];
+      modalController = [HandicapSelectionController controllerWithDelegate:self
+                                                            defaultHandicap:self.theNewGameModel.handicap
+                                                            maximumHandicap:maximumHandicap];
       break;
+    }
+    case AdvancedCellID:
+    {
+      NewGameAdvancedController* newGameAdvancedController = [NewGameAdvancedController controllerWithGameType:self.theNewGameModel.gameTypeLastSelected
+                                                                                                      loadGame:self.loadGame];
+      [self.navigationController pushViewController:newGameAdvancedController animated:YES];
+      self.advancedScreenWasShown = true;
+      return;
     }
     default:
     {
-      assert(0);
+      // Some cells (e.g. EvenGameCellID) don't react to selection
       return;
     }
   }
+
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:modalController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -709,21 +748,26 @@ enum GameRulesSectionItem
 {
   if (didMakeSelection && controller.indexOfDefaultItem != controller.indexOfSelectedItem)
   {
-    NSIndexPath* indexPathContext = controller.context;
-    if (PlayersSection == indexPathContext.section)
+    NSNumber* cellIDAsNumber = controller.context;
+    enum CellID cellID = [cellIDAsNumber intValue];
+    switch (cellID)
     {
-      bool pickHumanPlayer = [self shouldPickHumanPlayerForRowAtIndexPath:indexPathContext];
-      NSArray* playerList = [self.playerModel playerListHuman:pickHumanPlayer];
-      Player* newPlayer = [playerList objectAtIndex:controller.indexOfSelectedItem];
-      [self updateWithNewPlayer:newPlayer forRowAtIndexPath:indexPathContext];
-      self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
-      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:PlayersSection];
-      [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
-    }
-    else if (BoardSizeSection == indexPathContext.section ||
-             GameRulesSection == indexPathContext.section)
-    {
-      if (! self.loadGame && indexPathContext.section != GameRulesSection)
+      case HumanPlayerCellID:
+      case ComputerPlayerCellID:
+      case BlackPlayerCellID:
+      case WhitePlayerCellID:
+      case SingleComputerPlayerCellID:
+      {
+        bool pickHumanPlayer = [self shouldPickHumanPlayerForCellID:cellID];
+        NSArray* playerList = [self.playerModel playerListHuman:pickHumanPlayer];
+        Player* newPlayer = [playerList objectAtIndex:controller.indexOfSelectedItem];
+        [self updateWithNewPlayer:newPlayer forCellID:cellID];
+        self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+        NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:PlayersSection];
+        [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+        break;
+      }
+      case BoardSizeCellID:
       {
         self.theNewGameModel.boardSize = GoBoardSizeMin + (controller.indexOfSelectedItem * 2);
         NSRange indexSetRange = NSMakeRange(BoardSizeSection, 1);
@@ -734,32 +778,29 @@ enum GameRulesSectionItem
         if (self.theNewGameModel.handicap > maximumHandicap)
         {
           self.theNewGameModel.handicap = maximumHandicap;
-          indexSetRange.length = HandicapKomiSection - indexSetRange.location + 1;
+          indexSetRange.length = RulesetHandicapSection - indexSetRange.location + 1;
         }
 
         self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
         NSIndexSet* indexSet = [NSIndexSet indexSetWithIndexesInRange:indexSetRange];
         [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+        break;
       }
-      else
+      case RulesetCellID:
       {
-        if (KoRuleItem == indexPathContext.row)
-        {
-          self.theNewGameModel.koRule = controller.indexOfSelectedItem;
-        }
-        else
-        {
-          self.theNewGameModel.scoringSystem = controller.indexOfSelectedItem;
-          if (! self.loadGame && 0 == self.theNewGameModel.handicap)
-          {
-            [self autoAdjustKomiAccordingToScoringSystem];
-            NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:HandicapKomiSection];
-            [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
-          }
-        }
-        self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
-        NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:indexPathContext.section];
+        [self applyRuleset:controller.indexOfSelectedItem];
+        NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:RulesetHandicapSection];
         [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+        break;
+      }
+      default:
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Unexpected cell ID: %d", cellID];
+        DDLogError(@"%@: %@", self, errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
       }
     }
   }
@@ -778,32 +819,9 @@ enum GameRulesSectionItem
     if (self.theNewGameModel.handicap != controller.handicap)
     {
       self.theNewGameModel.handicap = controller.handicap;
-      if (self.theNewGameModel.handicap > 0)
-        self.theNewGameModel.komi = 0.5;
-      else
-        [self autoAdjustKomiAccordingToScoringSystem];
+      [self autoAdjustKomi];
       self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
-      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:HandicapKomiSection];
-      [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
-    }
-  }
-  [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - KomiSelectionDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief KomiSelectionDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) komiSelectionController:(KomiSelectionController*)controller didMakeSelection:(bool)didMakeSelection
-{
-  if (didMakeSelection)
-  {
-    if (self.theNewGameModel.komi != controller.komi)
-    {
-      self.theNewGameModel.komi = controller.komi;
-      self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
-      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:HandicapKomiSection];
+      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:RulesetHandicapSection];
       [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
     }
   }
@@ -811,6 +829,115 @@ enum GameRulesSectionItem
 }
 
 #pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the #CellID value that corresponds to @a indexPath, taking
+/// into account the values  @e self.loadGame and the @e gameTypeLastSelected
+/// property in NewGameModel.
+// -----------------------------------------------------------------------------
+- (enum CellID) cellIDForIndexPath:(NSIndexPath*)indexPath
+{
+  if (PlayersSection == indexPath.section)
+  {
+    switch (self.theNewGameModel.gameTypeLastSelected)
+    {
+      case GoGameTypeComputerVsHuman:
+      {
+        switch (indexPath.row)
+        {
+          case HumanPlayerItem:
+            return HumanPlayerCellID;
+          case ComputerPlayerItem:
+            return ComputerPlayerCellID;
+          case ComputerPlayerColorItem:
+            return ComputerPlayerColorCellID;
+          default:
+            break;
+        }
+        break;
+      }
+      case GoGameTypeHumanVsHuman:
+      {
+        switch (indexPath.row)
+        {
+          case BlackPlayerItem:
+            return BlackPlayerCellID;
+          case WhitePlayerItem:
+            return WhitePlayerCellID;
+          default:
+            break;
+        }
+        break;
+      }
+      case GoGameTypeComputerVsComputer:
+      {
+        switch (indexPath.row)
+        {
+          case SingleComputerPlayerItem:
+            return SingleComputerPlayerCellID;
+          default:
+            break;
+        }
+        break;
+      }
+      default:
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected];
+        DDLogError(@"%@: %@", self, errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+    }
+  }
+  else if (! self.loadGame && BoardSizeSection == indexPath.section)
+  {
+    return BoardSizeCellID;
+  }
+  else if ((self.loadGame && RulesetHandicapSection_LoadGame == indexPath.section) ||
+           (! self.loadGame && RulesetHandicapSection == indexPath.section))
+  {
+    if (RulesetItem == indexPath.row)
+    {
+      return RulesetCellID;
+    }
+    else
+    {
+      if (self.loadGame)
+      {
+      }
+      else
+      {
+        switch (indexPath.row)
+        {
+          case EvenGameItem:
+            return EvenGameCellID;
+          case HandicapItem:
+            return HandicapCellID;
+          default:
+          {
+            assert(0);
+            break;
+          }
+        }
+      }
+    }
+  }
+  else if ((self.loadGame && AdvancedSection_LoadGame == indexPath.section) ||
+           (! self.loadGame && AdvancedSection == indexPath.section))
+  {
+    return AdvancedCellID;
+  }
+
+  NSString* errorMessage = [NSString stringWithFormat:@"Cannot determine cell ID, loadGame = %d, indexPath.section = %d, indexPath.row = %d, game type: %d",
+                            self.loadGame, indexPath.section, indexPath.row, self.theNewGameModel.gameTypeLastSelected];
+  DDLogError(@"%@: %@", self, errorMessage);
+  NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                   reason:errorMessage
+                                                 userInfo:nil];
+  @throw exception;
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the object from the player property that corresponds to the
@@ -828,32 +955,37 @@ enum GameRulesSectionItem
 - (Player*) playerForRowAtIndexPath:(NSIndexPath*)indexPath
 {
   NSString* playerUUID;
-  switch (self.theNewGameModel.gameTypeLastSelected)
+  enum CellID cellID = [self cellIDForIndexPath:indexPath];
+  switch (cellID)
   {
-    case GoGameTypeComputerVsHuman:
+    case HumanPlayerCellID:
     {
-      if (HumanPlayerItem == indexPath.row)
-        playerUUID = self.theNewGameModel.humanPlayerUUID;
-      else
-        playerUUID = self.theNewGameModel.computerPlayerUUID;
+      playerUUID = self.theNewGameModel.humanPlayerUUID;
       break;
     }
-    case GoGameTypeHumanVsHuman:
+    case ComputerPlayerCellID:
     {
-      if (BlackPlayerItem == indexPath.row)
-        playerUUID = self.theNewGameModel.humanBlackPlayerUUID;
-      else
-        playerUUID = self.theNewGameModel.humanWhitePlayerUUID;
+      playerUUID = self.theNewGameModel.computerPlayerUUID;
       break;
     }
-    case GoGameTypeComputerVsComputer:
+    case BlackPlayerCellID:
+    {
+      playerUUID = self.theNewGameModel.humanBlackPlayerUUID;
+      break;
+    }
+    case WhitePlayerCellID:
+    {
+      playerUUID = self.theNewGameModel.humanWhitePlayerUUID;
+      break;
+    }
+    case SingleComputerPlayerCellID:
     {
       playerUUID = self.theNewGameModel.computerPlayerSelfPlayUUID;
       break;
     }
     default:
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected];
+      NSString* errorMessage = [NSString stringWithFormat:@"Cell ID does not represent a player cell: %d", cellID];
       DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                        reason:errorMessage
@@ -877,32 +1009,35 @@ enum GameRulesSectionItem
 /// Raises an @e NSInvalidArgumentException if
 /// theNewGameModel.gameTypeLastSelected is not recognized.
 // -----------------------------------------------------------------------------
-- (bool) shouldPickHumanPlayerForRowAtIndexPath:(NSIndexPath*)indexPath
+- (bool) shouldPickHumanPlayerForCellID:(enum CellID)cellID
 {
   bool pickHumanPlayer = true;
-  switch (self.theNewGameModel.gameTypeLastSelected)
+  switch (cellID)
   {
-    case GoGameTypeComputerVsHuman:
-    {
-      if (HumanPlayerItem == indexPath.row)
-        pickHumanPlayer = true;
-      else
-        pickHumanPlayer = false;
-      break;
-    }
-    case GoGameTypeHumanVsHuman:
+    case HumanPlayerCellID:
     {
       pickHumanPlayer = true;
       break;
     }
-    case GoGameTypeComputerVsComputer:
+    case ComputerPlayerCellID:
+    {
+      pickHumanPlayer = false;
+      break;
+    }
+    case BlackPlayerCellID:
+    case WhitePlayerCellID:
+    {
+      pickHumanPlayer = true;
+      break;
+    }
+    case SingleComputerPlayerCellID:
     {
       pickHumanPlayer = false;
       break;
     }
     default:
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected];
+      NSString* errorMessage = [NSString stringWithFormat:@"Cell ID does not represent a player cell: %d", cellID];
       DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                        reason:errorMessage
@@ -927,35 +1062,39 @@ enum GameRulesSectionItem
 /// Raises an @e NSInvalidArgumentException if
 /// theNewGameModel.gameTypeLastSelected is not recognized.
 // -----------------------------------------------------------------------------
-- (void) updateWithNewPlayer:(Player*)newPlayer forRowAtIndexPath:(NSIndexPath*)indexPath
+- (void) updateWithNewPlayer:(Player*)newPlayer forCellID:(enum CellID)cellID
 {
   NSString* newPlayerUUID = newPlayer.uuid;
-  switch (self.theNewGameModel.gameTypeLastSelected)
+  switch (cellID)
   {
-    case GoGameTypeComputerVsHuman:
+    case HumanPlayerCellID:
     {
-      if (HumanPlayerItem == indexPath.row)
-        self.theNewGameModel.humanPlayerUUID = newPlayerUUID;
-      else
-        self.theNewGameModel.computerPlayerUUID = newPlayerUUID;
+      self.theNewGameModel.humanPlayerUUID = newPlayerUUID;
       break;
     }
-    case GoGameTypeHumanVsHuman:
+    case ComputerPlayerCellID:
     {
-      if (BlackPlayerItem == indexPath.row)
-        self.theNewGameModel.humanBlackPlayerUUID = newPlayerUUID;
-      else
-        self.theNewGameModel.humanWhitePlayerUUID = newPlayerUUID;
+      self.theNewGameModel.computerPlayerUUID = newPlayerUUID;
       break;
     }
-    case GoGameTypeComputerVsComputer:
+    case BlackPlayerCellID:
+    {
+      self.theNewGameModel.humanBlackPlayerUUID = newPlayerUUID;
+      break;
+    }
+    case WhitePlayerCellID:
+    {
+      self.theNewGameModel.humanWhitePlayerUUID = newPlayerUUID;
+      break;
+    }
+    case SingleComputerPlayerCellID:
     {
       self.theNewGameModel.computerPlayerSelfPlayUUID = newPlayerUUID;
       break;
     }
     default:
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Invalid game type: %d", self.theNewGameModel.gameTypeLastSelected];
+      NSString* errorMessage = [NSString stringWithFormat:@"Cell ID does not represent a player cell: %d", cellID];
       DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                        reason:errorMessage
@@ -986,6 +1125,15 @@ enum GameRulesSectionItem
     cell.detailTextLabel.text = @"No player selected";
     cell.detailTextLabel.textColor = [UIColor redColor];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns whether or not the current "new game" settings denote an even
+/// game. A game is considered "even" if uses no handicap.
+// -----------------------------------------------------------------------------
+- (bool) isEvenGame
+{
+  return (0 == self.theNewGameModel.handicap);
 }
 
 // -----------------------------------------------------------------------------
@@ -1102,14 +1250,60 @@ enum GameRulesSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Internal helper
+/// @brief Reacts to a tap gesture on the "Even game" switch.
 // -----------------------------------------------------------------------------
-- (void) autoAdjustKomiAccordingToScoringSystem
+- (void) toggleEvenGame:(id)sender
 {
-  if (GoScoringSystemAreaScoring == self.theNewGameModel.scoringSystem)
-    self.theNewGameModel.komi = gDefaultKomiAreaScoring;
+  UISwitch* accessoryView = (UISwitch*)sender;
+  bool evenGame = (accessoryView.on == YES);
+  if (evenGame)
+    self.theNewGameModel.handicap = 0;
   else
-    self.theNewGameModel.komi = gDefaultKomiTerritoryScoring;
+    self.theNewGameModel.handicap = 2;
+  [self autoAdjustKomi];
+
+  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:RulesetHandicapSection];
+  [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Adjusts komi depending on the combination of the current handicap
+/// and scoring system.
+// -----------------------------------------------------------------------------
+- (void) autoAdjustKomi
+{
+  self.theNewGameModel.komi = [GoUtilities defaultKomiForHandicap:self.theNewGameModel.handicap
+                                                    scoringSystem:self.theNewGameModel.scoringSystem];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the ruleset that best describes the current "new game"
+/// settings. Returns #GoRulesetCustom if no ruleset fits.
+// -----------------------------------------------------------------------------
+- (enum GoRuleset) currentRuleset
+{
+  GoGameRules* rules = [[[GoGameRules alloc] init] autorelease];
+  rules.koRule = self.theNewGameModel.koRule;
+  rules.scoringSystem = self.theNewGameModel.scoringSystem;
+  rules.lifeAndDeathSettlingRule = self.theNewGameModel.lifeAndDeathSettlingRule;
+  rules.disputeResolutionRule = self.theNewGameModel.disputeResolutionRule;
+  rules.fourPassesRule = self.theNewGameModel.fourPassesRule;
+  return [GoUtilities rulesetForRules:rules];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Modifies the "new game" settings so that they reflect the combination
+/// of settings and rules for which @a ruleset is a shorthand.
+// -----------------------------------------------------------------------------
+- (void) applyRuleset:(enum GoRuleset)ruleset
+{
+  GoGameRules* rules = [GoUtilities rulesForRuleset:ruleset];
+  self.theNewGameModel.koRule = rules.koRule;
+  self.theNewGameModel.scoringSystem = rules.scoringSystem;
+  self.theNewGameModel.lifeAndDeathSettlingRule = rules.lifeAndDeathSettlingRule;
+  self.theNewGameModel.disputeResolutionRule = rules.disputeResolutionRule;
+  self.theNewGameModel.fourPassesRule = rules.fourPassesRule;
+  [self autoAdjustKomi];
 }
 
 // -----------------------------------------------------------------------------
@@ -1160,6 +1354,38 @@ enum GameRulesSectionItem
     default:
     {
       NSString* errorMessage = [NSString stringWithFormat:@"Invalid segment index: %ld", (long)segmentIndex];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string representation of @a ruleset that is suitable for
+/// displaying in the UI.
+///
+/// Raises an @e NSInvalidArgumentException if @a ruleset is not recognized.
+// -----------------------------------------------------------------------------
++ (NSString*) rulesetName:(enum GoRuleset)ruleset
+{
+  switch (ruleset)
+  {
+    case GoRulesetAGA:
+      return @"AGA";
+    case GoRulesetIGS:
+      return @"IGS (Pandanet)";
+    case GoRulesetChinese:
+      return @"Chinese";
+    case GoRulesetJapanese:
+      return @"Japanese";
+    case GoRulesetCustom:
+      return @"Custom";
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Invalid ruleset: %d", ruleset];
       DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                        reason:errorMessage

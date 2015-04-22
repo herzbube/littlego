@@ -47,7 +47,7 @@
 /// - Managing sub-controllers for views that need to be displayed as part of
 ///   handling the tap on an action sheet button
 // -----------------------------------------------------------------------------
-@interface GameActionsActionSheetController : NSObject <UIActionSheetDelegate, UIAlertViewDelegate, NewGameDelegate, EditTextDelegate>
+@interface GameActionsActionSheetController : NSObject <UIActionSheetDelegate, UIAlertViewDelegate, NewGameControllerDelegate, EditTextDelegate>
 {
 }
 

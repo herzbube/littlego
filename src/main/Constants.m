@@ -241,6 +241,9 @@ NSString* handicapKey = @"Handicap";
 NSString* komiKey = @"Komi";
 NSString* koRuleKey = @"KoRule";
 NSString* scoringSystemKey = @"ScoringSystem";
+NSString* lifeAndDeathSettlingRuleKey = @"LifeAndDeathSettlingRule";
+NSString* disputeResolutionRuleKey = @"DisputeResolutionRule";
+NSString* fourPassesRuleKey = @"FourPassesRule";
 // Players
 NSString* playerListKey = @"PlayerList";
 NSString* playerUUIDKey = @"UUID";

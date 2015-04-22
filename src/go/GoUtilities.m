@@ -20,6 +20,7 @@
 #import "GoBoard.h"
 #import "GoBoardRegion.h"
 #import "GoGame.h"
+#import "GoGameRules.h"
 #import "GoMove.h"
 #import "GoPoint.h"
 #import "GoVertex.h"
@@ -351,6 +352,124 @@
     numericVertexIteration.y++;
   }
   return pointsInRectangle;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the default komi value for the combination of @a handicap and
+/// @a scoringSystem.
+///
+/// Raises an @e NSInvalidArgumentException if the combination of @a handicap
+/// and @a scoringSystem is not recognized.
+// -----------------------------------------------------------------------------
++ (double) defaultKomiForHandicap:(int)handicap scoringSystem:(enum GoScoringSystem)scoringSystem
+{
+  if (handicap > 0)
+    return 0.5;
+
+  switch (scoringSystem)
+  {
+    case GoScoringSystemAreaScoring:
+    {
+      return gDefaultKomiAreaScoring;
+    }
+    case GoScoringSystemTerritoryScoring:
+    {
+      return gDefaultKomiTerritoryScoring;
+    }
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Unable to determine default komi, unknown scoring system %d", scoringSystem];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a newly allocated GoGameRules object that contains rules for
+/// which @a ruleset is a shorthand.
+///
+/// Raises an @e NSInvalidArgumentException if @a ruleset is not recognized.
+// -----------------------------------------------------------------------------
++ (GoGameRules*) rulesForRuleset:(enum GoRuleset)ruleset
+{
+  GoGameRules* rules = [[[GoGameRules alloc] init] autorelease];
+  switch (ruleset)
+  {
+    case GoRulesetAGA:
+    {
+      rules.koRule = GoKoRuleSuperkoSituational;
+      rules.scoringSystem = GoScoringSystemAreaScoring;
+      rules.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleTwoPasses;
+      rules.disputeResolutionRule = GoDisputeResolutionRuleAlternatingPlay;
+      rules.fourPassesRule = GoFourPassesRuleFourPassesEndTheGame;
+      break;
+    }
+    case GoRulesetIGS:
+    {
+      rules.koRule = GoKoRuleSimple;
+      rules.scoringSystem = GoScoringSystemTerritoryScoring;
+      rules.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleThreePasses;
+      rules.disputeResolutionRule = GoDisputeResolutionRuleAlternatingPlay;
+      rules.fourPassesRule = GoFourPassesRuleFourPassesHaveNoSpecialMeaning;
+      break;
+    }
+    case GoRulesetChinese:
+    {
+      rules.koRule = GoKoRuleSuperkoPositional;
+      rules.scoringSystem = GoScoringSystemAreaScoring;
+      rules.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleTwoPasses;
+      rules.disputeResolutionRule = GoDisputeResolutionRuleNonAlternatingPlay;
+      rules.fourPassesRule = GoFourPassesRuleFourPassesHaveNoSpecialMeaning;
+      break;
+    }
+    case GoRulesetJapanese:
+    {
+      rules.koRule = GoKoRuleSimple;
+      rules.scoringSystem = GoScoringSystemTerritoryScoring;
+      rules.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleTwoPasses;
+      rules.disputeResolutionRule = GoDisputeResolutionRuleNonAlternatingPlay;
+      rules.fourPassesRule = GoFourPassesRuleFourPassesHaveNoSpecialMeaning;
+      break;
+    }
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Unable to determine GoGameRules, unknown ruleset %d", ruleset];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+  return rules;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the ruleset that best describes the rules in @a rules.
+/// Returns #GoRulesetCustom if no ruleset fits.
+// -----------------------------------------------------------------------------
++ (enum GoRuleset) rulesetForRules:(GoGameRules*)rules
+{
+  for (enum GoRuleset ruleset = GoRulesetMin; ruleset <= GoRulesetMax; ++ruleset)
+  {
+    GoGameRules* rulesForRuleset = [GoUtilities rulesForRuleset:ruleset];
+    if (rules.koRule != rulesForRuleset.koRule)
+      continue;
+    else if (rules.scoringSystem != rulesForRuleset.scoringSystem)
+      continue;
+    else if (rules.lifeAndDeathSettlingRule != rulesForRuleset.lifeAndDeathSettlingRule)
+      continue;
+    else if (rules.disputeResolutionRule != rulesForRuleset.disputeResolutionRule)
+      continue;
+    else if (rules.fourPassesRule != rulesForRuleset.fourPassesRule)
+      continue;
+    return ruleset;
+  }
+  return GoRulesetCustom;
 }
 
 @end

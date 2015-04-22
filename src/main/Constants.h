@@ -403,6 +403,28 @@ enum GoScoreMarkMode
   GoScoreMarkModeSeki    ///< @brief Stone groups are marked as in seki / not in seki
 };
 
+/// @brief Enumerates the rulesets that the user can select when he starts a new
+/// game. A ruleset is a collection of rules that the user can select as a whole
+/// instead of selecting individual rules, thus simplifying the game setup
+/// process.
+enum GoRuleset
+{
+  /// @brief The rules of the American Go Association (AGA).
+  GoRulesetAGA,
+  /// @brief The rules of the Internet Go server (IGS), also known as Pandanet.
+  GoRulesetIGS,
+  /// @brief The Chinese rules of Weiqi (Go).
+  GoRulesetChinese,
+  /// @brief The Japanese rules of Go.
+  GoRulesetJapanese,
+  /// @brief A custom ruleset, i.e. any combination of rules that does not match
+  /// one of the other values in this enumeration.
+  GoRulesetCustom,
+  GoRulesetMin = GoRulesetAGA,
+  GoRulesetMax = GoRulesetJapanese,
+  GoRulesetDefault = GoRulesetAGA
+};
+
 extern const enum GoGameType gDefaultGameType;
 extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
@@ -956,6 +978,9 @@ extern NSString* handicapKey;
 extern NSString* komiKey;
 extern NSString* koRuleKey;
 extern NSString* scoringSystemKey;
+extern NSString* lifeAndDeathSettlingRuleKey;
+extern NSString* disputeResolutionRuleKey;
+extern NSString* fourPassesRuleKey;
 // Players
 extern NSString* playerListKey;
 extern NSString* playerUUIDKey;

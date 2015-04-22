@@ -49,6 +49,12 @@
 		<integer>0</integer>
 		<key>ScoringSystem</key>
 		<integer>0</integer>
+		<key>LifeAndDeathSettlingRule</key>
+		<integer>0</integer>
+		<key>DisputeResolutionRule</key>
+		<integer>0</integer>
+		<key>FourPassesRule</key>
+		<integer>0</integer>
 	</dict>
 	<key>PlayerList</key>
 	<array>

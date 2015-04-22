@@ -57,5 +57,8 @@
 @property(nonatomic, assign) double komi;
 @property(nonatomic, assign) enum GoKoRule koRule;
 @property(nonatomic, assign) enum GoScoringSystem scoringSystem;
+@property(nonatomic, assign) enum GoLifeAndDeathSettlingRule lifeAndDeathSettlingRule;
+@property(nonatomic, assign) enum GoDisputeResolutionRule disputeResolutionRule;
+@property(nonatomic, assign) enum GoFourPassesRule fourPassesRule;
 
 @end

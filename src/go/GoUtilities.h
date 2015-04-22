@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class GoGame;
+@class GoGameRules;
 @class GoMove;
 @class GoPlayer;
 @class GoPoint;
@@ -43,5 +44,8 @@
 + (NSArray*) pointsInRectangleDelimitedByCornerPoint:(GoPoint*)pointA
                                  oppositeCornerPoint:(GoPoint*)pointB
                                               inGame:(GoGame*)game;
++ (double) defaultKomiForHandicap:(int)handicap scoringSystem:(enum GoScoringSystem)scoringSystem;
++ (GoGameRules*) rulesForRuleset:(enum GoRuleset)ruleset;
++ (enum GoRuleset) rulesetForRules:(GoGameRules*)rules;
 
 @end
