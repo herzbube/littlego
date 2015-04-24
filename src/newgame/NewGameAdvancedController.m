@@ -40,7 +40,7 @@ enum NewGameTableViewSection
   DisputeResolutionRuleSection,
   FourPassesRuleSection,
   MaxSection,
-  MaxSection_ComputerVsComputerGame = KoRuleScoringSystemSection + 1,
+  MaxSection_ComputerVsComputerGame = LifeAndDeathSettlingRuleSection + 1,
   MaxSection_LifeAndDeathSettlingRuleThreePasses = DisputeResolutionRuleSection + 1
 };
 
@@ -245,7 +245,10 @@ enum CellID
     case KoRuleScoringSystemSectionID:
       return MaxKoRuleScoringSystemSectionItem;
     case LifeAndDeathSettlingRuleSectionID:
-      return MaxLifeAndDeathSettlingRuleSectionItem;
+      if (self.gameType == GoGameTypeComputerVsComputer)
+        return 0;  // we only want to show a footer
+      else
+        return MaxLifeAndDeathSettlingRuleSectionItem;
     case DisputeResolutionRuleSectionID:
       return MaxDisputeResolutionRuleSectionItem;
     case FourPassesRuleSectionID:
@@ -266,14 +269,23 @@ enum CellID
   switch (sectionID)
   {
     case LifeAndDeathSettlingRuleSectionID:
-      return (@"Select the number of pass moves after which normal play should "
-              "end and the game should enter the life & death settling phase. "
-              "If you select '2 passes', play can be resumed to settle "
-              "life & death disputes without discarding any moves. If you "
-              "select '3 passes', the third pass move must be discarded in "
-              "order to resume play. The latter option is used to implement "
-              "the IGS ruleset.");
+    {
+      if (self.gameType == GoGameTypeComputerVsComputer)
+        return (@"Here you would normally be able to select life & death "
+                "settling rules. In a computer vs. computer game these rules "
+                "are not available, though, because they only make sense for "
+                "human players.");
+      else
+        return (@"Select the number of pass moves after which normal play should "
+                "end and the game should enter the life & death settling phase. "
+                "If you select '2 passes', play can be resumed to settle "
+                "life & death disputes without discarding any moves. If you "
+                "select '3 passes', the third pass move must be discarded in "
+                "order to resume play. The latter option is used to implement "
+                "the IGS ruleset.");
+    }
     case DisputeResolutionRuleSectionID:
+    {
       return (@"If in the life & death settling phase, players cannot agree on "
               "which stones are dead and which stones are alive, players must "
               "resume play to resolve the dispute. The option selected here "
@@ -281,7 +293,9 @@ enum CellID
               "player who plays first is the opponent of the last player to "
               "pass. If you select 'Non-alternating play', either player is "
               "allowed to play first.");
+    }
     case FourPassesRuleSectionID:
+    {
       return (@"If players resume play in order to resolve a life & death "
               "dispute, but neither player wants to play and both players pass "
               "a second time, the result are 4 consecutive pass moves. The "
@@ -290,8 +304,11 @@ enum CellID
               "ends immediately after the fourth pass move, with all stones on "
               "the board deemed ALIVE ! The latter option is used to implement "
               "the AGA ruleset.");
+    }
     default:
+    {
       break;
+    }
   }
   return nil;
 }
