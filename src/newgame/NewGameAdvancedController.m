@@ -320,18 +320,37 @@ enum CellID
 {
   enum CellID cellID = [self cellIDForIndexPath:indexPath];
   UITableViewCell* cell;
+
+  bool isCellSelectable = true;
   if (DisputeResolutionRuleCellID == cellID)
   {
-    cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
+    NSString* reusableCellIdentifier;
     if (GoLifeAndDeathSettlingRuleThreePasses == self.theNewGameModel.lifeAndDeathSettlingRule)
-      cell.accessoryType = UITableViewCellAccessoryNone;
+    {
+      isCellSelectable = false;
+      reusableCellIdentifier = @"VariableHeightCellWithoutDisclosureIndicator";
+    }
     else
-      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+    {
+      reusableCellIdentifier = @"VariableHeightCellWithDisclosureIndicator";
+    }
+    cell = [TableViewCellFactory cellWithType:VariableHeightCellType
+                                    tableView:tableView
+                       reusableCellIdentifier:reusableCellIdentifier];
   }
   else
   {
     cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+  }
+
+  if (isCellSelectable)
+  {
+    cell.selectionStyle = UITableViewCellSelectionStyleBlue;
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  }
+  else
+  {
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
   }
 
   switch (cellID)
