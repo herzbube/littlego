@@ -45,6 +45,7 @@ enum GameInfoTableViewSection
   MaxSectionScoreInfoType,
   GameStateSection = 0,
   GameInfoSection,
+  PlayersProfileSection,
   MoveStatisticsSection,
   MaxSectionGameInfoType,
   BoardPositionSection = 0,
@@ -100,10 +101,18 @@ enum GameInfoSectionItem
   KomiItem,
   KoRuleItem,
   ScoringSystemItem,
+  MaxGameInfoSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the PlayersProfileSection.
+// -----------------------------------------------------------------------------
+enum PlayersProfileSectionItem
+{
   BlackPlayerItem,
   WhitePlayerItem,
   ActiveProfileItem,
-  MaxGameInfoSectionItem
+  MaxPlayersProfileSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -338,6 +347,8 @@ enum BoardPositionSectionItem
             return MaxGameStateSectionItem - 1;  // don't need to display whose turn it is
         case GameInfoSection:
           return MaxGameInfoSectionItem;
+        case PlayersProfileSection:
+          return MaxPlayersProfileSectionItem;
         case MoveStatisticsSection:
           return MaxMoveStatisticsSectionItem;
         default:
@@ -379,6 +390,8 @@ enum BoardPositionSectionItem
           return @"Game state";
         case GameInfoSection:
           return @"Game information";
+        case PlayersProfileSection:
+          return @"Players & profile";
         case MoveStatisticsSection:
           return @"Move statistics";
         default:
@@ -617,21 +630,8 @@ enum BoardPositionSectionItem
     }
     case GameInfoSection:
     {
-      switch (indexPath.row)
-      {
-        case BlackPlayerItem:
-        case WhitePlayerItem:
-        case ActiveProfileItem:
-          isCellSelectable = true;
-          cell = [TableViewCellFactory cellWithType:Value1CellType
-                                          tableView:tableView
-                             reusableCellIdentifier:@"Value1CellWithDisclosureIndicator"];
-          break;
-        default:
-          cell = [TableViewCellFactory cellWithType:Value1CellType
-                                          tableView:tableView];
-          break;
-      }
+      cell = [TableViewCellFactory cellWithType:Value1CellType
+                                      tableView:tableView];
       switch (indexPath.row)
       {
         case HandicapItem:
@@ -668,6 +668,22 @@ enum BoardPositionSectionItem
           cell.detailTextLabel.text = [NSString stringWithScoringSystem:game.rules.scoringSystem];
           break;
         }
+        default:
+        {
+          assert(0);
+          break;
+        }
+      }
+      break;
+    }
+    case PlayersProfileSection:
+    {
+      isCellSelectable = true;
+      cell = [TableViewCellFactory cellWithType:Value1CellType
+                                      tableView:tableView
+                         reusableCellIdentifier:@"Value1CellWithDisclosureIndicator"];
+      switch (indexPath.row)
+      {
         case BlackPlayerItem:
         {
           cell.textLabel.text = @"Black player";
@@ -686,7 +702,9 @@ enum BoardPositionSectionItem
           GtpEngineProfile* profile = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel.activeProfile;
           assert(profile);
           if (profile)
+          {
             cell.detailTextLabel.text = profile.name;
+          }
           else
           {
             DDLogError(@"%@: Active GtpEngineProfile is nil", self);
@@ -759,8 +777,10 @@ enum BoardPositionSectionItem
       break;
     }
     default:
+    {
       assert(0);
       break;
+    }
   }
   if (isCellSelectable)
   {
@@ -860,7 +880,7 @@ enum BoardPositionSectionItem
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
   if (GameInfoType != self.boardViewModel.infoTypeLastSelected)
     return;
-  if (GameInfoSection != indexPath.section)
+  if (PlayersProfileSection != indexPath.section)
     return;
 
   GoGame* game = [GoGame sharedGame];
@@ -1131,7 +1151,7 @@ enum BoardPositionSectionItem
   GtpEngineProfileModel* gtpEngineProfileModel = applicationDelegate.gtpEngineProfileModel;
   if (object == gtpEngineProfileModel)
   {
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ActiveProfileItem inSection:GameInfoSection];
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ActiveProfileItem inSection:PlayersProfileSection];
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:UITableViewRowAnimationNone];
 
@@ -1144,7 +1164,7 @@ enum BoardPositionSectionItem
   }
   else if ([object isKindOfClass:[GtpEngineProfile class]])
   {
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ActiveProfileItem inSection:GameInfoSection];
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ActiveProfileItem inSection:PlayersProfileSection];
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:UITableViewRowAnimationNone];
   }
@@ -1155,7 +1175,7 @@ enum BoardPositionSectionItem
       row = BlackPlayerItem;
     else
       row = WhitePlayerItem;
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row inSection:GameInfoSection];
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row inSection:PlayersProfileSection];
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:UITableViewRowAnimationNone];
   }
@@ -1174,12 +1194,12 @@ enum BoardPositionSectionItem
   {
     // In case the user selected a different profile or changed the profile
     // name
-    [indexPaths addObject:[NSIndexPath indexPathForRow:ActiveProfileItem inSection:GameInfoSection]];
+    [indexPaths addObject:[NSIndexPath indexPathForRow:ActiveProfileItem inSection:PlayersProfileSection]];
   }
   if (editPlayerController.player == game.playerBlack.player)
-    [indexPaths addObject:[NSIndexPath indexPathForRow:BlackPlayerItem inSection:GameInfoSection]];
+    [indexPaths addObject:[NSIndexPath indexPathForRow:BlackPlayerItem inSection:PlayersProfileSection]];
   else
-    [indexPaths addObject:[NSIndexPath indexPathForRow:WhitePlayerItem inSection:GameInfoSection]];
+    [indexPaths addObject:[NSIndexPath indexPathForRow:WhitePlayerItem inSection:PlayersProfileSection]];
   [self.tableView reloadRowsAtIndexPaths:indexPaths
                         withRowAnimation:UITableViewRowAnimationNone];
   [self dismissViewControllerAnimated:YES completion:nil];
@@ -1192,7 +1212,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (void) didEditProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController
 {
-  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ActiveProfileItem inSection:GameInfoSection];
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ActiveProfileItem inSection:PlayersProfileSection];
   [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                         withRowAnimation:UITableViewRowAnimationNone];
   [self dismissViewControllerAnimated:YES completion:nil];
