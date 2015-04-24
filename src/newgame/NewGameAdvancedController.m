@@ -45,6 +45,21 @@ enum NewGameTableViewSection
 };
 
 // -----------------------------------------------------------------------------
+/// @brief Enumerates the sections presented in the table view that makes up the
+/// "New game > Advanced settings" subscreen, when in "load game" mode.
+// -----------------------------------------------------------------------------
+enum NewGameTableViewSection_LoadGame
+{
+  KoRuleScoringSystemSection_LoadGame,
+  LifeAndDeathSettlingRuleSection_LoadGame,
+  DisputeResolutionRuleSection_LoadGame,
+  FourPassesRuleSection_LoadGame,
+  MaxSection_LoadGame,
+  MaxSection_ComputerVsComputerGame_LoadGame = KoRuleScoringSystemSection_LoadGame + 1,
+  MaxSection_LifeAndDeathSettlingRuleThreePasses_LoadGame = DisputeResolutionRuleSection_LoadGame + 1
+};
+
+// -----------------------------------------------------------------------------
 /// @brief Enumerates items in the KomiSection.
 // -----------------------------------------------------------------------------
 enum KomiSectionItem
@@ -88,6 +103,24 @@ enum FourPassesRuleSectionItem
 {
   FourPassesRuleItem,
   MaxFourPassesRuleSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates all table view sections that can ever appear in the
+/// "Advanced new game settings" table view, without regard to the conditions
+/// under which they appear.
+///
+/// This enumeration exists to simplify controller logic. Using this enumeration
+/// allows to write a single switch() statement instead of writing complicated
+/// complicated nested switch/if statements.
+// -----------------------------------------------------------------------------
+enum SectionID
+{
+  KomiSectionID,
+  KoRuleScoringSystemSectionID,
+  LifeAndDeathSettlingRuleSectionID,
+  DisputeResolutionRuleSectionID,
+  FourPassesRuleSectionID,
 };
 
 // -----------------------------------------------------------------------------
@@ -177,11 +210,26 @@ enum CellID
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
   if (self.gameType == GoGameTypeComputerVsComputer)
-    return MaxSection_ComputerVsComputerGame;
+  {
+    if (self.loadGame)
+      return MaxSection_ComputerVsComputerGame_LoadGame;
+    else
+      return MaxSection_ComputerVsComputerGame;
+  }
   else if (GoLifeAndDeathSettlingRuleThreePasses == self.theNewGameModel.lifeAndDeathSettlingRule)
-    return MaxSection_LifeAndDeathSettlingRuleThreePasses;
+  {
+    if (self.loadGame)
+      return MaxSection_LifeAndDeathSettlingRuleThreePasses_LoadGame;
+    else
+      return MaxSection_LifeAndDeathSettlingRuleThreePasses;
+  }
   else
-    return MaxSection;
+  {
+    if (self.loadGame)
+      return MaxSection_LoadGame;
+    else
+      return MaxSection;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -189,17 +237,18 @@ enum CellID
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  switch (section)
+  enum SectionID sectionID = [self sectionIDForSection:section];
+  switch (sectionID)
   {
-    case KomiSection:
+    case KomiSectionID:
       return MaxKomiSectionItem;
-    case KoRuleScoringSystemSection:
+    case KoRuleScoringSystemSectionID:
       return MaxKoRuleScoringSystemSectionItem;
-    case LifeAndDeathSettlingRuleSection:
+    case LifeAndDeathSettlingRuleSectionID:
       return MaxLifeAndDeathSettlingRuleSectionItem;
-    case DisputeResolutionRuleSection:
+    case DisputeResolutionRuleSectionID:
       return MaxDisputeResolutionRuleSectionItem;
-    case FourPassesRuleSection:
+    case FourPassesRuleSectionID:
       return MaxFourPassesRuleSectionItem;
     default:
       assert(0);
@@ -213,9 +262,10 @@ enum CellID
 // -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
-  switch (section)
+  enum SectionID sectionID = [self sectionIDForSection:section];
+  switch (sectionID)
   {
-    case LifeAndDeathSettlingRuleSection:
+    case LifeAndDeathSettlingRuleSectionID:
       return (@"Select the number of pass moves after which normal play should "
               "end and the game should enter the life & death settling phase. "
               "If you select '2 passes', play can be resumed to settle "
@@ -223,7 +273,7 @@ enum CellID
               "select '3 passes', the third pass move must be discarded in "
               "order to resume play. The latter option is used to implement "
               "the IGS ruleset.");
-    case DisputeResolutionRuleSection:
+    case DisputeResolutionRuleSectionID:
       return (@"If in the life & death settling phase, players cannot agree on "
               "which stones are dead and which stones are alive, players must "
               "resume play to resolve the dispute. The option selected here "
@@ -231,7 +281,7 @@ enum CellID
               "player who plays first is the opponent of the last player to "
               "pass. If you select 'Non-alternating play', either player is "
               "allowed to play first.");
-    case FourPassesRuleSection:
+    case FourPassesRuleSectionID:
       return (@"If players resume play in order to resolve a life & death "
               "dispute, but neither player wants to play and both players pass "
               "a second time, the result are 4 consecutive pass moves. The "
@@ -536,13 +586,63 @@ enum CellID
 #pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the #SectionID value that corresponds to @a section.
+// -----------------------------------------------------------------------------
+- (enum SectionID) sectionIDForSection:(NSInteger)section
+{
+  if (self.loadGame)
+  {
+    switch (section)
+    {
+      case KoRuleScoringSystemSection_LoadGame:
+        return KoRuleScoringSystemSectionID;
+      case LifeAndDeathSettlingRuleSection_LoadGame:
+        return LifeAndDeathSettlingRuleSectionID;
+      case DisputeResolutionRuleSection_LoadGame:
+        return DisputeResolutionRuleSectionID;
+      case FourPassesRuleSection_LoadGame:
+        return FourPassesRuleSectionID;
+      default:
+        break;
+    }
+  }
+  else
+  {
+    switch (section)
+    {
+      case KomiSection:
+        return KomiSectionID;
+      case KoRuleScoringSystemSection:
+        return KoRuleScoringSystemSectionID;
+      case LifeAndDeathSettlingRuleSection:
+        return LifeAndDeathSettlingRuleSectionID;
+      case DisputeResolutionRuleSection:
+        return DisputeResolutionRuleSectionID;
+      case FourPassesRuleSection:
+        return FourPassesRuleSectionID;
+      default:
+        break;
+    }
+  }
+
+  NSString* errorMessage = [NSString stringWithFormat:@"Cannot determine section ID, loadGame = %d, section = %d",
+                            self.loadGame, section];
+  DDLogError(@"%@: %@", self, errorMessage);
+  NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                   reason:errorMessage
+                                                 userInfo:nil];
+  @throw exception;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the #CellID value that corresponds to @a indexPath.
 // -----------------------------------------------------------------------------
 - (enum CellID) cellIDForIndexPath:(NSIndexPath*)indexPath
 {
-  switch (indexPath.section)
+  enum SectionID sectionID = [self sectionIDForSection:indexPath.section];
+  switch (sectionID)
   {
-    case KomiSection:
+    case KomiSectionID:
     {
       switch (indexPath.row)
       {
@@ -553,7 +653,7 @@ enum CellID
       }
       break;
     }
-    case KoRuleScoringSystemSection:
+    case KoRuleScoringSystemSectionID:
     {
       switch (indexPath.row)
       {
@@ -566,7 +666,7 @@ enum CellID
       }
       break;
     }
-    case LifeAndDeathSettlingRuleSection:
+    case LifeAndDeathSettlingRuleSectionID:
     {
       switch (indexPath.row)
       {
@@ -577,7 +677,7 @@ enum CellID
       }
       break;
     }
-    case DisputeResolutionRuleSection:
+    case DisputeResolutionRuleSectionID:
     {
       switch (indexPath.row)
       {
@@ -588,7 +688,7 @@ enum CellID
       }
       break;
     }
-    case FourPassesRuleSection:
+    case FourPassesRuleSectionID:
     {
       switch (indexPath.row)
       {
@@ -605,8 +705,8 @@ enum CellID
     }
   }
 
-  NSString* errorMessage = [NSString stringWithFormat:@"Cannot determine cell ID, loadGame = %d, indexPath.section = %d, indexPath.row = %d",
-                            self.loadGame, indexPath.section, indexPath.row];
+  NSString* errorMessage = [NSString stringWithFormat:@"Cannot determine cell ID, loadGame = %d, sectionID = %d, indexPath.section = %d, indexPath.row = %d",
+                            self.loadGame, sectionID, indexPath.section, indexPath.row];
   DDLogError(@"%@: %@", self, errorMessage);
   NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                    reason:errorMessage
