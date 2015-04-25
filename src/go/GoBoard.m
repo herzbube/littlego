@@ -290,6 +290,11 @@
 /// @brief Returns the GoPoint object located at @a vertex.
 ///
 /// See the GoVertex class documentation for a discussion of what a vertex is.
+///
+/// Raises an @e NSRangeException if one of the vertex compounds stored in
+/// @a stringValue are outside the supported range of values. Raises an
+/// @e NSInvalidArgumentException if @a stringValue is nil or otherwise
+/// fundamentally malformed.
 // -----------------------------------------------------------------------------
 - (GoPoint*) pointAtVertex:(NSString*)vertex
 {

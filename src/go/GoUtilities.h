@@ -47,5 +47,6 @@
 + (double) defaultKomiForHandicap:(int)handicap scoringSystem:(enum GoScoringSystem)scoringSystem;
 + (GoGameRules*) rulesForRuleset:(enum GoRuleset)ruleset;
 + (enum GoRuleset) rulesetForRules:(GoGameRules*)rules;
++ (enum GoColor) alternatingColorForColor:(enum GoColor)color;
 
 @end

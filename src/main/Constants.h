@@ -174,16 +174,19 @@ enum AlertViewType
   AlertViewTypeResetPlayersProfilesConfirmation,
   AlertViewTypeResetPlayersProfilesDiscardGameConfirmation,
   AlertViewTypePlayMoveRejectedLoggingEnabled,
-  AlertViewTypePlayMoveRejectedLoggingDisabled
+  AlertViewTypePlayMoveRejectedLoggingDisabled,
+  AlertViewTypeSelectSideToPlay
 };
 
 /// @brief Enumerates the types of buttons used by the various alert views in
 /// #AlertViewType.
 enum AlertViewButtonType
 {
-  AlertViewButtonTypeOk = 0,  ///< @brief Used as the single button in a simple alert view
-  AlertViewButtonTypeNo = 0,  ///< @brief Used as the "cancel" button in a Yes/No alert view
-  AlertViewButtonTypeYes = 1  ///< @brief Used as the first "other" button in a Yes/No alert view
+  AlertViewButtonTypeOk = 0,   ///< @brief Used as the single button in a simple alert view
+  AlertViewButtonTypeNo = 0,   ///< @brief Used as the "cancel" button in a Yes/No alert view
+  AlertViewButtonTypeYes = 1,  ///< @brief Used as the first "other" button in a Yes/No alert view
+  AlertViewButtonTypeNonAlternatingColor = 0,
+  AlertViewButtonTypeAlternatingColor = 1
 };
 
 /// @brief Enumerates the types of information that the Info view can display.
@@ -268,8 +271,12 @@ enum GoGameState
 enum GoGameHasEndedReason
 {
   GoGameHasEndedReasonNotYetEnded,   ///< @brief The game has not yet ended.
-  GoGameHasEndedReasonTwoPasses,     ///< @brief The game ended due to two consecutive pass moves.
-  GoGameHasEndedReasonFourPasses,    ///< @brief The game ended due to four consecutive pass moves.
+  GoGameHasEndedReasonTwoPasses,     ///< @brief The game ended due to two consecutive pass moves. This
+                                     ///  occurs only if #GoLifeAndDeathSettlingRuleTwoPasses is active.
+  GoGameHasEndedReasonThreePasses,   ///< @brief The game ended due to three consecutive pass moves. This
+                                     ///  occurs only if #GoLifeAndDeathSettlingRuleThreePasses is active.
+  GoGameHasEndedReasonFourPasses,    ///< @brief The game ended due to four consecutive pass moves. This
+                                     ///  occurs only if #GoFourPassesRuleFourPassesEndTheGame is active.
   GoGameHasEndedReasonResigned,      ///< @brief The game ended due to one of the players resigning.
   GoGameHasEndedReasonTimeExceeded   ///< @brief The game ended due to one of the players having no time left.
 };

@@ -472,4 +472,30 @@
   return GoRulesetCustom;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the color that is the alternating (i.e. opposite) color of
+/// @a color.
+///
+/// Raises an @e NSInvalidArgumentException if @a color is neither #GoColorBlack
+/// nor #GoColorWhite.
+// -----------------------------------------------------------------------------
++ (enum GoColor) alternatingColorForColor:(enum GoColor)color
+{
+  switch (color)
+  {
+    case GoColorBlack:
+      return GoColorWhite;
+    case GoColorWhite:
+      return GoColorBlack;
+    default:
+      break;
+  }
+  NSString* errorMessage = [NSString stringWithFormat:@"Unable to determine alternating color for color %d", color];
+  DDLogError(@"%@: %@", self, errorMessage);
+  NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                   reason:errorMessage
+                                                 userInfo:nil];
+  @throw exception;
+}
+
 @end

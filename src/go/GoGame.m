@@ -29,8 +29,8 @@
 #import "GoScore.h"
 #import "GoUtilities.h"
 #import "GoZobristTable.h"
-#import "../player/Player.h"
 #import "../main/ApplicationDelegate.h"
+#import "../player/Player.h"
 
 
 @implementation GoGame
@@ -266,9 +266,40 @@
   // the nextMovePlayer
   [self.moveModel appendMove:move];
 
-  // Game state must change after any of the other things; this order is
-  // important for observer notifications
-  if (move.previous.type == GoMoveTypePass)
+  // This may change the game state. Such a change must occur after the move was
+  // generated; this order is important for observer notifications.
+  [self endGameIfNecessary];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Ends the game after at least two consecutive pass moves have been
+/// made. Sets @e reasonForGameHasEnded according to the game rules.
+///
+/// This is a private helper for pass().
+// -----------------------------------------------------------------------------
+- (void) endGameIfNecessary
+{
+  int numberOfConsecutivePassMoves = 0;
+  GoMove* potentialPassMove = self.lastMove;
+  while (potentialPassMove && GoMoveTypePass == potentialPassMove.type)
+  {
+    ++numberOfConsecutivePassMoves;
+    potentialPassMove = potentialPassMove.previous;
+  }
+
+  // GoFourPassesRuleFourPassesEndTheGame has precedence over
+  // GoLifeAndDeathSettlingRuleTwoPasses
+  if (4 == numberOfConsecutivePassMoves && GoFourPassesRuleFourPassesEndTheGame == self.rules.fourPassesRule)
+  {
+    self.reasonForGameHasEnded = GoGameHasEndedReasonFourPasses;
+    self.state = GoGameStateGameHasEnded;
+  }
+  else if (3 == numberOfConsecutivePassMoves && GoLifeAndDeathSettlingRuleThreePasses == self.rules.lifeAndDeathSettlingRule)
+  {
+    self.reasonForGameHasEnded = GoGameHasEndedReasonThreePasses;
+    self.state = GoGameStateGameHasEnded;
+  }
+  else if (0 == (numberOfConsecutivePassMoves % 2) && GoLifeAndDeathSettlingRuleTwoPasses == self.rules.lifeAndDeathSettlingRule)
   {
     self.reasonForGameHasEnded = GoGameHasEndedReasonTwoPasses;
     self.state = GoGameStateGameHasEnded;
@@ -514,7 +545,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// Private helper
+/// @brief Private helper for isLegalMove:byColor:isIllegalReason:().
 // -----------------------------------------------------------------------------
 - (bool) isKoMove:(GoPoint*)point
         moveColor:(enum GoColor)moveColor
@@ -783,7 +814,7 @@
 ///
 /// @note This method should only be invoked if the state of other objects
 /// associated with this GoGame is also adjusted to bring the game into a state
-/// that conforms to the Go rules. For instance, if two pass moves caused the
+/// that conforms to the Go rules. For instance, if three pass moves caused the
 /// game to end, then the most recent pass move should also be discarded after
 /// control returns to the caller.
 ///
@@ -792,9 +823,9 @@
 /// resignation action, which also sets the document dirty flag. If the game
 /// ended for some reason other than resigning, it is expected that some other
 /// action in addition to invoking revertStateFromEndedToInProgress will cause
-/// the document dirty flag to be set. For instance, if two pass moves caused
+/// the document dirty flag to be set. For instance, if three pass moves caused
 /// the game to end, then the document dirty flag needs to be reset by
-/// discarding the second pass move.
+/// discarding the third pass move.
 // -----------------------------------------------------------------------------
 - (void) revertStateFromEndedToInProgress
 {

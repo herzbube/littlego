@@ -28,7 +28,9 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameRules.h"
+#import "../../go/GoMove.h"
 #import "../../go/GoScore.h"
+#import "../../go/GoUtilities.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../play/model/BoardViewModel.h"
 #import "../../play/model/ScoringModel.h"
@@ -172,6 +174,10 @@ enum ActionSheetButton
       }
       case SwitchNextMoveColor:
       {
+        // In a computer vs. computer game there is no point in allowing to
+        // switch colors
+        if (GoGameTypeComputerVsComputer == game.type)
+          continue;
         // Currently we only support switching the color to move in order to
         // settle a life & death dispute, and only if the rules allow
         // non-alternating play
@@ -180,20 +186,20 @@ enum ActionSheetButton
         // A life & death dispute is only possible if the game has not yet ended
         if (GoGameStateGameHasEnded == game.state)
           continue;
-        enum GoColor alternatingNextMoveColor;
-        switch (game.nextMoveColor)
-        {
-          case GoColorBlack:
-            alternatingNextMoveColor = GoColorWhite;
-            break;
-          case GoColorWhite:
-            alternatingNextMoveColor = GoColorBlack;
-            break;
-          default:
-            DDLogWarn(@"%@: Unexpected next move color %d", self, game.nextMoveColor);
-            assert(0);
-            continue;
-        }
+        // We allow color switching only after exactly 2 pass moves
+        GoMove* lastMove = game.lastMove;
+        if (! lastMove || lastMove.type != GoMoveTypePass)
+          continue;
+        GoMove* previousToLastMove = lastMove.previous;
+        if (! previousToLastMove || previousToLastMove.type != GoMoveTypePass)
+          continue;
+        // If a third move exists before the two pass moves, it must be a play
+        // move. If the two pass moves occurred right after the start of the
+        // game, that's weird but OK.
+        GoMove* previousToPreviousToLastMove = previousToLastMove.previous;
+        if (previousToPreviousToLastMove && previousToPreviousToLastMove.type != GoMoveTypePlay)
+          continue;
+        enum GoColor alternatingNextMoveColor = [GoUtilities alternatingColorForColor:game.nextMoveColor];
         NSString* alternatingNextMoveColorName = [[NSString stringWithGoColor:alternatingNextMoveColor] lowercaseString];
         title = [NSString stringWithFormat:@"Set %@ to move", alternatingNextMoveColorName];
         break;
@@ -383,8 +389,9 @@ enum ActionSheetButton
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "xxx" action sheet button. Changes
-/// the side that will play next from Black to White, or vice versa.
+/// @brief Reacts to a tap gesture on the "Set color to <foo>" action sheet
+/// button. Changes the side that will play next from Black to White, or vice
+/// versa.
 // -----------------------------------------------------------------------------
 - (void) switchNextMoveColor
 {

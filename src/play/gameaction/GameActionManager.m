@@ -19,19 +19,22 @@
 #import "GameActionManager.h"
 #import "../controller/DiscardFutureMovesAlertController.h"
 #import "../model/BoardViewModel.h"
-#import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoGameRules.h"
 #import "../../go/GoScore.h"
+#import "../../go/GoUtilities.h"
 #import "../../command/gtp/InterruptComputerCommand.h"
 #import "../../command/boardposition/ChangeAndDiscardCommand.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../command/game/PauseGameCommand.h"
+#import "../../command/move/ComputerPlayMoveCommand.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../main/WindowRootViewController.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../shared/LayoutManager.h"
+#import "../../utility/NSStringAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -42,6 +45,7 @@
 @property(nonatomic, retain) NSMutableDictionary* enabledStates;
 @property(nonatomic, assign) bool visibleStatesNeedUpdate;
 @property(nonatomic, assign) bool enabledStatesNeedUpdate;
+@property(nonatomic, assign) bool scoringModeNeedUpdate;
 @property(nonatomic, assign) GameInfoViewController* gameInfoViewController;
 @property(nonatomic, retain) GameActionsActionSheetController* gameActionsActionSheetController;
 @property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
@@ -107,6 +111,7 @@ static GameActionManager* sharedGameActionManager = nil;
     [self.enabledStates setObject:[NSNumber numberWithBool:NO] forKey:[NSNumber numberWithInt:gameAction]];
   self.visibleStatesNeedUpdate = false;
   self.enabledStatesNeedUpdate = false;
+  self.scoringModeNeedUpdate = false;
   self.gameInfoViewController = nil;
   self.gameActionsActionSheetController = nil;
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
@@ -270,7 +275,10 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) scoringDone:(id)sender
 {
-  [GoGame sharedGame].score.scoringEnabled = false;  // triggers notification to which this manager reacts
+  GoGame* game = [GoGame sharedGame];
+  game.score.scoringEnabled = false;  // triggers notification to which this manager reacts
+  if (GoGameStateGameHasEnded == game.state)
+    [self resumePlayIfNecessary];
 }
 
 // -----------------------------------------------------------------------------
@@ -334,6 +342,29 @@ static GameActionManager* sharedGameActionManager = nil;
   self.gameInfoViewController = nil;
 }
 
+#pragma mark - UIAlertViewDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIAlertViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+  switch (buttonIndex)
+  {
+    case AlertViewButtonTypeAlternatingColor:
+      break;
+    case AlertViewButtonTypeNonAlternatingColor:
+      [[GoGame sharedGame] switchNextMoveColor];
+      break;
+    default:
+      DDLogError(@"%@: Unexpected button index %d", self, buttonIndex);
+      assert(0);
+      return;
+  }
+
+  [self resumePlay];
+}
+
 #pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
@@ -373,22 +404,8 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   self.visibleStatesNeedUpdate = true;
   self.enabledStatesNeedUpdate = true;
+  self.scoringModeNeedUpdate = true;
   [self delayedUpdate];
-  GoGame* game = [GoGame sharedGame];
-  if (GoGameStateGameHasEnded == game.state)
-  {
-    if ([ApplicationDelegate sharedDelegate].scoringModel.scoreWhenGameEnds)
-    {
-      // Only trigger scoring if it makes sense to do so. It specifically does
-      // not make sense if a player resigned - that player has lost the game
-      // by his own explicit action, so we don't need to calculate a score.
-      if (GoGameHasEndedReasonTwoPasses == game.reasonForGameHasEnded)
-      {
-        game.score.scoringEnabled = true;
-        [game.score calculateWaitUntilDone:false];
-      }
-    }
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -521,6 +538,7 @@ static GameActionManager* sharedGameActionManager = nil;
     return;
   [self updateVisibleStates];
   [self updateEnabledStates];
+  [self updateScoringMode];
 }
 
 #pragma mark - Game action visibility updating
@@ -704,7 +722,6 @@ static GameActionManager* sharedGameActionManager = nil;
   }
   [self updateEnabledState:enabled forGameAction:GameActionPass];
 }
-
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the enabled state of game action
@@ -962,6 +979,111 @@ static GameActionManager* sharedGameActionManager = nil;
   [self.uiDelegate gameActionManager:self
                               enable:newState
                           gameAction:gameAction];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Enables scoring mode if the current game state requires it.
+// -----------------------------------------------------------------------------
+- (void) updateScoringMode
+{
+  if (! self.scoringModeNeedUpdate)
+    return;
+  self.scoringModeNeedUpdate = false;
+
+  GoGame* game = [GoGame sharedGame];
+  if (GoGameStateGameHasEnded == game.state)
+  {
+    // Only trigger scoring if it makes sense to do so. It specifically does
+    // not make sense in the following cases:
+    // - If a player resigned - that player has lost the game by his own
+    //   explicit action, so we don't need to calculate a score.
+    // - If the game ended due to four passes - in this case all stones are
+    //   deemed alive and no life & death settling is required
+    switch (game.reasonForGameHasEnded)
+    {
+      case GoGameHasEndedReasonTwoPasses:
+      case GoGameHasEndedReasonThreePasses:
+        game.score.scoringEnabled = true;
+        [game.score calculateWaitUntilDone:false];
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+#pragma Play resumption handling
+
+// -----------------------------------------------------------------------------
+/// @brief Resumes play if the game is currently ended with reason
+/// #GoGameHasEndedReasonTwoPasses, and the game is not a computer vs. computer
+/// game. If the rules allow non-alternating play, an alert view is displayed
+/// which lets the user select the side to move first.
+///
+/// Due to the asynchronous nature of UIAlertView, control may return to the
+/// caller before play has actually been resumed.
+// -----------------------------------------------------------------------------
+- (void) resumePlayIfNecessary
+{
+  // Only if the game ended after two passes are we allowed to automatically
+  // resume play. In all other cases the user has to perform a specific
+  // action (e.g. "undo resign", "discard last move") to resume play. Whether
+  // or not such an action is available in the UI depends on the circumstances
+  // (e.g. in a Game Center game moves typically cannot be discarded).
+  GoGame* game = [GoGame sharedGame];
+  if (GoGameHasEndedReasonTwoPasses != game.reasonForGameHasEnded)
+    return;
+
+  // Resuming play for computer vs. computer games does not make sense - the
+  // computer player does not understand "life & death disputes" and in all
+  // probability will merely continue to play passes
+  if (GoGameTypeComputerVsComputer == game.type)
+    return;
+
+  if (GoDisputeResolutionRuleNonAlternatingPlay == game.rules.disputeResolutionRule)
+  {
+    NSString* nextMoveColorName = [NSString stringWithGoColor:game.nextMoveColor];
+    enum GoColor alternatingNextMoveColor = [GoUtilities alternatingColorForColor:game.nextMoveColor];
+    NSString* alternatingNextMoveColorName = [NSString stringWithGoColor:alternatingNextMoveColor];
+
+    NSString* alertTitle = @"Choose side to play first";
+    NSString* alertMessage = [NSString stringWithFormat:@"\nYou have decided to resume play to resolve a life & death dispute.\n\n"
+                              "Because the game rules allow non-alternating play you may now choose a side to play first. "
+                              "With alternating play,  %@ would play first.\n\n"
+                              "Which side would you like to play first?", [nextMoveColorName lowercaseString]];
+    // UIAlertView shows the second button with a bold font to indicate a
+    // "default choice". For this reason we display the color that would move
+    // naturally, i.e. with alternating play, in the second button. The
+    // consequence is that the alert view sometimes shows the buttons in the
+    // order Black/White, and sometimes in the order White/Black. I would expect
+    // that a frequent user of the app is annoyed/confused by this "unstable"
+    // UI, so if UIAlertView is replaced at some time in the future I suggest
+    // that the order of buttons is made stable.
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:alertTitle
+                                                    message:alertMessage
+                                                   delegate:self
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:alternatingNextMoveColorName, nextMoveColorName, nil];
+    alert.tag = AlertViewTypeSelectSideToPlay;
+    [alert show];
+    [alert release];
+  }
+  else
+  {
+    [self resumePlay];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Resumes play if the game is currently ended. Triggers the computer
+/// player if it is the computer player's turn to move.
+// -----------------------------------------------------------------------------
+- (void) resumePlay
+{
+  GoGame* game = [GoGame sharedGame];
+  [game revertStateFromEndedToInProgress];
+  if (game.nextMovePlayerIsComputerPlayer)
+    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
 }
 
 #pragma mark - Private helpers

@@ -39,8 +39,19 @@
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/PathUtilities.h"
 
-
+// Constants
 static const int maxStepsForReplayMoves = 10;
+
+/// @brief Enumerates possible results of parsing a move string provided by
+/// Fuego.
+enum ParseMoveStringResult
+{
+  ParseMoveStringResultSuccess,
+  ParseMoveStringResultInvalidFormat,
+  ParseMoveStringResultInvalidColor,
+  ParseMoveStringResultInvalidVertex
+};
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for LoadGameCommand.
@@ -526,7 +537,6 @@ static const int maxStepsForReplayMoves = 10;
 - (void) replayMoves:(NSArray*)moveList
 {
   GoGame* game = [GoGame sharedGame];
-  GoBoard* board = game.board;
 
   float movesPerStep;
   NSUInteger remainingNumberOfSteps;
@@ -546,60 +556,85 @@ static const int maxStepsForReplayMoves = 10;
 
   @try
   {
-    bool hasResigned = false;
     int movesReplayed = 0;
     float nextProgressUpdate = movesPerStep;  // use float in case movesPerStep has fractions
-    for (NSString* move in moveList)
+    for (NSString* moveString in moveList)
     {
-      if (hasResigned)
+      enum GoColor moveColor;
+      bool isResignMove;
+      enum GoMoveType moveType;
+      GoPoint* point;
+      enum ParseMoveStringResult result = [self parseMoveString:moveString
+                                                      moveColor:&moveColor
+                                           isResignMove:&isResignMove
+                                                       moveType:&moveType
+                                                          point:&point];
+      if (ParseMoveStringResultSuccess != result)
       {
-        DDLogError(@"%@: One or more moves after resign, discarding this and any follow-up moves", [self shortDescription]);
-        assert(0);
-        break;
-      }
-
-      NSArray* moveComponents = [move componentsSeparatedByString:@" "];
-      NSString* colorString = [[moveComponents objectAtIndex:0] lowercaseString];
-      NSString* vertexString = [[moveComponents objectAtIndex:1] lowercaseString];
-      if ([colorString isEqualToString:@"b"])
-        game.nextMoveColor = GoColorBlack;
-      else if ([colorString isEqualToString:@"w"])
-        game.nextMoveColor = GoColorWhite;
-      else
-      {
-        NSString* errorMessageFormat = @"Internal error: Unsupported player color, move string = %@";
-        NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, move];
-        [self handleCommandFailed:errorMessage];
+        [self handleInvalidMoveString:moveString parseMoveStringResult:result];
         return;
       }
 
-      if ([vertexString isEqualToString:@"pass"])
+      // Here we support if the .sgf contains moves by non-alternating colors,
+      // anywhere in the game. Thus the user can ***VIEW*** almost any .sgf
+      // game, even though the app itself is not capable of producing such
+      // games.
+      game.nextMoveColor = moveColor;
+
+      NSString* colorName = [NSString stringWithGoColor:moveColor];
+      if (isResignMove)
       {
-        [game pass];
-      }
-      else if ([vertexString isEqualToString:@"resign"])  // not sure if this is ever sent
-      {
-        [game resign];
-        hasResigned = true;
-      }
-      else
-      {
-        GoPoint* point = [board pointAtVertex:vertexString];
-        enum GoMoveIsIllegalReason illegalReason;
-        if (! [game isLegalMove:point byColor:game.nextMoveColor isIllegalReason:&illegalReason])
+        if (GoGameStateGameHasEnded == game.state)
         {
-          NSString* errorMessageFormat = @"Game contains an illegal move: Move %d, played by %@, on intersection %@. Reason: %@.";
-          NSString* illegalReasonString = [NSString stringWithMoveIsIllegalReason:illegalReason];
-          NSString* colorName = [NSString stringWithGoColor:game.nextMoveColor];
-          NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, (movesReplayed + 1), colorName, [vertexString uppercaseString], illegalReasonString];
+          NSString* errorMessageFormat = @"Game contains a resignation after the game has already ended (%@): Move %d, played by %@.";
+          NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, [self gameHasEndedReasonDescription:game.reasonForGameHasEnded], (movesReplayed + 1), colorName];
           [self handleCommandFailed:errorMessage];
           return;
         }
-
-        [game play:point];
+        [game resign];
       }
-      ++movesReplayed;
+      else
+      {
+        if (GoGameStateGameHasEnded == game.state)
+        {
+          if (GoGameHasEndedReasonTwoPasses != game.reasonForGameHasEnded)
+          {
+            NSString* errorMessage;
+            if (GoMoveTypePass == moveType)
+            {
+              errorMessage = [NSString stringWithFormat:@"Game contains a pass move after the game has already ended (%@): Move %d, played by %@.",
+                              [self gameHasEndedReasonDescription:game.reasonForGameHasEnded], (movesReplayed + 1), colorName];
+            }
+            else
+            {
+              errorMessage = [NSString stringWithFormat:@"Game contains a move after the game has already ended (%@): Move %d, played by %@, on intersection %@.",
+                              [self gameHasEndedReasonDescription:game.reasonForGameHasEnded], (movesReplayed + 1), colorName, point.vertex.string];
+            }
+            [self handleCommandFailed:errorMessage];
+            return;
+          }
+          [game revertStateFromEndedToInProgress];
+        }
+        if (GoMoveTypePass == moveType)
+        {
+          [game pass];
+        }
+        else
+        {
+          enum GoMoveIsIllegalReason illegalReason;
+          if (! [game isLegalMove:point byColor:moveColor isIllegalReason:&illegalReason])
+          {
+            NSString* errorMessageFormat = @"Game contains an illegal move: Move %d, played by %@, on intersection %@. Reason: %@.";
+            NSString* illegalReasonString = [NSString stringWithMoveIsIllegalReason:illegalReason];
+            NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, (movesReplayed + 1), colorName, point.vertex.string, illegalReasonString];
+            [self handleCommandFailed:errorMessage];
+            return;
+          }
+          [game play:point];
+        }
+      }
 
+      ++movesReplayed;
       if (movesReplayed >= nextProgressUpdate)
       {
         nextProgressUpdate += movesPerStep;
@@ -609,10 +644,130 @@ static const int maxStepsForReplayMoves = 10;
   }
   @catch (NSException* exception)
   {
-    NSString* errorMessageFormat = @"An unexpected error occurred loading the game. To improve this app, please consider submitting a bug report, if possible with the game file attached.\n\nException name: %@.\n\nException reason: %@.";
+    NSString* errorMessageFormat = @"An unexpected error occurred loading the game. To improve this app, please consider submitting a bug report with the game file attached.\n\nException name: %@.\n\nException reason: %@.";
     NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, [exception name], [exception reason]];
     [self handleCommandFailed:errorMessage];
     return;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Attempts to parse @a moveString. If the parse attempt succeeds,
+/// returns #ParseMoveStringResultSuccess and fills the out parameters with the
+/// result. If the parse attempt fails, returns one of the remaining values from
+/// the #ParseMoveStringResult enumeration. The content of the out parameters is
+/// undefined in this case.
+///
+/// If parsing is successful, the out parameters are filled as follows:
+/// - @a moveColor is always filled
+/// - If @a isResignMove is true, the content of the remaining parameters is
+///   undefined
+/// - If @a isResignMove is false, @a moveType is either #GoMoveTypePass or
+///   #GoMoveTypePlay
+/// - If @a moveType is #GoMoveTypePass, the content of @a point is undefined
+///
+/// This is a private helper for replayMoves:().
+// -----------------------------------------------------------------------------
+- (enum ParseMoveStringResult) parseMoveString:(NSString*)moveString
+                                     moveColor:(enum GoColor*)moveColor
+                                  isResignMove:(bool*)isResignMove
+                                      moveType:(enum GoMoveType*)moveType
+                                         point:(GoPoint**)point
+{
+  NSArray* moveStringComponents = [moveString componentsSeparatedByString:@" "];
+  if (moveStringComponents.count != 2)
+    return ParseMoveStringResultInvalidFormat;
+
+  NSString* colorString = [[moveStringComponents objectAtIndex:0] lowercaseString];
+  if ([colorString isEqualToString:@"b"])
+    *moveColor = GoColorBlack;
+  else if ([colorString isEqualToString:@"w"])
+    *moveColor = GoColorWhite;
+  else
+    return ParseMoveStringResultInvalidColor;
+
+  NSString* vertexString = [[moveStringComponents objectAtIndex:1] lowercaseString];
+  if ([vertexString isEqualToString:@"resign"])  // not sure if this is ever sent
+  {
+    *isResignMove = true;
+    return ParseMoveStringResultSuccess;
+  }
+  else if ([vertexString isEqualToString:@"pass"])
+  {
+    *isResignMove = false;
+    *moveType = GoMoveTypePass;
+    return ParseMoveStringResultSuccess;
+  }
+  else
+  {
+    *isResignMove = false;
+    *moveType = GoMoveTypePlay;
+    // If the vertex is not legal we get an exception here
+    // - NSInvalidArgumentException if vertex is malformed
+    // - NSRangeException if vertex compounds are out of range
+    // TODO xxx add exception handling here to provide a nicer error message?
+    *point = [[GoGame sharedGame].board pointAtVertex:vertexString];
+    return ParseMoveStringResultSuccess;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs all steps required to handle the case that a move string
+/// provided by Fuego could not be parsed.
+///
+/// This is a private helper for replayMoves:().
+// -----------------------------------------------------------------------------
+- (void) handleInvalidMoveString:(NSString*)moveString parseMoveStringResult:(enum ParseMoveStringResult)parseMoveStringResult
+{
+  NSString* errorMessage;
+  switch (parseMoveStringResult)
+  {
+    case ParseMoveStringResultInvalidFormat:
+    {
+      errorMessage = @"Move string has invalid format";
+      break;
+    }
+    case ParseMoveStringResultInvalidColor:
+    {
+      errorMessage = @"Move string contains unsupported player color";
+      break;
+    }
+    case ParseMoveStringResultInvalidVertex:
+    {
+      errorMessage = @"Move string contains invalid intersection";
+      break;
+    }
+    default:
+    {
+      errorMessage = @"Unknown error";
+      assert(0);
+      break;
+    }
+  }
+  errorMessage = [NSString stringWithFormat:@"Internal error: %@. Move string = %@", errorMessage, moveString];
+  [self handleCommandFailed:errorMessage];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a description for @a gameHasEndedReason that can be
+/// incorporated into an error message.
+///
+/// This is a private helper for replayMoves:().
+// -----------------------------------------------------------------------------
+- (NSString*) gameHasEndedReasonDescription:(enum GoGameHasEndedReason)gameHasEndedReason
+{
+  switch (gameHasEndedReason)
+  {
+    case GoGameHasEndedReasonTwoPasses:
+      return @"by two pass moves";
+    case GoGameHasEndedReasonThreePasses:
+      return @"by three pass moves";
+    case GoGameHasEndedReasonFourPasses:
+      return @"by four pass moves";
+    case GoGameHasEndedReasonResigned:
+      return @"by resignation";
+    default:
+      return @"by an unkown reason";
   }
 }
 

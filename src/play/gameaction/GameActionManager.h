@@ -104,7 +104,7 @@
 /// the possible display of an alert which the user must confirm before the
 /// command is actually executed.
 // -----------------------------------------------------------------------------
-@interface GameActionManager : NSObject <GameActionsActionSheetDelegate, GameInfoViewControllerCreator>
+@interface GameActionManager : NSObject <GameActionsActionSheetDelegate, GameInfoViewControllerCreator, UIAlertViewDelegate>
 {
 }
 
