@@ -25,7 +25,7 @@
 #import "../utility/NSStringAdditions.h"
 
 // Constants
-NSString* disputeResolutionRuleText = @"Dispute resolution";
+NSString* disputeResolutionRuleText_NewGameAdvancedController = @"Dispute resolution";
 
 
 // -----------------------------------------------------------------------------
@@ -376,20 +376,20 @@ enum CellID
     case LifeAndDeathSettlingRuleCellID:
     {
       cell.textLabel.text = @"Life & death settling after";
-      cell.detailTextLabel.text = [NewGameAdvancedController lifeAndDeathSettlingRuleName:self.theNewGameModel.lifeAndDeathSettlingRule];
+      cell.detailTextLabel.text = [NSString stringWithLifeAndDeathSettlingRule:self.theNewGameModel.lifeAndDeathSettlingRule];
       break;
     }
     case DisputeResolutionRuleCellID:
     {
       TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
-      variableHeightCell.descriptionLabel.text = disputeResolutionRuleText;
-      variableHeightCell.valueLabel.text = [NewGameAdvancedController disputeResolutionRuleName:self.theNewGameModel.disputeResolutionRule];
+      variableHeightCell.descriptionLabel.text = disputeResolutionRuleText_NewGameAdvancedController;
+      variableHeightCell.valueLabel.text = [NSString stringWithDisputeResolutionRule:self.theNewGameModel.disputeResolutionRule];
       break;
     }
     case FourPassesRuleCellID:
     {
       cell.textLabel.text = @"Four passes";
-      cell.detailTextLabel.text = [NewGameAdvancedController fourPassesRuleName:self.theNewGameModel.fourPassesRule];
+      cell.detailTextLabel.text = [NSString stringWithFourPassesRule:self.theNewGameModel.fourPassesRule];
       break;
     }
     default:
@@ -411,10 +411,10 @@ enum CellID
   enum CellID cellID = [self cellIDForIndexPath:indexPath];
   if (DisputeResolutionRuleCellID == cellID)
   {
-    NSString* valueText = [NewGameAdvancedController disputeResolutionRuleName:self.theNewGameModel.disputeResolutionRule];
+    NSString* valueText = [NSString stringWithDisputeResolutionRule:self.theNewGameModel.disputeResolutionRule];
     bool hasDisclosureIndicator = (GoLifeAndDeathSettlingRuleThreePasses != self.theNewGameModel.lifeAndDeathSettlingRule);
     return [TableViewVariableHeightCell heightForRowInTableView:tableView
-                                                descriptionText:disputeResolutionRuleText
+                                                descriptionText:disputeResolutionRuleText_NewGameAdvancedController
                                                       valueText:valueText
                                          hasDisclosureIndicator:hasDisclosureIndicator];
   }
@@ -480,7 +480,7 @@ enum CellID
           enum GoLifeAndDeathSettlingRule defaultLifeAndDeathSettlingRule = self.theNewGameModel.lifeAndDeathSettlingRule;
           for (int lifeAndDeathSettlingRule = 0; lifeAndDeathSettlingRule <= GoLifeAndDeathSettlingRuleMax; ++lifeAndDeathSettlingRule)
           {
-            NSString* lifeAndDeathSettlingRuleString = [NewGameAdvancedController lifeAndDeathSettlingRuleName:lifeAndDeathSettlingRule];
+            NSString* lifeAndDeathSettlingRuleString = [NSString stringWithLifeAndDeathSettlingRule:lifeAndDeathSettlingRule];
             [itemList addObject:lifeAndDeathSettlingRuleString];
             if (lifeAndDeathSettlingRule == defaultLifeAndDeathSettlingRule)
               indexOfDefaultItem = lifeAndDeathSettlingRule;
@@ -496,7 +496,7 @@ enum CellID
           enum GoDisputeResolutionRule defaultDisputeResolutionRule = self.theNewGameModel.disputeResolutionRule;
           for (int disputeResolutionRule = 0; disputeResolutionRule <= GoDisputeResolutionRuleMax; ++disputeResolutionRule)
           {
-            NSString* disputeResolutionRuleString = [NewGameAdvancedController disputeResolutionRuleName:disputeResolutionRule];
+            NSString* disputeResolutionRuleString = [NSString stringWithDisputeResolutionRule:disputeResolutionRule];
             [itemList addObject:disputeResolutionRuleString];
             if (disputeResolutionRule == defaultDisputeResolutionRule)
               indexOfDefaultItem = disputeResolutionRule;
@@ -509,7 +509,7 @@ enum CellID
           enum GoFourPassesRule defaultFourPassesRule = self.theNewGameModel.fourPassesRule;
           for (int fourPassesRule = 0; fourPassesRule <= GoFourPassesRuleMax; ++fourPassesRule)
           {
-            NSString* fourPassesRuleString = [NewGameAdvancedController fourPassesRuleName:fourPassesRule];
+            NSString* fourPassesRuleString = [NSString stringWithFourPassesRule:fourPassesRule];
             [itemList addObject:fourPassesRuleString];
             if (fourPassesRule == defaultFourPassesRule)
               indexOfDefaultItem = fourPassesRule;
@@ -758,87 +758,6 @@ enum CellID
 {
   self.theNewGameModel.komi = [GoUtilities defaultKomiForHandicap:self.theNewGameModel.handicap
                                                     scoringSystem:self.theNewGameModel.scoringSystem];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a string representation of @a lifeAndDeathSettlingRule that
-/// is suitable for displaying in the UI.
-///
-/// Raises an @e NSInvalidArgumentException if @a lifeAndDeathSettlingRule is
-/// not recognized.
-// -----------------------------------------------------------------------------
-+ (NSString*) lifeAndDeathSettlingRuleName:(enum GoLifeAndDeathSettlingRule)lifeAndDeathSettlingRule
-{
-  switch (lifeAndDeathSettlingRule)
-  {
-    case GoLifeAndDeathSettlingRuleTwoPasses:
-      return @"2 passes";
-    case GoLifeAndDeathSettlingRuleThreePasses:
-      return @"3 passes";
-    default:
-    {
-      NSString* errorMessage = [NSString stringWithFormat:@"Invalid life & death settling rule: %d", lifeAndDeathSettlingRule];
-      DDLogError(@"%@: %@", self, errorMessage);
-      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:errorMessage
-                                                     userInfo:nil];
-      @throw exception;
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a string representation of @a disputeResolutionRule that is
-/// suitable for displaying in the UI.
-///
-/// Raises an @e NSInvalidArgumentException if @a disputeResolutionRule is not
-/// recognized.
-// -----------------------------------------------------------------------------
-+ (NSString*) disputeResolutionRuleName:(enum GoDisputeResolutionRule)disputeResolutionRule
-{
-  switch (disputeResolutionRule)
-  {
-    case GoDisputeResolutionRuleAlternatingPlay:
-      return @"Alternating play";
-    case GoDisputeResolutionRuleNonAlternatingPlay:
-      return @"Non-alternating play";
-    default:
-    {
-      NSString* errorMessage = [NSString stringWithFormat:@"Invalid dispute resolution rule rule: %d", disputeResolutionRule];
-      DDLogError(@"%@: %@", self, errorMessage);
-      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:errorMessage
-                                                     userInfo:nil];
-      @throw exception;
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a string representation of @a fourPassesRule that is suitable
-/// for displaying in the UI.
-///
-/// Raises an @e NSInvalidArgumentException if @a fourPassesRule is not
-/// recognized.
-// -----------------------------------------------------------------------------
-+ (NSString*) fourPassesRuleName:(enum GoFourPassesRule)fourPassesRule
-{
-  switch (fourPassesRule)
-  {
-    case GoFourPassesRuleFourPassesEndTheGame:
-      return @"End game";
-    case GoFourPassesRuleFourPassesHaveNoSpecialMeaning:
-      return @"No special meaning";
-    default:
-    {
-      NSString* errorMessage = [NSString stringWithFormat:@"Invalid four passes rule: %d", fourPassesRule];
-      DDLogError(@"%@: %@", self, errorMessage);
-      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:errorMessage
-                                                     userInfo:nil];
-      @throw exception;
-    }
-  }
 }
 
 @end

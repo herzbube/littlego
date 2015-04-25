@@ -35,4 +35,7 @@
 + (NSString*) stringWithScoringSystem:(enum GoScoringSystem)scoringSystem;
 + (NSString*) stringWithMoveIsIllegalReason:(enum GoMoveIsIllegalReason)reason;
 + (NSString*) stringWithGoColor:(enum GoColor)color;
++ (NSString*) stringWithLifeAndDeathSettlingRule:(enum GoLifeAndDeathSettlingRule)lifeAndDeathSettlingRule;
++ (NSString*) stringWithDisputeResolutionRule:(enum GoDisputeResolutionRule)disputeResolutionRule;
++ (NSString*) stringWithFourPassesRule:(enum GoFourPassesRule)fourPassesRule;
 @end

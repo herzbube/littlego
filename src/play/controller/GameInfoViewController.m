@@ -31,9 +31,13 @@
 #import "../../player/GtpEngineProfileModel.h"
 #import "../../player/GtpEngineProfile.h"
 #import "../../player/Player.h"
-#import "../../utility/NSStringAdditions.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/TableViewCellFactory.h"
+#import "../../ui/TableViewVariableHeightCell.h"
+#import "../../utility/NSStringAdditions.h"
+
+// Constants
+NSString* disputeResolutionRuleText_GameInfoViewController = @"Dispute resolution";
 
 
 // -----------------------------------------------------------------------------
@@ -101,6 +105,9 @@ enum GameInfoSectionItem
   KomiItem,
   KoRuleItem,
   ScoringSystemItem,
+  LifeAndDeathSettlingRuleItem,
+  DisputeResolutionRuleItem,
+  FourPassesRuleItem,
   MaxGameInfoSectionItem
 };
 
@@ -630,8 +637,16 @@ enum BoardPositionSectionItem
     }
     case GameInfoSection:
     {
-      cell = [TableViewCellFactory cellWithType:Value1CellType
-                                      tableView:tableView];
+      if (DisputeResolutionRuleItem == indexPath.row)
+      {
+        cell = [TableViewCellFactory cellWithType:VariableHeightCellType
+                                        tableView:tableView];
+      }
+      else
+      {
+        cell = [TableViewCellFactory cellWithType:Value1CellType
+                                        tableView:tableView];
+      }
       switch (indexPath.row)
       {
         case HandicapItem:
@@ -666,6 +681,25 @@ enum BoardPositionSectionItem
         {
           cell.textLabel.text = @"Scoring system";
           cell.detailTextLabel.text = [NSString stringWithScoringSystem:game.rules.scoringSystem];
+          break;
+        }
+        case LifeAndDeathSettlingRuleItem:
+        {
+          cell.textLabel.text = @"Life & death settling after";
+          cell.detailTextLabel.text = [NSString stringWithLifeAndDeathSettlingRule:game.rules.lifeAndDeathSettlingRule];
+          break;
+        }
+        case DisputeResolutionRuleItem:
+        {
+          TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+          variableHeightCell.descriptionLabel.text = disputeResolutionRuleText_GameInfoViewController;
+          variableHeightCell.valueLabel.text = [NSString stringWithDisputeResolutionRule:game.rules.disputeResolutionRule];
+          break;
+        }
+        case FourPassesRuleItem:
+        {
+          cell.textLabel.text = @"Four passes";
+          cell.detailTextLabel.text = [NSString stringWithFourPassesRule:game.rules.fourPassesRule];
           break;
         }
         default:
@@ -871,6 +905,25 @@ enum BoardPositionSectionItem
 }
 
 #pragma mark - UITableViewDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  if (GameInfoSection == indexPath.section && DisputeResolutionRuleItem == indexPath.row)
+  {
+    NSString* valueText = [NSString stringWithDisputeResolutionRule:[GoGame sharedGame].rules.disputeResolutionRule];
+    return [TableViewVariableHeightCell heightForRowInTableView:tableView
+                                                descriptionText:disputeResolutionRuleText_GameInfoViewController
+                                                      valueText:valueText
+                                         hasDisclosureIndicator:false];
+  }
+  else
+  {
+    return tableView.rowHeight;
+  }
+}
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.

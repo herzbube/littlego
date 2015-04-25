@@ -222,6 +222,54 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a lifeAndDeathSettlingRule.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithLifeAndDeathSettlingRule:(enum GoLifeAndDeathSettlingRule)lifeAndDeathSettlingRule
+{
+  switch (lifeAndDeathSettlingRule)
+  {
+    case GoLifeAndDeathSettlingRuleTwoPasses:
+      return @"2 passes";
+    case GoLifeAndDeathSettlingRuleThreePasses:
+      return @"3 passes";
+    default:
+      return @"Unknown";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a disputeResolutionRule.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithDisputeResolutionRule:(enum GoDisputeResolutionRule)disputeResolutionRule
+{
+  switch (disputeResolutionRule)
+  {
+    case GoDisputeResolutionRuleAlternatingPlay:
+      return @"Alternating play";
+    case GoDisputeResolutionRuleNonAlternatingPlay:
+      return @"Non-alternating play";
+    default:
+      return @"Unknown";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a fourPassesRule.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithFourPassesRule:(enum GoFourPassesRule)fourPassesRule
+{
+  switch (fourPassesRule)
+  {
+    case GoFourPassesRuleFourPassesEndTheGame:
+      return @"End game";
+    case GoFourPassesRuleFourPassesHaveNoSpecialMeaning:
+      return @"No special meaning";
+    default:
+      return @"Unknown";
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a string that describes @a reason.
 // -----------------------------------------------------------------------------
 + (NSString*) stringWithMoveIsIllegalReason:(enum GoMoveIsIllegalReason)reason
