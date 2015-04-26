@@ -26,6 +26,7 @@
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
+#import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../player/GtpEngineProfileModel.h"
@@ -536,6 +537,8 @@ enum BoardPositionSectionItem
             {
               if (! game.firstMove)
                 cell.detailTextLabel.text = @"Game has not yet started";
+              else if ([GoUtilities isGameInResumedPlayState:game])
+                cell.detailTextLabel.text = @"Resumed play";
               else
                 cell.detailTextLabel.text = @"Game is in progress";
               break;

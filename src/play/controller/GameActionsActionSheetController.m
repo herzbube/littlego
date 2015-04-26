@@ -179,24 +179,9 @@ enum ActionSheetButton
         // Currently we only support switching colors in order to settle a
         // life & death dispute, immediately after play was resumed, and only if
         // the rules allow non-alternating play.
-        if (GoGameStateGameHasEnded == game.state)
+        if (![GoUtilities isGameInResumedPlayState:game])
           continue;
         if (game.rules.disputeResolutionRule != GoDisputeResolutionRuleNonAlternatingPlay)
-          continue;
-        // We assume that play was resumed if exactly 2 consecutive pass moves
-        // have been made at the end of the game
-        int numberOfConsecutivePassMoves = 0;
-        GoMove* potentialPassMove = game.lastMove;
-        while (potentialPassMove && GoMoveTypePass == potentialPassMove.type)
-        {
-          ++numberOfConsecutivePassMoves;
-          potentialPassMove = potentialPassMove.previous;
-        }
-        if (numberOfConsecutivePassMoves != 2)
-          continue;
-        // Switching colors is allowed only if play was resumed. This is not the
-        // case if the user views an old board position.
-        if (!game.boardPosition.isLastPosition)
           continue;
         // In a computer vs. computer game there is no point in allowing to
         // switch colors

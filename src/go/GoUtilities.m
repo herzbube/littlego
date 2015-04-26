@@ -509,6 +509,47 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns true if @a game is in a state that counts as "resumed play".
+/// Returns false if @a game is not in "resumed play" state.
+// -----------------------------------------------------------------------------
++ (bool) isGameInResumedPlayState:(GoGame*)game
+{
+  // Very Special Case: GoLifeAndDeathSettlingRuleThreePasses is used to
+  // implement IGS rules. When this rule is active, play can only be resumed by
+  // discarding the third pass move. This does not count as "resumed play" in
+  // the sense understood and implemented by this app.
+  if (GoLifeAndDeathSettlingRuleThreePasses == game.rules.lifeAndDeathSettlingRule)
+    return false;
+
+  // Obviously, the game must be in progress
+  if (GoGameStateGameHasStarted != game.state)
+    return false;
+
+  // An even number of consecutive pass moves must have been made at the end of
+  // the game. If GoFourPassesRuleFourPassesEndTheGame is in effect it will
+  // cause the game to end after 4 passes, so that's not a problem we have to
+  // deal with here.
+  int numberOfConsecutivePassMoves = 0;
+  GoMove* potentialPassMove = game.lastMove;
+  while (potentialPassMove && GoMoveTypePass == potentialPassMove.type)
+  {
+    ++numberOfConsecutivePassMoves;
+    potentialPassMove = potentialPassMove.previous;
+  }
+  if (0 == numberOfConsecutivePassMoves)
+    return false;
+  if (numberOfConsecutivePassMoves % 2 != 0)
+    return false;
+
+  // Resumed play is only possible if the user views the last board position,
+  // i.e. is ready to continue to play
+  if (!game.boardPosition.isLastPosition)
+    return false;
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns true if @a game has ended and its remaining state allows play
 /// to be resumed in order to settle life & death disputes. Returns false if the
 /// state of @a game does not allow play to be resumed.

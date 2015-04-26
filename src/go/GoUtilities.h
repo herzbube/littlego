@@ -48,6 +48,7 @@
 + (GoGameRules*) rulesForRuleset:(enum GoRuleset)ruleset;
 + (enum GoRuleset) rulesetForRules:(GoGameRules*)rules;
 + (enum GoColor) alternatingColorForColor:(enum GoColor)color;
++ (bool) isGameInResumedPlayState:(GoGame*)game;
 + (bool) shouldAllowResumePlay:(GoGame*)game;
 
 @end
