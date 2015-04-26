@@ -930,8 +930,8 @@ enum CellID
     return AdvancedCellID;
   }
 
-  NSString* errorMessage = [NSString stringWithFormat:@"Cannot determine cell ID, loadGame = %d, indexPath.section = %d, indexPath.row = %d, game type: %d",
-                            self.loadGame, indexPath.section, indexPath.row, self.theNewGameModel.gameTypeLastSelected];
+  NSString* errorMessage = [NSString stringWithFormat:@"Cannot determine cell ID, loadGame = %d, indexPath.section = %ld, indexPath.row = %ld, game type: %d",
+                            self.loadGame, (long)indexPath.section, (long)indexPath.row, self.theNewGameModel.gameTypeLastSelected];
   DDLogError(@"%@: %@", self, errorMessage);
   NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                    reason:errorMessage

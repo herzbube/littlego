@@ -96,6 +96,8 @@
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
+  [super viewDidLoad];
+
   [self.collectionView registerClass:[BoardPositionCollectionViewCell class]
           forCellWithReuseIdentifier:self.reuseIdentifierCell];
 

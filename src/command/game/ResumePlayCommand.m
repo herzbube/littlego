@@ -122,7 +122,7 @@
       [[GoGame sharedGame] switchNextMoveColor];
       break;
     default:
-      DDLogError(@"%@: Unexpected button index %d", self, buttonIndex);
+      DDLogError(@"%@: Unexpected button index %ld", self, (long)buttonIndex);
       assert(0);
       return;
   }

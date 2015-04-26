@@ -25,7 +25,7 @@
 ///
 /// GtpLogModel observes the application default notification centre for
 /// notifications posted by the GTP client when it submits commands to, or
-/// receives responses from, the GTP engine. These notificatins are delivered
+/// receives responses from, the GTP engine. These notifications are delivered
 /// in the context of a secondary thread. The notifications carry with them the
 /// GtpCommand and GtpResponse objects which were used in the GTP client/engine
 /// communication, and which are now evaluated by GtpLogModel to generate

@@ -46,6 +46,8 @@
       break;
     default:
       [ExceptionUtility throwInvalidUIType:[LayoutManager sharedManager].uiType];
+      navigationBarController = nil;  // make compiler happy
+      break;
   }
   return navigationBarController;
 }

@@ -134,6 +134,8 @@
 // -----------------------------------------------------------------------------
 - (void) viewDidLoad
 {
+  [super viewDidLoad];
+
   [self.collectionView registerClass:[ButtonBoxCell class]
           forCellWithReuseIdentifier:self.reuseIdentifierCell];
   [self.collectionView registerClass:[UICollectionReusableView class]

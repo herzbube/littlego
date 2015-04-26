@@ -999,9 +999,9 @@ static GameActionManager* sharedGameActionManager = nil;
         break;
       }
       default:
-        {
+      {
         break;
-        }
+      }
     }
   }
 }

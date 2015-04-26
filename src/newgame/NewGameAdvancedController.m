@@ -661,8 +661,8 @@ enum CellID
     }
   }
 
-  NSString* errorMessage = [NSString stringWithFormat:@"Cannot determine section ID, loadGame = %d, section = %d",
-                            self.loadGame, section];
+  NSString* errorMessage = [NSString stringWithFormat:@"Cannot determine section ID, loadGame = %d, section = %ld",
+                            self.loadGame, (long)section];
   DDLogError(@"%@: %@", self, errorMessage);
   NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                    reason:errorMessage
@@ -741,8 +741,8 @@ enum CellID
     }
   }
 
-  NSString* errorMessage = [NSString stringWithFormat:@"Cannot determine cell ID, loadGame = %d, sectionID = %d, indexPath.section = %d, indexPath.row = %d",
-                            self.loadGame, sectionID, indexPath.section, indexPath.row];
+  NSString* errorMessage = [NSString stringWithFormat:@"Cannot determine cell ID, loadGame = %d, sectionID = %d, indexPath.section = %ld, indexPath.row = %ld",
+                            self.loadGame, sectionID, (long)indexPath.section, (long)indexPath.row];
   DDLogError(@"%@: %@", self, errorMessage);
   NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                    reason:errorMessage
