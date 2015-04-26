@@ -182,13 +182,6 @@ enum PlayCommandType
 - (bool) discardBoardPositions
 {
   GoGame* game = [GoGame sharedGame];
-  enum GoGameState gameState = game.state;
-  assert(GoGameStateGameHasEnded != gameState);
-  if (GoGameStateGameHasEnded == gameState)
-  {
-    DDLogError(@"%@: Unexpected game state: GoGameStateGameHasEnded", [self shortDescription]);
-    return false;
-  }
   GoBoardPosition* boardPosition = game.boardPosition;
   int indexOfFirstMoveToDiscard = boardPosition.currentBoardPosition;
   DDLogInfo(@"%@: Index position of first move to discard = %d", [self shortDescription], indexOfFirstMoveToDiscard);

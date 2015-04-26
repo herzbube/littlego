@@ -117,13 +117,6 @@
 - (bool) discardMoves
 {
   GoGame* game = [GoGame sharedGame];
-  enum GoGameState gameState = game.state;
-  assert(GoGameStateGameHasEnded != gameState);
-  if (GoGameStateGameHasEnded == gameState)
-  {
-    DDLogError(@"%@: Unexpected game state: GoGameStateGameHasEnded", [self shortDescription]);
-    return false;
-  }
   GoBoardPosition* boardPosition = game.boardPosition;
   int indexOfFirstMoveToDiscard = boardPosition.currentBoardPosition;
   GoMoveModel* moveModel = game.moveModel;
