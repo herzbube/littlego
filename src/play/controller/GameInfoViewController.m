@@ -572,6 +572,16 @@ enum BoardPositionSectionItem
                 cell.detailTextLabel.text = @"Both players passed";
                 break;
               }
+              case GoGameHasEndedReasonThreePasses:
+              {
+                cell.detailTextLabel.text = @"Three pass moves";
+                break;
+              }
+              case GoGameHasEndedReasonFourPasses:
+              {
+                cell.detailTextLabel.text = @"Four pass moves";
+                break;
+              }
               case GoGameHasEndedReasonResigned:
               {
                 NSString* colorOfNextMovePlayer;

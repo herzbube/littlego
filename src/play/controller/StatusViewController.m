@@ -463,6 +463,16 @@
               statusText = @"Game has ended by two consecutive pass moves";
               break;
             }
+            case GoGameHasEndedReasonThreePasses:
+            {
+              statusText = @"Game has ended by three consecutive pass moves";
+              break;
+            }
+            case GoGameHasEndedReasonFourPasses:
+            {
+              statusText = @"Game has ended by four consecutive pass moves";
+              break;
+            }
             case GoGameHasEndedReasonResigned:
             {
               NSString* color;
