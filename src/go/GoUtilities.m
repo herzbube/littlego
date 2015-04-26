@@ -436,6 +436,15 @@
       rules.fourPassesRule = GoFourPassesRuleFourPassesHaveNoSpecialMeaning;
       break;
     }
+    case GoRulesetLittleGo:
+    {
+      rules.koRule = GoKoRuleDefault;
+      rules.scoringSystem = gDefaultScoringSystem;
+      rules.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleDefault;
+      rules.disputeResolutionRule = GoDisputeResolutionRuleDefault;
+      rules.fourPassesRule = GoFourPassesRuleDefault;
+      break;
+    }
     default:
     {
       NSString* errorMessage = [NSString stringWithFormat:@"Unable to determine GoGameRules, unknown ruleset %d", ruleset];

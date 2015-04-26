@@ -1381,6 +1381,8 @@ enum CellID
       return @"Chinese";
     case GoRulesetJapanese:
       return @"Japanese";
+    case GoRulesetLittleGo:
+      return @"Little Go";
     case GoRulesetCustom:
       return @"Custom";
     default:

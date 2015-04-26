@@ -424,12 +424,14 @@ enum GoRuleset
   GoRulesetChinese,
   /// @brief The Japanese rules of Go.
   GoRulesetJapanese,
+  /// @brief The default rules of the app.
+  GoRulesetLittleGo,
   /// @brief A custom ruleset, i.e. any combination of rules that does not match
   /// one of the other values in this enumeration.
   GoRulesetCustom,
   GoRulesetMin = GoRulesetAGA,
-  GoRulesetMax = GoRulesetJapanese,
-  GoRulesetDefault = GoRulesetAGA
+  GoRulesetMax = GoRulesetLittleGo,
+  GoRulesetDefault = GoRulesetLittleGo
 };
 
 extern const enum GoGameType gDefaultGameType;
