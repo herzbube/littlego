@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2012-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2012-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -138,7 +138,13 @@ enum PlayCommandType
     bool shouldDiscardBoardPositions = [self shouldDiscardBoardPositions];
     if (shouldDiscardBoardPositions)
     {
-      bool success = [self discardBoardPositions];
+      bool success = [self revertGameStateIfNecessary];
+      if (! success)
+      {
+        DDLogError(@"%@: Aborting because revertGameStateIfNecessary failed", [self shortDescription]);
+        return false;
+      }
+      success = [self discardBoardPositions];
       if (! success)
       {
         DDLogError(@"%@: Aborting because discardBoardPositions failed", [self shortDescription]);
@@ -174,6 +180,17 @@ enum PlayCommandType
     shouldDiscardBoardPositions = true;
   DDLogVerbose(@"%@: shouldDiscardBoardPositions = %d", [self shortDescription], shouldDiscardBoardPositions);
   return shouldDiscardBoardPositions;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt(). Returns true on success, false on failure.
+// -----------------------------------------------------------------------------
+- (bool) revertGameStateIfNecessary
+{
+  GoGame* game = [GoGame sharedGame];
+  if (GoGameStateGameHasEnded == game.state)
+    [game revertStateFromEndedToInProgress];
+  return true;
 }
 
 // -----------------------------------------------------------------------------
