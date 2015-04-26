@@ -18,6 +18,7 @@
 // Project includes
 #import "GoUtilities.h"
 #import "GoBoard.h"
+#import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
 #import "GoGame.h"
 #import "GoGameRules.h"
@@ -496,6 +497,53 @@
                                                    reason:errorMessage
                                                  userInfo:nil];
   @throw exception;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if @a game has ended and its remaining state allows play
+/// to be resumed in order to settle life & death disputes. Returns false if the
+/// state of @a game does not allow play to be resumed.
+// -----------------------------------------------------------------------------
++ (bool) shouldAllowResumePlay:(GoGame*)game
+{
+  // Obviously, play can only be resumed if the game has ended
+  if (GoGameStateGameHasEnded != game.state)
+    return false;
+
+  // Only if the game ended after two passes can play be resumed. In all other
+  // cases the user has to perform a different action (e.g. "undo resign",
+  // "discard last move") to resume play. Whether or not such an action is
+  // available in the UI depends on the circumstances (e.g. in a Game Center
+  // game moves typically cannot be discarded).
+  if (GoGameHasEndedReasonTwoPasses != game.reasonForGameHasEnded)
+    return false;
+
+  // Resuming play for computer vs. computer games does not make sense - the
+  // computer player does not understand "life & death disputes" and in all
+  // probability will merely continue to play passes
+  if (GoGameTypeComputerVsComputer == game.type)
+    return false;
+
+  // If the user is not viewing the last board position, we assume that he is
+  // not interested in resuming play, so we don't allow it. More importantly: We
+  // MUST not resume play if GoDisputeResolutionRuleNonAlternatingPlay is active
+  // because:
+  // 1) The client would probably have to display an alert that lets the user
+  //    choose the side to play first after play is resumed. Such an alert is
+  //    probably inappropriate since at the moment the user is viewing an old
+  //    board position.
+  // 2) The alert would have to base its content on the current value of
+  //    game.nextMoveColor, which would be wrong for the purpose of play
+  //    resumption because at the moment game.nextMoveColor reflects the side to
+  //    play next after the CURRENT board position, not after the LAST board
+  //    position.
+  // 3) In response to the alert, the value of game.nextMoveColor might have to
+  //    be changed which, again, is inappropriate because game.nextMoveColor is
+  //    tied to the CURRENT board position, not the LAST board position.
+  if (!game.boardPosition.isLastPosition)
+    return false;
+
+  return true;
 }
 
 @end

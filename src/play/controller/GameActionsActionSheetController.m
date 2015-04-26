@@ -24,6 +24,7 @@
 #import "../../command/backup/CleanBackupSgfCommand.h"
 #import "../../command/game/SaveGameCommand.h"
 #import "../../command/game/NewGameCommand.h"
+#import "../../command/game/ResumePlayCommand.h"
 #import "../../command/playerinfluence/GenerateTerritoryStatisticsCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -50,7 +51,8 @@ enum ActionSheetButton
   ScoreButton,
   MarkModeButton,
   UpdatePlayerInfluenceButton,
-  SwitchNextMoveColor,
+  SwitchNextMoveColorButton,
+  ResumePlayButton,
   ResignButton,
   UndoResignButton,
   SaveGameButton,
@@ -172,7 +174,7 @@ enum ActionSheetButton
         title = @"Update player influence";
         break;
       }
-      case SwitchNextMoveColor:
+      case SwitchNextMoveColorButton:
       {
         // In a computer vs. computer game there is no point in allowing to
         // switch colors
@@ -202,6 +204,14 @@ enum ActionSheetButton
         enum GoColor alternatingNextMoveColor = [GoUtilities alternatingColorForColor:game.nextMoveColor];
         NSString* alternatingNextMoveColorName = [[NSString stringWithGoColor:alternatingNextMoveColor] lowercaseString];
         title = [NSString stringWithFormat:@"Set %@ to move", alternatingNextMoveColorName];
+        break;
+      }
+      case ResumePlayButton:
+      {
+        bool shouldAllowResumePlay = [GoUtilities shouldAllowResumePlay:game];
+        if (!shouldAllowResumePlay)
+          continue;
+        title = @"Resume play";
         break;
       }
       case ResignButton:
@@ -305,8 +315,11 @@ enum ActionSheetButton
     case UpdatePlayerInfluenceButton:
       [self updatePlayerInfluence];
       break;
-    case SwitchNextMoveColor:
+    case SwitchNextMoveColorButton:
       [self switchNextMoveColor];
+      break;
+    case ResumePlayButton:
+      [self resumePlay];
       break;
     case ResignButton:
       [self resign];
@@ -430,6 +443,18 @@ enum ActionSheetButton
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
   [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
+  [self.delegate gameActionsActionSheetControllerDidFinish:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Resume play" action sheet button.
+/// Causes play to be resumed, with the goal to settle life & death disputes.
+// -----------------------------------------------------------------------------
+- (void) resumePlay
+{
+  // ResumePlayCommand may show an alert view, so code execution may return
+  // to us before play is actually resumed
+  [[[[ResumePlayCommand alloc] init] autorelease] submit];
   [self.delegate gameActionsActionSheetControllerDidFinish:self];
 }
 

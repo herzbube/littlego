@@ -21,20 +21,18 @@
 #import "../model/BoardViewModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
-#import "../../go/GoGameRules.h"
 #import "../../go/GoScore.h"
 #import "../../go/GoUtilities.h"
 #import "../../command/gtp/InterruptComputerCommand.h"
 #import "../../command/boardposition/ChangeAndDiscardCommand.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../command/game/PauseGameCommand.h"
-#import "../../command/move/ComputerPlayMoveCommand.h"
+#import "../../command/game/ResumePlayCommand.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../main/WindowRootViewController.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../shared/LayoutManager.h"
-#import "../../utility/NSStringAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -277,8 +275,14 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   GoGame* game = [GoGame sharedGame];
   game.score.scoringEnabled = false;  // triggers notification to which this manager reacts
-  if (GoGameStateGameHasEnded == game.state)
-    [self resumePlayIfNecessary];
+
+  bool shouldAllowResumePlay = [GoUtilities shouldAllowResumePlay:game];
+  if (shouldAllowResumePlay)
+  {
+    // ResumePlayCommand may show an alert view, so code execution may return
+    // to us before play is actually resumed
+    [[[[ResumePlayCommand alloc] init] autorelease] submit];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -340,29 +344,6 @@ static GameActionManager* sharedGameActionManager = nil;
 - (void) gameInfoViewControllerWillDeallocate:(GameInfoViewController*)gameInfoViewController
 {
   self.gameInfoViewController = nil;
-}
-
-#pragma mark - UIAlertViewDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UIAlertViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-  switch (buttonIndex)
-  {
-    case AlertViewButtonTypeAlternatingColor:
-      break;
-    case AlertViewButtonTypeNonAlternatingColor:
-      [[GoGame sharedGame] switchNextMoveColor];
-      break;
-    default:
-      DDLogError(@"%@: Unexpected button index %d", self, buttonIndex);
-      assert(0);
-      return;
-  }
-
-  [self resumePlay];
 }
 
 #pragma mark - Notification responders
@@ -1023,92 +1004,6 @@ static GameActionManager* sharedGameActionManager = nil;
         }
     }
   }
-}
-
-#pragma Play resumption handling
-
-// -----------------------------------------------------------------------------
-/// @brief Resumes play if the game is currently ended with reason
-/// #GoGameHasEndedReasonTwoPasses, and the game is not a computer vs. computer
-/// game. If the rules allow non-alternating play, an alert view is displayed
-/// which lets the user select the side to move first.
-///
-/// Due to the asynchronous nature of UIAlertView, control may return to the
-/// caller before play has actually been resumed.
-// -----------------------------------------------------------------------------
-- (void) resumePlayIfNecessary
-{
-  // Only if the game ended after two passes are we allowed to automatically
-  // resume play. In all other cases the user has to perform a specific
-  // action (e.g. "undo resign", "discard last move") to resume play. Whether
-  // or not such an action is available in the UI depends on the circumstances
-  // (e.g. in a Game Center game moves typically cannot be discarded).
-  GoGame* game = [GoGame sharedGame];
-  if (GoGameHasEndedReasonTwoPasses != game.reasonForGameHasEnded)
-    return;
-
-  // Resuming play for computer vs. computer games does not make sense - the
-  // computer player does not understand "life & death disputes" and in all
-  // probability will merely continue to play passes
-  if (GoGameTypeComputerVsComputer == game.type)
-    return;
-
-  // If the user is not viewing the last board position, we assume that he is
-  // not interested in resuming play, so we stop here. Also important: We MUST
-  // not resume play because if GoDisputeResolutionRuleNonAlternatingPlay
-  // is active because:
-  // 1) We would have to display an alert which is inappropriate since at the
-  //    moment the user is viewing an old board position
-  // 2) In response to the alert we might have to change game.nextMoveColor,
-  //    which would be useless because game.nextMoveColor also changes every
-  //    time that the current board position changes
-  if (!game.boardPosition.isLastPosition)
-    return;
-
-  if (GoDisputeResolutionRuleNonAlternatingPlay == game.rules.disputeResolutionRule)
-  {
-    NSString* nextMoveColorName = [NSString stringWithGoColor:game.nextMoveColor];
-    enum GoColor alternatingNextMoveColor = [GoUtilities alternatingColorForColor:game.nextMoveColor];
-    NSString* alternatingNextMoveColorName = [NSString stringWithGoColor:alternatingNextMoveColor];
-
-    NSString* alertTitle = @"Choose side to play first";
-    NSString* alertMessage = [NSString stringWithFormat:@"\nYou have decided to resume play to resolve a life & death dispute.\n\n"
-                              "Because the game rules allow non-alternating play you may now choose a side to play first. "
-                              "With alternating play,  %@ would play first.\n\n"
-                              "Which side would you like to play first?", [nextMoveColorName lowercaseString]];
-    // UIAlertView shows the second button with a bold font to indicate a
-    // "default choice". For this reason we display the color that would move
-    // naturally, i.e. with alternating play, in the second button. The
-    // consequence is that the alert view sometimes shows the buttons in the
-    // order Black/White, and sometimes in the order White/Black. I would expect
-    // that a frequent user of the app is annoyed/confused by this "unstable"
-    // UI, so if UIAlertView is replaced at some time in the future I suggest
-    // that the order of buttons is made stable.
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:alertTitle
-                                                    message:alertMessage
-                                                   delegate:self
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:alternatingNextMoveColorName, nextMoveColorName, nil];
-    alert.tag = AlertViewTypeSelectSideToPlay;
-    [alert show];
-    [alert release];
-  }
-  else
-  {
-    [self resumePlay];
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Resumes play if the game is currently ended. Triggers the computer
-/// player if it is the computer player's turn to move.
-// -----------------------------------------------------------------------------
-- (void) resumePlay
-{
-  GoGame* game = [GoGame sharedGame];
-  [game revertStateFromEndedToInProgress];
-  if (game.nextMovePlayerIsComputerPlayer)
-    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
 }
 
 #pragma mark - Private helpers

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,5 +48,6 @@
 + (GoGameRules*) rulesForRuleset:(enum GoRuleset)ruleset;
 + (enum GoRuleset) rulesetForRules:(GoGameRules*)rules;
 + (enum GoColor) alternatingColorForColor:(enum GoColor)color;
++ (bool) shouldAllowResumePlay:(GoGame*)game;
 
 @end

@@ -281,6 +281,8 @@
 		CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD96A47F16CD6FD5000C2792 /* GoBoardPositionTest.m */; };
 		CD97FA101AE3D4DD00148C16 /* NewGameAdvancedController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD97FA0F1AE3D4DD00148C16 /* NewGameAdvancedController.m */; };
 		CD97FA111AE3D4DD00148C16 /* NewGameAdvancedController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD97FA0F1AE3D4DD00148C16 /* NewGameAdvancedController.m */; };
+		CD97FA141AED1BD600148C16 /* ResumePlayCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD97FA131AED1BD600148C16 /* ResumePlayCommand.m */; };
+		CD97FA151AED1BD600148C16 /* ResumePlayCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD97FA131AED1BD600148C16 /* ResumePlayCommand.m */; };
 		CD99EC6314B10749007B3B67 /* GoPointTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99EC6214B10747007B3B67 /* GoPointTest.m */; };
 		CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD99EC6514B12059007B3B67 /* GoPlayerTest.m */; };
 		CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49AA17107BC9009E7514 /* FontRange.m */; };
@@ -800,6 +802,8 @@
 		CD96A47F16CD6FD5000C2792 /* GoBoardPositionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = GoBoardPositionTest.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		CD97FA0E1AE3D4DD00148C16 /* NewGameAdvancedController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameAdvancedController.h; sourceTree = "<group>"; };
 		CD97FA0F1AE3D4DD00148C16 /* NewGameAdvancedController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGameAdvancedController.m; sourceTree = "<group>"; };
+		CD97FA121AED1BD600148C16 /* ResumePlayCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResumePlayCommand.h; sourceTree = "<group>"; };
+		CD97FA131AED1BD600148C16 /* ResumePlayCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResumePlayCommand.m; sourceTree = "<group>"; };
 		CD99EC6114B10746007B3B67 /* GoPointTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPointTest.h; sourceTree = "<group>"; };
 		CD99EC6214B10747007B3B67 /* GoPointTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPointTest.m; sourceTree = "<group>"; };
 		CD99EC6414B12058007B3B67 /* GoPlayerTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPlayerTest.h; sourceTree = "<group>"; };
@@ -1229,6 +1233,8 @@
 				CD05AA741423D80C00214BBE /* PauseGameCommand.m */,
 				CD05AC771425470B00214BBE /* RenameGameCommand.h */,
 				CD05AC781425470B00214BBE /* RenameGameCommand.m */,
+				CD97FA121AED1BD600148C16 /* ResumePlayCommand.h */,
+				CD97FA131AED1BD600148C16 /* ResumePlayCommand.m */,
 				CD05AC791425470B00214BBE /* SaveGameCommand.h */,
 				CD05AC7A1425470B00214BBE /* SaveGameCommand.m */,
 			);
@@ -2311,6 +2317,7 @@
 				CD05B121142A60A700214BBE /* RestoreGameFromSgfCommand.m in Sources */,
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
+				CD97FA141AED1BD600148C16 /* ResumePlayCommand.m in Sources */,
 				CDCBA6D0183D8801003697E2 /* MagnifyingGlassSettingsController.m in Sources */,
 				CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */,
 				CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */,
@@ -2580,6 +2587,7 @@
 				CD9A49AC171099FB009E7514 /* FontRange.m in Sources */,
 				CD9A49DA17125061009E7514 /* BoardPositionListViewController.m in Sources */,
 				CD9A49DB1712506F009E7514 /* BoardPositionTableListViewController.m in Sources */,
+				CD97FA151AED1BD600148C16 /* ResumePlayCommand.m in Sources */,
 				CD9A49DC1712507D009E7514 /* BoardPositionView.m in Sources */,
 				CDFD9F7418F1D37B0031CBCF /* SoundSettingsController.m in Sources */,
 				CD9A49DD17125081009E7514 /* BoardPositionToolbarController.m in Sources */,
