@@ -489,8 +489,9 @@
   // neighbours
   else if ([point liberties] > 0)
   {
+    // Because the point has liberties a simple ko is not possible
     bool isSuperko;
-    bool isKoMove = [self isKoMove:point moveColor:color checkSuperkoOnly:true isSuperko:&isSuperko];
+    bool isKoMove = [self isKoMove:point moveColor:color simpleKoIsPossible:false isSuperko:&isSuperko];
     if (isKoMove)
       *reason = isSuperko ? GoMoveIsIllegalReasonSuperko : GoMoveIsIllegalReasonSimpleKo;
     return !isKoMove;
@@ -510,7 +511,7 @@
       if ([neighbourRegion liberties] > 1)
       {
         bool isSuperko;
-        bool isKoMove = [self isKoMove:point moveColor:color checkSuperkoOnly:true isSuperko:&isSuperko];
+        bool isKoMove = [self isKoMove:point moveColor:color simpleKoIsPossible:false isSuperko:&isSuperko];
         if (isKoMove)
           *reason = isSuperko ? GoMoveIsIllegalReasonSuperko : GoMoveIsIllegalReasonSimpleKo;
         return !isKoMove;
@@ -529,7 +530,7 @@
         // A simple Ko situation is possible only if we are NOT connecting
         bool isSimpleKoStillPossible = (0 == neighbourRegionsFriendly.count);
         bool isSuperko;
-        bool isKoMove = [self isKoMove:point moveColor:color checkSuperkoOnly:!isSimpleKoStillPossible isSuperko:&isSuperko];
+        bool isKoMove = [self isKoMove:point moveColor:color simpleKoIsPossible:isSimpleKoStillPossible isSuperko:&isSuperko];
         if (isKoMove)
           *reason = isSuperko ? GoMoveIsIllegalReasonSuperko : GoMoveIsIllegalReasonSimpleKo;
         return !isKoMove;
@@ -545,16 +546,36 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for isLegalMove:byColor:isIllegalReason:().
+/// @brief Returns true if placing a stone at @a point by player @a moveColor
+/// would violate the current ko rule of the game. Returns false if placing
+/// such a stone would not violate the current ko rule of the game.
+///
+/// If this method returns true, it also fills the out parameter @a isSuperko
+/// with true or false to distinguish ko from superko. If this method returns
+/// false, the value of the out parameter @a isSuperko is undefined.
+///
+/// @note If the current ko rule is #GoKoRuleSimple this method does not check
+/// for superko at all, so the out parameter @a isSuperko can never become true.
+///
+/// To optimize ko detection, the caller may set @a simpleKoIsPossible to false
+/// if prior analysis has shown that placing a stone at @a point by player
+/// @a moveColor is impossible to be a simple ko. If the current ko rule is
+/// #GoKoRuleSimple and the caller sets @a simpleKoIsPossible to false, then
+/// this method does not have to perform any ko detection at all! If the current
+/// ko rule is not #GoKoRuleSimple (i.e. the ko rule allows superko), then no
+/// optimization is possible.
+///
+/// This is a private helper for isLegalMove:byColor:isIllegalReason:().
 // -----------------------------------------------------------------------------
 - (bool) isKoMove:(GoPoint*)point
         moveColor:(enum GoColor)moveColor
- checkSuperkoOnly:(bool)checkSuperkoOnly
+simpleKoIsPossible:(bool)simpleKoIsPossible
         isSuperko:(bool*)isSuperko
 {
   enum GoKoRule koRule = self.rules.koRule;
-  if (checkSuperkoOnly && GoKoRuleSimple == koRule)
+  if (GoKoRuleSimple == koRule && !simpleKoIsPossible)
     return false;
+
   // The algorithm below for finding ko can kick in only if we have at least
   // two moves. The earliest possible ko needs even more moves, but optimizing
   // the algorithm is not worth the trouble.
@@ -565,9 +586,10 @@
   if (! previousToLastMove)
     return false;
 
+  long long zobristHashOfHypotheticalMove = [self zobristHashOfHypotheticalMoveAtPoint:point byColor:moveColor];
+
   // Even if we use one of the superko rules, we still want to check for simple
   // ko first so that we can distinguish between simple ko and superko.
-  long long zobristHashOfHypotheticalMove = [self zobristHashOfHypotheticalMoveAtPoint:point byColor:moveColor];
   bool isSimpleKo = (zobristHashOfHypotheticalMove == previousToLastMove.zobristHash);
   if (isSimpleKo)
   {
@@ -618,7 +640,8 @@
 /// occurred after the current last move, i.e. after the move which created the
 /// current board position.
 ///
-/// This is a private helper.
+/// This is a private helper for
+/// isKoMove:moveColor:checkSuperkoOnly:isSuperko:().
 // -----------------------------------------------------------------------------
 - (long long) zobristHashOfHypotheticalMoveAtPoint:(GoPoint*)point
                                            byColor:(enum GoColor)color
@@ -638,6 +661,9 @@
 /// groups exist. The array has no particular order.
 ///
 /// This is a private helper.
+///
+/// This is a private helper for
+/// zobristHashOfHypotheticalMoveAtPoint:byColor:().
 // -----------------------------------------------------------------------------
 - (NSArray*) stonesWithColor:(enum GoColor)color withSingleLibertyAt:(GoPoint*)point
 {
