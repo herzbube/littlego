@@ -1053,6 +1053,18 @@ static GameActionManager* sharedGameActionManager = nil;
   if (GoGameTypeComputerVsComputer == game.type)
     return;
 
+  // If the user is not viewing the last board position, we assume that he is
+  // not interested in resuming play, so we stop here. Also important: We MUST
+  // not resume play because if GoDisputeResolutionRuleNonAlternatingPlay
+  // is active because:
+  // 1) We would have to display an alert which is inappropriate since at the
+  //    moment the user is viewing an old board position
+  // 2) In response to the alert we might have to change game.nextMoveColor,
+  //    which would be useless because game.nextMoveColor also changes every
+  //    time that the current board position changes
+  if (!game.boardPosition.isLastPosition)
+    return;
+
   if (GoDisputeResolutionRuleNonAlternatingPlay == game.rules.disputeResolutionRule)
   {
     NSString* nextMoveColorName = [NSString stringWithGoColor:game.nextMoveColor];
