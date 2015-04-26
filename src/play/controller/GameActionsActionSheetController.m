@@ -134,7 +134,14 @@ enum ActionSheetButton
     {
       case ScoreButton:
       {
-        if (game.score.scoringEnabled || GoGameStateGameHasEnded == game.state)
+        // If game has ended there is a dedicated button for enabling scoring
+        // mode, so no need to show this option in our menu
+        if (GoGameStateGameHasEnded == game.state)
+          continue;
+        // Scoring is not available for resign
+        if (GoGameHasEndedReasonResigned == game.reasonForGameHasEnded)
+          continue;
+        if (game.score.scoringEnabled)
           continue;
         title = @"Score";
         break;
@@ -143,6 +150,14 @@ enum ActionSheetButton
       {
         if (! game.score.scoringEnabled)
           continue;
+        switch (game.reasonForGameHasEnded)
+        {
+          case GoGameHasEndedReasonResigned:
+          case GoGameHasEndedReasonFourPasses:
+            continue;
+          default:
+            break;
+        }
         ScoringModel* model = [ApplicationDelegate sharedDelegate].scoringModel;
         switch (model.scoreMarkMode)
         {

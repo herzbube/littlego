@@ -438,11 +438,30 @@
           statusText = @"Scoring in progress...";
         else
         {
-          statusText = [[GoGame sharedGame].score resultString];
-          if (GoScoreMarkModeDead == [ApplicationDelegate sharedDelegate].scoringModel.scoreMarkMode)
-            statusText = [statusText stringByAppendingString:@" - Tap to mark dead stones"];
-          else
-            statusText = [statusText stringByAppendingString:@" - Tap to mark stones in seki"];
+          switch (game.reasonForGameHasEnded)
+          {
+            case GoGameHasEndedReasonResigned:
+            {
+              NSString* colorString = [NSString stringWithGoColor:game.nextMoveColor];
+              statusText = [NSString stringWithFormat:@"%@ resigned", colorString];
+              break;
+            }
+            case GoGameHasEndedReasonFourPasses:
+            {
+              statusText = [[GoGame sharedGame].score resultString];
+              statusText = [statusText stringByAppendingString:@" - All stones on the board are deemed alive"];
+              break;
+            }
+            default:
+            {
+              statusText = [[GoGame sharedGame].score resultString];
+              if (GoScoreMarkModeDead == [ApplicationDelegate sharedDelegate].scoringModel.scoreMarkMode)
+                statusText = [statusText stringByAppendingString:@" - Tap to mark dead stones"];
+              else
+                statusText = [statusText stringByAppendingString:@" - Tap to mark stones in seki"];
+              break;
+            }
+          }
         }
       }
       else

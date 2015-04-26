@@ -342,7 +342,11 @@ enum BoardPositionSectionItem
   {
     case ScoreInfoType:
     {
-      return MaxScoreSectionItem;
+      GoGame* game = [GoGame sharedGame];
+      if (GoGameStateGameHasEnded == game.state && GoGameHasEndedReasonResigned == game.reasonForGameHasEnded)
+        return 0;
+      else
+        return MaxScoreSectionItem;
     }
     case GameInfoType:
     {
@@ -425,24 +429,32 @@ enum BoardPositionSectionItem
     case ScoreInfoType:
     {
       GoGame* game = [GoGame sharedGame];
-      NSString* titlePartOne = nil;
-      if (! game.boardPosition.isLastPosition)
-        titlePartOne = @"This score reflects the board position you are currently viewing, NOT the final score. Navigate to the last move of the game to see the final score.";
-      NSString* titlePartTwo = nil;
-      if (! game.score.scoringEnabled)
+      if (GoGameStateGameHasEnded == game.state && GoGameHasEndedReasonResigned == game.reasonForGameHasEnded)
       {
-        if (GoScoringSystemAreaScoring == game.rules.scoringSystem)
-          titlePartTwo = @"Stone count";
-        else
-          titlePartTwo = @"Dead stone count";
-        titlePartTwo = [titlePartTwo stringByAppendingString:@" and territory score are not available because you are not in scoring mode."];
+        NSString* colorString = [NSString stringWithGoColor:game.nextMoveColor];
+        return [NSString stringWithFormat:@"The game has ended by resignation. %@ resigned.", colorString];
       }
-      if (titlePartOne && titlePartTwo)
-        return [NSString stringWithFormat:@"%@\n\n%@", titlePartOne, titlePartTwo];
-      else if (titlePartOne)
-        return titlePartOne;
       else
-        return titlePartTwo;
+      {
+        NSString* titlePartOne = nil;
+        if (! game.boardPosition.isLastPosition)
+          titlePartOne = @"This score reflects the board position you are currently viewing, NOT the final score. Navigate to the last move of the game to see the final score.";
+        NSString* titlePartTwo = nil;
+        if (! game.score.scoringEnabled)
+        {
+          if (GoScoringSystemAreaScoring == game.rules.scoringSystem)
+            titlePartTwo = @"Stone count";
+          else
+            titlePartTwo = @"Dead stone count";
+          titlePartTwo = [titlePartTwo stringByAppendingString:@" and territory score are not available because you are not in scoring mode."];
+        }
+        if (titlePartOne && titlePartTwo)
+          return [NSString stringWithFormat:@"%@\n\n%@", titlePartOne, titlePartTwo];
+        else if (titlePartOne)
+          return titlePartOne;
+        else
+          return titlePartTwo;
+      }
     }
     case BoardInfoType:
     {
@@ -587,12 +599,8 @@ enum BoardPositionSectionItem
               }
               case GoGameHasEndedReasonResigned:
               {
-                NSString* colorOfNextMovePlayer;
-                if (game.nextMovePlayer.isBlack)
-                  colorOfNextMovePlayer = @"Black";
-                else
-                  colorOfNextMovePlayer = @"White";
-                cell.detailTextLabel.text = [colorOfNextMovePlayer stringByAppendingString:@" resigned"];
+                NSString* colorString = [NSString stringWithGoColor:game.nextMoveColor];
+                cell.detailTextLabel.text = [colorString stringByAppendingString:@" resigned"];
                 break;
               }
               default:

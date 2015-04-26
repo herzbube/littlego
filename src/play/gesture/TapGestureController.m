@@ -195,11 +195,29 @@
 // -----------------------------------------------------------------------------
 - (void) updateTappingEnabled
 {
-  GoScore* score = [GoGame sharedGame].score;
+  GoGame* game = [GoGame sharedGame];
+  GoScore* score = game.score;
   if (score.scoringEnabled)
-    self.tappingEnabled = ! score.scoringInProgress;
+  {
+    switch (game.reasonForGameHasEnded)
+    {
+      case GoGameHasEndedReasonResigned:
+      case GoGameHasEndedReasonFourPasses:
+      {
+        self.tappingEnabled = false;
+        break;
+      }
+      default:
+      {
+        self.tappingEnabled = ! score.scoringInProgress;
+        break;
+      }
+    }
+  }
   else
+  {
     self.tappingEnabled = false;
+  }
 }
 
 @end
