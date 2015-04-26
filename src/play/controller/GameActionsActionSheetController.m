@@ -176,30 +176,31 @@ enum ActionSheetButton
       }
       case SwitchNextMoveColorButton:
       {
+        // Currently we only support switching colors in order to settle a
+        // life & death dispute, immediately after play was resumed, and only if
+        // the rules allow non-alternating play.
+        if (GoGameStateGameHasEnded == game.state)
+          continue;
+        if (game.rules.disputeResolutionRule != GoDisputeResolutionRuleNonAlternatingPlay)
+          continue;
+        // We assume that play was resumed if exactly 2 consecutive pass moves
+        // have been made at the end of the game
+        int numberOfConsecutivePassMoves = 0;
+        GoMove* potentialPassMove = game.lastMove;
+        while (potentialPassMove && GoMoveTypePass == potentialPassMove.type)
+        {
+          ++numberOfConsecutivePassMoves;
+          potentialPassMove = potentialPassMove.previous;
+        }
+        if (numberOfConsecutivePassMoves != 2)
+          continue;
+        // Switching colors is allowed only if play was resumed. This is not the
+        // case if the user views an old board position.
+        if (!game.boardPosition.isLastPosition)
+          continue;
         // In a computer vs. computer game there is no point in allowing to
         // switch colors
         if (GoGameTypeComputerVsComputer == game.type)
-          continue;
-        // Currently we only support switching the color to move in order to
-        // settle a life & death dispute, and only if the rules allow
-        // non-alternating play
-        if (game.rules.disputeResolutionRule != GoDisputeResolutionRuleNonAlternatingPlay)
-          continue;
-        // A life & death dispute is only possible if the game has not yet ended
-        if (GoGameStateGameHasEnded == game.state)
-          continue;
-        // We allow color switching only after exactly 2 pass moves
-        GoMove* lastMove = game.lastMove;
-        if (! lastMove || lastMove.type != GoMoveTypePass)
-          continue;
-        GoMove* previousToLastMove = lastMove.previous;
-        if (! previousToLastMove || previousToLastMove.type != GoMoveTypePass)
-          continue;
-        // If a third move exists before the two pass moves, it must be a play
-        // move. If the two pass moves occurred right after the start of the
-        // game, that's weird but OK.
-        GoMove* previousToPreviousToLastMove = previousToLastMove.previous;
-        if (previousToPreviousToLastMove && previousToPreviousToLastMove.type != GoMoveTypePlay)
           continue;
         enum GoColor alternatingNextMoveColor = [GoUtilities alternatingColorForColor:game.nextMoveColor];
         NSString* alternatingNextMoveColorName = [[NSString stringWithGoColor:alternatingNextMoveColor] lowercaseString];
