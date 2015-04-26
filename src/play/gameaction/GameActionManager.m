@@ -1003,11 +1003,24 @@ static GameActionManager* sharedGameActionManager = nil;
     {
       case GoGameHasEndedReasonTwoPasses:
       case GoGameHasEndedReasonThreePasses:
-        game.score.scoringEnabled = true;
-        [game.score calculateWaitUntilDone:false];
+      {
+        @try
+        {
+          [[ApplicationStateManager sharedManager] beginSavePoint];
+          game.score.scoringEnabled = true;
+          [game.score calculateWaitUntilDone:false];
+        }
+        @finally
+        {
+          [[ApplicationStateManager sharedManager] applicationStateDidChange];
+          [[ApplicationStateManager sharedManager] commitSavePoint];
+        }
         break;
+      }
       default:
+        {
         break;
+        }
     }
   }
 }
