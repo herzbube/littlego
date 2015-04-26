@@ -709,12 +709,64 @@ Cf. http://sourceforge.net/apps/trac/fuego/wiki/ShowingTerritoryStatistics
 - Decimal values range from -1.0 (always white) to +1.0 (always black)
 
 
+Rules of Go
+-----------
+There are many rulesets to play Go, an overview is available at the Sensei's
+Library '[1] and, even more concise, on the British Go Association website [2].
+A ruleset is a compilation of rules that govern the following:
+- What constitutes a legal move
+  - Which ko rule is used?
+  - Is suicide possible?
+- How the score is calculated
+  - Which is the default komi?
+  - Which scoring system is in use?
+  - Which counting method is in use?
+  - Are points in seki counted?
+  - Other things that influence the score, such as handing a pass stone to the
+    opponent when passing, or requiring white to make the last move (both AGA
+    rules specialities)
+- Procedure
+  - How is the starting (= black) player determined?
+  - How are handicap points placed?
+  - When does the game end?
+  - At the end of the game, how are disputes about life and death resolved?
+
+With some restrictions, Little Go allows the user to compose his own ruleset
+when he starts a game, thus enabling the user to play according to most of the
+common rulesets. Here is an overview:
+
+                | Ko          | Suicide |      |           | Game ending
+                | rule        | allowed | Komi | Scoring   | procedure
+----------------+-------------+---------+------+-----------+-------------------------------------------------------------------------------------------
+Japanese rules  | Simple      | No      | 6.5  | Territory | Two passes (play is resumed to settle disputes, non-alternating play)
+Chinese rules   | Positional  | No      | 7.5  | Area      | Two passes (play is resumed to settle disputes, non-alternating play)
+AGA rules       | Situational | No      | 7.5  | Area      | Two passes (play is resumed to settle disputes, alternating play), four passes (game ends)
+IGS rules       | Simple      | No      | 6.5  | Territory | Three passes (play is resumed by discarding the last pass move to settle disputes)
+Little Go rules | Simple      | No      | 7.5  | Area      | Two passes (play is resumed to settle disputes, alternating play)
+
+
+Little Go does not strive to provide a 100% exact representation of the various
+rulesets. The main goal of the app is, after all, to let the user play and enjoy
+the game. Here are some notable exceptions:
+- Little Go uses the handicap positions specified in section 4.1.1 of the GTP v2
+  specification ([3]). Little Go does not allow free placing of handicap stones,
+  and it only supports a maximum of 9 handicap stones.
+- Little Go has its own counting methods, one for Territory scoring and one for
+  Area scoring. Little Go's counting methods are, of course, based on the two
+  most commonly used counting methods for the two scoring systems (Japanese and
+  Chinese counting methods). See the following sections for more information.
+
+
+[1] http://senseis.xmp.net/?RulesOfGo
+[2] http://www.britgo.org/rules/compare.html
+[3] http://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html#sec:fixed-handicap-placement
+
+
 Scoring and counting
 --------------------
-The difference between scoring and counting
-- The terms "scoring" and "counting" are often used interchangeably (e.g.
-  "chinese scoring", "chinese counting") when in fact the two are different
-  things.
+The terms "scoring" and "counting" are often used interchangeably (e.g.
+"chinese scoring", "chinese counting") when in fact the two are different
+things:
 - The scoring system in use determines *what* counts. For instance, do captured
   stones count? Do occupied intersections count?
 - The counting method in use determines *how* the count is made. For instance,
@@ -723,67 +775,57 @@ The difference between scoring and counting
   player who owns the stones.
 - The scoring system has an influence on how the game is played and is part of
   the game rules.
-- Using different counting methods may yield different scores, but the winning
-  player always remains the same.
+- The scoring system determines which counting methods can be used.
+- Using different counting methods may yield different individual scores for
+  each player, but
+  - The winning player always remains the same
+  - Also, the amount by which a player wins always remains the same (e.g.
+    "black wins by 3.5 points")
 
-Glossary
-- Territory = Empty intersections surrounded by the stones of a color
-- Area = Intersections occupied by the stones of a color
+Little Go currently distinguishes between two scoring systems. The user must
+select one of these when he starts a game:
+- Territory Scoring
+- Area scoring
 
-Territory scoring
-- The basic rules of this scoring system are
-  - Remove dead stones from the board, adding them to the already captured
-    stones
-  - Start the score with your territory (excluding territory surrounded in Seki)
-  - Subtract the number of your stones that were captured by the opponent (this
-    includes the dead stones that were initially removed from the board)
-  - Add Komi (for white only)
-- The basic rules allow negative scores, so there are variations how to count
-  captured stones
-  - Japanese counting (http://senseis.xmp.net/?JapaneseCounting): Subtract only
-    as many captured stones until you reach zero. Any surplus captured stones
-    are then added to the opponent's score. For the white player, Komi is added
-    *after* handling captured stones.
-  - Little Go: Instead of subtracting captured stones from the owning player's
-    score, simply add them to the opponent's score. This makes sure that no
-    negative scores can occur, but it will result in overall higher scores.
-- Handicap has no effect on the score under Territory scoring rules
-- Komi for non-handicap games is 6.5
+Little Go currently does not allow the user to select a specific counting method
+because it assumes that the user is mainly interested in the final score, which
+expresses who won, and by how much that player won. Nevertheless, Little Go
+shows details about how the final score was calculated. It can be said that
+Little Go has its own counting method.
 
-Area scoring
-- The basic rules of this scoring system are
-  - Remove dead stones from the board, giving them back to the owning player
-  - Start the score with your territory (including territory surrounded in Seki)
-  - Add the number of stones of your color on the board
-  - Add Komi (for white only)
-  - Add compensation for handicap stones (for white only)
-- There are a few variations how to count handicap
-  - The basic goal always is to compensate white for the area occupied by the
-    handicap stones
-  - Chinese counting: For a handicap with n stones, black subtracts n/2 from his
-    score, white adds n/2 to his score.
-  - AGA (American Go Association) counting: For a handicap with n stones, white
-    adds n-1 to his score.
-- Komi for non-handicap games is 7.5
+Finally, some clarification of terms:
+- Chinese scoring = The scoring system used in the Chinese ruleset. The Chinese
+  ruleset uses the Area scoring system, which is why Chinese scoring is often
+  used interchangeably with Area scoring.
+- Chinese counting = The counting system used in the Chinese ruleset. This
+  counting system can be used to determine the score in a game that uses Area
+  scoring, which is why Chinese counting is sometimes used interchangeably with
+  Area scoring.
+- Japanese scoring = The scoring system used in the Japanese ruleset. The
+  Japanese ruleset uses the Territory scoring system, which is why Japanese
+  scoring is often used interchangeably with Territory scoring.
+- Japanese counting = The counting system used in the Japanese ruleset. This
+  counting system can be used to determine the score in a game that uses
+  Territory scoring, which is why Japanese counting is sometimes used
+  interchangeably with Territory scoring.
 
 Links & resources
 - http://senseis.xmp.net/?Scoring
   - Has basic rules for the two scoring systems
+- http://www.britgo.org/rules/compare.html
+  - Very good comparison of different Go rulesets, including some clarification
+    regarding the handling of handicap compensation in the various rulesets
+  - Also has an enlightening "Scoring" section that explains how the AGA rules
+    use Area scoring, while at the same time supporting both territory AND area
+    counting methods.
 - http://senseis.xmp.net/?TerritoryAndAreaScoring
   - Compares the two scoring systems
-  - Mentions the n/2 handicap compensation in reference to the Chinese counting
-    method
-  - Also mentions the AGA handicap compensation system
 - http://senseis.xmp.net/?ChineseCounting
   - The counting method most often used for area scoring
-  - Mentions handicap compensation in a rather ambiguous way
 - http://senseis.xmp.net/?JapaneseCounting
   - The counting method most often used for territory scoring
 - http://senseis.xmp.net/?Komi
   - Explains which Komi should be used for the different scoring systems
-- http://www.britgo.org/rules/compare.html
-  - Good comparison of different Go rulesets, including some clarification
-    regarding the handling of handicap compensation
 
 GTP commands involved in scoring
 - go_param_rules japanese_scoring
@@ -791,11 +833,11 @@ GTP commands involved in scoring
     value = 0) and territory scoring (parameter value = 1)
 - go_param_rules capture_dead
   - Somewhere in the Fuego source code the parameter is documented like this:
-      "Whether it necessary to capture dead stones. With some rules all
-      un-captured stones count as alive."
-  - The rules for neither area nor territory scoring mandate that un-captured
-    stones count as alive
-  - Therefore the capture_dead parameter must be set to 0 (= turned off)
+    "Whether it necessary to capture dead stones. With some rules all
+    un-captured stones count as alive."
+  - None of the rules (= scoring systems) that Little Go supports mandate that
+    un-captured stones count as alive, therefore we must set the "capture_dead"
+    parameter to 0 (= turned off)
   - 0 is already the default value, so no GTP command must be sent
 - uct_param_player early_pass
   - The meaning of this parameter is not fully understood
@@ -810,6 +852,177 @@ GTP commands involved in scoring
 
 [1] https://sourceforge.net/mailarchive/message.php?msg_id=31365068
 [2] https://sourceforge.net/apps/trac/fuego/attachment/wiki/JapaneseRules/%5Bfuego-devel%5D%20Supported%20Go%20rules.txt
+
+
+Counting methods
+----------------
+This section has details about a number of common counting methods, in case
+future implementation of the app want to provide the user with a choice.
+
+Glossary
+- Territory = Empty intersections surrounded by the stones of a color
+- Area = Intersections occupied by the stones of a color
+
+Territory scoring
+- Japanese rules
+  - Information taken from [1], [2], [3], [11]
+  - Count territory
+    - Exclude territory surrounded by stones in seki
+  - Subtract from territory
+    - Prisoners
+    - Dead stones
+    - Both of these are subtracted because according to the rules prisoners and
+      dead stones are filled into the territory on the board, thus diminishing
+      the territory count
+    - Note: The official rules ([1]) do not mention what happens if there are
+      more prisoners and dead stones than there is territory to fill in. One of
+      the Sensei's Library pages ([3]) says that any surplus stones are added to
+      the opponent's score.
+  - Komi
+    - Add komi to white's score
+    - Note: I did not find this in [1], in fact the rules don't mention komi at
+      all. The information how to score komi appears in [11]. Also, [2] mentions
+      komi but does not say how to count it.
+  - Handicap
+    - Not relevant because area is not counted
+- Little Go
+  - Count territory
+    - Exclude territory surrounded by stones in seki
+  - Add prisoners
+  - Add dead stones
+  - Komi
+    - Add komi to white's score
+  - Handicap
+    - Not relevant because area is not counted
+
+Area scoring
+- Chinese rules
+  - Information taken from [4], [5], [6], [11]
+  - Count territory
+    - Include territory surrounded by stones in seki
+  - Add number of stones
+  - Add half of the neutral area to each player's score
+  - Komi
+    - Subtract 3.75 from black's score (for a 7.5 komi)
+    - Note: The official rules [4] do not state anything about non-standard
+      komi, but it's reasonable to assume that we should always subtract half of
+      the komi from black's score
+  - Handicap
+    - If the handicap is n stones, and n>0, add n/2 to white's score and
+      subtract n/2 from black's score
+    - Note: I did not find this in the official rules [4]. The way how to score
+      handicap compensation comes from [11]. One of the Sensei's Library pages
+      [6] says to add n compensation to white's score, but another page [12]
+      follows the convention on [11]
+- AGA rules, territory counting (the default, as specified by the rules)
+  - Information taken from [7], [8], [9], [10], [11]
+  - Count territory
+    - Include territory surrounded by stones in seki
+  - Subtract from territory
+    - Prisoners
+      - Includes pass stones
+      - Includes the pass stone for the very last pass made by white
+    - Dead stones
+    - Note: The rules [7] mention that "it is customary for the players to fill
+      in their opponent's territory with their prisoners, and to then rearrange
+      their territories to facilitate counting. These are merely mechanical
+      conventions to simplify counting". Since Little Go is quite capable of
+      counting without any simplifications, these conventions need not be
+      followed by Little Go. On the other hand, not following conventions might
+      result in negative scores. It would also mean that the AGA rules and the
+      Japanese rules territory counting methods differ, which is probably not
+      what the designers of the AGA rules intended. This example beautifully
+      shows the futility of strictly adhering to the letters of a ruleset.
+  - Komi
+    - Add komi to white's score
+- AGA rules, area counting
+  - Information taken from [7], [8], [9], [10], [11]
+  - Count territory
+    - Include territory surrounded by stones in seki
+  - Add number of stones
+  - Komi
+    - Add komi to white's score
+  - Handicap
+    - If the handicap is n stones, and n>0, add n-1 handicap compensation to
+      white's score
+- Little Go
+  - Count territory
+    - Include territory surrounded by stones in seki
+  - Add number of stones
+  - Komi
+    - Add komi to white's score
+  - Handicap
+    - If the handicap is n stones, and n>0, add n handicap compensation to
+      white's score
+
+
+[1] http://www-2.cs.cmu.edu/~wjh/go/rules/Japanese.html
+[2] http://senseis.xmp.net/?JapaneseRules
+[3] http://senseis.xmp.net/?JapaneseCounting
+[4] http://home.snafu.de/jasiek/c2002.pdf
+[5] http://senseis.xmp.net/?ChineseRules
+[6] http://senseis.xmp.net/?ChineseCounting
+[7] http://www.usgo.org/files/pdf/completerules.pdf
+[8] http://www.cs.cmu.edu/~wjh/go/rules/AGA.commentary.html
+[9] http://senseis.xmp.net/?AGARules
+[10] http://www.lifein19x19.com/forum/viewtopic.php?f=45&t=10634
+[11] http://www.britgo.org/rules/compare.html
+[12] http://senseis.xmp.net/?TerritoryAndAreaScoring
+
+
+Settling life & death disputes
+------------------------------
+At the end of the game, before the score can be determined, players must agree
+on which stones on the board are alive, and which are dead. If disputes arise,
+they are settled according to the rules in use, which can cause different move
+patterns to emerge.
+
+End of game signal / beginning of the scoring phase:
+- Japanese, Chinese and AGA rules: 2 consecutive pass moves
+- IGS rules: 3 consecutive pass moves
+
+Resuming play to settle disputes
+- Japanese rules (from [1])
+  - A player can request that the game be resumed
+  - The opponent must oblige the request and has the right to play first
+  - In other words: It is not relevant who made the second pass, the same
+    player can play again.
+- Chinese rules (from [2], buried in chapter 3 "Rules for Referees" in
+  section 21 "Ending the game")
+  - 21.3 and 21.4 seem to contradict, so I assume that 21.4 overrides 21.3
+  - To quote 21.4: "Both players must agree about which stones are dead and
+    which are alive. If there is disagreement, the game is resumed. The one who
+    thinks the stones are dead plays first, and the argument is resolved by
+    playing it out."
+  - As with Japanese rules, it is not relevant who made the second pass, the
+    same player can play again.
+- AGA rules (from [3])
+  - When play resumes, the sequence of play continues as normal from the last
+    pass move, i.e. the first move is made by the opponent of the player who
+    made the last pass move.
+- IGS rules (from [4])
+  - An undo of the third pass move is made, then play resumes
+  - The sequence of play continues as normal from the last pass move, i.e. the
+    first move is made by the opponent of the player who made the last pass
+    move.
+  - Note: This is my interpretation of the rules as outlined in [4]. The wording
+    in that document is not unambiguous.
+
+Special AGA rules (from [3], [5], [6] and, especially, [7])
+- If the two pass moves signaling the end of the game are followed by another
+  two consecutive pass moves (making for a total of 4 pass moves), the game ends
+  immediately, with all stones on the board deemed alive.
+- White must always make the last pass move. The result is that the number of
+  pass moves at the end of the game can vary between 2-5
+
+
+[1] http://www-2.cs.cmu.edu/~wjh/go/rules/Japanese.html
+[2] http://home.snafu.de/jasiek/c2002.pdf
+[3] http://www.usgo.org/files/pdf/completerules.pdf
+[4] http://home.snafu.de/jasiek/igsrules.html
+[5] http://www.cs.cmu.edu/~wjh/go/rules/AGA.commentary.html
+[6] http://senseis.xmp.net/?AGARules
+[7] http://www.lifein19x19.com/forum/viewtopic.php?f=45&t=10634
 
 
 Redesigning the drawing mechanism in PlayView (v0.8)
