@@ -37,6 +37,9 @@
   XCTAssertNotNil(m_game.rules);
   XCTAssertEqual(m_game.rules.koRule, GoKoRuleSimple);
   XCTAssertEqual(m_game.rules.scoringSystem, GoScoringSystemAreaScoring);
+  XCTAssertEqual(m_game.rules.lifeAndDeathSettlingRule, GoLifeAndDeathSettlingRuleTwoPasses);
+  XCTAssertEqual(m_game.rules.disputeResolutionRule, GoDisputeResolutionRuleAlternatingPlay);
+  XCTAssertEqual(m_game.rules.fourPassesRule, GoFourPassesRuleFourPassesHaveNoSpecialMeaning);
 }
 
 // -----------------------------------------------------------------------------
@@ -48,10 +51,16 @@
   NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
   newGameModel.koRule = GoKoRuleSuperkoPositional;
   newGameModel.scoringSystem = GoScoringSystemTerritoryScoring;
+  newGameModel.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleThreePasses;
+  newGameModel.disputeResolutionRule = GoDisputeResolutionRuleNonAlternatingPlay;
+  newGameModel.fourPassesRule = GoFourPassesRuleFourPassesEndTheGame;
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   XCTAssertEqual(m_game.rules.koRule, GoKoRuleSuperkoPositional);
   XCTAssertEqual(m_game.rules.scoringSystem, GoScoringSystemTerritoryScoring);
+  XCTAssertEqual(m_game.rules.lifeAndDeathSettlingRule, GoLifeAndDeathSettlingRuleThreePasses);
+  XCTAssertEqual(m_game.rules.disputeResolutionRule, GoDisputeResolutionRuleNonAlternatingPlay);
+  XCTAssertEqual(m_game.rules.fourPassesRule, GoFourPassesRuleFourPassesEndTheGame);
 }
 
 @end

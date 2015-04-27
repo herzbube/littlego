@@ -399,18 +399,65 @@
 // -----------------------------------------------------------------------------
 - (void) testReasonForGameHasEnded
 {
+  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game resign];
   XCTAssertEqual(GoGameHasEndedReasonResigned, m_game.reasonForGameHasEnded);
 
-  // Cannot undo a "resign", and we don't want to fiddle with game state, so
-  // we must create a new game
+  // Can resume play an arbitrary number of times; each time two passes are made
+  // the game ends GoGameHasEndedReasonTwoPasses
+  [m_game revertStateFromEndedToInProgress];
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  [m_game pass];
+  [m_game pass];
+  XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
+  [m_game revertStateFromEndedToInProgress];
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  [m_game pass];
+  [m_game pass];
+  XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
+
+  // If GoFourPassesRuleFourPassesEndTheGame is active it will cause the game
+  // to end with reason GoGameHasEndedReasonFourPasses when the second pair of
+  // pass moves is made
+  newGameModel.fourPassesRule = GoFourPassesRuleFourPassesEndTheGame;
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game pass];
   [m_game pass];
   XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
+  [m_game revertStateFromEndedToInProgress];
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  [m_game pass];
+  [m_game pass];
+  // If the game has ended with reason GoGameHasEndedReasonFourPasses, the UI
+  // forces the user to discard the last pass move if he wants to continue
+  // playing. In other words, in the UI there is no way to resume play as we
+  // do where, so this test is somewhat contrived.
+  XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
+  [m_game revertStateFromEndedToInProgress];
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  [m_game pass];
+  [m_game pass];
+
+  // The UI does not allow GoLifeAndDeathSettlingRuleThreePasses and
+  // GoFourPassesRuleFourPassesEndTheGame to be active at the same time, so this
+  // test may seem a bit contrived. On the other hand, GoGame is perfectly
+  // capable of handling these two rules, so let's test away...
+  newGameModel.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleThreePasses;
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  [m_game pass];
+  [m_game pass];
+  [m_game pass];
+  XCTAssertEqual(GoGameHasEndedReasonThreePasses, m_game.reasonForGameHasEnded);
+  [m_game revertStateFromEndedToInProgress];
+  [m_game pass];
+  // GoGameHasEndedReasonFourPasses
+  XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
 }
 
 // -----------------------------------------------------------------------------
@@ -847,6 +894,10 @@
   XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+
+  // The public API of GoGame does not provide a means to set nextMoveColor to
+  // GoColorNone, so we cannot test whether switchNextMoveColor really raises
+  // NSInternalInconsistencyException if it encounters GoColorNone
 }
 
 // -----------------------------------------------------------------------------
