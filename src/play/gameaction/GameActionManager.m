@@ -578,7 +578,8 @@ static GameActionManager* sharedGameActionManager = nil;
   if (game.score.scoringEnabled)
   {
     [self addGameAction:GameActionScoringDone toVisibleStatesDictionary:visibleStates];
-    [self addGameAction:GameActionDiscardBoardPosition toVisibleStatesDictionary:visibleStates];
+    if (boardPosition.numberOfBoardPositions > 1)
+      [self addGameAction:GameActionDiscardBoardPosition toVisibleStatesDictionary:visibleStates];
   }
   else
   {
@@ -592,7 +593,6 @@ static GameActionManager* sharedGameActionManager = nil;
             [self addGameAction:GameActionContinue toVisibleStatesDictionary:visibleStates];
         }
         else
-
         {
           if (GoGameStateGameHasEnded == game.state)
             [self addGameAction:GameActionScoringStart toVisibleStatesDictionary:visibleStates];
