@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
 
-@property(nonatomic, assign) bool scoreWhenGameEnds;
+@property(nonatomic, assign) bool autoScoringAndResumingPlay;
 @property(nonatomic, assign) bool askGtpEngineForDeadStones;
 @property(nonatomic, assign) bool markDeadStonesIntelligently;
 @property(nonatomic, assign) enum InconsistentTerritoryMarkupType inconsistentTerritoryMarkupType;

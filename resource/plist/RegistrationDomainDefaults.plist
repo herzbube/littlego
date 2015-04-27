@@ -272,7 +272,7 @@
 	</array>
 	<key>Scoring</key>
 	<dict>
-		<key>ScoreWhenGameEnds</key>
+		<key>AutoScoringAndResumingPlay</key>
 		<true/>
 		<key>AskGtpEngineForDeadStones</key>
 		<true/>

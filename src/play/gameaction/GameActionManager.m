@@ -19,6 +19,7 @@
 #import "GameActionManager.h"
 #import "../controller/DiscardFutureMovesAlertController.h"
 #import "../model/BoardViewModel.h"
+#import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
@@ -276,13 +277,7 @@ static GameActionManager* sharedGameActionManager = nil;
   GoGame* game = [GoGame sharedGame];
   game.score.scoringEnabled = false;  // triggers notification to which this manager reacts
 
-  bool shouldAllowResumePlay = [GoUtilities shouldAllowResumePlay:game];
-  if (shouldAllowResumePlay)
-  {
-    // ResumePlayCommand may show an alert view, so code execution may return
-    // to us before play is actually resumed
-    [[[[ResumePlayCommand alloc] init] autorelease] submit];
-  }
+  [self autoResumePlayIfNecessary];
 }
 
 // -----------------------------------------------------------------------------
@@ -971,39 +966,65 @@ static GameActionManager* sharedGameActionManager = nil;
     return;
   self.scoringModeNeedUpdate = false;
 
+  [self autoEnableScoringIfNecessary];
+}
+
+#pragma mark - Auto scoring & resuming play
+
+// -----------------------------------------------------------------------------
+/// @brief Enables scoring mode if the user preferences and the current game
+/// state allow it.
+// -----------------------------------------------------------------------------
+- (void) autoEnableScoringIfNecessary
+{
+  if (! [ApplicationDelegate sharedDelegate].scoringModel.autoScoringAndResumingPlay)
+    return;
   GoGame* game = [GoGame sharedGame];
-  if (GoGameStateGameHasEnded == game.state)
+  if (GoGameStateGameHasEnded != game.state)
+    return;
+  // Only trigger scoring if it makes sense to do so. It specifically does
+  // not make sense in the following cases:
+  // - If a player resigned - that player has lost the game by his own
+  //   explicit action, so we don't need to calculate a score.
+  // - If the game ended due to four passes - in this case all stones are
+  //   deemed alive and no life & death settling is required
+  switch (game.reasonForGameHasEnded)
   {
-    // Only trigger scoring if it makes sense to do so. It specifically does
-    // not make sense in the following cases:
-    // - If a player resigned - that player has lost the game by his own
-    //   explicit action, so we don't need to calculate a score.
-    // - If the game ended due to four passes - in this case all stones are
-    //   deemed alive and no life & death settling is required
-    switch (game.reasonForGameHasEnded)
-    {
-      case GoGameHasEndedReasonTwoPasses:
-      case GoGameHasEndedReasonThreePasses:
-      {
-        @try
-        {
-          [[ApplicationStateManager sharedManager] beginSavePoint];
-          game.score.scoringEnabled = true;
-          [game.score calculateWaitUntilDone:false];
-        }
-        @finally
-        {
-          [[ApplicationStateManager sharedManager] applicationStateDidChange];
-          [[ApplicationStateManager sharedManager] commitSavePoint];
-        }
-        break;
-      }
-      default:
-      {
-        break;
-      }
-    }
+    case GoGameHasEndedReasonTwoPasses:
+    case GoGameHasEndedReasonThreePasses:
+      break;
+    default:
+      return;
   }
+
+  @try
+  {
+    [[ApplicationStateManager sharedManager] beginSavePoint];
+    game.score.scoringEnabled = true;
+    [game.score calculateWaitUntilDone:false];
+  }
+  @finally
+  {
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
+    [[ApplicationStateManager sharedManager] commitSavePoint];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Resumes play if the user preferences and the current game state
+/// allow it.
+// -----------------------------------------------------------------------------
+- (void) autoResumePlayIfNecessary
+{
+  if (! [ApplicationDelegate sharedDelegate].scoringModel.autoScoringAndResumingPlay)
+    return;
+  GoGame* game = [GoGame sharedGame];
+  bool shouldAllowResumePlay = [GoUtilities shouldAllowResumePlay:game];
+  if (! shouldAllowResumePlay)
+    return;
+  // ResumePlayCommand may show an alert view, so code execution may return
+  // to us before play is actually resumed
+  [[[[ResumePlayCommand alloc] init] autorelease] submit];
 }
 
 #pragma mark - Private helpers

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
   self = [super init];
   if (! self)
     return nil;
-  self.scoreWhenGameEnds = true;
+  self.autoScoringAndResumingPlay = true;
   self.askGtpEngineForDeadStones = false;
   self.markDeadStonesIntelligently = false;
   self.inconsistentTerritoryMarkupType = InconsistentTerritoryMarkupTypeDotSymbol;
@@ -47,7 +47,7 @@
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:scoringKey];
-  self.scoreWhenGameEnds = [[dictionary valueForKey:scoreWhenGameEndsKey] boolValue];
+  self.autoScoringAndResumingPlay = [[dictionary valueForKey:autoScoringAndResumingPlayKey] boolValue];
   self.askGtpEngineForDeadStones = [[dictionary valueForKey:askGtpEngineForDeadStonesKey] boolValue];
   self.markDeadStonesIntelligently = [[dictionary valueForKey:markDeadStonesIntelligentlyKey] boolValue];
   self.inconsistentTerritoryMarkupType = [[dictionary valueForKey:inconsistentTerritoryMarkupTypeKey] intValue];
@@ -65,7 +65,7 @@
   // setObject:forKey:() which is less forgiving and would force us to check
   // for nil values.
   // Note: Use NSNumber to represent int and bool values as an object.
-  [dictionary setValue:[NSNumber numberWithBool:self.scoreWhenGameEnds] forKey:scoreWhenGameEndsKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.autoScoringAndResumingPlay] forKey:autoScoringAndResumingPlayKey];
   [dictionary setValue:[NSNumber numberWithBool:self.askGtpEngineForDeadStones] forKey:askGtpEngineForDeadStonesKey];
   [dictionary setValue:[NSNumber numberWithBool:self.markDeadStonesIntelligently] forKey:markDeadStonesIntelligentlyKey];
   [dictionary setValue:[NSNumber numberWithInt:self.inconsistentTerritoryMarkupType] forKey:inconsistentTerritoryMarkupTypeKey];

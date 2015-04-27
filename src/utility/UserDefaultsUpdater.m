@@ -63,6 +63,7 @@ NSString* maximumZoomScaleKey = @"MaximumZoomScale";
 NSString* selectedTabIndexKey = @"SelectedTabIndex";
 NSString* stoneDistanceFromFingertipKey = @"StoneDistanceFromFingertip";
 const float stoneDistanceFromFingertipDefault = 0.5;
+NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
 //@}
 
 
@@ -667,6 +668,16 @@ const float stoneDistanceFromFingertipDefault = 0.5;
     [userDefaults setObject:boardViewDictionaryUpgrade forKey:boardViewKey];
   }
 
+  // Rename key in "Scoring" dictionary
+  id scoringDictionary = [userDefaults objectForKey:scoringKey];
+  if (scoringDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* scoringDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:scoringDictionary];
+    bool scoreWhenGameEnds = [[scoringDictionaryUpgrade valueForKey:scoreWhenGameEndsKey] boolValue];
+    [scoringDictionaryUpgrade removeObjectForKey:scoreWhenGameEndsKey];
+    [scoringDictionaryUpgrade setValue:[NSNumber numberWithBool:scoreWhenGameEnds] forKey:autoScoringAndResumingPlayKey];
+    [userDefaults setObject:scoringDictionaryUpgrade forKey:scoringKey];
+  }
 }
 
 // -----------------------------------------------------------------------------

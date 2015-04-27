@@ -285,7 +285,7 @@ NSString* gtpLogViewFrontSideIsVisibleKey = @"GtpLogViewFrontSideIsVisible";
 NSString* gtpCannedCommandsKey = @"GtpCannedCommands";
 // Scoring settings
 NSString* scoringKey = @"Scoring";
-NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
+NSString* autoScoringAndResumingPlayKey = @"AutoScoringAndResumingPlay";
 NSString* askGtpEngineForDeadStonesKey = @"AskGtpEngineForDeadStones";
 NSString* markDeadStonesIntelligentlyKey = @"MarkDeadStonesIntelligently";
 NSString* inconsistentTerritoryMarkupTypeKey = @"InconsistentTerritoryMarkupType";

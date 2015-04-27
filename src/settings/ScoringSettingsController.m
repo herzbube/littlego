@@ -34,7 +34,7 @@ NSString* inconsistentTerritoryMarkupTypeText = @"Inconsistent territory markup 
 // -----------------------------------------------------------------------------
 enum ScoringTableViewSection
 {
-  ScoreWhenGameEndsSection,
+  AutoScoringAndResumingPlaySection,
   AskGtpEngineForDeadStonesItemSection,
   MarkDeadStonesIntelligentlySection,
   InconsistentTerritoryMarkupTypeSection,
@@ -42,12 +42,12 @@ enum ScoringTableViewSection
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the ScoreWhenGameEndsSection.
+/// @brief Enumerates items in the AutoScoringAndResumingPlaySection.
 // -----------------------------------------------------------------------------
-enum ScoreWhenGameEndsSectionItem
+enum AutoScoringAndResumingPlaySectionItem
 {
-  ScoreWhenGameEndsItem,
-  MaxScoreWhenGameEndsSectionItem
+  AutoScoringAndResumingPlayItem,
+  MaxAutoScoringAndResumingPlaySectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -144,8 +144,8 @@ enum InconsistentTerritoryMarkupTypeSectionItem
 {
   switch (section)
   {
-    case ScoreWhenGameEndsSection:
-      return MaxScoreWhenGameEndsSectionItem;
+    case AutoScoringAndResumingPlaySection:
+      return MaxAutoScoringAndResumingPlaySectionItem;
     case AskGtpEngineForDeadStonesItemSection:
       return MaxAskGtpEngineForDeadStonesItemSectionItem;
     case MarkDeadStonesIntelligentlySection:
@@ -166,8 +166,12 @@ enum InconsistentTerritoryMarkupTypeSectionItem
 {
   switch (section)
   {
-    case ScoreWhenGameEndsSection:
-      return @"Turn this on to automatically activate scoring mode when the game ends by two consecutive pass moves.";
+    case AutoScoringAndResumingPlaySection:
+      return (@"Recommended for smoother gameplay. Turning this on has two "
+              "effects: 1) The app automatically activates scoring mode when "
+              "the game ends by two consecutive pass moves. 2) The app "
+              "automatically resumes play when you leave scoring mode so that "
+              "you and your opponent can settle life & death disputes.");
     case AskGtpEngineForDeadStonesItemSection:
       return @"When scoring mode is activated the app suggests an initial set of dead stones. The process of finding these dead stones takes a moment, so you may wish to turn this option off.";
     case MarkDeadStonesIntelligentlySection:
@@ -187,14 +191,14 @@ enum InconsistentTerritoryMarkupTypeSectionItem
   UITableViewCell* cell = nil;
   switch (indexPath.section)
   {
-    case ScoreWhenGameEndsSection:
+    case AutoScoringAndResumingPlaySection:
     {
       cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       accessoryView.enabled = YES;
-      cell.textLabel.text = @"Score when game ends";;
-      accessoryView.on = self.scoringModel.scoreWhenGameEnds;
-      [accessoryView addTarget:self action:@selector(toggleScoreWhenGameEnds:) forControlEvents:UIControlEventValueChanged];
+      cell.textLabel.text = @"Auto scoring / resuming play";
+      accessoryView.on = self.scoringModel.autoScoringAndResumingPlay;
+      [accessoryView addTarget:self action:@selector(toggleAutoScoringAndResumingPlay:) forControlEvents:UIControlEventValueChanged];
       break;
     }
     case AskGtpEngineForDeadStonesItemSection:
@@ -293,13 +297,13 @@ enum InconsistentTerritoryMarkupTypeSectionItem
 #pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Score when game ends" switch. Writes
-/// the new value to the appropriate model.
+/// @brief Reacts to a tap gesture on the "Auto scoring / resuming play" switch.
+/// Writes the new value to the appropriate model.
 // -----------------------------------------------------------------------------
-- (void) toggleScoreWhenGameEnds:(id)sender
+- (void) toggleAutoScoringAndResumingPlay:(id)sender
 {
   UISwitch* accessoryView = (UISwitch*)sender;
-  self.scoringModel.scoreWhenGameEnds = accessoryView.on;
+  self.scoringModel.autoScoringAndResumingPlay = accessoryView.on;
 }
 
 // -----------------------------------------------------------------------------
