@@ -23,6 +23,7 @@
 #import "../../go/GoMoveModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
@@ -90,10 +91,12 @@
   NSUInteger handicap = game.handicapPoints.count;
   if (0 == handicap)
     return true;
-  GtpCommand* commandFixedHandicap = [GtpCommand command:[NSString stringWithFormat:@"fixed_handicap %lu", (unsigned long)handicap]];
-  [commandFixedHandicap submit];
-  assert(commandFixedHandicap.response.status);
-  return commandFixedHandicap.response.status;
+  NSString* verticesString = [GoUtilities verticesStringForPoints:game.handicapPoints];
+  NSString* commandString = [@"set_free_handicap " stringByAppendingString:verticesString];
+  GtpCommand* command = [GtpCommand command:commandString];
+  [command submit];
+  assert(command.response.status);
+  return command.response.status;
 }
 
 // -----------------------------------------------------------------------------

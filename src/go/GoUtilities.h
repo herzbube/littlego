@@ -50,5 +50,6 @@
 + (enum GoColor) alternatingColorForColor:(enum GoColor)color;
 + (bool) isGameInResumedPlayState:(GoGame*)game;
 + (bool) shouldAllowResumePlay:(GoGame*)game;
++ (NSString*) verticesStringForPoints:(NSArray*)points;
 
 @end

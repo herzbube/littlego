@@ -369,13 +369,16 @@
 {
   GoGame* game = [GoGame sharedGame];
 
-  // Setup handicap only if there is one. The GTP command "fixed_handicap"
-  // accepts only values >= 2. This should not be a problem since our own
-  // handicap selection screen does not offer to select handicap 1.
+  // Setup handicap only if there is one. The GTP command "set_free_handicap"
+  // accepts only a list with more than 2 vertices. This should not be a problem
+  // since our own handicap selection screen does not offer to select
+  // handicap 1.
   NSUInteger handicap = game.handicapPoints.count;
   if (handicap >= 2)
   {
-    GtpCommand* commandFixedHandicap = [GtpCommand command:[NSString stringWithFormat:@"fixed_handicap %lu", (unsigned long)handicap]];
+    NSString* verticesString = [GoUtilities verticesStringForPoints:game.handicapPoints];
+    NSString* commandString = [@"set_free_handicap " stringByAppendingString:verticesString];
+    GtpCommand* commandFixedHandicap = [GtpCommand command:commandString];
     [commandFixedHandicap submit];
     assert(commandFixedHandicap.response.status);
   }

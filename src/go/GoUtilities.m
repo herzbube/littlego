@@ -596,4 +596,25 @@
   return true;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a single string that consists of a space separated list of
+/// vertices, one for each GoPoint object in @a points. Vertices appear in the
+/// returned string in no particular order. Returns an empty string if @a points
+/// has no elements.
+// -----------------------------------------------------------------------------
++ (NSString*) verticesStringForPoints:(NSArray*)points
+{
+  NSString* verticesString = @"";
+  bool firstVertice = true;
+  for (GoPoint* handicapPoint in points)
+  {
+    if (firstVertice)
+      firstVertice = false;
+    else
+      verticesString = [verticesString stringByAppendingString:@" "];
+    verticesString = [verticesString stringByAppendingString:handicapPoint.vertex.string];
+  }
+  return verticesString;
+}
+
 @end
