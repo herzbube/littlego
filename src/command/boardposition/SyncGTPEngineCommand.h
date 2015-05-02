@@ -38,6 +38,9 @@ enum SyncMoveType
 ///
 /// Optionally SyncGTPEngineCommand may be configured so that it synchronizes
 /// the GTP engine with all moves of the entire game.
+///
+/// If execution of SyncGTPEngineCommand fails, the GTP engine is left in an
+/// unknown state.
 // -----------------------------------------------------------------------------
 @interface SyncGTPEngineCommand : CommandBase
 {

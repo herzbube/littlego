@@ -160,7 +160,16 @@
 
     boardPosition.currentBoardPosition = self.newBoardPosition;
 
-    [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+    bool syncSuccess = [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+    if (! syncSuccess)
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Failed to synchronize the GTP engine state with the current GoGame state"];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
 
     if (game.score.scoringEnabled)
     {

@@ -84,7 +84,8 @@
     temporarilyResyncGTPEngine = true;
     SyncGTPEngineCommand* command = [[[SyncGTPEngineCommand alloc] init] autorelease];
     command.syncMoveType = SyncMovesOfEntireGame;
-    [command submit];
+    bool syncSuccess = [command submit];
+    [self throwIfSyncCommandFailed:syncSuccess];
   }
 
   // Use the file *NAME* without the path
@@ -93,7 +94,10 @@
   [command submit];
 
   if (temporarilyResyncGTPEngine)
-    [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+  {
+    bool syncSuccess = [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+    [self throwIfSyncCommandFailed:syncSuccess];
+  }
 
   // Switch back as soon as possible; from now on operations use the full path
   // to the temporary file
@@ -126,6 +130,22 @@
   [[ApplicationStateManager sharedManager] applicationStateDidChange];
   [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Raises an exception if @a syncCommandResult is false. Does nothing if
+/// @a syncCommandResult is true.
+// -----------------------------------------------------------------------------
+- (void) throwIfSyncCommandFailed:(bool)syncCommandResult
+{
+  if (syncCommandResult)
+    return;
+  NSString* errorMessage = [NSString stringWithFormat:@"Failed to synchronize the GTP engine state with the current GoGame state"];
+  DDLogError(@"%@: %@", self, errorMessage);
+  NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                   reason:errorMessage
+                                                 userInfo:nil];
+  @throw exception;
 }
 
 // -----------------------------------------------------------------------------

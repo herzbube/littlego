@@ -240,8 +240,9 @@
     temporarilyResyncGTPEngine = true;
     SyncGTPEngineCommand* command = [[[SyncGTPEngineCommand alloc] init] autorelease];
     command.syncMoveType = SyncMovesOfEntireGame;
-    [command submit];
-  }
+    bool syncSuccess = [command submit];
+    [self throwIfSyncCommandFailed:syncSuccess];
+ }
 
   NSString* commandString = [NSString stringWithFormat:@"savesgf %@", bugReportCurrentGameFileName];
   GtpCommand* gtpCommand = [GtpCommand command:commandString];
@@ -249,7 +250,10 @@
   bool success = gtpCommand.response.status;
 
   if (temporarilyResyncGTPEngine)
-    [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+  {
+    bool syncSuccess = [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+    [self throwIfSyncCommandFailed:syncSuccess];
+  }
 
   [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];
 
@@ -262,6 +266,22 @@
                                                    userInfo:nil];
     @throw exception;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Raises an exception if @a syncCommandResult is false. Does nothing if
+/// @a syncCommandResult is true.
+// -----------------------------------------------------------------------------
+- (void) throwIfSyncCommandFailed:(bool)syncCommandResult
+{
+  if (syncCommandResult)
+    return;
+  NSString* errorMessage = [NSString stringWithFormat:@"Failed to synchronize the GTP engine state with the current GoGame state"];
+  DDLogError(@"%@: %@", self, errorMessage);
+  NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                   reason:errorMessage
+                                                 userInfo:nil];
+  @throw exception;
 }
 
 // -----------------------------------------------------------------------------
