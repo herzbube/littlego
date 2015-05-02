@@ -195,6 +195,14 @@ enum MainApplicationViewControllerType
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method
 // -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotate
+{
+  return [LayoutManager sharedManager].shouldAutorotate;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method
+// -----------------------------------------------------------------------------
 - (NSUInteger) supportedInterfaceOrientations
 {
   return [LayoutManager sharedManager].supportedInterfaceOrientations;

@@ -27,6 +27,7 @@
 #import "../../main/ApplicationDelegate.h"
 #import "../../main/MainUtility.h"
 #import "../../main/MagnifyingGlassOwner.h"
+#import "../../shared/LayoutManager.h"
 #import "../../ui/MagnifyingViewModel.h"
 #import "../../utility/ExceptionUtility.h"
 
@@ -174,6 +175,10 @@
   switch (recognizerState)
   {
     case UIGestureRecognizerStateBegan:
+    {
+      [LayoutManager sharedManager].shouldAutorotate = false;
+      // No break, fall-through intentional!
+    }
     case UIGestureRecognizerStateChanged:
     {
       if (UIGestureRecognizerStateBegan == recognizerState)
@@ -201,6 +206,7 @@
     }
     case UIGestureRecognizerStateEnded:
     {
+      [LayoutManager sharedManager].shouldAutorotate = true;
       boardViewModel.boardViewDisplaysCrossHair = false;
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
       [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
@@ -213,6 +219,7 @@
     // being handled, or if the gesture recognizer was disabled.
     case UIGestureRecognizerStateCancelled:
     {
+      [LayoutManager sharedManager].shouldAutorotate = true;
       boardViewModel.boardViewDisplaysCrossHair = false;
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
       [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
