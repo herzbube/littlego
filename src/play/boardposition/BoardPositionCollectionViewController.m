@@ -166,15 +166,6 @@
 // -----------------------------------------------------------------------------
 /// @brief UICollectionViewDataSource method.
 // -----------------------------------------------------------------------------
-- (NSInteger) numberOfSectionsInCollectionView:(UICollectionView *)collectionView
-{
-  // TODO xxx not needed if really is 1
-  return 1;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UICollectionViewDataSource method.
-// -----------------------------------------------------------------------------
 - (NSInteger) collectionView:(UICollectionView*)collectionView
       numberOfItemsInSection:(NSInteger)section
 {
@@ -246,7 +237,7 @@
   // positions.
   int newBoardPosition = (int)indexPath.row;
 
-  // The command triggers a notification that we can ignore since it was the
+  // The command triggers a KVO notification that we can ignore since it was the
   // user who made the selection
   self.ignoreCurrentBoardPositionChange = true;
   [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];

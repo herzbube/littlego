@@ -128,15 +128,6 @@
 // -----------------------------------------------------------------------------
 /// @brief UICollectionViewDataSource method.
 // -----------------------------------------------------------------------------
-- (NSInteger) numberOfSectionsInCollectionView:(UICollectionView *)collectionView
-{
-  // TODO xxx not needed if really is 1
-  return 1;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UICollectionViewDataSource method.
-// -----------------------------------------------------------------------------
 - (NSInteger) collectionView:(UICollectionView*)collectionView
       numberOfItemsInSection:(NSInteger)section
 {
