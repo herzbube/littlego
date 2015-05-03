@@ -155,7 +155,7 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, B
   CGContextBeginPath(layerContext);
   CGContextAddRect(layerContext, layerRect);
   CGContextSetStrokeColorWithColor(layerContext, symbolColor.CGColor);
-  CGContextSetLineWidth(layerContext, metrics.normalLineWidth);
+  CGContextSetLineWidth(layerContext, metrics.normalLineWidth * metrics.contentsScale);
   CGContextStrokePath(layerContext);
 
   return layer;
@@ -197,7 +197,7 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, BoardViewMetrics* me
   CGContextMoveToPoint(layerContext, layerRect.origin.x, layerRect.origin.y + layerRect.size.width);
   CGContextAddLineToPoint(layerContext, layerRect.origin.x + layerRect.size.width, layerRect.origin.y);
   CGContextSetStrokeColorWithColor(layerContext, metrics.deadStoneSymbolColor.CGColor);
-  CGContextSetLineWidth(layerContext, metrics.normalLineWidth);
+  CGContextSetLineWidth(layerContext, metrics.normalLineWidth * metrics.contentsScale);
   CGContextStrokePath(layerContext);
 
   return layer;
