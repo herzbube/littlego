@@ -17,6 +17,7 @@
 
 // Project includes
 #import "AutoLayoutUtility.h"
+#import "../utility/UIDeviceAdditions.h"
 
 
 @implementation AutoLayoutUtility
@@ -294,10 +295,22 @@
   static CGFloat horizontalSpacingTableViewCell = -1.0f;
   if (horizontalSpacingTableViewCell < 0.0f)
   {
-    UITableViewCell* cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"dummy"] autorelease];
-    cell.textLabel.text = @"A";
-    [cell layoutIfNeeded];
-    horizontalSpacingTableViewCell = cell.textLabel.frame.origin.x;
+    if ([UIDevice systemVersionMajor] < 8)
+    {
+      UITableViewCell* cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"dummy"] autorelease];
+      cell.textLabel.text = @"A";
+      [cell layoutIfNeeded];
+      horizontalSpacingTableViewCell = cell.textLabel.frame.origin.x;
+    }
+    else
+    {
+      // In iOS 8 the above method to calculate the real value does not work:
+      // The calculated value is 15, i.e. still the same as in iOS 7, but when
+      // we look at the *REAL* spacing we see that in iOS 8 it has increased
+      // to 20. Although hard-coding values is ugly, we don't have any other
+      // choice :-(
+      horizontalSpacingTableViewCell = 20;
+    }
   }
   return horizontalSpacingTableViewCell;
 }
