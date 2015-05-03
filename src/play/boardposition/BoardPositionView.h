@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@
 // -----------------------------------------------------------------------------
 /// @brief The BoardPositionView class shows information about a board position.
 ///
-/// BoardPositionView is used on the iPhone only.
-///
 /// All BoardPositionView instances have the same pre-calculated size.
 ///
 /// The view layout is this:
@@ -35,18 +33,21 @@
 /// +-----------------------------------------------+
 /// @endverbatim
 // -----------------------------------------------------------------------------
-@interface BoardPositionView : UIView
+@interface BoardPositionView : UICollectionViewCell
 {
 }
-
-- (id) initWithBoardPosition:(int)boardPosition;
 
 + (CGSize) boardPositionViewSize;
 
 /// @brief The board position that this view represents. A value of -1 for this
 /// property causes the BoardPositionView to display nothing.
 @property(nonatomic, assign) int boardPosition;
-/// @brief True if this view represents the current board position.
+/// @brief True if this view should render itself with a different background,
+/// indicating that it represents the current board position.
+///
+/// This property must be assigned externally because BoardPositionView is used
+/// not only inside a collection view, so it's not possible to use the
+/// @e selectedBackgroundView property.
 @property(nonatomic, assign) bool currentBoardPosition;
 
 @end

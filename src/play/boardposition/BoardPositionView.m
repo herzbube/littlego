@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,35 +52,23 @@ static UIImage* whiteStoneImage = nil;
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a BoardPositionView object that represents the board
-/// position identified by @a boardPosition.
+/// @brief Initializes a BoardPositionView object with frame @a rect.
 ///
 /// @note This is the designated initializer of BoardPositionView.
 // -----------------------------------------------------------------------------
-- (id) initWithBoardPosition:(int)boardPosition
+- (id) initWithFrame:(CGRect)rect
 {
-  // TODO: We should not need to set a frame.
-  // - BoardPositionView implements intrinsicContentSize in case it is used with
-  //   Auto Layout. This works well.
-  // - If BoardPositionView is used without Auto Layout, the superview or the
-  //   managing view controller is responsible for assigning a frame. This does
-  //   not work quite as expected. For some reason if the frame is not set here
-  //   and BoardPositionView is used in ItemScrollView, there is a weird Auto
-  //   Layout warning. Find out why this is the case so that we can get rid of
-  //   the frame calculation here.
-  CGRect frame = CGRectZero;
-  frame.size = [BoardPositionView boardPositionViewSize];
-  // Call designated initializer of superclass (UIView)
-  self = [super initWithFrame:frame];
+  // Call designated initializer of superclass (UICollectionViewCell)
+  self = [super initWithFrame:rect];
   if (! self)
     return nil;
   self.offscreenMode = false;
-  _boardPosition = boardPosition;  // don't use self, we don't want to trigger the setter
+  _boardPosition = -1;             // don't use self, we don't want to trigger the setter
   _currentBoardPosition = false;   // ditto
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
   [self configureSubviews];
-  [self setupRealContent];
+  // No content to setup, we first need a board position
   return self;
 }
 

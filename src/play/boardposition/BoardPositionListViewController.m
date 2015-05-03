@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,12 +32,13 @@
 /// BoardPositionListViewController.
 // -----------------------------------------------------------------------------
 @interface BoardPositionListViewController()
-@property(nonatomic, assign) ItemScrollView* boardPositionListView;
+@property(nonatomic, retain) NSString* reuseIdentifierCell;
 @property(nonatomic, assign) bool allDataNeedsUpdate;
-@property(nonatomic, assign) bool currentBoardPositionNeedsUpdate;
-@property(nonatomic, assign) int oldBoardPosition;
 @property(nonatomic, assign) bool numberOfItemsNeedsUpdate;
-@property(nonatomic, assign) bool tappingEnabledNeedsUpdate;
+@property(nonatomic, assign) bool currentBoardPositionNeedsUpdate;
+@property(nonatomic, assign) int oldCurrentBoardPosition;
+@property(nonatomic, assign) bool userInteractionEnabledNeedsUpdate;
+@property(nonatomic, retain) NSIndexPath* indexPathForDelayedSelectItemOperation;
 @end
 
 
@@ -50,16 +51,22 @@
 // -----------------------------------------------------------------------------
 - (id) init
 {
-  // Call designated initializer of superclass (UIViewController)
-  self = [super initWithNibName:nil bundle:nil];
+  UICollectionViewFlowLayout* flowLayout = [[[UICollectionViewFlowLayout alloc] init] autorelease];
+  flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+  flowLayout.itemSize = [BoardPositionView boardPositionViewSize];
+  flowLayout.minimumLineSpacing = 0.0f;
+
+  // Call designated initializer of superclass (UICollectionViewController)
+  self = [super initWithCollectionViewLayout:flowLayout];
   if (! self)
     return nil;
-  self.boardPositionListView = nil;
+  self.reuseIdentifierCell = @"BoardPositionView";
   self.allDataNeedsUpdate = false;
-  self.currentBoardPositionNeedsUpdate = false;
-  self.oldBoardPosition = -1;
   self.numberOfItemsNeedsUpdate = false;
-  self.tappingEnabledNeedsUpdate = false;
+  self.currentBoardPositionNeedsUpdate = false;
+  self.oldCurrentBoardPosition = -1;
+  self.userInteractionEnabledNeedsUpdate = false;
+  self.indexPathForDelayedSelectItemOperation = nil;
   return self;
 }
 
@@ -70,29 +77,28 @@
 - (void) dealloc
 {
   [self removeNotificationResponders];
-  self.boardPositionListView = nil;
+  self.indexPathForDelayedSelectItemOperation = nil;
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
-- (void) loadView
+- (void) viewDidLoad
 {
-  self.boardPositionListView = [[[ItemScrollView alloc] initWithFrame:CGRectZero
-                                                          orientation:ItemScrollViewOrientationHorizontal] autorelease];
-  self.view = self.boardPositionListView;
-  self.view.backgroundColor = [UIColor clearColor];
-  self.boardPositionListView.itemScrollViewDelegate = self;
-  self.boardPositionListView.itemScrollViewDataSource = self;
+  [super viewDidLoad];
+
+  [self.collectionView registerClass:[BoardPositionView class]
+          forCellWithReuseIdentifier:self.reuseIdentifierCell];
+  self.collectionView.backgroundColor = [UIColor clearColor];
 
   [self setupNotificationResponders];
 
   self.allDataNeedsUpdate = true;
-  self.currentBoardPositionNeedsUpdate = true;
-  self.oldBoardPosition = -1;
   self.numberOfItemsNeedsUpdate = false;
-  self.tappingEnabledNeedsUpdate = true;
+  self.currentBoardPositionNeedsUpdate = true;
+  self.oldCurrentBoardPosition = -1;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -116,6 +122,71 @@
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
 }
+
+#pragma mark - UICollectionViewDataSource overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UICollectionViewDataSource method.
+// -----------------------------------------------------------------------------
+- (NSInteger) numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+  // TODO xxx not needed if really is 1
+  return 1;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UICollectionViewDataSource method.
+// -----------------------------------------------------------------------------
+- (NSInteger) collectionView:(UICollectionView*)collectionView
+      numberOfItemsInSection:(NSInteger)section
+{
+  GoGame* game = [GoGame sharedGame];
+  if (game)
+    return game.boardPosition.numberOfBoardPositions;
+  else
+    return 0;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UICollectionViewDataSource method.
+// -----------------------------------------------------------------------------
+- (UICollectionViewCell*) collectionView:(UICollectionView*)collectionView
+                  cellForItemAtIndexPath:(NSIndexPath*)indexPath
+{
+  BoardPositionView* cell = [collectionView dequeueReusableCellWithReuseIdentifier:self.reuseIdentifierCell
+                                                                      forIndexPath:indexPath];
+  // Cast is safe, we know that we cannot have more than pow(2, 31) board
+  // positions
+  cell.boardPosition = (int)indexPath.row;
+  cell.currentBoardPosition = (cell.boardPosition == [GoGame sharedGame].boardPosition.currentBoardPosition);
+
+  if (self.indexPathForDelayedSelectItemOperation)
+  {
+    // We should not interrupt the data acquisiton process, so we perform the
+    // scrolling operation asynchronously. See the comments in
+    // updateCurrentBoardPosition for an explanation why we do this stuff here.
+    [self performSelector:@selector(selectItemAtIndexPath:) withObject:self.indexPathForDelayedSelectItemOperation afterDelay:0];
+    self.indexPathForDelayedSelectItemOperation = nil;
+  }
+
+  return cell;
+}
+
+#pragma mark - UICollectionViewDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UICollectionViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) collectionView:(UICollectionView*)collectionView didSelectItemAtIndexPath:(NSIndexPath*)indexPath
+{
+  // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
+  // is safe because this app was not made to handle more than pow(2, 31) board
+  // positions.
+  int newBoardPosition = (int)indexPath.row;
+  [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
+}
+
+#pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper.
@@ -153,8 +224,8 @@
   // launches and we need to display a non-zero board position right after a
   // game is created
   self.currentBoardPositionNeedsUpdate = true;
-  self.oldBoardPosition = -1;
-  self.tappingEnabledNeedsUpdate = true;
+  self.oldCurrentBoardPosition = -1;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -163,7 +234,7 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingStarts:(NSNotification*)notification
 {
-  self.tappingEnabledNeedsUpdate = true;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -172,7 +243,7 @@
 // -----------------------------------------------------------------------------
 - (void) computerPlayerThinkingStops:(NSNotification*)notification
 {
-  self.tappingEnabledNeedsUpdate = true;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -181,7 +252,7 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationStarts:(NSNotification*)notification
 {
-  self.tappingEnabledNeedsUpdate = true;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -190,7 +261,7 @@
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
-  self.tappingEnabledNeedsUpdate = true;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -199,7 +270,7 @@
 // -----------------------------------------------------------------------------
 - (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
 {
-  self.tappingEnabledNeedsUpdate = true;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -208,7 +279,7 @@
 // -----------------------------------------------------------------------------
 - (void) boardViewWillHideCrossHair:(NSNotification*)notification
 {
-  self.tappingEnabledNeedsUpdate = true;
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -233,7 +304,7 @@
     // first notification is the one we need to remember, since the follow-up
     // notifications never caused a BoardPositionView to be updated.
     if (! self.currentBoardPositionNeedsUpdate)
-      self.oldBoardPosition = [[change objectForKey:NSKeyValueChangeOldKey] intValue];
+      self.oldCurrentBoardPosition = [[change objectForKey:NSKeyValueChangeOldKey] intValue];
     self.currentBoardPositionNeedsUpdate = true;
     [self delayedUpdate];
   }
@@ -263,7 +334,7 @@
   // discarded.
   [self updateNumberOfItems];
   [self updateCurrentBoardPosition];
-  [self updateTappingEnabled];
+  [self updateUserInteractionEnabled];
 }
 
 // -----------------------------------------------------------------------------
@@ -276,7 +347,42 @@
   if (! self.allDataNeedsUpdate)
     return;
   self.allDataNeedsUpdate = false;
-  [self.boardPositionListView reloadData];
+  [self.collectionView reloadData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updater method.
+///
+/// Reloads all data in the collection view managed by this controller.
+///
+/// We only know that the number of board positions has changed since the last
+/// update, but we don't know exactly what has changed. Because we don't know
+/// exactly what has changed, it is impossible to delete rows from
+/// UICollectionView, or insert rows into UICollectionView without making
+/// assumptions. For instance:
+/// - User discards 1 board position, then creates a new board position by
+///   playing a move. In this scenario, due to our delayed update scheme, two
+///   changes to the number of board positions are coalesced into a single
+///   update. When the update is finally performed, it appears as if the number
+///   of board positions has not actually changed (1 position was discarded,
+///   1 was added).
+/// - User discards 2 board positions, then creates a new board position by
+///   playing a move. Again, 2 changes are coalesced into one update so that
+///   when the update is finally performed it appears as if one new board
+///   position was added (2 positions were discarded, 1 was added).
+///
+/// We don't want to make assumptions about such scenarios, because future
+/// changes to command implementations are bound to break them. The simplest
+/// solution is to reload the entire collection view. We rely on
+/// UICollectionView to perform smooth UI updates so that no flickering occurs
+/// for cells whose content has not actually changed.
+// -----------------------------------------------------------------------------
+- (void) updateNumberOfItems
+{
+  if (! self.numberOfItemsNeedsUpdate)
+    return;
+  self.numberOfItemsNeedsUpdate = false;
+  [self.collectionView reloadData];
 }
 
 // -----------------------------------------------------------------------------
@@ -296,126 +402,112 @@
   if (! game)
     return;
   GoBoardPosition* boardPosition = game.boardPosition;
-  int newBoardPosition = boardPosition.currentBoardPosition;
+  NSInteger newCurrentBoardPosition = boardPosition.currentBoardPosition;
+  NSInteger numberOfItemsInCollectionView = [self.collectionView numberOfItemsInSection:0];
 
-  if ([self.boardPositionListView isVisibleItemViewAtIndex:self.oldBoardPosition])
+  if (self.oldCurrentBoardPosition >= 0)
   {
-    UIView* itemView = [self.boardPositionListView visibleItemViewAtIndex:self.oldBoardPosition];
-    BoardPositionView* boardPositionView = (BoardPositionView*)itemView;
-    boardPositionView.currentBoardPosition = false;
+    NSIndexPath* indexPathForOldCurrentBoardPosition = [NSIndexPath indexPathForRow:self.oldCurrentBoardPosition inSection:0];
+    // Returns nil if cell is not visible, in which case we don't have to do
+    // anything
+    UICollectionViewCell* cell = [self.collectionView cellForItemAtIndexPath:indexPathForOldCurrentBoardPosition];
+    if (cell)
+    {
+      BoardPositionView* boardPositionView = (BoardPositionView*)cell;
+      boardPositionView.currentBoardPosition = false;
+    }
+    self.oldCurrentBoardPosition = -1;
   }
 
-  if ([self.boardPositionListView isVisibleItemViewAtIndex:newBoardPosition])
+  if (newCurrentBoardPosition < numberOfItemsInCollectionView)
   {
-    UIView* itemView = [self.boardPositionListView visibleItemViewAtIndex:newBoardPosition];
-    BoardPositionView* boardPositionView = (BoardPositionView*)itemView;
+    NSIndexPath* indexPathForNewCurrentBoardPosition = [NSIndexPath indexPathForRow:newCurrentBoardPosition inSection:0];
+    // If the collection view is not visible (= it's window property is nil)
+    // then it won't perform the desired scrolling operation. When the
+    // collection view becomes visible later on, the item will be selected, but
+    // the UICollectionViewCell won't be visible. This happens in at least two
+    // known scenarios:
+    // - The collection view is hidden
+    // - The application launches into an UI area that is not UIAreaPlay
+    // The workaround is to delay the scrolling operation until we know that
+    // the collection view has become visible. In this case we have chosen
+    // collectionView:cellForItemAtIndexPath: as a likely trigger because we
+    // can assume that when the collection view starts to acquire data from its
+    // data source, then it will also be visible.
+    if (self.view.window)
+      [self selectItemAtIndexPath:indexPathForNewCurrentBoardPosition];
+    else
+      self.indexPathForDelayedSelectItemOperation = indexPathForNewCurrentBoardPosition;
+  }
+  else
+  {
+    DDLogError(@"%@: Unexpected new current board position %ld, number of items in collection view = %ld", self, (long)newCurrentBoardPosition, (long)numberOfItemsInCollectionView);
+    assert(0);
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper for updateCurrentBoardPosition.
+// -----------------------------------------------------------------------------
+- (void) selectItemAtIndexPath:(NSIndexPath*)indexPath
+{
+  // Scroll and center only if cell is not visible; if the method was invoked
+  // because the user selected an already visible cell we don't want to center
+  // on that cell, this has a jarring effect
+  UICollectionViewCell* cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+  if (! cell)
+  {
+    UICollectionViewScrollPosition scrollPosition;
+    UICollectionViewFlowLayout* flowLayout = (UICollectionViewFlowLayout*)self.collectionView.collectionViewLayout;
+    if (flowLayout.scrollDirection == UICollectionViewScrollDirectionHorizontal)
+      scrollPosition = UICollectionViewScrollPositionCenteredHorizontally;
+    else
+      scrollPosition = UICollectionViewScrollPositionCenteredVertically;
+    [self.collectionView selectItemAtIndexPath:indexPath
+                                      animated:NO
+                                scrollPosition:scrollPosition];
+    cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+  }
+  if (cell)
+  {
+    BoardPositionView* boardPositionView = (BoardPositionView*)cell;
     boardPositionView.currentBoardPosition = true;
   }
-  else
-  {
-    // Triggers itemScrollView:itemViewAtIndex() where we will set up a new
-    // view with the "currentBoardPosition" flag set correctly
-    [self.boardPositionListView makeVisibleItemViewAtIndex:newBoardPosition animated:true];
-  }
-
-  self.oldBoardPosition = -1;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updater method.
+/// @brief Updates whether user interaction on the collection view should be
+/// enabled or not.
 ///
-/// Updates the number of items (i.e. board positions) in the board position
-/// list view.
+/// Although disabling user interaction is a harsh measure (it even disables
+/// scrolling), it is the only RELIABLE way that I have found to prevent the
+/// user from changing the selected cell. I attempted to override various
+/// UICollectionViewDelegate methods for controlling highlighting/selection,
+/// but without success. Notably:
+/// - I implemented the override
+///   collectionView:shouldHighlightItemAtIndexPath:() so that it returns NO
+///   when selection changes should be disabled
+/// - If this override is present and UICollectionView gets NO as a return
+///   value, the collection view immediately de-selects the currently selected
+///   cell!
 // -----------------------------------------------------------------------------
-- (void) updateNumberOfItems
+- (void) updateUserInteractionEnabled
 {
-  if (! self.numberOfItemsNeedsUpdate)
+  if (! self.userInteractionEnabledNeedsUpdate)
     return;
-  self.numberOfItemsNeedsUpdate = false;
-  // ItemScrollView takes care of moving the content offset (i.e. scrolling
-  // position) if it currently displays views whose index is beyond the new
-  // number of board positions
-  [self.boardPositionListView updateNumberOfItems];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates whether tapping is enabled.
-// -----------------------------------------------------------------------------
-- (void) updateTappingEnabled
-{
-  if (! self.tappingEnabledNeedsUpdate)
-    return;
-  self.tappingEnabledNeedsUpdate = false;
+  self.userInteractionEnabledNeedsUpdate = false;
   GoGame* game = [GoGame sharedGame];
-  if (! game)
-    self.boardPositionListView.tappingEnabled = false;
-  else if (game.isComputerThinking)
-    self.boardPositionListView.tappingEnabled = false;
-  else if (game.score.scoringInProgress)
-    self.boardPositionListView.tappingEnabled = false;
-  else if ([ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
-    self.boardPositionListView.tappingEnabled = false;
-  else
-    self.boardPositionListView.tappingEnabled = true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief ItemScrollViewDataSource protocol method.
-// -----------------------------------------------------------------------------
-- (int) numberOfItemsInItemScrollView:(ItemScrollView*)itemScrollView
-{
-  return [GoGame sharedGame].boardPosition.numberOfBoardPositions;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief ItemScrollViewDataSource protocol method.
-// -----------------------------------------------------------------------------
-- (int) itemWidthInItemScrollView:(ItemScrollView*)itemScrollView
-{
-  return [BoardPositionView boardPositionViewSize].width;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief ItemScrollViewDataSource protocol method.
-// -----------------------------------------------------------------------------
-- (int) itemHeightInItemScrollView:(ItemScrollView*)itemScrollView
-{
-  return [BoardPositionView boardPositionViewSize].height;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief ItemScrollViewDataSource protocol method.
-// -----------------------------------------------------------------------------
-- (UIView*) itemScrollView:(ItemScrollView*)itemScrollView itemViewAtIndex:(int)index
-{
-  BoardPositionView* view = [[[BoardPositionView alloc] initWithBoardPosition:index] autorelease];
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  if (index == boardPosition.currentBoardPosition)
-    view.currentBoardPosition = true;
-  return view;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief ItemScrollViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) itemScrollView:(ItemScrollView*)itemScrollView didTapItemView:(UIView*)itemView
-{
-  if ([self shouldIgnoreTaps])
+  if (! game ||
+      game.isComputerThinking ||
+      game.score.scoringInProgress ||
+      [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
-    DDLogWarn(@"%@: Ignoring board position change", self);
-    return;
+    self.collectionView.userInteractionEnabled = NO;
   }
-  BoardPositionView* boardPositionView = (BoardPositionView*)itemView;
-  int newBoardPosition = boardPositionView.boardPosition;
-  [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns true if taps on item views should currently be ignored.
-// -----------------------------------------------------------------------------
-- (bool) shouldIgnoreTaps
-{
-  return [GoGame sharedGame].isComputerThinking;
+  else
+  {
+    self.collectionView.userInteractionEnabled = YES;
+  }
 }
 
 @end

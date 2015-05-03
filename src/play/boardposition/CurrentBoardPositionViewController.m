@@ -89,7 +89,9 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.boardPositionView = [[[BoardPositionView alloc] initWithBoardPosition:-1] autorelease];
+  CGRect boardPositionViewFrame = CGRectZero;
+  boardPositionViewFrame.size = [BoardPositionView boardPositionViewSize];
+  self.boardPositionView = [[[BoardPositionView alloc] initWithFrame:boardPositionViewFrame] autorelease];
   self.view = self.boardPositionView;
 
 	[self.boardPositionView addGestureRecognizer:self.tapRecognizer];

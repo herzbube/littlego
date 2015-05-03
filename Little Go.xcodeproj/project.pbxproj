@@ -302,7 +302,6 @@
 		CD9A49E917125106009E7514 /* DiscardAndPlayCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */; };
 		CD9A49EA17125115009E7514 /* ContinueGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA711423D80500214BBE /* ContinueGameCommand.m */; };
 		CD9A49EB1712511D009E7514 /* PlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */; };
-		CD9A49EC1712512E009E7514 /* ItemScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC4E979167B996C00AFDB51 /* ItemScrollView.m */; };
 		CD9A49F11712515C009E7514 /* InterruptComputerCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */; };
 		CD9A49F21712516D009E7514 /* EditTextController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCAC14194DA00065C93B /* EditTextController.m */; };
 		CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70A146028770012C3EA /* HandicapSelectionController.m */; };
@@ -375,7 +374,6 @@
 		CDBFCBBE16C3EFB0001D78C0 /* SetupApplicationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */; };
 		CDC0043D192C0777000443A7 /* forward.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC0043B192C0777000443A7 /* forward.png */; };
 		CDC0043E192C0777000443A7 /* forward@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC0043C192C0777000443A7 /* forward@2x.png */; };
-		CDC4E97A167B996C00AFDB51 /* ItemScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC4E979167B996C00AFDB51 /* ItemScrollView.m */; };
 		CDC97A8A182EEB5F00755EB2 /* GoZobristTable.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */; };
 		CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */; };
 		CDC97A8E18301CC100755EB2 /* GoGameRules.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A8D18301CC100755EB2 /* GoGameRules.m */; };
@@ -893,8 +891,6 @@
 		CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetupApplicationCommand.m; sourceTree = "<group>"; };
 		CDC0043B192C0777000443A7 /* forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = forward.png; sourceTree = "<group>"; };
 		CDC0043C192C0777000443A7 /* forward@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "forward@2x.png"; sourceTree = "<group>"; };
-		CDC4E978167B996C00AFDB51 /* ItemScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemScrollView.h; sourceTree = "<group>"; };
-		CDC4E979167B996C00AFDB51 /* ItemScrollView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ItemScrollView.m; sourceTree = "<group>"; };
 		CDC97A88182EEB5F00755EB2 /* GoZobristTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoZobristTable.h; sourceTree = "<group>"; };
 		CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GoZobristTable.mm; sourceTree = "<group>"; };
 		CDC97A8C18301CC000755EB2 /* GoGameRules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameRules.h; sourceTree = "<group>"; };
@@ -1967,8 +1963,6 @@
 				CDFABCAC14194DA00065C93B /* EditTextController.m */,
 				CDDD52591482DD9F0027476B /* ItemPickerController.h */,
 				CDDD525A1482DD9F0027476B /* ItemPickerController.m */,
-				CDC4E978167B996C00AFDB51 /* ItemScrollView.h */,
-				CDC4E979167B996C00AFDB51 /* ItemScrollView.m */,
 				CDB5AE231AC5A86D0075C8DC /* MagnifyingView.h */,
 				CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */,
 				CDB5AE271AC5ABA60075C8DC /* MagnifyingViewController.h */,
@@ -2375,7 +2369,6 @@
 				CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */,
 				CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */,
 				CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */,
-				CDC4E97A167B996C00AFDB51 /* ItemScrollView.m in Sources */,
 				CD15A480168CBE7F00D4472A /* GoMoveModel.m in Sources */,
 				CDA493A7168F26890076E168 /* BoardPositionSettingsController.m in Sources */,
 				CDF630AA168F50BA003C8BEF /* DiscardAndPlayCommand.m in Sources */,
@@ -2605,7 +2598,6 @@
 				CD9A49EA17125115009E7514 /* ContinueGameCommand.m in Sources */,
 				CDEE19F819433EAC00DF2389 /* BoardViewDrawingHelper.m in Sources */,
 				CD9A49EB1712511D009E7514 /* PlayMoveCommand.m in Sources */,
-				CD9A49EC1712512E009E7514 /* ItemScrollView.m in Sources */,
 				CD9A49F11712515C009E7514 /* InterruptComputerCommand.m in Sources */,
 				CD9A49F21712516D009E7514 /* EditTextController.m in Sources */,
 				CD7C69F61AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */,

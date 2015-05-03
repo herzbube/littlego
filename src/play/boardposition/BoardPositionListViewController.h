@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,10 +13,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // -----------------------------------------------------------------------------
-
-
-// Project references
-#import "../../ui/ItemScrollView.h"
 
 
 // -----------------------------------------------------------------------------
@@ -74,10 +70,10 @@
 ///   position is at least partially visible
 /// - The scroll position is updated if the subview for the new board position
 ///   is not visible at all. The scroll position is set so that the subview is
-///   fully in view, either on the left or on the right edge of the board
-///   position list view. The scroll position update is made as if the user had
-///   naturally scrolled to the new board position and then stopped when the new
-///   board position came into view.
+///   fully in view, either centered in the collection view (if there are other
+///   subviews both on the left and the right) or on the left or on the right
+///   edge of the collection view (if there are no more subviews to the left or
+///   to the right).
 ///
 ///
 /// @par Delayed updates
@@ -100,7 +96,7 @@
 /// progress). An updater method will always check if its "needs update" flag
 /// has been set.
 // -----------------------------------------------------------------------------
-@interface BoardPositionListViewController : UIViewController <ItemScrollViewDataSource, ItemScrollViewDelegate>
+@interface BoardPositionListViewController : UICollectionViewController
 {
 }
 
