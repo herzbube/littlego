@@ -206,24 +206,47 @@
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method
 ///
-/// This override handles interface orientation changes.
-///
-/// @note This override is also called if a view controller is pushed onto, or
-/// popped from the navigation stack.
+/// This override exists for the following purposes:
+/// - It contains interface orientation change handling supplementary to
+///   statusBarOrientationDidChange:().
+/// - It contains navigation bar handling that must be executed whenever a view
+///   controller is pushed onto, or popped from the navigation stack, and also
+///   when the interface orientation changes.
 // -----------------------------------------------------------------------------
 - (void) viewWillLayoutSubviews
 {
-  // We install a new root view controller only if the root view controller is
-  // actually visible
-  NSUInteger navigationStackSize = self.viewControllers.count;
-  if (navigationStackSize > 2)
-    return;
+  // The notification handler statusBarOrientationDidChange:() is the main
+  // method responsible for reacting to interface orientation changes. However,
+  // statusBarOrientationDidChange:() does not do anything if the user is on a
+  // deeper level of the navigation stack at the time the interface orientation
+  // change occurs. So here we need supplementary handling, for the time when
+  // the user returns to the root view controller level of the navigation stack.
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
+  if (isPortraitOrientation != self.hasPortraitOrientationViewHierarchy)
+  {
+    NSUInteger navigationStackSize = self.viewControllers.count;
+    if (navigationStackSize <= 2)
+    {
+      [self removeChildControllersIfNotMatchingInterfaceOrientation:self.interfaceOrientation];
+      [self addChildControllersForInterfaceOrientation:self.interfaceOrientation];
+    }
+  }
 
-  // These calls are necessary in case the interface orientation changed while
-  // the user was on a deeper level of the navigation stack, and now returns to
-  // the root view controller level of the navigation stack.
-  [self removeChildControllersIfNotMatchingInterfaceOrientation:self.interfaceOrientation];
-  [self addChildControllersForInterfaceOrientation:self.interfaceOrientation];
+  // These things must be executed when the interface orientation changes, but
+  // also whenever a view controller is pushed onto, or popped from the
+  // navigation stack. One tricky case where this is absolutely required:
+  // - Top of navigation stack = Main menu
+  // - User slightly drags the main menu from left to right, as if he wanted
+  //   to go back to UIAreaPlay. This triggers
+  //   navigationController:willShowViewController:animated:(), which will
+  //   cause the navigation bar to be hidden
+  // - User cancels the gesture before completing it, which causes the main
+  //   menu to remain at the top of the navigation stack. Inexplicably (is this
+  //   an iOS bug?) this does ***NOT*** trigger
+  //   navigationController:willShowViewController:animated:(), which would mean
+  //   mean that the navigation bar remains hidden
+  // - But cancelling the gesture triggers viewWillLayoutSubviews, so here we
+  //   can fix the problem by re-showing the navigation bar
   [self updateNavigationBarVisibility];
   [self updateNavigationItemBackButtonTitle];
 }
@@ -231,17 +254,31 @@
 // -----------------------------------------------------------------------------
 /// @brief Responds to the
 /// #UIApplicationDidChangeStatusBarOrientationNotification notification.
+/// Installs a new root view controller that knows how to handle the new UI
+/// orientation.
 ///
-/// This notification handler is required because we can't override
-/// didRotateFromInterfaceOrientation:(). Reason: There appears to be a
-/// bug in iOS 8 which causes that override not to be called for subclasses of
-/// UINavigationController. Experimentally determined: The override is called
-/// correctly in the iOS 7.1 simulator.
+/// This notification handler is required to get rid of Auto Layout warnings
+/// in the following scenario:
+/// - UIAreaPlay is visible
+/// - The UI rotates from Landscape to Portrait
+///
+/// viewWillLayoutSubviews does the same as this notification handler, but if
+/// we let viewWillLayoutSubviews do all the work we get a lot of nasty Auto
+/// Layout warnings. Apparently the notification that triggers this handler is
+/// sent well before viewWillLayoutSubviews is invoked, so in this handler we
+/// get the chance to do stuff that prevents those Auto Layout warnings.
+///
+/// Instead of reacting to a notification, it would have been nice if we could
+/// have written an override of the UIViewController method
+/// didRotateFromInterfaceOrientation:(). Unfortunately that doesn't work,
+/// either, because there appears to be a bug in iOS 8 which causes the override
+/// not to be called for subclasses of UINavigationController. Experimentally
+/// determined: The override is called correctly in the iOS 7.1 simulator.
 // -----------------------------------------------------------------------------
 - (void) statusBarOrientationDidChange:(NSNotification*)notification
 {
-  // We install a new root view controller only if the root view controller is
-  // actually visible
+  // We must not replace the root view controller if it is currently not
+  // displayed, otherwise we would change the current navigation stack.
   NSUInteger navigationStackSize = self.viewControllers.count;
   if (navigationStackSize > 2)
     return;
