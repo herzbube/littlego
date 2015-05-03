@@ -155,8 +155,11 @@
 
   self.boardView.backgroundColor = [UIColor clearColor];
   self.boardView.delegate = self;
-  self.boardView.minimumZoomScale = metrics.minimumAbsoluteZoomScale;
-  self.boardView.maximumZoomScale = metrics.maximumAbsoluteZoomScale;
+  // After an interface orientation change the board may already be zoomed
+  // (e.g. iPhone 6+), so we have to take the current absolute zoom scale into
+  // account
+  self.boardView.minimumZoomScale = metrics.minimumAbsoluteZoomScale / metrics.absoluteZoomScale;
+  self.boardView.maximumZoomScale = metrics.maximumAbsoluteZoomScale / metrics.absoluteZoomScale;
   self.boardView.dataSource = self;
   self.boardView.tileSize = metrics.tileSize;
 }
