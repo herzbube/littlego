@@ -225,6 +225,7 @@
   [self removeChildControllersIfNotMatchingInterfaceOrientation:self.interfaceOrientation];
   [self addChildControllersForInterfaceOrientation:self.interfaceOrientation];
   [self updateNavigationBarVisibility];
+  [self updateNavigationItemBackButtonTitle];
 }
 
 // -----------------------------------------------------------------------------
@@ -251,6 +252,7 @@
   [self removeChildControllersIfNotMatchingInterfaceOrientation:interfaceOrientation];
   [self addChildControllersForInterfaceOrientation:interfaceOrientation];
   [self updateNavigationBarVisibility];
+  [self updateNavigationItemBackButtonTitle];
 }
 
 #pragma mark - UINavigationControllerDelegate overrides
