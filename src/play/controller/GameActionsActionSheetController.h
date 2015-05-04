@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,8 +61,5 @@
 /// @brief Master controller based on which modal view controllers can be
 /// displayed.
 @property(nonatomic, assign) UIViewController* modalMaster;
-/// @brief Maps action sheet button indexes to actions known by this controller.
-/// Key = action sheet button index, value = #ActionSheetButton enum value
-@property(nonatomic, retain) NSMutableDictionary* buttonIndexes;
 
 @end

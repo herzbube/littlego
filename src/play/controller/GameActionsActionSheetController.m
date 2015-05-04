@@ -67,6 +67,9 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 @interface GameActionsActionSheetController()
 @property(nonatomic, assign) UIActionSheet* actionSheet;
+/// @brief Maps action sheet button indexes to actions known by this controller.
+/// Key = action sheet button index, value = #ActionSheetButton enum value
+@property(nonatomic, retain) NSMutableDictionary* buttonIndexes;
 @property(nonatomic, retain) NSString* saveGameName;
 @end
 
@@ -119,17 +122,38 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) showActionSheetFromRect:(CGRect)rect inView:(UIView*)view
 {
-  self.actionSheet = [[UIActionSheet alloc] initWithTitle:@"Game actions"
-                                                 delegate:self
-                                        cancelButtonTitle:nil
-                                   destructiveButtonTitle:nil
-                                        otherButtonTitles:nil];
+  // Find out whether we are on iOS 8 or later where we can use
+  // UIAlertController. In iOS 8 we should not use UIActionSheet, first because
+  // it's deprecated, second because it's buggy
+  // (see http://stackoverflow.com/q/29201897/1054378)
+  bool canUseUIAlertController;
+  if ([UIAlertController class])
+    canUseUIAlertController = true;
+  else
+    canUseUIAlertController = false;
+
+  UIAlertController* alertController = nil;
+  if (canUseUIAlertController)
+  {
+    alertController = [UIAlertController alertControllerWithTitle:@"Game actions"
+                                                          message:nil
+                                                   preferredStyle:UIAlertControllerStyleActionSheet];
+  }
+  else
+  {
+    self.actionSheet = [[[UIActionSheet alloc] initWithTitle:@"Game actions"
+                                                    delegate:self
+                                           cancelButtonTitle:nil
+                                      destructiveButtonTitle:nil
+                                           otherButtonTitles:nil] autorelease];
+  }
 
   // Add buttons in the order that they appear in the ActionSheetButton enum
   GoGame* game = [GoGame sharedGame];
   for (int iterButtonIndex = 0; iterButtonIndex < MaxButton; ++iterButtonIndex)
   {
     NSString* title = nil;
+    void (^alertActionBlock) (UIAlertAction*) = nil;
     switch (iterButtonIndex)
     {
       case ScoreButton:
@@ -144,6 +168,8 @@ enum ActionSheetButton
         if (game.score.scoringEnabled)
           continue;
         title = @"Score";
+        if (canUseUIAlertController)
+          alertActionBlock = ^(UIAlertAction* action) { [self score]; };
         break;
       }
       case MarkModeButton:
@@ -177,6 +203,8 @@ enum ActionSheetButton
             return;
           }
         }
+        if (canUseUIAlertController)
+          alertActionBlock = ^(UIAlertAction* action) { [self toggleMarkMode]; };
         break;
       }
       case UpdatePlayerInfluenceButton:
@@ -187,6 +215,8 @@ enum ActionSheetButton
         if (game.score.scoringEnabled)
           continue;
         title = @"Update player influence";
+        if (canUseUIAlertController)
+          alertActionBlock = ^(UIAlertAction* action) { [self updatePlayerInfluence]; };
         break;
       }
       case SwitchNextMoveColorButton:
@@ -205,6 +235,8 @@ enum ActionSheetButton
         enum GoColor alternatingNextMoveColor = [GoUtilities alternatingColorForColor:game.nextMoveColor];
         NSString* alternatingNextMoveColorName = [[NSString stringWithGoColor:alternatingNextMoveColor] lowercaseString];
         title = [NSString stringWithFormat:@"Set %@ to move", alternatingNextMoveColorName];
+        if (canUseUIAlertController)
+          alertActionBlock = ^(UIAlertAction* action) { [self switchNextMoveColor]; };
         break;
       }
       case ResumePlayButton:
@@ -213,6 +245,8 @@ enum ActionSheetButton
         if (!shouldAllowResumePlay)
           continue;
         title = @"Resume play";
+        if (canUseUIAlertController)
+          alertActionBlock = ^(UIAlertAction* action) { [self resumePlay]; };
         break;
       }
       case ResignButton:
@@ -231,6 +265,8 @@ enum ActionSheetButton
         if (! game.boardPosition.isLastPosition)
           continue;
         title = @"Resign";
+        if (canUseUIAlertController)
+          alertActionBlock = ^(UIAlertAction* action) { [self resign]; };
         break;
       }
       case UndoResignButton:
@@ -245,16 +281,22 @@ enum ActionSheetButton
         if (! game.boardPosition.isLastPosition)
           continue;
         title = @"Undo resign";
+        if (canUseUIAlertController)
+          alertActionBlock = ^(UIAlertAction* action) { [self undoResign]; };
         break;
       }
       case SaveGameButton:
       {
         title = @"Save game";
+        if (canUseUIAlertController)
+          alertActionBlock = ^(UIAlertAction* action) { [self saveGame]; };
         break;
       }
       case NewGameButton:
       {
         title = @"New game";
+        if (canUseUIAlertController)
+          alertActionBlock = ^(UIAlertAction* action) { [self newGame]; };
         break;
       }
       default:
@@ -264,27 +306,60 @@ enum ActionSheetButton
         break;
       }
     }
-    NSInteger buttonIndex = [self.actionSheet addButtonWithTitle:title];
-    [self.buttonIndexes setObject:[NSNumber numberWithInt:iterButtonIndex]
-                           forKey:[NSNumber numberWithInteger:buttonIndex]];
+
+    if (canUseUIAlertController)
+    {
+      UIAlertAction* action = [UIAlertAction actionWithTitle:title
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:alertActionBlock];
+      [alertController addAction:action];
+    }
+    else
+    {
+      NSInteger buttonIndex = [self.actionSheet addButtonWithTitle:title];
+      [self.buttonIndexes setObject:[NSNumber numberWithInt:iterButtonIndex]
+                             forKey:[NSNumber numberWithInteger:buttonIndex]];
+    }
   }
 
   // On the iPad the cancel button is not displayed, but if the user taps
   // outside of the popover to cancel the action sheet, the action sheet
   // notifies the delegate with the button index stored in cancelButtonIndex
-  self.actionSheet.cancelButtonIndex = [self.actionSheet addButtonWithTitle:@"Cancel"];
-
-  // It's important that we do NOT use showFromBarButtonItem:animated:(), for
-  // two reasons:
-  // 1) On the iPad this would allow other buttons in the bar button item's
-  //    parent navigation bar to be tapped without dismissing the action sheet.
-  //    This would be bad because the app logic requires that in certain app
-  //    states the functions from the "Game Actions" menu must not be available.
-  // 2) On the iPhone, showFromBarButtonItem:animated:() simply seems to not
-  //    work properly - items in the action sheet cannot be selected when that
-  //    method is used.
-  [self.actionSheet showFromRect:rect inView:view animated:YES];
-  [self.actionSheet release];
+  if (canUseUIAlertController)
+  {
+    UIAlertAction* action = [UIAlertAction actionWithTitle:@"Cancel"
+                                                     style:UIAlertActionStyleCancel
+                                                   handler:^(UIAlertAction* action){
+                                                     [self.delegate gameActionsActionSheetControllerDidFinish:self];
+                                                   }];
+    [alertController addAction:action];
+    [self.modalMaster presentViewController:alertController animated:YES completion:nil];
+    // As documented in the UIPopoverPresentationController class reference,
+    // we should wait with accessing the presentation controller until after we
+    // initiate the presentation, otherwise the controller may not have been
+    // created yet. Furthermore, a presentation controller is only created on
+    // the iPad, but not on the iPhone, so we check for the controller's
+    // existence before using it.
+    if (alertController.popoverPresentationController)
+    {
+      alertController.popoverPresentationController.sourceView = view;
+      alertController.popoverPresentationController.sourceRect = rect;
+    }
+  }
+  else
+  {
+    self.actionSheet.cancelButtonIndex = [self.actionSheet addButtonWithTitle:@"Cancel"];
+    // It's important that we do NOT use showFromBarButtonItem:animated:(), for
+    // two reasons:
+    // 1) On the iPad this would allow other buttons in the bar button item's
+    //    parent navigation bar to be tapped without dismissing the action sheet.
+    //    This would be bad because the app logic requires that in certain app
+    //    states the functions from the "Game Actions" menu must not be available.
+    // 2) On the iPhone, showFromBarButtonItem:animated:() simply seems to not
+    //    work properly - items in the action sheet cannot be selected when that
+    //    method is used.
+    [self.actionSheet showFromRect:rect inView:view animated:YES];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -346,11 +421,22 @@ enum ActionSheetButton
 // -----------------------------------------------------------------------------
 - (void) cancelActionSheet
 {
-  if (! self.actionSheet)
-    return;
-  [self.actionSheet dismissWithClickedButtonIndex:self.actionSheet.cancelButtonIndex animated:NO];
-  // Don't do anything else, the above line caused this
-  // GameActionsActionSheetController to be deallocated
+  if (self.actionSheet)
+  {
+    // Programmatically triggers the cancel button, which in turn informs the
+    // delegate that GameActionsActionSheetController has finished
+    [self.actionSheet dismissWithClickedButtonIndex:self.actionSheet.cancelButtonIndex animated:NO];
+  }
+  else
+  {
+    // Dismiss the UIAlertController
+    [self.modalMaster dismissViewControllerAnimated:NO completion:nil];
+    // Dismissing the UIAlertController did not trigger the cancel button,
+    // so we must inform the delegate ourselves
+    [self.delegate gameActionsActionSheetControllerDidFinish:self];
+  }
+  // Don't do anything else, informing the delegate that we are done (see above)
+  // caused this GameActionsActionSheetController to be deallocated
 }
 
 // -----------------------------------------------------------------------------
