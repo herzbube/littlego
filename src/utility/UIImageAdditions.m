@@ -152,12 +152,53 @@
   CGRect drawingRect = CGRectMake(leftEdgePadding, topEdgePadding, originalImageSize.width, originalImageSize.height);
 
   BOOL opaque = NO;
-  UIGraphicsBeginImageContextWithOptions(size, opaque, [[UIScreen mainScreen] scale]);
+  CGFloat scale = 0.0f;
+  UIGraphicsBeginImageContextWithOptions(size, opaque, scale);
   [originalImage drawInRect:drawingRect];
 
   UIImage* paddedImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return paddedImage;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an image of size @a size which consists of repetitions of
+/// the tile image @a tile. If @a size is smaller than the dimensions of
+/// @a tile, only the upper-left part of @a tile is used.
+///
+/// The tile image @a tile must already be suitable for tiling.
+// -----------------------------------------------------------------------------
++ (UIImage*) tiledImageWithSize:(CGSize)size fromTile:(UIImage*)tile
+{
+  BOOL opaque = NO;
+  CGFloat scale = 0.0f;
+  UIGraphicsBeginImageContextWithOptions(size, opaque, scale);
+  CGContextRef context = UIGraphicsGetCurrentContext();
+
+  CGRect drawingRect = CGRectMake(0, 0, size.width, size.height);
+  CGContextClipToRect(context, drawingRect);
+  CGRect tileRect = CGRectMake(0, 0, tile.size.width, tile.size.height);
+  CGContextDrawTiledImage(context, tileRect, tile.CGImage);
+
+  UIImage* tiledImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return tiledImage;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an image object that can be used to display a wooden
+/// background. The image is suitable for tiling.
+// -----------------------------------------------------------------------------
++ (UIImage*) woodenBackgroundTileImage
+{
+  // The background image is quite large, so we don't use UIImage namedImage:()
+  // because that method caches the image in the background. We don't need
+  // caching because we only load the image once, so not using namedImage:()
+  // saves us quite a bit of valuable memory.
+  NSString* imagePath = [[NSBundle mainBundle] pathForResource:woodenBackgroundImageResource
+                                                        ofType:nil];
+  NSData* imageData = [NSData dataWithContentsOfFile:imagePath];
+  return [UIImage imageWithData:imageData];
 }
 
 @end

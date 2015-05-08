@@ -17,6 +17,7 @@
 
 // Project includes
 #import "UIColorAdditions.h"
+#import "UIImageAdditions.h"
 
 // System includes
 #import <UIKit/UIKit.h>
@@ -394,19 +395,27 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a color object that can be used to display a wooden
-/// background. The UIColor object is actually an image suitable for tiling.
+/// background. The UIColor object is actually an image sized so that it is
+/// guaranteed to cover the device's entire screen, regardless of which
+/// orientation the UI has.
 // -----------------------------------------------------------------------------
 + (UIColor*) woodenBackgroundColor
 {
-  // The background image is quite large, so we don't use UIImage namedImage:()
-  // because that method caches the image in the background. We don't need
-  // caching because we only load the image once, so not using namedImage:()
-  // saves us quite a bit of valuable memory.
-  NSString* imagePath = [[NSBundle mainBundle] pathForResource:woodenBackgroundImageResource
-                                                        ofType:nil];
-  NSData* imageData = [NSData dataWithContentsOfFile:imagePath];
-  UIImage* image = [UIImage imageWithData:imageData];
-  return [UIColor colorWithPatternImage:image];
+  // To make sure that the image covers the entire screen, regardless of which
+  // orientation the UI has, we must make the image square, using the larger
+  // dimension of the screen. This wastes some memory, but the alternative
+  // would be to recreate the image whenever the UI orientation changes.
+  CGRect mainScreenBounds = [UIScreen mainScreen].bounds;
+  CGFloat largerDimension = MAX(mainScreenBounds.size.width, mainScreenBounds.size.height);
+  CGSize mainScreenSquaredSize = CGSizeMake(largerDimension, largerDimension);
+
+  // The image on disk is quite large, intentionally, so that it's not very
+  // obvious that tiling takes place. On devices with smaller screens the image
+  // on disk may even be large enough to cover the entire screen without any
+  // tiling at all.
+  UIImage* image = [UIImage woodenBackgroundTileImage];
+  UIImage* tiledImage = [UIImage tiledImageWithSize:mainScreenSquaredSize fromTile:image];
+  return [UIColor colorWithPatternImage:tiledImage];
 }
 
 @end

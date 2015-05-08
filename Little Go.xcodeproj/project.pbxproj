@@ -470,6 +470,7 @@
 		CDEE1D5D1AFAC29300524BF9 /* interrupt@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDEE1D5C1AFAC29300524BF9 /* interrupt@3x.png */; };
 		CDEE1D5F1AFAC36400524BF9 /* pass@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDEE1D5E1AFAC36400524BF9 /* pass@3x.png */; };
 		CDEE1D611AFAC3D500524BF9 /* pause@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDEE1D601AFAC3D500524BF9 /* pause@3x.png */; };
+		CDEE1D631AFCC2A500524BF9 /* wooden-background-tile.png in Resources */ = {isa = PBXBuildFile; fileRef = CDEE1D621AFCC2A500524BF9 /* wooden-background-tile.png */; };
 		CDEECC6C1992923000BC89F2 /* ArchiveUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEECC6B1992923000BC89F2 /* ArchiveUtility.m */; };
 		CDEECC6D1992923000BC89F2 /* ArchiveUtility.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEECC6B1992923000BC89F2 /* ArchiveUtility.m */; };
 		CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3BAE140A192F002D9C1C /* GtpEngineProfile.m */; };
@@ -491,10 +492,6 @@
 		CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */; };
 		CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
 		CDF630AA168F50BA003C8BEF /* DiscardAndPlayCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */; };
-		CDF6FCD216B59C6C009A2193 /* wooden-background@2x~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF6FCCE16B59C6C009A2193 /* wooden-background@2x~ipad.png */; };
-		CDF6FCD716B5AA17009A2193 /* wooden-background@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF6FCCF16B59C6C009A2193 /* wooden-background@2x~iphone.png */; };
-		CDF6FCD816B5B6D1009A2193 /* wooden-background~ipad.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF6FCD016B59C6C009A2193 /* wooden-background~ipad.png */; };
-		CDF6FCD916B5B6D4009A2193 /* wooden-background~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = CDF6FCD116B59C6C009A2193 /* wooden-background~iphone.png */; };
 		CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */; };
 		CDFA329B159FA0F600439B4E /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFA329A159FA0F400439B4E /* libz.dylib */; };
 		CDFA329F15A0920200439B4E /* Lumberjack-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */; };
@@ -1045,6 +1042,7 @@
 		CDEE1D5C1AFAC29300524BF9 /* interrupt@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "interrupt@3x.png"; sourceTree = "<group>"; };
 		CDEE1D5E1AFAC36400524BF9 /* pass@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pass@3x.png"; sourceTree = "<group>"; };
 		CDEE1D601AFAC3D500524BF9 /* pause@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pause@3x.png"; sourceTree = "<group>"; };
+		CDEE1D621AFCC2A500524BF9 /* wooden-background-tile.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wooden-background-tile.png"; sourceTree = "<group>"; };
 		CDEECC6A1992923000BC89F2 /* ArchiveUtility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveUtility.h; sourceTree = "<group>"; };
 		CDEECC6B1992923000BC89F2 /* ArchiveUtility.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveUtility.m; sourceTree = "<group>"; };
 		CDEF3BAD140A192F002D9C1C /* GtpEngineProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfile.h; sourceTree = "<group>"; };
@@ -1072,10 +1070,6 @@
 		CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = GoBoardRegionTest.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		CDF630A8168F50BA003C8BEF /* DiscardAndPlayCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardAndPlayCommand.h; sourceTree = "<group>"; };
 		CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardAndPlayCommand.m; sourceTree = "<group>"; };
-		CDF6FCCE16B59C6C009A2193 /* wooden-background@2x~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wooden-background@2x~ipad.png"; sourceTree = "<group>"; };
-		CDF6FCCF16B59C6C009A2193 /* wooden-background@2x~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wooden-background@2x~iphone.png"; sourceTree = "<group>"; };
-		CDF6FCD016B59C6C009A2193 /* wooden-background~ipad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wooden-background~ipad.png"; sourceTree = "<group>"; };
-		CDF6FCD116B59C6C009A2193 /* wooden-background~iphone.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "wooden-background~iphone.png"; sourceTree = "<group>"; };
 		CDF8229A164D490600F53C01 /* InterruptComputerCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterruptComputerCommand.h; sourceTree = "<group>"; };
 		CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterruptComputerCommand.m; sourceTree = "<group>"; };
 		CDF9740316C4082200D01D24 /* AsynchronousCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsynchronousCommand.h; sourceTree = "<group>"; };
@@ -1807,10 +1801,7 @@
 				CD393F731669210E009DF814 /* stone-crosshair.png */,
 				CD393F741669210E009DF814 /* stone-white.png */,
 				CD393F7816692C4D009DF814 /* stones.svg */,
-				CDF6FCCE16B59C6C009A2193 /* wooden-background@2x~ipad.png */,
-				CDF6FCCF16B59C6C009A2193 /* wooden-background@2x~iphone.png */,
-				CDF6FCD016B59C6C009A2193 /* wooden-background~ipad.png */,
-				CDF6FCD116B59C6C009A2193 /* wooden-background~iphone.png */,
+				CDEE1D621AFCC2A500524BF9 /* wooden-background-tile.png */,
 			);
 			path = image;
 			sourceTree = "<group>";
@@ -2261,6 +2252,7 @@
 				CD9FB5461687E1310042AA89 /* forwardtoend.png in Resources */,
 				CDEE1D5B1AFAC23900524BF9 /* gameinfo@3x.png in Resources */,
 				CD9FB5471687E1310042AA89 /* forwardtoend@2x.png in Resources */,
+				CDEE1D631AFCC2A500524BF9 /* wooden-background-tile.png in Resources */,
 				CD9FB5571687E1410042AA89 /* rewindtostart.png in Resources */,
 				CDEE1D4D1AFAB3EE00524BF9 /* back@3x.png in Resources */,
 				CD97FA281AF8336600148C16 /* about.png in Resources */,
@@ -2273,10 +2265,6 @@
 				CDEE1D471AF9920700524BF9 /* computer-vs-computer@3x.png in Resources */,
 				CD3982C8192D2ECC00F12DCC /* discard.png in Resources */,
 				CD3982D9192D2FC800F12DCC /* pause@2x.png in Resources */,
-				CDF6FCD216B59C6C009A2193 /* wooden-background@2x~ipad.png in Resources */,
-				CDF6FCD716B5AA17009A2193 /* wooden-background@2x~iphone.png in Resources */,
-				CDF6FCD816B5B6D1009A2193 /* wooden-background~ipad.png in Resources */,
-				CDF6FCD916B5B6D4009A2193 /* wooden-background~iphone.png in Resources */,
 				CDEE1D4F1AFAB3FA00524BF9 /* forward@3x.png in Resources */,
 				CD97FA3E1AF83C0D00148C16 /* help@3x.png in Resources */,
 				CD97FA241AF8311A00148C16 /* archive@3x.png in Resources */,

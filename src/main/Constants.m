@@ -205,7 +205,7 @@ NSString* stoneCrosshairImageResource = @"stone-crosshair.png";
 NSString* computerVsComputerImageResource = @"computer-vs-computer.png";
 NSString* humanVsComputerImageResource = @"human-vs-computer.png";
 NSString* humanVsHumanImageResource = @"human-vs-human.png";
-NSString* woodenBackgroundImageResource = @"wooden-background.png";
+NSString* woodenBackgroundImageResource = @"wooden-background-tile.png";
 NSString* bugReportMessageTemplateResource = @"bug-report-message-template.txt";
 
 // Constants (mostly keys) for user defaults
