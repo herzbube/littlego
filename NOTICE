@@ -45,14 +45,14 @@ code of the three components is available from
   http://code.google.com/p/protobuf-c/
 
 The following icons are all from the Noun Project (http://thenounproject.com/).
-- The main menu button is "Menu by John Caserta"
+- The Main Menu button is "Menu by John Caserta"
   http://thenounproject.com/term/menu/36901/
 - The Computer Play button is a composition of
-    "Computer by Edward Boatman"
-    (http://thenounproject.com/term/computer/115/
-  and
-    "Video Player by Antar"
-    http://thenounproject.com/term/play/18306/
+    "Imac by Aaron K. Kim"
+    https://thenounproject.com/term/imac/123922/
+  and a slightly modified version of
+    "Play by P.J. Onori"
+    https://thenounproject.com/term/play/2873/
 - The Pass button is "Dots by Alex Fuller"
   http://thenounproject.com/term/dots/10554/
 - The Discard button is "Eraser by Terrence Kevin Oleary"
@@ -63,11 +63,35 @@ The following icons are all from the Noun Project (http://thenounproject.com/).
   http://thenounproject.com/term/pause/2866/
 - The Continue button is "Arrow by Naomi Atkinson"
   http://thenounproject.com/term/arrow/5582/
-- The 4 navigation buttons are all derived from "Step Forward by useiconic.com"
-  http://thenounproject.com/term/step-forward/45526/
+- The board position navigation buttons are all derived from
+    "Step Forward by useiconic.com"
+    http://thenounproject.com/term/step-forward/45526/
 - The Game Info button is "line chart by Richard Schumann"
   http://thenounproject.com/term/graph/50837/
 - The Scoring button is a modified version of "Abacus by Cris Dobbins"
   http://thenounproject.com/term/abacus/8926/
 - The More Game Actions button is "Right-Arrow by Icons8"
   http://thenounproject.com/term/right-arrow/61422/
+- The Settings icon is "Gears by Simple Icons"
+  https://thenounproject.com/term/gears/31893/
+- The Archive icon is "Archive by Gustav Salomonsson"
+  https://thenounproject.com/term/archive/26076/
+- The Help icon is a modified version of
+    "Information by José Campos"
+    https://thenounproject.com/term/information/55404/
+  where the "i" symbol was replaced by the "?" symbol
+- The Diagnostics icon is "First-Aid by Hans Paul Mösl Junior"
+  https://thenounproject.com/term/first-aid/27633/
+- The About icon is "Information by José Campos"
+  https://thenounproject.com/term/information/55404/
+- The Source Code icon is "Source Code by d"
+  https://thenounproject.com/term/source-code/1171/
+- The Licenses icon is "Impressum by Martin Karachorov"
+  https://thenounproject.com/term/impressum/92864/
+- The Credits icon is "Badge by Shane Miller"
+  https://thenounproject.com/term/badge/8180/
+- The icon
+    "User by Mike Ashley"
+    https://thenounproject.com/term/user/17845/
+  is used to compose both the Human vs. Human game type icon and the
+  Human vs. Computer game type icon
