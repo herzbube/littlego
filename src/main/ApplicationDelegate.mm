@@ -179,6 +179,9 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Singleton.
   sharedDelegate = self;
 
+  // Don't release with this set to true :-)
+  self.launchImageModeEnabled = false;
+
   // Enable in normal (i.e. not unit testing) environment
   self.writeUserDefaultsEnabled = true;
 

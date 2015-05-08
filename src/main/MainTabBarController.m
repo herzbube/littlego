@@ -26,16 +26,6 @@
 #import "../utility/UIColorAdditions.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for MainTabBarController.
-// -----------------------------------------------------------------------------
-@interface MainTabBarController()
-/// @brief Set this to true to create a fake UI that can be used to take
-/// screenshots that serve as the basis for launch images.
-@property(nonatomic, assign) bool launchImageMode;
-@end
-
-
 @implementation MainTabBarController
 
 #pragma mark - Initialization and deallocation
@@ -54,7 +44,6 @@
   self.delegate = self;
   self.moreNavigationController.delegate = self;
   self.moreNavigationController.uiArea = UIAreaNavigation;
-  self.launchImageMode = false;
   [self setupTabControllers];
   [self restoreTabBarControllerAppearanceToUserDefaults];
   return self;
@@ -67,7 +56,7 @@
 {
   NSMutableArray* tabControllers = [NSMutableArray array];
 
-  if (self.launchImageMode)
+  if ([ApplicationDelegate sharedDelegate].launchImageModeEnabled)
   {
     [self createTabControllerForUIArea:UIAreaSettings tabControllers:tabControllers];
     self.viewControllers = tabControllers;
@@ -113,7 +102,7 @@
 // -----------------------------------------------------------------------------
 - (NSString*) titleStringForUIArea:(enum UIArea)uiArea
 {
-  if (self.launchImageMode)
+  if ([ApplicationDelegate sharedDelegate].launchImageModeEnabled)
     return @"";
   else
     return [MainUtility titleStringForUIArea:uiArea];
@@ -124,7 +113,7 @@
 // -----------------------------------------------------------------------------
 - (UIViewController*) rootViewControllerForUIArea:(enum UIArea)uiArea
 {
-  if (self.launchImageMode)
+  if ([ApplicationDelegate sharedDelegate].launchImageModeEnabled)
   {
     UIViewController* rootViewController = [[[UITableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
     return rootViewController;
@@ -140,7 +129,7 @@
 // -----------------------------------------------------------------------------
 - (NSString*) iconResourceNameForUIArea:(enum UIArea)uiArea
 {
-  if (self.launchImageMode)
+  if ([ApplicationDelegate sharedDelegate].launchImageModeEnabled)
     return @"";
   else
     return [MainUtility iconResourceNameForUIArea:uiArea];

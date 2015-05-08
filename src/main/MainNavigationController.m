@@ -133,6 +133,9 @@
     return;
   self.hasPortraitOrientationViewHierarchy = isPortraitOrientation;
 
+  if ([ApplicationDelegate sharedDelegate].launchImageModeEnabled)
+    return;
+
   UIViewController* realRootViewController;
   if (isPortraitOrientation)
   {
@@ -387,6 +390,9 @@
 // -----------------------------------------------------------------------------
 - (void) activateUIArea:(enum UIArea)uiArea
 {
+  if ([ApplicationDelegate sharedDelegate].launchImageModeEnabled)
+    return;
+
   [self popNavigationStackToUIAreaPlay];
   switch (uiArea)
   {
@@ -450,7 +456,7 @@
   else
   {
     NSUInteger navigationStackSize = self.viewControllers.count;
-    if (2 == navigationStackSize)
+    if (2 == navigationStackSize || [ApplicationDelegate sharedDelegate].launchImageModeEnabled)
       self.navigationBarHidden = YES;
     else
       self.navigationBarHidden = NO;

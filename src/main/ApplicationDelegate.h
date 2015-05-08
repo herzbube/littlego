@@ -81,6 +81,9 @@
 @property(nonatomic, retain) UIWindow* window;
 /// @brief The main application window's root view controller.
 @property(nonatomic, retain) WindowRootViewController* windowRootViewController;
+/// @brief Set this to true to create a fake UI that can be used to take
+/// screenshots that serve as the basis for launch images.
+@property(nonatomic, assign) bool launchImageModeEnabled;
 /// @brief Indicates how the application was launched.
 ///
 /// This property initially has the value #ApplicationLaunchModeUnknown. At the
