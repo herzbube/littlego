@@ -123,6 +123,18 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
   {
     // nothing to do
   }
+  else if (0 == applicationDomainVersion)
+  {
+    // Theoretically, applicationDomainVersion could also be 0 if an extremely
+    // old version of the source code were built & run, i.e. one before user
+    // defaults versioning was introduced. User defaults versioning was
+    // introduced during the work for version 0.6 of the project (actually, in
+    // commit aee80ead04a34b274932199878a4f3e1b06bf9b8), i.e. well before the
+    // first public release on the App Store.
+    DDLogInfo(@"Fresh install, setting user defaults version to %d", registrationDomainVersion);
+    [userDefaults setValue:[NSNumber numberWithInt:registrationDomainVersion]
+                    forKey:userDefaultsVersionApplicationDomainKey];
+  }
   else if (applicationDomainVersion > registrationDomainVersion)
   {
     DDLogWarn(@"UserDefaultsUpdater performs DOWNGRADE operation. Downgrade to target version = %d, current version = %d",
