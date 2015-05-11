@@ -690,6 +690,182 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
     [scoringDictionaryUpgrade setValue:[NSNumber numberWithBool:scoreWhenGameEnds] forKey:autoScoringAndResumingPlayKey];
     [userDefaults setObject:scoringDictionaryUpgrade forKey:scoringKey];
   }
+
+  // The intent of the following upgrade block is to change the default GTP
+  // engine profile so that it no longer enables pondering. The upgrade does
+  // this by copying the default profile from the registration domain into the
+  // application domain. The upgrade also copies other profiles and players
+  // from the registration domain into the application domain to provide a
+  // useful set of profiles and players to those users who are not interested
+  // in fiddling with the technical details of profile & player settings. It is
+  // expected that this is the majority of the user base.
+  //
+  // At the same time, the upgrade must make sure that customizations made by
+  // technically interested users are preserved. For this reason, a backup copy
+  // is made of those profiles and players that the the upgrade process is
+  // going to overwrite.
+
+  // First pass: Update profiles. Also remember which profiles had to be
+  // renamed (i.e. the backup) - this information is required by the second
+  // pass.
+  NSMutableDictionary* renamedProfiles;
+  bool renamedAtLeastOneProfile = [UserDefaultsUpdater addToUserDefaults:userDefaults
+                                                  fromRegistrationDomain:registrationDomainDefaults
+                                                             addProfiles:true
+                                                         renamedProfiles:&renamedProfiles];  // renamedProfiles = out parameter
+  // Second pass: Update players (includes fixing references to renamed
+  // profiles)
+  bool renamedAtLeastOnePlayer = [UserDefaultsUpdater addToUserDefaults:userDefaults
+                                                 fromRegistrationDomain:registrationDomainDefaults
+                                                            addProfiles:false
+                                                        renamedProfiles:&renamedProfiles];  // renamedProfiles = in parameter
+
+  // Inform the user
+  if (renamedAtLeastOneProfile || renamedAtLeastOnePlayer)
+  {
+    NSString* alertTitle = @"Updated Settings";
+    NSString* alertMessage = (@"Your settings had to be updated for this version of the app.\n\n"
+                              "Please review the changes that were made in the 'Players & Profiles' section.\n\n"
+                              "You will find that a backup has been created for some players and/or profiles. "
+                              "This is to preserve any customizations you may have made. If you don't need these "
+                              "backups you can simply delete them.");
+    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:alertTitle
+                                                    message:alertMessage
+                                                   delegate:nil
+                                          cancelButtonTitle:nil
+                                          otherButtonTitles:@"Ok", nil];
+    alert.tag = AlertViewTypeSaveGame;
+    [alert show];
+    [alert release];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief If @a addProfiles is true this method adds a copy of all profiles
+/// existing in @a registrationDomainDefaults to @a userDefaults. If
+/// @a addProfiles is false, the same is done for players.
+///
+/// Players and profiles already in @a userDefaults remain. If a player or
+/// profile in @a userDefaults has the same UUID as one of the players or
+/// profiles copied from @a registrationDomainDefaults, it is given a new UUID
+/// and renamed with the suffix " (backup)".
+///
+/// When profiles are processed, @a renamedProfiles is treated as an out
+/// parameter and initialized with a newly allocated dictionary object. The
+/// dictionary is populated with entries, one for each profile for which a
+/// backup is created. The key of the entry is the old UUID, the value of the
+/// entry is the new UUID.
+///
+/// When players are processed, @a renamedProfiles is treated as an in
+/// parameter. If a player is found which refers to one of the old profile UUIDs
+/// in the dictionary, the reference is changed to the profile's new UUID.
+// -----------------------------------------------------------------------------
++ (bool) addToUserDefaults:(NSUserDefaults*)userDefaults
+    fromRegistrationDomain:(NSDictionary*)registrationDomainDefaults
+               addProfiles:(bool)addProfiles
+           renamedProfiles:(NSMutableDictionary**)renamedProfiles
+{
+  NSMutableDictionary* localRenamedProfiles;
+  NSString* mainArrayKey;
+  NSString* uuidKey;
+  NSString* nameKey;
+  if (addProfiles)
+  {
+    localRenamedProfiles = [NSMutableDictionary dictionary];
+    *renamedProfiles = localRenamedProfiles;
+    mainArrayKey = gtpEngineProfileListKey;
+    uuidKey = gtpEngineProfileUUIDKey;
+    nameKey = gtpEngineProfileNameKey;
+  }
+  else
+  {
+    localRenamedProfiles = *renamedProfiles;
+    mainArrayKey = playerListKey;
+    uuidKey = playerUUIDKey;
+    nameKey = playerNameKey;
+  }
+
+  bool renamedAtLeastOneEntry = false;
+  id applicationDomainArray = [userDefaults objectForKey:mainArrayKey];
+  if (! applicationDomainArray)
+    return renamedAtLeastOneEntry;
+
+  // At the end of processing this array will contain the list of dictionaries
+  // that we want to write
+  NSMutableArray* applicationDomainArrayUpgrade = [NSMutableArray array];
+
+  // Step 1: Prepare a lookup table. As a side-effect we transform all immutable
+  // dictionaries into mutable dictionaries.
+  // For players only: We also fix references to renamed profiles.
+  NSMutableDictionary* applicationDomainLookupTable = [NSMutableDictionary dictionary];
+  for (NSDictionary* applicationDomainDictionary in applicationDomainArray)
+  {
+    NSMutableDictionary* applicationDomainDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:applicationDomainDictionary];
+    NSString* uuid = applicationDomainDictionaryUpgrade[uuidKey];
+    applicationDomainLookupTable[uuid] = applicationDomainDictionaryUpgrade;
+    if (! addProfiles)
+    {
+      NSString* profileUUID = applicationDomainDictionaryUpgrade[gtpEngineProfileReferenceKey];
+      NSString* renamedProfileUUID = localRenamedProfiles[profileUUID];
+      // renamedProfileUUID is nil if the profile wasn't renamed - which means
+      // we don't need to fix the reference
+      if (renamedProfileUUID)
+        applicationDomainDictionaryUpgrade[gtpEngineProfileReferenceKey] = renamedProfileUUID;
+    }
+  }
+
+  // Step 2: Process entries in registration domain
+  NSMutableArray* backupEntriesArray = [NSMutableArray array];
+  id registrationDomainArray = [registrationDomainDefaults objectForKey:mainArrayKey];
+  for (NSDictionary* registrationDomainDictionary in registrationDomainArray)
+  {
+    NSString* uuid = registrationDomainDictionary[uuidKey];
+    NSMutableDictionary* applicationDomainDictionary = applicationDomainLookupTable[uuid];
+    if (! applicationDomainDictionary)
+    {
+      [applicationDomainArrayUpgrade addObject:registrationDomainDictionary];
+      continue;
+    }
+
+    // When step 2 has finished processing we only want entries in the lookup
+    // table that exist in the application domain, but NOT in the registration
+    // domain. This is important for step 3.
+    [applicationDomainLookupTable removeObjectForKey:uuid];
+
+    // Keep the registration domain entry in all cases
+    [applicationDomainArrayUpgrade addObject:registrationDomainDictionary];
+
+    // Make a backup copy of the application domain entry if it is different
+    // from the registration domain entry in any way
+    if (![registrationDomainDictionary isEqualToDictionary:applicationDomainDictionary])
+    {
+      NSString* newUUID = [NSString UUIDString];
+      applicationDomainDictionary[uuidKey] = newUUID;
+      NSString* name = applicationDomainDictionary[nameKey];
+      NSString* newName = [name stringByAppendingString:@" (backup)"];
+      applicationDomainDictionary[nameKey] = newName;
+      [backupEntriesArray addObject:applicationDomainDictionary];
+
+      // Remember the old/new UUID pair so that when we later process players
+      // we can fix their references to the renamed profile
+      if (addProfiles)
+        localRenamedProfiles[uuid] = newUUID;
+
+      renamedAtLeastOneEntry = true;
+    }
+  }
+
+  // Step 3: Keep entries that exist in the application domain, but NOT in the
+  // registration domain. Those are the entries that the user has newly created
+  // on his device.
+  [applicationDomainArrayUpgrade addObjectsFromArray:[applicationDomainLookupTable allValues]];
+
+  // Step 4: Keep backup copies, but place them at the end of the list
+  [applicationDomainArrayUpgrade addObjectsFromArray:backupEntriesArray];
+
+  // Step 5: Write changed values back to user defaults
+  [userDefaults setObject:applicationDomainArrayUpgrade forKey:mainArrayKey];
+  return renamedAtLeastOneEntry;
 }
 
 // -----------------------------------------------------------------------------
