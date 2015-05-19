@@ -38,6 +38,17 @@
 @interface PanGestureController()
 @property(nonatomic, retain) UILongPressGestureRecognizer* longPressRecognizer;
 @property(nonatomic, assign, getter=isPanningEnabled) bool panningEnabled;
+/// @brief Remember whether the controller has registered as observer for
+/// GoBoardPosition.
+///
+/// Before this flag was introduced, crash reports were received that indicated
+/// that the controller tried to unregister from observing GoBoardPosition
+/// although the controller hadn't registered as observer before. The scenario
+/// was thought to be impossible, but obviously the analysis must have missed
+/// something. Although the root cause for the problem was never identified,
+/// this flag was added so that a bit of general-purpose defensive programming
+/// could be implemented.
+@property(nonatomic, assign) bool observingBoardPosition;
 @end
 
 
@@ -68,8 +79,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [[GoGame sharedGame].boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [self removeNotificationResponders];
   self.boardView = nil;
   self.longPressRecognizer = nil;
   [super dealloc];
@@ -87,8 +97,10 @@
   self.longPressRecognizer.minimumPressDuration = gGoBoardLongPressDelay;
 }
 
+#pragma mark - Setup/remove notification responders
+
 // -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
+/// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
@@ -101,7 +113,44 @@
   [center addObserver:self selector:@selector(goScoreScoringEnabled:) name:goScoreScoringEnabled object:nil];
   [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
   // KVO observing
-  [[GoGame sharedGame].boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  [self setupBoardPositionObserver:[GoGame sharedGame].boardPosition];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) setupBoardPositionObserver:(GoBoardPosition*)boardPosition
+{
+  if (boardPosition)
+  {
+    [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+    self.observingBoardPosition = true;
+  }
+  else
+  {
+    self.observingBoardPosition = false;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [self removeBoardPositionObserver:[GoGame sharedGame].boardPosition];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeBoardPositionObserver:(GoBoardPosition*)boardPosition
+{
+  if (! self.observingBoardPosition)
+    return;
+  self.observingBoardPosition = false;
+  if (boardPosition)
+    [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
 }
 
 #pragma mark - Property setter
@@ -254,7 +303,7 @@
 - (void) goGameWillCreate:(NSNotification*)notification
 {
   GoGame* oldGame = [notification object];
-  [oldGame.boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
+  [self removeBoardPositionObserver:oldGame.boardPosition];
 }
 
 // -----------------------------------------------------------------------------
@@ -263,7 +312,7 @@
 - (void) goGameDidCreate:(NSNotification*)notification
 {
   GoGame* newGame = [notification object];
-  [newGame.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  [self setupBoardPositionObserver:newGame.boardPosition];
   [self updatePanningEnabled];
 }
 
