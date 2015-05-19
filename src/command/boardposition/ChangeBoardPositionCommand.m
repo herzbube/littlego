@@ -89,7 +89,11 @@
   }
   else
   {
-    [self release];
+    // Even though the object will be deallocated in a moment, we still must
+    // complete initialization to make sure that dealloc will work properly
+    self = [super init];
+    if (self)
+      [self release];
     self = [[AsynchronousChangeBoardPositionCommand alloc] initWithBoardPosition:aBoardPosition];
   }
   return self;
