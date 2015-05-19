@@ -256,7 +256,7 @@ enum ParseMoveStringResult
   [command submit];
   if (! command.response.status)
   {
-    *errorMessage = @"The game could not be loaded. Is the game file in .sgf format?";
+    *errorMessage = @"The game could not be loaded. Does the game use a board that is too large (maximum board size is 19)? Is the game file in .sgf format?";
     return false;
   }
   return true;
