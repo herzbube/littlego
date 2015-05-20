@@ -253,8 +253,7 @@ enum PlayCommandType
 
   if (command)
   {
-    [command submit];
-    return true;
+    return [command submit];
   }
   else
   {
