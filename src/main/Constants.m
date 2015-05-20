@@ -154,7 +154,7 @@ NSString* bugReportEmailRecipient = @"herzbube@herzbube.ch";
 NSString* bugReportEmailSubject = @"Little Go Bug Report";
 
 // Crash reporting constants
-NSString* crashReportSubmissionURL = @"http://www.herzbube.ch/quincykit/crash_v200.php";
+NSString* crashReportSubmissionURL = @"http://www.herzbube.ch/quincykit3/crash_v300.php";
 
 // Resource file names
 NSString* openingBookResource = @"book.dat";

@@ -338,13 +338,7 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   BWQuincyManager* sharedQuincyManager = [BWQuincyManager sharedQuincyManager];
   [sharedQuincyManager setSubmissionURL:crashReportSubmissionURL];
-  // The QuincyKit docs do not mention this, but setting the delegate is
-  // required for displaying an alert view to the user
-  [sharedQuincyManager setDelegate:self];
-  // Default is NO (QuincyKit docs claim the default is YES)
-  sharedQuincyManager.showAlwaysButton = YES;
-  // sharedQuincyManager.appIdentifier must not be set, otherwise no crash
-  // reports are sent to the submission URL.
+  [sharedQuincyManager startManager];
 }
 
 // -----------------------------------------------------------------------------
