@@ -2989,13 +2989,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
 				PRODUCT_NAME = "Little Go";
-				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -3005,13 +3002,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
 				PRODUCT_NAME = "Little Go";
-				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};
@@ -3030,8 +3024,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3058,6 +3052,7 @@
 					"-lMBProgressHUD",
 					"-ObjC",
 				);
+				PROVISIONING_PROFILE = "625b7e8d-6a8f-40c7-b1b1-f1424749585e";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3078,8 +3073,8 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -3107,6 +3102,7 @@
 					"-lMBProgressHUD",
 					"-ObjC",
 				);
+				PROVISIONING_PROFILE = "625b7e8d-6a8f-40c7-b1b1-f1424749585e";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3176,7 +3172,7 @@
 					"-lMBProgressHUD",
 					"-ObjC",
 				);
-				PROVISIONING_PROFILE = "455BE5A6-BFAA-4AC3-832B-E56866A6F28D";
+				PROVISIONING_PROFILE = "25bedbf9-2a80-4138-8268-9daf7de17938";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3188,13 +3184,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
 				PRODUCT_NAME = "Little Go";
-				PROVISIONING_PROFILE = "";
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Distribute_AppStore;
@@ -3224,6 +3217,7 @@
 				);
 				INFOPLIST_FILE = test/resource/Info.plist;
 				PRODUCT_NAME = "Unit tests";
+				PROVISIONING_PROFILE = "590c1555-a3ec-45ac-a5e1-cb4403845939";
 			};
 			name = Distribute_AppStore;
 		};
@@ -3242,6 +3236,7 @@
 				);
 				INFOPLIST_FILE = test/resource/Info.plist;
 				PRODUCT_NAME = "Unit tests";
+				PROVISIONING_PROFILE = "590c1555-a3ec-45ac-a5e1-cb4403845939";
 			};
 			name = Debug;
 		};
@@ -3260,6 +3255,7 @@
 				);
 				INFOPLIST_FILE = test/resource/Info.plist;
 				PRODUCT_NAME = "Unit tests";
+				PROVISIONING_PROFILE = "590c1555-a3ec-45ac-a5e1-cb4403845939";
 			};
 			name = Release;
 		};
@@ -3278,6 +3274,7 @@
 				);
 				INFOPLIST_FILE = test/resource/Info.plist;
 				PRODUCT_NAME = "Unit tests";
+				PROVISIONING_PROFILE = "590c1555-a3ec-45ac-a5e1-cb4403845939";
 			};
 			name = Distribute_AdHoc;
 		};
@@ -3325,7 +3322,7 @@
 					"-lMBProgressHUD",
 					"-ObjC",
 				);
-				PROVISIONING_PROFILE = "CDCE12DF-4A1E-4D19-A8D6-4B37A1695A16";
+				PROVISIONING_PROFILE = "23a452c0-75d0-4dc2-8a83-7e7397e8fbd7";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3337,13 +3334,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
 				PRODUCT_NAME = "Little Go";
-				PROVISIONING_PROFILE = "";
 			};
 			name = Distribute_AdHoc;
 		};
