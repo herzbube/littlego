@@ -204,6 +204,18 @@ enum DeleteAllSectionItem
     self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Updates the entire archive view after the last game was deleted
+// -----------------------------------------------------------------------------
+- (void) updateArchiveViewAfterLastGameWasDeleted
+{
+  [self updateVisibleStateOfMainViews];
+  [self updateVisibleStateOfEditButton];
+  // "Delete All" button must go away, the simplest way to achieve this is to
+  // reload all data
+  [self.tableView reloadData];
+}
+
 #pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
@@ -305,7 +317,12 @@ enum DeleteAllSectionItem
   // Animate item deletion. Requires that in the meantime we have not triggered
   // a reloadData().
   if (success)
-    [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationRight];
+  {
+    if (0 == self.archiveViewModel.gameCount)
+      [self updateArchiveViewAfterLastGameWasDeleted];
+    else
+      [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationRight];
+  }
 }
 
 #pragma mark - UITableViewDelegate overrides
@@ -362,8 +379,7 @@ enum DeleteAllSectionItem
 {
   [self updateVisibleStateOfMainViews];
   [self updateVisibleStateOfEditButton];
-  // Debugging note: Invocation of most of the UITableViewDataSource methods is
-  // delayed until the table is displayed
+  // "Delete All" button may need to be shown if game count goes from 0 to 1
   [self.tableView reloadData];
 }
 
@@ -415,9 +431,7 @@ enum DeleteAllSectionItem
       [[[[DeleteGameCommand alloc] initWithGame:game] autorelease] submit];
     }
     [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
-    [self updateVisibleStateOfMainViews];
-    [self updateVisibleStateOfEditButton];
-    [self.tableView reloadData];
+    [self updateArchiveViewAfterLastGameWasDeleted];
   }
 }
 
