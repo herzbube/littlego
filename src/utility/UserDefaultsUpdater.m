@@ -691,19 +691,20 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
     [userDefaults setObject:scoringDictionaryUpgrade forKey:scoringKey];
   }
 
-  // The intent of the following upgrade block is to change the default GTP
-  // engine profile so that it no longer enables pondering. The upgrade does
-  // this by copying the default profile from the registration domain into the
-  // application domain. The upgrade also copies other profiles and players
-  // from the registration domain into the application domain to provide a
-  // useful set of profiles and players to those users who are not interested
-  // in fiddling with the technical details of profile & player settings. It is
-  // expected that this is the majority of the user base.
+  // The intent of the following upgrade block is to change the human vs. human
+  // games GTP engine profile so that it no longer enables pondering. The
+  // upgrade does this by copying the human vs. human games profile from the
+  // registration domain into the application domain. The upgrade also copies
+  // other profiles and players from the registration domain into the
+  // application domain to provide a useful set of profiles and players to those
+  // users who are not interested in fiddling with the technical details of
+  // profile & player settings. It is expected that this is the majority of the
+  // user base.
   //
   // At the same time, the upgrade must make sure that customizations made by
   // technically interested users are preserved. For this reason, a backup copy
-  // is made of those profiles and players that the the upgrade process is
-  // going to overwrite.
+  // is made of those profiles and players that the upgrade process is going to
+  // overwrite.
 
   // First pass: Update profiles. Also remember which profiles had to be
   // renamed (i.e. the backup) - this information is required by the second

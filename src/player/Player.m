@@ -168,7 +168,9 @@
 ///
 /// If after the change this Player object represents a human player,
 /// @e gtpEngineProfileUUID is set to an empty string. Otherwise
-/// @e gtpEngineProfileUUID is set to reference the default GtpEngineProfile.
+/// @e gtpEngineProfileUUID is set to reference the first GtpEngineProfile that
+/// is not the "human vs. human games" profile. If no other profile exists, then
+/// the "human vs. human games" profile is used as a fallback.
 // -----------------------------------------------------------------------------
 - (void) setHuman:(bool)newValue
 {
@@ -180,7 +182,16 @@
   else
   {
     GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
-    self.gtpEngineProfileUUID = [model defaultProfile].uuid;
+    NSString* profileUUID = fallbackGtpEngineProfileUUID;
+    for (GtpEngineProfile* profile in model.profileList)
+    {
+      if (! [profile.uuid isEqualToString:fallbackGtpEngineProfileUUID])
+      {
+        profileUUID = profile.uuid;
+        break;
+      }
+    }
+    self.gtpEngineProfileUUID = profileUUID;
   }
 }
 

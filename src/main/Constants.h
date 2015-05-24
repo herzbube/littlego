@@ -799,10 +799,10 @@ extern const bool autoSelectFuegoResignMinGamesDefault;
 extern const unsigned long long fuegoResignMinGamesDefault;
 extern const int arraySizeFuegoResignThresholdDefault;
 extern const int fuegoResignThresholdDefault[];
-/// @brief The hardcoded UUID of the default GTP engine profile. This profile
-/// is the fallback profile if no other profile is available or appropriate.
-/// The user cannot delete this profile.
-extern NSString* defaultGtpEngineProfileUUID;
+/// @brief The hardcoded UUID of the human vs. human games GTP engine profile.
+/// This profile is the fallback profile if no other profile is available or
+/// appropriate. The user cannot delete this profile.
+extern NSString* fallbackGtpEngineProfileUUID;
 
 /// @brief Enumerates the types of additive knowledge known by the GTP engine.
 enum AdditiveKnowledgeType

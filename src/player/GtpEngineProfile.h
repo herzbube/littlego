@@ -19,14 +19,17 @@
 /// @brief The GtpEngineProfile class collects settings that define the
 /// behaviour of the GTP engine.
 ///
-/// There is always one GtpEngineProfile object that is the default GTP engine
-/// profile. This profile is the fallback profile if no other profile is
-/// available or appropriate. The user cannot delete the default profile.
+/// There is always one GtpEngineProfile object that is used for human vs. human
+/// games. This profile is the fallback profile if no other profile is
+/// available or appropriate. The user cannot delete the human vs. human games
+/// profile.
 ///
-/// Circumstances where the default profile is used:
+/// Circumstances where the human vs. human games profile is used:
 /// - If a game is started where both players are human
 /// - If a profile is deleted that is still associated with a Player object,
-///   then that Player object is re-associated with the default profile
+///   then that Player object is re-associated with another profile. If the only
+///   profile that still exists is the human vs. human games profile, then that
+///   profile is used as the fallback.
 ///
 ///
 /// @par Active profile
@@ -86,7 +89,7 @@
 - (id) initWithDictionary:(NSDictionary*)dictionary;
 - (NSDictionary*) asDictionary;
 - (void) applyProfile;
-- (bool) isDefaultProfile;
+- (bool) isFallbackProfile;
 - (void) resetPlayingStrengthPropertiesToDefaultValues;
 - (void) resetResignBehaviourPropertiesToDefaultValues;
 - (int) resignThresholdForBoardSize:(enum GoBoardSize)boardSize;

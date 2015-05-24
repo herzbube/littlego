@@ -256,7 +256,7 @@ enum ResetToDefaultsSectionItem
     case GtpEngineProfilesSection:
     {
       if (self.tableView.editing)
-        return @"The default and the active profiles (may be the same) cannot be deleted.";
+        return @"The human vs. human games profile and the active profile (may be the same) cannot be deleted.";
       else
         return @"A profile is a collection of technical settings that define how the computer calculates its moves when that profile is active. Profiles can be attached to computer players to adjust their playing strength.";
     }
@@ -377,19 +377,34 @@ enum ResetToDefaultsSectionItem
         }
         case GtpEngineProfilesSection:
         {
-          GtpEngineProfile* profile = [self.gtpEngineProfileModel.profileList objectAtIndex:indexPath.row];
-          NSString* profileUUID = profile.uuid;
-          NSString* defaultProfileUUID = [self.gtpEngineProfileModel defaultProfile].uuid;
-          // Players that refer to the profile that is about to be deleted,
-          // are set to refer to the default profile instead. Note that it is
-          // not possible to delete the active profile, so we don't have to
-          // handle a change of the active profile here.
+          GtpEngineProfile* profileToDelete = [self.gtpEngineProfileModel.profileList objectAtIndex:indexPath.row];
+          NSString* profileToDeleteUUID = profileToDelete.uuid;
+
+          // Players that refer to the profile that is about to be deleted need
+          // a replacement. We use the first profile that we can find that is
+          // not the "human vs. human games" profile. If no such profile exists
+          // we fallback to the "human vs. human games" profile after all.
+          NSString* replacementProfileUUID = fallbackGtpEngineProfileUUID;
+          for (GtpEngineProfile* replacementProfile in self.gtpEngineProfileModel.profileList)
+          {
+            if ([replacementProfile.uuid isEqualToString:profileToDeleteUUID])
+              continue;
+            if ([replacementProfile.uuid isEqualToString:fallbackGtpEngineProfileUUID])
+              continue;
+            replacementProfileUUID = replacementProfile.uuid;
+            break;
+          }
+
+          // Now re-associate players that refer to the profile that is about to
+          // be deleted. Note that it is not possible to delete the active
+          // profile, so we don't have to handle a change of the active profile
+          // here.
           for (Player* player in self.playerModel.playerList)
           {
-            if ([profileUUID isEqualToString:player.gtpEngineProfileUUID])
-              player.gtpEngineProfileUUID = defaultProfileUUID;
+            if ([profileToDeleteUUID isEqualToString:player.gtpEngineProfileUUID])
+              player.gtpEngineProfileUUID = replacementProfileUUID;
           }
-          [self.gtpEngineProfileModel remove:profile];
+          [self.gtpEngineProfileModel remove:profileToDelete];
           break;
         }
         default:
@@ -467,7 +482,7 @@ enum ResetToDefaultsSectionItem
     case ResetToDefaultsSection:
     {
       UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Please confirm"
-                                                      message:@"This will discard ALL players and profiles that currently exist, and restore those players and profiles that come with the app when it is installed from the App Store.\n\nAre you sure you want to this?"
+                                                      message:@"This will discard ALL players and profiles that currently exist, and restore those players and profiles that come with the app when it is installed from the App Store.\n\nAre you sure you want to do this?"
                                                      delegate:self
                                             cancelButtonTitle:@"No"
                                             otherButtonTitles:@"Yes", nil];
@@ -511,7 +526,7 @@ enum ResetToDefaultsSectionItem
       if (indexPath.row < self.gtpEngineProfileModel.profileCount)
       {
         GtpEngineProfile* profile = [self.gtpEngineProfileModel.profileList objectAtIndex:indexPath.row];
-        if ([profile isDefaultProfile] || profile.isActiveProfile)
+        if ([profile isFallbackProfile] || profile.isActiveProfile)
           return UITableViewCellEditingStyleNone;
         else
           return UITableViewCellEditingStyleDelete;

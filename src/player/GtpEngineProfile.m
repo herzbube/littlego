@@ -235,11 +235,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns true if this GtpEngineProfile object is the default profile.
+/// @brief Returns true if this GtpEngineProfile object is the fallback profile.
 // -----------------------------------------------------------------------------
-- (bool) isDefaultProfile
+- (bool) isFallbackProfile
 {
-  return [self.uuid isEqualToString:defaultGtpEngineProfileUUID];
+  return [self.uuid isEqualToString:fallbackGtpEngineProfileUUID];
 }
 
 // -----------------------------------------------------------------------------

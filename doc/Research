@@ -1087,8 +1087,8 @@ Things that should also be kept in mind:
 
 Benchmark results
 - Set up the user defaults with a 19x19 board for new games, two human
-  players, and the default profile set not to use pondering (to eliminiate all
-  interference by Fuego)
+  players, and the "human vs. human games" profile set not to use pondering (to
+  eliminate all interference by Fuego)
 - Kill all applications to eliminate other outside interference
 - Start Instruments, then wait a moment until system activity dies down before
   starting to pan

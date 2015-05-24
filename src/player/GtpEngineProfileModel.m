@@ -153,14 +153,14 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the default profile object. See the class documentation of
+/// @brief Returns the fallback profile object. See the class documentation of
 /// GtpEngineProfile for details.
 // -----------------------------------------------------------------------------
-- (GtpEngineProfile*) defaultProfile
+- (GtpEngineProfile*) fallbackProfile
 {
   for (GtpEngineProfile* profile in self.profileList)
   {
-    if ([profile isDefaultProfile])
+    if ([profile isFallbackProfile])
       return profile;
   }
   return nil;

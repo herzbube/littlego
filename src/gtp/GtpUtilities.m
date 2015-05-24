@@ -66,7 +66,8 @@
 /// - Computer vs. computer game: Applies the settings obtained from the black
 ///   computer player
 /// - Human vs. human game: There is no computer player. As a fallback the
-///   settings from the default GTP engine profile are applied.
+///   settings from the special "human vs. human games" GTP engine profile are
+///   applied.
 // -----------------------------------------------------------------------------
 + (void) setupComputerPlayer
 {
@@ -75,7 +76,7 @@
   if (player)
     profileToActivate = [player gtpEngineProfile];
   else
-    profileToActivate = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel defaultProfile];
+    profileToActivate = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel fallbackProfile];
 
   // Invoking applyProfile makes the profile the active profile
   if (profileToActivate)
