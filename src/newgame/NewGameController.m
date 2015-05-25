@@ -267,7 +267,12 @@ enum CellID
   {
     // We get here if the "Advanced settings" screeen is popped from the
     // navigation stack
-    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:RulesetHandicapSection];
+    NSUInteger indexOfSectionToReload;
+    if (self.loadGame)
+      indexOfSectionToReload = RulesetHandicapSection_LoadGame;
+    else
+      indexOfSectionToReload = RulesetHandicapSection;
+    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:indexOfSectionToReload];
     [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
     self.advancedScreenWasShown = false;
   }
@@ -789,7 +794,12 @@ enum CellID
       case RulesetCellID:
       {
         [self applyRuleset:controller.indexOfSelectedItem];
-        NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:RulesetHandicapSection];
+        NSUInteger indexOfSectionToReload;
+        if (self.loadGame)
+          indexOfSectionToReload = RulesetHandicapSection_LoadGame;
+        else
+          indexOfSectionToReload = RulesetHandicapSection;
+        NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:indexOfSectionToReload];
         [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
         break;
       }
