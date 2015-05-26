@@ -17,7 +17,7 @@
 
 // Project includes
 #import "AutoLayoutUtility.h"
-#import "../utility/UIDeviceAdditions.h"
+#import "../shared/LayoutManager.h"
 
 
 @implementation AutoLayoutUtility
@@ -295,7 +295,7 @@
   static CGFloat horizontalSpacingTableViewCell = -1.0f;
   if (horizontalSpacingTableViewCell < 0.0f)
   {
-    if ([UIDevice systemVersionMajor] < 8)
+    if ([LayoutManager sharedManager].uiType != UITypePhone)
     {
       UITableViewCell* cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"dummy"] autorelease];
       cell.textLabel.text = @"A";
@@ -304,11 +304,15 @@
     }
     else
     {
-      // In iOS 8 the above method to calculate the real value does not work:
-      // The calculated value is 15, i.e. still the same as in iOS 7, but when
-      // we look at the *REAL* spacing we see that in iOS 8 it has increased
-      // to 20. Although hard-coding values is ugly, we don't have any other
-      // choice :-(
+      // On the iPhone 6+ the above method to calculate the real value does not
+      // work: The calculated value is 15, i.e. the same as on all other
+      // devices, but when we look at the *REAL* spacing we see that on
+      // iPhone 6+ it has increased to 20. Although hard-coding values is ugly,
+      // we don't have any other choice :-( By basing our decision on the UIType
+      // we hope to make this solution slightly more resilient: UITypePhone
+      // hopefully covers other, future devices with wide screens, and these
+      // hopefully behave the same as the iPhone 6+ and also use a larger
+      // spacing.
       horizontalSpacingTableViewCell = 20;
     }
   }
