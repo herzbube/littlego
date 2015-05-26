@@ -185,12 +185,12 @@ enum ResetToDefaultsSectionItem
 - (void) setEditing:(BOOL)editing animated:(BOOL)animated
 {
   // Invoke super implementation, as per API documentation
-  [super setEditing:editing animated:YES];
+  [super setEditing:editing animated:animated];
   // Update footer titles. I have not found a more graceful way how to do this
-  // than to reload the entire sections.
-  NSRange indexSetRange = NSMakeRange(PlayersSection, 2);
+  // than to reload entire sections
+  NSRange indexSetRange = NSMakeRange(PlayersSection, 3);
   NSIndexSet* indexSet = [NSIndexSet indexSetWithIndexesInRange:indexSetRange];
-  [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationNone];
+  [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -327,6 +327,10 @@ enum ResetToDefaultsSectionItem
     {
       cell = [TableViewCellFactory cellWithType:DeleteTextCellType tableView:tableView];
       cell.textLabel.text = @"Reset to default players & profiles";
+      if (self.editing)
+        cell.textLabel.textColor = [UIColor lightGrayColor];
+      else
+        cell.textLabel.textColor = [UIColor redColor];
       break;
     }
     default:
