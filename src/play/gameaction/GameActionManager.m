@@ -986,12 +986,16 @@ static GameActionManager* sharedGameActionManager = nil;
   // not make sense in the following cases:
   // - If a player resigned - that player has lost the game by his own
   //   explicit action, so we don't need to calculate a score.
-  // - If the game ended due to four passes - in this case all stones are
-  //   deemed alive and no life & death settling is required
+  //
+  // Possibly controversial: If the game ended due to four passes, all stones
+  // are deemed alive. Although no life & death settling is required in this
+  // case, we still activate scoring mode so that the user sees a result in the
+  // status view.
   switch (game.reasonForGameHasEnded)
   {
     case GoGameHasEndedReasonTwoPasses:
     case GoGameHasEndedReasonThreePasses:
+    case GoGameHasEndedReasonFourPasses:
       break;
     default:
       return;
