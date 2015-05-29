@@ -703,7 +703,7 @@ enum MagnifyingGlassEnableMode
   MagnifyingGlassEnableModeAlwaysOff,   ///< @brief The magnifying glass is always off
   MagnifyingGlassEnableModeAuto,        ///< @brief The magnifying glass is on if the grid cell size on the board view falls
                                         ///  below the threshold where it is hard to see the cross-hair stone below the finger
-  MagnifyingGlassEnableModeDefault = MagnifyingGlassEnableModeAuto
+  MagnifyingGlassEnableModeDefault = MagnifyingGlassEnableModeAlwaysOn
 };
 
 /// @brief Enumerates the different thresholds for
