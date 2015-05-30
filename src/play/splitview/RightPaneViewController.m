@@ -108,14 +108,9 @@
 - (void) setupUseNavigationBar
 {
   if ([LayoutManager sharedManager].uiType == UITypePhone)
-  {
-    bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
-    self.useNavigationBar = isPortraitOrientation;
-  }
+    self.useNavigationBar = false;
   else
-  {
     self.useNavigationBar = true;
-  }
 }
 
 #pragma mark - Container view controller handling
@@ -270,6 +265,7 @@
 {
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
+                                  forInterfaceOrientation:self.interfaceOrientation
                                          constraintHolder:self.woodenBackgroundView];
 }
 
@@ -310,6 +306,7 @@
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
+                                  forInterfaceOrientation:self.interfaceOrientation
                                          constraintHolder:self.woodenBackgroundView];
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];

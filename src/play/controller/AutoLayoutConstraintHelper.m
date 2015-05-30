@@ -36,21 +36,27 @@
 /// The generated constraints satisfy the following layout requirements:
 /// - The board view is square
 /// - The board view size matches either the width or the height of the
-///   superview, depending on which is the superview's smaller dimension
+///   superview, depending on which is the superview's smaller dimension. The
+///   specified interface orientation @a interfaceOrientation, not the current
+///   view size at the time this method is invoked, decides which is the smaller
+///   dimension: A portrait orientation means that the width is smaller, a
+///   landscape orientation means that the height is smaller. The reason for
+///   this approach is that during interface orientation changes the superview's
+///   current size may not be accurate.
 /// - The board view is horizontally or vertically centered within its
 ///   superview, the axis depending on which is the superview's larger
-///   dimension
+///   dimension. The logic that determines the larger dimension is the inverse
+///   of the logic that determines the smaller dimension.
 // -----------------------------------------------------------------------------
 + (void) updateAutoLayoutConstraints:(NSMutableArray*)constraints
                          ofBoardView:(UIView*)boardView
+             forInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
                     constraintHolder:(UIView*)constraintHolder;
 {
   [constraintHolder removeConstraints:constraints];
   [constraints removeAllObjects];
 
   UIView* superviewOfBoardView = boardView.superview;
-  CGSize superviewSize = superviewOfBoardView.bounds.size;
-  bool superviewHasPortraitOrientation = (superviewSize.height > superviewSize.width);
 
   // Choose whichever is the superview's smaller dimension. We know that the
   // board view is constrained to be square, so we need to constrain only one
@@ -65,7 +71,7 @@
   // distributes the remaining space not taken up by the board view. Other
   // content can then be placed into that space.
   UILayoutConstraintAxis centerConstraintAxis;
-  if (superviewHasPortraitOrientation)
+  if (UIInterfaceOrientationIsPortrait(interfaceOrientation))
   {
     dimensionToConstrain = NSLayoutAttributeWidth;
     alignConstraintAxis = NSLayoutAttributeLeft;

@@ -62,7 +62,6 @@
     return nil;
   self.woodenBackgroundView = nil;
   self.boardViewAutoLayoutConstraints = [NSMutableArray array];
-  [self setupChildControllers];
   return self;
 }
 
@@ -98,7 +97,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  self.navigationBarController = [[[NavigationBarControllerPhone alloc] initWithNavigationItem:self.navigationItem] autorelease];
+  // TODO xxx This makes assumptions about the view controller hierarchy
+  self.navigationBarController = [[[NavigationBarControllerPhone alloc] initWithNavigationItem:self.parentViewController.navigationItem] autorelease];
   self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
   self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
   self.statusViewController = [[[StatusViewController alloc] init] autorelease];
@@ -213,13 +213,28 @@
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
+- (void) didMoveToParentViewController:(UIViewController*)parent
+{
+  // TODO xxx can do this only after the parent VC is known, because we need
+  // the parent VC's navigation item. also, we must check that the parent VC
+  // is not nil because we also get invoked when this VC is removed from its
+  // parent
+  if (parent)
+    [self setupChildControllers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
 - (void) loadView
 {
   [super loadView];
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
   [self configureViews];
-  self.navigationBarController.navigationBar = self.navigationController.navigationBar;
+  // TODO xxx This makes assumptions about the view controller hierarchy
+  self.navigationBarController.navigationBar = self.parentViewController.navigationController.navigationBar;
+  [self.boardPositionButtonBoxController reloadData];
 }
 
 // -----------------------------------------------------------------------------
@@ -232,6 +247,7 @@
 {
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
+                                  forInterfaceOrientation:self.interfaceOrientation
                                          constraintHolder:self.woodenBackgroundView];
 }
 
@@ -279,6 +295,7 @@
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
+                                  forInterfaceOrientation:self.interfaceOrientation
                                          constraintHolder:self.woodenBackgroundView];
 
   [viewsDictionary removeAllObjects];

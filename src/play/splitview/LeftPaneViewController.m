@@ -82,14 +82,9 @@
 - (void) setupUseBoardPositionToolbar
 {
   if ([LayoutManager sharedManager].uiType == UITypePhone)
-  {
-    bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(self.interfaceOrientation);
-    self.useBoardPositionToolbar = isPortraitOrientation;
-  }
+    self.useBoardPositionToolbar = false;
   else
-  {
     self.useBoardPositionToolbar = true;
-  }
 }
 
 #pragma mark - Container view controller handling

@@ -16,19 +16,11 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The AutoLayoutConstraintHelper class is a container for helper
-/// functions related to managing Auto Layout constraints on the #UIAreaPlay.
-///
-/// All functions in AutoLayoutConstraintHelper are class methods, so there is
-/// no need to create an instance of AutoLayoutUtility.
+/// @brief The PlayUiAreaController class manages the root view in #UIAreaPlay
+/// for #UITypePhone.
 // -----------------------------------------------------------------------------
-@interface AutoLayoutConstraintHelper : NSObject
+@interface PlayUiAreaController : UIViewController
 {
 }
-
-+ (void) updateAutoLayoutConstraints:(NSMutableArray*)constraints
-                         ofBoardView:(UIView*)boardView
-             forInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-                    constraintHolder:(UIView*)constraintHolder;
 
 @end

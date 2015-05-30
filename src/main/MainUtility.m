@@ -28,6 +28,7 @@
 #import "../archive/ArchiveViewController.h"
 #import "../diagnostics/DiagnosticsViewController.h"
 #import "../play/rootview/PlayRootViewController.h"
+#import "../play/uiarea/PlayUiAreaController.h"
 #import "../settings/SettingsViewController.h"
 #import "../shared/LayoutManager.h"
 #import "../ui/UiSettingsModel.h"
@@ -109,7 +110,10 @@
   switch (uiArea)
   {
     case UIAreaPlay:
-      rootViewController = [PlayRootViewController playRootViewController];
+      if ([LayoutManager sharedManager].uiType == UITypePhone)
+        rootViewController = [[[PlayUiAreaController alloc] init] autorelease];
+      else
+        rootViewController = [PlayRootViewController playRootViewController];
       break;
     case UIAreaSettings:
       rootViewController = [SettingsViewController controller];
