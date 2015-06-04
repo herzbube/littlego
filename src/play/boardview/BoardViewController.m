@@ -35,6 +35,9 @@
 /// @brief Class extension with private properties for BoardViewController.
 // -----------------------------------------------------------------------------
 @interface BoardViewController()
+/// @brief Prevents unregistering by dealloc if registering hasn't happened
+/// yet. Registering may not happen if the controller's view is never loaded.
+@property(nonatomic, assign) bool notificationRespondersAreSetup;
 @property(nonatomic, assign) bool viewDidLayoutSubviewsInProgress;
 @property(nonatomic, retain) BoardView* boardView;
 @property(nonatomic, retain) TiledScrollView* coordinateLabelsLetterView;
@@ -62,6 +65,7 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+  self.notificationRespondersAreSetup = false;
   self.viewDidLayoutSubviewsInProgress = false;
   self.boardView = nil;
   self.coordinateLabelsLetterView = nil;
@@ -202,6 +206,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
+  if (self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = true;
+
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   [metrics addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
@@ -213,6 +221,10 @@
 // -----------------------------------------------------------------------------
 - (void) removeNotificationResponders
 {
+  if (! self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = false;
+
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   [metrics removeObserver:self forKeyPath:@"canvasSize"];
   [metrics removeObserver:self forKeyPath:@"boardSize"];
