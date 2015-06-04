@@ -62,6 +62,11 @@
   // board view is constrained to be square, so we need to constrain only one
   // dimension to define the view size.
   NSLayoutAttribute dimensionToConstrain;
+  // For the makeSquare... method we need to know if the width depends on the
+  // height (i.e. the dimension to constrain is the height, and the width is
+  // derived from the height), or if the dependency relationship is the other
+  // way around.
+  bool widthDependsOnHeight;
   // We also need to place the board view. The first part is to align it to one
   // of the superview edges from which it can freely flow to take up the entire
   // extent of the superview.
@@ -74,17 +79,20 @@
   if (UIInterfaceOrientationIsPortrait(interfaceOrientation))
   {
     dimensionToConstrain = NSLayoutAttributeWidth;
+    widthDependsOnHeight = false;
     alignConstraintAxis = NSLayoutAttributeLeft;
     centerConstraintAxis = UILayoutConstraintAxisVertical;
   }
   else
   {
     dimensionToConstrain = NSLayoutAttributeHeight;
+    widthDependsOnHeight = true;
     alignConstraintAxis = NSLayoutAttributeTop;
     centerConstraintAxis = UILayoutConstraintAxisHorizontal;
   }
 
   NSLayoutConstraint* aspectRatioConstraint = [AutoLayoutUtility makeSquare:boardView
+                                                       widthDependsOnHeight:widthDependsOnHeight
                                                            constraintHolder:superviewOfBoardView];
   [constraints addObject:aspectRatioConstraint];
 

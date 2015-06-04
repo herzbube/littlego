@@ -43,9 +43,11 @@
                            onAttribute:(NSLayoutAttribute)attribute
                       constraintHolder:(UIView*)constraintHolder;
 + (NSLayoutConstraint*) makeSquare:(UIView*)view
+              widthDependsOnHeight:(bool)widthDependsOnHeight
                   constraintHolder:(UIView*)constraintHolder;
 + (NSLayoutConstraint*) setAspectRatio:(CGFloat)multiplier
-                                  view:(UIView*)view
+                         widthToHeight:(bool)widthToHeight
+                                ofView:(UIView*)view
                       constraintHolder:(UIView*)constraintHolder;
 + (NSArray*) installVisualFormats:(NSArray*)visualFormats
                         withViews:(NSDictionary*)viewsDictionary
