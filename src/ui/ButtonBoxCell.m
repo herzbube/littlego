@@ -55,7 +55,11 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [self removeButtonIfSet];
+  // Do NOT invoke removeButtonIfSet - in fact do NOT mess with the view
+  // hierarchy or auto layout constraints at all, otherwise an autorelease
+  // may be queued by iOS
+  self.autoLayoutConstraints = nil;
+  self.button = nil;
   [super dealloc];
 }
 
