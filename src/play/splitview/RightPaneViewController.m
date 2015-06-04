@@ -433,20 +433,6 @@
                                                                                    inView:self.rightColumnView];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Removes all dynamically managed Auto Layout constraints.
-///
-/// TODO This should be removed, it is a HACK! See documentation at call site
-/// for more information.
-// -----------------------------------------------------------------------------
-- (void) removeDynamicConstraints
-{
-  [self.woodenBackgroundView removeConstraints:self.boardViewAutoLayoutConstraints];
-  [self.boardViewAutoLayoutConstraints removeAllObjects];
-  [self.rightColumnView removeConstraints:self.gameActionButtonBoxAutoLayoutConstraints];
-  self.gameActionButtonBoxAutoLayoutConstraints = nil;
-}
-
 #pragma mark - ButtonBoxControllerDataDelegate overrides
 
 // -----------------------------------------------------------------------------

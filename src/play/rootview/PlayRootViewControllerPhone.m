@@ -381,29 +381,6 @@ enum ViewHierarchyState
   }
   else
   {
-    // TODO xxx it looks as if this can actually be removed now that the
-    // UINavigationController is no longer responsible for setting up the
-    // view hierarchy
-
-    // TODO This should be removed, it is a HACK! Reason for the hack:
-    // - The Auto Layout constraints in RightPaneViewController are made so that
-    //   they fit landscape orientation. In portrait orientation the constraints
-    //   cause the Auto Layout engine to print warnings into the Debug console.
-    // - Now here's the strange thing: Despite the fact that here we remove all
-    //   references to the RightPaneViewController object, and that object is
-    //   properly deallocated later on, the deallocation takes place too late
-    //   so that RightPaneViewController's view hierarchy still takes part in
-    //   the view layout process after the interface orientation change.
-    //   Something - presumably it's UINavigationController - keeps
-    //   RightPaneViewController around too long.
-    // - The only way I have found to get rid of the Auto Layout warnings is to
-    //   explicitly tell RightPaneViewController to remove the offending
-    //   constraints NOW!
-    //
-    // Perhaps the hack can be eliminated once we drop iOS 7 support and can
-    // start to work with size classes.
-    [self.rightPaneViewController removeDynamicConstraints];
-
     self.splitViewControllerChild = nil;
     self.leftPaneViewController = nil;
     self.rightPaneViewController = nil;

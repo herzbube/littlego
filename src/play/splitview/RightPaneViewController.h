@@ -34,8 +34,6 @@
 {
 }
 
-- (void) removeDynamicConstraints;
-
 @property(nonatomic, retain) NavigationBarController* navigationBarController;
 
 @end
