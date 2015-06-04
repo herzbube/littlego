@@ -205,6 +205,22 @@ enum ViewHierarchyState
 {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
+  // This override is called even if the the view hierarchy of this view
+  // controller is not visible (e.g. buried in a navigation controller's stack).
+  // This is different from the behaviour of the pre-iOS 8 interface rotation
+  // methods (e.g. willRotateToInterfaceOrientation:duration:()).
+  //
+  // Because we already have the statusBarOrientationDidChange:() and
+  // viewWillAppear:() combination that takes care of the interface rotation
+  // in the "view hierarchy is not visible" scenario, we simply abort here.
+  //
+  // Also note: If the view hierarchy is not visible, the size parameter is
+  // still set to dimensions that match the interface orientation before the
+  // rotation. This totally screws up the logic below that attempts to derive
+  // the target interface orientation from the size.
+  if (!self.view.window)
+    return;
+
   UIInterfaceOrientation toInterfaceOrientation;
   if (size.height > size.width)
     toInterfaceOrientation = UIInterfaceOrientationPortrait;
@@ -229,6 +245,14 @@ enum ViewHierarchyState
 {
   [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
 
+  // TODO: This abort condition is here to match the implementation of
+  // viewWillTransitionToSize:withTransitionCoordinator:(). The condition is
+  // probably not necessary, though, because this override here should not be
+  // called if the view hierarchy is not visible. This still needs to be
+  // confirmed, though.
+  if (!self.view.window)
+    return;
+
   [self tearDownViewHierarchyIfNotInterfaceOrientation:toInterfaceOrientation];
   [self performSelector:@selector(setupViewHierarchyForInterfaceOrientationAsync:) withObject:[NSNumber numberWithLong:toInterfaceOrientation] afterDelay:0];
 }
@@ -244,10 +268,6 @@ enum ViewHierarchyState
 {
   [super viewWillAppear:animated];
 
-  // TODO xxx: Why exactly do we need this to be async? It works when rotating
-  // from landscape to portrait, but not the other way round (the board view
-  // is wrongly zoomed, and after the next orientation change the app even
-  /// crashes)
   UIInterfaceOrientation toInterfaceOrientation = self.interfaceOrientation;
   [self performSelector:@selector(setupViewHierarchyForInterfaceOrientationAsync:) withObject:[NSNumber numberWithLong:toInterfaceOrientation] afterDelay:0];
 }
