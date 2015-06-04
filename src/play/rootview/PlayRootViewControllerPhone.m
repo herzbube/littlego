@@ -529,6 +529,7 @@ enum ViewHierarchyState
   if ([self hasPortraitOrientationViewHierarchy])
   {
     [self.woodenBackgroundView removeFromSuperview];
+    self.woodenBackgroundView = nil;
     [self.boardPositionCollectionViewController.view removeFromSuperview];
     [self.statusViewController.view removeFromSuperview];
   }
