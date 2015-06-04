@@ -27,7 +27,7 @@
 // -----------------------------------------------------------------------------
 @interface NavigationBarControllerPhone()
 @property(nonatomic, assign) UINavigationItem* navigationItem;
-@property(nonatomic, assign) UIBarButtonItem* spacerButton;
+@property(nonatomic, retain) UIBarButtonItem* spacerButton;
 @property(nonatomic, retain) NavigationBarButtonModel* navigationBarButtonModel;
 @end
 
