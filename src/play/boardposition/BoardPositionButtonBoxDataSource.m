@@ -20,6 +20,23 @@
 
 
 // -----------------------------------------------------------------------------
+/// @brief Enumerates all buttons that appear in the board position navigation
+/// button box, without regard in which section or oder they appear.
+///
+/// This enumeration exists to simplify controller logic. Using this enumeration
+/// allows to write a single switch() statement instead of writing complicated
+/// complicated nested switch/if statements.
+// -----------------------------------------------------------------------------
+enum ButtonID
+{
+  RewindToStartButtonID,
+  PreviousButtonID,
+  NextButtonID,
+  ForwardToEndButtonID,
+};
+
+
+// -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
 /// BoardPositionButtonBoxDataSource.
 // -----------------------------------------------------------------------------
@@ -74,7 +91,7 @@
 // -----------------------------------------------------------------------------
 - (int) numberOfSectionsInButtonBoxController:(ButtonBoxController*)buttonBoxController
 {
-  return 1;
+  return 2;
 }
 
 // -----------------------------------------------------------------------------
@@ -85,7 +102,7 @@
   if (buttonBoxController.scrollDirection == UICollectionViewScrollDirectionHorizontal)
     return 1;
   else
-    return 4;
+    return 2;
 }
 
 // -----------------------------------------------------------------------------
@@ -94,7 +111,7 @@
 - (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfColumnsInSection:(NSInteger)section
 {
   if (buttonBoxController.scrollDirection == UICollectionViewScrollDirectionHorizontal)
-    return 4;
+    return 2;
   else
     return 1;
 }
@@ -107,30 +124,31 @@
   NSString* imageResourceName;
   SEL selector;
   enum BoardPositionNavigationDirection boardPositionNavigationDirection;
-  switch (indexPath.row)
+  enum ButtonID buttonID = [self buttonIDForIndexPath:indexPath];
+  switch (buttonID)
   {
-    case 0:
+    case RewindToStartButtonID:
     {
       imageResourceName = rewindToStartButtonIconResource;
       selector = @selector(rewindToStart:);
       boardPositionNavigationDirection = BoardPositionNavigationDirectionBackward;
       break;
     }
-    case 1:
+    case PreviousButtonID:
     {
       imageResourceName = backButtonIconResource;
       selector = @selector(previousBoardPosition:);
       boardPositionNavigationDirection = BoardPositionNavigationDirectionBackward;
       break;
     }
-    case 2:
+    case NextButtonID:
     {
       imageResourceName = forwardButtonIconResource;
       selector = @selector(nextBoardPosition:);
       boardPositionNavigationDirection = BoardPositionNavigationDirectionForward;
       break;
     }
-    case 3:
+    case ForwardToEndButtonID:
     {
       imageResourceName = forwardToEndButtonIconResource;
       selector = @selector(fastForwardToEnd:);
@@ -193,6 +211,29 @@
     {
       break;
     }
+  }
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the #ButtonID value that corresponds to @a indexPath.
+// -----------------------------------------------------------------------------
+- (enum ButtonID) buttonIDForIndexPath:(NSIndexPath*)indexPath
+{
+  if (0 == indexPath.section)
+  {
+    if (0 == indexPath.row)
+      return RewindToStartButtonID;
+    else
+      return PreviousButtonID;
+  }
+  else
+  {
+    if (0 == indexPath.row)
+      return NextButtonID;
+    else
+      return ForwardToEndButtonID;
   }
 }
 
