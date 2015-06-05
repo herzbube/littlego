@@ -139,10 +139,6 @@ static LayoutManager* sharedManager = nil;
       break;
     }
     case UITypePhone:
-    {
-      self.supportedInterfaceOrientations = UIInterfaceOrientationMaskLandscape;
-      break;
-    }
     case UITypePad:
     {
       self.supportedInterfaceOrientations = UIInterfaceOrientationMaskAll;
