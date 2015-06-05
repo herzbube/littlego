@@ -150,13 +150,11 @@
   // state. When testing consider this:
   // - The longest possible status text is the one that includes the player
   //   name, because that name is variable and can be entered by the user.
-  // - The second-longest status text is the one about the game ending with 2
-  //   pass moves.
-  // - The third-longest status text is the one in scoring mode.
-  // - In layouts where the space available to the status view is fixed: Make
-  //   tests with the player name.
-  // - In layouts where the space available to the status view is variable:
-  //   Make tests both with all three
+  // - The longest status text without a variable component is the one in
+  //   scoring mode, when one of the players has resigned.
+  // - When testing, make sure that the longest non-variable text fits, then
+  //   also test with a long player name to make sure an acceptable part of the
+  //   name is still visible before it is truncated.
   CGFloat fontSize;
   switch ([LayoutManager sharedManager].uiType)
   {
@@ -166,8 +164,8 @@
       fontSize = 9.0f;
       break;
     case UITypePhone:
-      // Portrait: See UITypePhonePortraitOnly.
-      // Landscape: Label can have 3 lines. Player names about 40 characters
+      // Portrait: See UITypePad.
+      // Landscape: Label can have 4 lines. Player names about 40 characters
       // long are OK but must consist of several words for line breaks.
       fontSize = 11.0f;
       break;
@@ -431,35 +429,48 @@
     }
     else
     {
-      GoScore* score = [GoGame sharedGame].score;
+      GoScore* score = game.score;
       if (score.scoringEnabled)
       {
         if (score.scoringInProgress)
+        {
           statusText = @"Scoring in progress...";
+        }
         else
         {
-          switch (game.reasonForGameHasEnded)
+          NSString* resultString = [game.score resultString];
+          NSString* tapString;
+          if (GoScoreMarkModeDead == [ApplicationDelegate sharedDelegate].scoringModel.scoreMarkMode)
+            tapString = @" - Tap to mark dead stones";
+          else
+            tapString = @" - Tap to mark stones in seki";
+
+          if (! game.boardPosition.isLastPosition
+              || GoGameStateGameHasEnded != game.state)
           {
-            case GoGameHasEndedReasonResigned:
+            // If the user is viewing an old board position we don't care
+            // whether the game has ended, nor what the reason was - we always
+            // show a status as if the game had not yet ended (which is true,
+            // in a sense, since the user is viewing a board position before
+            // the game has actually ended)
+            statusText = [resultString stringByAppendingString:tapString];
+          }
+          else
+          {
+            switch (game.reasonForGameHasEnded)
             {
-              NSString* colorString = [NSString stringWithGoColor:game.nextMoveColor];
-              statusText = [NSString stringWithFormat:@"%@ resigned", colorString];
-              break;
-            }
-            case GoGameHasEndedReasonFourPasses:
-            {
-              statusText = [[GoGame sharedGame].score resultString];
-              statusText = [statusText stringByAppendingString:@" - All stones on the board are deemed alive"];
-              break;
-            }
-            default:
-            {
-              statusText = [[GoGame sharedGame].score resultString];
-              if (GoScoreMarkModeDead == [ApplicationDelegate sharedDelegate].scoringModel.scoreMarkMode)
-                statusText = [statusText stringByAppendingString:@" - Tap to mark dead stones"];
-              else
-                statusText = [statusText stringByAppendingString:@" - Tap to mark stones in seki"];
-              break;
+              case GoGameHasEndedReasonFourPasses:
+              {
+                // Interaction is not possible, so no need to add the tapping
+                // message
+                statusText = [resultString stringByAppendingString:@" - All stones on the board are deemed alive"];
+                break;
+              }
+              default:
+              {
+                statusText = [resultString stringByAppendingString:tapString];
+                break;
+              }
             }
           }
         }

@@ -201,7 +201,6 @@
   {
     switch (game.reasonForGameHasEnded)
     {
-      case GoGameHasEndedReasonResigned:
       case GoGameHasEndedReasonFourPasses:
       {
         self.tappingEnabled = false;

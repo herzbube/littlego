@@ -162,9 +162,6 @@ enum ActionSheetButton
         // mode, so no need to show this option in our menu
         if (GoGameStateGameHasEnded == game.state)
           continue;
-        // Scoring is not available for resign
-        if (GoGameHasEndedReasonResigned == game.reasonForGameHasEnded)
-          continue;
         if (game.score.scoringEnabled)
           continue;
         title = @"Score";
@@ -178,7 +175,6 @@ enum ActionSheetButton
           continue;
         switch (game.reasonForGameHasEnded)
         {
-          case GoGameHasEndedReasonResigned:
           case GoGameHasEndedReasonFourPasses:
             continue;
           default:

@@ -245,7 +245,11 @@
     [visualFormats addObject:@"V:|-0-[boardPositionCollectionView]-0-[statusView]-0-|"];
     CGFloat boardPositionCollectionViewWidth = self.boardPositionCollectionViewController.boardPositionCollectionViewMaximumCellSize.width;
     [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewWidth]];
-    int statusViewHeight = [UiElementMetrics tableViewCellContentViewHeight];
+    // This multiplier was experimentally determined so that even with 4 lines
+    // of text there is a comfortable spacing at the top/bottom of the status
+    // view label. The multiplier is closely linked to the label's font size.
+    CGFloat statusViewHeightMultiplier = 1.4f;
+    int statusViewHeight = [UiElementMetrics tableViewCellContentViewHeight] * statusViewHeightMultiplier;
     [visualFormats addObject:[NSString stringWithFormat:@"V:[statusView(==%d)]", statusViewHeight]];
   }
 

@@ -328,30 +328,49 @@
   if (self.lastCalculationHadError)
     return @"Error calculating score";
 
+  NSString* resultString;
   switch (self.result)
   {
     case GoGameResultNone:
-      return @"No score calculated yet";
+    {
+      resultString = @"No score calculated yet";
+      break;
+    }
     case GoGameResultBlackHasWon:
     {
       NSString* score = [NSString stringWithFractionValue:self.totalScoreBlack - self.totalScoreWhite];
-      return [NSString stringWithFormat:@"Black wins by %@", score];
+      resultString = [NSString stringWithFormat:@"Black wins by %@", score];
+      break;
     }
     case GoGameResultWhiteHasWon:
     {
       NSString* score = [NSString stringWithFractionValue:self.totalScoreWhite - self.totalScoreBlack];
-      return [NSString stringWithFormat:@"White wins by %@", score];
+      resultString = [NSString stringWithFormat:@"White wins by %@", score];
+      break;
     }
     case GoGameResultTie:
-      return @"Game is a tie";
+    {
+      resultString = @"Game is a tie";
+      break;
+    }
     default:
     {
       DDLogError(@"%@: Unexpected GoGameResult value %d", self, self.result);
       assert(0);
-      break;
+      return @"Unknown game result";
     }
   }
-  return @"Unknown game result";
+
+  GoGame* game = [GoGame sharedGame];
+  if (game.boardPosition.isLastPosition
+      && GoGameStateGameHasEnded == game.state
+      && GoGameHasEndedReasonResigned == game.reasonForGameHasEnded)
+  {
+    NSString* colorString = [NSString stringWithGoColor:game.nextMoveColor];
+    resultString = [NSString stringWithFormat:@"%@ resigned / %@", colorString, resultString];
+  }
+
+  return resultString;
 }
 
 // -----------------------------------------------------------------------------
