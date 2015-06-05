@@ -88,35 +88,37 @@
   
   [self pushViewController:self.rootViewController animated:NO];
   [self restoreVisibleUIAreaToUserDefaults];
+
+  // Disable the swipe-to-left gesture that pops the top of the navigation
+  // stack. iOS does a very poor job of implementing this gesture, so disabling
+  // the gesture entirely is not only simpler but also less error-prone than
+  // attempting to deal with its shortcomings. Known problems:
+  // - When the gesture starts, the delegate method
+  //   navigationController:willShowViewController:animated:() is invoked. But
+  //   if the user cancels the gesture halfway through, the top view controller
+  //   is restored WITHOUT the delegate method being invoked. One workaround for
+  //   this is to override viewWillLayoutSubviews(), which is invoked even if
+  //   the delegate method is not.
+  // - This controller hides the navigation bar if the user pops back to the
+  //   root view controller, but if the gesture is cancelled so that the main
+  //   menu remains visible, the navigation bar must be re-shown by
+  //   viewWillLayoutSubviews(). Doing this causes UINavigationController to
+  //   become confused, so when later the settings UI area is displayed the
+  //   back button and navigation title are wrong.
+  self.interactivePopGestureRecognizer.enabled = NO;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method
 ///
-/// This override contains navigation bar handling that must be executed in
-/// the following cases:
-/// - When a view controller is pushed onto, or popped from the navigation stack
-/// - When the interface orientation changes
+/// This override contains navigation bar handling that must be executed when
+/// the interface orientation changes while #UIAreaPlay is shown. The change
+/// effected is that the navigation item must be made visible when rotating to
+/// portrait orientation, and hidden when rotating to landscape orientation.
 // -----------------------------------------------------------------------------
 - (void) viewWillLayoutSubviews
 {
-  // These things must be executed when the interface orientation changes, but
-  // also whenever a view controller is pushed onto, or popped from the
-  // navigation stack. One tricky case where this is absolutely required:
-  // - Top of navigation stack = Main menu
-  // - User slightly drags the main menu from left to right, as if he wanted
-  //   to go back to UIAreaPlay. This triggers
-  //   navigationController:willShowViewController:animated:(), which will
-  //   cause the navigation bar to be hidden
-  // - User cancels the gesture before completing it, which causes the main
-  //   menu to remain at the top of the navigation stack. Inexplicably (is this
-  //   an iOS bug?) this does ***NOT*** trigger
-  //   navigationController:willShowViewController:animated:(), which would mean
-  //   mean that the navigation bar remains hidden
-  // - But cancelling the gesture triggers viewWillLayoutSubviews, so here we
-  //   can fix the problem by re-showing the navigation bar
   [self updateNavigationBarVisibility];
-  [self updateNavigationItemBackButtonTitle];
 }
 
 #pragma mark - UINavigationControllerDelegate overrides
@@ -290,10 +292,10 @@
   switch (navigationStackSize)
   {
     case 1:
-      self.topViewController.title = nil;
+      self.rootViewController.title = nil;
       break;
     case 2:
-      ((UIViewController*)self.viewControllers[0]).title = [MainUtility titleStringForUIArea:UIAreaPlay];
+      self.rootViewController.title = [MainUtility titleStringForUIArea:UIAreaPlay];
       break;
     default:
       break;
