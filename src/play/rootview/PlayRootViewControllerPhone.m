@@ -541,6 +541,10 @@ enum ViewHierarchyState
   {
     [self.view addSubview:self.splitViewControllerChild.view];
   }
+
+  // Now that the view hierarchy is in place we can remove the transitional
+  // background image that was installed by tearDownViewHierarchy
+  self.view.backgroundColor = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -563,6 +567,13 @@ enum ViewHierarchyState
   {
     [self.splitViewControllerChild.view removeFromSuperview];
   }
+
+  // Installing this generic and repeating background image makes the transition
+  // from the old to the new view hierarchy much less jarring. Without the
+  // background image, only a simple gray background is visible. Obviously, a
+  // nice rotation animation would be better, but also more difficult to
+  // implement.
+  self.view.backgroundColor = [UIColor woodenBackgroundColor];
 }
 
 #pragma mark - Auto Layout constraints setup and removal
