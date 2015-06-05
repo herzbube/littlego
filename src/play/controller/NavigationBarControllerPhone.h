@@ -22,6 +22,10 @@
 // -----------------------------------------------------------------------------
 /// @brief The NavigationBarControllerPhone class is responsible for managing
 /// the navigation bar above the Go board in #UIAreaPlay for #UITypePhone.
+///
+/// @note Unlike other navigation bar controllers in the project,
+/// NavigationBarControllerPhone is not derived from NavigationBarController,
+/// it not even is a view controller.
 // -----------------------------------------------------------------------------
 @interface NavigationBarControllerPhone : NSObject <GameActionManagerUIDelegate>
 {

@@ -17,7 +17,6 @@
 
 // Project includes
 #import "NavigationBarController.h"
-#import "NavigationBarControllerPhone.h"
 #import "NavigationBarControllerPhonePortraitOnly.h"
 #import "../model/NavigationBarButtonModel.h"
 #import "../../shared/LayoutManager.h"

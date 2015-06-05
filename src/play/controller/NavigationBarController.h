@@ -32,6 +32,12 @@
 /// navigationBarController() to obtain a UI type-dependent controller object
 /// that knows how to correctly manage the navigation bar for the current UI
 /// type.
+///
+/// @todo The controller object that manages the navigation bar in #UITypePhone
+/// (NavigationBarControllerPhone) currently is not a subclass of
+/// NavigationBarController. If possible this should be changed. One notable
+/// difficulty is that NavigationBarControllerPhone is not a view controller,
+/// while NavigationBarController itself derives from UIViewController.
 // -----------------------------------------------------------------------------
 @interface NavigationBarController : UIViewController <GameActionManagerUIDelegate>
 {
