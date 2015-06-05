@@ -258,15 +258,37 @@
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 ///
-/// This override exists to update Auto Layout constraints when the interface
-/// orientation rotates.
+/// This override handles interface orientation changes while this controller's
+/// view hierarchy is visible.
+///
+/// @note On iOS 7 the Auto Layout constraint changes made in this method MUST
+/// be made in viewWillLayoutSubviews(), not in viewDidLayoutSubviews(). If they
+/// are made in viewDidLayoutSubviews() a runtime assertion within the bowels of
+/// UIView ensues, crashing the app (at least in the simulator).
 // -----------------------------------------------------------------------------
-- (void) viewDidLayoutSubviews
+- (void) viewWillLayoutSubviews
 {
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
                                   forInterfaceOrientation:self.interfaceOrientation
                                          constraintHolder:self.woodenBackgroundView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+///
+/// This override handles interface orientation changes that occurred while this
+/// controller's view hierarchy was not visible (viewWillLayoutSubviews was not
+/// invoked).
+///
+/// This override is absolutely required for iOS 7. This override is not
+/// required for iOS 8 because there viewWillLayoutSubviews is invoked when the
+/// view hierarchy appears.
+// -----------------------------------------------------------------------------
+- (void) viewWillAppear:(BOOL)animated
+{
+  [self.view setNeedsLayout];  // triggers viewDidLayoutSubviews
+  [super viewWillAppear:animated];
 }
 
 #pragma mark - Private helpers for loadView
