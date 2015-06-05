@@ -156,7 +156,16 @@ static GameActionManager* sharedGameActionManager = nil;
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
-  [center addObserver:self selector:@selector(statusBarOrientationWillChange:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
+  // Note: UIApplicationWillChangeStatusBarOrientationNotification is also sent
+  // if a view controller is modally presented on iPhone while in
+  // UIInterfaceOrientationPortraitUpsideDown. This is unexpected and not
+  // something we want, because our notification handler dismisses a controller
+  // that might be the one doing the presenting, which would cause a crash. So
+  // here we make sure that we react to the notification only on iPad - which
+  // is exactly the device we want to handle anyway because popovers exist only
+  // on iPad.
+  if ([LayoutManager sharedManager].uiType == UITypePad)
+    [center addObserver:self selector:@selector(statusBarOrientationWillChange:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
 
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -467,14 +476,12 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) statusBarOrientationWillChange:(NSNotification*)notification
 {
-  if ([LayoutManager sharedManager].uiType != UITypePhonePortraitOnly)
+  if (self.gameActionsActionSheetController)
   {
-    if (self.gameActionsActionSheetController)
-    {
-      // Dismiss the popover that displays the action sheet because the popover
-      // will be wrongly positioned after the interface has rotated.
-      [self.gameActionsActionSheetController cancelActionSheet];
-    }
+    // Dismiss the popover that displays the action sheet because the popover
+    // will be wrongly positioned after the interface has rotated.
+    [self.gameActionsActionSheetController cancelActionSheet];
+
   }
 }
 

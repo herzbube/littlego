@@ -289,6 +289,12 @@ enum ViewHierarchyState
   // to trigger view loading by accessing self.view. A scenario where the view
   // is not yet loaded is when the app launches directly into the main menu,
   // without first showing UIAreaPlay.
+  //
+  // Note: This notification handler is also invoked if a view controller is
+  // modally presented on iPhone while in
+  // UIInterfaceOrientationPortraitUpsideDown. This is unexpected, but not
+  // harmful because the statusbar orientation did not really change from
+  // portrait to landscape, so the teardown method will not do anything.
   if (self.isViewLoaded && ! self.view.window)
   {
     UIInterfaceOrientation toInterfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
