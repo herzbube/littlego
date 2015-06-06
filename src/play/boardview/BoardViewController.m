@@ -81,7 +81,7 @@
 - (void) dealloc
 {
   [self removeNotificationResponders];
-  [self removeCoordinateLabelsViewConstraints];
+  self.coordinateLabelsViewConstraints = nil;
   self.boardView = nil;
   self.coordinateLabelsLetterView = nil;
   self.coordinateLabelsNumberView = nil;
