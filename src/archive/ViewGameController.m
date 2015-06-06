@@ -343,8 +343,13 @@ enum GameAttributesSectionItem
   if (didStartNewGame)
   {
     [MainUtility activateUIArea:UIAreaPlay];
-    // No animation necessary, the Play UI area is now visible
-    [self.navigationController popViewControllerAnimated:NO];
+    // In some layouts activating the Play UI area pops this VC from the
+    // navigation stack, in other layouts we have to do the popping ourselves
+    if (self.navigationController)
+    {
+      // No animation necessary, the Play UI area is already visible
+      [self.navigationController popViewControllerAnimated:NO];
+    }
   }
 }
 
