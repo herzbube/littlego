@@ -32,6 +32,7 @@
 #import "../../player/GtpEngineProfileModel.h"
 #import "../../player/GtpEngineProfile.h"
 #import "../../player/Player.h"
+#import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/TableViewCellFactory.h"
 #import "../../ui/TableViewVariableHeightCell.h"
@@ -961,6 +962,7 @@ enum BoardPositionSectionItem
       UINavigationController* navigationController = [[[UINavigationController alloc]
                                                        initWithRootViewController:editPlayerController] autorelease];
       navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+      navigationController.delegate = [LayoutManager sharedManager];
       [self presentViewController:navigationController animated:YES completion:nil];
       break;
     }
@@ -973,6 +975,7 @@ enum BoardPositionSectionItem
         UINavigationController* navigationController = [[[UINavigationController alloc]
                                                          initWithRootViewController:editProfileController] autorelease];
         navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+        navigationController.delegate = [LayoutManager sharedManager];
         [self presentViewController:navigationController animated:YES completion:nil];
       }
       break;

@@ -19,8 +19,20 @@
 /// @brief The LayoutManager class is a singleton that provides information
 /// about the user interface type and the user interface layout to classes that
 /// are layout-aware, i.e. view controllers and possibly views.
+///
+/// As a convenience, LayoutManager adopts UINavigationControllerDelegate so
+/// that it may be assigned as the delegate of a UINavigationController. The
+/// only delegate method that LayoutManager overrides is
+/// navigationControllerSupportedInterfaceOrientations:(). In the implementation
+/// LayoutManager returns the value of its @e supportedInterfaceOrientations
+/// property. The purpose of this is so that clients can create a standard
+/// UINavigationController object, assign LayoutManager as its delegate, and use
+/// it to modally present a view controller. By supplying the proper interface
+/// orientations to the navigation controller, LayoutManager makes sure that
+/// the user interface can be properly rotated while the modal presentation is
+/// taking place.
 // -----------------------------------------------------------------------------
-@interface LayoutManager : NSObject
+@interface LayoutManager : NSObject <UINavigationControllerDelegate>
 {
 }
 

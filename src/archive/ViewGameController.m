@@ -20,10 +20,11 @@
 #import "ArchiveGame.h"
 #import "ArchiveUtility.h"
 #import "ArchiveViewModel.h"
-#import "../go/GoGame.h"
 #import "../command/game/RenameGameCommand.h"
 #import "../command/game/LoadGameCommand.h"
+#import "../go/GoGame.h"
 #import "../main/MainUtility.h"
+#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 
 
@@ -261,6 +262,7 @@ enum GameAttributesSectionItem
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:editTextController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  navigationController.delegate = [LayoutManager sharedManager];
   [self presentViewController:navigationController animated:YES completion:nil];
   [navigationController release];
   [editTextController release];
@@ -319,6 +321,7 @@ enum GameAttributesSectionItem
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:newGameController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  navigationController.delegate = [LayoutManager sharedManager];
   [self presentViewController:navigationController animated:YES completion:nil];
   [navigationController release];
   [newGameController release];

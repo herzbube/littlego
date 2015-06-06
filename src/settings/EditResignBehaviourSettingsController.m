@@ -18,6 +18,7 @@
 // Project includes
 #import "EditResignBehaviourSettingsController.h"
 #import "../player/GtpEngineProfile.h"
+#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
 #import "../utility/UIColorAdditions.h"
@@ -317,6 +318,7 @@ enum ResignMinGamesCategory
       UINavigationController* navigationController = [[UINavigationController alloc]
                                                       initWithRootViewController:modalController];
       navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+      navigationController.delegate = [LayoutManager sharedManager];
       [self presentViewController:navigationController animated:YES completion:nil];
       [navigationController release];
     }

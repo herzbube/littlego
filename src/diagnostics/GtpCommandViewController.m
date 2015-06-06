@@ -19,6 +19,7 @@
 #import "GtpCommandViewController.h"
 #import "GtpCommandModel.h"
 #import "../main/ApplicationDelegate.h"
+#import "../shared/LayoutManager.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
 
@@ -179,6 +180,7 @@
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:editTextController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  navigationController.delegate = [LayoutManager sharedManager];
   [self presentViewController:navigationController animated:YES completion:nil];
   [navigationController release];
   [editTextController release];
@@ -199,6 +201,7 @@
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:editTextController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  navigationController.delegate = [LayoutManager sharedManager];
   [self presentViewController:navigationController animated:YES completion:nil];
   [navigationController release];
   [editTextController release];

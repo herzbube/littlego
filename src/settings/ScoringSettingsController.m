@@ -19,6 +19,7 @@
 #import "ScoringSettingsController.h"
 #import "../main/ApplicationDelegate.h"
 #import "../play/model/ScoringModel.h"
+#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
 #import "../ui/UiUtilities.h"
@@ -344,6 +345,7 @@ enum InconsistentTerritoryMarkupTypeSectionItem
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:modalController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  navigationController.delegate = [LayoutManager sharedManager];
   [self presentViewController:navigationController animated:YES completion:nil];
   [navigationController release];
 }

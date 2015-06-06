@@ -19,6 +19,7 @@
 #import "CrashReportingSettingsController.h"
 #import "../main/ApplicationDelegate.h"
 #import "../diagnostics/CrashReportingModel.h"
+#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
 
@@ -248,6 +249,7 @@ enum ContactSectionItem
     UINavigationController* navigationController = [[UINavigationController alloc]
                                                     initWithRootViewController:editTextController];
     navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    navigationController.delegate = [LayoutManager sharedManager];
     [self presentViewController:navigationController animated:YES completion:nil];
     [navigationController release];
     [editTextController release];

@@ -18,6 +18,7 @@
 // Project includes
 #import "EditPlayingStrengthSettingsController.h"
 #import "../player/GtpEngineProfile.h"
+#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
 
@@ -379,6 +380,7 @@ enum MaxGamesCategory
     UINavigationController* navigationController = [[UINavigationController alloc]
                                                     initWithRootViewController:modalController];
     navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    navigationController.delegate = [LayoutManager sharedManager];
     [self presentViewController:navigationController animated:YES completion:nil];
     [navigationController release];
   }
@@ -409,6 +411,7 @@ enum MaxGamesCategory
       UINavigationController* navigationController = [[UINavigationController alloc]
                                                       initWithRootViewController:modalController];
       navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+      navigationController.delegate = [LayoutManager sharedManager];
       [self presentViewController:navigationController animated:YES completion:nil];
       [navigationController release];
     }

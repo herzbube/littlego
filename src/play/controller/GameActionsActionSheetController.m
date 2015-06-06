@@ -36,6 +36,7 @@
 #import "../../play/model/BoardViewModel.h"
 #import "../../play/model/ScoringModel.h"
 #import "../../shared/ApplicationStateManager.h"
+#import "../../shared/LayoutManager.h"
 #import "../../utility/NSStringAdditions.h"
 
 
@@ -579,6 +580,7 @@ enum ActionSheetButton
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:editTextController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  navigationController.delegate = [LayoutManager sharedManager];
   [self.modalMaster presentViewController:navigationController animated:YES completion:nil];
   [navigationController release];
   [editTextController release];
@@ -601,6 +603,7 @@ enum ActionSheetButton
                                                   initWithRootViewController:newGameController];
   // Present the navigation controller, not the "new game" controller.
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  navigationController.delegate = [LayoutManager sharedManager];
   [self.modalMaster presentViewController:navigationController animated:YES completion:nil];
   // Cleanup
   [navigationController release];

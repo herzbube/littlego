@@ -23,6 +23,7 @@
 #import "../player/Player.h"
 #import "../player/GtpEngineProfileModel.h"
 #import "../player/GtpEngineProfile.h"
+#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
 
@@ -300,6 +301,7 @@ enum GtpEngineProfileSectionItem
       UINavigationController* navigationController = [[UINavigationController alloc]
                                                       initWithRootViewController:editTextController];
       navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+      navigationController.delegate = [LayoutManager sharedManager];
       [self presentViewController:navigationController animated:YES completion:nil];
       [navigationController release];
       [editTextController release];
@@ -329,6 +331,7 @@ enum GtpEngineProfileSectionItem
           UINavigationController* navigationController = [[UINavigationController alloc]
                                                           initWithRootViewController:modalController];
           navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+          navigationController.delegate = [LayoutManager sharedManager];
           [self presentViewController:navigationController animated:YES completion:nil];
           [navigationController release];
           break;

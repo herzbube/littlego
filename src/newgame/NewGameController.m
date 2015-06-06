@@ -27,6 +27,7 @@
 #import "../main/ApplicationDelegate.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
+#import "../shared/LayoutManager.h"
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
@@ -740,6 +741,7 @@ enum CellID
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:modalController];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  navigationController.delegate = [LayoutManager sharedManager];
   [self presentViewController:navigationController animated:YES completion:nil];
   [navigationController release];
 }

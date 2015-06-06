@@ -156,4 +156,16 @@ static LayoutManager* sharedManager = nil;
   }
 }
 
+#pragma mark - UINavigationControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UINavigationControllerDelegate method.
+///
+/// Read the class documentation for details why this override exists.
+// -----------------------------------------------------------------------------
+- (NSUInteger) navigationControllerSupportedInterfaceOrientations:(UINavigationController*)navigationController
+{
+  return self.supportedInterfaceOrientations;
+}
+
 @end
