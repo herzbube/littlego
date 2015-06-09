@@ -146,8 +146,8 @@
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
-  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
+  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
+  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -265,7 +265,7 @@
   GoGame* newGame = [notification object];
   GoBoardPosition* boardPosition = newGame.boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
-  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
+  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:NULL];
   self.allDataNeedsUpdate = true;
   // currentBoardPosition also needs update to cover the case where the app
   // launches and we need to display a non-zero board position right after a
@@ -354,6 +354,19 @@
   else if ([keyPath isEqualToString:@"numberOfBoardPositions"])
   {
     self.numberOfItemsNeedsUpdate = true;
+    if (1 == [change[NSKeyValueChangeNewKey] intValue] && [change[NSKeyValueChangeOldKey] intValue] > 1)
+    {
+      // The number of board positions has decreased from >1 to =1, i.e. all
+      // moves were discarded. If the current board position was 0 before the
+      // discard, the discard does not change the current board position, which
+      // means that KVO for "currentBoardPosition" is NOT triggered. This is a
+      // problem for this controller, because updateNumberOfItems() causes the
+      // collection view to reload all data, and after the reload no cell is
+      // selected. So, to make sure that board position 0 is selected after the
+      // reload, we fake a board position change by setting the flag
+      // self.currentBoardPositionNeedsUpdate.
+      self.currentBoardPositionNeedsUpdate = true;
+    }
     [self delayedUpdate];
   }
   else
