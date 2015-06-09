@@ -17,6 +17,7 @@
 
 // Project includes
 #import "UiElementMetrics.h"
+#import "../utility/UIDeviceAdditions.h"
 
 
 @implementation UiElementMetrics
@@ -30,8 +31,11 @@ static UIViewController* m_interfaceOrientationSource;
 
 + (int) screenWidth
 {
-  // TODO xxx In iOS 8 we no longer need to look at the interface orientation
-  // ourselves, UIScreen supposedly already does this
+  // In iOS 8 we no longer need to look at the interface orientation ourselves,
+  // UIScreen already does that for us
+  if ([UIDevice systemVersionMajor] >= 8)
+    return [UIScreen mainScreen].bounds.size.width;
+
   bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
   if (isPortraitOrientation)
     return [UIScreen mainScreen].bounds.size.width;
@@ -41,8 +45,11 @@ static UIViewController* m_interfaceOrientationSource;
 
 + (int) screenHeight
 {
-  // TODO xxx In iOS 8 we no longer need to look at the interface orientation
-  // ourselves, UIScreen supposedly already does this
+  // In iOS 8 we no longer need to look at the interface orientation ourselves,
+  // UIScreen already does that for us
+  if ([UIDevice systemVersionMajor] >= 8)
+    return [UIScreen mainScreen].bounds.size.height;
+
   bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
   if (isPortraitOrientation)
     return [UIScreen mainScreen].bounds.size.height;
@@ -60,8 +67,11 @@ static UIViewController* m_interfaceOrientationSource;
 /// bar if visible)
 + (CGRect) applicationFrame
 {
-  // TODO xxx In iOS 8 we no longer need to look at the interface orientation
-  // ourselves, UIScreen supposedly already does this
+  // In iOS 8 we no longer need to look at the interface orientation ourselves,
+  // UIScreen already does that for us
+  if ([UIDevice systemVersionMajor] >= 8)
+    return [UIScreen mainScreen].applicationFrame;
+
   bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
   if (isPortraitOrientation)
     return [UIScreen mainScreen].applicationFrame;
