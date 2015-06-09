@@ -115,10 +115,17 @@
 /// the interface orientation changes while #UIAreaPlay is shown. The change
 /// effected is that the navigation item must be made visible when rotating to
 /// portrait orientation, and hidden when rotating to landscape orientation.
+///
+/// This override is also responsible for handling navigation bar updates when
+/// the navigation stack is changed programmatically via activateUIArea:(). In
+/// this case, both navigation bar visibility and back button title must be
+/// updated. One example where this is relevant: When the user loads a game from
+/// the archive, the UI area is programmatically changed back to #UIAreaPlay.
 // -----------------------------------------------------------------------------
 - (void) viewWillLayoutSubviews
 {
   [self updateNavigationBarVisibility];
+  [self updateNavigationItemBackButtonTitle];
 }
 
 #pragma mark - UINavigationControllerDelegate overrides
