@@ -702,12 +702,19 @@ enum ParseMoveStringResult
   {
     *isResignMove = false;
     *moveType = GoMoveTypePlay;
-    // If the vertex is not legal we get an exception here
-    // - NSInvalidArgumentException if vertex is malformed
-    // - NSRangeException if vertex compounds are out of range
-    // TODO xxx add exception handling here to provide a nicer error message?
-    *point = [[GoGame sharedGame].board pointAtVertex:vertexString];
-    return ParseMoveStringResultSuccess;
+    @try
+    {
+      *point = [[GoGame sharedGame].board pointAtVertex:vertexString];
+      return ParseMoveStringResultSuccess;
+    }
+    @catch (NSException* exception)
+    {
+      // If the vertex is not legal an exception is raised:
+      // - NSInvalidArgumentException if vertex is malformed
+      // - NSRangeException if vertex compounds are out of range
+      // For our purposes, both exception types are the same.
+      return ParseMoveStringResultInvalidVertex;
+    }
   }
 }
 
