@@ -428,13 +428,11 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 + (void) setupStaticViewMetrics
 {
-  // TODO xxx experiment with spacing
   horizontalSpacingSuperview = [UiElementMetrics horizontalSpacingSiblings];
   horizontalSpacingSiblings = [UiElementMetrics horizontalSpacingSiblings];
   verticalSpacingSuperview = [UiElementMetrics horizontalSpacingSiblings] / 2;
   verticalSpacingSiblings = 0;
 
-  // TODO xxx experiment with size
   stoneImageWidthAndHeight = floor([UiElementMetrics tableViewCellContentViewHeight] * 0.7);
   CGSize stoneImageSize = CGSizeMake(stoneImageWidthAndHeight, stoneImageWidthAndHeight);
   blackStoneImage = [[[UIImage imageNamed:stoneBlackImageResource] imageByResizingToSize:stoneImageSize] retain];
@@ -445,10 +443,6 @@ static UIFont* smallFont = nil;
   alternateCellBackgroundColor2 = [[UIColor whiteColor] retain];
   capturedStonesLabelBackgroundColor = [[UIColor redColor] retain];
 
-  // TODO xxx experiment with font sizes
-  // 17/12 = UITableViewCellStyleSubtitle, too large
-  // 17/11 or 16/10 = good ratio
-  // 16/10 = too small
   largeFont = [[UIFont systemFontOfSize:17] retain];
   smallFont = [[UIFont systemFontOfSize:11] retain];
 

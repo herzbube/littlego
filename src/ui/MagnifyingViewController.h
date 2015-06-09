@@ -33,7 +33,20 @@
 /// @brief The MagnifyingViewController class is responsible for managing a
 /// MagnifyingView.
 ///
-/// TODO xxx document this
+/// Clients instantiate MagnifyingViewController when they want the magnifying
+/// glass to become visible to the user. To actually make the magnifying glass
+/// visible, a client must invoke updateMagnificationCenter:inView:() with the
+/// initial location. Afterwards, the client continuously invokes
+/// updateMagnificationCenter:inView:() to change the magnifying glass location.
+/// When a client no longer wants to display the magnifying glass, it
+/// deallocates MagnifyingViewController.
+///
+/// MagnifyingView is responsible for rendering the magnifying glass,
+/// MagnifyingViewController is responsible for positioning MagnifyingView.
+///
+/// MagnifyingViewController must be configured with a delegate, which in turn
+/// must provide a MagnifyingViewModel object that the controller can query to
+/// obtain user preferences how the MagnifyingView should be positioned.
 // -----------------------------------------------------------------------------
 @interface MagnifyingViewController : UIViewController
 {

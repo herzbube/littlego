@@ -133,7 +133,6 @@
       }
       NSNumber* gameActionAsNumber = [NSNumber numberWithInt:gameAction];
       button = self.gameActionButtons[gameActionAsNumber];
-      // TODO xxx what is the enabled state?
       break;
     }
     default:
@@ -193,6 +192,7 @@
   for (enum GameAction gameAction = GameActionFirst; gameAction <= GameActionLast; ++gameAction)
   {
     UIButton* button = [GameActionButtonBoxDataSource buttonForGameAction:gameAction];
+    button.enabled = NO;
     NSNumber* gameActionAsNumber = [NSNumber numberWithInt:gameAction];
     gameActionButtons[gameActionAsNumber] = button;
   }

@@ -156,7 +156,7 @@
     self.tabBar.tintColor = [UIColor bleuDeFranceColor];
   }
 
-  // TODO xxx We should not fake this color, we should somehow get a real
+  // TODO We should not fake this color, we should somehow get a real
   // navigation bar to place itself behind the statusbar.
   self.view.backgroundColor = [UIColor navigationbarBackgroundColor];
 }
