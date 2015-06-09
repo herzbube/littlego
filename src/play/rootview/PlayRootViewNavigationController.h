@@ -21,8 +21,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayRootViewNavigationController class is a
-/// UINavigationController that handles the special navigational needs of the
-/// #UIAreaPlay.
+/// UINavigationController that handles the special navigational needs of
+/// #UIAreaPlay for #UITypePhonePortraitOnly and #UITypePad.
 // -----------------------------------------------------------------------------
 @interface PlayRootViewNavigationController : UINavigationController <UINavigationControllerDelegate, GameInfoViewControllerPresenter>
 {

@@ -26,9 +26,12 @@
 ///
 /// GenerateTerritoryStatisticsCommand currently uses the "reg_genmove" GTP
 /// command to generate territory statistics. "reg_genmove" does not actually
-/// make a move, it only lets the GTP engine make a suggestion. In order to be
-/// able to make a suggestion, the GTP engine is forced to calculate playouts
-/// which, as a side-effect, generates territory statistics.
+/// make a move, it only lets the GTP engine make a @e suggestion.
+/// GenerateTerritoryStatisticsCommand ignores the suggestion, because what it
+/// is @e really interested in is the side effect of "reg_genmove": In order to
+/// be able to make the suggestion, the GTP engine is forced to calculate
+/// playouts, and that, as a side effect, generates the desired territory
+/// statistics.
 // -----------------------------------------------------------------------------
 @interface GenerateTerritoryStatisticsCommand : CommandBase
 {

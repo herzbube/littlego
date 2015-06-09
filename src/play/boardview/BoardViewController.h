@@ -31,7 +31,7 @@
 ///   scroll view
 /// - Resize scroll views when a view layout change occurs outside of zooming
 ///   (typically when the device changes orientation). See the documentation of
-///   viewWillLayoutSubviews() for details.
+///   viewDidLayoutSubviews() for details.
 ///
 /// BoardViewController creates additional controllers for managing all gestures
 /// except zooming and scrolling. Since these sub-controllers are not view

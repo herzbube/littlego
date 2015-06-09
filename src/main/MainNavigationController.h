@@ -28,10 +28,10 @@
 /// MainNavigationController by default displays the Go board and various other
 /// views related to playing the game. MainNavigationController also displays a
 /// button in the upper-right corner that floats over the rest of the content.
-/// When the user taps the button, MainNavigationController calls up a
-/// navigation controller that shows entries that the user can select to
-/// navigate to other parts of the application. The Go board is no longer
-/// visible in that case until the user dismisses the navigation controller.
+/// When the user taps the button, MainNavigationController calls up a table
+/// view that shows entries that the user can select to navigate to other parts
+/// of the application. The Go board is no longer visible in that case until the
+/// user dismisses the table view.
 ///
 /// @see WindowRootViewController
 // -----------------------------------------------------------------------------
