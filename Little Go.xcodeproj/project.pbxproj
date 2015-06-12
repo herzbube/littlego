@@ -32,7 +32,6 @@
 		CD00A36A148C2C6A004E1A0C /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35A148C2C26004E1A0C /* Constants.m */; };
 		CD02629C16E0F06E007B35CC /* book.dat in Resources */ = {isa = PBXBuildFile; fileRef = CD02629B16E0F06E007B35CC /* book.dat */; };
 		CD028609163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD028608163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html */; };
-		CD02860C1640986B00CF23A1 /* build-quincykit.sh in Resources */ = {isa = PBXBuildFile; fileRef = CD02860B1640986B00CF23A1 /* build-quincykit.sh */; };
 		CD05199516B1C09B002771F7 /* LeftPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199416B1C09B002771F7 /* LeftPaneViewController.m */; };
 		CD05199916B1C29B002771F7 /* RightPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199816B1C29B002771F7 /* RightPaneViewController.m */; };
 		CD0519D416B2D23C002771F7 /* BoardPositionTableListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0519D316B2D23B002771F7 /* BoardPositionTableListViewController.m */; };
@@ -161,7 +160,6 @@
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
-		CD61BC7118731BA800CFF994 /* build-mbprogresshud.sh in Resources */ = {isa = PBXBuildFile; fileRef = CD61BC7018731BA800CFF994 /* build-mbprogresshud.sh */; };
 		CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD377F0716BD154A00972F04 /* MainTabBarController.m */; };
 		CD6C7DBC17512152009FBEC4 /* UiSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */; };
 		CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */; };
@@ -442,7 +440,6 @@
 		CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
 		CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
 		CDD7D7E5175257850068CBBA /* ResetPlayersAndProfilesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */; };
-		CDD961011662A8E300B54E09 /* render-readme.rb in Resources */ = {isa = PBXBuildFile; fileRef = CDD961001662A8E300B54E09 /* render-readme.rb */; };
 		CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */; };
@@ -2479,7 +2476,6 @@
 				CD968B6B1B026E2300984AEE /* noun_123922_cc.svg in Resources */,
 				CDE1A19614C1CF4D00317ECA /* RegistrationDomainDefaults.plist in Resources */,
 				CD968BB31B026E2300984AEE /* pass@3x.png in Resources */,
-				CD61BC7118731BA800CFF994 /* build-mbprogresshud.sh in Resources */,
 				CD968B6A1B026E2300984AEE /* computer-play@3x.png in Resources */,
 				CD968B681B026E2300984AEE /* computer-play.svg in Resources */,
 				CD968B7D1B026E2300984AEE /* game-info.png in Resources */,
@@ -2506,14 +2502,12 @@
 				CD968B951B026E2300984AEE /* interrupt@3x.png in Resources */,
 				CD968B9E1B026E2300984AEE /* noun_36901_cc.svg in Resources */,
 				CD968B831B026E2300984AEE /* computer-vs-computer@3x.png in Resources */,
-				CD02860C1640986B00CF23A1 /* build-quincykit.sh in Resources */,
 				CD968BB01B026E2300984AEE /* noun_10554_cc.svg in Resources */,
 				CD899E4A1645D2A200329154 /* PLCrashReporter-LICENSE.txt.html in Resources */,
 				CD968BB51B026E2300984AEE /* pause.png in Resources */,
 				CD899E4B1645D2A200329154 /* protobuf-c-LICENSE.txt.html in Resources */,
 				CD968B791B026E2300984AEE /* discard.png in Resources */,
 				CD968BA81B026E2300984AEE /* forward@3x.png in Resources */,
-				CDD961011662A8E300B54E09 /* render-readme.rb in Resources */,
 				CD968B601B026E2300984AEE /* about@2x.png in Resources */,
 				CD968B8C1B026E2300984AEE /* gogrid2x2.png in Resources */,
 				CD968B941B026E2300984AEE /* interrupt@2x.png in Resources */,
