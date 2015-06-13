@@ -18,17 +18,17 @@ Note that the same result can also be achieved by a target dependency.
 
 To run the tests, you must manually select the "Product > Test" menu item. It
 would be preferrable to run the tests automatically as part of the build, but I
-am not aware how this can be achieved in Xcode 5. In Xcode 4.x there was a
-built-in script named "RunUnitTests" that could be invoked in a "Run Script"
-build phase. In Xcode 5, however, this is no longer working, the built-in script
-fails with the error message "RunUnitTests is obsolete."
+am not aware how this can be achieved in Xcode 5 or later. In Xcode 4.x there
+was a built-in script named "RunUnitTests" that could be invoked in a
+"Run Script" build phase. In Xcode 5, however, this is no longer working, the
+built-in script fails with the error message "RunUnitTests is obsolete."
 
 Notes about the "Unit test" target:
 - All tests in this target are what Apple used to call "logic tests", i.e. unit
-  tests exercise more or less isolated classes. The test source code is built
-  using the iOS Simulator SDK, and tests can be run within the simulator only,
-  i.e. not on a real iOS device, and also not outside of the simulator (the
-  latter differs from Xcode 4.x where it was possible to run tests without
+  tests that exercise more or less isolated classes. The test source code is
+  built using the iOS Simulator SDK, and tests can be run within the simulator
+  only, i.e. not on a real iOS device, and also not outside of the simulator
+  (the latter differs from Xcode 4.x where it was possible to run tests without
   launching the simulator)
 - All source code files that are unit tested must be added to the "Unit test"
   target so that they are built for that target.
@@ -72,32 +72,33 @@ Preconditions
   - Via Xcode, if the device can be physically connected to the build machine.
     Disconnect the device after the build has been installed so that the tests
     are performed without Xcode being attached to the process.
-  - Via ad-hoc distribution if this is not possible. In this case, the device
-    UUID must be added to the ad-hoc distribution provisioning profile and the
-    provisioning profile must be installed on the device before the test build
-    can be installed.
-- Unless otherwise noted, tests on the iPad should be made with the device held
-  in landscape orientation
+  - Via ad-hoc distribution if the above is not possible. In this case, the
+    device UUID must be added to the ad-hoc distribution provisioning profile
+    and the provisioning profile must be installed on the device before the test
+    build can be installed.
+- Unless otherwise noted, tests on devices that support landscape orientation
+  (iPad, iPhone 6+) should be made with the device held in landscape orientation
 
 
-Basic tab functionality
+Basic functionality to switch between UI areas of the application
 - Launch application
-- Briefly activate all tabs
-- On the settings tab check that all user preferences use factory default
+- Briefly activate all UI areas of the application
+- In the Settings area check that all user preferences use factory default
   settings
-- On the Archive tab check that no saved games are present
-- On the Diagnostics tab check that the GTP log contains no failed commands
-- On the "More" tab, go through all the documents once and check that they
-  are properly displayed
+- In the Archive area check that no saved games are present
+- In the Diagnostics area check that the GTP log contains no failed commands
+- Go through all the documents (e.g. manual) once and check that they are
+  properly displayed
 
 
 Basic game play functionality
 - Switch back to the Play UI area
-- The navigation bar at the top displays the following buttons
-  - Computer play
+- The toolbar at the top displays the following buttons
   - Pass
+  - Computer play
   - Game info
-  - Game actions
+  - More game actions
+  - iPhone 6+: Menu
 - All buttons are enabled
 - Tap the "Game info" button
 - The "Game info" view slides into view, covering the entire content of the
@@ -106,23 +107,31 @@ Basic game play functionality
     following segments: Score, Game, Board
   - The "Score" segment is selected
 - Select the "Game" segment. Check that the information presented matches the
-  factory defaults: No handicap, board size 9, komi 7.5, simple ko rule, area
-  scoring, black player is "Anonymous", white player is "Fuego", active profile
-  is "Default profile".
+  factory defaults:
+  - no handicap
+  - board size 9
+  - komi 7.5
+  - simple ko rule
+  - area scoring
+  - life & death settling after 2 passes
+  - dispute resolution using alternating play
+  - four passes have no special meaning
+  - black player is "Anonymous"
+  - white player is "Fuego"
+  - active profile is "Strong".
 - Tap "back" to dismiss the "Game info" view; the view slides away to once more
   reveal the game board and other UI elements of the Play UI area
-- Tap the "Game info" button
-- Tap the "Play" tab bar button. This must dismiss the "Game info" view, just as
-  if the "back" button had been tapped
 - Touch the screen & keep touching
-- The stone must appear immediately.
-  - iPhone: The stone must appear some distance above the fingertip location
-  - iPad: The stone must appear directly under the fingertip
+- The stone must appear immediately directly under the fingertip
+- The magnifying glass must appear above the spot where the fingertip touches
+  the screen
 - All interactive UI elements must be disabled while the gesture is in progress
-  - iPhone: Navigation bar buttons, current board position view, board
-    position navigation buttons, board position list view
-  - iPad: Navigation bar buttons, board position navigation buttons, board
-    position table view
+  - iPhone: Toolbar buttons, current board position view, board position
+    navigation buttons, board position list view
+  - iPad: Toolbar buttons, board position navigation buttons, board position
+    table view
+  - Devices that support interface orientation changes: Rotation is disabled
+    while the gesture is in progress
 - Drag the cross-hair around the board: The status view must continuously be
   updated to show the coordinates of the current position
 - Move the stone outside of the board area, then release the finger: No stone
@@ -154,17 +163,40 @@ Basic game play functionality
   buttons are replaced by the "Interrupt" button
 - Tap the "Interrupt" button. The computer immediately stops thinking and plays
   a move.
-- Tap the "Game actions" button. A menu must appear that displays the following
-  buttons: Score, Resign, Save game and New game.
+- Tap the "More game actions" button. A menu must appear that displays the
+  following buttons: Score, Resign, Save game and New game.
   - iPhone: There is also a Cancel button.
   - iPad: The menu appears as a popover with the arrow pointing to the
-    "Game actions" button
+    "More game actions" button
 - Tap cancel (iPhone) or tap outside of the menu area (iPad). The menu must be
   dismissed without any action taking place.
 - iPad
-  - Tap the "Game actions" button. The "Game actions" menu appears.
+  - Tap the "More game actions" button. The "More game actions" menu appears.
   - Rotate the device to a different orientation. When the interface orientation
-    change animation finishes, the "Game actions" menu is no longer visible.
+    change animation finishes, the "More game actions" menu is no longer
+    visible.
+
+
+New game factory defaults
+- Tap the "More game actions" button and select "New game"
+- A modal screen pops up that lets the user enter parameters for the new
+  game
+- For human players, "Anonymous" must be pre-selected
+- For computer players, "Fuego" must be pre-selected
+- Select the "Human vs. computer" segment and check that the following
+  parameter values are in effect:
+  - Computer plays white = true
+  - Board size = 9
+  - Ruleset = Little Go
+  - Even game = True
+- Open the "Advanced settings" screen and check that the following parameter
+  values are in effect:
+  - Komi = 7.5
+  - Scoring system = Area scoring
+  - Ko rule = Simple
+  - Life & death settling after = 2 passes
+  - Dispute resolution = Alternating play
+  - Four passes = No special meaning
 
 
 Illegal play
@@ -184,11 +216,51 @@ Basic user preferences
 - The last move must no longer be marked with a symbol
 - Re-enable the "mark last move" user preference
 - The last move must now again be marked with a symbol
-- Move the slider "stone distance from fingertip" to its lowest setting
-- While panning, the stone must now be drawn at the fingertip location
-- Move the slider "stone distance from fingertip" to a medium setting
-- While panning, the stone must now again be drawn some distance above the
-  fingertip location
+
+
+Magnifying glass
+- Start a new 19x19 game
+- Change "Settings > Magnifying glass > Show magnifying glass" to "Auto"
+- Begin the stone placing gesture
+- A magnifying glass appears with a red dot in the center that indicates where
+  the fingertip touches the screen
+- Move the finger; the magnifying glass moves synchronously with the panning
+  finger
+- Move the finger outside of the grid of the Go board at the top of the board;
+  the magnifying glass does not go away even when the finger leaves the grid of
+  the Go board
+- Move the finger towards the top of the screen; the magnifying glass veers
+  towards the left to evade the fingertip
+- Move the finger towards the top-left corner of the screen; the magnifying
+  veers downwards to evade the fingertip
+- Change "Settings > Magnifying glass > Distance from Center"
+  - Closer: The magnifying glass appears closer to the fingertip than before
+  - Farther: The magnifying glass appears farther away from the fingertip than
+    before
+- Change "Settings > Magnifying glass > Veer direction" to the value "Right",
+  then start another stone placing gesture and move the finger towards the top
+  of the screen. The magnifying glass now veers towards the right to evade the
+  fingertip. Move the finger towards the top-right corner of the screen; the
+  magnifying veers downwards to evade the fingertip.
+- Change "Settings > Magnifying glass > Auto takes effect" to "Less often".
+  The magnifying glass still appears.
+- Start new games with decreasing board sizes until you hit a board size where
+  the magnifying glass no longer appears
+- Change "Settings > Magnifying glass > Auto takes effect" to "Normal".
+  The magnifying glass again appears.
+- Start new games with decreasing board sizes until you hit a board size where
+  the magnifying glass no longer appears
+- Change "Settings > Magnifying glass > Auto takes effect" to "More often".
+  The magnifying glass again appears.
+- Start new games with decreasing board sizes until you hit a board size where
+  the magnifying glass no longer appears
+- Change "Settings > Magnifying glass > Show magnifying glass" to "Always". The
+  magnifying glass now appears.
+- Change "Settings > Magnifying glass > Show magnifying glass" to "Never". The
+  magnifying glass no longer appears
+- Start a new 19x19 game; the magnifying glass does not appear
+- Change "Settings > Magnifying glass > Show magnifying glass" to "Auto". The
+  magnifying glass again appears.
 
 
 Sound & Vibration user preferences
@@ -217,14 +289,14 @@ Sound & Vibration user preferences
 
 
 Save game
-- Tap the "Game actions" button, then select "Save game"
+- Tap the "More game actions" button, then select "Save game"
 - A modal screen must pop up that lets the user enter a name for the saved game
 - The name is already filled in with a default name that follows the pattern
   "<black player name> vs. <white player name> 1".
 - Tap cancel. The screen must disappear, and on the Archive tab no new game must
   be visible.
-- Tap the "Game actions" button, then select "save game". Clear the game name
-  text field. The "Done" button must become disabled.
+- Tap the "More game actions" button, then select "save game". Clear the game
+  name text field. The "Done" button must become disabled.
 - Enter a name for the game, then tap "Done". On the Archive tab a new game must
   be visible with the name you just entered
 - The entry must display the date and time when the game was saved
@@ -236,41 +308,55 @@ Save game
   The message must enumerate all characters that are illegal. Tapping OK must
   dismiss the error message, the screen with the illegal game name must become
   available for editing once more.
-- Try saving a game with the name "." (a full stop). Same behaviour as above,
-  with a different error message that explains that the game name consists of
-  a reserved word.
+- Try saving a game with the name that consists only of a "." (a full stop).
+  Same behaviour as above, with a different error message that explains that
+  the game name consists of a reserved word.
 
 
 New game
-- Tap the "Game actions" button and select "New game"
+- Tap the "More game actions" button and select "New game"
 - A modal screen must pop up that lets the user enter parameters for the new
   game
-- The default values on all segments must match the factory defaults. For
-  human players, "Anonymous" must be pre-selected. For computer players, "Fuego"
-  must be pre-selected.
-- Select the "Human vs. human" segment and check that the following parameter
-  values are in effect:
-  - Handicap = 0
-  - Komi = 7.5
-  - Scoring system = Area scoring
-- Change handicap to 4. Komi must be automatically adjusted to 0.5.
+- Select the "Human vs. human" segment
+- Disable the "Even game" switch. A new cell must become visible that shows
+  handicap 2.
+- On the "Advanced setting" screen, komi must have been automatically
+  adjusted to 0.5.
 - Change scoring system to "Territory scoring". Komi must still be set to 0.5.
-- Change handicap to 0. Komi must be automatically adjusted to 6.5.
+- Change handicap to 0. The "Even game" switch must become enabled and the
+  handicap cell must disappear. Komi must be automatically adjusted to 6.5.
 - Change komi to "no komi", then change scoring system to "Area scoring". Komi
   must be automatically adjusted to 7.5.
-- Change all parameters to the following values:
+- In the "Advanced settings" screen, first set "Dispute resolution" to the
+  value "Non-alternating play", then set "Life & death settling after ..."
+  to the value "3 passes".
+  - The "Dispute resolution" cell must be changed back to "Alternating play"
+  - The "Dispute resolution" cell must become read-only, i.e. it is no longer
+    possible to change its value
+  - The "Four passes" cell disappears
+- Set "Life & death settling after ..." to "2 passes".
+  - The "Dispute resolution" cell must become read-write, i.e. it is now
+    again possible to change its value
+  - Also, the "Four passes" cell is shown again
+- Change parameters to the following values. For all parameters, a modal
+  screen must pop up that lets the user enter the new parameter value. For
+  all parameters, test that the cancel button dismisses the modal screen
+  without changing the value on the "new game" screen.
   - Black = Anonymous
+    - On the player selection screen, only human players are available for
+      selection
   - White = Anonymous
   - Board size = 13
   - Handicap = 4
   - Komi = No komi
   - Ko rule = Positional superko
   - Scoring system = Territory scoring
-- For all parameters, a modal screen must pop up that lets the user enter the
-  new parameter value
-- For all parameters, test that the cancel button dismisses the modal screen
-  without changing the value on the "new game" screen
-- On the player selection screen, only human players are available for selection
+  - Life & death settling after = 2 passes
+  - Dispute resolution = Non-alternating play
+  - Four passes = End game
+- When you return to the "New game" screen after changing parameter values
+  on the "Advanced settings" screen, the ruleset cell shows the value
+  "Custom"
 - Tap cancel. The screen must disappear without a new game being started
 - Again select "New game". The screen must appear with the "Human vs. human"
   segment initially being selected. All parameter values must be the same as
@@ -279,77 +365,199 @@ New game
 - All stones from the previous game are cleared
 - The board is displayed using the new size 13x13
 - 4 handicap stones are placed on the 4 corner star points
-- The navigation bar displays the same buttons as when the application was
-  launched for the first time
+- The toolbar displays the same buttons as when the application was launched
+  for the first time
 - Tap the "Game info" button and check that the information displayed matches
   the parameters that were just entered
 - Select "New game"
+- Select handicap 9
+- Select board size 7x7. Handicap must be adjusted down to 4.
+- Call up the handicap screen. It is not possible to select a handicap
+  greater than 4.
+- Enable the "Even game" switch. The handicap cell must disappear.
+- Call up the "ruleset" screen. None of the predefined rulesets is selected.
+- Start selecting each of the rulesets and compare that their settings match
+  the following table
+
+                | Ko          |      |           | Life & death   | Dispute              | Four
+Ruleset         | rule        | Komi | Scoring   | settling after | resolution           | passes
+----------------+-------------+------+-----------+----------------+----------------------+-----------
+AGA rules       | Situational | 7.5  | Area      | Two passes     | Alternating play     | Game ends
+IGS rules       | Simple      | 6.5  | Territory | Three passes   | Alternating play     | n/a
+Chinese rules   | Positional  | 7.5  | Area      | Two passes     | Non-alternating play | No meaning
+Japanese rules  | Simple      | 6.5  | Territory | Two passes     | Non-alternating play | No meaning
+Little Go rules | Simple      | 7.5  | Area      | Two passes     | Alternating play     | No meaning
+
 - Check that on all segments where a computer player can be selected, only
   computer players are actually available for selection
 - Tap cancel
 
 
-End of game / Resigning
-- Start a new human vs. human game with no handicap
+End of game: Resigning
+- Start a new human vs. human game with no handicap and the "Little Go" ruleset
 - Place a black and a white stone
-- Make sure that the "Score when game ends" user preference is enabled
-- Tap the "Game actions" button and select "Resign".
-- Scoring mode is not activated. The navigation bar displays only the "Discard"
-  button. The status view displays "Black resigned".
+- Make sure that the "Auto scoring / resuming play" user preference is enabled
+- Tap the "More game actions" button and select "Resign".
+- Scoring mode is not activated. The toolbar displays the "Scoring" and the
+  "Discard" buttons. The status view displays "Black resigned".
 - Display the "Game info" view. The "Game state" section on the "Game" segment
   must show that the game has ended. Dismiss the "Game info" view.
-- Tapping the "Game actions" button reveals a menu with these game actions:
-  Score, Undo resign, Save game, New game
-- Select "Undo resign" from the "Game actions" menu
-- The navigation bar again displays the three buttons "Computer play", "Pass"
-  and "Discard"
+- Tap the "Scoring" button. This activates scoring mode. The toolbar now
+  displays the "Play" and the "Discard" buttons.
+- Tap the "Play" button. This deactivates scoring mode and returns to play mode.
+  The toolbar now displays the "Scoring" and the "Discard" buttons.
+- Tapping the "More game actions" button reveals a menu with these game actions:
+  Undo resign, Save game, New game
+- Select "Undo resign" from the "More game actions" menu
+- The toolbar again displays the three buttons "Pass", "Computer play" and
+  "Discard"
 - Display the "Game info" view. The "Game state" section on the "Game" segment
   must show that the game is in progress. Dismiss the "Game info" view.
-- Tap the "Game actions" button and select "Resign"
+- Tap the "More game actions" button and select "Resign"
 - Tap "Discard"
-- The navigation bar again displays the three buttons "Computer play", "Pass"
-  and "Discard"
+- The toolbar again displays the three buttons "Pass" , "Computer play" and
+  "Discard"
 - Display the "Game info" view. The "Game state" section on the "Game" segment
   must show that the game is in progress. Dismiss the "Game info" view.
-- Make two pass moves
+
+End of game: Two pass moves, alternating play
+- Start a new human vs. human game with no handicap and the "Little Go" ruleset
+- Enable "Settings > Scoring > "Auto scoring / resuming play"
+- Place a black and a white stone, then make a black and a white pass move
 - Scoring mode is now activated. The status view displays a message "Scoring in
   progress" while the initial set of dead stones is determined.
 - After the initial set of dead stones has been determined, the status view
-  displays scoring information, and the navigation bar displays the "Done" and
+  displays scoring information, and the toolbar displays the "Play" and
   "Discard" buttons
 - Display the "Game info" view. The "Game state" section on the "Game" segment
   must show that the game has ended. Dismiss the "Game info" view.
-- Tapping the "Game actions" button reveals a menu with these game actions:
-  Start marking as seki, Save game, New game
+- Tapping the "More game actions" button reveals a menu with these game actions:
+  Start marking as seki, Resume play, Save game, New game
 - Select "Save game" and save another game, which must appear on the Archive tab
-- Tap "Done"
-- The "Done" button disappears, only the "Discard" button remains in the
-  navigation bar. The scoring markup disappears from the board. The status view
-  message is "Game has ended by two consecutive pass moves".
-- Select "Score" from the "Game actions" menu
+- Tap the "Play" button
+- Play mode is activated and play is resumed automatically:
+  - The scoring markup disappears from the board
+  - The toolbar now displays the "Pass", "Computer play" and "Discard" buttons
+  - The status view message is "White passed. Black to move."
+  - The "More game actions" menu contains the items "Score", "Resign",
+    "Save game" and "New game"
+  - In the "Game info" view, the "Game state" item on the "Game" segment must
+    show "Resumed play"
+- Tap "Discard", then make a white pass move. Scoring mode is automatically
+  activated.
+- Tap "More game actions", then select the "Resume play" item. Play mode is
+  activated and play is resumed. See above for the conditions that must apply.
+- Tap "Discard", then make a white pass move. Scoring mode is automatically
+  activated.
+- Disable "Settings > Scoring > "Auto scoring / resuming play"
+- Tap the "Play" button
+- Play mode is activated but play is NOT resumed automatically:
+  - The scoring markup disappears from the board
+  - The toolbar now displays the "Scoring" and "Discard" buttons
+  - The status view message is "Game has ended by two consecutive pass moves."
+  - The "More game actions" menu contains the items "Resume play", "Save game"
+    and "New game"
+  - In the "Game info" view, the "Game state" item on the "Game" segment must
+    show "Game has ended"
+- Tap the "Scoring" button
 - Scoring mode is activated again, with the same effects as described above
-- Tap "Done"
+- Tap the "Play" button. Play mode is activated.
 - Tap "Discard"
-- The navigation bar again displays the three buttons "Computer play", "Pass"
+- The toolbar again displays the three buttons "Pass", "Computer play",
   and "Discard"
-- The status view message is "White has passed"
+- The status view message is "Black passed. White to move."
 - Display the "Game info" view. The "Game state" section on the "Game" segment
   must show that the game is in progress. Dismiss the "Game info" view.
-- Disable the user preference "Score when game ends"
-- Make a pass move
-- Scoring mode is not activated. The navigation bar displays only the "Discard"
-  button
+- Make a white pass move
+- Scoring mode is not activated. The toolbar displays the "Scoring" and
+  "Discard" buttons
+- Display the "Game info" view. The "Game state" section on the "Game" segment
+  must show that the game has ended. Dismiss the "Game info" view.
 - Tap "Discard"
-- The navigation bar again displays the three buttons "Computer play", "Pass"
-  and "Discard"
+- The toolbar again displays the three buttons "Pass", "Computer play" and
+  "Discard"
 - Display the "Game info" view. The "Game state" section on the "Game" segment
   must show that the game is in progress. Dismiss the "Game info" view.
-- Enable the user preference "Score when game ends". This is important for
-  subsequent tests.
+
+
+End of game: Two pass moves, non-alternating play
+- Start a new human vs. human game with no handicap and the "Chinese" ruleset
+- Disable "Settings > Scoring > "Auto scoring / resuming play"
+- Place a black and a white stone, then make a black and a white pass move
+- The game ends, but scoring mode is not activated
+- Tap "More game actions", then select the "Resume play" item. An alert is
+  displayed that asks the user to choose a side to play first. The default is
+  "Black".
+- Select "Black"
+- Play is resumed. The status view message is "White passed. Black to move."
+- Place a black stone, then make a white and a black pass move
+- The game ends, but scoring mode is not activated
+- Tap "More game actions", then select the "Resume play" item. This time, the
+  alert that asks the user to choose a side to play first has "White" as the
+  default
+- Select "White"
+- Play is resumed. The status view message is "Black passed. White to move."
+- Tap "More game actions". The menu contains an item "Set black to move".
+- Select "Set black to move"
+- The status view message is "Black passed. Black to move.".
+- In the "Game info" view, the "Next move" item on the "Game" segment must
+  show "Black"
+- Tap "More game actions". The menu contains an item "Set white to move".
+- Select "Set white to move"
+- The status view message is "Black passed. White to move."
+- Tap "More game actions", then select the "Set black to move" item
+- Place a black stone
+- Check the list of board positions: The last two moves must be both by black.
+- Tap "More game actions". The menu does not contain an item that allows to set
+  the side to move.
+- Tap "Discard"
+- The status view message is "Black passed. White to move.".
+- Tap "More game actions". The menu contains an item "Set black to move".
+
+
+End of game: Three pass moves
+- Start a new human vs. human game with no handicap and the "IGS (Pandanet)"
+  ruleset
+- Enable "Settings > Scoring > "Auto scoring / resuming play"
+- Place a black and a white stone, then make a black and a white pass move
+- The game does not end
+- Make a third pass move by black
+- The game ends, scoring mode is activated
+- Tap "More game actions". The menu does not contain the "Resume play" item.
+- Tap the "Play" button
+- Play mode is activated but play is NOT resumed automatically
+- Tap "More game actions". The menu does not contain the "Resume play" item.
+- Tap "Discard"
+- Play is resumed. The toolbar again displays the three buttons "Pass",
+  "Computer play", and "Discard"
+
+
+End of game: Four pass moves
+- Start a new human vs. human game with no handicap and the "AGA" ruleset
+- Enable "Settings > Scoring > "Auto scoring / resuming play"
+- Place a black and a white stone, then make a black and a white pass move
+- The game ends, scoring mode is activated
+- Tap "More game actions", then select the "Resume play" item
+- Play mode is activated and play is resumed
+- Make another black and a white pass move
+- The game ends, scoring mode is activated
+- The status view message is "White wins by 7½ - All stones on the board are
+  deemed alive."
+- Tapping a stone has no effect, i.e. stones cannot be marked as dead
+- Tap "More game actions". The menu contains only the items "Save game" and
+  "New game". It specifically does not contain the items "Start marking as seki"
+  or "Resume play".
+- Tap the "Play" button
+- Play mode is activated but play is NOT resumed automatically
+- Tap "More game actions". The menu does not contain the "Resume play" item.
+- Tap "Discard"
+- Play is resumed. The toolbar again displays the three buttons "Pass",
+  "Computer play", and "Discard"
 
 
 Human vs. human game / Handicap
-- Start a new human vs. human game with handicap 4
+- Enable "Settings > Scoring > "Auto scoring / resuming play"
+- Start a new human vs. human game with board size 19 and handicap 4
 - Place a stone; because of the handicap, the stone must be white
 - The computer does not respond with a move because a human vs. human game is
   in progress
@@ -378,9 +586,10 @@ Computer vs. computer game
   - Pause
   - Interrupt
   - Game info
-  - Game actions
-- The "Pause" and "Interrupt" buttons are enabled, the "Game info" and
-  "Game actions" buttons are disabled
+  - More game actions
+  - iPhone 6+: Menu
+- The "Pause", "Interrupt" and "Menu" buttons are enabled, the "Game info" and
+  "More game actions" buttons are disabled
 - Tap "Pause"
 - The "Pause" button is replaced by the "Continue" button
 - The current computer player finishes calculating its move
@@ -388,19 +597,19 @@ Computer vs. computer game
 - Once the computer player has finished generating its move, the following
   happens
   - The "Interrupt" button is replaced by the "Discard" button
-  - The "Game info" and "Game actions" buttons become enabled
-  - The next computer player does not start generating a move
+  - The "Game info" and "More game actions" buttons become enabled
+  - No new move is generated
 - Tap "Game info"; the game state is now displayed as "game is paused"; dismiss
   the "Game info" view
 - Tap "Continue"
-- The next computer player immediately starts to generate a move
+- The computer player immediately starts to generate a move
 - Tap "Interrupt"
-- The current computer player immediately plays its move, and the next
-  computer player immediately starts to generate a move
+- The computer player immediately plays its move, then immediately starts to
+  generate another move
 - Tap pause, immediately followed by a tap on "Continue"
 - The game continues uninterrupted
 - Tap "Pause"
-- Tap "Game actions" as soon as it becomes available. The menu must not display
+- Tap "More game actions" as soon as it becomes available. The menu must not display
   "Resign". Dismiss the menu.
 - Tap "Discard"
 - The most recent move is discarded
@@ -414,7 +623,8 @@ Computer vs. computer game
 
 
 Board position
-- Start a new computer vs. human game that uses a handicap
+- Start a new computer vs. human game where the computer plays white and the
+  game uses a handicap
 - Make a few moves until the computer actually requires some time to make its
   move. Whenever the computer player is thinking, any controls that allow to
   change board positions must be disabled or have no effect when tapped. This
@@ -424,17 +634,19 @@ Board position
 - When the computer player has generated its move
   - Buttons that allow to view earlier board positions must be enabled
   - Buttons that allow to view later board positions must be disabled
-- iPhone: Tap the current board position view several times. On each tap the
-  toolbar switches between the board position navigation buttons and the board
-  position list.
+- iPhone (regular, not iPhone 6+): Tap the current board position view
+  several times. On each tap the toolbar switches between the board position
+  navigation buttons and the board position list.
 - Display the "Game info" view. Dismiss the "Game info" view after checking the
   following information on the "Board" segment:
   - Board position and move info refer to the correct move
   - 0 (zero) moves follow after the current position
   - The footer text indicates that the board position after the most recent move
     is currently displayed.
+- The status view displays "White played <vertex>. Black to move"
 - Go back one move. No progress HUD is displayed.
 - Buttons that allow to view later board positions must now be enabled.
+- The status view displays "Black played <vertex>. White will play <vertex>"
 - The "Pass" button must be disabled (because it is the computer player's turn)
 - The next move marker "A" is displayed at the intersection where in the next
   board position a stone will be placed
@@ -450,11 +662,12 @@ Board position
     currently displayed.
 - Try to make a move by panning. Nothing happens.
 - Go back one move. No progress HUD is displayed.
+- The status view displays "White played <vertex>. Black will play <vertex>"
 - The "Pass" button must be enabled
 - Make a move by panning. An alert must be displayed that informs the user that
   all future moves will be discarded.
 - Cancel the move. The move must not be played.
-- Tap "Computer play", "Pass" and "Discard". For each tap an alert must be
+- Tap "Pass", "Computer play" and "Discard". For each tap an alert must be
   displayed that informs the user that all future moves will be discarded. When
   the "Discard" button is tapped, the wording is slightly different. Cancel each
   of the alerts.
@@ -466,14 +679,15 @@ Board position
     later board positions must be disabled, buttons that allow to view earlier
     board positions must be enabled.
 - Turn off the "Discard future moves alert" in the user preferences
-- Repeat the following steps for 1) making a move by panning, 2) tapping
-  "Computer play", and 3) tapping "Pass":
+- Repeat the following steps for 1) making a move by panning, 2) tapping "Pass",
+  and 3) tapping "Computer play":
   - Go back two moves
   - Take the action that makes the move
   - This time no alert is displayed, the move is just played and the same
     sequence of events occurs as before when the alert was displayed.
 - Go back to the beginning of the game. Only the handicap stones are displayed.
   Buttons that allow to view earlier board positions must be disabled.
+- The status view displays "Game started. White will play <vertex>"
 - Display the "Game info" view. Dismiss the "Game info" view after checking the
   following information on the "Board" segment:
   - Board position refers to "start of game"
@@ -483,9 +697,9 @@ Board position
     of the game is currently displayed
 - Go forward one move. All navigation buttons must be enabled.
 - Tap the "Discard" button. All moves are discarded. The "Discard" button is
-  no longer visible. The "Computer play" button is visible and enabled. The
-  "Pass" button is visible but disabled (because it is the computer player's
-  turn). The next move marker "A" is not displayed.
+  no longer visible. The "Pass" button is visible but disabled (because it is
+  the computer player's cutnr). The "Computer play" button is visible and
+  enabled. The next move marker "A" is not displayed.
 - Tap the "Computer play" button
 - The "Discard" button is visible and enabled
 - Go back to the beginning of the game. The next move marker "A" is displayed.
@@ -498,9 +712,9 @@ Board position
   move is a pass move.
 - Generate more than 10 moves (to make this quicker, start a new game with
   "Fuego (weak)" as the computer player)
-- On the board position list, select the board position that represents the
-  beginning of the game (must be more than 10 board positions away from the end
-  of the game)
+- Scroll to the beginning of the board position list, then select the board
+  position that represents the beginning of the game (must be more than 10
+  board positions away from the end of the game)
 - The progress HUD is displayed while the app updates the board to display
   the beginning of the game
 - Suspend the application
@@ -512,6 +726,12 @@ Board position
   - Restore board position
 - After application launch is complete, the board displays the board position
   at the beginning of the game
+- Start a new human vs. human game with ruleset "Chinese", make two pass
+  moves, then resume play. 
+- An alert is displayed that asks the user to choose a side to play first. The
+  default is "Black".
+- Choose "White". The status view displays "White passed. White to move."
+- Make a pass move. The status view displays "White passed. Black to move."
 
 
 Zooming/scrolling, coordinates and move number
@@ -524,6 +744,10 @@ Zooming/scrolling, coordinates and move number
   - Coordinate labels are displayed
   - Move numbers are displayed for all stones
   - The last move number (325) is displayed in red
+- iPhone 6+
+  - Coordinate labels are displayed
+  - Move numbers are not displayed
+  - The last move is marked up with a symbol
 - iPhone
   - Neither coordinate nor move numbers are displayed
   - The last move is marked up with a symbol
@@ -563,43 +787,57 @@ Player influence
 - Start a new computer vs. human game and make a few moves
 - Enable the user preference "Display player influence"
 - No player influence is displayed after you switch back to the Play UI area
-- Tap the "Game actions" button. The menu that pops up must contain an entry
+- Tap the "More game actions" button. The menu that pops up must contain an entry
   "Update player influence"
 - Select the menu entry
 - Fuego takes a few seconds to calculate, then the player influence is displayed
 - Make a few moves. Player influence is updated after each move
 - Select the board position at the beginning of the game
 - Player influence is not updated and remains the same
-- Select "Update player influence" from the "Game actions" menu
+- Select "Update player influence" from the "More game actions" menu
 - Player influence disappears
 - Select the board position that represents the most recent move
 - No player influence is displayed
-- Select "Update player influence" from the "Game actions" menu
+- Select "Update player influence" from the "More game actions" menu
 - Fuego takes a few seconds to calculate, then the player influence is displayed
 - Enable scoring mode
 - Player influence disappears
-- Tap the "Game actions" button. The menu that pops up must not contain the
+- Tap the "More game actions" button. The menu that pops up must not contain the
   "Update player influence" entry
 - Disable scoring mode
 - Player influence re-appears
-- Tap the "Game actions" button. The menu that pops up must contain the
+- Tap the "More game actions" button. The menu that pops up must contain the
   "Update player influence" entry
 - Disable the user preference "Display player influence"
 - No player influence is displayed after you switch back to the Play UI area
-- Tap the "Game actions" button. The menu that pops up must not contain the
+- Tap the "More game actions" button. The menu that pops up must not contain the
   "Update player influence" entry
 
 
 Players & profiles
 - Start a new computer vs. human game with players "Anonymous" and "Fuego"
 - Navigate to the players & profiles preferences screen
+- The screen shows the following content
+  - A list of all players and profiles that exist
+  - A cell "Add new player"
+  - A cell "Add new profile"
+  - A cell "Reset to default players & profiles"
+- Tap "Add new player". A screen that allows to enter data for a new player
+  is shown. Tap cancel.
+- Tap "Add new profile". A screen that allows to enter data for a new profile
+  is shown. Tap cancel.
 - Tap the edit button
+- The "Add" cells are marked up with an icon
+- Deleteable players and profiles are marked up with an icon
 - Only the "Fuego (weak)" player can be deleted
-- All profiles except the "Default" profile can be deleted
-- Start a new game while the players & profiles preferences screen remains in
-  edit mode
-- Return to the players & profiles preferences screen. Edit mode must now be
-  disabled
+- Only the "Weak" and "Extra strong" profiles can be deleted
+- Leave the screen, then come back. Edit mode must now be disabled.
+- iPad and iPhone (not iPhone 6+) only
+  - Tap edit
+  - Start a new game while the players & profiles preferences screen remains in
+    edit mode
+  - Return to the players & profiles preferences screen. Edit mode must now be
+    disabled
 - Tap edit
 - Add a new profile
 - The "create" button must be disabled until you enter at least 1 character for
@@ -609,31 +847,50 @@ Players & profiles
 - The "create" button must be disabled until you enter at least 1 character for
   the player name
 - Turn the "human player" switch off
-- The profile cell must now be displayed with the "Default" profile being
-  selected
+- The profile cell must now be displayed with the "Weak" profile being selected
+  (because the "Weak" profile is the first profile that is not the
+  "Human vs. human games" profile)
 - Tap the profile cell
 - A modal selection screen must appear; the "foo" profile which has previously
   been created must appear in the selection screen
-- Select a profile that is not the default profile
+- Select a profile that is not the "human vs. human games" profile
 - Back on the player edit screen, the selected profile must now be updated
 - Turn the "human player" switch on
 - The profile cell must now be hidden
 - Turn the "human player" switch off
-- The profile cell must again be displayed with the "Default" profile being
+- The profile cell must again be displayed with the "Weak" profile being
   selected
 - Select the "foo" profile
 - Create the player using the name "bar"
 - Delete the profile "foo"
 - Edit the player "bar"
-- The player must be configured with the "Default" profile
+- The player must be configured with the "Weak" profile
 - Display the "new game" screen. On all segments where a computer player can be
   selected, select the player "bar".
 - Tap "cancel"
 - Delete the player "bar"
-- Display the "new game" screen. On all segments where a computer player can be
-  selected, the pre-selected player is shown as "no player selected" in red
-  color. One of the remaining computer players "Fuego" and "Fuego (weak") can
-  be selected.
+- Display the "new game" screen
+  - On all segments where a computer player can be selected, the pre-selected
+    player is shown as "no player selected" in red color
+  - The "Done" button is enabled on the "Human vs. human" segment, and
+    disabled on all other segments
+  - One of the remaining computer players "Fuego" and "Fuego (weak") can
+    be selected.
+- Start a new human vs. human game
+- Delete the "Weak" profile
+- Edit the player "Fuego (weak)". The player must be configured with the
+  "Strong" profile.
+- Delete the "Strong" profile
+- Edit players "Fuego" and "Fuego (weak)". Both players must be configured with
+  the "Extra strong" profile.
+- Delete the "Extra strong" profile
+- Edit players "Fuego" and "Fuego (weak)". Both players must be configured with
+  the "Human vs. human games" profile.
+- Tap "Reset to default players & profiles"
+- An alert must be displayed that asks the user for confirmation
+- Tap cancel. No changes are made.
+- Tap "Reset to default players & profiles", but this time accept. All
+  players & profiles are reset to their defaults.
 
 
 Archive, document interaction
@@ -662,7 +919,7 @@ Archive, document interaction
 - A menu opens that offers to export the .sgf file to the following desintations
   - Mail
   - Pasteboard
-  - PandaTetsuki (if installed)
+  - Pandanet Go (if installed)
   - Drop Box (if installed)
 - Select Mail, then proceed to send the email with the attached file to your
   own address
@@ -675,56 +932,103 @@ Archive, document interaction
 - Little Go launches and informs the user that the game was imported
 - Import the same .sgf again
 - The name of the imported game is adjusted so that it remains unique
-- Make sure that the following types of saved games are present on the device
-  (typically by importing them from DropBox, or via iTunes file sharing):
-  - a game with handicap
-  - a game with no komi
-  - games with different board sizes
-  - a game that contains both stone placement moves and pass moves
-  - a large 19x19 game
-  - a game where one of the players resigned
-  - the game 9x9_1.sgf (for scoring later on)
-- Load each of these games and check that the content of the saved game is
-  correctly restored (handicap, komi, board size, pass and normal moves,
-  resignation)
-- Every time a game is loaded, a progress bar must indicate the load status;
-  after the game is loaded the Play UI area must be visible
-- Use iTunes to upload a file that has the .sgf extension, but is not a game in
-  .sgf format
-- Attempt to load a game from this file. An error message must be displayed that
-  the file may not be an .sgf file. A new game is started using the most recent
-  "new game" settings.
-- Load a game in the following situations
-  - While the game is finished; a new game must be started and all appropriate
-    toolbar buttons must be enabled after the game has finished loading
-  - While the "Game info" view is visible; the "Game info" view must be
-    dismissed after the game has finished loading
-  - While scoring mode is enabled; scoring mode must be disabled after the game
-    has finished loading
-- After a game is loaded, the next new game must use the same player selection,
-  ko rule and scoring system used for loading the game. Board size, komi and
-  handicap must remain unchanged from the values that were explicitly set by
-  the user when a new game was started the last time.
-- Make sure that the following saved games which contain errors are present on
-  the device
-  - illegal-move.sgf
-  - move-by-wrong-player.sgf
-- Try loading each of these games. An error message must be displayed each time,
-  explaining that the save game contains an error, and also saying what the
-  error is. Dismissing the error message must still result in a new game being
-  started.
-- Make sure that the following saved games which contain superko positions are
-  present on the device
-  - positional-superko.sgf
-  - situational-superko.sgf
-- Try loading these games as follows
-  - positional-superko.sgf with simple and situational superko rules: The game
-    can be loaded
-  - positional-superko.sgf with positional superko rule: The game cannot be
-    loaded
-  - situational-superko.sgf with simple ko rule: The game can be loaded
-  - situational-superko.sgf with positional and situational superko rules: The
-    game cannot be loaded.
+- Start a new game and play a few moves so that the current game in progress
+  has unsaved changes
+- Select Ear-reddening game.sgf, then tap the "Load" button
+- The "Load game" screen is displayed. The screen is almost identical to the
+  regular "New game" screen, with the following exceptions:
+  - None of the segments allows to set the board size
+  - None of the segments allows to set the handicap
+  - The "Advanced settings" screen does not allow to set komi
+- Tap "Cancel". The screen is dismissed and the game is not loaded.
+- Tap the "Load" button. The "Load game" screen is displayed with the same
+  segment and the same settings as before.
+- Tap the "Done" button. A confirmation alert that warns the user that the
+  current game has unsaved changes
+- Tap the "Cancel" button. The alert is dismissed and the "Load game" screen
+  is displayed again.
+- Tap the "Done" button. This time confirm that the game should be loaded.
+- A progress bar / HUD indicates the load status
+- After the game is loaded the Play UI area must be visible
+- Don't make any moves, directly load another game from the archive. This
+  time there is no alert warning about unsaved changes, the game is simply
+  loaded and the previously running game is discarded.
+- Load a game in the following situations:
+  - While the game has ended (e.g. by two pass moves): A new game must be
+    started and all appropriate toolbar buttons must be enabled after the
+    game has finished loading.
+  - iPad and iPhone (not iPhone 6+) only: While the "Game info" view is
+    visible: The "Game info" view must be dismissed after the game has
+    finished loading.
+  - While scoring mode is enabled: Scoring mode must be disabled after the game
+    has finished loading.
+- Start a new human vs. human game with 7x7 board size, no handicap and
+  Chinese ruleset, then load handicap-7-komi-0-with-pass-moves.sgf as a
+  human vs. computer game with AGA ruleset, then call up the "New game"
+  screen. The new game screen must initially display the
+  "human vs. computer" segment with the following settings
+  - Same player selection as when the .sgf was loaded
+  - Board size 7x7 (i.e. the board size that was used when a new game was
+    started the last time; the board size from the .sgf is not remembered)
+  - AGA ruleset (i.e. the ruleset used when the game was loaded)
+  - No handicap (i.e. the handicap setting that was used when a new game
+    was started the last time; the handicap setting from the .sgf is not
+    remembered)
+  - Komi 7.5 (i.e. the komi setting that matches the ruleset; the komi setting
+    from the .sgf is not remembered)
+- Try loading the following saved games. Where not specified otherwise, use the
+  "Little Go" ruleset and a human vs. human game. When a game cannot be loaded,
+  dismissing the error message must still result in a new game being started.
+  - handicap-7-komi-0-with-pass-moves.sgf: The game can be loaded. Check that
+    the content of the game is correctly restored (handicap 7, komi 0, both
+    stone placement moves and pass moves).
+  - Ear-reddening game.sgf: The game can be loaded. The game contains 325
+    moves, i.e. a large number of moves.
+  - 9x9_1.sgf: The game can be loaded. The game contains a board size that is
+    not 19x19.
+  - TODO: An .sgf file that contains a game where one of the players
+    resigned. Currently such a file can be loaded, but the resignation
+    status is not recognized, due to a limitation in Fuego.
+  - 2-passes.sgf: The game can be loaded. The game has ended.
+  - 3-passes.sgf: The game can be loaded. The game is still in progress.
+  - 3-passes.sgf, with ruleset "IGS (Pandanet)": The game can be loaded. The
+    game has ended.
+  - 4-passes.sgf: The game can be loaded. The game has ended.
+  - 4-passes.sgf, with ruleset "IGS (Pandanet)": The game cannot be loaded. An
+    error message is displayed that explains the reason (a pass move is made
+    after the game has already ended).
+  - 4-passes.sgf, with ruleset "AGA": The game can be loaded. The game has
+    ended. The status view shows a message that "all stones on the board are
+    deemed alive".
+  - 5-passes.sgf: The game can be loaded. The game is still in progress.
+  - 5-passes.sgf, with ruleset "IGS (Pandanet)": The game cannot be loaded. An
+    error message is displayed that explains the reason (a pass move is made
+    after the game has already ended).
+  - 5-passes.sgf, with ruleset "AGA": The game cannot be loaded. An error
+    message is displayed that explains the reason (a pass move is made after the
+    game has already ended).
+  - non-alternating-play.sgf: The game can be loaded. Make sure that in the
+    list of board positions the positions 44 and 45 are both moves made by
+    white.
+  - suicide.sgf: The game cannot be loaded. An error message is displayed that
+    explains the reason (suicide).
+  - illegal-move.sgf: The game cannot be loaded. An error message is displayed
+    that explains the reason (white plays on an intersection that is already
+    occupied).
+  - positional-superko.sgf, with simple and situational superko rules (rulesets
+    "Little Go" and "AGA", respectively): The game can be loaded
+  - positional-superko.sgf, with positional superko rule (ruleset "Chinese"):
+    The game cannot be loaded.
+  - situational-superko.sgf with simple ko rule (ruleset "Little Go"): The game
+    can be loaded.
+  - situational-superko.sgf with positional and situational superko rules
+    (rulesets "AGA" and "Chinese", respectively): The game cannot be loaded.
+  - not-an-sgf-file.sgf: The game cannot be loaded. An error message is
+    displayed that the file may not be an .sgf file.
+  - 25x25_single_black_move.sgf: The game cannot be loaded. An error message
+    is displayed that the file may not be an .sgf file.
+- The following tests may be difficult to perform with modern devices that
+  can load games faster than a human tester is able to interfere
 - Load a game, then press the Home button in the middle of the loading process
 - Launch the application. The loading process must continue.
 - Load a game, then press the Home button in the middle of the loading process
@@ -792,7 +1096,7 @@ Scoring
 - Load game seki-9b.sgf with area scoring
 - Turn on scoring mode
 - The status text must read "White wins by 6.5 - Tap to mark dead stones".
-- Tap the "Game actions" button. The menu must contain an item
+- Tap the "More game actions" button. The menu must contain an item
   "Start marking as seki". Select that item.
 - The status text must read "White wins by 6.5 - Tap to mark stones in seki".
 - Tap black stone at A6
@@ -820,6 +1124,17 @@ Scoring
       0    Territory    0
       0      Score      6.5
        White wins by 6.5
+- Start a new human vs. human game game with ruleset "AGA"
+- Place a black and a white stone
+- Make a black and a white pass move
+- The game ends and scoring mode is activated
+- Tap the black stone to verify that it is marked as dead stone
+- Tap the white stone to verify that it is marked as dead stone
+- Resume play, then make another black and a white pass move
+- The game ends and scoring mode is activated
+- Tapping the black or white stone has no effect, i.e. stones cannot be marked
+  as dead. Also, the "More game actions" menu does not contain the
+  "Start marking as seki" entry.
 
 
 Suspending the app
@@ -835,13 +1150,21 @@ Suspending the app
   the app was last active
 - Changed user preferences are also restored
 
+
+Interface orientation (general)
+- Rotate the device to portrait, switch to the "Settings" area of the app,
+  rotate the device to landscape, then switch back to the "Play" area. The UI
+  in the "Play" area has changed to landscape orientation. It is acceptable if
+  the UI change is visible to the user at the moment the UI area is changed.
+
+
 Interface orientation (iPad only)
 - Launch the app in landscape
 - The board is sized to fit the screen vertically, and is centered horizontally
-- The navigation bar above the board does not contain a "Moves" button
+- The toolbar above the board does not contain a "Moves" button
 - On the left of the screen on the Play UI area there is a pane that contains
   the following UI elements:
-  - Navigation bar wird buttons to select board positions
+  - Navigation bar with buttons to select board positions
   - Single-cell table view that displays the current board position
   - Table view with all board positions of the game
 - Scroll to the top, then to the bottom of the list of board positions to make
@@ -850,7 +1173,7 @@ Interface orientation (iPad only)
 - The UI changes as follows
   - The board is resized to fit the screen horizontally, and is centered
     vertically
-  - The navigation bar above the board now contains a "Moves" button
+  - The toolbar above the board now contains a "Moves" button
   - The pane on the left that contains board position UI elements disappears
 - Swipe from left to right [not possible until issue 238 is resolved]
 - The pane that contains board position UI elements slides in from the left
@@ -867,7 +1190,8 @@ Interface orientation (iPad only)
 - Tap anywhere outside of the pane
 - The pane disappears
 - Zoom the board
-- Swipe from right to left [not possible until issue 238 is resolved]
+- Swipe from right to left [test does not make sense until issue 238 is
+  resolved]
 - The board scrolls
 - Rotate the device to landscape
 - Scroll to the top, then to the bottom of the list of board positions to make
@@ -878,3 +1202,72 @@ Interface orientation (iPad only)
 - Scroll to the top, then to the bottom of the list of board positions to make
   sure that the first and last board positions are visible
 - Scroll the board to make sure that the scroll gesture is recognized
+
+
+iPhone 6+ layout
+- Launch app in portrait
+- The UI differs from the UI of smaller iPhones like this:
+  - The toolbar at the top of the screen contains a "Menu" button on the right
+  - Below the game board are the following elements, arranged from top to
+    bottom:
+    - A button box that contains the board position navigation buttons
+    - A list with board positions that is horizontally scrollable
+    - The status view
+- Tap the "Menu" button. The main menu view appears that lists all the UI areas
+  of the app. The main menu view has a title bar with a title "Main Menu" and a
+  back button "Play".
+- Check that each UI area can be activated, and that it is possible to return
+  from each UI area to the list of UI areas.
+- Dismiss the main menu
+- Rotate the device to landscape
+- The UI differs from the UI of smaller iPhones like this:
+  - On the left-hand side of the screen is a list with board positions that is
+    vertically scrollable
+  - Below the list with board positions is the status view
+  - On the left and right of the game board are two button boxes
+    - On the left: A button box that contains the board position navigation
+      buttons
+    - On the right: A button box that contains the toolbar buttons, with two
+      permanent buttons (Game Info, More Game Actions) at the bottom, and above
+      all the remaining buttons
+  - The "Menu" button is in the top-right corner of the screen
+- Tap the "Menu" button. The main menu view appears that lists all the UI areas
+  of the app. The main menu view has a title bar with a title "Main Menu" and a
+  back button "Play".
+- Check that each UI area can be activated, and that it is possible to return
+  from each UI area to the list of UI areas.
+- Make sure that you are viewing the list of UI areas
+- Rotate the device to portrait. The list of UI areas rotates correctly.
+- Dismiss the main menu. The Play UI area is shown with the layout for portrait.
+  It is acceptable if the transition from landscape to portrait layout is
+  briefly visible.
+- Tap the "Menu" button, rotate the device to landscape, then dismiss the main
+  menu. The Play UI area is shown with the layout for landscape. Again, it's
+  acceptable if the UI update is briefly visible.
+- Tap the "Menu" button
+- Start a drag gesture by dragging from the left edge of the screen towards the
+  right. The Play UI area gradually becomes visible the farther you drag.
+- Cancel the gesture by lifting the finger before more than half of the screen
+  is covered by the Play UI area. The main menu view slides back into place.
+  The title bar with the view title and the back button (which were temporarily
+  hidden during the drag gesture) are visible again.
+
+
+Tab functionality (on those devices that use a tab bar)
+- Dismissing "Game info" view
+  - Go to Play area
+  - Tap the "Game info" button
+  - Tap the "Play" tab bar button. This must dismiss the "Game info" view, just
+    as if the "back" button had been tapped
+
+
+Special test cases
+- Disable UI rotation while stone is being placed
+  - This test is possible only on a device where the app supports UI rotation
+  - Start a gesture to place a stone
+  - Rotate the device while the gesture is still in progress
+  - The UI must not rotate
+  - End the stone placing gesture
+  - Rotate the device
+  - The UI must rotate
+

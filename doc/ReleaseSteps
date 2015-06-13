@@ -145,7 +145,6 @@ Make the release
   git push
   git push --tags
 - Remove the release branch, both locally and, if it was pushed, on GitHub
-- Write a release note blog post on the website
 - Close tickets that are not yet closed in the issue tracker, then close the
   milestone
 - Create a new release on GitHub that references the git tag. Copy ChangeLog
@@ -155,3 +154,4 @@ Make the release
 - Cleanup the Trello board
 - Update littlego.herzbube.ch
 - Release the new version to the App Store
+- Advertise the release (check out the NOTES.Marketing file)

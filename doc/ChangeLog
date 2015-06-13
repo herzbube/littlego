@@ -1,3 +1,107 @@
+June 12 2015   "Patrick Näf" <herzbube@herzbube.ch>
+- Release of version 1.2.0
+- Features
+  - iPhone 6/6+ are now supported with their native screen resolution (#263)
+  - iPhone 6+ has a redesigned user interface that makes better use of the
+    available screen estate (#253). iPhone 6+ also supports holding the device
+    in landscape.
+  - When starting a new game, it is now possible to select from several
+    predefined rulesets, which allows setting many game rules at once with a
+    single tap (#274). This makes the "New game" screen less cluttered and more
+    user friendly. Rule enthusiasts can still adjust each individual game rule
+    by calling up an "Advanced settings" screen.
+  - Gameplay mechanics at the end of the game have been significantly revised:
+    - It is now generally possible to resume play after two pass moves without
+      having to discard ("undo") the second pass move
+    - 3 new game rules were added that govern gameplay mechanics at the end of
+      the game. These rules allow to play games under AGA or IGS rules
+      (#221, #223), but also under Japanese and Chinese rules where
+      non-alternating play is possible to resume a game after it has ended after
+      two pass moves (#275).
+  - As a consequence of these new gameplay mechanics at the end of the game, a
+    much wider array of .sgf files can now be loaded from the archive, provided
+    that the user selects the appropriate rules for the game that is in the .sgf
+    file.
+    - Files that contain more than two pass moves at the end of the game. This
+      is especially useful to load games that were played on IGS (Pandanet),
+      where games end with 3 instead of 2 pass moves.
+    - Files that resume play after two pass moves. Again, this is useful for
+      loading files from IGS (Pandanet), but also for files that contain games
+      played under any ruleset that allows play to be resumed after two pass
+      moves.
+    - Files that contain non-alternating play (e.g. two moves in a row by
+      black). This is useful to load files that contain game problems where
+      theoretical board situations are set up by non-alternating play. Also,
+      games can now be loaded that were played under rulesets (e.g. Chinese,
+      Japanese) that allow play to be resumed after two pass moves by
+      non-alternating play.
+  - Special thanks go to Norbert Langermann and his innocent suggestion to add
+    support for loading .sgf files with games that were played on IGS. This was
+    the trigger for adding the new end-of-game gameplay mechanics.
+  - One more thing: When placing a stone a magnifying glass is now displayed
+    that shows the area of the board that currently under the user's 'fingertip
+    (#271). This feature replaces the old "stone distance from fingertip"
+    feature, which confused and was hated by many users.
+- Improvements and changes
+  - Disable Fuego pondering in human vs. human games (#281). This saves *a lot*
+    of otherwise wasted battery power. Thanks to Ben Jackson for the suggestion.
+    Unfortunately, a nasty piece of code was required to upgrade existing user
+    preferences, which may result in unnecessary player and profile backup
+    copies cluttering the upgraded preferences. Users will get an alert if this
+    happens so that they can clean up their preferences.
+  - When a game cannot be loaded from the archive because it has moves after
+    the game has ended, the error message displayed to the user should now be
+    less cryptic (#277)
+  - When the game has ended, the "Scoring" menu item is now shown as a button
+    so that the user can quickly switch between scoring mode and play mode
+    without first having to call up the "More game actions" menu (#268)
+  - A couple of buttons have gotten new icons (#269). Thanks to David Helfand
+    for the suggestion.
+  - The status view now always shows the status for the current and the next
+    board position (#265). Up until now the status view only showed when a
+    player had passed, and never showed any information about the next board
+    position.
+- Bugfixes
+  - The app now correctly synchronizes handicap stones with Fuego when board
+    positions are changed (#279). This is the most important bugfix of this
+    release because it fixes another source for the infamous
+    "The computer played an illegal move" and "Your move was rejected by Fuego"
+    alerts. Many thanks to Laurent Guanzini for providing step-by-step
+    instructions that helped me with diagnosing the problem!
+  - The app no longer crashes when a game is loaded from the archive that
+    contains a board that is larger than 19x19 (#283). The game still cannot be
+    loaded, but an error message is displayed instead of crashing.
+  - The app no longer crashes when the last game in the archive is deleted
+    (#286)
+  - It is now possible to place a stone when viewing an old board position, even
+    if the game has already ended (#278). It is thus possible to resume play at
+    an earlier board position than the last.
+  - The user interface no longer rotates while a stone is being placed (#272)
+  - The status view now correctly displays "<color> passed" when a computer vs.
+    computer game is paused (#266)
+  - If the user attempts to make an illegal move, the status view now displays
+    the intersection of the move (#261)
+  - The device statusbar at the top of the screen no longer disappears when
+    some screens are displayed (#256)
+  - iPad only: The board is now rotated correctly even if it is not visible at
+    the time that the device orientation changes (#255)
+  - A number of other bugs were fixed that may have caused crashes (#192, #284)
+  - Other minor bugfixes (#209, #257, #258, #262, #273)
+- Regressions
+  - None
+- Technical changes
+  - The project has been upgraded to the iOS 8.1 SDK (#248) and Xcode 6.1.1
+  - 64-bit support was added (#249)
+  - The Xcode project has been cleaned up (#252, #253)
+  - The vector graphics sources (.svg files) for all icons in the app were added
+    to the project and to version control (#264)
+  - User defaults updating is no longer triggered for fresh installs (#282)
+  - The 3rd party crash reporting library QuincyKit was upgraded to version 3
+    (#285)
+- A list of all issues closed for this release is available on GitHub:
+  https://github.com/herzbube/littlego/issues?q=milestone%3A1.2.0+is%3Aclosed
+
+
 Fri September 19 2014   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 1.1.2
 - Bugfixes
@@ -20,6 +124,7 @@ Fri August 15 2014   "Patrick Näf" <herzbube@herzbube.ch>
 - Bugfixes
   - App (hopefully) no longer crashes while stone is dragged around the board
     (#242)
+
 
 Sun August 10 2014   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 1.1.0
@@ -128,6 +233,7 @@ Mon January 06 2014   "Patrick Näf" <herzbube@herzbube.ch>
     (Fuego trunk r1728, Boost 1.55.0, MBProgressHUD 0.8, Cocoa Lumberjack 1.7.0,
     ZipKit 1.0.2, QuincyKit 2.1.9)
 
+
 Mon September 09 2013   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.12.0
 - Features
@@ -194,6 +300,7 @@ Mon September 09 2013   "Patrick Näf" <herzbube@herzbube.ch>
     an initial set of dead stones during scoring (#163)
   - A number of potential app crashes have been eliminated (#130, #172, #173)
 
+
 Mon May 20 2013   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.11.1
 - Bugfixes
@@ -209,6 +316,7 @@ Mon May 20 2013   "Patrick Näf" <herzbube@herzbube.ch>
     (#157). Thanks to the anonymous iPad 1 user who patiently reminded me that
     the issue needs fixing by sending an occasional crash report.
   - Fix for a memory leak in TableViewSliderCell (#155)
+
 
 Sat Apr 20 2013   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.11.0
@@ -273,6 +381,7 @@ Sat Apr 20 2013   "Patrick Näf" <herzbube@herzbube.ch>
   - Private Objective-C method declarations in .m files have been removed to
     reduce unnecessary code duplication (#102).
 
+
 Fri Mar 01 2013   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.10.0
 - Improve graphic design
@@ -322,6 +431,7 @@ Fri Mar 01 2013   "Patrick Näf" <herzbube@herzbube.ch>
   - Upgrade CocoaLumberjack to version 1.6
   - Update Doxygen target to use the MacPorts path /opt/local/bin
 
+
 Sun Dec 22 2012   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.9.2
 - Bugfixes
@@ -344,6 +454,7 @@ Sun Dec 22 2012   "Patrick Näf" <herzbube@herzbube.ch>
   - Fix for GUI update errors on Play tab after an error occurs while loading a
     game (issue #89)
 
+
 Sun Dec 09 2012   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.9.1
 - Bugfixes
@@ -354,6 +465,7 @@ Sun Dec 09 2012   "Patrick Näf" <herzbube@herzbube.ch>
 - Technical changes
   - The project's bugtracker is now hosted on GitHub
     (https://github.com/herzbube/littlego/issues)
+
 
 Fri Nov 23 2012   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.9.0
@@ -396,6 +508,7 @@ Fri Nov 23 2012   "Patrick Näf" <herzbube@herzbube.ch>
   - An Ohloh page now provides mildly interesting source code statistics
     (https://www.ohloh.net/p/littlego)
 
+
 Tue June 12 2012   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 0.8.1
 - Features
@@ -410,6 +523,7 @@ Tue June 12 2012   "Patrick Näf" <herzbube@herzbube.ch>
     occur (capturing stones might not work, suicide moves might be allowed,
     marking dead stones in scoring mode might not work correctly, and in some
     extreme cases it might even cause the app to crash).
+
 
 Tue April 17 2012   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.8.0
@@ -435,6 +549,7 @@ Tue April 17 2012   "Patrick Näf" <herzbube@herzbube.ch>
   - lots of new unit tests
   - upgrade to iOS SDK 5.1
 
+
 Tue January 3 2012   "Patrick Näf" <herzbube@herzbube.ch>
 - release of bugfix version 0.7.1
 - bugfixes
@@ -448,6 +563,7 @@ Tue January 3 2012   "Patrick Näf" <herzbube@herzbube.ch>
     and top-right corners
   - board size 7x7 no longer allows handicaps greater than 4 (selecting such
     a handicap previously would result in no handicap being set at all)
+
 
 Tue December 20 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.7
@@ -467,6 +583,7 @@ Tue December 20 2011   "Patrick Näf" <herzbube@herzbube.ch>
   - eliminated various memory leaks
   - application startup now mostly happens in a secondary thread; this makes
     it possible to run the application through Instruments
+
 
 Sun December 4 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.6
@@ -499,6 +616,7 @@ Sun December 4 2011   "Patrick Näf" <herzbube@herzbube.ch>
   - the GTP log now displays seconds
   - a lot of code cleanup
 
+
 Wed November 16 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.5
 - features
@@ -520,6 +638,7 @@ Wed November 16 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - technical changes
   - none
 
+
 Mon October 31 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.4
 - features
@@ -533,6 +652,7 @@ Mon October 31 2011   "Patrick Näf" <herzbube@herzbube.ch>
   - none
 - technical changes
   - add Cocoa Lumberjack logging framework
+
 
 Sun September 25 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.3
@@ -563,6 +683,7 @@ Sun September 25 2011   "Patrick Näf" <herzbube@herzbube.ch>
   - add command processor design pattern
   - GTP commands can now be executed synchronously
 
+
 Tue August 23 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.2
 - features
@@ -584,21 +705,27 @@ Tue August 23 2011   "Patrick Näf" <herzbube@herzbube.ch>
   - updated to use Fuego 1.1
   - unit test support
 
+
 Fri April 8 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - release of version 0.1
+
 
 Mon March 28 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - feature complete for 0.1
 
+
 Thu March 24 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - first draft of human vs. computer implementation
+
 
 Tue March 15 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - extremely crude computer vs. computer implementation
 
+
 Fri March 4 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - proof of concept: create an instance of Fuego and communicate with that
   instance by sending commands and receiving responses
+
 
 Thu Jan 27 2011   "Patrick Näf" <herzbube@herzbube.ch>
 - created project

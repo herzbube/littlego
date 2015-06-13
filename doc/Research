@@ -755,6 +755,11 @@ the game. Here are some notable exceptions:
   Area scoring. Little Go's counting methods are, of course, based on the two
   most commonly used counting methods for the two scoring systems (Japanese and
   Chinese counting methods). See the following sections for more information.
+- When compensating white for black handicap stones, Little Go follows the
+  counting method of the Chinese rules and compensates white by adding n points
+  to the score. The AGA rules area counting method, however, compensates white
+  by adding n-1 points. So there is a difference of 1 point that someone who
+  wants to play by AGA rules might find irritating or even wrong.
 
 
 [1] http://senseis.xmp.net/?RulesOfGo
