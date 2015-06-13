@@ -1,0 +1,181 @@
+Purpose of this document
+------------------------
+This document contains "marketing" notes, which are mostly notes on what to do
+to advertise the app in Apple's app store.
+
+
+App Store page content
+----------------------
+
+*************************** HELP WANTED **************************
+Please contact me if you are interested in contributing an app video preview that can be placed here in the App Store. If I seem to ignore you, your message may have been blocked by my spam filter. Please comment on GitHub issue #288 instead (https://github.com/herzbube/littlego/issues/288).
+******************************************************************
+
+Little Go is a free and open source iOS application that lets you play the game of Go on the iPhone or iPad. You can play against another human (on the same device), or against the computer. The computer player is powered by the open source software library Fuego (http://fuego.sf.net/). The minimum requirement for running this version of Little Go is iOS 7.0.
+
+Features:
+- Board sizes between 7x7 and 19x19 (start a new game to change the board size)
+- Let the computer player make a move for you
+- Calculate the score at any time during the game (area scoring is the default, territory scoring can be selected at the start of a new game)
+- Adjust the computer's playing strength and resign behaviour by selecting from a number of presets, or by fine-tuning advanced settings
+- Play even games, or games with 2-9 handicap stones (fixed stone placement)
+- Select from 5 pre-defined rulesets when you start a new game, or adjust game rules to your preference (komi, ko rule, area/territory scoring system, number of passes to end game, resume play by alternating/non-alternating play, four passes end game)
+- View board positions for moves played earlier during the game (no support for game variations, though)
+- Discard moves (aka "undo")
+- Display move numbers and coordinate labels
+- Zoom & scroll board
+- Display player influence (aka territory statistics) for an estimate who owns an area
+- Computer vs. computer game for entertainment
+- Save & load games to/from the archive
+- Use iTunes file sharing to transfer saved games to/from your iOS device
+- Import/export game files from/to other apps on your device (e.g. Mail, DropBox)
+- In-app user manual (text-only)
+- Submit bug report email from inside the app (yes, this *is* a feature :-))
+- For the technically inclined: Watch what happens behind the scenes when Little Go and Fuego talk to each other over the Go Text Protocol (GTP)
+
+Your contribution in any form (coding, UI design, testing, bug reports, creating an app video preview, website design) is welcome - please contact me or visit the project website (http://littlego.herzbube.ch/) to find out more.
+
+Little Go is released under the Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0).
+
+
+App Store screenshots
+---------------------
+App Store Screenshots are prepared in the simulator. The content is the same
+for all devices. iPhone screenshots are taken in portrait orientation, landscape
+screenshots are taken in landscape orientation.
+
+Before starting to take screenshots, prepare each simulator as follows:
+
+- Remove the app from the simulator
+- Install a clean new build
+- Add the following .sgf files to the archive:
+  - 9x9_1.sgf
+  - 9x9_2.sgf
+  - Anonymous vs. Fuego 1.sgf
+  - game_050.sgf
+  - Blood-vomiting game.sgf
+  - Ear-reddening\ game.sgf
+  - Lee's Broken Ladder Game.sgf
+  - Fuego vs. Fuego.sgf
+- Launch the app
+- Load "Lee's Broken Ladder Game.sgf"
+- Go to board position 97
+
+
+Screenshots
+- Screenshot 1: Start placing a stone, then take a screenshot while the
+  magnifying glass is visible
+- Screenshot 2: Take a screenshot from the "Settings > Display" screen
+- Screenshot 3: Take a screenshot from the "Archive" screen
+- Screenshot 4: Take a screenshot from the "Help" screen
+- Screenshot 3: Take a screenshot from the "Diagnostics > GTP Log" screen
+
+
+App Store app preview
+---------------------
+This section contains a possible "screenplay" for an App Store app preview
+movie. The aim is to highlight the most important features of the app. An
+initial attempt to realize this showed, however, that the screenplay is probably
+too long: Even with a severly compressed timeline and rather aggressive cutting,
+the resulting movie was almost 1.5 minutes long, which is 3 times as long as
+the maximum length allowed by Apple.
+
+Preparations
+- Select the device on which to record
+- Delete app, reinstall app, launch app
+- Settings
+  - Scoring > Find dead stones = off
+  - Players & Profiles > Rename "Anonymous" to "Patrick"
+  - Players & Profiles > Strong profile > Playing Strength = 3 (so that
+    computer calculations don't take too long during the video)
+- Archive
+  - Add "Blood-vomiting game" + "Ear-reddening game"
+  - Add a "Scoring demo" game that can be used to demonstrate the scoring
+    mechanism. The game must have the following characteristics:
+    - Small board (9x9 or 7x7)
+    - Simple positions with a few clear-cut regions
+    - Two or three groups that can be marked dead
+    - The last move in the game must be by white, i.e. it must be black's turn
+- Settings in "New game" screen
+  - Board size = 19x19
+- DropBox
+  - Perform a DropBox export into a subfolder "sgf", so that the private content
+    of the DropBox root folder need not be exposed during the demo
+  - Cleanup sgf folder afterwards
+
+- Scene 1: Empty 19x19 board
+  - Purpose: Briefly show the basic board with a nice wooden background
+- Transition 1-2: Select "More Game Actions" > New game
+- Scene 2: New game
+  - Purpose: Briefly show the most important settings that exist
+  - Select board size > Switch to 9x9
+  - Set "Even game" = Off
+  - Select handicap > 4
+  - Select "Done"
+- Scene 3: Placing stones
+- Purpose: Show how the user and the computer place stones
+  - Wait until computer has played
+  - Place a stone by dragging it around the board
+  - Let the computer play for me
+  - Wait until computer has played
+- Transition 3-4: Menu > Settings
+- Scene 4: Settings
+  - Purpose: Briefly show some interesting settings that have visible effects on
+    the board
+  - Select Display > Display coordinates = On
+  - Select Display move numbers = Full
+  - Select Magnifying Glass > Show magnifying glass = Always
+- Transition 4-5: Return to board view
+- Scene 5: Show support for small devices
+  - Purpose: Show the effects of the settings changed in scene 4, and also how
+    the app supports small devices
+  - Effect by changed display settings: Coordinates + move numbers
+  - Effect by changed magnifying glass settings: Place a stone by dragging it
+    around the board & showing off the magnifying glass
+  - Zoom in & scroll around
+  - Place a stone while zoomed in
+  - Zoom out
+- Scene 6: Save to archive
+  - Purpose: Show how a game can be saved
+  - Select "More Game Actions" > Save game
+  - Accept default name
+- Transition 6-7: Menu > Archive
+- Scene 7: Archive
+  - Purpose: Show where archived games are found and how they can be loaded
+  - Briefly show that the archive contains various games
+  - Select the "Scoring demo" game
+  - Select "Load"
+  - In the "New game" screen, accept the default settings
+- Scene 8: Scoring
+  - Purpose: Show how the scoring mechanism works
+  - Select "More Game Actions" > Scoring
+  - Tap the stone groups that are dead
+  - Point out the score in the status view
+  - Select "Game info"
+  - Briefly show the "Score" tab
+- Transition 8-9: Menu > Archive
+- Scene 9: Export to / import from DropBox
+  - Purpose: Show how to export / import .sgf files to/from other applications
+  - Select the "Patrick vs. Fuego 1" game
+  - Select Export > Open in Dropbox > sgf > Save
+  - Wait until .sgf has been uploaded
+  - Open "Famous games" folder
+  - Select "Lee's Broken Ladder Game"
+  - Select Export > Open in app > Open in Little Go
+- Transition 9-10: Load "Lee's Broken Ladder Game"
+- Scene 10: Viewing old board positions
+  - Purpose: Show how to navigate between board positions
+  - Select the two board positions before the last
+  - Scroll to beginning of list
+  - Select the "Start of the game" board position
+  - Quickly tap the "Next" button 5-6 times
+  - Select "forward to end"
+
+
+Advertising
+-----------
+- Write a release note blog post on www.herzbube.ch
+- Update "Sensei's Library"
+  - http://senseis.xmp.net/?IPhone
+  - http://senseis.xmp.net/?IPad
+- Write an announcement on http://www.lifein19x19.com/

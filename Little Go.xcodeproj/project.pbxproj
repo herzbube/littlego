@@ -1060,6 +1060,7 @@
 		CDEC288312F477E70069F5B7 /* Research */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Research; sourceTree = "<group>"; };
 		CDEC288412F477E70069F5B7 /* Roadmap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Roadmap; sourceTree = "<group>"; };
 		CDEC28B212F55F270069F5B7 /* build-3rdparty-software.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-3rdparty-software.sh"; sourceTree = "<group>"; };
+		CDECC1961B0F75FB00343512 /* NOTES.Marketing */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.Marketing; sourceTree = "<group>"; };
 		CDEE19E319433EAC00DF2389 /* BoardTileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardTileView.h; sourceTree = "<group>"; };
 		CDEE19E419433EAC00DF2389 /* BoardTileView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardTileView.m; sourceTree = "<group>"; };
 		CDEE19E519433EAC00DF2389 /* BoardView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardView.h; sourceTree = "<group>"; };
@@ -2149,6 +2150,7 @@
 				CDD7D7EB1753F6EA0068CBBA /* NOTES.Design */,
 				CDD7D7EC1753F8A70068CBBA /* NOTES.Diagnostics */,
 				CDD7D7EE1753FA710068CBBA /* NOTES.Info-plist */,
+				CDECC1961B0F75FB00343512 /* NOTES.Marketing */,
 				CD6EBE43175401C200ABB980 /* ProgrammingTopics */,
 				CDEC288112F477E70069F5B7 /* README.developer */,
 				CDEC288212F477E70069F5B7 /* ReleaseSteps */,
