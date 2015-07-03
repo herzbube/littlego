@@ -77,6 +77,9 @@
   self.value = newValue;
   self.slider.value = newValue;
   [self updateValueLabel];
+  self.delegate = nil;
+  self.delegateActionValueDidChange = nil;
+  self.delegateActionSliderValueDidChange = nil;
   return self;
 }
 
@@ -230,8 +233,11 @@
   _value = newValue;
   self.slider.value = newValue;
   [self updateValueLabel];
-  if ([self.delegate respondsToSelector:self.delegateActionValueDidChange])
-    [self.delegate performSelector:self.delegateActionValueDidChange withObject:self];
+  if (self.delegate && self.delegateActionValueDidChange)
+  {
+    if ([self.delegate respondsToSelector:self.delegateActionValueDidChange])
+      [self.delegate performSelector:self.delegateActionValueDidChange withObject:self];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -246,8 +252,11 @@
   if (_value == newValue)
     return;
   self.value = newValue;
-  if ([self.delegate respondsToSelector:self.delegateActionSliderValueDidChange])
-    [self.delegate performSelector:self.delegateActionSliderValueDidChange withObject:self];
+  if (self.delegate && self.delegateActionSliderValueDidChange)
+  {
+    if ([self.delegate respondsToSelector:self.delegateActionSliderValueDidChange])
+      [self.delegate performSelector:self.delegateActionSliderValueDidChange withObject:self];
+  }
 }
 
 // -----------------------------------------------------------------------------
