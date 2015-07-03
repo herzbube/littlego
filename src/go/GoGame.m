@@ -579,7 +579,7 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
   // The algorithm below for finding ko can kick in only if we have at least
   // two moves. The earliest possible ko needs even more moves, but optimizing
   // the algorithm is not worth the trouble.
-  GoMove* lastMove = self.lastMove;
+  GoMove* lastMove = self.boardPosition.currentMove;
   if (! lastMove)
     return false;
   GoMove* previousToLastMove = lastMove.previous;

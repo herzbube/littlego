@@ -52,5 +52,6 @@
 - (void) testSwitchNextMoveColor;
 - (void) testDiscardCausesRegionToFragment;
 - (void) testIssue2;
+- (void) testIssue289;
 
 @end

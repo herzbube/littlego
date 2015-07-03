@@ -20,6 +20,7 @@
 
 // Application includes
 #import <go/GoBoard.h>
+#import <go/GoBoardPosition.h>
 #import <go/GoBoardRegion.h>
 #import <go/GoGame.h>
 #import <go/GoGameDocument.h>
@@ -1003,7 +1004,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Regression test for GitHub issue 2 ("Ko is erroneously detected
-/// (again)"). Exercises the isLegalMove().
+/// (again)"). Exercises the isLegalMove() method.
 // -----------------------------------------------------------------------------
 - (void) testIssue2
 {
@@ -1020,5 +1021,25 @@
   [m_game play:point1];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Regression test for GitHub issue 289 ("Ko detection does not work
+/// correctly if old board position is viewed"). Exercises the isLegalMove()
+/// method.
+// -----------------------------------------------------------------------------
+- (void) testIssue289
+{
+  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  newGameModel.koRule = GoKoRuleSuperkoPositional;
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+
+  [m_game play:[m_game.board pointAtVertex:@"A2"]];
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  [m_game play:[m_game.board pointAtVertex:@"B1"]];
+  m_game.boardPosition.currentBoardPosition -= 1;
+  GoPoint* point = [m_game.board pointAtVertex:@"B1"];
+  enum GoMoveIsIllegalReason illegalReason;
+  XCTAssertTrue([m_game isLegalMove:point isIllegalReason:&illegalReason]);
+}
 
 @end
