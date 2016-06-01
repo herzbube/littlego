@@ -67,10 +67,6 @@
 #import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
 
-// Library includes
-#include <lumberjack/DDTTYLogger.h>
-#include <lumberjack/DDFileLogger.h>
-
 // System includes
 #include <string>
 #include <vector>
@@ -369,9 +365,9 @@ static ApplicationDelegate* sharedDelegate = nil;
     loggingEnabled = [[[NSUserDefaults standardUserDefaults] valueForKey:loggingEnabledKey] boolValue];
   if (loggingEnabled)
   {
-    [DDLog addLogger:self.fileLogger];
+    [DDLog addLogger:self.fileLogger withLevel:ddLogLevel];
     // Increase log level if you want to see more logging in the Debug console
-    [DDLog addLogger:[DDTTYLogger sharedInstance] withLogLevel:LOG_LEVEL_WARN];
+    [DDLog addLogger:[DDTTYLogger sharedInstance] withLevel:DDLogLevelWarning];
     DDLogInfo(@"Logging enabled. Log folder is %@", [self logFolder]);
   }
   else

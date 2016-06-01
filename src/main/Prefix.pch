@@ -21,7 +21,7 @@
   #import <QuartzCore/QuartzCore.h>
 
   // Library includes
-  #include <lumberjack/DDLog.h>
+  #import <CocoaLumberjack/CocoaLumberjack.h>
 
   // Project includes
   #import "Constants.h"

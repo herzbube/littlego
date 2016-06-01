@@ -25,7 +25,7 @@ const int arraySizeDefaultTabOrder = 9;
 const int defaultTabOrder[arraySizeDefaultTabOrder] = {0, 1, 2, 4, 3, 5, 6, 7, 8};
 
 // Logging constants
-const int ddLogLevel = LOG_LEVEL_VERBOSE;
+const DDLogLevel ddLogLevel = DDLogLevelAll;
 
 // Go constants
 const enum GoGameType gDefaultGameType = GoGameTypeComputerVsHuman;

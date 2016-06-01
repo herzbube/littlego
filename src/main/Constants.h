@@ -226,7 +226,7 @@ enum TerritoryMarkupStyle
 /// preference that can be changed at runtime from within the application. If
 /// logging is enabled the log output goes to a DDFileLogger with default
 /// values.
-extern const int ddLogLevel;
+extern const DDLogLevel ddLogLevel;
 //@}
 
 // -----------------------------------------------------------------------------

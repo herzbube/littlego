@@ -210,7 +210,7 @@
       // This should not happen, we should have filtered out intersections with
       // no color long ago
       assert(false);
-      DDLogCError(@"Unknown color %d", influenceColor);
+      DDLogError(@"Unknown color %d", influenceColor);
       return nil;
     }
   }
