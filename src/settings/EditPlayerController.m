@@ -325,7 +325,7 @@ enum GtpEngineProfileSectionItem
               indexOfDefaultProfile = profileIndex;
           }
           UIViewController* modalController = [ItemPickerController controllerWithItemList:itemList
-                                                                                     title:@"Select profile"
+                                                                               screenTitle:@"Select profile"
                                                                         indexOfDefaultItem:indexOfDefaultProfile
                                                                                   delegate:self];
           UINavigationController* navigationController = [[UINavigationController alloc]

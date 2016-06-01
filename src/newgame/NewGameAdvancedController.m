@@ -444,14 +444,14 @@ enum CellID
     }
     default:
     {
-      NSString* title;
+      NSString* screenTitle;
       NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
       int indexOfDefaultItem = -1;
       switch (cellID)
       {
         case KoRuleCellID:
         {
-          title = @"Ko rule";
+          screenTitle = @"Ko rule";
           enum GoKoRule defaultKoRule = self.theNewGameModel.koRule;
           for (int koRule = 0; koRule <= GoKoRuleMax; ++koRule)
           {
@@ -464,7 +464,7 @@ enum CellID
         }
         case ScoringSystemCellID:
         {
-          title = @"Scoring system";
+          screenTitle = @"Scoring system";
           enum GoScoringSystem defaultScoringSystem = self.theNewGameModel.scoringSystem;
           for (int scoringSystem = 0; scoringSystem <= GoScoringSystemMax; ++scoringSystem)
           {
@@ -477,7 +477,7 @@ enum CellID
         }
         case LifeAndDeathSettlingRuleCellID:
         {
-          title = @"Life & death settling after";
+          screenTitle = @"Life & death settling after";
           enum GoLifeAndDeathSettlingRule defaultLifeAndDeathSettlingRule = self.theNewGameModel.lifeAndDeathSettlingRule;
           for (int lifeAndDeathSettlingRule = 0; lifeAndDeathSettlingRule <= GoLifeAndDeathSettlingRuleMax; ++lifeAndDeathSettlingRule)
           {
@@ -493,7 +493,7 @@ enum CellID
           if (GoLifeAndDeathSettlingRuleThreePasses == self.theNewGameModel.lifeAndDeathSettlingRule)
             return;
 
-          title = @"Dispute resolution";
+          screenTitle = @"Dispute resolution";
           enum GoDisputeResolutionRule defaultDisputeResolutionRule = self.theNewGameModel.disputeResolutionRule;
           for (int disputeResolutionRule = 0; disputeResolutionRule <= GoDisputeResolutionRuleMax; ++disputeResolutionRule)
           {
@@ -506,7 +506,7 @@ enum CellID
         }
         case FourPassesRuleCellID:
         {
-          title = @"Four passes rule";
+          screenTitle = @"Four passes rule";
           enum GoFourPassesRule defaultFourPassesRule = self.theNewGameModel.fourPassesRule;
           for (int fourPassesRule = 0; fourPassesRule <= GoFourPassesRuleMax; ++fourPassesRule)
           {
@@ -524,7 +524,7 @@ enum CellID
         }
       }
       ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
-                                                                                          title:title
+                                                                                    screenTitle:screenTitle
                                                                              indexOfDefaultItem:indexOfDefaultItem
                                                                                        delegate:self];
       itemPickerController.context = indexPath;

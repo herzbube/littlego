@@ -670,12 +670,12 @@ enum CellID
     case BoardSizeCellID:
     case RulesetCellID:
     {
-      NSString* title;
+      NSString* screenTitle;
       NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
       int indexOfDefaultItem = -1;
       if (BoardSizeCellID == cellID)
       {
-        title = @"Select board size";
+        screenTitle = @"Select board size";
         for (int boardSizeIndex = 0; boardSizeIndex < gNumberOfBoardSizes; ++boardSizeIndex)
         {
           int naturalBoardSize = GoBoardSizeMin + (boardSizeIndex * 2);
@@ -685,7 +685,7 @@ enum CellID
       }
       else if (RulesetCellID == cellID)
       {
-        title = @"Select ruleset";
+        screenTitle = @"Select ruleset";
         for (enum GoRuleset ruleset = GoRulesetMin; ruleset <= GoRulesetMax; ++ruleset)
           [itemList addObject:[NewGameController rulesetName:ruleset]];
         // No default selection if the current ruleset is a custom ruleset
@@ -695,7 +695,7 @@ enum CellID
       }
       else
       {
-        title = @"Select player";
+        screenTitle = @"Select player";
         Player* defaultPlayer = [self playerForRowAtIndexPath:indexPath];
         bool pickHumanPlayer = [self shouldPickHumanPlayerForCellID:cellID];
         NSArray* playerList = [self.playerModel playerListHuman:pickHumanPlayer];
@@ -708,7 +708,7 @@ enum CellID
         }
       }
       ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
-                                                                                          title:title
+                                                                                    screenTitle:screenTitle
                                                                              indexOfDefaultItem:indexOfDefaultItem
                                                                                        delegate:self];
       itemPickerController.context = [NSNumber numberWithInt:cellID];

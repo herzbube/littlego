@@ -405,7 +405,7 @@ enum MaxGamesCategory
       if (UndefinedMaxGamesCategory == indexOfDefaultMaxGamesCategory)
         indexOfDefaultMaxGamesCategory = -1;
       UIViewController* modalController = [ItemPickerController controllerWithItemList:itemList
-                                                                                 title:@"Max. games"
+                                                                           screenTitle:@"Max. games"
                                                                     indexOfDefaultItem:indexOfDefaultMaxGamesCategory
                                                                               delegate:self];
       UINavigationController* navigationController = [[UINavigationController alloc]

@@ -255,7 +255,7 @@ enum DistanceFromMagnificationCenterSetting
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 
   NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
-  NSString* titleString = nil;
+  NSString* screenTitle = nil;
   int indexOfDefaultItem = -1;
   NSString* footerTitle = nil;
   switch (indexPath.section)
@@ -270,7 +270,7 @@ enum DistanceFromMagnificationCenterSetting
           [itemList addObject:[self enableModeName:MagnifyingGlassEnableModeAlwaysOff]];
           [itemList addObject:[self enableModeName:MagnifyingGlassEnableModeAuto]];
           indexOfDefaultItem = self.magnifyingViewModel.enableMode;
-          titleString = @"Show magnifying glass";
+          screenTitle = @"Show magnifying glass";
           footerTitle = @"Controls if/when the magnifying glass is shown when you place a stone. If set to 'Auto', the app will show the magnifying glass only when intersections become too small to see when the fingertip touches the screen.";
           break;
         }
@@ -280,7 +280,7 @@ enum DistanceFromMagnificationCenterSetting
           [itemList addObject:[self autoThresholdName:MagnifyingGlassAutoThresholdNormal]];
           [itemList addObject:[self autoThresholdName:MagnifyingGlassAutoThresholdMoreOften]];
           indexOfDefaultItem = [self autoThresholdFrequency:self.magnifyingViewModel.autoThreshold];
-          titleString = @"Auto takes effect";
+          screenTitle = @"Auto takes effect";
           footerTitle = @"Adjusts how often you want the magnifying glass to pop up in 'Auto' mode. Select 'More often' if you want the magnifying glass to pop up even if intersections are fairly large. Select 'Less often' if you want the magnifying glass to pop up only if intersections are fairly small.";
           break;
         }
@@ -298,7 +298,7 @@ enum DistanceFromMagnificationCenterSetting
       [itemList addObject:[self distanceFromMagnificationCenterName:MagnifyingGlassDistanceFromMagnificationCenterNormal]];
       [itemList addObject:[self distanceFromMagnificationCenterName:MagnifyingGlassDistanceFromMagnificationCenterFarther]];
       indexOfDefaultItem = [self distanceFromMagnificationCenterSetting:self.magnifyingViewModel.distanceFromMagnificationCenter];
-      titleString = @"Distance from center";
+      screenTitle = @"Distance from center";
       footerTitle = @"Adjusts the vertical distance of the magnifying glass from the center of magnification.";
       break;
       break;
@@ -308,7 +308,7 @@ enum DistanceFromMagnificationCenterSetting
       [itemList addObject:[self veerDirectionName:MagnifyingGlassVeerDirectionLeft]];
       [itemList addObject:[self veerDirectionName:MagnifyingGlassVeerDirectionRight]];
       indexOfDefaultItem = self.magnifyingViewModel.veerDirection;
-      titleString = @"Veer direction";
+      screenTitle = @"Veer direction";
       footerTitle = @"Select the horizontal direction in which the magnifying glass veers away when it reaches the top of the screen.";
       break;
     }
@@ -320,7 +320,7 @@ enum DistanceFromMagnificationCenterSetting
   }
 
   ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
-                                                                                      title:titleString
+                                                                                screenTitle:screenTitle
                                                                          indexOfDefaultItem:indexOfDefaultItem
                                                                                    delegate:self];
   itemPickerController.itemPickerControllerMode = ItemPickerControllerModeNonModal;

@@ -312,7 +312,7 @@ enum ResignMinGamesCategory
       if (UndefinedResignMinGamesCategory == indexOfDefaultResignMinGamesCategory)
         indexOfDefaultResignMinGamesCategory = -1;
       UIViewController* modalController = [ItemPickerController controllerWithItemList:itemList
-                                                                                 title:@"Resign min. games"
+                                                                           screenTitle:@"Resign min. games"
                                                                     indexOfDefaultItem:indexOfDefaultResignMinGamesCategory
                                                                               delegate:self];
       UINavigationController* navigationController = [[UINavigationController alloc]

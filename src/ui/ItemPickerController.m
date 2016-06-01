@@ -26,7 +26,7 @@
 @interface ItemPickerController()
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
-@property(nonatomic, retain, readwrite) NSString* title;
+@property(nonatomic, retain, readwrite) NSString* screenTitle;
 @property(nonatomic, assign, readwrite) int indexOfDefaultItem;
 @property(nonatomic, assign, readwrite) int indexOfSelectedItem;
 @property(nonatomic, retain, readwrite) NSArray* itemList;
@@ -42,11 +42,12 @@
 /// @brief Convenience constructor. Creates an ItemPickerController instance of
 /// grouped style that is used to pick an item from @a itemList.
 ///
-/// @a defaultItem is the index of the item that is selected by default when
-/// the selection process begins. Can be -1 to indicate no default selection.
+/// @a indexOfDefaultItem is the index of the item that is selected by default
+/// when the selection process begins. Can be -1 to indicate no default
+/// selection.
 // -----------------------------------------------------------------------------
 + (ItemPickerController*) controllerWithItemList:(NSArray*)itemList
-                                           title:(NSString*)title
+                                     screenTitle:(NSString*)screenTitle
                               indexOfDefaultItem:(int)indexOfDefaultItem
                                         delegate:(id<ItemPickerDelegate>)delegate
 {
@@ -55,7 +56,7 @@
   {
     [controller autorelease];
     controller.itemList = itemList;
-    controller.title = title;
+    controller.screenTitle = screenTitle;
     controller.footerTitle = nil;
     controller.indexOfDefaultItem = indexOfDefaultItem;
     controller.indexOfSelectedItem = indexOfDefaultItem;
@@ -77,7 +78,8 @@
     return nil;
   self.itemPickerControllerMode = ItemPickerControllerModeModal;
   self.context = nil;
-  self.title = nil;
+  self.screenTitle = nil;
+  self.footerTitle = nil;
   self.delegate = nil;
   self.indexOfDefaultItem = -1;
   self.indexOfSelectedItem = -1;
@@ -92,7 +94,7 @@
 - (void) dealloc
 {
   self.context = nil;
-  self.title = nil;
+  self.screenTitle = nil;
   self.footerTitle = nil;
   self.delegate = nil;
   self.itemList = nil;
@@ -107,7 +109,7 @@
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-  self.navigationItem.title = self.title;
+  self.navigationItem.title = self.screenTitle;
   if (ItemPickerControllerModeModal == self.itemPickerControllerMode)
   {
     self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel

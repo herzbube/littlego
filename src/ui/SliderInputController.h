@@ -46,8 +46,8 @@
 /// context or purpose that an instance of SliderInputController was created
 /// for.
 @property(nonatomic, retain) id context;
-/// @brief The title to be displayed in the navigation item.
-@property(nonatomic, retain) NSString* title;
+/// @brief The screen title to be displayed in the navigation item.
+@property(nonatomic, retain) NSString* screenTitle;
 /// @brief The string to be displayed as the title of the table view's footer.
 @property(nonatomic, retain) NSString* footerTitle;
 /// @brief The string to be displayed as the slider's description label.

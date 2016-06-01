@@ -90,7 +90,7 @@ enum ItemPickerControllerMode
 }
 
 + (ItemPickerController*) controllerWithItemList:(NSArray*)itemList
-                                           title:(NSString*)title
+                                     screenTitle:(NSString*)screenTitle
                               indexOfDefaultItem:(int)indexOfDefaultItem
                                         delegate:(id<ItemPickerDelegate>)delegate;
 
@@ -105,8 +105,8 @@ enum ItemPickerControllerMode
 /// context object is a convenient method how the delegate can distinguish
 /// between them.
 @property(nonatomic, retain) id context;
-/// @brief The title to be displayed in the navigation item.
-@property(nonatomic, retain, readonly) NSString* title;
+/// @brief The screen title to be displayed in the navigation item.
+@property(nonatomic, retain, readonly) NSString* screenTitle;
 /// @brief The string to be displayed as the title of the table view's footer.
 @property(nonatomic, retain) NSString* footerTitle;
 /// @brief This is the delegate that will be informed when the user has finished

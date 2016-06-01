@@ -338,7 +338,7 @@ enum InconsistentTerritoryMarkupTypeSectionItem
   [itemList addObject:[self inconsistentTerritoryMarkupTypeAsString:InconsistentTerritoryMarkupTypeFillColor]];
   [itemList addObject:[self inconsistentTerritoryMarkupTypeAsString:InconsistentTerritoryMarkupTypeNeutral]];
   ItemPickerController* modalController = [ItemPickerController controllerWithItemList:itemList
-                                                                                 title:@"Select style"
+                                                                           screenTitle:@"Select style"
                                                                     indexOfDefaultItem:self.scoringModel.inconsistentTerritoryMarkupType
                                                                               delegate:self];
   modalController.footerTitle = @"Select neutral to not mark inconsistent territory at all, thus making it look as if it were neutral territory. Select this option if you are confident that you don't need any help picking out inconsistencies.";

@@ -480,7 +480,7 @@ enum PlayerListSectionItem
         else
           indexOfDefaultPlayingStrength = self.profile.playingStrength - minimumPlayingStrength;
         ItemPickerController* modalController = [ItemPickerController controllerWithItemList:itemList
-                                                                                       title:@"Playing strength"
+                                                                                 screenTitle:@"Playing strength"
                                                                           indexOfDefaultItem:indexOfDefaultPlayingStrength
                                                                                     delegate:self];
         modalController.context = [NSNumber numberWithInteger:indexPath.section];
@@ -524,7 +524,7 @@ enum PlayerListSectionItem
         else
           indexOfDefaultResignBehaviour = self.profile.resignBehaviour - minimumResignBehaviour;
         ItemPickerController* modalController = [ItemPickerController controllerWithItemList:itemList
-                                                                                       title:@"Resign behaviour"
+                                                                                 screenTitle:@"Resign behaviour"
                                                                           indexOfDefaultItem:indexOfDefaultResignBehaviour
                                                                                     delegate:self];
         modalController.context = [NSNumber numberWithInteger:indexPath.section];

@@ -37,7 +37,7 @@
   if (! self)
     return nil;
   self.context = nil;
-  self.title = nil;
+  self.screenTitle = nil;
   self.footerTitle = nil;
   self.descriptionLabelText = nil;
   self.delegate = nil;
@@ -54,7 +54,7 @@
 - (void) dealloc
 {
   self.context = nil;
-  self.title = nil;
+  self.screenTitle = nil;
   self.footerTitle = nil;
   self.descriptionLabelText = nil;
   self.delegate = nil;
@@ -69,7 +69,7 @@
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-  self.navigationItem.title = self.title;
+  self.navigationItem.title = self.screenTitle;
 }
 
 // -----------------------------------------------------------------------------
