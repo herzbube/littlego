@@ -43,6 +43,8 @@
 	<string>© 2011-2015 Patrick Näf</string>
 	<key>UIFileSharingEnabled</key>
 	<string>YES</string>
+	<key>UILaunchStoryboardName</key>
+	<string>Launch Screen</string>
 	<key>UIPrerenderedIcon</key>
 	<true/>
 	<key>UIRequiredDeviceCapabilities</key>

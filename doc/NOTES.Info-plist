@@ -37,13 +37,33 @@ now stored in an asset catalog, and the reference to the icons is made in the
 project file using the setting ASSETCATALOG_COMPILER_APPICON_NAME.
 
 
-Launch images
--------------
+Launch images / Launch screens
+------------------------------
 Launch images used to be specified using the UILaunchImageFile~iphone and
 UILaunchImageFile~ipad keys in the bundle's Info.plist file. This is no longer
 the case: Launch images are now stored in an asset catalog, and the reference to
-the icons is made in the project file using the setting
+the images is made in the project file using the setting
 ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME.
+
+Beginning with iOS 8 (Xcode 6) it is possible to use a storyboard as a launch
+screen. Using a launch screen storyboard is optional - unless you want to
+support the iPad Pro's native screen resolution, in which case using a launch
+screen storyboard is mandatory. The reference to the launch screen storyboard is
+made in the bundle's Info.plist file using the UILaunchStoryboardName key.
+If separate launch screens are desired for iPhone and iPad, the usual "~iphone"
+and "~ipad" suffixes can be added to the key.
+
+This project uses both launch images in an asset catalog and a single launch
+screen storyboard. The launch images are still required because currently this
+project still supports iOS 7.
+
+The launch screen storyboard is ultra-simple, showing a pseudo-logo that is
+nothing but a label with the text "Little Go". It would be preferrable to have
+one or more launch screens that duplicate the different launch images, but this
+is not possible because there is no way to provide different content for
+iPhone 6+ and smaller iPhones merely based on size classes as the
+distinguishing factor (no other logic than size classes can be used in launch
+screen storyboards).
 
 
 Device capabilities

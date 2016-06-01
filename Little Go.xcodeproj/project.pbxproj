@@ -407,6 +407,7 @@
 		CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */; };
 		CDAFAE6E195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
 		CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
+		CDB3ABFE1CFB401B00DE4B38 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ABFD1CFB401B00DE4B38 /* Launch Screen.storyboard */; };
 		CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
 		CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
 		CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */; };
@@ -956,6 +957,7 @@
 		CDAFAE2B195DB78200EF84A9 /* Tile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tile.h; sourceTree = "<group>"; };
 		CDAFAE6C195F811D00EF84A9 /* BoardViewCGLayerCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewCGLayerCache.h; sourceTree = "<group>"; };
 		CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewCGLayerCache.m; sourceTree = "<group>"; };
+		CDB3ABFD1CFB401B00DE4B38 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		CDB45798147ADEAC0043EDE4 /* GtpEngineProfileModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfileModel.h; sourceTree = "<group>"; };
 		CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfileModel.m; sourceTree = "<group>"; };
 		CDB4579D147AEB590043EDE4 /* EditGtpEngineProfileController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditGtpEngineProfileController.h; sourceTree = "<group>"; };
@@ -1948,6 +1950,14 @@
 			path = newgame;
 			sourceTree = "<group>";
 		};
+		CDB3ABFC1CFB401B00DE4B38 /* storyboard */ = {
+			isa = PBXGroup;
+			children = (
+				CDB3ABFD1CFB401B00DE4B38 /* Launch Screen.storyboard */,
+			);
+			path = storyboard;
+			sourceTree = "<group>";
+		};
 		CDD48C80141034F000188B6A /* archive */ = {
 			isa = PBXGroup;
 			children = (
@@ -2168,10 +2178,11 @@
 				CDE1A13B14C1CED200317ECA /* icon */,
 				CDE1A15214C1CED200317ECA /* image */,
 				CD941363198BDBA20001F55A /* images.xcassets */,
+				CD02629A16E0F06E007B35CC /* openingbook */,
 				CDE1A19014C1CF4D00317ECA /* plist */,
 				CDE1A15514C1CED200317ECA /* sound */,
+				CDB3ABFC1CFB401B00DE4B38 /* storyboard */,
 				CD48AD9A15A75B77004A7096 /* text */,
-				CD02629A16E0F06E007B35CC /* openingbook */,
 			);
 			path = resource;
 			sourceTree = "<group>";
@@ -2488,6 +2499,7 @@
 				CD968B7A1B026E2300984AEE /* discard@2x.png in Resources */,
 				CDFA32A015A0920200439B4E /* MBProgressHUD-license.html in Resources */,
 				CD968B6D1B026E2300984AEE /* continue.png in Resources */,
+				CDB3ABFE1CFB401B00DE4B38 /* Launch Screen.storyboard in Resources */,
 				CD968B9F1B026E2300984AEE /* more-game-actions.png in Resources */,
 				CDFA32A115A0920200439B4E /* ZipKit-COPYING.TXT.html in Resources */,
 				CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */,
