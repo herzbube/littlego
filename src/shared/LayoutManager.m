@@ -26,7 +26,7 @@
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, assign, readwrite) enum UIType uiType;
-@property(nonatomic, assign, readwrite) NSUInteger supportedInterfaceOrientations;
+@property(nonatomic, assign, readwrite) UIInterfaceOrientationMask supportedInterfaceOrientations;
 //@}
 @end
 
@@ -163,7 +163,7 @@ static LayoutManager* sharedManager = nil;
 ///
 /// Read the class documentation for details why this override exists.
 // -----------------------------------------------------------------------------
-- (NSUInteger) navigationControllerSupportedInterfaceOrientations:(UINavigationController*)navigationController
+- (UIInterfaceOrientationMask) navigationControllerSupportedInterfaceOrientations:(UINavigationController*)navigationController
 {
   return self.supportedInterfaceOrientations;
 }

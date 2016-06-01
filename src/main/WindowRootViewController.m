@@ -203,7 +203,7 @@ enum MainApplicationViewControllerType
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method
 // -----------------------------------------------------------------------------
-- (NSUInteger) supportedInterfaceOrientations
+- (UIInterfaceOrientationMask) supportedInterfaceOrientations
 {
   return [LayoutManager sharedManager].supportedInterfaceOrientations;
 }

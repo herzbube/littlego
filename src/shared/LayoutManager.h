@@ -52,7 +52,7 @@
 /// supportedInterfaceOrientations().
 ///
 /// @note supportedInterfaceOrientations:() is relevant for iOS 6 and later.
-@property(nonatomic, assign, readonly) NSUInteger supportedInterfaceOrientations;
+@property(nonatomic, assign, readonly) UIInterfaceOrientationMask supportedInterfaceOrientations;
 /// @brief Returns true if the application's user interface is allowed to
 /// rotate in response to the device orientation changing. Returns false if the
 /// UI is not allowed to rotate.
