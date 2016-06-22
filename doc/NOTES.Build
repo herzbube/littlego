@@ -58,7 +58,7 @@ Xcode build system configuration
 --------------------------------
 Important configuration settings in Xcode (both for the "Little Go" and the
 "Unit tests" targets):
-- IPHONEOS_DEPLOYMENT_TARGET = 8.0
+- IPHONEOS_DEPLOYMENT_TARGET = 8.1
 - HEADER_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/include"
 - LIBRARY_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/lib"
 - FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install" "$(SRCROOT)/3rdparty/install/quincykit"
@@ -132,8 +132,8 @@ Platform notes
   iPhone Simulator.
 - The base SDK is "Latest" so that a simple rebuild is sufficient after an
   Xcode upgrade.
-- The deployment target is set to 8.0 so that the application keeps running on
-  iOS 8.0 devices.
+- The deployment target is set to 8.1 so that the application keeps running on
+  iOS 8.1 devices.
 
 
 Upgrading the iOS SDK
