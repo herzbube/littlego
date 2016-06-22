@@ -136,7 +136,7 @@ enum ViewHierarchyState
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(statusBarOrientationDidChange:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
 
-  [self setupViewHierarchyForInterfaceOrientation:self.interfaceOrientation];
+  [self setupViewHierarchyForInterfaceOrientation:[UiElementMetrics interfaceOrientation]];
 }
 
 // -----------------------------------------------------------------------------
@@ -268,7 +268,7 @@ enum ViewHierarchyState
 {
   [super viewWillAppear:animated];
 
-  UIInterfaceOrientation toInterfaceOrientation = self.interfaceOrientation;
+  UIInterfaceOrientation toInterfaceOrientation = [UiElementMetrics interfaceOrientation];
   [self performSelector:@selector(setupViewHierarchyForInterfaceOrientationAsync:) withObject:[NSNumber numberWithLong:toInterfaceOrientation] afterDelay:0];
 }
 

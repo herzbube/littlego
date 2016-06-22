@@ -627,7 +627,6 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   [self setupWindow];
   [self setupWindowRootViewController];
-  [UiElementMetrics setInterfaceOrientationSource:self.window.rootViewController];
   [self.window makeKeyAndVisible];
 }
 

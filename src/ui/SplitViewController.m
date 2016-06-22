@@ -134,10 +134,11 @@
   [self setupChildViewControllers:_viewControllers];
   if (self.isViewLoaded)
   {
-    [self updateViewHierarchyForInterfaceOrientation:self.interfaceOrientation];
-    [self updateAutoLayoutConstraintsForInterfaceOrientation:self.interfaceOrientation];
-    [self updateBarButtonItemForInterfaceOrientation:self.interfaceOrientation];
-    [self viewLayoutDidChangeToInterfaceOrientation:self.interfaceOrientation];
+    UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
+    [self updateViewHierarchyForInterfaceOrientation:interfaceOrientation];
+    [self updateAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
+    [self updateBarButtonItemForInterfaceOrientation:interfaceOrientation];
+    [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
   }
 }
 
@@ -230,10 +231,11 @@
   self.dividerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   self.dividerView.backgroundColor = [UIColor blackColor];
 
-  [self updateViewHierarchyForInterfaceOrientation:self.interfaceOrientation];
-  [self updateAutoLayoutConstraintsForInterfaceOrientation:self.interfaceOrientation];
-  [self updateBarButtonItemForInterfaceOrientation:self.interfaceOrientation];
-  [self viewLayoutDidChangeToInterfaceOrientation:self.interfaceOrientation];
+  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
+  [self updateViewHierarchyForInterfaceOrientation:interfaceOrientation];
+  [self updateAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
+  [self updateBarButtonItemForInterfaceOrientation:interfaceOrientation];
+  [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
 }
 
 // -----------------------------------------------------------------------------
@@ -244,11 +246,12 @@
 // -----------------------------------------------------------------------------
 - (void) viewWillLayoutSubviews
 {
-  if ([self isViewLayoutChangeRequiredForInterfaceOrientation:self.interfaceOrientation])
+  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
+  if ([self isViewLayoutChangeRequiredForInterfaceOrientation:interfaceOrientation])
   {
-    [self prepareForInterfaceOrientationChange:self.interfaceOrientation];
-    [self completeInterfaceOrientationChange:self.interfaceOrientation];
-    [self viewLayoutDidChangeToInterfaceOrientation:self.interfaceOrientation];
+    [self prepareForInterfaceOrientationChange:interfaceOrientation];
+    [self completeInterfaceOrientationChange:interfaceOrientation];
+    [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
   }
 }
 
@@ -265,11 +268,12 @@
 // -----------------------------------------------------------------------------
 - (void) viewWillAppear:(BOOL)animated
 {
-  if ([self isViewLayoutChangeRequiredForInterfaceOrientation:self.interfaceOrientation])
+  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
+  if ([self isViewLayoutChangeRequiredForInterfaceOrientation:interfaceOrientation])
   {
-    [self prepareForInterfaceOrientationChange:self.interfaceOrientation];
-    [self completeInterfaceOrientationChange:self.interfaceOrientation];
-    [self viewLayoutDidChangeToInterfaceOrientation:self.interfaceOrientation];
+    [self prepareForInterfaceOrientationChange:interfaceOrientation];
+    [self completeInterfaceOrientationChange:interfaceOrientation];
+    [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
   }
   [super viewWillAppear:animated];
 }

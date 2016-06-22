@@ -21,11 +21,7 @@
 ///
 /// The metrics returned by functions of UiElementMetrics take into account the
 /// device that the application is running on, and the current orientation of
-/// the device.
-///
-/// For the latter to work, someone must invoke setInterfaceOrientationSource:()
-/// before clients start to invoke metrics methods. Usually this is done by the
-/// application delegate early on during application startup.
+/// the user interface.
 ///
 /// All functions in UiElementMetrics are class methods, so there is no need to
 /// create an instance of UiElementMetrics.
@@ -41,8 +37,8 @@
 {
 }
 
-+ (void) setInterfaceOrientationSource:(UIViewController*)interfaceOrientationSource;
-
++ (UIInterfaceOrientation) interfaceOrientation;
++ (bool) interfaceOrientationIsPortrait;
 + (int) screenWidth;
 + (int) screenHeight;
 + (int) screenWidthLandscape;

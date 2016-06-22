@@ -22,11 +22,14 @@
 
 @implementation UiElementMetrics
 
-static UIViewController* m_interfaceOrientationSource;
-
-+ (void) setInterfaceOrientationSource:(UIViewController*)interfaceOrientationSource
++ (UIInterfaceOrientation) interfaceOrientation
 {
-  m_interfaceOrientationSource = interfaceOrientationSource;
+  return [UIApplication sharedApplication].statusBarOrientation;
+}
+
++ (bool) interfaceOrientationIsPortrait
+{
+  return UIInterfaceOrientationIsPortrait([UiElementMetrics interfaceOrientation]);
 }
 
 + (int) screenWidth
@@ -36,7 +39,7 @@ static UIViewController* m_interfaceOrientationSource;
   if ([UIDevice systemVersionMajor] >= 8)
     return [UIScreen mainScreen].bounds.size.width;
 
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
+  bool isPortraitOrientation = [UiElementMetrics interfaceOrientationIsPortrait];
   if (isPortraitOrientation)
     return [UIScreen mainScreen].bounds.size.width;
   else
@@ -50,7 +53,7 @@ static UIViewController* m_interfaceOrientationSource;
   if ([UIDevice systemVersionMajor] >= 8)
     return [UIScreen mainScreen].bounds.size.height;
 
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
+  bool isPortraitOrientation = [UiElementMetrics interfaceOrientationIsPortrait];
   if (isPortraitOrientation)
     return [UIScreen mainScreen].bounds.size.height;
   else
@@ -72,7 +75,7 @@ static UIViewController* m_interfaceOrientationSource;
   if ([UIDevice systemVersionMajor] >= 8)
     return [UIScreen mainScreen].applicationFrame;
 
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(m_interfaceOrientationSource.interfaceOrientation);
+  bool isPortraitOrientation = [UiElementMetrics interfaceOrientationIsPortrait];
   if (isPortraitOrientation)
     return [UIScreen mainScreen].applicationFrame;
   else

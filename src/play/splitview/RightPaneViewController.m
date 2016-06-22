@@ -28,6 +28,7 @@
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/ButtonBoxController.h"
+#import "../../ui/UiElementMetrics.h"
 #import "../../utility/UiColorAdditions.h"
 
 
@@ -270,7 +271,7 @@
 {
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
-                                  forInterfaceOrientation:self.interfaceOrientation
+                                  forInterfaceOrientation:[UiElementMetrics interfaceOrientation]
                                          constraintHolder:self.woodenBackgroundView];
 }
 
@@ -328,7 +329,7 @@
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
-                                  forInterfaceOrientation:self.interfaceOrientation
+                                  forInterfaceOrientation:[UiElementMetrics interfaceOrientation]
                                          constraintHolder:self.woodenBackgroundView];
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];

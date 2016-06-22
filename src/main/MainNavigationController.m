@@ -21,6 +21,7 @@
 #import "MainTableViewController.h"
 #import "MainUtility.h"
 #import "UIAreaInfo.h"
+#import "../ui/UiElementMetrics.h"
 #import "../ui/UiSettingsModel.h"
 #import "../utility/UIColorAdditions.h"
 
@@ -269,10 +270,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateNavigationBarVisibility
 {
-  // Don't use self.interfaceOrientation, this method may be called at a time
-  // when this property does not have the correct value
-  UIInterfaceOrientation interfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
-  if (UIInterfaceOrientationIsPortrait(interfaceOrientation))
+  if ([UiElementMetrics interfaceOrientationIsPortrait])
   {
     self.navigationBarHidden = NO;
   }
