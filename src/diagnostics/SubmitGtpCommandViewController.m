@@ -145,7 +145,7 @@
 {
   self.navigationItem.title = @"New command";
   UIBarButtonItem* submitButton = [[[UIBarButtonItem alloc] initWithTitle:@"Submit"
-                                                                    style:UIBarButtonItemStyleBordered
+                                                                    style:UIBarButtonItemStylePlain
                                                                    target:self
                                                                    action:@selector(submitCommand:)] autorelease];
   self.navigationItem.rightBarButtonItem = submitButton;

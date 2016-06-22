@@ -112,7 +112,7 @@ enum GameAttributesSectionItem
   UIBarButtonItem* actionButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
                                                                                  target:self
                                                                                  action:@selector(action:)] autorelease];
-  actionButton.style = UIBarButtonItemStyleBordered;
+  actionButton.style = UIBarButtonItemStylePlain;
   self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:actionButton, self.loadButton, nil];
   [self updateLoadButtonState];
 

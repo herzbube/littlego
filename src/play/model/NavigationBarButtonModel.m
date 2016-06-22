@@ -187,7 +187,7 @@
   }
 
   UIBarButtonItem* button = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:imageResourceName]
-                                                              style:UIBarButtonItemStyleBordered
+                                                              style:UIBarButtonItemStylePlain
                                                              target:[GameActionManager sharedGameActionManager]
                                                              action:selector] autorelease];
   button.tag = gameAction;
@@ -201,7 +201,7 @@
 + (UIBarButtonItem*) mainMenuButton
 {
   return [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:mainMenuIconResource]
-                                           style:UIBarButtonItemStyleBordered
+                                           style:UIBarButtonItemStylePlain
                                           target:[MainMenuPresenter sharedPresenter]
                                           action:@selector(presentMainMenu:)] autorelease];
 }

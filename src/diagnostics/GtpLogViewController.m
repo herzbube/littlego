@@ -183,9 +183,9 @@
   UIBarButtonItem* composeButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
                                                                                   target:self
                                                                                   action:@selector(composeCommand:)] autorelease];
-  composeButton.style = UIBarButtonItemStyleBordered;
+  composeButton.style = UIBarButtonItemStylePlain;
   UIBarButtonItem* flipButton = [[[UIBarButtonItem alloc] initWithTitle:@"Flip"
-                                                                  style:UIBarButtonItemStyleBordered
+                                                                  style:UIBarButtonItemStylePlain
                                                                  target:self
                                                                  action:@selector(flipView:)] autorelease];
   self.navigationItem.rightBarButtonItems = @[composeButton, flipButton];

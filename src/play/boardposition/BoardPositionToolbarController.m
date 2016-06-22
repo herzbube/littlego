@@ -198,7 +198,7 @@
 - (void) addButtonWithImageNamed:(NSString*)imageName withSelector:(SEL)selector navigationDirection:(enum BoardPositionNavigationDirection)direction
 {
   UIBarButtonItem* button = [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:imageName]
-                                                              style:UIBarButtonItemStyleBordered
+                                                              style:UIBarButtonItemStylePlain
                                                              target:[BoardPositionNavigationManager sharedNavigationManager]
                                                              action:selector] autorelease];
   button.enabled = [[BoardPositionNavigationManager sharedNavigationManager] isNavigationEnabledInDirection:direction];

@@ -79,7 +79,7 @@
   UIBarButtonItem* addButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                                               target:self
                                                                               action:@selector(addCommand:)] autorelease];
-  addButton.style = UIBarButtonItemStyleBordered;
+  addButton.style = UIBarButtonItemStylePlain;
   self.navigationItem.rightBarButtonItems = @[self.editButtonItem, addButton];
   self.navigationItem.title = @"Commands";
 }
