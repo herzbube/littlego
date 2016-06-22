@@ -59,39 +59,18 @@ Xcode build system configuration
 Important configuration settings in Xcode (both for the "Little Go" and the
 "Unit tests" targets):
 - IPHONEOS_DEPLOYMENT_TARGET = 8.0
-- HEADER_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/include
-- LIBRARY_SEARCH_PATHS = ./3rdparty/install$(SDKROOT)/lib
-- FRAMEWORK_SEARCH_PATHS = ./3rdparty/install ./3rdparty/install/quincykit ./3rdparty/install$(SDKROOT)/Frameworks
-- OTHER_LDFLAGS = -lfuego -lboost_system -lboost_thread -lboost_filesystem -lboost_program_options -ltouchzipkit -ObjC
+- HEADER_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/include"
+- LIBRARY_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/lib"
+- FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install" "$(SRCROOT)/3rdparty/install/quincykit"
+- OTHER_LDFLAGS = -lCocoaLumberjack -ltouchzipkit -lMBProgressHUD -ObjC
   - Note 1: The option "-ObjC" is required by ZipKit and QuincyKit (actually
     QuincyKit specifies -all_load, but -ObjC is sufficient). Without this option
     ZipKit crashes the app when a ZKFileArchive object is created due to an
     unrecognized selector being sent to the object. For understanding the issue,
     read this technote: http://developer.apple.com/library/mac/#qa/qa1490/_index.html.
-  - Note 2: If a future version of Fuego requires additional Boost libraries,
-    they must be added here.
 - libz.dylib has been added to the "Build Phases" section "Link Binary with
   Libraries". This is required to satisfy the dependencies of ZipKit and
   QuincyKit.
-- Cocoa Lumberjack used to be built as a library, but now it is built as a
-  framework. Consequently it has been added to the "Build Phases" section
-  "Link Binary with Libraries". Adding the framework requires the user to
-  navigate to the specific location in the filesystem where the framework is
-  located. The framework is then referenced in the .pbxproj project file using
-  that filesystem location. The problem is that two versions of the framework
-  exist: One for the i386 architecture (required for simulator builds) and one
-  for the ARM architecture (required for device builds). So the path in the
-  project file is correct for one of those versions, but wrong for the other.
-  The solution is this:
-  - Manually edit the .pbxproj project file and in the "PBXFileReference"
-    section remove the path that points to CocoaLumberjack.framework
-  - Add the following path to FRAMEWORK_SEARCH_PATHS:
-      ./3rdparty/install$(SDKROOT)/Frameworks
-    This makes sure that the correct framework is found and linked to, depending
-    on which type of build (simulator or device) is made.
-  The only drawback of this solution is that Xcode lists the framework with a
-  red font in the project's' "Frameworks" group, indicating that Xcode cannot
-  find the framework.
 - CLANG_ENABLE_MODULES = YES
   This is enabled project-wide so that #import statements for system frameworks
   automatically result in the respective framework being linked against. As a

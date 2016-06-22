@@ -408,8 +408,6 @@
 		CDAFAE6E195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
 		CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
 		CDB3ABFE1CFB401B00DE4B38 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ABFD1CFB401B00DE4B38 /* Launch Screen.storyboard */; };
-		CDB3AC071CFF59F000DE4B38 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDB3AC061CFF59F000DE4B38 /* CocoaLumberjack.framework */; };
-		CDB3AC081CFF5A2700DE4B38 /* CocoaLumberjack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDB3AC061CFF59F000DE4B38 /* CocoaLumberjack.framework */; };
 		CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
 		CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
 		CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */; };
@@ -960,7 +958,6 @@
 		CDAFAE6C195F811D00EF84A9 /* BoardViewCGLayerCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewCGLayerCache.h; sourceTree = "<group>"; };
 		CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewCGLayerCache.m; sourceTree = "<group>"; };
 		CDB3ABFD1CFB401B00DE4B38 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
-		CDB3AC061CFF59F000DE4B38 /* CocoaLumberjack.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CocoaLumberjack.framework; path = CocoaLumberjack.framework; sourceTree = "<group>"; };
 		CDB45798147ADEAC0043EDE4 /* GtpEngineProfileModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfileModel.h; sourceTree = "<group>"; };
 		CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfileModel.m; sourceTree = "<group>"; };
 		CDB4579D147AEB590043EDE4 /* EditGtpEngineProfileController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditGtpEngineProfileController.h; sourceTree = "<group>"; };
@@ -1153,7 +1150,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CDB3AC071CFF59F000DE4B38 /* CocoaLumberjack.framework in Frameworks */,
 				CDFA329B159FA0F600439B4E /* libz.dylib in Frameworks */,
 				CD6E846E17FF99D100643576 /* boost.framework in Frameworks */,
 				CD6E847017FF99EC00643576 /* fuego-on-ios.framework in Frameworks */,
@@ -1165,7 +1161,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CDB3AC081CFF5A2700DE4B38 /* CocoaLumberjack.framework in Frameworks */,
 				CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */,
 				CD6E847517FF9A3700643576 /* CrashReporter.framework in Frameworks */,
 			);
@@ -1206,7 +1201,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				CDB3AC061CFF59F000DE4B38 /* CocoaLumberjack.framework */,
 				CDFA329A159FA0F400439B4E /* libz.dylib */,
 				CD6E846D17FF99D000643576 /* boost.framework */,
 				CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */,
@@ -3003,10 +2997,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/3rdparty/install",
-				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
@@ -3020,10 +3010,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/3rdparty/install",
-				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
@@ -3053,7 +3039,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SRCROOT)/3rdparty/install\"",
 					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
-					"\"$(SRCROOT)/3rdparty/install$(SDKROOT)/Frameworks\"",
 				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
@@ -3070,6 +3055,7 @@
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
+					"-lCocoaLumberjack",
 					"-ltouchzipkit",
 					"-lMBProgressHUD",
 					"-ObjC",
@@ -3102,7 +3088,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SRCROOT)/3rdparty/install\"",
 					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
-					"\"$(SRCROOT)/3rdparty/install$(SDKROOT)/Frameworks\"",
 				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
@@ -3120,6 +3105,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
 				OTHER_LDFLAGS = (
+					"-lCocoaLumberjack",
 					"-ltouchzipkit",
 					"-lMBProgressHUD",
 					"-ObjC",
@@ -3172,7 +3158,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SRCROOT)/3rdparty/install\"",
 					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
-					"\"$(SRCROOT)/3rdparty/install$(SDKROOT)/Frameworks\"",
 				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
@@ -3190,6 +3175,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
 				OTHER_LDFLAGS = (
+					"-lCocoaLumberjack",
 					"-ltouchzipkit",
 					"-lMBProgressHUD",
 					"-ObjC",
@@ -3206,10 +3192,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/3rdparty/install",
-				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
@@ -3231,10 +3213,6 @@
 		CD89232E149FDC8A00A94A7B /* Distribute_AppStore */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/3rdparty/install",
-				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3254,10 +3232,6 @@
 		CDA595B11401384000B250D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/3rdparty/install",
-				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3277,10 +3251,6 @@
 		CDA595B21401384000B250D8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/3rdparty/install",
-				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3300,10 +3270,6 @@
 		CDA595B31401384000B250D8 /* Distribute_AdHoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/3rdparty/install",
-				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3342,7 +3308,6 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"\"$(SRCROOT)/3rdparty/install\"",
 					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
-					"\"$(SRCROOT)/3rdparty/install$(SDKROOT)/Frameworks\"",
 				);
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
@@ -3360,6 +3325,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
 				OTHER_LDFLAGS = (
+					"-lCocoaLumberjack",
 					"-ltouchzipkit",
 					"-lMBProgressHUD",
 					"-ObjC",
@@ -3376,10 +3342,6 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/3rdparty/install",
-				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
