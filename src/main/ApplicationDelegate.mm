@@ -67,6 +67,12 @@
 #import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
 
+// Fabric/Crashlytics
+#ifndef LITTLEGO_UNITTESTS
+#import <Fabric/Fabric.h>
+#import <Crashlytics/Crashlytics.h>
+#endif
+
 // System includes
 #include <string>
 #include <vector>
@@ -181,6 +187,9 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Enable in normal (i.e. not unit testing) environment
   self.writeUserDefaultsEnabled = true;
 
+  // Crash Reporting depends on this (needs to read the Fabric API key)
+  [self setupResourceBundle];
+
   // For QuincyKit to work properly, this method must be invoked in the context
   // of the main thread, i.e. it cannot be invoked by SetupApplicationCommand
   // which runs in a secondary thread. If this method is invoked in a secondary
@@ -195,7 +204,6 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self setupApplicationLaunchMode];
   bool setupDocumentInteractionSuccess = [self setupDocumentInteraction:launchOptions];
   [self setupFolders];
-  [self setupResourceBundle];
   [self setupRegistrationDomain];
   [self setupUserDefaults];
   [self setupSound];
@@ -332,9 +340,31 @@ static ApplicationDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) setupCrashReporting
 {
-  BWQuincyManager* sharedQuincyManager = [BWQuincyManager sharedQuincyManager];
-  [sharedQuincyManager setSubmissionURL:crashReportSubmissionURL];
-  [sharedQuincyManager startManager];
+#ifndef LITTLEGO_UNITTESTS
+  // TODO: Conditional compile this only when building for App Distribution
+  NSString* fabricAPIKey = [self contentOfTextResource:fabricAPIKeyResource];
+  if (fabricAPIKey != nil)
+  {
+    // TODO: Don't start the service if the API key has a pre-determined "dummy"
+    // value. This lets collaborators run the app without the need for
+    // disseminating the API key.
+    [Crashlytics startWithAPIKey:fabricAPIKey];
+    [Fabric with:@[[Crashlytics class]]];
+  }
+  else
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to obtain Fabric API key from resources! Refusing to continue without crash reporting service."];
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+#endif
+
+//  BWQuincyManager* sharedQuincyManager = [BWQuincyManager sharedQuincyManager];
+//  [sharedQuincyManager setSubmissionURL:crashReportSubmissionURL];
+//  [sharedQuincyManager startManager];
 }
 
 // -----------------------------------------------------------------------------
@@ -661,13 +691,30 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
   if (! resourceName)
     return @"";
+
   NSURL* resourceURL = [self.resourceBundle URLForResource:resourceName
                                              withExtension:nil];
+  if (nil == resourceURL)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to read text resource %@, resource URL is nil", resourceName];
+    DDLogError(@"%@: %@", self, errorMessage);
+    return nil;
+  }
+
   NSStringEncoding usedEncoding;
   NSError* error;
-  return [NSString stringWithContentsOfURL:resourceURL
-                              usedEncoding:&usedEncoding
-                                     error:&error];
+  NSString* content = [NSString stringWithContentsOfURL:resourceURL
+                                           usedEncoding:&usedEncoding
+                                                  error:&error];
+  if (nil == content)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to read text resource %@", resourceURL];
+    if (nil != error)
+      errorMessage = [NSString stringWithFormat:@"%@. Error decription: %@", errorMessage, [error localizedDescription]];
+    DDLogError(@"%@: %@", self, errorMessage);
+  }
+
+  return content;
 }
 
 // -----------------------------------------------------------------------------

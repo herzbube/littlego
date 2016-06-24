@@ -892,7 +892,7 @@ extern NSString* bugReportEmailSubject;
 /// @name Crash reporting constants
 // -----------------------------------------------------------------------------
 //@{
-extern NSString* crashReportSubmissionURL;
+extern NSString* fabricAPIKeyResource;
 //@}
 
 // -----------------------------------------------------------------------------

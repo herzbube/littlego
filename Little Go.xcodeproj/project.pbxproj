@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		27AEB52732379A1A7484A71E /* libPods-Little Go.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A5B345976B92E49F9A3CC209 /* libPods-Little Go.a */; };
 		CD00A34E1487F9CF004E1A0C /* MANUAL in Resources */ = {isa = PBXBuildFile; fileRef = CD00A34D1487F9CF004E1A0C /* MANUAL */; };
 		CD00A363148C2C26004E1A0C /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD00A358148C2C26004E1A0C /* ApplicationDelegate.mm */; };
 		CD00A364148C2C26004E1A0C /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35A148C2C26004E1A0C /* Constants.m */; };
@@ -386,6 +387,7 @@
 		CDA596131401741800B250D8 /* GoVertexTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA596121401741800B250D8 /* GoVertexTest.m */; };
 		CDA597521401825600B250D8 /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */; };
+		CDA96F231D1D4E6E00CEE129 /* fabric.apikey in Resources */ = {isa = PBXBuildFile; fileRef = CDA96F211D1D4E6E00CEE129 /* fabric.apikey */; };
 		CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
 		CDAB5ECE13E483AA00C4A4AA /* NewGameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */; };
 		CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ED013E483DE00C4A4AA /* NewGameController.m */; };
@@ -555,6 +557,10 @@
 
 /* Begin PBXFileReference section */
 		1D6058910D05DD3D006BFB54 /* Little Go.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Little Go.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		34585F20235289E7C533F4F8 /* Pods-Little Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Little Go.release.xcconfig"; path = "Pods/Target Support Files/Pods-Little Go/Pods-Little Go.release.xcconfig"; sourceTree = "<group>"; };
+		463D52FBB67A314950C8FAEE /* Pods-Little Go.distribute_adhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Little Go.distribute_adhoc.xcconfig"; path = "Pods/Target Support Files/Pods-Little Go/Pods-Little Go.distribute_adhoc.xcconfig"; sourceTree = "<group>"; };
+		65F688F1A6A7B5ADEF3706EA /* Pods-Little Go.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Little Go.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Little Go/Pods-Little Go.debug.xcconfig"; sourceTree = "<group>"; };
+		A5B345976B92E49F9A3CC209 /* libPods-Little Go.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Little Go.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CD00A34D1487F9CF004E1A0C /* MANUAL */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MANUAL; sourceTree = "<group>"; };
 		CD00A357148C2C26004E1A0C /* ApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationDelegate.h; sourceTree = "<group>"; };
 		CD00A358148C2C26004E1A0C /* ApplicationDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ApplicationDelegate.mm; sourceTree = "<group>"; };
@@ -932,6 +938,8 @@
 		CDA596121401741800B250D8 /* GoVertexTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoVertexTest.m; sourceTree = "<group>"; };
 		CDA6F0A814B1C88F00F71BC0 /* GoMoveTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveTest.h; sourceTree = "<group>"; };
 		CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveTest.m; sourceTree = "<group>"; };
+		CDA96F211D1D4E6E00CEE129 /* fabric.apikey */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fabric.apikey; sourceTree = "<group>"; };
+		CDA96F221D1D4E6E00CEE129 /* fabric.buildsecret */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fabric.buildsecret; sourceTree = "<group>"; };
 		CDAA57EA185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetAdditiveKnowledgeTypeCommand.h; sourceTree = "<group>"; };
 		CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SetAdditiveKnowledgeTypeCommand.mm; sourceTree = "<group>"; };
 		CDAB5ECC13E483AA00C4A4AA /* NewGameModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameModel.h; sourceTree = "<group>"; };
@@ -1143,6 +1151,7 @@
 		CDFE66AC173EC446003D8776 /* EditResignBehaviourSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditResignBehaviourSettingsController.h; sourceTree = "<group>"; };
 		CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditResignBehaviourSettingsController.m; sourceTree = "<group>"; };
 		CDFF8A87149E2F2900E75B71 /* TESTING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TESTING; sourceTree = "<group>"; };
+		D47384524DFC4DE4483B07F2 /* Pods-Little Go.distribute_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Little Go.distribute_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-Little Go/Pods-Little Go.distribute_appstore.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1154,6 +1163,7 @@
 				CD6E846E17FF99D100643576 /* boost.framework in Frameworks */,
 				CD6E847017FF99EC00643576 /* fuego-on-ios.framework in Frameworks */,
 				CD6E847217FF9A0200643576 /* CrashReporter.framework in Frameworks */,
+				27AEB52732379A1A7484A71E /* libPods-Little Go.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1185,6 +1195,8 @@
 				CD3AE6E91343F14200B58E08 /* LICENSE.html */,
 				CD1087711323D07800E83543 /* NOTICE */,
 				CD6BBED81723161D00BCC492 /* README.md */,
+				CDA96F211D1D4E6E00CEE129 /* fabric.apikey */,
+				CDA96F221D1D4E6E00CEE129 /* fabric.buildsecret */,
 				CD4A83BC12F5BFBB007E1A67 /* 3rdparty */,
 				CDEC28B112F55F270069F5B7 /* script */,
 				CDEC282B12F477360069F5B7 /* src */,
@@ -1194,6 +1206,7 @@
 				CD3AE864134A33A500B58E08 /* doxygen */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				B449B8B1CDAFFFC1E6728B41 /* Pods */,
 			);
 			name = "Little Go";
 			sourceTree = "<group>";
@@ -1205,8 +1218,20 @@
 				CD6E846D17FF99D000643576 /* boost.framework */,
 				CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */,
 				CD6E847117FF9A0200643576 /* CrashReporter.framework */,
+				A5B345976B92E49F9A3CC209 /* libPods-Little Go.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B449B8B1CDAFFFC1E6728B41 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				65F688F1A6A7B5ADEF3706EA /* Pods-Little Go.debug.xcconfig */,
+				34585F20235289E7C533F4F8 /* Pods-Little Go.release.xcconfig */,
+				D47384524DFC4DE4483B07F2 /* Pods-Little Go.distribute_appstore.xcconfig */,
+				463D52FBB67A314950C8FAEE /* Pods-Little Go.distribute_adhoc.xcconfig */,
+			);
+			name = Pods;
 			sourceTree = "<group>";
 		};
 		CD00A356148C2C21004E1A0C /* main */ = {
@@ -2352,9 +2377,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "Little Go" */;
 			buildPhases = (
+				EED1787E51B6052FDF32F0F9 /* [CP] Check Pods Manifest.lock */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
+				CDB3AC3F1D1B1CB400DE4B38 /* Submit dSYM files to Crashlytics */,
+				DBBFAC0D0807AE9DFCCACC65 /* [CP] Embed Pods Frameworks */,
+				77A65DA0B5AB72A10FCBA579 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -2468,6 +2497,7 @@
 				CD968B881B026E2300984AEE /* human-vs-human.png in Resources */,
 				CD968B621B026E2300984AEE /* noun_55404_cc.svg in Resources */,
 				CD968BA41B026E2300984AEE /* back@2x.png in Resources */,
+				CDA96F231D1D4E6E00CEE129 /* fabric.apikey in Resources */,
 				CD968B741B026E2300984AEE /* noun_8180_cc.svg in Resources */,
 				CD968BC41B026E2300984AEE /* source-code@3x.png in Resources */,
 				CD968B631B026E2300984AEE /* archive.png in Resources */,
@@ -2565,6 +2595,21 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		77A65DA0B5AB72A10FCBA579 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Little Go/Pods-Little Go-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		CD3AE855134A333D00B58E08 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2577,6 +2622,50 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# change directory because Doxyfile is configured with a relative input path \"..\"\ncd doxygen\n\n# clean the directory\nrm -rf html\n\n# generate docs\n/usr/local/bin/doxygen Doxyfile\n\n# open the html documentation\nopen html/index.html\n";
+		};
+		CDB3AC3F1D1B1CB400DE4B38 /* Submit dSYM files to Crashlytics */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Submit dSYM files to Crashlytics";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "APPSTORE_CONFIGURATION=\"Distribute_AppStore\"\nFABRIC_APIKEY_FILE=\"${SRCROOT}/fabric.apikey\"\nFABRIC_BUILDSECRET_FILE=\"${SRCROOT}/fabric.buildsecret\"\n\nif test \"$APPSTORE_CONFIGURATION\" = \"${CONFIGURATION}\"; then\n  if test ! -f \"$FABRIC_APIKEY_FILE\" -o ! -f \"$FABRIC_BUILDSECRET_FILE\"; then\n    echo \"This is an App Store build that wants to uploaddSYM files to Crashlytics.\"\n    echo \"Uploading is possible only if a Fabric API key and a Fabric build secret are\"\n    echo \"available. This build is failing because at least one of these pieces of\"\n    echo \"information is missing.\"\n    echo \"\"\n    echo \"To fix the problem, create the following files and store the API key and\"\n    echo \"build secret, respectively, within those files:\"\n    echo \"\"\n    echo \"  $FABRIC_APIKEY_FILE\"\n    echo \"  $FABRIC_BUILDSECRET_FILE\"\n    echo \"\"\n    echo \"If you forked the project to create your own App Store build then you must\"\n    echo \"register with Crashlytics and get your own API key and build secret.\"\n\n    # Let the build fail\n    exit 1\n  fi\n\n  FABRIC_APIKEY=$(cat \"$FABRIC_APIKEY_FILE\")\n  if test $? -ne 0; then\n    echo \"Cannot read $FABRIC_APIKEY_FILE\"\n    exit 1\n  fi\n\n  FABRIC_BUILDSECRET=$(cat \"$FABRIC_BUILDSECRET_FILE\")\n  if test $? -ne 0; then\n    echo \"Cannot read $FABRIC_BUILDSECRET_FILE\"\n    exit 1\n  fi\n\n  echo \"Uploading dSYM files to Crashlytics\"\n  \"${PODS_ROOT}/Fabric.framework/run\" \"$FABRIC_APIKEY\" \"$FABRIC_BUILDSECRET\"\nfi";
+		};
+		DBBFAC0D0807AE9DFCCACC65 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Little Go/Pods-Little Go-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		EED1787E51B6052FDF32F0F9 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2993,6 +3082,7 @@
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 65F688F1A6A7B5ADEF3706EA /* Pods-Little Go.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -3006,6 +3096,7 @@
 		};
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 34585F20235289E7C533F4F8 /* Pods-Little Go.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -3188,6 +3279,7 @@
 		};
 		CD89232C149FDC8A00A94A7B /* Distribute_AppStore */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D47384524DFC4DE4483B07F2 /* Pods-Little Go.distribute_appstore.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -3338,6 +3430,7 @@
 		};
 		CDE3010E1357942E005235F2 /* Distribute_AdHoc */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 463D52FBB67A314950C8FAEE /* Pods-Little Go.distribute_adhoc.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;

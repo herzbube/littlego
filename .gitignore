@@ -6,6 +6,12 @@ Little Go.xcodeproj/*.pbxuser
 Little Go.xcodeproj/*.mode1v3
 Little Go.xcodeproj/project.xcworkspace
 Little Go.xcodeproj/xcuserdata
+Little Go.xcworkspace/xcuserdata
+# Fabric and Crashlytics files
+fabric.apikey
+fabric.buildsecret
+# CocoaPods files
+Pods/
 # Other files
 3rdparty/install/
 doxygen/html

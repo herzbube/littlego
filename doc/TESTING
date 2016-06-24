@@ -23,28 +23,7 @@ was a built-in script named "RunUnitTests" that could be invoked in a
 "Run Script" build phase. In Xcode 5, however, this is no longer working, the
 built-in script fails with the error message "RunUnitTests is obsolete."
 
-Notes about the "Unit test" target:
-- All tests in this target are what Apple used to call "logic tests", i.e. unit
-  tests that exercise more or less isolated classes. The test source code is
-  built using the iOS Simulator SDK, and tests can be run within the simulator
-  only, i.e. not on a real iOS device, and also not outside of the simulator
-  (the latter differs from Xcode 4.x where it was possible to run tests without
-  launching the simulator)
-- All source code files that are unit tested must be added to the "Unit test"
-  target so that they are built for that target.
-- The build setting "Header Search Path" is set to the value "./src". Since the
-  test sources are completely separated from the normal application sources, I
-  don't want to deal with relative path issues for each #import statement. The
-  application can be seen as third party software from the point of view of the
-  unit test bundle.
-- Because application source files depend on the presence of a prefix header,
-  the "Unit test" target has to have the same "Prefix header" build settings
-  as the main application target.
-- Compiling ApplicationDelegate usually pulls in Fuego/Boost (via GTP classes)
-  as dependencies. To prevent this, the "Unit test" target defines the
-  preprocessor macro LITTLEGO_UNITTESTS. The effect is that certain #include
-  statements and pieces of code are not compiled and the dependency on
-  Fuego/Boost goes away.
+See NOTES.Build for technical details about the "Unit test" build target.
 
 A final note about logging: The log file for unit tests run in the simulator
 environment is located in
