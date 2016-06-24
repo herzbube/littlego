@@ -1,21 +1,34 @@
 # Build products
 DerivedData/
 build/
-# Xcode files
+doxygen/html
+
+# Xcode workspace
+Little Go.xcworkspace/xcuserdata
+
+# Xcode project
 Little Go.xcodeproj/*.pbxuser
 Little Go.xcodeproj/*.mode1v3
-Little Go.xcodeproj/project.xcworkspace
 Little Go.xcodeproj/xcuserdata
-Little Go.xcworkspace/xcuserdata
+# Xcode creates this hidden workspace when someone opens just the
+# project (top-level .xcodeproj folder) instead of the workspace
+# (top-level .xcworkspace folder). Because the hidden workspace never
+# contains anything but the enclosing project, it can be safely ignored.
+Little Go.xcodeproj/project.xcworkspace
+
 # Fabric and Crashlytics files
 fabric.apikey
 fabric.buildsecret
+
 # CocoaPods files
 Pods/
-# Other files
-3rdparty/install/
-doxygen/html
+
+# Folders for local/manual storage of beta test .ipa bundles,
+# crash reports and bug reports
 dist/
 crash/
 bugreport/
+
+# Other files
+3rdparty/install/
 .DS_Store
