@@ -37,72 +37,36 @@ Once the application has launched you are ready to test & debug.
 
 Crash Reporting
 ---------------
-Little Go currently uses QuincyKit [1] for crash reporting. QuincyKit is free
-and open source, but the deciding factor has been that it allows me to send
-crash reports to my own server. If you are creating a clone of Little Go, make
-sure to change the submission URL that appears in ApplicationDelegate.mm to a
-server that you control.
+Little Go currently uses Crashlytics [1] for crash reporting.
 
-Bugsense [2] is the alternative that should be considered should there ever be a
-need to replace QuincyKit. Although the Bugsense library itself is not open
-source, they are friendly to open source projects and offer them their Plus
-package (which normally costs a hefty fee) for free.
+Before Crashlytics, Little Go used the open source library QuincyKit for crash
+reporting, but unfortunately that library fell into disrepair, so at some point
+a replacement that supports modern iOS versions was required.
 
-QuincyKit integration into the Little Go app (= the client) has been very easy
-and is described in [3]. Setting up the QuincyKit server is also described in
-[3] and pretty much a no-brainer. The default setup, however, leaves the admin
-web interface completely unprotected against anonymous access from the Internet.
-On [4] I have outlined how to protect the admin interface via HTTP
-authentication.
+With the demise of QuincyKit there currently is no other open source solution
+for crash reporting, or at least none that I know of. I selected Crashlytics
+from a list of five contenders because it seems trustworthy, friendly and is
+the only solution with (seemingly) no strings attached. For a bit more detail
+read GitHub issue 293 ([2]).
 
-Symbolication of a crash report is described in [3]. For easy reference I am
-reproducing the steps here:
-- From the extracted QuincyKit package, copy the content of the "server/local"
-  folder to your dev machine
-- If necessary, make the symbolication script executable:
-    chmod + x symbolicatecrash.pl
-- Copy the crash log file to the dev machine
-- The following command symbolicates the crash log file and prints the result
-  to stdout
-    symbolicatecrash.pl /path/to/crashlogfile
-- For this to work, the following packages must be present somewhere on the dev
-  machine:
-    Little Go.app
-    Little Go.app.dSYM
-  Obviously, the packages must match the build that the crash log file comes
-  from. The symbolication script tries to find the packages by peeking into the
-  Spotlight index and looking up the appropriate packages by UUID. If you have
-  an archived build hanging around on the machine, the script will find it and
-  use the packages from inside the archive.
-- You can also specify the folder that contains the necessary packages:
-    symbolicatecrash.pl /path/to/crashlogfile /path/to/packagefiles
-  I have never had to use this, so I don't know how this works.
+IMPORTANT: If you are creating a clone of Little Go that you want to distribute
+to the App Store, you must register with Crashlytics to get your own API key
+and build secret. These pieces of information you have to store locally in
+separate files required by the build process and - in the case of the API
+key - also at runtime.
 
-Once you have local symbolication up and running, you can add remote
-symbolication by doing the following:
-- Modify serverconfig.php so that it contains the necessary details to access
-  the QuincyKit server that receives crash log files from clients. NOTE: I was
-  unable to get this to work with HTTPS access.
-- Try whether this works by running
-    php symbolicate.php
-  Apparently this prints some error message which can be ignored.
-- Log in to the QuincyKit server admin web interface. If everything was set up
-  correctly, you should see that the crash log files on the server are now
-  symbolicated.
+Crashlytics integration into the Little Go app hasn't been too difficult, thanks
+to CocoaPods. The main things that I had to fiddle with were:
 
-Once remote symbolication works, you can take it one step further and add
-automation to the process:
-- Modify symbolicate.sh and com.crashreportsender.symbolicator.plist so that
-  they contain the proper paths
-- Make the shell script executable:
-    chmod + x symbolicate.sh
-- Start automation for the current user:
-  cp com.crashreportsender.symbolicator.plist User/Library/LaunchAgents
-  launchctl load com.crashreportsender.symbolicator.plist
-- Remote symbolication should now run every 15 minutes. If you want a different
-  interval you can change this in the .plist. file.
+1) The build phase that submits the dSYM files to the Crashlytics servers. I
+   modified the default shell script added by CocoaPods so that dSYM files are
+   submitted only when an App Store distribution build is made. Furthermore, I
+   modified the shell script so that it reads the Fabric API key and the Fabric
+   build secret from external files.
+2) The Info.plist. CocoaPods adds a dictionary with Fabric key/values to
+   Info.plist. This dictionary contained the Fabric API key. I removed the API
+   key and instead added some code to the AppDelegate launch process that reads
+   the API key from the same external file as the dSYM submitting build phase.
 
-[1] http://quincykit.net/
-[2] http://www.bugsense.com/pricing
-[3] https://github.com/TheRealKerni/QuincyKit
-[4] http://wiki.herzbube.ch/index.php/QuincyKit
+[1] https://www.crashlytics.com/
+[2] https://github.com/herzbube/littlego/issues/293

@@ -149,8 +149,7 @@ Make the release
   milestone
 - Create a new release on GitHub that references the git tag. Copy ChangeLog
   content into the release description.
-- Change the QuincyKit status of the new version to "Available" and the status
-  of the old version to "Discontinued"
+- TODO: Document Crashlytics handling
 - Cleanup the Trello board
 - Update littlego.herzbube.ch
 - Release the new version to the App Store

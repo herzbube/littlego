@@ -15,10 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-// 3rdparty library includes (uses "" instead of <> syntax because QuincyKit
-// is compiled into the project, not linked against as an external library)
-#import "../../3rdparty/install/quincykit/BWQuincyManager.h"
-
 // Forward declarations
 @class GtpClient;
 @class GtpEngine;
@@ -55,8 +51,7 @@
 /// ApplicationDelegate then becomes available to clients via the class method
 /// sharedDelegate().
 // -----------------------------------------------------------------------------
-@interface ApplicationDelegate : NSObject <UIApplicationDelegate,
-                                           BWQuincyManagerDelegate>
+@interface ApplicationDelegate : NSObject <UIApplicationDelegate>
 {
 }
 

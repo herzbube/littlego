@@ -33,16 +33,24 @@ framework. ZipKit was developed by Karl Moskowski and has been released under a
 BSD-style license. The original source code is available from
   https://github.com/kolpanic/ZipKit
 
-This product uses QuincyKit to provide a crash reporting service. QuincyKit in
-turn incorporates the PLCrashReporter framework and the protobuf-c library to
-achieve its task. QuincyKit and PLCrashReporter have been released under the MIT
-license, while protobuf-c has been released under the Apache license v2.0.
-Quincy is copyright by Andreas Linde, PLCrashReporter is copyright by Plausible
-Labs Cooperative, Inc., and protobuf-c is copyright by Dave Benson. The source
-code of the three components is available from
-  https://github.com/therealkerni/QuincyKit
-  http://code.google.com/p/plcrashreporter/
-  http://code.google.com/p/protobuf-c/
+This product uses the Twitter Fabric and the Crashlytics frameworks to provide
+a crash reporting service. Twitter Fabric is copyright by Twitter, Inc.,
+Crashlytics is copyright by Crashlytics, Inc. Both frameworks are closed source.
+The header files for Twitter Fabric are released under the Apache License,
+Version 2.0. The header files for Crashlytics are released without any specific
+license information. The terms of service for both frameworks are available
+from here:
+  https://fabric.io/terms
+  http://try.crashlytics.com/terms/terms-of-service.pdf
+
+Crashlytics makes use of numerous open source software projects. For a full list
+of attributions and licenses, please read the file
+  resource/text/Crashlytics-opensource.txt
+This file was retrieved on 25 June 2016 from this URL:
+  http://try.crashlytics.com/terms/opensource.txt
+An HTML'ized version of the text file can be viewed in-app. That version is also
+available as a file
+  resource/html/Crashlytics-opensource.txt.html
 
 The following icons are all from the Noun Project (http://thenounproject.com/).
 - The Main Menu button is "Menu by John Caserta"

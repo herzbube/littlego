@@ -190,11 +190,12 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Crash Reporting depends on this (needs to read the Fabric API key)
   [self setupResourceBundle];
 
-  // For QuincyKit to work properly, this method must be invoked in the context
-  // of the main thread, i.e. it cannot be invoked by SetupApplicationCommand
-  // which runs in a secondary thread. If this method is invoked in a secondary
-  // thread context, QuincyKit will not query the user whether she wants to
-  // send a crash report. In fact, QuincyKit will not do anything at all.
+  // Back at the time when this project used QuincyKit for crash reporting,
+  // this method had to be invoked in the context of the main thread,
+  // specifically SetupApplicationCommand was not allowed to invoke it because
+  // that command runs in a secondary thread. This project now uses a different
+  // crash reporting tool now, but it's still safest to invoke this on the main
+  // thread.
   [self setupCrashReporting];
 
   // Don't change the following sequence without thoroughly checking the

@@ -32,7 +32,6 @@
 		CD00A369148C2C62004E1A0C /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD00A358148C2C26004E1A0C /* ApplicationDelegate.mm */; };
 		CD00A36A148C2C6A004E1A0C /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35A148C2C26004E1A0C /* Constants.m */; };
 		CD02629C16E0F06E007B35CC /* book.dat in Resources */ = {isa = PBXBuildFile; fileRef = CD02629B16E0F06E007B35CC /* book.dat */; };
-		CD028609163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD028608163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html */; };
 		CD05199516B1C09B002771F7 /* LeftPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199416B1C09B002771F7 /* LeftPaneViewController.m */; };
 		CD05199916B1C29B002771F7 /* RightPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199816B1C29B002771F7 /* RightPaneViewController.m */; };
 		CD0519D416B2D23C002771F7 /* BoardPositionTableListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0519D316B2D23B002771F7 /* BoardPositionTableListViewController.m */; };
@@ -152,11 +151,6 @@
 		CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA415A891B8004A7096 /* BugReportUtilities.m */; };
 		CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A715A0A3E400439B4E /* PathUtilities.m */; };
 		CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFA329A159FA0F400439B4E /* libz.dylib */; };
-		CD4D44721A79CEC200272579 /* Quincy.bundle in Resources */ = {isa = PBXBuildFile; fileRef = CD4D446E1A79CEC200272579 /* Quincy.bundle */; };
-		CD4D44731A79D08C00272579 /* BWQuincyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D446B1A79CEC200272579 /* BWQuincyManager.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		CD4D44741A79D08F00272579 /* BWQuincyManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D446B1A79CEC200272579 /* BWQuincyManager.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		CD4D44751A79D0A400272579 /* BWCrashReportTextFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D44681A79CE5800272579 /* BWCrashReportTextFormatter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
-		CD4D44761A79D0A600272579 /* BWCrashReportTextFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4D44681A79CE5800272579 /* BWCrashReportTextFormatter.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
@@ -166,8 +160,6 @@
 		CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */; };
 		CD6E846E17FF99D100643576 /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846D17FF99D000643576 /* boost.framework */; };
 		CD6E847017FF99EC00643576 /* fuego-on-ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */; };
-		CD6E847217FF9A0200643576 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E847117FF9A0200643576 /* CrashReporter.framework */; };
-		CD6E847517FF9A3700643576 /* CrashReporter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E847117FF9A0200643576 /* CrashReporter.framework */; };
 		CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
 		CD7C69B61A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
@@ -222,8 +214,6 @@
 		CD85B5C81401C347001715B8 /* NewGameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */; };
 		CD85B5CB1401C354001715B8 /* PlayerStatistics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302871360BDA3005235F2 /* PlayerStatistics.m */; };
 		CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
-		CD899E4A1645D2A200329154 /* PLCrashReporter-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */; };
-		CD899E4B1645D2A200329154 /* protobuf-c-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */; };
 		CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
 		CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
 		CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
@@ -388,6 +378,8 @@
 		CDA597521401825600B250D8 /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */; };
 		CDA96F231D1D4E6E00CEE129 /* fabric.apikey in Resources */ = {isa = PBXBuildFile; fileRef = CDA96F211D1D4E6E00CEE129 /* fabric.apikey */; };
+		CDA96F261D1E2A2F00CEE129 /* Crashlytics-opensource.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CDA96F251D1E2A2F00CEE129 /* Crashlytics-opensource.txt.html */; };
+		CDA96F281D1EC97800CEE129 /* Crashlytics-opensource.txt in Resources */ = {isa = PBXBuildFile; fileRef = CDA96F271D1EC97800CEE129 /* Crashlytics-opensource.txt */; };
 		CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
 		CDAB5ECE13E483AA00C4A4AA /* NewGameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */; };
 		CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ED013E483DE00C4A4AA /* NewGameController.m */; };
@@ -575,8 +567,6 @@
 		CD00A361148C2C26004E1A0C /* SectionedDocumentViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SectionedDocumentViewController.h; sourceTree = "<group>"; };
 		CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SectionedDocumentViewController.m; sourceTree = "<group>"; };
 		CD02629B16E0F06E007B35CC /* book.dat */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = book.dat; sourceTree = "<group>"; };
-		CD028608163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "QuincyKit-LICENSE.txt.html"; sourceTree = "<group>"; };
-		CD02860B1640986B00CF23A1 /* build-quincykit.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-quincykit.sh"; sourceTree = "<group>"; };
 		CD05199316B1C09B002771F7 /* LeftPaneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LeftPaneViewController.h; sourceTree = "<group>"; };
 		CD05199416B1C09B002771F7 /* LeftPaneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LeftPaneViewController.m; sourceTree = "<group>"; };
 		CD05199716B1C29B002771F7 /* RightPaneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RightPaneViewController.h; sourceTree = "<group>"; };
@@ -722,14 +712,6 @@
 		CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportUserDefaultsCommand.m; sourceTree = "<group>"; };
 		CD48ADA315A891B7004A7096 /* BugReportUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BugReportUtilities.h; sourceTree = "<group>"; };
 		CD48ADA415A891B8004A7096 /* BugReportUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BugReportUtilities.m; sourceTree = "<group>"; };
-		CD4D44661A79CDB900272579 /* BWQuincyManagerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWQuincyManagerDelegate.h; sourceTree = "<group>"; };
-		CD4D44671A79CE5800272579 /* BWCrashReportTextFormatter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWCrashReportTextFormatter.h; sourceTree = "<group>"; };
-		CD4D44681A79CE5800272579 /* BWCrashReportTextFormatter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWCrashReportTextFormatter.m; sourceTree = "<group>"; };
-		CD4D446A1A79CEC200272579 /* BWQuincyManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BWQuincyManager.h; sourceTree = "<group>"; };
-		CD4D446B1A79CEC200272579 /* BWQuincyManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BWQuincyManager.m; sourceTree = "<group>"; };
-		CD4D446C1A79CEC200272579 /* CrashReporter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CrashReporter.framework; sourceTree = "<group>"; };
-		CD4D446D1A79CEC200272579 /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		CD4D446E1A79CEC200272579 /* Quincy.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Quincy.bundle; sourceTree = "<group>"; };
 		CD613D98143CD1B70002759E /* GtpCommandModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandModel.h; sourceTree = "<group>"; };
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
@@ -742,7 +724,6 @@
 		CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiSettingsModel.m; sourceTree = "<group>"; };
 		CD6E846D17FF99D000643576 /* boost.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = boost.framework; path = 3rdparty/install/boost.framework; sourceTree = "<group>"; };
 		CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "fuego-on-ios.framework"; path = "3rdparty/install/fuego-on-ios.framework"; sourceTree = "<group>"; };
-		CD6E847117FF9A0200643576 /* CrashReporter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CrashReporter.framework; path = 3rdparty/install/quincykit/CrashReporter.framework; sourceTree = "<group>"; };
 		CD6EBE421753FE5200ABB980 /* MediaFiles */ = {isa = PBXFileReference; lastKnownFileType = text; path = MediaFiles; sourceTree = "<group>"; };
 		CD6EBE43175401C200ABB980 /* ProgrammingTopics */ = {isa = PBXFileReference; lastKnownFileType = text; path = ProgrammingTopics; sourceTree = "<group>"; };
 		CD72216714633F1D005EAC65 /* TableViewGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewGridCell.h; sourceTree = "<group>"; };
@@ -786,8 +767,6 @@
 		CD7C6A1C1AB61893009EC5AD /* ButtonBoxCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonBoxCell.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
-		CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "PLCrashReporter-LICENSE.txt.html"; sourceTree = "<group>"; };
-		CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "protobuf-c-LICENSE.txt.html"; sourceTree = "<group>"; };
 		CD899E5B164875A800329154 /* CrashReportingModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingModel.h; sourceTree = "<group>"; };
 		CD899E5C164875A800329154 /* CrashReportingModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingModel.m; sourceTree = "<group>"; };
 		CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiElementMetrics.h; sourceTree = "<group>"; };
@@ -940,6 +919,8 @@
 		CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveTest.m; sourceTree = "<group>"; };
 		CDA96F211D1D4E6E00CEE129 /* fabric.apikey */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fabric.apikey; sourceTree = "<group>"; };
 		CDA96F221D1D4E6E00CEE129 /* fabric.buildsecret */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fabric.buildsecret; sourceTree = "<group>"; };
+		CDA96F251D1E2A2F00CEE129 /* Crashlytics-opensource.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Crashlytics-opensource.txt.html"; sourceTree = "<group>"; };
+		CDA96F271D1EC97800CEE129 /* Crashlytics-opensource.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Crashlytics-opensource.txt"; sourceTree = "<group>"; };
 		CDAA57EA185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetAdditiveKnowledgeTypeCommand.h; sourceTree = "<group>"; };
 		CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SetAdditiveKnowledgeTypeCommand.mm; sourceTree = "<group>"; };
 		CDAB5ECC13E483AA00C4A4AA /* NewGameModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGameModel.h; sourceTree = "<group>"; };
@@ -1162,7 +1143,6 @@
 				CDFA329B159FA0F600439B4E /* libz.dylib in Frameworks */,
 				CD6E846E17FF99D100643576 /* boost.framework in Frameworks */,
 				CD6E847017FF99EC00643576 /* fuego-on-ios.framework in Frameworks */,
-				CD6E847217FF9A0200643576 /* CrashReporter.framework in Frameworks */,
 				27AEB52732379A1A7484A71E /* libPods-Little Go.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1172,7 +1152,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */,
-				CD6E847517FF9A3700643576 /* CrashReporter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1197,7 +1176,6 @@
 				CD6BBED81723161D00BCC492 /* README.md */,
 				CDA96F211D1D4E6E00CEE129 /* fabric.apikey */,
 				CDA96F221D1D4E6E00CEE129 /* fabric.buildsecret */,
-				CD4A83BC12F5BFBB007E1A67 /* 3rdparty */,
 				CDEC28B112F55F270069F5B7 /* script */,
 				CDEC282B12F477360069F5B7 /* src */,
 				CDEC28A612F4A2BB0069F5B7 /* resource */,
@@ -1217,7 +1195,6 @@
 				CDFA329A159FA0F400439B4E /* libz.dylib */,
 				CD6E846D17FF99D000643576 /* boost.framework */,
 				CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */,
-				CD6E847117FF9A0200643576 /* CrashReporter.framework */,
 				A5B345976B92E49F9A3CC209 /* libPods-Little Go.a */,
 			);
 			name = Frameworks;
@@ -1274,22 +1251,6 @@
 				CD02629B16E0F06E007B35CC /* book.dat */,
 			);
 			path = openingbook;
-			sourceTree = "<group>";
-		};
-		CD0286271640AEE100CF23A1 /* quincykit */ = {
-			isa = PBXGroup;
-			children = (
-				CD4D44671A79CE5800272579 /* BWCrashReportTextFormatter.h */,
-				CD4D44681A79CE5800272579 /* BWCrashReportTextFormatter.m */,
-				CD4D446A1A79CEC200272579 /* BWQuincyManager.h */,
-				CD4D446B1A79CEC200272579 /* BWQuincyManager.m */,
-				CD4D44661A79CDB900272579 /* BWQuincyManagerDelegate.h */,
-				CD4D446C1A79CEC200272579 /* CrashReporter.framework */,
-				CD4D446D1A79CEC200272579 /* LICENSE.txt */,
-				CD4D446E1A79CEC200272579 /* Quincy.bundle */,
-			);
-			name = quincykit;
-			path = 3rdparty/install/quincykit;
 			sourceTree = "<group>";
 		};
 		CD05199216B1C09B002771F7 /* splitview */ = {
@@ -1614,16 +1575,9 @@
 			isa = PBXGroup;
 			children = (
 				CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */,
+				CDA96F271D1EC97800CEE129 /* Crashlytics-opensource.txt */,
 			);
 			path = text;
-			sourceTree = "<group>";
-		};
-		CD4A83BC12F5BFBB007E1A67 /* 3rdparty */ = {
-			isa = PBXGroup;
-			children = (
-				CD0286271640AEE100CF23A1 /* quincykit */,
-			);
-			name = 3rdparty;
 			sourceTree = "<group>";
 		};
 		CD7C69BC1A9BC7D2009EC5AD /* gameaction */ = {
@@ -2034,12 +1988,10 @@
 				CDE1A13614C1CED200317ECA /* BoostSoftwareLicense.html */,
 				CDE1A13714C1CED200317ECA /* COPYING.html */,
 				CDE1A13814C1CED200317ECA /* COPYING.LESSER.html */,
+				CDA96F251D1E2A2F00CEE129 /* Crashlytics-opensource.txt.html */,
 				CDE1A13914C1CED200317ECA /* Credits.html */,
 				CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */,
 				CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */,
-				CD899E481645D2A200329154 /* PLCrashReporter-LICENSE.txt.html */,
-				CD899E491645D2A200329154 /* protobuf-c-LICENSE.txt.html */,
-				CD028608163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html */,
 				CDE1A13A14C1CED200317ECA /* SourceCode.html */,
 				CDFA329E15A0920200439B4E /* ZipKit-COPYING.TXT.html */,
 			);
@@ -2219,7 +2171,6 @@
 				CDE3F58F13117EFE00EC16CC /* build-env.sh */,
 				CDE3F585131147D800EC16CC /* build-fuego.sh */,
 				CD61BC7018731BA800CFF994 /* build-mbprogresshud.sh */,
-				CD02860B1640986B00CF23A1 /* build-quincykit.sh */,
 				CDE3F58E13117E3100EC16CC /* build-software.sh */,
 				CDFA329015990C8400439B4E /* build-zipkit.sh */,
 				CDEC28B212F55F270069F5B7 /* build-3rdparty-software.sh */,
@@ -2483,7 +2434,9 @@
 				CD968BA11B026E2300984AEE /* more-game-actions@3x.png in Resources */,
 				CD968B961B026E2300984AEE /* noun_5763_cc.svg in Resources */,
 				CD968B991B026E2300984AEE /* licenses@3x.png in Resources */,
+				CDA96F281D1EC97800CEE129 /* Crashlytics-opensource.txt in Resources */,
 				CD968B901B026E2300984AEE /* help.png in Resources */,
+				CDA96F261D1E2A2F00CEE129 /* Crashlytics-opensource.txt.html in Resources */,
 				CD968B8F1B026E2300984AEE /* gogrid2x2@3x.png in Resources */,
 				CD968B6E1B026E2300984AEE /* continue@2x.png in Resources */,
 				CD968BAB1B026E2300984AEE /* forwardtoend@3x.png in Resources */,
@@ -2540,16 +2493,13 @@
 				CD968B7B1B026E2300984AEE /* discard@3x.png in Resources */,
 				CD968BAC1B026E2300984AEE /* noun_45526_cc.svg in Resources */,
 				CD968B731B026E2300984AEE /* credits@3x.png in Resources */,
-				CD028609163D9F2100CF23A1 /* QuincyKit-LICENSE.txt.html in Resources */,
 				CD968BA21B026E2300984AEE /* noun_61422.svg in Resources */,
 				CD968B8E1B026E2300984AEE /* gogrid2x2@2x.png in Resources */,
 				CD968B951B026E2300984AEE /* interrupt@3x.png in Resources */,
 				CD968B9E1B026E2300984AEE /* noun_36901_cc.svg in Resources */,
 				CD968B831B026E2300984AEE /* computer-vs-computer@3x.png in Resources */,
 				CD968BB01B026E2300984AEE /* noun_10554_cc.svg in Resources */,
-				CD899E4A1645D2A200329154 /* PLCrashReporter-LICENSE.txt.html in Resources */,
 				CD968BB51B026E2300984AEE /* pause.png in Resources */,
-				CD899E4B1645D2A200329154 /* protobuf-c-LICENSE.txt.html in Resources */,
 				CD968B791B026E2300984AEE /* discard.png in Resources */,
 				CD968BA81B026E2300984AEE /* forward@3x.png in Resources */,
 				CD968B601B026E2300984AEE /* about@2x.png in Resources */,
@@ -2579,7 +2529,6 @@
 				CD968B8B1B026E2300984AEE /* noun_17845_cc.svg in Resources */,
 				CD02629C16E0F06E007B35CC /* book.dat in Resources */,
 				CD968BA01B026E2300984AEE /* more-game-actions@2x.png in Resources */,
-				CD4D44721A79CEC200272579 /* Quincy.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2724,7 +2673,6 @@
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
 				CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */,
 				CD7C6A091AB462CB009EC5AD /* NavigationBarButtonModel.m in Sources */,
-				CD4D44761A79D0A600272579 /* BWCrashReportTextFormatter.m in Sources */,
 				CD05AB961425169500214BBE /* GoUtilities.m in Sources */,
 				CDAFAE25195A1DCA00EF84A9 /* TiledScrollView.m in Sources */,
 				CD05AC7B1425470B00214BBE /* DeleteGameCommand.m in Sources */,
@@ -2860,7 +2808,6 @@
 				CDEE1A0319438AE000DF2389 /* StonesLayerDelegate.m in Sources */,
 				CD8EAABA1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
 				CD07270E180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */,
-				CD4D44731A79D08C00272579 /* BWQuincyManager.m in Sources */,
 				CD072710180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */,
 				CD072714180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
 				CDC97A8A182EEB5F00755EB2 /* GoZobristTable.mm in Sources */,
@@ -2906,7 +2853,6 @@
 				CD7C69E41AA67EAD009EC5AD /* MainTableViewController.m in Sources */,
 				CD85B5C51401C338001715B8 /* PlayerModel.m in Sources */,
 				CD85B5C81401C347001715B8 /* NewGameModel.m in Sources */,
-				CD4D44751A79D0A400272579 /* BWCrashReportTextFormatter.m in Sources */,
 				CD85B5CB1401C354001715B8 /* PlayerStatistics.m in Sources */,
 				CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */,
 				CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */,
@@ -2935,7 +2881,6 @@
 				CD05B136142A745500214BBE /* BackupGameToSgfCommand.m in Sources */,
 				CD05B137142A746100214BBE /* CleanBackupSgfCommand.m in Sources */,
 				CD05B138142A746800214BBE /* RestoreGameFromSgfCommand.m in Sources */,
-				CD4D44741A79D08F00272579 /* BWQuincyManager.m in Sources */,
 				CDFD9F8218F1D5F40031CBCF /* GtpLogSettingsController.m in Sources */,
 				CD05B143142A74ED00214BBE /* LoadGameCommand.m in Sources */,
 				CDB5AE2A1AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */,
@@ -3127,10 +3072,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SRCROOT)/3rdparty/install\"",
-					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install\"";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -3176,10 +3118,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SRCROOT)/3rdparty/install\"",
-					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install\"";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3246,10 +3185,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SRCROOT)/3rdparty/install\"",
-					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install\"";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3397,10 +3333,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"\"$(SRCROOT)/3rdparty/install\"",
-					"\"$(SRCROOT)/3rdparty/install/quincykit\"",
-				);
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install\"";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (

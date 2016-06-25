@@ -80,22 +80,6 @@ ZipKit build/installation issues
 No issues, build works out of the box.
 
 
-QuincyKit build/installation issues
------------------------------------
-QuincyKit comes pre-built, so no build is necessary.
-
-Installation
-- QuincyKit does not consist of the usual header + library files that can be
-  installed into split locations (include/lib) within platform-specific folders
-  (Developer/Platforms/iPhoneOS.platform/...). Instead, QuincyKit includes a
-  framework (CrashReporter.framework) and a bundle (Quincy.bundle) which need to
-  be added to the Xcode project as a whole, and regardless of which platform
-  the project is built for.
-- For this reason, the necessary QuincyKit files are copied into the folder
-  3rdparty/install/quincykit, and the Xcode project references the files
-  from there
-
-
 Testing the patched version of Fuego on the Mac OS X command line
 -----------------------------------------------------------------
 Little Go integrates Fuego via the "fuego-for-littlego" branch of the Fuego on

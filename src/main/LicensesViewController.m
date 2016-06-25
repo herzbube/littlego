@@ -42,9 +42,7 @@ enum LicensesSectionItem
   MBProgressHUDLicenseItem,
   LumberjackLicenseItem,
   ZipKitLicenseItem,
-  QuincyKitLicenseItem,
-  PLCrashReporterLicenseItem,
-  ProtobufCLicenseItem,
+  CrashlyticsLicenseItem,
   MaxLicensesSectionItem
 };
 
@@ -162,19 +160,9 @@ enum LicensesSectionItem
       return @"ZipKit License";
       break;
     }
-    case QuincyKitLicenseItem:
+    case CrashlyticsLicenseItem:
     {
-      return @"QuincyKit License";
-      break;
-    }
-    case PLCrashReporterLicenseItem:
-    {
-      return @"PLCrashReporter License";
-      break;
-    }
-    case ProtobufCLicenseItem:
-    {
-      return @"protobuf-c License";
+      return @"Licenses for software used by Crashlytics";
       break;
     }
     default:
@@ -229,19 +217,9 @@ enum LicensesSectionItem
       return zipkitLicenseDocumentResource;
       break;
     }
-    case QuincyKitLicenseItem:
+    case CrashlyticsLicenseItem:
     {
-      return quincykitLicenseDocumentResource;
-      break;
-    }
-    case PLCrashReporterLicenseItem:
-    {
-      return plcrashreporterLicenseDocumentResource;
-      break;
-    }
-    case ProtobufCLicenseItem:
-    {
-      return protobufcLicenseDocumentResource;
+      return crashlyticsLicenseDocumentResource;
       break;
     }
     default:

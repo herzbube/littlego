@@ -61,16 +61,14 @@ Important configuration settings in Xcode (both for the "Little Go" and the
 - IPHONEOS_DEPLOYMENT_TARGET = 8.1
 - HEADER_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/include"
 - LIBRARY_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/lib"
-- FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install" "$(SRCROOT)/3rdparty/install/quincykit"
+- FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install"
 - OTHER_LDFLAGS = -lCocoaLumberjack -ltouchzipkit -lMBProgressHUD -ObjC
-  - Note 1: The option "-ObjC" is required by ZipKit and QuincyKit (actually
-    QuincyKit specifies -all_load, but -ObjC is sufficient). Without this option
+  - Note 1: The option "-ObjC" is required by ZipKit. Without this option
     ZipKit crashes the app when a ZKFileArchive object is created due to an
     unrecognized selector being sent to the object. For understanding the issue,
     read this technote: http://developer.apple.com/library/mac/#qa/qa1490/_index.html.
 - libz.dylib has been added to the "Build Phases" section "Link Binary with
-  Libraries". This is required to satisfy the dependencies of ZipKit and
-  QuincyKit.
+  Libraries". This is required to satisfy the dependencies of ZipKit.
 - CLANG_ENABLE_MODULES = YES
   This is enabled project-wide so that #import statements for system frameworks
   automatically result in the respective framework being linked against. As a
@@ -82,14 +80,6 @@ Important configuration settings in Xcode (both for the "Little Go" and the
   links against a release build of Fuego. Because of this NDEBUG becomes useless
   for distinguishing between debug/release builds, so we need our own project
   specific macro, in this case named LITTLEGO_NDEBUG.
-- QuincyKit requires ARC, but Little Go does not use ARC. Consequently all
-  QuincyKit .m files have been configured with a special compiler flag that
-  enables ARC when those files are compiled. This has been done like this:
-  - Select a target
-  - Select the "Build Phases" tab
-  - In the "Compile Sources" phase, search for the QuincyKit files
-  - Set the compiler flag "-fobjc-arc" for each file
-  - Repeat for all targets where the QuincyKit files appear
 - The build configurations "Distribute_AdHoc" and "Distribute_AppStore" are
   duplicates of the "Release" build configuration, with the single exception of
   the code-signing identity (found in the "Code Signing" section). Whenever a
