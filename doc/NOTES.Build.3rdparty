@@ -7,9 +7,11 @@ project, and how that software is built.
 3rdparty software build
 -----------------------
 Before the first Xcode build of the project is possible, 3rdparty software must
-be downloaded and built. Currently all 3rdparty software projects are integrated
-as Git submodules. After you have cloned the Little Go repository from GitHub
-the submodules must first be initialized like this:
+be downloaded and built. Currently most 3rdparty software projects are available
+via CocoaPods, but some need to be fetched and built as Git submodules.
+
+After you have cloned the Little Go repository from GitHub the Git submodules
+must first be initialized like this:
 
   cd /path/to/littlego
   git submodule update --init --recursive
@@ -28,7 +30,7 @@ A short overview of what the script does:
 - Invoke build-software.sh for each 3rdparty software package, in the correct
   order of dependencies
 - build-software.sh first invokes build-env.sh to obtain general build settings;
-  build-env.sh reflects the Xcode build environment such as base SDK, or
+  build-env.sh reflects the Xcode build environment such as the base SDK, or the
   deployment target. If the Xcode build environment changes, build-env.sh also
   needs to be modified
 - build-software.sh then invokes the package-specific build script (e.g.
@@ -40,11 +42,21 @@ A short overview of what the script does:
   install the built software
 - All this occurs within the project top-level folder "3rdparty"
 
+The next step is to set up the CocoaPods environment. For this to work you need
+to have CocoaPods installed on your machine. Visit the CocoaPods website
+(https://cocoapods.org/) for instructions how to do this. Once CocoaPods is
+installed, run the following commands:
+
+  cd /path/to/littlego
+  pod install
+
+If all went well, you are now ready to build Little Go itself.
+
 
 Boost build/installation issues
 -------------------------------
-No issues, build works out of the box. Any issues have been worked out before
-in the Fuego on iOS project that is included as a Git submodule.
+No known issues, build should work out of the box. Any issues have been worked
+out before in the Fuego on iOS project that is included as a Git submodule.
 
 The Boost build results in this framework bundle:
   3rdparty/install/boost.framework
@@ -52,8 +64,8 @@ The Boost build results in this framework bundle:
 
 Fuego build/installation issues
 -------------------------------
-No issues, build works out of the box. Any issues have been worked out before
-in the Fuego on iOS project that is included as a Git submodule.
+No known issues, build should work out of the box. Any issues have been worked
+out before in the Fuego on iOS project that is included as a Git submodule.
 
 The Fuego build results in this framework bundle:
   3rdparty/install/fuego-on-ios.framework
