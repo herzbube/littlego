@@ -19,7 +19,7 @@
 #import "AsynchronousCommand.h"
 
 // Library includes
-#import <mbprogresshud/MBProgressHUD.h>
+#import <MBProgressHUD/MBProgressHUD.h>
 
 // Forward declarations
 @protocol Command;

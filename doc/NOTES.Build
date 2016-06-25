@@ -62,7 +62,7 @@ Important configuration settings in Xcode (both for the "Little Go" and the
 - HEADER_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/include"
 - LIBRARY_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/lib"
 - FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install"
-- OTHER_LDFLAGS = -lCocoaLumberjack -ltouchzipkit -lMBProgressHUD -ObjC
+- OTHER_LDFLAGS = -lCocoaLumberjack -ltouchzipkit -ObjC
   - Note 1: The option "-ObjC" is required by ZipKit. Without this option
     ZipKit crashes the app when a ZKFileArchive object is created due to an
     unrecognized selector being sent to the object. For understanding the issue,
