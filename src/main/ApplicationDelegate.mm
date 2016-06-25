@@ -67,12 +67,6 @@
 #import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
 
-// Fabric/Crashlytics
-#ifndef LITTLEGO_UNITTESTS
-#import <Fabric/Fabric.h>
-#import <Crashlytics/Crashlytics.h>
-#endif
-
 // System includes
 #include <string>
 #include <vector>
