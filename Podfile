@@ -1,4 +1,6 @@
-project 'Little Go.xcodeproj'
+workspace 'Little Go'
+project 'Little Go'
+platform :ios, '8.1'
 
 abstract_target 'All Targets' do
   pod 'Fabric'
