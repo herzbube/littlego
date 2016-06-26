@@ -61,14 +61,16 @@ Important configuration settings in Xcode (both for the "Little Go" and the
 "Unit tests" targets):
 - IPHONEOS_DEPLOYMENT_TARGET = 8.1
   - This must match the deployment target in script/build-env.sh and in Podfile.
-- HEADER_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/include"
-- LIBRARY_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/lib"
 - FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install"
+  - This is required to find the Fuego and Boost frameworks.
+  - Note that FRAMEWORK_SEARCH_PATHS serves both for header file inclusion and
+    library linking. Traditional C/C++ has two separate settings for these:
+    HEADER_SEARCH_PATHS and LIBRARY_SEARCH_PATHS.
 - CLANG_ENABLE_MODULES = YES
   This is enabled project-wide so that #import statements for system frameworks
   automatically result in the respective framework being linked against. As a
-  result the project no longer contains a "Framework" group, and there are far
-  less entries in the "Link Binary with Libraries" build phase.
+  result there are far less entries in the "Link Binary with Libraries" build
+  phase.
 - GCC_PREPROCESSOR_DEFINITIONS = NDEBUG,LITTLEGO_NDEBUG (Release and Distribute_* configurations)
   GCC_PREPROCESSOR_DEFINITIONS = NDEBUG                 (Debug configuration)
   Note: The NDEBUG macro is required even for a debug build because the project
@@ -80,7 +82,7 @@ Important configuration settings in Xcode (both for the "Little Go" and the
   the code-signing identity (found in the "Code Signing" section). Whenever a
   change is made to one of the three configurations, the other two
   configurations must be kept in sync!
-- The main build target has a "Run Script" build phase that automatically
+- The "Little Go" target has a "Run Script" build phase that automatically
   uploads dSYM files to Crashlytics when an App Store build is made. The
   Fabric API key and the build secret required to perform this upload are
   ***NOT*** part of the public source code - if you forked the project to

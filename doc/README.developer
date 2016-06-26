@@ -43,6 +43,7 @@ Folder structure
  +-- LICENSE.html      The Apache license in HTML format (for display on the
  |                     device).
  +-- NOTICE            Attribution notices.
+ +-- Podfile           The CocoaPods configuration file.
  +-- README.md         Introduction to the project. This file is formatted in
  |                     Markdown and rendered as the front page on GitHub.
  +-- 3rdparty          After cloning the Little Go repository, this folder

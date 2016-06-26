@@ -71,27 +71,6 @@ The Fuego build results in this framework bundle:
   3rdparty/install/fuego-on-ios.framework
 
 
-CocoaLumberjack build/installation issues
------------------------------------------
-Building CocoaLumberjack's premade Xcode project with Xcode 4.6 results in
-otool complaining with the following warning:
-
-  -dynamic not specified the following flags are invalid: -ObjC
-
-The warning can be ignored because -ObjC is irrelevant for the static library
-build of CocoaLumberjack (otool itself already says it: -ObjC is only for
-dynamic, or shared library builds). The article at [1] has a good explanation
-of the issue. I assume that the CocoaLumberjack author eventually will fix the
-premade Xcode project in a future release.
-
-[1] http://www.cocoanetics.com/2013/02/xcode-4-6-libtool-issues/
-
-
-ZipKit build/installation issues
---------------------------------
-No issues, build works out of the box.
-
-
 Testing the patched version of Fuego on the Mac OS X command line
 -----------------------------------------------------------------
 Little Go integrates Fuego via the "fuego-for-littlego" branch of the Fuego on
