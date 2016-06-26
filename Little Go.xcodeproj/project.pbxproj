@@ -150,7 +150,6 @@
 		CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
 		CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA415A891B8004A7096 /* BugReportUtilities.m */; };
 		CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A715A0A3E400439B4E /* PathUtilities.m */; };
-		CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFA329A159FA0F400439B4E /* libz.dylib */; };
 		CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
@@ -507,7 +506,6 @@
 		CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
 		CDF630AA168F50BA003C8BEF /* DiscardAndPlayCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */; };
 		CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */; };
-		CDFA329B159FA0F600439B4E /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = CDFA329A159FA0F400439B4E /* libz.dylib */; };
 		CDFA329F15A0920200439B4E /* Lumberjack-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */; };
 		CDFA32A015A0920200439B4E /* MBProgressHUD-license.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */; };
 		CDFA32A115A0920200439B4E /* ZipKit-COPYING.TXT.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329E15A0920200439B4E /* ZipKit-COPYING.TXT.html */; };
@@ -1113,8 +1111,6 @@
 		CDF8229A164D490600F53C01 /* InterruptComputerCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterruptComputerCommand.h; sourceTree = "<group>"; };
 		CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterruptComputerCommand.m; sourceTree = "<group>"; };
 		CDF9740316C4082200D01D24 /* AsynchronousCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsynchronousCommand.h; sourceTree = "<group>"; };
-		CDFA329015990C8400439B4E /* build-zipkit.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-zipkit.sh"; sourceTree = "<group>"; };
-		CDFA329A159FA0F400439B4E /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Lumberjack-LICENSE.txt.html"; sourceTree = "<group>"; };
 		CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "MBProgressHUD-license.html"; sourceTree = "<group>"; };
 		CDFA329E15A0920200439B4E /* ZipKit-COPYING.TXT.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "ZipKit-COPYING.TXT.html"; sourceTree = "<group>"; };
@@ -1145,7 +1141,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CDFA329B159FA0F600439B4E /* libz.dylib in Frameworks */,
 				CD6E846E17FF99D100643576 /* boost.framework in Frameworks */,
 				CD6E847017FF99EC00643576 /* fuego-on-ios.framework in Frameworks */,
 				19BC6071EDF78D418FF44E38 /* libPods-All Targets-Little Go.a in Frameworks */,
@@ -1156,7 +1151,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CD48ADAA15A8F918004A7096 /* libz.dylib in Frameworks */,
 				D1180DF100FA850BAE6D58F9 /* libPods-All Targets-Unit tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1198,7 +1192,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				CDFA329A159FA0F400439B4E /* libz.dylib */,
 				CD6E846D17FF99D000643576 /* boost.framework */,
 				CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */,
 				EFA40757AA3D18B0C541BBC3 /* libPods-All Targets-Little Go.a */,
@@ -2182,7 +2175,6 @@
 				CDE3F58F13117EFE00EC16CC /* build-env.sh */,
 				CDE3F585131147D800EC16CC /* build-fuego.sh */,
 				CDE3F58E13117E3100EC16CC /* build-software.sh */,
-				CDFA329015990C8400439B4E /* build-zipkit.sh */,
 				CDEC28B212F55F270069F5B7 /* build-3rdparty-software.sh */,
 				CD3D5147147436C70098D8E0 /* makedist.sh */,
 				CDD961001662A8E300B54E09 /* render-readme.rb */,
@@ -3145,11 +3137,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = (
-					"-lCocoaLumberjack",
-					"-ltouchzipkit",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-lCocoaLumberjack";
 				PROVISIONING_PROFILE = "625b7e8d-6a8f-40c7-b1b1-f1424749585e";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3191,11 +3179,7 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
-				OTHER_LDFLAGS = (
-					"-lCocoaLumberjack",
-					"-ltouchzipkit",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-lCocoaLumberjack";
 				PROVISIONING_PROFILE = "625b7e8d-6a8f-40c7-b1b1-f1424749585e";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3257,11 +3241,7 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
-				OTHER_LDFLAGS = (
-					"-lCocoaLumberjack",
-					"-ltouchzipkit",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-lCocoaLumberjack";
 				PROVISIONING_PROFILE = "25bedbf9-2a80-4138-8268-9daf7de17938";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3408,11 +3388,7 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
-				OTHER_LDFLAGS = (
-					"-lCocoaLumberjack",
-					"-ltouchzipkit",
-					"-ObjC",
-				);
+				OTHER_LDFLAGS = "-lCocoaLumberjack";
 				PROVISIONING_PROFILE = "23a452c0-75d0-4dc2-8a83-7e7397e8fbd7";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";

@@ -62,13 +62,7 @@ Important configuration settings in Xcode (both for the "Little Go" and the
 - HEADER_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/include"
 - LIBRARY_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/lib"
 - FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install"
-- OTHER_LDFLAGS = -lCocoaLumberjack -ltouchzipkit -ObjC
-  - Note 1: The option "-ObjC" is required by ZipKit. Without this option
-    ZipKit crashes the app when a ZKFileArchive object is created due to an
-    unrecognized selector being sent to the object. For understanding the issue,
-    read this technote: http://developer.apple.com/library/mac/#qa/qa1490/_index.html.
-- libz.dylib has been added to the "Build Phases" section "Link Binary with
-  Libraries". This is required to satisfy the dependencies of ZipKit.
+- OTHER_LDFLAGS = -lCocoaLumberjack
 - CLANG_ENABLE_MODULES = YES
   This is enabled project-wide so that #import statements for system frameworks
   automatically result in the respective framework being linked against. As a

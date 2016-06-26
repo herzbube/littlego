@@ -3,17 +3,20 @@ PODS:
     - Fabric (~> 1.6.3)
   - Fabric (1.6.7)
   - MBProgressHUD (0.9.2)
+  - ZipKit (1.0.3)
 
 DEPENDENCIES:
   - Crashlytics
   - Fabric
   - MBProgressHUD
+  - ZipKit
 
 SPEC CHECKSUMS:
   Crashlytics: 130ab943f8c78cda7a814b434f270b2e2c8a3cba
   Fabric: caf7580c725e64db144f610ac65cd60956911dc7
   MBProgressHUD: 1569cf7ace17a8bac47aabfbb8580a49690386d1
+  ZipKit: 594735e7ad2fd3ee7349759681a0423a1b296572
 
-PODFILE CHECKSUM: 5d55f9e4b653f3f1c717e1135f91b088dbd6a0e7
+PODFILE CHECKSUM: fdd9946c31a073f9ae98902d46bf605196bb962a
 
 COCOAPODS: 1.0.1

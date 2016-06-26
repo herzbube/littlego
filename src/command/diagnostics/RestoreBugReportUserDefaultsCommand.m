@@ -22,8 +22,8 @@
 #import "../../utility/PathUtilities.h"
 
 // 3rdparty library includes
-#import <zipkit/ZKDefs.h>
-#import <zipkit/ZKFileArchive.h>
+#import <ZipKit/ZKDefs.h>
+#import <ZipKit/ZKFileArchive.h>
 
 
 @implementation RestoreBugReportUserDefaultsCommand
