@@ -731,7 +731,6 @@
 		CD6EBE43175401C200ABB980 /* ProgrammingTopics */ = {isa = PBXFileReference; lastKnownFileType = text; path = ProgrammingTopics; sourceTree = "<group>"; };
 		CD72216714633F1D005EAC65 /* TableViewGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewGridCell.h; sourceTree = "<group>"; };
 		CD72216814633F1D005EAC65 /* TableViewGridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewGridCell.m; sourceTree = "<group>"; };
-		CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = "build-cocoalumberjack.sh"; sourceTree = "<group>"; };
 		CD7C69B41A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionButtonBoxDataSource.h; sourceTree = "<group>"; };
 		CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionButtonBoxDataSource.m; sourceTree = "<group>"; };
 		CD7C69B81A9ABDE2009EC5AD /* BoardPositionNavigationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionNavigationManager.h; sourceTree = "<group>"; };
@@ -2171,7 +2170,6 @@
 		CDEC28B112F55F270069F5B7 /* script */ = {
 			isa = PBXGroup;
 			children = (
-				CD72B0F314589DA000334C72 /* build-cocoalumberjack.sh */,
 				CDE3F58F13117EFE00EC16CC /* build-env.sh */,
 				CDE3F585131147D800EC16CC /* build-fuego.sh */,
 				CDE3F58E13117E3100EC16CC /* build-software.sh */,
@@ -3137,7 +3135,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "-lCocoaLumberjack";
+				OTHER_LDFLAGS = "";
 				PROVISIONING_PROFILE = "625b7e8d-6a8f-40c7-b1b1-f1424749585e";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3179,7 +3177,7 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
-				OTHER_LDFLAGS = "-lCocoaLumberjack";
+				OTHER_LDFLAGS = "";
 				PROVISIONING_PROFILE = "625b7e8d-6a8f-40c7-b1b1-f1424749585e";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3241,7 +3239,7 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
-				OTHER_LDFLAGS = "-lCocoaLumberjack";
+				OTHER_LDFLAGS = "";
 				PROVISIONING_PROFILE = "25bedbf9-2a80-4138-8268-9daf7de17938";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3388,7 +3386,7 @@
 				HEADER_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/include\"";
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = "\"$(SRCROOT)/3rdparty/install$(SDKROOT)/lib\"";
-				OTHER_LDFLAGS = "-lCocoaLumberjack";
+				OTHER_LDFLAGS = "";
 				PROVISIONING_PROFILE = "23a452c0-75d0-4dc2-8a83-7e7397e8fbd7";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";

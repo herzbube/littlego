@@ -7,6 +7,7 @@ abstract_target 'All Targets' do
   pod 'Crashlytics'
   pod 'MBProgressHUD'
   pod 'ZipKit'
+  pod 'CocoaLumberjack'
 
   target 'Little Go' do
   end

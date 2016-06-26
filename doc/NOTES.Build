@@ -64,7 +64,6 @@ Important configuration settings in Xcode (both for the "Little Go" and the
 - HEADER_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/include"
 - LIBRARY_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install$(SDKROOT)/lib"
 - FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install"
-- OTHER_LDFLAGS = -lCocoaLumberjack
 - CLANG_ENABLE_MODULES = YES
   This is enabled project-wide so that #import statements for system frameworks
   automatically result in the respective framework being linked against. As a
