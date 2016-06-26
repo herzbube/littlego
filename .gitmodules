@@ -1,15 +1,3 @@
 [submodule "3rdparty/src/fuego-on-ios"]
 	path = 3rdparty/src/fuego-on-ios
 	url = git@github.com:herzbube/fuego-on-ios.git
-[submodule "3rdparty/src/CocoaLumberjack"]
-	path = 3rdparty/src/CocoaLumberjack
-	url = git@github.com:CocoaLumberjack/CocoaLumberjack.git
-[submodule "3rdparty/src/QuincyKit"]
-	path = 3rdparty/src/QuincyKit
-	url = git@github.com:bitstadium/QuincyKit.git
-[submodule "3rdparty/src/ZipKit"]
-	path = 3rdparty/src/ZipKit
-	url = git@github.com:kolpanic/ZipKit.git
-[submodule "3rdparty/src/MBProgressHUD"]
-	path = 3rdparty/src/MBProgressHUD
-	url = git@github.com:matej/MBProgressHUD.git
