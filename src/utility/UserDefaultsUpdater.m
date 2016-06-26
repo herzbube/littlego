@@ -167,8 +167,6 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
       }
     }
   }
-  if ([ApplicationDelegate sharedDelegate].writeUserDefaultsEnabled)
-    [userDefaults synchronize];
 
   // Perform final check if the cumulative effect of all upgrades had the
   // desired effect.

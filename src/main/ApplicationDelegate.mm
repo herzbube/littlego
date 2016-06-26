@@ -572,8 +572,6 @@ static ApplicationDelegate* sharedDelegate = nil;
   [self.loggingModel writeUserDefaults];
   [self.uiSettingsModel writeUserDefaults];
   [self.magnifyingViewModel writeUserDefaults];
-
-  [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
 // -----------------------------------------------------------------------------
