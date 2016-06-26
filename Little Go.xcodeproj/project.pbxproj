@@ -3083,6 +3083,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego;
 				PRODUCT_NAME = "Little Go";
 			};
 			name = Debug;
@@ -3097,6 +3098,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego;
 				PRODUCT_NAME = "Little Go";
 			};
 			name = Release;
@@ -3256,6 +3258,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego;
 				PRODUCT_NAME = "Little Go";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -3286,6 +3289,7 @@
 					./src,
 				);
 				INFOPLIST_FILE = test/resource/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.unittests;
 				PRODUCT_NAME = "Unit tests";
 				PROVISIONING_PROFILE = "590c1555-a3ec-45ac-a5e1-cb4403845939";
 			};
@@ -3306,6 +3310,7 @@
 					./src,
 				);
 				INFOPLIST_FILE = test/resource/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.unittests;
 				PRODUCT_NAME = "Unit tests";
 				PROVISIONING_PROFILE = "590c1555-a3ec-45ac-a5e1-cb4403845939";
 			};
@@ -3326,6 +3331,7 @@
 					./src,
 				);
 				INFOPLIST_FILE = test/resource/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.unittests;
 				PRODUCT_NAME = "Unit tests";
 				PROVISIONING_PROFILE = "590c1555-a3ec-45ac-a5e1-cb4403845939";
 			};
@@ -3346,6 +3352,7 @@
 					./src,
 				);
 				INFOPLIST_FILE = test/resource/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.unittests;
 				PRODUCT_NAME = "Unit tests";
 				PROVISIONING_PROFILE = "590c1555-a3ec-45ac-a5e1-cb4403845939";
 			};
@@ -3403,6 +3410,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego;
 				PRODUCT_NAME = "Little Go";
 			};
 			name = Distribute_AdHoc;
