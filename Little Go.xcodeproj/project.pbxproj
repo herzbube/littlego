@@ -3140,7 +3140,8 @@
 				LIBRARY_SEARCH_PATHS = "";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "625b7e8d-6a8f-40c7-b1b1-f1424749585e";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "d2d5a442-0ee5-4f44-b8bf-33ec96320c3b";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3183,7 +3184,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "625b7e8d-6a8f-40c7-b1b1-f1424749585e";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=*]" = "d2d5a442-0ee5-4f44-b8bf-33ec96320c3b";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3246,7 +3248,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "25bedbf9-2a80-4138-8268-9daf7de17938";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=*]" = "b6279cca-1d21-4c24-98f5-b96c2074dde5";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -3295,7 +3298,7 @@
 				INFOPLIST_FILE = test/resource/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.unittests;
 				PRODUCT_NAME = "Unit tests";
-				PROVISIONING_PROFILE = "590c1555-a3ec-45ac-a5e1-cb4403845939";
+				"PROVISIONING_PROFILE[sdk=*]" = "e464c2ca-2294-4f17-b3dd-39e7abdfc2f9";
 			};
 			name = Distribute_AppStore;
 		};
@@ -3316,7 +3319,7 @@
 				INFOPLIST_FILE = test/resource/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.unittests;
 				PRODUCT_NAME = "Unit tests";
-				PROVISIONING_PROFILE = "590c1555-a3ec-45ac-a5e1-cb4403845939";
+				"PROVISIONING_PROFILE[sdk=iphoneos*]" = "e464c2ca-2294-4f17-b3dd-39e7abdfc2f9";
 			};
 			name = Debug;
 		};
@@ -3337,7 +3340,7 @@
 				INFOPLIST_FILE = test/resource/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.unittests;
 				PRODUCT_NAME = "Unit tests";
-				PROVISIONING_PROFILE = "590c1555-a3ec-45ac-a5e1-cb4403845939";
+				"PROVISIONING_PROFILE[sdk=*]" = "e464c2ca-2294-4f17-b3dd-39e7abdfc2f9";
 			};
 			name = Release;
 		};
@@ -3358,7 +3361,7 @@
 				INFOPLIST_FILE = test/resource/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.unittests;
 				PRODUCT_NAME = "Unit tests";
-				PROVISIONING_PROFILE = "590c1555-a3ec-45ac-a5e1-cb4403845939";
+				"PROVISIONING_PROFILE[sdk=*]" = "e464c2ca-2294-4f17-b3dd-39e7abdfc2f9";
 			};
 			name = Distribute_AdHoc;
 		};
@@ -3399,7 +3402,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LIBRARY_SEARCH_PATHS = "";
 				OTHER_LDFLAGS = "";
-				PROVISIONING_PROFILE = "23a452c0-75d0-4dc2-8a83-7e7397e8fbd7";
+				PROVISIONING_PROFILE = "";
+				"PROVISIONING_PROFILE[sdk=*]" = "8989c558-eb9d-459e-9c00-afcad495bd47";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

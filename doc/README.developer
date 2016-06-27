@@ -15,7 +15,9 @@ NOTES.build and NOTES.Build.3rdparty, but mostly you will be on your own.
 
 Before you begin, make sure that you have CocoaPods installed on your machine.
 Visit the CocoaPods website (https://cocoapods.org/) for instructions how to do
-this.
+this. Also note that if you want to create a build that runs on an actual iOS
+device there are additional requirements. See the section "Device builds" in
+NOTES.build.
 
 1. Log in as the user you are going to develop with.
 2. Clone the Git repository (since you are reading this document you probably

@@ -55,6 +55,133 @@ iOS base SDK 6.1 (Xcode 5.1.1 comes bundled with iOS base SDK 7.1).
    (Preferences > Downloads).
 
 
+Device builds
+-------------
+If you want to create a build that runs on an actual iOS device, the following
+additional requirements apply:
+
+- You must provide code signing identities and provisioning profiles on the
+  machine where the build takes place. If you haven't got an Apple developer
+  account, now is the time to create one. If you're new to this then it might
+  be best to take your first steps with a simple "Hello world" app instead of
+  with this project.
+- The build setting PROVISIONING_PROFILE references various provisioning
+  profiles that are tied to my personal Apple developer account. You must
+  therefore update PROVISIONING_PROFILE so that it references provisioning
+  profiles that are tied to YOUR account. See the sections
+  "Build configurations" and "Code signing and provisioning profiles" below for
+  details.
+- You must create the following two files in the project's 'root folder:
+    fabric.apikey
+    fabric.buildsecret
+  These are required for setting up Crashlytics, the crash reporting service.
+  If you haven't got an account with Crashlytics yet, now is the time to create
+  one. Once you have your account, create an organization in the web interface,
+  then get the API key and build secret from the organization page in the web
+  interface and put those values into their respective local file.
+
+
+Build configurations
+--------------------
+This project defines 4 build configurations:
+- Debug configuration: For non-optimized developer builds that can be debugged
+  in the simulator or on a device that is directly attached to the development
+  machine.
+- Release configuration: For production builds that can be tested in the
+  simulator or on a device that is directly attached to the development machine.
+  This is also the configuration to use for profiling with Instruments on a
+  device.
+- Distribute_AdHoc configuration: For production builds that can be tested on
+  a device, but the device is not attached to the development machine. App
+  distribution happens over the AdHoc distribution channel. This is the
+  configuration to use when distributing builds to beta testers.
+- Distribute_AppStore configuration: For final production builds that are
+  submitted to Apple, for distribution via the App Store.
+
+IMPORTANT: The build settings for the Distribute_AdHoc and Distribute_AppStore
+configurations are almost identical to the build settings for the Release
+configuration. The only differences are the provisioning profile and the code
+signing identities, because of the different distribution channels. Whenever a
+change is made to one of the three configurations, the other two configurations
+must be kept in sync!
+
+
+Code signing and provisioning profiles
+--------------------------------------
+Please read the section "Build configurations" above for an understanding of
+the purpose of the 4 build configurations of this project. This understanding
+is crucial for how provisioning profiles are set up for this project.
+
+Code signing and provisioning profiles are relevant only for device builds.
+They can be ignored for simulator builds.
+
+Code signing identity
+- The identity to use for code signing is specified via the build setting
+  CODE_SIGN_IDENTITY.
+- This project does not specify a code signing identy. It sets the build setting
+  CODE_SIGN_IDENTITY = "" (an empty string) for all configurations.
+- If the code signing identity is not specified, two things can happen:
+  - If a provisioning profile is present: Xcode looks up the code signing
+    identity in the provisioning profile. The certificate used for creating the
+    provisioning profile is used as the code signing identity.
+  - If no provisioning profile is present: No code signing occurs. This is OK
+    for simulator builds, but it is a fatal build error for device builds.
+- This project does not specify a code signing identity because Xcode is meant
+  to look up the code signing in the provisioning profile.
+
+Both a development and a distribution certificate for code signing must be
+present on the machine where the build is taking place. It is best to let Xcode
+automatically handle those certificates: Go to
+  Preferences > Accounts > View Details
+where you can create new certificates or renew existing ones.
+
+
+Provisioning profile
+- The provisioning profile to use for a build is specified via the build
+  setting PROVISIONING_PROFILE. The value of the build setting is a UUID that
+  identifies the provisioning profile.
+- This project specifies the following provisioning profiles for the target
+  "Little Go":
+  - PROVISIONING_PROFILE = Development profile             (for configurations "Debug" and "Release")
+  - PROVISIONING_PROFILE = AdHoc distribution profile      (for configuration "Distribute_AdHoc")
+  - PROVISIONING_PROFILE = App Store distribution profile  (for configuration "Distribute_AppStore")
+  - All provisioning profiles use the App ID ch.herzbube.littlego
+- This project specifies only one provisioning profiles for the target
+  "Unit tests":
+  - PROVISIONING_PROFILE = Development profile
+  - The provisioning profile is the same for all configurations
+  - The provisioning profile uses a Wildcard App ID
+  - This single developer provisioning profile is sufficient because unit tests
+    are never actually distributed via the AdHoc or App Store channels. If a
+    build is made for one of the "Distribute_*" configurations, all that is
+    necessary is that the "Unit tests" target builds.
+
+Provisioning profiles must be present on the machine where the build is taking
+place. It is not entirely clear how Xcode (or xcodebuild) looks up provisioning
+profiles, but one possibility is that they must be present in a certain location
+(~/Library/MobileDevice/Provisioning Profiles), another is that they are found
+via Spotlight (mdfind). As with the certificates for code signing, you can try
+to let Xcode automatically manage provisioning profiles. Again, go to
+  Preferences > Accounts > View Details
+and check the options that Xcode offers.
+
+Personally, I didn't have much luck with automatic management of provisioning
+profiles: Somehow the combination of 2 targets and 4 configurations is more than
+Xcode can handle, and it regularly botches even renewals of expired profiles.
+I am therefore using the following manual process:
+- Manually create the 4 provisioning profiles in Apple's provisioning portal
+  (https://developer.apple.com/)
+- Remove all expired provisioning profiles
+- Add the developer Apple ID account in Xcode under "Preferences > Accounts" if
+  the account is not yet present
+- Select "View details" for the account
+- Xcode now retrieves the names of all provisioning profiles that currently
+  exist on the provisioning portal
+- Click the "Download All" button to retrieve the actual profiles
+- Go to the project's build settings and select the appropriate profile for the
+  build setting PROVISIONING_PROFILE, as described further up
+
+
 Xcode build system configuration
 --------------------------------
 Important configuration settings in Xcode (both for the "Little Go" and the
@@ -83,11 +210,6 @@ Important configuration settings in Xcode (both for the "Little Go" and the
   Boost and Fuego 3rdparty software builds do not (yet) produce binaries with
   bitcode. It is not clear whether whether the binaries consumed from CocoaPods
   contain bitcode.
-- The build configurations "Distribute_AdHoc" and "Distribute_AppStore" are
-  duplicates of the "Release" build configuration, with the single exception of
-  the code-signing identity (found in the "Code Signing" section). Whenever a
-  change is made to one of the three configurations, the other two
-  configurations must be kept in sync!
 - The "Little Go" target has a "Run Script" build phase that automatically
   uploads dSYM files to Crashlytics when an App Store build is made. The
   Fabric API key and the build secret required to perform this upload are
