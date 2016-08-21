@@ -337,14 +337,20 @@ static ApplicationDelegate* sharedDelegate = nil;
 {
 #ifndef LITTLEGO_UNITTESTS
   // TODO: Conditional compile this only when building for App Distribution
-  NSString* fabricAPIKey = [self contentOfTextResource:fabricAPIKeyResource];
+
+  // Reading the bundle resource results in a string with a trailing newline,
+  // character because the resource file also contains a newline. Fabric does
+  // not handle such extraneous whitespace characters, so we have to trim them
+  // ourselves.
+  NSString* fabricAPIKey = [[self contentOfTextResource:fabricAPIKeyResource] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
   if (fabricAPIKey != nil)
   {
     // TODO: Don't start the service if the API key has a pre-determined "dummy"
     // value. This lets collaborators run the app without the need for
     // disseminating the API key.
+
+    // Crashlytics calls [Fabric with:...] behind the scenes
     [Crashlytics startWithAPIKey:fabricAPIKey];
-    [Fabric with:@[[Crashlytics class]]];
   }
   else
   {
