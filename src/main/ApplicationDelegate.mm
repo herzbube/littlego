@@ -48,6 +48,9 @@
 #import "../play/model/ScoringModel.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
+#ifndef LITTLEGO_UNITTESTS
+#import "../diagnostics/CrashReportingHandler.h"
+#endif
 #import "../diagnostics/CrashReportingModel.h"
 #import "../diagnostics/GtpCommandModel.h"
 #import "../diagnostics/GtpLogModel.h"
@@ -181,29 +184,29 @@ static ApplicationDelegate* sharedDelegate = nil;
   // Enable in normal (i.e. not unit testing) environment
   self.writeUserDefaultsEnabled = true;
 
-  // Crash Reporting depends on this (needs to read the Fabric API key)
-  [self setupResourceBundle];
-
-  // Back at the time when this project used QuincyKit for crash reporting,
-  // this method had to be invoked in the context of the main thread,
-  // specifically SetupApplicationCommand was not allowed to invoke it because
-  // that command runs in a secondary thread. This project now uses a different
-  // crash reporting tool now, but it's still safest to invoke this on the main
-  // thread.
-  [self setupCrashReporting];
-
   // Don't change the following sequence without thoroughly checking the
   // dependencies
-  // TODO: Document dependencies
+  // The following steps have no dependencies
+  [self setupResourceBundle];
   [self setupLogging];
   [self setupApplicationLaunchMode];
   bool setupDocumentInteractionSuccess = [self setupDocumentInteraction:launchOptions];
   [self setupFolders];
+  // Depends on setupResourceBundle for reading registration domain defaults
   [self setupRegistrationDomain];
+  // Depends on setupRegistrationDomain to provide fallback values if no user
+  // preferences exist
   [self setupUserDefaults];
+  // Depends on setupResourceBundle for reading the Fabric API key, and on
+  // setupUserDefaults (for crashReportingModel)
+  [self setupCrashReporting];
+  // Depends on setupUserDefaults (for boardViewModel)
   [self setupSound];
+  // Has no dependencies
   [self setupFuego];
-  [self setupGUI];  // depends on setupUserDefaults (e.g. MainTabBarController wants to restore tab order)
+  // Depends on setupUserDefaults (e.g. MainTabBarController wants to restore
+  // tab order)
+  [self setupGUI];
 
   // Further setup steps are executed in a secondary thread so that we can
   // display a progress HUD
@@ -349,8 +352,9 @@ static ApplicationDelegate* sharedDelegate = nil;
     // value. This lets collaborators run the app without the need for
     // disseminating the API key.
 
+    CrashReportingHandler* crashReportingHandler = [[[CrashReportingHandler alloc] initWithModel:self.crashReportingModel] autorelease];
     // Crashlytics calls [Fabric with:...] behind the scenes
-    [Crashlytics startWithAPIKey:fabricAPIKey];
+    [Crashlytics startWithAPIKey:fabricAPIKey delegate:crashReportingHandler];
   }
   else
   {
@@ -362,10 +366,6 @@ static ApplicationDelegate* sharedDelegate = nil;
     @throw exception;
   }
 #endif
-
-//  BWQuincyManager* sharedQuincyManager = [BWQuincyManager sharedQuincyManager];
-//  [sharedQuincyManager setSubmissionURL:crashReportSubmissionURL];
-//  [sharedQuincyManager startManager];
 }
 
 // -----------------------------------------------------------------------------
