@@ -36,6 +36,7 @@
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/TableViewCellFactory.h"
 #import "../../ui/TableViewVariableHeightCell.h"
+#import "../../ui/UiElementMetrics.h"
 #import "../../utility/NSStringAdditions.h"
 
 // Constants
@@ -239,6 +240,7 @@ enum BoardPositionSectionItem
   [self.view addSubview:self.tableView];
   self.tableView.delegate = self;
   self.tableView.dataSource = self;
+  self.tableView.estimatedRowHeight = [UiElementMetrics tableViewCellSize].height;
 }
 
 // -----------------------------------------------------------------------------
@@ -916,25 +918,6 @@ enum BoardPositionSectionItem
 }
 
 #pragma mark - UITableViewDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  if (GameInfoSection == indexPath.section && DisputeResolutionRuleItem == indexPath.row)
-  {
-    NSString* valueText = [NSString stringWithDisputeResolutionRule:[GoGame sharedGame].rules.disputeResolutionRule];
-    return [TableViewVariableHeightCell heightForRowInTableView:tableView
-                                                descriptionText:disputeResolutionRuleText_GameInfoViewController
-                                                      valueText:valueText
-                                         hasDisclosureIndicator:false];
-  }
-  else
-  {
-    return tableView.rowHeight;
-  }
-}
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.

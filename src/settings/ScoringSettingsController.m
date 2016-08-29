@@ -22,6 +22,7 @@
 #import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
+#import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
 
 // Constants
@@ -126,6 +127,7 @@ enum InconsistentTerritoryMarkupTypeSectionItem
 {
   [super viewDidLoad];
   self.title = @"Scoring settings";
+  self.tableView.estimatedRowHeight = [UiElementMetrics tableViewCellSize].height;
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -258,14 +260,6 @@ enum InconsistentTerritoryMarkupTypeSectionItem
                 heightForCellOfType:SwitchCellType
                            withText:markDeadStonesIntelligentlyText
              hasDisclosureIndicator:false];
-    }
-    case InconsistentTerritoryMarkupTypeSection:
-    {
-      NSString* valueText = [self inconsistentTerritoryMarkupTypeAsString:self.scoringModel.inconsistentTerritoryMarkupType];
-      return [TableViewVariableHeightCell heightForRowInTableView:tableView
-                                                  descriptionText:inconsistentTerritoryMarkupTypeText
-                                                        valueText:valueText
-                                           hasDisclosureIndicator:true];
     }
     default:
     {

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2016 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,9 +22,14 @@
 /// exception that the description text label is adjusted in width and height to
 /// accommodate text that requires more than 1 line.
 ///
-/// To make TableViewVariableHeightCell work as expected, a UITableViewDelegate
-/// must override tableView:heightForRowAtIndexPath: and return the value of
-/// heightForRowWithDescriptionText:valueText:hasDisclosureIndicator:().
+/// To make TableViewVariableHeightCell work as expected, the
+/// UITableViewDelegate must NOT override tableView:heightForRowAtIndexPath:(),
+/// instead it must set the following UITableView properties:
+/// - rowHeight = UITableViewAutomaticDimension (already the default value)
+/// - estimatedRowHeight = a non-zero value; for the best results, the value
+///   should match the actual height of most of the cells in the table view,
+///   because in that case the table view has to make unexpected layout changes
+///   only for occasional outlying cells
 ///
 /// TableViewVariableHeightCell arranges its labels within its content view
 /// according to the following schema:
@@ -62,10 +67,6 @@
 }
 
 + (TableViewVariableHeightCell*) cellWithReuseIdentifier:(NSString*)reuseIdentifier;
-+ (CGFloat) heightForRowInTableView:(UITableView*)tableView
-                    descriptionText:(NSString*)descriptionText
-                          valueText:(NSString*)valueText
-             hasDisclosureIndicator:(bool)hasDisclosureIndicator;
 
 @property(nonatomic, retain, readonly) UILabel* descriptionLabel;
 @property(nonatomic, retain, readonly) UILabel* valueLabel;

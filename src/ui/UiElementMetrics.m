@@ -130,9 +130,15 @@
   return 94;
 }
 
-+ (int) tableViewCellWidth
++ (CGSize) tableViewCellSize;
 {
-  return [UiElementMetrics screenWidth];
+  static CGSize tableViewCellSize = { 0.0f, 0.0f };
+  if (CGSizeEqualToSize(tableViewCellSize, CGSizeZero))
+  {
+    UITableViewCell* dummyCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+    tableViewCellSize = dummyCell.bounds.size;
+  }
+  return tableViewCellSize;
 }
 
 // The horizontal margin is the distance from the left or right edge of the
@@ -150,7 +156,7 @@
 /// @brief Width is for a non-indented top-level cell.
 + (int) tableViewCellContentViewWidth
 {
-  return [UiElementMetrics tableViewCellWidth] - 2 * [UiElementMetrics tableViewCellMarginHorizontal];
+  return [UiElementMetrics tableViewCellSize].width - 2 * [UiElementMetrics tableViewCellMarginHorizontal];
 }
 
 // For the top cell in a grouped table view, the content view frame.origin.y

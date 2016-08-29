@@ -49,7 +49,7 @@
 + (CGFloat) horizontalSpacingSuperview;
 + (CGFloat) verticalSpacingSuperview;
 + (int) switchWidth;
-+ (int) tableViewCellWidth;
++ (CGSize) tableViewCellSize;
 + (int) tableViewCellMarginHorizontal;
 + (int) tableViewCellContentViewWidth;
 + (int) tableViewCellContentViewHeight;

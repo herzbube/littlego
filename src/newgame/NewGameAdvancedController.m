@@ -23,6 +23,7 @@
 #import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
+#import "../ui/UiElementMetrics.h"
 #import "../utility/NSStringAdditions.h"
 
 // Constants
@@ -201,6 +202,7 @@ enum CellID
 {
   [super viewDidLoad];
   self.title = @"Advanced settings";
+  self.tableView.estimatedRowHeight = [UiElementMetrics tableViewCellSize].height;
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -403,27 +405,6 @@ enum CellID
 }
 
 #pragma mark - UITableViewDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  enum CellID cellID = [self cellIDForIndexPath:indexPath];
-  if (DisputeResolutionRuleCellID == cellID)
-  {
-    NSString* valueText = [NSString stringWithDisputeResolutionRule:self.theNewGameModel.disputeResolutionRule];
-    bool hasDisclosureIndicator = (GoLifeAndDeathSettlingRuleThreePasses != self.theNewGameModel.lifeAndDeathSettlingRule);
-    return [TableViewVariableHeightCell heightForRowInTableView:tableView
-                                                descriptionText:disputeResolutionRuleText_NewGameAdvancedController
-                                                      valueText:valueText
-                                         hasDisclosureIndicator:hasDisclosureIndicator];
-  }
-  else
-  {
-    return tableView.rowHeight;
-  }
-}
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
