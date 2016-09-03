@@ -25,6 +25,8 @@
 /// @brief Class extension with private properties for SplitViewController.
 // -----------------------------------------------------------------------------
 @interface SplitViewController()
+/// @brief True if the controller object is in the process of deallocating.
+@property (nonatomic, assign) bool deallocating;
 @property (nonatomic, retain) UIView* dividerView;
 @property (nonatomic, retain) UIBarButtonItem* barButtonItemLeftPane;
 @property (nonatomic, assign) bool leftPaneIsShownInOverlay;
@@ -50,6 +52,7 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+  self.deallocating = false;
   self.viewControllers = [NSArray array];
   self.delegate = nil;
   self.leftPaneWidth = [UiElementMetrics splitViewControllerLeftPaneWidth];
@@ -68,6 +71,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.deallocating = true;
   // First, let the property setter get rid of all child view controllers and
   // their subviews
   self.viewControllers = [NSArray array];
@@ -132,7 +136,7 @@
   _viewControllers = [[NSArray alloc] initWithArray:viewControllers];
 
   [self setupChildViewControllers:_viewControllers];
-  if (self.isViewLoaded)
+  if (self.isViewLoaded && !self.deallocating)
   {
     UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
     [self updateViewHierarchyForInterfaceOrientation:interfaceOrientation];
