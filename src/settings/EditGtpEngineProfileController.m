@@ -24,6 +24,7 @@
 #import "../player/PlayerModel.h"
 #import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
 #import "../utility/UiColorAdditions.h"
 
@@ -177,6 +178,8 @@ enum PlayerListSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
+  self.tableView.estimatedRowHeight = [UiElementMetrics tableViewCellSize].height;
+
   if (self.profileExists)
   {
     self.navigationItem.title = @"Edit Profile";
@@ -414,30 +417,6 @@ enum PlayerListSectionItem
 }
 
 #pragma mark - UITableViewDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  CGFloat height = tableView.rowHeight;
-  switch (indexPath.section)
-  {
-    case ProfileNotesSection:
-    {
-      height = [UiUtilities tableView:tableView
-                  heightForCellOfType:DefaultCellType
-                             withText:self.profile.profileDescription
-               hasDisclosureIndicator:true];
-      break;
-    }
-    default:
-    {
-      break;
-    }
-  }
-  return height;
-}
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.

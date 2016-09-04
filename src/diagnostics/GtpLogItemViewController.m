@@ -21,7 +21,7 @@
 #import "GtpCommandModel.h"
 #import "../main/ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/UiUtilities.h"
+#import "../ui/UiElementMetrics.h"
 
 
 // -----------------------------------------------------------------------------
@@ -109,6 +109,7 @@ enum ResponseStringSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
+  self.tableView.estimatedRowHeight = [UiElementMetrics tableViewCellSize].height;
 
   self.navigationItem.title = @"GTP Log Item";
 
@@ -274,27 +275,6 @@ enum ResponseStringSectionItem
       break;
   }
   return cell;
-}
-
-#pragma mark - UITableViewDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  NSString* cellText;  // use the same strings as in tableView:cellForRowAtIndexPath:()
-  if (CommandSection == indexPath.section && CommandStringItem == indexPath.row)
-    cellText = self.logItem.commandString;
-  else if (ResponseStringSection == indexPath.section && ResponseStringItem == indexPath.row)
-    cellText = self.logItem.parsedResponseString;
-  else
-    return tableView.rowHeight;
-
-  return [UiUtilities tableView:tableView
-            heightForCellOfType:DefaultCellType
-                       withText:cellText
-         hasDisclosureIndicator:false];
 }
 
 #pragma mark - Notification responders
