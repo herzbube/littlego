@@ -580,6 +580,10 @@ static GameActionManager* sharedGameActionManager = nil;
 - (NSDictionary*) visibleStatesOfGameActions
 {
   NSMutableDictionary* visibleStates = [NSMutableDictionary dictionary];
+
+  [self addGameAction:GameActionGameInfo toVisibleStatesDictionary:visibleStates];
+  [self addGameAction:GameActionMoreGameActions toVisibleStatesDictionary:visibleStates];
+
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
   if (game.score.scoringEnabled)

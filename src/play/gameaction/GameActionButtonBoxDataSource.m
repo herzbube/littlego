@@ -19,14 +19,23 @@
 #import "GameActionButtonBoxDataSource.h"
 
 
+/// @brief Enumerates the button box sections that this
+/// GameActionButtonBoxDataSource provides.
+enum ButtonBoxSection
+{
+  VariableButtonBoxSection,  ///< @brief A section with a variable number of buttons
+  FixedButtonBoxSection,     ///< @brief A section with a fixed number of buttons
+};
+
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
 /// GameActionButtonBoxDataSource.
 // -----------------------------------------------------------------------------
 @interface GameActionButtonBoxDataSource()
 @property(nonatomic, retain) NSDictionary* gameActionButtons;
-@property(nonatomic, retain) NSArray* buttonOrderList;
-@property(nonatomic, retain) NSArray* visibleGameActions;
+@property(nonatomic, retain) NSDictionary* buttonOrderDictionary;
+@property(nonatomic, retain) NSDictionary* visibleGameActions;
 @end
 
 
@@ -46,7 +55,7 @@
   if (! self)
     return nil;
   self.gameActionButtons = [GameActionButtonBoxDataSource gameActionButtons];
-  self.buttonOrderList = [GameActionButtonBoxDataSource buttonOrderList];
+  self.buttonOrderDictionary = [GameActionButtonBoxDataSource buttonOrderDictionary];
   [GameActionManager sharedGameActionManager].uiDelegate = self;
   NSDictionary* visibleStates = [[GameActionManager sharedGameActionManager] visibleStatesOfGameActions];
   [self updateForVisibleGameActions:visibleStates];
@@ -60,7 +69,7 @@
 - (void) dealloc
 {
   self.gameActionButtons = nil;
-  self.buttonOrderList = nil;
+  self.buttonOrderDictionary = nil;
   self.visibleGameActions = nil;
   if ([GameActionManager sharedGameActionManager].uiDelegate == self)
     [GameActionManager sharedGameActionManager].uiDelegate = nil;
@@ -74,7 +83,7 @@
 // -----------------------------------------------------------------------------
 - (int) numberOfSectionsInButtonBoxController:(ButtonBoxController*)buttonBoxController
 {
-  return 2;
+  return (int)self.visibleGameActions.count;
 }
 
 // -----------------------------------------------------------------------------
@@ -82,10 +91,9 @@
 // -----------------------------------------------------------------------------
 - (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfRowsInSection:(NSInteger)section
 {
-  if (0 == section)
-    return (int)self.visibleGameActions.count;
-  else
-    return 2;  // game info + game actions are always visible
+  NSNumber* sectionAsNumber = [NSNumber numberWithInteger:section];
+  NSArray* visibleGameActionsInSection = self.visibleGameActions[sectionAsNumber];
+  return (int)visibleGameActionsInSection.count;
 }
 
 // -----------------------------------------------------------------------------
@@ -101,46 +109,10 @@
 // -----------------------------------------------------------------------------
 - (UIButton*) buttonBoxController:(ButtonBoxController*)buttonBoxController buttonAtIndexPath:(NSIndexPath*)indexPath
 {
-  UIButton* button;
-
-  switch (indexPath.section)
-  {
-    case 0:
-    {
-      NSNumber* gameActionAsNumber = self.visibleGameActions[indexPath.row];
-      button = self.gameActionButtons[gameActionAsNumber];
-      break;
-    }
-    case 1:
-    {
-      enum GameAction gameAction;
-      switch (indexPath.row)
-      {
-        case 0:
-        {
-          gameAction = GameActionGameInfo;
-          break;
-        }
-        case 1:
-        {
-          gameAction = GameActionMoreGameActions;
-          break;
-        }
-        default:
-        {
-          return nil;
-        }
-      }
-      NSNumber* gameActionAsNumber = [NSNumber numberWithInt:gameAction];
-      button = self.gameActionButtons[gameActionAsNumber];
-      break;
-    }
-    default:
-    {
-      return nil;
-    }
-  }
-
+  NSNumber* sectionAsNumber = [NSNumber numberWithInteger:indexPath.section];
+  NSArray* visibleGameActionsInSection = self.visibleGameActions[sectionAsNumber];
+  NSNumber* gameActionAsNumber = visibleGameActionsInSection[indexPath.row];
+  UIButton* button = self.gameActionButtons[gameActionAsNumber];
   return button;
 }
 
@@ -288,23 +260,39 @@
 #pragma mark - Private helpers - Button order
 
 // -----------------------------------------------------------------------------
-/// @brief Returns an array with NSNumber objects, each NSNumber encapsulating
-/// a value from the GameAction enumeration. The array elements appear in the
-/// order in which UIButton objects corresponding to those GameAction values
-/// should be displayed in the UI.
+/// @brief Returns a dictionary whose content specifies the order in which
+/// buttons should be displayed in the UI.
+///
+/// Dictionary keys are NSNumber objects, each encapsulating a value that
+/// denotes the index of a button box. Dictionary values are NSArray objects,
+/// each specifying the order in which buttons should be displayed in the UI in
+/// the corresponding button box.
+///
+/// Array elements are NSNumber objects, each NSNumber encapsulating a value
+/// from the GameAction enumeration. The array elements appear in the order in
+/// which UIButton objects corresponding to those GameAction values should be
+/// displayed in the UI in the corresponding button box.
 // -----------------------------------------------------------------------------
-+ (NSArray*) buttonOrderList
++ (NSDictionary*) buttonOrderDictionary
 {
-  NSMutableArray* buttonOrderList = [NSMutableArray array];
-  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionScoringStart]];
-  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionScoringDone]];
-  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionPass]];
-  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionComputerPlay]];
-  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionDiscardBoardPosition]];
-  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionPause]];
-  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionContinue]];
-  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionInterrupt]];
-  return buttonOrderList;
+  NSMutableArray* variableButtonBoxSectionOrder = [NSMutableArray array];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionScoringStart]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionScoringDone]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionPass]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionComputerPlay]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionDiscardBoardPosition]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionPause]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionContinue]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionInterrupt]];
+
+  NSMutableArray* fixedButtonBoxSectionOrder = [NSMutableArray array];
+  [fixedButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionGameInfo]];
+  [fixedButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionMoreGameActions]];
+
+  NSMutableDictionary* buttonOrderDictionary = [NSMutableDictionary dictionary];
+  buttonOrderDictionary[[NSNumber numberWithInt:VariableButtonBoxSection]] = variableButtonBoxSectionOrder;
+  buttonOrderDictionary[[NSNumber numberWithInt:FixedButtonBoxSection]] = fixedButtonBoxSectionOrder;
+  return buttonOrderDictionary;
 }
 
 #pragma mark - Private helpers - Game action visible state
@@ -335,22 +323,31 @@
 // -----------------------------------------------------------------------------
 - (void) updateForVisibleGameActions:(NSDictionary*)gameActions
 {
-  NSMutableArray* visibleGameActions = [NSMutableArray array];
-  for (NSNumber* gameActionAsNumber in self.buttonOrderList)
+  NSMutableDictionary* visibleGameActionsDictionary = [NSMutableDictionary dictionary];
+
+  for (NSNumber* buttonBoxSectionAsNumber in self.buttonOrderDictionary)
   {
-    NSNumber* enabledState = [gameActions objectForKey:gameActionAsNumber];
-    if (! enabledState)
+    NSMutableArray* buttonBoxSectionOrder = self.buttonOrderDictionary[buttonBoxSectionAsNumber];
+
+    NSMutableArray* visibleGameActions = [NSMutableArray array];
+    for (NSNumber* gameActionAsNumber in buttonBoxSectionOrder)
     {
-      // Game action does not appear in the supplied dictionary, so it should
-      // not become visible
-      continue;
+      NSNumber* enabledState = [gameActions objectForKey:gameActionAsNumber];
+      if (! enabledState)
+      {
+        // Game action does not appear in the supplied dictionary, so it should
+        // not become visible
+        continue;
+      }
+      [visibleGameActions addObject:gameActionAsNumber];
+      // Setup initial enabled state
+      UIButton* button = self.gameActionButtons[gameActionAsNumber];
+      button.enabled = [enabledState boolValue];
     }
-    [visibleGameActions addObject:gameActionAsNumber];
-    // Setup initial enabled state
-    UIButton* button = self.gameActionButtons[gameActionAsNumber];
-    button.enabled = [enabledState boolValue];
+
+    visibleGameActionsDictionary[buttonBoxSectionAsNumber] = visibleGameActions;
   }
-  self.visibleGameActions = visibleGameActions;
+  self.visibleGameActions = visibleGameActionsDictionary;
 }
 
 @end
