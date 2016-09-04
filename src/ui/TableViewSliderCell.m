@@ -17,8 +17,9 @@
 
 // Project includes
 #import "TableViewSliderCell.h"
-#import "UIColorAdditions.h"
 #import "AutoLayoutUtility.h"
+#import "UIColorAdditions.h"
+#import "UIDeviceAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -30,6 +31,11 @@
 @property(nonatomic, retain, readwrite) UILabel* descriptionLabel;
 @property(nonatomic, retain, readwrite) UILabel* valueLabel;
 @property(nonatomic, retain, readwrite) UISlider* slider;
+/// @brief True if TableViewSliderCell should layout its content view
+/// using layout guides. Layout guides were introduced in iOS 9.
+///
+/// TODO: Remove this flag when we drop iOS 8 support.
+@property(nonatomic, assign) bool layoutWithLayoutGuides;
 @property(nonatomic, assign, readwrite) id delegate;
 @property(nonatomic, assign, readwrite) SEL delegateActionValueDidChange;
 @property(nonatomic, assign, readwrite) SEL delegateActionSliderValueDidChange;
@@ -68,6 +74,7 @@
   if (! self)
     return nil;
   _valueLabelHidden = valueLabelHidden;
+  self.layoutWithLayoutGuides = ([UIDevice systemVersionMajor] >= 9);
   [self setupCell];
   [self setupContentView];
   // TODO: instead of duplicating code from the setter, we should invoke the
@@ -162,6 +169,51 @@
   self.descriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.valueLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.slider.translatesAutoresizingMaskIntoConstraints = NO;
+
+  if (self.layoutWithLayoutGuides)
+    [self setupAutoLayoutConstraintsWithLayoutGuides];
+  else
+    [self setupAutoLayoutConstraintsWithoutLayoutGuides];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraints
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsWithLayoutGuides
+{
+  CGFloat horizontalSpacingSiblings = [AutoLayoutUtility horizontalSpacingSiblings];
+  CGFloat verticalSpacingSiblings = [AutoLayoutUtility verticalSpacingSiblings];
+  CGFloat verticalSpacingTableViewCell = [AutoLayoutUtility verticalSpacingTableViewCell];
+
+  // Horizontal constraints
+  if (self.valueLabelHidden)
+  {
+    [self.descriptionLabel.leadingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.leadingAnchor].active = YES;
+    [self.descriptionLabel.trailingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.trailingAnchor].active = YES;
+  }
+  else
+  {
+    [self.descriptionLabel.leadingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.leadingAnchor].active = YES;
+    [self.valueLabel.trailingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.trailingAnchor].active = YES;
+    [self.valueLabel.leadingAnchor constraintEqualToAnchor:self.descriptionLabel.trailingAnchor constant:horizontalSpacingSiblings].active = YES;
+  }
+  [self.slider.leadingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.leadingAnchor].active = YES;
+  [self.slider.trailingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.trailingAnchor].active = YES;
+
+  // Vertical constraints
+  [self.descriptionLabel.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:verticalSpacingTableViewCell].active = YES;
+  [self.slider.topAnchor constraintEqualToAnchor:self.descriptionLabel.bottomAnchor constant:verticalSpacingSiblings].active = YES;
+  if (! self.valueLabelHidden)
+  {
+    [self.valueLabel.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:verticalSpacingTableViewCell].active = YES;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraints
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsWithoutLayoutGuides
+{
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                           self.descriptionLabel, @"descriptionLabel",
                                           self.slider, @"slider",
