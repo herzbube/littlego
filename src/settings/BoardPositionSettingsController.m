@@ -184,25 +184,6 @@ enum DiscardFutureMovesAlertSectionItem
   return cell;
 }
 
-#pragma mark - UITableViewDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  CGFloat height = tableView.rowHeight;
-  if (DiscardFutureMovesAlertSection == indexPath.section)
-  {
-    NSString* cellText = discardFutureMovesAlertText;
-    height = [UiUtilities tableView:tableView
-                heightForCellOfType:SwitchCellType
-                           withText:cellText
-             hasDisclosureIndicator:false];
-  }
-  return height;
-}
-
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------

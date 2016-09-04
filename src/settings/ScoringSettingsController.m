@@ -250,27 +250,6 @@ enum InconsistentTerritoryMarkupTypeSectionItem
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  switch (indexPath.section)
-  {
-    case MarkDeadStonesIntelligentlySection:
-    {
-      return [UiUtilities tableView:tableView
-                heightForCellOfType:SwitchCellType
-                           withText:markDeadStonesIntelligentlyText
-             hasDisclosureIndicator:false];
-    }
-    default:
-    {
-      return tableView.rowHeight;
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];

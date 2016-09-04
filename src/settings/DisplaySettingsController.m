@@ -264,15 +264,6 @@ enum DisplayPlayerInfluenceSectionItem
       }
       break;
     }
-    case DisplayPlayerInfluenceSection:
-    {
-      NSString* cellText = displayPlayerInfluenceText;
-      height = [UiUtilities tableView:tableView
-                  heightForCellOfType:SwitchCellType
-                             withText:cellText
-               hasDisclosureIndicator:false];
-      break;
-    }
     default:
     {
       break;
