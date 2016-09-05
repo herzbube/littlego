@@ -17,7 +17,7 @@
 
 // Project includes
 #import "GameInfoViewController.h"
-#import "../controller/GameActionsActionSheetController.h"
+#import "../controller/MoreGameActionsController.h"
 
 // Forward declarations
 @class GameActionManager;
@@ -43,7 +43,7 @@
                     enable:(BOOL)enable
                 gameAction:(enum GameAction)gameAction;
 /// @brief The delegate must return a view that can be used to present an
-/// UIActionSheet from.
+/// UIAlertController from.
 - (UIView*) viewForPresentingMoreGameActionsByGameActionManager:(GameActionManager*)manager;
 @end
 
@@ -104,7 +104,7 @@
 /// the possible display of an alert which the user must confirm before the
 /// command is actually executed.
 // -----------------------------------------------------------------------------
-@interface GameActionManager : NSObject <GameActionsActionSheetDelegate, GameInfoViewControllerCreator>
+@interface GameActionManager : NSObject <MoreGameActionsControllerDelegate, GameInfoViewControllerCreator>
 {
 }
 

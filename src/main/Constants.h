@@ -104,7 +104,7 @@ enum GameAction
   /// @brief Displays the "Game Info" view with information about the game in
   /// progress.
   GameActionGameInfo,
-  /// @brief Displays an action sheet with additional game actions.
+  /// @brief Displays an alert message with additional game actions.
   GameActionMoreGameActions,
   /// @brief Pseudo game action, used as the starting value during a for-loop.
   GameActionFirst = GameActionPass,

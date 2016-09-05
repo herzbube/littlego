@@ -108,9 +108,9 @@
 - (UIView*) viewForPresentingMoreGameActionsByGameActionManager:(GameActionManager*)manager
 {
   // We need the view that represents the "More Game Actions" bar button item so
-  // that we can present an action sheet originating from that view. There is no
-  // official API that lets us find the view, but we know that the button is at
-  // the right-most end of whichever navigation bar the bar button item was
+  // that we can present an alert message originating from that view. There is
+  // no official API that lets us find the view, but we know that the button is
+  // at the right-most end of whichever navigation bar the bar button item was
   // added to, so we can find the representing view by examining the frames of
   // all navigation bar subviews.
   UIView* rightMostSubview = nil;

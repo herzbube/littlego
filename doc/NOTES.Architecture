@@ -129,7 +129,7 @@ About the Play UI area
   hierarchy. With a few exceptions, the view hierarchy is represented by a
   corresponding hierarchy of container/child UIViewControllers. Not all
   controller classes are view controllers, though: There are also a number of
-  controllers that manage gesture recognizing, alert views or action sheets.
+  controllers that manage gesture recognizing and alert messages.
 - Dynamic design: When the application launches, the main application view
   controller creates an instance of the appropriate PlayRootViewController
   subclass. This starts a first cascade of object creation during which all the
@@ -170,9 +170,9 @@ iPhone UI design:
     is a "nervous" UI, i.e. toolbar buttons are constantly being shown and
     hidden. I have not yet come up with a UI design that is more "calm".
   - At the right-most position there is a "Game Actions" button which provides
-    access to an action sheet with additional actions that are not used very
-    often. Only actions related to games as a whole are to be displayed on
-    this action sheet.
+    access to an alert message with additional actions that are not used very
+    often. Only actions related to games as a whole are to be displayed by
+    this alert message.
   - At the second-to-right-most position there is a "Game Info" button that
     provides access to a screen with detailed information about the current
     game.

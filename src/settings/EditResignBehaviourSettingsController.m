@@ -325,16 +325,36 @@ enum ResignMinGamesCategory
   }
   else if (ResetToDefaultsSection == indexPath.section)
   {
-    // TODO iPad: Modify this to not include a cancel button (see HIG).
-    UIActionSheet* actionSheet = [[UIActionSheet alloc] initWithTitle:nil
-                                                             delegate:self
-                                                    cancelButtonTitle:@"Cancel"
-                                               destructiveButtonTitle:@"Reset to default values"
-                                                    otherButtonTitles:nil];
-    // The acton sheet must be shown based on the cell, not the table view,
-    // otherwise buttons in the sheet cannot be properly tapped.
-    [actionSheet showInView:[tableView cellForRowAtIndexPath:indexPath]];
-    [actionSheet release];
+    UIAlertControllerStyle alertControllerStyle;
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+      alertControllerStyle = UIAlertControllerStyleActionSheet;
+    else
+      alertControllerStyle = UIAlertControllerStyleAlert;
+    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Please confirm"
+                                                                   message:@"This will reset the profile's resign behaviour settings to a set of default values. Any changes you have made will be discarded."
+                                                            preferredStyle:alertControllerStyle];
+
+    void (^resetActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+    {
+      [self.profile resetResignBehaviourPropertiesToDefaultValues];
+      [self.delegate didChangeResignBehaviour:self];
+      self.profile.autoSelectFuegoResignMinGames = autoSelectFuegoResignMinGamesDefault;
+      if (! self.profile.autoSelectFuegoResignMinGames)
+        self.profile.fuegoResignMinGames = fuegoResignMinGamesDefault;
+      [self.tableView reloadData];
+    };
+    UIAlertAction* resetAction = [UIAlertAction actionWithTitle:@"Reset to default values"
+                                                          style:UIAlertActionStyleDestructive
+                                                        handler:resetActionBlock];
+    [alert addAction:resetAction];
+
+    void (^cancelActionBlock) (UIAlertAction*) = ^(UIAlertAction* action) {};
+    UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                           style:UIAlertActionStyleCancel
+                                                         handler:cancelActionBlock];
+    [alert addAction:cancelAction];
+
+    [self presentViewController:alert animated:YES completion:nil];
   }
 }
 
@@ -383,25 +403,6 @@ enum ResignMinGamesCategory
     }
   }
   [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - UIActionSheetDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to the user selecting an action from the action sheet
-/// displayed when the "Reset to default values" button was tapped.
-// -----------------------------------------------------------------------------
-- (void) actionSheet:(UIActionSheet*)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-  if (actionSheet.cancelButtonIndex != buttonIndex)
-  {
-    [self.profile resetResignBehaviourPropertiesToDefaultValues];
-    [self.delegate didChangeResignBehaviour:self];
-    self.profile.autoSelectFuegoResignMinGames = autoSelectFuegoResignMinGamesDefault;
-    if (! self.profile.autoSelectFuegoResignMinGames)
-      self.profile.fuegoResignMinGames = fuegoResignMinGamesDefault;
-    [self.tableView reloadData];
-  }
 }
 
 #pragma mark - Action handlers

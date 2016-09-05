@@ -151,6 +151,8 @@
 		CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA415A891B8004A7096 /* BugReportUtilities.m */; };
 		CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A715A0A3E400439B4E /* PathUtilities.m */; };
 		CD55D0331D6FAE7E00A9A5BC /* CrashReportingHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD55D0321D6FAE7E00A9A5BC /* CrashReportingHandler.m */; };
+		CD5E6B361D7CCB610089D0B3 /* MoreGameActionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */; };
+		CD5E6B371D7CD0500089D0B3 /* MoreGameActionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */; };
 		CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
@@ -391,8 +393,6 @@
 		CDAF17161967FFD500271396 /* BoardViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17141967FFD500271396 /* BoardViewMetrics.m */; };
 		CDAF17191968037700271396 /* BoardViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17181968037700271396 /* BoardViewModel.m */; };
 		CDAF171A1968037700271396 /* BoardViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF17181968037700271396 /* BoardViewModel.m */; };
-		CDAF171D196869E700271396 /* GameActionsActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF171C196869E700271396 /* GameActionsActionSheetController.m */; };
-		CDAF171E196869E700271396 /* GameActionsActionSheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF171C196869E700271396 /* GameActionsActionSheetController.m */; };
 		CDAF1723196CA81900271396 /* GoVertexNumeric.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF1722196CA81900271396 /* GoVertexNumeric.m */; };
 		CDAF1724196CA81900271396 /* GoVertexNumeric.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAF1722196CA81900271396 /* GoVertexNumeric.m */; };
 		CDAFAE25195A1DCA00EF84A9 /* TiledScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */; };
@@ -719,6 +719,8 @@
 		CD48ADA415A891B8004A7096 /* BugReportUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BugReportUtilities.m; sourceTree = "<group>"; };
 		CD55D0311D6FAE7E00A9A5BC /* CrashReportingHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingHandler.h; sourceTree = "<group>"; };
 		CD55D0321D6FAE7E00A9A5BC /* CrashReportingHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingHandler.m; sourceTree = "<group>"; };
+		CD5E6B341D7CCB610089D0B3 /* MoreGameActionsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoreGameActionsController.h; sourceTree = "<group>"; };
+		CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoreGameActionsController.m; sourceTree = "<group>"; };
 		CD613D98143CD1B70002759E /* GtpCommandModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandModel.h; sourceTree = "<group>"; };
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
@@ -940,8 +942,6 @@
 		CDAF17141967FFD500271396 /* BoardViewMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewMetrics.m; sourceTree = "<group>"; };
 		CDAF17171968037700271396 /* BoardViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewModel.h; sourceTree = "<group>"; };
 		CDAF17181968037700271396 /* BoardViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewModel.m; sourceTree = "<group>"; };
-		CDAF171B196869E700271396 /* GameActionsActionSheetController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameActionsActionSheetController.h; sourceTree = "<group>"; };
-		CDAF171C196869E700271396 /* GameActionsActionSheetController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameActionsActionSheetController.m; sourceTree = "<group>"; };
 		CDAF1721196CA81900271396 /* GoVertexNumeric.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoVertexNumeric.h; sourceTree = "<group>"; };
 		CDAF1722196CA81900271396 /* GoVertexNumeric.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoVertexNumeric.m; sourceTree = "<group>"; };
 		CDAFAE23195A1DCA00EF84A9 /* TiledScrollView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TiledScrollView.h; sourceTree = "<group>"; };
@@ -1520,10 +1520,10 @@
 				CD7C6A101AB4862E009EC5AD /* AutoLayoutConstraintHelper.m */,
 				CD3591C817346D25000E2963 /* DiscardFutureMovesAlertController.h */,
 				CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */,
-				CDAF171B196869E700271396 /* GameActionsActionSheetController.h */,
-				CDAF171C196869E700271396 /* GameActionsActionSheetController.m */,
 				CD1E9E59171806FE00E1B7D1 /* GameInfoViewController.h */,
 				CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */,
+				CD5E6B341D7CCB610089D0B3 /* MoreGameActionsController.h */,
+				CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */,
 				CD7C69FB1AB43B3F009EC5AD /* NavigationBarController.h */,
 				CD7C69FC1AB43B3F009EC5AD /* NavigationBarController.m */,
 				CD7C69FF1AB458CE009EC5AD /* NavigationBarControllerPhone.h */,
@@ -2829,7 +2829,6 @@
 				CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */,
 				CD1E9E66171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m in Sources */,
 				CD7C69ED1AA9F697009EC5AD /* ExceptionUtility.m in Sources */,
-				CDAF171D196869E700271396 /* GameActionsActionSheetController.m in Sources */,
 				CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */,
 				CDB5AE251AC5A86D0075C8DC /* MagnifyingView.m in Sources */,
 				CD1311C217180B45006CE699 /* ScoringModel.m in Sources */,
@@ -2839,6 +2838,7 @@
 				CDF341C617270D0800AEFB20 /* LongRunningActionCounter.m in Sources */,
 				CDF341CA1727507900AEFB20 /* ApplicationStateManager.m in Sources */,
 				CDF341D1172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
+				CD5E6B361D7CCB610089D0B3 /* MoreGameActionsController.m in Sources */,
 				CDF341D3172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
 				CD3591CA17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */,
 				CD3591DA1735A711000E2963 /* BoardPositionModel.m in Sources */,
@@ -2984,6 +2984,7 @@
 				CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */,
 				CDEE1A08194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */,
 				CD7C69C41A9D2086009EC5AD /* GameActionManager.m in Sources */,
+				CD5E6B371D7CD0500089D0B3 /* MoreGameActionsController.m in Sources */,
 				CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */,
 				CDFD9F7618F1D39E0031CBCF /* ResetPlayersAndProfilesCommand.m in Sources */,
 				CDFD9F7F18F1D5E20031CBCF /* DiagnosticsViewController.m in Sources */,
@@ -3058,7 +3059,6 @@
 				CD2D3AA2174C34B50030EDE4 /* MaxMemoryController.m in Sources */,
 				CD2D3AA3174C34C40030EDE4 /* SliderInputController.m in Sources */,
 				CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */,
-				CDAF171E196869E700271396 /* GameActionsActionSheetController.m in Sources */,
 				CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */,
 				CDEE1A101946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */,

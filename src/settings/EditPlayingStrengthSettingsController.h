@@ -54,7 +54,7 @@
 /// work, the delegate must implement the protocol
 /// EditPlayingStrengthSettingsDelegate.
 // -----------------------------------------------------------------------------
-@interface EditPlayingStrengthSettingsController : UITableViewController <MaxMemoryControllerDelegate, ItemPickerDelegate, UIActionSheetDelegate>
+@interface EditPlayingStrengthSettingsController : UITableViewController <MaxMemoryControllerDelegate, ItemPickerDelegate>
 {
 }
 

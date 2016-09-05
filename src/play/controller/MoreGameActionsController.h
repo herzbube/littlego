@@ -20,44 +20,46 @@
 #import "../../ui/EditTextController.h"
 
 // Forward declarations
-@class GameActionsActionSheetController;
+@class MoreGameActionsController;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GameActionsActionSheetDelegate protocol must be implemented by
-/// the delegate of GameActionsActionSheetController.
+/// @brief The MoreGameActionsControllerDelegate protocol must be implemented by
+/// the delegate of MoreGameActionsController.
 // -----------------------------------------------------------------------------
-@protocol GameActionsActionSheetDelegate
+@protocol MoreGameActionsControllerDelegate
 /// @brief This method is invoked when the user has finished working with
 /// @a controller. The implementation is responsible for releasing
 /// @a controller.
-- (void) gameActionsActionSheetControllerDidFinish:(GameActionsActionSheetController*)controller;
+- (void) moreGameActionsControllerDidFinish:(MoreGameActionsController*)controller;
 @end
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GameActionsActionSheetController class is responsible for
-/// managing an action sheet when the user taps the "Game Actions" button in
-/// #UIAreaPlay.
+/// @brief The MoreGameActionsController class is responsible for managing an
+/// alert message when the user taps the "More Game Actions" button in
+/// #UIAreaPlay. The alert message displays buttons that represent game actions
+/// that are not used very often and therefore do not need to be visible all the
+/// time.
 ///
-/// Tasks implementend by GameActionsActionSheetController are:
-/// - Displaying the action sheet with buttons that are appropriate to the
+/// Tasks implementend by MoreGameActionsController are:
+/// - Displaying an alert message with buttons that are appropriate to the
 ///   current game state
-/// - Reacting to the user tapping on each action sheet button
+/// - Reacting to the user tapping on each button
 /// - Managing sub-controllers for views that need to be displayed as part of
-///   handling the tap on an action sheet button
+///   handling the tap on a button
 // -----------------------------------------------------------------------------
-@interface GameActionsActionSheetController : NSObject <UIActionSheetDelegate, UIAlertViewDelegate, NewGameControllerDelegate, EditTextDelegate>
+@interface MoreGameActionsController : NSObject <NewGameControllerDelegate, EditTextDelegate>
 {
 }
 
-- (id) initWithModalMaster:(UIViewController*)aController delegate:(id<GameActionsActionSheetDelegate>)aDelegate;
-- (void) showActionSheetFromRect:(CGRect)rect inView:(UIView*)view;
-- (void) cancelActionSheet;
+- (id) initWithModalMaster:(UIViewController*)aController delegate:(id<MoreGameActionsControllerDelegate>)aDelegate;
+- (void) showAlertMessageFromRect:(CGRect)rect inView:(UIView*)view;
+- (void) cancelAlertMessage;
 
 /// @brief This is the delegate that will be informed when
-/// GameActionsActionSheetController has finished its task.
-@property(nonatomic, assign) id<GameActionsActionSheetDelegate> delegate;
+/// MoreGameActionsController has finished its task.
+@property(nonatomic, assign) id<MoreGameActionsControllerDelegate> delegate;
 /// @brief Master controller based on which modal view controllers can be
 /// displayed.
 @property(nonatomic, assign) UIViewController* modalMaster;

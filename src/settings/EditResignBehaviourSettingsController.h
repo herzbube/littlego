@@ -39,7 +39,7 @@
 /// @brief The EditResignBehaviourSettingsController class is responsible for
 /// managing user interaction on the "Resign Behaviour" preferences view.
 // -----------------------------------------------------------------------------
-@interface EditResignBehaviourSettingsController : UITableViewController <SliderInputDelegate, ItemPickerDelegate, UIActionSheetDelegate>
+@interface EditResignBehaviourSettingsController : UITableViewController <SliderInputDelegate, ItemPickerDelegate>
 {
 }
 

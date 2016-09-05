@@ -46,7 +46,7 @@
 @property(nonatomic, assign) bool enabledStatesNeedUpdate;
 @property(nonatomic, assign) bool scoringModeNeedUpdate;
 @property(nonatomic, assign) GameInfoViewController* gameInfoViewController;
-@property(nonatomic, retain) GameActionsActionSheetController* gameActionsActionSheetController;
+@property(nonatomic, retain) MoreGameActionsController* moreGameActionsController;
 @property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 @end
 
@@ -112,7 +112,7 @@ static GameActionManager* sharedGameActionManager = nil;
   self.enabledStatesNeedUpdate = false;
   self.scoringModeNeedUpdate = false;
   self.gameInfoViewController = nil;
-  self.gameActionsActionSheetController = nil;
+  self.moreGameActionsController = nil;
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.commandDelegate = self.discardFutureMovesAlertController;
   [self setupNotificationResponders];
@@ -128,7 +128,7 @@ static GameActionManager* sharedGameActionManager = nil;
   self.visibleGameActions = nil;
   self.enabledStates = nil;
   self.gameInfoViewController = nil;
-  self.gameActionsActionSheetController = nil;
+  self.moreGameActionsController = nil;
   self.uiDelegate = nil;
   self.commandDelegate = nil;
   self.gameInfoViewControllerPresenter = nil;
@@ -324,20 +324,19 @@ static GameActionManager* sharedGameActionManager = nil;
   if (viewForPresentingMoreGameActions)
   {
     UIViewController* modalMaster = [ApplicationDelegate sharedDelegate].windowRootViewController;
-    self.gameActionsActionSheetController = [[[GameActionsActionSheetController alloc] initWithModalMaster:modalMaster delegate:self] autorelease];
-    [self.gameActionsActionSheetController showActionSheetFromRect:viewForPresentingMoreGameActions.bounds
-                                                            inView:viewForPresentingMoreGameActions];
+    self.moreGameActionsController = [[[MoreGameActionsController alloc] initWithModalMaster:modalMaster delegate:self] autorelease];
+    [self.moreGameActionsController showAlertMessageFromRect:viewForPresentingMoreGameActions.bounds inView:viewForPresentingMoreGameActions];
   }
 }
 
-#pragma mark - GameActionsActionSheetDelegate overrides
+#pragma mark - MoreGameActionsControllerDelegate overrides
 
 // -----------------------------------------------------------------------------
-/// @brief GameActionsActionSheetDelegate protocol method.
+/// @brief MoreGameActionsControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) gameActionsActionSheetControllerDidFinish:(GameActionsActionSheetController*)controller
+- (void) moreGameActionsControllerDidFinish:(MoreGameActionsController*)controller
 {
-  self.gameActionsActionSheetController = nil;
+  self.moreGameActionsController = nil;
 }
 
 #pragma mark - GameInfoViewControllerCreator overrides
@@ -476,12 +475,11 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) statusBarOrientationWillChange:(NSNotification*)notification
 {
-  if (self.gameActionsActionSheetController)
+  if (self.moreGameActionsController)
   {
-    // Dismiss the popover that displays the action sheet because the popover
+    // Dismiss the popover that displays the alert message because the popover
     // will be wrongly positioned after the interface has rotated.
-    [self.gameActionsActionSheetController cancelActionSheet];
-
+    [self.moreGameActionsController cancelAlertMessage];
   }
 }
 
