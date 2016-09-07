@@ -27,6 +27,7 @@
 }
 
 + (enum ArchiveGameNameValidationResult) validateGameName:(NSString*)name;
-+ (void) showAlertForFailedGameNameValidation:(enum ArchiveGameNameValidationResult)validationResult;
++ (void) showAlertForFailedGameNameValidation:(enum ArchiveGameNameValidationResult)validationResult
+                               alertPresenter:(UIViewController*)presenter;
 
 @end

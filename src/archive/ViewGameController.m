@@ -276,7 +276,8 @@ enum GameAttributesSectionItem
   enum ArchiveGameNameValidationResult validationResult = [ArchiveUtility validateGameName:text];
   if (ArchiveGameNameValidationResultValid != validationResult)
   {
-    [ArchiveUtility showAlertForFailedGameNameValidation:validationResult];
+    [ArchiveUtility showAlertForFailedGameNameValidation:validationResult
+                                          alertPresenter:editTextController];
     return false;
   }
   ArchiveGame* aGame = [self.model gameWithName:text];
@@ -284,14 +285,18 @@ enum GameAttributesSectionItem
     return true;  // ok, no game with the new name exists
   else if (aGame == self.game)
     return true;  // ok, user has made no real changes
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Game already exists"
-                                                  message:@"Please choose a different name. Another game with that name already exists."
-                                                 delegate:self
-                                        cancelButtonTitle:nil
-                                        otherButtonTitles:@"Ok", nil];
-  alert.tag = AlertViewTypeRenameGame;
-  [alert show];
-  [alert release];
+
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Game already exists"
+                                                                           message:@"Please choose a different name. Another game with that name already exists."
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction* action) {}];
+  [alertController addAction:okAction];
+
+  [editTextController presentViewController:alertController animated:YES completion:nil];
+
   return false;
 }
 

@@ -52,6 +52,7 @@
 /// dismissing the alert.
 // -----------------------------------------------------------------------------
 + (void) showAlertForFailedGameNameValidation:(enum ArchiveGameNameValidationResult)validationResult
+                               alertPresenter:(UIViewController*)presenter
 {
   NSString* alertTitle;
   NSString* alertMessage;
@@ -76,14 +77,17 @@
       return;
     }
   }
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:alertTitle
-                                                  message:alertMessage
-                                                 delegate:nil
-                                        cancelButtonTitle:nil
-                                        otherButtonTitles:@"Ok", nil];
-  alert.tag = AlertViewTypeSaveGame;
-  [alert show];
-  [alert release];
+
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:alertTitle
+                                                                           message:alertMessage
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction* action) {}];
+  [alertController addAction:okAction];
+
+  [presenter presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

@@ -32,6 +32,22 @@
 #import "../../shared/ApplicationStateManager.h"
 
 
+/// @brief Enumerates the types of alerts presented by this command.
+enum AlertType
+{
+  AlertTypePlayMoveRejectedLoggingEnabled,
+  AlertTypePlayMoveRejectedLoggingDisabled,
+};
+
+/// @brief Enumerates the types of buttons used in alerts presented by this
+/// command.
+enum AlertButtonType
+{
+  AlertButtonTypeNo,
+  AlertButtonTypeYes
+};
+
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for PlayMoveCommand.
 // -----------------------------------------------------------------------------
@@ -220,45 +236,63 @@
   NSString* message = @"Your move was rejected by Fuego. The reason given was:\n\n";
   message = [message stringByAppendingString:self.failedGtpResponse];
   message = [message stringByAppendingString:@"\n\nThis is almost certainly a bug in Little Go. "];
-  enum AlertViewType alertViewType;
+  enum AlertType alertType;
   bool loggingEnabled = [ApplicationDelegate sharedDelegate].loggingModel.loggingEnabled;
   if (loggingEnabled)
   {
     message = [message stringByAppendingString:@"\n\nWould you like to report this incident now so that we can fix the bug?"];
-    alertViewType = AlertViewTypePlayMoveRejectedLoggingEnabled;
+    alertType = AlertTypePlayMoveRejectedLoggingEnabled;
   }
   else
   {
     message = [message stringByAppendingString:@"You should enable logging now so that you can report the bug when it occurs the next time.\n\nWould you like to enable logging now?"];
-    alertViewType = AlertViewTypePlayMoveRejectedLoggingDisabled;
+    alertType = AlertTypePlayMoveRejectedLoggingDisabled;
   }
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Unexpected error"
-                                                  message:message
-                                                 delegate:self
-                                        cancelButtonTitle:@"No"
-                                        otherButtonTitles:@"Yes", nil];
-  alert.tag = alertViewType;
-  [alert show];
-  [alert release];
+
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Unexpected error"
+                                                                           message:message
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  void (^noActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+  {
+    [self didDismissAlertWithButton:AlertButtonTypeNo
+                          alertType:alertType];
+  };
+  UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
+                                                     style:UIAlertActionStyleCancel
+                                                   handler:noActionBlock];
+  [alertController addAction:noAction];
+
+  void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+  {
+    [self didDismissAlertWithButton:AlertButtonTypeYes
+                          alertType:alertType];
+  };
+  UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:yesActionBlock];
+  [alertController addAction:yesAction];
+
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
 
   [self retain];  // must survive until the delegate method is invoked
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to the user dismissing an alert view for which this controller
-/// is the delegate.
+/// @brief Reacts to the user dismissing an alert that was triggered by this
+/// command.
 // -----------------------------------------------------------------------------
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+- (void) didDismissAlertWithButton:(enum AlertButtonType)alertButtonType alertType:(enum AlertType)alertType
 {
   [self autorelease];  // balance retain that is sent before an alert is shown
 
-  switch (alertView.tag)
+  switch (alertType)
   {
-    case AlertViewTypePlayMoveRejectedLoggingDisabled:
+    case AlertTypePlayMoveRejectedLoggingDisabled:
     {
-      switch (buttonIndex)
+      switch (alertButtonType)
       {
-        case AlertViewButtonTypeYes:
+        case AlertButtonTypeYes:
           [self enableLogging];
           break;
         default:
@@ -266,16 +300,20 @@
       }
       break;
     }
-    case AlertViewTypePlayMoveRejectedLoggingEnabled:
+    case AlertTypePlayMoveRejectedLoggingEnabled:
     {
-      switch (buttonIndex)
+      switch (alertButtonType)
       {
-        case AlertViewButtonTypeYes:
+        case AlertButtonTypeYes:
           [self sendBugReport];
           break;
         default:
           break;
       }
+      break;
+    }
+    default:
+    {
       break;
     }
   }

@@ -63,8 +63,7 @@
 @interface NewGameController : UIViewController <UITableViewDataSource,
                                                  UITableViewDelegate,
                                                  ItemPickerDelegate,
-                                                 HandicapSelectionDelegate,
-                                                 UIAlertViewDelegate>
+                                                 HandicapSelectionDelegate>
 {
 }
 

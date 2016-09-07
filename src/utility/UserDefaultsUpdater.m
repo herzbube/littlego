@@ -728,14 +728,17 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
                               "You will find that a backup has been created for some players and/or profiles. "
                               "This is to preserve any customizations you may have made. If you don't need these "
                               "backups you can simply delete them.");
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:alertTitle
-                                                    message:alertMessage
-                                                   delegate:nil
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:@"Ok", nil];
-    alert.tag = AlertViewTypeSaveGame;
-    [alert show];
-    [alert release];
+
+    UIAlertController* alertController = [UIAlertController alertControllerWithTitle:alertTitle
+                                                                             message:alertMessage
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
+                                                       style:UIAlertActionStyleDefault
+                                                     handler:^(UIAlertAction* action) {}];
+    [alertController addAction:okAction];
+
+    [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
   }
 }
 

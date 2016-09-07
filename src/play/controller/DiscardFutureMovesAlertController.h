@@ -23,8 +23,7 @@
 /// @brief The DiscardFutureMovesAlertController class displays an alert and
 /// executes a command, working as a delegate on behalf of GameActionManager.
 // -----------------------------------------------------------------------------
-@interface DiscardFutureMovesAlertController : NSObject <UIAlertViewDelegate,
-                                                         GameActionManagerCommandDelegate>
+@interface DiscardFutureMovesAlertController : NSObject <GameActionManagerCommandDelegate>
 {
 }
 

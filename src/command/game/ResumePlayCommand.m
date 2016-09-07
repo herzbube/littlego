@@ -22,8 +22,18 @@
 #import "../../go/GoGameRules.h"
 #import "../../go/GoScore.h"
 #import "../../go/GoUtilities.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../utility/NSStringAdditions.h"
+
+
+/// @brief Enumerates the types of buttons used in alerts presented by this
+/// command.
+enum AlertButtonType
+{
+  AlertButtonTypeNonAlternatingColor,
+  AlertButtonTypeAlternatingColor,
+};
 
 
 @implementation ResumePlayCommand
@@ -35,7 +45,7 @@
 {
   GoGame* game = [GoGame sharedGame];
   if (GoDisputeResolutionRuleNonAlternatingPlay == game.rules.disputeResolutionRule)
-    [self showAlertViewToSelectSideToPlay];
+    [self showAlertToSelectSideToPlay];
   else
     [self resumePlay];
   return true;
@@ -72,57 +82,73 @@
 /// @brief Shows an alert that allows the user to select the side to play first
 /// after play is resumed.
 // -----------------------------------------------------------------------------
-- (void) showAlertViewToSelectSideToPlay
+- (void) showAlertToSelectSideToPlay
 {
   GoGame* game = [GoGame sharedGame];
-  NSString* nextMoveColorName = [NSString stringWithGoColor:game.nextMoveColor];
-  enum GoColor alternatingNextMoveColor = [GoUtilities alternatingColorForColor:game.nextMoveColor];
-  NSString* alternatingNextMoveColorName = [NSString stringWithGoColor:alternatingNextMoveColor];
+  NSString* alternatingColorName = [NSString stringWithGoColor:game.nextMoveColor];
+  enum GoColor nonAlternatingColor = [GoUtilities alternatingColorForColor:game.nextMoveColor];
+  NSString* nonAlternatingColorName = [NSString stringWithGoColor:nonAlternatingColor];
 
   NSString* alertTitle = @"Choose side to play first";
   NSString* alertMessage = [NSString stringWithFormat:
                             @"\nYou have decided to resume play to resolve a life & death dispute.\n\n"
                             "Because the game rules allow non-alternating play you may now choose a side to play first. "
                             "With alternating play,  %@ would play first.\n\n"
-                            "Which side would you like to play first?", [nextMoveColorName lowercaseString]];
-  // UIAlertView shows the second button with a bold font to indicate a
-  // "default choice". For this reason we display the color that would move
-  // naturally, i.e. with alternating play, in the second button. The
-  // consequence is that the alert view sometimes shows the buttons in the
-  // order Black/White, and sometimes in the order White/Black. I would expect
-  // that a frequent user of the app is annoyed/confused by this "unstable"
-  // UI, so if UIAlertView is replaced at some time in the future I suggest
-  // that the order of buttons is made stable.
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:alertTitle
-                                                  message:alertMessage
-                                                 delegate:self
-                                        cancelButtonTitle:nil
-                                        otherButtonTitles:alternatingNextMoveColorName, nextMoveColorName, nil];
-  alert.tag = AlertViewTypeSelectSideToPlay;
-  [alert show];
-  [alert release];
+                            "Which side would you like to play first?", [alternatingColorName lowercaseString]];
+
+  // TODO: When we still used UIAlertView, the alert showed the second button
+  // with a bold font to indicate a "default choice". For this reason we display
+  // the color that would move naturally, i.e. with alternating play, in the
+  // second button. The consequence is that the alert sometimes shows the
+  // buttons in the order Black/White, and sometimes in the order White/Black.
+  // I would expect that a frequent user of the app is annoyed/confused by this
+  // "unstable" UI. Since UIAlertView is no longer used, I suggest that the
+  // order of buttons is made stable.
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:alertTitle
+                                                                           message:alertMessage
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  void (^nonAlternatingColorActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+  {
+    [self didDismissAlertWithButton:AlertButtonTypeNonAlternatingColor];
+  };
+  UIAlertAction* nonAlternatingColorAction = [UIAlertAction actionWithTitle:nonAlternatingColorName
+                                                                      style:UIAlertActionStyleDefault
+                                                                    handler:nonAlternatingColorActionBlock];
+  [alertController addAction:nonAlternatingColorAction];
+
+  void (^alternatingColorActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+  {
+    [self didDismissAlertWithButton:AlertButtonTypeAlternatingColor];
+  };
+  UIAlertAction* alternatingColorAction = [UIAlertAction actionWithTitle:alternatingColorName
+                                                                   style:UIAlertActionStyleDefault
+                                                                 handler:alternatingColorActionBlock];
+  [alertController addAction:alternatingColorAction];
+
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
 
   [self retain];  // must survive until the delegate method is invoked
 }
 
-#pragma mark - UIAlertViewDelegate overrides
+#pragma mark - Alert handler
 
 // -----------------------------------------------------------------------------
-/// @brief UIAlertViewDelegate protocol method.
+/// @brief Alert handler method.
 // -----------------------------------------------------------------------------
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+- (void) didDismissAlertWithButton:(enum AlertButtonType)alertButtonType
 {
   [self autorelease];  // balance retain that is sent before an alert is shown
 
-  switch (buttonIndex)
+  switch (alertButtonType)
   {
-    case AlertViewButtonTypeAlternatingColor:
+    case AlertButtonTypeAlternatingColor:
       break;
-    case AlertViewButtonTypeNonAlternatingColor:
+    case AlertButtonTypeNonAlternatingColor:
       [[GoGame sharedGame] switchNextMoveColor];
       break;
     default:
-      DDLogError(@"%@: Unexpected button index %ld", self, (long)buttonIndex);
+      DDLogError(@"%@: Unexpected alert button %ld", self, (long)alertButtonType);
       assert(0);
       return;
   }

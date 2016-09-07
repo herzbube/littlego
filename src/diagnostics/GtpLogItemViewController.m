@@ -299,16 +299,19 @@ enum ResponseStringSectionItem
   ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
   GtpCommandModel* model = delegate.gtpCommandModel;
   [model addCommand:self.logItem.commandString];
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Command added"
-                                                  message:@"The command was added to the list of predefined commands."
-                                                 delegate:nil
-                                        cancelButtonTitle:nil
-                                        otherButtonTitles:@"Ok", nil];
-  alert.tag = AlertViewTypeAddToCannedCommands;
-  [alert show];
-  [alert release];
 
-  // Make sure that command cannot be added a second time
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Command added"
+                                                                           message:@"The command was added to the list of predefined commands."
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction* action) {}];
+  [alertController addAction:okAction];
+
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+
+  // Make sure the command cannot be added a second time
   self.navigationItem.rightBarButtonItem = nil;
 }
 

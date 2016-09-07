@@ -495,7 +495,8 @@ enum MoreGameActionsButton
   }
   else
   {
-    [ArchiveUtility showAlertForFailedGameNameValidation:validationResult];
+    [ArchiveUtility showAlertForFailedGameNameValidation:validationResult
+                                          alertPresenter:editTextController];
     return false;
   }
 }
@@ -519,24 +520,24 @@ enum MoreGameActionsButton
                                                                                message:@"Another game with that name already exists. Do you want to overwrite that game?"
                                                                         preferredStyle:UIAlertControllerStyleAlert];
 
-      void (^resetActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+      void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
       {
         [self doSaveGame:editTextController.text];
         [self.delegate moreGameActionsControllerDidFinish:self];
       };
-      UIAlertAction* overwriteAction = [UIAlertAction actionWithTitle:@"Yes"
-                                                                style:UIAlertActionStyleDefault
-                                                              handler:resetActionBlock];
-      [alertController addAction:overwriteAction];
+      UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
+                                                               style:UIAlertActionStyleDefault
+                                                             handler:yesActionBlock];
+      [alertController addAction:yesAction];
 
-      void (^cancelActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+      void (^noActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
       {
         [self.delegate moreGameActionsControllerDidFinish:self];
       };
-      UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"No"
-                                                             style:UIAlertActionStyleCancel
-                                                           handler:cancelActionBlock];
-      [alertController addAction:cancelAction];
+      UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
+                                                         style:UIAlertActionStyleCancel
+                                                       handler:noActionBlock];
+      [alertController addAction:noAction];
 
       [self.modalMaster presentViewController:alertController animated:YES completion:nil];
 

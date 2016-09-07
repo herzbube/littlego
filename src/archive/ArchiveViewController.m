@@ -402,24 +402,16 @@ enum DeleteAllSectionItem
 // -----------------------------------------------------------------------------
 - (void) deleteAllGames
 {
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Please confirm"
-                                                  message:@"Are you sure you want to delete all games?"
-                                                 delegate:self
-                                        cancelButtonTitle:@"No"
-                                        otherButtonTitles:@"Yes", nil];
-  alert.tag = AlertViewTypeDeleteAllGamesConfirmation;
-  [alert show];
-  [alert release];
-}
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Please confirm"
+                                                                           message:@"Are you sure you want to delete all games?"
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
 
-#pragma mark - UIAlertViewDelegate overrides
+  UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
+                                                     style:UIAlertActionStyleCancel
+                                                   handler:^(UIAlertAction* action) {}];
+  [alertController addAction:noAction];
 
-// -----------------------------------------------------------------------------
-/// @brief UIAlertViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-  if (AlertViewButtonTypeYes == buttonIndex)
+  void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
   {
     // Temporarily disable KVO observer mechanism so that no table view update
     // is triggered while we are deleting games. When we are finished we will
@@ -432,7 +424,13 @@ enum DeleteAllSectionItem
     }
     [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
     [self updateArchiveViewAfterLastGameWasDeleted];
-  }
+  };
+  UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:yesActionBlock];
+  [alertController addAction:yesAction];
+
+  [self presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

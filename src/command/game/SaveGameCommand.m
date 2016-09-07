@@ -164,14 +164,16 @@
 // -----------------------------------------------------------------------------
 - (void) showAlertWithMessage:(NSString*)message
 {
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Failed to save game"
-                                                  message:message
-                                                 delegate:nil
-                                        cancelButtonTitle:nil
-                                        otherButtonTitles:@"Ok", nil];
-  alert.tag = AlertViewTypeSaveGameFailed;
-  [alert show];
-  [alert release];
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Failed to save game"
+                                                                           message:message
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction* action) {}];
+  [alertController addAction:okAction];
+
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

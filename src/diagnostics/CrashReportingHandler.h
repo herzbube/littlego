@@ -24,7 +24,7 @@
 /// submitting crash reports according to the user preferences in
 /// CrashReportingModel.
 // -----------------------------------------------------------------------------
-@interface CrashReportingHandler : NSObject <CrashlyticsDelegate, UIAlertViewDelegate>
+@interface CrashReportingHandler : NSObject <CrashlyticsDelegate>
 {
 }
 

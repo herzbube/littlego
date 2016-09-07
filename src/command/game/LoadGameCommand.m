@@ -836,14 +836,16 @@ enum ParseMoveStringResult
 // -----------------------------------------------------------------------------
 - (void) showAlert:(NSString*)message
 {
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Failed to load game"
-                                                  message:message
-                                                 delegate:nil
-                                        cancelButtonTitle:nil
-                                        otherButtonTitles:@"Ok", nil];
-  alert.tag = AlertViewTypeLoadGameFailed;
-  [alert show];
-  [alert release];
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Failed to load game"
+                                                                           message:message
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction* action) {}];
+  [alertController addAction:okAction];
+
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------

@@ -36,6 +36,14 @@ enum ActionType
   ActionTypeDiscard
 };
 
+/// @brief Enumerates the types of buttons used in alerts presented by this
+/// command.
+enum AlertButtonType
+{
+  AlertButtonTypeNo,
+  AlertButtonTypeYes,
+};
+
 
 @implementation DiscardFutureMovesAlertController
 
@@ -57,21 +65,22 @@ enum ActionType
   [self alertOrAction:ActionTypeDiscard withCommand:command];
 }
 
-#pragma mark - UIAlertViewDelegate overrides
+#pragma mark - Alert handler
 
 // -----------------------------------------------------------------------------
-/// @brief UIAlertViewDelegate protocol method.
+/// @brief Alert handler method.
 // -----------------------------------------------------------------------------
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+- (void) didDismissAlertWithButton:(enum AlertButtonType)alertButtonType
 {
-  CommandBase* command = objc_getAssociatedObject(alertView, associatedCommandObjectKey);
+  CommandBase* command = objc_getAssociatedObject(self, associatedCommandObjectKey);
   // objc_setAssociatedObject() will invoke release, so we must make sure that
   // the command survives until it is submitted
   [[command retain] autorelease];
-  objc_setAssociatedObject(alertView, associatedCommandObjectKey, nil, OBJC_ASSOCIATION_RETAIN);
-  switch (buttonIndex)
+  objc_setAssociatedObject(self, associatedCommandObjectKey, nil, OBJC_ASSOCIATION_RETAIN);
+
+  switch (alertButtonType)
   {
-    case AlertViewButtonTypeYes:
+    case AlertButtonTypeYes:
     {
       [command submit];
       break;
@@ -97,8 +106,7 @@ enum ActionType
 /// alert is shown that warns the user that discarding now will discard all
 /// future board positions. If the user confirms that this is OK, @a command is
 /// executed. If the user cancels the operation, @a command is not executed.
-/// Handling of the user's response happens in
-/// alertView:didDismissWithButtonIndex:().
+/// Handling of the user's response happens in didDismissAlertWithButton:().
 ///
 /// The user can suppress the alert in the user preferences. In this case
 /// @a command is immediately executed.
@@ -140,16 +148,35 @@ enum ActionType
     else
       formatString = @"You are viewing a board position in the middle of the game. %@ all moves that have been made after this position will be discarded.\n\nDo you want to continue?";
     NSString* messageString = [NSString stringWithFormat:formatString, actionDescription];
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Future moves will be discarded"
-                                                    message:messageString
-                                                   delegate:self
-                                          cancelButtonTitle:@"No"
-                                          otherButtonTitles:@"Yes", nil];
-    alert.tag = AlertViewTypeActionWillDiscardAllFutureMoves;
-    [alert show];
-    [alert release];
+
+
+    UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Future moves will be discarded"
+                                                                             message:messageString
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+
+    void (^noActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+    {
+      [self didDismissAlertWithButton:AlertButtonTypeNo];
+    };
+    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
+                                                       style:UIAlertActionStyleCancel
+                                                     handler:noActionBlock];
+    [alertController addAction:noAction];
+
+    void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+    {
+      [self didDismissAlertWithButton:AlertButtonTypeYes];
+    };
+    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:yesActionBlock];
+    [alertController addAction:yesAction];
+
+    [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+
+
     // Store command object for later use by the alert handler
-    objc_setAssociatedObject(alert, associatedCommandObjectKey, command, OBJC_ASSOCIATION_RETAIN);
+    objc_setAssociatedObject(self, associatedCommandObjectKey, command, OBJC_ASSOCIATION_RETAIN);
   }
 }
 

@@ -60,19 +60,14 @@
   NSString* uniqueFilePath = [model filePathForGameWithName:uniqueGameName];
   NSError* error;
   BOOL success = [PathUtilities moveItemAtPath:documentInteractionFilePath overwritePath:uniqueFilePath error:&error];
+
+  NSString* alertTitle;
+  NSString* alertMessage;
   if (success)
   {
-    NSString* message = [NSString stringWithFormat:@"The game has been imported and stored in the archive under this name:\n\n%@",
-                         uniqueGameName];
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Game imported"
-                                                    message:message
-                                                   delegate:nil
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:@"Ok", nil];
-    alert.tag = AlertViewTypeHandleDocumentInteractionCommandSucceeded;
-    [alert performSelectorOnMainThread:@selector(show) withObject:nil waitUntilDone:YES];
-    [alert release];
-    return true;
+    alertTitle = @"Game imported";
+    alertMessage = [NSString stringWithFormat:@"The game has been imported and stored in the archive under this name:\n\n%@",
+                    uniqueGameName];
   }
   else
   {
@@ -80,18 +75,32 @@
     // the safe side
     [PathUtilities deleteItemIfExists:documentInteractionFilePath];
     [PathUtilities deleteItemIfExists:uniqueFilePath];
-    NSString* message = [NSString stringWithFormat:@"The game could not be imported. Reason for the failure: %@",
-                         [error localizedDescription]];
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Game not imported"
-                                                    message:message
-                                                   delegate:nil
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:@"Ok", nil];
-    alert.tag = AlertViewTypeHandleDocumentInteractionCommandFailed;
-    [alert performSelectorOnMainThread:@selector(show) withObject:nil waitUntilDone:YES];
-    [alert release];
-    return false;
+
+    alertTitle = @"Game imported";
+    alertMessage = [NSString stringWithFormat:@"The game could not be imported. Reason for the failure: %@",
+                    [error localizedDescription]];
   }
+
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:alertTitle
+                                                                           message:alertMessage
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction* action) {}];
+  [alertController addAction:okAction];
+
+  [self performSelectorOnMainThread:@selector(showAlert:) withObject:alertController waitUntilDone:YES];
+
+  return success;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for moveDocumentInteractionFileToArchive().
+// -----------------------------------------------------------------------------
+- (void) showAlert:(UIAlertController*)alertController
+{
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

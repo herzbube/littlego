@@ -224,14 +224,27 @@ enum PhysicalMemorySectionItem
   {
     NSString* formatString = @"You have increased the maximum amount of memory that the computer is allowed to use for its calculations.\n\nThe previous value was %d MB, the new value is %d MB.\n\nAre you sure you want to do this?";
     NSString* messageString = [NSString stringWithFormat:formatString, self.maxMemory, sliderCell.value];
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Please confirm"
-                                                    message:messageString
-                                                   delegate:self
-                                          cancelButtonTitle:@"No"
-                                          otherButtonTitles:@"Yes", nil];
-    alert.tag = AlertViewTypeMaxMemoryConfirmation;
-    [alert show];
-    [alert release];
+
+    UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Please confirm"
+                                                                             message:messageString
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
+                                                       style:UIAlertActionStyleCancel
+                                                     handler:^(UIAlertAction* action) {}];
+    [alertController addAction:noAction];
+
+    void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+    {
+      self.maxMemory = [self sliderCell].value;
+      [self.delegate didEndEditing:self didCancel:false];
+    };
+    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:yesActionBlock];
+    [alertController addAction:yesAction];
+
+    [self presentViewController:alertController animated:YES completion:nil];
   }
   else
   {
@@ -246,20 +259,6 @@ enum PhysicalMemorySectionItem
 - (void) cancel:(id)sender
 {
   [self.delegate didEndEditing:self didCancel:true];
-}
-
-#pragma mark - UIAlertViewDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UIAlertViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-  if (AlertViewButtonTypeYes == buttonIndex)
-  {
-    self.maxMemory = [self sliderCell].value;
-    [self.delegate didEndEditing:self didCancel:false];
-  }
 }
 
 #pragma mark - Private helpers

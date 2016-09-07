@@ -37,7 +37,7 @@
 /// preferences view dedicated to changing the "Maximum memory" GTP engine
 /// profile setting.
 // -----------------------------------------------------------------------------
-@interface MaxMemoryController : UITableViewController <UIAlertViewDelegate>
+@interface MaxMemoryController : UITableViewController
 {
 }
 

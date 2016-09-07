@@ -25,7 +25,7 @@
 ///
 /// SaveGameCommand delegates its task to the GTP engine via the "savesgf" GTP
 /// command. If a game with the same name already exists, it is overwritten. If
-/// an error occurs, SaveGameCommand displays an alert view.
+/// an error occurs, SaveGameCommand displays an alert.
 ///
 /// SaveGameCommand makes sure that the resulting .sgf file includes all moves
 /// of the game. If the user currently views an old board position,

@@ -109,15 +109,11 @@
   self.sendBugReportMode = false;
   if (! [self generateDiagnosticsInformationFileInternal])
     return;
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Information generated"
-                                                  message:[NSString stringWithFormat:@"Diagnostics information has been generated and is ready for transfer to your computer via iTunes file sharing. In iTunes look for the file named '%@'.", bugReportDiagnosticsInformationFileName]
-                                                 delegate:self
-                                        cancelButtonTitle:nil
-                                        otherButtonTitles:@"Ok", nil];
-  alert.tag = AlertViewTypeDiagnosticsInformationFileGenerated;
-  [alert show];
-  [alert release];
-  [self retain];  // must survive until the delegate method is invoked
+
+  NSString* alertTitle = @"Information generated";
+  NSString* alertMessage = [NSString stringWithFormat:@"Diagnostics information has been generated and is ready for transfer to your computer via iTunes file sharing. In iTunes look for the file named '%@'.", bugReportDiagnosticsInformationFileName];
+  NSString* buttonTitle = @"Ok";
+  [self presentAlertWithTitle:alertTitle message:alertMessage buttonTitle:buttonTitle];
 }
 
 #pragma mark - Private helpers
@@ -131,15 +127,10 @@
   bool canSendMail = [MFMailComposeViewController canSendMail];
   if (! canSendMail)
   {
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Operation failed"
-                                                    message:@"This device is not configured to send email."
-                                                   delegate:self
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:@"Ok", nil];
-    alert.tag = AlertViewTypeCannotSendEmail;
-    [alert show];
-    [alert release];
-    [self retain];  // must survive until the delegate method is invoked
+    NSString* alertTitle = @"Operation failed";
+    NSString* alertMessage = @"This device is not configured to send email.";
+    NSString* buttonTitle = @"Ok";
+    [self presentAlertWithTitle:alertTitle message:alertMessage buttonTitle:buttonTitle];
   }
   return canSendMail;
 }
@@ -156,15 +147,10 @@
   self.diagnosticsInformationFilePath = command.diagnosticsInformationFilePath;
   if (! success)
   {
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Operation failed"
-                                                    message:@"An error occurred while generating diagnostics information."
-                                                   delegate:self
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:@"Very funny!", nil];
-    alert.tag = AlertViewTypeDiagnosticsInformationFileNotGenerated;
-    [alert show];
-    [alert release];
-    [self retain];  // must survive until the delegate method is invoked
+    NSString* alertTitle = @"Operation failed";
+    NSString* alertMessage = @"An error occurred while generating diagnostics information.";
+    NSString* buttonTitle = @"Very funny!";
+    [self presentAlertWithTitle:alertTitle message:alertMessage buttonTitle:buttonTitle];
   }
   return success;
 }
@@ -257,19 +243,34 @@
   [self notifyDelegate];
 }
 
-#pragma mark - UIAlertViewDelegate overrides
+#pragma mark - Present and handle alerts
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to the user dismissing an alert view for which this controller
-/// is the delegate.
+/// @brief Presents an alert using the specified title and message. The alert
+/// has a single button with the specified button title.
 // -----------------------------------------------------------------------------
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+- (void) presentAlertWithTitle:(NSString*)alertTitle message:(NSString*)alertMessage buttonTitle:(NSString*)buttonTitle
 {
-  [self autorelease];  // balance retain that is sent before an alert is shown
-  [self notifyDelegate];
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:alertTitle
+                                                                           message:alertMessage
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  void (^actionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+  {
+    [self autorelease];  // balance retain that is sent before an alert is shown
+    [self notifyDelegate];
+  };
+  UIAlertAction* action = [UIAlertAction actionWithTitle:buttonTitle
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:actionBlock];
+  [alertController addAction:action];
+
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+
+  [self retain];  // must survive until the delegate method is invoked
 }
 
-#pragma mark - Private helpers for UIAlertViewDelegate overrides
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Notifies the delegate that the process managed by this controller

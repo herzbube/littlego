@@ -145,54 +145,6 @@ enum UIArea
   UIAreaDefault = UIAreaPlay
 };
 
-/// @brief Enumerates the types of alert views used across the application.
-///
-/// Enumeration values are used as UIView tags so that an alert view delegate
-/// that manages several alert views knows how to distinguish between them.
-enum AlertViewType
-{
-  AlertViewTypeGameHasEnded,
-  AlertViewTypeNewGame,
-  AlertViewTypeSaveGame,
-  AlertViewTypeRenameGame,
-  AlertViewTypeLoadGameFailed,
-  AlertViewTypeSaveGameFailed,
-  AlertViewTypeUndoMoveFailed,
-  AlertViewTypeAddToCannedCommands,
-  AlertViewTypeMemoryWarning,
-  AlertViewTypeCannotSendEmail,
-  AlertViewTypeDiagnosticsInformationFileGenerated,
-  AlertViewTypeDiagnosticsInformationFileNotGenerated,
-  AlertViewTypeComputerPlayedIllegalMoveLoggingEnabled,
-  AlertViewTypeComputerPlayedIllegalMoveLoggingDisabled,
-  AlertViewTypeNewGameAfterComputerPlayedIllegalMove,
-  AlertViewTypeActionWillDiscardAllFutureMoves,
-  AlertViewTypeHandleDocumentInteractionCommandSucceeded,
-  AlertViewTypeHandleDocumentInteractionCommandFailed,
-  AlertViewTypeMaxMemoryConfirmation,
-  AlertViewTypeDeleteAllGamesConfirmation,
-  AlertViewTypeResetPlayersProfilesConfirmation,
-  AlertViewTypeResetPlayersProfilesDiscardGameConfirmation,
-  AlertViewTypePlayMoveRejectedLoggingEnabled,
-  AlertViewTypePlayMoveRejectedLoggingDisabled,
-  AlertViewTypeSelectSideToPlay,
-  AlertViewTypeSubmitCrashReport
-};
-
-/// @brief Enumerates the types of buttons used by the various alert views in
-/// #AlertViewType.
-enum AlertViewButtonType
-{
-  AlertViewButtonTypeOk = 0,   ///< @brief Used as the single button in a simple alert view
-  AlertViewButtonTypeNo = 0,   ///< @brief Used as the "cancel" button in a Yes/No alert view
-  AlertViewButtonTypeYes = 1,  ///< @brief Used as the first "other" button in a Yes/No alert view
-  AlertViewButtonTypeNonAlternatingColor = 0,
-  AlertViewButtonTypeAlternatingColor = 1,
-  AlertViewButtonTypeCrashReportSend = 0,
-  AlertViewButtonTypeCrashReportAlwaysSend = 1,
-  AlertViewButtonTypeCrashReportDontSend = 2
-};
-
 /// @brief Enumerates the types of information that the Info view can display.
 enum InfoType
 {

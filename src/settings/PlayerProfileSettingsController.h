@@ -24,7 +24,7 @@
 /// @brief The PlayerProfileSettingsController class is responsible for managing
 /// user interaction on the "Players & Profiles" user preferences view.
 // -----------------------------------------------------------------------------
-@interface PlayerProfileSettingsController : UITableViewController <EditPlayerDelegate, EditGtpEngineProfileDelegate, UIAlertViewDelegate>
+@interface PlayerProfileSettingsController : UITableViewController <EditPlayerDelegate, EditGtpEngineProfileDelegate>
 {
 }
 

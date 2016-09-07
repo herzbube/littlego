@@ -25,12 +25,12 @@
 ///
 /// ResumePlayCommand checks if the game rules allow non-alternating play on
 /// game resumption. If not, ResumePlayCommand simply resumes play. If yes,
-/// ResumePlayCommand shows an alert view that lets the user select which side
+/// ResumePlayCommand shows an alert that lets the user select which side
 /// should play first after the game is resumed. When the user has selected a
 /// side, ResumePlayCommand resumes play and sets the color to move according
 /// to the user's choice.
 ///
-/// @note Because ResumePlayCommand may show an alert view, code execution may
+/// @note Because ResumePlayCommand may show an alert, code execution may
 /// return to the client who submitted the command before play is actually
 /// resumed.
 ///
@@ -40,7 +40,7 @@
 /// If after the game is resumed it is the computer player's turn,
 /// ResumePlayCommand triggers the computer to play a move.
 // -----------------------------------------------------------------------------
-@interface ResumePlayCommand : CommandBase <UIAlertViewDelegate>
+@interface ResumePlayCommand : CommandBase
 {
 }
 

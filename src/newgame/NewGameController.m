@@ -394,14 +394,26 @@ enum CellID
     NSString* message = @"The game in progress has unsaved changes that will "
                          "be lost if you proceed. Are you sure you want to "
                          "discard the game in progress?";
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:self.navigationItem.title
-                                                    message:message
-                                                   delegate:self
-                                          cancelButtonTitle:@"No"
-                                          otherButtonTitles:@"Yes", nil];
-    alert.tag = AlertViewTypeNewGame;
-    [alert show];
-    [alert release];
+
+    UIAlertController* alertController = [UIAlertController alertControllerWithTitle:self.navigationItem.title
+                                                                             message:message
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
+
+    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
+                                                       style:UIAlertActionStyleCancel
+                                                     handler:^(UIAlertAction* action) {}];
+    [alertController addAction:noAction];
+
+    void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+    {
+      [self newGame];
+    };
+    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:yesActionBlock];
+    [alertController addAction:yesAction];
+
+    [self presentViewController:alertController animated:YES completion:nil];
   }
   else
   {
@@ -1202,24 +1214,6 @@ enum CellID
     }
   }
   return isSelectionValid;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Reacts to the user dismissing an alert view for which this controller
-/// is the delegate.
-// -----------------------------------------------------------------------------
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-  switch (buttonIndex)
-  {
-    case AlertViewButtonTypeNo:
-      break;
-    case AlertViewButtonTypeYes:
-      [self newGame];
-      break;
-    default:
-      break;
-  }
 }
 
 // -----------------------------------------------------------------------------

@@ -486,14 +486,50 @@ enum ResetToDefaultsSectionItem
     }
     case ResetToDefaultsSection:
     {
-      UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Please confirm"
-                                                      message:@"This will discard ALL players and profiles that currently exist, and restore those players and profiles that come with the app when it is installed from the App Store.\n\nAre you sure you want to do this?"
-                                                     delegate:self
-                                            cancelButtonTitle:@"No"
-                                            otherButtonTitles:@"Yes", nil];
-      alert.tag = AlertViewTypeResetPlayersProfilesConfirmation;
-      [alert show];
-      [alert release];
+      UIAlertController* outerAlertController = [UIAlertController alertControllerWithTitle:@"Please confirm"
+                                                                                    message:@"This will discard ALL players and profiles that currently exist, and restore those players and profiles that come with the app when it is installed from the App Store.\n\nAre you sure you want to do this?"
+                                                                             preferredStyle:UIAlertControllerStyleAlert];
+
+      UIAlertAction* outerNoAction = [UIAlertAction actionWithTitle:@"No"
+                                                              style:UIAlertActionStyleCancel
+                                                            handler:^(UIAlertAction* action) {}];
+      [outerAlertController addAction:outerNoAction];
+
+      void (^outerYesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+      {
+        if ([GoGame sharedGame].document.dirty)
+        {
+          UIAlertController* innerAlertController = [UIAlertController alertControllerWithTitle:@"Please confirm"
+                                                                                        message:@"The current game has unsaved changes. In order to proceed, the current game must be discarded so that a new game can be started with the restored players and profiles.\n\nAre you sure you want to discard the current game and lose all unsaved changes?"
+                                                                                 preferredStyle:UIAlertControllerStyleAlert];
+
+          UIAlertAction* innerNoAction = [UIAlertAction actionWithTitle:@"No"
+                                                                  style:UIAlertActionStyleCancel
+                                                                handler:^(UIAlertAction* action) {}];
+          [innerAlertController addAction:innerNoAction];
+
+          void (^innerYesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+          {
+            [self resetToDefaults];
+          };
+          UIAlertAction* innerYesAction = [UIAlertAction actionWithTitle:@"Yes"
+                                                                   style:UIAlertActionStyleDefault
+                                                                 handler:innerYesActionBlock];
+          [innerAlertController addAction:innerYesAction];
+
+          [self presentViewController:innerAlertController animated:YES completion:nil];
+        }
+        else
+        {
+          [self resetToDefaults];
+        }
+      };
+      UIAlertAction* outerYesAction = [UIAlertAction actionWithTitle:@"Yes"
+                                                               style:UIAlertActionStyleDefault
+                                                             handler:outerYesActionBlock];
+      [outerAlertController addAction:outerYesAction];
+
+      [self presentViewController:outerAlertController animated:YES completion:nil];
       break;
     }
     default:
@@ -764,43 +800,6 @@ enum ResetToDefaultsSectionItem
     NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row inSection:PlayersSection];
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:UITableViewRowAnimationNone];
-  }
-}
-
-#pragma mark - UIAlertViewDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UIAlertViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
-{
-  if (AlertViewTypeResetPlayersProfilesConfirmation == alertView.tag)
-  {
-    if (AlertViewButtonTypeYes == buttonIndex)
-    {
-      if ([GoGame sharedGame].document.dirty)
-      {
-        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Please confirm"
-                                                        message:@"The current game has unsaved changes. In order to proceed, the current game must be discarded so that a new game can be started with the restored players and profiles.\n\nAre you sure you want to discard the current game and lose all unsaved changes?"
-                                                       delegate:self
-                                              cancelButtonTitle:@"No"
-                                              otherButtonTitles:@"Yes", nil];
-        alert.tag = AlertViewTypeResetPlayersProfilesDiscardGameConfirmation;
-        [alert show];
-        [alert release];
-      }
-      else
-      {
-        [self resetToDefaults];
-      }
-    }
-  }
-  else if (AlertViewTypeResetPlayersProfilesDiscardGameConfirmation)
-  {
-    if (AlertViewButtonTypeYes == buttonIndex)
-    {
-      [self resetToDefaults];
-    }
   }
 }
 

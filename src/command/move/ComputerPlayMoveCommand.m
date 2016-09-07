@@ -36,6 +36,24 @@
 #import "../../shared/ApplicationStateManager.h"
 
 
+/// @brief Enumerates the types of alerts presented by this command.
+enum AlertType
+{
+  AlertTypeComputerPlayedIllegalMoveLoggingEnabled,
+  AlertTypeComputerPlayedIllegalMoveLoggingDisabled,
+  AlertTypeNewGameAfterComputerPlayedIllegalMove,
+};
+
+/// @brief Enumerates the types of buttons used in alerts presented by this
+/// command.
+enum AlertButtonType
+{
+  AlertButtonTypeOk,
+  AlertButtonTypeNo,
+  AlertButtonTypeYes,
+};
+
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for ComputerPlayMoveCommand.
 // -----------------------------------------------------------------------------
@@ -195,28 +213,46 @@
 - (void) handleComputerPlayedIllegalMove1:(enum GoMoveIsIllegalReason)illegalReason
 {
   NSString* message = @"The computer played an illegal move. This is almost certainly a bug in Little Go. ";
-  enum AlertViewType alertViewType;
+  enum AlertType alertType;
   bool loggingEnabled = [ApplicationDelegate sharedDelegate].loggingModel.loggingEnabled;
   if (loggingEnabled)
   {
     message = [message stringByAppendingString:@"\n\nWould you like to report this incident now so that we can fix the bug?"];
-    alertViewType = AlertViewTypeComputerPlayedIllegalMoveLoggingEnabled;
+    alertType = AlertTypeComputerPlayedIllegalMoveLoggingEnabled;
   }
   else
   {
     message = [message stringByAppendingString:@"You should enable logging now so that you can report the bug when it occurs the next time.\n\nWould you like to enable logging now?"];
-    alertViewType = AlertViewTypeComputerPlayedIllegalMoveLoggingDisabled;
+    alertType = AlertTypeComputerPlayedIllegalMoveLoggingDisabled;
   }
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Unexpected error"
-                                                  message:message
-                                                 delegate:self
-                                        cancelButtonTitle:@"No"
-                                        otherButtonTitles:@"Yes", nil];
-  alert.tag = alertViewType;
-  [alert show];
-  [alert release];
 
-  [self retain];  // must survive until the delegate method is invoked
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Unexpected error"
+                                                                           message:message
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  void (^noActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+  {
+    [self didDismissAlertWithButton:AlertButtonTypeNo
+                          alertType:alertType];
+  };
+  UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
+                                                     style:UIAlertActionStyleCancel
+                                                   handler:noActionBlock];
+  [alertController addAction:noAction];
+
+  void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+  {
+    [self didDismissAlertWithButton:AlertButtonTypeYes
+                          alertType:alertType];
+  };
+  UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:yesActionBlock];
+  [alertController addAction:yesAction];
+
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+
+  [self retain];  // must survive until the handler method is invoked
 }
 
 // -----------------------------------------------------------------------------
@@ -235,36 +271,44 @@
 
   NSString* messageFormat = @"Until this bug is fixed, Little Go unfortunately cannot continue with the game in progress. The game has been saved to the archive under the name\n\n%@\n\nA new game is being started now to bring the app back into a good state.";
   NSString* message = [NSString stringWithFormat:messageFormat, uniqueGameName];
-  UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"New game about to begin"
-                                                  message:message
-                                                 delegate:self
-                                        cancelButtonTitle:nil
-                                        otherButtonTitles:@"Ok", nil];
-  alert.tag = AlertViewTypeNewGameAfterComputerPlayedIllegalMove;
-  [alert show];
-  [alert release];
 
-  [self retain];  // must survive until the delegate method is invoked
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"New game about to begin"
+                                                                           message:message
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  void (^okActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+  {
+    [self didDismissAlertWithButton:AlertButtonTypeOk
+                          alertType:AlertTypeNewGameAfterComputerPlayedIllegalMove];
+  };
+  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:okActionBlock];
+  [alertController addAction:okAction];
+
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+
+  [self retain];  // must survive until the handler method is invoked
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to the user dismissing an alert view for which this controller
-/// is the delegate.
+/// @brief Reacts to the user dismissing an alert that was triggered by this
+/// command.
 ///
 /// This method has been added to gather information in order to fix issue 90
 /// on GitHub. This method can be removed as soon the issue has been fixed.
 // -----------------------------------------------------------------------------
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+- (void) didDismissAlertWithButton:(enum AlertButtonType)alertButtonType alertType:(enum AlertType)alertType
 {
   [self autorelease];  // balance retain that is sent before an alert is shown
 
-  switch (alertView.tag)
+  switch (alertType)
   {
-    case AlertViewTypeComputerPlayedIllegalMoveLoggingDisabled:
+    case AlertTypeComputerPlayedIllegalMoveLoggingDisabled:
     {
-      switch (buttonIndex)
+      switch (alertButtonType)
       {
-        case AlertViewButtonTypeYes:
+        case AlertButtonTypeYes:
           [self enableLogging];
           break;
         default:
@@ -273,14 +317,14 @@
       [self handleComputerPlayedIllegalMove2];
       break;
     }
-    case AlertViewTypeComputerPlayedIllegalMoveLoggingEnabled:
+    case AlertTypeComputerPlayedIllegalMoveLoggingEnabled:
     {
-      switch (buttonIndex)
+      switch (alertButtonType)
       {
-        case AlertViewButtonTypeNo:
+        case AlertButtonTypeNo:
           [self handleComputerPlayedIllegalMove2];
           break;
-        case AlertViewButtonTypeYes:
+        case AlertButtonTypeYes:
           [self sendBugReport];
           break;
         default:
@@ -288,9 +332,13 @@
       }
       break;
     }
-    case AlertViewTypeNewGameAfterComputerPlayedIllegalMove:
+    case AlertTypeNewGameAfterComputerPlayedIllegalMove:
     {
       [self startNewGame];
+      break;
+    }
+    default:
+    {
       break;
     }
   }

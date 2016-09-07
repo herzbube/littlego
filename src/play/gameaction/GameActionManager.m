@@ -1035,8 +1035,8 @@ static GameActionManager* sharedGameActionManager = nil;
   bool shouldAllowResumePlay = [GoUtilities shouldAllowResumePlay:game];
   if (! shouldAllowResumePlay)
     return;
-  // ResumePlayCommand may show an alert view, so code execution may return
-  // to us before play is actually resumed
+  // ResumePlayCommand may show an alert, so code execution may return to us
+  // before play is actually resumed
   [[[[ResumePlayCommand alloc] init] autorelease] submit];
 }
 

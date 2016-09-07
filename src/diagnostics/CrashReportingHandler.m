@@ -18,9 +18,19 @@
 // Project includes
 #import "CrashReportingHandler.h"
 #import "CrashReportingModel.h"
+#import "../main/ApplicationDelegate.h"
 
 // Typedef to improve code readability
 typedef void (^CrashlyticsCompletionHandler) (BOOL);
+
+/// @brief Enumerates the types of buttons used in alerts presented by this
+/// command.
+enum AlertButtonType
+{
+  AlertButtonTypeCrashReportSend,
+  AlertButtonTypeCrashReportAlwaysSend,
+  AlertButtonTypeCrashReportDontSend
+};
 
 
 // -----------------------------------------------------------------------------
@@ -98,43 +108,66 @@ typedef void (^CrashlyticsCompletionHandler) (BOOL);
     NSString* alertTitle = @"Little Go Unexpectedly Quit";
     NSString* alertMessage = @"Would you like to send a report so we can fix the problem?";
 
-    UIAlertView* alert = [[UIAlertView alloc] initWithTitle:alertTitle
-                                                    message:alertMessage
-                                                   delegate:self
-                                          cancelButtonTitle:nil
-                                          otherButtonTitles:@"Send report", @"Always send", @"Don't send", nil];
-    alert.tag = AlertViewTypeSubmitCrashReport;
-    [alert show];
-    [alert release];
+    UIAlertController* alertController = [UIAlertController alertControllerWithTitle:alertTitle
+                                                                             message:alertMessage
+                                                                      preferredStyle:UIAlertControllerStyleAlert];
 
-    // This handler object must remain alive until the alert view has been
-    // handled
+    void (^sendReportBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+    {
+      [self didDismissAlertWithButton:AlertButtonTypeCrashReportSend];
+    };
+    UIAlertAction* sendReport = [UIAlertAction actionWithTitle:@"Send report"
+                                                       style:UIAlertActionStyleCancel
+                                                     handler:sendReportBlock];
+    [alertController addAction:sendReport];
+
+    void (^alwaysSendBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+    {
+      [self didDismissAlertWithButton:AlertButtonTypeCrashReportAlwaysSend];
+    };
+    UIAlertAction* alwaysSend = [UIAlertAction actionWithTitle:@"Always send"
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:alwaysSendBlock];
+    [alertController addAction:alwaysSend];
+
+    void (^dontSendBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+    {
+      [self didDismissAlertWithButton:AlertButtonTypeCrashReportDontSend];
+    };
+    UIAlertAction* dontSend = [UIAlertAction actionWithTitle:@"Don't send"
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:dontSendBlock];
+    [alertController addAction:dontSend];
+
+    [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+
+    // This handler object must remain alive until the alert has been handled
     [self retain];
   }
 }
 
-#pragma mark - UIAlertViewDelegate overrides
+#pragma mark - Alert handler
 
 // -----------------------------------------------------------------------------
-/// @brief UIAlertViewDelegate protocol method.
+/// @brief Alert handler method.
 // -----------------------------------------------------------------------------
-- (void) alertView:(UIAlertView*)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
+- (void) didDismissAlertWithButton:(enum AlertButtonType)alertButtonType
 {
   BOOL submitReport;
-  switch (buttonIndex)
+  switch (alertButtonType)
   {
-    case AlertViewButtonTypeCrashReportSend:
+    case AlertButtonTypeCrashReportSend:
     {
       submitReport = YES;
       break;
     }
-    case AlertViewButtonTypeCrashReportAlwaysSend:
+    case AlertButtonTypeCrashReportAlwaysSend:
     {
       submitReport = YES;
       self.crashReportingModel.automaticReport = true;
       break;
     }
-    case AlertViewButtonTypeCrashReportDontSend:
+    case AlertButtonTypeCrashReportDontSend:
     {
       submitReport = NO;
       break;
@@ -143,7 +176,7 @@ typedef void (^CrashlyticsCompletionHandler) (BOOL);
     {
       submitReport = NO;
       assert(false);
-      DDLogError(@"Unknown alert button %ld", (long)buttonIndex);
+      DDLogError(@"Unknown alert button %ld", (long)alertButtonType);
       break;
     }
   }
@@ -155,7 +188,7 @@ typedef void (^CrashlyticsCompletionHandler) (BOOL);
     self.crashlyticsCompletionHandler(submitReport);
   }];
 
-  // Alert view has been handled, so this handler object can now die
+  // Alert has been handled, so this handler object can now die
   [self autorelease];
 }
 
