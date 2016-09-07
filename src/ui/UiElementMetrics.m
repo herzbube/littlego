@@ -32,34 +32,22 @@
   return UIInterfaceOrientationIsPortrait([UiElementMetrics interfaceOrientation]);
 }
 
+/// @brief The current screen width. The value returned here changes when the
+/// interface orientation changes.
 + (int) screenWidth
 {
-  // In iOS 8 we no longer need to look at the interface orientation ourselves,
-  // UIScreen already does that for us
-  if ([UIDevice systemVersionMajor] >= 8)
-    return [UIScreen mainScreen].bounds.size.width;
-
-  bool isPortraitOrientation = [UiElementMetrics interfaceOrientationIsPortrait];
-  if (isPortraitOrientation)
-    return [UIScreen mainScreen].bounds.size.width;
-  else
-    return [UIScreen mainScreen].bounds.size.height;
+  return [UIScreen mainScreen].bounds.size.width;
 }
 
+/// @brief The current screen height. The value returned here changes when the
+/// interface orientation changes.
 + (int) screenHeight
 {
-  // In iOS 8 we no longer need to look at the interface orientation ourselves,
-  // UIScreen already does that for us
-  if ([UIDevice systemVersionMajor] >= 8)
-    return [UIScreen mainScreen].bounds.size.height;
-
-  bool isPortraitOrientation = [UiElementMetrics interfaceOrientationIsPortrait];
-  if (isPortraitOrientation)
-    return [UIScreen mainScreen].bounds.size.height;
-  else
-    return [UIScreen mainScreen].bounds.size.width;
+  return [UIScreen mainScreen].bounds.size.height;
 }
 
+/// @brief The screen width for landscape interface orientations. The value
+/// returned here is always the same.
 + (int) screenWidthLandscape
 {
   CGRect mainScreenBounds = [UIScreen mainScreen].bounds;
@@ -70,23 +58,7 @@
 /// bar if visible)
 + (CGRect) applicationFrame
 {
-  // In iOS 8 we no longer need to look at the interface orientation ourselves,
-  // UIScreen already does that for us
-  if ([UIDevice systemVersionMajor] >= 8)
-    return [UIScreen mainScreen].applicationFrame;
-
-  bool isPortraitOrientation = [UiElementMetrics interfaceOrientationIsPortrait];
-  if (isPortraitOrientation)
-    return [UIScreen mainScreen].applicationFrame;
-  else
-  {
-    CGRect applicationFrame = [UIScreen mainScreen].applicationFrame;
-    CGRect applicationFrameWithOrientation = CGRectMake(applicationFrame.origin.x,
-                                                        applicationFrame.origin.y,
-                                                        applicationFrame.size.height,
-                                                        applicationFrame.size.width);
-    return applicationFrameWithOrientation;
-  }
+  return [UIScreen mainScreen].applicationFrame;
 }
 
 + (int) statusBarHeight

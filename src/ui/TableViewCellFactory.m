@@ -173,28 +173,8 @@
     }
     case DeleteTextCellType:
     {
-      if ([UIDevice systemVersionMajor] <= 6)
-      {
-        // Source for the stuff we are doing here:
-        // http://stackoverflow.com/questions/1076785/uibutton-in-uitableview-cell-like-delete-event
-        cell.backgroundView = [UiUtilities redButtonTableViewCellBackground:false];
-        cell.selectedBackgroundView = [UiUtilities redButtonTableViewCellBackground:true];
-        // Make background views visible
-        cell.textLabel.backgroundColor = [UIColor clearColor];
-        // It's a button, so we want centered text
-        cell.textLabel.textAlignment = NSTextAlignmentCenter;
-        // Contrast against the red background
-        cell.textLabel.textColor = [UIColor whiteColor];
-        // Gives the text a slightly embossed effect so it looks more like the
-        // native button
-        cell.textLabel.shadowColor = [UIColor blackColor];
-        cell.textLabel.shadowOffset = CGSizeMake(0, -1);
-      }
-      else
-      {
-        cell.textLabel.textColor = [UIColor redColor];
-        cell.textLabel.textAlignment = NSTextAlignmentCenter;
-      }
+      cell.textLabel.textColor = [UIColor redColor];
+      cell.textLabel.textAlignment = NSTextAlignmentCenter;
       break;
     }
     default:
