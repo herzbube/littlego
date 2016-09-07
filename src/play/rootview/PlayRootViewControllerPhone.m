@@ -205,6 +205,13 @@ enum ViewHierarchyState
 {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
+  // This override is called even if the view has not been loaded yet. We don't
+  // want to be the cause of the view being loaded, so we abort here. A scenario
+  // where the view is not yet loaded is when the app launches directly into the
+  // main menu, without first showing UIAreaPlay.
+  if (! self.isViewLoaded)
+    return;
+
   // This override is called even if the the view hierarchy of this view
   // controller is not visible (e.g. buried in a navigation controller's stack).
   // This is different from the behaviour of the pre-iOS 8 interface rotation
