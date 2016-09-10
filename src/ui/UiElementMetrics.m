@@ -32,35 +32,6 @@
   return UIInterfaceOrientationIsPortrait([UiElementMetrics interfaceOrientation]);
 }
 
-/// @brief The current screen width. The value returned here changes when the
-/// interface orientation changes.
-+ (int) screenWidth
-{
-  return [UIScreen mainScreen].bounds.size.width;
-}
-
-/// @brief The current screen height. The value returned here changes when the
-/// interface orientation changes.
-+ (int) screenHeight
-{
-  return [UIScreen mainScreen].bounds.size.height;
-}
-
-/// @brief The screen width for landscape interface orientations. The value
-/// returned here is always the same.
-+ (int) screenWidthLandscape
-{
-  CGRect mainScreenBounds = [UIScreen mainScreen].bounds;
-  return MAX(mainScreenBounds.size.width, mainScreenBounds.size.height);
-}
-
-/// @brief Frame of application screen area (i.e. entire screen minus status
-/// bar if visible)
-+ (CGRect) applicationFrame
-{
-  return [UIScreen mainScreen].applicationFrame;
-}
-
 + (int) statusBarHeight
 {
   CGRect statusbarFrame = [UIApplication sharedApplication].statusBarFrame;
