@@ -78,7 +78,7 @@
   static CGSize tableViewCellSize = { 0.0f, 0.0f };
   if (CGSizeEqualToSize(tableViewCellSize, CGSizeZero))
   {
-    UITableViewCell* dummyCell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil];
+    UITableViewCell* dummyCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
     tableViewCellSize = dummyCell.bounds.size;
   }
   return tableViewCellSize;
