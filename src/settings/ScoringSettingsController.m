@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2016 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
 #import "../ui/UiElementMetrics.h"
-#import "../ui/UiUtilities.h"
 
 // Constants
 NSString* markDeadStonesIntelligentlyText = @"Mark dead stones intelligently";

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015-2016 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@
 @end
 
 // -----------------------------------------------------------------------------
-/// @brief The command delegate of GameActionManager must adtop the
+/// @brief The command delegate of GameActionManager must adopt the
 /// GameActionManagerCommandDelegate protocol. The command delegate is
 /// responsible for handling the execution of certain commands. This handling
 /// includes the possible display of an alert which the user must confirm before
@@ -61,7 +61,7 @@
 - (void) gameActionManager:(GameActionManager*)manager playOrAlertWithCommand:(CommandBase*)command;
 /// @brief This method is invoked when the user attempts to discard board
 /// positions. The delegate executes @a command, possibly displaying an alert
-/// first which the user must confirmed.
+/// first which the user must confirm.
 - (void) gameActionManager:(GameActionManager*)manager discardOrAlertWithCommand:(CommandBase*)command;
 @end
 

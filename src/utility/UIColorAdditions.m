@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2016 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -398,6 +398,11 @@
 /// background. The UIColor object is actually an image sized so that it is
 /// guaranteed to cover the device's entire screen, regardless of which
 /// orientation the UI has.
+///
+/// @todo The implementation of this method uses the UIScreen bounds to
+/// determine the size of the image. For iPad multitasking scenarios this
+/// yields a grossly oversized image. Although not wrong, this wastes a lot of
+/// memory.
 // -----------------------------------------------------------------------------
 + (UIColor*) woodenBackgroundColor
 {

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015-2016 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -232,8 +232,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the internal state of this NavigationBarButtonModel to match
-/// the dictionary @a gameActions. Returns true if there are any changes to the
-/// current visibility of game actions. Returns false if there are no changes.
+/// the dictionary @a gameActions.
 ///
 /// The supplied dictionary is expected to contain one key/value pair for each
 /// game action that should become visible in the UI. Game actions not in the

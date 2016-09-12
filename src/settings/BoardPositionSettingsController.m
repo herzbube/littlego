@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2012-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2012-2016 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@
 #import "../main/ApplicationDelegate.h"
 #import "../play/model/BoardPositionModel.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/UiUtilities.h"
 
 // Constants
 NSString* discardFutureMovesAlertText = @"Discard future moves alert";
