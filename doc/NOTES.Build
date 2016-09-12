@@ -145,12 +145,17 @@ Provisioning profile
   - PROVISIONING_PROFILE = Development profile             (for configurations "Debug" and "Release")
   - PROVISIONING_PROFILE = AdHoc distribution profile      (for configuration "Distribute_AdHoc")
   - PROVISIONING_PROFILE = App Store distribution profile  (for configuration "Distribute_AppStore")
-  - All provisioning profiles use the App ID ch.herzbube.littlego
+  - The development provisioning profile uses a Wildcard App ID, so that it can
+    be shared with the Unit Test target
+  - The distribution provisioning profiles use the App ID ch.herzbube.littlego
 - This project specifies only one provisioning profiles for the target
   "Unit tests":
   - PROVISIONING_PROFILE = Development profile
   - The provisioning profile is the same for all configurations
-  - The provisioning profile uses a Wildcard App ID
+  - The provisioning profile is the same one that is also used in the target
+    "Little Go". Because the target "Unit tests" has a differend bundle
+    identifier than the target "Little Go", the provisioning profile uses a
+    Wildcard App ID.
   - This single developer provisioning profile is sufficient because unit tests
     are never actually distributed via the AdHoc or App Store channels. If a
     build is made for one of the "Distribute_*" configurations, all that is
@@ -169,7 +174,7 @@ Personally, I didn't have much luck with automatic management of provisioning
 profiles: Somehow the combination of 2 targets and 4 configurations is more than
 Xcode can handle, and it regularly botches even renewals of expired profiles.
 I am therefore using the following manual process:
-- Manually create the 4 provisioning profiles in Apple's provisioning portal
+- Manually create the 3 provisioning profiles in Apple's provisioning portal
   (https://developer.apple.com/)
 - Remove all expired provisioning profiles
 - Add the developer Apple ID account in Xcode under "Preferences > Accounts" if
