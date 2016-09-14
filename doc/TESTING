@@ -42,6 +42,10 @@ in the limited amount of time that I am willing to spend on this project.
 
 Script for manual testing
 -------------------------
+The device name "iPhone n+" refers to any of the superior iPhone devices which
+have a larger screen than regular iPhones. The first of these devices was the
+iPhone 6+, later models are iPhone 6s+, iPhone 7+, etc.
+
 Preconditions
 - Perform tests on a real device, not in the simulator
 - Before testing begins, remove the app bundle from the device under test so
@@ -56,7 +60,7 @@ Preconditions
     and the provisioning profile must be installed on the device before the test
     build can be installed.
 - Unless otherwise noted, tests on devices that support landscape orientation
-  (iPad, iPhone 6+) should be made with the device held in landscape orientation
+  (iPad, iPhone n+) should be made with the device held in landscape orientation
 
 
 Basic functionality to switch between UI areas of the application
@@ -72,34 +76,36 @@ Basic functionality to switch between UI areas of the application
 
 Basic game play functionality
 - Switch back to the Play UI area
-- The toolbar at the top displays the following buttons
+- The following buttons are visible, either in the toolbar at the top or in a
+  button box:
   - Pass
   - Computer play
   - Game info
   - More game actions
-  - iPhone 6+: Menu
+  - iPhone n+: Menu
 - All buttons are enabled
 - Tap the "Game info" button
-- The "Game info" view slides into view, covering the entire content of the
+- The "Game info" screen slides into view, covering the entire content of the
   Play UI area
-  - The navgation bar contains a "back" button and a segmented control with the
-    following segments: Score, Game, Board
+  - The navgation bar contains a button to navigate back to the board view, and
+    a segmented control with the following segments: Score, Game, Board
   - The "Score" segment is selected
 - Select the "Game" segment. Check that the information presented matches the
   factory defaults:
-  - no handicap
-  - board size 9
-  - komi 7.5
-  - simple ko rule
-  - area scoring
-  - life & death settling after 2 passes
-  - dispute resolution using alternating play
-  - four passes have no special meaning
-  - black player is "Anonymous"
-  - white player is "Fuego"
-  - active profile is "Strong".
-- Tap "back" to dismiss the "Game info" view; the view slides away to once more
-  reveal the game board and other UI elements of the Play UI area
+  - No handicap
+  - Board size 9
+  - Komi 7.5
+  - Simple ko rule
+  - Area scoring
+  - Life & death settling after 2 passes
+  - Dispute resolution using alternating play
+  - Four passes have no special meaning
+  - Black player is "Anonymous"
+  - White player is "Fuego"
+  - Active profile is "Strong".
+- Tap the button that navigates back to the board view; the "Game Info" screen
+  is dismissed and the game board and other UI elements of the Play UI area
+  become visible
 - Touch the screen & keep touching
 - The stone must appear immediately directly under the fingertip
 - The magnifying glass must appear above the spot where the fingertip touches
@@ -124,9 +130,9 @@ Basic game play functionality
   black, then respond with its own move for white.
 - Tap the "Pass" button. No black stone must be placed, the computer must
   respond with a move for white
-- Display the "Game info" view. The "Game" segment must already be selected.
+- Display the "Game info" screen. The "Game" segment must already be selected.
   The "Game state" section must display updated information. Dismiss the
-  "Game info" view.
+  "Game info" screen.
 - Tap the "Discard" button repeatedly until no stones are left on the board
 - Each discard must remove one move
 - When all moves have been discarded, the "Discard" button must no longer be
@@ -149,21 +155,26 @@ Basic game play functionality
     "More game actions" button
 - Tap cancel (iPhone) or tap outside of the menu area (iPad). The menu must be
   dismissed without any action taking place.
-- iPad
-  - Tap the "More game actions" button. The "More game actions" menu appears.
-  - Rotate the device to a different orientation. When the interface orientation
-    change animation finishes, the "More game actions" menu is no longer
-    visible.
+- Devices that support interface orientation changes: Tap the
+  "More game actions" button, then rotate the device to a different
+  orientation while the "More game actions" menu is visible.
+  - iPhone n+: The "More game actions" menu remains visible while the rest of
+    the UI rotates in the background
+  - iPad: The "More game actions" menu is dismissed automatically, then the UI
+    rotates.
 
 
 New game factory defaults
 - Tap the "More game actions" button and select "New game"
 - A modal screen pops up that lets the user enter parameters for the new
   game
-- For human players, "Anonymous" must be pre-selected
-- For computer players, "Fuego" must be pre-selected
-- Select the "Human vs. computer" segment and check that the following
-  parameter values are in effect:
+- A segmented control with 3 segments is displayed at the top of the screen.
+  Each segment is represented by an icon. The icons denote the following
+  segments: Human vs. Computer, Human vs. Human, Computer vs. Computer
+- The "Human vs. Computer" segment is selected
+- For human players, "Anonymous" is pre-selected
+- For computer players, "Fuego" is pre-selected
+- Check that the following parameter values are in effect:
   - Computer plays white = true
   - Board size = 9
   - Ruleset = Little Go
@@ -171,8 +182,8 @@ New game factory defaults
 - Open the "Advanced settings" screen and check that the following parameter
   values are in effect:
   - Komi = 7.5
-  - Scoring system = Area scoring
   - Ko rule = Simple
+  - Scoring system = Area scoring
   - Life & death settling after = 2 passes
   - Dispute resolution = Alternating play
   - Four passes = No special meaning
@@ -235,11 +246,13 @@ Magnifying glass
   the magnifying glass no longer appears
 - Change "Settings > Magnifying glass > Show magnifying glass" to "Always". The
   magnifying glass now appears.
-- Change "Settings > Magnifying glass > Show magnifying glass" to "Never". The
-  magnifying glass no longer appears
+- Change "Settings > Magnifying glass > Show magnifying glass" to "Never"
+  - All other preferences in the "Magnifying glass" section disappear
+  - The magnifying glass no longer appears
 - Start a new 19x19 game; the magnifying glass does not appear
-- Change "Settings > Magnifying glass > Show magnifying glass" to "Auto". The
-  magnifying glass again appears.
+- Change "Settings > Magnifying glass > Show magnifying glass" to "Auto"
+  - All other preferences in the "Magnifying glass" section re-appear
+  - The magnifying glass again appears.
 
 
 Sound & Vibration user preferences
@@ -272,16 +285,16 @@ Save game
 - A modal screen must pop up that lets the user enter a name for the saved game
 - The name is already filled in with a default name that follows the pattern
   "<black player name> vs. <white player name> 1".
-- Tap cancel. The screen must disappear, and on the Archive tab no new game must
-  be visible.
+- Tap cancel. The screen must disappear, and on the Archive UI area no new game
+  must be visible.
 - Tap the "More game actions" button, then select "save game". Clear the game
   name text field. The "Done" button must become disabled.
-- Enter a name for the game, then tap "Done". On the Archive tab a new game must
-  be visible with the name you just entered
+- Enter a name for the game, then tap "Done". On the Archive UI area a new game
+  must be visible with the name you just entered
 - The entry must display the date and time when the game was saved
 - Save another game, this time accept the default name with the suffix "1"
 - Save a third game. The default name must now have the suffix "2"
-- On the Archive tab, all three games appear sorted by file name
+- On the Archive UI area, all three games appear sorted by file name
 - Try saving a game with the character "/" in the name. An error message must be
   displayed that explains that the game name contains an illegal character.
   The message must enumerate all characters that are illegal. Tapping OK must
@@ -399,6 +412,7 @@ End of game: Resigning
 - Display the "Game info" view. The "Game state" section on the "Game" segment
   must show that the game is in progress. Dismiss the "Game info" view.
 
+
 End of game: Two pass moves, alternating play
 - Start a new human vs. human game with no handicap and the "Little Go" ruleset
 - Enable "Settings > Scoring > "Auto scoring / resuming play"
@@ -412,7 +426,8 @@ End of game: Two pass moves, alternating play
   must show that the game has ended. Dismiss the "Game info" view.
 - Tapping the "More game actions" button reveals a menu with these game actions:
   Start marking as seki, Resume play, Save game, New game
-- Select "Save game" and save another game, which must appear on the Archive tab
+- Select "Save game" and save another game, which must appear on the
+  Archive UI area
 - Tap the "Play" button
 - Play mode is activated and play is resumed automatically:
   - The scoring markup disappears from the board
@@ -566,7 +581,7 @@ Computer vs. computer game
   - Interrupt
   - Game info
   - More game actions
-  - iPhone 6+: Menu
+  - iPhone n+: Menu
 - The "Pause", "Interrupt" and "Menu" buttons are enabled, the "Game info" and
   "More game actions" buttons are disabled
 - Tap "Pause"
@@ -613,7 +628,7 @@ Board position
 - When the computer player has generated its move
   - Buttons that allow to view earlier board positions must be enabled
   - Buttons that allow to view later board positions must be disabled
-- iPhone (regular, not iPhone 6+): Tap the current board position view
+- iPhone (regular, not iPhone n+): Tap the current board position view
   several times. On each tap the toolbar switches between the board position
   navigation buttons and the board position list.
 - Display the "Game info" view. Dismiss the "Game info" view after checking the
@@ -718,12 +733,12 @@ Zooming/scrolling, coordinates and move number
 - Enable the "Display coordinates" user preference
 - Set the slider of the "Display move numbers" user preference to its maximum
   value
-- From the Archive tab, load the ear-reddening game (human vs. human game)
+- From the Archive UI area, load the ear-reddening game (human vs. human game)
 - iPad
   - Coordinate labels are displayed
   - Move numbers are displayed for all stones
   - The last move number (325) is displayed in red
-- iPhone 6+
+- iPhone n+
   - Coordinate labels are displayed
   - Move numbers are not displayed
   - The last move is marked up with a symbol
@@ -731,6 +746,10 @@ Zooming/scrolling, coordinates and move number
   - Neither coordinate nor move numbers are displayed
   - The last move is marked up with a symbol
 - Double tap. The board is zoomed in.
+- iPhone n+
+  - Move numbers are now displayed for all stones (scroll around the board
+    for verification)
+  - The last move number (325) is displayed in red
 - iPhone
   - Coordinate labels are now displayed
   - Move numbers are still not displayed
@@ -742,13 +761,14 @@ Zooming/scrolling, coordinates and move number
 - Scroll around. The coordinate labels stick to the left/upper edge of the
   screen, but scroll together with the horizontal/vertical scroll direction so
   that they are always centered on the grid lines they are labelling.
-- From the Archive tab, load the "9x9_1" game or any other 9x9 game
+- From the Archive UI area, load the "9x9_1" game or any other 9x9 game
   (human vs. human game)
 - When the game has finished loading, the board is still zoomed in to the same
   zoom scale as before
 - Touch two fingers. The board is zoomed out.
 - Pinch to zoom in. Zooming stops at a certain maximum.
 - Pinch to zoom out until the board is at its normal size
+- iPhone n+: Move numbers are shown because we are now on a 9x9 board.
 - iPhone: Both move numbers and display coordinates are shown because we are
   now on a 9x9 board.
 - In the "Display" settings, disable coordinate labels
@@ -811,7 +831,7 @@ Players & profiles
 - Only the "Fuego (weak)" player can be deleted
 - Only the "Weak" and "Extra strong" profiles can be deleted
 - Leave the screen, then come back. Edit mode must now be disabled.
-- iPad and iPhone (not iPhone 6+) only
+- iPad and iPhone (not iPhone n+) only
   - Tap edit
   - Start a new game while the players & profiles preferences screen remains in
     edit mode
@@ -873,7 +893,7 @@ Players & profiles
 
 
 Archive, document interaction
-- On the Archive tab, select an entry from the list of saved games
+- On the Archive UI area, select an entry from the list of saved games
 - The detail view displays the same information as the table view entry, plus
   a "Load" and a "Document interaction" button
 - Tap the game name cell
@@ -936,7 +956,7 @@ Archive, document interaction
   - While the game has ended (e.g. by two pass moves): A new game must be
     started and all appropriate toolbar buttons must be enabled after the
     game has finished loading.
-  - iPad and iPhone (not iPhone 6+) only: While the "Game info" view is
+  - iPad and iPhone (not iPhone n+) only: While the "Game info" view is
     visible: The "Game info" view must be dismissed after the game has
     finished loading.
   - While scoring mode is enabled: Scoring mode must be disabled after the game
@@ -1183,7 +1203,7 @@ Interface orientation (iPad only)
 - Scroll the board to make sure that the scroll gesture is recognized
 
 
-iPhone 6+ layout
+iPhone n+ layout
 - Launch app in portrait
 - The UI differs from the UI of smaller iPhones like this:
   - The toolbar at the top of the screen contains a "Menu" button on the right
@@ -1223,13 +1243,18 @@ iPhone 6+ layout
 - Tap the "Menu" button, rotate the device to landscape, then dismiss the main
   menu. The Play UI area is shown with the layout for landscape. Again, it's
   acceptable if the UI update is briefly visible.
-- Tap the "Menu" button
-- Start a drag gesture by dragging from the left edge of the screen towards the
-  right. The Play UI area gradually becomes visible the farther you drag.
-- Cancel the gesture by lifting the finger before more than half of the screen
-  is covered by the Play UI area. The main menu view slides back into place.
-  The title bar with the view title and the back button (which were temporarily
-  hidden during the drag gesture) are visible again.
+- iOS 7 only
+  - Tap the "Menu" button
+  - Start a drag gesture by dragging from the left edge of the screen towards
+    the right. The Play UI area gradually becomes visible the farther you drag.
+  - Cancel the gesture by lifting the finger before more than half of the screen
+    is covered by the Play UI area. The main menu view slides back into place.
+    The title bar with the view title and the back button (which were temporarily
+    hidden during the drag gesture) are visible again.
+- iOS 8 and newer
+  - Tap the "Menu" button
+  - Try to start a drag gesture by dragging from the left edge of the screen
+    towards the right. The gesture has no effect.
 
 
 Tab functionality (on those devices that use a tab bar)

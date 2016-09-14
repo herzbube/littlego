@@ -7,10 +7,6 @@ to advertise the app in Apple's app store.
 App Store page content
 ----------------------
 
-*************************** HELP WANTED **************************
-Please contact me if you are interested in contributing an app video preview that can be placed here in the App Store. If I seem to ignore you, your message may have been blocked by my spam filter. Please comment on GitHub issue #288 instead (https://github.com/herzbube/littlego/issues/288).
-******************************************************************
-
 Little Go is a free and open source iOS application that lets you play the game of Go on the iPhone or iPad. You can play against another human (on the same device), or against the computer. The computer player is powered by the open source software library Fuego (http://fuego.sf.net/). The minimum requirement for running this version of Little Go is iOS 8.1.
 
 Features:

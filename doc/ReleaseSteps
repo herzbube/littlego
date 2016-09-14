@@ -19,6 +19,11 @@ Before the release
   that the Xcode and iOS base SDK versions are updated in the following files:
   - README.developer
   - NOTES.Build
+- If a new deployment target was used to build the project, update the following
+  files
+  - README.md
+  - NOTES.Build
+  - NOTES.Marketing
 - If 3rd party software has been updated
   - Make sure that the third party software version numbers in About.html are
     up to date
@@ -75,7 +80,7 @@ Create an archive
       or
     Little Go AppStore Distribution
   Which one depends on what you want to do with the archive.
-- In both cases, select the "iOS Device" destination
+- In both cases, select the "Generic iOS Device" destination
 - From the menu, select Product > Archive
 - The application is now built using either the "Distribute_AdHoc" or the
   "Distribute_AppStore" build configuration
@@ -119,14 +124,18 @@ Make an AppStore distribution (production release)
   finished and you return to the app's version information screen, the app
   status should now be "Waiting for Upload".
 - In Xcode in the Organizer window, select the archived build, then click the
-  "Distribute..." button, followed by "Submit to the iOS App Store" on the next
-  screen
-- Provide the login credentials
+  "Upload to App Store..." button
 - Select a code-signing identity (the default should be OK)
-- The archive is now validated and uploaded
+- The archive is now being validated and uploaded
 - After the upload has finished, the app's status in iTunes Connect should now
   have changed to "Upload Received" 
 - Wait for Apple to review the submission
+
+If uploading fails and Xcode does not provide any sensible error message, try
+exporting the archive from Xcode to an .ipa bundle, then upload the .ipa using
+Application Loader (launch in Xcode from the menu Xcode > Open Developer Tool).
+Application Loader usually provides a pretty decent error message that allows
+to quickly fix the issue.
 
 
 Make the release
@@ -149,8 +158,8 @@ Make the release
   milestone
 - Create a new release on GitHub that references the git tag. Copy ChangeLog
   content into the release description.
-- TODO: Document Crashlytics handling
-- Cleanup the Trello board
-- Update littlego.herzbube.ch
+- On the Crashlytics website, make sure that the new app version is enabled and
+  the previous app version is disabled.
+- Update website littlego.herzbube.ch
 - Release the new version to the App Store
 - Advertise the release (check out the NOTES.Marketing file)

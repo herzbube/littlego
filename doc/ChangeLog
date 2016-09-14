@@ -1,3 +1,36 @@
+September 12 2016   "Patrick Näf" <herzbube@herzbube.ch>
+- Release of version 1.3.0
+- Features
+  - iPad Pro is now supported with its native screen resolution (#297)
+- Improvements and changes
+  - When the game is resumed to settle a life & death dispute, a "Resume Play"
+    alert is displayed if the game rules allow resumption with non-alternating
+    play. Previously the alert buttons were sometimes displayed in the order
+    Black/White and someteimes in the order White/Black, depending on whose
+    player's turn it was. Now the alert buttons are always displayed in the
+    order Black/White (#300)
+- Bugfixes
+  - Ko detection now works correctly if an old board position is viewed (#289).
+    Many thanks to Denis Martynov for bringing this to my attention. I promised
+    to release the bugfix "as soon as possible, probably next weekend". This was
+    in June 2015 - over a year ago :-(
+  - The status view now displays the correct text after the user discards all
+    moves at the beginning of a game (#301)
+  - iPhone n Plus devices: The "Game Info" and "More Game Actions" buttons are
+    now correctly enabled after rotating the device to landscape (#299)
+- Regressions
+  - None
+- Technical changes
+  - The project has been upgraded to the iOS 9.3 SDK (#298) and Xcode 7.3.1
+  - Support for iOS 7 has been dropped, the minimum required version is now iOS
+    8.1 (#260). The only device that is no longer supported is the iPhone 4.
+  - The project now uses CocoaPods for most 3rdparty libraries (#291)
+  - The 3rd party crash reporting library QuincyKit was replaced by a new
+    library called Crashlytics (#293)
+- A list of all issues closed for this release is available on GitHub:
+  https://github.com/herzbube/littlego/issues?q=milestone%3A1.3.0+is%3Aclosed
+
+
 June 12 2015   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 1.2.0
 - Features
