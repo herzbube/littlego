@@ -1037,9 +1037,40 @@
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   [m_game play:[m_game.board pointAtVertex:@"B1"]];
   m_game.boardPosition.currentBoardPosition -= 1;
+
   GoPoint* point = [m_game.board pointAtVertex:@"B1"];
   enum GoMoveIsIllegalReason illegalReason;
   XCTAssertTrue([m_game isLegalMove:point isIllegalReason:&illegalReason]);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Regression test for GitHub issue 307 ("Ko not detected if old board
+/// position is viewed"). Exercises the isLegalMove() method.
+// -----------------------------------------------------------------------------
+- (void) testIssue307
+{
+  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  newGameModel.koRule = GoKoRuleSimple;
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  [m_game play:[m_game.board pointAtVertex:@"A2"]];
+  [m_game play:[m_game.board pointAtVertex:@"B2"]];
+  [m_game pass];
+  [m_game play:[m_game.board pointAtVertex:@"C1"]];
+  [m_game play:[m_game.board pointAtVertex:@"B1"]];
+  // Black playing on A1 would be illegal, but black does not do that. Instead
+  // Black plays E5, or anywhere else on the board that is not related to the
+  // ko situation.
+  [m_game play:[m_game.board pointAtVertex:@"E5"]];
+  // Go back one position. Black playing on A1 is still illegal
+  m_game.boardPosition.currentBoardPosition -= 1;
+
+  GoPoint* point = [m_game.board pointAtVertex:@"A1"];
+  enum GoMoveIsIllegalReason illegalReason;
+  XCTAssertFalse([m_game isLegalMove:point isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSimpleKo);
 }
 
 @end

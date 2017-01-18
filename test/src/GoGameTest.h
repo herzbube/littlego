@@ -53,5 +53,6 @@
 - (void) testDiscardCausesRegionToFragment;
 - (void) testIssue2;
 - (void) testIssue289;
+- (void) testIssue307;
 
 @end

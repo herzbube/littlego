@@ -550,6 +550,8 @@
 /// would violate the current ko rule of the game. Returns false if placing
 /// such a stone would not violate the current ko rule of the game.
 ///
+/// This ko detection routine is based on the current board position!
+///
 /// If this method returns true, it also fills the out parameter @a isSuperko
 /// with true or false to distinguish ko from superko. If this method returns
 /// false, the value of the out parameter @a isSuperko is undefined.
@@ -579,6 +581,9 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
   // The algorithm below for finding ko can kick in only if we have at least
   // two moves. The earliest possible ko needs even more moves, but optimizing
   // the algorithm is not worth the trouble.
+  //
+  // IMPORTANT: Ko detection must be based on the current board position, so
+  // we must not use self.lastMove!
   GoMove* lastMove = self.boardPosition.currentMove;
   if (! lastMove)
     return false;
@@ -586,7 +591,9 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
   if (! previousToLastMove)
     return false;
 
-  long long zobristHashOfHypotheticalMove = [self zobristHashOfHypotheticalMoveAtPoint:point byColor:moveColor];
+  long long zobristHashOfHypotheticalMove = [self zobristHashOfHypotheticalMoveAtPoint:point
+                                                                               byColor:moveColor
+                                                                             afterMove:lastMove];
 
   // Even if we use one of the superko rules, we still want to check for simple
   // ko first so that we can distinguish between simple ko and superko.
@@ -636,22 +643,21 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 
 // -----------------------------------------------------------------------------
 /// @brief Generates the Zobrist hash for a hypothetical move played by @a color
-/// on the intersection @a point. The hypothetical move is played as if it
-/// occurred after the current last move, i.e. after the move which created the
-/// current board position.
+/// on the intersection @a point, after the previous move @a move.
 ///
 /// This is a private helper for
 /// isKoMove:moveColor:checkSuperkoOnly:isSuperko:().
 // -----------------------------------------------------------------------------
 - (long long) zobristHashOfHypotheticalMoveAtPoint:(GoPoint*)point
                                            byColor:(enum GoColor)color
+                                         afterMove:(GoMove*)move
 {
   enum GoColor opponentColor = (color == GoColorBlack ? GoColorWhite : GoColorBlack);
   NSArray* stonesWithOneLiberty = [self stonesWithColor:opponentColor withSingleLibertyAt:point];
   return [self.board.zobristTable hashForStonePlayedByColor:color
                                                     atPoint:point
                                             capturingStones:stonesWithOneLiberty
-                                                  afterMove:self.lastMove];
+                                                  afterMove:move];
 }
 
 // -----------------------------------------------------------------------------
@@ -668,6 +674,7 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 - (NSArray*) stonesWithColor:(enum GoColor)color withSingleLibertyAt:(GoPoint*)point
 {
   NSMutableArray* stonesWithSingleLiberty = [NSMutableArray arrayWithCapacity:0];
+  // The array we get is guaranteed to have no duplicates
   NSArray* neighbourRegionsOpponent = [point neighbourRegionsWithColor:color];
   for (GoBoardRegion* neighbourRegion in neighbourRegionsOpponent)
   {
