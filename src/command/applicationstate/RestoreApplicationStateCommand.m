@@ -70,6 +70,11 @@
     return false;
   }
 
+  // GoZobristTable is not archived, instead a new GoZobristTable object with
+  // random values is created each time when a game is unarchived. Zobrist
+  // hashes created by the previous GoZobristTable object are thus invalid and
+  // must be re-calculated here. Incidentally, because Zobrist hashes would be
+  // invalid, they are not archived at all to make the archive smaller.
   [self calculateZobristHashes:unarchivedGame];
 
   NewGameCommand* command = [[[NewGameCommand alloc] initWithGame:unarchivedGame] autorelease];

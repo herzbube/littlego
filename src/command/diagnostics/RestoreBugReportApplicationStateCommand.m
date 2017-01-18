@@ -22,6 +22,9 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../go/GoZobristTable.h"
+#import "../../go/GoBoard.h"
+#import "../../go/GoMove.h"
 
 
 // -----------------------------------------------------------------------------
@@ -73,6 +76,8 @@
     return false;
   }
   [self fixObjectReferences];
+  [self calculateZobristHashes:self.unarchivedGame];
+
   [self postNotifications];
   [self loadCurrentGameFromSgf];
   return true;
@@ -102,6 +107,16 @@
 
   ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
   applicationDelegate.game = self.unarchivedGame;
+}
+
+// -----------------------------------------------------------------------------
+/// Calculates Zobrist hashes because they are not stored in the archive.
+// -----------------------------------------------------------------------------
+- (void) calculateZobristHashes:(GoGame*)unarchivedGame
+{
+  GoZobristTable* zobristTable = unarchivedGame.board.zobristTable;
+  for (GoMove* move = unarchivedGame.firstMove; move != nil; move = move.next)
+    move.zobristHash = [zobristTable hashForMove:move];
 }
 
 // -----------------------------------------------------------------------------

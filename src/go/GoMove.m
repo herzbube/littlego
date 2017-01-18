@@ -140,6 +140,9 @@
   self.next = [decoder decodeObjectForKey:goMoveNextKey];
   self.capturedStones = [decoder decodeObjectForKey:goMoveCapturedStonesKey];
   self.moveNumber = [decoder decodeIntForKey:goMoveMoveNumberKey];
+  // The hash was not archived. Whoever is unarchiving this GoMove is
+  // responsible for re-calculating the hash.
+  self.zobristHash = 0;
 
   return self;
 }
@@ -380,6 +383,12 @@
   [encoder encodeObject:self.next forKey:goMoveNextKey];
   [encoder encodeObject:self.capturedStones forKey:goMoveCapturedStonesKey];
   [encoder encodeInt:self.moveNumber forKey:goMoveMoveNumberKey];
+  // GoZobristTable is not archived, instead a new GoZobristTable object with
+  // random values is created each time when a game is unarchived. Zobrist
+  // hashes created by the previous GoZobristTable object are thus invalid.
+  // This is the reason why we don't archive self.zobristHash here - it doesn't
+  // make sense to archive an invalid value. A side effect of not archiving
+  // self.zobristHash is that the overall archive becomes smaller.
 }
 
 @end
