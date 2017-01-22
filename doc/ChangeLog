@@ -1,3 +1,25 @@
+January 18 2017   "Patrick Näf" <herzbube@herzbube.ch>
+- Release of version 1.3.1
+- Features
+  - None
+- Bugfixes
+  - Another ko detection problem when viewing an old board position is now
+    fixed (#307). This was the root cause for the dreaded alert message
+    "Your move was rejected by Fuego", which must have popped up on quite a few
+    people's devices, but which I had never been able to reproduce despite the
+    bug reports that were kindly sent to me by some of the most patient users.
+    Yesterday, however, I received a report that finally gave me a reproducible
+    case which allowed me to pinpoint and fix the coding error. Many thanks to
+    everybody who sent bug reports, but especially to Manuel Braun for
+    submitting the crucial last bug report.
+- Regressions
+  - None
+- Technical changes
+  - None
+- A list of all issues closed for this release is available on GitHub:
+  https://github.com/herzbube/littlego/milestone/14?closed=1
+
+
 September 12 2016   "Patrick Näf" <herzbube@herzbube.ch>
 - Release of version 1.3.0
 - Features

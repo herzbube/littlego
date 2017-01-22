@@ -9,7 +9,9 @@ Little Go is released under the [Apache License](http://www.apache.org/licenses/
 
 ## Changes in this release
 
-This is the Little Go technical and bugfix release 1.3.0. A selection of the most important changes are:
+This is the Little Go bugfix release 1.3.1. It contains an important fix for a bug that sometimes caused ko detection to fail when an old board position was viewed (#307). Special thanks go to Manuel Braun for submitting the crucial bug report that finally let me reproduce this long-standing problem, and to all the other patient people who also submitted reports for the same issue.
+
+The previous release was the Little Go technical and bugfix release 1.3.0. A selection of the most important changes are:
 
 * Ko detection now works correctly if an old board position is viewed (#289). Many thanks to Denis Martynov for bringing this to my attention. I promised to release the bugfix "as soon as possible, probably next weekend". This was in June 2015 - over a year ago :-(
 * iPad Pro is now supported with its native screen resolution (#297)

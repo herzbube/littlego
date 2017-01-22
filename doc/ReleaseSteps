@@ -118,30 +118,68 @@ Make an ad-hoc distribution (beta release)
 Make an AppStore distribution (production release)
 --------------------------------------------------
 - Log in to iTunes Connect
-- Add the new application version under "Manage apps"
-- When everything is ready, click "Ready to Upload Binary"
-- Step through the wizard and answer a few questions. After the wizard is
-  finished and you return to the app's version information screen, the app
-  status should now be "Waiting for Upload".
-- In Xcode in the Organizer window, select the archived build, then click the
-  "Upload to App Store..." button
-- Select a code-signing identity (the default should be OK)
-- The archive is now being validated and uploaded
-- After the upload has finished, the app's status in iTunes Connect should now
-  have changed to "Upload Received" 
+- Navigate to the main screen of the app
+- Add the new application version by clicking the button labelled
+  "(+) Version or platform"
+- Make all the preparations required for the submission. What to do and how to
+  do it is a moving target - Apple keeps changing the iTunes Connect site, so
+  it doesn't make much sense to describe things here in detail. You certainly
+  need to fill in the "What's New in This Version" field (the necessary
+  information can be taken from the ChangeLog), and specify whether you want
+  the release the app manually or automatically after the review process has
+  completed. You may also need to provide new screenshots if new devices were
+  introduced by Apple.
+- When everything is ready, switch back to Xcode. In the Organizer window,
+  select the archived build (instructions how to create an archive can be found
+  further up in this document), then click the "Upload to App Store..." button
+- Select a provisioning profile to use. The provisioning profile determines
+  the code-signing identity that Xcode will use. The default should be OK.
+- Click "Upload" for one final time. The archive is now being validated and
+  uploaded. This can take several minutes.
+- If uploading fails and Xcode does not provide any sensible error message, try
+  exporting the archive from Xcode to an .ipa bundle, then upload the .ipa using
+  Application Loader. Application Loader usually provides a pretty decent error
+  message that should let you identify and fix the issue. Sometimes
+  Application Loader may even succeed where Xcode fails (this happened e.g. for
+  the 1.3.0 and 1.3.1 releases of Little Go). Here's the detailed procedure:
+  - In the Xcode Organizer, select the archived build and click "Export"
+  - Select "Save for iOS App Store Deployment"
+  - Select a provisioning profile
+  - Click "Export"
+  - Select the destination folder where you want to save the exported build.
+    I usually save these builds in a "dist" subfolder of the Little Go main
+    project folder.
+  - The file that is created is an .ipa file
+  - Launch Application Loader, either from the Xcode menu
+    (Xcode > Open Developer Tool) or via Spotlight. If you use Spotlight and
+    have several Xcode versions installed, make sure you get the
+    Application Loader from the correct Xcode bundle.
+  - Select the symbol that will start the process for App Store submission
+  - Navigate to the .ipa bundle that you previously exported, then select the
+    file
+  - Click "Next". The upload process should be starting now. The process takes a
+    while, in the meantime you can click on the "Activity" button to see what
+    Application Loader is doing.
+- After the upload has finished, switch back to iTunes Connect. Scroll down to
+  the section titled "Build" and select the build you just uploaded. You may
+  need to wait a moment until the build appears. If in doubt, log out and log
+  back in.
+- Click "Submit for review" at the top of the page.
+- Answer a couple of final questions, then click "Submit". The app status
+  should now be "Waiting for Review".
 - Wait for Apple to review the submission
-
-If uploading fails and Xcode does not provide any sensible error message, try
-exporting the archive from Xcode to an .ipa bundle, then upload the .ipa using
-Application Loader (launch in Xcode from the menu Xcode > Open Developer Tool).
-Application Loader usually provides a pretty decent error message that allows
-to quickly fix the issue.
 
 
 Make the release
 ----------------
 - After Apple has completed the review process, the release can now be viewed
   as official and the remaining steps can be performed
+- Backup the archive that was uploaded to the App Store. This is important
+  because that archive contains the symbols that are required to symbolicate any
+  crash reports. Usually you will rely on Crashlytics for this, but you never
+  know. I have configured my Xcode to generate archives in this location
+    /Users/patrick/dev/Xcode Archives
+  but this is non-standard. If in doubt, check out your Xcode preferences.
 - Merge all changes in the release branch into develop
   git checkout develop
   git merge release-0.9.0
