@@ -20,6 +20,14 @@ DEPENDENCIES:
   - MBProgressHUD
   - ZipKit
 
+SPEC REPOS:
+  https://github.com/cocoapods/specs.git:
+    - CocoaLumberjack
+    - Crashlytics
+    - Fabric
+    - MBProgressHUD
+    - ZipKit
+
 SPEC CHECKSUMS:
   CocoaLumberjack: 97fab7ee5f507fe54445cca7ea80f926729cfd15
   Crashlytics: 76f6beaff70acf226139582c09c78461597c2b98
@@ -29,4 +37,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 49ff1c4a8514778e855b37fd2d12b9fb967ab700
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.5.3

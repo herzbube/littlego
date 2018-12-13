@@ -2338,8 +2338,6 @@
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
 				CDB3AC3F1D1B1CB400DE4B38 /* Submit dSYM files to Crashlytics */,
-				DBBFAC0D0807AE9DFCCACC65 /* [CP] Embed Pods Frameworks */,
-				77A65DA0B5AB72A10FCBA579 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -2358,8 +2356,6 @@
 				CDA595AA1401383E00B250D8 /* Resources */,
 				CDA595AB1401383E00B250D8 /* Sources */,
 				CDA595AC1401383E00B250D8 /* Frameworks */,
-				97237A177701987B71EA7A44 /* [CP] Embed Pods Frameworks */,
-				5B179E43BD8E132D0FDCAD6D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -2394,6 +2390,7 @@
 				German,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* Little Go */;
+			productRefGroup = 19C28FACFE9D520D11CA2CBB /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -2552,51 +2549,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		5B179E43BD8E132D0FDCAD6D /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-All Targets-Unit tests/Pods-All Targets-Unit tests-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		77A65DA0B5AB72A10FCBA579 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		97237A177701987B71EA7A44 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-All Targets-Unit tests/Pods-All Targets-Unit tests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		CD3AE855134A333D00B58E08 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2624,34 +2576,22 @@
 			shellPath = /bin/sh;
 			shellScript = "APPSTORE_CONFIGURATION=\"Distribute_AppStore\"\nFABRIC_APIKEY_FILE=\"${SRCROOT}/fabric.apikey\"\nFABRIC_BUILDSECRET_FILE=\"${SRCROOT}/fabric.buildsecret\"\n\nif test \"$APPSTORE_CONFIGURATION\" = \"${CONFIGURATION}\"; then\n  if test ! -f \"$FABRIC_APIKEY_FILE\" -o ! -f \"$FABRIC_BUILDSECRET_FILE\"; then\n    echo \"This is an App Store build that wants to uploaddSYM files to Crashlytics.\"\n    echo \"Uploading is possible only if a Fabric API key and a Fabric build secret are\"\n    echo \"available. This build is failing because at least one of these pieces of\"\n    echo \"information is missing.\"\n    echo \"\"\n    echo \"To fix the problem, create the following files and store the API key and\"\n    echo \"build secret, respectively, within those files:\"\n    echo \"\"\n    echo \"  $FABRIC_APIKEY_FILE\"\n    echo \"  $FABRIC_BUILDSECRET_FILE\"\n    echo \"\"\n    echo \"If you forked the project to create your own App Store build then you must\"\n    echo \"register with Crashlytics and get your own API key and build secret.\"\n\n    # Let the build fail\n    exit 1\n  fi\n\n  FABRIC_APIKEY=$(cat \"$FABRIC_APIKEY_FILE\")\n  if test $? -ne 0; then\n    echo \"Cannot read $FABRIC_APIKEY_FILE\"\n    exit 1\n  fi\n\n  FABRIC_BUILDSECRET=$(cat \"$FABRIC_BUILDSECRET_FILE\")\n  if test $? -ne 0; then\n    echo \"Cannot read $FABRIC_BUILDSECRET_FILE\"\n    exit 1\n  fi\n\n  echo \"Uploading dSYM files to Crashlytics\"\n  \"${PODS_ROOT}/Fabric.framework/run\" \"$FABRIC_APIKEY\" \"$FABRIC_BUILDSECRET\"\nfi";
 		};
-		DBBFAC0D0807AE9DFCCACC65 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		EED1787E51B6052FDF32F0F9 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-All Targets-Little Go-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FB13904BEFC67FF4CE93D645 /* [CP] Check Pods Manifest.lock */ = {
@@ -2660,13 +2600,16 @@
 			files = (
 			);
 			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
 			);
 			name = "[CP] Check Pods Manifest.lock";
 			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-All Targets-Unit tests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
