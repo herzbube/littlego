@@ -21,11 +21,12 @@
 ///
 /// @ingroup gtp
 ///
-/// GtpClient communicates with its counterpart GtpClient via named pipes.
-/// When GtpClient is instantiated using engineWithInputPipe:outputPipe:() it
-/// spawns a new secondary thread, then invokes the engine's main method, and
-/// finally blocks and waits for the engine's main method to return. It is
-/// expected that this happens when the engine receives a "quit" command.
+/// GtpClient communicates with its counterpart GtpClient via C++ Standard
+/// Library I/O streams. When GtpClient is instantiated using
+/// engineWithStreamBuffers:() it spawns a new secondary thread, then invokes
+/// the engine's main method, and finally blocks and waits for the engine's
+/// main method to return. It is expected that this happens when the engine
+/// receives a "quit" command.
 // -----------------------------------------------------------------------------
 @interface GtpEngine : NSObject
 {
@@ -34,6 +35,6 @@
   NSThread* m_thread;
 }
 
-+ (GtpEngine*) engineWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe;
++ (GtpEngine*) engineWithStreamBuffers:(NSArray*)streamBuffers;
 
 @end

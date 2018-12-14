@@ -34,6 +34,7 @@
 #import "../gtp/GtpClient.h"
 #import "../gtp/GtpEngine.h"
 #import "../gtp/GtpUtilities.h"
+#import "../gtp/PipeStreamBuffer.h"
 #import "../newgame/NewGameModel.h"
 #import "../player/GtpEngineProfileModel.h"
 #import "../player/GtpEngineProfile.h"
@@ -94,6 +95,8 @@
 /// @brief Shared instance of ApplicationDelegate.
 // -----------------------------------------------------------------------------
 static ApplicationDelegate* sharedDelegate = nil;
+static std::streambuf* inputPipeStreamBuffer = nullptr;
+static std::streambuf* outputPipeStreamBuffer = nullptr;
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the shared application delegate object.
@@ -163,6 +166,18 @@ static ApplicationDelegate* sharedDelegate = nil;
   [LayoutManager releaseSharedManager];
   if (self == sharedDelegate)
     sharedDelegate = nil;
+
+  if (inputPipeStreamBuffer)
+  {
+    delete inputPipeStreamBuffer;
+    inputPipeStreamBuffer = nullptr;
+  }
+  if (outputPipeStreamBuffer)
+  {
+    delete outputPipeStreamBuffer;
+    outputPipeStreamBuffer = nullptr;
+  }
+
   [super dealloc];
 }
 
@@ -594,60 +609,27 @@ static ApplicationDelegate* sharedDelegate = nil;
 /// In a regular desktop environment, engine and client would be launched in
 /// separate processes, which would then communicate via stdin/stdout. Since
 /// there is no way to launch separate processes under iOS, engine and client
-/// run in separate threads, and they communicate via named pipes.
+/// run in separate threads, and they communicate via C++ Standard Library
+/// I/O streams.
 // -----------------------------------------------------------------------------
 - (void) setupFuego
 {
-  mode_t pipeMode = S_IWUSR | S_IRUSR | S_IRGRP | S_IROTH;
-  NSString* tempDir = NSTemporaryDirectory();
-  NSString* inputPipePath = [NSString pathWithComponents:[NSArray arrayWithObjects:tempDir, @"inputPipe", nil]];
-  NSString* outputPipePath = [NSString pathWithComponents:[NSArray arrayWithObjects:tempDir, @"outputPipe", nil]];
-  std::vector<std::string> pipeList;
-  pipeList.push_back([inputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-  pipeList.push_back([outputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]]);
-  std::vector<std::string>::const_iterator it = pipeList.begin();
-  for (; it != pipeList.end(); ++it)
-  {
-    std::string pipePath = *it;
-    DDLogVerbose(@"%@: Creating input pipe %s", self, pipePath.c_str());
-    // TODO: Check if pipes already exist, and/or clean them up when the
-    // application shuts down
-    int status = mkfifo(pipePath.c_str(), pipeMode);
-    if (status == 0)
-    {
-      DDLogVerbose(@"%@: Success!", self);
-    }
-    else
-    {
-      NSString* error;
-      switch (errno)
-      {
-        case EACCES:
-          error = @"EACCES";
-          break;
-        case EEXIST:
-          error = @"EEXIST";
-          break;
-        case ELOOP:
-          error = @"ELOOP";
-          break;
-        case ENOENT:
-          error = @"ENOENT";
-          break;
-        case EROFS:
-          error = @"EROFS";
-          break;
-        default:
-          error = [NSString stringWithFormat:@"Some other result: %d", status];
-          break;
-      }
-      DDLogVerbose(@"%@: Failure! Reason = %@", self, error);
-    }
-  }
-  self.gtpClient = [GtpClient clientWithInputPipe:inputPipePath outputPipe:outputPipePath];
-  self.gtpEngine = [GtpEngine engineWithInputPipe:inputPipePath outputPipe:outputPipePath];
-}
+  // Create objects on the heap, not the stack, so that they remain alive after
+  // control leaves this method. It would be much nicer to make these variables
+  // members of the ApplicationDelegate class, but they are C++ and
+  // ApplicationDelegate.h is also #import'ed by pure Objective-C
+  // implementations.
+  inputPipeStreamBuffer = new PipeStreamBuffer();
+  outputPipeStreamBuffer = new PipeStreamBuffer();
 
+  NSArray* streamBuffers = [NSArray arrayWithObjects:
+                            [NSValue valueWithPointer:inputPipeStreamBuffer],
+                            [NSValue valueWithPointer:outputPipeStreamBuffer],
+                            nil];
+
+  self.gtpClient = [GtpClient clientWithStreamBuffers:streamBuffers];
+  self.gtpEngine = [GtpEngine engineWithStreamBuffers:streamBuffers];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the objects used to manage the GUI.

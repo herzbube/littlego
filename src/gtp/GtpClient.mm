@@ -28,14 +28,15 @@
 #import "GtpResponse.h"
 
 // System includes
-#include <fstream>   // ifstream and ofstream
+#include <istream>
+#include <ostream>
+#include <streambuf>
 
 // It would be much nicer to make these variables members of the GtpClient
 // class, but they are C++ and GtpClient.h is also #import'ed by pure
 // Objective-C implementations.
-static std::ofstream commandStream;
-static std::ifstream responseStream;
-
+static std::ostream* commandStream = nullptr;
+static std::istream* responseStream = nullptr;
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for GtpClient.
@@ -49,14 +50,13 @@ static std::ifstream responseStream;
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpClient instance which will use
-/// the two named pipes to communicate with its counterpart GtpEngine.
+/// C++ Standard Library I/O streams to communicate with its counterpart
+/// GtpEngine. The I/O streams are constructed with the stream buffers in the
+/// specified array.
 // -----------------------------------------------------------------------------
-+ (GtpClient*) clientWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe;
++ (GtpClient*) clientWithStreamBuffers:(NSArray*)streamBuffers
 {
-  // Create copies so that the objects can be safely used by the thread when
-  // it starts
-  NSArray* pipes = [NSArray arrayWithObjects:[[inputPipe copy] autorelease], [[outputPipe copy] autorelease], nil];
-  return [[[GtpClient alloc] initWithPipes:pipes] autorelease];
+  return [[[GtpClient alloc] initWithStreamBuffers:streamBuffers] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -64,7 +64,7 @@ static std::ifstream responseStream;
 ///
 /// @note This is the designated initializer of GtpClient.
 // -----------------------------------------------------------------------------
-- (id) initWithPipes:(NSArray*)pipes
+- (id) initWithStreamBuffers:(NSArray*)streamBuffers
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -74,7 +74,7 @@ static std::ifstream responseStream;
   self.shouldExit = false;
 
   // Create and start the thread
-  self.thread = [[[NSThread alloc] initWithTarget:self selector:@selector(mainLoop:) object:pipes] autorelease];
+  self.thread = [[[NSThread alloc] initWithTarget:self selector:@selector(mainLoop:) object:streamBuffers] autorelease];
   [self.thread start];
 
   // TODO: Clients that work with self returned here will invoke methods in
@@ -98,20 +98,22 @@ static std::ifstream responseStream;
 /// @brief The secondary thread's main loop method. Returns only after the
 /// @e shouldExit property has been set to true.
 // -----------------------------------------------------------------------------
-- (void) mainLoop:(NSArray*)pipes
+- (void) mainLoop:(NSArray*)streamBuffers
 {
   // Create an autorelease pool as the very first thing in this thread
   NSAutoreleasePool* mainPool = [[NSAutoreleasePool alloc] init];
 
   // Stream to write commands for the GTP engine
-  NSString* inputPipePath = [pipes objectAtIndex:0];
-  const char* pchInputPipePath = [inputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]];
-  commandStream.open(pchInputPipePath);
+  NSValue* inputStreamBufferAsNSValue = [streamBuffers objectAtIndex:0];
+  std::streambuf* inputStreamBuffer = reinterpret_cast<std::streambuf*>([inputStreamBufferAsNSValue pointerValue]);
+  std::ostream inputStream(inputStreamBuffer);
+  commandStream = &inputStream;
 
   // Stream to read responses from the GTP engine
-  NSString* outputPipePath = [pipes objectAtIndex:1];
-  const char* pchOutputPipePath = [outputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]];
-  responseStream.open(pchOutputPipePath);
+  NSValue* outputStreamBufferAsNSValue = [streamBuffers objectAtIndex:1];
+  std::streambuf* outputStreamBuffer = reinterpret_cast<std::streambuf*>([outputStreamBufferAsNSValue pointerValue]);
+  std::istream outputStream(outputStreamBuffer);
+  responseStream = &outputStream;
 
   // The timer is required because otherwise the run loop has no input source
   NSDate* distantFuture = [NSDate distantFuture];
@@ -135,6 +137,11 @@ static std::ifstream responseStream;
     if (self.shouldExit)
       break;
   }
+
+  // The local objects are auto-destroyed when they go out of scope. Here we
+  // forget the global references to these local objects
+  commandStream = nullptr;
+  responseStream = nullptr;
 
   // Deallocate the autorelease pool as the very last thing in this thread
   [mainPool drain];
@@ -166,14 +173,14 @@ static std::ifstream responseStream;
   if (nil == command.command || 0 == [command.command length])
     return;
   const char* pchCommand = [command.command cStringUsingEncoding:[NSString defaultCStringEncoding]];
-  commandStream << pchCommand << std::endl;  // this wakes up the engine
-
+  (*commandStream) << pchCommand << std::endl;  // this wakes up the engine
+  
   // Read the engine's response (blocking if necessary)
   std::string fullResponse;
   std::string singleLineResponse;
   while (true)
   {
-    getline(responseStream, singleLineResponse);
+    getline(*responseStream, singleLineResponse);
     if (singleLineResponse.empty())
       break;
     if (! fullResponse.empty())
@@ -284,7 +291,7 @@ static std::ifstream responseStream;
 - (void) interrupt
 {
   const char* pchCommand = "# interrupt";
-  commandStream << pchCommand << std::endl;
+  (*commandStream) << pchCommand << std::endl;
 }
 
 @end

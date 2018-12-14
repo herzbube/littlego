@@ -25,20 +25,21 @@
 
 // System includes
 #include <exception>
-
+#include <istream>
+#include <ostream>
+#include <streambuf>
 
 @implementation GtpEngine
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GtpEngine instance which will use
-/// the two named pipes to communicate with its counterpart GtpClient.
+/// C++ Standard Library I/O streams to communicate with its counterpart
+/// GtpClient. The I/O streams are constructed with the stream buffers in the
+/// specified array.
 // -----------------------------------------------------------------------------
-+ (GtpEngine*) engineWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe
++ (GtpEngine*) engineWithStreamBuffers:(NSArray*)streamBuffers
 {
-  // Create copies so that the objects can be safely used by the thread when
-  // it starts
-  NSArray* pipes = [NSArray arrayWithObjects:[[inputPipe copy] autorelease], [[outputPipe copy] autorelease], nil];
-  return [[[GtpEngine alloc] initWithPipes:pipes] autorelease];
+  return [[[GtpEngine alloc] initWithStreamBuffers:streamBuffers] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -46,7 +47,7 @@
 ///
 /// @note This is the designated initializer of GtpEngine.
 // -----------------------------------------------------------------------------
-- (id) initWithPipes:(NSArray*)pipes
+- (id) initWithStreamBuffers:(NSArray*)streamBuffers
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -54,7 +55,7 @@
     return nil;
 
   // Create and start the thread
-  m_thread = [[NSThread alloc] initWithTarget:self selector:@selector(mainLoop:) object:pipes];
+  m_thread = [[NSThread alloc] initWithTarget:self selector:@selector(mainLoop:) object:streamBuffers];
   [m_thread start];
 
   // TODO: Clients that work with self returned here will invoke methods in
@@ -78,49 +79,39 @@
 /// @brief The secondary thread's main loop method. Returns only after the
 /// GTP engine's main method returns.
 // -----------------------------------------------------------------------------
-- (void) mainLoop:(NSArray*)pipes
+- (void) mainLoop:(NSArray*)streamBuffers
 {
   // Create an autorelease pool as the very first thing in this thread
   NSAutoreleasePool* mainPool = [[NSAutoreleasePool alloc] init];
 
-  // Pipe to read commands from the GTP client
-  NSString* inputPipePath = [pipes objectAtIndex:0];
-  const char* pchInputPipePath = [inputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]];
+  // Stream to read commands from the GTP client
+  NSValue* inputStreamBufferAsNSValue = [streamBuffers objectAtIndex:0];
+  std::streambuf* inputStreamBuffer = reinterpret_cast<std::streambuf*>([inputStreamBufferAsNSValue pointerValue]);
+  std::istream inputStream(inputStreamBuffer);
 
   // Stream to write responses to the GTP client
-  NSString* outputPipePath = [pipes objectAtIndex:1];
-  const char* pchOutputPipePath = [outputPipePath cStringUsingEncoding:[NSString defaultCStringEncoding]];
+  NSValue* outputStreamBufferAsNSValue = [streamBuffers objectAtIndex:1];
+  std::streambuf* outputStreamBuffer = reinterpret_cast<std::streambuf*>([outputStreamBufferAsNSValue pointerValue]);
+  std::ostream outputStream(outputStreamBuffer);
 
   char programName[255];
-  char inputPipeParameterName[255];
-  char inputPipeParameterValue[255];
-  char outputPipeParameterName[255];
-  char outputPipeParameterValue[255];
   char nobookParameterName[255];
   char quietParameterName[255];
   sprintf(programName, "fuego");
-  sprintf(inputPipeParameterName, "--input-pipe");
-  sprintf(inputPipeParameterValue, "%s", pchInputPipePath);
-  sprintf(outputPipeParameterName, "--output-pipe");
-  sprintf(outputPipeParameterValue, "%s", pchOutputPipePath);
   sprintf(nobookParameterName, "--nobook");  // opening book is loaded separately from a project resource
   sprintf(quietParameterName, "--quiet");  // don't print debug messages, otherwise the project's debugging console becomes overloaded
-  int argc = 7;
+  int argc = 3;
   char* argv[argc];
   argv[0] = programName;
-  argv[1] = inputPipeParameterName;
-  argv[2] = inputPipeParameterValue;
-  argv[3] = outputPipeParameterName;
-  argv[4] = outputPipeParameterValue;
-  argv[5] = nobookParameterName;
-  argv[6] = quietParameterName;
+  argv[1] = nobookParameterName;
+  argv[2] = quietParameterName;
 
   try
   {
 #ifndef LITTLEGO_UNITTESTS
     // No need to create an autorelease pool, no Objective-C stuff is happening
     // in here...
-    FuegoMainUtil::FuegoMain(argc, argv);
+    FuegoMainUtil::FuegoMain(argc, argv, &inputStream, &outputStream);
 #endif
   }
   catch(std::exception& e)

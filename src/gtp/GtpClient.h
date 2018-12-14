@@ -27,16 +27,16 @@
 ///
 /// @ingroup gtp
 ///
-/// GtpClient communicates with its counterpart GtpEngine via named pipes.
-/// When GtpClient is instantiated using clientWithInputPipe:outputPipe:() it
-/// spawns a new secondary thread, then blocks and waits for GTP commands to be
-/// submitted via submit:(). submit:() is usually (but not necessarily) invoked
-/// in the main thread's context. If the command's @e waitUntilDone property is
-/// false, submit:() returns immediately, while the command is processed and
-/// passed on to the GtpEngine asynchronously in the secondary thread's context.
-/// If the command's @e waitUntilDone property is true, submit:() blocks and
-/// waits until after the command has been processed and its answer was
-/// received.
+/// GtpClient communicates with its counterpart GtpEngine via C++ Standard
+/// Library I/O streams. When GtpClient is instantiated using
+/// clientWithStreamBuffers:() it spawns a new secondary thread, then blocks
+/// and waits for GTP commands to be submitted via submit:(). submit:() is
+/// usually (but not necessarily) invoked in the main thread's context. If the
+/// command's @e waitUntilDone property is false, submit:() returns immediately,
+/// while the command is processed and passed on to the GtpEngine asynchronously
+/// in the secondary thread's context. If the command's @e waitUntilDone
+/// property is true, submit:() blocks and waits until after the command has
+/// been processed and its answer was received.
 ///
 /// @note As a convenience, GtpCommand is capable of submitting itself so that
 /// clients do not have to concern themselves with where to obtain an instance
@@ -77,7 +77,7 @@
 {
 }
 
-+ (GtpClient*) clientWithInputPipe:(NSString*)inputPipe outputPipe:(NSString*)outputPipe;
++ (GtpClient*) clientWithStreamBuffers:(NSArray*)streamBuffers;
 - (void) submit:(GtpCommand*)command;
 - (void) interrupt;
 

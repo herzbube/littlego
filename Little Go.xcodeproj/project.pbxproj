@@ -157,6 +157,8 @@
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
+		CD63B9E221C1F8B100E013B5 /* PipeStreamBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD63B9E021C1F8B100E013B5 /* PipeStreamBuffer.cpp */; };
+		CD63B9E321C1F8B100E013B5 /* PipeStreamBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD63B9E021C1F8B100E013B5 /* PipeStreamBuffer.cpp */; };
 		CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD377F0716BD154A00972F04 /* MainTabBarController.m */; };
 		CD6C7DBC17512152009FBEC4 /* UiSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */; };
 		CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */; };
@@ -725,6 +727,8 @@
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
 		CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandViewController.m; sourceTree = "<group>"; };
+		CD63B9E021C1F8B100E013B5 /* PipeStreamBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PipeStreamBuffer.cpp; sourceTree = "<group>"; };
+		CD63B9E121C1F8B100E013B5 /* PipeStreamBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PipeStreamBuffer.h; sourceTree = "<group>"; };
 		CD6612811558692A009C6535 /* appicon-appstore.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-appstore.png"; sourceTree = "<group>"; };
 		CD6612821558692A009C6535 /* appicon-appstore@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-appstore@2x.png"; sourceTree = "<group>"; };
 		CD6BBED81723161D00BCC492 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
@@ -1369,6 +1373,8 @@
 				CD108814132559EA00E83543 /* GtpResponse.m */,
 				CD05B20E142BC4AF00214BBE /* GtpUtilities.h */,
 				CD05B20F142BC4AF00214BBE /* GtpUtilities.m */,
+				CD63B9E021C1F8B100E013B5 /* PipeStreamBuffer.cpp */,
+				CD63B9E121C1F8B100E013B5 /* PipeStreamBuffer.h */,
 			);
 			path = gtp;
 			sourceTree = "<group>";
@@ -2644,6 +2650,7 @@
 				CDE3028B1360BDA4005235F2 /* PlayerStatistics.m in Sources */,
 				CDAB5ECE13E483AA00C4A4AA /* NewGameModel.m in Sources */,
 				CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */,
+				CD63B9E221C1F8B100E013B5 /* PipeStreamBuffer.cpp in Sources */,
 				CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */,
 				CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */,
 				CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */,
@@ -2818,6 +2825,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDAFAE26195A1DCA00EF84A9 /* TiledScrollView.m in Sources */,
+				CD63B9E321C1F8B100E013B5 /* PipeStreamBuffer.cpp in Sources */,
 				CDA596131401741800B250D8 /* GoVertexTest.m in Sources */,
 				CDA597521401825600B250D8 /* GoVertex.m in Sources */,
 				CDFD9F8018F1D5E80031CBCF /* GtpCommandViewController.m in Sources */,
