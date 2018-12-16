@@ -31,7 +31,7 @@
 #import "../../ui/UiElementMetrics.h"
 #import "../../ui/SplitViewController.h"
 #import "../../utility/ExceptionUtility.h"
-#import "../../utility/UiColorAdditions.h"
+#import "../../utility/UIColorAdditions.h"
 
 
 /// @brief Enumerates the states that the view hierarchy of

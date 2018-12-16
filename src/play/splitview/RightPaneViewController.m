@@ -29,7 +29,7 @@
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/ButtonBoxController.h"
 #import "../../ui/UiElementMetrics.h"
-#import "../../utility/UiColorAdditions.h"
+#import "../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------

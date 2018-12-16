@@ -26,7 +26,7 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
-#import "../utility/UiColorAdditions.h"
+#import "../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
