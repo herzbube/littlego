@@ -24,7 +24,7 @@
 #import <go/GoPoint.h>
 #import <go/GoVertex.h>
 #import <main/ApplicationDelegate.h>
-#import <newGame/NewGameModel.h>
+#import <newgame/NewGameModel.h>
 #import <command/game/NewGameCommand.h>
 
 

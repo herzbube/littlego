@@ -30,7 +30,7 @@
 #import <go/GoUtilities.h>
 #import <main/ApplicationDelegate.h>
 #import <command/game/NewGameCommand.h>
-#import <newGame/NewGameModel.h>
+#import <newgame/NewGameModel.h>
 
 
 @implementation GoGameTest
