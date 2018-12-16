@@ -1,11 +1,9 @@
 PODS:
-  - CocoaLumberjack (2.3.0):
-    - CocoaLumberjack/Default (= 2.3.0)
-    - CocoaLumberjack/Extensions (= 2.3.0)
-  - CocoaLumberjack/Core (2.3.0)
-  - CocoaLumberjack/Default (2.3.0):
-    - CocoaLumberjack/Core
-  - CocoaLumberjack/Extensions (2.3.0):
+  - CocoaLumberjack (3.4.2):
+    - CocoaLumberjack/Default (= 3.4.2)
+    - CocoaLumberjack/Extensions (= 3.4.2)
+  - CocoaLumberjack/Default (3.4.2)
+  - CocoaLumberjack/Extensions (3.4.2):
     - CocoaLumberjack/Default
   - Crashlytics (3.7.3):
     - Fabric (~> 1.6.3)
@@ -29,7 +27,7 @@ SPEC REPOS:
     - ZipKit
 
 SPEC CHECKSUMS:
-  CocoaLumberjack: 97fab7ee5f507fe54445cca7ea80f926729cfd15
+  CocoaLumberjack: db7cc9e464771f12054c22ff6947c5a58d43a0fd
   Crashlytics: 76f6beaff70acf226139582c09c78461597c2b98
   Fabric: 5755268d0171435ab167e3d0878a28a777deaf10
   MBProgressHUD: e7baa36a220447d8aeb12769bf0585582f3866d9
