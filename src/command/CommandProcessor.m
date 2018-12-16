@@ -111,7 +111,9 @@ static CommandProcessor* sharedProcessor = nil;
     _progressHUD = [[MBProgressHUD alloc] initWithView:superview];
     [superview addSubview:_progressHUD];
     _progressHUD.mode = MBProgressHUDModeAnnularDeterminate;
-    _progressHUD.dimBackground = YES;
+    // Applying a partially transparent color lets the background appear dimmed
+    _progressHUD.backgroundView.style = MBProgressHUDBackgroundStyleSolidColor;
+    _progressHUD.backgroundView.color = [UIColor colorWithWhite:0.f alpha:.2f];
   }
   return _progressHUD;
 }
@@ -180,7 +182,7 @@ static CommandProcessor* sharedProcessor = nil;
 - (void) submitAsynchronousCommand:(id<Command>)command
 {
   BOOL animated = YES;
-  [self.progressHUD show:animated];
+  [self.progressHUD showAnimated:animated];
 
   // Retain to make sure that object is still alive when it "arrives" in
   // the secondary thread
@@ -312,7 +314,7 @@ static CommandProcessor* sharedProcessor = nil;
   NSNumber* progressAsNSNumber = [progressInfo objectAtIndex:0];
   self.progressHUD.progress = [progressAsNSNumber floatValue];
   if (progressInfo.count > 1)
-    self.progressHUD.labelText = (NSString*)[progressInfo objectAtIndex:1];
+    self.progressHUD.label.text = (NSString*)[progressInfo objectAtIndex:1];
 }
 
 // -----------------------------------------------------------------------------
