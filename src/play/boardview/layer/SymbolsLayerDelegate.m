@@ -137,7 +137,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief CALayer delegate method.
+/// @brief CALayerDelegate method.
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
