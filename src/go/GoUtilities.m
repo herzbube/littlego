@@ -226,6 +226,8 @@
       {
         DDLogError(@"%@: Unsupported handicap %d", [self class], handicapIter);
         assert(0);
+        numericVertex.x = -1;
+        numericVertex.y = -1;
         break;
       }
     }
