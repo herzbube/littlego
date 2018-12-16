@@ -233,8 +233,8 @@
     }
     default:
     {
-      NSString* logMessage = [NSString stringWithFormat:@"SendBugReportController: Sending bug report finished with unknown result: %d",
-                              result];
+      NSString* logMessage = [NSString stringWithFormat:@"SendBugReportController: Sending bug report finished with unknown result: %ld",
+                              (long)result];
       DDLogInfo(@"%@", logMessage);
       break;
     }
