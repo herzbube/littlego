@@ -51,6 +51,8 @@
 	</dict>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<false/>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2011-2017 Patrick Näf</string>
 	<key>UIFileSharingEnabled</key>
