@@ -36,7 +36,11 @@
 /// - Synthesizes the properties @e layer and @e tile (because properties
 ///   declared in protocols are not auto-synthesized)
 /// - In its initializer, creates a new CALayer object and configures that
-///   object to use the BoardViewLayerDelegateBase as its delegate.
+///   object to use the BoardViewLayerDelegateBase as its delegate. Because
+///   of this BoardViewLayerDelegateBase declares itself to adopt the protocol
+///   CALayerDelegate, but effectively does not implement any of the methods
+///   in that protocol (which is legal since they are all optional). It's the
+///   job of the concrete delegate subclass to implement any such methods.
 /// - Provides an empty "do-nothing" implementation of notify:eventInfo:().
 ///   A concrete delegate subclass must override notify:eventInfo:(), otherwise
 ///   an instance of the concrete delegate class won't react to any events.
@@ -47,7 +51,7 @@
 ///   notify:eventInfo:() if it wants the layer to be redrawn during the next
 ///   drawing cycle.
 // -----------------------------------------------------------------------------
-@interface BoardViewLayerDelegateBase : NSObject <BoardViewLayerDelegate>
+@interface BoardViewLayerDelegateBase : NSObject <BoardViewLayerDelegate, CALayerDelegate>
 {
 }
 
