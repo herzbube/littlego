@@ -168,9 +168,11 @@
 // -----------------------------------------------------------------------------
 - (CGSize) influenceSizeForScore:(float)influenceScore
 {
+  float influenceScoreFactor = fabsf(influenceScore);
+
   CGSize influenceSize = self.boardViewMetrics.stoneInnerSquareSize;
-  influenceSize.width *= influenceScore;
-  influenceSize.height *= influenceScore;
+  influenceSize.width *= influenceScoreFactor;
+  influenceSize.height *= influenceScoreFactor;
   return influenceSize;
 }
 
@@ -261,7 +263,7 @@
                                                                  metrics:self.boardViewMetrics];
     if (! CGRectIntersectsRect(tileRect, stoneRect))
       continue;
-    float influenceScore = fabsf(point.territoryStatisticsScore);
+    float influenceScore = point.territoryStatisticsScore;
     enum GoColor influenceColor = [self influenceColor:influenceScore];
     if (GoColorNone == influenceColor)
       continue;
