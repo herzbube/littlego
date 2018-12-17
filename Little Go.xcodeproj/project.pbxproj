@@ -729,8 +729,6 @@
 		CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandViewController.m; sourceTree = "<group>"; };
 		CD63B9E021C1F8B100E013B5 /* PipeStreamBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PipeStreamBuffer.cpp; sourceTree = "<group>"; };
 		CD63B9E121C1F8B100E013B5 /* PipeStreamBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PipeStreamBuffer.h; sourceTree = "<group>"; };
-		CD6612811558692A009C6535 /* appicon-appstore.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-appstore.png"; sourceTree = "<group>"; };
-		CD6612821558692A009C6535 /* appicon-appstore@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "appicon-appstore@2x.png"; sourceTree = "<group>"; };
 		CD6BBED81723161D00BCC492 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		CD6C7DBA17512152009FBEC4 /* UiSettingsModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiSettingsModel.h; sourceTree = "<group>"; };
 		CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiSettingsModel.m; sourceTree = "<group>"; };
@@ -2044,8 +2042,6 @@
 			isa = PBXGroup;
 			children = (
 				CD968ADB1B026DD200984AEE /* stones */,
-				CD6612811558692A009C6535 /* appicon-appstore.png */,
-				CD6612821558692A009C6535 /* appicon-appstore@2x.png */,
 				CDEE1D621AFCC2A500524BF9 /* wooden-background-tile.png */,
 			);
 			path = image;
