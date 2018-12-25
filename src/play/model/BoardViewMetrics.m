@@ -69,7 +69,9 @@
 {
   [self removeNotificationResponders];
   self.lineRectangles = nil;
+  self.moveNumberFont = nil;
   self.coordinateLabelFont = nil;
+  self.nextMoveLabelFont = nil;
   self.lineColor = nil;
   self.starPointColor = nil;
   self.crossHairColor = nil;
@@ -548,11 +550,16 @@
     CGFloat boundingLineStartCoordinate = boundingLineStrokeCoordinate - boundingLineHalfWidth;
     self.lineStartOffset = normalLineStrokeCoordinate - boundingLineStartCoordinate;
 
+    UIFont* moveNumberFont = nil;
+    CGSize moveNumberMaximumSize = CGSizeZero;
     bool success = [self.moveNumberFontRange queryForWidth:self.stoneInnerSquareSize.width
-                                                      font:&_moveNumberFont
-                                                  textSize:&_moveNumberMaximumSize];
+                                                      font:&moveNumberFont
+                                                  textSize:&moveNumberMaximumSize];
     if (success)
     {
+      self.moveNumberFont = moveNumberFont;
+      self.moveNumberMaximumSize = moveNumberMaximumSize;
+      
       if (self.coordinateLabelFont)
       {
         // We tone down the coordinate label font because it looks very bad if
@@ -568,10 +575,17 @@
       self.moveNumberMaximumSize = CGSizeZero;
     }
 
+    UIFont* nextMoveLabelFont = nil;
+    CGSize nextMoveLabelFontMaximumSize = CGSizeZero;
     success = [self.nextMoveLabelFontRange queryForWidth:self.stoneInnerSquareSize.width
-                                                    font:&_nextMoveLabelFont
-                                                textSize:&_nextMoveLabelMaximumSize];
-    if (! success)
+                                                    font:&nextMoveLabelFont
+                                                textSize:&nextMoveLabelFontMaximumSize];
+    if (success)
+    {
+      self.nextMoveLabelFont = nextMoveLabelFont;
+      self.nextMoveLabelMaximumSize = nextMoveLabelFontMaximumSize;
+    }
+    else
     {
       self.nextMoveLabelFont = nil;
       self.nextMoveLabelMaximumSize = CGSizeZero;

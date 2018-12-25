@@ -299,7 +299,7 @@
 @property(nonatomic, assign) int coordinateLabelInset;
 /// @brief The font to use for drawing move numbers. Is nil if no suitable font
 /// exists for the current metrics (usually because stoneRadius is too small).
-@property(nonatomic, assign) UIFont* moveNumberFont;
+@property(nonatomic, retain) UIFont* moveNumberFont;
 /// @brief The maximum size required for drawing the widest possible move
 /// number using the current @e moveNumberFont. Is CGSizeZero if no suitable
 /// font exists.
@@ -315,7 +315,7 @@
 /// @brief The font to use for drawing the "next move" label. Is nil if no
 /// suitable font exists for the current metrics (usually because
 /// stoneInnerSquareSize is too small).
-@property(nonatomic, assign) UIFont* nextMoveLabelFont;
+@property(nonatomic, retain) UIFont* nextMoveLabelFont;
 /// @brief The maximum size required for drawing the widest possible "next move"
 /// label using the current @e nextMoveLabelFont. Is CGSizeZero if no suitable
 /// font exists.
