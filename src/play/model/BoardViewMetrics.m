@@ -69,6 +69,7 @@
 {
   [self removeNotificationResponders];
   self.lineRectangles = nil;
+  self.coordinateLabelFont = nil;
   self.lineColor = nil;
   self.starPointColor = nil;
   self.crossHairColor = nil;
@@ -405,18 +406,26 @@
       // that is not the desired optimum, than to not display labels at all.
       // coordinateLabelInsetMinimum is still the hard limit, though.
       bool didFindCoordinateLabelFont = false;
+      UIFont* coordinateLabelFont = nil;
+      CGSize coordinateLabelMaximumSize = CGSizeZero;
       while (! didFindCoordinateLabelFont
              && self.coordinateLabelInset >= coordinateLabelInsetMinimum)
       {
         int coordinateLabelAvailableWidth = (self.coordinateLabelStripWidth
                                              - 2 * self.coordinateLabelInset);
         didFindCoordinateLabelFont = [self.coordinateLabelFontRange queryForWidth:coordinateLabelAvailableWidth
-                                                                             font:&_coordinateLabelFont
-                                                                         textSize:&_coordinateLabelMaximumSize];
+                                                                             font:&coordinateLabelFont
+                                                                         textSize:&coordinateLabelMaximumSize];
         if (! didFindCoordinateLabelFont)
           self.coordinateLabelInset--;
       }
-      if (! didFindCoordinateLabelFont)
+
+      if (didFindCoordinateLabelFont)
+      {
+        self.coordinateLabelFont = coordinateLabelFont;
+        self.coordinateLabelMaximumSize = coordinateLabelMaximumSize;
+      }
+      else
       {
         self.coordinateLabelStripWidth = 0;
         self.coordinateLabelInset = 0;
@@ -544,11 +553,14 @@
                                                   textSize:&_moveNumberMaximumSize];
     if (success)
     {
-      // We tone down the coordinate label font because it looks very bad if
-      // coordinate label become much larger than move numbers.
-      CGFloat maximumCoordinateLabelFontSize = floorf(self.moveNumberFont.pointSize / coordinateLabelStripWidthFactor);
-      if (self.coordinateLabelFont.pointSize > maximumCoordinateLabelFontSize)
-        self.coordinateLabelFont = [self.coordinateLabelFont fontWithSize:maximumCoordinateLabelFontSize];
+      if (self.coordinateLabelFont)
+      {
+        // We tone down the coordinate label font because it looks very bad if
+        // coordinate label become much larger than move numbers.
+        CGFloat maximumCoordinateLabelFontSize = floorf(self.moveNumberFont.pointSize / coordinateLabelStripWidthFactor);
+        if (self.coordinateLabelFont.pointSize > maximumCoordinateLabelFontSize)
+          self.coordinateLabelFont = [self.coordinateLabelFont fontWithSize:maximumCoordinateLabelFontSize];
+      }
     }
     else
     {

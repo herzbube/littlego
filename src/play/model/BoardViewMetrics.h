@@ -307,7 +307,7 @@
 /// @brief The font to use for drawing coordinate labels. Is nil if no suitable
 /// font exists for the current metrics (usually because
 /// coordinateLabelStripWidth is too small).
-@property(nonatomic, assign) UIFont* coordinateLabelFont;
+@property(nonatomic, retain) UIFont* coordinateLabelFont;
 /// @brief The maximum size required for drawing the widest possible coordinate
 /// label using the current @e coordinateLabelFont. Is CGSizeZero if no suitable
 /// font exists.
