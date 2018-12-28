@@ -683,6 +683,7 @@ enum CellID
     case RulesetCellID:
     {
       NSString* screenTitle;
+      NSString* footerTitle = nil;
       NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
       int indexOfDefaultItem = -1;
       if (BoardSizeCellID == cellID)
@@ -698,6 +699,7 @@ enum CellID
       else if (RulesetCellID == cellID)
       {
         screenTitle = @"Select ruleset";
+        footerTitle = @"IMPORTANT: It is strongly recommended that you play with a ruleset that uses area scoring, because the computer player (Fuego) does not properly support territory scoring. For more information, see \"Why area scoring is the default\" in the \"Scoring\" section of the in-game manual.";
         for (enum GoRuleset ruleset = GoRulesetMin; ruleset <= GoRulesetMax; ++ruleset)
           [itemList addObject:[NewGameController rulesetName:ruleset]];
         // No default selection if the current ruleset is a custom ruleset
@@ -724,6 +726,7 @@ enum CellID
                                                                              indexOfDefaultItem:indexOfDefaultItem
                                                                                        delegate:self];
       itemPickerController.context = [NSNumber numberWithInt:cellID];
+      itemPickerController.footerTitle = footerTitle;
       modalController = itemPickerController;
       break;
     }

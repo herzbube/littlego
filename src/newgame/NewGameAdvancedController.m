@@ -426,6 +426,7 @@ enum CellID
     default:
     {
       NSString* screenTitle;
+      NSString* footerTitle = nil;
       NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
       int indexOfDefaultItem = -1;
       switch (cellID)
@@ -446,6 +447,7 @@ enum CellID
         case ScoringSystemCellID:
         {
           screenTitle = @"Scoring system";
+          footerTitle = @"IMPORTANT: It is strongly recommended that you play with area scoring, because the computer player (Fuego) does not properly support territory scoring. For more information, see \"Why area scoring is the default\" in the \"Scoring\" section of the in-game manual.";
           enum GoScoringSystem defaultScoringSystem = self.theNewGameModel.scoringSystem;
           for (int scoringSystem = 0; scoringSystem <= GoScoringSystemMax; ++scoringSystem)
           {
@@ -509,6 +511,7 @@ enum CellID
                                                                              indexOfDefaultItem:indexOfDefaultItem
                                                                                        delegate:self];
       itemPickerController.context = indexPath;
+      itemPickerController.footerTitle = footerTitle;
       modalController = itemPickerController;
       break;
     }
