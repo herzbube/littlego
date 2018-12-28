@@ -844,6 +844,20 @@ GTP commands involved in scoring
     un-captured stones count as alive, therefore we must set the "capture_dead"
     parameter to 0 (= turned off)
   - 0 is already the default value, so no GTP command must be sent
+- go_param_rules extra_handicap_komi
+  - Somewhere in the Fuego source code the parameter is documented like this:
+    "Each handicap stone counts as an extra komi point for white.
+    This extra komi point is not included in the komi settings. Used by
+    the KGS Go server. Default is false."
+  - This command turns handicap compensation on (parameter value = 1) or off
+    (parameter value = 0). Since Little Go's scoring implementation (GoScore.m)
+    directly ties handicap compensation to the scoring system, the GTP command
+    must be sent whenever the scoring system changes.
+  - The "Counting methods" section below mentions several different handicap
+    compensation counting methods. Fuego can only handle those counting methods
+    for which the total compensation is equal to the number of handicap stones
+    (n). For instance, Fuego cannot properly handle AGA rules with area
+    counting, because for that counting method the total compensation is n-1.
 - uct_param_player early_pass
   - The meaning of this parameter is not fully understood
   - According to this fuego-devel post [1], early_pass = 1 may be helpful when

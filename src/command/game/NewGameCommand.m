@@ -287,6 +287,7 @@
 {
   [self setupKoRule];
   [self setupScoringSystem];
+  [self setupHandicapCompensation];
 }
 
 // -----------------------------------------------------------------------------
@@ -347,6 +348,36 @@
     }
   }
   NSString* commandString = [NSString stringWithFormat:@"go_param_rules japanese_scoring %d", japaneseScoring];
+  [[GtpCommand command:commandString] submit];
+  
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the GTP engine with the handicap compensation rule to use.
+// -----------------------------------------------------------------------------
+- (void) setupHandicapCompensation
+{
+  enum GoScoringSystem scoringSystem = [GoGame sharedGame].rules.scoringSystem;
+  int handicapCompensation;
+  switch (scoringSystem)
+  {
+    case GoScoringSystemAreaScoring:
+      handicapCompensation = 1;
+      break;
+    case GoScoringSystemTerritoryScoring:
+      handicapCompensation = 0;
+      break;
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Illegal GoScoringSystem value %d", scoringSystem];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+  NSString* commandString = [NSString stringWithFormat:@"go_param_rules extra_handicap_komi %d", handicapCompensation];
   [[GtpCommand command:commandString] submit];
 }
 
