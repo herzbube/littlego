@@ -3,6 +3,7 @@ project 'Little Go'
 platform :ios, '8.1'
 
 abstract_target 'All Targets' do
+  pod 'Firebase/Core'
   pod 'Fabric'
   pod 'Crashlytics'
   pod 'MBProgressHUD'
