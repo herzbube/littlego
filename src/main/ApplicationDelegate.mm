@@ -360,6 +360,8 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 #ifndef LITTLEGO_UNITTESTS
   // TODO: Conditional compile this only when building for App Distribution
 
+  [FIRApp configure];
+
   // Reading the bundle resource results in a string with a trailing newline,
   // character because the resource file also contains a newline. Fabric does
   // not handle such extraneous whitespace characters, so we have to trim them

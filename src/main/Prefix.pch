@@ -23,8 +23,7 @@
   // Library includes
   #import <CocoaLumberjack/CocoaLumberjack.h>
 #ifndef LITTLEGO_UNITTESTS
-  #import <Fabric/Fabric.h>
-  #import <Crashlytics/Crashlytics.h>
+  #import <Firebase.h>
 #endif
 
   // Project includes
