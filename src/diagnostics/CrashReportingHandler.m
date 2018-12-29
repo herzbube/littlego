@@ -88,6 +88,8 @@ enum AlertButtonType
 // -----------------------------------------------------------------------------
 - (void) crashlyticsDidDetectReportForLastExecution:(CLSReport*)report completionHandler:(void (^) (BOOL))completionHandler
 {
+  DDLogInfo(@"%@: Crash report detected, automaticReport = %d", self, self.crashReportingModel.automaticReport);
+
   if (self.crashReportingModel.allowContact)
   {
     // Verified that this works! Setting the email address on the shared
@@ -97,9 +99,8 @@ enum AlertButtonType
 
   if (self.crashReportingModel.automaticReport)
   {
-      [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        completionHandler(YES);
-      }];
+    [self runCrashlyticsCompletionHandler:completionHandler
+                         withSubmitReport:YES];
   }
   else
   {
@@ -153,6 +154,8 @@ enum AlertButtonType
 // -----------------------------------------------------------------------------
 - (void) didDismissAlertWithButton:(enum AlertButtonType)alertButtonType
 {
+  DDLogInfo(@"%@: User selected alertButtonType = %u", self, alertButtonType);
+
   BOOL submitReport;
   switch (alertButtonType)
   {
@@ -184,12 +187,23 @@ enum AlertButtonType
   // Run the completion handler in all cases. Even if the user does not want the
   // report to be submitted, running the completion handler is necessary to
   // clear the report from the queue.
-  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-    self.crashlyticsCompletionHandler(submitReport);
-  }];
+  [self runCrashlyticsCompletionHandler:self.crashlyticsCompletionHandler
+                       withSubmitReport:submitReport];
 
   // Alert has been handled, so this handler object can now die
   [self autorelease];
+}
+
+#pragma mark - Private helpers
+
+- (void) runCrashlyticsCompletionHandler:(CrashlyticsCompletionHandler)completionHandler
+                        withSubmitReport:(BOOL)submitReport
+{
+  DDLogInfo(@"%@: Running Crashlytics completion handler, submitReport = %d", self, submitReport);
+
+  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    completionHandler(submitReport);
+  }];
 }
 
 @end
