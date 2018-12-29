@@ -212,9 +212,6 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   // Depends on setupRegistrationDomain to provide fallback values if no user
   // preferences exist
   [self setupUserDefaults];
-  // Depends on setupResourceBundle for reading the Fabric API key, and on
-  // setupUserDefaults (for crashReportingModel)
-  [self setupCrashReporting];
   // Depends on setupUserDefaults (for boardViewModel)
   [self setupSound];
   // Has no dependencies
@@ -222,6 +219,13 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   // Depends on setupUserDefaults (e.g. MainTabBarController wants to restore
   // tab order)
   [self setupGUI];
+  // Depends on
+  // - setupResourceBundle, for reading the Fabric API key
+  // - setupUserDefaults, for crashReportingModel
+  // - setupGUI, for setting up self.window and its rootViewController property,
+  //   which is required to present the alert that asks the user for permission
+  //   to submit a crash report
+  [self setupCrashReporting];
 
   // Further setup steps are executed in a secondary thread so that we can
   // display a progress HUD
