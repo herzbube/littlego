@@ -142,6 +142,7 @@
 		CD3A0999169389A600ABDB5D /* PanGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A0998169389A600ABDB5D /* PanGestureController.m */; };
 		CD3A09A116939E2200ABDB5D /* TapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A09A016939E2200ABDB5D /* TapGestureController.m */; };
 		CD3AE6EA1343F14200B58E08 /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE6E91343F14200B58E08 /* LICENSE.html */; };
+		CD3B1EC421D7BDA100D1DCAD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CD27AEC521D5D100002028E4 /* GoogleService-Info.plist */; };
 		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
 		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */; };
 		CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
@@ -684,6 +685,7 @@
 		CD252DA116A4969D00A088D5 /* BoardPositionToolbarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionToolbarController.m; sourceTree = "<group>"; };
 		CD252DA316A4B97700A088D5 /* UIImageAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIImageAdditions.h; sourceTree = "<group>"; };
 		CD252DA416A4B97800A088D5 /* UIImageAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIImageAdditions.m; sourceTree = "<group>"; };
+		CD27AEC521D5D100002028E4 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		CD2BA77A1649D034000C6F09 /* CrashReportingSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingSettingsController.h; sourceTree = "<group>"; };
 		CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingSettingsController.m; sourceTree = "<group>"; };
 		CD30BAA316F7A2AE00C95DCF /* DoubleTapGestureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DoubleTapGestureController.h; sourceTree = "<group>"; };
@@ -1180,6 +1182,7 @@
 				CD6BBED81723161D00BCC492 /* README.md */,
 				CDA96F211D1D4E6E00CEE129 /* fabric.apikey */,
 				CDA96F221D1D4E6E00CEE129 /* fabric.buildsecret */,
+				CD27AEC521D5D100002028E4 /* GoogleService-Info.plist */,
 				CDEC28B112F55F270069F5B7 /* script */,
 				CDEC282B12F477360069F5B7 /* src */,
 				CDEC28A612F4A2BB0069F5B7 /* resource */,
@@ -2463,6 +2466,7 @@
 				CD968BC41B026E2300984AEE /* source-code@3x.png in Resources */,
 				CD968B631B026E2300984AEE /* archive.png in Resources */,
 				CD968BC01B026E2300984AEE /* settings@3x.png in Resources */,
+				CD3B1EC421D7BDA100D1DCAD /* GoogleService-Info.plist in Resources */,
 				CD968BB11B026E2300984AEE /* pass.png in Resources */,
 				CD968B651B026E2300984AEE /* archive@3x.png in Resources */,
 				CD968BB61B026E2300984AEE /* pause@2x.png in Resources */,

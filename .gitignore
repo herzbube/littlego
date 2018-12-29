@@ -19,6 +19,7 @@ Little Go.xcodeproj/project.xcworkspace
 # Fabric and Crashlytics files
 fabric.apikey
 fabric.buildsecret
+GoogleService-Info.plist
 
 # CocoaPods files
 Pods/
