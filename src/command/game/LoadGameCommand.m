@@ -86,6 +86,8 @@ enum ParseMoveStringResult
   self.didTriggerComputerPlayer = false;
   m_boardSize = GoBoardSizeUndefined;
   m_handicap = nil;
+  m_setup = nil;
+  m_setupPlayer = nil;
   m_komi = nil;
   m_moves = nil;
   m_oldCurrentDirectory = nil;
@@ -113,6 +115,8 @@ enum ParseMoveStringResult
 {
   self.filePath = nil;
   [m_handicap release];
+  [m_setup release];
+  [m_setupPlayer release];
   [m_komi release];
   [m_moves release];
   [m_oldCurrentDirectory release];
@@ -209,6 +213,14 @@ enum ParseMoveStringResult
     return false;
   [self increaseProgressAndNotifyDelegate];
   success = [self askGtpEngineForHandicap:errorMessage];
+  if (! success)
+    return false;
+  [self increaseProgressAndNotifyDelegate];
+  success = [self askGtpEngineForSetup:errorMessage];
+  if (! success)
+    return false;
+  [self increaseProgressAndNotifyDelegate];
+  success = [self askGtpEngineForSetupPlayer:errorMessage];
   if (! success)
     return false;
   [self increaseProgressAndNotifyDelegate];
@@ -344,6 +356,38 @@ enum ParseMoveStringResult
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
+- (bool) askGtpEngineForSetup:(NSString**)errorMessage
+{
+  GtpCommand* command = [GtpCommand command:@"list_setup"];
+  [command submit];
+  if (! command.response.status)
+  {
+    *errorMessage = @"Internal error: Failed to detect setup of the game to be loaded";
+    return false;
+  }
+  m_setup = [command.response.parsedResponse copy];
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt()
+// -----------------------------------------------------------------------------
+- (bool) askGtpEngineForSetupPlayer:(NSString**)errorMessage
+{
+  GtpCommand* command = [GtpCommand command:@"list_setup_player"];
+  [command submit];
+  if (! command.response.status)
+  {
+    *errorMessage = @"Internal error: Failed to detect setup player of the game to be loaded";
+    return false;
+  }
+  m_setupPlayer = [command.response.parsedResponse copy];
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt()
+// -----------------------------------------------------------------------------
 - (bool) askGtpEngineForMoves:(NSString**)errorMessage
 {
   GtpCommand* command = [GtpCommand command:@"list_moves"];
@@ -364,12 +408,15 @@ enum ParseMoveStringResult
 {
   // The following sequence must always be run in its entirety. If an error
   // occurs it is handled right at the source and is never escalated to this
-  // method. In practice, this can only happen when setupMoves:() encounters
-  // illegal moves. If an error occurs, handleCommandFailed:() is invoked
-  // behind our back to set up a new clean game. All game characteristics that
-  // have been set up to then are discarded.
+  // method. In practice, this can only happen when setupSetup:() encounters
+  // an illegal setup or setupMoves:() encounters illegal moves. If an error
+  // occurs, handleCommandFailed:() is invoked behind our back to set up a new
+  // clean game. All game characteristics that have been set up to then are
+  // discarded.
   [self startNewGameForSuccessfulCommand:true boardSize:m_boardSize];
   [self setupHandicap:m_handicap];
+  [self setupSetup:m_setup];
+  [self setupSetupPlayer:m_setupPlayer];
   [self setupKomi:m_komi];
   [self setupMoves:m_moves];
   if (self.restoreMode)
@@ -472,6 +519,149 @@ enum ParseMoveStringResult
   }
   // GoGame takes care to place black stones on the points
   game.handicapPoints = handicapPoints;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the setup stones prior to the first move of the game, using
+/// the information in @a setupFromGtp.
+///
+/// Expected format for @a setupFromGtp:
+///   "color vertex, color vertex, color vertex[...]"
+///
+/// @a setupFromGtp may be empty to indicate that there are no stones to set up.
+///
+/// @note If an error occurs while this method runs, handleCommandFailed:() is
+/// invoked with an appropriate error message.
+// -----------------------------------------------------------------------------
+- (void) setupSetup:(NSString*)setupFromGtp
+{
+  if (setupFromGtp.length == 0)
+    return;
+
+  GoGame* game = [GoGame sharedGame];
+  GoBoard* board = game.board;
+  NSArray* handicapPoints = game.handicapPoints;
+
+  NSMutableArray* blackSetupPoints = [NSMutableArray arrayWithCapacity:0];
+  NSMutableArray* whiteSetupPoints = [NSMutableArray arrayWithCapacity:0];
+  NSMutableArray* setupVertexes = [NSMutableArray arrayWithCapacity:0];
+  NSArray* setupStoneStrings = [setupFromGtp componentsSeparatedByString:@", "];
+
+  for (NSString* setupStoneString in setupStoneStrings)
+  {
+    NSArray* setupStoneStringComponents = [setupStoneString componentsSeparatedByString:@" "];
+
+    NSString* colorString = [setupStoneStringComponents objectAtIndex:0];
+    NSString* vertexString = [setupStoneStringComponents objectAtIndex:1];
+
+    enum GoColor stoneColor;
+    bool success = [self parseColorString:colorString
+                                    color:&stoneColor];
+    if (! success)
+    {
+      NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move. The stone at intersection %@ has an invalid color. Invalid color designation: %@. Supported are 'B' for black and 'W' for white.";
+      NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString, colorString];
+      [self handleCommandFailed:errorMessage];
+      return;
+    }
+
+    GoPoint* point;
+    @try
+    {
+      point = [board pointAtVertex:vertexString];
+    }
+    @catch (NSException* exception)
+    {
+      // If the vertex is not legal an exception is raised:
+      // - NSInvalidArgumentException if vertex is malformed
+      // - NSRangeException if vertex compounds are out of range
+      // For our purposes, both exception types are the same.
+      NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move. The intersection %@ is invalid.";
+      NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString];
+      [self handleCommandFailed:errorMessage];
+      return;
+    }
+
+    // Fuego should not list stones twice - if two different SGF setup
+    // properties set up the same intersection Fuego should only list the
+    // last setup. We perform the check anyway, to be on the safe side.
+    if ([setupVertexes containsObject:point.vertex.string])
+    {
+      NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move. An intersection must be set up with a stone only once, but intersection %@ is set up with a stone at least twice.";
+      NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString];
+      [self handleCommandFailed:errorMessage];
+      return;
+    }
+    [setupVertexes addObject:point.vertex.string];
+
+    if ([handicapPoints containsObject:point])
+    {
+      NSString* colorName = [[NSString stringWithGoColor:stoneColor] lowercaseString];
+      NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move. The intersection %@ is set up with a %@ stone although it is already occupied by a black handicap stone.";
+      NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString, colorName];
+      [self handleCommandFailed:errorMessage];
+      return;
+    }
+
+    if (stoneColor == GoColorBlack)
+      [blackSetupPoints addObject:point];
+    else
+      [whiteSetupPoints addObject:point];
+  }
+
+  @try
+  {
+    // GoGame takes care to place black and white stones on the points
+    game.blackSetupPoints = blackSetupPoints;
+    game.whiteSetupPoints = whiteSetupPoints;
+  }
+  @catch (NSException* exception)
+  {
+    // This can happen if the setup results in a position where a stone has
+    // 0 (zero) liberties
+    NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move. %@";
+    NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, exception.reason];
+    [self handleCommandFailed:errorMessage];
+    return;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the player to play first for the new game, using the
+/// information in @a setupPlayerFromGtp.
+///
+/// Expected format for @a setupPlayerFromGtp is: "B" or "W"
+///
+/// @a setupPlayerFromGtp may be empty to indicate that no player is set up to
+/// play first. In that case, since there is no explicit setup, the game logic
+/// determines the player who plays first (e.g. in a normal game with no
+/// handicap, black plays first).
+///
+/// @note If an error occurs while this method runs, handleCommandFailed:() is
+/// invoked with an appropriate error message.
+// -----------------------------------------------------------------------------
+- (void) setupSetupPlayer:(NSString*)setupPlayerFromGtp
+{
+  enum GoColor setupFirstMoveColor;
+  if (0 == setupPlayerFromGtp.length)
+  {
+    setupFirstMoveColor = GoColorNone;
+  }
+  else
+  {
+    bool success = [self parseColorString:setupPlayerFromGtp
+                                    color:&setupFirstMoveColor];
+    if (! success)
+    {
+      NSString* errorMessageFormat = @"Game attempts to set up an invalid player to play the first move. Invalid player designation: %@. Supported are 'B' for black and 'W' for white.";
+      NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, setupPlayerFromGtp];
+      [self handleCommandFailed:errorMessage];
+      return;
+    }
+  }
+
+  GoGame* game = [GoGame sharedGame];
+  game.setupFirstMoveColor = setupFirstMoveColor;
 }
 
 // -----------------------------------------------------------------------------
@@ -678,12 +868,9 @@ enum ParseMoveStringResult
   if (moveStringComponents.count != 2)
     return ParseMoveStringResultInvalidFormat;
 
-  NSString* colorString = [[moveStringComponents objectAtIndex:0] lowercaseString];
-  if ([colorString isEqualToString:@"b"])
-    *moveColor = GoColorBlack;
-  else if ([colorString isEqualToString:@"w"])
-    *moveColor = GoColorWhite;
-  else
+  bool success = [self parseColorString:[moveStringComponents objectAtIndex:0]
+                                  color:moveColor];
+  if (! success)
     return ParseMoveStringResultInvalidColor;
 
   NSString* vertexString = [[moveStringComponents objectAtIndex:1] lowercaseString];
@@ -775,6 +962,35 @@ enum ParseMoveStringResult
       return @"by resignation";
     default:
       return @"by an unkown reason";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Attempts to parse @a colorString. If the parse attempt succeeds,
+/// returns true and fills the out parameter with the result. If the parse
+/// attempt fails, returns false. The content of the out parameters is
+/// undefined in this case.
+///
+/// This is a private helper.
+// -----------------------------------------------------------------------------
+- (bool) parseColorString:(NSString*)colorString
+                    color:(enum GoColor*)color
+{
+  colorString = [colorString lowercaseString];
+
+  if ([colorString isEqualToString:@"b"])
+  {
+    *color = GoColorBlack;
+    return true;
+  }
+  else if ([colorString isEqualToString:@"w"])
+  {
+    *color = GoColorWhite;
+    return true;
+  }
+  else
+  {
+    return false;
   }
 }
 

@@ -284,16 +284,29 @@
 // -----------------------------------------------------------------------------
 /// @brief Assuming that alternating play is desired, returns the player whose
 /// turn it is after @a move was played. If @a move is nil, returns the player
-/// who plays first in @a game (after taking handicap into consideration).
+/// who plays first in @a game (after taking the setup player or handicap into
+/// consideration).
 // -----------------------------------------------------------------------------
 + (GoPlayer*) playerAfter:(GoMove*)move inGame:(GoGame*)game
 {
   if (! move)
   {
-    if (0 == game.handicapPoints.count)
+    enum GoColor setupFirstMoveColor = game.setupFirstMoveColor;
+    if (setupFirstMoveColor == GoColorBlack)
+    {
       return game.playerBlack;
-    else
+    }
+    else if (setupFirstMoveColor == GoColorWhite)
+    {
       return game.playerWhite;
+    }
+    else
+    {
+      if (0 == game.handicapPoints.count)
+        return game.playerBlack;
+      else
+        return game.playerWhite;
+    }
   }
   else if (move.player == game.playerBlack)
     return game.playerWhite;

@@ -76,6 +76,10 @@
   _rules = [[GoGameRules alloc] init];
   _document = [[GoGameDocument alloc] init];
   _score = [[GoScore alloc] initWithGame:self];
+  _blackSetupPoints = [[NSArray array] retain];
+  _whiteSetupPoints = [[NSArray array] retain];
+  _setupFirstMoveColor = GoColorNone;
+
   return self;
 }
 
@@ -108,6 +112,9 @@
   _rules = [[decoder decodeObjectForKey:goGameRulesKey] retain];
   _document = [[decoder decodeObjectForKey:goGameDocumentKey] retain];
   _score = [[decoder decodeObjectForKey:goGameScoreKey] retain];
+  _blackSetupPoints = [[decoder decodeObjectForKey:goGameBlackSetupPointsKey] retain];
+  _whiteSetupPoints = [[decoder decodeObjectForKey:goGameWhiteSetupPointsKey] retain];
+  _setupFirstMoveColor = [decoder decodeIntForKey:goGameSetupFirstMoveColorKey];
 
   return self;
 }
@@ -135,6 +142,18 @@
   self.rules = nil;
   self.document = nil;
   self.score = nil;
+  // Don't use self.blackSetupPoints - same reason as for _handicapPoints above
+  if (_blackSetupPoints)
+  {
+    [_blackSetupPoints release];
+    _blackSetupPoints = nil;
+  }
+  // Don't use self.whiteSetupPoints - same reason as for _handicapPoints above
+  if (_whiteSetupPoints)
+  {
+    [_whiteSetupPoints release];
+    _whiteSetupPoints = nil;
+  }
   [super dealloc];
 }
 
@@ -799,6 +818,16 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
   {
     for (GoPoint* point in _handicapPoints)
     {
+      if (point.stoneState != GoColorNone)
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Handicap list contains point that is already occupied: %@", point];
+        DDLogError(@"%@: %@", self, errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+
       point.stoneState = GoColorBlack;
       [GoUtilities movePointToNewRegion:point];
     }
@@ -832,6 +861,9 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
   [encoder encodeObject:self.rules forKey:goGameRulesKey];
   [encoder encodeObject:self.document forKey:goGameDocumentKey];
   [encoder encodeObject:self.score forKey:goGameScoreKey];
+  [encoder encodeObject:self.blackSetupPoints forKey:goGameBlackSetupPointsKey];
+  [encoder encodeObject:self.whiteSetupPoints forKey:goGameWhiteSetupPointsKey];
+  [encoder encodeInt:self.setupFirstMoveColor forKey:goGameSetupFirstMoveColorKey];
 }
 
 // -----------------------------------------------------------------------------
@@ -913,6 +945,136 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
       @throw exception;
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setBlackSetupPoints:(NSArray*)newValue
+{
+  [self setSetupPoints:newValue forStoneColor:GoColorBlack];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setWhiteSetupPoints:(NSArray*)newValue
+{
+  [self setSetupPoints:newValue forStoneColor:GoColorWhite];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setBlackSetupPoints:() and
+/// setWhiteSetupPoints().
+// -----------------------------------------------------------------------------
+- (void) setSetupPoints:(NSArray*)newValue forStoneColor:(enum GoColor)stoneColor
+{
+  if (GoGameStateGameHasStarted != self.state || nil != self.firstMove)
+  {
+    NSString* errorMessage = @"Setup stones can only be set while GoGame object is in state GoGameStateGameHasStarted and has no moves";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (! newValue)
+  {
+    NSString* errorMessage = @"Point list argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  NSArray* oldValue;
+  if (stoneColor == GoColorBlack)
+    oldValue = _blackSetupPoints;
+  else
+    oldValue = _whiteSetupPoints;
+
+  if ([oldValue isEqualToArray:newValue])
+    return;
+
+  // Reset previously set setup points
+  if (oldValue)
+  {
+    [oldValue autorelease];
+    for (GoPoint* point in oldValue)
+    {
+      point.stoneState = GoColorNone;
+      [GoUtilities movePointToNewRegion:point];
+    }
+  }
+
+  if (stoneColor == GoColorBlack)
+    _blackSetupPoints = [newValue copy];
+  else
+    _whiteSetupPoints = [newValue copy];
+
+  if (newValue)
+  {
+    for (GoPoint* point in newValue)
+    {
+      if (point.stoneState != GoColorNone)
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Board setup prior to first move attempts to place a stone on the already occupied intersection %@.", point];
+        if ([_handicapPoints containsObject:point])
+          errorMessage = [errorMessage stringByAppendingString:@"The intersection is occupied by a handicap stone."];
+        else
+          errorMessage = [errorMessage stringByAppendingString:@"The reason why the intersection is already occupied could not be determined."];
+
+        DDLogError(@"%@: %@", self, errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+
+      point.stoneState = stoneColor;
+      [GoUtilities movePointToNewRegion:point];
+    }
+
+    // For performance reasons we perform the liberties check only after all
+    // stones have been placed. If we wanted to perform the liberties check
+    // immediately while placing each stone, the check would be much more
+    // expensive because we would have to check not only the GoPoint where the
+    // stone is placed, but also the up to 4 neighbouring GoPoints.
+    for (GoPoint* point in newValue)
+    {
+      if (point.liberties == 0)
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Board setup prior to first move attempts to place a stone on intersection %@ which would result in the stone having 0 (zero) liberties.", point];
+        DDLogError(@"%@: %@", self, errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setSetupFirstMoveColor:(enum GoColor)newValue
+{
+  if (GoGameStateGameHasStarted != self.state || nil != self.firstMove)
+  {
+    NSString* errorMessage = @"First move color can only be set up while GoGame object is in state GoGameStateGameHasStarted and has no moves";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  _setupFirstMoveColor = newValue;
+
+  if (_setupFirstMoveColor != GoColorNone)
+    self.nextMoveColor = _setupFirstMoveColor;
 }
 
 @end

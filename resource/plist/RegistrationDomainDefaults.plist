@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>UserDefaultsVersionRegistrationDomain</key>
-	<integer>10</integer>
+	<integer>11</integer>
 	<key>LoggingEnabled</key>
 	<false/>
 	<key>BoardView</key>
@@ -302,6 +302,8 @@
 		<string>list_commands</string>
 		<string>get_komi</string>
 		<string>list_handicap</string>
+		<string>list_setup</string>
+		<string>list_setup_player</string>
 		<string>list_moves</string>
 		<string>list_stones</string>
 		<string>showboard</string>

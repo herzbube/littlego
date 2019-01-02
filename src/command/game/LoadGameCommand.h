@@ -68,6 +68,8 @@
 @private
   enum GoBoardSize m_boardSize;
   NSString* m_handicap;
+  NSString* m_setup;
+  NSString* m_setupPlayer;
   NSString* m_komi;
   NSString* m_moves;
   NSString* m_oldCurrentDirectory;

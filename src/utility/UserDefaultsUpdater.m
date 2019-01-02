@@ -743,6 +743,25 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Performs the incremental upgrade to the user defaults format
+/// version 11.
+// -----------------------------------------------------------------------------
++ (void) upgradeToVersion11:(NSDictionary*)registrationDomainDefaults
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  
+  // Add two new GTP commands to "GtpCannedCommands" array
+  id cannedCommandsArray = [userDefaults objectForKey:gtpCannedCommandsKey];
+  if (cannedCommandsArray)  // is nil if the key is not present
+  {
+    NSMutableArray* cannedCommandsArrayUpgrade = [NSMutableArray arrayWithArray:cannedCommandsArray];
+    [cannedCommandsArrayUpgrade addObject:@"list_setup"];
+    [cannedCommandsArrayUpgrade addObject:@"list_setup_player"];
+    [userDefaults setObject:cannedCommandsArrayUpgrade forKey:gtpCannedCommandsKey];
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief If @a addProfiles is true this method adds a copy of all profiles
 /// existing in @a registrationDomainDefaults to @a userDefaults. If
 /// @a addProfiles is false, the same is done for players.

@@ -1035,6 +1035,9 @@ extern NSString* goGameBoardPositionKey;
 extern NSString* goGameRulesKey;
 extern NSString* goGameDocumentKey;
 extern NSString* goGameScoreKey;
+extern NSString* goGameBlackSetupPointsKey;
+extern NSString* goGameWhiteSetupPointsKey;
+extern NSString* goGameSetupFirstMoveColorKey;
 // GoPlayer keys
 extern NSString* goPlayerPlayerUUIDKey;
 extern NSString* goPlayerIsBlackKey;
