@@ -94,6 +94,15 @@
 /// occur only if a GoPoint already appears in @e blackSetupPoints or
 /// @e whiteSetupPoints).
 ///
+/// If the setter raises an @e NSInvalidArgumentException for one of the reasons
+/// documented above, the exception message is usable for displaying as error
+/// message to the user. Also, the old property value has already been replaced
+/// with the new value, and the @e stoneState property of GoPoint objects in the
+/// old list have already been restored to #GoColorNone. The @e stoneState
+/// property of some GoPoint objects in the new list may already have been set
+/// to #GoColorBlack. The state of the board is probably difficult to repair and
+/// it is recommended to allocate a new GoGame instance.
+///
 /// Raises @e NSInvalidArgumentException if this property is set with a nil
 /// value.
 @property(nonatomic, retain) NSArray* handicapPoints;
@@ -166,22 +175,39 @@
 /// The setter raises @e NSInvalidArgumentException if the specified list
 /// contains one or more GoPoint objects that are already occupied (this can
 /// occur only if a GoPoint already appears in @e handicapPoints or
-/// @e whiteSetupPoints). The setter also raises @e NSInvalidArgumentException
-/// if placing one of the stones results in an illegal position (since Ko is not
-/// yet possible before moves have been played, the only illegal position
-/// possible is a stone or group of stones having no liberties). In both cases
-/// the exception message is usable for displaying as error message to the user.
+/// @e whiteSetupPoints).
+///
+/// The setter raises @e NSInvalidArgumentException if placing one of the stones
+/// results in an illegal position (since Ko is not yet possible before moves
+/// have been played, the only illegal position possible is a stone or group of
+/// stones having no liberties).
+///
+/// If the setter raises an @e NSInvalidArgumentException for one of the reasons
+/// documented above, the exception message is usable for displaying as error
+/// message to the user. Also, the old property value has already been replaced
+/// with the new value, and the @e stoneState property of GoPoint objects in the
+/// old list have already been restored to #GoColorNone. The @e stoneState
+/// property of some GoPoint objects in the new list may already have been set
+/// to #GoColorBlack. The state of the board is probably difficult to repair and
+/// it is recommended to allocate a new GoGame instance.
 ///
 /// Raises @e NSInvalidArgumentException if this property is set with a nil
 /// value.
 @property(nonatomic, retain) NSArray* blackSetupPoints;
 /// @brief List of GoPoint objects on which white stones are to be placed
-/// as part of the game setup prior to the first move. Cf. the documentation of
-/// property @e blackSetupPoints - the same rules specified there apply to this
-/// property as well. 
+/// as part of the game setup prior to the first move.
+///
+/// @see Property @e blackSetupPoints - the same rules specified there apply to
+/// this property as well. 
 @property(nonatomic, retain) NSArray* whiteSetupPoints;
 /// @brief The side that is set up to play the first move. Is #GoColorNone
-/// if no side is set up to play first.
+/// if no side is set up to play first. Note that this is @b not necessarily the
+/// side that actually plays the first move - notably in a game that was loaded
+/// from an .sgf file the two can be different.
+///
+/// Setting this property to either #GoColorBlack or #GoColorWhite changes the
+/// property @e nextMoveColor to the same value. Setting this property to
+/// #GoColorNone does not change the value of property @e nextMoveColor.
 ///
 /// The setter raises @e NSInternalInconsistencyException if it is invoked when
 /// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is

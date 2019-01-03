@@ -40,6 +40,9 @@
 - (void) testLastMove;
 - (void) testState;
 - (void) testReasonForGameHasEnded;
+- (void) testBlackSetupPoints;
+- (void) testWhiteSetupPoints;
+- (void) testSetupFirstMoveColor;
 - (void) testPlay;
 - (void) testPass;
 - (void) testResign;

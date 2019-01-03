@@ -1021,9 +1021,9 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
       {
         NSString* errorMessage = [NSString stringWithFormat:@"Board setup prior to first move attempts to place a stone on the already occupied intersection %@.", point];
         if ([_handicapPoints containsObject:point])
-          errorMessage = [errorMessage stringByAppendingString:@"The intersection is occupied by a handicap stone."];
+          errorMessage = [errorMessage stringByAppendingString:@" The intersection is occupied by a handicap stone."];
         else
-          errorMessage = [errorMessage stringByAppendingString:@"The reason why the intersection is already occupied could not be determined."];
+          errorMessage = [errorMessage stringByAppendingString:@" The reason why the intersection is already occupied could not be determined."];
 
         DDLogError(@"%@: %@", self, errorMessage);
         NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException

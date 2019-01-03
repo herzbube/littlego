@@ -135,6 +135,27 @@
   // Can set handicap if game has not ended
   [m_game revertStateFromEndedToInProgress];
   m_game.handicapPoints = handicapPoints;
+
+  m_game.handicapPoints = [NSArray array];
+  m_game.blackSetupPoints = handicapPoints;
+  XCTAssertThrowsSpecificNamed(m_game.handicapPoints = handicapPoints,
+                               NSException, NSInvalidArgumentException, @"handicap points are already occupied by black setup stones");
+
+  // As recommended in the docs of handicapPoints, the damage after the
+  // NSInvalidArgumentException from the previous test is too difficult to
+  // repair, so we allocate a new game.
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [handicapPoints setArray:[GoUtilities pointsForHandicap:5 inGame:m_game]];
+  [handicapPoints addObject:[m_game.board pointAtVertex:@"A1"]];
+  [handicapPoints addObject:[m_game.board pointAtVertex:@"B1"]];
+  [handicapPoints addObject:[m_game.board pointAtVertex:@"C1"]];
+  m_game.whiteSetupPoints = handicapPoints;
+  XCTAssertThrowsSpecificNamed(m_game.handicapPoints = handicapPoints,
+                               NSException, NSInvalidArgumentException, @"handicap points are already occupied by white setup stones");
+
+  // If you want to add more tests here, allocate a new game with
+  // NewGameCommand. See comments above for details.
 }
 
 // -----------------------------------------------------------------------------
@@ -459,6 +480,259 @@
   [m_game pass];
   // GoGameHasEndedReasonFourPasses
   XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e blackSetupPoints property.
+///
+/// Tests are equivalent to those in testWhiteSetupPoints(). If you make
+/// changes here, make the same changes in testWhiteSetupPoints().
+// -----------------------------------------------------------------------------
+- (void) testBlackSetupPoints
+{
+  NSUInteger setupCount = 0;
+  XCTAssertEqual(m_game.blackSetupPoints.count, setupCount);
+
+  NSMutableArray* setupPoints = [NSMutableArray arrayWithCapacity:0];
+  [setupPoints addObject:[m_game.board pointAtVertex:@"A1"]];
+  [setupPoints addObject:[m_game.board pointAtVertex:@"B1"]];
+  [setupPoints addObject:[m_game.board pointAtVertex:@"C1"]];
+  for (GoPoint* point in setupPoints)
+    XCTAssertEqual(GoColorNone, point.stoneState);
+  // Setting the setup points changes the GoPoint's stoneState
+  m_game.blackSetupPoints = setupPoints;
+  // Changing the GoGame property now must not have any influence on the game's
+  // setup points, i.e. we expect that GoGame made a copy of setupPoints
+  [setupPoints addObject:[m_game.board pointAtVertex:@"A2"]];
+  // If GoGame made a copy, A2 will not be in the list that we get and the test
+  // will succeed. If GoGame didn't make a copy, A2 will be in the list, but its
+  // stoneState will still be GoColorNone, thus causing our test to fail.
+  for (GoPoint* point in m_game.blackSetupPoints)
+    XCTAssertEqual(GoColorBlack, point.stoneState);
+  [setupPoints removeObject:[m_game.board pointAtVertex:@"A2"]];
+
+  // Must be possible to 1) set an empty array, and 2) change a previously set
+  // setup point list
+  m_game.blackSetupPoints = [NSArray array];
+  // GoPoint object's that were previously set must have their stoneState reset
+  for (GoPoint* point in setupPoints)
+    XCTAssertEqual(GoColorNone, point.stoneState);
+
+  XCTAssertThrowsSpecificNamed(m_game.blackSetupPoints = nil,
+                               NSException, NSInvalidArgumentException, @"black setup point list is nil");
+
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  XCTAssertThrowsSpecificNamed(m_game.blackSetupPoints = setupPoints,
+                               NSException, NSInternalInconsistencyException, @"black setup points set after first move");
+
+  // Can set setup points if there are no moves
+  [m_game.lastMove undo];  // revert stoneState before discarding the move
+  [m_game.moveModel discardLastMove];
+  XCTAssertEqual(GoColorNone, [m_game.board pointAtVertex:@"A1"].stoneState);
+  m_game.blackSetupPoints = setupPoints;
+
+  [m_game resign];
+  XCTAssertThrowsSpecificNamed(m_game.blackSetupPoints = setupPoints,
+                               NSException, NSInternalInconsistencyException, @"black setup points set after game has ended");
+
+  // Can set setup points if game has not ended
+  [m_game revertStateFromEndedToInProgress];
+  m_game.blackSetupPoints = setupPoints;
+
+  m_game.blackSetupPoints = [NSArray array];
+  m_game.whiteSetupPoints = setupPoints;
+  XCTAssertThrowsSpecificNamed(m_game.blackSetupPoints = setupPoints,
+                               NSException, NSInvalidArgumentException, @"black setup points are already occupied by white setup stones");
+
+  // As recommended in the docs of blackSetupPoints, the damage after the
+  // NSInvalidArgumentException from the previous test is too difficult to
+  // repair, so we allocate a new game.
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  setupPoints = [NSMutableArray arrayWithCapacity:0];
+  [setupPoints addObject:[m_game.board pointAtVertex:@"A1"]];
+  [setupPoints addObject:[m_game.board pointAtVertex:@"B1"]];
+  [setupPoints addObject:[m_game.board pointAtVertex:@"C1"]];
+  m_game.handicapPoints = setupPoints;
+  XCTAssertThrowsSpecificNamed(m_game.blackSetupPoints = setupPoints,
+                               NSException, NSInvalidArgumentException, @"black setup points are already occupied by handicap stones");
+
+  // As recommended in the docs of blackSetupPoints, the damage after the
+  // NSInvalidArgumentException from the previous test is too difficult to
+  /// repair, so we allocate a new game.
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  // Create a prison with setup stones of the other color, then place a
+  // suicidal stone inside
+  NSMutableArray* setupPointsPrison = [NSMutableArray arrayWithCapacity:0];
+  [setupPointsPrison addObject:[m_game.board pointAtVertex:@"A2"]];
+  [setupPointsPrison addObject:[m_game.board pointAtVertex:@"B1"]];
+  m_game.whiteSetupPoints = setupPointsPrison;
+  XCTAssertEqual(0, [m_game.board pointAtVertex:@"A1"].liberties);
+  NSMutableArray* setupPointsSuicide = [NSMutableArray arrayWithCapacity:0];
+  [setupPointsSuicide addObject:[m_game.board pointAtVertex:@"A1"]];
+  XCTAssertThrowsSpecificNamed(m_game.blackSetupPoints = setupPointsSuicide,
+                               NSException, NSInvalidArgumentException, @"black setup points are suicidal");
+
+  // If you want to add more tests here, allocate a new game with
+  // NewGameCommand. See comments above for details.
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e whiteSetupPoints property.
+///
+/// Tests are equivalent to those in testBlackSetupPoints(). If you make
+/// changes here, make the same changes in testBlackSetupPoints().
+// -----------------------------------------------------------------------------
+- (void) testWhiteSetupPoints
+{
+  NSUInteger setupCount = 0;
+  XCTAssertEqual(m_game.whiteSetupPoints.count, setupCount);
+
+  NSMutableArray* setupPoints = [NSMutableArray arrayWithCapacity:0];
+  [setupPoints addObject:[m_game.board pointAtVertex:@"A1"]];
+  [setupPoints addObject:[m_game.board pointAtVertex:@"B1"]];
+  [setupPoints addObject:[m_game.board pointAtVertex:@"C1"]];
+  for (GoPoint* point in setupPoints)
+    XCTAssertEqual(GoColorNone, point.stoneState);
+  // Setting the setup points changes the GoPoint's stoneState
+  m_game.whiteSetupPoints = setupPoints;
+  // Changing the GoGame property now must not have any influence on the game's
+  // setup points, i.e. we expect that GoGame made a copy of setupPoints
+  [setupPoints addObject:[m_game.board pointAtVertex:@"A2"]];
+  // If GoGame made a copy, A2 will not be in the list that we get and the test
+  // will succeed. If GoGame didn't make a copy, A2 will be in the list, but its
+  // stoneState will still be GoColorNone, thus causing our test to fail.
+  for (GoPoint* point in m_game.whiteSetupPoints)
+    XCTAssertEqual(GoColorWhite, point.stoneState);
+  [setupPoints removeObject:[m_game.board pointAtVertex:@"A2"]];
+
+  // Must be possible to 1) set an empty array, and 2) change a previously set
+  // setup point list
+  m_game.whiteSetupPoints = [NSArray array];
+  // GoPoint object's that were previously set must have their stoneState reset
+  for (GoPoint* point in setupPoints)
+    XCTAssertEqual(GoColorNone, point.stoneState);
+
+  XCTAssertThrowsSpecificNamed(m_game.whiteSetupPoints = nil,
+                               NSException, NSInvalidArgumentException, @"white setup point list is nil");
+
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  XCTAssertThrowsSpecificNamed(m_game.whiteSetupPoints = setupPoints,
+                               NSException, NSInternalInconsistencyException, @"white setup points set after first move");
+
+  // Can set setup points if there are no moves
+  [m_game.lastMove undo];  // revert stoneState before discarding the move
+  [m_game.moveModel discardLastMove];
+  XCTAssertEqual(GoColorNone, [m_game.board pointAtVertex:@"A1"].stoneState);
+  m_game.whiteSetupPoints = setupPoints;
+
+  [m_game resign];
+  XCTAssertThrowsSpecificNamed(m_game.whiteSetupPoints = setupPoints,
+                               NSException, NSInternalInconsistencyException, @"white setup points set after game has ended");
+
+  // Can set setup points if game has not ended
+  [m_game revertStateFromEndedToInProgress];
+  m_game.whiteSetupPoints = setupPoints;
+
+  m_game.whiteSetupPoints = [NSArray array];
+  m_game.blackSetupPoints = setupPoints;
+  XCTAssertThrowsSpecificNamed(m_game.whiteSetupPoints = setupPoints,
+                               NSException, NSInvalidArgumentException, @"white setup points are already occupied by black setup stones");
+
+  // As recommended in the docs of blackSetupPoints, the damage after the
+  // NSInvalidArgumentException from the previous test is too difficult to
+  // repair, so we allocate a new game.
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  setupPoints = [NSMutableArray arrayWithCapacity:0];
+  [setupPoints addObject:[m_game.board pointAtVertex:@"A1"]];
+  [setupPoints addObject:[m_game.board pointAtVertex:@"B1"]];
+  [setupPoints addObject:[m_game.board pointAtVertex:@"C1"]];
+  m_game.handicapPoints = setupPoints;
+  XCTAssertThrowsSpecificNamed(m_game.whiteSetupPoints = setupPoints,
+                               NSException, NSInvalidArgumentException, @"white setup points are already occupied by handicap stones");
+
+  // As recommended in the docs of blackSetupPoints, the damage after the
+  // NSInvalidArgumentException from the previous test is too difficult to
+  /// repair, so we allocate a new game.
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  // Create a prison with setup stones of the other color, then place a
+  // suicidal stone inside
+  NSMutableArray* setupPointsPrison = [NSMutableArray arrayWithCapacity:0];
+  [setupPointsPrison addObject:[m_game.board pointAtVertex:@"A2"]];
+  [setupPointsPrison addObject:[m_game.board pointAtVertex:@"B1"]];
+  m_game.blackSetupPoints = setupPointsPrison;
+  XCTAssertEqual(0, [m_game.board pointAtVertex:@"A1"].liberties);
+  NSMutableArray* setupPointsSuicide = [NSMutableArray arrayWithCapacity:0];
+  [setupPointsSuicide addObject:[m_game.board pointAtVertex:@"A1"]];
+  XCTAssertThrowsSpecificNamed(m_game.whiteSetupPoints = setupPointsSuicide,
+                               NSException, NSInvalidArgumentException, @"white setup points are suicidal");
+
+  // If you want to add more tests here, allocate a new game with
+  // NewGameCommand. See comments above for details.
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e setupFirstMoveColor property.
+// -----------------------------------------------------------------------------
+- (void) testSetupFirstMoveColor
+{
+  XCTAssertEqual(GoColorNone, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+
+  // Setting the same value has no effect
+  m_game.setupFirstMoveColor = GoColorNone;
+  XCTAssertEqual(GoColorNone, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+
+  // Setting a different value, but no observable change to nextMoveColor
+  // because that property already had that value
+  m_game.setupFirstMoveColor = GoColorBlack;
+  XCTAssertEqual(GoColorBlack, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+
+  // Setting another different value, but this time observable change to
+  // nextMoveColor
+  m_game.setupFirstMoveColor = GoColorWhite;
+  XCTAssertEqual(GoColorWhite, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
+
+  // Resetting to original value, but no observable change to nextMoveColor
+  // because GoColorNone is documented to have no such effect
+  m_game.setupFirstMoveColor = GoColorNone;
+  XCTAssertEqual(GoColorNone, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
+
+  // Test that property cannot be set if game state is correct but a move was
+  // made. In addition, test that nextMoveColor remains unchanged.
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  [m_game play:[m_game.board pointAtVertex:@"B1"]];
+  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);  // still white because of two moves
+  XCTAssertThrowsSpecificNamed(m_game.setupFirstMoveColor = GoColorBlack,
+                               NSException, NSInternalInconsistencyException, @"setupFirstMoveColor set after first move");
+  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
+
+  // Can set setupFirstMoveColor if there are no moves
+  [m_game.moveModel discardLastMove];
+  [m_game.moveModel discardLastMove];
+  m_game.setupFirstMoveColor = GoColorBlack;
+  XCTAssertEqual(GoColorBlack, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+
+  // Test that property cannot be set if game state is wrong. In addition, test
+  // that nextMoveColor remains unchanged.
+  [m_game resign];
+  XCTAssertThrowsSpecificNamed(m_game.setupFirstMoveColor = GoColorWhite,
+                               NSException, NSInternalInconsistencyException, @"setupFirstMoveColor set after game has ended");
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+
+  // Can set setupFirstMoveColor if game has not ended
+  [m_game revertStateFromEndedToInProgress];
+  m_game.setupFirstMoveColor = GoColorWhite;
+  XCTAssertEqual(GoColorWhite, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
 }
 
 // -----------------------------------------------------------------------------
