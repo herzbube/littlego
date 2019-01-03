@@ -63,6 +63,18 @@
     DDLogError(@"%@: Aborting because syncGTPEngineHandicap failed", [self shortDescription]);
     return false;
   }
+  if (! [self syncGTPEngineSetupStones])
+  {
+    DDLogError(@"%@: Aborting because syncGTPEngineSetupStones failed", [self shortDescription]);
+    return false;
+  }
+
+  if (! [self syncGTPEngineSetupPlayer])
+  {
+    DDLogError(@"%@: Aborting because syncGTPEngineSetupPlayer failed", [self shortDescription]);
+    return false;
+  }
+
   if (! [self syncGTPEngineMoves])
   {
     DDLogError(@"%@: Aborting because syncGTPEngineMoves failed", [self shortDescription]);
@@ -93,6 +105,70 @@
     return true;
   NSString* verticesString = [GoUtilities verticesStringForPoints:game.handicapPoints];
   NSString* commandString = [@"set_free_handicap " stringByAppendingString:verticesString];
+  GtpCommand* command = [GtpCommand command:commandString];
+  [command submit];
+  assert(command.response.status);
+  return command.response.status;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt(). Returns true on success, false on failure.
+// -----------------------------------------------------------------------------
+- (bool) syncGTPEngineSetupStones
+{
+  GoGame* game = [GoGame sharedGame];
+  if (game.blackSetupPoints.count == 0 && game.whiteSetupPoints.count == 0)
+    return true;
+
+  NSString* commandString = @"gogui-setup";
+
+  for (NSNumber* stoneColorAsNumber in @[[NSNumber numberWithInt:GoColorBlack], [NSNumber numberWithInt:GoColorWhite]])
+  {
+    enum GoColor stoneColor = [stoneColorAsNumber intValue];
+
+    NSArray* setupPoints;
+    NSString* colorString;
+    if (stoneColor == GoColorBlack)
+    {
+      setupPoints = game.blackSetupPoints;
+      colorString = @"B";
+    }
+    else
+    {
+      setupPoints = game.whiteSetupPoints;
+      colorString = @"W";
+    }
+
+    for (GoPoint* setupPoint in setupPoints)
+    {
+      NSString* setupStoneString = [NSString stringWithFormat:@" %@ %@", colorString, setupPoint.vertex.string];
+      commandString = [commandString stringByAppendingString:setupStoneString];
+    }
+  }
+
+  GtpCommand* command = [GtpCommand command:commandString];
+  [command submit];
+  assert(command.response.status);
+  return command.response.status;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt(). Returns true on success, false on failure.
+// -----------------------------------------------------------------------------
+- (bool) syncGTPEngineSetupPlayer
+{
+  GoGame* game = [GoGame sharedGame];
+  if (game.setupFirstMoveColor == GoColorNone)
+    return true;
+
+  NSString* colorString;
+  if (game.setupFirstMoveColor == GoColorBlack)
+    colorString = @"B";
+  else
+    colorString = @"W";
+
+  NSString* commandString = [NSString stringWithFormat:@"gogui-setup_player %@", colorString];
+
   GtpCommand* command = [GtpCommand command:commandString];
   [command submit];
   assert(command.response.status);
