@@ -400,10 +400,11 @@
 {
   GoGame* game = [GoGame sharedGame];
 
-  // Setup handicap only if there is one. The GTP command "set_free_handicap"
-  // accepts only a list with more than 2 vertices. This should not be a problem
-  // since our own handicap selection screen does not offer to select
-  // handicap 1.
+  // The previously sent GTP command "clear_board" has left Fuego without a
+  // handicap, so we need to setup handicap only if there is one. The GTP
+  // command "set_free_handicap" accepts only a list with more than 2 vertices.
+  // This should not be a problem since our own handicap selection screen does
+  // not offer to select handicap 1.
   NSUInteger handicap = game.handicapPoints.count;
   if (handicap >= 2)
   {
@@ -414,8 +415,10 @@
     assert(commandFixedHandicap.response.status);
   }
 
-  // There is no universal default value for komi, so to be on the sure side we
-  // always have to setup komi.
+  // The previously sent GTP command "clear_board" has caused Fuego to reset
+  // komi to the last value that was explicitly set with the GTP command "komi"
+  // (or to the built-in default komi value, in case no "komi" command was ever
+  // sent). Therefore, unlike handicap we always have to setup komi.
   GtpCommand* commandKomi = [GtpCommand command:[NSString stringWithFormat:@"komi %.1f", game.komi]];
   [commandKomi submit];
   assert(commandKomi.response.status);

@@ -52,17 +52,27 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  // This clears all board state related parameters (handicap, komi, setup
+  // stones, setup player, moves) but leaves board size, game rules and player
+  // configuration (e.g. UCT parameters) untouched
   if (! [self syncGTPEngineClearBoard])
   {
     DDLogError(@"%@: Aborting because syncGTPEngineClearBoard failed", [self shortDescription]);
     return false;
   }
-  // clear_board affects handicap (but not board size and komi)
+
   if (! [self syncGTPEngineHandicap])
   {
     DDLogError(@"%@: Aborting because syncGTPEngineHandicap failed", [self shortDescription]);
     return false;
   }
+
+  if (! [self syncGTPEngineKomi])
+  {
+    DDLogError(@"%@: Aborting because syncGTPEngineKomi failed", [self shortDescription]);
+    return false;
+  }
+
   if (! [self syncGTPEngineSetupStones])
   {
     DDLogError(@"%@: Aborting because syncGTPEngineSetupStones failed", [self shortDescription]);
@@ -100,12 +110,33 @@
 - (bool) syncGTPEngineHandicap
 {
   GoGame* game = [GoGame sharedGame];
+
+  // The previously sent GTP command "clear_board" has left Fuego without a
+  // handicap, so we need to setup handicap only if there is one. The GTP
   NSUInteger handicap = game.handicapPoints.count;
   if (0 == handicap)
     return true;
+
   NSString* verticesString = [GoUtilities verticesStringForPoints:game.handicapPoints];
   NSString* commandString = [@"set_free_handicap " stringByAppendingString:verticesString];
   GtpCommand* command = [GtpCommand command:commandString];
+  [command submit];
+  assert(command.response.status);
+  return command.response.status;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt(). Returns true on success, false on failure.
+// -----------------------------------------------------------------------------
+- (bool) syncGTPEngineKomi
+{
+  GoGame* game = [GoGame sharedGame];
+
+  // The previously sent GTP command "clear_board" has caused Fuego to reset
+  // komi to the last value that was explicitly set with the GTP command "komi"
+  // (or to the built-in default komi value, in case no "komi" command was ever
+  // sent). Therefore, unlike handicap we always have to setup komi.
+  GtpCommand* command = [GtpCommand command:[NSString stringWithFormat:@"komi %.1f", game.komi]];
   [command submit];
   assert(command.response.status);
   return command.response.status;
