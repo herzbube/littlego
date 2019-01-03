@@ -111,6 +111,9 @@ enum GameInfoSectionItem
   LifeAndDeathSettlingRuleItem,
   DisputeResolutionRuleItem,
   FourPassesRuleItem,
+  BlackSetupStonesItem,
+  WhiteSetupStonesItem,
+  PlayerToPlayFirstItem,
   MaxGameInfoSectionItem
 };
 
@@ -713,6 +716,44 @@ enum BoardPositionSectionItem
         {
           cell.textLabel.text = @"Four passes";
           cell.detailTextLabel.text = [NSString stringWithFourPassesRule:game.rules.fourPassesRule];
+          break;
+        }
+        case BlackSetupStonesItem:
+        case WhiteSetupStonesItem:
+        {
+          NSUInteger numberOfSetupStones;
+          if (indexPath.row == BlackSetupStonesItem)
+          {
+            cell.textLabel.text = @"Black setup stones";
+            numberOfSetupStones = game.blackSetupPoints.count;
+          }
+          else
+          {
+            cell.textLabel.text = @"White setup stones";
+            numberOfSetupStones = game.whiteSetupPoints.count;
+          }
+          if (0 == numberOfSetupStones)
+            cell.detailTextLabel.text = @"None";
+          else
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)numberOfSetupStones];
+          break;
+        }
+        case PlayerToPlayFirstItem:
+        {
+          // We need an item that somehow shows the influence of the non-obvious
+          // game setup property game.setupFirstMoveColor. We could simply show
+          // its value here, but if the value were GoColorNone - i.e. no player
+          // is explicitly set up to play first - the information would be quite
+          // worthless to the user. Therefore, if game.setupFirstMoveColor is
+          // indeed GoColorNone we show the player to play first according to
+          // the normal game rules.
+          if (game.setupFirstMoveColor == GoColorNone)
+            cell.textLabel.text = @"Player to play first";
+          else
+            cell.textLabel.text = @"Player set up to play first";
+          enum GoColor colorToPlayFirst = [GoUtilities playerAfter:nil
+                                                            inGame:game].color;
+          cell.detailTextLabel.text = [NSString stringWithGoColor:colorToPlayFirst];
           break;
         }
         default:
