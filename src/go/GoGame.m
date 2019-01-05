@@ -242,7 +242,7 @@
   }
   @catch (NSException* exception)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Exception occurred while playing on intersection %@. Exception = %@", aPoint.vertex, exception];
+    NSString* errorMessage = [NSString stringWithFormat:@"Exception occurred while playing on intersection %@. Exception = %@", aPoint.vertex.string, exception];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* newException = [NSException exceptionWithName:NSInvalidArgumentException
                                                         reason:errorMessage
@@ -1020,7 +1020,7 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
     {
       if (point.stoneState != GoColorNone)
       {
-        NSString* errorMessage = [NSString stringWithFormat:@"Board setup prior to first move attempts to place a stone on the already occupied intersection %@.", point];
+        NSString* errorMessage = [NSString stringWithFormat:@"Board setup prior to first move attempts to place a stone on the already occupied intersection %@.", point.vertex.string];
         if ([_handicapPoints containsObject:point])
           errorMessage = [errorMessage stringByAppendingString:@" The intersection is occupied by a handicap stone."];
         else
