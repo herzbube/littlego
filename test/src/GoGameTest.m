@@ -574,6 +574,21 @@
   XCTAssertThrowsSpecificNamed(m_game.blackSetupPoints = setupPointsSuicide,
                                NSException, NSInvalidArgumentException, @"black setup points are suicidal");
 
+  // In this test we reverse the order in which we assign the setup properties:
+  // The prison is set up and the illegal board situation is created when we set
+  // the OTHER setup property, not the setup property UNDER TEST.
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  setupPointsSuicide = [NSMutableArray arrayWithCapacity:0];
+  [setupPointsSuicide addObject:[m_game.board pointAtVertex:@"A1"]];
+  m_game.blackSetupPoints = setupPointsSuicide;
+  XCTAssertEqual(2, [m_game.board pointAtVertex:@"A1"].liberties);
+  setupPointsPrison = [NSMutableArray arrayWithCapacity:0];
+  [setupPointsPrison addObject:[m_game.board pointAtVertex:@"A2"]];
+  [setupPointsPrison addObject:[m_game.board pointAtVertex:@"B1"]];
+  XCTAssertThrowsSpecificNamed(m_game.whiteSetupPoints = setupPointsPrison,
+                               NSException, NSInvalidArgumentException, @"white setup points create prison");
+
   // If you want to add more tests here, allocate a new game with
   // NewGameCommand. See comments above for details.
 }
@@ -669,6 +684,22 @@
   [setupPointsSuicide addObject:[m_game.board pointAtVertex:@"A1"]];
   XCTAssertThrowsSpecificNamed(m_game.whiteSetupPoints = setupPointsSuicide,
                                NSException, NSInvalidArgumentException, @"white setup points are suicidal");
+
+  // In this test we reverse the order in which we assign the setup properties:
+  // The prison is set up and the illegal board situation is created when we set
+  // the OTHER setup property, not the setup property UNDER TEST.
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  setupPointsSuicide = [NSMutableArray arrayWithCapacity:0];
+  [setupPointsSuicide addObject:[m_game.board pointAtVertex:@"A1"]];
+  m_game.whiteSetupPoints = setupPointsSuicide;
+  XCTAssertEqual(2, [m_game.board pointAtVertex:@"A1"].liberties);
+  setupPointsPrison = [NSMutableArray arrayWithCapacity:0];
+  [setupPointsPrison addObject:[m_game.board pointAtVertex:@"A2"]];
+  [setupPointsPrison addObject:[m_game.board pointAtVertex:@"B1"]];
+  XCTAssertThrowsSpecificNamed(m_game.blackSetupPoints = setupPointsPrison,
+                               NSException, NSInvalidArgumentException, @"black setup points create prison");
+
 
   // If you want to add more tests here, allocate a new game with
   // NewGameCommand. See comments above for details.

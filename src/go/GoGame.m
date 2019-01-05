@@ -28,6 +28,7 @@
 #import "GoPoint.h"
 #import "GoScore.h"
 #import "GoUtilities.h"
+#import "GoVertex.h"
 #import "GoZobristTable.h"
 #import "../main/ApplicationDelegate.h"
 #import "../player/Player.h"
@@ -1039,19 +1040,34 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
     // For performance reasons we perform the liberties check only after all
     // stones have been placed. If we wanted to perform the liberties check
     // immediately while placing each stone, the check would be much more
-    // expensive because we would have to check not only the GoPoint where the
-    // stone is placed, but also the up to 4 neighbouring GoPoints.
-    for (GoPoint* point in newValue)
+    // expensive because we would have to check the same GoBoardRegions over
+    // and over again.
+    int numberOfSuicidalIntersections = 0;
+    NSString* suicidalIntersectionsString = @"";
+    for (GoBoardRegion* region in self.board.regions)
     {
-      if (point.liberties == 0)
+      if (! region.isStoneGroup)
+        continue;
+      if (region.liberties > 0)
+        continue;
+
+      for (GoPoint* suicidalPoint in region.points)
       {
-        NSString* errorMessage = [NSString stringWithFormat:@"Board setup prior to first move attempts to place a stone on intersection %@ which would result in the stone having 0 (zero) liberties.", point];
-        DDLogError(@"%@: %@", self, errorMessage);
-        NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                         reason:errorMessage
-                                                       userInfo:nil];
-        @throw exception;
+        if (numberOfSuicidalIntersections > 0)
+          suicidalIntersectionsString = [suicidalIntersectionsString stringByAppendingString:@", "];
+        suicidalIntersectionsString = [suicidalIntersectionsString stringByAppendingString:suicidalPoint.vertex.string];
+        numberOfSuicidalIntersections++;
       }
+    }
+
+    if (numberOfSuicidalIntersections > 0)
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Board setup prior to first move attempts to place stones with 0 (zero) liberties on the following intersections: %@.", suicidalIntersectionsString];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
     }
   }
 }
