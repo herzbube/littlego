@@ -20,11 +20,9 @@
 #import "../boardposition/SyncGTPEngineCommand.h"
 #import "../game/NewGameCommand.h"
 #import "../playerinfluence/ToggleTerritoryStatisticsCommand.h"
-#import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
-#import "../../go/GoMove.h"
 #import "../../go/GoScore.h"
-#import "../../go/GoZobristTable.h"
+#import "../../go/GoUtilities.h"
 #import "../../utility/PathUtilities.h"
 
 
@@ -70,12 +68,7 @@
     return false;
   }
 
-  // GoZobristTable is not archived, instead a new GoZobristTable object with
-  // random values is created each time when a game is unarchived. Zobrist
-  // hashes created by the previous GoZobristTable object are thus invalid and
-  // must be re-calculated here. Incidentally, because Zobrist hashes would be
-  // invalid, they are not archived at all to make the archive smaller.
-  [self calculateZobristHashes:unarchivedGame];
+  [GoUtilities recalculateZobristHashes:unarchivedGame];
 
   NewGameCommand* command = [[[NewGameCommand alloc] initWithGame:unarchivedGame] autorelease];
   // Computer player must not be triggered before the GTP engine has been
@@ -138,16 +131,6 @@
   }
 
   return true;
-}
-
-// -----------------------------------------------------------------------------
-/// Private helper
-// -----------------------------------------------------------------------------
-- (void) calculateZobristHashes:(GoGame*)unarchivedGame
-{
-  GoZobristTable* zobristTable = unarchivedGame.board.zobristTable;
-  for (GoMove* move = unarchivedGame.firstMove; move != nil; move = move.next)
-    move.zobristHash = [zobristTable hashForMove:move];
 }
 
 @end

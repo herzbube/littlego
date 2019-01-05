@@ -29,10 +29,12 @@
 
 - (void) testInitialState;
 - (void) testHashForBoard;
+- (void) testHashForBoardBlackStonesWhiteStones;
 - (void) testHashForMove;
 - (void) testHashForStone;
 - (void) testHashForLastMoveEqualsHashForBoard;
 - (void) testHashAfterPass;
 - (void) testHashAfterUndoAndRedo;
+- (void) testValidateBoardSize;
 
 @end

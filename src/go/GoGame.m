@@ -80,6 +80,7 @@
   _blackSetupPoints = [[NSArray array] retain];
   _whiteSetupPoints = [[NSArray array] retain];
   _setupFirstMoveColor = GoColorNone;
+  _zobristHashBeforeFirstMove = 0;
 
   return self;
 }
@@ -116,6 +117,9 @@
   _blackSetupPoints = [[decoder decodeObjectForKey:goGameBlackSetupPointsKey] retain];
   _whiteSetupPoints = [[decoder decodeObjectForKey:goGameWhiteSetupPointsKey] retain];
   _setupFirstMoveColor = [decoder decodeIntForKey:goGameSetupFirstMoveColorKey];
+  // The hash was not archived. Whoever is unarchiving this GoMove is
+  // responsible for re-calculating the hash.
+  _zobristHashBeforeFirstMove = 0;
 
   return self;
 }
@@ -599,8 +603,10 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
     return false;
 
   // The algorithm below for finding ko can kick in only if we have at least
-  // two moves. The earliest possible ko needs even more moves, but optimizing
-  // the algorithm is not worth the trouble.
+  // two moves: A real move that was already played, and the hypothetical move
+  // for which we are performing ko detection. For normal play without setup
+  // stones, the earliest possible ko needs even more moves, but with setup
+  // stones a ko is already possible in the second move.
   //
   // IMPORTANT: Ko detection must be based on the current board position, so
   // we must not use self.lastMove!
@@ -608,16 +614,20 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
   if (! lastMove)
     return false;
   GoMove* previousToLastMove = lastMove.previous;
-  if (! previousToLastMove)
-    return false;
 
   long long zobristHashOfHypotheticalMove = [self zobristHashOfHypotheticalMoveAtPoint:point
                                                                                byColor:moveColor
                                                                              afterMove:lastMove];
 
+  long long zobristHashOfPreviousToLastBoardPosition;
+  if (previousToLastMove)
+    zobristHashOfPreviousToLastBoardPosition = previousToLastMove.zobristHash;
+  else
+    zobristHashOfPreviousToLastBoardPosition = self.zobristHashBeforeFirstMove;
+
   // Even if we use one of the superko rules, we still want to check for simple
   // ko first so that we can distinguish between simple ko and superko.
-  bool isSimpleKo = (zobristHashOfHypotheticalMove == previousToLastMove.zobristHash);
+  bool isSimpleKo = (zobristHashOfHypotheticalMove == zobristHashOfPreviousToLastBoardPosition);
   if (isSimpleKo)
   {
     *isSuperko = false;
@@ -635,6 +645,12 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
     case GoKoRuleSuperkoPositional:
     case GoKoRuleSuperkoSituational:
     {
+      // The zobrist hash of the previous-to-last board position has already
+      // been examined by the Simple Ko check above, so if there are no
+      // additional board positions there's nothing else we need to do here
+      if (! previousToLastMove)
+        return false;
+
       for (GoMove* move = previousToLastMove.previous; move != nil; move = move.previous)
       {
         // Situational superko only examines board positions that resulted from
@@ -647,6 +663,40 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
           return true;
         }
       }
+
+      // Situational superko only examines board positions that resulted from
+      // moves made by the same color. But which color did the board position
+      // prior to the first move result from? The only possible answer can be:
+      // The opposing color of the first move. There are two ways how to
+      // determine the color of the first move:
+      // - Find out which color a logical first move would have had, i.e.
+      //   without looking at the actually played first move. The color of the
+      //   logical first move is this:
+      //   - self.setupFirstMoveColor, if it is not GoColorNone
+      //   - GoColorBlack, if handicap is 0
+      //   - GoColorWhite, if handicap is >0
+      // - Look at the first move as it was actually played. If we think about
+      //   what's possible in an .sgf file, we see that the first move can be
+      //   any color - even if it defies the game logic (handicap) or
+      //   contradicts the .sgf file's own data (first move color is != setup
+      //   player color).
+      // Both approaches have their merits, but to be on the safe side we
+      // choose the same implementation as Fuego: Look at the first move as it
+      // was actually played.
+      if (GoKoRuleSuperkoSituational == koRule)
+      {
+        enum GoColor colorOfZobristHashBeforeFirstMove =
+          [GoUtilities alternatingColorForColor:self.firstMove.player.color];
+        if (colorOfZobristHashBeforeFirstMove != moveColor)
+          return false;
+      }
+
+      if (zobristHashOfHypotheticalMove == self.zobristHashBeforeFirstMove)
+      {
+        *isSuperko = true;
+        return true;
+      }
+
       return false;
     }
     default:
@@ -677,7 +727,8 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
   return [self.board.zobristTable hashForStonePlayedByColor:color
                                                     atPoint:point
                                             capturingStones:stonesWithOneLiberty
-                                                  afterMove:move];
+                                                  afterMove:move
+                                                     inGame:self];
 }
 
 // -----------------------------------------------------------------------------
@@ -838,6 +889,8 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
     self.nextMoveColor = GoColorBlack;
   else
     self.nextMoveColor = GoColorWhite;
+
+  self.zobristHashBeforeFirstMove = [self.board.zobristTable hashForBoard:self.board];
 }
 
 // -----------------------------------------------------------------------------
@@ -865,6 +918,13 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
   [encoder encodeObject:self.blackSetupPoints forKey:goGameBlackSetupPointsKey];
   [encoder encodeObject:self.whiteSetupPoints forKey:goGameWhiteSetupPointsKey];
   [encoder encodeInt:self.setupFirstMoveColor forKey:goGameSetupFirstMoveColorKey];
+  // GoZobristTable is not archived, instead a new GoZobristTable object with
+  // random values is created each time when a game is unarchived. Zobrist
+  // hashes created by the previous GoZobristTable object are thus invalid.
+  // This is the reason why we don't archive self.zobristHashBeforeFirstMove
+  // here - it doesn't make sense to archive an invalid value. A side effect of
+  // not archiving self.zobristHashBeforeFirstMove is that the overall archive
+  // becomes smaller.
 }
 
 // -----------------------------------------------------------------------------
@@ -1070,6 +1130,8 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
       @throw exception;
     }
   }
+
+  self.zobristHashBeforeFirstMove = [self.board.zobristTable hashForBoard:self.board];
 }
 
 // -----------------------------------------------------------------------------

@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class GoBoard;
+@class GoGame;
 @class GoMove;
 @class GoPlayer;
 @class GoPoint;
@@ -50,10 +51,15 @@
 - (id) initWithBoardSize:(enum GoBoardSize)boardSize;
 
 - (long long) hashForBoard:(GoBoard*)board;
-- (long long) hashForMove:(GoMove*)move;
+- (long long) hashForBoard:(GoBoard*)board
+               blackStones:(NSArray*)blackStones
+               whiteStones:(NSArray*)whiteStones;
+- (long long) hashForMove:(GoMove*)move
+                   inGame:(GoGame*)game;
 - (long long) hashForStonePlayedByColor:(enum GoColor)color
                                 atPoint:(GoPoint*)point
                         capturingStones:(NSArray*)capturedStones
-                              afterMove:(GoMove*)move;
+                              afterMove:(GoMove*)move
+                                 inGame:(GoGame*)game;
 
 @end

@@ -18,6 +18,7 @@
 // Project includes
 #import "GoZobristTable.h"
 #import "GoBoard.h"
+#import "GoGame.h"
 #import "GoMove.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
@@ -134,11 +135,25 @@
 // -----------------------------------------------------------------------------
 /// @brief Generates the Zobrist hash for the current board position represented
 /// by @a board.
+///
+/// Raises @e NSInvalidArgumentException if @a board is nil.
 // -----------------------------------------------------------------------------
 - (long long) hashForBoard:(GoBoard*)board
 {
+  if (!board )
+  {
+    NSString* errorMessage = @"Board argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   [self throwIfTableSizeDoesNotMatchSizeOfBoard:board];
+
   long long hash = 0;
+
   GoPoint* point = [board pointAtVertex:@"A1"];
   while (point)
   {
@@ -149,6 +164,53 @@
     }
     point = point.next;
   }
+
+  return hash;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Generates the Zobrist hash for the board position where @a board is
+/// empty, except for a list of specified black and white stones. @a blackStones
+/// and @a whiteStones are either empty or contain GoPoint objects.
+///
+/// The current board position represented by @a board is ignored.
+///
+/// Raises @e NSInvalidArgumentException if @a board, @a blackStones or
+/// @a whiteStones is nil.
+///
+/// Raises @e NSGenericException if the board size with which this
+/// GoZobristTable was initialized does not match the board size of @a board.
+// -----------------------------------------------------------------------------
+- (long long) hashForBoard:(GoBoard*)board
+               blackStones:(NSArray*)blackStones
+               whiteStones:(NSArray*)whiteStones
+{
+  if (!board || !blackStones || !whiteStones)
+  {
+    NSString* errorMessage = @"Board, black stones or white stones argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  [self throwIfTableSizeDoesNotMatchSizeOfBoard:board];
+
+  long long hash = 0;
+
+  for (GoPoint* point in blackStones)
+  {
+    int indexPlayed = [self indexForStoneAt:point playedByColor:GoColorBlack];
+    hash ^= _zobristTable[indexPlayed];
+  }
+
+  for (GoPoint* point in whiteStones)
+  {
+    int indexPlayed = [self indexForStoneAt:point playedByColor:GoColorWhite];
+    hash ^= _zobristTable[indexPlayed];
+  }
+
   return hash;
 }
 
@@ -161,18 +223,20 @@
 /// - The stone that was added by @a move is added to the hash of the previous
 ///   move
 ///
-/// If there is no previous move the calculation starts with 0.
+/// If there is no previous move the calculation starts with the hash in @a game
+/// before the first move.
 ///
 /// If @a move is a pass move, the resulting hash is the same as for the
 /// previous move.
 ///
-/// Raises @e NSInvalidArgumentException if @a move is nil.
+/// Raises @e NSInvalidArgumentException if @a move or @a game is nil.
 // -----------------------------------------------------------------------------
 - (long long) hashForMove:(GoMove*)move
+                   inGame:(GoGame*)game
 {
-  if (!move)
+  if (!move || !game)
   {
-    NSString* errorMessage = @"Move argument is nil";
+    NSString* errorMessage = @"Move or game argument is nil";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
@@ -186,7 +250,8 @@
     hash = [self hashForStonePlayedByColor:move.player.color
                                    atPoint:move.point
                            capturingStones:move.capturedStones
-                                 afterMove:move.previous];
+                                 afterMove:move.previous
+                                    inGame:game];
   }
   else
   {
@@ -194,7 +259,7 @@
     if (previousMove)
       hash = previousMove.zobristHash;
     else
-      hash = 0;
+      hash = game.zobristHashBeforeFirstMove;
   }
   return hash;
 }
@@ -209,19 +274,36 @@
 /// - Stones that are captured are removed from the hash
 /// - The stone that was added is added to the hash
 ///
-/// If @a move is nil the calculation starts with 0.
+/// If @a move is nil the calculation starts with the hash in @a game before the
+/// first move.
 ///
 /// Raises @e NSInvalidArgumentException if @a color is neither GoColorBlack
 /// nor GoColorWhite.
+///
+/// Raises @e NSInvalidArgumentException if @a point or @a game is nil.
+///
+/// Raises @e NSGenericException if the board size with which this
+/// GoZobristTable was initialized does not match the board size of GoBoard
+/// object that @a point is associated with.
 // -----------------------------------------------------------------------------
 - (long long) hashForStonePlayedByColor:(enum GoColor)color
                                 atPoint:(GoPoint*)point
                         capturingStones:(NSArray*)capturedStones
                               afterMove:(GoMove*)move
+                                 inGame:(GoGame*)game
 {
   if (color != GoColorBlack && color != GoColorWhite)
   {
     NSString* errorMessage = [NSString stringWithFormat:@"Invalid color argument %d", color];
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (!point || !game)
+  {
+    NSString* errorMessage = @"Point or game argument is nil";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
@@ -233,7 +315,7 @@
   if (move)
     hash = move.zobristHash;
   else
-    hash = 0;
+    hash = game.zobristHashBeforeFirstMove;
   [self throwIfTableSizeDoesNotMatchSizeOfBoard:point.board];
   if (capturedStones)
   {

@@ -58,14 +58,26 @@
   XCTAssertNotNil(m_game.playerWhite);
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertFalse(m_game.nextMovePlayerIsComputerPlayer);
   XCTAssertEqual(m_game.alternatingPlay, true);
+  XCTAssertNotNil(m_game.moveModel);
   XCTAssertNil(m_game.firstMove);
   XCTAssertNil(m_game.lastMove);
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state, @"game state test failed");
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   XCTAssertFalse(m_game.isComputerThinking);
   XCTAssertEqual(GoGameComputerIsThinkingReasonIsNotThinking, m_game.reasonForComputerIsThinking);
+  XCTAssertNotNil(m_game.boardPosition);
+  XCTAssertNotNil(m_game.rules);
+  XCTAssertNotNil(m_game.document);
   XCTAssertFalse(m_game.document.isDirty);
+  XCTAssertNotNil(m_game.score);
+  NSUInteger setupPointsCount = 0;
+  XCTAssertEqual(m_game.blackSetupPoints.count, setupPointsCount);
+  XCTAssertEqual(m_game.whiteSetupPoints.count, setupPointsCount);
+  XCTAssertEqual(m_game.setupFirstMoveColor, GoColorNone);
+  long long hashForEmptyBoard = 0;
+  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashForEmptyBoard);
 }
 
 // -----------------------------------------------------------------------------
@@ -767,6 +779,51 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Exercises the @e zobristHashBeforeFirstMove property.
+// -----------------------------------------------------------------------------
+- (void) testZobristHashBeforeFirstMove
+{
+  long long hashForEmptyBoard = 0;
+  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashForEmptyBoard);
+
+  m_game.handicapPoints = @[[m_game.board pointAtVertex:@"C3"]];
+  XCTAssertTrue(m_game.zobristHashBeforeFirstMove != hashForEmptyBoard);
+  m_game.handicapPoints = @[];
+  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashForEmptyBoard);
+
+  m_game.blackSetupPoints = @[[m_game.board pointAtVertex:@"B1"]];
+  XCTAssertTrue(m_game.zobristHashBeforeFirstMove != hashForEmptyBoard);
+  m_game.blackSetupPoints = @[];
+  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashForEmptyBoard);
+
+  m_game.whiteSetupPoints = @[[m_game.board pointAtVertex:@"A2"]];
+  XCTAssertTrue(m_game.zobristHashBeforeFirstMove != hashForEmptyBoard);
+  m_game.whiteSetupPoints = @[];
+  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashForEmptyBoard);
+
+  m_game.handicapPoints = @[[m_game.board pointAtVertex:@"C3"]];
+  long long hashAfterHandicapPoints = m_game.zobristHashBeforeFirstMove;
+  XCTAssertTrue(hashAfterHandicapPoints != hashForEmptyBoard);
+  m_game.blackSetupPoints = @[[m_game.board pointAtVertex:@"B1"]];
+  long long hashAfterBlackSetupPoints = m_game.zobristHashBeforeFirstMove;
+  XCTAssertTrue(hashAfterBlackSetupPoints != hashForEmptyBoard);
+  m_game.whiteSetupPoints = @[[m_game.board pointAtVertex:@"A2"]];
+  long long hashAfterWhiteSetupPoints = m_game.zobristHashBeforeFirstMove;
+  XCTAssertTrue(hashAfterWhiteSetupPoints != hashForEmptyBoard);
+
+  XCTAssertTrue(hashAfterHandicapPoints != hashAfterBlackSetupPoints);
+  XCTAssertTrue(hashAfterHandicapPoints != hashAfterWhiteSetupPoints);
+  XCTAssertTrue(hashAfterBlackSetupPoints != hashAfterWhiteSetupPoints);
+
+  m_game.whiteSetupPoints = @[];
+  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashAfterBlackSetupPoints);
+  m_game.blackSetupPoints = @[];
+  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashAfterHandicapPoints);
+  m_game.handicapPoints = @[];
+  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashForEmptyBoard);
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Exercises the play() method.
 // -----------------------------------------------------------------------------
 - (void) testPlay
@@ -1376,6 +1433,125 @@
   enum GoMoveIsIllegalReason illegalReason;
   XCTAssertFalse([m_game isLegalMove:point isIllegalReason:&illegalReason]);
   XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSimpleKo);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Tests whether a simple ko is found when some of the stones are
+/// placed via stone setup and the first player to move is set up prior to the
+/// first move. Exercises the isLegalMove() method.
+// -----------------------------------------------------------------------------
+- (void) testSetupAndSimpleKo
+{
+  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  newGameModel.koRule = GoKoRuleSimple;
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+
+  m_game.blackSetupPoints = @[[m_game.board pointAtVertex:@"A2"],
+                              [m_game.board pointAtVertex:@"B1"]];
+  m_game.whiteSetupPoints = @[[m_game.board pointAtVertex:@"B2"],
+                              [m_game.board pointAtVertex:@"C1"]];
+  m_game.setupFirstMoveColor = GoColorWhite;
+
+  // White captures the black stone on B1
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  // Black cannot immediately capture back
+  GoPoint* point = [m_game.board pointAtVertex:@"B1"];
+  enum GoMoveIsIllegalReason illegalReason;
+  XCTAssertFalse([m_game isLegalMove:point isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSimpleKo);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Tests whether a positional ko is found when some of the stones are
+/// placed via stone setup and the first player to move is set up prior to the
+/// first move. Exercises the isLegalMove() method.
+// -----------------------------------------------------------------------------
+- (void) testSetupAndPositionalSuperko;
+{
+  NewGameModel* newGameModel = m_delegate.theNewGameModel;
+  newGameModel.koRule = GoKoRuleSuperkoPositional;
+  enum GoMoveIsIllegalReason illegalReason;
+
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [self setupAndPlayUntilAlmostPositionalSuperko];
+  GoPoint* point1 = [m_game.board pointAtVertex:@"B1"];
+  XCTAssertFalse([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSuperko);
+
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [self setupAndPlayUntilAlmostSituationalSuperko];
+  GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
+  XCTAssertFalse([m_game isLegalMove:point2 isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSuperko);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Tests whether a situational ko is found when some of the stones are
+/// placed via stone setup and the first player to move is set up prior to the
+/// first move. Exercises the isLegalMove() method.
+// -----------------------------------------------------------------------------
+- (void) testSetupAndSituationalSuperko
+{
+  NewGameModel* newGameModel = m_delegate.theNewGameModel;
+  newGameModel.koRule = GoKoRuleSuperkoSituational;
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  enum GoMoveIsIllegalReason illegalReason;
+
+  [self setupAndPlayUntilAlmostPositionalSuperko];
+  GoPoint* point1 = [m_game.board pointAtVertex:@"B1"];
+  // Positional superko does not trigger situational superko
+  XCTAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
+
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [self setupAndPlayUntilAlmostSituationalSuperko];
+  GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
+  XCTAssertFalse([m_game isLegalMove:point2 isIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSuperko);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper method of testSetupAndPositionalSuperko() and
+/// testSetupAndSituationalSuperko().
+// -----------------------------------------------------------------------------
+- (void) setupAndPlayUntilAlmostPositionalSuperko
+{
+  // This re-creates the position achieved in
+  // playUntilAlmostPositionalSuperko() - see the comments in that method
+  // for explanations.
+  m_game.blackSetupPoints = @[[m_game.board pointAtVertex:@"B1"],
+                              [m_game.board pointAtVertex:@"C2"],
+                              [m_game.board pointAtVertex:@"D1"]];
+  m_game.whiteSetupPoints = @[[m_game.board pointAtVertex:@"A2"],
+                              [m_game.board pointAtVertex:@"B2"]];
+  m_game.setupFirstMoveColor = GoColorWhite;
+  [m_game play:[m_game.board pointAtVertex:@"D2"]];
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  [m_game play:[m_game.board pointAtVertex:@"C1"]];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper method of testSetupAndPositionalSuperko() and
+/// testSetupAndSituationalSuperko().
+// -----------------------------------------------------------------------------
+- (void) setupAndPlayUntilAlmostSituationalSuperko
+{
+  // This re-creates the position achieved in
+  // playUntilAlmostSituationalSuperko() - see the comments in that method
+  // for explanations.
+  m_game.blackSetupPoints = @[[m_game.board pointAtVertex:@"B1"],
+                              [m_game.board pointAtVertex:@"C2"],
+                              [m_game.board pointAtVertex:@"D1"]];
+  m_game.whiteSetupPoints = @[[m_game.board pointAtVertex:@"A2"],
+                              [m_game.board pointAtVertex:@"B2"]];
+  m_game.setupFirstMoveColor = GoColorWhite;
+  [m_game pass];
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  [m_game play:[m_game.board pointAtVertex:@"C1"]];
 }
 
 @end

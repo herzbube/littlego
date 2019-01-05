@@ -43,6 +43,7 @@
 - (void) testBlackSetupPoints;
 - (void) testWhiteSetupPoints;
 - (void) testSetupFirstMoveColor;
+- (void) testZobristHashBeforeFirstMove;
 - (void) testPlay;
 - (void) testPass;
 - (void) testResign;
@@ -57,5 +58,8 @@
 - (void) testIssue2;
 - (void) testIssue289;
 - (void) testIssue307;
+- (void) testSetupAndSimpleKo;
+- (void) testSetupAndPositionalSuperko;
+- (void) testSetupAndSituationalSuperko;
 
 @end

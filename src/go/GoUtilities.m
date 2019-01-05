@@ -25,6 +25,7 @@
 #import "GoMove.h"
 #import "GoPoint.h"
 #import "GoVertex.h"
+#import "GoZobristTable.h"
 
 
 @implementation GoUtilities
@@ -630,6 +631,31 @@
     verticesString = [verticesString stringByAppendingString:handicapPoint.vertex.string];
   }
   return verticesString;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Recalculates all Zobrist hashes of the specified game.
+///
+/// GoZobristTable is not archived when a game is archived, instead a new
+/// GoZobristTable object with random values is created each time when a game
+/// is unarchived. Zobrist hashes created by the previous GoZobristTable object
+/// are thus invalid and must be re-calculated when a game is unarchived.
+/// This method performs the necessary re-calculations.
+///
+/// @note Because Zobrist hashes would be invalid after unarchiving, they are
+/// not even archived in the first place. This has the benefit that the archive
+/// becomes smaller.
+// -----------------------------------------------------------------------------
++ (void) recalculateZobristHashes:(GoGame*)game
+{
+  GoZobristTable* zobristTable = game.board.zobristTable;
+
+  game.zobristHashBeforeFirstMove = [zobristTable hashForBoard:game.board
+                                                   blackStones:game.blackSetupPoints
+                                                   whiteStones:game.whiteSetupPoints];
+
+  for (GoMove* move = game.firstMove; move != nil; move = move.next)
+    move.zobristHash = [zobristTable hashForMove:move inGame:game];
 }
 
 @end

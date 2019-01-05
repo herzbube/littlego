@@ -18,6 +18,7 @@
 // Project includes
 #import "GoMove.h"
 #import "GoBoard.h"
+#import "GoGame.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
 #import "GoBoardRegion.h"
@@ -231,11 +232,13 @@
 // -----------------------------------------------------------------------------
 - (void) doIt
 {
+  GoGame* game = [GoGame sharedGame];
+
   // Nothing to do for pass moves
   if (GoMoveTypePass == self.type)
   {
-    if (self.previous)
-      self.zobristHash = self.previous.zobristHash;
+    self.zobristHash = [game.board.zobristTable hashForMove:self
+                                                     inGame:game];
     return;
   }
 
@@ -305,7 +308,8 @@
     }
   }
 
-  self.zobristHash = [self.point.board.zobristTable hashForMove:self];
+  self.zobristHash = [self.point.board.zobristTable hashForMove:self
+                                                         inGame:game];
 }
 
 // -----------------------------------------------------------------------------

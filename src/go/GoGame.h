@@ -78,11 +78,12 @@
 /// @brief List of GoPoint objects with handicap stones.
 ///
 /// Setting this property causes a black stone to be set on the GoPoint objects
-/// in the specified list. Setting this property also changes the value of the
-/// @e nextMoveColor property (regardless of whether alternating play is enabled
-/// or not): If a non-empty handicap list is set, @e nextMoveColor is set to
-/// #GoColorWhite, if an empty handicap list is set, @e nextMoveColor is set to
-/// #GoColorBlack.
+/// in the specified list and the property
+/// @e zobristHashBeforeFirstMove to be recalculated. Setting this property also
+/// changes the value of the @e nextMoveColor property (regardless of whether
+/// alternating play is enabled or not): If a non-empty handicap list is set,
+/// @e nextMoveColor is set to #GoColorWhite, if an empty handicap list is set,
+/// @e nextMoveColor is set to #GoColorBlack.
 ///
 /// The setter raises @e NSInternalInconsistencyException if it is invoked when
 /// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is
@@ -165,7 +166,8 @@
 /// as part of the game setup prior to the first move.
 ///
 /// Setting this property causes a black stone to be placed on the GoPoint
-/// objects in the specified list.
+/// objects in the specified list and the property
+/// @e zobristHashBeforeFirstMove to be recalculated.
 ///
 /// The setter raises @e NSInternalInconsistencyException if it is invoked when
 /// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is
@@ -214,5 +216,9 @@
 /// in that state but already has moves. Summing it up, this property can be set
 /// only at the start of the game.
 @property(nonatomic, assign) enum GoColor setupFirstMoveColor;
+/// @brief The Zobrist hash for the board before the first move is played. Is
+/// recalculated every time one of the properties @e handicapPoints,
+/// @e blackSetupPoints and @e whiteSetupPoints changes.
+@property(nonatomic, assign) long long zobristHashBeforeFirstMove;
 
 @end

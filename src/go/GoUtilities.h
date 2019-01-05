@@ -51,5 +51,6 @@
 + (bool) isGameInResumedPlayState:(GoGame*)game;
 + (bool) shouldAllowResumePlay:(GoGame*)game;
 + (NSString*) verticesStringForPoints:(NSArray*)points;
++ (void) recalculateZobristHashes:(GoGame*)game;
 
 @end
