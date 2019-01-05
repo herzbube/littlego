@@ -219,17 +219,26 @@
       crossHairIntersection = BoardViewIntersectionNull;
   }
 
+  static int gestureRecognizerStateChangedCount = 0;
+
   BoardViewModel* boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
   UIGestureRecognizerState recognizerState = gestureRecognizer.state;
   switch (recognizerState)
   {
     case UIGestureRecognizerStateBegan:
     {
+      gestureRecognizerStateChangedCount = 0;
+      DDLogDebug(@"UIGestureRecognizerStateBegan");
+
       [LayoutManager sharedManager].shouldAutorotate = false;
       // No break, fall-through intentional!
     }
     case UIGestureRecognizerStateChanged:
     {
+      if (gestureRecognizerStateChangedCount % 200 == 0)
+        DDLogDebug(@"UIGestureRecognizerStateChanged, gestureRecognizerStateChangedCount = %d", gestureRecognizerStateChangedCount);
+      ++gestureRecognizerStateChangedCount;
+
       if (UIGestureRecognizerStateBegan == recognizerState)
       {
         boardViewModel.boardViewDisplaysCrossHair = true;
@@ -255,6 +264,8 @@
     }
     case UIGestureRecognizerStateEnded:
     {
+      DDLogDebug(@"UIGestureRecognizerStateEnded");
+
       [LayoutManager sharedManager].shouldAutorotate = true;
       boardViewModel.boardViewDisplaysCrossHair = false;
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
@@ -268,6 +279,8 @@
     // being handled, or if the gesture recognizer was disabled.
     case UIGestureRecognizerStateCancelled:
     {
+      DDLogDebug(@"UIGestureRecognizerStateCancelled");
+
       [LayoutManager sharedManager].shouldAutorotate = true;
       boardViewModel.boardViewDisplaysCrossHair = false;
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
@@ -277,6 +290,8 @@
     }
     default:
     {
+      DDLogDebug(@"handlePanFrom, unhandled recognizerState = %ld", recognizerState);
+
       break;
     }
   }
@@ -462,7 +477,11 @@
 {
   id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
   if (! magnifyingGlassOwner.magnifyingGlassEnabled)
+  {
+    DDLogDebug(@"Enabling magnifying glass for panning location, owner = %@", magnifyingGlassOwner);
+
     [magnifyingGlassOwner enableMagnifyingGlass:self];
+  }
   MagnifyingViewController* magnifyingViewController = magnifyingGlassOwner.magnifyingViewController;
   [magnifyingViewController updateMagnificationCenter:panningLocation inView:self.boardView];
 }
@@ -477,7 +496,11 @@
 {
   id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
   if (! magnifyingGlassOwner.magnifyingGlassEnabled)
+  {
+    DDLogDebug(@"Enabling magnifying glass for crosshair intersection, owner = %@", magnifyingGlassOwner);
+
     [magnifyingGlassOwner enableMagnifyingGlass:self];
+  }
   MagnifyingViewController* magnifyingViewController = magnifyingGlassOwner.magnifyingViewController;
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
   CGPoint magnificationCenter = [metrics coordinatesFromPoint:crossHairIntersection.point];
@@ -491,7 +514,11 @@
 {
   id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
   if (magnifyingGlassOwner.magnifyingGlassEnabled)
+  {
+    DDLogDebug(@"Disabling magnifying glass, owner = %@", magnifyingGlassOwner);
+
     [magnifyingGlassOwner disableMagnifyingGlass];
+  }
 }
 
 #pragma mark - MagnifyingViewControllerDelegate overrides
