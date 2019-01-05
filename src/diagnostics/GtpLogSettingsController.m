@@ -22,6 +22,7 @@
 #import "../main/ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
+#import "../utility/UIDeviceAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -112,6 +113,10 @@ enum ResetCannedCommandsSectionItem
 {
   [super viewDidLoad];
   self.navigationItem.title = @"GTP Settings";
+
+  // We set this because of TableViewSliderCell - see the class docs for details
+  if ([UIDevice systemVersionMajor] >= 9)
+    self.tableView.cellLayoutMarginsFollowReadableWidth = YES;
 }
 
 #pragma mark - UITableViewDataSource overrides

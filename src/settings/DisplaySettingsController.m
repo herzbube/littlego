@@ -22,6 +22,7 @@
 #import "../play/model/BoardViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
+#import "../utility/UIDeviceAdditions.h"
 
 // Constants
 static const float sliderValueFactorForMoveNumbersPercentage = 100.0;
@@ -116,6 +117,10 @@ enum DisplayPlayerInfluenceSectionItem
 {
   [super viewDidLoad];
   self.title = @"Display settings";
+
+  // We set this because of TableViewSliderCell - see the class docs for details
+  if ([UIDevice systemVersionMajor] >= 9)
+    self.tableView.cellLayoutMarginsFollowReadableWidth = YES;
 }
 
 #pragma mark - UITableViewDataSource overrides

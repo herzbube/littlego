@@ -19,6 +19,7 @@
 #import "SliderInputController.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
+#import "../utility/UIDeviceAdditions.h"
 
 
 @implementation SliderInputController
@@ -70,6 +71,10 @@
 {
   [super viewDidLoad];
   self.navigationItem.title = self.screenTitle;
+
+  // We set this because of TableViewSliderCell - see the class docs for details
+  if ([UIDevice systemVersionMajor] >= 9)
+    self.tableView.cellLayoutMarginsFollowReadableWidth = YES;
 }
 
 // -----------------------------------------------------------------------------

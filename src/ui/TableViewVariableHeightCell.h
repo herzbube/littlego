@@ -30,6 +30,15 @@
 ///   should match the actual height of most of the cells in the table view,
 ///   because in that case the table view has to make unexpected layout changes
 ///   only for occasional outlying cells
+/// - In iOS 9 and later, make sure that cellLayoutMarginsFollowReadableWidth
+///   is set to YES. The reason for this is that in iOS 9 and later,
+///   TableViewVariableHeightCell internally uses the cell content view's
+///   @e readableContentGuide property. If the UITableView has other cells
+///   but cellLayoutMarginsFollowReadableWidth is set to NO, then the default
+///   table view cells use different margins than TableViewVariableHeightCell.
+///   In iOS 9-11 the default for cellLayoutMarginsFollowReadableWidth is YES,
+///   in iOS 12 and later the default for cellLayoutMarginsFollowReadableWidth
+///   is NO.
 ///
 /// TableViewVariableHeightCell arranges its labels within its content view
 /// according to the following schema:

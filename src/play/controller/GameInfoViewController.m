@@ -38,6 +38,7 @@
 #import "../../ui/TableViewVariableHeightCell.h"
 #import "../../ui/UiElementMetrics.h"
 #import "../../utility/NSStringAdditions.h"
+#import "../../utility/UIDeviceAdditions.h"
 
 // Constants
 NSString* disputeResolutionRuleText_GameInfoViewController = @"Dispute resolution";
@@ -243,7 +244,12 @@ enum BoardPositionSectionItem
   [self.view addSubview:self.tableView];
   self.tableView.delegate = self;
   self.tableView.dataSource = self;
+
+  // We set this because of TableViewVariableHeightCell - see the class docs
+  // for details.
   self.tableView.estimatedRowHeight = [UiElementMetrics tableViewCellSize].height;
+  if ([UIDevice systemVersionMajor] >= 9)
+    self.tableView.cellLayoutMarginsFollowReadableWidth = YES;
 }
 
 // -----------------------------------------------------------------------------

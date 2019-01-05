@@ -23,6 +23,7 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
 #import "../ui/UiElementMetrics.h"
+#import "../utility/UIDeviceAdditions.h"
 
 // Constants
 NSString* markDeadStonesIntelligentlyText = @"Mark dead stones intelligently";
@@ -126,7 +127,12 @@ enum InconsistentTerritoryMarkupTypeSectionItem
 {
   [super viewDidLoad];
   self.title = @"Scoring settings";
+
+  // We set this because of TableViewVariableHeightCell - see the class docs
+  // for details.
   self.tableView.estimatedRowHeight = [UiElementMetrics tableViewCellSize].height;
+  if ([UIDevice systemVersionMajor] >= 9)
+    self.tableView.cellLayoutMarginsFollowReadableWidth = YES;
 }
 
 #pragma mark - UITableViewDataSource overrides
