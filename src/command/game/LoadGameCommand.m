@@ -559,7 +559,7 @@ enum ParseMoveStringResult
                                     color:&stoneColor];
     if (! success)
     {
-      NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move. The stone at intersection %@ has an invalid color. Invalid color designation: %@. Supported are 'B' for black and 'W' for white.";
+      NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move.\n\nThe stone at intersection %@ has an invalid color. Invalid color designation: %@. Supported are 'B' for black and 'W' for white.";
       NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString, colorString];
       [self handleCommandFailed:errorMessage];
       return;
@@ -576,7 +576,7 @@ enum ParseMoveStringResult
       // - NSInvalidArgumentException if vertex is malformed
       // - NSRangeException if vertex compounds are out of range
       // For our purposes, both exception types are the same.
-      NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move. The intersection %@ is invalid.";
+      NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move.\n\nThe intersection %@ is invalid.";
       NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString];
       [self handleCommandFailed:errorMessage];
       return;
@@ -587,7 +587,7 @@ enum ParseMoveStringResult
     // last setup. We perform the check anyway, to be on the safe side.
     if ([setupVertexes containsObject:point.vertex.string])
     {
-      NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move. An intersection must be set up with a stone only once, but intersection %@ is set up with a stone at least twice.";
+      NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move.\n\nAn intersection must be set up with a stone only once, but intersection %@ is set up with a stone at least twice.";
       NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString];
       [self handleCommandFailed:errorMessage];
       return;
@@ -597,7 +597,7 @@ enum ParseMoveStringResult
     if ([handicapPoints containsObject:point])
     {
       NSString* colorName = [[NSString stringWithGoColor:stoneColor] lowercaseString];
-      NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move. The intersection %@ is set up with a %@ stone although it is already occupied by a black handicap stone.";
+      NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move.\n\nThe intersection %@ is set up with a %@ stone although it is already occupied by a black handicap stone.";
       NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString, colorName];
       [self handleCommandFailed:errorMessage];
       return;
@@ -619,7 +619,7 @@ enum ParseMoveStringResult
   {
     // This can happen if the setup results in a position where a stone has
     // 0 (zero) liberties
-    NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move. %@";
+    NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move.\n\n%@";
     NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, exception.reason];
     [self handleCommandFailed:errorMessage];
     return;
