@@ -71,11 +71,6 @@
 #import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
 
-// System includes
-#include <string>
-#include <vector>
-#include <sys/stat.h>  // for mkfifo
-
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for ApplicationDelegate.

@@ -19,7 +19,7 @@
 #import "TableViewVariableHeightCell.h"
 #import "AutoLayoutUtility.h"
 #import "UIColorAdditions.h"
-#import "UIDeviceAdditions.h"
+#import "../utility/UIDeviceAdditions.h"
 
 
 // -----------------------------------------------------------------------------

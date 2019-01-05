@@ -20,9 +20,6 @@
 #import "TableViewSliderCell.h"
 #import "TableViewGridCell.h"
 #import "TableViewVariableHeightCell.h"
-#import "../ui/UiUtilities.h"
-#import "../utility/UIColorAdditions.h"
-#import "../utility/UIDeviceAdditions.h"
 
 
 @implementation TableViewCellFactory
