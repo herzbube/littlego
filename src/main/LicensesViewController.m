@@ -43,6 +43,7 @@ enum LicensesSectionItem
   LumberjackLicenseItem,
   ZipKitLicenseItem,
   CrashlyticsLicenseItem,
+  FirebaseLicenseItem,
   MaxLicensesSectionItem
 };
 
@@ -165,6 +166,10 @@ enum LicensesSectionItem
       return @"Licenses for software used by Crashlytics";
       break;
     }
+    case FirebaseLicenseItem:
+    {
+      return @"Licenses for software used by Firebase";
+    }
     default:
     {
       assert(0);
@@ -221,6 +226,10 @@ enum LicensesSectionItem
     {
       return crashlyticsLicenseDocumentResource;
       break;
+    }
+    case FirebaseLicenseItem:
+    {
+      return firebaseLicenseDocumentResource;
     }
     default:
     {

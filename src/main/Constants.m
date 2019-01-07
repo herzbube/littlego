@@ -168,6 +168,7 @@ NSString* MBProgressHUDLicenseDocumentResource = @"MBProgressHUD-license.html";
 NSString* lumberjackLicenseDocumentResource = @"Lumberjack-LICENSE.txt.html";
 NSString* zipkitLicenseDocumentResource = @"ZipKit-COPYING.TXT.html";
 NSString* crashlyticsLicenseDocumentResource = @"Crashlytics-opensource.txt.html";
+NSString* firebaseLicenseDocumentResource = @"Firebase-oss.html";
 NSString* readmeDocumentResource = @"README";
 NSString* manualDocumentResource = @"MANUAL";
 NSString* creditsDocumentResource = @"Credits.html";

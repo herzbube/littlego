@@ -33,24 +33,41 @@ framework. ZipKit was developed by Karl Moskowski and has been released under a
 BSD-style license. The original source code is available from
   https://github.com/kolpanic/ZipKit
 
-This product uses the Twitter Fabric and the Crashlytics frameworks to provide
-a crash reporting service. Twitter Fabric is copyright by Twitter, Inc.,
-Crashlytics is copyright by Crashlytics, Inc. Both frameworks are closed source.
-The header files for Twitter Fabric are released under the Apache License,
-Version 2.0. The header files for Crashlytics are released without any specific
-license information. The terms of service for both frameworks are available
-from here:
+This product uses the Crashlytics framework to provide a crash reporting
+service. Due to technical dependencies, this product is also required to
+integrate the Fabric framework and the Firebase SDK in order to use Crashlytics.
+Please note that this product makes a best effort NOT to use any other part of
+the Firebase SDK, specifically Firebase Analytics and Firebase Analytics Screen
+reporting. Fabric is copyright by Twitter, Inc. and Crashlytics is copyright by
+Crashlytics, Inc. The copyright for the Firebase SDK is not easily determined,
+but at least the "Firebase Core" part of the SDK is copyright by Google. All
+three frameworks/SDKs are closed source. The header files for Fabric and
+Firebase Core are released under the Apache License, Version 2.0. The header
+files for Crashlytics and the remaining parts of the Firebase SDK are released
+without any specific license information. The terms of service for the three
+frameworks/SDKs are available from here:
   https://fabric.io/terms
-  http://try.crashlytics.com/terms/terms-of-service.pdf
+  https://firebase.google.com/terms/crashlytics/
+  https://firebase.google.com/terms/
 
 Crashlytics makes use of numerous open source software projects. For a full list
 of attributions and licenses, please read the file
   resource/text/Crashlytics-opensource.txt
-This file was retrieved on 25 June 2016 from this URL:
+This file was retrieved on 25 June 2016 from this URL (which is now defunct):
   http://try.crashlytics.com/terms/opensource.txt
 An HTML'ized version of the text file can be viewed in-app. That version is also
 available as a file
   resource/html/Crashlytics-opensource.txt.html
+
+Firebase makes use of numerous open source software projects. For a full list of
+attributions and licenses, please read the file
+  resource/html/Firebase-oss.html
+This file can also be viewed in-app. The file is a modified version of the
+document that was retrieved on 07 January 2019 from this URL:
+  https://www.firebase.com/terms/oss.html
+The modifications consist of manually adding a preamble, as well as deleting
+all inline JavaScript parts and all references to external JavaScripts and CSS
+stylesheets from the header and footer of the document.
 
 The following icons are all from the Noun Project (http://thenounproject.com/).
 - The Main Menu button is "Menu by John Caserta"

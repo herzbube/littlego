@@ -866,6 +866,7 @@ extern NSString* MBProgressHUDLicenseDocumentResource;
 extern NSString* lumberjackLicenseDocumentResource;
 extern NSString* zipkitLicenseDocumentResource;
 extern NSString* crashlyticsLicenseDocumentResource;
+extern NSString* firebaseLicenseDocumentResource;
 extern NSString* readmeDocumentResource;
 extern NSString* manualDocumentResource;
 extern NSString* creditsDocumentResource;
