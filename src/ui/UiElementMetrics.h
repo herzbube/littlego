@@ -45,7 +45,8 @@
 + (CGFloat) horizontalSpacingSuperview;
 + (CGFloat) verticalSpacingSuperview;
 + (int) switchWidth;
-+ (CGSize) tableViewCellSize;
++ (CGSize) tableViewCellSizeForDefaultType;
++ (CGSize) tableViewCellSizeForType:(enum TableViewCellType)cellType;
 + (int) tableViewCellMarginHorizontal;
 + (int) tableViewCellContentViewWidth;
 + (int) tableViewCellContentViewHeight;
@@ -53,6 +54,8 @@
 + (int) tableViewCellContentDistanceFromEdgeHorizontal;
 + (int) tableViewCellContentDistanceFromEdgeVertical;
 + (int) tableViewCellDisclosureIndicatorWidth;
++ (CGSize) tableViewHeaderViewSizeForStyle:(UITableViewStyle)tableViewStyle;
++ (CGSize) tableViewFooterViewSizeForStyle:(UITableViewStyle)tableViewStyle;
 + (int) splitViewControllerLeftPaneWidth;
 + (CGSize) toolbarIconSize;
 

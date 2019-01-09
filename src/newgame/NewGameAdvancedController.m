@@ -206,7 +206,7 @@ enum CellID
 
   // We set this because of TableViewVariableHeightCell - see the class docs
   // for details.
-  self.tableView.estimatedRowHeight = [UiElementMetrics tableViewCellSize].height;
+  self.tableView.estimatedRowHeight = [UiElementMetrics tableViewCellSizeForDefaultType].height;
   if ([UIDevice systemVersionMajor] >= 9)
     self.tableView.cellLayoutMarginsFollowReadableWidth = YES;
 }

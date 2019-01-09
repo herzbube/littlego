@@ -19,6 +19,13 @@
 #import "UiElementMetrics.h"
 #import "../utility/UIDeviceAdditions.h"
 
+/// @brief Helper class used internally by UiElementMetrics.
+@interface OffscreenTableListViewController : UITableViewController
+{
+}
+
+@end
+
 
 @implementation UiElementMetrics
 
@@ -73,7 +80,12 @@
   return 94;
 }
 
-+ (CGSize) tableViewCellSize;
++ (CGSize) tableViewCellSizeForDefaultType
+{
+  return [UiElementMetrics tableViewCellSizeForType:DefaultCellType];
+}
+
++ (CGSize) tableViewCellSizeForType:(enum TableViewCellType)cellType
 {
   static CGSize tableViewCellSize = { 0.0f, 0.0f };
   if (CGSizeEqualToSize(tableViewCellSize, CGSizeZero))
@@ -81,7 +93,31 @@
     UITableViewCell* dummyCell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:nil] autorelease];
     tableViewCellSize = dummyCell.bounds.size;
   }
-  return tableViewCellSize;
+
+  switch (cellType)
+  {
+    case SubtitleCellType:
+      // In iOS 10 and below, cells with UITableViewCellStyleSubtitle had the
+      // same height as all other cell types. In iOS 11 this changed: Cells with
+      // UITableViewCellStyleSubtitle now have an increased height.
+      // Unfortunately the height increase can be observed only when a cell is
+      // actually rendered on screen - rendering an off-screen cell, as we do
+      // above, returns the same height for all cell types. Experimentally
+      // determined in the simulator: The height is variable! On some devices
+      // it is 57 (e.g. iPhone 6S Plus, iPhone XS Max, iPad Pro 12.9"), while
+      // on others it is 58 (e.g. iPhone 5S, iPhone 7). Instead of hardcoding
+      // one of these numbers we calculate the increased height by adding a
+      // number that we assume to be the additional top/bottom margins. This
+      // should make us less vulnerable to a change of the default cell height
+      // in the future. Also experimentally determined: The default cell height
+      // is 44.
+      if ([UIDevice systemVersionMajor] <= 10)
+        return tableViewCellSize;
+      else
+        return CGSizeMake(tableViewCellSize.width, tableViewCellSize.height + 13);
+    default:
+      return tableViewCellSize;
+  }
 }
 
 // The horizontal margin is the distance from the left or right edge of the
@@ -99,7 +135,7 @@
 /// @brief Width is for a non-indented top-level cell.
 + (int) tableViewCellContentViewWidth
 {
-  return [UiElementMetrics tableViewCellSize].width - 2 * [UiElementMetrics tableViewCellMarginHorizontal];
+  return [UiElementMetrics tableViewCellSizeForDefaultType].width - 2 * [UiElementMetrics tableViewCellMarginHorizontal];
 }
 
 // For the top cell in a grouped table view, the content view frame.origin.y
@@ -133,6 +169,60 @@
   return 20;
 }
 
++ (CGSize) tableViewHeaderViewSizeForStyle:(UITableViewStyle)tableViewStyle
+{
+  if (tableViewStyle == UITableViewStylePlain)
+  {
+    static CGSize tableViewHeaderViewSizePlain = { 0.0f, 0.0f };
+    if (CGSizeEqualToSize(tableViewHeaderViewSizePlain, CGSizeZero))
+      tableViewHeaderViewSizePlain = [UiElementMetrics tableViewHeaderFooterViewSizeForStyle:tableViewStyle forHeaderView:true];
+    return tableViewHeaderViewSizePlain;
+  }
+  else
+  {
+    static CGSize tableViewHeaderViewSizeGrouped = { 0.0f, 0.0f };
+    if (CGSizeEqualToSize(tableViewHeaderViewSizeGrouped, CGSizeZero))
+      tableViewHeaderViewSizeGrouped = [UiElementMetrics tableViewHeaderFooterViewSizeForStyle:tableViewStyle forHeaderView:true];
+    return tableViewHeaderViewSizeGrouped;
+  }
+}
+
++ (CGSize) tableViewFooterViewSizeForStyle:(UITableViewStyle)tableViewStyle
+{
+  if (tableViewStyle == UITableViewStylePlain)
+  {
+    static CGSize tableViewFooterViewSizePlain = { 0.0f, 0.0f };
+    if (CGSizeEqualToSize(tableViewFooterViewSizePlain, CGSizeZero))
+      tableViewFooterViewSizePlain = [UiElementMetrics tableViewHeaderFooterViewSizeForStyle:tableViewStyle forHeaderView:false];
+    return tableViewFooterViewSizePlain;
+  }
+  else
+  {
+    static CGSize tableViewFooterViewSizeGrouped = { 0.0f, 0.0f };
+    if (CGSizeEqualToSize(tableViewFooterViewSizeGrouped, CGSizeZero))
+      tableViewFooterViewSizeGrouped = [UiElementMetrics tableViewHeaderFooterViewSizeForStyle:tableViewStyle forHeaderView:false];
+    return tableViewFooterViewSizeGrouped;
+  }
+}
+
++ (CGSize) tableViewHeaderFooterViewSizeForStyle:(UITableViewStyle)tableViewStyle forHeaderView:(bool)headerView
+{
+  OffscreenTableListViewController* offscreenTableListViewController =
+    [[OffscreenTableListViewController alloc] initWithStyle:tableViewStyle];
+
+  UITableView* offscreenTableView = offscreenTableListViewController.tableView;
+  [offscreenTableView layoutIfNeeded];
+
+  UITableViewHeaderFooterView* headerFooterView;
+  if (headerView)
+    headerFooterView = [offscreenTableView headerViewForSection:0];
+  else
+    headerFooterView = [offscreenTableView footerViewForSection:0];
+
+  CGSize headerFooterViewSize = headerFooterView.contentView.bounds.size;
+  return headerFooterViewSize;
+}
+
 + (int) splitViewControllerLeftPaneWidth
 {
   return 320;
@@ -143,6 +233,53 @@
   // This is the size (in points) recommended by the HIG for navigation and
   // toolbar icons
   return CGSizeMake(22.0f, 22.0f);
+}
+
+@end
+
+// -----------------------------------------------------------------------------
+// Implementation of internal helper class
+// -----------------------------------------------------------------------------
+
+@implementation OffscreenTableListViewController
+
+#pragma mark - UITableViewDataSource overrides
+
+- (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
+{
+  return 1;
+}
+
+- (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
+{
+  return 1;
+}
+
+- (NSString*) tableView:(UITableView*)tableView titleForHeaderInSection:(NSInteger)section
+{
+  return @"foo";
+}
+
+- (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
+{
+  return @"foo";
+}
+
+- (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  NSString* identifier = @"foo";
+
+  UITableViewCell* cell = [tableView dequeueReusableCellWithIdentifier:identifier];
+  if (cell != nil)
+    return cell;
+
+  cell = [[[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
+                                 reuseIdentifier:identifier] autorelease];
+
+  cell.textLabel.text = @"foo";
+  cell.detailTextLabel.text = @"foo";
+
+  return cell;
 }
 
 @end

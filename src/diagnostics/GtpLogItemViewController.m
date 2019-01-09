@@ -109,7 +109,7 @@ enum ResponseStringSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-  self.tableView.estimatedRowHeight = [UiElementMetrics tableViewCellSize].height;
+  self.tableView.estimatedRowHeight = [UiElementMetrics tableViewCellSizeForDefaultType].height;
 
   self.navigationItem.title = @"GTP Log Item";
 

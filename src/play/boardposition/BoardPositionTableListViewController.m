@@ -193,11 +193,9 @@
                                    self.boardPositionListTableView, @"boardPositionListTableView",
                                    nil];
 
-  // layoutIfNeeded causes various UITableViewSource methods to be called.
-  // Notably ***NOT*** called: tableView:cellForRowAtIndexPath:(). This should
-  // not be a problem since we use standard cells with a standard height.
-  [self.currentBoardPositionTableView layoutIfNeeded];
-  CGFloat realTableViewHeight = [self.currentBoardPositionTableView contentSize].height;
+  CGFloat realTableViewHeight = ([self tableView:self.currentBoardPositionTableView heightForHeaderInSection:0] +
+                                 [self tableView:self.currentBoardPositionTableView heightForRowAtIndexPath:[NSIndexPath indexPathWithIndex:0]]);
+
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             @"H:|-0-[currentBoardPositionTableView]-0-|",
                             @"H:|-0-[boardPositionListTableView]-0-|",
@@ -657,6 +655,35 @@
   // positions.
   int newBoardPosition = (int)indexPath.row;
   [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (CGFloat)tableView:(UITableView*)tableView heightForHeaderInSection:(NSInteger)section;
+{
+  // We implement this delegate method to make sure that there are no
+  // differences between the height of self.currentBoardPositionTableView that
+  // is calculated by setupAutoLayoutConstraints() and the height that is
+  // actually rendered.
+  return [UiElementMetrics tableViewHeaderViewSizeForStyle:tableView.style].height;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (CGFloat)tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  // Since iOS 11 cells with UITableViewCellStyleSubtitle have a different
+  // height than cells of other types. In addition, the height is not the same
+  // across all devices. This makes it very difficult for
+  // setupAutoLayoutConstraints() to calculate the correct height of
+  // self.currentBoardPositionTableView. To make sure that there are no
+  // differences between the height calculated by setupAutoLayoutConstraints()
+  // and the height that is actually rendered, we implement this delegate
+  // method. Doing so forces UITableView to apply the desired height, even if
+  // the iOS default height might be different.
+  return [UiElementMetrics tableViewCellSizeForType:SubtitleCellType].height;
 }
 
 // -----------------------------------------------------------------------------
