@@ -165,7 +165,22 @@
 
   [self setupBarButtonItems];
   if ([LayoutManager sharedManager].uiType != UITypePad)
+  {
+    // In iOS 11 and later UIToolbar works with an internal content view. If we
+    // just invoke setupBoardPositionViews() without doing anything else, we
+    // add our own subviews to the toolbar, then when the toolbar is laid out
+    // its internal content view is created on top of our own subviews, making
+    // them unresponsive to touches and gestures. By invoking layoutSubviews()
+    // ***NOW*** we force the toolbar to create its internal content view
+    // ***NOW***, so that it ends up lower in the view hierarchy than our own
+    // subviews and does not interfere with their touch/gesture handling. This
+    // solution, which is very neat because it is compatible with older iOS
+    // versions, was suggested here:
+    // https://stackoverflow.com/a/46448751/1054378.
+    [self.toolbar layoutSubviews];
+
     [self setupBoardPositionViews];
+  }
 
   self.toolbarNeedsPopulation = true;
   [self delayedUpdate];
