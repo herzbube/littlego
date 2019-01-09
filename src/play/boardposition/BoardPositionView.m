@@ -326,7 +326,18 @@ static UIImage* whiteStoneImage = nil;
 {
   BoardPositionView* offscreenView = [[[BoardPositionView alloc] initOffscreenView] autorelease];
   [offscreenView layoutIfNeeded];
-  boardPositionViewSize = [offscreenView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+  CGSize offscreenViewSize = [offscreenView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+  // If values with fractions are used there is bound to be a rounding error
+  // at some stage, either when the cell sizes are passed to the collection view
+  // or when the cell sizes are used for Auto Layout constraints. For instance,
+  // an effect that was observed with fractions was this totally misleading
+  // warning output in Xcode's debug window:
+  // "The behavior of the UICollectionViewFlowLayout is not defined because
+  // the item height must be less than the height of the UICollectionView minus
+  // the section insets top and bottom values, minus the content insets top and
+  // bottom values."
+  boardPositionViewSize = CGSizeMake(ceilf(offscreenViewSize.width), ceilf(offscreenViewSize.height));
+
   // The stone image size is based on the height of one of the labels
   CGFloat stoneImageDimension = offscreenView.boardPositionLabel.intrinsicContentSize.height;
   stoneImageDimension *= 0.75;
