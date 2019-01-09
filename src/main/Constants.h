@@ -852,6 +852,35 @@ extern NSString* fabricAPIKeyResource;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Constants related to UITableViewCell
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Enumerates types of table view cells that can be created by
+/// TableViewCellFactory.
+enum TableViewCellType
+{
+  DefaultCellType,       ///< @brief Cell with style @e UITableViewCellStyleDefault
+  Value1CellType,        ///< @brief Cell with style @e UITableViewCellStyleValue1
+  Value2CellType,        ///< @brief Cell with style @e UITableViewCellStyleValue2
+  SubtitleCellType,      ///< @brief Cell with style @e UITableViewCellStyleSubtitle
+  SwitchCellType,        ///< @brief Cell with a UISwitch in the accessory view
+  SliderWithValueLabelCellType,        ///< @brief Similar to Value1CellType, but with a slider that allows to adjust the value. Displays the value label.
+  SliderWithoutValueLabelCellType,     ///< @brief ditto, but does not display the value label.
+  GridCellType,          ///< @brief Cell displays configurable number of columns; requires a delegate
+  ActivityIndicatorCellType,  ///< @brief Cell with an activity indicator in the accessory view
+  DeleteTextCellType,     ///< @brief Cell that displays a "delete" text. Style and color are similar to the delete cell in Apple's address book or calendar apps.
+  VariableHeightCellType  ///< @brief Similar to Value1CellType, but the text label uses a variable number of lines.
+};
+
+/// @brief Enumerates all possible tags for subviews in custom table view cells
+/// created by TableViewCellFactory.
+enum TableViewCellSubViewTag
+{
+  UnusedSubviewTag = 0  ///< @brief Tag 0 must not be used, it is the default tag used for all framework-created views (e.g. the cell's content view)
+};
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name Resource file names
 // -----------------------------------------------------------------------------
 //@{
