@@ -142,9 +142,6 @@ enum ViewHierarchyState
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method
 ///
-/// If the runtime is iOS 8 and later, this method is invoked instead of the
-/// deprecated willRotateToInterfaceOrientation:duration:() override below.
-///
 /// This method is invoked when the interface orientation is about to change
 /// AND the view hierarchy of this view controller is visible.
 ///
@@ -215,8 +212,6 @@ enum ViewHierarchyState
 
   // This override is called even if the the view hierarchy of this view
   // controller is not visible (e.g. buried in a navigation controller's stack).
-  // This is different from the behaviour of the pre-iOS 8 interface rotation
-  // methods (e.g. willRotateToInterfaceOrientation:duration:()).
   //
   // Because we already have the statusBarOrientationDidChange:() and
   // viewWillAppear:() combination that takes care of the interface rotation
@@ -234,33 +229,6 @@ enum ViewHierarchyState
     toInterfaceOrientation = UIInterfaceOrientationPortrait;
   else
     toInterfaceOrientation = UIInterfaceOrientationLandscapeLeft;
-  [self tearDownViewHierarchyIfNotInterfaceOrientation:toInterfaceOrientation];
-  [self performSelector:@selector(setupViewHierarchyForInterfaceOrientationAsync:) withObject:[NSNumber numberWithLong:toInterfaceOrientation] afterDelay:0];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method
-///
-/// If the runtime is iOS 7 (which we still want to support), this method is
-/// invoked instead of the viewWillTransitionToSize:withTransitionCoordinator:()
-/// override above.
-///
-/// This override does exactly the same as
-/// viewWillTransitionToSize:withTransitionCoordinator:() - see the
-/// documentation of that method for details.
-// -----------------------------------------------------------------------------
-- (void) willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
-{
-  [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
-
-  // TODO: This abort condition is here to match the implementation of
-  // viewWillTransitionToSize:withTransitionCoordinator:(). The condition is
-  // probably not necessary, though, because this override here should not be
-  // called if the view hierarchy is not visible. This still needs to be
-  // confirmed, though.
-  if (!self.view.window)
-    return;
-
   [self tearDownViewHierarchyIfNotInterfaceOrientation:toInterfaceOrientation];
   [self performSelector:@selector(setupViewHierarchyForInterfaceOrientationAsync:) withObject:[NSNumber numberWithLong:toInterfaceOrientation] afterDelay:0];
 }
