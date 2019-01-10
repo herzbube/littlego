@@ -63,16 +63,12 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  if (self.useBoardPositionToolbar)
-  {
-    self.boardPositionToolbarController = nil;
-    self.boardPositionTableListViewController = nil;
-  }
-  else
-  {
-    self.boardPositionCollectionViewController = nil;
-    self.statusViewController = nil;
-  }
+  self.boardPositionToolbarController = nil;
+  self.boardPositionTableListViewController = nil;
+
+  self.boardPositionCollectionViewController = nil;
+  self.statusViewController = nil;
+  
   [super dealloc];
 }
 

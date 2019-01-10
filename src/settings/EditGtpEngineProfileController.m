@@ -148,6 +148,7 @@ enum PlayerListSectionItem
 {
   self.delegate = nil;
   self.profile = nil;
+  self.playersUsingTheProfile = nil;
   [super dealloc];
 }
 
@@ -314,6 +315,7 @@ enum PlayerListSectionItem
         default:
         {
           assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
           break;
         }
       }
@@ -344,6 +346,7 @@ enum PlayerListSectionItem
         default:
         {
           assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
           break;
         }
       }
@@ -376,6 +379,7 @@ enum PlayerListSectionItem
         default:
         {
           assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
           break;
         }
       }
@@ -394,6 +398,7 @@ enum PlayerListSectionItem
         default:
         {
           assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
           break;
         }
       }
@@ -409,6 +414,7 @@ enum PlayerListSectionItem
     default:
     {
       assert(0);
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
       break;
     }
   }

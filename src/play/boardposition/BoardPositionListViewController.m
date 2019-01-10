@@ -77,6 +77,7 @@
 - (void) dealloc
 {
   [self removeNotificationResponders];
+  self.reuseIdentifierCell = nil;
   self.indexPathForDelayedSelectItemOperation = nil;
   [super dealloc];
 }

@@ -86,6 +86,7 @@ enum MainApplicationViewControllerType
   self.mainApplicationViewController = nil;
   self.magnifyingGlassEnabled = false;  // resets self.magnifyingViewController
   self.autoLayoutConstraints = nil;
+  self.magnifyingViewController = nil;
   [super dealloc];
 }
 

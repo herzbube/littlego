@@ -66,6 +66,7 @@
 - (void) dealloc
 {
   self.navigationItem = nil;
+  self.spacerButton = nil;
   self.navigationBar = nil;
   self.navigationBarButtonModel = nil;
   if ([GameActionManager sharedGameActionManager].uiDelegate == self)

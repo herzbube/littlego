@@ -270,6 +270,7 @@ enum BugReportSectionItem
           break;
         default:
           assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
           break;
       }
       break;
@@ -288,6 +289,7 @@ enum BugReportSectionItem
         default:
         {
           assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
           break;
         }
       }
@@ -325,6 +327,7 @@ enum BugReportSectionItem
             break;
           default:
             assert(0);
+            @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
             break;
         }
       }
@@ -333,6 +336,7 @@ enum BugReportSectionItem
     default:
     {
       assert(0);
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
       break;
     }
   }

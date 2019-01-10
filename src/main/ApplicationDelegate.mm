@@ -130,6 +130,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 - (void) dealloc
 {
   self.window = nil;
+  self.windowRootViewController = nil;
   self.documentInteractionURL = nil;
   self.gtpClient = nil;
   self.gtpEngine = nil;

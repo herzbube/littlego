@@ -90,6 +90,7 @@
 - (void) dealloc
 {
   self.diagnosticsInformationFolderPath = nil;
+  self.diagnosticsInformationFilePath = nil;
   self.registrationDomainDefaults = nil;
   [super dealloc];
 }

@@ -221,8 +221,11 @@ enum GtpEngineProfileSectionItem
           break;
         }
         default:
+        {
           assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
           break;
+        }
       }
       break;
     }
@@ -240,8 +243,11 @@ enum GtpEngineProfileSectionItem
           accessoryView.enabled = (! self.player.isPlaying);
           break;
         default:
+        {
           assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
           break;
+        }
       }
       break;
     }
@@ -266,13 +272,16 @@ enum GtpEngineProfileSectionItem
         default:
         {
           assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
           break;
         }
       }
+      break;
     }
     default:
     {
       assert(0);
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
       break;
     }
   }

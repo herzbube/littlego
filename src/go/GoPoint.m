@@ -163,6 +163,7 @@
   self.vertex = nil;
   self.board = nil;
   [_neighbours release];
+  self.region = nil;
   [super dealloc];
 }
 

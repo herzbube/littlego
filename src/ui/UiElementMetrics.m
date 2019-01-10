@@ -208,7 +208,7 @@
 + (CGSize) tableViewHeaderFooterViewSizeForStyle:(UITableViewStyle)tableViewStyle forHeaderView:(bool)headerView
 {
   OffscreenTableListViewController* offscreenTableListViewController =
-    [[OffscreenTableListViewController alloc] initWithStyle:tableViewStyle];
+    [[[OffscreenTableListViewController alloc] initWithStyle:tableViewStyle] autorelease];
 
   UITableView* offscreenTableView = offscreenTableListViewController.tableView;
   [offscreenTableView layoutIfNeeded];

@@ -183,6 +183,7 @@ enum ResetCannedCommandsSectionItem
           break;
         default:
           assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
           break;
       }
       break;
@@ -198,6 +199,7 @@ enum ResetCannedCommandsSectionItem
           break;
         default:
           assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
           break;
       }
       break;
@@ -212,13 +214,17 @@ enum ResetCannedCommandsSectionItem
           break;
         default:
           assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
           break;
       }
       break;
     }
     default:
+    {
       assert(0);
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
       break;
+    }
   }
   return cell;
 }

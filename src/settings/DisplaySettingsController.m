@@ -202,6 +202,12 @@ enum DisplayPlayerInfluenceSectionItem
           [accessoryView addTarget:self action:@selector(toggleDisplayCoordinates:) forControlEvents:UIControlEventValueChanged];
           break;
         }
+        default:
+        {
+          assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
+          break;
+        }
       }
       break;
     }
@@ -222,6 +228,12 @@ enum DisplayPlayerInfluenceSectionItem
                               * sliderValueFactorForMoveNumbersPercentage);
           break;
         }
+        default:
+        {
+          assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
+          break;
+        }
       }
       break;
     }
@@ -239,6 +251,7 @@ enum DisplayPlayerInfluenceSectionItem
     default:
     {
       assert(0);
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
       break;
     }
   }

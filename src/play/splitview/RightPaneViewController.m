@@ -82,24 +82,21 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  if (self.useNavigationBar)
-  {
-    self.navigationBarController = nil;
-  }
-  else
-  {
-    self.leftColumnView = nil;
-    self.rightColumnView = nil;
-    self.boardPositionButtonBoxController = nil;
-    self.boardPositionButtonBoxDataSource = nil;
-    self.gameActionButtonBoxController = nil;
-    self.gameActionButtonBoxDataSource = nil;
-    self.gameActionButtonBoxAutoLayoutConstraints = nil;
-    self.mainMenuButton = nil;
-  }
+  self.navigationBarController = nil;
+
+  self.leftColumnView = nil;
+  self.rightColumnView = nil;
+  self.boardPositionButtonBoxController = nil;
+  self.boardPositionButtonBoxDataSource = nil;
+  self.gameActionButtonBoxController = nil;
+  self.gameActionButtonBoxDataSource = nil;
+  self.gameActionButtonBoxAutoLayoutConstraints = nil;
+  self.mainMenuButton = nil;
+
   self.woodenBackgroundView = nil;
   self.boardViewController = nil;
   self.boardViewAutoLayoutConstraints = nil;
+  
   [super dealloc];
 }
 
