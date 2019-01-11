@@ -62,6 +62,7 @@ enum GameAttributesSectionItem
 // -----------------------------------------------------------------------------
 @interface ViewGameController()
 @property(nonatomic, retain) UIBarButtonItem* loadButton;
+@property(nonatomic, retain) UIBarButtonItem* actionButton;
 @end
 
 
@@ -93,6 +94,7 @@ enum GameAttributesSectionItem
   self.game = nil;
   self.model = nil;
   self.loadButton = nil;
+  self.actionButton = nil;
   [super dealloc];
 }
 
@@ -109,11 +111,11 @@ enum GameAttributesSectionItem
                                                       style:UIBarButtonItemStylePlain
                                                      target:self
                                                      action:@selector(loadGame)] autorelease];
-  UIBarButtonItem* actionButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                                                                                 target:self
-                                                                                 action:@selector(action:)] autorelease];
-  actionButton.style = UIBarButtonItemStylePlain;
-  self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:actionButton, self.loadButton, nil];
+  self.actionButton = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                     target:self
+                                                                     action:@selector(action:)] autorelease];
+  self.actionButton.style = UIBarButtonItemStylePlain;
+  self.navigationItem.rightBarButtonItems = [NSArray arrayWithObjects:self.actionButton, self.loadButton, nil];
   [self updateLoadButtonState];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
@@ -398,75 +400,213 @@ enum GameAttributesSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Presents a UIDocumentInteractionController
+/// @brief Presents a UIActivityViewController
 // -----------------------------------------------------------------------------
 - (void) action:(id)sender
 {
+  // We can use self because this controller conforms to the
+  // UIActivityItemSource protocol. When UIActivityViewController is presented
+  // it will start invoking UIActivityItemSource protocol methods in this
+  // controller.
+  NSArray* activityItems = @[self];
+  NSArray* applicationActivities = nil;
+  UIActivityViewController* activityViewController = [[[UIActivityViewController alloc] initWithActivityItems:activityItems
+                                                                                        applicationActivities:applicationActivities] autorelease];
+
+  NSMutableArray* excludedActivityTypes = [NSMutableArray arrayWithArray:
+                                             @[UIActivityTypeAddToReadingList,
+                                               UIActivityTypeAssignToContact,
+                                               // Apparently Facebook does not allow to
+                                               // pre-populate a message for the user
+                                               UIActivityTypePostToFacebook,
+                                               // Crazy idea: Render a Go board with
+                                               // the content of the .sgf
+                                               UIActivityTypePostToFlickr,
+                                               UIActivityTypePostToVimeo,
+                                               UIActivityTypeSaveToCameraRoll,
+                                               // Don't know what this is
+                                               UIActivityTypeOpenInIBooks]];
+  if (@available(iOS 11, *))
+  {
+    // Don't know what this is
+    [excludedActivityTypes addObject:UIActivityTypeMarkupAsPDF];
+  }
+  activityViewController.excludedActivityTypes = excludedActivityTypes;
+
+  [self presentViewController:activityViewController animated:YES completion:nil];
+
+  // As documented in the UIPopoverPresentationController class reference,
+  // we should wait with accessing the presentation controller until after we
+  // initiate the presentation, otherwise the controller may not have been
+  // created yet. Furthermore, a presentation controller is only created on
+  // the iPad, but not on the iPhone, so we check for the controller's
+  // existence before using it.
+  if (activityViewController.popoverPresentationController)
+    activityViewController.popoverPresentationController.barButtonItem = self.actionButton;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIActivityItemSource method.
+///
+/// Returns a placeholder object for the .sgf file. The object type has an
+/// effect on which activities are presented to the user. This SO answer [1]
+/// suggests that returning a placeholder object that is a plain NSObject
+/// instance is best, because placeholders that are not NSObject might cause
+/// some activities to be filtered out. However, this information seems to be
+/// incorrect - if we return an auto-released NSObject the list of activities
+/// presented to the user is empty.
+///
+// [1] https://stackoverflow.com/a/43441790/1054378
+// -----------------------------------------------------------------------------
+- (id) activityViewControllerPlaceholderItem:(UIActivityViewController*)activityViewController
+{
+  return @"SGF file";
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIActivityItemSource method.
+///
+/// Returns the .sgf file in a format that is best suited to the activity.
+///
+/// Tested activity types:
+/// - com.apple.UIKit.activity.Mail (UIActivityTypeMail) = Apple Mail
+/// - com.apple.UIKit.activity.Message (UIActivityTypeMessage) = iMessage
+/// - org.whispersystems.signal.shareextension = Signal
+/// - com.skype.skype.sharingextension = Skype
+/// - com.facebook.Messenger.ShareExtension = Facebook Messenger
+/// - com.getdropbox.Dropbox.ActionExtension = The grey "Save to Dropbox"
+///   action. This is a so-called "Action Extension".
+/// - com.getdropbox.Dropbox.DropboxShareExtension = The colored "Dropbox"
+///   activity.
+/// - com.apple.CloudDocsUI.AddToiCloudDrive = The "Save to Files" activity.
+///   This lets the user select any app that collaborates with the iCloud Drive
+///   API.
+/// - com.apple.UIKit.activity.AirDrop (UIActivityTypeAirDrop) = AirDrop
+/// - com.apple.UIKit.activity.CopyToPasteboard (UIActivityTypeCopyToPasteboard)
+///   = The grey "Copy" action
+/// - com.apple.mobilenotes.SharingExtension = "Add to Notes" activity
+/// - com.apple.UIKit.activity.PostToTwitter (UIActivityTypePostToTwitter)
+///   = Twitter
+/// - com.hammerandchisel.discord.Share = Discord
+/// - com.fogcreek.trello.trelloshare = Trello
+/// - org.mozilla.ios.Firefox.ShareTo = Firefox
+///
+/// Untested activity types known because they are in the default list:
+/// - com.apple.UIKit.activity.Print (UIActivityTypePrint)
+/// - com.apple.UIKit.activity.PostToWeibo (UIActivityTypePostToWeibo)
+///   Weibo is any chinese micro-blogging service, similar to Twitter
+/// - com.apple.UIKit.activity.TencentWeibo (UIActivityTypePostToTencentWeibo)
+///
+/// @note: If this becomes relevant in the future: The .sgf file can be shared
+/// as NSData object with this code:
+///
+/// @verbatim
+/// NSData* sgfFileData = [NSData dataWithContentsOfFile:sgfFilePath];
+/// return sgfFileData;
+/// @endverbatim
+// -----------------------------------------------------------------------------
+- (id) activityViewController:(UIActivityViewController*)activityViewController
+          itemForActivityType:(UIActivityType)activityType;
+{
   NSString* sgfFilePath = [self.model filePathForGameWithName:self.game.name];
   NSURL* sgfFileURL = [NSURL fileURLWithPath:sgfFilePath isDirectory:NO];
-  UIDocumentInteractionController* interactionController = [UIDocumentInteractionController interactionControllerWithURL:sgfFileURL];
-  interactionController.delegate = self;
-  interactionController.UTI = sgfUTI;
-  [interactionController retain];
-  // The Mail app does not appear in the "Open in..." menu if we use
-  // presentOpenInMenuFromBarButtonItem:animated:, so we use
-  // presentOptionsMenuFromBarButtonItem:animated:.
-  BOOL didPresentMenu = [interactionController presentOptionsMenuFromBarButtonItem:sender
-                                                                          animated:YES];
-  if (! didPresentMenu)
-    [interactionController autorelease];
-}
 
-// -----------------------------------------------------------------------------
-/// @brief UIDocumentInteractionControllerDelegate method.
-// -----------------------------------------------------------------------------
-- (void) documentInteractionControllerDidDismissOpenInMenu:(UIDocumentInteractionController*)controller
-{
-  [controller autorelease];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIDocumentInteractionControllerDelegate method.
-///
-/// This is deprecated in iOS 6, so it will probably go away in iOS 7. Until
-/// that happens we can still make use of it by adding an item to copy the .sgf
-/// file content to the clipboard. When this method goes away, we need to
-/// replace it with UIActivityViewController if we want to keep the "Copy"
-/// action.
-// -----------------------------------------------------------------------------
-- (BOOL) documentInteractionController:(UIDocumentInteractionController*)controller canPerformAction:(SEL)action
-{
-  if (@selector(copy:) == action)
-    return YES;
-  else
-    return NO;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIDocumentInteractionControllerDelegate method.
-///
-/// This implementation performs the "copy to pasteboard" action.
-///
-/// This is deprecated in iOS 6, so it will probably go away in iOS 7. See
-/// documentInteractionController:canPerformAction:() for some details.
-// -----------------------------------------------------------------------------
-- (BOOL) documentInteractionController:(UIDocumentInteractionController*)controller performAction:(SEL)action
-{
-  if (@selector(copy:) != action)
+  if ([activityType isEqualToString:UIActivityTypeCopyToPasteboard] ||
+      [activityType isEqualToString:UIActivityTypePostToTwitter])
   {
-    assert(0);
-    DDLogError(@"%@: Cannot perform unsupported action %@", self, NSStringFromSelector(action));
-    return NO;
-  }
+    NSStringEncoding usedEncoding;
+    NSError* error;
+    NSString* sgfFileContent = [NSString stringWithContentsOfURL:sgfFileURL
+                                                    usedEncoding:&usedEncoding
+                                                           error:&error];
 
-  NSStringEncoding usedEncoding;
-  NSError* error;
-  NSString* sgfFileContent = [NSString stringWithContentsOfURL:controller.URL
-                                                  usedEncoding:&usedEncoding
-                                                         error:&error];
-  UIPasteboard* pasteboard = [UIPasteboard generalPasteboard];
-  [pasteboard setString:sgfFileContent];
-  return YES;
+    // UIActivityTypeCopyToPasteboard
+    // >>> Copies the file content to the clipboard for later pasting in any
+    //     place that can receive text
+    // UIActivityTypePostToTwitter
+    // >>> Pre-populates the Tweet with the file content
+    return sgfFileContent;
+  }
+  else
+  {
+    // UIActivityTypeMail
+    // >>> Creates a mail attachment with the on-disk file name.
+    // UIActivityTypeMessage, Signal, Facebook Messenger, Skype
+    // >>> Creates a message attachment with the on-disk file name.
+    // com.getdropbox.Dropbox.ActionExtension
+    // >>> Lets the user select a save location. The .sgf file is saved under
+    //     the on-disk file name.
+    // com.getdropbox.Dropbox.DropboxShareExtension
+    // >>> Lets the user select a save location, write a message, and a list of
+    //     recipients that will be able to access the file. The .sgf file is
+    //     saved under the on-disk file name.
+    // com.apple.CloudDocsUI.AddToiCloudDrive
+    // >>> Lets the user select an app that collaborates with the iCloud Drive
+    //     API. The .sgf file is then saved in the file area of that app under
+    //     the on-disk file name.
+    // UIActivityTypeAirDrop
+    // >>> Sends the file to the "Download" folder on the target system
+    // com.apple.mobilenotes.SharingExtension
+    // >>> Creates an attachment to an existing or new note. The attachment has
+    //     the on-disk file name.
+    // com.hammerandchisel.discord.Share
+    // >>> Lets the user select a channel or recipient and a write a message.
+    //     The .sgf file is attached to the message.
+    // com.fogcreek.trello.trelloshare
+    // >>> Lets the user select a board and a list and write a message. A new
+    //     item is added to the list and the sgf file is attached to the item
+    //     under the on-disk file name.
+    // org.mozilla.ios.Firefox.ShareTo
+    // >>> Attempts to open a file:// URL that refers to a file in the private
+    //     sandbox of this app. Of course this does not work, but it's too much
+    //     trouble to try to disable Firefox - if we were to add Firefox to
+    //     the UIActivityController's excludedActivityTypes, the activity type
+    //     might change in the future, in addition there are probably many other
+    //     activity types that don't work either, but we have no way to disable
+    //     them.
+    // UIActivityTypePrint
+    // >>> Untested. Let's hope that the file can be printed.
+    // UIActivityTypePostToWeibo, UIActivityTypePostToTencentWeibo
+    // >>> Untested. Let's hope that, unlike Twitter, the file can be attached
+    //     to the message.
+    return sgfFileURL;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIActivityItemSource method.
+///
+/// The string returned here is used for activities that have support for a
+/// "subject". The typical example is UIActivityTypeMail.
+// -----------------------------------------------------------------------------
+- (NSString*) activityViewController:(UIActivityViewController*)activityViewController
+              subjectForActivityType:(UIActivityType)activityType
+{
+  return self.game.name;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIActivityItemSource method.
+///
+/// This is invoked several times with @a activityType set to nil while the
+/// sharing sheet is not yet shown to the user. This is called one more time
+/// if the user has selected an activity for which
+/// activityViewController:itemForActivityType:() has returned an NSData object.
+// -----------------------------------------------------------------------------
+- (NSString*) activityViewController:(UIActivityViewController*)activityViewController
+   dataTypeIdentifierForActivityType:(UIActivityType)activityType
+{
+  // This method is already invoked several times before the sharing sheet is
+  // even shown to the user. We can detect this "setup" phase because the
+  // activityType parameter is nil - obviously because the user has not yet
+  // selected an activity. It is very important that during the "setup" phase
+  // this method returns nil. If this method returns the real UTI, the resulting
+  // sharing sheet may not display some sharing options. Notably, the Dropbox
+  // activity will be missing.
+  if (activityType)
+    return sgfUTI;
+  else
+    return nil;
 }
 
 @end

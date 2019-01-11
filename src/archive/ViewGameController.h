@@ -37,7 +37,7 @@
 /// then expected to be displayed in the navigation bar of the parent
 /// navigation controller.
 // -----------------------------------------------------------------------------
-@interface ViewGameController : UITableViewController <EditTextDelegate, NewGameControllerDelegate, UIDocumentInteractionControllerDelegate>
+@interface ViewGameController : UITableViewController <EditTextDelegate, NewGameControllerDelegate, UIActivityItemSource>
 {
 }
 
