@@ -600,13 +600,13 @@ enum GameAttributesSectionItem
   // even shown to the user. We can detect this "setup" phase because the
   // activityType parameter is nil - obviously because the user has not yet
   // selected an activity. It is very important that during the "setup" phase
-  // this method returns nil. If this method returns the real UTI, the resulting
-  // sharing sheet may not display some sharing options. Notably, the Dropbox
-  // activity will be missing.
+  // this method returns an empty string. If this method returns the real UTI,
+  // the resulting sharing sheet may not display some sharing options. Notably,
+  // all Dropbox activities will be missing.
   if (activityType)
     return sgfUTI;
   else
-    return nil;
+    return @"";
 }
 
 @end
