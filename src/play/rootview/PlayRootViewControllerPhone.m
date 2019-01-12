@@ -199,7 +199,7 @@ enum ViewHierarchyState
 /// - Unfortunately the gap between teardown and setup is visible by the user
 // -----------------------------------------------------------------------------
 - (void) viewWillTransitionToSize:(CGSize)size
-                                 :(id<UIViewControllerTransitionCoordinator>)coordinator
+       withTransitionCoordinator :(id<UIViewControllerTransitionCoordinator>)coordinator
 {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
