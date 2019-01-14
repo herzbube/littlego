@@ -1,4 +1,124 @@
 --------------------------------------------------------------------------------
+Version 1.4.0 (January 13 2019)
+--------------------------------------------------------------------------------
+==========
+Known bugs
+==========
+- On iPhone Plus devices as well as on iPhone XS Max, when the user navigates
+  to the first or last board position most of the time the new current board
+  position is not displayed with a special background color as it should
+  (#326).
+
+========
+Features
+========
+
+- Added support for loading and saving .sgf files that contain stone and/or
+  player setup nodes (#323). This kind of .sgf files is frequently used for
+  sharing board positions that teach how to play best in certain game
+  situations, or that are puzzles to be solved. Notes:
+  - It was already possible to load these .sgf files before the change, but
+    Little Go would not display the stones specified by the stone setup nodes,
+    and playing after loading such an .sgf file would usually result in the
+    alert message "Your move was rejected by Fuego".
+  - Even after this change, only those .sgf files are properly handled which
+    contain setup nodes at the beginning of the file. Little Go still cannot
+    properly handle .sgf file that contain setup nodes after the first move is
+    played.
+
+========================
+Improvements and changes
+========================
+- The "New game" screen now displays a recommendation to use the area scoring
+  system.
+- The "Game info" screen now shows stone and player setup information.
+  1. asfad
+  1. asfas
+    - jjj
+- When the app is started for the first time after the update, two new
+  GTP commands "list_setup" and "list_setup_player" are added to the user's
+  list of GTP commands (Diagnostics > GTP commands).
+- The way how an archived game can be shared was re-implemented
+  (UIActivityViewController instead of the long deprecated
+  UIDocumentInteractionController). This may result in users now seeing
+  different sharing options.
+- The Changelog is now available in-app
+
+========
+Bugfixes
+========
+- When playing with area scoring, the Fuego computer player now correctly
+  includes handicap compensation in its score calculation (#319). Before this
+  fix, the Fuego computer player was calculating scores without handicap
+  compensation, which would lead to it resigning (when playing as white) even
+  though it had actually won the game. Or it might not resign (when playing
+  as black) even though it had actually lost the game. This serious bug was
+  reported by dtsudo - thanks a lot!
+- The app now synchronizes komi with Fuego when board positions are changed
+  (#324). Up until now the app never synchronized komi. This omission could
+  lead to the following problems:
+  - An .sgf file is saved with the wrong komi value in it.
+  - Fuego is likely to play wrong moves. For instance, towards the end of the
+    game Fuego might start to pass because it thinks it is winning, or it
+    might resign because it thinks it is losing. The probability of misplays
+    increases when there is a large difference in komi values.
+  These problems would occur only if the user loaded an .sgf file that
+  contained a different komi value than the last game that was started with
+  the "New game" function, and then changed board positions or discarded a
+  move.
+- A bug in the board drawing routines was fixed which caused the app to
+  occasionally crash (#308).
+
+===========
+Regressions
+===========
+- White player influence is now shown correctly with white squares (#317).
+  White player influence was erroneously shown with black squares since the
+  release of version 1.1.0. Thanks for reporting this bug go to ecru86.
+- Users that do not have automatic crash reporting enabled are now asked
+  whether they want to submit a crash report (#321). The alert that asks for
+  permission was accidentally disabled since the release of version 1.3.0.
+  Because the alert was disabled, no crash reports were submitted at all
+  unless the user had automatic crash reporting enabled.
+
+=================
+Technical changes
+=================
+- The project has been upgraded to the iOS 12.1 SDK (#314) and
+  Xcode 10.1 (#315)
+- Code signing overhaul: Code signing is now managed automatically by Xcode
+- The project is now built with Bitcode enabled (#295)
+- The project now uses libc++ (#181), the C++ standard library implementation
+  provided by the LLVM project, instead of libstdc++, the GNU project's
+  implementation.
+- Communication between Little Go and Fuego is no longer based on named pipes,
+  instead it works with a custom stream buffer that acts as an in-memory pipe
+  (#316). This change was necessary because libc++ has a bug [1] that breaks
+  the original named pipe communication channel.
+  [1] https://bugs.llvm.org/show_bug.cgi?id=23078
+- Started migration from Twitter Fabric to Google Firebase (#320). A best
+  effort has been made to disable all other Google services and to only keep
+  Crashlytics enabled. Notably, Firebase Analytics data collection has been
+  explicitly disabled! An explanatory side note: This technical change has
+  become necessary because in January 2017 Google acquired Fabric/Crashlytics
+  and, after a grace period of 1.5 years, announced in September 2018 that
+  they will discontinue Fabric in favour of the Firebase platform. It's all
+  very complicated, but the main point is that Little Go wants to continue to
+  use the excellent Crashlytics as its crash reporting service, and since that
+  now requires integration with the Firebase platform, Little Go has no choice
+  but to follow Google's lead.
+- All third party software has been upgraded to their newest versions
+  (Boost 1.69.0, CocoaPods 1.5.3, MBProgressHUD 1.1.0, Cocoa Lumberjack 3.4.2,
+  Fabric 1.6.13, Crashlytics 3.8.6)
+
+=================
+GitHub issue list
+=================
+A list of all issues closed for this release is available on GitHub:
+https://github.com/herzbube/littlego/milestone/15?closed=1
+
+
+--------------------------------------------------------------------------------
 Version 1.3.1 (January 18 2017)
 --------------------------------------------------------------------------------
 ========
