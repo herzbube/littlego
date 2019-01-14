@@ -47,12 +47,13 @@ Folder structure
  +-- Podfile             The CocoaPods configuration file.
  +-- README.md           Introduction to the project. This file is formatted in
  |                       Markdown and rendered as the front page on GitHub.
- +-- fabric.apikey       This file and the next are required for using the
- |   fabric.buildsecret  Crashlytics crash reporting service. The two files are
- |                       not under version control, you must create and populate
- |                       them yourself with information from your own
- |                       Crashlytics account. See section "Crash reporting" in
- |                       "NOTES.Diagnostics.
+ +-- fabric.apikey       This file and the next two are required for using the
+ |   fabric.buildsecret         Crashlytics crash reporting service. The two
+ |   GoogleService-Info.plist   files are not under version control, you must
+ |                              create and populate them yourself with
+ |                       information from your own Fabric/Firebase accounts.
+ |                       See section "Crash reporting" in "NOTES.Diagnostics.
+ |                       This file is required for using the Firebase servic
  +-- 3rdparty            After cloning the Little Go repository, this folder
  |                       contains some of the 3rdparty software sources as Git
  |                       submodules. After the 3rdparty software build, the
@@ -138,7 +139,7 @@ The bugtracker for the Little Go project is located on GitHub [1]. If you want
 to submit a new issue you must be a registered GitHub user (it's free and they
 won't bother you with spam!).
 
-Before version 0.9.1, all issues were tracked on my private bugtracker [2]. If
+Before version 0.9.1, all issues were tracked on a private bugtracker [2]. If
 you are really desperate about the project's history :-) you can browse the few
 but closed bugs that are still floating around there.
 

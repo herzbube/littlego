@@ -36,28 +36,6 @@ list of configurations that have worked in the past:
 - Xcode 7.3.1, iOS base SDK 9.3, available in 1.3.x
 
 
-Setting up Xcode with an older iOS base SDK
--------------------------------------------
-Note: The information in this section is out of date and probably no longer works.
-
-When Apple releases a new version of Xcode, it always bundles the application
-with a certain version of the iOS base SDK. Sometimes you want to use the new
-version of Xcode, but continue to develop with an older version of the iOS base
-SDK. These steps are an example how this can be achieved for Xcode 5.1.1 and
-iOS base SDK 6.1 (Xcode 5.1.1 comes bundled with iOS base SDK 7.1).
-
-1. Log in as a user with administrator privileges
-2. Install both Xcode 5.1.1 and 4.6.3. You will work with Xcode 5.1.1, you need
-   Xcode 4.6.3 solely as a source for the iOS 6.1 SDK.
-3. Launch Terminal.app and execute these commands (adjust paths if your Xcode
-   app bundles are named differently):
-     sudo xcode-select -s /Applications/Xcode-5.1.1.app
-     cd /Applications/Xcode-5.1.1.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs
-     sudo cp -Rp /Applications/Xcode-4.6.3.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.1.sdk .
-4. Launch Xcode 5.1.1 and install the iOS 6.1 simulator
-   (Preferences > Downloads).
-
-
 Device builds
 -------------
 If you want to create a build that runs on an actual iOS device, the following
@@ -68,20 +46,25 @@ additional requirements apply:
   account, now is the time to create one. If you're new to this then it might
   be best to take your first steps with a simple "Hello world" app instead of
   with this project.
-- The build setting PROVISIONING_PROFILE references various provisioning
-  profiles that are tied to my personal Apple developer account. You must
-  therefore update PROVISIONING_PROFILE so that it references provisioning
-  profiles that are tied to YOUR account. See the sections
-  "Build configurations" and "Code signing and provisioning profiles" below for
-  details.
-- You must create the following two files in the project's 'root folder:
+- The project is set to let Xcode automatically manage code signing. The only
+  thing you should have to do is to change the development team so that it
+  references YOUR account. See the section
+  "Code signing and provisioning profiles" below for details.
+- You must create the following files in the project's 'root folder:
     fabric.apikey
     fabric.buildsecret
-  These are required for setting up Crashlytics, the crash reporting service.
-  If you haven't got an account with Crashlytics yet, now is the time to create
-  one. Once you have your account, create an organization in the web interface,
-  then get the API key and build secret from the organization page in the web
-  interface and put those values into their respective local file.
+    GoogleService-Info.plist
+  These are required for setting up Crashlytics, the crash reporting service
+  used in this project. If you haven't got accounts with Fabric and Firebase
+  yet, now is the time to create them. Once you have your accounts, do this:
+  - In the Fabric web interface create an organization, then get the API key
+    and build secret from the organization page. Put those values into their
+    respective local file in the project's root folder.
+  - In the Firebase web interface create a project. During the project setup
+    wizard you have to enter a few pieces of information which will result
+    in a Firebase configuration file GoogleService-Info.plist being made
+    available. Download the file and place the local copy in the project's root
+    folder.
 
 
 Build configurations
@@ -111,83 +94,57 @@ must be kept in sync!
 
 Code signing and provisioning profiles
 --------------------------------------
-Please read the section "Build configurations" above for an understanding of
-the purpose of the 4 build configurations of this project. This understanding
-is crucial for how provisioning profiles are set up for this project.
+Over time the way how code signing and provisioning profiles are managed have
+changed several times for this project. Older policies can be found by looking
+at the history of this document in version control.
 
 Code signing and provisioning profiles are relevant only for device builds.
 They can be ignored for simulator builds.
 
+Provisioning style
+- The project is set to let Xcode automatically manage code signing.
+- In "Little\ Go.xcodeproj/project.pbxproj" this can be seen by searching for
+  the "ProvisioningStyle" project setting:
+    ProvisioningStyle = Automatic;
+- The "ProvisioningStyle" project setting is configured per target.
+- In the Xcode UI the setting is found on the "General" tab when you select a
+  target, not in the "Build Settings" tab where one might expect it.
+- Only the "Little Go" target is set up with automatically managed code signing.
+
+Development team
+- In addition to the "ProvisioningStyle" project setting the target is also
+  configured with a development team project setting.
+- This is the only thing that needs to be changed when a clone of the project
+  is created.
+- In "Little\ Go.xcodeproj/project.pbxproj" this can be seen by searching for
+  the "DevelopmentTeam" project setting:
+    DevelopmentTeam = P7NZKNP5L2;
+- In the Xcode UI the setting is found, again, on the "General" tab, alongside
+  the "ProvisioningStyle" setting.
+- Don't confuse this project setting with the build setting "DEVELOPMENT_TEAM".
+  The build setting must remain unset.
+
 Code signing identity
-- The identity to use for code signing is specified via the build setting
-  CODE_SIGN_IDENTITY.
-- This project does not specify a code signing identy. It sets the build setting
-  CODE_SIGN_IDENTITY = "" (an empty string) for all configurations.
-- If the code signing identity is not specified, two things can happen:
-  - If a provisioning profile is present: Xcode looks up the code signing
-    identity in the provisioning profile. The certificate used for creating the
-    provisioning profile is used as the code signing identity.
-  - If no provisioning profile is present: No code signing occurs. This is OK
-    for simulator builds, but it is a fatal build error for device builds.
-- This project does not specify a code signing identity because Xcode is meant
-  to look up the code signing in the provisioning profile.
-
-Both a development and a distribution certificate for code signing must be
-present on the machine where the build is taking place. It is best to let Xcode
-automatically handle those certificates: Go to
-  Preferences > Accounts > View Details
-where you can create new certificates or renew existing ones.
-
+- The build setting "CODE_SIGN_IDENTITY" is set to the generic code signing
+  identy named "iPhone Developer".
+- Xcode is managing public/private keypairs and the accompanying certificates
+  under this name, so as long as Xcode is allowed to automatically manage code
+  signing this build setting never needs to be changed.
+- Both a development and a distribution certificate for code signing must be
+  present on the machine where the build is taking place. As mentioned, Xcode
+  automatically manages these. You can view the certificates by going to
+    Preferences > Accounts > Manage Certificates
+  On this screen, if necessary you can create new certificates or renew
+  existing ones.
 
 Provisioning profile
-- The provisioning profile to use for a build is specified via the build
-  setting PROVISIONING_PROFILE. The value of the build setting is a UUID that
-  identifies the provisioning profile.
-- This project specifies the following provisioning profiles for the target
-  "Little Go":
-  - PROVISIONING_PROFILE = Development profile             (for configurations "Debug" and "Release")
-  - PROVISIONING_PROFILE = AdHoc distribution profile      (for configuration "Distribute_AdHoc")
-  - PROVISIONING_PROFILE = App Store distribution profile  (for configuration "Distribute_AppStore")
-  - The development provisioning profile uses a Wildcard App ID, so that it can
-    be shared with the Unit Test target
-  - The distribution provisioning profiles use the App ID ch.herzbube.littlego
-- This project specifies only one provisioning profiles for the target
-  "Unit tests":
-  - PROVISIONING_PROFILE = Development profile
-  - The provisioning profile is the same for all configurations
-  - The provisioning profile is the same one that is also used in the target
-    "Little Go". Because the target "Unit tests" has a differend bundle
-    identifier than the target "Little Go", the provisioning profile uses a
-    Wildcard App ID.
-  - This single developer provisioning profile is sufficient because unit tests
-    are never actually distributed via the AdHoc or App Store channels. If a
-    build is made for one of the "Distribute_*" configurations, all that is
-    necessary is that the "Unit tests" target builds.
-
-Provisioning profiles must be present on the machine where the build is taking
-place. It is not entirely clear how Xcode (or xcodebuild) looks up provisioning
-profiles, but one possibility is that they must be present in a certain location
-(~/Library/MobileDevice/Provisioning Profiles), another is that they are found
-via Spotlight (mdfind). As with the certificates for code signing, you can try
-to let Xcode automatically manage provisioning profiles. Again, go to
-  Preferences > Accounts > View Details
-and check the options that Xcode offers.
-
-Personally, I didn't have much luck with automatic management of provisioning
-profiles: Somehow the combination of 2 targets and 4 configurations is more than
-Xcode can handle, and it regularly botches even renewals of expired profiles.
-I am therefore using the following manual process:
-- Manually create the 3 provisioning profiles in Apple's provisioning portal
-  (https://developer.apple.com/)
-- Remove all expired provisioning profiles
-- Add the developer Apple ID account in Xcode under "Preferences > Accounts" if
-  the account is not yet present
-- Select "View details" for the account
-- Xcode now retrieves the names of all provisioning profiles that currently
-  exist on the provisioning portal
-- Click the "Download All" button to retrieve the actual profiles
-- Go to the project's build settings and select the appropriate profile for the
-  build setting PROVISIONING_PROFILE, as described further up
+- The build setting "PROVISIONING_PROFILE" can remain empty because Xcode is
+  automatically managing code signing.
+- Provisioning profiles must be present on the machine where the build is taking
+  place. It is not entirely clear how Xcode (or xcodebuild) looks up
+  provisioning profiles, but one possibility is that they must be present in a
+  certain location (~/Library/MobileDevice/Provisioning Profiles). Another is
+  that they are found via Spotlight (mdfind).
 
 
 Xcode build system configuration
@@ -212,17 +169,11 @@ Important configuration settings in Xcode (both for the "Little Go" and the
   links against a release build of Fuego. Because of this NDEBUG becomes useless
   for distinguishing between debug/release builds, so we need our own project
   specific macro, in this case named LITTLEGO_NDEBUG.
-- ENABLE_BITCODE = NO
-  The default for ENABLE_BITCODE is YES. Using YES when not all dependencies are
-  built with bitcode generates a linker error. We have to say NO because the
-  Boost and Fuego 3rdparty software builds do not (yet) produce binaries with
-  bitcode. It is not clear whether whether the binaries consumed from CocoaPods
-  contain bitcode.
 - The "Little Go" target has a "Run Script" build phase that automatically
   uploads dSYM files to Crashlytics when an App Store build is made. The
   Fabric API key and the build secret required to perform this upload are
   ***NOT*** part of the public source code - if you forked the project to
-  create your own App Store build then you must register with Crashlytics and
+  create your own App Store build then you must register a Fabric account and
   get your own API key and build secret.
 
 
@@ -248,18 +199,19 @@ Configuration settings for the "Unit tests" target
   preprocessor macro LITTLEGO_UNITTESTS. The effect is that certain #include
   statements and pieces of code are not compiled and the dependency on
   Fuego/Boost goes away.
-- Compiling ApplicationDelegate also pulls in Fabric and Crashlytics as
+- Compiling ApplicationDelegate also pulls in Firebase/Fabric and Crashlytics as
   dependencies. For the unit test target this results either in a linker error
   because of undefined symbols (if the unit test target does not link against
-  the two frameworks), or in a linker error because of duplicate symbols
-  (if the unit test target *does* link against the two frameworks; the
+  the third party frameworks), or in a linker error because of duplicate symbols
+  (if the unit test target *does* link against the third party frameworks; the
   duplication of symbols probably occurs because the unit test target links
-  against the main bundle, which already contains the Fabric and Crashlytics
+  against the main bundle, which already contains the third party framework
   symbols). Since crash reporting is not required for unit tests, the simplest
   way to work around these issues was to let the code in the main bundle that
-  works with Fabric and Crashlytics not compile when the preprocessor macro
-  LITTLEGO_UNITTESTS is defined. The dependency on Fabric and Crashlytics thus
-  goes away, in exactly the same as the dependency on Fuego/Boost.
+  works with Firebase/Fabric and Crashlytics not compile when the preprocessor
+  macro LITTLEGO_UNITTESTS is defined. The dependency on Firebase/Fabric and
+  Crashlytics thus goes away, in exactly the same as the dependency on
+  Fuego/Boost.
 
 
 Xcode schemes

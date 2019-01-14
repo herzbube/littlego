@@ -113,19 +113,25 @@
 @property(nonatomic, retain) GoPlayer* playerBlack;
 /// @brief The GoPlayer object that plays white.
 @property(nonatomic, retain) GoPlayer* playerWhite;
-/// @brief The side who will make the next move.
+/// @brief The side who will make the next move. Note that this property is tied
+/// to the CURRENT board position, which if the user is viewing an old board
+/// position is not the same as the LAST board position.
 ///
 /// The setter raises @e NSInvalidArgumentException if a color is set that is
 /// neither black nor white.
 @property(nonatomic, assign) enum GoColor nextMoveColor;
-/// @brief The player who will make the next move.
+/// @brief The player who will make the next move. Note that this property is
+/// tied to the CURRENT board position, which if the user is viewing an old
+/// board position is not the same as the LAST board position.
 @property(nonatomic, assign, readonly) GoPlayer* nextMovePlayer;
 /// @brief True if the player who makes the next move is a computer player.
 @property(nonatomic, assign, readonly) bool nextMovePlayerIsComputerPlayer;
 /// @brief Denotes whether alternating play is enabled or disabled. If
 /// alternating play is enabled, invoking play:() and pass() or modifying the
 /// content of the GoMoveModel object causes the @e nextMovePlayer and
-/// @e nextMovePlayerColor properties to change.
+/// @e nextMoveColor properties to change. If alternating play is not enabled,
+/// the mentioned properties do not change so that the same player can make
+/// several consecutive moves.
 @property(nonatomic, assign) bool alternatingPlay;
 /// @brief The model object that stores the moves of the game.
 @property(nonatomic, retain) GoMoveModel* moveModel;
@@ -141,14 +147,19 @@
 /// This is a convenience property that serves as a shortcut so that clients do
 /// not have to obtain the desired GoMove object from @e moveModel.
 @property(nonatomic, assign, readonly) GoMove* lastMove;
-/// @brief The state of the game.
+/// @brief The state of the game. Note that this property is tied to the LAST
+/// board position, not the CURRENT board position.
 @property(nonatomic, assign) enum GoGameState state;
-/// @brief The reason why the game has reached the state #GoGameStateGameHasEnded.
+/// @brief The reason why the game has reached the state
+/// #GoGameStateGameHasEnded. Is #GoGameHasEndedReasonNotYetEnded if property
+/// @e state has not the value #GoGameStateGameHasEnded.
 @property(nonatomic, assign) enum GoGameHasEndedReason reasonForGameHasEnded;
 /// @brief Returns true if the computer player is currently busy thinking about
 /// something (typically its next move).
 @property(nonatomic, assign, readonly, getter=isComputerThinking) bool computerThinks;
-/// @brief The reason why the computer is busy.
+/// @brief The reason why the computer is busy. Is
+/// #GoGameComputerIsThinkingReasonIsNotThinking if property
+/// @e isComputerThinking is not true.
 @property(nonatomic, assign) enum GoGameComputerIsThinkingReason reasonForComputerIsThinking;
 /// @brief The model object that defines defines which position of the Go board
 /// is currently described by the GoPoint and GoBoardRegion objects attached to

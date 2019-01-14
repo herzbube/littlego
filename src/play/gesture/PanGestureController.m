@@ -290,7 +290,7 @@
     }
     default:
     {
-      DDLogDebug(@"handlePanFrom, unhandled recognizerState = %ld", recognizerState);
+      DDLogDebug(@"handlePanFrom, unhandled recognizerState = %ld", (long)recognizerState);
 
       break;
     }

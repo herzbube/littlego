@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2016 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -240,7 +240,7 @@ enum AlertButtonType
   bool loggingEnabled = [ApplicationDelegate sharedDelegate].loggingModel.loggingEnabled;
   if (loggingEnabled)
   {
-    message = [message stringByAppendingString:@"\n\nWould you like to report this incident now so that we can fix the bug?"];
+    message = [message stringByAppendingString:@"\n\nWould you like to report this incident now so that we can try to find and fix the bug?"];
     alertType = AlertTypePlayMoveRejectedLoggingEnabled;
   }
   else

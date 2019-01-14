@@ -140,7 +140,7 @@ enum UIArea
   /// The user selects from that list to navigate to an actual area, the one
   /// that he selected. For instance, the "More" navigation controller of the
   /// main tab bar controller, or the menu presented by the main navigation
-  /// controller.m
+  /// controller.
   UIAreaNavigation,
   UIAreaUnknown = -1,
   UIAreaDefault = UIAreaPlay

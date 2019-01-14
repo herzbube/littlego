@@ -602,9 +602,8 @@ you selected when you started the game.
 
 Only if the game rules allow non-alternating play: Immediately after you
 resume play, the app presents you with a choice which side (black or white) is
-to play first. The default is the side which would result in alternating play.
-If you make the wrong choice, you can tap the "More game actions" button and
-select the menu item "Set &lt;side&gt; to move" to revert your
+to play first. If you make the wrong choice, you can tap the "More game actions"
+button and select the menu item "Set &lt;side&gt; to move" to revert your
 decision. This menu item disappears once the first move has been made.
 
 
@@ -1346,7 +1345,7 @@ When you tap the entry for a saved game, a screen with detail info for that game
 is displayed. You can rename the game by tapping on its name. To load the game
 tap the "Load" toolbar button. To export the game file to an external
 application (e.g. Mail, DropBox, or another Go application that can import .sgf
-files) tap the "Actions" toolbar button.
+files) tap the "Share" toolbar button.
 
 ====================
 Loading a saved game
@@ -1691,10 +1690,10 @@ you can send off the report.
 You will notice that the email has a file attached. The next section will tell
 you more about this file.
 
-Please do not send reports without a problem description, it is impossible to
-glean the nature of your problem just from the file attachment. If I am busy or
-in a nasty mood, I will simply ignore emails without an explanation of what the
-problem is.
+<strong>Please do not send reports without a problem description!</strong> It is
+impossible for me to know the nature of your problem just from the file
+attachment. Usually I will simply ignore emails that don't contain an
+explanation of what the problem is.
 
 ============================
 Diagnostics information file

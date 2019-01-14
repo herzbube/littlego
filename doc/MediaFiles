@@ -60,7 +60,7 @@ Icon files
 - To create the actual images I use either the Gimp or Inkscape. The .xcf and
   .svg files are currently not part of the project.
 
-[1] http://developer.apple.com/iphone/library/documentation/UserExperience/Conceptual/MobileHIG/IconsImages/IconsImages.html
+[1] https://developer.apple.com/design/human-interface-guidelines/ios/icons-and-images/
 
 
 stone-black.png, stone-white.png, stone-crosshair.png

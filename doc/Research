@@ -57,7 +57,7 @@ Dave Dyer's Go Program
 - Doesn't play
 
 Pachi
-- http://repo.or.cz/w/pachi.git
+- https://github.com/pasky/pachi
 - Player program and framework
 - Licensed under GPLv2
 
@@ -639,8 +639,8 @@ Copy & paste templates:
 Fuego resigning mechanics
 -------------------------
 - The resigning behaviour is modified by these two GTP commands:
-  - uct_param_player resign_min_games <xxx>
-  - uct_param_player resign_threshold <xxx>
+  - uct_param_player resign_min_games <12345>
+  - uct_param_player resign_threshold <12345>
 - resign_min_games
   - From the source code docs: "Minimum number of simulations to check for
     resign."
@@ -1637,3 +1637,74 @@ The conclusions:
 All in all it can probably be said that the application launch problem has
 been virtually eliminated, and that further time and effort for optimizing
 should therefore be spent in other areas.
+
+
+The Smart Game Format (SGF)
+---------------------------
+Overview
+- The SGF specification lives here: https://www.red-bean.com/sgf/index.html
+- The formal EBNF definition can be found here: https://www.red-bean.com/sgf/sgf4.html#2
+- The current version is SGF FF[4].
+- Discussions on a new version SGF FF [5] and on an XML format XGF that will
+  replace SGF were started in 1999 and 2002, respectively, but to date no
+  progress has been made.
+- The format is usable for all kinds of board games. Game-specific extensions
+  exist, specifically for Go.
+
+Structure
+- An SGF document consists of nodes structured in a tree.
+- A node has 1 predecessor: Its parent.
+- A node has 0-n successors: Its children.
+
+Nodes
+- A node consists of 1-n properties
+
+Move properties vs. setup properties
+- A node can contain 0-n setup properties
+- A node can contain 0-1 move properties
+- A node cannot contain both setup and move properties at the same time
+
+
+Example tree, shown in the simplified Go convention:
+
+root -- A -- B -- C
+   \          \
+   \          -- D -- E
+   -- F -- G -- H -- I
+   \
+   -- J
+
+The same example tree, shown in purely hierarchical form:
+
+root
++-- A
+|   +-- B
+|       +-- C
+|       +-- D
+|           +-- E
++-- F
++-- G
+|   +-- H
+|       +-- I
++-- J
+
+
+The same example tree, shown in annotated SGF format. The annotations use terms
+from the EBNF definition of the SGF format.
+
+game          game       game
+tree 1        tree 2     tree 3
+v             v          v
+(;FF[4]C[root](;C[a];C[b](;C[c])
+game
+tree 4
+v
+(;C[d];C[e]))
+game  game
+tree 5tree 6
+v     v
+(;C[f](;C[g];C[h];C[i])
+game
+tree 7
+v
+(;C[j])))

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -239,7 +239,7 @@ enum BugReportSectionItem
     if (self.bugReportSectionIsDisabled)
       return @"The options for reporting a bug are temporarily unavailable because the application is currently busy doing something else (e.g. computer player is thinking). If this is a computer vs. computer game, you must pause the game to be able to send a bug report.";
     else
-      return @"Sending a bug report creates an email with an attached diagnostics information file. You can edit the email before you send it. If you want to send the report from your computer, generate just the file and transfer it to your computer via iTunes file sharing.";
+      return @"Sending a bug report creates an email with an attached diagnostics information file. You can edit the email before you send it. If you want to send the report from your computer, generate just the file and transfer it to your computer via iTunes file sharing.\n\nIMPORTANT: Please do not send reports without a problem description! It is impossible for me to know the nature of your problem just from the file attachment. Usually I will simply ignore emails that don't contain an explanation of what the problem is.";
   }
   else
     return nil;

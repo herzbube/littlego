@@ -13,12 +13,13 @@ Preparation work
   matches the user's device.
 - Stop the app. This first run was just to make sure that the app bundle is
   installed in the simulator
-- Locate the app bundle folder in the Finder. For instance, on my system with
-  Xcode 4.2 and using the current 4.3 simulator the folder is located here:
-  /Users/patrick/Library/Application Support/iPhone Simulator/4.3.2/Applications/5A454C1C-1339-494A-8CDD-9DBF1FCB85D6/Little Go.app
-- Place a copy of the diagnostics information file into the
-  "Library/Application Support" folder which is located parallel to the
-  simulator app bundle
+- Locate the app bundle folder in the Finder or the Terminal app. For instance,
+  on my system with Xcode 10.1 and using the iPhone 8 (iOS 12.1) simulator the
+  folder is located here:
+  /Users/patrick/Library/Developer/CoreSimulator/Devices/9AA07496-17AE-4013-95D0-2019A6AE7555/data/Containers/Data/Application/A1D006C6-6566-4D3E-9DA9-64CFE9F0F3DC
+- Place a copy of the diagnostics information file (the .zip file) into the
+  "Library/Application Support" folder which is located below the app bundle
+  folder.
 
 Run the debug build you made earlier in the preparation phase. The following
 things will happen:
@@ -28,9 +29,9 @@ things will happen:
   that were extracted from the diagnostics information file
 - User defaults are then loaded in the usual way
 - RestoreBugReportApplicationStateCommand is executed instead of
-  RestoreGameFromSgfCommand; more stuff is extracted from the diagnostics information
-  file to bring the application back to the exact state it was in when
-  diagnostics information file was generated
+  RestoreGameFromSgfCommand; more stuff is extracted from the diagnostics
+  information file to bring the application back to the exact state it was in
+  when diagnostics information file was generated
 
 Once the application has launched you are ready to test & debug.
 

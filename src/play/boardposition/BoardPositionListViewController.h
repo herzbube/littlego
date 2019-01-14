@@ -61,7 +61,7 @@
 /// the game can be discarded).
 ///
 ///
-/// @par Current board position chanages
+/// @par Current board position changes
 ///
 /// The scroll position of the move list view is updated in response to a change
 /// of the current board position in the game's GoBoardPosition instance. The
