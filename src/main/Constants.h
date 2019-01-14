@@ -135,6 +135,7 @@ enum UIArea
   UIAreaSourceCode,
   UIAreaLicenses,
   UIAreaCredits,
+  UIAreaChangelog,
   /// @brief This is a pseudo area that refers to a list of "more UI areas".
   /// The user selects from that list to navigate to an actual area, the one
   /// that he selected. For instance, the "More" navigation controller of the
@@ -899,6 +900,7 @@ extern NSString* firebaseLicenseDocumentResource;
 extern NSString* readmeDocumentResource;
 extern NSString* manualDocumentResource;
 extern NSString* creditsDocumentResource;
+extern NSString* changelogDocumentResource;
 extern NSString* registrationDomainDefaultsResource;
 extern NSString* playStoneSoundFileResource;
 extern NSString* mainMenuIconResource;
@@ -911,6 +913,7 @@ extern NSString* uiAreaAboutIconResource;
 extern NSString* uiAreaSourceCodeIconResource;
 extern NSString* uiAreaLicensesIconResource;
 extern NSString* uiAreaCreditsIconResource;
+extern NSString* uiAreaChangelogIconResource;
 extern NSString* computerPlayButtonIconResource;
 extern NSString* passButtonIconResource;
 extern NSString* discardButtonIconResource;

@@ -18,7 +18,16 @@
 // Project includes
 #import "DocumentGenerator.h"
 
-#import <UIKit/UITableView.h>
+
+enum ListType
+{
+  ListTypeUnnumbered,
+  ListTypeNumbered,
+  ListTypeDefinition,
+};
+
+static const int unnumberedIndentationSpaces = 2;
+static const int numberedIndentationSpaces = 3;
 
 
 // -----------------------------------------------------------------------------
@@ -338,20 +347,28 @@
 // -----------------------------------------------------------------------------
 - (NSString*) parseSectionContentLines:(NSArray*)sectionContentLines
 {
-  NSCharacterSet* whitespaceCharacterSet = [NSCharacterSet whitespaceCharacterSet];
-
+  NSMutableArray* listStack = [NSMutableArray array];
+  NSError* error = nil;;
+  NSRegularExpression* emptyLineRegex = [NSRegularExpression regularExpressionWithPattern:@"^ *$"
+                                                                                  options:0
+                                                                                    error:&error];
+  NSRegularExpression* listRegex = [NSRegularExpression regularExpressionWithPattern:@"^( *)(-|1\\.) "
+                                                                             options:0
+                                                                               error:&error];
+  NSRegularExpression* indentationRegex = [NSRegularExpression regularExpressionWithPattern:@"^( *)[^ ]*"
+                                                                             options:0
+                                                                               error:&error];
   bool paragraphHasStarted = false;
-  bool listHasStarted = false;
-  bool listIsUnnumbered = true;
-  bool listItemHasStarted = false;
   bool useNextLineAsSubsectionTitle = false;
   bool ignoreNextLineIfItIsSubsectionSeparator = false;
 
   NSString* sectionContent = @"";
   for (NSString* sectionContentLine in sectionContentLines)
   {
-    sectionContentLine = [sectionContentLine stringByTrimmingCharactersInSet:whitespaceCharacterSet];
-    if (0 == sectionContentLine.length)
+    NSUInteger numberOfMatches = [emptyLineRegex numberOfMatchesInString:sectionContentLine
+                                                                 options:0
+                                                                   range:NSMakeRange(0, sectionContentLine.length)];
+    if (1 == numberOfMatches)
     {
       // An empty line closes a previously opened paragraph or list, but does
       // nothing if there is no list or paragraph open. This approach has the
@@ -359,20 +376,14 @@
       // - Multiple empty lines in a row are "collapsed" into one
       // - Empty lines at the beginning of the section are ignored
       // - Empty lines after a subsection title are ignored
-      if (paragraphHasStarted)
+      if (listStack.count > 0)
+      {
+        sectionContent = [self closeListStack:listStack inSectionContent:sectionContent];
+      }
+      else if (paragraphHasStarted)
       {
         paragraphHasStarted = false;
         sectionContent = [sectionContent stringByAppendingString:@"</p>"];
-      }
-      else if (listHasStarted)
-      {
-        listHasStarted = false;
-        listItemHasStarted = false;
-        sectionContent = [sectionContent stringByAppendingString:@"</li>"];
-        if (listIsUnnumbered)
-          sectionContent = [sectionContent stringByAppendingString:@"</ul>"];
-        else
-          sectionContent = [sectionContent stringByAppendingString:@"</ol>"];
       }
     }
     else
@@ -392,21 +403,16 @@
       {
         useNextLineAsSubsectionTitle = false;
         ignoreNextLineIfItIsSubsectionSeparator = true;
-        if (listHasStarted)
+        if (listStack.count > 0)
         {
-          listHasStarted = false;
-          listItemHasStarted = false;
-          sectionContent = [sectionContent stringByAppendingString:@"</li>"];
-          if (listIsUnnumbered)
-            sectionContent = [sectionContent stringByAppendingString:@"</ul>"];
-          else
-            sectionContent = [sectionContent stringByAppendingString:@"</ol>"];
+          sectionContent = [self closeListStack:listStack inSectionContent:sectionContent];
         }
         else if (paragraphHasStarted)
         {
           paragraphHasStarted = false;
           sectionContent = [sectionContent stringByAppendingString:@"</p>"];
         }
+
         sectionContent = [sectionContent stringByAppendingFormat:@"<p class=\"section-header\">%@</p>",
                           sectionContentLine];
       }
@@ -414,68 +420,102 @@
       {
         ignoreNextLineIfItIsSubsectionSeparator = false;
 
-        if ([sectionContentLine hasPrefix:@"- "] || [sectionContentLine hasPrefix:@"1. "])
+        NSTextCheckingResult* listRegexMatch = [listRegex firstMatchInString:sectionContentLine
+                                                                     options:0
+                                                                       range:NSMakeRange(0, sectionContentLine.length)];
+        if (listRegexMatch)
         {
           if (paragraphHasStarted)
           {
             paragraphHasStarted = false;
             sectionContent = [sectionContent stringByAppendingString:@"</p>"];
           }
-          if ([sectionContentLine hasPrefix:@"- "])
-          {
-            listIsUnnumbered = true;
-            sectionContentLine = [sectionContentLine stringByReplacingCharactersInRange:NSMakeRange(0, 2) withString:@""];
-          }
+
+          NSString* substringIndentation = [sectionContentLine substringWithRange:[listRegexMatch rangeAtIndex:1]];
+          NSInteger newListItemIndentationSpaces = substringIndentation.length;
+
+          NSString* substringItemType = [sectionContentLine substringWithRange:[listRegexMatch rangeAtIndex:2]];
+          enum ListType newListType;
+          if ([substringItemType hasPrefix:@"-"])
+            newListType = ListTypeUnnumbered;
           else
+            newListType = ListTypeNumbered;
+
+          NSInteger currentListItemIndentationSpaces = [self listItemIndentationSpacesAtTopOfListStack:listStack];
+          if (newListItemIndentationSpaces > currentListItemIndentationSpaces)
           {
-            listIsUnnumbered = false;
-            sectionContentLine = [sectionContentLine stringByReplacingCharactersInRange:NSMakeRange(0, 3) withString:@""];
-          }
-          if (! listHasStarted)
-          {
-            listHasStarted = true;
-            if (listIsUnnumbered)
+            int indentationSpaces = 0;
+            if (newListType == ListTypeUnnumbered)
+            {
               sectionContent = [sectionContent stringByAppendingString:@"<ul>"];
+              indentationSpaces = unnumberedIndentationSpaces;
+            }
             else
+            {
               sectionContent = [sectionContent stringByAppendingString:@"<ol>"];
+              indentationSpaces = numberedIndentationSpaces;
+            }
+
+            if (listStack.count > 0 && (currentListItemIndentationSpaces + indentationSpaces) != newListItemIndentationSpaces)
+            {
+              @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                             reason:@"Indendation mismatch when beginning new list"
+                                           userInfo:nil];
+            }
+
+            [listStack addObject:[NSNumber numberWithInt:newListType]];
           }
-          if (listItemHasStarted)
-            sectionContent = [sectionContent stringByAppendingString:@"</li>"];
+          else if (newListItemIndentationSpaces < currentListItemIndentationSpaces)
+          {
+            sectionContent = [self popListStack:listStack
+                 untilListItemIndentationSpaces:newListItemIndentationSpaces
+                               inSectionContent:sectionContent];
+          }
           else
-            listItemHasStarted = true;
-          sectionContent = [sectionContent stringByAppendingFormat:@"<li> %@",
-                            sectionContentLine];
+          {
+            sectionContent = [sectionContent stringByAppendingString:@"</li>"];
+          }
+
+          // Remove matched string
+          NSRange matchRange = [listRegexMatch range];
+          sectionContentLine = [sectionContentLine substringFromIndex:NSMaxRange(matchRange)];
+
+          sectionContent = [sectionContent stringByAppendingString:@"<li>"];
+          sectionContent = [sectionContent stringByAppendingString:sectionContentLine];
         }
         else
         {
-          if (listHasStarted)
+          if (listStack.count > 0)
           {
-            // do nothing if a list has started, we're just adding lines to
-            // the current list entry
+            NSTextCheckingResult* indentationRegexMatch = [indentationRegex firstMatchInString:sectionContentLine
+                                                                                       options:0
+                                                                                         range:NSMakeRange(0, sectionContentLine.length)];
+
+            // No need to check for nil - the regex matches always
+            NSString* substringIndentation = [sectionContentLine substringWithRange:[indentationRegexMatch rangeAtIndex:1]];
+            NSInteger newLineIndentationSpaces = substringIndentation.length;
+
+            sectionContent = [self popListStack:listStack
+                     untilLineIndentationSpaces:newLineIndentationSpaces
+                               inSectionContent:sectionContent];
           }
           else if (! paragraphHasStarted)
           {
             paragraphHasStarted = true;
             sectionContent = [sectionContent stringByAppendingString:@"<p class=\"section\">"];
           }
+
           sectionContent = [sectionContent stringByAppendingFormat:@" %@",
                             sectionContentLine];
         }
       }
     }
   }
-  if (listHasStarted)
-  {
-    sectionContent = [sectionContent stringByAppendingString:@"</li>"];
-    if (listIsUnnumbered)
-      sectionContent = [sectionContent stringByAppendingString:@"</ul>"];
-    else
-      sectionContent = [sectionContent stringByAppendingString:@"</ol>"];
-  }
+
+  if (listStack.count > 0)
+    sectionContent = [self closeListStack:listStack inSectionContent:sectionContent];
   else if (paragraphHasStarted)
-  {
     sectionContent = [sectionContent stringByAppendingString:@"</p>"];
-  }
 
   return [NSString stringWithFormat:@""
           "<html>"
@@ -491,6 +531,160 @@
           "%@"
           "</body>"
           "</html>", sectionContent];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Pops lists from the specified list stack, one after the other, until
+/// the list stack is empty. Does nothing if the list stack is empty.
+// -----------------------------------------------------------------------------
+- (NSString*) closeListStack:(NSMutableArray*)listStack inSectionContent:(NSString*)sectionContent
+{
+  if (listStack.count == 0)
+    return sectionContent;
+
+  while (listStack.count > 0)
+    sectionContent = [self popListStack:listStack inSectionContent:sectionContent];
+
+  return sectionContent;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Pops the list at the top of the specified list stack.
+// -----------------------------------------------------------------------------
+- (NSString*) popListStack:(NSMutableArray*)listStack inSectionContent:(NSString*)sectionContent
+{
+  sectionContent = [sectionContent stringByAppendingString:@"</li>"];
+
+  NSNumber* listTypeAsNumber = [listStack lastObject];
+  enum ListType listType = listTypeAsNumber.intValue;
+
+  if (listType == ListTypeUnnumbered)
+    sectionContent = [sectionContent stringByAppendingString:@"</ul>"];
+  else
+    sectionContent = [sectionContent stringByAppendingString:@"</ol>"];
+
+  [listStack removeLastObject];
+
+  return sectionContent;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Pops lists from the specified list stack, one after the other, until
+/// the list stack has reached the nesting level required for a line with the
+/// specified number of indentation spaces. Does nothing If the list stack
+/// is already at the required level.
+///
+/// Raises an @e NSInternalInconsistencyException if the list stack's nesting
+/// level is currently below the required level.
+// -----------------------------------------------------------------------------
+- (NSString*) popListStack:(NSMutableArray*)listStack
+untilLineIndentationSpaces:(NSInteger)indentationSpaces
+          inSectionContent:(NSString*)sectionContent
+{
+  while (true)
+  {
+    NSInteger lineIndentationSpacesAtTopOfListStack = [self lineIndentationSpacesAtTopOfListStack:listStack];
+    if (indentationSpaces == lineIndentationSpacesAtTopOfListStack)
+    {
+      break;
+    }
+    else if (indentationSpaces > lineIndentationSpacesAtTopOfListStack)
+    {
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:@"Indendation mismatch"
+                                   userInfo:nil];
+    }
+
+    sectionContent = [self popListStack:listStack inSectionContent:sectionContent];
+  }
+
+  return sectionContent;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Pops lists from the specified list stack, one after the other, until
+/// the list stack has reached the nesting level required for a list item with
+/// the specified number of indentation spaces. Does nothing If the list stack
+/// is already at the required level.
+///
+/// Raises an @e NSInternalInconsistencyException if the list stack's nesting
+/// level is currently below the required level.
+// -----------------------------------------------------------------------------
+- (NSString*) popListStack:(NSMutableArray*)listStack
+untilListItemIndentationSpaces:(NSInteger)indentationSpaces
+          inSectionContent:(NSString*)sectionContent
+{
+  while (true)
+  {
+    NSInteger listItemIndentationSpacesAtTopOfListStack = [self listItemIndentationSpacesAtTopOfListStack:listStack];
+    if (indentationSpaces == listItemIndentationSpacesAtTopOfListStack)
+    {
+      break;
+    }
+    else if (indentationSpaces > listItemIndentationSpacesAtTopOfListStack)
+    {
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:@"Indendation mismatch"
+                                   userInfo:nil];
+    }
+
+    sectionContent = [self popListStack:listStack inSectionContent:sectionContent];
+  }
+
+  return sectionContent;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the number of indentation spaces needed for a line that
+/// belongs to a list item that in turn belongs to the list currently at the
+/// top of the specified list stack. Returns -1 if the list stack is empty.
+// -----------------------------------------------------------------------------
+- (NSInteger) lineIndentationSpacesAtTopOfListStack:(NSArray*)listStack
+{
+  if (listStack.count == 0)
+    return -1;
+
+  NSInteger indentationSpacesForLineAtTopOfListStack = 0;
+
+  for (NSNumber* listTypeAsNumber in listStack)
+  {
+    enum ListType listType = listTypeAsNumber.intValue;
+
+    if (listType == ListTypeUnnumbered)
+      indentationSpacesForLineAtTopOfListStack += unnumberedIndentationSpaces;
+    else
+      indentationSpacesForLineAtTopOfListStack += numberedIndentationSpaces;
+  }
+
+  return indentationSpacesForLineAtTopOfListStack;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the number of indentation spaces needed for a list item that
+/// belongs to the list currently at the top of the specified list stack.
+/// Returns -1 if the list stack is empty.
+// -----------------------------------------------------------------------------
+- (NSInteger) listItemIndentationSpacesAtTopOfListStack:(NSArray*)listStack
+{
+  if (listStack.count == 0)
+    return -1;
+
+  NSInteger listItemIndentationSpacesAtTopOfListStack = 0;
+
+  int indentationSpacesOfPreviousList = 0;
+  for (NSNumber* listTypeAsNumber in listStack)
+  {
+    listItemIndentationSpacesAtTopOfListStack += indentationSpacesOfPreviousList;
+
+    enum ListType listType = listTypeAsNumber.intValue;
+
+    if (listType == ListTypeUnnumbered)
+      indentationSpacesOfPreviousList = unnumberedIndentationSpaces;
+    else
+      indentationSpacesOfPreviousList = numberedIndentationSpaces;
+  }
+
+  return listItemIndentationSpacesAtTopOfListStack;
 }
 
 @end

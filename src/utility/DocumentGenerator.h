@@ -60,6 +60,7 @@
 ///   - The list is terminated by an empty line, or a line that contains only
 ///     whitespace
 ///   - Ditto for numbered lists, but the line must start with "1. "
+///   - Lists can be arbitrarily nested.
 /// - URLs (e.g. http://) are used to create anchor HTML elements
 // -----------------------------------------------------------------------------
 @interface DocumentGenerator : NSObject

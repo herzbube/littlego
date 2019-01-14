@@ -72,6 +72,7 @@
   [self createTabControllerForUIArea:UIAreaSourceCode tabControllers:tabControllers];
   [self createTabControllerForUIArea:UIAreaLicenses tabControllers:tabControllers];
   [self createTabControllerForUIArea:UIAreaCredits tabControllers:tabControllers];
+  [self createTabControllerForUIArea:UIAreaChangelog tabControllers:tabControllers];
 
   self.viewControllers = tabControllers;
 }

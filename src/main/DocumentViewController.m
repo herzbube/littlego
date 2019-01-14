@@ -126,11 +126,22 @@
     switch (uiArea)
     {
       case UIAreaAbout:
+      {
         [self showAboutDocument:resourceContent];
         break;
+      }
+      case UIAreaChangelog:
+      {
+        NSString* resourceContentAsHtmlString =
+          [NSString stringWithFormat:@"<html><body><pre>%@</pre></body></html>", resourceContent];;
+        [self.webView loadHTMLString:resourceContentAsHtmlString baseURL:nil];
+        break;
+      }
       default:
+      {
         [self.webView loadHTMLString:resourceContent baseURL:nil];
         break;
+      }
     }
   }
 }

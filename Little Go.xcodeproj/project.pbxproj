@@ -423,6 +423,11 @@
 		CDBFCBBD16C3ED01001D78C0 /* SetupApplicationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */; };
 		CDBFCBBE16C3EFB0001D78C0 /* SetupApplicationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */; };
 		CDC66BB821E3D383006C73B3 /* Firebase-oss.html in Resources */ = {isa = PBXBuildFile; fileRef = CDC66BB721E3D383006C73B3 /* Firebase-oss.html */; };
+		CDC66BC021EBB052006C73B3 /* changelog@2.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC66BBC21EBB051006C73B3 /* changelog@2.png */; };
+		CDC66BC121EBB052006C73B3 /* changelog@3.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC66BBD21EBB051006C73B3 /* changelog@3.png */; };
+		CDC66BC221EBB052006C73B3 /* noun_Changelog_365219.svg in Resources */ = {isa = PBXBuildFile; fileRef = CDC66BBE21EBB051006C73B3 /* noun_Changelog_365219.svg */; };
+		CDC66BC321EBB052006C73B3 /* changelog.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC66BBF21EBB052006C73B3 /* changelog.png */; };
+		CDC66BC421EBB273006C73B3 /* ChangeLog in Resources */ = {isa = PBXBuildFile; fileRef = CDEC287C12F477E70069F5B7 /* ChangeLog */; };
 		CDC97A8A182EEB5F00755EB2 /* GoZobristTable.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */; };
 		CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */; };
 		CDC97A8E18301CC100755EB2 /* GoGameRules.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC97A8D18301CC100755EB2 /* GoGameRules.m */; };
@@ -981,6 +986,10 @@
 		CDBFCBBB16C3ED00001D78C0 /* SetupApplicationCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupApplicationCommand.h; sourceTree = "<group>"; };
 		CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetupApplicationCommand.m; sourceTree = "<group>"; };
 		CDC66BB721E3D383006C73B3 /* Firebase-oss.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Firebase-oss.html"; sourceTree = "<group>"; };
+		CDC66BBC21EBB051006C73B3 /* changelog@2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "changelog@2.png"; path = "resource/icon/changelog/changelog@2.png"; sourceTree = SOURCE_ROOT; };
+		CDC66BBD21EBB051006C73B3 /* changelog@3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "changelog@3.png"; path = "resource/icon/changelog/changelog@3.png"; sourceTree = SOURCE_ROOT; };
+		CDC66BBE21EBB051006C73B3 /* noun_Changelog_365219.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = noun_Changelog_365219.svg; path = resource/icon/changelog/noun_Changelog_365219.svg; sourceTree = SOURCE_ROOT; };
+		CDC66BBF21EBB052006C73B3 /* changelog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = changelog.png; path = resource/icon/changelog/changelog.png; sourceTree = SOURCE_ROOT; };
 		CDC97A88182EEB5F00755EB2 /* GoZobristTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoZobristTable.h; sourceTree = "<group>"; };
 		CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GoZobristTable.mm; sourceTree = "<group>"; };
 		CDC97A8C18301CC000755EB2 /* GoGameRules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameRules.h; sourceTree = "<group>"; };
@@ -1954,6 +1963,18 @@
 			path = storyboard;
 			sourceTree = "<group>";
 		};
+		CDC66BBB21EBB029006C73B3 /* changelog */ = {
+			isa = PBXGroup;
+			children = (
+				CDC66BBF21EBB052006C73B3 /* changelog.png */,
+				CDC66BBC21EBB051006C73B3 /* changelog@2.png */,
+				CDC66BBD21EBB051006C73B3 /* changelog@3.png */,
+				CDC66BBE21EBB051006C73B3 /* noun_Changelog_365219.svg */,
+			);
+			name = changelog;
+			path = "New Group";
+			sourceTree = "<group>";
+		};
 		CDD48C80141034F000188B6A /* archive */ = {
 			isa = PBXGroup;
 			children = (
@@ -2021,6 +2042,7 @@
 			children = (
 				CD968AE41B026E2300984AEE /* about */,
 				CD968AE91B026E2300984AEE /* archive */,
+				CDC66BBB21EBB029006C73B3 /* changelog */,
 				CD968AEE1B026E2300984AEE /* computer-play */,
 				CD968AF51B026E2300984AEE /* continue */,
 				CD968AFA1B026E2300984AEE /* credits */,
@@ -2424,6 +2446,7 @@
 				CD00A34E1487F9CF004E1A0C /* MANUAL in Resources */,
 				CD968BBE1B026E2300984AEE /* settings.png in Resources */,
 				CD968B821B026E2300984AEE /* computer-vs-computer@2x.png in Resources */,
+				CDC66BC021EBB052006C73B3 /* changelog@2.png in Resources */,
 				CDE1A16214C1CED200317ECA /* About.html in Resources */,
 				CDE1A16314C1CED200317ECA /* BoostSoftwareLicense.html in Resources */,
 				CDE1A16414C1CED200317ECA /* COPYING.html in Resources */,
@@ -2443,6 +2466,8 @@
 				CDE1A16614C1CED200317ECA /* Credits.html in Resources */,
 				CD968B671B026E2300984AEE /* computer-play.png in Resources */,
 				CD968BC31B026E2300984AEE /* source-code@2x.png in Resources */,
+				CDC66BC121EBB052006C73B3 /* changelog@3.png in Resources */,
+				CDC66BC321EBB052006C73B3 /* changelog.png in Resources */,
 				CD968B661B026E2300984AEE /* noun_26076_cc.svg in Resources */,
 				CD968B7F1B026E2300984AEE /* game-info@3x.png in Resources */,
 				CD968BA11B026E2300984AEE /* more-game-actions@3x.png in Resources */,
@@ -2482,6 +2507,7 @@
 				CD968B641B026E2300984AEE /* archive@2x.png in Resources */,
 				CD968B6C1B026E2300984AEE /* noun_2873_cc.svg in Resources */,
 				CD968B8A1B026E2300984AEE /* human-vs-human@3x.png in Resources */,
+				CDC66BC421EBB273006C73B3 /* ChangeLog in Resources */,
 				CD968B9D1B026E2300984AEE /* main-menu@3x.png in Resources */,
 				CD968BA31B026E2300984AEE /* back.png in Resources */,
 				CD968B931B026E2300984AEE /* interrupt.png in Resources */,
@@ -2526,6 +2552,7 @@
 				CD968B8D1B026E2300984AEE /* gogrid2x2.svg in Resources */,
 				CD968BA61B026E2300984AEE /* forward.png in Resources */,
 				CD968BBD1B026E2300984AEE /* noun_31893_cc.svg in Resources */,
+				CDC66BC221EBB052006C73B3 /* noun_Changelog_365219.svg in Resources */,
 				CD968AE11B026DD200984AEE /* stone-crosshair.png in Resources */,
 				CD968BB91B026E2300984AEE /* noun_8926_cc.svg in Resources */,
 				CD968AE01B026DD200984AEE /* stone-black.png in Resources */,

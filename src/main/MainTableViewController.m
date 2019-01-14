@@ -37,6 +37,7 @@ enum MainTableViewItem
   MainTableViewItemSourceCode,
   MainTableViewItemLicenses,
   MainTableViewItemCredits,
+  MainTableViewItemChangelog,
   MaxMainTableViewItem
 };
 
@@ -142,6 +143,8 @@ enum MainTableViewItem
       return UIAreaLicenses;
     case MainTableViewItemCredits:
       return UIAreaCredits;
+    case MainTableViewItemChangelog:
+      return UIAreaChangelog;
     default:
     {
       NSString* errorMessage = [NSString stringWithFormat:@"Invalid table row %ld", (long)tableRow];

@@ -61,6 +61,8 @@
       return @"Licenses";
     case UIAreaCredits:
       return @"Credits";
+    case UIAreaChangelog:
+      return @"Changelog";
     case UIAreaNavigation:
       return @"Main Menu";
     default:
@@ -94,6 +96,8 @@
       return uiAreaLicensesIconResource;
     case UIAreaCredits:
       return uiAreaCreditsIconResource;
+    case UIAreaChangelog:
+      return uiAreaChangelogIconResource;
     default:
       return nil;
   }
@@ -134,6 +138,9 @@
       break;
     case UIAreaCredits:
       rootViewController = [[[DocumentViewController alloc] init] autorelease];
+      break;
+    case UIAreaChangelog:
+      rootViewController = [[[SectionedDocumentViewController alloc] init] autorelease];
       break;
     default:
       return nil;
@@ -184,6 +191,9 @@
       break;
     case UIAreaCredits:
       resourceName = creditsDocumentResource;
+      break;
+    case UIAreaChangelog:
+      resourceName = changelogDocumentResource;
       break;
     default:
       break;

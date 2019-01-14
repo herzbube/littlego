@@ -1,786 +1,1028 @@
-January 18 2017   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 1.3.1
-- Features
-  - None
-- Bugfixes
-  - Another ko detection problem when viewing an old board position is now
-    fixed (#307). This was the root cause for the dreaded alert message
-    "Your move was rejected by Fuego", which must have popped up on quite a few
-    people's devices, but which I had never been able to reproduce despite the
-    bug reports that were kindly sent to me by some of the most patient users.
-    Yesterday, however, I received a report that finally gave me a reproducible
-    case which allowed me to pinpoint and fix the coding error. Many thanks to
-    everybody who sent bug reports, but especially to Manuel Braun for
-    submitting the crucial last bug report.
-- Regressions
-  - None
-- Technical changes
-  - None
-- A list of all issues closed for this release is available on GitHub:
-  https://github.com/herzbube/littlego/milestone/14?closed=1
+--------------------------------------------------------------------------------
+Version 1.3.1 (January 18 2017)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- None
+
+========
+Bugfixes
+========
+- Another ko detection problem when viewing an old board position is now
+  fixed (#307). This was the root cause for the dreaded alert message
+  "Your move was rejected by Fuego", which must have popped up on quite a few
+  people's devices, but which I had never been able to reproduce despite the
+  bug reports that were kindly sent to me by some of the most patient users.
+  Yesterday, however, I received a report that finally gave me a reproducible
+  case which allowed me to pinpoint and fix the coding error. Many thanks to
+  everybody who sent bug reports, but especially to Manuel Braun for
+  submitting the crucial last bug report.
+
+===========
+Regressions
+===========
+- None
+
+=================
+Technical changes
+=================
+- None
+
+=================
+GitHub issue list
+=================
+A list of all issues closed for this release is available on GitHub:
+https://github.com/herzbube/littlego/milestone/14?closed=1
 
 
-September 12 2016   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 1.3.0
-- Features
-  - iPad Pro is now supported with its native screen resolution (#297)
-- Improvements and changes
-  - When the game is resumed to settle a life & death dispute, a "Resume Play"
-    alert is displayed if the game rules allow resumption with non-alternating
-    play. Previously the alert buttons were sometimes displayed in the order
-    Black/White and someteimes in the order White/Black, depending on whose
-    player's turn it was. Now the alert buttons are always displayed in the
-    order Black/White (#300)
-- Bugfixes
-  - Ko detection now works correctly if an old board position is viewed (#289).
-    Many thanks to Denis Martynov for bringing this to my attention. I promised
-    to release the bugfix "as soon as possible, probably next weekend". This was
-    in June 2015 - over a year ago :-(
-  - The status view now displays the correct text after the user discards all
-    moves at the beginning of a game (#301)
-  - iPhone n Plus devices: The "Game Info" and "More Game Actions" buttons are
-    now correctly enabled after rotating the device to landscape (#299)
-- Regressions
-  - None
-- Technical changes
-  - The project has been upgraded to the iOS 9.3 SDK (#298) and Xcode 7.3.1
-  - Support for iOS 7 has been dropped, the minimum required version is now iOS
-    8.1 (#260). The only device that is no longer supported is the iPhone 4.
-  - The project now uses CocoaPods for most 3rdparty libraries (#291)
-  - The 3rd party crash reporting library QuincyKit was replaced by a new
-    library called Crashlytics (#293)
-- A list of all issues closed for this release is available on GitHub:
-  https://github.com/herzbube/littlego/issues?q=milestone%3A1.3.0+is%3Aclosed
+--------------------------------------------------------------------------------
+Version 1.3.0 (September 12 2016)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- iPad Pro is now supported with its native screen resolution (#297)
+
+========================
+Improvements and changes
+========================
+- When the game is resumed to settle a life & death dispute, a "Resume Play"
+  alert is displayed if the game rules allow resumption with non-alternating
+  play. Previously the alert buttons were sometimes displayed in the order
+  Black/White and someteimes in the order White/Black, depending on whose
+  player's turn it was. Now the alert buttons are always displayed in the
+  order Black/White (#300)
+
+========
+Bugfixes
+========
+- Ko detection now works correctly if an old board position is viewed (#289).
+  Many thanks to Denis Martynov for bringing this to my attention. I promised
+  to release the bugfix "as soon as possible, probably next weekend". This was
+  in June 2015 - over a year ago :-(
+- The status view now displays the correct text after the user discards all
+  moves at the beginning of a game (#301)
+- iPhone n Plus devices: The "Game Info" and "More Game Actions" buttons are
+  now correctly enabled after rotating the device to landscape (#299)
+
+===========
+Regressions
+===========
+- None
+
+=================
+Technical changes
+=================
+- The project has been upgraded to the iOS 9.3 SDK (#298) and Xcode 7.3.1
+- Support for iOS 7 has been dropped, the minimum required version is now iOS
+  8.1 (#260). The only device that is no longer supported is the iPhone 4.
+- The project now uses CocoaPods for most 3rdparty libraries (#291)
+- The 3rd party crash reporting library QuincyKit was replaced by a new
+  library called Crashlytics (#293)
+
+=================
+GitHub issue list
+=================
+A list of all issues closed for this release is available on GitHub:
+https://github.com/herzbube/littlego/issues?q=milestone%3A1.3.0+is%3Aclosed
 
 
-June 12 2015   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 1.2.0
-- Features
-  - iPhone 6/6+ are now supported with their native screen resolution (#263)
-  - iPhone 6+ has a redesigned user interface that makes better use of the
-    available screen estate (#253). iPhone 6+ also supports holding the device
-    in landscape.
-  - When starting a new game, it is now possible to select from several
-    predefined rulesets, which allows setting many game rules at once with a
-    single tap (#274). This makes the "New game" screen less cluttered and more
-    user friendly. Rule enthusiasts can still adjust each individual game rule
-    by calling up an "Advanced settings" screen.
-  - Gameplay mechanics at the end of the game have been significantly revised:
-    - It is now generally possible to resume play after two pass moves without
-      having to discard ("undo") the second pass move
-    - 3 new game rules were added that govern gameplay mechanics at the end of
-      the game. These rules allow to play games under AGA or IGS rules
-      (#221, #223), but also under Japanese and Chinese rules where
-      non-alternating play is possible to resume a game after it has ended after
-      two pass moves (#275).
-  - As a consequence of these new gameplay mechanics at the end of the game, a
-    much wider array of .sgf files can now be loaded from the archive, provided
-    that the user selects the appropriate rules for the game that is in the .sgf
-    file.
-    - Files that contain more than two pass moves at the end of the game. This
-      is especially useful to load games that were played on IGS (Pandanet),
-      where games end with 3 instead of 2 pass moves.
-    - Files that resume play after two pass moves. Again, this is useful for
-      loading files from IGS (Pandanet), but also for files that contain games
-      played under any ruleset that allows play to be resumed after two pass
-      moves.
-    - Files that contain non-alternating play (e.g. two moves in a row by
-      black). This is useful to load files that contain game problems where
-      theoretical board situations are set up by non-alternating play. Also,
-      games can now be loaded that were played under rulesets (e.g. Chinese,
-      Japanese) that allow play to be resumed after two pass moves by
-      non-alternating play.
-  - Special thanks go to Norbert Langermann and his innocent suggestion to add
-    support for loading .sgf files with games that were played on IGS. This was
-    the trigger for adding the new end-of-game gameplay mechanics.
-  - One more thing: When placing a stone a magnifying glass is now displayed
-    that shows the area of the board that currently under the user's 'fingertip
-    (#271). This feature replaces the old "stone distance from fingertip"
-    feature, which confused and was hated by many users.
-- Improvements and changes
-  - Disable Fuego pondering in human vs. human games (#281). This saves *a lot*
-    of otherwise wasted battery power. Thanks to Ben Jackson for the suggestion.
-    Unfortunately, a nasty piece of code was required to upgrade existing user
-    preferences, which may result in unnecessary player and profile backup
-    copies cluttering the upgraded preferences. Users will get an alert if this
-    happens so that they can clean up their preferences.
-  - When a game cannot be loaded from the archive because it has moves after
-    the game has ended, the error message displayed to the user should now be
-    less cryptic (#277)
-  - When the game has ended, the "Scoring" menu item is now shown as a button
-    so that the user can quickly switch between scoring mode and play mode
-    without first having to call up the "More game actions" menu (#268)
-  - A couple of buttons have gotten new icons (#269). Thanks to David Helfand
-    for the suggestion.
-  - The status view now always shows the status for the current and the next
-    board position (#265). Up until now the status view only showed when a
-    player had passed, and never showed any information about the next board
-    position.
-- Bugfixes
-  - The app now correctly synchronizes handicap stones with Fuego when board
-    positions are changed (#279). This is the most important bugfix of this
-    release because it fixes another source for the infamous
-    "The computer played an illegal move" and "Your move was rejected by Fuego"
-    alerts. Many thanks to Laurent Guanzini for providing step-by-step
-    instructions that helped me with diagnosing the problem!
-  - The app no longer crashes when a game is loaded from the archive that
-    contains a board that is larger than 19x19 (#283). The game still cannot be
-    loaded, but an error message is displayed instead of crashing.
-  - The app no longer crashes when the last game in the archive is deleted
-    (#286)
-  - It is now possible to place a stone when viewing an old board position, even
-    if the game has already ended (#278). It is thus possible to resume play at
-    an earlier board position than the last.
-  - The user interface no longer rotates while a stone is being placed (#272)
-  - The status view now correctly displays "<color> passed" when a computer vs.
-    computer game is paused (#266)
-  - If the user attempts to make an illegal move, the status view now displays
-    the intersection of the move (#261)
-  - The device statusbar at the top of the screen no longer disappears when
-    some screens are displayed (#256)
-  - iPad only: The board is now rotated correctly even if it is not visible at
-    the time that the device orientation changes (#255)
-  - A number of other bugs were fixed that may have caused crashes (#192, #284)
-  - Other minor bugfixes (#209, #257, #258, #262, #273)
-- Regressions
-  - None
-- Technical changes
-  - The project has been upgraded to the iOS 8.1 SDK (#248) and Xcode 6.1.1
-  - 64-bit support was added (#249)
-  - The Xcode project has been cleaned up (#252, #253)
-  - The vector graphics sources (.svg files) for all icons in the app were added
-    to the project and to version control (#264)
-  - User defaults updating is no longer triggered for fresh installs (#282)
-  - The 3rd party crash reporting library QuincyKit was upgraded to version 3
-    (#285)
-- A list of all issues closed for this release is available on GitHub:
-  https://github.com/herzbube/littlego/issues?q=milestone%3A1.2.0+is%3Aclosed
+--------------------------------------------------------------------------------
+Version 1.2.0 (June 12 2015)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- iPhone 6/6+ are now supported with their native screen resolution (#263)
+- iPhone 6+ has a redesigned user interface that makes better use of the
+  available screen estate (#253). iPhone 6+ also supports holding the device
+  in landscape.
+- When starting a new game, it is now possible to select from several
+  predefined rulesets, which allows setting many game rules at once with a
+  single tap (#274). This makes the "New game" screen less cluttered and more
+  user friendly. Rule enthusiasts can still adjust each individual game rule
+  by calling up an "Advanced settings" screen.
+- Gameplay mechanics at the end of the game have been significantly revised:
+  - It is now generally possible to resume play after two pass moves without
+    having to discard ("undo") the second pass move
+  - 3 new game rules were added that govern gameplay mechanics at the end of
+    the game. These rules allow to play games under AGA or IGS rules
+    (#221, #223), but also under Japanese and Chinese rules where
+    non-alternating play is possible to resume a game after it has ended after
+    two pass moves (#275).
+- As a consequence of these new gameplay mechanics at the end of the game, a
+  much wider array of .sgf files can now be loaded from the archive, provided
+  that the user selects the appropriate rules for the game that is in the .sgf
+  file.
+  - Files that contain more than two pass moves at the end of the game. This
+    is especially useful to load games that were played on IGS (Pandanet),
+    where games end with 3 instead of 2 pass moves.
+  - Files that resume play after two pass moves. Again, this is useful for
+    loading files from IGS (Pandanet), but also for files that contain games
+    played under any ruleset that allows play to be resumed after two pass
+    moves.
+  - Files that contain non-alternating play (e.g. two moves in a row by
+    black). This is useful to load files that contain game problems where
+    theoretical board situations are set up by non-alternating play. Also,
+    games can now be loaded that were played under rulesets (e.g. Chinese,
+    Japanese) that allow play to be resumed after two pass moves by
+    non-alternating play.
+- Special thanks go to Norbert Langermann and his innocent suggestion to add
+  support for loading .sgf files with games that were played on IGS. This was
+  the trigger for adding the new end-of-game gameplay mechanics.
+- One more thing: When placing a stone a magnifying glass is now displayed
+  that shows the area of the board that currently under the user's 'fingertip
+  (#271). This feature replaces the old "stone distance from fingertip"
+  feature, which confused and was hated by many users.
+
+========================
+Improvements and changes
+========================
+- Disable Fuego pondering in human vs. human games (#281). This saves *a lot*
+  of otherwise wasted battery power. Thanks to Ben Jackson for the suggestion.
+  Unfortunately, a nasty piece of code was required to upgrade existing user
+  preferences, which may result in unnecessary player and profile backup
+  copies cluttering the upgraded preferences. Users will get an alert if this
+  happens so that they can clean up their preferences.
+- When a game cannot be loaded from the archive because it has moves after
+  the game has ended, the error message displayed to the user should now be
+  less cryptic (#277)
+- When the game has ended, the "Scoring" menu item is now shown as a button
+  so that the user can quickly switch between scoring mode and play mode
+  without first having to call up the "More game actions" menu (#268)
+- A couple of buttons have gotten new icons (#269). Thanks to David Helfand
+  for the suggestion.
+- The status view now always shows the status for the current and the next
+  board position (#265). Up until now the status view only showed when a
+  player had passed, and never showed any information about the next board
+  position.
+
+========
+Bugfixes
+========
+- The app now correctly synchronizes handicap stones with Fuego when board
+  positions are changed (#279). This is the most important bugfix of this
+  release because it fixes another source for the infamous
+  "The computer played an illegal move" and "Your move was rejected by Fuego"
+  alerts. Many thanks to Laurent Guanzini for providing step-by-step
+  instructions that helped me with diagnosing the problem!
+- The app no longer crashes when a game is loaded from the archive that
+  contains a board that is larger than 19x19 (#283). The game still cannot be
+  loaded, but an error message is displayed instead of crashing.
+- The app no longer crashes when the last game in the archive is deleted
+  (#286)
+- It is now possible to place a stone when viewing an old board position, even
+  if the game has already ended (#278). It is thus possible to resume play at
+  an earlier board position than the last.
+- The user interface no longer rotates while a stone is being placed (#272)
+- The status view now correctly displays "<color> passed" when a computer vs.
+  computer game is paused (#266)
+- If the user attempts to make an illegal move, the status view now displays
+  the intersection of the move (#261)
+- The device statusbar at the top of the screen no longer disappears when
+  some screens are displayed (#256)
+- iPad only: The board is now rotated correctly even if it is not visible at
+  the time that the device orientation changes (#255)
+- A number of other bugs were fixed that may have caused crashes (#192, #284)
+- Other minor bugfixes (#209, #257, #258, #262, #273)
+
+===========
+Regressions
+===========
+- None
+
+=================
+Technical changes
+=================
+- The project has been upgraded to the iOS 8.1 SDK (#248) and Xcode 6.1.1
+- 64-bit support was added (#249)
+- The Xcode project has been cleaned up (#252, #253)
+- The vector graphics sources (.svg files) for all icons in the app were added
+  to the project and to version control (#264)
+- User defaults updating is no longer triggered for fresh installs (#282)
+- The 3rd party crash reporting library QuincyKit was upgraded to version 3
+  (#285)
+
+=================
+GitHub issue list
+=================
+A list of all issues closed for this release is available on GitHub:
+https://github.com/herzbube/littlego/issues?q=milestone%3A1.2.0+is%3Aclosed
 
 
-Fri September 19 2014   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 1.1.2
-- Bugfixes
-  - Interactive UI elements are now disabled while a stone-placing gesture is in
-    progress (#243). This closes a loop hole that may have been the source for
-    a number of crashes in the past (e.g. the crash described in #244)
-  - Stones no longer temporarily disappear from view while dragging a new stone
-    (#245). Thanks to stfiend for reporting this bug.
-  - Fixed a potential crash if the computer player starts playing immediately
-    after a game is loaded from the archive (#247).
-- Regressions
-  - It is now possible again to make a move when viewing an old board position
-    while the game has already ended (#246). This will resume the game, discard
-    all board positions beyond the one that the user is currently viewing, and
-    then play the desired move.
+--------------------------------------------------------------------------------
+Version 1.1.2 (September 19 2014)
+--------------------------------------------------------------------------------
+========
+Bugfixes
+========
+- Interactive UI elements are now disabled while a stone-placing gesture is in
+  progress (#243). This closes a loop hole that may have been the source for
+  a number of crashes in the past (e.g. the crash described in #244)
+- Stones no longer temporarily disappear from view while dragging a new stone
+  (#245). Thanks to stfiend for reporting this bug.
+- Fixed a potential crash if the computer player starts playing immediately
+  after a game is loaded from the archive (#247).
+
+===========
+Regressions
+===========
+- It is now possible again to make a move when viewing an old board position
+  while the game has already ended (#246). This will resume the game, discard
+  all board positions beyond the one that the user is currently viewing, and
+  then play the desired move.
 
 
-Fri August 15 2014   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 1.1.1
-- Bugfixes
-  - App (hopefully) no longer crashes while stone is dragged around the board
-    (#242)
+--------------------------------------------------------------------------------
+Version 1.1.1 (August 15 2014)
+--------------------------------------------------------------------------------
+========
+Bugfixes
+========
+- App (hopefully) no longer crashes while stone is dragged around the board
+  (#242)
 
 
-Sun August 10 2014   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 1.1.0
-- Improvements and changes
-  - The app's user interface has been updated to the iOS 7 look & feel (#204)
-  - The "maximum zoom" user preference has been removed (#217)
-  - iPad: The "Game Actions" menu is now displayed in a popover (#232)
-  - The name of the "iPhone 4S" demo profile has been changed to "Strong" (#210)
-  - The "long press" gesture for placing a stone now has a slightly longer
-    delay (#241). This should make it less likely that the user places a stone
-    when instead she wanted to scroll.
-- Bugfixes
-  - Drawing for Retina displays has been fixed (#205). Many thanks to
-    Eric O. Lebigot for reporting the issue and giving me the necessary KITB to
-    investigate the problem.
-  - The app no longer crashes when the "Score" segment is visible on the
-    "Game Info" screen and player/profile information is edited (#225)
-  - The app no longer crashes when a player is viewed on the "Game" segment of
-    the "Game Info" screen and the game ends (#226)
-  - The app no longer crashes when a saved game is renamed and the new name
-    contains illegal characters (#235)
-  - iPad: The list of board positions now shows the correct move after
-    discard & play (#233)
-  - iPhone: Potential app crash eliminated if user taps an entry in the list of
-    board positions (#229)
-  - Handicap compensation is now shown in the "Game info" screen even if scoring
-    mode is not enabled (#220)
-  - The "Minimum number of games" setting in the resign behaviour advanced
-    settings screen is no longer editable if the "Auto-select" setting is turned
-    on (#207)
-  - When the board is zoomed in or out, the internally managed zoom scale can no
-    longer become lower/higher than the intended minimum/maximum (#139)
-- Regressions
-  - The "Load" button on the Archive tab is now disabled again while the
-    computer is thinking (#227). This was broken when document interaction was
-    introduced in 0.11.0.
-- Technical changes
-  - Memory usage during zooming has been greatly reduced (#212, #214, #215)
-  - Memory usage for wooden background image has been reduced (#216)
-  - The project has been upgraded to the iOS 7 SDK (#204) and Xcode Xcode 5.1.1
-  - Support for iOS 6 has been dropped, the minimum required version is now iOS
-    7.0. Devices that are no longer supported are the iPhone 3GS and the
-    iPod Touch 4th generation.
-  - The user interface now uses Auto Layout instead of manually calculated
-    frames (#206)
-  - Unit tests were migrated from SenTestingKit/OCUnit to XCTest (#222)
-  - No longer use any .xib files, the entire UI is now set up programmatically
-- A list of all issues closed for this release is available on GitHub:
-  https://github.com/herzbube/littlego/issues?q=milestone%3A1.1.0+is%3Aclosed
+--------------------------------------------------------------------------------
+Version 1.1.0 (August 10 2014)
+--------------------------------------------------------------------------------
+========================
+Improvements and changes
+========================
+- The app's user interface has been updated to the iOS 7 look & feel (#204)
+- The "maximum zoom" user preference has been removed (#217)
+- iPad: The "Game Actions" menu is now displayed in a popover (#232)
+- The name of the "iPhone 4S" demo profile has been changed to "Strong" (#210)
+- The "long press" gesture for placing a stone now has a slightly longer
+  delay (#241). This should make it less likely that the user places a stone
+  when instead she wanted to scroll.
+
+========
+Bugfixes
+========
+- Drawing for Retina displays has been fixed (#205). Many thanks to
+  Eric O. Lebigot for reporting the issue and giving me the necessary KITB to
+  investigate the problem.
+- The app no longer crashes when the "Score" segment is visible on the
+  "Game Info" screen and player/profile information is edited (#225)
+- The app no longer crashes when a player is viewed on the "Game" segment of
+  the "Game Info" screen and the game ends (#226)
+- The app no longer crashes when a saved game is renamed and the new name
+  contains illegal characters (#235)
+- iPad: The list of board positions now shows the correct move after
+  discard & play (#233)
+- iPhone: Potential app crash eliminated if user taps an entry in the list of
+  board positions (#229)
+- Handicap compensation is now shown in the "Game info" screen even if scoring
+  mode is not enabled (#220)
+- The "Minimum number of games" setting in the resign behaviour advanced
+  settings screen is no longer editable if the "Auto-select" setting is turned
+  on (#207)
+- When the board is zoomed in or out, the internally managed zoom scale can no
+  longer become lower/higher than the intended minimum/maximum (#139)
+
+===========
+Regressions
+===========
+- The "Load" button on the Archive tab is now disabled again while the
+  computer is thinking (#227). This was broken when document interaction was
+  introduced in 0.11.0.
+
+=================
+Technical changes
+=================
+- Memory usage during zooming has been greatly reduced (#212, #214, #215)
+- Memory usage for wooden background image has been reduced (#216)
+- The project has been upgraded to the iOS 7 SDK (#204) and Xcode Xcode 5.1.1
+- Support for iOS 6 has been dropped, the minimum required version is now iOS
+  7.0. Devices that are no longer supported are the iPhone 3GS and the
+  iPod Touch 4th generation.
+- The user interface now uses Auto Layout instead of manually calculated
+  frames (#206)
+- Unit tests were migrated from SenTestingKit/OCUnit to XCTest (#222)
+- No longer use any .xib files, the entire UI is now set up programmatically
+
+=================
+GitHub issue list
+=================
+A list of all issues closed for this release is available on GitHub:
+https://github.com/herzbube/littlego/issues?q=milestone%3A1.1.0+is%3Aclosed
 
 
-Mon January 06 2014   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 1.0.0
-- Features
-  - When a new game is started, it is now possible to select one of several ko
-    rules. Simple ko remains the default, new choices are positional and
-    situational superko (#169).
-  - When a new game is started, it is now possible to select whether area or
-    territory scoring should be in effect (#30). Area scoring is the default
-    because the computer player (Fuego) does not properly support territory
-    scoring.
-  - During scoring it is now possible to mark stones in seki (#190). Tap the
-    "Actions" button to find the menu entry that lets you switch from
-    "mark dead stones" to "mark stones in seki".
-  - It is now possible to display player influence, aka territory statistics,
-    for an estimate who owns an area (#18). The feature can be enabled under
-    "Settings > Display > Display player influence".
-- Other improvements and changes
-  - Some of the sections on the "Settings" tab have been re-organized (#132)
-  - Attempting to play an illegal move now displays the reason why the move is
-    illegal (#182). Examples are suicide, ko or superko.
-  - When a new game is started and a handicap is selected, komi is adjusted
-    automatically to 0.5 (#189)
-  - The computer player's strength has improved because a new version of Fuego
-    has been integrated into Little Go. It is not possible to quantify the
-    improvement against human opponents, but if the new and the old versions of
-    Fuego play against each other, the new version wins 80% - 90% of the games.
-  - Use pattern-based additive knowledge on devices with more than 512 MB memory
-    (#187).
-- Bugfixes
-  - iOS 7: The app no longer crashes on startup after a game has been imported
-    from an external app such as Mail or DropBox (#184)
-  - The app no longer crashes when game is loaded while "Game Info" screen is
-    displayed (#191)
-  - The app no longer hangs after launch if it was previously suspended/killed
-    during scoring (#203)
-  - The maximum zoom scale has been reduced to 2.0 for iPad devices, and to 2.5
-    for iPhone devices (#202). The previous maximum zoom scale 3.0 was too high,
-    causing crashes on most devices.
-  - The next stone marker "A" is no longer displayed after all moves have been
-    discarded (#200)
-  - The "Start of the game" board position table view cell no longer has a wrong
-    background color (#199)
-  - The "Delete all games" button on the "Archive" tab is no longer affected by
-    edit mode (#185)
-  - A sliding gesture no longer puts the entire "Players & Profiles" screen into
-    edit mode (#175)
-  - A number of memory leaks were fixed (#188 and other, smaller fixes)
-- Technical changes
-  - The project has been upgraded to Xcode 5.0 (#183)
-  - Support for iOS 5 has been dropped, the minimum required version is now
-    iOS 6.1 (#198). Devices that are no longer supported are iPad 1st generation
-    and iPod Touch 3rd generation.
-  - The 3rd party software build process has been completely rewritten (#92)
-  - All 3rd party software have been upgraded to newest versions
-    (Fuego trunk r1728, Boost 1.55.0, MBProgressHUD 0.8, Cocoa Lumberjack 1.7.0,
-    ZipKit 1.0.2, QuincyKit 2.1.9)
+--------------------------------------------------------------------------------
+Version 1.0.0 (January 06 2014)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- When a new game is started, it is now possible to select one of several ko
+  rules. Simple ko remains the default, new choices are positional and
+  situational superko (#169).
+- When a new game is started, it is now possible to select whether area or
+  territory scoring should be in effect (#30). Area scoring is the default
+  because the computer player (Fuego) does not properly support territory
+  scoring.
+- During scoring it is now possible to mark stones in seki (#190). Tap the
+  "Actions" button to find the menu entry that lets you switch from
+  "mark dead stones" to "mark stones in seki".
+- It is now possible to display player influence, aka territory statistics,
+  for an estimate who owns an area (#18). The feature can be enabled under
+  "Settings > Display > Display player influence".
+
+==============================
+Other improvements and changes
+==============================
+- Some of the sections on the "Settings" tab have been re-organized (#132)
+- Attempting to play an illegal move now displays the reason why the move is
+  illegal (#182). Examples are suicide, ko or superko.
+- When a new game is started and a handicap is selected, komi is adjusted
+  automatically to 0.5 (#189)
+- The computer player's strength has improved because a new version of Fuego
+  has been integrated into Little Go. It is not possible to quantify the
+  improvement against human opponents, but if the new and the old versions of
+  Fuego play against each other, the new version wins 80% - 90% of the games.
+- Use pattern-based additive knowledge on devices with more than 512 MB memory
+  (#187).
+
+========
+Bugfixes
+========
+- iOS 7: The app no longer crashes on startup after a game has been imported
+  from an external app such as Mail or DropBox (#184)
+- The app no longer crashes when game is loaded while "Game Info" screen is
+  displayed (#191)
+- The app no longer hangs after launch if it was previously suspended/killed
+  during scoring (#203)
+- The maximum zoom scale has been reduced to 2.0 for iPad devices, and to 2.5
+  for iPhone devices (#202). The previous maximum zoom scale 3.0 was too high,
+  causing crashes on most devices.
+- The next stone marker "A" is no longer displayed after all moves have been
+  discarded (#200)
+- The "Start of the game" board position table view cell no longer has a wrong
+  background color (#199)
+- The "Delete all games" button on the "Archive" tab is no longer affected by
+  edit mode (#185)
+- A sliding gesture no longer puts the entire "Players & Profiles" screen into
+  edit mode (#175)
+- A number of memory leaks were fixed (#188 and other, smaller fixes)
+
+=================
+Technical changes
+=================
+- The project has been upgraded to Xcode 5.0 (#183)
+- Support for iOS 5 has been dropped, the minimum required version is now
+  iOS 6.1 (#198). Devices that are no longer supported are iPad 1st generation
+  and iPod Touch 3rd generation.
+- The 3rd party software build process has been completely rewritten (#92)
+- All 3rd party software have been upgraded to newest versions
+  (Fuego trunk r1728, Boost 1.55.0, MBProgressHUD 0.8, Cocoa Lumberjack 1.7.0,
+  ZipKit 1.0.2, QuincyKit 2.1.9)
 
 
-Mon September 09 2013   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 0.12.0
-- Features
-  - It is now possible to configure the computer player with a threshold how
-    quickly it will resign a game (#133). For instance, it is now possible to
-    tell the computer player to never resign so that the game can be played out
-    to the very end. This also allows beginners to play with a large handicap on
-    a small board (up until now the computer player would always resign
-    immediately when faced with an overwhelming handicap). The resignation
-    behaviour setting can be found towards the bottom on the "edit profile"
-    screen.
-  - When an old board position is viewed, the intersection where the next stone
-    will be placed is now marked with the letter "A" (#101). This can be
-    disabled in the "Board position" settings.
-  - Changes to the active profile are now immediately applied to the GTP engine
-    (#123). For instance, it is now possible to change the playing strength or
-    the resign behaviour of the computer player without starting a new game.
-  - At the bottom of the "Archive" tab there is now a button to delete all
-    archived games in one fell swoop (#55)
-  - The tab order can now be customized (#57)
-  - Players & profiles can now be reset to their factory defaults (#54), in case
-    some severe misconfiguration occurred
-  - Players & profiles can now be edited directly from the Game Info screen
-    (#122)
-- Other improvements and changes
-  - Loading a game from the archive is now about 10% faster (#166)
-  - The user interface for changing the dangerous "Max. memory" profile setting
-    is now vastly improved (#153). The maximum value that can be selected for
-    the setting is now limited to a fraction of the device's physical memory,
-    and the amount of physical memory that the device has is also displayed.
-  - When a computer player is edited, there is now a button that allows to
-    directly edit the profile that the player is using (#71)
-  - When a profile is edited, the players that are using the profile are now
-    listed at the bottom of the screen (#70)
-  - The button to reset predefined GTP commands is now clearly marked with a
-    "red warning" style (#56)
-  - The "About" screen now displays the build date/time (#161)
-- Bugfixes
-  - The GTP engine is configured to no longer recognize positional superko
-    (#171). This is a temporary solution to bring the GTP engine's rules into
-    sync with Little Go's rules. Little Go currently does not recognize superko,
-    so this sync'ing fixes the problem that Little Go lets the user make a
-    superko move which is then rejected by the GTP engine. Many thanks to Brid
-    Griffin for emailing me a bug report that helped me with diagnosing this
-    problem! Note that Little Go will officially support superko in 1.0.
-  - On the iPad, the board size is now correct after the device is rotated while
-    the board is zoomed (#162)
-  - Dragging a stone outside the zoomed in board section no longer places the
-    stone (#143)
-  - The computer player now resigns even if the profile setting "Max. games" is
-    set to a value < 5000 (#154)
-  - Undo resign is no longer possible when viewing an old board position. This
-    fixes the problem that undo resign when viewing an old board position
-    corrupts the backup .sgf (#158).
-  - If the game has ended but an old board position is viewed, the status view
-    now shows information related to the board position instead of end-of-game
-    information (#107)
-  - Scoring mode is no longer activated automatically when a player resigns. The
-    effect is that the status now reads "x has resigned" instead of the
-    inappropriate "y wins by ..." (#4). If a score is desired it must be
-    requested by manually activating scoring mode.
-  - The user can no longer place a stone on behalf of the computer player (#160)
-  - The board position can no longer be changed while Fuego is searching for
-    an initial set of dead stones during scoring (#163)
-  - A number of potential app crashes have been eliminated (#130, #172, #173)
+--------------------------------------------------------------------------------
+Version 0.12.0 (September 09 2013)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- It is now possible to configure the computer player with a threshold how
+  quickly it will resign a game (#133). For instance, it is now possible to
+  tell the computer player to never resign so that the game can be played out
+  to the very end. This also allows beginners to play with a large handicap on
+  a small board (up until now the computer player would always resign
+  immediately when faced with an overwhelming handicap). The resignation
+  behaviour setting can be found towards the bottom on the "edit profile"
+  screen.
+- When an old board position is viewed, the intersection where the next stone
+  will be placed is now marked with the letter "A" (#101). This can be
+  disabled in the "Board position" settings.
+- Changes to the active profile are now immediately applied to the GTP engine
+  (#123). For instance, it is now possible to change the playing strength or
+  the resign behaviour of the computer player without starting a new game.
+- At the bottom of the "Archive" tab there is now a button to delete all
+  archived games in one fell swoop (#55)
+- The tab order can now be customized (#57)
+- Players & profiles can now be reset to their factory defaults (#54), in case
+  some severe misconfiguration occurred
+- Players & profiles can now be edited directly from the Game Info screen
+  (#122)
+
+==============================
+Other improvements and changes
+==============================
+- Loading a game from the archive is now about 10% faster (#166)
+- The user interface for changing the dangerous "Max. memory" profile setting
+  is now vastly improved (#153). The maximum value that can be selected for
+  the setting is now limited to a fraction of the device's physical memory,
+  and the amount of physical memory that the device has is also displayed.
+- When a computer player is edited, there is now a button that allows to
+  directly edit the profile that the player is using (#71)
+- When a profile is edited, the players that are using the profile are now
+  listed at the bottom of the screen (#70)
+- The button to reset predefined GTP commands is now clearly marked with a
+  "red warning" style (#56)
+- The "About" screen now displays the build date/time (#161)
+
+========
+Bugfixes
+========
+- The GTP engine is configured to no longer recognize positional superko
+  (#171). This is a temporary solution to bring the GTP engine's rules into
+  sync with Little Go's rules. Little Go currently does not recognize superko,
+  so this sync'ing fixes the problem that Little Go lets the user make a
+  superko move which is then rejected by the GTP engine. Many thanks to Brid
+  Griffin for emailing me a bug report that helped me with diagnosing this
+  problem! Note that Little Go will officially support superko in 1.0.
+- On the iPad, the board size is now correct after the device is rotated while
+  the board is zoomed (#162)
+- Dragging a stone outside the zoomed in board section no longer places the
+  stone (#143)
+- The computer player now resigns even if the profile setting "Max. games" is
+  set to a value < 5000 (#154)
+- Undo resign is no longer possible when viewing an old board position. This
+  fixes the problem that undo resign when viewing an old board position
+  corrupts the backup .sgf (#158).
+- If the game has ended but an old board position is viewed, the status view
+  now shows information related to the board position instead of end-of-game
+  information (#107)
+- Scoring mode is no longer activated automatically when a player resigns. The
+  effect is that the status now reads "x has resigned" instead of the
+  inappropriate "y wins by ..." (#4). If a score is desired it must be
+  requested by manually activating scoring mode.
+- The user can no longer place a stone on behalf of the computer player (#160)
+- The board position can no longer be changed while Fuego is searching for
+  an initial set of dead stones during scoring (#163)
+- A number of potential app crashes have been eliminated (#130, #172, #173)
 
 
-Mon May 20 2013   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 0.11.1
-- Bugfixes
-  - Board position can no longer be changed while other commands are executed
-    (#156). This hard-to-find bug caused numerous crashes (e.g. those described
-    by issues #128 and #129) and other problems, such as the infamous
-    "The computer played an illegal move." alert. Many thanks to Logan Bouia and
-    Carole Wolf for emailing me bug reports that helped me with diagnosing the
-    problem.
-  - The entire game is now saved when an old board position is viewed (#150)
-  - The app should no longer crash after receiving a memory warning on iOS 5
-    while the "Game info", "New game" or "Save game" screens are displayed
-    (#157). Thanks to the anonymous iPad 1 user who patiently reminded me that
-    the issue needs fixing by sending an occasional crash report.
-  - Fix for a memory leak in TableViewSliderCell (#155)
+--------------------------------------------------------------------------------
+Version 0.11.1 (May 20 2013)
+--------------------------------------------------------------------------------
+========
+Bugfixes
+========
+- Board position can no longer be changed while other commands are executed
+  (#156). This hard-to-find bug caused numerous crashes (e.g. those described
+  by issues #128 and #129) and other problems, such as the infamous
+  "The computer played an illegal move." alert. Many thanks to Logan Bouia and
+  Carole Wolf for emailing me bug reports that helped me with diagnosing the
+  problem.
+- The entire game is now saved when an old board position is viewed (#150)
+- The app should no longer crash after receiving a memory warning on iOS 5
+  while the "Game info", "New game" or "Save game" screens are displayed
+  (#157). Thanks to the anonymous iPad 1 user who patiently reminded me that
+  the issue needs fixing by sending an occasional crash report.
+- Fix for a memory leak in TableViewSliderCell (#155)
 
 
-Sat Apr 20 2013   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 0.11.0
-- Features
-  - Display coordinate labels (#12). This can be turned on or off under
-    "Settings > Play view > Display coordinates".
-  - Display move numbers (#17). The user preference can be found under
-    "Settings > Play view > Display move numbers". Because displaying many move
-    numbers is cluttering the board, the percentage of move numbers to display
-    can be adjusted with a slider.
-  - Zoom the board up to a 3x zoom scale (#16). All standard zoom gestures are
-    supported. Because zooming costs memory the user may want to limit herself
-    to a maximum zoom scale that is below 3x. This can be done with the slider
-    found under "Settings > Play view > Maximum zoom". A limit of 2x zoom scale
-    is recommended for devices that do not have much RAM (typically older
-    devices such as the iPhone 3GS or the iPad 1st generation).
-  - Archived games can now be exported to Mail (#19) and other apps that are
-    capable of processing .sgf files (e.g. DropBox).
-  - Games can now be imported from Mail (#20) and other apps that are capable
-    of exporting .sgf files (e.g. DropBox).
-- Other improvements and changes
-  - The application now launches much faster (#114), except for the first time
-    after upgrading from a previous version.
-  - Status text and activity indicator are now displayed in the navigation bar
-    at the top of the screen (#120).
-  - When a new game is started, the "discard old game" question is not displayed
-    anymore if there have been no changes since the game was saved the last
-    time (#42).
-  - Loading a game from the archive is now about 10% faster (commit 139bb46).
-  - Drawing of Go board now makes better use of the available space. This is
-    especially noticeable for the large 19x19 board on a small iPhone screen
-    (commit 86443d9).
-  - The "stone distance from fingertip" user preference now behaves more
-    predictably: Previously a "clever" algorithm tried to figure out the "best"
-    distance by taking into account various parameters such as board size and
-    screen size. The new algorithm now simply scales a fixed maximum distance
-    according to the value of the slider.
-- Bugfixes
-  - No longer crash when a computer vs. computer game is restored during app
-    launch and that game has already ended (#127). Thanks to Serge Grossenbacher
-    for reporting this bug.
-  - No longer draw in secondary thread during app launch (#117). This eliminates
-    another potential source of crashes.
-  - iPad only: Screen should no longer be flickering wildly after loading some
-    games from the archive (#126).
-  - It is now possible to save games with a name that consists of 1 or 2
-    characters (#125).
-  - Resigning is no longer possible when viewing an old board position. This
-    fixes the problem that resigning when viewing an old board position corrupts
-    the backup .sgf (#115).
-  - During scoring, the activity indicator is now only displayed for finding
-    the initial set of dead stones (#121).
-- Known bugs
-  - App may crash when board position is changed (possibly forward going only)
-    (#128)
-  - App crashes when user plays an illegal move while viewing an old board
-    position (#129)
-  - App crashes during launch after a player has been deleted (#130)
-- Technical changes
-  - MBProgressHUD upgraded to the newest version (HEAD of the git repository).
-    The progress indicator is now a round shape instead of a horizontal bar.
-  - Private Objective-C method declarations in .m files have been removed to
-    reduce unnecessary code duplication (#102).
+--------------------------------------------------------------------------------
+Version 0.11.0 (April 20 2013)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- Display coordinate labels (#12). This can be turned on or off under
+  "Settings > Play view > Display coordinates".
+- Display move numbers (#17). The user preference can be found under
+  "Settings > Play view > Display move numbers". Because displaying many move
+  numbers is cluttering the board, the percentage of move numbers to display
+  can be adjusted with a slider.
+- Zoom the board up to a 3x zoom scale (#16). All standard zoom gestures are
+  supported. Because zooming costs memory the user may want to limit herself
+  to a maximum zoom scale that is below 3x. This can be done with the slider
+  found under "Settings > Play view > Maximum zoom". A limit of 2x zoom scale
+  is recommended for devices that do not have much RAM (typically older
+  devices such as the iPhone 3GS or the iPad 1st generation).
+- Archived games can now be exported to Mail (#19) and other apps that are
+  capable of processing .sgf files (e.g. DropBox).
+- Games can now be imported from Mail (#20) and other apps that are capable
+  of exporting .sgf files (e.g. DropBox).
+
+==============================
+Other improvements and changes
+==============================
+- The application now launches much faster (#114), except for the first time
+  after upgrading from a previous version.
+- Status text and activity indicator are now displayed in the navigation bar
+  at the top of the screen (#120).
+- When a new game is started, the "discard old game" question is not displayed
+  anymore if there have been no changes since the game was saved the last
+  time (#42).
+- Loading a game from the archive is now about 10% faster (commit 139bb46).
+- Drawing of Go board now makes better use of the available space. This is
+  especially noticeable for the large 19x19 board on a small iPhone screen
+  (commit 86443d9).
+- The "stone distance from fingertip" user preference now behaves more
+  predictably: Previously a "clever" algorithm tried to figure out the "best"
+  distance by taking into account various parameters such as board size and
+  screen size. The new algorithm now simply scales a fixed maximum distance
+  according to the value of the slider.
+
+========
+Bugfixes
+========
+- No longer crash when a computer vs. computer game is restored during app
+  launch and that game has already ended (#127). Thanks to Serge Grossenbacher
+  for reporting this bug.
+- No longer draw in secondary thread during app launch (#117). This eliminates
+  another potential source of crashes.
+- iPad only: Screen should no longer be flickering wildly after loading some
+  games from the archive (#126).
+- It is now possible to save games with a name that consists of 1 or 2
+  characters (#125).
+- Resigning is no longer possible when viewing an old board position. This
+  fixes the problem that resigning when viewing an old board position corrupts
+  the backup .sgf (#115).
+- During scoring, the activity indicator is now only displayed for finding
+  the initial set of dead stones (#121).
+
+==========
+Known bugs
+==========
+- App may crash when board position is changed (possibly forward going only)
+  (#128)
+- App crashes when user plays an illegal move while viewing an old board
+  position (#129)
+- App crashes during launch after a player has been deleted (#130)
+
+=================
+Technical changes
+=================
+- MBProgressHUD upgraded to the newest version (HEAD of the git repository).
+  The progress indicator is now a round shape instead of a horizontal bar.
+- Private Objective-C method declarations in .m files have been removed to
+  reduce unnecessary code duplication (#102).
 
 
-Fri Mar 01 2013   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 0.10.0
-- Improve graphic design
-  - Add wooden background
-  - Add artwork for black/white/cross-hair stones (instead of just drawing
-    filled circles)
-  - New layout on iPad
-  - New icon for "continue" button in computer vs. computer games, to
-    distinguish it from the new "forward" button
-- Features
-  - View board positions for moves played earlier during the game
-  - Replace "undo" with "discard move"
-  - A game that has ended can now be resumed in two ways:
-    - Discard the most recent move if two pass moves were played by mistake
-    - Select "Undo resign" from the game actions menu after accidentally
-      resigning the game
-  - Redesign of "New game" and "Game info" screens
-  - New user preferences
-    - Settings > Play view > Stone distance from fingertip
-    - Setting > Board position > Discard future moves alert
-    - Settings > Scoring > Score when game ends
-  - Add support for collecting logging data
-    - Turn this on under Diagnostics > Collect logging data
-    - Logging data is automatically included in a bug report
-  - Do not trigger the computer player when a computer vs. computer game is
-    restored on app launch
-  - Add placeholder message to "Archive" tab if there are no saved games
-  - Various other small GUI updates and fixes
-- Bugfixes
-  - App no longer crashes if a computer vs. computer game is paused and the
-    computer passes or resigns
-  - Diagnostics > Bug report section is no longer disabled when computer player
-    resigns
-  - Fix various memory leaks
-  - GUI updates during long-running actions (e.g. app launch, load game) should
-    now happen always in the main thread; besides smoother GUI updates, this
-    should eliminate one more possible source of crashes
-- Known bugs
-  - The resigned state of a game is lost when a game is saved or loaded; this
-    is not new in this release, it's just been added to the list of known bugs
-- Technical changes
-  - Upgrade project to Xcode 4.6
-  - Drop support for iOS 4.3, the minimum required version is now iOS 5.0
-  - Add iOS 6 compatibility
-  - Add iPhone 5 support
-  - Improve 3rd party software build process
-  - Upgrade CocoaLumberjack to version 1.6
-  - Update Doxygen target to use the MacPorts path /opt/local/bin
+--------------------------------------------------------------------------------
+Version 0.10.0 (March 01 2013)
+--------------------------------------------------------------------------------
+======================
+Improve graphic design
+======================
+- Add wooden background
+- Add artwork for black/white/cross-hair stones (instead of just drawing
+  filled circles)
+- New layout on iPad
+- New icon for "continue" button in computer vs. computer games, to
+  distinguish it from the new "forward" button
+
+========
+Features
+========
+- View board positions for moves played earlier during the game
+- Replace "undo" with "discard move"
+- A game that has ended can now be resumed in two ways:
+  - Discard the most recent move if two pass moves were played by mistake
+  - Select "Undo resign" from the game actions menu after accidentally
+    resigning the game
+- Redesign of "New game" and "Game info" screens
+- New user preferences
+  - Settings > Play view > Stone distance from fingertip
+  - Setting > Board position > Discard future moves alert
+  - Settings > Scoring > Score when game ends
+- Add support for collecting logging data
+  - Turn this on under Diagnostics > Collect logging data
+  - Logging data is automatically included in a bug report
+- Do not trigger the computer player when a computer vs. computer game is
+  restored on app launch
+- Add placeholder message to "Archive" tab if there are no saved games
+- Various other small GUI updates and fixes
+
+========
+Bugfixes
+========
+- App no longer crashes if a computer vs. computer game is paused and the
+  computer passes or resigns
+- Diagnostics > Bug report section is no longer disabled when computer player
+  resigns
+- Fix various memory leaks
+- GUI updates during long-running actions (e.g. app launch, load game) should
+  now happen always in the main thread; besides smoother GUI updates, this
+  should eliminate one more possible source of crashes
+
+==========
+Known bugs
+==========
+- The resigned state of a game is lost when a game is saved or loaded; this
+  is not new in this release, it's just been added to the list of known bugs
+
+=================
+Technical changes
+=================
+- Upgrade project to Xcode 4.6
+- Drop support for iOS 4.3, the minimum required version is now iOS 5.0
+- Add iOS 6 compatibility
+- Add iPhone 5 support
+- Improve 3rd party software build process
+- Upgrade CocoaLumberjack to version 1.6
+- Update Doxygen target to use the MacPorts path /opt/local/bin
 
 
-Sun Dec 22 2012   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 0.9.2
-- Bugfixes
-  - Fix for crash if Play tab is not visible and low memory conditions occur
-    (issue #86)
-  - Fix for crash if an error occurs while loading an archived game, e.g.
-    because the game contains an illegal move (issue #88)
-  - Fix for crash when Little Go thinks that a move made by the computer player
-    is illegal. Note that the root cause of the problem has not yet been
-    identified, but at least the app no longer crashes when the condition
-    occurs. Instead you will be asked to submit a bug report (please do!), the
-    game in progress is automatically saved to the archive and a new game is
-    started to bring the app back into a stable state. This temporary solution
-    will remain in place until I can track down and fix the actual bug
-    (issue #90).
-  - Fix for memory leak that occurs when the Game Info view has been selected
-    on the Play tab, but the Play tab is not visible and low memory conditions
-    occur (issue #87)
-  - Fix for memory leak when a bug report is sent (issue #91)
-  - Fix for GUI update errors on Play tab after an error occurs while loading a
-    game (issue #89)
+--------------------------------------------------------------------------------
+Version 0.9.2 (December 22 2012)
+--------------------------------------------------------------------------------
+========
+Bugfixes
+========
+- Fix for crash if Play tab is not visible and low memory conditions occur
+  (issue #86)
+- Fix for crash if an error occurs while loading an archived game, e.g.
+  because the game contains an illegal move (issue #88)
+- Fix for crash when Little Go thinks that a move made by the computer player
+  is illegal. Note that the root cause of the problem has not yet been
+  identified, but at least the app no longer crashes when the condition
+  occurs. Instead you will be asked to submit a bug report (please do!), the
+  game in progress is automatically saved to the archive and a new game is
+  started to bring the app back into a stable state. This temporary solution
+  will remain in place until I can track down and fix the actual bug
+  (issue #90).
+- Fix for memory leak that occurs when the Game Info view has been selected
+  on the Play tab, but the Play tab is not visible and low memory conditions
+  occur (issue #87)
+- Fix for memory leak when a bug report is sent (issue #91)
+- Fix for GUI update errors on Play tab after an error occurs while loading a
+  game (issue #89)
 
 
-Sun Dec 09 2012   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 0.9.1
-- Bugfixes
-  - Another bug in the Ko detection logic is now fixed. For instance the
-    following sequence: Black A2, White B2, Black pass, White C1, Black pass,
-    White A1. If Black now tries to capture on B1, this was erroneously thought
-    to be illegal due to Ko.
-- Technical changes
-  - The project's bugtracker is now hosted on GitHub
-    (https://github.com/herzbube/littlego/issues)
+--------------------------------------------------------------------------------
+Version 0.9.1 (December 09 2012)
+--------------------------------------------------------------------------------
+========
+Bugfixes
+========
+- Another bug in the Ko detection logic is now fixed. For instance the
+  following sequence: Black A2, White B2, Black pass, White C1, Black pass,
+  White A1. If Black now tries to capture on B1, this was erroneously thought
+  to be illegal due to Ko.
+
+=================
+Technical changes
+=================
+- The project's bugtracker is now hosted on GitHub
+  (https://github.com/herzbube/littlego/issues)
 
 
-Fri Nov 23 2012   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 0.9.0
-- Features
-  - 3 new settings have been added to profiles (maximum number of playout games,
-    maximum thinking time, ponder time). These settings provide much improved
-    control over the computer player's playing strength.
-  - Individual profile settings are now hidden in an "Advanced configuration"
-    screen. The user can still tweak those settings if she wants to, but there
-    is also a simplified "playing strength" screen where, by selecting a playing
-    strength, the user adjusts several profile settings in a single action,
-    without having to know the technical details behind each setting.
-  - The computer player can now be interrupted when it is thinking.
-  - The user can now choose to send a crash report if the app crashes (available
-    when the app is launched the next time after the crash). Settings are
-    available on the "Diagnostics" tab. Read the in-game manual for more
-    information.
-  - The user can now send send a bug report email with attached diagnostics
-    information file from within the app. The function is available on the
-    "Diagnostics" tab. Read the in-game manual for more information.
-  - The Game Info view now displays the currently active profile.
-- Bugfixes
-  - Loading an .sgf file with bad content no longer crashes the app. Thanks to
-    Andrew Hersee for reporting this bug.
-  - iPhone only: The Status line is now 2 lines high and no longer truncates
-    texts. Thanks to Andrew Hersee for reporting this bug.
-  - Improved protection against data loss after a crash (preferences data is
-    saved more often, and the game in progress is saved after every move).
-    Thanks to Tripp Lilley for reporting this bug.
-  - It is no longer possible to enter empty profile and player names
-  - iPad only: The Go board is now properly resized when the interface
-    orientation changes while the "Play" tab is not visible
-  - Display an error message when an illegal save game name is entered (instead
-    of just silently not saving the game)
-- Technical changes
-  - The project's source code is now hosted on GitHub
-    (https://github.com/herzbube/littlego/)
-  - The project now has a Trello board where you can see what is currently being
-    worked on (https://trello.com/board/little-go/4fd84c295027333d460dcc32)
-  - An Ohloh page now provides mildly interesting source code statistics
-    (https://www.ohloh.net/p/littlego)
+--------------------------------------------------------------------------------
+Version 0.9.0 (November 23 2012)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- 3 new settings have been added to profiles (maximum number of playout games,
+  maximum thinking time, ponder time). These settings provide much improved
+  control over the computer player's playing strength.
+- Individual profile settings are now hidden in an "Advanced configuration"
+  screen. The user can still tweak those settings if she wants to, but there
+  is also a simplified "playing strength" screen where, by selecting a playing
+  strength, the user adjusts several profile settings in a single action,
+  without having to know the technical details behind each setting.
+- The computer player can now be interrupted when it is thinking.
+- The user can now choose to send a crash report if the app crashes (available
+  when the app is launched the next time after the crash). Settings are
+  available on the "Diagnostics" tab. Read the in-game manual for more
+  information.
+- The user can now send send a bug report email with attached diagnostics
+  information file from within the app. The function is available on the
+  "Diagnostics" tab. Read the in-game manual for more information.
+- The Game Info view now displays the currently active profile.
+
+========
+Bugfixes
+========
+- Loading an .sgf file with bad content no longer crashes the app. Thanks to
+  Andrew Hersee for reporting this bug.
+- iPhone only: The Status line is now 2 lines high and no longer truncates
+  texts. Thanks to Andrew Hersee for reporting this bug.
+- Improved protection against data loss after a crash (preferences data is
+  saved more often, and the game in progress is saved after every move).
+  Thanks to Tripp Lilley for reporting this bug.
+- It is no longer possible to enter empty profile and player names
+- iPad only: The Go board is now properly resized when the interface
+  orientation changes while the "Play" tab is not visible
+- Display an error message when an illegal save game name is entered (instead
+  of just silently not saving the game)
+
+=================
+Technical changes
+=================
+- The project's source code is now hosted on GitHub
+  (https://github.com/herzbube/littlego/)
+- The project now has a Trello board where you can see what is currently being
+  worked on (https://trello.com/board/little-go/4fd84c295027333d460dcc32)
+- An Ohloh page now provides mildly interesting source code statistics
+  (https://www.ohloh.net/p/littlego)
 
 
-Tue June 12 2012   "Patrick Näf" <herzbube@herzbube.ch>
-- Release of version 0.8.1
-- Features
-  - New application icon
-  - Added "Quick Start Guide" section to in-game help
-- Bugfixes
-  - A bug in a low-level function, which has been present in all versions of
-    Little Go since its initial App Store release, has finally been found and
-    exterminated. The bug caused "Undo" to not work correctly in certain
-    situations. The error, when it manifested, did not have an immediate visible
-    impact in the GUI, instead it caused all sorts of follow-up problems to
-    occur (capturing stones might not work, suicide moves might be allowed,
-    marking dead stones in scoring mode might not work correctly, and in some
-    extreme cases it might even cause the app to crash).
+--------------------------------------------------------------------------------
+Version 0.8.1 (June 12 2012)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- New application icon
+- Added "Quick Start Guide" section to in-game help
+
+========
+Bugfixes
+========
+- A bug in a low-level function, which has been present in all versions of
+  Little Go since its initial App Store release, has finally been found and
+  exterminated. The bug caused "Undo" to not work correctly in certain
+  situations. The error, when it manifested, did not have an immediate visible
+  impact in the GUI, instead it caused all sorts of follow-up problems to
+  occur (capturing stones might not work, suicide moves might be allowed,
+  marking dead stones in scoring mode might not work correctly, and in some
+  extreme cases it might even cause the app to crash).
 
 
-Tue April 17 2012   "Patrick Näf" <herzbube@herzbube.ch>
-- release of version 0.8.0
-- features
-  - iPad version with support for retina display and all interface orientations
-  - iPhone now supports upside-down portrait orientation
-  - improved in-game help
-- bugfixes
-  - loading a game is now much faster
-  - drawing, especially while moving a stone around the board, now uses 10-15%
-    less CPU power, which improves battery life
-  - Ko is no longer erroneously detected in certain situations (e.g. black has
-    stones on A2, B1, B3, C1, C3, white has stones on B2 and C2; black now plays
-    on D2, white on B2; in this situation, black C2 was erroneously thought to
-    be illegal due to Ko)
-  - profiles: "reuse subtree" is now always enabled (and cannot be disabled)
-    when pondering is enabled; previously the two settings were independent of
-    each other, which was a bug
-  - loading archived game now works even if temporary file is still around for
-    some reason
-- technical changes
-  - rewrite of Play view drawing code
-  - lots of new unit tests
-  - upgrade to iOS SDK 5.1
+--------------------------------------------------------------------------------
+Version 0.8.0 (April 17 2012)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- iPad version with support for retina display and all interface orientations
+- iPhone now supports upside-down portrait orientation
+- improved in-game help
+
+========
+Bugfixes
+========
+- loading a game is now much faster
+- drawing, especially while moving a stone around the board, now uses 10-15%
+  less CPU power, which improves battery life
+- Ko is no longer erroneously detected in certain situations (e.g. black has
+  stones on A2, B1, B3, C1, C3, white has stones on B2 and C2; black now plays
+  on D2, white on B2; in this situation, black C2 was erroneously thought to
+  be illegal due to Ko)
+- profiles: "reuse subtree" is now always enabled (and cannot be disabled)
+  when pondering is enabled; previously the two settings were independent of
+  each other, which was a bug
+- loading archived game now works even if temporary file is still around for
+  some reason
+
+=================
+Technical changes
+=================
+- rewrite of Play view drawing code
+- lots of new unit tests
+- upgrade to iOS SDK 5.1
 
 
-Tue January 3 2012   "Patrick Näf" <herzbube@herzbube.ch>
-- release of bugfix version 0.7.1
-- bugfixes
-  - loading a game with no moves is now handled correctly (previously the app
-    would hang and needed to be manually killed to get into a usable state
-    again)
-  - capturing moves that "almost" create a Ko are now correctly recognized as
-    legal moves (e.g. black A1, white A2, black D1, white B2, black C2,
-    white C1, previously the black move on B1 was thought to be illegal)
-  - it is no longer possible to place stones outside the board in the top-left
-    and top-right corners
-  - board size 7x7 no longer allows handicaps greater than 4 (selecting such
-    a handicap previously would result in no handicap being set at all)
+--------------------------------------------------------------------------------
+Version 0.7.1 (January 03 2012)
+--------------------------------------------------------------------------------
+========
+Bugfixes
+========
+- loading a game with no moves is now handled correctly (previously the app
+  would hang and needed to be manually killed to get into a usable state
+  again)
+- capturing moves that "almost" create a Ko are now correctly recognized as
+  legal moves (e.g. black A1, white A2, black D1, white B2, black C2,
+  white C1, previously the black move on B1 was thought to be illegal)
+- it is no longer possible to place stones outside the board in the top-left
+  and top-right corners
+- board size 7x7 no longer allows handicaps greater than 4 (selecting such
+  a handicap previously would result in no handicap being set at all)
 
 
-Tue December 20 2011   "Patrick Näf" <herzbube@herzbube.ch>
-- release of version 0.7
-- this is the first release published to the App Store
-- features
+--------------------------------------------------------------------------------
+Version 0.7 (December 20 2011)
+--------------------------------------------------------------------------------
+This is the first release published to the App Store
+
+========
+Features
+========
   - added application, tab bar and toolbar icons
   - no longer display an alert when a memory warning is received from iOS
   - rename "Debug" tab to "Diagnostics"
+
+================
+User preferences
+================
+- none
+
+========
+Bugfixes
+========
+- dead stones are now always marked correctly (they were not marked correctly
+  in release builds due to an uninitialized variable)
+- enabling scoring mode in mid-game made further game play impossible; this
+  has been fixed
+
+=================
+Technical changes
+=================
+- eliminated various memory leaks
+- application startup now mostly happens in a secondary thread; this makes
+  it possible to run the application through Instruments
+
+
+--------------------------------------------------------------------------------
+Version 0.6 (December 04 2011)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- a stone is now displayed immediately when fingertip touches the board
+- GTP engine settings are now managed in profiles (instead of as player
+  attributes)
+- an alert is displayed, and game and user preferences are now saved as an
+  emergency when iOS sends a memory warning
+- the game info view now displays entries for "last move" and "next move"
+- cross-hair point distance from fingertip is now scaled based on board size
+- default board size is now 9x9 (down from 19x19)
+- new "Help" and "Credits" documents
+- all license documents are now displayed in their own table view
+
+================
+User preferences
+================
+- all user-defined players are removed on upgrade
+- all scoring user defaults are lost on upgrade
+- new user preferences for "inconsistent territory" (scoring) and
+  "place stone under finger" (play view)
+- reorganization of Settings view into topical sections
+
+========
+Bugfixes
+========
+- changing a player's type (human/computer) now shows/hides the profile as
+  appropriate
+- game info view is now dismissed when a game is loaded
+- play view now correctly calculates board edge thickness
+- user preference "mark dead stones intelligently" is now displayed correctly
+
+=================
+Technical changes
+=================
+- upgrade project to Xcode 4
+- user defaults are now versioned
+- the GTP log now displays seconds
+- a lot of code cleanup
+
+
+--------------------------------------------------------------------------------
+Version 0.5 (November 16 2011)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- when a new game is started it is now possible to select a handicap (up to
+  9 stones in fixed locations) and a komi value
+- the user can now "flip" the Play view to see an Info view which displays
+  information about the current game
+- new accurate scoring mode
+  - when activated, the user can now interactively mark stone groups on the
+    Play view as dead or alive
+  - territory scoring is based on stone groups' dead or alive status
+  - the Info view displays detailed tabular scoring information
+  - scoring mode is activated automatically when the game ends, or by the
+    user at any time during normal game play
+- the status line on the Play view now displays a message if the computer
+  player passed
+
+========
+Bugfixes
+========
+- the GTP log now displays all commands (previously some commands were lost)
+
+=================
+Technical changes
+=================
+- none
+
+
+--------------------------------------------------------------------------------
+Version 0.4 (October 31 2011)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- the GTP log on the Debug view is now a table view (the raw log is still
+  available by switching to the view's "backside")
+- arbitrary commands can now be submitted to the GTP engine
+- GTP commands can be "canned" for later or repeated submission
+- interruptions (e.g. a phone call) now pause a computer vs. computer game
+- sound/vibration is temporarily disabled during an interruption
+
+========
+Bugfixes
+========
+- none
+
+=================
+Technical changes
+=================
+- add Cocoa Lumberjack logging framework
+
+
+--------------------------------------------------------------------------------
+Version 0.3 (September 25 2011)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- computer players now have a set of GTP engine attributes that allow to
+  limit memory consumption and, to a certain degree, playing strength
+- game archive
+  - a game in progress can now be saved
+  - existing games can be managed on a separate "Archive" tab
+  - the game archive is accessible from iTunes so that archived games can be
+    transferred to/from the iOS device when it is connected to iTunes
+- the game in progress is auto-saved when the application is put into the
+  background so that the game is not lost if the application is subsequently
+  killed for any reason
+- Play view now uses a grey instead of a b/w color scheme
+
+========
+Bugfixes
+========
+- by default the GTP engine now uses 64 MB memory only; on an iPhone 3GS with
+  256 MB memory this limit is sufficient that the system no longer kills the
+  application because it uses up too much memory
+- application no longer hangs if GTP engine responds with error to final_score
+- capturing moves with a single stone now work correctly
+- pass moves are no longer drawn on the Go board
+- toolbar buttons on Play view now use an explicit text label instead of
+  confusing icons
+
+=================
+Technical changes
+=================
+- less view updates on the Play view, which means less power consumption and
+  slightly snappier panning
+- add command processor design pattern
+- GTP commands can now be executed synchronously
+
+
+--------------------------------------------------------------------------------
+Version 0.2 (August 23 2011)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- players can be added/edited/removed; player attributes
+  - name
+  - is human / is computer player
+- start a new game
+  - variable board size
+  - select players
+- pause game in an automated game with two computer players
+- undo move
+- markup last played stone
+- play sound and/or vibrate when computer player makes a move
+- display star points for all board sizes
 - user preferences
-  - none
-- bugfixes
-  - dead stones are now always marked correctly (they were not marked correctly
-    in release builds due to an uninitialized variable)
-  - enabling scoring mode in mid-game made further game play impossible; this
-    has been fixed
-- technical changes
-  - eliminated various memory leaks
-  - application startup now mostly happens in a secondary thread; this makes
-    it possible to run the application through Instruments
+
+========
+Bugfixes
+========
+- too many to enumerate
+
+=================
+Technical changes
+=================
+- updated to use Fuego 1.1
+- unit test support
 
 
-Sun December 4 2011   "Patrick Näf" <herzbube@herzbube.ch>
-- release of version 0.6
-- features
-  - a stone is now displayed immediately when fingertip touches the board
-  - GTP engine settings are now managed in profiles (instead of as player
-    attributes)
-  - an alert is displayed, and game and user preferences are now saved as an
-    emergency when iOS sends a memory warning
-  - the game info view now displays entries for "last move" and "next move"
-  - cross-hair point distance from fingertip is now scaled based on board size
-  - default board size is now 9x9 (down from 19x19)
-  - new "Help" and "Credits" documents
-  - all license documents are now displayed in their own table view
-- user preferences
-  - all user-defined players are removed on upgrade
-  - all scoring user defaults are lost on upgrade
-  - new user preferences for "inconsistent territory" (scoring) and
-    "place stone under finger" (play view)
-  - reorganization of Settings view into topical sections
-- bugfixes
-  - changing a player's type (human/computer) now shows/hides the profile as
-    appropriate
-  - game info view is now dismissed when a game is loaded
-  - play view now correctly calculates board edge thickness
-  - user preference "mark dead stones intelligently" is now displayed correctly
-- technical changes
-  - upgrade project to Xcode 4
-  - user defaults are now versioned
-  - the GTP log now displays seconds
-  - a lot of code cleanup
+--------------------------------------------------------------------------------
+Version 0.1 (April 08 2011)
+--------------------------------------------------------------------------------
+Release of version 0.1
 
 
-Wed November 16 2011   "Patrick Näf" <herzbube@herzbube.ch>
-- release of version 0.5
-- features
-  - when a new game is started it is now possible to select a handicap (up to
-    9 stones in fixed locations) and a komi value
-  - the user can now "flip" the Play view to see an Info view which displays
-    information about the current game
-  - new accurate scoring mode
-    - when activated, the user can now interactively mark stone groups on the
-      Play view as dead or alive
-    - territory scoring is based on stone groups' dead or alive status
-    - the Info view displays detailed tabular scoring information
-    - scoring mode is activated automatically when the game ends, or by the
-      user at any time during normal game play
-  - the status line on the Play view now displays a message if the computer
-    player passed
-- bugfixes
-  - the GTP log now displays all commands (previously some commands were lost)
-- technical changes
-  - none
+--------------------------------------------------------------------------------
+March 28 2011
+--------------------------------------------------------------------------------
+Feature complete for 0.1
 
 
-Mon October 31 2011   "Patrick Näf" <herzbube@herzbube.ch>
-- release of version 0.4
-- features
-  - the GTP log on the Debug view is now a table view (the raw log is still
-    available by switching to the view's "backside")
-  - arbitrary commands can now be submitted to the GTP engine
-  - GTP commands can be "canned" for later or repeated submission
-  - interruptions (e.g. a phone call) now pause a computer vs. computer game
-  - sound/vibration is temporarily disabled during an interruption
-- bugfixes
-  - none
-- technical changes
-  - add Cocoa Lumberjack logging framework
+--------------------------------------------------------------------------------
+March 24 2011
+--------------------------------------------------------------------------------
+First draft of human vs. computer implementation
 
 
-Sun September 25 2011   "Patrick Näf" <herzbube@herzbube.ch>
-- release of version 0.3
-- features
-  - computer players now have a set of GTP engine attributes that allow to
-    limit memory consumption and, to a certain degree, playing strength
-  - game archive
-    - a game in progress can now be saved
-    - existing games can be managed on a separate "Archive" tab
-    - the game archive is accessible from iTunes so that archived games can be
-      transferred to/from the iOS device when it is connected to iTunes
-  - the game in progress is auto-saved when the application is put into the
-    background so that the game is not lost if the application is subsequently
-    killed for any reason
-  - Play view now uses a grey instead of a b/w color scheme
-- bugfixes
-  - by default the GTP engine now uses 64 MB memory only; on an iPhone 3GS with
-    256 MB memory this limit is sufficient that the system no longer kills the
-    application because it uses up too much memory
-  - application no longer hangs if GTP engine responds with error to final_score
-  - capturing moves with a single stone now work correctly
-  - pass moves are no longer drawn on the Go board
-  - toolbar buttons on Play view now use an explicit text label instead of
-    confusing icons
-- technical changes
-  - less view updates on the Play view, which means less power consumption and
-    slightly snappier panning
-  - add command processor design pattern
-  - GTP commands can now be executed synchronously
+--------------------------------------------------------------------------------
+March 15 2011
+--------------------------------------------------------------------------------
+Extremely crude computer vs. computer implementation
 
 
-Tue August 23 2011   "Patrick Näf" <herzbube@herzbube.ch>
-- release of version 0.2
-- features
-  - players can be added/edited/removed; player attributes
-    - name
-    - is human / is computer player
-  - start a new game
-    - variable board size
-    - select players
-  - pause game in an automated game with two computer players
-  - undo move
-  - markup last played stone
-  - play sound and/or vibrate when computer player makes a move
-  - display star points for all board sizes
-  - user preferences
-- bugfixes
-  - too many to enumerate
-- technical changes
-  - updated to use Fuego 1.1
-  - unit test support
+--------------------------------------------------------------------------------
+March 04 2011
+--------------------------------------------------------------------------------
+Proof of concept: create an instance of Fuego and communicate with that
+instance by sending commands and receiving responses
 
 
-Fri April 8 2011   "Patrick Näf" <herzbube@herzbube.ch>
-- release of version 0.1
-
-
-Mon March 28 2011   "Patrick Näf" <herzbube@herzbube.ch>
-- feature complete for 0.1
-
-
-Thu March 24 2011   "Patrick Näf" <herzbube@herzbube.ch>
-- first draft of human vs. computer implementation
-
-
-Tue March 15 2011   "Patrick Näf" <herzbube@herzbube.ch>
-- extremely crude computer vs. computer implementation
-
-
-Fri March 4 2011   "Patrick Näf" <herzbube@herzbube.ch>
-- proof of concept: create an instance of Fuego and communicate with that
-  instance by sending commands and receiving responses
-
-
-Thu Jan 27 2011   "Patrick Näf" <herzbube@herzbube.ch>
-- created project
+--------------------------------------------------------------------------------
+January 27 2011
+--------------------------------------------------------------------------------
+Created project
