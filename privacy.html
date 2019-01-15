@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Privacy policy for Little Go</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Privacy policy for Little Go</h1>
+          <h2>Version 1</h2>
+          <p><a href="index.html">Back to main page</a></p>
+        </header>
+
+        <hr>
+
+        <section id="main_content">
+
+<h3>Summary</h3>
+
+<p>Little Go does not collect any personal data whatsoever. Little Go may, however, collect some non-personal data about the way how you use the app, for the sole purpose of identifying bugs in the software so that they can then be fixed. None of the data collected is transmitted without your approval.</p>
+
+<p>The remainder of this page tries to explain the details in "no bullshit" terms - no legalese, just plain English written by a non-native speaker. If you have any questions, feel free to <a href="mailto:herzbube@herzbube.ch">contact me</a>.</p>
+
+<h3>Crash report data</h3>
+
+<p>When Little Go crashes, data about the crash is collected automatically and stored locally on your device. Next time you launch the app an alert is displayed, offering you the choice to send the collected data in the form of a crash report to the developer. If you decline, no data is sent.</p>
+
+<p>In the "Diagnostics" area of the app, you can change the way how crash report data is collected and transmitted: You can turn off data collection entirely, you can decide that crash reports should be automatically sent without asking you first, or you can enter an email address that should be sent along with the crash report data so that the developer will be able to contact you if clarifications are needed about the problem.</p>
+
+<p>A crash report contains the following information:</p>
+
+<ul>
+<li>Hardware model (not the device ID!)</li>
+<li>Operating system version</li>
+<li>Type of crash</li>
+<li>Technical information about the state of the application when the crash occurred</li>
+</ul>
+
+<p>When you decide to send the crash report, Little Go transmits the data to the <a href="https://firebase.google.com/products/crashlytics/">Crashlytics</a> web service, which is part of the <a href="https://firebase.google.com/">Google Firebase</a> platform. Information about the network connection, such as the IP address of your device, is almost certainly logged by Google. Other than that, nothing about you or your device should be shared with Google - a best effort has been made to disable all other Google Firebase services and to only keep Crashlytics enabled. Notably, Firebase Analytics data collection has been explicitly disabled!
+
+<h3>Logging data</h3>
+
+<p>In the "Diagnostics" area of the app, there is an option that lets you enable the collecting of logging data. The option is disabled by default.</p>
+
+<p>While the option is enabled, a log file is written in the background that captures technical details about what you do with the app, which functions you execute, and what steps in detail the app performs in response to your requests.</p>
+
+<p>Logging data is stored locally on your device. It leaves your device only if you send a bug report. See the next section.</p>
+
+<h3>Bug report data</h3>
+
+<p>In the "Diagnostics" area of the app, you will find a button labelled "Send a bug report". Tapping the button displays a pre-filled email view that you only need to supplement with your problem description before you can send off the report.</p>
+
+<p>The email has a .zip file attached that contains the following information:</p>
+
+<ul>
+<li>A version number that identifies the format of the information inside the attachment</li>
+<li>iOS version and device type (only whether it is an iPhone or an iPad)</li>
+<li>A snapshot of some of Little Go's in-memory objects that make it possible to reproduce the state of Little Go exactly the way it was at the time the diagnostics information file was generated</li>
+<li>Your current preferences (including the players you have defined and the settings you use on GTP engine profiles)</li>
+<li>The current game as an .sgf file</li>
+<li>A screenshot of the "Play" area of the app (excluding the status bar, i.e. the name of your carrier is not in the screenshot)</li>
+<li>The output of the "showboard" GTP command</li>
+<li>The log files (if you have previously enabled logging - see the previous section)</li>
+</ul>
+
+<p>The bug report email is just like any other email, so the usual email-related disclaimers apply. Notably, the recipient of the message will see your email address.</p>
+        </section>
+
+        <footer>
+          Little Go is maintained by <a href="https://github.com/herzbube">herzbube</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
