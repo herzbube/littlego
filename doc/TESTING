@@ -1275,3 +1275,260 @@ Special test cases
   - Rotate the device
   - The UI must rotate
 
+
+Board setup and player setup tests
+- The following table lists a set of .sgf files that are used to test the app's
+  behaviour in regard to various board setup and player setup combinations.
+- The table lists the basic characteristics of each file, together with the
+  file's specific test goals.
+- The entire set of .sgf file also fulfills combinatorial test goals. For
+  instance, board setup must work regardless of whether or not moves are
+  present in the file, or whether player setup is also present in the file.
+  Usually these combinatorial test goals are not explicitly mentioned.
+
+
+File      Board   Player
+name      setup   setup    Handicap   Moves   Test goals
+----------------------------------------------------------------------------------------------------------------------------------------
+02*.sgf   -       -        -          x       Test absence of player and board setup properties.
+03*.sgf   -       x        x          x       1) Test regular handicap: The black stone setup property which exists in the same
+                                                 node as the handicap property enumerates the handicap stones.
+                                              2) Test that player setup works if the player setup property appears in the same
+                                                 node as the handicap property. Test that the white player can be set up in
+                                                 accordance to the game rules (white plays first when handicap is present).
+04*.sgf   x       x        x          x       1) Test mix of setup and handicap: The black stone setup property which exists in
+                                                 the same node as the handicap property enumerates BOTH handicap stones and
+                                                 additional setup stones, but the end result is that all those black stones are
+                                                 interpreted as handicap stones. The same node also contains a white stone setup
+                                                 property, these white stones are treated as regular setup stones.
+                                              2) The numeric handicap values in the HA property does not match the number of
+                                                 handicap stones enumerated by the black stone setup property. This is currently
+                                                 accepted, but might be rejected in the future.
+05*.sgf   x       x        -          x       1) Test regular black/white stone setup without handicap.
+                                              2) Test that the black player can be set up. Test that this works if the first
+                                                 move is actually by black.
+06*.sgf   x       x        x          x       1) Test setup and handicap in separate nodes. Unlike in 04*.sgf, if the black stone
+                                                 setup property is in a different node than the HA property, this results in
+                                                 genuine black setup stones.
+                                              2) Test that a different player can be setup than the player who actually makes
+                                                 the first move. Load the .sgf file, then go the initial board position. The
+                                                 first move must be shown as by white, even though the black player is set up
+                                                 to move first. Discard all moves then play a move - now the black player plays
+                                                 first in accordance with the player setup.
+07*.sgf   x       x        x          x       Tests the same things as 06*.sgf, albeit with different data. The difference is
+                                              that this file was saved by Fuego, whereas 06*.sgf was manually crafted. The
+                                              difference is a bit artificial.
+08*.sgf   x       -        -          x       Test that board setup properties in multiple nodes are aggregated.
+09*.sgf   x       -        -          -       Same as 08*.sgf, but without moves.
+10*.sgf   x       x        x          -       Test what happens if board setup properties in later nodes "overwrite" intersections
+                                              already occupied by handicap stones. In this case, the .sgf file is illegal because a
+                                              white setup stone is placed on intersection K4 which is already occupied by a handicap
+                                              stone.
+11*.sgf   x       x        x          -       1) Test what happens if board setup properties in later nodes "overwrite" intersections
+                                                 already occupied by handicap stones. In this case, the .sgf file is legal because a
+                                                 black setup stone is placed on intersection D4 which is already occupied by a handicap
+                                                 stone. The result is that the black setup stone is ignored and intersection D4 is
+                                                 treated as handicap stone.
+                                              2) Test that multiple player setup properties can appear in the .sgf file and that the
+                                                 last one wins. Load the .sgf file then play a move - the black player must move first.
+12*.sgf   x       x        x          x       1) Same board setup as 11*.sgf, but with moves.
+                                              2) Player setup properties are slightly different than in 11*.sgf. The white player
+                                                 plays first, and it's the same player who actually makes the first  move.
+13*.sgf   -       x        -          x       Test that a different player can be setup than the player who actually makes the first
+                                              move. This is the same test as in 06*.sgf, but this time without any board setup nor
+                                              handicap present.
+14*.sgf   x       x        x          -       Same board setup as 11*.sgf, but with only a single player setup property located in
+                                              the node of the handicap property. After loading the file white must play first. It
+                                              seems as if this file is somewhat superfluous.
+15*.sgf   x       x        x          -       Test what happens if board setup properties in later nodes "overwrite" intersections
+                                              already occupied by previous setup stones. This is always legal: Intersection A1
+                                              ends up with a white stone (overwriting a previously set up black stone), and
+                                              intersection T19 ends up with a black stone (overwriting a previously set up white stone).
+16*.sgf   x       -        -          -       Test that a board setup that places stones with 0 liberties is illegal. In this test the
+                                              white stones have 0 liberties. The .sgf file is illegal.
+17*.sgf   x       -        -          -       Same as 16*.sgf, but in this test the black stones have 0 liberties. The .sgf file is
+                                              illegal.
+18*.sgf   x       x        -          x       Test that a board setup can contribute to a positional superko. The .sgf file is illegal
+                                              when loaded with positional superko rules. The .sgf file is legal when loaded with
+                                              simple ko or situation superko rules.
+19*.sgf   x       x        -          x       Test that a board setup can contribute to a situational superko. The .sgf file is illegal
+                                              when loaded with situational and also positional superko rules. The .sgf file is legal
+                                              when loaded with simple ko rules.
+20*.sgf   -       -        x          -       Test that if handicap is present but no explicit player setup, the game rules ensure
+                                              that white plays first. After loading the .sgf, make sure that white plays first.
+                                              This test is especially interesting because Fuego always writes a player setup property
+                                              to the .sgf file if handicap is present.
+
+To create the files for the above tests, copy & paste the following lines into
+a shell script, then run that shell script.
+
+cat << EOF >02-no-setup-no-playersetup-no-handicap-with-moves.sgf
+(;SZ[19]KM[6.5]
+DT[2018-12-31]
+PB[GoUctPlayer]
+PW[GoUctPlayer];B[pp];W[pd];B[cp];W[dd])
+EOF
+
+cat << EOF >03-no-setup-with-playersetup-with-handicap-with-moves.sgf
+(;SZ[19]KM[6.5]
+DT[2018-12-31]
+AB[dp][pd][dd][pp][dj][pj][jp][jd]HA[8]PL[W]
+PW[GoUctPlayer]
+PB[GoUctPlayer];W[gc];B[cg];W[qm];B[gq])
+EOF
+
+cat << EOF >04-with-setup-with-playersetup-with-handicap-with-moves.sgf
+(;FF[4]CA[UTF-8]AP[GoGui:1.4.9]
+HA[7]PW[Fuego-trunk]DT[2018-12-31]
+AB[dp][pd][dd][pp][jj][dj][pj][da][fa][ia][ka][ja][ga][ea]
+AW[ma][na][oa][pa][qa][ra][sa]PL[W];W[qf])
+EOF
+
+cat << EOF >05-with-setup-with-playersetup-no-handicap-with-moves.sgf
+(;FF[4]CA[UTF-8]AP[GoGui:1.4.9]
+KM[6.5]DT[2018-12-31]
+AB[da][ea][fa][ig]AW[oa][pa][qa][ra]PL[B];B[fk];W[lm];B[pj];W[pp];B[hq])
+EOF
+
+cat << EOF >06-with-setup-with-playersetup-with-handicap-with-moves-manually-crafted.sgf
+(;SZ[19]KM[6.5]
+DT[2018-12-31]
+AB[dp][pd][dd][pp][dj][pj][jp][jd]HA[8]
+PW[GoUctPlayer]
+PB[GoUctPlayer]
+;AB[da][ea][fa][ig]AW[oa][pa][qa][ra]PL[B]
+;W[gc];B[cg];W[qm];B[gq])
+EOF
+
+cat << EOF >07-with-setup-with-playersetup-with-handicap-with-moves-saved-by-fuego.sgf
+(;SZ[19]KM[6.5]
+DT[2019-01-01]
+AB[dp][pd][dd][pp][dj][pj][jp][jd]HA[8]PL[W]
+PW[GoUctPlayer]
+PB[GoUctPlayer];
+AB[as][ar]
+AW[ra][sa];W[ic];B[jc])
+EOF
+
+cat << EOF >08-with-setup-no-playersetup-no-handicap-with-moves.sgf
+(;SZ[19]KM[6.5]
+DT[2019-01-01]
+PB[GoUctPlayer]
+PW[GoUctPlayer];
+AB[as][ar]
+AW[ra][sa];
+AB[cm]
+AW[pj];
+AB[dp]
+AW[gl];B[dd];W[pp])
+EOF
+
+cat << EOF >09-with-setup-no-playersetup-no-handicap-no-moves.sgf
+(;SZ[19]KM[6.5]
+DT[2019-01-01];
+AB[as][ar]
+AW[ra][sa];
+AB[cm]
+AW[pj];
+AB[dp]
+AW[gl])
+EOF
+
+cat << EOF >10-with-setup-with-playersetup-with-handicap-no-moves.sgf
+(;SZ[19]KM[6.5]
+DT[2019-01-01]
+AB[dp][pd][dd][pp][jj][dj][pj][jp][jd]HA[9]PL[W];
+AB[as][ar]
+AW[ra][sa];
+AB[cm]
+AW[pj];
+AW[jp]
+AB[dp])
+EOF
+
+cat << EOF >11-with-setup-with-playersetup-with-handicap-no-moves.sgf
+(;SZ[19]KM[6.5]
+DT[2019-01-01]
+AB[dp][pd][dd][pp][jj][dj][pj][jp][jd]HA[9]PL[W];
+AB[as][ar]
+AW[ra][sa]PL[B];
+AB[cm]PL[W];
+AB[dp]PL[W];
+PL[B])
+EOF
+
+cat << EOF >12-with-setup-with-playersetup-with-handicap-with-moves.sgf
+(;SZ[19]KM[6.5]
+DT[2019-01-01]
+AB[dp][pd][dd][pp][jj][dj][pj][jp][jd]HA[9]PL[W]
+PW[GoUctPlayer]
+PB[GoUctPlayer];
+AB[as][ar]
+AW[ra][sa]PL[B];
+AB[cm]PL[W];
+AB[dp]PL[B];
+PL[W];W[mc];B[mq])
+EOF
+
+cat << EOF >13-no-setup-with-playersetup-no-handicap-with-moves-playersetupdoesnotmatchmove.sgf
+(;SZ[19]KM[6.5]
+DT[2019-01-01]PL[W]
+PB[GoUctPlayer];B[pp])
+EOF
+
+cat << EOF >14-with-setup-with-playersetup-with-handicap-no-moves.sgf
+(;SZ[19]KM[6.5]
+DT[2019-01-01]
+AB[dp][pd][dd][pp][jj][dj][pj][jp][jd]HA[9]PL[W];
+AB[as][ar]
+AW[ra][sa];
+AB[cm];
+AB[dp])
+EOF
+
+cat << EOF >15-with-setup-with-playersetup-with-handicap-no-moves.sgf
+(;SZ[19]KM[6.5]
+DT[2019-01-01]
+AB[dp][pd][dd][pp][jj][dj][pj][jp][jd]HA[9]PL[W];
+AB[as][ar]
+AW[ra][sa];
+AB[cm];
+AW[as]
+AB[sa])
+EOF
+
+cat << EOF >16-with-setup-no-playersetup-no-handicap-no-moves.sgf
+(;SZ[19]KM[6.5]
+DT[2019-01-04];
+AB[ds][cr][bq][ap]
+AW[as][bs][cs][ar][br][aq])
+EOF
+
+cat << EOF >17-with-setup-no-playersetup-no-handicap-no-moves.sgf
+(;SZ[19]KM[6.5]
+DT[2019-01-04];
+AW[ds][cr][bq][ap]
+AB[as][bs][cs][ar][br][aq])
+EOF
+
+cat << EOF >18-with-setup-with-playersetup-no-handicap-with-moves.sgf
+(;SZ[19]KM[6.5]
+DT[2019-01-05];
+AB[bs][ds][cr]
+AW[ar][br]PL[W];W[dr];B[as];W[cs];B[bs])
+EOF
+
+cat << EOF >19-with-setup-with-playersetup-no-handicap-with-moves.sgf
+(;SZ[19]
+DT[2019-01-05]KM[6.5];
+AB[bs][ds][cr]
+AW[ar][br]PL[W];W[];B[as];W[cs];B[bs])
+EOF
+
+cat << EOF >20-no-setup-no-playersetup-with-handicap-no-moves.sgf
+(;SZ[19]KM[6.5]
+DT[2018-12-31]
+AB[dp][pd][dd][pp][dj][pj][jp][jd]HA[8]
+PW[GoUctPlayer]
+PB[GoUctPlayer])
+EOF
