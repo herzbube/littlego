@@ -1,0 +1,168 @@
+Purpose of this document
+------------------------
+This document has notes about all known irregularities that are currently in the
+project: Compiler warnings, Xcode analyze issues, runtime messages printed to
+the Xcode debug console, unfixed crash reports, etc.. This document complements
+the issue list on the project's bug tracker.
+
+
+Compiler warnings
+-----------------
+This compiler warning is generated only sometimes
+  Enable Base Internationalization in Little Go.xcodeproj
+The warning can be ignored since the project does not use translation.
+
+
+This compiler warning is generated when ZipKit is built:
+  /Users/patrick/dev/littlego/Pods/ZipKit/ZipKit/ZKLFHeader.m:47:1: Implementing deprecated method
+ZipKit implements the finalize method in the ZKLFHeader class, which is marked
+deprecated in the system headers like this:
+  - (void)finalize OBJC_DEPRECATED("Objective-C garbage collection is no longer supported");
+The finalize method implementation looks like this:
+  - (void) finalize {
+    [self removeObservers];
+    [super finalize];
+  }
+The "removeObservers" method unregisters KVO observers for various properties.
+I am not using any such observers, the question remains: Is ZipKit using KVO
+observers internally?
+
+
+These compiler warnings are generated when some CocoaPods are built:
+  The iOS deployment target is set to 6.0, but the range of supported deployment target versions for this platform is 8.0 to 12.1. (in target 'CocoaLumberjack')
+  The iOS deployment target is set to 6.0, but the range of supported deployment target versions for this platform is 8.0 to 12.1. (in target 'GoogleUtilities')
+  The iOS deployment target is set to 4.3, but the range of supported deployment target versions for this platform is 8.0 to 12.1. (in target 'nanopb')
+  The iOS deployment target is set to 6.1, but the range of supported deployment target versions for this platform is 8.0 to 12.1. (in target 'ZipKit')
+The Podspec of CocoaLumberjack, ZipKit and GoogleUtilities explicitly set a
+platform that, apparently, overrides the platform in Little Go's Podfile. This
+leads to IPHONEOS_DEPLOYMENT_TARGET being set to 6.0 or 6.1, respectively, for
+the build of those libraries. The Podspec of nanopb does not specify a platform,
+so it's not clear why IPHONEOS_DEPLOYMENT_TARGET is set to 4.3 for this library.
+In any case, the following code snippet (taken from [1]) can be used Little Go's
+Podfile to override the Podspec-specific platforms:
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      target.build_configurations.each do |config|
+        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.1'
+      end
+    end
+  end
+Unfortunately setting IPHONEOS_DEPLOYMENT_TARGET=8.1 generates a lot of other
+new compiler warnings for ZipKit. Pretty much all of them are deprecation
+warnings because ZipKit uses APIs that have been deprecated between iOS 6.0 and
+iOS 8.0. So if the intent of the change was to get rid of some compiler
+warnings, the cure is worse than the original illness. Since at the moment the
+compiler warnings are just that, and there are no apparent actual problems at
+runtime, I'm leaving this as an open issue to be resolved later. Hopefully the
+ZipKit library author will update ZipKit, but if worst comes to worst I'll have
+to do the changes myself, or use a new zip library.
+[1] https://stackoverflow.com/a/37289688/1054378
+
+
+This compiler warning is generated when GoogleUtilites is built:
+  'NSURLSession' is only available on iOS 7.0 or newer
+This is a follow-up problem of IPHONEOS_DEPLOYMENT_TARGET being set to 6.0 in
+the Podspec of GoogleUtilities - see the previous section for details. Once the
+IPHONEOS_DEPLOYMENT_TARGET issue is solved, this problem will disappear as well.
+
+
+Xcode analyze issues
+--------------------
+No issues.
+
+
+Runtime messages in the Xcode debub console
+-------------------------------------------
+This message occasionally appears in Xcode's debug console:
+    2019-01-09 22:17:16.951254+0100 Little Go[17873:3109184] [Common] _BSMachError: port f23; (os/kern) invalid capability (0x14) "Unable to insert COPY_SEND"
+I have not been able to find out what this means. One post that I saw claimed
+that it had to do with old breakpoints set in Xcode, and that the message went
+away after deleting all breakpoints. However, in my case I cannot confirm this,
+I've seen the message at least once while not having set any breakpoints. This
+was on a real device, but on previous occasions I'm pretty sure that I've also
+seen the message in the simulator.
+
+
+The following message appears in Xcode's debug console when the app is run in
+the simulator of an older device:
+  2018-12-13 03:32:16.838694+0100 Little Go[60892:7782851] libMobileGestalt MobileGestalt.c:890: MGIsDeviceOneOfType is not supported on this platform.
+A knowledgeable answer on StackOverflow [1] explains that
+  The messages we are seeing indicate incompatibilities between simulator
+  versions and Xcode versions.
+Verified that the message is printed somewhere between the main() function
+executing the line
+  return UIApplicationMain(argc, argv, nil, NSStringFromClass([ApplicationDelegate class]));
+and the application delegate receiving the message
+  application:didFinishLaunchingWithOptions:()
+Experimentally determined which devices have the message and which one's don't:
+- These devices do have the message: iPhone SE, iPhone 8 Plus, iPhone 8,
+  iPhone 7 Plus, iPhone 7, iPhone 6s Plus, iPhone 6s, iPhone 6 Plus, iPhone 6,
+  iPhone 5s, iPad Pro (12.9-inch) (2nd generation), iPad Pro (12.9-inch),
+  iPad Pro (10.5-inch), iPad Pro (9.7-inch), iPad Air 2, iPad Air,
+  iPad (6th generation), iPad (5th generation)
+- These devices do not have the message: iPhone XS Max, iPhone XS, iPhone XR,
+  iPhone X, iPhone 5, iPhone 4s, iPad Retina,
+  iPad Pro (12.9-inch) (3rd generation), iPad Pro (11-inch), iPad Pro
+[1] https://stackoverflow.com/a/52874178/1054378
+
+
+These messages frequently appear in Xcode's debug console:
+  2019-01-09 21:58:31.237175+0100 Little Go[63316:9128553] [MC] System group container for systemgroup.com.apple.configurationprofiles path is /Users/patrick/Library/Developer/CoreSimulator/Devices/12301FD1-7457-4768-A2CA-92D386D2FB76/data/Containers/Shared/SystemGroup/systemgroup.com.apple.configurationprofiles
+  2019-01-09 21:58:31.237793+0100 Little Go[63316:9128553] [MC] Reading from private effective user settings.
+are generally accepted to be harmless and appear to related to the simulator
+environment. I've seen these message only on some device/iOS combinations.
+
+
+This message appears in Xcode's debug console when rotating the interface,
+but only in iPad simulators, and then only in those with iOS 10.3.1 and 11.4:
+  [App] if we're in the real pre-commit handler we can't actually add any new fences due to CA restriction
+The message is generally accepted to be harmless. [1] seems to be the most
+knowledgable post on the net. Apparently several radars were filed, which seem
+to have taken effect because the message no longer appears in iOS 12.1
+simulators. The message also does not appear in iOS 9.3 and older simulators.
+[1] https://stackoverflow.com/a/38860899/1054378
+
+
+This messages sometimes appears in Xcode's debug console:
+  objc[9632]: Class _NSZombie_FBSXPCMessage is implemented in both ?? (0x600000840630) and ?? (0x600000817ba0). One of the two will be used. Which one is undefined.
+The message appears when the app is launched, if at all. Although I understand
+the problem that the message indicates, I have been unable to find out its
+source. Since Zombie Objects are enabled only in the Xcode scheme for debug
+builds, and not the in the Xcode schemes for AdHoc or AppStore distribution, the
+problem can be safely ignored for the moment.
+
+
+These are harmless informational messages related to Firebase/Crashlytics
+that appear in Xcode's debug console when the app launches:
+  2019-01-09 22:13:36.884327+0100 Little Go[17873:3109273]  - <AppMeasurement>[I-ACS036001] Analytics screen reporting is disabled. UIViewController transitions will not be logged.
+  2019-01-09 22:13:38.185502+0100 Little Go[17873:3109274] 5.15.0 - [Firebase/Analytics][I-ACS023007] Analytics v.50400000 started
+  2019-01-09 22:13:38.186412+0100 Little Go[17873:3109274] 5.15.0 - [Firebase/Analytics][I-ACS023008] To enable debug logging set the following application argument: -FIRAnalyticsDebugEnabled (see http://goo.gl/RfcP7r)
+  2019-01-09 22:13:38.202260+0100 Little Go[17873:3109184] [Crashlytics] Version 3.12.0 (136)
+
+
+These are additional Firebase/Crashlytics messages which can be ignored. The
+Gyro message appears only on a real device. The other message seem to be
+network-related.
+  2019-01-09 22:13:39.671815+0100 Little Go[17873:3109305] [Gyro] Manually set gyro-interrupt-calibration to 200
+  2019-01-09 22:13:39.818298+0100 Little Go[17873:3109275] [BoringSSL] nw_protocol_boringssl_get_output_frames(1301) [C1.1:2][0x147e466d0] get output frames failed, state 8196
+  2019-01-09 22:13:39.819228+0100 Little Go[17873:3109275] [BoringSSL] nw_protocol_boringssl_get_output_frames(1301) [C1.1:2][0x147e466d0] get output frames failed, state 8196
+  2019-01-09 22:13:39.821358+0100 Little Go[17873:3109275] TIC Read Status [1:0x0]: 1:57
+  2019-01-09 22:13:39.822132+0100 Little Go[17873:3109275] TIC Read Status [1:0x0]: 1:57
+
+
+Crash reports
+-------------
+For version 1.3.1 there were 3 exotic-looking crashes in the Crashlytics
+dashboard. The stack trace of those crash reports does not show any direct
+relation to the app's code. I don't have the time nor the knowledge to
+investigate them.
+
+For version 1.3.1, in Xcode under "Organizer > Crashes" there were quite a large
+number of crashes. The cause for most of them is "High CPU Usage", e.g. this:
+  144 seconds cpu time over 19 seconds
+I attempted to reproduce this on a device by configuring a GTP engine profile
+with the maximum number of 8 threads and the maximum thinking time of 120
+seconds. After more than 15 minutes of calculations at full throttle there were
+no signs of any problems. Tested while Instruments was attached to the session.
+Since I currently don't know how to reproduce the crashes, I also can't provide
+sensible counter-measures.

@@ -990,6 +990,7 @@
 		CDC66BBD21EBB051006C73B3 /* changelog@3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "changelog@3.png"; path = "resource/icon/changelog/changelog@3.png"; sourceTree = SOURCE_ROOT; };
 		CDC66BBE21EBB051006C73B3 /* noun_Changelog_365219.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = noun_Changelog_365219.svg; path = resource/icon/changelog/noun_Changelog_365219.svg; sourceTree = SOURCE_ROOT; };
 		CDC66BBF21EBB052006C73B3 /* changelog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = changelog.png; path = resource/icon/changelog/changelog.png; sourceTree = SOURCE_ROOT; };
+		CDC66BC521EF4B0A006C73B3 /* BUGS */ = {isa = PBXFileReference; lastKnownFileType = text; path = BUGS; sourceTree = "<group>"; };
 		CDC97A88182EEB5F00755EB2 /* GoZobristTable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoZobristTable.h; sourceTree = "<group>"; };
 		CDC97A89182EEB5F00755EB2 /* GoZobristTable.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = GoZobristTable.mm; sourceTree = "<group>"; };
 		CDC97A8C18301CC000755EB2 /* GoGameRules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameRules.h; sourceTree = "<group>"; };
@@ -2163,6 +2164,7 @@
 		CDEC287B12F477E70069F5B7 /* doc */ = {
 			isa = PBXGroup;
 			children = (
+				CDC66BC521EF4B0A006C73B3 /* BUGS */,
 				CDEC287C12F477E70069F5B7 /* ChangeLog */,
 				CDD7D7F01753FD290068CBBA /* Class diagram of packages go + player.jpg */,
 				CDD7D7E81753F4990068CBBA /* CodingGuidelines */,
