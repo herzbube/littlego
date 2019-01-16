@@ -16,12 +16,22 @@ Communication with Fuego
 - The problem: iOS does not allow to launch other processes, therefore a
   different solution is required
 - The solution: What works very nicely is to run the Fuego engine in a
-  secondary thread and to let it attach its input/output streams to a pair of
-  named pipes. The Fuego client also runs in a secondary thread and attaches
-  two complementary streams to the same pair of named pipes. Synchronization
-  between the two threads is achieved through the pipes' blocking behaviour.
+  secondary thread and to let it attach its input/output streams to a pair
+  in-memory pipe streams. The Fuego client also runs in a secondary thread and
+  attaches two complementary streams to the same pair of in-memory pipe streams.
+  Synchronization between the two threads is achieved through the pipe streams'
+  blocking behaviour.
 - Fuego had to be patched to make this happen. For details, read the section
   "Changes to the Fuego source code".
+- The in-memory pipe streams are made possible by the PipeStreamBuffer class,
+  which is part of this project. PipeStreamBuffer is a custom I/O stream buffer
+  that allows std::istream and std::ostream to act as the input and output end
+  points of an in-memory pipe.
+- An earlier, much simpler implementation without the need of a custom I/O
+  stream buffer made use of named pipes, but this had to be abandoned when the
+  project switched to the C++ standard library implementation libc++ due to a
+  bug in that library. See [1] for details.
+  [1] https://bugs.llvm.org/show_bug.cgi?id=23078
 
 
 Thread architecture

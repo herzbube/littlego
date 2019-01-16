@@ -91,22 +91,9 @@ These are the commands to build/install Fuego:
   make
   make install
 
-Create communication FIFO pipes:
+Run Fuego
   cd /path/to/littlego/3rdparty/install/fuego-macosx
-  mkfifo input.pipe
-  mkfifo output.pipe
+  ./bin fuego
 
-These are the commands to setup the test. You need 3 terminal windows for this.
-- Launch Fuego in terminal window 1
-    cd /path/to/littlego/3rdparty/install/fuego-macosx
-    ./bin/fuego --input-pipe input.pipe --output-pipe output.pipe
-- Execute this command in terminal window 2
-    cd /path/to/littlego/3rdparty/install/fuego-macosx
-    cat output.pipe
-- Execute this command in terminal window 3
-    cd /path/to/littlego/3rdparty/install/fuego-macosx
-    cat >input.pipe
-
-GTP commands can now be typed into terminal window 3 in order to control Fuego.
-Fuego's output in response to the commands can be observed in terminal window 2.
-To get rid of everything, simply remove the "fuego-macosx" folder.
+GTP commands can now be typed to control Fuego. To get rid of everything, simply
+remove the "fuego-macosx" folder.
