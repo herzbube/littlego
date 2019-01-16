@@ -113,3 +113,21 @@ stone-black.png, stone-white.png, stone-crosshair.png
 
 [1] https://github.com/justinweiss/dragongoclient
 
+
+App Store icon
+--------------
+The original App Store icon used transparency. It was not shipped as part of
+the app bundle, but was uploaded separately/manually to App Store Connect
+(formerly iTunes Connect).
+
+When the project was updated to Xcode 10 for version 1.4, the App Store icon
+had to be added to the project's asset catalog. When the app was released the
+App Store would then automatically extract the icon from the app bundle - so no
+more manual uploading to App Store Connect. In addition, the App Store icon no
+longer was allowed to contain transparency (an alpha channel). I fixed this by
+the widely accepted workflow: Load the image into Preview.app, export the
+image and uncheck the "Alpha" checkbox.
+
+If the original image with transparency is needed in the future, it can be
+restored from vesion control history. The file was originally located under
+"resource/image/appicon-appstore@2x-with-transparency.png".
