@@ -1,6 +1,8 @@
 Purpose of this document
 ------------------------
-This document has notes about the project's build process.
+This document has notes about the project's build process. The file
+NOTES.Build.3rdparty has additional notes about building the 3rdparty software
+used by the project.
 
 
 Xcode version

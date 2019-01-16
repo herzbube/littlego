@@ -32,9 +32,6 @@ Improvements and changes
 - The "New game" screen now displays a recommendation to use the area scoring
   system.
 - The "Game info" screen now shows stone and player setup information.
-  1. asfad
-  1. asfas
-    - jjj
 - When the app is started for the first time after the update, two new
   GTP commands "list_setup" and "list_setup_player" are added to the user's
   list of GTP commands (Diagnostics > GTP commands).

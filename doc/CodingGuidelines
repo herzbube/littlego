@@ -10,7 +10,7 @@ Naming
 - Member variables use the the prefix "_" to distinguish them from variables
   that are local to a method (in a few places with older code, the prefix is
   still "m_")
-- Setter/getter methods should be named after the membere variable they
+- Setter/getter methods should be named after the member variable they
   encapsulate (e.g. getter = icon(), setter = setIcon:())
 - Use @property in preference to member variables; letting the compiler
   synthesize the property for you guarantees that the naming is correct

@@ -37,7 +37,7 @@ Little Go is released under the Apache License 2.0 (http://www.apache.org/licens
 App Store screenshots
 ---------------------
 App Store Screenshots are prepared in the simulator. The content is the same
-for all devices. iPhone screenshots are taken in portrait orientation, landscape
+for all devices. iPhone screenshots are taken in portrait orientation, iPad
 screenshots are taken in landscape orientation.
 
 Before starting to take screenshots, prepare each simulator as follows:

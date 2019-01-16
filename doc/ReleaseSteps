@@ -76,7 +76,7 @@ Before the release
 - Commit final changes (check with "git status" that nothing was forgotten)
 - Select the "Little Go AppStore Distribution" scheme, then Product > Archive.
   Follow the instructions in the "Make an AppStore distribution" section below
-  to upload the resulting build to iTunes Connect.
+  to upload the resulting build to App Store Connect.
 
 
 Create an archive
@@ -123,13 +123,13 @@ Make an ad-hoc distribution (beta release)
 
 Make an AppStore distribution (production release)
 --------------------------------------------------
-- Log in to iTunes Connect
+- Log in to App Store Connect
 - Navigate to the main screen of the app
 - Add the new application version by clicking the button labelled
   "(+) Version or platform"
 - Make all the preparations required for the submission. What to do and how to
-  do it is a moving target - Apple keeps changing the iTunes Connect site, so
-  it doesn't make much sense to describe things here in detail. You certainly
+  do it is a moving target - Apple keeps changing the App Store Connect site,
+  so it doesn't make much sense to describe things here in detail. You certainly
   need to fill in the "What's New in This Version" field (the necessary
   information can be taken from the ChangeLog), and specify whether you want
   the release the app manually or automatically after the review process has
@@ -137,7 +137,7 @@ Make an AppStore distribution (production release)
   introduced by Apple.
 - When everything is ready, switch back to Xcode. In the Organizer window,
   select the archived build (instructions how to create an archive can be found
-  further up in this document), then click the "Upload to App Store..." button
+  further up in this document), then click the "Distribute app" button
 - Select a provisioning profile to use. The provisioning profile determines
   the code-signing identity that Xcode will use. The default should be OK.
 - Click "Upload" for one final time. The archive is now being validated and
@@ -166,8 +166,8 @@ Make an AppStore distribution (production release)
   - Click "Next". The upload process should be starting now. The process takes a
     while, in the meantime you can click on the "Activity" button to see what
     Application Loader is doing.
-- After the upload has finished, switch back to iTunes Connect. Scroll down to
-  the section titled "Build" and select the build you just uploaded. You may
+- After the upload has finished, switch back to App Store Connect. Scroll down
+  to the section titled "Build" and select the build you just uploaded. You may
   need to wait a moment until the build appears. If in doubt, log out and log
   back in.
 - Click "Submit for review" at the top of the page.
@@ -183,9 +183,8 @@ Make the release
 - Backup the archive that was uploaded to the App Store. This is important
   because that archive contains the symbols that are required to symbolicate any
   crash reports. Usually you will rely on Crashlytics for this, but you never
-  know. I have configured my Xcode to generate archives in this location
-    /Users/patrick/dev/Xcode Archives
-  but this is non-standard. If in doubt, check out your Xcode preferences.
+  know. To find the .xcarchive bundle to backup, right-click on the archived
+  build in the Organizer window, then select "Show in Finder".
 - Merge all changes in the release branch into develop
   git checkout develop
   git merge release-0.9.0

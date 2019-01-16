@@ -85,10 +85,18 @@ MANUAL
   "Help" tab. For this to work, the content of this file must follow certain
   guidelines that are documented in DocumentGenerator.h.
 
+ChangeLog
+  This document contains an annotated compilation of all bugfixes, newly
+  implemented features, and other improvements and changes for all released
+  versions of the project. The file is parsed and displayed in game under the
+  "Changelog" tab. For this to work, the content of this file must follow
+  certain guidelines that are documented in DocumentGenerator.h.
+
 NOTES.Build
 NOTES.Build.3rdparty
   These documents have detailed notes about the third-party software build
-  process, and the project's own build process.
+  process, and the project's own build process (including documentation about
+  any compiler warnings that currently exist).
 
 NOTES.Architecture
 NOTES.Design

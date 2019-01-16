@@ -18,7 +18,7 @@ must first be initialized like this:
 
 This step basically performs a clone of each Git repository that is represented
 by a Git submodule. This may take a while, especially the Boost sub-submodule is
-quite a hefty download of 350+ MB.
+quite a hefty download of several hundred MB.
 
 The next step is to build the various 3rdparty software. The following
 convenience script should do this for you:
@@ -81,13 +81,13 @@ create such a build.
 
 Preconditions
 - Install the Xcode command line tools
-- Install Boost system-wide (e.g. through MacPorts)
-- Install the Autotools system-wide (e.g. through MacPorts)
+- Install Boost system-wide (e.g. through Homebrew)
+- Install the Autotools system-wide (e.g. through Homebrew)
 
 These are the commands to build/install Fuego:
   cd /path/to/littlego/3rdparty/src/fuego-on-ios
   autoreconf -i
-  ./configure --prefix=$(pwd)/../../install/fuego-macosx
+  ./configure --prefix="$(pwd)/../../install/fuego-macosx"
   make
   make install
 
