@@ -132,15 +132,18 @@ enum AlertButtonType
 // -----------------------------------------------------------------------------
 - (void) gtpResponseReceived:(GtpResponse*)response
 {
-  if (! response.status)
-  {
-    DDLogError(@"%@: Aborting due to failed GTP command", [self shortDescription]);
-    assert(0);
-    return;
-  }
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
+
+    if (! response.status)
+    {
+      DDLogError(@"%@: Aborting due to failed GTP command", [self shortDescription]);
+      assert(0);
+      [self handleComputerFailedToPlay:response.parsedResponse];
+      return;
+    }
+
     bool success = [self playMoveInsideResponse:response];
     if (! success)
       return;
@@ -289,6 +292,31 @@ enum AlertButtonType
   [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
 
   [self retain];  // must survive until the handler method is invoked
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Is invoked when the GTP engine is unable to play a move for some
+/// reason. This method displays an alert and brings the app back into a sane
+/// state.
+// -----------------------------------------------------------------------------
+- (void) handleComputerFailedToPlay:(NSString*)gtpResponseString;
+{
+  NSString* message = [NSString stringWithFormat:@"The computer failed to play. The technical reason is this:\n\n%@", gtpResponseString];
+
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Unexpected error"
+                                                                           message:message
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  void (^okActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+  {
+    self.game.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
+  };
+  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:okActionBlock];
+  [alertController addAction:okAction];
+
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------
