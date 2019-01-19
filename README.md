@@ -9,7 +9,9 @@ Little Go is released under the [Apache License](http://www.apache.org/licenses/
 
 ## Changes in this release
 
-This is the Little Go maintenance and bugfix release 1.4.0. A selection of the most important changes are:
+This is the Little Go bugfix release 1.4.1. It contains an important fix for a bug in Fuego that could cause Fuego to play a stone during the opening game on an intersection that was already occupied by a handicap or setup stone (#328). In addition, Little Go's error handling is now capable of dealing with such a situation so that user's are not stuck in a seemingly endless "computer is thinking" loop. Thanks to Rob Wildschut and Mark Spurlock for reporting the issue.
+
+The previous release was the Little Go maintenance and bugfix release 1.4.0. A selection of the most important changes are:
 
 * Added support for loading and saving .sgf files that contain stone and/or player setup nodes (#323). This kind of .sgf files is frequently used for sharing board positions that teach how to play best in certain game situations, or that are puzzles to be solved. Notes:
   * It was already possible to load these .sgf files before the change, but Little Go would not display the stones specified by the stone setup nodes, and playing after loading such an .sgf file would usually result in the alert message "Your move was rejected by Fuego".
