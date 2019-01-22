@@ -77,6 +77,8 @@ NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
 NSString* boardViewWillDisplayCrossHair = @"BoardViewWillDisplayCrossHair";
 NSString* boardViewWillHideCrossHair = @"BoardViewWillHideCrossHair";;
 NSString* boardViewDidChangeCrossHair = @"BoardViewDidChangeCrossHair";
+NSString* uiAreaPlayModeWillChange = @"UIAreaPlayModeWillChange";
+NSString* uiAreaPlayModeDidChange = @"UIAreaPlayModeDidChange";
 
 // Default values for properties that define how the Go board is displayed
 const float iPhoneMaximumZoomScale = 2.5;
@@ -303,6 +305,7 @@ NSString* loggingEnabledKey = @"LoggingEnabled";
 // User interface settings
 NSString* visibleUIAreaKey = @"VisibleUIArea";
 NSString* tabOrderKey = @"TabOrder";
+NSString* uiAreaPlayModeKey = @"UiAreaPlayMode";
 // Magnifying glass settings
 NSString* magnifyingGlassEnableModeKey = @"MagnifyingGlassEnableMode";
 NSString* magnifyingGlassAutoThresholdKey = @"MagnifyingGlassAutoThreshold";
@@ -377,7 +380,6 @@ NSString* goPointStoneStateKey = @"StoneState";
 NSString* goPointTerritoryStatisticsScoreKey = @"TerritoryStatisticsScore";
 NSString* goPointRegionKey = @"Region";
 // GoScore keys
-NSString* goScoreScoringEnabledKey = @"ScoringEnabled";
 NSString* goScoreKomiKey = @"Komi";
 NSString* goScoreCapturedByBlackKey = @"CapturedByBlack";
 NSString* goScoreCapturedByWhiteKey = @"CapturedByWhite";

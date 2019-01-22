@@ -28,8 +28,9 @@
 #import "../main/ApplicationDelegate.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
-#import "../utility/NSStringAdditions.h"
 #import "../play/model/ScoringModel.h"
+#import "../ui/UiSettingsModel.h"
+#import "../utility/NSStringAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -57,7 +58,6 @@
   if (! self)
     return nil;
 
-  _scoringEnabled = false;                       // don't use self to avoid triggering a notification
   _scoringInProgress = false;                    // ditto
   _askGtpEngineForDeadStonesInProgress = false;  // ditto
   _game = game;
@@ -80,7 +80,6 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
-  _scoringEnabled = [decoder decodeBoolForKey:goScoreScoringEnabledKey];
   _komi = [decoder decodeDoubleForKey:goScoreKomiKey];
   _capturedByBlack = [decoder decodeIntForKey:goScoreCapturedByBlackKey];
   _capturedByWhite = [decoder decodeIntForKey:goScoreCapturedByWhiteKey];
@@ -156,51 +155,139 @@
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
-- (void) setScoringEnabled:(bool)newState
+- (bool) scoringEnabled
 {
-  if (_scoringEnabled == newState)
-    return;
-  _scoringEnabled = newState;
-  if (newState)
-  {
-    [self initializeRegions];
-    self.didAskGtpEngineForDeadStones = false;
-  }
+  UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+  if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+    return true;
   else
-  {
-    [self uninitializeRegions];
-  }
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Enables scoring on this GoScore object.
+///
+/// Invoking this method puts all GoBoardRegion objects that currently
+/// exist into scoring mode (see the GoBoardRegion class documentation for
+/// details) and initializes them to belong to no territory. Also, when
+/// calculateWaitUntilDone:() is invoked the next time, the GTP engine will be
+/// queried for an initial set of dead stones (unless suppressed by the user
+/// preference).
+// -----------------------------------------------------------------------------
+- (void) enableScoring
+{
+  [self initializeRegionsRetainTerritory:false];
+
+  self.didAskGtpEngineForDeadStones = false;
+
   [self postScoringModeNotification];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for setScoringEnabled.
+/// @brief Enables scoring on this GoScore object during app launch.
+///
+/// Invoking this method puts all GoBoardRegion objects that currently
+/// exist into scoring mode (see the GoBoardRegion class documentation for
+/// details), but lets them retain the current territory information.
 // -----------------------------------------------------------------------------
-- (void) initializeRegions
+- (void) enableScoringOnAppLaunch
+{
+  // This does nothing if GoBoardRegion objects are already in scoring mode.
+  // Otherwise they are put into scoring mode but still retain the territory
+  // information that they loaded from the NSCoding archive. Because of this
+  // it's important that uninitializeRegions() resets the territory
+  // information.
+  [self initializeRegionsRetainTerritory:true];
+
+  // If GoBoardRegion objects are already in scoring mode, the GTP engine
+  // must not be asked for dead stones. If GoBoardRegion objects are not in
+  // scoring mode, we forego asking because that would delay app launch.
+  self.didAskGtpEngineForDeadStones = true;
+
+  // Make sure that this object does not contain outdated information.
+  [self doCalculate];
+
+  // No need to post notification. Clients already know whether or not scoring
+  // mode is enabled because they obtained this information from
+  // UiSettingsModel.
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Disables scoring on this GoScore object.
+///
+/// Invoking this method puts all GoBoardRegion objects that currently
+/// exist into normal mode, i.e. "not scoring" mode.
+// -----------------------------------------------------------------------------
+- (void) disableScoring
+{
+  [self uninitializeRegions];
+
+  [self postScoringModeNotification];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Enables scoring on this GoScore object.
+///
+/// Invoking this method puts all GoBoardRegion objects that currently
+/// exist into normal mode, i.e. "not scoring" mode.
+// -----------------------------------------------------------------------------
+- (void) disableScoringOnAppLaunch
+{
+  [self uninitializeRegions];
+
+  // No need to post notification. Clients already know whether or not scoring
+  // mode is enabled because they obtained this information from
+  // UiSettingsModel.
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for enableScoring(), enableScoringOnAppLaunch() and
+/// didChangeBoardPosition().
+// -----------------------------------------------------------------------------
+- (void) initializeRegionsRetainTerritory:(bool)retainTerritory
 {
   NSArray* allRegions = self.game.board.regions;
   DDLogVerbose(@"%@: initializing GoBoardRegion objects, number of regions = %lu", self, (unsigned long)allRegions.count);
   for (GoBoardRegion* region in allRegions)
   {
-    region.territoryColor = GoColorNone;
-    region.territoryInconsistencyFound = false;
-    if (region.isStoneGroup)
-      region.stoneGroupState = GoStoneGroupStateAlive;
-    else
-      region.stoneGroupState = GoStoneGroupStateUndefined;
+    if (!retainTerritory)
+      [self resetRegion:region];
+
     region.scoringMode = true;  // enabling scoring mode allows caching for optimized performance
   }
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for setScoringEnabled.
+/// @brief Private helper for disableScoring(), disableScoringOnAppLaunch()
+/// and willChangeBoardPosition().
 // -----------------------------------------------------------------------------
 - (void) uninitializeRegions
 {
   NSArray* allRegions = self.game.board.regions;
   DDLogVerbose(@"%@: uninitializing GoBoardRegion objects, number of regions = %lu", self, (unsigned long)allRegions.count);
   for (GoBoardRegion* region in allRegions)
+  {
+    // Make sure that regions do not contain outdated information. If the app
+    // is suspended and enableScoringOnAppLaunch() is invoked on next app
+    // launch, then we want to start with a clean score.
+    [self resetRegion:region];
+
     region.scoringMode = false;  // forget cached values
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for initializeRegionsRetainTerritory:() and
+/// uninitializeRegions().
+// -----------------------------------------------------------------------------
+- (void) resetRegion:(GoBoardRegion*)region
+{
+  region.territoryColor = GoColorNone;
+  region.territoryInconsistencyFound = false;
+  if (region.isStoneGroup)
+    region.stoneGroupState = GoStoneGroupStateAlive;
+  else
+    region.stoneGroupState = GoStoneGroupStateUndefined;
 }
 
 // -----------------------------------------------------------------------------
@@ -232,7 +319,7 @@
 {
   if (! self.scoringEnabled)
     return;
-  [self initializeRegions];
+  [self initializeRegionsRetainTerritory:false];
   self.didAskGtpEngineForDeadStones = false;
 }
 
@@ -1111,7 +1198,6 @@
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
-  [encoder encodeBool:self.scoringEnabled forKey:goScoreScoringEnabledKey];
   [encoder encodeDouble:self.komi forKey:goScoreKomiKey];
   [encoder encodeInt:self.capturedByBlack forKey:goScoreCapturedByBlackKey];
   [encoder encodeInt:self.capturedByWhite forKey:goScoreCapturedByWhiteKey];

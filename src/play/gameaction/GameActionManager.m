@@ -29,6 +29,7 @@
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../command/game/PauseGameCommand.h"
 #import "../../command/game/ResumePlayCommand.h"
+#import "../../command/ChangeUIAreaPlayModeCommand.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../main/WindowRootViewController.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -273,9 +274,8 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) scoringStart:(id)sender
 {
-  GoScore* score = [GoGame sharedGame].score;
-  score.scoringEnabled = true;
-  [score calculateWaitUntilDone:false];
+  // This triggers a notification to which this manager reacts
+  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModeScoring] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -283,8 +283,8 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) scoringDone:(id)sender
 {
-  GoGame* game = [GoGame sharedGame];
-  game.score.scoringEnabled = false;  // triggers notification to which this manager reacts
+  // This triggers a notification to which this manager reacts
+  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModePlay] autorelease] submit];
 
   [self autoResumePlayIfNecessary];
 }
@@ -1013,8 +1013,7 @@ static GameActionManager* sharedGameActionManager = nil;
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
-    game.score.scoringEnabled = true;
-    [game.score calculateWaitUntilDone:false];
+    [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModeScoring] autorelease] submit];
   }
   @finally
   {

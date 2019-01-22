@@ -18,6 +18,7 @@
 // Project includes
 #import "NewGameCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
+#import "../ChangeUIAreaPlayModeCommand.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
@@ -66,6 +67,7 @@
   if (! self)
     return nil;
   self.prefabricatedGame = game;
+  self.shouldResetUIAreaPlayMode = true;
   self.shouldSetupGtpBoard = true;
   self.shouldSetupGtpHandicapAndKomi = true;
   self.shouldSetupComputerPlayer = true;
@@ -78,6 +80,8 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  if (self.shouldResetUIAreaPlayMode)
+    [self resetUIAreaPlayMode];
   [self newGame];
   [self setupGtpRules];
   if (self.shouldSetupGtpBoard)
@@ -92,16 +96,24 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Resets the UI area "Play" to #UIAreaPlayModePlay.
+// -----------------------------------------------------------------------------
+- (void) resetUIAreaPlayMode
+{
+  // When a new game is started, we want to begin in play mode. It's especially
+  // important to disable scoring mode while the old GoGame is still around
+  // because scoring mode affects the state of some Go model objects.
+  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModePlay] autorelease] submit];
+}
+
+  // -----------------------------------------------------------------------------
 /// @brief Creates a new GoGame instance (deallocates the old one first).
 // -----------------------------------------------------------------------------
 - (void) newGame
 {
-  // Disable scoring mode while the old GoGame is still around
-  GoGame* oldGame = [GoGame sharedGame];
-  oldGame.score.scoringEnabled = false;
-
   // Send this while the old GoGame object is still around and fully functional
   // (the old game is nil if this happens during application startup)
+  GoGame* oldGame = [GoGame sharedGame];
   [[NSNotificationCenter defaultCenter] postNotificationName:goGameWillCreate object:oldGame];
 
   // Create the new GoGame object (unless a pre-fabricated object was supplied)

@@ -169,6 +169,8 @@
 		CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
 		CD7C578221F4A3A900694520 /* UnarchiveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C578021F4A3A900694520 /* UnarchiveGameCommand.m */; };
 		CD7C578321F4A3A900694520 /* UnarchiveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C578021F4A3A900694520 /* UnarchiveGameCommand.m */; };
+		CD7C578621F79C3000694520 /* ChangeUIAreaPlayModeCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C578421F79C2F00694520 /* ChangeUIAreaPlayModeCommand.m */; };
+		CD7C578721F79C3000694520 /* ChangeUIAreaPlayModeCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C578421F79C2F00694520 /* ChangeUIAreaPlayModeCommand.m */; };
 		CD7C69B61A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
 		CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
 		CD7C69BA1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B91A9ABDE2009EC5AD /* BoardPositionNavigationManager.m */; };
@@ -750,6 +752,8 @@
 		CD72216814633F1D005EAC65 /* TableViewGridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewGridCell.m; sourceTree = "<group>"; };
 		CD7C578021F4A3A900694520 /* UnarchiveGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnarchiveGameCommand.m; sourceTree = "<group>"; };
 		CD7C578121F4A3A900694520 /* UnarchiveGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnarchiveGameCommand.h; sourceTree = "<group>"; };
+		CD7C578421F79C2F00694520 /* ChangeUIAreaPlayModeCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangeUIAreaPlayModeCommand.m; sourceTree = "<group>"; };
+		CD7C578521F79C2F00694520 /* ChangeUIAreaPlayModeCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeUIAreaPlayModeCommand.h; sourceTree = "<group>"; };
 		CD7C69B41A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionButtonBoxDataSource.h; sourceTree = "<group>"; };
 		CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionButtonBoxDataSource.m; sourceTree = "<group>"; };
 		CD7C69B81A9ABDE2009EC5AD /* BoardPositionNavigationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionNavigationManager.h; sourceTree = "<group>"; };
@@ -2011,6 +2015,8 @@
 				CD05A8C91422803B00214BBE /* move */,
 				CD072705180B292E0083B138 /* playerinfluence */,
 				CDF9740316C4082200D01D24 /* AsynchronousCommand.h */,
+				CD7C578521F79C2F00694520 /* ChangeUIAreaPlayModeCommand.h */,
+				CD7C578421F79C2F00694520 /* ChangeUIAreaPlayModeCommand.m */,
 				CDD48FA71413E00E00188B6A /* Command.h */,
 				CDD48FAE1413E95500188B6A /* CommandBase.h */,
 				CDD48FAF1413E95500188B6A /* CommandBase.m */,
@@ -2724,6 +2730,7 @@
 				CD05AB961425169500214BBE /* GoUtilities.m in Sources */,
 				CDAFAE25195A1DCA00EF84A9 /* TiledScrollView.m in Sources */,
 				CD05AC7B1425470B00214BBE /* DeleteGameCommand.m in Sources */,
+				CD7C578621F79C3000694520 /* ChangeUIAreaPlayModeCommand.m in Sources */,
 				CD05AC7C1425470B00214BBE /* NewGameCommand.m in Sources */,
 				CD05AC7D1425470B00214BBE /* RenameGameCommand.m in Sources */,
 				CD05AC7E1425470B00214BBE /* SaveGameCommand.m in Sources */,
@@ -3053,6 +3060,7 @@
 				CD2D3A9E174C348C0030EDE4 /* EditGtpEngineProfileController.m in Sources */,
 				CD2D3A9F174C34910030EDE4 /* EditPlayerController.m in Sources */,
 				CD2D3AA0174C34A60030EDE4 /* EditPlayingStrengthSettingsController.m in Sources */,
+				CD7C578721F79C3000694520 /* ChangeUIAreaPlayModeCommand.m in Sources */,
 				CD2D3AA1174C34B20030EDE4 /* EditResignBehaviourSettingsController.m in Sources */,
 				CD2D3AA2174C34B50030EDE4 /* MaxMemoryController.m in Sources */,
 				CD2D3AA3174C34C40030EDE4 /* SliderInputController.m in Sources */,

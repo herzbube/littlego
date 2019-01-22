@@ -146,6 +146,16 @@ enum UIArea
   UIAreaDefault = UIAreaPlay
 };
 
+/// @brief Enumerates the possible modes that the "Play" UI area can be in.
+enum UIAreaPlayMode
+{
+  UIAreaPlayModePlay,        ///< @brief The "Play" UI area is in play mode, i.e. the user can play moves.
+  UIAreaPlayModeScoring,     ///< @brief The "Play" UI area is in scoring mode.
+  UIAreaPlayModeBoardSetup,  ///< @brief The "Play" UI area is in board setup mode. Only possible if no moves have been played yet.
+  UIAreaPlayModeTsumego,     ///< @brief The "Play" UI area is in tsumego (problem solving) mode
+  UIAreaPlayModeDefault = UIAreaPlayModePlay,
+};
+
 /// @brief Enumerates the types of information that the Info view can display.
 enum InfoType
 {
@@ -634,6 +644,22 @@ extern NSString* playersAndProfilesDidReset;
 /// @brief Is sent to indicate that territory statistics in GoPoint objects have
 /// been updated.
 extern NSString* territoryStatisticsChanged;
+/// @brief Is sent to indicate that the mode of the UI area "Play" is about
+/// to change. An NSArray object containing to NSNumber objects is associated
+/// with the notification. The first NSNumber object contains the old
+/// UIAreaPlayMode value, the second NSNumber object the new UIAreaPlayMode
+/// value. Receivers of the notification must process the NSArray immediately
+/// because the NSArray may be deallocated, or its content changed, after the
+/// notification has been delivered.
+extern NSString* uiAreaPlayModeWillChange;
+/// @brief Is sent to indicate that the mode of the UI area "Play" has changed.
+/// An NSArray object containing to NSNumber objects is associated with the
+/// notification. The first NSNumber object contains the old UIAreaPlayMode
+/// value, the second NSNumber object the new UIAreaPlayMode value. Receivers
+/// of the notification must process the NSArray immediately because the NSArray
+/// may be deallocated, or its content changed, after the notification has been
+/// delivered.
+extern NSString* uiAreaPlayModeDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -1035,6 +1061,7 @@ extern NSString* loggingEnabledKey;
 // User interface settings
 extern NSString* visibleUIAreaKey;
 extern NSString* tabOrderKey;
+extern NSString* uiAreaPlayModeKey;
 // Magnifying glass settings
 extern NSString* magnifyingGlassEnableModeKey;
 extern NSString* magnifyingGlassAutoThresholdKey;
@@ -1113,7 +1140,6 @@ extern NSString* goPointStoneStateKey;
 extern NSString* goPointTerritoryStatisticsScoreKey;
 extern NSString* goPointRegionKey;
 // GoScore keys
-extern NSString* goScoreScoringEnabledKey;
 extern NSString* goScoreMarkModeKey;
 extern NSString* goScoreKomiKey;
 extern NSString* goScoreCapturedByBlackKey;

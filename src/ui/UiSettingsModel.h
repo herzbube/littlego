@@ -40,5 +40,7 @@
 /// correspond to the #UIArea enumeration values and can thus be matched to
 /// a corresponding view controller.
 @property(nonatomic, retain) NSArray* tabOrder;
+/// @brief The mode that the "Play" UI area is currently in.
+@property(nonatomic, assign) enum UIAreaPlayMode uiAreaPlayMode;
 
 @end

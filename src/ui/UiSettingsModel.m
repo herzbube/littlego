@@ -32,10 +32,13 @@
   self = [super init];
   if (! self)
     return nil;
+
   self.visibleUIArea = UIAreaDefault;
   _tabOrder = [[NSMutableArray arrayWithCapacity:arraySizeDefaultTabOrder] retain];
   for (int arrayIndex = 0; arrayIndex < arraySizeDefaultTabOrder; ++arrayIndex)
     [(NSMutableArray*)_tabOrder addObject:[NSNumber numberWithInt:defaultTabOrder[arrayIndex]]];
+  _uiAreaPlayMode = UIAreaPlayModeDefault;
+
   return self;
 }
 
@@ -56,6 +59,7 @@
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   self.visibleUIArea = (enum UIArea)[[userDefaults valueForKey:visibleUIAreaKey] intValue];
   self.tabOrder = [userDefaults arrayForKey:tabOrderKey];
+  self.uiAreaPlayMode = (enum UIAreaPlayMode)[[userDefaults valueForKey:uiAreaPlayModeKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -67,6 +71,7 @@
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setValue:[NSNumber numberWithInt:self.visibleUIArea] forKey:visibleUIAreaKey];
   [userDefaults setObject:self.tabOrder forKey:tabOrderKey];
+  [userDefaults setValue:[NSNumber numberWithInt:self.uiAreaPlayMode] forKey:uiAreaPlayModeKey];
 }
 
 @end

@@ -53,6 +53,7 @@
 - (id) init;
 - (id) initWithGame:(GoGame*)game;
 
+@property(nonatomic, assign) bool shouldResetUIAreaPlayMode;
 @property(nonatomic, assign) bool shouldSetupGtpBoard;
 @property(nonatomic, assign) bool shouldSetupGtpHandicapAndKomi;
 @property(nonatomic, assign) bool shouldSetupComputerPlayer;

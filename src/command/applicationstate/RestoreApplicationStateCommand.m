@@ -47,6 +47,8 @@
   [GoUtilities recalculateZobristHashes:unarchivedGame];
 
   NewGameCommand* command = [[[NewGameCommand alloc] initWithGame:unarchivedGame] autorelease];
+  // We want to keep the mode of the UI area "Play" from the previous session
+  command.shouldResetUIAreaPlayMode = false;
   // Computer player must not be triggered before the GTP engine has been
   // sync'ed (it is irrelevant that we are not going to trigger the computer
   // player at all)

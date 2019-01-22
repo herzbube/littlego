@@ -21,9 +21,12 @@
 #import "diagnostics/RestoreBugReportApplicationStateCommand.h"
 #import "gtp/LoadOpeningBookCommand.h"
 #import "gtp/SetAdditiveKnowledgeTypeCommand.h"
+#import "../go/GoGame.h"
+#import "../go/GoScore.h"
 #import "../main/ApplicationDelegate.h"
 #import "../shared/ApplicationStateManager.h"
 #import "../shared/LongRunningActionCounter.h"
+#import "../ui/UiSettingsModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -107,6 +110,45 @@
     else
     {
       [[ApplicationStateManager sharedManager] restoreApplicationState];
+
+      // Special scoring mode considerations:
+      // - Go model objects store scoring-related information. This information
+      //   is saved to the NSCoding archive when the app state is saved.
+      // - UiSettingsModel stores whether or not scoring is enabled, in the form
+      //   of an UIAreaPlayMode value. This information is saved when the user
+      //   preferences are saved.
+      // - The app state and the user preferences are not necessarily saved at the
+      //   same time. For instance, the app state is changed whenever a move is
+      //   played, or whenever anything about the Go model objects changes. The
+      //   user preferences on the other hand are saved when the user switches
+      //   tabs.
+      // - When the app is suspended all this does not matter, because at that
+      //   moment both app state and user preferences are saved again, so that the
+      //   two information sets on disk are in sync.
+      // - However, if the app crashes the result may be that the two information
+      //   sets on disk do not match.
+      // - A possible solution that was considered is to save both app state and
+      //   user preferences in ChangeUIAreaPlayModeCommand. The problem with
+      //   this is that the two information sets cannot be saved
+      //   atomically - the app may crash after the user preferences were saved,
+      //   but before the app state is saved, again resulting in the data on
+      //   disk not being in sync. This may seem far-fetched, but keep in mind
+      //   that enabling or disabling scoring mode triggers many reactions in
+      //   the application, any one of which might cause the app to crash.
+      // - The final solution chosen is that when the app is restored, the value
+      //   of UiSettingsModel.uiAreaPlayMode takes precedence over what is in the
+      //   Go model objects. The consequence of this decision is that the score
+      //   from the previous app session may be lost.
+      switch (delegate.uiSettingsModel.uiAreaPlayMode)
+      {
+        case UIAreaPlayModeScoring:
+          [[GoGame sharedGame].score enableScoringOnAppLaunch];
+          break;
+        default:
+          [[GoGame sharedGame].score disableScoringOnAppLaunch];
+          break;
+      }
+
       if (delegate.documentInteractionURL)
       {
         // Control returns while an alert is still being displayed

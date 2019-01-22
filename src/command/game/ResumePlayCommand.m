@@ -18,6 +18,7 @@
 // Project includes
 #import "ResumePlayCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
+#import "../ChangeUIAreaPlayModeCommand.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameRules.h"
 #import "../../go/GoScore.h"
@@ -54,10 +55,11 @@
     [[ApplicationStateManager sharedManager] beginSavePoint];
     [game revertStateFromEndedToInProgress];
 
-    // We don't want GameActionManager to react to our disabling scoring mode,
-    // so we have to disable scoring mode ***AFTER*** reverting the game state
-    if (game.score.scoringEnabled)
-      game.score.scoringEnabled = false;
+    // When play is resumed we obviously want to return to play mode. It's
+    // important that we do this ***AFTER*** reverting the game state in case
+    // we are disabling scoring mode, because we don't want GameActionManager
+    // to react to our disabling scoring mode.
+    [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModePlay] autorelease] submit];
   }
   @finally
   {

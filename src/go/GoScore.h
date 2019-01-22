@@ -175,6 +175,12 @@
 }
 
 - (id) initWithGame:(GoGame*)game;
+
+- (void) enableScoring;
+- (void) enableScoringOnAppLaunch;
+- (void) disableScoring;
+- (void) disableScoringOnAppLaunch;
+
 - (void) calculateWaitUntilDone:(bool)waitUntilDone;
 - (void) toggleDeadStateOfStoneGroup:(GoBoardRegion*)stoneGroup;
 - (void) toggleSekiStateOfStoneGroup:(GoBoardRegion*)stoneGroup;
@@ -188,18 +194,10 @@
 /// @name General properties
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is true if scoring is enabled on this GoScore object.
-///
-/// Setting this property to true puts all GoBoardRegion objects that currently
-/// exist into scoring mode (see the GoBoardRegion class documentation for
-/// details) and initializes them to belong to no territory. Also, when
-/// calculateWaitUntilDone:() is invoked the next time, the GTP engine will be
-/// queried for an initial set of dead stones (unless suppressed by the user
-/// preference).
-///
-/// Setting this property to false puts all GoBoardRegion objects that currently
-/// exist into normal mode, i.e. "not scoring" mode.
-@property(nonatomic, assign) bool scoringEnabled;
+/// @brief Is true if scoring is enabled. This property exists solely for
+/// compatibility purposes. Clients should not use this property, instead they
+/// should query @e UiSettingsModel.uiAreaPlayMode.
+@property(nonatomic, assign, readonly) bool scoringEnabled;
 @property(nonatomic, assign) bool scoringInProgress;         ///< @brief Is true if a scoring operation is currently in progress.
 @property(nonatomic, assign) bool askGtpEngineForDeadStonesInProgress; ///< @brief Is true if the GTP engine is currently being queried for dead stones.
 //@}
