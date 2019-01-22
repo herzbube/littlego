@@ -167,6 +167,8 @@
 		CD6E847017FF99EC00643576 /* fuego-on-ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */; };
 		CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
+		CD7C578221F4A3A900694520 /* UnarchiveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C578021F4A3A900694520 /* UnarchiveGameCommand.m */; };
+		CD7C578321F4A3A900694520 /* UnarchiveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C578021F4A3A900694520 /* UnarchiveGameCommand.m */; };
 		CD7C69B61A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
 		CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
 		CD7C69BA1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B91A9ABDE2009EC5AD /* BoardPositionNavigationManager.m */; };
@@ -746,6 +748,8 @@
 		CD6EBE43175401C200ABB980 /* ProgrammingTopics */ = {isa = PBXFileReference; lastKnownFileType = text; path = ProgrammingTopics; sourceTree = "<group>"; };
 		CD72216714633F1D005EAC65 /* TableViewGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewGridCell.h; sourceTree = "<group>"; };
 		CD72216814633F1D005EAC65 /* TableViewGridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewGridCell.m; sourceTree = "<group>"; };
+		CD7C578021F4A3A900694520 /* UnarchiveGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnarchiveGameCommand.m; sourceTree = "<group>"; };
+		CD7C578121F4A3A900694520 /* UnarchiveGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnarchiveGameCommand.h; sourceTree = "<group>"; };
 		CD7C69B41A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionButtonBoxDataSource.h; sourceTree = "<group>"; };
 		CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionButtonBoxDataSource.m; sourceTree = "<group>"; };
 		CD7C69B81A9ABDE2009EC5AD /* BoardPositionNavigationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionNavigationManager.h; sourceTree = "<group>"; };
@@ -1331,6 +1335,8 @@
 				CD05B119142A606400214BBE /* CleanBackupSgfCommand.m */,
 				CD05B11F142A60A700214BBE /* RestoreGameFromSgfCommand.h */,
 				CD05B120142A60A700214BBE /* RestoreGameFromSgfCommand.m */,
+				CD7C578121F4A3A900694520 /* UnarchiveGameCommand.h */,
+				CD7C578021F4A3A900694520 /* UnarchiveGameCommand.m */,
 			);
 			path = backup;
 			sourceTree = "<group>";
@@ -2729,6 +2735,7 @@
 				CD97FA141AED1BD600148C16 /* ResumePlayCommand.m in Sources */,
 				CDCBA6D0183D8801003697E2 /* MagnifyingGlassSettingsController.m in Sources */,
 				CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */,
+				CD7C578221F4A3A900694520 /* UnarchiveGameCommand.m in Sources */,
 				CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */,
 				CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */,
 				CD0CCBF214311AD300A3F869 /* GtpLogViewController.m in Sources */,
@@ -2878,6 +2885,7 @@
 				CDFD9F7E18F1D5DF0031CBCF /* CrashReportingSettingsController.m in Sources */,
 				CDEECC6D1992923000BC89F2 /* ArchiveUtility.m in Sources */,
 				CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */,
+				CD7C578321F4A3A900694520 /* UnarchiveGameCommand.m in Sources */,
 				CDA0970C1A99F77F002FCD78 /* SplitViewController.m in Sources */,
 				CD7C69EE1AA9F697009EC5AD /* ExceptionUtility.m in Sources */,
 				CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */,

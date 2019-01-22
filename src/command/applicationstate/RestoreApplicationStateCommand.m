@@ -17,6 +17,7 @@
 
 // Project includes
 #import "RestoreApplicationStateCommand.h"
+#import "../backup/UnarchiveGameCommand.h"
 #import "../boardposition/SyncGTPEngineCommand.h"
 #import "../game/NewGameCommand.h"
 #import "../playerinfluence/ToggleTerritoryStatisticsCommand.h"
@@ -33,40 +34,15 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  BOOL fileExists;
-  NSString* archiveFilePath = [PathUtilities filePathForBackupFileNamed:archiveBackupFileName
-                                                             fileExists:&fileExists];
-  if (! fileExists)
+  UnarchiveGameCommand* unarchiveGameCommand = [[[UnarchiveGameCommand alloc] init] autorelease];
+  bool success = [unarchiveGameCommand submit];
+  if (! success)
   {
-    DDLogVerbose(@"%@: Restoring not possible, NSCoding archive file does not exist: %@", [self shortDescription], archiveFilePath);
+    DDLogError(@"%@: Unarchiving failed", [self shortDescription]);
     return false;
   }
 
-  NSData* data = [NSData dataWithContentsOfFile:archiveFilePath];
-  NSKeyedUnarchiver* unarchiver;
-  @try
-  {
-    unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
-  }
-  @catch (NSException* exception)
-  {
-    DDLogError(@"%@: Restoring not possible, NSKeyedUnarchiver's initForReadingWithData raises exception, exception name = %@, reason = %@", [self shortDescription], exception.name, exception.reason);
-    NSFileManager* fileManager = [NSFileManager defaultManager];
-    BOOL result = [fileManager removeItemAtPath:archiveFilePath error:nil];
-    DDLogVerbose(@"%@: Removed archive file %@, result = %d", [self shortDescription], archiveFilePath, result);
-    return false;
-  }
-  GoGame* unarchivedGame = [unarchiver decodeObjectForKey:nsCodingGoGameKey];
-  [unarchiver finishDecoding];
-  [unarchiver release];
-  if (! unarchivedGame)
-  {
-    DDLogError(@"%@: Restoring not possible, NSCoding archive not compatible", [self shortDescription]);
-    NSFileManager* fileManager = [NSFileManager defaultManager];
-    BOOL result = [fileManager removeItemAtPath:archiveFilePath error:nil];
-    DDLogVerbose(@"%@: Removed archive file %@, result = %d", [self shortDescription], archiveFilePath, result);
-    return false;
-  }
+  GoGame* unarchivedGame = unarchiveGameCommand.game;
 
   [GoUtilities recalculateZobristHashes:unarchivedGame];
 
@@ -77,7 +53,7 @@
   command.shouldTriggerComputerPlayer = false;
   [command submit];
 
-  bool success = [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+  success = [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
   if (! success)
   {
     DDLogError(@"%@: Restoring not possible, cannot sync GTP engine", [self shortDescription]);
