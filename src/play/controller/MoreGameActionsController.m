@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2016 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@
 #import "../../command/game/NewGameCommand.h"
 #import "../../command/game/ResumePlayCommand.h"
 #import "../../command/playerinfluence/GenerateTerritoryStatisticsCommand.h"
+#import "../../command/ChangeUIAreaPlayModeCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameRules.h"
@@ -49,6 +50,7 @@
 // -----------------------------------------------------------------------------
 enum MoreGameActionsButton
 {
+  BoardSetupButton,
   ScoreButton,
   MarkModeButton,
   UpdatePlayerInfluenceButton,
@@ -106,14 +108,28 @@ enum MoreGameActionsButton
                                                                            message:nil
                                                                     preferredStyle:UIAlertControllerStyleActionSheet];
 
-  // Add buttons in the order that they appear in the MoreGameActionsButton enum
   GoGame* game = [GoGame sharedGame];
+
+  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+  enum UIAreaPlayMode uiAreaPlayMode = applicationDelegate.uiSettingsModel.uiAreaPlayMode;
+
+  // Add buttons in the order that they appear in the MoreGameActionsButton enum
   for (int iterButtonIndex = 0; iterButtonIndex < MaxButton; ++iterButtonIndex)
   {
     NSString* title = nil;
     void (^alertActionBlock) (UIAlertAction*) = nil;
     switch (iterButtonIndex)
     {
+      case BoardSetupButton:
+      {
+        if (game.boardPosition.currentBoardPosition > 0)
+          continue;
+        if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeScoring)
+          continue;
+        title = @"Set up board";
+        alertActionBlock = ^(UIAlertAction* action) { [self setupBoard]; };
+        break;
+      }
       case ScoreButton:
       {
         // If game has ended there is a dedicated button for enabling scoring
@@ -137,7 +153,7 @@ enum MoreGameActionsButton
           default:
             break;
         }
-        ScoringModel* model = [ApplicationDelegate sharedDelegate].scoringModel;
+        ScoringModel* model = applicationDelegate.scoringModel;
         switch (model.scoreMarkMode)
         {
           case GoScoreMarkModeDead:
@@ -161,7 +177,7 @@ enum MoreGameActionsButton
       }
       case UpdatePlayerInfluenceButton:
       {
-        BoardViewModel* model = [ApplicationDelegate sharedDelegate].boardViewModel;
+        BoardViewModel* model = applicationDelegate.boardViewModel;
         if (! model.displayPlayerInfluence)
           continue;
         if (game.score.scoringEnabled)
@@ -295,6 +311,16 @@ enum MoreGameActionsButton
 
   // Don't do anything else, informing the delegate that we are done (see above)
   // caused this MoreGameActionsController to be deallocated
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Set up board" button. Switches the
+/// UI area "Play" to board setup mode.
+// -----------------------------------------------------------------------------
+- (void) setupBoard
+{
+  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModeBoardSetup] autorelease] submit];
+  [self.delegate moreGameActionsControllerDidFinish:self];
 }
 
 // -----------------------------------------------------------------------------
