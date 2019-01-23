@@ -38,6 +38,7 @@
 #import "../../play/model/ScoringModel.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LayoutManager.h"
+#import "../../ui/UiSettingsModel.h"
 #import "../../utility/NSStringAdditions.h"
 
 
@@ -136,7 +137,7 @@ enum MoreGameActionsButton
         // mode, so no need to show this option in our menu
         if (GoGameStateGameHasEnded == game.state)
           continue;
-        if (game.score.scoringEnabled)
+        if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeBoardSetup)
           continue;
         title = @"Score";
         alertActionBlock = ^(UIAlertAction* action) { [self score]; };
@@ -144,7 +145,7 @@ enum MoreGameActionsButton
       }
       case MarkModeButton:
       {
-        if (! game.score.scoringEnabled)
+        if (uiAreaPlayMode != UIAreaPlayModeScoring)
           continue;
         switch (game.reasonForGameHasEnded)
         {
@@ -180,7 +181,7 @@ enum MoreGameActionsButton
         BoardViewModel* model = applicationDelegate.boardViewModel;
         if (! model.displayPlayerInfluence)
           continue;
-        if (game.score.scoringEnabled)
+        if (uiAreaPlayMode != UIAreaPlayModePlay)
           continue;
         title = @"Update player influence";
         alertActionBlock = ^(UIAlertAction* action) { [self updatePlayerInfluence]; };
@@ -188,6 +189,8 @@ enum MoreGameActionsButton
       }
       case SwitchNextMoveColorButton:
       {
+        if (uiAreaPlayMode != UIAreaPlayModePlay)
+          continue;
         // Currently we only support switching colors in order to settle a
         // life & death dispute, immediately after play was resumed, and only if
         // the rules allow non-alternating play.
@@ -207,6 +210,8 @@ enum MoreGameActionsButton
       }
       case ResumePlayButton:
       {
+        if (uiAreaPlayMode != UIAreaPlayModePlay)
+          continue;
         bool shouldAllowResumePlay = [GoUtilities shouldAllowResumePlay:game];
         if (!shouldAllowResumePlay)
           continue;
@@ -216,11 +221,11 @@ enum MoreGameActionsButton
       }
       case ResignButton:
       {
+        if (uiAreaPlayMode != UIAreaPlayModePlay)
+          continue;
         if (GoGameTypeComputerVsComputer == game.type)
           continue;
         if (GoGameStateGameHasEnded == game.state)
-          continue;
-        if (game.score.scoringEnabled)
           continue;
         if (game.nextMovePlayerIsComputerPlayer)
           continue;
@@ -235,6 +240,8 @@ enum MoreGameActionsButton
       }
       case UndoResignButton:
       {
+        if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeScoring)
+          continue;
         if (GoGameStateGameHasEnded != game.state)
           continue;
         if (GoGameHasEndedReasonResigned != game.reasonForGameHasEnded)
