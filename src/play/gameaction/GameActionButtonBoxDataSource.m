@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015-2016 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -223,10 +223,10 @@ enum ButtonBoxSection
       selector = @selector(scoringStart:);
       break;
     }
-    case GameActionScoringDone:
+    case GameActionPlayStart:
     {
-      imageResourceName = scoringDoneButtonIconResource;
-      selector = @selector(scoringDone:);
+      imageResourceName = playStartButtonIconResource;
+      selector = @selector(playStart:);
       break;
     }
     case GameActionGameInfo:
@@ -277,7 +277,7 @@ enum ButtonBoxSection
 {
   NSMutableArray* variableButtonBoxSectionOrder = [NSMutableArray array];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionScoringStart]];
-  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionScoringDone]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionPlayStart]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionPass]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionComputerPlay]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionDiscardBoardPosition]];

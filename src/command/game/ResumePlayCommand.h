@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015-2016 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,9 +33,6 @@
 /// @note Because ResumePlayCommand may show an alert, code execution may
 /// return to the client who submitted the command before play is actually
 /// resumed.
-///
-/// If scoring mode is currently enabled, ResumePlayCommand disables it upon
-/// resuming play so that the user can continue playing smoothly.
 ///
 /// If after the game is resumed it is the computer player's turn,
 /// ResumePlayCommand triggers the computer to play a move.

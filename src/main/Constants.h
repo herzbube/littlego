@@ -98,9 +98,8 @@ enum GameAction
   GameActionInterrupt,
   /// @brief Starts scoring mode.
   GameActionScoringStart,
-  /// @brief Ends the currently active scoring mode and returns to normal play
-  /// mode.
-  GameActionScoringDone,
+  /// @brief Starts play mode.
+  GameActionPlayStart,
   /// @brief Displays the "Game Info" view with information about the game in
   /// progress.
   GameActionGameInfo,
@@ -948,7 +947,7 @@ extern NSString* continueButtonIconResource;
 extern NSString* gameInfoButtonIconResource;
 extern NSString* interruptButtonIconResource;
 extern NSString* scoringStartButtonIconResource;
-extern NSString* scoringDoneButtonIconResource;
+extern NSString* playStartButtonIconResource;
 extern NSString* moreGameActionsButtonIconResource;
 extern NSString* forwardButtonIconResource;
 extern NSString* forwardToEndButtonIconResource;

@@ -17,9 +17,13 @@
 
 // Project includes
 #import "ChangeUIAreaPlayModeCommand.h"
+#import "game/ResumePlayCommand.h"
 #import "../go/GoGame.h"
 #import "../go/GoScore.h"
+#import "../go/GoUtilities.h"
 #import "../main/ApplicationDelegate.h"
+#import "../play/model/ScoringModel.h"
+#import "../shared/ApplicationStateManager.h"
 #import "../ui/UiSettingsModel.h"
 
 
@@ -108,16 +112,27 @@
   {
     GoScore* score = [GoGame sharedGame].score;
     [score disableScoring];
+
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
   }
   else if (self.newUIAreaPlayMode == UIAreaPlayModeScoring)
   {
     GoScore* score = [GoGame sharedGame].score;
     [score enableScoring];
     [score calculateWaitUntilDone:false];
+
+    [[ApplicationStateManager sharedManager] applicationStateDidChange];
   }
 
   // Post the notification after we have finished
   [self postNotification:uiAreaPlayModeDidChange];
+
+  // Perform auto-resume handling after posting uiAreaPlayModeDidChange. This
+  // guarantees that the order of notifications remains constant even if
+  // control returns from autoResumePlayIfNecessary() before play is actually
+  // resumed (due to an alert being displayed).
+  if (oldUIAreaPlayMode == UIAreaPlayModeScoring && self.newUIAreaPlayMode == UIAreaPlayModePlay)
+    [self autoResumePlayIfNecessary];
 
   return true;
 }
@@ -146,6 +161,23 @@
 - (void) postNotificationOnMainThread:(NSString*)notificationName
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:notificationName object:self.oldAndNewModes];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Resumes play if the user preferences and the current game state
+/// allow it.
+// -----------------------------------------------------------------------------
+- (void) autoResumePlayIfNecessary
+{
+  if (! [ApplicationDelegate sharedDelegate].scoringModel.autoScoringAndResumingPlay)
+    return;
+  GoGame* game = [GoGame sharedGame];
+  bool shouldAllowResumePlay = [GoUtilities shouldAllowResumePlay:game];
+  if (! shouldAllowResumePlay)
+    return;
+  // ResumePlayCommand may show an alert, so code execution may return to us
+  // before play is actually resumed
+  [[[[ResumePlayCommand alloc] init] autorelease] submit];
 }
 
 @end

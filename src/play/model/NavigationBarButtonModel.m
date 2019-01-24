@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015-2016 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -162,10 +162,10 @@
       selector = @selector(scoringStart:);
       break;
     }
-    case GameActionScoringDone:
+    case GameActionPlayStart:
     {
-      imageResourceName = scoringDoneButtonIconResource;
-      selector = @selector(scoringDone:);
+      imageResourceName = playStartButtonIconResource;
+      selector = @selector(playStart:);
       break;
     }
     case GameActionGameInfo:
@@ -218,7 +218,7 @@
 {
   NSMutableArray* buttonOrderList = [NSMutableArray array];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionScoringStart]];
-  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionScoringDone]];
+  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionPlayStart]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionPass]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionComputerPlay]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionDiscardBoardPosition]];

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015-2016 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -54,12 +54,6 @@
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
     [game revertStateFromEndedToInProgress];
-
-    // When play is resumed we obviously want to return to play mode. It's
-    // important that we do this ***AFTER*** reverting the game state in case
-    // we are disabling scoring mode, because we don't want GameActionManager
-    // to react to our disabling scoring mode.
-    [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModePlay] autorelease] submit];
   }
   @finally
   {

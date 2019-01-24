@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015-2016 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -119,7 +119,7 @@
 - (void) continue:(id)sender;
 - (void) interrupt:(id)sender;
 - (void) scoringStart:(id)sender;
-- (void) scoringDone:(id)sender;
+- (void) playStart:(id)sender;
 - (void) gameInfo:(id)sender;
 - (void) moreGameActions:(id)sender;
 

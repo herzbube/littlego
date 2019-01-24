@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015-2016 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,18 +23,17 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
-#import "../../go/GoUtilities.h"
 #import "../../command/gtp/InterruptComputerCommand.h"
 #import "../../command/boardposition/ChangeAndDiscardCommand.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../command/game/PauseGameCommand.h"
-#import "../../command/game/ResumePlayCommand.h"
 #import "../../command/ChangeUIAreaPlayModeCommand.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../main/WindowRootViewController.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../shared/LayoutManager.h"
+#import "../../ui/UiSettingsModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -150,8 +149,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringEnabled:) name:goScoreScoringEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
+  [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
@@ -279,14 +277,11 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Handles execution of game action #GameActionScoringDone.
+/// @brief Handles execution of game action #GameActionPlayStart.
 // -----------------------------------------------------------------------------
-- (void) scoringDone:(id)sender
+- (void) playStart:(id)sender
 {
-  // This triggers a notification to which this manager reacts
   [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModePlay] autorelease] submit];
-
-  [self autoResumePlayIfNecessary];
 }
 
 // -----------------------------------------------------------------------------
@@ -404,21 +399,10 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringEnabled notification.
+/// @brief Responds to the #uiAreaPlayModeDidChange notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringEnabled:(NSNotification*)notification
+- (void) uiAreaPlayModeDidChange:(NSNotification*)notification
 {
-  self.visibleStatesNeedUpdate = true;
-  self.enabledStatesNeedUpdate = true;
-  [self delayedUpdate];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringDisabled notification.
-// -----------------------------------------------------------------------------
-- (void) goScoreScoringDisabled:(NSNotification*)notification
-{
-  [[ApplicationStateManager sharedManager] applicationStateDidChange];
   self.visibleStatesNeedUpdate = true;
   self.enabledStatesNeedUpdate = true;
   [self delayedUpdate];
@@ -584,13 +568,16 @@ static GameActionManager* sharedGameActionManager = nil;
 
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
-  if (game.score.scoringEnabled)
+
+  UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+
+  if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
-    [self addGameAction:GameActionScoringDone toVisibleStatesDictionary:visibleStates];
+    [self addGameAction:GameActionPlayStart toVisibleStatesDictionary:visibleStates];
     if (boardPosition.numberOfBoardPositions > 1)
       [self addGameAction:GameActionDiscardBoardPosition toVisibleStatesDictionary:visibleStates];
   }
-  else
+  else if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay)
   {
     switch (game.type)
     {
@@ -643,6 +630,11 @@ static GameActionManager* sharedGameActionManager = nil;
       }
     }
   }
+  else if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
+  {
+    [self addGameAction:GameActionPlayStart toVisibleStatesDictionary:visibleStates];
+  }
+
   return visibleStates;
 }
 
@@ -665,7 +657,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [self updateContinueEnabledState];
   [self updateInterruptEnabledState];
   [self updateScoringEnabledState];
-  [self updateScoringDoneEnabledState];
+  [self updatePlayStartEnabledState];
   [self updateGameInfoEnabledState];
   [self updateMoreGameActionsEnabledState];
 }
@@ -875,18 +867,34 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of game action #GameActionScoringDone.
+/// @brief Updates the enabled state of game action #GameActionPlayStart.
 // -----------------------------------------------------------------------------
-- (void) updateScoringDoneEnabledState
+- (void) updatePlayStartEnabledState
 {
   BOOL enabled = NO;
-  GoGame* game = [GoGame sharedGame];
-  if (game.score.scoringEnabled)
+
+  UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+  switch (uiSettingsModel.uiAreaPlayMode)
   {
-    if (! game.score.scoringInProgress)
+    case UIAreaPlayModeScoring:
+    {
+      GoGame* game = [GoGame sharedGame];
+      if (! game.score.scoringInProgress)
+        enabled = YES;
+      break;
+    }
+    case UIAreaPlayModeBoardSetup:
+    {
       enabled = YES;
+      break;
+    }
+    default:
+    {
+      break;
+    }
   }
-  [self updateEnabledState:enabled forGameAction:GameActionScoringDone];
+
+  [self updateEnabledState:enabled forGameAction:GameActionPlayStart];
 }
 
 // -----------------------------------------------------------------------------
@@ -1020,23 +1028,6 @@ static GameActionManager* sharedGameActionManager = nil;
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Resumes play if the user preferences and the current game state
-/// allow it.
-// -----------------------------------------------------------------------------
-- (void) autoResumePlayIfNecessary
-{
-  if (! [ApplicationDelegate sharedDelegate].scoringModel.autoScoringAndResumingPlay)
-    return;
-  GoGame* game = [GoGame sharedGame];
-  bool shouldAllowResumePlay = [GoUtilities shouldAllowResumePlay:game];
-  if (! shouldAllowResumePlay)
-    return;
-  // ResumePlayCommand may show an alert, so code execution may return to us
-  // before play is actually resumed
-  [[[[ResumePlayCommand alloc] init] autorelease] submit];
 }
 
 #pragma mark - Private helpers
