@@ -53,7 +53,10 @@ enum BoardViewLayerDelegateEvent
   BVLDEventScoringModeDisabled,
   BVLDEventScoreCalculationEnds,
   BVLDEventMarkNextMoveChanged,
-  BVLDEventTerritoryStatisticsChanged
+  BVLDEventTerritoryStatisticsChanged,
+  /// @brief This event is sent after both BVLDEventScoringModeEnabled and
+  /// BVLDEventScoringModeDisabled.
+  BVLDEventUIAreaPlayModeChanged,
 };
 
 

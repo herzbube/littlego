@@ -21,6 +21,7 @@
 // Forward declarations
 @class BoardPositionModel;
 @class BoardViewModel;
+@class UiSettingsModel;
 
 
 // -----------------------------------------------------------------------------
@@ -34,6 +35,7 @@
 - (id) initWithTile:(id<Tile>)tile
             metrics:(BoardViewMetrics*)metrics
      boardViewModel:(BoardViewModel*)boardViewModel
- boardPositionModel:(BoardPositionModel*)boardPositionmodel;
+ boardPositionModel:(BoardPositionModel*)boardPositionmodel
+    uiSettingsModel:(UiSettingsModel*)uiSettingsModel;
 
 @end

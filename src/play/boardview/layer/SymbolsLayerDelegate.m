@@ -29,6 +29,7 @@
 #import "../../../go/GoPlayer.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoScore.h"
+#import "../../../ui/UiSettingsModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -37,6 +38,7 @@
 @interface SymbolsLayerDelegate()
 @property(nonatomic, assign) BoardViewModel* boardViewModel;
 @property(nonatomic, assign) BoardPositionModel* boardPositionModel;
+@property(nonatomic, assign) UiSettingsModel* uiSettingsModel;
 @property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
 @property(nonatomic, retain) NSShadow* nextMoveShadow;
 @end
@@ -53,6 +55,7 @@
             metrics:(BoardViewMetrics*)metrics
      boardViewModel:(BoardViewModel*)boardViewModel
  boardPositionModel:(BoardPositionModel*)boardPositionmodel
+    uiSettingsModel:(UiSettingsModel*)uiSettingsModel
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
@@ -60,6 +63,7 @@
     return nil;
   _boardViewModel = boardViewModel;
   _boardPositionModel = boardPositionmodel;
+  _uiSettingsModel = uiSettingsModel;
   self.paragraphStyle = [[[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
   self.paragraphStyle.alignment = NSTextAlignmentCenter;
   self.nextMoveShadow = [[[NSShadow alloc] init] autorelease];
@@ -121,10 +125,10 @@
     case BVLDEventMarkLastMoveChanged:
     case BVLDEventMoveNumbersPercentageChanged:
     case BVLDEventMarkNextMoveChanged:
-    // The layer is added dynamically as a result of scoring becoming disabled.
-    // This is the only event we get after being added, so we react to it to
-    // trigger a redraw.
-    case BVLDEventScoringModeDisabled:
+    // We draw completely different symbols in each of the various modes. Also
+    // note that the layer is removed/added dynamically as a result of scoring
+    // mode becoming enabled/disabled.
+    case BVLDEventUIAreaPlayModeChanged:
     {
       self.dirty = true;
       break;
@@ -141,10 +145,13 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
+  enum UIAreaPlayMode uiAreaPlayMode = self.uiSettingsModel.uiAreaPlayMode;
+
   // Completely disable symbols while scoring mode is enabled
-  GoGame* game = [GoGame sharedGame];
-  if (game.score.scoringEnabled)
+  if (uiAreaPlayMode == UIAreaPlayModeScoring)
     return;
+
+  GoGame* game = [GoGame sharedGame];
 
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
   CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
@@ -164,34 +171,49 @@
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
                                                       metrics:self.boardViewMetrics];
-  if ([self shouldDisplayMoveNumbers])
+
+  if (uiAreaPlayMode == UIAreaPlayModePlay)
   {
-    [self drawMoveNumbersInContext:context inTileWithRect:tileRect];
-  }
-  else
-  {
-    if (self.boardViewModel.markLastMove)
+    if ([self shouldDisplayMoveNumbers])
     {
-      GoMove* lastMove = game.boardPosition.currentMove;
-      if (lastMove && GoMoveTypePlay == lastMove.type)
+      [self drawMoveNumbersInContext:context inTileWithRect:tileRect];
+    }
+    else
+    {
+      if (self.boardViewModel.markLastMove)
       {
-        CGLayerRef lastMoveLayer;
-        if (lastMove.player.isBlack)
-          lastMoveLayer = whiteLastMoveLayer;
-        else
-          lastMoveLayer = blackLastMoveLayer;
-        [BoardViewDrawingHelper drawLayer:lastMoveLayer
-                              withContext:context
-                          centeredAtPoint:lastMove.point
-                           inTileWithRect:tileRect
-                              withMetrics:self.boardViewMetrics];
+        GoMove* lastMove = game.boardPosition.currentMove;
+        if (lastMove && GoMoveTypePlay == lastMove.type)
+        {
+          CGLayerRef lastMoveLayer;
+          if (lastMove.player.isBlack)
+            lastMoveLayer = whiteLastMoveLayer;
+          else
+            lastMoveLayer = blackLastMoveLayer;
+          [BoardViewDrawingHelper drawLayer:lastMoveLayer
+                                withContext:context
+                            centeredAtPoint:lastMove.point
+                             inTileWithRect:tileRect
+                                withMetrics:self.boardViewMetrics];
+        }
       }
     }
-  }
 
-  if ([self shouldDisplayNextMoveLabel])
+    if ([self shouldDisplayNextMoveLabel])
+    {
+      [self drawNextMoveInContext:context inTileWithRect:tileRect];
+    }
+  }
+  else if (uiAreaPlayMode == UIAreaPlayModeBoardSetup)
   {
-    [self drawNextMoveInContext:context inTileWithRect:tileRect];
+    for (GoPoint* handicapPoint in game.handicapPoints)
+    {
+      [BoardViewDrawingHelper drawLayer:whiteLastMoveLayer
+                            withContext:context
+                        centeredAtPoint:handicapPoint
+                         inTileWithRect:tileRect
+                            withMetrics:self.boardViewMetrics];
+    }
   }
 }
 

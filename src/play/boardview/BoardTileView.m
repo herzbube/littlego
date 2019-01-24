@@ -129,8 +129,7 @@
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringEnabled:) name:goScoreScoringEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
+  [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(territoryStatisticsChanged:) name:territoryStatisticsChanged object:nil];
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
@@ -316,7 +315,8 @@
     self.symbolsLayerDelegate = [[[SymbolsLayerDelegate alloc] initWithTile:self
                                                                     metrics:appDelegate.boardViewMetrics
                                                              boardViewModel:appDelegate.boardViewModel
-                                                         boardPositionModel:appDelegate.boardPositionModel] autorelease];
+                                                         boardPositionModel:appDelegate.boardPositionModel
+                                                            uiSettingsModel:appDelegate.uiSettingsModel] autorelease];
 
   }
 }
@@ -471,28 +471,31 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringEnabled notification.
+/// @brief Responds to the #uiAreaPlayModeDidChange notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringEnabled:(NSNotification*)notification
+- (void) uiAreaPlayModeDidChange:(NSNotification*)notification
 {
-  [self setupInfluenceLayerDelegate];
-  [self setupSymbolsLayerDelegate];
-  [self setupTerritoryLayerDelegate];
-  [self updateLayers];
-  [self notifyLayerDelegates:BVLDEventScoringModeEnabled eventInfo:nil];
-  [self delayedDrawLayers];
-}
+  NSArray* oldAndNewModes = notification.object;
+  NSNumber* oldModeAsNumber = oldAndNewModes[0];
+  enum UIAreaPlayMode oldMode = oldModeAsNumber.intValue;
+  NSNumber* newModeAsNumber = oldAndNewModes[1];
+  enum UIAreaPlayMode newMode = newModeAsNumber.intValue;
 
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringDisabled notification.
-// -----------------------------------------------------------------------------
-- (void) goScoreScoringDisabled:(NSNotification*)notification
-{
-  [self setupInfluenceLayerDelegate];
-  [self setupSymbolsLayerDelegate];
-  [self setupTerritoryLayerDelegate];
-  [self updateLayers];
-  [self notifyLayerDelegates:BVLDEventScoringModeDisabled eventInfo:nil];
+  // Scoring enabled or disabled
+  if (oldMode == UIAreaPlayModeScoring || newMode == UIAreaPlayModeScoring)
+  {
+    [self setupInfluenceLayerDelegate];
+    [self setupSymbolsLayerDelegate];
+    [self setupTerritoryLayerDelegate];
+    [self updateLayers];
+
+    if (oldMode == UIAreaPlayModeScoring)
+      [self notifyLayerDelegates:BVLDEventScoringModeDisabled eventInfo:nil];
+    else
+      [self notifyLayerDelegates:BVLDEventScoringModeEnabled eventInfo:nil];
+  }
+
+  [self notifyLayerDelegates:BVLDEventUIAreaPlayModeChanged eventInfo:nil];
   [self delayedDrawLayers];
 }
 
