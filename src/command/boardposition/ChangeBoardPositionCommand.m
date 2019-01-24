@@ -19,11 +19,14 @@
 #import "ChangeBoardPositionCommand.h"
 #import "SyncGTPEngineCommand.h"
 #import "../AsynchronousCommand.h"
+#import "../ChangeUIAreaPlayModeCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
+#import "../../ui/UiSettingsModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -159,8 +162,21 @@
   {
     [[LongRunningActionCounter sharedCounter] increment];
 
-    if (game.score.scoringEnabled)
+    UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+
+    if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+    {
       [game.score willChangeBoardPosition];  // disable GoBoardRegion caching
+    }
+    else if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
+    {
+      // Board setup mode is allowed only while user is viewing the first
+      // board position.
+      assert(boardPosition.currentBoardPosition == 0);
+      // Since we are about to change the board position, we have to disable
+      // board setup mode first.
+      [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModePlay] autorelease] submit];
+    }
 
     boardPosition.currentBoardPosition = self.newBoardPosition;
 
@@ -175,7 +191,7 @@
       @throw exception;
     }
 
-    if (game.score.scoringEnabled)
+    if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
     {
       [game.score didChangeBoardPosition];  // re-enable GoBoardRegion caching
       [game.score calculateWaitUntilDone:false];
