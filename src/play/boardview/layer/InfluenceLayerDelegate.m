@@ -79,10 +79,10 @@
     case BVLDEventBoardSizeChanged:
     case BVLDEventGoGameStarted:  // reset statistics to zero (even if board size remains the same)
     case BVLDEventInvalidateContent:
-    // The layer is added dynamically as a result of scoring becoming disabled.
-    // This is the only event we get after being added, so we react to it to
-    // trigger a redraw.
-    case BVLDEventScoringModeDisabled:
+    // The layer is removed/added dynamically as a result of play mode becoming
+    // enabled/disabled. This is the only event we get after being added, so we
+    // react to it to trigger a redraw.
+    case BVLDEventUIAreaPlayModeChanged:
     {
       self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;

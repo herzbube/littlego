@@ -123,7 +123,6 @@
     }
     case BVLDEventScoreCalculationEnds:
     case BVLDEventInconsistentTerritoryMarkupTypeChanged:
-    case BVLDEventScoringModeDisabled:
     {
       NSMutableDictionary* oldDrawingPointsTerritory = self.drawingPointsTerritory;
       NSMutableDictionary* newDrawingPointsTerritory = [self calculateDrawingPointsTerritory];

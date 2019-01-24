@@ -27,9 +27,9 @@
 #import "../model/BoardViewMetrics.h"
 #import "../model/BoardViewModel.h"
 #import "../../go/GoGame.h"
-#import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
+#import "../../ui/UiSettingsModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -274,13 +274,13 @@
 // -----------------------------------------------------------------------------
 - (void) setupInfluenceLayerDelegate
 {
-  if ([GoGame sharedGame].score.scoringEnabled)
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  if (appDelegate.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModePlay)
   {
     self.influenceLayerDelegate = nil;
   }
   else
   {
-    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
     BoardViewModel* boardViewModel = appDelegate.boardViewModel;
     if (boardViewModel.displayPlayerInfluence)
     {
@@ -303,7 +303,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupSymbolsLayerDelegate
 {
-  if ([GoGame sharedGame].score.scoringEnabled)
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     self.symbolsLayerDelegate = nil;
   }
@@ -311,13 +312,11 @@
   {
     if (self.symbolsLayerDelegate)
       return;
-    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
     self.symbolsLayerDelegate = [[[SymbolsLayerDelegate alloc] initWithTile:self
                                                                     metrics:appDelegate.boardViewMetrics
                                                              boardViewModel:appDelegate.boardViewModel
                                                          boardPositionModel:appDelegate.boardPositionModel
                                                             uiSettingsModel:appDelegate.uiSettingsModel] autorelease];
-
   }
 }
 
@@ -327,11 +326,11 @@
 // -----------------------------------------------------------------------------
 - (void) setupTerritoryLayerDelegate
 {
-  if ([GoGame sharedGame].score.scoringEnabled)
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (self.territoryLayerDelegate)
       return;
-    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
     self.territoryLayerDelegate = [[[TerritoryLayerDelegate alloc] initWithTile:self
                                                                         metrics:appDelegate.boardViewMetrics
                                                                    scoringModel:appDelegate.scoringModel] autorelease];
@@ -475,25 +474,10 @@
 // -----------------------------------------------------------------------------
 - (void) uiAreaPlayModeDidChange:(NSNotification*)notification
 {
-  NSArray* oldAndNewModes = notification.object;
-  NSNumber* oldModeAsNumber = oldAndNewModes[0];
-  enum UIAreaPlayMode oldMode = oldModeAsNumber.intValue;
-  NSNumber* newModeAsNumber = oldAndNewModes[1];
-  enum UIAreaPlayMode newMode = newModeAsNumber.intValue;
-
-  // Scoring enabled or disabled
-  if (oldMode == UIAreaPlayModeScoring || newMode == UIAreaPlayModeScoring)
-  {
-    [self setupInfluenceLayerDelegate];
-    [self setupSymbolsLayerDelegate];
-    [self setupTerritoryLayerDelegate];
-    [self updateLayers];
-
-    if (oldMode == UIAreaPlayModeScoring)
-      [self notifyLayerDelegates:BVLDEventScoringModeDisabled eventInfo:nil];
-    else
-      [self notifyLayerDelegates:BVLDEventScoringModeEnabled eventInfo:nil];
-  }
+  [self setupInfluenceLayerDelegate];
+  [self setupSymbolsLayerDelegate];
+  [self setupTerritoryLayerDelegate];
+  [self updateLayers];
 
   [self notifyLayerDelegates:BVLDEventUIAreaPlayModeChanged eventInfo:nil];
   [self delayedDrawLayers];
@@ -561,7 +545,7 @@
   {
     if ([keyPath isEqualToString:@"inconsistentTerritoryMarkupType"])
     {
-      if ([GoGame sharedGame].score.scoringEnabled)
+      if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
       {
         [self notifyLayerDelegates:BVLDEventInconsistentTerritoryMarkupTypeChanged eventInfo:nil];
         [self delayedDrawLayers];
