@@ -171,6 +171,8 @@ static GameActionManager* sharedGameActionManager = nil;
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  [appDelegate.gameSetupModel addObserver:self forKeyPath:@"gameSetupStoneColor" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -182,6 +184,9 @@ static GameActionManager* sharedGameActionManager = nil;
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
+
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  [appDelegate.gameSetupModel removeObserver:self forKeyPath:@"gameSetupStoneColor"];
 }
 
 #pragma mark - Game action handlers
@@ -291,6 +296,7 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) switchSetupStoneColorToWhite:(id)sender
 {
+  [ApplicationDelegate sharedDelegate].gameSetupModel.gameSetupStoneColor = GoColorWhite;
 }
 
 // -----------------------------------------------------------------------------
@@ -299,6 +305,7 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) switchSetupStoneColorToBlack:(id)sender
 {
+  [ApplicationDelegate sharedDelegate].gameSetupModel.gameSetupStoneColor = GoColorBlack;
 }
 
 // -----------------------------------------------------------------------------
@@ -512,6 +519,14 @@ static GameActionManager* sharedGameActionManager = nil;
       self.visibleStatesNeedUpdate = true;
     }
     [self delayedUpdate];
+  }
+  else if (object == [ApplicationDelegate sharedDelegate].gameSetupModel)
+  {
+    if ([keyPath isEqualToString:@"gameSetupStoneColor"])
+    {
+      self.visibleStatesNeedUpdate = true;
+      [self delayedUpdate];
+    }
   }
 }
 
