@@ -171,6 +171,8 @@
 		CD7C578321F4A3A900694520 /* UnarchiveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C578021F4A3A900694520 /* UnarchiveGameCommand.m */; };
 		CD7C578621F79C3000694520 /* ChangeUIAreaPlayModeCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C578421F79C2F00694520 /* ChangeUIAreaPlayModeCommand.m */; };
 		CD7C578721F79C3000694520 /* ChangeUIAreaPlayModeCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C578421F79C2F00694520 /* ChangeUIAreaPlayModeCommand.m */; };
+		CD7C57BE21FD346F00694520 /* GameSetupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57BC21FD346E00694520 /* GameSetupModel.m */; };
+		CD7C57BF21FD346F00694520 /* GameSetupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57BC21FD346E00694520 /* GameSetupModel.m */; };
 		CD7C69B61A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
 		CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
 		CD7C69BA1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B91A9ABDE2009EC5AD /* BoardPositionNavigationManager.m */; };
@@ -754,6 +756,8 @@
 		CD7C578121F4A3A900694520 /* UnarchiveGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnarchiveGameCommand.h; sourceTree = "<group>"; };
 		CD7C578421F79C2F00694520 /* ChangeUIAreaPlayModeCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangeUIAreaPlayModeCommand.m; sourceTree = "<group>"; };
 		CD7C578521F79C2F00694520 /* ChangeUIAreaPlayModeCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeUIAreaPlayModeCommand.h; sourceTree = "<group>"; };
+		CD7C57BC21FD346E00694520 /* GameSetupModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameSetupModel.m; sourceTree = "<group>"; };
+		CD7C57BD21FD346F00694520 /* GameSetupModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameSetupModel.h; sourceTree = "<group>"; };
 		CD7C69B41A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionButtonBoxDataSource.h; sourceTree = "<group>"; };
 		CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionButtonBoxDataSource.m; sourceTree = "<group>"; };
 		CD7C69B81A9ABDE2009EC5AD /* BoardPositionNavigationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionNavigationManager.h; sourceTree = "<group>"; };
@@ -1533,6 +1537,8 @@
 				CDAF17141967FFD500271396 /* BoardViewMetrics.m */,
 				CDAF17171968037700271396 /* BoardViewModel.h */,
 				CDAF17181968037700271396 /* BoardViewModel.m */,
+				CD7C57BD21FD346F00694520 /* GameSetupModel.h */,
+				CD7C57BC21FD346E00694520 /* GameSetupModel.m */,
 				CD7C6A071AB462CB009EC5AD /* NavigationBarButtonModel.h */,
 				CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */,
 				CD1311BF17180B45006CE699 /* ScoringModel.h */,
@@ -2694,6 +2700,7 @@
 				CD10882513255AA600E83543 /* GoPoint.m in Sources */,
 				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
 				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
+				CD7C57BE21FD346F00694520 /* GameSetupModel.m in Sources */,
 				CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */,
 				CDEE19F919433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */,
 				CDE302891360BDA4005235F2 /* Player.m in Sources */,
@@ -2963,6 +2970,7 @@
 				CDEE19F219433EAC00DF2389 /* BoardTileView.m in Sources */,
 				CD7C69F21AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */,
 				CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */,
+				CD7C57BF21FD346F00694520 /* GameSetupModel.m in Sources */,
 				CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */,
 				CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */,
 				CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */,

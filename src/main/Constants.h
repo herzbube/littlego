@@ -1066,6 +1066,8 @@ extern NSString* magnifyingGlassEnableModeKey;
 extern NSString* magnifyingGlassAutoThresholdKey;
 extern NSString* magnifyingGlassVeerDirectionKey;
 extern NSString* magnifyingGlassDistanceFromMagnificationCenterKey;
+// Game setup settings
+extern NSString* gameSetupStoneColorKey;
 //@}
 
 // -----------------------------------------------------------------------------

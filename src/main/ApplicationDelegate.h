@@ -35,6 +35,7 @@
 @class UiSettingsModel;
 @class WindowRootViewController;
 @class MagnifyingViewModel;
+@class GameSetupModel;
 
 
 // -----------------------------------------------------------------------------
@@ -145,6 +146,9 @@
 /// @brief Model object that stores attributes relating to the magnifying
 /// glass functionality.
 @property(nonatomic, retain) MagnifyingViewModel* magnifyingViewModel;
+/// @brief Model object that stores attributes related to the game setup prior
+/// to the first move.
+@property(nonatomic, retain) GameSetupModel* gameSetupModel;
 
 @end
 
