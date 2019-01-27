@@ -30,6 +30,7 @@
 #import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../ui/UiSettingsModel.h"
 #import "../../utility/ExceptionUtility.h"
 #import "../../utility/NSStringAdditions.h"
 
@@ -273,7 +274,7 @@
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
+  [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesStarts:) name:askGtpEngineForDeadStonesStarts object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesEnds:) name:askGtpEngineForDeadStonesEnds object:nil];
@@ -457,16 +458,17 @@
     }
     else
     {
-      GoScore* score = game.score;
-      if (score.scoringEnabled)
+      UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+      if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
       {
+        GoScore* score = game.score;
         if (score.scoringInProgress)
         {
           statusText = @"Scoring in progress...";
         }
         else
         {
-          NSString* resultString = [game.score resultString];
+          NSString* resultString = [score resultString];
           NSString* tapString;
           if (GoScoreMarkModeDead == [ApplicationDelegate sharedDelegate].scoringModel.scoreMarkMode)
             tapString = @" - Tap to mark dead stones";
@@ -502,6 +504,10 @@
             }
           }
         }
+      }
+      else if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
+      {
+        statusText = @"Tap to place or remove stones";
       }
       else
       {
@@ -647,11 +653,10 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringDisabled notification.
+/// @brief Responds to the #uiAreaPlayModeDidChange notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringDisabled:(NSNotification*)notification
+- (void) uiAreaPlayModeDidChange:(NSNotification*)notification
 {
-  // Need this to remove score summary message
   self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }
