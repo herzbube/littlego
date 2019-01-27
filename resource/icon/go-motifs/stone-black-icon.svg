@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="30mm"
+   height="30mm"
+   viewBox="0 0 30.000001 30.000001"
+   version="1.1"
+   id="svg891"
+   inkscape:version="0.92.2 5c3e80d, 2017-08-06"
+   sodipodi:docname="black-stone.svg">
+  <defs
+     id="defs885" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.6"
+     inkscape:cx="25.516133"
+     inkscape:cy="56.248807"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1627"
+     inkscape:window-height="1005"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata888">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-96.04388,-29.290775)">
+    <path
+       style="opacity:1;fill:#000000;stroke:#000000;stroke-width:0.79375;stroke-miterlimit:4.30000019;stroke-dasharray:none;stroke-opacity:0"
+       inkscape:connector-curvature="0"
+       id="path16"
+       d="m 111.65433,52.015012 c 4.60386,0 8.33466,-3.731366 8.33466,-8.334658 0,-4.602723 -3.7308,-8.33466 -8.33466,-8.33466 -4.60273,0 -8.33468,3.732508 -8.33468,8.33466 -5.8e-4,4.603292 3.73195,8.334658 8.33468,8.334658 z M 109.9236,37.597981 c -2.45429,2.863434 -2.73504,7.668161 -0.9153,11.255726 0,0 -2.87885,-1.621732 -2.76757,-5.685782 0.10499,-3.770169 3.68287,-5.569944 3.68287,-5.569944 z"
+       inkscape:export-filename="/Users/patrick/dev/littlego/resource/icon/go-motifs/black-stone@3x.png"
+       inkscape:export-xdpi="96"
+       inkscape:export-ydpi="96" />
+  </g>
+</svg>

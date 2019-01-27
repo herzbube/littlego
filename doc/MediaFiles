@@ -131,3 +131,32 @@ image and uncheck the "Alpha" checkbox.
 If the original image with transparency is needed in the future, it can be
 restored from vesion control history. The file was originally located under
 "resource/image/appicon-appstore@2x-with-transparency.png".
+
+
+go-motifs: stone-black-icon.svg, stone-white-icon.svg
+-----------------------------------------------------
+- Extract the icon from noun_go_181280.svg
+- Resize the icon to 66 x 66 px
+- Set stroke color to anything with an alpha value 0, i.e. fully transparent
+- Set stroke width to 3 px
+  >>> This creates a transparent "border" around the icon. When the image is
+      exported to PNG, the rasterization process can now place anti-aliasing
+      pixels into the area provided by the transparent "border". The end result
+      is a smoother circle.
+- Adjusting the stroke width changes the shape size, so after the stroke width
+  is adjusted the shape must again be scaled to 66 x 66 px.
+- Scaling the shape again changes the stroke width. Repeat this until the stroke
+  width remains close to 3 px.
+- Save the .svg file
+- Export to .png in varying sizes
+  - Each time the shape is resized, adjust the stroke width to an even number
+    so that there's again sufficient space for anti-aliasing pixels. Repeat the
+    cycle of adjusting stroke width and resizing shape until the stroke width
+    stabilizes near the desired value.
+  - Output size 66 x 66 px = Stroke width 3 px
+  - Output size 44 x 44 px = Stroke width 3 px
+  - Output size 22 x 22 px = Stroke width 3 px for stone-black-icon.png
+                             Stroke width 2 px for stone-white-icon.svg. Don't
+                             use 3 px here because this causes the small glare
+                             shape inside the stone shape to become an
+                             unrecognizable pixel mess.
