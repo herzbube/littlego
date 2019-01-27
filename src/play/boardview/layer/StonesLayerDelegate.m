@@ -139,6 +139,7 @@
       break;
     }
     case BVLDEventBoardPositionChanged:
+    case BVLDEventAllSetupStonesDiscarded:
     {
       [self invalidateCrossHairPoint];
       [self invalidateDirtyRectForCrossHairPoint];

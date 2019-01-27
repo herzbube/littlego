@@ -79,6 +79,8 @@ NSString* boardViewWillHideCrossHair = @"BoardViewWillHideCrossHair";;
 NSString* boardViewDidChangeCrossHair = @"BoardViewDidChangeCrossHair";
 NSString* uiAreaPlayModeWillChange = @"UIAreaPlayModeWillChange";
 NSString* uiAreaPlayModeDidChange = @"UIAreaPlayModeDidChange";
+NSString* allSetupStonesWillDiscard = @"AllSetupStonesWillDiscard";
+NSString* allSetupStonesDidDiscard = @"AllSetupStonesDidDiscard";
 
 // Default values for properties that define how the Go board is displayed
 const float iPhoneMaximumZoomScale = 2.5;

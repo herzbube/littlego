@@ -134,6 +134,7 @@
   [center addObserver:self selector:@selector(territoryStatisticsChanged:) name:territoryStatisticsChanged object:nil];
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+  [center addObserver:self selector:@selector(allSetupStonesDidDiscard:) name:allSetupStonesDidDiscard object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [boardPositionModel addObserver:self forKeyPath:@"markNextMove" options:0 context:NULL];
@@ -517,6 +518,15 @@
 {
   [self setupCrossHairLinesLayerDelegateIsRequired:false];
   [self updateLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #allSetupStonesDidDiscard notifications.
+// -----------------------------------------------------------------------------
+- (void) allSetupStonesDidDiscard:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:BVLDEventAllSetupStonesDiscarded eventInfo:nil];
+  [self delayedDrawLayers];
 }
 
 // -----------------------------------------------------------------------------

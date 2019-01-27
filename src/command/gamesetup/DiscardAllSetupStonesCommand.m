@@ -113,12 +113,15 @@
     {
       // Whoever invoked DiscardAllSetupStonesCommand must have previously
       // made sure that it's OK to discard future moves. We can therefore safely
-      // submit this command without user interaction.
+      // submit ChangeAndDiscardCommand without user interaction. Note that
+      // ChangeAndDiscardCommand reverts the game state to "in progress" if the
+      // game is currently ended. The overall effect is that after executing
+      // this command GoGame is in a state that allows us to perform changes to
+      // the board setup.
       [[[[ChangeAndDiscardCommand alloc] init] autorelease] submit];
     }
 
-    game.blackSetupPoints = @[];
-    game.whiteSetupPoints = @[];
+    [game discardAllSetupStones];
 
     [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
   }

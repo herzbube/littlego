@@ -679,6 +679,10 @@ extern NSString* uiAreaPlayModeWillChange;
 /// may be deallocated, or its content changed, after the notification has been
 /// delivered.
 extern NSString* uiAreaPlayModeDidChange;
+/// @brief Is sent to indicate that all setup stones are about to be discarded.
+extern NSString* allSetupStonesWillDiscard;
+/// @brief Is sent to indicate that all setup stones have been discarded.
+extern NSString* allSetupStonesDidDiscard;
 //@}
 
 // -----------------------------------------------------------------------------

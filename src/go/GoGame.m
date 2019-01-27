@@ -1155,4 +1155,35 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
     self.nextMoveColor = _setupFirstMoveColor;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Discards all setup stones on intersections that are currently listed
+/// in @e blackSetupPoints and @e whiteSetupPoints.
+///
+/// Posts #allSetupStonesWillDiscard to the global notification centre before
+/// any changes are made. Posts #allSetupStonesDidDiscard to the global
+/// notification centre after the discard is complete.
+///
+/// KVO observers of the two properties will be triggered first for
+/// @e blackSetupPoints, then for @e whiteSetupPoints. If one of the properties
+/// is already empty, this method does not change the property value and KVO
+/// observers will not be notified.
+///
+/// Raises @e NSInternalInconsistencyException if it is invoked when this GoGame
+/// object is not in state #GoGameStateGameHasStarted, or if it is in that state
+/// but already has moves. Summing it up, this property can be set only at the
+/// start of the game.
+// -----------------------------------------------------------------------------
+- (void) discardAllSetupStones
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:allSetupStonesWillDiscard object:self];
+
+  if (self.blackSetupPoints.count > 0)
+    self.blackSetupPoints = @[];
+
+  if (self.whiteSetupPoints.count > 0)
+    self.whiteSetupPoints = @[];
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:allSetupStonesDidDiscard object:self];
+}
+
 @end

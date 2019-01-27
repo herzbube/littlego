@@ -156,6 +156,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+  [center addObserver:self selector:@selector(allSetupStonesDidDiscard:) name:allSetupStonesDidDiscard object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // Note: UIApplicationWillChangeStatusBarOrientationNotification is also sent
   // if a view controller is modally presented on iPhone while in
@@ -170,8 +171,6 @@ static GameActionManager* sharedGameActionManager = nil;
 
   // KVO observing
   GoGame* game = [GoGame sharedGame];
-  [game addObserver:self forKeyPath:@"blackSetupPoints" options:0 context:NULL];
-  [game addObserver:self forKeyPath:@"whiteSetupPoints" options:0 context:NULL];
   GoBoardPosition* boardPosition = game.boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
@@ -187,9 +186,6 @@ static GameActionManager* sharedGameActionManager = nil;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   GoGame* game = [GoGame sharedGame];
-  [game removeObserver:self forKeyPath:@"blackSetupPoints"];
-  [game removeObserver:self forKeyPath:@"whiteSetupPoints"];
-
   GoBoardPosition* boardPosition = game.boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
@@ -399,8 +395,6 @@ static GameActionManager* sharedGameActionManager = nil;
     [self.gameInfoViewControllerPresenter dismissGameInfoViewController:self.gameInfoViewController];
 
   GoGame* oldGame = [notification object];
-  [oldGame removeObserver:self forKeyPath:@"blackSetupPoints"];
-  [oldGame removeObserver:self forKeyPath:@"whiteSetupPoints"];
   GoBoardPosition* boardPosition = oldGame.boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
@@ -412,8 +406,6 @@ static GameActionManager* sharedGameActionManager = nil;
 - (void) goGameDidCreate:(NSNotification*)notification
 {
   GoGame* newGame = [notification object];
-  [newGame addObserver:self forKeyPath:@"blackSetupPoints" options:0 context:NULL];
-  [newGame addObserver:self forKeyPath:@"whiteSetupPoints" options:0 context:NULL];
   GoBoardPosition* boardPosition = newGame.boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
@@ -492,6 +484,15 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #allSetupStonesDidDiscard notifications.
+// -----------------------------------------------------------------------------
+- (void) allSetupStonesDidDiscard:(NSNotification*)notification
+{
+  self.visibleStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -521,15 +522,7 @@ static GameActionManager* sharedGameActionManager = nil;
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
   GoGame* game = [GoGame sharedGame];
-  if (object == game)
-  {
-    if ([keyPath isEqualToString:@"blackSetupPoints"] ||
-        [keyPath isEqualToString:@"whiteSetupPoints"])
-    {
-      self.visibleStatesNeedUpdate = true;
-    }
-  }
-  else if (object == game.boardPosition)
+  if (object == game.boardPosition)
   {
     if ([keyPath isEqualToString:@"currentBoardPosition"])
     {

@@ -52,7 +52,8 @@ enum BoardViewLayerDelegateEvent
   BVLDEventUIAreaPlayModeChanged,
   BVLDEventScoreCalculationEnds,
   BVLDEventMarkNextMoveChanged,
-  BVLDEventTerritoryStatisticsChanged
+  BVLDEventTerritoryStatisticsChanged,
+  BVLDEventAllSetupStonesDiscarded,
 };
 
 
