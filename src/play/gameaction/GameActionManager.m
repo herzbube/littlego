@@ -28,6 +28,7 @@
 #import "../../command/boardposition/ChangeAndDiscardCommand.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../command/game/PauseGameCommand.h"
+#import "../../command/gamesetup/DiscardAllSetupStonesCommand.h"
 #import "../../command/ChangeUIAreaPlayModeCommand.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../main/WindowRootViewController.h"
@@ -168,7 +169,10 @@ static GameActionManager* sharedGameActionManager = nil;
     [center addObserver:self selector:@selector(statusBarOrientationWillChange:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
 
   // KVO observing
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  GoGame* game = [GoGame sharedGame];
+  [game addObserver:self forKeyPath:@"blackSetupPoints" options:0 context:NULL];
+  [game addObserver:self forKeyPath:@"whiteSetupPoints" options:0 context:NULL];
+  GoBoardPosition* boardPosition = game.boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
@@ -181,7 +185,12 @@ static GameActionManager* sharedGameActionManager = nil;
 - (void) removeNotificationResponders
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+
+  GoGame* game = [GoGame sharedGame];
+  [game removeObserver:self forKeyPath:@"blackSetupPoints"];
+  [game removeObserver:self forKeyPath:@"whiteSetupPoints"];
+
+  GoBoardPosition* boardPosition = game.boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 
@@ -313,6 +322,8 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) discardAllSetupStones:(id)sender
 {
+  DiscardAllSetupStonesCommand* command = [[[DiscardAllSetupStonesCommand alloc] init] autorelease];
+  [self.commandDelegate gameActionManager:self discardOrAlertWithCommand:command];
 }
 
 // -----------------------------------------------------------------------------
@@ -388,6 +399,8 @@ static GameActionManager* sharedGameActionManager = nil;
     [self.gameInfoViewControllerPresenter dismissGameInfoViewController:self.gameInfoViewController];
 
   GoGame* oldGame = [notification object];
+  [oldGame removeObserver:self forKeyPath:@"blackSetupPoints"];
+  [oldGame removeObserver:self forKeyPath:@"whiteSetupPoints"];
   GoBoardPosition* boardPosition = oldGame.boardPosition;
   [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
@@ -399,6 +412,8 @@ static GameActionManager* sharedGameActionManager = nil;
 - (void) goGameDidCreate:(NSNotification*)notification
 {
   GoGame* newGame = [notification object];
+  [newGame addObserver:self forKeyPath:@"blackSetupPoints" options:0 context:NULL];
+  [newGame addObserver:self forKeyPath:@"whiteSetupPoints" options:0 context:NULL];
   GoBoardPosition* boardPosition = newGame.boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
@@ -505,7 +520,16 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  if (object == [GoGame sharedGame].boardPosition)
+  GoGame* game = [GoGame sharedGame];
+  if (object == game)
+  {
+    if ([keyPath isEqualToString:@"blackSetupPoints"] ||
+        [keyPath isEqualToString:@"whiteSetupPoints"])
+    {
+      self.visibleStatesNeedUpdate = true;
+    }
+  }
+  else if (object == game.boardPosition)
   {
     if ([keyPath isEqualToString:@"currentBoardPosition"])
     {
