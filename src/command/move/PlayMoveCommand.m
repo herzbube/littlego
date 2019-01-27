@@ -39,14 +39,6 @@ enum AlertType
   AlertTypePlayMoveRejectedLoggingDisabled,
 };
 
-/// @brief Enumerates the types of buttons used in alerts presented by this
-/// command.
-enum AlertButtonType
-{
-  AlertButtonTypeNo,
-  AlertButtonTypeYes
-};
-
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for PlayMoveCommand.

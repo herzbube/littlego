@@ -193,6 +193,14 @@ enum TerritoryMarkupStyle
   TerritoryMarkupStyleInconsistentFillColor,
   TerritoryMarkupStyleInconsistentDotSymbol
 };
+
+/// @brief Enumerates a number of standard alert button types.
+enum AlertButtonType
+{
+  AlertButtonTypeOk,
+  AlertButtonTypeYes,
+  AlertButtonTypeNo,
+};
 //@}
 
 // -----------------------------------------------------------------------------

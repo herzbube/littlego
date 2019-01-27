@@ -25,7 +25,7 @@ typedef void (^CrashlyticsCompletionHandler) (BOOL);
 
 /// @brief Enumerates the types of buttons used in alerts presented by this
 /// command.
-enum AlertButtonType
+enum AlertButtonTypeCrashReport
 {
   AlertButtonTypeCrashReportSend,
   AlertButtonTypeCrashReportAlwaysSend,
@@ -152,7 +152,7 @@ enum AlertButtonType
 // -----------------------------------------------------------------------------
 /// @brief Alert handler method.
 // -----------------------------------------------------------------------------
-- (void) didDismissAlertWithButton:(enum AlertButtonType)alertButtonType
+- (void) didDismissAlertWithButton:(enum AlertButtonTypeCrashReport)alertButtonType
 {
   DDLogInfo(@"%@: User selected alertButtonType = %u", self, alertButtonType);
 

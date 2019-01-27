@@ -44,15 +44,6 @@ enum AlertType
   AlertTypeNewGameAfterComputerPlayedIllegalMove,
 };
 
-/// @brief Enumerates the types of buttons used in alerts presented by this
-/// command.
-enum AlertButtonType
-{
-  AlertButtonTypeOk,
-  AlertButtonTypeNo,
-  AlertButtonTypeYes,
-};
-
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for ComputerPlayMoveCommand.
