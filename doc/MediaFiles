@@ -54,11 +54,13 @@ Icon files
   the following names:
     foo.png    - normal image
     foo@2x.png - retina display image
+    foo@3x.png - devices with triple resolution (e.g. iPhone 6 Plus)
 - Whenever you need to load an image just use the normal image name and iOS will
   check behind the scenes if there is a retina display image available when it
   could use one.
-- To create the actual images I use either the Gimp or Inkscape. The .xcf and
-  .svg files are currently not part of the project.
+- To create the actual images I use either the Gimp or Inkscape.
+- The .xcf and .svg files are part of the project, although they are currently
+  not used at runtime.
 
 [1] https://developer.apple.com/design/human-interface-guidelines/ios/icons-and-images/
 

@@ -729,7 +729,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [self updatePauseEnabledState];
   [self updateContinueEnabledState];
   [self updateInterruptEnabledState];
-  [self updateScoringEnabledState];
+  [self updateScoringStartEnabledState];
   [self updatePlayStartEnabledState];
   [self updateSwitchSetupStoneColorToWhiteEnabledState];
   [self updateSwitchSetupStoneColorToBlackEnabledState];
@@ -925,7 +925,7 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 /// @brief Updates the enabled state of game action #GameActionScoringStart.
 // -----------------------------------------------------------------------------
-- (void) updateScoringEnabledState
+- (void) updateScoringStartEnabledState
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];

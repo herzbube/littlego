@@ -409,7 +409,7 @@ enum AlertType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Triggers the sending of a bug report.
+/// @brief Starts a new game.
 ///
 /// This method has been added to gather information in order to fix issue 90
 /// on GitHub. This method can be removed as soon the issue has been fixed.

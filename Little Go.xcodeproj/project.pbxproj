@@ -2080,8 +2080,7 @@
 				CDC66BBD21EBB051006C73B3 /* changelog@3.png */,
 				CDC66BBE21EBB051006C73B3 /* noun_Changelog_365219.svg */,
 			);
-			name = changelog;
-			path = "New Group";
+			path = changelog;
 			sourceTree = "<group>";
 		};
 		CDD48C80141034F000188B6A /* archive */ = {
