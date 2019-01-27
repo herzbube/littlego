@@ -120,6 +120,9 @@
 - (void) interrupt:(id)sender;
 - (void) scoringStart:(id)sender;
 - (void) playStart:(id)sender;
+- (void) switchSetupStoneColorToWhite:(id)sender;
+- (void) switchSetupStoneColorToBlack:(id)sender;
+- (void) discardAllSetupStones:(id)sender;
 - (void) gameInfo:(id)sender;
 - (void) moreGameActions:(id)sender;
 

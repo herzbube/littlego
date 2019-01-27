@@ -19,6 +19,7 @@
 #import "GameActionManager.h"
 #import "../controller/DiscardFutureMovesAlertController.h"
 #import "../model/BoardViewModel.h"
+#import "../model/GameSetupModel.h"
 #import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -282,6 +283,29 @@ static GameActionManager* sharedGameActionManager = nil;
 - (void) playStart:(id)sender
 {
   [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModePlay] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Handles execution of game action
+/// #GameActionSwitchSetupStoneColorToWhite.
+// -----------------------------------------------------------------------------
+- (void) switchSetupStoneColorToWhite:(id)sender
+{
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Handles execution of game action
+/// #GameActionSwitchSetupStoneColorToBlack.
+// -----------------------------------------------------------------------------
+- (void) switchSetupStoneColorToBlack:(id)sender
+{
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Handles execution of game action #GameActionDiscardAllSetupStones.
+// -----------------------------------------------------------------------------
+- (void) discardAllSetupStones:(id)sender
+{
 }
 
 // -----------------------------------------------------------------------------
@@ -569,7 +593,8 @@ static GameActionManager* sharedGameActionManager = nil;
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
 
-  UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  UiSettingsModel* uiSettingsModel = appDelegate.uiSettingsModel;
 
   if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
@@ -633,6 +658,15 @@ static GameActionManager* sharedGameActionManager = nil;
   else if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
   {
     [self addGameAction:GameActionPlayStart toVisibleStatesDictionary:visibleStates];
+
+    GameSetupModel* gameSetupModel = appDelegate.gameSetupModel;
+    if (gameSetupModel.gameSetupStoneColor == GoColorBlack)
+      [self addGameAction:GameActionSwitchSetupStoneColorToWhite toVisibleStatesDictionary:visibleStates];
+    else
+      [self addGameAction:GameActionSwitchSetupStoneColorToBlack toVisibleStatesDictionary:visibleStates];
+
+    if (game.blackSetupPoints.count > 0 || game.whiteSetupPoints.count > 0)
+      [self addGameAction:GameActionDiscardAllSetupStones toVisibleStatesDictionary:visibleStates];
   }
 
   return visibleStates;
@@ -658,6 +692,9 @@ static GameActionManager* sharedGameActionManager = nil;
   [self updateInterruptEnabledState];
   [self updateScoringEnabledState];
   [self updatePlayStartEnabledState];
+  [self updateSwitchSetupStoneColorToWhiteEnabledState];
+  [self updateSwitchSetupStoneColorToBlackEnabledState];
+  [self updateGameActionDiscardAllSetupStonesEnabledState];
   [self updateGameInfoEnabledState];
   [self updateMoreGameActionsEnabledState];
 }
@@ -895,6 +932,46 @@ static GameActionManager* sharedGameActionManager = nil;
   }
 
   [self updateEnabledState:enabled forGameAction:GameActionPlayStart];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of game action
+/// #GameActionSwitchSetupStoneColorToWhite.
+// -----------------------------------------------------------------------------
+- (void) updateSwitchSetupStoneColorToWhiteEnabledState
+{
+  BOOL enabled = YES;
+  [self updateEnabledState:enabled forGameAction:GameActionSwitchSetupStoneColorToWhite];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of game action
+/// #GameActionSwitchSetupStoneColorToBlack.
+// -----------------------------------------------------------------------------
+- (void) updateSwitchSetupStoneColorToBlackEnabledState
+{
+  BOOL enabled = YES;
+  [self updateEnabledState:enabled forGameAction:GameActionSwitchSetupStoneColorToBlack];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of game action
+/// #GameActionDiscardAllSetupStones.
+// -----------------------------------------------------------------------------
+- (void) updateGameActionDiscardAllSetupStonesEnabledState
+{
+  BOOL enabled = NO;
+
+  if ([ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
+  {
+    // always disabled
+  }
+  else
+  {
+    enabled = YES;
+  }
+
+  [self updateEnabledState:enabled forGameAction:GameActionDiscardAllSetupStones];
 }
 
 // -----------------------------------------------------------------------------

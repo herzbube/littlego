@@ -229,6 +229,24 @@ enum ButtonBoxSection
       selector = @selector(playStart:);
       break;
     }
+    case GameActionSwitchSetupStoneColorToWhite:
+    {
+      imageResourceName = stoneBlackButtonIconResource;
+      selector = @selector(switchSetupStoneColorToWhite:);
+      break;
+    }
+    case GameActionSwitchSetupStoneColorToBlack:
+    {
+      imageResourceName = stoneWhiteButtonIconResource;
+      selector = @selector(switchSetupStoneColorToBlack:);
+      break;
+    }
+    case GameActionDiscardAllSetupStones:
+    {
+      imageResourceName = discardButtonIconResource;
+      selector = @selector(discardAllSetupStones:);
+      break;
+    }
     case GameActionGameInfo:
     {
       imageResourceName = gameInfoButtonIconResource;
@@ -278,6 +296,9 @@ enum ButtonBoxSection
   NSMutableArray* variableButtonBoxSectionOrder = [NSMutableArray array];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionScoringStart]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionPlayStart]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionSwitchSetupStoneColorToWhite]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionSwitchSetupStoneColorToBlack]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionDiscardAllSetupStones]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionPass]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionComputerPlay]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionDiscardBoardPosition]];

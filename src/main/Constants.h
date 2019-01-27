@@ -100,6 +100,18 @@ enum GameAction
   GameActionScoringStart,
   /// @brief Starts play mode.
   GameActionPlayStart,
+  /// @brief Switch the default color for new stones placed during board setup
+  /// from black to white. The icon representing this game action is a black
+  /// stone icon, indicating the current default color instead of what the game
+  /// action actually does.
+  GameActionSwitchSetupStoneColorToWhite,
+  /// @brief Switch the default color for new stones placed during board setup
+  /// from white to black. The icon representing this game action is a white
+  /// stone icon, indicating the current default color instead of what the game
+  /// action actually does.
+  GameActionSwitchSetupStoneColorToBlack,
+  /// @brief Discards all board setup stones. Handicap stones remain.
+  GameActionDiscardAllSetupStones,
   /// @brief Displays the "Game Info" view with information about the game in
   /// progress.
   GameActionGameInfo,
@@ -948,6 +960,8 @@ extern NSString* gameInfoButtonIconResource;
 extern NSString* interruptButtonIconResource;
 extern NSString* scoringStartButtonIconResource;
 extern NSString* playStartButtonIconResource;
+extern NSString* stoneBlackButtonIconResource;
+extern NSString* stoneWhiteButtonIconResource;
 extern NSString* moreGameActionsButtonIconResource;
 extern NSString* forwardButtonIconResource;
 extern NSString* forwardToEndButtonIconResource;

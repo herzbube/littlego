@@ -168,6 +168,24 @@
       selector = @selector(playStart:);
       break;
     }
+    case GameActionSwitchSetupStoneColorToWhite:
+    {
+      imageResourceName = stoneBlackButtonIconResource;
+      selector = @selector(switchSetupStoneColorToWhite:);
+      break;
+    }
+    case GameActionSwitchSetupStoneColorToBlack:
+    {
+      imageResourceName = stoneWhiteButtonIconResource;
+      selector = @selector(switchSetupStoneColorToBlack:);
+      break;
+    }
+    case GameActionDiscardAllSetupStones:
+    {
+      imageResourceName = discardButtonIconResource;
+      selector = @selector(discardAllSetupStones:);
+      break;
+    }
     case GameActionGameInfo:
     {
       imageResourceName = gameInfoButtonIconResource;
@@ -219,6 +237,9 @@
   NSMutableArray* buttonOrderList = [NSMutableArray array];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionScoringStart]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionPlayStart]];
+  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionSwitchSetupStoneColorToWhite]];
+  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionSwitchSetupStoneColorToBlack]];
+  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionDiscardAllSetupStones]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionPass]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionComputerPlay]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionDiscardBoardPosition]];
