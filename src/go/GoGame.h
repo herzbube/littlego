@@ -70,6 +70,8 @@
 - (bool) isLegalMove:(GoPoint*)point byColor:(enum GoColor)color isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (void) revertStateFromEndedToInProgress;
 - (void) switchNextMoveColor;
+- (void) toggleHandicapPoint:(GoPoint*)point;
+- (void) changeSetupPoint:(GoPoint*)point toStoneState:(enum GoColor)stoneState;
 - (void) discardAllSetupStones;
 
 /// @brief The type of this GoGame object.

@@ -1165,6 +1165,269 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Adds or removes @a point to/from the list of handicap points
+/// (@e handicapPoints). Changes the @e stoneState property of @a point
+/// accordingly and recalculates the property @e zobristHashBeforeFirstMove.
+///
+/// If @e setupFirstMoveColor is #GoColorBlack or #GoColorWhite this method
+/// does not change the value of the @e nextMoveColor property, because if a
+/// side is explicitly set to play first this has precedence over the normal
+/// game rules. If however @e setupFirstMoveColor is #GoColorNone, this method
+/// may change the value of the @e nextMoveColor property:
+/// - Sets @e nextMoveColor to #GoColorWhite if @e handicapPoints changes from
+///   empty to non-empty.
+/// - Sets @e nextMoveColor to #GoColorBlack if @e handicapPoints changes from
+///   non-empty to empty.
+///
+/// Posts #handicapPointDidChange to the global notification centre after the
+/// operation is complete.
+///
+/// KVO observers of the property @e handicapPoints will be triggered.
+///
+/// Raises @e NSInternalInconsistencyException if this method is invoked when
+/// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is
+/// in that state but already has moves. Summing it up, this method can be
+/// invoked only at the start of the game.
+///
+/// Also raises @e NSInternalInconsistencyException if something about @a point
+/// is wrong:
+/// - @a point is listed in @e blackSetupStones or @e whiteSetupStones.
+/// - The current stone state of @a point indicates that there is a black
+///   handicap stone on the intersection, but @a point is not listed in
+///   @e handicapPoints.
+/// - The current stone state of @a point indicates that the intersection is
+///   empty, but @a point is listed in either @e handicapPoints.
+/// - The current stone state of @a point indicates that there is a white
+///   stone on the intersection.
+// -----------------------------------------------------------------------------
+- (void) toggleHandicapPoint:(GoPoint*)point
+{
+  if (GoGameStateGameHasStarted != self.state || nil != self.firstMove)
+  {
+    NSString* errorMessage = @"Handicap can only be set while GoGame object is in state GoGameStateGameHasStarted and has no moves";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  NSString* colorString;
+  if ([self.blackSetupPoints containsObject:point])
+    colorString = @"black";
+  else if ([self.whiteSetupPoints containsObject:point])
+    colorString = @"white";
+  else
+    colorString = nil;
+
+  if (colorString)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: Point is already in the list of %@ setup stones", point.vertex, colorString];
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  switch (point.stoneState)
+  {
+    case GoColorBlack:
+    {
+      NSMutableArray* newHandicapPoints = [NSMutableArray arrayWithArray:self.handicapPoints];
+      [newHandicapPoints removeObject:point];
+
+      if (self.handicapPoints.count == newHandicapPoints.count)
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: There is a black stone on the intersection, but the point is not in the list of handicap stones", point.vertex];
+        DDLogError(@"%@: %@", self, errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+
+      self.handicapPoints = newHandicapPoints;
+      assert(point.stoneState == GoColorNone);
+
+      break;
+    }
+    case GoColorNone:
+    {
+      if ([self.handicapPoints containsObject:point])
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: There is no stone on the intersection, but the point is in the list of handicap stones", point.vertex];
+        DDLogError(@"%@: %@", self, errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+
+      self.handicapPoints = [self.handicapPoints arrayByAddingObject:point];
+      assert(point.stoneState == GoColorBlack);
+
+      break;
+    }
+    case GoColorWhite:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: There is a black stone on the intersection", point.vertex];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:handicapPointDidChange object:point];
+
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Changes the @e stoneState property of @a point to the specified value
+/// @a stoneState. Either adds or removes @a point to/from one of the lists of
+/// setup stones (either @e blackSetupPoints or @e whiteSetupPoints).
+/// Recalculates the property @e zobristHashBeforeFirstMove.
+///
+/// Does nothing if @a point already has the desired stone state.
+///
+/// Posts #setupPointDidChange to the global notification centre after the
+/// operation is complete.
+///
+/// KVO observers of the properties @e blackSetupPoints and @e whiteSetupPoints
+/// will be triggered. The order depends on the old and the new stone state of
+/// @a point. If either the old or the new stone state is #GoColorNone, this
+/// method does not change one of the two properties and KVO observers will not
+/// be notified for that property.
+///
+/// Raises @e NSInternalInconsistencyException if this method is invoked when
+/// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is
+/// in that state but already has moves. Summing it up, this method can be
+/// invoked only at the start of the game.
+///
+/// Also raises @e NSInternalInconsistencyException if something about @a point
+/// is wrong:
+/// - @a point is listed in @e handicapPoints.
+/// - The current stone state of @a point indicates that there is a black or
+///   white setup stone on the intersection, but @a point is not listed in
+///   @e blackSetupStones or @e whiteSetupStones.
+/// - The current stone state of @a point indicates that the intersection is
+///   empty, but @a point is listed in either @e blackSetupStones or
+///   @e whiteSetupStones.
+// -----------------------------------------------------------------------------
+- (void) changeSetupPoint:(GoPoint*)point toStoneState:(enum GoColor)stoneState
+{
+  if (GoGameStateGameHasStarted != self.state || nil != self.firstMove)
+  {
+    NSString* errorMessage = @"Setup stones can only be set while GoGame object is in state GoGameStateGameHasStarted and has no moves";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  if (point.stoneState == stoneState)
+    return;
+
+  if ([self.handicapPoints containsObject:point])
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: Point is already in the list of handicap points", point.vertex, stoneState];
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  switch (point.stoneState)
+  {
+    case GoColorBlack:
+    {
+      NSMutableArray* newBlackSetupPoints = [NSMutableArray arrayWithArray:self.blackSetupPoints];
+      [newBlackSetupPoints removeObject:point];
+
+      if (self.blackSetupPoints.count == newBlackSetupPoints.count)
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: There is a black stone on the intersection, but the point is not in the list of black setup stones", point.vertex, stoneState];
+        DDLogError(@"%@: %@", self, errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+
+      self.blackSetupPoints = newBlackSetupPoints;
+      break;
+    }
+    case GoColorWhite:
+    {
+      NSMutableArray* newWhiteSetupPoints = [NSMutableArray arrayWithArray:self.whiteSetupPoints];
+      [newWhiteSetupPoints removeObject:point];
+
+      if (self.whiteSetupPoints.count == newWhiteSetupPoints.count)
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: There is a white stone on the intersection, but the point is not in the list of white setup stones", point.vertex, stoneState];
+        DDLogError(@"%@: %@", self, errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+
+      self.whiteSetupPoints = newWhiteSetupPoints;
+      break;
+    }
+    default:
+    {
+      NSString* colorString;
+      if ([self.blackSetupPoints containsObject:point])
+        colorString = @"black";
+      else if ([self.whiteSetupPoints containsObject:point])
+        colorString = @"white";
+      else
+        colorString = nil;
+
+      if (colorString)
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: There is no stone on the intersection, but the point is in the list of %@ setup stones", point.vertex, stoneState, colorString];
+        DDLogError(@"%@: %@", self, errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+      break;
+    }
+  }
+
+  assert(point.stoneState == GoColorNone);
+
+  switch (stoneState)
+  {
+    case GoColorBlack:
+    {
+      self.blackSetupPoints = [self.blackSetupPoints arrayByAddingObject:point];
+      break;
+    }
+    case GoColorWhite:
+    {
+      self.whiteSetupPoints = [self.whiteSetupPoints arrayByAddingObject:point];
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
+
+  assert(point.stoneState == stoneState);
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:setupPointDidChange object:point];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Discards all setup stones on intersections that are currently listed
 /// in @e blackSetupPoints and @e whiteSetupPoints.
 ///

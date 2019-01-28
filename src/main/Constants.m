@@ -79,6 +79,8 @@ NSString* boardViewWillHideCrossHair = @"BoardViewWillHideCrossHair";;
 NSString* boardViewDidChangeCrossHair = @"BoardViewDidChangeCrossHair";
 NSString* uiAreaPlayModeWillChange = @"UIAreaPlayModeWillChange";
 NSString* uiAreaPlayModeDidChange = @"UIAreaPlayModeDidChange";
+NSString* handicapPointDidChange = @"HandicapPointDidChange";
+NSString* setupPointDidChange = @"SetupPointDidChange";
 NSString* allSetupStonesWillDiscard = @"AllSetupStonesWillDiscard";
 NSString* allSetupStonesDidDiscard = @"AllSetupStonesDidDiscard";
 

@@ -679,6 +679,17 @@ extern NSString* uiAreaPlayModeWillChange;
 /// may be deallocated, or its content changed, after the notification has been
 /// delivered.
 extern NSString* uiAreaPlayModeDidChange;
+/// @brief Is sent to indicate that the state of an intersection has changed
+/// during board setup. The intersection now has a handicap stone, or a
+/// previously set handicap stone has been removed. The GoPoint object that
+/// identifies the intersection is associated with the notification.
+extern NSString* handicapPointDidChange;
+/// @brief Is sent to indicate that the state of an intersection has changed
+/// during board setup. The intersection how has a black or white stone, or the
+/// color of a previously set setup stone has been changed, or a previously set
+/// setup stone has been removed. The GoPoint object that identifies the
+/// intersection is associated with the notification.
+extern NSString* setupPointDidChange;
 /// @brief Is sent to indicate that all setup stones are about to be discarded.
 extern NSString* allSetupStonesWillDiscard;
 /// @brief Is sent to indicate that all setup stones have been discarded.
