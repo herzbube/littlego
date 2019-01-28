@@ -885,10 +885,15 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
     }
   }
 
-  if (_handicapPoints && 0 == _handicapPoints.count)
-    self.nextMoveColor = GoColorBlack;
-  else
-    self.nextMoveColor = GoColorWhite;
+  // If setupFirstMoveColor has not set an explicit color, nextMoveColor is
+  // free to change according to the game rules
+  if (self.setupFirstMoveColor == GoColorNone)
+  {
+    if (_handicapPoints && 0 == _handicapPoints.count)
+      self.nextMoveColor = GoColorBlack;
+    else
+      self.nextMoveColor = GoColorWhite;
+  }
 
   self.zobristHashBeforeFirstMove = [self.board.zobristTable hashForBoard:self.board];
 }
@@ -1153,6 +1158,10 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 
   if (_setupFirstMoveColor != GoColorNone)
     self.nextMoveColor = _setupFirstMoveColor;
+  else if (self.handicapPoints.count > 0)
+    self.nextMoveColor = GoColorWhite;
+  else
+    self.nextMoveColor = GoColorBlack;
 }
 
 // -----------------------------------------------------------------------------

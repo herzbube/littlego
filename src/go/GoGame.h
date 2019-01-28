@@ -78,13 +78,20 @@
 @property(nonatomic, retain) GoBoard* board;
 /// @brief List of GoPoint objects with handicap stones.
 ///
-/// Setting this property causes a black stone to be set on the GoPoint objects
-/// in the specified list and the property
-/// @e zobristHashBeforeFirstMove to be recalculated. Setting this property also
-/// changes the value of the @e nextMoveColor property (regardless of whether
-/// alternating play is enabled or not): If a non-empty handicap list is set,
-/// @e nextMoveColor is set to #GoColorWhite, if an empty handicap list is set,
-/// @e nextMoveColor is set to #GoColorBlack.
+/// Setting this property causes a black stone to be set on each GoPoint object
+/// in the specified list, and the black stone to be removed from each GoPoint
+/// object in the previously set list. Setting this property also recalculates
+/// @e zobristHashBeforeFirstMove.
+///
+/// If @e setupFirstMoveColor is #GoColorBlack or #GoColorWhite, setting this
+/// property does not change the value of the @e nextMoveColor property, because
+/// if a side is explicitly set to play first this has precedence over the
+/// normal game rules. If however @e setupFirstMoveColor is #GoColorNone,
+/// setting this property may change the value of the @e nextMoveColor property:
+/// - Sets @e nextMoveColor to #GoColorWhite if the handicap list changes from
+///   empty to non-empty.
+/// - Sets @e nextMoveColor to #GoColorBlack if the handicap list changes from
+///   non-empty to empty.
 ///
 /// The setter raises @e NSInternalInconsistencyException if it is invoked when
 /// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is
@@ -221,7 +228,9 @@
 ///
 /// Setting this property to either #GoColorBlack or #GoColorWhite changes the
 /// property @e nextMoveColor to the same value. Setting this property to
-/// #GoColorNone does not change the value of property @e nextMoveColor.
+/// #GoColorNone changes the value of the @e nextMoveColor property like this:
+/// - Sets @e nextMoveColor to #GoColorWhite if @e handicapPoints is non-empty.
+/// - Sets @e nextMoveColor to #GoColorBlack if @e handicapPoints is empty.
 ///
 /// The setter raises @e NSInternalInconsistencyException if it is invoked when
 /// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is

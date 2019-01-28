@@ -742,39 +742,52 @@
   XCTAssertEqual(GoColorWhite, m_game.setupFirstMoveColor);
   XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
 
-  // Resetting to original value, but no observable change to nextMoveColor
-  // because GoColorNone is documented to have no such effect
+  // Resetting to original value, also changes nextMoveColor according to
+  // normal game rules
   m_game.setupFirstMoveColor = GoColorNone;
   XCTAssertEqual(GoColorNone, m_game.setupFirstMoveColor);
-  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
 
   // Test that property cannot be set if game state is correct but a move was
   // made. In addition, test that nextMoveColor remains unchanged.
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   [m_game play:[m_game.board pointAtVertex:@"B1"]];
-  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);  // still white because of two moves
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);  // still black because of two moves
   XCTAssertThrowsSpecificNamed(m_game.setupFirstMoveColor = GoColorBlack,
                                NSException, NSInternalInconsistencyException, @"setupFirstMoveColor set after first move");
-  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
 
   // Can set setupFirstMoveColor if there are no moves
   [m_game.moveModel discardLastMove];
   [m_game.moveModel discardLastMove];
-  m_game.setupFirstMoveColor = GoColorBlack;
-  XCTAssertEqual(GoColorBlack, m_game.setupFirstMoveColor);
-  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+  m_game.setupFirstMoveColor = GoColorWhite;
+  XCTAssertEqual(GoColorWhite, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
 
   // Test that property cannot be set if game state is wrong. In addition, test
   // that nextMoveColor remains unchanged.
   [m_game resign];
   XCTAssertThrowsSpecificNamed(m_game.setupFirstMoveColor = GoColorWhite,
                                NSException, NSInternalInconsistencyException, @"setupFirstMoveColor set after game has ended");
-  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
 
   // Can set setupFirstMoveColor if game has not ended
   [m_game revertStateFromEndedToInProgress];
-  m_game.setupFirstMoveColor = GoColorWhite;
-  XCTAssertEqual(GoColorWhite, m_game.setupFirstMoveColor);
+  m_game.setupFirstMoveColor = GoColorBlack;
+  XCTAssertEqual(GoColorBlack, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+
+  // Interaction between handicapPoints setter and setupFirstMoveColor
+  NSMutableArray* handicapPoints = [NSMutableArray arrayWithCapacity:0];
+  [handicapPoints setArray:[GoUtilities pointsForHandicap:3 inGame:m_game]];
+  // handicapPoints setter does not change nextMoveColor property value if
+  // setupFirstMoveColor is not GoColorNone
+  m_game.handicapPoints = handicapPoints;
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+  // Setting setupFirstMoveColor to GoColorNone resets nextMoveColor to its
+  // unforced value, which is GoColorWhite because we currently have handicap
+  m_game.setupFirstMoveColor = GoColorNone;
+  XCTAssertEqual(GoColorNone, m_game.setupFirstMoveColor);
   XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
 }
 
