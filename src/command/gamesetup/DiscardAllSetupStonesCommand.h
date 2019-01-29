@@ -29,9 +29,12 @@
 /// backup of the current game.
 ///
 /// @note Because DiscardAllSetupStonesCommand always shows an alert as its
-/// first action, command execution will always succeed and code execution will
-/// always return to the client who submitted the command before the setup
-/// stones are actually discarded.
+/// first action, command execution will always succeed and control will always
+/// return to the client who submitted the command before the setup stones are
+/// actually discarded.
+///
+/// It is expected that this command is only executed while the UI area "Play"
+/// is in board setup mode.
 // -----------------------------------------------------------------------------
 @interface DiscardAllSetupStonesCommand : CommandBase
 {

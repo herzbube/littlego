@@ -107,7 +107,6 @@ static GameActionManager* sharedGameActionManager = nil;
   if (! self)
     return nil;
   self.uiDelegate = nil;
-  self.commandDelegate = nil;
   self.gameInfoViewControllerPresenter = nil;
   self.visibleGameActions = [NSArray array];
   self.enabledStates = [NSMutableDictionary dictionary];
@@ -208,7 +207,7 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   if ([self shouldIgnoreUserInteraction])
   {
-    DDLogWarn(@"%@: Ignoring GameActionPass", self);
+    DDLogWarn(@"%@: Ignoring playAtIntersection", self);
     return;
   }
   DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initWithPoint:point] autorelease];
