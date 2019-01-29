@@ -194,7 +194,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [appDelegate.gameSetupModel removeObserver:self forKeyPath:@"gameSetupStoneColor"];
 }
 
-#pragma mark - Game action handlers
+#pragma mark - Handlers for board interactions
 
 // -----------------------------------------------------------------------------
 /// @brief Places a stone on behalf of the player whose turn it currently is,
@@ -210,6 +210,24 @@ static GameActionManager* sharedGameActionManager = nil;
   DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initWithPoint:point] autorelease];
   [self.commandDelegate gameActionManager:self playOrAlertWithCommand:command];
 }
+
+// -----------------------------------------------------------------------------
+/// @brief Toggles either the "dead state" or the "seki state" of the stone
+/// group that covers the intersection identified by @a point. Is invoked only
+/// while the UI area "Play" is in scoring mode.
+// -----------------------------------------------------------------------------
+- (void) toggleScoringStateOfStoneGroupAtIntersection:(GoPoint*)point
+{
+  if ([self shouldIgnoreUserInteraction])
+  {
+    DDLogWarn(@"%@: Ignoring toggleScoringStateOfStoneGroupAtIntersection", self);
+    return;
+  }
+
+  [[[[ToggleScoringStateOfStoneGroupCommand alloc] initWithPoint:point] autorelease] submit];
+}
+
+#pragma mark - Game action handlers
 
 // -----------------------------------------------------------------------------
 /// @brief Handles execution of game action #GameActionPass.

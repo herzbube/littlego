@@ -84,7 +84,8 @@
 // -----------------------------------------------------------------------------
 /// @brief The GameActionManager class defines an abstract set of game actions
 /// (e.g. "pass"). GameActionManager also defines the behaviour of these actions
-/// (i.e. what they do) and when they are available.
+/// (i.e. what they do) and when they are available. In addition,
+/// GameActionManager provides handlers for some interactions with the board.
 ///
 /// GameActionManager requires a third party - the so-called "UI delegate" - to
 /// provide a visual representation of the actions it manages. UIControls such
@@ -112,6 +113,8 @@
 + (void) releaseSharedGameActionManager;
 
 - (void) playAtIntersection:(GoPoint*)point;
+- (void) toggleScoringStateOfStoneGroupAtIntersection:(GoPoint*)point;
+
 - (void) pass:(id)sender;
 - (void) discardBoardPosition:(id)sender;
 - (void) computerPlay:(id)sender;

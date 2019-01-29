@@ -183,6 +183,8 @@
 		CD7C57BF21FD346F00694520 /* GameSetupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57BC21FD346E00694520 /* GameSetupModel.m */; };
 		CD7C57C321FD3E1C00694520 /* DiscardAllSetupStonesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57C121FD3E1C00694520 /* DiscardAllSetupStonesCommand.m */; };
 		CD7C57C421FD3E1C00694520 /* DiscardAllSetupStonesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57C121FD3E1C00694520 /* DiscardAllSetupStonesCommand.m */; };
+		CD7C57CC21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57CB21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m */; };
+		CD7C57CD21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57CB21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m */; };
 		CD7C69B61A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
 		CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
 		CD7C69BA1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B91A9ABDE2009EC5AD /* BoardPositionNavigationManager.m */; };
@@ -794,6 +796,8 @@
 		CD7C57BD21FD346F00694520 /* GameSetupModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameSetupModel.h; sourceTree = "<group>"; };
 		CD7C57C121FD3E1C00694520 /* DiscardAllSetupStonesCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardAllSetupStonesCommand.m; sourceTree = "<group>"; };
 		CD7C57C221FD3E1C00694520 /* DiscardAllSetupStonesCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardAllSetupStonesCommand.h; sourceTree = "<group>"; };
+		CD7C57CA21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToggleScoringStateOfStoneGroupCommand.h; sourceTree = "<group>"; };
+		CD7C57CB21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToggleScoringStateOfStoneGroupCommand.m; sourceTree = "<group>"; };
 		CD7C69B41A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionButtonBoxDataSource.h; sourceTree = "<group>"; };
 		CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionButtonBoxDataSource.m; sourceTree = "<group>"; };
 		CD7C69B81A9ABDE2009EC5AD /* BoardPositionNavigationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionNavigationManager.h; sourceTree = "<group>"; };
@@ -1715,6 +1719,15 @@
 			path = gamesetup;
 			sourceTree = "<group>";
 		};
+		CD7C57C921FF9E1500694520 /* scoring */ = {
+			isa = PBXGroup;
+			children = (
+				CD7C57CA21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.h */,
+				CD7C57CB21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m */,
+			);
+			path = scoring;
+			sourceTree = "<group>";
+		};
 		CD7C69BC1A9BC7D2009EC5AD /* gameaction */ = {
 			isa = PBXGroup;
 			children = (
@@ -2112,6 +2125,7 @@
 				CDAA57E0184FE9BE0049A90D /* gtp */,
 				CD05A8C91422803B00214BBE /* move */,
 				CD072705180B292E0083B138 /* playerinfluence */,
+				CD7C57C921FF9E1500694520 /* scoring */,
 				CDF9740316C4082200D01D24 /* AsynchronousCommand.h */,
 				CD7C578521F79C2F00694520 /* ChangeUIAreaPlayModeCommand.h */,
 				CD7C578421F79C2F00694520 /* ChangeUIAreaPlayModeCommand.m */,
@@ -2947,6 +2961,7 @@
 				CDEE1A1D19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */,
 				CD1311D2171B5857006CE699 /* LoggingModel.m in Sources */,
 				CDF341C617270D0800AEFB20 /* LongRunningActionCounter.m in Sources */,
+				CD7C57CC21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m in Sources */,
 				CDF341CA1727507900AEFB20 /* ApplicationStateManager.m in Sources */,
 				CDF341D1172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
 				CD5E6B361D7CCB610089D0B3 /* MoreGameActionsController.m in Sources */,
@@ -2992,6 +3007,7 @@
 				CDA597521401825600B250D8 /* GoVertex.m in Sources */,
 				CDFD9F8018F1D5E80031CBCF /* GtpCommandViewController.m in Sources */,
 				CDFD9F7818F1D5640031CBCF /* LicensesViewController.m in Sources */,
+				CD7C57CD21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m in Sources */,
 				CDFD9F7518F1D37E0031CBCF /* MagnifyingGlassSettingsController.m in Sources */,
 				CD85B5901401C137001715B8 /* GoGameTest.m in Sources */,
 				CD7C6A0A1AB462CB009EC5AD /* NavigationBarButtonModel.m in Sources */,

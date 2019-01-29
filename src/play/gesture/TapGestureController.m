@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,12 +17,13 @@
 
 // Project includes
 #import "TapGestureController.h"
-#import "../model/ScoringModel.h"
+#import "../gameaction/GameActionManager.h"
 #import "../boardview/BoardView.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../ui/UiSettingsModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -116,28 +117,29 @@
   BoardViewIntersection intersection = [self.boardView intersectionNear:tappingLocation];
   if (BoardViewIntersectionIsNullIntersection(intersection))
     return;
-  if (! [intersection.point hasStone])
-    return;
-  GoGame* game = [GoGame sharedGame];
-  switch ([ApplicationDelegate sharedDelegate].scoringModel.scoreMarkMode)
+
+  GameActionManager* gameActionManager = [GameActionManager sharedGameActionManager];
+
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  switch (appDelegate.uiSettingsModel.uiAreaPlayMode)
   {
-    case GoScoreMarkModeDead:
+    case UIAreaPlayModeScoring:
     {
-      [game.score toggleDeadStateOfStoneGroup:intersection.point.region];
+      if (! [intersection.point hasStone])
+        return;
+
+      [gameActionManager toggleScoringStateOfStoneGroupAtIntersection:intersection.point];
       break;
     }
-    case GoScoreMarkModeSeki:
+    case UIAreaPlayModeBoardSetup:
     {
-      [game.score toggleSekiStateOfStoneGroup:intersection.point.region];
       break;
     }
     default:
     {
-      assert(0);
-      return;
+      break;
     }
   }
-  [game.score calculateWaitUntilDone:false];
 }
 
 // -----------------------------------------------------------------------------
