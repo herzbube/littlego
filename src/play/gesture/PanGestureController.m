@@ -23,12 +23,12 @@
 #import "../model/BoardViewModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
-#import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../main/MainUtility.h"
 #import "../../main/MagnifyingGlassOwner.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/MagnifyingViewModel.h"
+#import "../../ui/UiSettingsModel.h"
 #import "../../utility/ExceptionUtility.h"
 
 
@@ -110,8 +110,7 @@
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringEnabled:) name:goScoreScoringEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
+  [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
   // KVO observing
   [self setupBoardPositionObserver:[GoGame sharedGame].boardPosition];
 }
@@ -349,17 +348,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringEnabled notification.
+/// @brief Responds to the #uiAreaPlayModeDidChange notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringEnabled:(NSNotification*)notification
-{
-  [self updatePanningEnabled];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringDisabled notification.
-// -----------------------------------------------------------------------------
-- (void) goScoreScoringDisabled:(NSNotification*)notification
+- (void) uiAreaPlayModeDidChange:(NSNotification*)notification
 {
   [self updatePanningEnabled];
 }
@@ -390,7 +381,7 @@
     return;
   }
 
-  if (game.score.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModePlay)
   {
     self.panningEnabled = false;
     return;
