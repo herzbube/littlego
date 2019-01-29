@@ -164,7 +164,9 @@
       if (oldCrossHairPoint == newCrossHairPoint)
         break;
       CGRect oldDrawingRect = self.drawingRectForCrossHairPoint;
-      CGRect newDrawingRect = [self calculateDrawingRectangleForCrossHairPoint:newCrossHairPoint];
+      CGRect newDrawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
+                                                         centeredAtPoint:newCrossHairPoint
+                                                             withMetrics:self.boardViewMetrics];
       // We need to compare the drawing rectangles, not the cross-hair points.
       // The points may have changed, but if BOTH the old and the new point are
       // not on this tile, the old and the new drawing rectangle have NOT
@@ -394,37 +396,6 @@
   }
 
   return drawingPoints;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a rectangle in which to draw the stone centered the specified
-/// cross-hair point.
-///
-/// Returns CGRectZero if the stone is not located on this tile.
-// -----------------------------------------------------------------------------
-- (CGRect) calculateDrawingRectangleForCrossHairPoint:(GoPoint*)crossHairPoint
-{
-  if (! crossHairPoint)
-    return CGRectZero;
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
-  CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:crossHairPoint
-                                                               metrics:self.boardViewMetrics];
-  CGRect drawingRectForCrossHairPoint = CGRectIntersection(tileRect, stoneRect);
-  // Rectangles that are adjacent and share a side *do* intersect: The
-  // intersection rectangle has either zero width or zero height, depending on
-  // which side the two intersecting rectangles share. For this reason, we
-  // must check CGRectIsEmpty() in addition to CGRectIsNull().
-  if (CGRectIsNull(drawingRectForCrossHairPoint) || CGRectIsEmpty(drawingRectForCrossHairPoint))
-  {
-    drawingRectForCrossHairPoint = CGRectZero;
-  }
-  else
-  {
-    drawingRectForCrossHairPoint = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRectForCrossHairPoint
-                                                                      inTileWithRect:tileRect];
-  }
-  return drawingRectForCrossHairPoint;
 }
 
 @end

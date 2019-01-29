@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2014-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2014-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -457,6 +457,39 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   drawingRect.origin.x -= tileRect.origin.x;
   drawingRect.origin.y -= tileRect.origin.y;
   return drawingRect;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a rectangle in which to draw the stone centered at the
+/// specified point. Returns CGRectZero if the point is not located on this
+/// tile.
+// -----------------------------------------------------------------------------
++ (CGRect) drawingRectForTile:(id<Tile>)tile
+              centeredAtPoint:(GoPoint*)point
+                  withMetrics:(BoardViewMetrics*)metrics
+{
+  if (! point)
+    return CGRectZero;
+
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:tile
+                                                      metrics:metrics];
+  CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
+                                                               metrics:metrics];
+  CGRect drawingRectForPoint = CGRectIntersection(tileRect, stoneRect);
+  // Rectangles that are adjacent and share a side *do* intersect: The
+  // intersection rectangle has either zero width or zero height, depending on
+  // which side the two intersecting rectangles share. For this reason, we
+  // must check CGRectIsEmpty() in addition to CGRectIsNull().
+  if (CGRectIsNull(drawingRectForPoint) || CGRectIsEmpty(drawingRectForPoint))
+  {
+    drawingRectForPoint = CGRectZero;
+  }
+  else
+  {
+    drawingRectForPoint = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRectForPoint
+                                                             inTileWithRect:tileRect];
+  }
+  return drawingRectForPoint;
 }
 
 @end

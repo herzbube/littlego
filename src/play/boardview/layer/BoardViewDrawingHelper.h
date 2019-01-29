@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2014-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -85,6 +85,9 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
                          withMetrics:(BoardViewMetrics*)metrics;
 + (CGRect) drawingRectFromCanvasRect:(CGRect)canvasRect
                       inTileWithRect:(CGRect)tileRect;
++ (CGRect) drawingRectForTile:(id<Tile>)tile
+              centeredAtPoint:(GoPoint*)point
+                  withMetrics:(BoardViewMetrics*)metrics;
 //@}
 
 @end
