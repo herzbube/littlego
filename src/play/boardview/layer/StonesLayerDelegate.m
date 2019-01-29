@@ -48,6 +48,15 @@
 /// used by drawLayer:inContext:(). Is nil if drawing is not triggered because
 /// of a cross-hair change.
 @property(nonatomic, retain) NSArray* dirtyPointsForCrossHairPoint;
+/// @brief The dirty rect calculated by notify:eventInfo:() that later needs to
+/// be used by drawLayer(). Used only when drawing is required because of a
+/// setup point change.
+@property(nonatomic, assign) CGRect dirtyRectForSetupPoint;
+/// @brief The GoPoint object whose intersection is within
+/// @e dirtyRectForSetupPoint. Calculated by notify:eventInfo:() and later
+/// used by drawLayer:inContext:(). Is nil if drawing is not triggered because
+/// of a setup point change.
+@property(nonatomic, retain) GoPoint* dirtySetupPoint;
 @end
 
 
@@ -69,6 +78,8 @@
   self.drawingRectForCrossHairPoint = CGRectZero;
   self.dirtyRectForCrossHairPoint = CGRectZero;
   self.dirtyPointsForCrossHairPoint = nil;
+  self.dirtyRectForSetupPoint = CGRectZero;
+  self.dirtySetupPoint = nil;
   return self;
 }
 
@@ -80,6 +91,7 @@
   self.drawingPoints = nil;
   self.currentCrossHairPoint = nil;
   self.dirtyPointsForCrossHairPoint = nil;
+  self.dirtySetupPoint = nil;
   [super dealloc];
 }
 
@@ -105,11 +117,27 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invalidates the dirty rectangle.
+/// @brief Invalidates the cross-hair point dirty rectangle.
 // -----------------------------------------------------------------------------
 - (void) invalidateDirtyRectForCrossHairPoint
 {
   self.dirtyRectForCrossHairPoint = CGRectZero;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invalidates the setup point.
+// -----------------------------------------------------------------------------
+- (void) invalidateDirtySetupPoint
+{
+  self.dirtySetupPoint = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invalidates the setup point dirty rectangle.
+// -----------------------------------------------------------------------------
+- (void) invalidateDirtyRectForSetupPoint
+{
+  self.dirtyRectForSetupPoint = CGRectZero;
 }
 
 // -----------------------------------------------------------------------------
@@ -125,6 +153,8 @@
       [self invalidateLayers];
       [self invalidateCrossHairPoint];
       [self invalidateDirtyRectForCrossHairPoint];
+      [self invalidateDirtySetupPoint];
+      [self invalidateDirtyRectForSetupPoint];
       self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
@@ -134,6 +164,8 @@
     {
       [self invalidateCrossHairPoint];
       [self invalidateDirtyRectForCrossHairPoint];
+      [self invalidateDirtySetupPoint];
+      [self invalidateDirtyRectForSetupPoint];
       self.drawingPoints = [self calculateDrawingPoints];
       self.dirty = true;
       break;
@@ -143,6 +175,8 @@
     {
       [self invalidateCrossHairPoint];
       [self invalidateDirtyRectForCrossHairPoint];
+      [self invalidateDirtySetupPoint];
+      [self invalidateDirtyRectForSetupPoint];
       NSMutableDictionary* oldDrawingPoints = self.drawingPoints;
       NSMutableDictionary* newDrawingPoints = [self calculateDrawingPoints];
       // The dictionary must contain the intersection state so that the
@@ -253,6 +287,22 @@
       }
       break;
     }
+    case BVLDEventHandicapPointChanged:
+    case BVLDEventSetupPointChanged:
+    {
+      GoPoint* setupPoint = eventInfo;
+      CGRect drawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
+                                                      centeredAtPoint:setupPoint
+                                                          withMetrics:self.boardViewMetrics];
+      if (CGRectIsEmpty(drawingRect))
+        break;
+
+      self.dirty = true;
+      self.dirtySetupPoint = setupPoint;
+      self.dirtyRectForSetupPoint = drawingRect;
+
+      break;
+    }
     default:
     {
       break;
@@ -268,11 +318,16 @@
   if (self.dirty)
   {
     self.dirty = false;
-    if (CGRectIsEmpty(self.dirtyRectForCrossHairPoint))
+
+    if (CGRectIsEmpty(self.dirtyRectForCrossHairPoint) && CGRectIsEmpty(self.dirtyRectForSetupPoint))
       [self.layer setNeedsDisplay];
+    else if (CGRectIsEmpty(self.dirtyRectForCrossHairPoint))
+      [self.layer setNeedsDisplayInRect:self.dirtyRectForSetupPoint];
     else
       [self.layer setNeedsDisplayInRect:self.dirtyRectForCrossHairPoint];
+
     [self invalidateDirtyRectForCrossHairPoint];
+    [self invalidateDirtyRectForSetupPoint];
   }
 }
 
@@ -315,13 +370,18 @@
      // GoPoint object
      GoPoint* point = [board pointAtVertex:vertexString];
 
-     // If self.dirtyPointsForCrossHairPoint is set it acts as a filter: We
-     // don't want to draw more points than those that are within the clipping
-     // path that was set up when our implementation of drawLayer() invoked
-     // setNeedsDisplayInRect:().
+     // If self.dirtyPointsForCrossHairPoint or self.dirtySetupPoint are set
+     // they act as a filter: We don't want to draw more points than those that
+     // are within the clipping path that was set up when our implementation of
+     // drawLayer() invoked setNeedsDisplayInRect:().
      if (self.dirtyPointsForCrossHairPoint)
      {
        if (! [self.dirtyPointsForCrossHairPoint containsObject:point])
+         return;
+     }
+     else if (self.dirtySetupPoint)
+     {
+       if (self.dirtySetupPoint != point)
          return;
      }
 
@@ -355,6 +415,9 @@
                         inTileWithRect:tileRect
                            withMetrics:self.boardViewMetrics];
   }];
+
+  self.dirtyPointsForCrossHairPoint = nil;
+  self.dirtySetupPoint = nil;
 }
 
 // -----------------------------------------------------------------------------

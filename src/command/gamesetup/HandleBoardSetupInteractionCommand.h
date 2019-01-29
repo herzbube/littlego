@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2019 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,19 +15,32 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "../CommandBase.h"
+
 // Forward declarations
-@class BoardView;
+@class GoPoint;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The TapGestureController class is responsible for managing the tap
-/// gesture on the Go board. Tapping is used to place stones during game setup
-/// prior to the first move, and to mark dead stones during scoring.
+/// @brief The HandleBoardSetupInteractionCommand class is responsible for
+/// handling a board setup interaction at the intersection identified by the
+/// GoPoint object that is passed to the initializer.
+///
+/// After it has processed the board setup interaction,
+/// HandleBoardSetupInteractionCommand performs a backup of the current game.
+///
+/// @note Because HandleBoardSetupInteractionCommand may show an alert, command
+/// execution may succeed and control may return to the client who submitted
+/// the command before handling of the tap gesture has actually finished.
+///
+/// It is expected that this command is only executed while the UI area "Play"
+/// is in board setup mode.
 // -----------------------------------------------------------------------------
-@interface TapGestureController : NSObject <UIGestureRecognizerDelegate>
+@interface HandleBoardSetupInteractionCommand : CommandBase
 {
 }
 
-@property(nonatomic, assign) BoardView* boardView;
+- (id) initWithPoint:(GoPoint*)point;
 
 @end

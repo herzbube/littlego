@@ -53,6 +53,12 @@ enum BoardViewLayerDelegateEvent
   BVLDEventScoreCalculationEnds,
   BVLDEventMarkNextMoveChanged,
   BVLDEventTerritoryStatisticsChanged,
+  /// @brief The event info object that accompanies this event type is a GoPoint
+  /// object that identifies the intersection that changed.
+  BVLDEventHandicapPointChanged,
+  /// @brief The event info object that accompanies this event type is a GoPoint
+  /// object that identifies the intersection that changed.
+  BVLDEventSetupPointChanged,
   BVLDEventAllSetupStonesDiscarded,
 };
 

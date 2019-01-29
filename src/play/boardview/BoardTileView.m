@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2014-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -134,6 +134,8 @@
   [center addObserver:self selector:@selector(territoryStatisticsChanged:) name:territoryStatisticsChanged object:nil];
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+  [center addObserver:self selector:@selector(handicapPointDidChange:) name:handicapPointDidChange object:nil];
+  [center addObserver:self selector:@selector(setupPointDidChange:) name:setupPointDidChange object:nil];
   [center addObserver:self selector:@selector(allSetupStonesDidDiscard:) name:allSetupStonesDidDiscard object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
@@ -518,6 +520,24 @@
 {
   [self setupCrossHairLinesLayerDelegateIsRequired:false];
   [self updateLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #handicapPointDidChange notifications.
+// -----------------------------------------------------------------------------
+- (void) handicapPointDidChange:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:BVLDEventHandicapPointChanged eventInfo:notification.object];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #setupPointDidChange notifications.
+// -----------------------------------------------------------------------------
+- (void) setupPointDidChange:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:BVLDEventSetupPointChanged eventInfo:notification.object];
+  [self delayedDrawLayers];
 }
 
 // -----------------------------------------------------------------------------

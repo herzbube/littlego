@@ -23,12 +23,15 @@
 #import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
 #import "../../command/gtp/InterruptComputerCommand.h"
 #import "../../command/boardposition/ChangeAndDiscardCommand.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
 #import "../../command/game/PauseGameCommand.h"
 #import "../../command/gamesetup/DiscardAllSetupStonesCommand.h"
+#import "../../command/gamesetup/HandleBoardSetupInteractionCommand.h"
+#import "../../command/scoring/ToggleScoringStateOfStoneGroupCommand.h"
 #import "../../command/ChangeUIAreaPlayModeCommand.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../main/WindowRootViewController.h"
@@ -156,6 +159,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+  [center addObserver:self selector:@selector(setupPointDidChange:) name:setupPointDidChange object:nil];
   [center addObserver:self selector:@selector(allSetupStonesDidDiscard:) name:allSetupStonesDidDiscard object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // Note: UIApplicationWillChangeStatusBarOrientationNotification is also sent
@@ -225,6 +229,22 @@ static GameActionManager* sharedGameActionManager = nil;
   }
 
   [[[[ToggleScoringStateOfStoneGroupCommand alloc] initWithPoint:point] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Handles a board setup interaction at the intersection identified by
+/// @a point. Is invoked only while the UI area "Play" is in board setup mode.
+// -----------------------------------------------------------------------------
+- (void) handleBoardSetupAtIntersection:(GoPoint*)point
+{
+  if ([self shouldIgnoreUserInteraction])
+  {
+    DDLogWarn(@"%@: Ignoring handleBoardSetupAtIntersection", self);
+    return;
+  }
+
+  HandleBoardSetupInteractionCommand* command = [[[HandleBoardSetupInteractionCommand alloc] initWithPoint:point] autorelease];
+  [self.commandDelegate gameActionManager:self discardOrAlertWithCommand:command];
 }
 
 #pragma mark - Game action handlers
@@ -498,6 +518,15 @@ static GameActionManager* sharedGameActionManager = nil;
 - (void) boardViewWillHideCrossHair:(NSNotification*)notification
 {
   self.enabledStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #setupPointDidChange notifications.
+// -----------------------------------------------------------------------------
+- (void) setupPointDidChange:(NSNotification*)notification
+{
+  self.visibleStatesNeedUpdate = true;
   [self delayedUpdate];
 }
 

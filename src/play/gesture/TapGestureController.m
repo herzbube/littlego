@@ -85,8 +85,7 @@
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringEnabled:) name:goScoreScoringEnabled object:nil];
-  [center addObserver:self selector:@selector(goScoreScoringDisabled:) name:goScoreScoringDisabled object:nil];
+  [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
 }
@@ -133,6 +132,7 @@
     }
     case UIAreaPlayModeBoardSetup:
     {
+      [gameActionManager handleBoardSetupAtIntersection:intersection.point];
       break;
     }
     default:
@@ -161,17 +161,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringEnabled notification.
+/// @brief Responds to the #uiAreaPlayModeDidChange notification.
 // -----------------------------------------------------------------------------
-- (void) goScoreScoringEnabled:(NSNotification*)notification
-{
-  [self updateTappingEnabled];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreScoringDisabled notification.
-// -----------------------------------------------------------------------------
-- (void) goScoreScoringDisabled:(NSNotification*)notification
+- (void) uiAreaPlayModeDidChange:(NSNotification*)notification
 {
   [self updateTappingEnabled];
 }
@@ -197,27 +189,37 @@
 // -----------------------------------------------------------------------------
 - (void) updateTappingEnabled
 {
-  GoGame* game = [GoGame sharedGame];
-  GoScore* score = game.score;
-  if (score.scoringEnabled)
+  switch ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode)
   {
-    switch (game.reasonForGameHasEnded)
+    case UIAreaPlayModeScoring:
     {
-      case GoGameHasEndedReasonFourPasses:
+      GoGame* game = [GoGame sharedGame];
+      switch (game.reasonForGameHasEnded)
       {
-        self.tappingEnabled = false;
-        break;
+        case GoGameHasEndedReasonFourPasses:
+        {
+          self.tappingEnabled = false;
+          break;
+        }
+        default:
+        {
+          self.tappingEnabled = ! game.score.scoringInProgress;
+          break;
+        }
       }
-      default:
-      {
-        self.tappingEnabled = ! score.scoringInProgress;
-        break;
-      }
+
+      break;
     }
-  }
-  else
-  {
-    self.tappingEnabled = false;
+    case UIAreaPlayModeBoardSetup:
+    {
+      self.tappingEnabled = true;
+      break;
+    }
+    default:
+    {
+      self.tappingEnabled = false;
+      break;
+    }
   }
 }
 
