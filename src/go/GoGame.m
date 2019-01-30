@@ -1333,6 +1333,7 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 
   if (_setupFirstMoveColor != GoColorNone)
     self.nextMoveColor = _setupFirstMoveColor;
+  // If no color is set up explicitly, the game rules apply
   else if (self.handicapPoints.count > 0)
     self.nextMoveColor = GoColorWhite;
   else

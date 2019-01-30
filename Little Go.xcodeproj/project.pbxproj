@@ -1721,8 +1721,8 @@
 		CD7C57C021FD3E1C00694520 /* gamesetup */ = {
 			isa = PBXGroup;
 			children = (
-				CD7C57C121FD3E1C00694520 /* DiscardAllSetupStonesCommand.m */,
 				CD7C57C221FD3E1C00694520 /* DiscardAllSetupStonesCommand.h */,
+				CD7C57C121FD3E1C00694520 /* DiscardAllSetupStonesCommand.m */,
 				CD7C57C621FF8E9400694520 /* HandleBoardSetupInteractionCommand.h */,
 				CD7C57C521FF8E9400694520 /* HandleBoardSetupInteractionCommand.m */,
 				CD7C57CF2201E89400694520 /* SetupFirstMoveColorCommand.h */,

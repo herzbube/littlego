@@ -25,8 +25,14 @@
 /// DiscardAllSetupStonesCommand first displays an alert that asks the user for
 /// confirmation.
 ///
-/// After it has made the discard, DiscardAllSetupStonesCommand performs a
-/// backup of the current game.
+/// Before it discards setup stones, DiscardAllSetupStonesCommand also discards
+/// any moves that the game currently has. Whoever invoked
+/// DiscardAllSetupStonesCommand must have previously made sure that it's OK to
+/// discard future moves.
+///
+/// After it has made the discard, DiscardAllSetupStonesCommand syncs the
+/// GTP engine, saves the application state and performs a backup of the
+/// current game.
 ///
 /// @note Because DiscardAllSetupStonesCommand always shows an alert as its
 /// first action, command execution will always succeed and control will always
@@ -34,7 +40,8 @@
 /// actually discarded.
 ///
 /// It is expected that this command is only executed while the UI area "Play"
-/// is in board setup mode.
+/// is in board setup mode. Also, DiscardAllSetupStonesCommand raises
+/// NSInternalInconsistencyException if the current board position is not 0.
 // -----------------------------------------------------------------------------
 @interface DiscardAllSetupStonesCommand : CommandBase
 {

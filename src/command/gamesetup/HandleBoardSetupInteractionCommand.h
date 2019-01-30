@@ -27,15 +27,22 @@
 /// handling a board setup interaction at the intersection identified by the
 /// GoPoint object that is passed to the initializer.
 ///
+/// Before it discards setup stones, HandleBoardSetupInteractionCommand also
+/// discards any moves that the game currently has. Whoever invoked
+/// HandleBoardSetupInteractionCommand must have previously made sure that it's
+/// OK to discard future moves.
+///
 /// After it has processed the board setup interaction,
-/// HandleBoardSetupInteractionCommand performs a backup of the current game.
+/// HandleBoardSetupInteractionCommand syncs the GTP engine, saves the
+/// application state and performs a backup of the current game.
 ///
 /// @note Because HandleBoardSetupInteractionCommand may show an alert, command
 /// execution may succeed and control may return to the client who submitted
 /// the command before handling of the tap gesture has actually finished.
 ///
 /// It is expected that this command is only executed while the UI area "Play"
-/// is in board setup mode.
+/// is in board setup mode. Also, HandleBoardSetupInteractionCommand raises
+/// NSInternalInconsistencyException if the current board position is not 0.
 // -----------------------------------------------------------------------------
 @interface HandleBoardSetupInteractionCommand : CommandBase
 {
