@@ -19,6 +19,7 @@
 #import "HandleBoardSetupInteractionCommand.h"
 #import "../backup/BackupGameToSgfCommand.h"
 #import "../boardposition/ChangeAndDiscardCommand.h"
+#import "../boardposition/SyncGTPEngineCommand.h"
 #import "../../play/model/GameSetupModel.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoBoardPosition.h"
@@ -154,6 +155,17 @@
       [game toggleHandicapPoint:self.point];
     else
       [game changeSetupPoint:self.point toStoneState:newStoneState];
+
+    bool syncSuccess = [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+    if (! syncSuccess)
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Failed to synchronize the GTP engine state with the current GoGame state"];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
 
     [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
   }
