@@ -1276,7 +1276,7 @@ Special test cases
   - The UI must rotate
 
 
-Board setup and player setup tests
+Board setup and player setup tests when loading an .sgf
 - The following table lists a set of .sgf files that are used to test the app's
   behaviour in regard to various board setup and player setup combinations.
 - The table lists the basic characteristics of each file, together with the
@@ -1532,3 +1532,286 @@ AB[dp][pd][dd][pp][dj][pj][jp][jd]HA[8]
 PW[GoUctPlayer]
 PB[GoUctPlayer])
 EOF
+
+
+
+Board setup mode tests
+- Start a new human vs. human game with handicap.
+  - Check that the handicap stones are not marked.
+  - Check that the "More game action" alert shows an entry to switch to board
+    setup mode.
+- Play a move.
+  - Check that the "More game action" alert no longer shows an entry to switch
+    to board setup mode.
+- Change board position to board position 0.
+  - Check that the "More game action" alert shows an entry to switch to board
+    setup mode.
+- Switch to board setup mode.
+  - Check that all handicap stones are marked.
+  - Check that the status view displays a message that indicates that the app
+    is now in board setup mode.
+  - Check that the following game actions are now available:
+    - Start play mode
+    - Switch setup stone color to black
+    - In the "More game actions" menu: Set up a side to move first
+  - Check that the the following game actions are not available:
+    - Discard all setup stones
+    - In the "More game actions" menu: Switch to board setup mode
+- Tap "Start play mode".
+  - Check that the app is now in play mode and that the board setup game actions
+    are no longer available.
+  - Check that the "More game action" alert shows an entry to switch to board
+    setup mode.
+- Switch to board setup mode, then change board position to board position 1.
+  - Check that the app is now in play mode and that the board setup game actions
+    are no longer available.
+- Switch to scoring mode.
+  - Check that the "More game action" alert does not show an entry to switch to
+    board setup mode.
+- Change board position to board position 0.
+  - Check that the "More game action" alert shows an entry to switch to board
+    setup mode.
+- Switch to board setup mode.
+  - Check that the app is no longer in scoring mode.
+  - Check that the "More game action" alert does not show an entry to switch to
+    scoring mode.
+- Switch to scoring mode.
+  - Check that the "More game action" alert shows an entry to switch to board
+    setup mode.
+
+
+Tests for placing setup stones
+- Start a new human vs. human game with handicap >= 3.
+- Play a move.
+- Change board position to board position 0.
+- Switch to board setup mode.
+- Tap an empty intersection. The "Discard all future moves" alert is displayed.
+- Decline to discard future moves.
+  - Check that moves have not been discarded.
+  - Check that the intersection remains empty.
+- Tap an empty intersection. The "Discard all future moves" alert is displayed.
+- Agree to discard future moves.
+  - Check that moves have been discarded and that it is no longer possible to
+    change board position.
+  - Check that a black stone is placed on the empty intersection.
+  - Check that the game action "Discard all setup stones" is now available.
+- Tap the intersection with the black stone.
+  - Check that the stone changes color to white.
+  - Check that the game action "Discard all setup stones" is still available.
+- Tap the intersection with the white stone.
+  - Check that the stone is cleared and the intersection becomes empty.
+  - Check that the game action "Discard all setup stones" is no longer
+    available.
+- Tap "Switch setup stone color to black". The game action toggles to
+  "Switch setup stone color to white".
+- Tap an empty intersection.
+  - Check that a white stone is placed on the empty intersection.
+  - Check that the game action "Discard all setup stones" is now available.
+- Tap the intersection with the white stone.
+  - Check that the stone changes color to black.
+  - Check that the game action "Discard all setup stones" is still available.
+- Tap the intersection with the black stone.
+  - Check that the stone is cleared and the intersection becomes empty.
+  - Check that the game action "Discard all setup stones" is no longer
+    available.
+- Tap "Switch setup stone color to white". The game action toggles to
+  "Switch setup stone color to black".
+- Tap an intersection with a handicap stone. A "Change handicap" alert is
+  displayed.
+- Decline to remove the handicap stone. Check that the handicap stones remains
+  on the intersection.
+- Tap an intersection with a handicap stone. A "Change handicap" alert is
+  displayed.
+- Agree to remove the handicap stone. Check that the handicap stone is removed
+  and the intersection becomes empty.
+- Tap "Switch setup stone color to black". The game action toggles to
+  "Switch setup stone color to white".
+- Tap an intersection with a handicap stone. A "Change handicap" alert is
+  displayed.
+- Agree to remove the handicap stone. Check that the handicap stone is removed
+  and the intersection becomes empty.
+- Tap an empty intersection.
+  - Check that a black stone is placed on the empty intersection.
+  - Check that the game action "Discard all setup stones" is now available.
+- Switch to play mode and play a move.
+- Change board position to board position and switch to board setup mode.
+  - Check that the previously placed black setup stone is still present.
+  - Check that at least one handicap stone is still present.
+  - Check that the game action "Discard all setup stones" is available.
+- Tap "Discard all setup stones". The "Discard all future moves" alert is
+  displayed.
+- Decline to discard future moves.
+  - Check that moves have not been discarded.
+  - Check that the black setup stone is still present.
+- Tap "Discard all setup stones". The "Discard all future moves" alert is
+  displayed.
+- Agree to discard future moves. A "Discard all setup stones" alert is
+  displayed.
+- Decline to discard all setup stones.
+  - Check that moves have not been discarded.
+  - Check that the black setup stone is still present.
+- Tap "Discard all setup stones". The "Discard all future moves" alert is
+  displayed.
+- Agree to discard future moves. A "Discard all setup stones" alert is
+  displayed.
+- Agree to discard all setup stones.
+  - Check that moves have been discarded and that it is no longer possible to
+    change board position.
+  - Check that the black stone is no longer present.
+  - Check that the game action "Discard all setup stones" is no longer
+    available.
+
+
+Board setup tests when game has ended
+- Start a new human vs. human game.
+- Play two pass moves. The game automatically switches to scoring mode.
+  - In the "Game info" screen, check that the game is ended.
+- Change board position to board position 0.
+- Switch to board setup mode.
+- Tap an empty intersection. The "Discard all future moves" alert is displayed.
+- Decline to discard future moves.
+  - Check that moves have not been discarded.
+  - In the "Game info" screen, check that the game is still ended.
+- Tap an empty intersection. The "Discard all future moves" alert is displayed.
+- Agree to discard future moves
+  - Check that moves have been discarded and that it is no longer possible to
+    change board position.
+  - Check that a setup stone is placed on the empty intersection.
+  - Check that the game action "Discard all setup stones" is now available.
+  - In the "Game info" screen, check that the game has not yet started.
+- Switch to play mode.
+- Play two pass moves. The game automatically switches to scoring mode.
+  - In the "Game info" screen, check that the game is ended.
+- Change board position to board position 0.
+- Switch to board setup mode.
+- Tap "Discard all setup stones". The "Discard all future moves" alert is
+  displayed.
+- Decline to discard future moves.
+  - Check that moves have not been discarded.
+  - Check that the setup stone is still present.
+  - In the "Game info" screen, check that the game is still ended.
+- Tap "Discard all setup stones". The "Discard all future moves" alert is
+  displayed.
+- Agree to discard future moves. A "Discard all setup stones" alert is
+  displayed.
+- Decline to discard all setup stones.
+  - Check that moves have not been discarded.
+  - Check that the setup stone is still present.
+  - In the "Game info" screen, check that the game is still ended.
+- Tap "Discard all setup stones". The "Discard all future moves" alert is
+  displayed.
+- Agree to discard future moves. A "Discard all setup stones" alert is
+  displayed.
+- Agree to discard all setup stones.
+  - Check that moves have been discarded and that it is no longer possible to
+    change board position.
+  - Check that the setup stone is no longer present.
+  - Check that the game action "Discard all setup stones" is no longer
+    available.
+  - In the "Game info" screen, check that the game has not yet started.
+
+
+Illegal board setup tests
+- Load game illegal-board-setup-test.sgf.
+- Switch to board setup mode
+- Check that placing a black setup stone on the following intersections shows a
+  "Stone is not legal" alert, with the alert message explaining why the stone
+  cannot be placed.
+- H8: Setup stone would have no liberties.
+- B9: Setup stone would connect to a black stone group and take away the group's
+  last liberty.
+- G5: Setup stone would take away all liberties from a white stone group.
+- H3: Setup stone would take away all liberties from a white stone.
+- C3: Setup stone would split up a black stone group and take away all liberties
+  from one of the resulting sub-groups.
+- E3: Setup stone would take away all liberties from a white stone group.
+  >>> The message is the same as for G5, but in the background there is special
+      handling to distinguish this case from the C3 "splitting" "case.
+
+
+Player setup tests
+- Start a new human vs. human game with handicap.
+- Open the "Game info" screen.
+  - Check that "Side to move first" displays "White"
+  - Check that the footer message of the "Game Information" section displays the
+    information that the side to move first is currently determined by the
+    normal game rules.
+- Play a move.
+- Change board position to board position 0.
+- Switch to board setup mode.
+- In the "More game actions" alert, select "Set up a side to move first".
+- A screen is displayed that lets the user select from these options:
+  - Game rules
+  - Black
+  - White
+  Check that "Game rules" has a check mark.
+- Tap "Cancel".
+  - In the "Game info" screen, check that "Side to move first" displays "White".
+  - In the "Game info" screen, check that the footer message of the
+    "Game Information" section displays the information that the side to move
+    first is currently determined by the normal game rules.
+- In the "More game actions" alert, select "Set up a side to move first".
+- Select "Black" and tap "Done". The "Discard all future moves" alert is
+  displayed.
+- Decline to discard future moves.
+  - Check that moves have not been discarded.
+  - In the "Game info" screen, check that "Side to move first" displays "White".
+  - In the "Game info" screen, check that the footer message of the
+    "Game Information" section displays the information that the side to move
+    first is currently determined by the normal game rules.
+- In the "More game actions" alert, select "Set up a side to move first".
+- Select "Black" and tap "Done". The "Discard all future moves" alert is
+  displayed.
+- Agree to discard future moves.
+  - Check that moves have been discarded and that it is no longer possible to
+    change board position.
+  - In the "Game info" screen, check that "Side to move first" displays "Black".
+  - In the "Game info" screen, check that the footer message of the
+    "Game Information" section displays the information that the side to move
+    first has been overridden.
+- Switch to play mode.
+- Play a move.
+  - Check that the first move is played by black.
+- Discard the move.
+- Switch to board setup mode.
+- In the "More game actions" alert, select "Set up a side to move first".
+- Select "Game Rules" and tap "Done".
+- Open the "Game info" screen.
+  - Check that "Side to move first" displays "White"
+  - Check that the footer message of the "Game Information" section displays the
+   information that the side to move first is currently determined by the
+   normal game rules.
+
+
+Board setup and player setup tests in a computer vs. computer game
+- Start a new computer vs. computer game.
+- Pause the game after the computer has played at least one move.
+- Change board position to board position 0.
+- Switch to board setup mode.
+  - Check that the following game actions are now available:
+    - Start play mode
+    - Switch setup stone color to black
+    - In the "More game actions" menu: Set up a side to move first
+- Tap an empty intersection. The "Discard all future moves" alert is displayed.
+- Agree to discard future moves
+  - Check that moves have been discarded and that it is no longer possible to
+    change board position.
+  - Check that a setup stone is placed on the empty intersection.
+  - Check that the game action "Discard all setup stones" is now available.
+  - In the "Game info" screen, check that the game is paused.
+- Switch to play mode.
+- Continue the game.
+- Pause the game after the computer has played at least one move.
+- Change board position to board position 0.
+- Switch to board setup mode.
+- Tap "Discard all setup stones". The "Discard all future moves" alert is
+  displayed.
+- Agree to discard future moves. A "Discard all setup stones" alert is
+  displayed.
+- Agree to discard all setup stones.
+  - Check that moves have been discarded and that it is no longer possible to
+    change board position.
+  - Check that the setup stone is no longer present.
+  - Check that the game action "Discard all setup stones" is no longer
+    available.
+  - In the "Game info" screen, check that the game is paused.
