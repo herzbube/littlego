@@ -1007,9 +1007,9 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 // -----------------------------------------------------------------------------
 - (void) setHandicapPoints:(NSArray*)newValue
 {
-  if (GoGameStateGameHasStarted != self.state || nil != self.firstMove)
+  if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
   {
-    NSString* errorMessage = @"Handicap can only be set while GoGame object is in state GoGameStateGameHasStarted and has no moves";
+    NSString* errorMessage = @"Handicap can only be set while GoGame object is not in state GoGameStateGameHasEnded and has no moves";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -1210,9 +1210,9 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 // -----------------------------------------------------------------------------
 - (void) setSetupPoints:(NSArray*)newValue forStoneColor:(enum GoColor)stoneColor
 {
-  if (GoGameStateGameHasStarted != self.state || nil != self.firstMove)
+  if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
   {
-    NSString* errorMessage = @"Setup stones can only be set while GoGame object is in state GoGameStateGameHasStarted and has no moves";
+    NSString* errorMessage = @"Setup stones can only be set while GoGame object is not in state GoGameStateGameHasEnded and has no moves";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -1319,9 +1319,9 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 // -----------------------------------------------------------------------------
 - (void) setSetupFirstMoveColor:(enum GoColor)newValue
 {
-  if (GoGameStateGameHasStarted != self.state || nil != self.firstMove)
+  if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
   {
-    NSString* errorMessage = @"First move color can only be set up while GoGame object is in state GoGameStateGameHasStarted and has no moves";
+    NSString* errorMessage = @"First move color can only be set up while GoGame object is not in state GoGameStateGameHasEnded and has no moves";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -1377,9 +1377,9 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 // -----------------------------------------------------------------------------
 - (void) toggleHandicapPoint:(GoPoint*)point
 {
-  if (GoGameStateGameHasStarted != self.state || nil != self.firstMove)
+  if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
   {
-    NSString* errorMessage = @"Handicap can only be set while GoGame object is in state GoGameStateGameHasStarted and has no moves";
+    NSString* errorMessage = @"Handicap can only be set while GoGame object is not in state GoGameStateGameHasEnded and has no moves";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -1493,9 +1493,9 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 // -----------------------------------------------------------------------------
 - (void) changeSetupPoint:(GoPoint*)point toStoneState:(enum GoColor)stoneState
 {
-  if (GoGameStateGameHasStarted != self.state || nil != self.firstMove)
+  if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
   {
-    NSString* errorMessage = @"Setup stones can only be set while GoGame object is in state GoGameStateGameHasStarted and has no moves";
+    NSString* errorMessage = @"Setup stones can only be set while GoGame object is not in state GoGameStateGameHasEnded and has no moves";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
