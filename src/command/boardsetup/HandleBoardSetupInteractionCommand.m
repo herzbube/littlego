@@ -20,7 +20,7 @@
 #import "../backup/BackupGameToSgfCommand.h"
 #import "../boardposition/ChangeAndDiscardCommand.h"
 #import "../boardposition/SyncGTPEngineCommand.h"
-#import "../../play/model/GameSetupModel.h"
+#import "../../play/model/BoardSetupModel.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoPoint.h"
@@ -185,13 +185,13 @@
 - (enum GoColor) determineNewStoneStateForSetupPoint
 {
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  GameSetupModel* gameSetupModel = appDelegate.gameSetupModel;
+  BoardSetupModel* boardSetupModel = appDelegate.boardSetupModel;
 
   if (self.point.stoneState == GoColorNone)
   {
-    return gameSetupModel.gameSetupStoneColor;
+    return boardSetupModel.boardSetupStoneColor;
   }
-  else if (self.point.stoneState == gameSetupModel.gameSetupStoneColor)
+  else if (self.point.stoneState == boardSetupModel.boardSetupStoneColor)
   {
     if (self.point.stoneState == GoColorBlack)
       return GoColorWhite;

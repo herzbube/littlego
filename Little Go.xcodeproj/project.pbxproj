@@ -179,8 +179,6 @@
 		CD7C57B621FCB0D100694520 /* stone-white-icon.svg in Resources */ = {isa = PBXBuildFile; fileRef = CD7C57B221FCB0D100694520 /* stone-white-icon.svg */; };
 		CD7C57B721FCB0D100694520 /* stone-white-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C57B321FCB0D100694520 /* stone-white-icon@2x.png */; };
 		CD7C57B821FCB0D100694520 /* stone-white-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C57B421FCB0D100694520 /* stone-white-icon.png */; };
-		CD7C57BE21FD346F00694520 /* GameSetupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57BC21FD346E00694520 /* GameSetupModel.m */; };
-		CD7C57BF21FD346F00694520 /* GameSetupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57BC21FD346E00694520 /* GameSetupModel.m */; };
 		CD7C57C321FD3E1C00694520 /* DiscardAllSetupStonesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57C121FD3E1C00694520 /* DiscardAllSetupStonesCommand.m */; };
 		CD7C57C421FD3E1C00694520 /* DiscardAllSetupStonesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57C121FD3E1C00694520 /* DiscardAllSetupStonesCommand.m */; };
 		CD7C57C721FF8E9500694520 /* HandleBoardSetupInteractionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57C521FF8E9400694520 /* HandleBoardSetupInteractionCommand.m */; };
@@ -189,6 +187,8 @@
 		CD7C57CD21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57CB21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m */; };
 		CD7C57D02201E89500694520 /* SetupFirstMoveColorCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57CE2201E89400694520 /* SetupFirstMoveColorCommand.m */; };
 		CD7C57D12201E89500694520 /* SetupFirstMoveColorCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57CE2201E89400694520 /* SetupFirstMoveColorCommand.m */; };
+		CD7C57D7220257B800694520 /* BoardSetupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57D6220257B800694520 /* BoardSetupModel.m */; };
+		CD7C57D8220257B800694520 /* BoardSetupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57D6220257B800694520 /* BoardSetupModel.m */; };
 		CD7C69B61A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
 		CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
 		CD7C69BA1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B91A9ABDE2009EC5AD /* BoardPositionNavigationManager.m */; };
@@ -796,8 +796,6 @@
 		CD7C57B321FCB0D100694520 /* stone-white-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-white-icon@2x.png"; sourceTree = "<group>"; };
 		CD7C57B421FCB0D100694520 /* stone-white-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-white-icon.png"; sourceTree = "<group>"; };
 		CD7C57BA21FCC18E00694520 /* 181278-reversed.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "181278-reversed.svg"; sourceTree = "<group>"; };
-		CD7C57BC21FD346E00694520 /* GameSetupModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameSetupModel.m; sourceTree = "<group>"; };
-		CD7C57BD21FD346F00694520 /* GameSetupModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameSetupModel.h; sourceTree = "<group>"; };
 		CD7C57C121FD3E1C00694520 /* DiscardAllSetupStonesCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardAllSetupStonesCommand.m; sourceTree = "<group>"; };
 		CD7C57C221FD3E1C00694520 /* DiscardAllSetupStonesCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardAllSetupStonesCommand.h; sourceTree = "<group>"; };
 		CD7C57C521FF8E9400694520 /* HandleBoardSetupInteractionCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandleBoardSetupInteractionCommand.m; sourceTree = "<group>"; };
@@ -806,6 +804,8 @@
 		CD7C57CB21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToggleScoringStateOfStoneGroupCommand.m; sourceTree = "<group>"; };
 		CD7C57CE2201E89400694520 /* SetupFirstMoveColorCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetupFirstMoveColorCommand.m; sourceTree = "<group>"; };
 		CD7C57CF2201E89400694520 /* SetupFirstMoveColorCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupFirstMoveColorCommand.h; sourceTree = "<group>"; };
+		CD7C57D6220257B800694520 /* BoardSetupModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardSetupModel.m; sourceTree = "<group>"; };
+		CD7C57D92202582000694520 /* BoardSetupModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BoardSetupModel.h; sourceTree = "<group>"; };
 		CD7C69B41A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionButtonBoxDataSource.h; sourceTree = "<group>"; };
 		CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionButtonBoxDataSource.m; sourceTree = "<group>"; };
 		CD7C69B81A9ABDE2009EC5AD /* BoardPositionNavigationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionNavigationManager.h; sourceTree = "<group>"; };
@@ -1579,14 +1579,14 @@
 			children = (
 				CD3591D81735A711000E2963 /* BoardPositionModel.h */,
 				CD3591D91735A711000E2963 /* BoardPositionModel.m */,
+				CD7C57D92202582000694520 /* BoardSetupModel.h */,
+				CD7C57D6220257B800694520 /* BoardSetupModel.m */,
 				CDAF170F1967FAF100271396 /* BoardViewIntersection.h */,
 				CDAF17101967FAF100271396 /* BoardViewIntersection.m */,
 				CDAF17131967FFD500271396 /* BoardViewMetrics.h */,
 				CDAF17141967FFD500271396 /* BoardViewMetrics.m */,
 				CDAF17171968037700271396 /* BoardViewModel.h */,
 				CDAF17181968037700271396 /* BoardViewModel.m */,
-				CD7C57BD21FD346F00694520 /* GameSetupModel.h */,
-				CD7C57BC21FD346E00694520 /* GameSetupModel.m */,
 				CD7C6A071AB462CB009EC5AD /* NavigationBarButtonModel.h */,
 				CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */,
 				CD1311BF17180B45006CE699 /* ScoringModel.h */,
@@ -1718,7 +1718,7 @@
 			path = unused;
 			sourceTree = "<group>";
 		};
-		CD7C57C021FD3E1C00694520 /* gamesetup */ = {
+		CD7C57C021FD3E1C00694520 /* boardsetup */ = {
 			isa = PBXGroup;
 			children = (
 				CD7C57C221FD3E1C00694520 /* DiscardAllSetupStonesCommand.h */,
@@ -1728,7 +1728,7 @@
 				CD7C57CF2201E89400694520 /* SetupFirstMoveColorCommand.h */,
 				CD7C57CE2201E89400694520 /* SetupFirstMoveColorCommand.m */,
 			);
-			path = gamesetup;
+			path = boardsetup;
 			sourceTree = "<group>";
 		};
 		CD7C57C921FF9E1500694520 /* scoring */ = {
@@ -2131,9 +2131,9 @@
 				CDF341CC172D609400AEFB20 /* applicationstate */,
 				CD05B115142A606400214BBE /* backup */,
 				CDF630A7168F50BA003C8BEF /* boardposition */,
+				CD7C57C021FD3E1C00694520 /* boardsetup */,
 				CDFA32A215A0A3C400439B4E /* diagnostics */,
 				CD05A8CD1422807300214BBE /* game */,
-				CD7C57C021FD3E1C00694520 /* gamesetup */,
 				CDAA57E0184FE9BE0049A90D /* gtp */,
 				CD05A8C91422803B00214BBE /* move */,
 				CD072705180B292E0083B138 /* playerinfluence */,
@@ -2827,7 +2827,6 @@
 				CD10882513255AA600E83543 /* GoPoint.m in Sources */,
 				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
 				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
-				CD7C57BE21FD346F00694520 /* GameSetupModel.m in Sources */,
 				CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */,
 				CDEE19F919433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */,
 				CDE302891360BDA4005235F2 /* Player.m in Sources */,
@@ -2967,6 +2966,7 @@
 				CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */,
 				CD1E9E66171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m in Sources */,
 				CD7C69ED1AA9F697009EC5AD /* ExceptionUtility.m in Sources */,
+				CD7C57D7220257B800694520 /* BoardSetupModel.m in Sources */,
 				CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */,
 				CDB5AE251AC5A86D0075C8DC /* MagnifyingView.m in Sources */,
 				CD1311C217180B45006CE699 /* ScoringModel.m in Sources */,
@@ -3021,6 +3021,7 @@
 				CDA597521401825600B250D8 /* GoVertex.m in Sources */,
 				CDFD9F8018F1D5E80031CBCF /* GtpCommandViewController.m in Sources */,
 				CDFD9F7818F1D5640031CBCF /* LicensesViewController.m in Sources */,
+				CD7C57D8220257B800694520 /* BoardSetupModel.m in Sources */,
 				CD7C57CD21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m in Sources */,
 				CDFD9F7518F1D37E0031CBCF /* MagnifyingGlassSettingsController.m in Sources */,
 				CD85B5901401C137001715B8 /* GoGameTest.m in Sources */,
@@ -3103,7 +3104,6 @@
 				CDEE19F219433EAC00DF2389 /* BoardTileView.m in Sources */,
 				CD7C69F21AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */,
 				CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */,
-				CD7C57BF21FD346F00694520 /* GameSetupModel.m in Sources */,
 				CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */,
 				CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */,
 				CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */,

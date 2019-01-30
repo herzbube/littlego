@@ -44,9 +44,9 @@
 #import "../play/controller/SoundHandling.h"
 #import "../play/gameaction/GameActionManager.h"
 #import "../play/model/BoardPositionModel.h"
+#import "../play/model/BoardSetupModel.h"
 #import "../play/model/BoardViewMetrics.h"
 #import "../play/model/BoardViewModel.h"
-#import "../play/model/GameSetupModel.h"
 #import "../play/model/ScoringModel.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
@@ -152,7 +152,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.loggingModel = nil;
   self.uiSettingsModel = nil;
   self.magnifyingViewModel = nil;
-  self.gameSetupModel = nil;
+  self.boardSetupModel = nil;
   self.fileLogger = nil;
   [MainMenuPresenter releaseSharedPresenter];
   [BoardPositionNavigationManager releaseSharedNavigationManager];
@@ -565,7 +565,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.loggingModel = [[[LoggingModel alloc] init] autorelease];
   self.uiSettingsModel = [[[UiSettingsModel alloc] init] autorelease];
   self.magnifyingViewModel = [[[MagnifyingViewModel alloc] init] autorelease];
-  self.gameSetupModel = [[[GameSetupModel alloc] init] autorelease];
+  self.boardSetupModel = [[[BoardSetupModel alloc] init] autorelease];
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
@@ -579,7 +579,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self.loggingModel readUserDefaults];
   [self.uiSettingsModel readUserDefaults];
   [self.magnifyingViewModel readUserDefaults];
-  [self.gameSetupModel readUserDefaults];
+  [self.boardSetupModel readUserDefaults];
   // Is dependent on some user defaults in BoardViewModel
   self.boardViewMetrics = [[[BoardViewMetrics alloc] init] autorelease];
 }
@@ -613,7 +613,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self.loggingModel writeUserDefaults];
   [self.uiSettingsModel writeUserDefaults];
   [self.magnifyingViewModel writeUserDefaults];
-  [self.gameSetupModel writeUserDefaults];
+  [self.boardSetupModel writeUserDefaults];
 }
 
 // -----------------------------------------------------------------------------

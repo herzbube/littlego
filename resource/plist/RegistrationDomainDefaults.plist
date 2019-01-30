@@ -360,7 +360,7 @@
 	<integer>0</integer>
 	<key>MagnifyingGlassDistanceFromMagnificationCenter</key>
 	<real>100</real>
-	<key>GameSetupStoneColor</key>
+	<key>BoardSetupStoneColor</key>
 	<integer>1</integer>
 </dict>
 </plist>

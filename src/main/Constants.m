@@ -318,7 +318,7 @@ NSString* magnifyingGlassAutoThresholdKey = @"MagnifyingGlassAutoThreshold";
 NSString* magnifyingGlassVeerDirectionKey = @"MagnifyingGlassVeerDirection";
 NSString* magnifyingGlassDistanceFromMagnificationCenterKey = @"MagnifyingGlassDistanceFromMagnificationCenter";
 // Game setup settings
-NSString* gameSetupStoneColorKey = @"GameSetupStoneColor";
+NSString* boardSetupStoneColorKey = @"BoardSetupStoneColor";
 
 // Constants for NSCoding
 // General constants

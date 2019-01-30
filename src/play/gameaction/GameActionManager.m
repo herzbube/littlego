@@ -18,8 +18,8 @@
 // Project includes
 #import "GameActionManager.h"
 #import "../controller/DiscardFutureMovesAlertController.h"
+#import "../model/BoardSetupModel.h"
 #import "../model/BoardViewModel.h"
-#import "../model/GameSetupModel.h"
 #import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -28,10 +28,10 @@
 #import "../../command/gtp/InterruptComputerCommand.h"
 #import "../../command/boardposition/ChangeAndDiscardCommand.h"
 #import "../../command/boardposition/DiscardAndPlayCommand.h"
+#import "../../command/boardsetup/DiscardAllSetupStonesCommand.h"
+#import "../../command/boardsetup/HandleBoardSetupInteractionCommand.h"
+#import "../../command/boardsetup/SetupFirstMoveColorCommand.h"
 #import "../../command/game/PauseGameCommand.h"
-#import "../../command/gamesetup/DiscardAllSetupStonesCommand.h"
-#import "../../command/gamesetup/HandleBoardSetupInteractionCommand.h"
-#import "../../command/gamesetup/SetupFirstMoveColorCommand.h"
 #import "../../command/scoring/ToggleScoringStateOfStoneGroupCommand.h"
 #import "../../command/ChangeUIAreaPlayModeCommand.h"
 #import "../../main/ApplicationDelegate.h"
@@ -179,7 +179,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  [appDelegate.gameSetupModel addObserver:self forKeyPath:@"gameSetupStoneColor" options:0 context:NULL];
+  [appDelegate.boardSetupModel addObserver:self forKeyPath:@"boardSetupStoneColor" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -195,7 +195,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  [appDelegate.gameSetupModel removeObserver:self forKeyPath:@"gameSetupStoneColor"];
+  [appDelegate.boardSetupModel removeObserver:self forKeyPath:@"boardSetupStoneColor"];
 }
 
 #pragma mark - Handlers for board interactions
@@ -356,7 +356,7 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) switchSetupStoneColorToWhite:(id)sender
 {
-  [ApplicationDelegate sharedDelegate].gameSetupModel.gameSetupStoneColor = GoColorWhite;
+  [ApplicationDelegate sharedDelegate].boardSetupModel.boardSetupStoneColor = GoColorWhite;
 }
 
 // -----------------------------------------------------------------------------
@@ -365,7 +365,7 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) switchSetupStoneColorToBlack:(id)sender
 {
-  [ApplicationDelegate sharedDelegate].gameSetupModel.gameSetupStoneColor = GoColorBlack;
+  [ApplicationDelegate sharedDelegate].boardSetupModel.boardSetupStoneColor = GoColorBlack;
 }
 
 // -----------------------------------------------------------------------------
@@ -601,9 +601,9 @@ static GameActionManager* sharedGameActionManager = nil;
     }
     [self delayedUpdate];
   }
-  else if (object == [ApplicationDelegate sharedDelegate].gameSetupModel)
+  else if (object == [ApplicationDelegate sharedDelegate].boardSetupModel)
   {
-    if ([keyPath isEqualToString:@"gameSetupStoneColor"])
+    if ([keyPath isEqualToString:@"boardSetupStoneColor"])
     {
       self.visibleStatesNeedUpdate = true;
       [self delayedUpdate];
@@ -755,8 +755,8 @@ static GameActionManager* sharedGameActionManager = nil;
   {
     [self addGameAction:GameActionPlayStart toVisibleStatesDictionary:visibleStates];
 
-    GameSetupModel* gameSetupModel = appDelegate.gameSetupModel;
-    if (gameSetupModel.gameSetupStoneColor == GoColorBlack)
+    BoardSetupModel* boardSetupModel = appDelegate.boardSetupModel;
+    if (boardSetupModel.boardSetupStoneColor == GoColorBlack)
       [self addGameAction:GameActionSwitchSetupStoneColorToWhite toVisibleStatesDictionary:visibleStates];
     else
       [self addGameAction:GameActionSwitchSetupStoneColorToBlack toVisibleStatesDictionary:visibleStates];

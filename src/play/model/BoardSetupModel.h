@@ -16,10 +16,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GameSetupModel class provides user defaults data to its clients
-/// that is related to the game setup prior to the first move.
+/// @brief The BoardSetupModel class provides user defaults data to its clients
+/// that is related to the board setup prior to the first move.
 // -----------------------------------------------------------------------------
-@interface GameSetupModel : NSObject
+@interface BoardSetupModel : NSObject
 {
 }
 
@@ -27,6 +27,6 @@
 - (void) readUserDefaults;
 - (void) writeUserDefaults;
 
-@property(nonatomic, assign) enum GoColor gameSetupStoneColor;
+@property(nonatomic, assign) enum GoColor boardSetupStoneColor;
 
 @end

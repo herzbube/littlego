@@ -16,15 +16,15 @@
 
 
 // Project includes
-#import "GameSetupModel.h"
+#import "BoardSetupModel.h"
 
 
-@implementation GameSetupModel
+@implementation BoardSetupModel
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a GameSetupModel object with default values.
+/// @brief Initializes a BoardSetupModel object with default values.
 ///
-/// @note This is the designated initializer of GameSetupModel.
+/// @note This is the designated initializer of BoardSetupModel.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -33,7 +33,7 @@
   if (! self)
     return nil;
   
-  self.gameSetupStoneColor = GoColorBlack;
+  self.boardSetupStoneColor = GoColorBlack;
 
   return self;
 }
@@ -45,7 +45,7 @@
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
-  self.gameSetupStoneColor = [[userDefaults valueForKey:gameSetupStoneColorKey] intValue];
+  self.boardSetupStoneColor = [[userDefaults valueForKey:boardSetupStoneColorKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -56,7 +56,7 @@
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
-  [userDefaults setValue:[NSNumber numberWithInt:self.gameSetupStoneColor] forKey:gameSetupStoneColorKey];
+  [userDefaults setValue:[NSNumber numberWithInt:self.boardSetupStoneColor] forKey:boardSetupStoneColorKey];
 }
 
 @end

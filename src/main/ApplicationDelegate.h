@@ -35,7 +35,7 @@
 @class UiSettingsModel;
 @class WindowRootViewController;
 @class MagnifyingViewModel;
-@class GameSetupModel;
+@class BoardSetupModel;
 
 
 // -----------------------------------------------------------------------------
@@ -148,7 +148,7 @@
 @property(nonatomic, retain) MagnifyingViewModel* magnifyingViewModel;
 /// @brief Model object that stores attributes related to the game setup prior
 /// to the first move.
-@property(nonatomic, retain) GameSetupModel* gameSetupModel;
+@property(nonatomic, retain) BoardSetupModel* boardSetupModel;
 
 @end
 
