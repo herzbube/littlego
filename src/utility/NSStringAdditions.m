@@ -291,6 +291,61 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a string that describes why placing a setup stone with stone
+/// color @a stoneColor on intersection @a setupStoneIntersection would create
+/// an illegal board position. @a reason specifies the kind of illegal board
+/// position that would be created. If @a reason specifies that a stone or stone
+/// group would be made illegal by placing the setup stone, then
+/// @a illegalStoneOrGroupIntersection identifies the stone or stone group.
+/// Otherwise @a illegalStoneOrGroupIntersection is ignored and can be nil.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithBoardSetupIsIllegalReason:(enum GoBoardSetupIsIllegalReason)reason
+                                       setupStone:(NSString*)setupStoneIntersection
+                                  setupStoneColor:(enum GoColor)setupStoneColor
+                       createsIllegalStoneOrGroup:(NSString*)illegalStoneOrGroupIntersection
+{
+  NSString* friendlyColorName;
+  NSString* opposingColorName;
+  if (setupStoneColor == GoColorBlack)
+  {
+    friendlyColorName = @"black";
+    opposingColorName = @"white";
+  }
+  else
+  {
+    opposingColorName = @"black";
+    friendlyColorName = @"white";
+  }
+
+  NSString* mainMessage = [NSString stringWithFormat:@"Cannot place a %@ stone on intersection %@.", friendlyColorName, setupStoneIntersection];
+
+  NSString* supplementalMessage;
+  switch (reason)
+  {
+    case GoBoardSetupIsIllegalReasonSuicideSetupStone:
+      supplementalMessage = @"The stone would have no liberties.";
+      break;
+    case GoBoardSetupIsIllegalReasonSuicideFriendlyStoneGroup:
+      supplementalMessage = [NSString stringWithFormat:@"The stone would connect to the %@ stone group with %@ in it and take away that stone group's last liberty.", friendlyColorName, illegalStoneOrGroupIntersection];
+      break;
+    case GoBoardSetupIsIllegalReasonSuicideOpposingStone:
+      supplementalMessage = [NSString stringWithFormat:@"The stone would take away all liberties from the %@ stone at intersection %@.", opposingColorName, illegalStoneOrGroupIntersection];
+      break;
+    case GoBoardSetupIsIllegalReasonSuicideOpposingStoneGroup:
+      supplementalMessage = [NSString stringWithFormat:@"The stone would take away all liberties from the %@ stone group with %@ in it.", opposingColorName, illegalStoneOrGroupIntersection];
+      break;
+    case GoBoardSetupIsIllegalReasonSuicideOpposingColorSubgroup:
+      supplementalMessage = [NSString stringWithFormat:@"The stone would split up a %@ stone group and take away all liberties from one of the resulting sub-groups (the one with %@ in it).", opposingColorName, illegalStoneOrGroupIntersection];
+      break;
+    default:
+      supplementalMessage = @"The reason is unknown.";
+      break;
+  }
+
+  return [NSString stringWithFormat:@"%@\n\n%@", mainMessage, supplementalMessage];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a string that describes @a color.
 // -----------------------------------------------------------------------------
 + (NSString*) stringWithGoColor:(enum GoColor)color

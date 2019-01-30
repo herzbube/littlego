@@ -66,6 +66,10 @@
 - (void) resign;
 - (void) pause;
 - (void) continue;
+- (bool) isLegalBoardSetupAt:(GoPoint*)point
+              withStoneState:(enum GoColor)stoneState
+             isIllegalReason:(enum GoBoardSetupIsIllegalReason*)reason
+  createsIllegalStoneOrGroup:(GoPoint**)illegalStoneOrGroupPoint;
 - (bool) isLegalMove:(GoPoint*)point isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isLegalMove:(GoPoint*)point byColor:(enum GoColor)color isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (void) revertStateFromEndedToInProgress;

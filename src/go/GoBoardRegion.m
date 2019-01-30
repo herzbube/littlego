@@ -644,6 +644,144 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns true if the stone located at @a point in this GoBoardRegion
+/// is a connecting stone that connects sub-groups of stones, and at least one
+/// of these sub-groups has no liberties of its own. The parameter
+/// @a suicidalSubgroup in this case is filled with the GoPoint objects that
+/// form the suicidal sub-group. Returns false if the stone located at @a point
+/// is not a connecting stone, or if it is a connecting stone but all sub-groups
+/// of stones that it connects have at least one liberty. The content of
+/// @a suicidalSubgroup in this case remains unchanged.
+///
+/// Raises @e NSInternalInconsistencyException if this GoBoardRegion is not a
+/// a stone group.
+///
+/// @note This method is intended to be invoked during board setup prior to the
+/// first move. The implementation is very similar to
+/// splitRegionAfterRemovingPoint:(), which is intended to be invoked during
+/// regular play.
+// -----------------------------------------------------------------------------
+- (bool) isStoneConnectingSuicidalSubgroups:(GoPoint*)point
+                           suicidalSubgroup:(NSMutableArray*)suicidalSubgroup
+{
+  if (! self.isStoneGroup)
+  {
+    NSString* errorMessage = @"GoBoardRegion is not a stone group";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  NSMutableArray* subRegions = [NSMutableArray arrayWithCapacity:0];
+
+  for (GoPoint* neighbourOfConnectingPoint in point.neighbours)
+  {
+    // We are not interested in the neighbour if it is not in our region
+    if (neighbourOfConnectingPoint.region != self)
+      continue;
+
+    // Check if the current neighbour has already been found in a previous
+    // iteration. If so this means that the current neighbour is connected to
+    // one of the other neighbours that have been previously processed.
+    bool isNeighbourConnected = false;
+    for (NSArray* subRegion in subRegions)
+    {
+      if ([subRegion containsObject:neighbourOfConnectingPoint])
+      {
+        isNeighbourConnected = true;
+        break;
+      }
+    }
+    if (isNeighbourConnected)
+      continue;
+
+    // If the neighbour is not connected, we can create a new subregion that
+    // contains the current neighbour and its neighbours that are also in self
+    // (the main region)
+    NSMutableArray* newSubRegion = [NSMutableArray arrayWithCapacity:0];
+    [subRegions addObject:newSubRegion];
+
+    bool newSubRegionHasLiberties = false;
+
+    [self fillSubRegion:newSubRegion
+        containingPoint:neighbourOfConnectingPoint
+    withConnectingPoint:point
+           hasLiberties:&newSubRegionHasLiberties];
+
+    if (! newSubRegionHasLiberties)
+    {
+      [suicidalSubgroup addObjectsFromArray:newSubRegion];
+      return true;
+    }
+
+    // If the new subregion has the same size as self (the main region), minus
+    // the connecting point, then it effectively is the same thing as self,
+    // minus the connecting point. There won't be any more subregions, so we
+    // can skip processing the remaining neighbours.
+    // This check can only have an effect in the very first iteration. If it
+    // fails in the first iteration, it will fail in all subsequent iterations,
+    // too.
+    if ((_points.count - 1) == newSubRegion.count)
+      break;
+  }
+
+  return false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Recursively adds GoPoint objects to @a subRegion that are connected
+/// with @a point and that, together, form a subregion of this GoBoardRegion.
+///
+/// When the recursion encounters @a connectingPoint it stops traversal in that
+/// direction. It also does not add @a connectingPoint to @a subRegion.
+///
+/// The recursion sets the out parameter @a hasLiberties to true when it
+/// encounters a GoPoint object that has at least one liberty. The recursion
+/// does @b not set the out parameter if it encounters no GoPoint objects with
+/// at least one liberty. To distinguish the two cases, the initial caller of
+/// this method must therefore initialize @a hasLiberties with false.
+///
+/// @note This is a private backend helper method for
+/// isStoneConnectingSuicidalSubgroups:(). The implementation is similar to
+/// fillSubRegion:containingPoint:().
+// -----------------------------------------------------------------------------
+- (void) fillSubRegion:(NSMutableArray*)subRegion
+       containingPoint:(GoPoint*)point
+   withConnectingPoint:(GoPoint*)connectingPoint
+          hasLiberties:(bool*)hasLiberties
+{
+  [subRegion addObject:point];
+
+  for (GoPoint* neighbour in point.neighbours)
+  {
+    if (neighbour.region == self)
+    {
+      if (neighbour == connectingPoint)
+        continue;
+
+      if ([subRegion containsObject:neighbour])
+        continue;
+
+      [self fillSubRegion:subRegion
+          containingPoint:neighbour
+      withConnectingPoint:connectingPoint
+             hasLiberties:hasLiberties];
+    }
+    else if ([neighbour hasStone])
+    {
+      // Neighbour belongs to stone group of opposing color
+    }
+    else
+    {
+      // Neighbour is an empty intersection, i.e. a liberty
+      *hasLiberties = true;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
 - (void) setScoringMode:(bool)newScoringMode

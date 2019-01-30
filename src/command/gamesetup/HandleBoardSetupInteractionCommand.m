@@ -23,8 +23,10 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoVertex.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/ApplicationStateManager.h"
+#import "../../utility/NSStringAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -112,6 +114,24 @@
   {
     toggleHandicapPoint = false;
     newStoneState = [self determineNewStoneStateForSetupPoint];
+
+    if (newStoneState != GoColorNone)
+    {
+      enum GoBoardSetupIsIllegalReason isIllegalReason;
+      GoPoint* illegalStoneOrGroupPoint;
+      bool isLegalSetupStone = [game isLegalBoardSetupAt:self.point
+                                          withStoneState:newStoneState
+                                         isIllegalReason:&isIllegalReason
+                              createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint];
+      if (!isLegalSetupStone)
+      {
+        [self showAlertIllegalSetupStone:self.point
+                              stoneColor:newStoneState
+                      isIllegalForReason:isIllegalReason
+              createsIllegalStoneOrGroup:illegalStoneOrGroupPoint];
+        return;
+      }
+    }
   }
 
   @try
@@ -154,14 +174,10 @@
 
   if (self.point.stoneState == GoColorNone)
   {
-    // TODO xxx: Test whether stone is illegal
-
     return gameSetupModel.gameSetupStoneColor;
   }
   else if (self.point.stoneState == gameSetupModel.gameSetupStoneColor)
   {
-    // TODO xxx: Test whether stone is illegal
-
     if (self.point.stoneState == GoColorBlack)
       return GoColorWhite;
     else
@@ -224,6 +240,44 @@
     return;
 
   [self handleBoardSetupInteraction];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Shows an alert that informs the user that placing a setup stone
+/// with stone color @a stoneColor on intersection @a point would create an
+/// illegal board position. @a isIllegalReason specifies the kind of illegal
+/// board position that would be created. If @a isIllegalReason specifies that
+/// a stone or stone group would be made illegal by placing the setup stone,
+/// then @a illegalStoneOrGroupPoint identifies the stone or stone group.
+/// Otherwise @a illegalStoneOrGroupPoint is ignored and can be nil.
+// -----------------------------------------------------------------------------
+- (void) showAlertIllegalSetupStone:(GoPoint*)point
+                         stoneColor:(enum GoColor)stoneColor
+                 isIllegalForReason:(enum GoBoardSetupIsIllegalReason)isIllegalReason
+         createsIllegalStoneOrGroup:(GoPoint*)illegalStoneOrGroupPoint
+{
+  NSString* alertTitle = @"Stone is not legal";
+  NSString* alertMessage = [NSString stringWithBoardSetupIsIllegalReason:isIllegalReason
+                                                              setupStone:point.vertex.string
+                                                         setupStoneColor:stoneColor
+                                              createsIllegalStoneOrGroup:illegalStoneOrGroupPoint.vertex.string];
+
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:alertTitle
+                                                                           message:alertMessage
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  void (^okActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+  {
+    [self didDismissAlertWithButton:AlertButtonTypeNo];
+  };
+  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:okActionBlock];
+  [alertController addAction:okAction];
+
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+
+  [self retain];  // must survive until the handler method is invoked
 }
 
 @end

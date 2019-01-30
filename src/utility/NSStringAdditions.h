@@ -34,6 +34,10 @@
 + (NSString*) stringWithKoRule:(enum GoKoRule)koRule;
 + (NSString*) stringWithScoringSystem:(enum GoScoringSystem)scoringSystem;
 + (NSString*) stringWithMoveIsIllegalReason:(enum GoMoveIsIllegalReason)reason;
++ (NSString*) stringWithBoardSetupIsIllegalReason:(enum GoBoardSetupIsIllegalReason)reason
+                                       setupStone:(NSString*)setupStoneIntersection
+                                  setupStoneColor:(enum GoColor)setupStoneColor
+                       createsIllegalStoneOrGroup:(NSString*)illegalStoneOrGroupIntersection;
 + (NSString*) stringWithGoColor:(enum GoColor)color;
 + (NSString*) stringWithLifeAndDeathSettlingRule:(enum GoLifeAndDeathSettlingRule)lifeAndDeathSettlingRule;
 + (NSString*) stringWithDisputeResolutionRule:(enum GoDisputeResolutionRule)disputeResolutionRule;

@@ -297,6 +297,26 @@ enum GoMoveIsIllegalReason
   GoMoveIsIllegalReasonUnknown
 };
 
+/// @brief Enumerates the possible reasons why setting up a stone at a given
+/// intersection can be illegal.
+enum GoBoardSetupIsIllegalReason
+{
+  /// @brief The setup stone to be placed would have no liberties.
+  GoBoardSetupIsIllegalReasonSuicideSetupStone,
+  /// @brief The setup stone to be placed would connect to a friendly stone
+  /// group and take away that stone group's last liberty.
+  GoBoardSetupIsIllegalReasonSuicideFriendlyStoneGroup,
+  /// @brief The setup stone to be placed would take away all liberties from an
+  /// opposing stone group.
+  GoBoardSetupIsIllegalReasonSuicideOpposingStoneGroup,
+  /// @brief The setup stone to be placed would take away all liberties from a
+  /// single opposing stone.
+  GoBoardSetupIsIllegalReasonSuicideOpposingStone,
+  /// @brief The setup stone to be placed would split up an opposing stone
+  /// group and take away all liberties from one of the resulting sub-groups.
+  GoBoardSetupIsIllegalReasonSuicideOpposingColorSubgroup,
+};
+
 /// @brief Enumerates the possible directions one can take to get from one
 /// GoPoint to another neighbouring GoPoint.
 enum GoBoardDirection

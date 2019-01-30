@@ -439,6 +439,181 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns true if changing the stone state of @a point to @a stoneState
+/// during board setup would be legal. This includes checking for suicide
+/// positions, but not for Ko situations or alternating play, because these
+/// things do not exist during board setup.
+///
+/// If this method returns false, the out parameter @a reason is filled with
+/// the reason why changing the stone state of @a point is not legal. If this
+/// method returns true, the value of @a reason is undefined.
+///
+/// If this method returns false and @a reason specifies that a stone or stone
+/// group would be made illegal by placing the setup stone, then the out
+/// parameter @a illegalStoneOrGroupPoint identifies the stone or stone group.
+/// Otherwise the value of @a illegalStoneOrGroupPoint is undefined.
+///
+/// Raises @e NSInvalidArgumentException if @a point is nil.
+// -----------------------------------------------------------------------------
+- (bool) isLegalBoardSetupAt:(GoPoint*)point
+              withStoneState:(enum GoColor)stoneState
+             isIllegalReason:(enum GoBoardSetupIsIllegalReason*)reason
+  createsIllegalStoneOrGroup:(GoPoint**)illegalStoneOrGroupPoint
+{
+  if (! point)
+  {
+    NSString* errorMessage = @"Point argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (stoneState != GoColorBlack && stoneState != GoColorWhite)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Invalid stoneState argument %d", stoneState];
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  enum GoColor friendlyColor = stoneState;
+  enum GoColor opponentColor = (friendlyColor == GoColorBlack ? GoColorWhite : GoColorBlack);
+
+  // Caller wants to remove a stone - this is always legal because removing a
+  // stone creates liberties
+  if (stoneState == GoColorNone)
+  {
+    assert([point hasStone]);
+    return true;
+  }
+  // Point is an already occupied intersection and caller wants to place a
+  // stone on it
+  else if ([point hasStone])
+  {
+    // Caller wants to place a stone of the same color
+    if (point.stoneState == stoneState)
+    {
+      return true;
+    }
+    // Caller wants to change the stone color
+    else
+    {
+      // If the stone that is about to change its color is a connecting stone,
+      // the stone group will be split up into two or even more sub-groups.
+      // Check if this is the case, and (if it is) if the split is cutting off
+      // one of the sub-groups from all liberties.
+      NSMutableArray* suicidalSubgroup = [NSMutableArray arrayWithCapacity:0];
+      if ([point.region isStoneConnectingSuicidalSubgroups:point suicidalSubgroup:suicidalSubgroup])
+      {
+        // If the suicidal sub-group has the same size as the region, minus the
+        // connecting stone, then the connecting stone is not really connecting
+        // sub-groups. Instead it is the single remaining connection of the
+        // stone group to a liberty. Changing the connecting stone's color
+        // removes that connection and effectively takes away the liberties from
+        // the entire remaining stone group.
+        if ((point.region.size - 1) == suicidalSubgroup.count)
+          *reason = GoBoardSetupIsIllegalReasonSuicideOpposingStoneGroup;
+        else
+          *reason = GoBoardSetupIsIllegalReasonSuicideOpposingColorSubgroup;
+        *illegalStoneOrGroupPoint = suicidalSubgroup[0];
+        return false;
+      }
+
+      // We now know that we are not killing an opposing stone group. We now
+      // have to check whether the stone about to change its color can survive.
+
+      // Check if the point has at least one neighbouring empty intersection
+      NSArray* neighbourRegionsEmpty = [point neighbourRegionsWithColor:GoColorNone];
+      if (neighbourRegionsEmpty.count > 0)
+      {
+        // Yes there is at least one empty intersection which provides us with
+        // one liberty.
+        return true;
+      }
+
+      // The point is entirely surrounded by stones. Check if we can connect to
+      // a friendly colored stone group.
+      NSArray* neighbourRegionsFriendly = [point neighbourRegionsWithColor:friendlyColor];
+      if (neighbourRegionsFriendly.count > 0)
+      {
+        // We don't have to check for friendly stone groups' liberties because
+        // since we don't allow suicidal groups we know that they must have at
+        // least one liberty. We also know that we don't take away that liberty
+        // because we don't place a new stone - we only change the color of an
+        // already existing stone. This might even create a liberty for a stone
+        // group that we connect to.
+        return true;
+      }
+
+      // We cannot connect to a friendly colored stone group, and there are no
+      // neighbouring empty intersections. The point is therefore surrounded by
+      // opposing stones.
+      *reason = GoBoardSetupIsIllegalReasonSuicideSetupStone;
+      *illegalStoneOrGroupPoint = point;
+      return false;
+    }
+  }
+  // Point is an empty intersection and caller wants to place a stone on it.
+  // This is taking away a liberty from neighbouring stones, just like with
+  // normal play.
+  else
+  {
+    // Check if we are about to kill an opposing stone group
+    NSArray* neighbourRegionsOpponent = [point neighbourRegionsWithColor:opponentColor];
+    for (GoBoardRegion* neighbourRegion in neighbourRegionsOpponent)
+    {
+      if ([neighbourRegion liberties] == 1)
+      {
+        if (neighbourRegion.points.count == 1)
+          *reason = GoBoardSetupIsIllegalReasonSuicideOpposingStone;
+        else
+          *reason = GoBoardSetupIsIllegalReasonSuicideOpposingStoneGroup;
+        *illegalStoneOrGroupPoint = neighbourRegion.points[0];;
+        return false;
+      }
+    }
+
+    // We now know that we are not killing an opposing stone group. We now
+    // have to check whether the stone about to be placed can survive.
+
+    // Check if the point has at least one neighbouring empty intersection
+    if ([point liberties] > 0)
+      return true;
+
+    // The point is an empty intersection that is entirely surrounded by stones.
+    // Check if we can connect to a friendly colored stone group without
+    // killing it.
+    NSArray* neighbourRegionsFriendly = [point neighbourRegionsWithColor:friendlyColor];
+    for (GoBoardRegion* neighbourRegion in neighbourRegionsFriendly)
+    {
+      if ([neighbourRegion liberties] > 1)
+        return true;
+    }
+
+    // We cannot connect to a friendly colored stone group (or we can connect
+    // but would kill the friendly colored stone group) and there are no
+    // neighbouring empty intersections. The point is therefore surrounded by
+    // opposing stones or friendly stones with insufficient liberties.
+    if (neighbourRegionsFriendly.count > 0)
+    {
+      *reason = GoBoardSetupIsIllegalReasonSuicideFriendlyStoneGroup;
+      GoBoardRegion* aFriendlyNeighbourRegion = neighbourRegionsFriendly[0];
+      *illegalStoneOrGroupPoint = aFriendlyNeighbourRegion.points[0];
+    }
+    else
+    {
+      *reason = GoBoardSetupIsIllegalReasonSuicideSetupStone;
+      *illegalStoneOrGroupPoint = point;
+    }
+
+    return false;
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns true if playing a stone on the intersection represented by
 /// @a point would be legal for the @e nextMovePlayer in the current board
 /// position. This includes checking for suicide moves and Ko situations, but
@@ -509,8 +684,8 @@
     *reason = GoMoveIsIllegalReasonIntersectionOccupied;
     return false;
   }
-  // Point is an empty intersection, possibly with other empty intersections as
-  // neighbours
+  // Point is an empty intersection with at least one other empty intersection
+  // as neighbour
   else if ([point liberties] > 0)
   {
     // Because the point has liberties a simple ko is not possible

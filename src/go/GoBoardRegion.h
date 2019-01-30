@@ -66,6 +66,8 @@
 - (enum GoColor) color;
 - (int) liberties;
 - (NSArray*) adjacentRegions;
+- (bool) isStoneConnectingSuicidalSubgroups:(GoPoint*)point
+                           suicidalSubgroup:(NSMutableArray*)suicidalSubgroup;
 
 /// @brief List of GoPoint objects in this GoBoardRegion. The list is
 /// unordered.
