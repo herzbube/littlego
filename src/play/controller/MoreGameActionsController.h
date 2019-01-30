@@ -18,6 +18,7 @@
 // Project includes
 #import "../../newgame/NewGameController.h"
 #import "../../ui/EditTextController.h"
+#import "../../ui/ItemPickerController.h"
 
 // Forward declarations
 @class MoreGameActionsController;
@@ -49,7 +50,7 @@
 /// - Managing sub-controllers for views that need to be displayed as part of
 ///   handling the tap on a button
 // -----------------------------------------------------------------------------
-@interface MoreGameActionsController : NSObject <NewGameControllerDelegate, EditTextDelegate>
+@interface MoreGameActionsController : NSObject <NewGameControllerDelegate, EditTextDelegate, ItemPickerDelegate>
 {
 }
 

@@ -51,6 +51,7 @@
 // -----------------------------------------------------------------------------
 enum MoreGameActionsButton
 {
+  SetupFirstMoveButton,
   BoardSetupButton,
   ScoreButton,
   MarkModeButton,
@@ -121,6 +122,15 @@ enum MoreGameActionsButton
     void (^alertActionBlock) (UIAlertAction*) = nil;
     switch (iterButtonIndex)
     {
+      case SetupFirstMoveButton:
+      {
+        if (uiAreaPlayMode != UIAreaPlayModeBoardSetup)
+          continue;
+        title = @"Set up a side to move first";
+        alertActionBlock = ^(UIAlertAction* action) { [self setupFirstMove]; };
+        break;
+
+      }
       case BoardSetupButton:
       {
         if (game.boardPosition.currentBoardPosition > 0)
@@ -318,6 +328,46 @@ enum MoreGameActionsButton
 
   // Don't do anything else, informing the delegate that we are done (see above)
   // caused this MoreGameActionsController to be deallocated
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Set up a side to move first" button.
+/// Displays a controller that lets the user select a side. The actual setup
+/// operation takes place in doSetupFirstMove:().
+// -----------------------------------------------------------------------------
+- (void) setupFirstMove
+{
+  NSString* screenTitle = @"Side to move first";
+  NSString* footerTitle = @"Select \"Game rules\" if you want the normal game rules to apply. For instance, in a handicap game the normal game rules specify that white moves first. Select one of the other options if you want to override the normal game rules.";
+
+  NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:3];
+  itemList[GoColorNone] = @"Game rules";
+  itemList[GoColorBlack] = @"Black";
+  itemList[GoColorWhite] = @"White";
+
+  int indexOfDefaultItem = [GoGame sharedGame].setupFirstMoveColor;
+
+  ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
+                                                                                screenTitle:screenTitle
+                                                                         indexOfDefaultItem:indexOfDefaultItem
+                                                                                   delegate:self];
+  itemPickerController.footerTitle = footerTitle;
+
+  UINavigationController* navigationController = [[UINavigationController alloc]
+                                                  initWithRootViewController:itemPickerController];
+  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  navigationController.delegate = [LayoutManager sharedManager];
+  [self.modalMaster presentViewController:navigationController animated:YES completion:nil];
+
+  [navigationController release];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs the actual "setup first move" operation.
+// -----------------------------------------------------------------------------
+- (void) doSetupFirstMove:(enum GoColor)firstMoveColor
+{
+  [[GameActionManager sharedGameActionManager] handleSetupFirstMove:firstMoveColor];
 }
 
 // -----------------------------------------------------------------------------
@@ -594,6 +644,28 @@ enum MoreGameActionsButton
 - (void) doSaveGame:(NSString*)gameName
 {
   [[[[SaveGameCommand alloc] initWithSaveGame:gameName] autorelease] submit];
+}
+
+#pragma mark - ItemPickerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief ItemPickerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection
+{
+  // Dismiss ItemPickerController before we actually do something. Reason:
+  // If a "Discard future moves" alert needs to be displayed the
+  // ItemPickerController must not cover the root view controller of the app's
+  // window.
+  [self.modalMaster dismissViewControllerAnimated:YES completion:nil];
+
+  if (didMakeSelection && controller.indexOfDefaultItem != controller.indexOfSelectedItem)
+  {
+    enum GoColor firstMoveColor = controller.indexOfSelectedItem;
+    [self doSetupFirstMove:firstMoveColor];
+  }
+
+  [self.delegate moreGameActionsControllerDidFinish:self];
 }
 
 @end

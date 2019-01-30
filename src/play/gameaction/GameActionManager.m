@@ -31,6 +31,7 @@
 #import "../../command/game/PauseGameCommand.h"
 #import "../../command/gamesetup/DiscardAllSetupStonesCommand.h"
 #import "../../command/gamesetup/HandleBoardSetupInteractionCommand.h"
+#import "../../command/gamesetup/SetupFirstMoveColorCommand.h"
 #import "../../command/scoring/ToggleScoringStateOfStoneGroupCommand.h"
 #import "../../command/ChangeUIAreaPlayModeCommand.h"
 #import "../../main/ApplicationDelegate.h"
@@ -243,6 +244,23 @@ static GameActionManager* sharedGameActionManager = nil;
   }
 
   HandleBoardSetupInteractionCommand* command = [[[HandleBoardSetupInteractionCommand alloc] initWithPoint:point] autorelease];
+  [self.commandDelegate gameActionManager:self discardOrAlertWithCommand:command];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Handles setting up the side that is to play first to
+/// @a firstMoveColor. Is invoked only while the UI area "Play" is in board
+/// setup mode.
+// -----------------------------------------------------------------------------
+- (void) handleSetupFirstMove:(enum GoColor)firstMoveColor
+{
+  if ([self shouldIgnoreUserInteraction])
+  {
+    DDLogWarn(@"%@: Ignoring handleBoardSetupAtIntersection", self);
+    return;
+  }
+
+  SetupFirstMoveColorCommand* command = [[[SetupFirstMoveColorCommand alloc] initWithFirstMoveColor:firstMoveColor] autorelease];
   [self.commandDelegate gameActionManager:self discardOrAlertWithCommand:command];
 }
 

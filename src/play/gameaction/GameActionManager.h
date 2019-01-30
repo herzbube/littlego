@@ -115,6 +115,7 @@
 - (void) playAtIntersection:(GoPoint*)point;
 - (void) toggleScoringStateOfStoneGroupAtIntersection:(GoPoint*)point;
 - (void) handleBoardSetupAtIntersection:(GoPoint*)point;
+- (void) handleSetupFirstMove:(enum GoColor)firstMoveColor;
 
 - (void) pass:(id)sender;
 - (void) discardBoardPosition:(id)sender;
