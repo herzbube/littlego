@@ -17,10 +17,12 @@
 
 // Project includes
 #import "SetupApplicationCommand.h"
+#import "ChangeUIAreaPlayModeCommand.h"
 #import "HandleDocumentInteractionCommand.h"
 #import "diagnostics/RestoreBugReportApplicationStateCommand.h"
 #import "gtp/LoadOpeningBookCommand.h"
 #import "gtp/SetAdditiveKnowledgeTypeCommand.h"
+#import "../go/GoBoardPosition.h"
 #import "../go/GoGame.h"
 #import "../go/GoScore.h"
 #import "../main/ApplicationDelegate.h"
@@ -111,6 +113,25 @@
     {
       [[ApplicationStateManager sharedManager] restoreApplicationState];
 
+      // Board position vs. UIAreaPlayMode
+      // - The documentation block below describes, with relevance to scoring,
+      //   how app state and user preferences can get out of sync when the app
+      //   crashes.
+      // - The same out-of-sync problem can affect board position vs.
+      //   UIAreaPlayMode: Board setup mode is allowed only when board position
+      //   0 is viewed, so if after app restore the current board position
+      //   is != 0, we have a problem.
+      // - We can either change the board position or change UIAreaPlayMode to
+      //   resolve the situation.
+      // - Because changing board positions is non-trivial and may take
+      //   considerable time to execute, the solution is that what is in the
+      //   Go model objects takes precedence over the UIAreaPlayMode value.
+      if (delegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
+      {
+        if ([GoGame sharedGame].boardPosition.currentBoardPosition != 0)
+          [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModePlay] autorelease] submit];
+      }
+
       // Special scoring mode considerations:
       // - Go model objects store scoring-related information. This information
       //   is saved to the NSCoding archive when the app state is saved.
@@ -139,15 +160,10 @@
       //   of UiSettingsModel.uiAreaPlayMode takes precedence over what is in the
       //   Go model objects. The consequence of this decision is that the score
       //   from the previous app session may be lost.
-      switch (delegate.uiSettingsModel.uiAreaPlayMode)
-      {
-        case UIAreaPlayModeScoring:
+      if (delegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
           [[GoGame sharedGame].score enableScoringOnAppLaunch];
-          break;
-        default:
+      else
           [[GoGame sharedGame].score disableScoringOnAppLaunch];
-          break;
-      }
 
       if (delegate.documentInteractionURL)
       {
