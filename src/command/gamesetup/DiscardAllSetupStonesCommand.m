@@ -24,6 +24,7 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/ApplicationStateManager.h"
+#import "../../shared/LongRunningActionCounter.h"
 
 
 @implementation DiscardAllSetupStonesCommand
@@ -108,6 +109,7 @@
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
+    [[LongRunningActionCounter sharedCounter] increment];
 
     if (game.boardPosition.numberOfBoardPositions > 0)
     {
@@ -140,6 +142,7 @@
   {
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
+    [[LongRunningActionCounter sharedCounter] decrement];
   }
 }
 
