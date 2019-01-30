@@ -300,6 +300,7 @@
       self.dirty = true;
       self.dirtySetupPoint = setupPoint;
       self.dirtyRectForSetupPoint = drawingRect;
+      self.drawingPoints = [self calculateDrawingPoints];
 
       break;
     }
