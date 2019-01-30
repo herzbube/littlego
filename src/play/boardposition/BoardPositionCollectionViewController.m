@@ -39,6 +39,8 @@
 @property(nonatomic, assign) bool currentBoardPositionNeedsUpdate;
 @property(nonatomic, assign) bool numberOfItemsNeedsUpdate;
 @property(nonatomic, assign) bool userInteractionEnabledNeedsUpdate;
+@property(nonatomic, assign) bool boardPositionZeroNeedsUpdate;
+@property(nonatomic, assign) bool isBoardPositionZeroCellContentInvalid;
 @property(nonatomic, assign) bool ignoreCurrentBoardPositionChange;
 @property(nonatomic, retain) NSIndexPath* indexPathForDelayedSelectItemOperation;
 @end
@@ -72,6 +74,8 @@
   self.currentBoardPositionNeedsUpdate = false;
   self.numberOfItemsNeedsUpdate = false;
   self.userInteractionEnabledNeedsUpdate = false;
+  self.boardPositionZeroNeedsUpdate = false;
+  self.isBoardPositionZeroCellContentInvalid = false;
   self.ignoreCurrentBoardPositionChange = false;
   self.indexPathForDelayedSelectItemOperation = nil;
   [self setupNotificationResponders];
@@ -144,6 +148,7 @@
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+  [center addObserver:self selector:@selector(handicapPointDidChange:) name:handicapPointDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -185,6 +190,13 @@
 {
   BoardPositionCollectionViewCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:self.reuseIdentifierCell
                                                                                     forIndexPath:indexPath];
+
+  if (self.isBoardPositionZeroCellContentInvalid)
+  {
+    [cell invalidateContent];
+    self.isBoardPositionZeroCellContentInvalid = false;
+  }
+
   // Cast is safe, we know that we cannot have more than pow(2, 31) board
   // positions
   cell.boardPosition = (int)indexPath.row;
@@ -330,6 +342,15 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #handicapPointDidChange notifications.
+// -----------------------------------------------------------------------------
+- (void) handicapPointDidChange:(NSNotification*)notification
+{
+  self.boardPositionZeroNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -389,6 +410,7 @@
   [self updateAllData];
   [self updateNumberOfItems];
   [self updateCurrentBoardPosition];
+  [self updateBoardPositionZero];
   [self updateUserInteractionEnabled];
 }
 
@@ -497,6 +519,21 @@
   [self.collectionView selectItemAtIndexPath:indexPath
                                     animated:NO
                               scrollPosition:scrollPosition];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the cell that displays board position zero.
+// -----------------------------------------------------------------------------
+- (void) updateBoardPositionZero
+{
+  if (! self.boardPositionZeroNeedsUpdate)
+    return;
+  self.boardPositionZeroNeedsUpdate = false;
+
+  // Causes the cell to be invalidated when it is reloaded the next time
+  self.isBoardPositionZeroCellContentInvalid = true;
+
+  [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathWithIndex:0]]];
 }
 
 // -----------------------------------------------------------------------------

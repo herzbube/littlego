@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,6 +38,8 @@
 }
 
 + (CGSize) boardPositionViewSize;
+
+- (void) invalidateContent;
 
 /// @brief The board position that this view represents. A value of -1 for this
 /// property causes the BoardPositionView to display nothing.

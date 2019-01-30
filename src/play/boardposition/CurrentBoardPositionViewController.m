@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
 @property(nonatomic, assign) bool allDataNeedsUpdate;
 @property(nonatomic, assign) bool boardPositionViewNeedsUpdate;
+@property(nonatomic, assign) bool boardPositionZeroNeedsUpdate;
 @property(nonatomic, assign) bool tappingEnabledNeedsUpdate;
 @property(nonatomic, assign, getter=isTappingEnabled) bool tappingEnabled;
 @end
@@ -57,6 +58,7 @@
   [self setupTapGestureRecognizer];
   self.allDataNeedsUpdate = false;
   self.boardPositionViewNeedsUpdate = false;
+  self.boardPositionZeroNeedsUpdate = false;
   self.tappingEnabledNeedsUpdate = false;
   self.tappingEnabled = false;
   return self;
@@ -118,6 +120,7 @@
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+  [center addObserver:self selector:@selector(handicapPointDidChange:) name:handicapPointDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -232,6 +235,16 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #handicapPointDidChange notifications.
+// -----------------------------------------------------------------------------
+- (void) handicapPointDidChange:(NSNotification*)notification
+{
+  self.boardPositionViewNeedsUpdate = true;
+  self.boardPositionZeroNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -279,14 +292,15 @@
   GoGame* game = [GoGame sharedGame];
   if (game)
   {
+    // BoardPositionView only updates its content if a new board position is
+    // set. In this updater, however, we have to force the content update, to
+    // cover the following scenario: Old board position is 0, new game is
+    // started with a different komi or handicap, new board position is
+    // again 0. The BoardPositionView must display the new komi/handicap values.
+    [self.boardPositionView invalidateContent];
+
     GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
     self.boardPositionView.boardPosition = boardPosition.currentBoardPosition;
-    // BoardPositionView only updates its layout if a new board position is
-    // set. In this updater, however, we have to force the layout update, to cover
-    // the following scenario: Old board position is 0, new game is started with
-    // a different komi or handicap, new board position is again 0. The
-    // BoardPositionView must display the new komi/handicap values.
-    [self.boardPositionView setNeedsLayout];
   }
   else
   {
@@ -302,9 +316,18 @@
   if (! self.boardPositionViewNeedsUpdate)
     return;
   self.boardPositionViewNeedsUpdate = false;
+
   GoGame* game = [GoGame sharedGame];
   if (game)
   {
+    if (self.boardPositionZeroNeedsUpdate)
+    {
+      self.boardPositionZeroNeedsUpdate = false;
+
+      if (self.boardPositionView.boardPosition == 0)
+        [self.boardPositionView invalidateContent];
+    }
+
     GoBoardPosition* boardPosition = game.boardPosition;
     self.boardPositionView.boardPosition = boardPosition.currentBoardPosition;
   }

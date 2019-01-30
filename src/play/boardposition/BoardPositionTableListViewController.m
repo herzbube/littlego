@@ -52,6 +52,7 @@
 @property(nonatomic, assign) bool currentBoardPositionNeedsUpdate;
 @property(nonatomic, assign) bool numberOfItemsNeedsUpdate;
 @property(nonatomic, assign) bool tappingEnabledNeedsUpdate;
+@property(nonatomic, assign) bool boardPositionZeroNeedsUpdate;
 @property(nonatomic, retain) UIImage* blackStoneImage;
 @property(nonatomic, retain) UIImage* whiteStoneImage;
 @property(nonatomic, retain) UIColor* alternateCellBackgroundColor1;
@@ -82,6 +83,7 @@
   self.currentBoardPositionNeedsUpdate = false;
   self.numberOfItemsNeedsUpdate = false;
   self.tappingEnabledNeedsUpdate = false;
+  self.boardPositionZeroNeedsUpdate = false;
   self.blackStoneImage = nil;
   self.whiteStoneImage = nil;
   self.alternateCellBackgroundColor1 = [UIColor lightBlueColor];
@@ -229,6 +231,7 @@
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+  [center addObserver:self selector:@selector(handicapPointDidChange:) name:handicapPointDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -347,6 +350,15 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #handicapPointDidChange notifications.
+// -----------------------------------------------------------------------------
+- (void) handicapPointDidChange:(NSNotification*)notification
+{
+  self.boardPositionZeroNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -390,6 +402,7 @@
   [self updateAllData];
   [self updateNumberOfItems];
   [self updateCurrentBoardPosition];
+  [self updateBoardPositionZero];
   [self updateTappingEnabled];
 }
 
@@ -498,6 +511,26 @@
     DDLogError(@"%@: Unexpected new current board position %ld, number of rows in table view = %ld", self, (long)newCurrentBoardPosition, (long)numberOfRowsInTableView);
     assert(0);
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the cell that displays board position zero.
+// -----------------------------------------------------------------------------
+- (void) updateBoardPositionZero
+{
+  if (! self.boardPositionZeroNeedsUpdate)
+    return;
+  self.boardPositionZeroNeedsUpdate = false;
+
+  // Don't reload cells, this would remove the selected state. Instead update
+  // the cells directly.
+  UITableViewCell* currentBoardPositionTableViewCell = [self.currentBoardPositionTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+  UITableViewCell* boardPositionListTableViewCell = [self.boardPositionListTableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+
+  // The reason why we update the cell is because handicap has changed during
+  // board setup. We therefore need to update only the detail text label.
+  currentBoardPositionTableViewCell.detailTextLabel.text = [self detailLabelTextForBoardPosition:0 move:nil];
+  boardPositionListTableViewCell.detailTextLabel.text = [self detailLabelTextForBoardPosition:0 move:nil];
 }
 
 // -----------------------------------------------------------------------------

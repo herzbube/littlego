@@ -44,6 +44,8 @@ static UIImage* whiteStoneImage = nil;
 @property(nonatomic, assign) UILabel* intersectionLabel;
 @property(nonatomic, assign) UILabel* capturedStonesLabel;
 @property(nonatomic, assign) UIImageView* stoneImageView;
+@property(nonatomic, assign) bool isBoardPositionValid;
+@property(nonatomic, assign) bool isCurrentBoardPositionValid;
 @end
 
 
@@ -62,12 +64,17 @@ static UIImage* whiteStoneImage = nil;
   self = [super initWithFrame:rect];
   if (! self)
     return nil;
+
   self.offscreenMode = false;
   _boardPosition = -1;             // don't use self, we don't want to trigger the setter
   _currentBoardPosition = false;   // ditto
+  self.isBoardPositionValid = false;
+  self.isCurrentBoardPositionValid = false;
+
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
   [self configureSubviews];
+
   // No content to setup, we first need a board position
   return self;
 }
@@ -285,8 +292,16 @@ static UIImage* whiteStoneImage = nil;
 // -----------------------------------------------------------------------------
 - (void) setBoardPosition:(int)newValue
 {
-  if (_boardPosition == newValue)
-    return;
+  if (self.isBoardPositionValid)
+  {
+    if (_boardPosition == newValue)
+      return;
+  }
+  else
+  {
+    self.isBoardPositionValid = true;
+  }
+
   _boardPosition = newValue;
   [self setupRealContent];
   [self setNeedsLayout];
@@ -297,8 +312,16 @@ static UIImage* whiteStoneImage = nil;
 // -----------------------------------------------------------------------------
 - (void) setCurrentBoardPosition:(bool)newValue
 {
-  if (_currentBoardPosition == newValue)
-    return;
+  if (self.isCurrentBoardPositionValid)
+  {
+    if (_currentBoardPosition == newValue)
+      return;
+  }
+  else
+  {
+    self.isCurrentBoardPositionValid = true;
+  }
+
   _currentBoardPosition = newValue;
   [self setupRealContent];
   [self setNeedsLayout];
@@ -375,6 +398,18 @@ static UIImage* whiteStoneImage = nil;
   UIImage* stoneImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return stoneImage;
+}
+
+#pragma mark - Other methods
+
+// -----------------------------------------------------------------------------
+/// @brief Invalidates the content of this BoardPositionView. The view content
+/// is guaranteed to be updated when @e boardPosition is set the next time.
+// -----------------------------------------------------------------------------
+- (void) invalidateContent
+{
+  self.isBoardPositionValid = false;
+  self.isCurrentBoardPositionValid = false;
 }
 
 @end

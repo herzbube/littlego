@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -45,6 +45,8 @@
 
 + (CGSize) boardPositionCollectionViewCellSizePositionZero;
 + (CGSize) boardPositionCollectionViewCellSizePositionNonZero;
+
+- (void) invalidateContent;
 
 /// @brief The board position that this cell represents. The default value is
 /// -1, which causes the cell to display nothing.

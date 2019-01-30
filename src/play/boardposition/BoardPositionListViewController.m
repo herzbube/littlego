@@ -38,6 +38,8 @@
 @property(nonatomic, assign) bool currentBoardPositionNeedsUpdate;
 @property(nonatomic, assign) int oldCurrentBoardPosition;
 @property(nonatomic, assign) bool userInteractionEnabledNeedsUpdate;
+@property(nonatomic, assign) bool boardPositionZeroNeedsUpdate;
+@property(nonatomic, assign) bool isBoardPositionZeroCellContentInvalid;
 @property(nonatomic, retain) NSIndexPath* indexPathForDelayedSelectItemOperation;
 @end
 
@@ -66,6 +68,8 @@
   self.currentBoardPositionNeedsUpdate = false;
   self.oldCurrentBoardPosition = -1;
   self.userInteractionEnabledNeedsUpdate = false;
+  self.boardPositionZeroNeedsUpdate = false;
+  self.isBoardPositionZeroCellContentInvalid = false;
   self.indexPathForDelayedSelectItemOperation = nil;
   return self;
 }
@@ -117,6 +121,7 @@
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+  [center addObserver:self selector:@selector(handicapPointDidChange:) name:handicapPointDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -147,6 +152,13 @@
 {
   BoardPositionView* cell = [collectionView dequeueReusableCellWithReuseIdentifier:self.reuseIdentifierCell
                                                                       forIndexPath:indexPath];
+
+  if (self.isBoardPositionZeroCellContentInvalid)
+  {
+    [cell invalidateContent];
+    self.isBoardPositionZeroCellContentInvalid = false;
+  }
+
   // Cast is safe, we know that we cannot have more than pow(2, 31) board
   // positions
   cell.boardPosition = (int)indexPath.row;
@@ -276,6 +288,15 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #handicapPointDidChange notifications.
+// -----------------------------------------------------------------------------
+- (void) handicapPointDidChange:(NSNotification*)notification
+{
+  self.boardPositionZeroNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -311,6 +332,8 @@
   }
 }
 
+#pragma mark - Updaters
+
 // -----------------------------------------------------------------------------
 /// @brief Internal helper that correctly handles delayed updates. See class
 /// documentation for details.
@@ -326,6 +349,7 @@
   // discarded.
   [self updateNumberOfItems];
   [self updateCurrentBoardPosition];
+  [self updateBoardPositionZero];
   [self updateUserInteractionEnabled];
 }
 
@@ -465,6 +489,21 @@
     BoardPositionView* boardPositionView = (BoardPositionView*)cell;
     boardPositionView.currentBoardPosition = true;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the cell that displays board position zero.
+// -----------------------------------------------------------------------------
+- (void) updateBoardPositionZero
+{
+  if (! self.boardPositionZeroNeedsUpdate)
+    return;
+  self.boardPositionZeroNeedsUpdate = false;
+
+  // Causes the cell to be invalidated when it is reloaded the next time
+  self.isBoardPositionZeroCellContentInvalid = true;
+
+  [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathWithIndex:0]]];
 }
 
 // -----------------------------------------------------------------------------
