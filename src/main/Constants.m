@@ -322,6 +322,7 @@ NSString* boardSetupStoneColorKey = @"BoardSetupStoneColor";
 NSString* doubleTapToZoomKey = @"DoubleTapToZoom";
 NSString* autoEnableBoardSetupModeKey = @"AutoEnableBoardSetupMode";
 NSString* changeHandicapAlertKey = @"ChangeHandicapAlert";
+NSString* tryNotToPlaceIllegalStonesKey = @"TryNotToPlaceIllegalStones";
 
 // Constants for NSCoding
 // General constants

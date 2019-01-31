@@ -1128,6 +1128,7 @@ extern NSString* boardSetupStoneColorKey;
 extern NSString* doubleTapToZoomKey;
 extern NSString* autoEnableBoardSetupModeKey;
 extern NSString* changeHandicapAlertKey;
+extern NSString* tryNotToPlaceIllegalStonesKey;
 //@}
 
 // -----------------------------------------------------------------------------

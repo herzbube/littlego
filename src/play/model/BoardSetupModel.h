@@ -31,5 +31,6 @@
 @property(nonatomic, assign) bool doubleTapToZoom;
 @property(nonatomic, assign) bool autoEnableBoardSetupMode;
 @property(nonatomic, assign) bool changeHandicapAlert;
+@property(nonatomic, assign) bool tryNotToPlaceIllegalStones;
 
 @end

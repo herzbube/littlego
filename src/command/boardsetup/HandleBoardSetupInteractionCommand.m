@@ -24,6 +24,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -126,11 +127,30 @@
                               createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint];
       if (!isLegalSetupStone)
       {
-        [self showAlertIllegalSetupStone:self.point
-                              stoneColor:newStoneState
-                      isIllegalForReason:isIllegalReason
-              createsIllegalStoneOrGroup:illegalStoneOrGroupPoint];
-        return;
+        if ([ApplicationDelegate sharedDelegate].boardSetupModel.tryNotToPlaceIllegalStones)
+        {
+          newStoneState = [self determineAlternativeNewStoneStateForSetupPoint:newStoneState];
+          if (newStoneState != GoColorNone)
+          {
+            isLegalSetupStone = [game isLegalBoardSetupAt:self.point
+                                           withStoneState:newStoneState
+                                          isIllegalReason:&isIllegalReason
+                               createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint];
+          }
+          else
+          {
+            isLegalSetupStone = true;
+          }
+        }
+
+        if (! isLegalSetupStone)
+        {
+          [self showAlertIllegalSetupStone:self.point
+                                stoneColor:newStoneState
+                        isIllegalForReason:isIllegalReason
+                createsIllegalStoneOrGroup:illegalStoneOrGroupPoint];
+          return;
+        }
       }
     }
   }
@@ -186,21 +206,30 @@
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   BoardSetupModel* boardSetupModel = appDelegate.boardSetupModel;
 
+  // The cycle is: Empty > Default Color > Alternate color > Empty
   if (self.point.stoneState == GoColorNone)
-  {
     return boardSetupModel.boardSetupStoneColor;
-  }
   else if (self.point.stoneState == boardSetupModel.boardSetupStoneColor)
-  {
-    if (self.point.stoneState == GoColorBlack)
-      return GoColorWhite;
-    else
-      return GoColorBlack;
-  }
+    return [GoUtilities alternatingColorForColor:boardSetupModel.boardSetupStoneColor];
   else
-  {
     return GoColorNone;
-  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for handleBoardSetupInteraction.
+// -----------------------------------------------------------------------------
+- (enum GoColor) determineAlternativeNewStoneStateForSetupPoint:(enum GoColor)previousStoneState
+{
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  BoardSetupModel* boardSetupModel = appDelegate.boardSetupModel;
+
+  // The cycle is: Empty > Alternate color > Default Color > Empty
+  if (self.point.stoneState == GoColorNone)
+    return [GoUtilities alternatingColorForColor:boardSetupModel.boardSetupStoneColor];
+  else if (self.point.stoneState == boardSetupModel.boardSetupStoneColor)
+    return GoColorNone;
+  else
+    return boardSetupModel.boardSetupStoneColor;
 }
 
 // -----------------------------------------------------------------------------

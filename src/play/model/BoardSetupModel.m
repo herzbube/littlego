@@ -37,6 +37,7 @@
   self.doubleTapToZoom = true;
   self.autoEnableBoardSetupMode = false;
   self.changeHandicapAlert = true;
+  self.tryNotToPlaceIllegalStones = false;
 
   return self;
 }
@@ -52,6 +53,7 @@
   self.doubleTapToZoom = [[userDefaults valueForKey:doubleTapToZoomKey] boolValue] == YES;
   self.autoEnableBoardSetupMode = [[userDefaults valueForKey:autoEnableBoardSetupModeKey] boolValue] == YES;
   self.changeHandicapAlert = [[userDefaults valueForKey:changeHandicapAlertKey] boolValue] == YES;
+  self.tryNotToPlaceIllegalStones = [[userDefaults valueForKey:tryNotToPlaceIllegalStonesKey] boolValue] == YES;
 }
 
 // -----------------------------------------------------------------------------
@@ -66,6 +68,7 @@
   [userDefaults setValue:[NSNumber numberWithBool:self.doubleTapToZoom ? YES : NO] forKey:doubleTapToZoomKey];
   [userDefaults setValue:[NSNumber numberWithBool:self.autoEnableBoardSetupMode ? YES : NO] forKey:autoEnableBoardSetupModeKey];
   [userDefaults setValue:[NSNumber numberWithBool:self.changeHandicapAlert ? YES : NO] forKey:changeHandicapAlertKey];
+  [userDefaults setValue:[NSNumber numberWithBool:self.tryNotToPlaceIllegalStones ? YES : NO] forKey:tryNotToPlaceIllegalStonesKey];
 }
 
 @end

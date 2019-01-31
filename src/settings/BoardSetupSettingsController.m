@@ -31,6 +31,7 @@ enum BoardSetupTableViewSection
   DoubleTapToZoomSection,
   AutoEnableBoardSetupModeSection,
   ChangeHandicapAlertSection,
+  TryNotToPlaceIllegalStonesSection,
   MaxSection
 };
 
@@ -59,6 +60,15 @@ enum ChangeHandicapAlertSectionItem
 {
   ChangeHandicapAlertItem,
   MaxChangeHandicapAlertSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the TryNotToPlaceIllegalStonesSection.
+// -----------------------------------------------------------------------------
+enum TryNotToPlaceIllegalStonesSectionItem
+{
+  TryNotToPlaceIllegalStonesItem,
+  MaxTryNotToPlaceIllegalStonesSectionItem
 };
 
 
@@ -134,6 +144,8 @@ enum ChangeHandicapAlertSectionItem
       return MaxAutoEnableBoardSetupModeSectionItem;
     case ChangeHandicapAlertSection:
       return MaxChangeHandicapAlertSectionItem;
+    case TryNotToPlaceIllegalStonesSection:
+      return MaxTryNotToPlaceIllegalStonesSectionItem;
     default:
       assert(0);
       break;
@@ -154,6 +166,8 @@ enum ChangeHandicapAlertSectionItem
       return @"If you enable this the app automatically switches to board setup mode when you start a new game. This can be useful if you want to create many games in a row that start with a board setup, for instance if you work on creating a Go problem collection.";
     case ChangeHandicapAlertSection:
       return @"You cannot undo removing a handicap stone in board setup mode, i.e. you cannot re-add a handicap stone once it is gone. Because of this an alert asks for confirmation each time you remove a handicap stone. If this alert annoys you, you can turn it off here.";
+    case TryNotToPlaceIllegalStonesSection:
+      return @"Instead of showing an alert each time you accidentally place an illegal stone in board setup mode, the app can try to find an alternative for you. This can help to improve the flow of setting up stairs or other complex board positions consisting of intertwined stone groups.";
     default:
       break;
   }
@@ -195,6 +209,15 @@ enum ChangeHandicapAlertSectionItem
       cell.textLabel.numberOfLines = 0;
       accessoryView.on = self.boardSetupModel.changeHandicapAlert;
       [accessoryView addTarget:self action:@selector(toggleChangeHandicapAlert:) forControlEvents:UIControlEventValueChanged];
+      break;
+    }
+    case TryNotToPlaceIllegalStonesSection:
+    {
+      cell.textLabel.text = @"Try not to place illegal stones";
+      cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+      cell.textLabel.numberOfLines = 0;
+      accessoryView.on = self.boardSetupModel.tryNotToPlaceIllegalStones;
+      [accessoryView addTarget:self action:@selector(toggleTryNotToPlaceIllegalStones:) forControlEvents:UIControlEventValueChanged];
       break;
     }
     default:
@@ -244,6 +267,16 @@ enum ChangeHandicapAlertSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.boardSetupModel.changeHandicapAlert = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Foo foo" switch.
+/// Writes the new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleTryNotToPlaceIllegalStones:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.boardSetupModel.tryNotToPlaceIllegalStones = accessoryView.on;
 }
 
 @end
