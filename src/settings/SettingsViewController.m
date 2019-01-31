@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 // Project includes
 #import "SettingsViewController.h"
 #import "BoardPositionSettingsController.h"
+#import "BoardSetupSettingsController.h"
 #import "DisplaySettingsController.h"
 #import "MagnifyingGlassSettingsController.h"
 #import "PlayerProfileSettingsController.h"
@@ -45,6 +46,7 @@ enum ViewSettingsSectionItem
   DisplaySettingsItem,
   BoardPositionSettingsItem,
   ScoringSettingsItem,
+  BoardSetupItem,
   MaxViewSettingsSectionItem
 };
 
@@ -142,6 +144,11 @@ enum PlayersProfilesSectionItem
           cell.textLabel.text = @"Scoring";
           break;
         }
+        case BoardSetupItem:
+        {
+          cell.textLabel.text = @"Board setup";
+          break;
+        }
       }
       break;
     }
@@ -205,6 +212,11 @@ enum PlayersProfilesSectionItem
         case ScoringSettingsItem:
         {
           controller = [ScoringSettingsController controller];
+          break;
+        }
+        case BoardSetupItem:
+        {
+          controller = [BoardSetupSettingsController controller];
           break;
         }
       }

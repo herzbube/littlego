@@ -34,6 +34,7 @@
     return nil;
   
   self.boardSetupStoneColor = GoColorBlack;
+  self.doubleTapToZoom = true;
 
   return self;
 }
@@ -46,6 +47,7 @@
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
   self.boardSetupStoneColor = [[userDefaults valueForKey:boardSetupStoneColorKey] intValue];
+  self.doubleTapToZoom = [[userDefaults valueForKey:doubleTapToZoomKey] boolValue] == YES;
 }
 
 // -----------------------------------------------------------------------------
@@ -57,6 +59,7 @@
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 
   [userDefaults setValue:[NSNumber numberWithInt:self.boardSetupStoneColor] forKey:boardSetupStoneColorKey];
+  [userDefaults setValue:[NSNumber numberWithBool:self.doubleTapToZoom ? YES : NO] forKey:doubleTapToZoomKey];
 }
 
 @end

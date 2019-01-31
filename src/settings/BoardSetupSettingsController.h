@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2019 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,19 +16,13 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The DoubleTapGestureController class is responsible for managing the
-/// double-tap gesture in #UIAreaPlay. Double-tapping is used to zoom in on the
-/// Go board.
-///
-/// Every double-tap performs a 50% zoom-in at the location where the tap
-/// occurred. Repeated double-taps zoom in up to the maximum zoom scale. Once
-/// the maximum zoom scale has been reached, additional double-taps have no
-/// effect.
+/// @brief The BoardSetupSettingsController class is responsible for managing
+/// user interaction on the "Board setup" user preferences view.
 // -----------------------------------------------------------------------------
-@interface DoubleTapGestureController : NSObject <UIGestureRecognizerDelegate>
+@interface BoardSetupSettingsController : UITableViewController
 {
 }
 
-@property(nonatomic, assign) UIScrollView* scrollView;
++ (BoardSetupSettingsController*) controller;
 
 @end

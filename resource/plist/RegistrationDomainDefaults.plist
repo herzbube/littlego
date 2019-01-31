@@ -362,5 +362,7 @@
 	<real>100</real>
 	<key>BoardSetupStoneColor</key>
 	<integer>1</integer>
+	<key>DoubleTapToZoom</key>
+	<true/>
 </dict>
 </plist>

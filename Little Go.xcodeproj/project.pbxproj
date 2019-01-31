@@ -187,6 +187,8 @@
 		CD7C57CD21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57CB21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m */; };
 		CD7C57D02201E89500694520 /* SetupFirstMoveColorCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57CE2201E89400694520 /* SetupFirstMoveColorCommand.m */; };
 		CD7C57D12201E89500694520 /* SetupFirstMoveColorCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57CE2201E89400694520 /* SetupFirstMoveColorCommand.m */; };
+		CD7C57D422024C4700694520 /* BoardSetupSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57D322024C4700694520 /* BoardSetupSettingsController.m */; };
+		CD7C57D522024C4700694520 /* BoardSetupSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57D322024C4700694520 /* BoardSetupSettingsController.m */; };
 		CD7C57D7220257B800694520 /* BoardSetupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57D6220257B800694520 /* BoardSetupModel.m */; };
 		CD7C57D8220257B800694520 /* BoardSetupModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57D6220257B800694520 /* BoardSetupModel.m */; };
 		CD7C69B61A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69B51A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m */; };
@@ -804,6 +806,8 @@
 		CD7C57CB21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToggleScoringStateOfStoneGroupCommand.m; sourceTree = "<group>"; };
 		CD7C57CE2201E89400694520 /* SetupFirstMoveColorCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetupFirstMoveColorCommand.m; sourceTree = "<group>"; };
 		CD7C57CF2201E89400694520 /* SetupFirstMoveColorCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupFirstMoveColorCommand.h; sourceTree = "<group>"; };
+		CD7C57D222024C4600694520 /* BoardSetupSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardSetupSettingsController.h; sourceTree = "<group>"; };
+		CD7C57D322024C4700694520 /* BoardSetupSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardSetupSettingsController.m; sourceTree = "<group>"; };
 		CD7C57D6220257B800694520 /* BoardSetupModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardSetupModel.m; sourceTree = "<group>"; };
 		CD7C57D92202582000694520 /* BoardSetupModel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BoardSetupModel.h; sourceTree = "<group>"; };
 		CD7C69B41A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionButtonBoxDataSource.h; sourceTree = "<group>"; };
@@ -1548,6 +1552,8 @@
 			children = (
 				CDA493A5168F26890076E168 /* BoardPositionSettingsController.h */,
 				CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */,
+				CD7C57D222024C4600694520 /* BoardSetupSettingsController.h */,
+				CD7C57D322024C4700694520 /* BoardSetupSettingsController.m */,
 				CDB4579D147AEB590043EDE4 /* EditGtpEngineProfileController.h */,
 				CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */,
 				CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */,
@@ -2847,6 +2853,7 @@
 				CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */,
 				CDD48FB01413E95500188B6A /* CommandBase.m in Sources */,
 				CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */,
+				CD7C57D422024C4700694520 /* BoardSetupSettingsController.m in Sources */,
 				CD7C69FD1AB43B3F009EC5AD /* NavigationBarController.m in Sources */,
 				CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */,
 				CDFABCA814194A420065C93B /* ViewGameController.m in Sources */,
@@ -3150,6 +3157,7 @@
 				CDFD9F7118F1D36C0031CBCF /* PlayerProfileSettingsController.m in Sources */,
 				CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */,
 				CD9A49AC171099FB009E7514 /* FontRange.m in Sources */,
+				CD7C57D522024C4700694520 /* BoardSetupSettingsController.m in Sources */,
 				CD9A49DA17125061009E7514 /* BoardPositionListViewController.m in Sources */,
 				CD9A49DB1712506F009E7514 /* BoardPositionTableListViewController.m in Sources */,
 				CD97FA151AED1BD600148C16 /* ResumePlayCommand.m in Sources */,

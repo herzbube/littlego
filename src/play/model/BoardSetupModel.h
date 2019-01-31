@@ -28,5 +28,6 @@
 - (void) writeUserDefaults;
 
 @property(nonatomic, assign) enum GoColor boardSetupStoneColor;
+@property(nonatomic, assign) bool doubleTapToZoom;
 
 @end
