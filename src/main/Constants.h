@@ -1126,6 +1126,7 @@ extern NSString* magnifyingGlassDistanceFromMagnificationCenterKey;
 // Game setup settings
 extern NSString* boardSetupStoneColorKey;
 extern NSString* doubleTapToZoomKey;
+extern NSString* autoEnableBoardSetupModeKey;
 //@}
 
 // -----------------------------------------------------------------------------

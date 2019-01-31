@@ -320,6 +320,7 @@ NSString* magnifyingGlassDistanceFromMagnificationCenterKey = @"MagnifyingGlassD
 // Game setup settings
 NSString* boardSetupStoneColorKey = @"BoardSetupStoneColor";
 NSString* doubleTapToZoomKey = @"DoubleTapToZoom";
+NSString* autoEnableBoardSetupModeKey = @"AutoEnableBoardSetupMode";
 
 // Constants for NSCoding
 // General constants

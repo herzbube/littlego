@@ -364,5 +364,7 @@
 	<integer>1</integer>
 	<key>DoubleTapToZoom</key>
 	<true/>
+	<key>AutoEnableBoardSetupMode</key>
+	<false/>
 </dict>
 </plist>

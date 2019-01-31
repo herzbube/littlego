@@ -29,6 +29,7 @@
 enum BoardSetupTableViewSection
 {
   DoubleTapToZoomSection,
+  AutoEnableBoardSetupModeSection,
   MaxSection
 };
 
@@ -39,6 +40,15 @@ enum DoubleTapToZoomSectionItem
 {
   DoubleTapToZoomItem,
   MaxDoubleTapToZoomSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the AutoEnableBoardSetupModeSection.
+// -----------------------------------------------------------------------------
+enum AutoEnableBoardSetupModeSectionItem
+{
+  AutoEnableBoardSetupModeItem,
+  MaxAutoEnableBoardSetupModeSectionItem
 };
 
 
@@ -110,6 +120,8 @@ enum DoubleTapToZoomSectionItem
   {
     case DoubleTapToZoomSection:
       return MaxDoubleTapToZoomSectionItem;
+    case AutoEnableBoardSetupModeSection:
+      return MaxAutoEnableBoardSetupModeSectionItem;
     default:
       assert(0);
       break;
@@ -126,6 +138,8 @@ enum DoubleTapToZoomSectionItem
   {
     case DoubleTapToZoomSection:
       return @"In board setup mode you may want to quickly tap on the same intersection several times in a row, to cycle through the differently colored setup stones. This may trigger an unwanted double-tap gesture which causes the board to zoom in. When you find that this negatively affects you, you can disable the double-tap gesture for board setup mode only.";
+    case AutoEnableBoardSetupModeSection:
+      return @"If you enable this the app automatically switches to board setup mode when you start a new game. This can be useful if you want to create many games in a row that start with a board setup, for instance if you work on creating a Go problem collection.";
     default:
       break;
   }
@@ -149,6 +163,15 @@ enum DoubleTapToZoomSectionItem
       cell.textLabel.numberOfLines = 0;
       accessoryView.on = self.boardSetupModel.doubleTapToZoom;
       [accessoryView addTarget:self action:@selector(toggleDoubleTapToZoom:) forControlEvents:UIControlEventValueChanged];
+      break;
+    }
+    case AutoEnableBoardSetupModeSection:
+    {
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      cell.textLabel.text = @"Auto-enable board setup";
+      accessoryView.on = self.boardSetupModel.autoEnableBoardSetupMode;
+      [accessoryView addTarget:self action:@selector(toggleAutoEnableBoardSetupMode:) forControlEvents:UIControlEventValueChanged];
       break;
     }
     default:
@@ -178,6 +201,16 @@ enum DoubleTapToZoomSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.boardSetupModel.doubleTapToZoom = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Auto-enable board setup mode" switch.
+/// Writes the new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleAutoEnableBoardSetupMode:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.boardSetupModel.autoEnableBoardSetupMode = accessoryView.on;
 }
 
 @end

@@ -29,6 +29,7 @@
 #import "../../go/GoPlayer.h"
 #import "../../go/GoScore.h"
 #import "../../go/GoUtilities.h"
+#import "../../play/model/BoardSetupModel.h"
 #import "../../player/Player.h"
 #import "../../player/PlayerModel.h"
 #import "../../newgame/NewGameModel.h"
@@ -100,10 +101,16 @@
 // -----------------------------------------------------------------------------
 - (void) resetUIAreaPlayMode
 {
-  // When a new game is started, we want to begin in play mode. It's especially
-  // important to disable scoring mode while the old GoGame is still around
-  // because scoring mode affects the state of some Go model objects.
-  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModePlay] autorelease] submit];
+  // When a new game is started it is especially important to disable scoring
+  // mode while the old GoGame is still around because scoring mode affects the
+  // state of some Go model objects.
+  enum UIAreaPlayMode uiAreaPlayMode;
+  if ([ApplicationDelegate sharedDelegate].boardSetupModel.autoEnableBoardSetupMode)
+    uiAreaPlayMode = UIAreaPlayModeBoardSetup;
+  else
+    uiAreaPlayMode = UIAreaPlayModePlay;
+
+  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:uiAreaPlayMode] autorelease] submit];
 }
 
   // -----------------------------------------------------------------------------
