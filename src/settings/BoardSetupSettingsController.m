@@ -30,6 +30,7 @@ enum BoardSetupTableViewSection
 {
   DoubleTapToZoomSection,
   AutoEnableBoardSetupModeSection,
+  ChangeHandicapAlertSection,
   MaxSection
 };
 
@@ -49,6 +50,15 @@ enum AutoEnableBoardSetupModeSectionItem
 {
   AutoEnableBoardSetupModeItem,
   MaxAutoEnableBoardSetupModeSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the ChangeHandicapAlertSection.
+// -----------------------------------------------------------------------------
+enum ChangeHandicapAlertSectionItem
+{
+  ChangeHandicapAlertItem,
+  MaxChangeHandicapAlertSectionItem
 };
 
 
@@ -122,6 +132,8 @@ enum AutoEnableBoardSetupModeSectionItem
       return MaxDoubleTapToZoomSectionItem;
     case AutoEnableBoardSetupModeSection:
       return MaxAutoEnableBoardSetupModeSectionItem;
+    case ChangeHandicapAlertSection:
+      return MaxChangeHandicapAlertSectionItem;
     default:
       assert(0);
       break;
@@ -140,6 +152,8 @@ enum AutoEnableBoardSetupModeSectionItem
       return @"In board setup mode you may want to quickly tap on the same intersection several times in a row, to cycle through the differently colored setup stones. This may trigger an unwanted double-tap gesture which causes the board to zoom in. When you find that this negatively affects you, you can disable the double-tap gesture for board setup mode only.";
     case AutoEnableBoardSetupModeSection:
       return @"If you enable this the app automatically switches to board setup mode when you start a new game. This can be useful if you want to create many games in a row that start with a board setup, for instance if you work on creating a Go problem collection.";
+    case ChangeHandicapAlertSection:
+      return @"You cannot undo removing a handicap stone in board setup mode, i.e. you cannot re-add a handicap stone once it is gone. Because of this an alert asks for confirmation each time you remove a handicap stone. If this alert annoys you, you can turn it off here.";
     default:
       break;
   }
@@ -172,6 +186,15 @@ enum AutoEnableBoardSetupModeSectionItem
       cell.textLabel.text = @"Auto-enable board setup";
       accessoryView.on = self.boardSetupModel.autoEnableBoardSetupMode;
       [accessoryView addTarget:self action:@selector(toggleAutoEnableBoardSetupMode:) forControlEvents:UIControlEventValueChanged];
+      break;
+    }
+    case ChangeHandicapAlertSection:
+    {
+      cell.textLabel.text = @"Change handicap alert";
+      cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+      cell.textLabel.numberOfLines = 0;
+      accessoryView.on = self.boardSetupModel.changeHandicapAlert;
+      [accessoryView addTarget:self action:@selector(toggleChangeHandicapAlert:) forControlEvents:UIControlEventValueChanged];
       break;
     }
     default:
@@ -211,6 +234,16 @@ enum AutoEnableBoardSetupModeSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.boardSetupModel.autoEnableBoardSetupMode = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Change handicap alert" switch.
+/// Writes the new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleChangeHandicapAlert:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.boardSetupModel.changeHandicapAlert = accessoryView.on;
 }
 
 @end

@@ -36,6 +36,7 @@
   self.boardSetupStoneColor = GoColorBlack;
   self.doubleTapToZoom = true;
   self.autoEnableBoardSetupMode = false;
+  self.changeHandicapAlert = true;
 
   return self;
 }
@@ -50,6 +51,7 @@
   self.boardSetupStoneColor = [[userDefaults valueForKey:boardSetupStoneColorKey] intValue];
   self.doubleTapToZoom = [[userDefaults valueForKey:doubleTapToZoomKey] boolValue] == YES;
   self.autoEnableBoardSetupMode = [[userDefaults valueForKey:autoEnableBoardSetupModeKey] boolValue] == YES;
+  self.changeHandicapAlert = [[userDefaults valueForKey:changeHandicapAlertKey] boolValue] == YES;
 }
 
 // -----------------------------------------------------------------------------
@@ -63,6 +65,7 @@
   [userDefaults setValue:[NSNumber numberWithInt:self.boardSetupStoneColor] forKey:boardSetupStoneColorKey];
   [userDefaults setValue:[NSNumber numberWithBool:self.doubleTapToZoom ? YES : NO] forKey:doubleTapToZoomKey];
   [userDefaults setValue:[NSNumber numberWithBool:self.autoEnableBoardSetupMode ? YES : NO] forKey:autoEnableBoardSetupModeKey];
+  [userDefaults setValue:[NSNumber numberWithBool:self.changeHandicapAlert ? YES : NO] forKey:changeHandicapAlertKey];
 }
 
 @end

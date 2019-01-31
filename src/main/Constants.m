@@ -321,6 +321,7 @@ NSString* magnifyingGlassDistanceFromMagnificationCenterKey = @"MagnifyingGlassD
 NSString* boardSetupStoneColorKey = @"BoardSetupStoneColor";
 NSString* doubleTapToZoomKey = @"DoubleTapToZoom";
 NSString* autoEnableBoardSetupModeKey = @"AutoEnableBoardSetupMode";
+NSString* changeHandicapAlertKey = @"ChangeHandicapAlert";
 
 // Constants for NSCoding
 // General constants

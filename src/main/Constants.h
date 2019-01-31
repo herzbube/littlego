@@ -1127,6 +1127,7 @@ extern NSString* magnifyingGlassDistanceFromMagnificationCenterKey;
 extern NSString* boardSetupStoneColorKey;
 extern NSString* doubleTapToZoomKey;
 extern NSString* autoEnableBoardSetupModeKey;
+extern NSString* changeHandicapAlertKey;
 //@}
 
 // -----------------------------------------------------------------------------

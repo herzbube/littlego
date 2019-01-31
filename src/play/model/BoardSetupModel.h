@@ -30,5 +30,6 @@
 @property(nonatomic, assign) enum GoColor boardSetupStoneColor;
 @property(nonatomic, assign) bool doubleTapToZoom;
 @property(nonatomic, assign) bool autoEnableBoardSetupMode;
+@property(nonatomic, assign) bool changeHandicapAlert;
 
 @end

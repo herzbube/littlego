@@ -88,13 +88,12 @@
     @throw exception;
   }
 
-  if ([game.handicapPoints containsObject:self.point])
+  if ([game.handicapPoints containsObject:self.point] && [ApplicationDelegate sharedDelegate].boardSetupModel.changeHandicapAlert)
     [self showAlertToConfirmHandicapChange];
   else
     [self handleBoardSetupInteraction];
 
   return true;
-
 }
 
 // -----------------------------------------------------------------------------

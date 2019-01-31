@@ -366,5 +366,7 @@
 	<true/>
 	<key>AutoEnableBoardSetupMode</key>
 	<false/>
+	<key>ChangeHandicapAlert</key>
+	<true/>
 </dict>
 </plist>
