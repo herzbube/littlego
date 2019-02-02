@@ -126,7 +126,7 @@ enum MoreGameActionsButton
       {
         if (uiAreaPlayMode != UIAreaPlayModeBoardSetup)
           continue;
-        title = @"Set up a side to move first";
+        title = @"Set up a side to play first";
         alertActionBlock = ^(UIAlertAction* action) { [self setupFirstMove]; };
         break;
 
@@ -331,13 +331,13 @@ enum MoreGameActionsButton
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Set up a side to move first" button.
+/// @brief Reacts to a tap gesture on the "Set up a side to play first" button.
 /// Displays a controller that lets the user select a side. The actual setup
 /// operation takes place in doSetupFirstMove:().
 // -----------------------------------------------------------------------------
 - (void) setupFirstMove
 {
-  NSString* screenTitle = @"Side to move first";
+  NSString* screenTitle = @"Side to play first";
   NSString* footerTitle = @"Select \"Game rules\" if you want the normal game rules to apply. For instance, in a handicap game the normal game rules specify that white moves first. Select one of the other options if you want to override the normal game rules.";
 
   NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:3];

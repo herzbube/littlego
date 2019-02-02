@@ -114,7 +114,7 @@ enum GameInfoSectionItem
   FourPassesRuleItem,
   BlackSetupStonesItem,
   WhiteSetupStonesItem,
-  SideToMoveFirstItem,
+  SideToPlayFirstItem,
   MaxGameInfoSectionItem
 };
 
@@ -464,10 +464,10 @@ enum BoardPositionSectionItem
       {
         NSString* footerText;
         if ([GoGame sharedGame].setupFirstMoveColor == GoColorNone)
-          footerText = @"The side to move first is currently determined by the normal game rules.";
+          footerText = @"The side to play first is currently determined by the normal game rules.";
         else
-          footerText = @"The side to move first is currently set up, overriding the normal game rules.";
-        return [footerText stringByAppendingString:@" The side to move first can be changed in board setup mode."];
+          footerText = @"The side to play first is currently set up, overriding the normal game rules.";
+        return [footerText stringByAppendingString:@" The side to play first can be changed in board setup mode."];
       }
       break;
     }
@@ -759,7 +759,7 @@ enum BoardPositionSectionItem
             cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)numberOfSetupStones];
           break;
         }
-        case SideToMoveFirstItem:
+        case SideToPlayFirstItem:
         {
           // We need an item that somehow shows the influence of the non-obvious
           // game setup property game.setupFirstMoveColor. We could simply show
@@ -768,7 +768,7 @@ enum BoardPositionSectionItem
           // worthless to the user. Therefore, if game.setupFirstMoveColor is
           // indeed GoColorNone we show the player to play first according to
           // the normal game rules.
-          cell.textLabel.text = @"Side to move first";
+          cell.textLabel.text = @"Side to play first";
           enum GoColor colorToPlayFirst = [GoUtilities playerAfter:nil
                                                             inGame:game].color;
           cell.detailTextLabel.text = [NSString stringWithGoColor:colorToPlayFirst];

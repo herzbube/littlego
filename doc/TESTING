@@ -1313,7 +1313,7 @@ name      setup   setup    Handicap   Moves   Test goals
                                               2) Test that a different player can be setup than the player who actually makes
                                                  the first move. Load the .sgf file, then go the initial board position. The
                                                  first move must be shown as by white, even though the black player is set up
-                                                 to move first. Discard all moves then play a move - now the black player plays
+                                                 to play first. Discard all moves then play a move - now the black player plays
                                                  first in accordance with the player setup.
 07*.sgf   x       x        x          x       Tests the same things as 06*.sgf, albeit with different data. The difference is
                                               that this file was saved by Fuego, whereas 06*.sgf was manually crafted. The
@@ -1330,7 +1330,7 @@ name      setup   setup    Handicap   Moves   Test goals
                                                  stone. The result is that the black setup stone is ignored and intersection D4 is
                                                  treated as handicap stone.
                                               2) Test that multiple player setup properties can appear in the .sgf file and that the
-                                                 last one wins. Load the .sgf file then play a move - the black player must move first.
+                                                 last one wins. Load the .sgf file then play a move - the black player must play first.
 12*.sgf   x       x        x          x       1) Same board setup as 11*.sgf, but with moves.
                                               2) Player setup properties are slightly different than in 11*.sgf. The white player
                                                  plays first, and it's the same player who actually makes the first  move.
@@ -1553,7 +1553,7 @@ Board setup mode tests
   - Check that the following game actions are now available:
     - Start play mode
     - Switch setup stone color to black
-    - In the "More game actions" menu: Set up a side to move first
+    - In the "More game actions" menu: Set up a side to play first
   - Check that the the following game actions are not available:
     - Discard all setup stones
     - In the "More game actions" menu: Switch to board setup mode
@@ -1774,12 +1774,12 @@ Player setup tests
   - Check that the first move is played by black.
 - Discard the move.
 - Switch to board setup mode.
-- In the "More game actions" alert, select "Set up a side to move first".
+- In the "More game actions" alert, select "Set up a side to play first".
 - Select "Game Rules" and tap "Done".
 - Open the "Game info" screen.
-  - Check that "Side to move first" displays "White"
+  - Check that "Side to play first" displays "White"
   - Check that the footer message of the "Game Information" section displays the
-   information that the side to move first is currently determined by the
+   information that the side to play first is currently determined by the
    normal game rules.
 
 
@@ -1791,7 +1791,7 @@ Board setup and player setup tests in a computer vs. computer game
   - Check that the following game actions are now available:
     - Start play mode
     - Switch setup stone color to black
-    - In the "More game actions" menu: Set up a side to move first
+    - In the "More game actions" menu: Set up a side to play first
 - Tap an empty intersection. The "Discard all future moves" alert is displayed.
 - Agree to discard future moves
   - Check that moves have been discarded and that it is no longer possible to
