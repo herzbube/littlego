@@ -34,10 +34,10 @@
     return nil;
   
   self.boardSetupStoneColor = GoColorBlack;
-  self.doubleTapToZoom = true;
+  self.doubleTapToZoom = false;
   self.autoEnableBoardSetupMode = false;
   self.changeHandicapAlert = true;
-  self.tryNotToPlaceIllegalStones = false;
+  self.tryNotToPlaceIllegalStones = true;
 
   return self;
 }

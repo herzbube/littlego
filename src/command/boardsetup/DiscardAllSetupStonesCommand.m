@@ -50,7 +50,7 @@
 
   GoGame* game = [GoGame sharedGame];
   if (game.handicapPoints.count > 0)
-    alertMessage = [alertMessage stringByAppendingString:@"\n\nNote: Handicap stones will stay on the board."];
+    alertMessage = [alertMessage stringByAppendingString:@"\n\nHandicap stones will stay on the board."];
 
   alertMessage = [alertMessage stringByAppendingString:@"\n\nAre you sure you want to do this?"];
 

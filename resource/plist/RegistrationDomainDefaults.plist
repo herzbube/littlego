@@ -363,12 +363,12 @@
 	<key>BoardSetupStoneColor</key>
 	<integer>1</integer>
 	<key>DoubleTapToZoom</key>
-	<true/>
+	<false/>
 	<key>AutoEnableBoardSetupMode</key>
 	<false/>
 	<key>ChangeHandicapAlert</key>
 	<true/>
 	<key>TryNotToPlaceIllegalStones</key>
-	<false/>
+	<true/>
 </dict>
 </plist>
