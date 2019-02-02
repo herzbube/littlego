@@ -466,6 +466,16 @@ enum ParseMoveStringResult
     [[[[CleanBackupSgfCommand alloc] init] autorelease] submit];
   }
   NewGameCommand* command = [[[NewGameCommand alloc] init] autorelease];
+  // We can't let NewGameCommand honor the "auto-enable board setup mode"
+  // user preference because LoadGameCommand (i.e. this command) performs all
+  // sorts of intricate actions that were designed to happen during play mode.
+  // If in the future the user preference should also be honored for new games
+  // started by loading an .sgf, then the handling must happen here in
+  // LoadGameCommand where we know when it is the appropriate time to switch
+  // to board setup mode. Things that immediately come to mind: Switch to board
+  // setup mode only after we know that the .sgf contains no moves, and if we
+  // switch we must prevent the computer player from being triggered.
+  command.shouldHonorAutoEnableBoardSetupMode = false;
   // If command was successful, the board was already set up by the "loadsgf"
   // GTP command. We must not setup the board again, or we will lose all moves
   // that were just loaded.

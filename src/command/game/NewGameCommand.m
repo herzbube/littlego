@@ -69,6 +69,7 @@
     return nil;
   self.prefabricatedGame = game;
   self.shouldResetUIAreaPlayMode = true;
+  self.shouldHonorAutoEnableBoardSetupMode = true;
   self.shouldSetupGtpBoard = true;
   self.shouldSetupGtpHandicapAndKomi = true;
   self.shouldSetupComputerPlayer = true;
@@ -105,7 +106,7 @@
   // mode while the old GoGame is still around because scoring mode affects the
   // state of some Go model objects.
   enum UIAreaPlayMode uiAreaPlayMode;
-  if ([ApplicationDelegate sharedDelegate].boardSetupModel.autoEnableBoardSetupMode)
+  if ([ApplicationDelegate sharedDelegate].boardSetupModel.autoEnableBoardSetupMode && self.shouldHonorAutoEnableBoardSetupMode)
     uiAreaPlayMode = UIAreaPlayModeBoardSetup;
   else
     uiAreaPlayMode = UIAreaPlayModePlay;
