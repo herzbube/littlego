@@ -24,7 +24,8 @@
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
-#import "../../../go/GoScore.h"
+#import "../../../main/ApplicationDelegate.h"
+#import "../../../ui/UiSettingsModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -244,7 +245,7 @@
   if (! self.boardViewModel.displayPlayerInfluence)
     return drawingPoints;
   GoGame* game = [GoGame sharedGame];
-  if (game.score.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
     return drawingPoints;
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile

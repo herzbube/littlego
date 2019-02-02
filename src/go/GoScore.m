@@ -153,18 +153,6 @@
 }
 
 // -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
-- (bool) scoringEnabled
-{
-  UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
-  if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
-    return true;
-  else
-    return false;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Enables scoring on this GoScore object.
 ///
 /// Invoking this method puts all GoBoardRegion objects that currently
@@ -301,7 +289,7 @@
 // -----------------------------------------------------------------------------
 - (void) willChangeBoardPosition
 {
-  if (! self.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return;
   [self uninitializeRegions];
 }
@@ -317,7 +305,7 @@
 // -----------------------------------------------------------------------------
 - (void) didChangeBoardPosition
 {
-  if (! self.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return;
   [self initializeRegionsRetainTerritory:false];
   self.didAskGtpEngineForDeadStones = false;
@@ -375,7 +363,7 @@
     self.lastCalculationHadError = false;
     [self resetValues];
 
-    if (self.scoringEnabled)
+    if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
     {
       [self askGtpEngineForDeadStones];
       bool success = [self updateTerritoryColor];
@@ -528,7 +516,7 @@
 - (void) postScoringModeNotification
 {
   NSString* notificationName;
-  if (self.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
     notificationName = goScoreScoringEnabled;
   else
     notificationName = goScoreScoringDisabled;
@@ -621,7 +609,7 @@
 // -----------------------------------------------------------------------------
 - (void) toggleDeadStateOfStoneGroup:(GoBoardRegion*)stoneGroup
 {
-  if (! self.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return;
   if (self.scoringInProgress)
     return;
@@ -736,7 +724,7 @@
 // -----------------------------------------------------------------------------
 - (void) toggleSekiStateOfStoneGroup:(GoBoardRegion*)stoneGroup
 {
-  if (! self.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return;
   if (self.scoringInProgress)
     return;
@@ -1086,7 +1074,7 @@
   }
 
   // Area, territory & dead stones (for current board position)
-  if (self.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     NSArray* allRegions = self.game.board.regions;
     for (GoBoardRegion* region in allRegions)
@@ -1197,6 +1185,11 @@
 // -----------------------------------------------------------------------------
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
+  // TODO: Why does GoScore participate in the archiving process? Right now
+  // the score is recalculated on app launch if the app restores into scoring
+  // mode, so it seems there is no point in archiving values that will be
+  // thrown away anyway... Cf. enableScoringOnAppLaunch.
+
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeDouble:self.komi forKey:goScoreKomiKey];
   [encoder encodeInt:self.capturedByBlack forKey:goScoreCapturedByBlackKey];

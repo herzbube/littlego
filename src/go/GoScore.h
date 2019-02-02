@@ -194,10 +194,6 @@
 /// @name General properties
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is true if scoring is enabled. This property exists solely for
-/// compatibility purposes. Clients should not use this property, instead they
-/// should query @e UiSettingsModel.uiAreaPlayMode.
-@property(nonatomic, assign, readonly) bool scoringEnabled;
 @property(nonatomic, assign) bool scoringInProgress;         ///< @brief Is true if a scoring operation is currently in progress.
 @property(nonatomic, assign) bool askGtpEngineForDeadStonesInProgress; ///< @brief Is true if the GTP engine is currently being queried for dead stones.
 //@}

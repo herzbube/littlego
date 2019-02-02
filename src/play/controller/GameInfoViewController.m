@@ -37,6 +37,7 @@
 #import "../../ui/TableViewCellFactory.h"
 #import "../../ui/TableViewVariableHeightCell.h"
 #import "../../ui/UiElementMetrics.h"
+#import "../../ui/UiSettingsModel.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIDeviceAdditions.h"
 
@@ -442,7 +443,7 @@ enum BoardPositionSectionItem
         titlePartOne = @"This score reflects the board position you are currently viewing, NOT the final score. Navigate to the last move of the game to see the final score.";
 
       NSString* titlePartTwo = nil;
-      if (! game.score.scoringEnabled)
+      if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
       {
         if (GoScoringSystemAreaScoring == game.rules.scoringSystem)
           titlePartTwo = @"Stone count";
@@ -1063,6 +1064,8 @@ enum BoardPositionSectionItem
   GoGame* game = [GoGame sharedGame];
   GoGameRules* rules = game.rules;
   GoScore* score = game.score;
+  UiSettingsModel* settingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+
   switch (gridCell.tag)
   {
     case HeadingItem:
@@ -1135,14 +1138,14 @@ enum BoardPositionSectionItem
         switch (column)
         {
           case BlackPlayerColumn:
-            if (score.scoringEnabled)
+            if (settingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
               return [NSString stringWithFormat:@"%d", score.aliveBlack];
             else
               return @"n/a";
           case TitleColumn:
             return @"Stones";
           case WhitePlayerColumn:
-            if (score.scoringEnabled)
+            if (settingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
               return [NSString stringWithFormat:@"%d", score.aliveWhite];
             else
               return @"n/a";
@@ -1156,14 +1159,14 @@ enum BoardPositionSectionItem
         switch (column)
         {
           case BlackPlayerColumn:
-            if (score.scoringEnabled)
+            if (settingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
               return [NSString stringWithFormat:@"%d", score.deadWhite];
             else
               return @"n/a";
           case TitleColumn:
             return @"Dead";
           case WhitePlayerColumn:
-            if (score.scoringEnabled)
+            if (settingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
               return [NSString stringWithFormat:@"%d", score.deadBlack];
             else
               return @"n/a";
@@ -1179,14 +1182,14 @@ enum BoardPositionSectionItem
       switch (column)
       {
         case BlackPlayerColumn:
-          if (score.scoringEnabled)
+          if (settingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
             return [NSString stringWithFormat:@"%d", score.territoryBlack];
           else
             return @"n/a";
         case TitleColumn:
           return @"Territory";
         case WhitePlayerColumn:
-          if (score.scoringEnabled)
+          if (settingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
             return [NSString stringWithFormat:@"%d", score.territoryWhite];
           else
             return @"n/a";

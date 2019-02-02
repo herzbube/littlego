@@ -25,8 +25,9 @@
 #import "../../../go/GoBoardRegion.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
-#import "../../../go/GoScore.h"
 #import "../../../go/GoVertex.h"
+#import "../../../main/ApplicationDelegate.h"
+#import "../../../ui/UiSettingsModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -350,8 +351,7 @@
 - (NSMutableDictionary*) calculateDrawingPointsTerritory
 {
   NSMutableDictionary* drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
-  GoGame* game = [GoGame sharedGame];
-  if (! game.score.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return drawingPoints;
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
@@ -364,6 +364,7 @@
   // list of points. On a 19x19 board this could save us quite a bit of time:
   // 381 points are iterated on 16 tiles (iPhone), i.e. over 6000 iterations.
   // on iPad where there are more tiles it is even worse.
+  GoGame* game = [GoGame sharedGame];
   NSEnumerator* enumerator = [game.board pointEnumerator];
   GoPoint* point;
   while (point = [enumerator nextObject])
@@ -436,7 +437,7 @@
 {
   NSMutableDictionary* drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return drawingPoints;
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile

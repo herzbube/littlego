@@ -382,9 +382,11 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) gameInfo:(id)sender
 {
-  GoScore* score = [GoGame sharedGame].score;
-  if (! score.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
+  {
+    GoScore* score = [GoGame sharedGame].score;
     [score calculateWaitUntilDone:true];
+  }
 
   self.gameInfoViewController = [[[GameInfoViewController alloc] init] autorelease];
   [self.gameInfoViewControllerPresenter presentGameInfoViewController:self.gameInfoViewController];
@@ -802,7 +804,7 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.scoringEnabled &&
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
       ! [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
     switch (game.type)
@@ -845,7 +847,7 @@ static GameActionManager* sharedGameActionManager = nil;
   {
     // always disabled
   }
-  else if (game.score.scoringEnabled)
+  else if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (! game.score.scoringInProgress)
       enabled = YES;
@@ -865,7 +867,7 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.scoringEnabled &&
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
       ! [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
     switch (game.type)
@@ -900,7 +902,7 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.scoringEnabled &&
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
       ! [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
     switch (game.type)
@@ -931,7 +933,7 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (! game.score.scoringEnabled &&
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
       ! [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
     switch (game.type)
@@ -966,7 +968,7 @@ static GameActionManager* sharedGameActionManager = nil;
   {
     // always disabled
   }
-  else if (game.score.scoringEnabled)
+  else if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (game.score.scoringInProgress)
       enabled = YES;
@@ -986,7 +988,7 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  if (game.score.scoringEnabled ||
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring ||
       game.isComputerThinking ||
       [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
   {
@@ -1081,7 +1083,7 @@ static GameActionManager* sharedGameActionManager = nil;
   {
     // always disabled
   }
-  else if (game.score.scoringEnabled)
+  else if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (! game.score.scoringInProgress)
       enabled = YES;
@@ -1118,7 +1120,7 @@ static GameActionManager* sharedGameActionManager = nil;
   {
     // always disabled
   }
-  else if (game.score.scoringEnabled)
+  else if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (! game.score.scoringInProgress)
       enabled = YES;

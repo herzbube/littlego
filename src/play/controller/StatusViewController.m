@@ -361,7 +361,7 @@
 
   GoGame* game = [GoGame sharedGame];
   bool shouldDisplayActivityIndicator = false;
-  if (game.score.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (game.score.askGtpEngineForDeadStonesInProgress)
       shouldDisplayActivityIndicator = true;

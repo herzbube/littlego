@@ -24,6 +24,8 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
 #import "../../go/GoUtilities.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../ui/UiSettingsModel.h"
 #import "../../utility/PathUtilities.h"
 
 
@@ -102,7 +104,7 @@
   // #goScoreCalculationEnds to be posted without a preceding
   // #goScoreCalculationStarts is well-known and documented.
   GoScore* unarchivedScore = unarchivedGame.score;
-  if (unarchivedScore.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     [unarchivedScore postScoringModeNotification];
     [unarchivedScore postScoringInProgressNotification];

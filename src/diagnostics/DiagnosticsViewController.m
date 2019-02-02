@@ -27,6 +27,7 @@
 #import "../go/GoScore.h"
 #import "../main/ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UiSettingsModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -590,7 +591,7 @@ enum BugReportSectionItem
         break;
     }
   }
-  if (game.score.scoringEnabled)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (game.score.scoringInProgress)
       return true;
