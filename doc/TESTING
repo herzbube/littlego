@@ -1536,6 +1536,8 @@ EOF
 
 
 Board setup mode tests
+- In the board setup settings, disable the "auto-enable board setup" user
+  preference.
 - Start a new human vs. human game with handicap.
   - Check that the handicap stones are not marked.
   - Check that the "More game action" alert shows an entry to switch to board
@@ -1581,6 +1583,8 @@ Board setup mode tests
 
 
 Tests for placing setup stones
+- In the board setup settings, enable the "change handicap alert" user
+  preference.
 - Start a new human vs. human game with handicap >= 3.
 - Play a move.
 - Change board position to board position 0.
@@ -1712,8 +1716,11 @@ Board setup tests when game has ended
 
 
 Illegal board setup tests
+- In the board setup settings, disable the "try not to place illegal stones"
+  user preference.
 - Load game illegal-board-setup-test.sgf.
-- Switch to board setup mode
+- Switch to board setup mode.
+- Make sure that the default setup stone color is black.
 - Check that placing a black setup stone on the following intersections shows a
   "Stone is not legal" alert, with the alert message explaining why the stone
   cannot be placed.
@@ -1727,45 +1734,64 @@ Illegal board setup tests
 - E3: Setup stone would take away all liberties from a white stone group.
   >>> The message is the same as for G5, but in the background there is special
       handling to distinguish this case from the C3 "splitting" "case.
+- In the board setup settings, enable the "try not to place illegal stones"
+  user preference.
+- Load game illegal-board-setup-test.sgf.
+- Switch to board setup mode.
+- Make sure that the default setup stone color is black.
+- Check that placing a setup stone on B9 shows a "Stone is not legal" alert.
+  The message explains that the setup stone would take away all liberties from
+  a black stone group.
+  >>> The reason why the alert is still displayed is that neither a black nor a
+      white stone can be placed without committing suicide.
+- Check that placing a setup stone on the following intersections does not show
+  a "Stone is not legal" alert.
+- H8: Places a white instead of a black setup stone.
+- G5: Places a white instead of a black setup stone.
+- H3: Places a white instead of a black setup stone.
+- E3: Removes the black setup stone that is already on the board instead of
+  placing a black setup stone.
+- C3: Removes the black setup stone that is already on the board instead of
+  placing a black setup stone.
 
 
 Player setup tests
 - Start a new human vs. human game with handicap.
 - Open the "Game info" screen.
-  - Check that "Side to move first" displays "White"
+  - Check that "Side to play first" displays "White"
   - Check that the footer message of the "Game Information" section displays the
-    information that the side to move first is currently determined by the
+    information that the side to play first is currently determined by the
     normal game rules.
 - Play a move.
 - Change board position to board position 0.
 - Switch to board setup mode.
-- In the "More game actions" alert, select "Set up a side to move first".
+- In the "More game actions" alert, select "Set up a side to play first".
 - A screen is displayed that lets the user select from these options:
   - Game rules
   - Black
   - White
   Check that "Game rules" has a check mark.
 - Tap "Cancel".
-  - In the "Game info" screen, check that "Side to move first" displays "White".
+  - In the "Game info" screen, check that "Side to play first" displays "White".
   - In the "Game info" screen, check that the footer message of the
     "Game Information" section displays the information that the side to move
     first is currently determined by the normal game rules.
-- In the "More game actions" alert, select "Set up a side to move first".
+- In the "More game actions" alert, select "Set up a side to play first".
 - Select "Black" and tap "Done". The "Discard all future moves" alert is
   displayed.
 - Decline to discard future moves.
   - Check that moves have not been discarded.
-  - In the "Game info" screen, check that "Side to move first" displays "White".
+  - In the "Game info" screen, check that "Side to play first" displays "White".
   - In the "Game info" screen, check that the footer message of the
     "Game Information" section displays the information that the side to move
     first is currently determined by the normal game rules.
-- In the "More game actions" alert, select "Set up a side to move first".
+- In the "More game actions" alert, select "Set up a side to play first".
 - Select "Black" and tap "Done". The "Discard all future moves" alert is
   displayed.
 - Agree to discard future moves.
   - Check that moves have been discarded and that it is no longer possible to
     change board position.
-  - In the "Game info" screen, check that "Side to move first" displays "Black".
+  - In the "Game info" screen, check that "Side to play first" displays "Black".
   - In the "Game info" screen, check that the footer message of the
     "Game Information" section displays the information that the side to move
     first has been overridden.
@@ -1815,3 +1841,31 @@ Board setup and player setup tests in a computer vs. computer game
   - Check that the game action "Discard all setup stones" is no longer
     available.
   - In the "Game info" screen, check that the game is paused.
+
+
+User preferences test
+- In the board setup settings, disable the "auto-enable board setup" user
+  preference.
+- Start a new human vs. human game
+- Check that the UI areay "Play" is in play mode.
+- In the board setup settings, enable the "auto-enable board setup" user
+  preference.
+- Start a new human vs. human game with handicap
+- Check that the UI areay "Play" is in board setup mode.
+- Make sure that the default setup stone color is black.
+- In the board setup settings, enable the "double-tap to zoom" user preference.
+- Check that double-tapping the board zooms the board in.
+- In the board setup settings, disable the "double-tap to zoom" user preference.
+- Check that double-tapping the board places first a black setup stone, then a
+  white setup stone.
+- In the board setup settings, enable the "change handicap alert" user
+  preference.
+- Check that tapping a handicap stone shows a "Change handicap" alert.
+- Decline
+- Decline to remove the handicap stone. Check that the handicap stones remains
+  on the intersection.
+- In the board setup settings, disable the "change handicap alert" user
+  preference.
+- Tap a handicap stone
+  - Check that the "Change handicap" alert is not shown.
+  - Check that the handicap stone is removed and the intersection becomes empty.

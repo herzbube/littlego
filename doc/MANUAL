@@ -138,9 +138,10 @@ menu.
 
 If you don't see this menu entry, you need to enable "Display player influence"
 under "Settings > Display settings". If this setting is already enabled, then
-you are in scoring mode which prevents the display of player influence. Tap the
-"Play" button to disable scoring mode. If you still don't see player influence,
-select the "Update player influence" menu entry mentioned above.
+you are in scoring mode or board setup mode, both of which prevent the display
+of player influence. Tap the "Play" button to enable play mode. If you still
+don't see player influence, select the "Update player influence" menu entry
+mentioned above.
 
 Also read the "Player influence" section of this manual to learn about important
 background information.
@@ -312,14 +313,14 @@ For an ultra-short introduction you may also wish to have a look at the "Quick
 Start Guide" section.
 
 The computer player built into Little Go is powered by the open source software
-library Fuego (http://fuego.sourceforge.net/). Be warned: Fuego is a pretty
-nasty opponent ☺ on smaller boards, and can also be challenging on larger boards
+library Fuego (http://fuego.sourceforge.net/). Be warned: Fuego is a tough
+opponent ☺ on smaller boards, and can also be challenging on larger boards
 if you tune up its number-crunching power. The "Players & Profiles" help section
 tells you more about how to make Fuego stronger or weaker.
 
 When a game is over you will usually want to know who has won. Little Go is not
 very smart about calculating a score - it relies quite heavily on your help
-with evaluating which stones on the board are alive and which ones are dead. The
+with evaluating which stones on the board are alive and which ones are dead.
 The "Scoring" section has details about how the life & death settling procedure
 is supposed to work.
 
@@ -733,6 +734,173 @@ automatically to reflect the new board position. At the same time, any decisions
 that you made on which stones are dead or in seki are forgotten.
 
 See the "Scoring" help section if you need more information about scoring.
+
+
+--------------------------------------------------------------------------------
+Board setup
+--------------------------------------------------------------------------------
+
+========
+Overview
+========
+When you start a new game, instead of beginning to play you can switch to
+board setup mode. In this mode you can place black or white stones in any order
+and combination to set up the initial board before you begin to play moves. The
+only restriction is that the board position you thus create is legal. In
+practice this means that the app will not allow you to place stones that create
+a stone group that has no liberties.
+
+In addition to placing stones, you can select the side which is to play the
+first move. This overrides the normal game rules which specify that in an even
+game black plays first, and in a game with handicap white plays first.
+
+==================================
+Switching to/from board setup mode
+==================================
+By default the app places you in play mode when you start a new game. You have
+to tap the "More game actions" button and select "Set up board" to switch to
+board setup mode. The idea is that usually you want to play, and setting up a
+board position is the exception. You can change this default behaviour in the
+user preferences under "Settings > Board setup": If you turn on the option
+"Auto-enable board setup" the app will automatically switch to board setup mode
+whenever you start a new game.
+
+While in board setup mode you can tap the "Play" button on the left-hand side of
+the toolbar at the top of the screen (iPhone 6+ landscape: on the right-hand
+side of the screen) to return to play mode.
+
+The "Set up board" entry disappears from the "More game actions" menu as soon as
+you play a move. It will reappear when you discard all moves, or when you
+navigate back to board position 0, i.e. the start of the game.
+
+==================================
+Placing stones in board setup mode
+==================================
+In board setup mode you place a stone by tapping on an empty intersection. A
+button on the left-hand side of the toolbar at the top of the screen (iPhone 6+
+landscape: on the right-hand side of the screen) shows which color the newly
+placed stone will have. You can repeatedly tap the button to switch between
+black and white as the default color.
+
+When you place a stone, then tap again on the same intersection, the stone
+changes its color. If you tap again on the same intersection, the stone is
+removed. The cycle then begins again. So, depending on which is the default
+stone color, you have one of these two cycles:
+
+1. Empty intersection > Black stone > White stone > Empty intersection.
+1. Empty intersection > White stone > Black stone > Empty intersection.
+
+These two cycles are broken if tapping on an intersection and following the
+cycle would result in an illegal board position. Read the section after the next
+to learn more about illegal board positions.
+
+
+=============
+Board zooming
+=============
+Hitting the right intersection with a single tap can be difficult if the device
+is small and the board is large. Unlike when you are in play mode, hitting the
+wrong intersection during board setup mode has no consequences - you can remove
+the stone again by quickly tapping the same intersection two more times.
+
+Usually on iOS devices a double-tap gesture like this is interpreted as a
+request to zoom in, and when in play mode double-tapping does exactly this: It
+zooms in the board by 50%. But when in board setup mode, quickly tapping the
+same spot has no special meaning because, as explained above, the app wants you
+to be able to change what is on an intersection by quickly and repeatedly
+tapping on the intersection. Zooming is still available via the standard pinch
+gesture.
+
+You can restore the double-tap gesture to its normal zoom meaning in the user
+preferences under "Settings > Board setup", by enabling the option
+"Double-tap to zoom".
+
+=======================
+Illegal board positions
+=======================
+As already mentioned in the overview section, an illegal board position can
+occur if placing a stone would create a stone group that has no liberties. In
+the previous section you have seen that the app follows one of two cycles when
+you attempt to place a stone. However, if following the cycle would result in
+an illegal board position, the app breaks the cycle and tries an alternative.
+If the alternative <em>still</em> results in an illegal board position, the app
+displays an alert with information about what the problem is and why the board
+situation is illegal.
+
+This feature of trying out alternatives can be very useful when you set up
+stairs, or other complex board positions consisting of intertwined stone groups.
+If you don't like the feature you can turn it off in the user preferences under
+"Settings > Board setup" by disabling the option
+"Try not to place illegal stones".
+
+This is how the "magic" alternative-finding works:
+
+1. When you tap on an empty intersection, and placing a stone with the default
+   color would be illegal, the app instead tries to place a stone that is the
+   opposing color of the default color.
+1. When you tap on an intersection that is occupied by a stone of the default
+   color, and placing a stone that is the opposing color of the default color
+   would be illegal, the app instead removes the stone.
+
+====================
+Discarding the board
+====================
+If you are not happy with the current board setup, you can tap the "Discard"
+button (visible only if you have placed at least one stone). This will throw
+away all stones that are currently on the board, with the exception of handicap
+stones which will remain on the board. Read the next section for more
+information about the special treatment of handicap stones.
+
+The app will display an alert and ask for confirmation before it actually
+clears the board.
+
+========================
+Board setup vs. handicap
+========================
+Playing a game with handicap results in a special kind of board setup: Handicap
+stones. While in board setup mode handicap stones are displayed with a special
+mark so that you can distinguish them from regular setup stones.
+
+Handicap stones are treated specially because under area scoring rules handicap
+has a direct influence on the game's score: White receives compensation for
+each handicap stone. When you tap a handicap stone the app removes it from the
+board so that you can place a regular setup stone on the empty intersection.
+Under area scoring rules the app also reduces the handicap compensation by 1.
+
+The app alerts you when this happens, giving you the opportunity to abort and
+keep the handicap stone. You can disable the alert in the user preferences under
+"Settings > Board setup" by turning off the option "Change handicap alert".
+
+Because handicap is more related to game rules than to board setup, the app
+currently does not provide a way to place new handicap stones while in board
+setup mode. If you accidentally remove a handicap stone you have to start a new
+game to get it back.
+
+===============================
+Setting up a side to play first
+===============================
+As already mentioned in the overview section, you can select the side which is
+to play the first move. While in board setup mode, tap the "More game actions"
+button and select "Set up a side to play first". This pops up a screen where
+you can select between the different options.
+
+If you have previously made a choice that overrides the normal game rules, you
+can select the "Game rules" entry to revert back to the normal game rules.
+
+===============================
+Board setup vs. game with moves
+===============================
+You can change the board setup only if no moves have been played yet. The reason
+is simple: Moves build upon each other, and the very first move of the game
+builds upon the initial board position that exists when the game is started.
+When you change this initial board position, the first move thus becomes
+invalid, and with it all future moves that in turn build upon the first move.
+
+So when you want to change something about the board setup, and one or more
+moves have already been played, the app will automatically discard all moves.
+The app will alert you when this is about to happen, giving you the opportunity
+to abort and keep those moves. You can disable the alert in the user preferences
+under "Settings > Board position".
 
 
 --------------------------------------------------------------------------------
