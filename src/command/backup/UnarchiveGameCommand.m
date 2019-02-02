@@ -49,6 +49,16 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this UnarchiveGameCommand object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.game = nil;
+
+  [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
 // -----------------------------------------------------------------------------
 - (bool) doIt
