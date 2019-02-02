@@ -452,6 +452,60 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Exercises the @e isStoneConnectingSuicidalSubgroups method.
+// -----------------------------------------------------------------------------
+- (void) testIsStoneConnectingSuicidalSubgroups
+{
+  GoBoard* board = m_game.board;
+  GoPoint* pointA1 = [board pointAtVertex:@"A1"];
+  GoPoint* pointB1 = [board pointAtVertex:@"B1"];
+  GoPoint* pointA2 = [board pointAtVertex:@"A2"];
+  GoPoint* pointB2 = [board pointAtVertex:@"B2"];
+  GoPoint* pointA3 = [board pointAtVertex:@"A3"];
+
+  NSMutableArray* suicidalSubgroup = [NSMutableArray arrayWithCapacity:0];
+  NSUInteger suicidalSubgroupCount = 0;
+
+  XCTAssertThrowsSpecificNamed([pointA1.region isStoneConnectingSuicidalSubgroups:pointA1 suicidalSubgroup:suicidalSubgroup],
+                               NSException, NSInternalInconsistencyException, @"region is no stone group");
+
+  // Region with 1 stone
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
+  XCTAssertFalse([pointA1.region isStoneConnectingSuicidalSubgroups:pointA1 suicidalSubgroup:suicidalSubgroup]);
+
+  // Region with 2 stones, no suicide yet
+  [m_game changeSetupPoint:pointA2 toStoneState:GoColorBlack];
+  XCTAssertFalse([pointA1.region isStoneConnectingSuicidalSubgroups:pointA1 suicidalSubgroup:suicidalSubgroup]);
+  XCTAssertFalse([pointA1.region isStoneConnectingSuicidalSubgroups:pointA2 suicidalSubgroup:suicidalSubgroup]);
+
+  // Region with 2 stones, with suicide because a neighbouring white stone
+  // cuts off the liberty from A1
+  [m_game changeSetupPoint:pointB1 toStoneState:GoColorWhite];
+  XCTAssertFalse([pointA1.region isStoneConnectingSuicidalSubgroups:pointA1 suicidalSubgroup:suicidalSubgroup]);
+  XCTAssertTrue([pointA1.region isStoneConnectingSuicidalSubgroups:pointA2 suicidalSubgroup:suicidalSubgroup]);
+  suicidalSubgroupCount = 1;
+  XCTAssertEqual(suicidalSubgroup.count, suicidalSubgroupCount);
+  [suicidalSubgroup removeAllObjects];
+
+  // Region with 3 stones, with suicide because a neighbouring white stones
+  // cut off the liberties from A1 and A2
+  [m_game changeSetupPoint:pointA3 toStoneState:GoColorBlack];
+  [m_game changeSetupPoint:pointB2 toStoneState:GoColorWhite];
+  XCTAssertFalse([pointA1.region isStoneConnectingSuicidalSubgroups:pointA1 suicidalSubgroup:suicidalSubgroup]);
+  XCTAssertTrue([pointA1.region isStoneConnectingSuicidalSubgroups:pointA2 suicidalSubgroup:suicidalSubgroup]);
+  suicidalSubgroupCount = 1;
+  XCTAssertEqual(suicidalSubgroup.count, suicidalSubgroupCount);
+  XCTAssertEqual(suicidalSubgroup.firstObject, pointA1);
+  [suicidalSubgroup removeAllObjects];
+  XCTAssertTrue([pointA1.region isStoneConnectingSuicidalSubgroups:pointA3 suicidalSubgroup:suicidalSubgroup]);
+  suicidalSubgroupCount = 2;
+  XCTAssertEqual(suicidalSubgroup.count, suicidalSubgroupCount);
+  XCTAssertTrue([suicidalSubgroup containsObject:pointA1]);
+  XCTAssertTrue([suicidalSubgroup containsObject:pointA2]);
+  [suicidalSubgroup removeAllObjects];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Exercises the @e scoringMode property.
 // -----------------------------------------------------------------------------
 - (void) testScoringMode

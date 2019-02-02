@@ -973,6 +973,106 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Exercises the isLegalBoardSetupAt() method.
+// -----------------------------------------------------------------------------
+- (void) testIsLegalBoardSetupAt
+{
+  enum GoBoardSetupIsIllegalReason reason;
+  GoPoint* illegalStoneOrGroupPoint;
+
+  GoPoint* pointA1 = [m_game.board pointAtVertex:@"A1"];
+  GoPoint* pointB1 = [m_game.board pointAtVertex:@"B1"];
+  GoPoint* pointA2 = [m_game.board pointAtVertex:@"A2"];
+  GoPoint* pointB2 = [m_game.board pointAtVertex:@"B2"];
+  GoPoint* pointA3 = [m_game.board pointAtVertex:@"A3"];
+
+  // Testing for GoColorNone does not make sense and is not allowed
+  XCTAssertThrowsSpecificNamed([m_game isLegalBoardSetupAt:pointA1 withStoneState:GoColorNone isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint],
+                               NSException, NSInvalidArgumentException, @"expected that GoColorNone is not allowed");
+
+  // Empty intersection is allowed for both colors
+  XCTAssertTrue([m_game isLegalBoardSetupAt:pointA1 withStoneState:GoColorBlack isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
+  XCTAssertTrue([m_game isLegalBoardSetupAt:pointA1 withStoneState:GoColorWhite isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
+
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
+
+  // Occupied intersection with no neighbours is allowed for both colors.
+  // Placing stone of the same color does not make much sense but is allowed
+  XCTAssertTrue([m_game isLegalBoardSetupAt:pointA1 withStoneState:GoColorBlack isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
+  XCTAssertTrue([m_game isLegalBoardSetupAt:pointA1 withStoneState:GoColorWhite isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
+
+  [m_game changeSetupPoint:pointB1 toStoneState:GoColorWhite];
+
+  // Capturing a single opposing stone
+  // 3
+  // 2  O*
+  // 1  X   O
+  //    A   B
+  XCTAssertFalse([m_game isLegalBoardSetupAt:pointA2 withStoneState:GoColorWhite isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
+  XCTAssertEqual(reason, GoBoardSetupIsIllegalReasonSuicideOpposingStone);
+
+  [m_game changeSetupPoint:pointA2 toStoneState:GoColorBlack];
+  [m_game changeSetupPoint:pointB2 toStoneState:GoColorWhite];
+
+  // Capturing an opposing stone group 1: Regular case where the stone is
+  // placed on an empty intersection.
+  // 3  O*
+  // 2  X   O
+  // 1  X   O
+  //    A   B
+  XCTAssertFalse([m_game isLegalBoardSetupAt:pointA3 withStoneState:GoColorWhite isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
+  XCTAssertEqual(reason, GoBoardSetupIsIllegalReasonSuicideOpposingStoneGroup);
+
+  [m_game changeSetupPoint:pointA3 toStoneState:GoColorBlack];
+
+  // Capturing an opposing stone group 2: Special case where the stone is
+  // placed on an intersection that is already occupied. An initial naive
+  // implementation of the isLegal... logic interpreted this as splitting the
+  // black stone group A1/A2/A3 into a group 1, consisting of A1/A2, and a
+  // group 2, consisting of no stones. The final implementation must recognize
+  // that this is not a split, but a regular capture.
+  // 3  O*
+  // 2  X   O
+  // 1  X   O
+  //    A   B
+  XCTAssertFalse([m_game isLegalBoardSetupAt:pointA3 withStoneState:GoColorWhite isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
+  XCTAssertEqual(reason, GoBoardSetupIsIllegalReasonSuicideOpposingStoneGroup);
+
+  // Splitting an opposing stone group and capturing a sub-group
+  // 3  X
+  // 2  O*  O
+  // 1  X   O
+  //    A   B
+  XCTAssertFalse([m_game isLegalBoardSetupAt:pointA2 withStoneState:GoColorWhite isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
+  XCTAssertEqual(reason, GoBoardSetupIsIllegalReasonSuicideOpposingColorSubgroup);
+
+  [m_game changeSetupPoint:pointA2 toStoneState:GoColorNone];
+  [m_game changeSetupPoint:pointA3 toStoneState:GoColorWhite];
+
+  // Suiciding a friendly stone group
+  // 3  O
+  // 2  X*  O
+  // 1  X   O
+  //    A   B
+  XCTAssertFalse([m_game isLegalBoardSetupAt:pointA2 withStoneState:GoColorBlack isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
+  XCTAssertEqual(reason, GoBoardSetupIsIllegalReasonSuicideFriendlyStoneGroup);
+
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorNone];
+  [m_game changeSetupPoint:pointA2 toStoneState:GoColorWhite];
+
+  // Suiciding the stone itself
+  // 3  O
+  // 2  O   O
+  // 1  X*  O
+  //    A   B
+  XCTAssertFalse([m_game isLegalBoardSetupAt:pointA1 withStoneState:GoColorBlack isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
+  XCTAssertEqual(reason, GoBoardSetupIsIllegalReasonSuicideSetupStone);
+
+  XCTAssertThrowsSpecificNamed([m_game isLegalBoardSetupAt:nil withStoneState:GoColorNone isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint],
+                               NSException, NSInvalidArgumentException, @"point is nil");
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Exercises the isLegalMove() method (including simple ko scenarios).
 // -----------------------------------------------------------------------------
 - (void) testIsLegalMove
@@ -1274,6 +1374,332 @@
   // The public API of GoGame does not provide a means to set nextMoveColor to
   // GoColorNone, so we cannot test whether switchNextMoveColor really raises
   // NSInternalInconsistencyException if it encounters GoColorNone
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the toggleHandicapPoint() method.
+// -----------------------------------------------------------------------------
+- (void) testToggleHandicapPoint
+{
+  NSUInteger handicapCount = 0;
+  XCTAssertEqual(m_game.handicapPoints.count, handicapCount);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  XCTAssertEqual(m_game.setupFirstMoveColor, GoColorNone);
+
+  GoPoint* pointA1 = [m_game.board pointAtVertex:@"A1"];
+
+  // Place handicap stone
+  [m_game toggleHandicapPoint:pointA1];
+  NSArray* handicapPoints = m_game.handicapPoints;
+  handicapCount = 1;
+  XCTAssertEqual(handicapPoints.count, handicapCount);
+  XCTAssertEqual(handicapPoints.firstObject, pointA1);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+
+  // Remove handicap stone
+  [m_game toggleHandicapPoint:pointA1];
+  handicapPoints = m_game.handicapPoints;
+  handicapCount = 0;
+  XCTAssertEqual(handicapPoints.count, handicapCount);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
+  // Place handicap stone, but don't change nextMoveColor
+  m_game.setupFirstMoveColor = GoColorBlack;
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  [m_game toggleHandicapPoint:pointA1];
+  handicapPoints = m_game.handicapPoints;
+  handicapCount = 1;
+  XCTAssertEqual(handicapPoints.count, handicapCount);
+  XCTAssertEqual(handicapPoints.firstObject, pointA1);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
+  // Remove handicap stone, but don't revert nextMoveColor
+  m_game.setupFirstMoveColor = GoColorWhite;
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  [m_game toggleHandicapPoint:pointA1];
+  handicapPoints = m_game.handicapPoints;
+  handicapCount = 0;
+  XCTAssertEqual(handicapPoints.count, handicapCount);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+
+  // Various attempts to illegaly toggle the point when the stone state is not
+  // correct
+  m_game.blackSetupPoints = @[pointA1];
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"point already in blackSetupPoints");
+  m_game.blackSetupPoints = @[];
+  m_game.whiteSetupPoints = @[pointA1];
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"point already in whiteSetupPoints");
+  m_game.whiteSetupPoints = @[];
+  pointA1.stoneState = GoColorBlack;
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"point has black stone on it but is not in handicapPoints");
+  pointA1.stoneState = GoColorWhite;
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"point has white stone on it");
+  pointA1.stoneState = GoColorNone;
+  [m_game toggleHandicapPoint:pointA1];
+  XCTAssertEqual(pointA1.stoneState, GoColorBlack);
+  pointA1.stoneState = GoColorNone;
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"point has no black stone on it, but is in handicapPoints");
+  pointA1.stoneState = GoColorBlack;
+  [m_game toggleHandicapPoint:pointA1];
+
+  // Various attempts to illegaly toggle the point when the game state is not
+  // correct
+  [m_game pass];
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"game aleady has moves");
+  [m_game.moveModel discardLastMove];
+  [m_game toggleHandicapPoint:pointA1];
+  [m_game resign];
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"game aleady has ended");
+  [m_game revertStateFromEndedToInProgress];
+
+  // Toggle is allowed for computer vs. computer games in paused state
+  m_game.type = GoGameTypeComputerVsComputer;
+  [m_game pause];
+  [m_game toggleHandicapPoint:pointA1];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the changeSetupPoint() method.
+// -----------------------------------------------------------------------------
+- (void) testChangeSetupPoint
+{
+  GoPoint* pointA1 = [m_game.board pointAtVertex:@"A1"];
+  GoPoint* pointB1 = [m_game.board pointAtVertex:@"B1"];
+  GoPoint* pointA2 = [m_game.board pointAtVertex:@"A2"];
+
+  NSArray* blackSetupPoints = m_game.blackSetupPoints;
+  NSUInteger blackSetupPointsCount = 0;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  NSArray* whiteSetupPoints = m_game.whiteSetupPoints;
+  NSUInteger whiteSetupPointsCount = 0;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+
+  // Empty > Empty
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorNone];
+  blackSetupPoints = m_game.blackSetupPoints;
+  blackSetupPointsCount = 0;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  whiteSetupPoints = m_game.whiteSetupPoints;
+  whiteSetupPointsCount = 0;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+
+  // Empty > Black
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
+  blackSetupPoints = m_game.blackSetupPoints;
+  blackSetupPointsCount = 1;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  whiteSetupPoints = m_game.whiteSetupPoints;
+  whiteSetupPointsCount = 0;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  XCTAssertEqual(blackSetupPoints.firstObject, pointA1);
+
+  // Black > Black
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
+  blackSetupPoints = m_game.blackSetupPoints;
+  blackSetupPointsCount = 1;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  whiteSetupPoints = m_game.whiteSetupPoints;
+  whiteSetupPointsCount = 0;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  XCTAssertEqual(blackSetupPoints.firstObject, pointA1);
+
+  // Black > White
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorWhite];
+  blackSetupPoints = m_game.blackSetupPoints;
+  blackSetupPointsCount = 0;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  whiteSetupPoints = m_game.whiteSetupPoints;
+  whiteSetupPointsCount = 1;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  XCTAssertEqual(whiteSetupPoints.firstObject, pointA1);
+
+  // White > White
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorWhite];
+  blackSetupPoints = m_game.blackSetupPoints;
+  blackSetupPointsCount = 0;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  whiteSetupPoints = m_game.whiteSetupPoints;
+  whiteSetupPointsCount = 1;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  XCTAssertEqual(whiteSetupPoints.firstObject, pointA1);
+
+  // White > Empty
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorNone];
+  blackSetupPoints = m_game.blackSetupPoints;
+  blackSetupPointsCount = 0;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  whiteSetupPoints = m_game.whiteSetupPoints;
+  whiteSetupPointsCount = 0;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+
+  // Illegal board setup
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
+  [m_game changeSetupPoint:pointA2 toStoneState:GoColorWhite];
+  XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointB1 toStoneState:GoColorWhite],
+                               NSException, NSInvalidArgumentException, @"illegal board setup");
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorNone];
+  [m_game changeSetupPoint:pointA2 toStoneState:GoColorNone];
+
+  // point is nil
+  XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:nil toStoneState:GoColorBlack],
+                               NSException, NSInvalidArgumentException, @"point is nil");
+
+  // Various attempts to illegaly change the stone state when the point is
+  // already a handicap point or a white setup point
+  m_game.handicapPoints = @[pointA1];
+  XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorWhite],
+                               NSException, NSInternalInconsistencyException, @"point already in handicapPoints");
+  m_game.handicapPoints = @[];
+  pointA1.stoneState = GoColorBlack;
+  XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorWhite],
+                               NSException, NSInternalInconsistencyException, @"point has black stone on it but is not in blackSetupPoints");
+  pointA1.stoneState = GoColorWhite;
+  XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack],
+                               NSException, NSInternalInconsistencyException, @"point has white stone on it but is not in whiteSetupPoints");
+  pointA1.stoneState = GoColorNone;
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
+  XCTAssertEqual(pointA1.stoneState, GoColorBlack);
+  pointA1.stoneState = GoColorNone;
+  XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack],
+                               NSException, NSInternalInconsistencyException, @"point has no black stone on it, but is in blackSetupPoints");
+  pointA1.stoneState = GoColorBlack;
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorWhite];
+  XCTAssertEqual(pointA1.stoneState, GoColorWhite);
+  pointA1.stoneState = GoColorNone;
+  XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack],
+                               NSException, NSInternalInconsistencyException, @"point has no white stone on it, but is in whiteSetupPoints");
+  pointA1.stoneState = GoColorWhite;
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorNone];
+
+  // Various attempts to illegaly change the stone state when the game state is
+  // not correct
+  [m_game pass];
+  XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack],
+                               NSException, NSInternalInconsistencyException, @"game aleady has moves");
+  [m_game.moveModel discardLastMove];
+  [m_game toggleHandicapPoint:pointA1];
+  [m_game resign];
+  XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack],
+                               NSException, NSInternalInconsistencyException, @"game aleady has ended");
+  [m_game revertStateFromEndedToInProgress];
+
+  // Change is allowed for computer vs. computer games in paused state
+  m_game.type = GoGameTypeComputerVsComputer;
+  [m_game pause];
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the discardAllSetupStones() method.
+// -----------------------------------------------------------------------------
+- (void) testDiscardAllSetupStones
+{
+  GoPoint* pointA1 = [m_game.board pointAtVertex:@"A1"];
+  GoPoint* pointB1 = [m_game.board pointAtVertex:@"B1"];
+  GoPoint* pointA2 = [m_game.board pointAtVertex:@"A2"];
+
+  NSArray* blackSetupPoints = m_game.blackSetupPoints;
+  NSUInteger blackSetupPointsCount = 0;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  NSArray* whiteSetupPoints = m_game.whiteSetupPoints;
+  NSUInteger whiteSetupPointsCount = 0;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  NSArray* handicapPoints = m_game.handicapPoints;
+  NSUInteger handicapPointsCount = 0;
+  XCTAssertEqual(handicapPoints.count, handicapPointsCount);
+
+  // Discard when no setup stones exist
+  [m_game discardAllSetupStones];
+  blackSetupPoints = m_game.blackSetupPoints;
+  blackSetupPointsCount = 0;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  whiteSetupPoints = m_game.whiteSetupPoints;
+  whiteSetupPointsCount = 0;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+
+  // Discard when no setup stones exist, but handicap
+  [m_game toggleHandicapPoint:pointA2];
+  blackSetupPoints = m_game.blackSetupPoints;
+  blackSetupPointsCount = 0;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  whiteSetupPoints = m_game.whiteSetupPoints;
+  whiteSetupPointsCount = 0;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  handicapPoints = m_game.handicapPoints;
+  handicapPointsCount = 1;
+  XCTAssertEqual(handicapPoints.count, handicapPointsCount);
+  XCTAssertEqual(pointA2.stoneState, GoColorBlack);
+  [m_game discardAllSetupStones];
+  blackSetupPoints = m_game.blackSetupPoints;
+  blackSetupPointsCount = 0;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  whiteSetupPoints = m_game.whiteSetupPoints;
+  whiteSetupPointsCount = 0;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  handicapPoints = m_game.handicapPoints;
+  handicapPointsCount = 1;
+  XCTAssertEqual(handicapPoints.count, handicapPointsCount);
+  XCTAssertEqual(pointA2.stoneState, GoColorBlack);
+
+  // Discard when 1 setup stone exists
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
+  blackSetupPoints = m_game.blackSetupPoints;
+  blackSetupPointsCount = 1;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  whiteSetupPoints = m_game.whiteSetupPoints;
+  whiteSetupPointsCount = 0;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  XCTAssertEqual(blackSetupPoints.firstObject, pointA1);
+  [m_game discardAllSetupStones];
+  blackSetupPoints = m_game.blackSetupPoints;
+  blackSetupPointsCount = 0;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  whiteSetupPoints = m_game.whiteSetupPoints;
+  whiteSetupPointsCount = 0;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+
+  // Discard when >1 setup stones exist, different colors
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
+  [m_game changeSetupPoint:pointB1 toStoneState:GoColorWhite];
+  blackSetupPoints = m_game.blackSetupPoints;
+  blackSetupPointsCount = 1;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  whiteSetupPoints = m_game.whiteSetupPoints;
+  whiteSetupPointsCount = 1;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  XCTAssertEqual(blackSetupPoints.firstObject, pointA1);
+  XCTAssertEqual(whiteSetupPoints.firstObject, pointB1);
+  [m_game discardAllSetupStones];
+  blackSetupPoints = m_game.blackSetupPoints;
+  blackSetupPointsCount = 0;
+  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
+  whiteSetupPoints = m_game.whiteSetupPoints;
+  whiteSetupPointsCount = 0;
+  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+
+  // Various attempts to illegaly discard setup stones when the game state is
+  // not correct
+  [m_game pass];
+  XCTAssertThrowsSpecificNamed([m_game discardAllSetupStones],
+                               NSException, NSInternalInconsistencyException, @"game aleady has moves");
+  [m_game.moveModel discardLastMove];
+  [m_game toggleHandicapPoint:pointA1];
+  [m_game resign];
+  XCTAssertThrowsSpecificNamed([m_game discardAllSetupStones],
+                               NSException, NSInternalInconsistencyException, @"game aleady has ended");
+  [m_game revertStateFromEndedToInProgress];
+
+  // Discard is allowed for computer vs. computer games in paused state
+  m_game.type = GoGameTypeComputerVsComputer;
+  [m_game pause];
+  [m_game discardAllSetupStones];
 }
 
 // -----------------------------------------------------------------------------

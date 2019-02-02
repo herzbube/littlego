@@ -37,6 +37,7 @@
 - (void) testColor;
 - (void) testLiberties;
 - (void) testAdjacentRegions;
+- (void) testIsStoneConnectingSuicidalSubgroups;
 - (void) testScoringMode;
 - (void) testDeallocation;
 

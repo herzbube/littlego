@@ -49,11 +49,15 @@
 - (void) testResign;
 - (void) testPause;
 - (void) testContinue;
+- (void) testIsLegalBoardSetupAt;
 - (void) testIsLegalMove;
 - (void) testIsLegalMovePositionalSuperko;
 - (void) testIsLegalMoveSituationalSuperko;
 - (void) testRevertStateFromEndedToInProgress;
 - (void) testSwitchNextMoveColor;
+- (void) testToggleHandicapPoint;
+- (void) testChangeSetupPoint;
+- (void) testDiscardAllSetupStones;
 - (void) testDiscardCausesRegionToFragment;
 - (void) testIssue2;
 - (void) testIssue289;

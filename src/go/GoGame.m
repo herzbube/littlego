@@ -1372,7 +1372,7 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 ///   handicap stone on the intersection, but @a point is not listed in
 ///   @e handicapPoints.
 /// - The current stone state of @a point indicates that the intersection is
-///   empty, but @a point is listed in either @e handicapPoints.
+///   empty, but @a point is listed in @e handicapPoints.
 /// - The current stone state of @a point indicates that there is a white
 ///   stone on the intersection.
 // -----------------------------------------------------------------------------
@@ -1491,6 +1491,10 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 /// - The current stone state of @a point indicates that the intersection is
 ///   empty, but @a point is listed in either @e blackSetupStones or
 ///   @e whiteSetupStones.
+///
+/// Raises @e NSInvalidArgumentException if @a point is nil, or if changing the
+/// @e stoneState property of @a point to the specified value @a stoneState is
+/// not a legal board setup operation.
 // -----------------------------------------------------------------------------
 - (void) changeSetupPoint:(GoPoint*)point toStoneState:(enum GoColor)stoneState
 {
@@ -1499,6 +1503,15 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
     NSString* errorMessage = @"Setup stones can only be set while GoGame object is not in state GoGameStateGameHasEnded and has no moves";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (! point)
+  {
+    NSString* errorMessage = @"Point argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
@@ -1515,6 +1528,26 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
                                                      reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
+  }
+
+  if (stoneState != GoColorNone)
+  {
+    enum GoBoardSetupIsIllegalReason reason;
+    GoPoint* illegalStoneOrGroupPoint;
+
+    bool isLegalBoardSetup = [self isLegalBoardSetupAt:point
+                                        withStoneState:stoneState
+                                       isIllegalReason:&reason
+                            createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint];
+    if (! isLegalBoardSetup)
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Point argument is not a legal setup stone for stone state %d: %@", stoneState, point.vertex];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
   }
 
   switch (point.stoneState)
@@ -1623,6 +1656,16 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 // -----------------------------------------------------------------------------
 - (void) discardAllSetupStones
 {
+  if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
+  {
+    NSString* errorMessage = @"Setup stones can only be discarded while GoGame object is not in state GoGameStateGameHasEnded and has no moves";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   [[NSNotificationCenter defaultCenter] postNotificationName:allSetupStonesWillDiscard object:self];
 
   if (self.blackSetupPoints.count > 0)
