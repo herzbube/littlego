@@ -123,6 +123,30 @@ enum GameAction
   GameActionLast = GameActionMoreGameActions
 };
 
+/// @brief Enumerates buttons that are displayed when the user taps the
+/// "More Game Actions" button in #UIAreaPlay.
+///
+/// The order in which buttons are enumerated also defines the order in which
+/// they appear in the alert message.
+enum MoreGameActionsButton
+{
+  MoreGameActionsButtonSetupFirstMove,
+  MoreGameActionsButtonBoardSetup,
+  MoreGameActionsButtonScore,
+  MoreGameActionsButtonMarkAsSeki,
+  MoreGameActionsButtonMarkAsDead,
+  MoreGameActionsButtonUpdatePlayerInfluence,
+  MoreGameActionsButtonSetBlackToMove,
+  MoreGameActionsButtonSetWhiteToMove,
+  MoreGameActionsButtonResumePlay,
+  MoreGameActionsButtonResign,
+  MoreGameActionsButtonUndoResign,
+  MoreGameActionsButtonSaveGame,
+  MoreGameActionsButtonNewGame,
+  MoreGameActionsButtonCancel,
+  MoreGameActionsButtonMax,     ///< @brief Pseudo enum value, used to iterate over the other enum values
+};
+
 /// @brief Enumerates buttons used to navigate between board positions.
 enum BoardPositionNavigationButton
 {

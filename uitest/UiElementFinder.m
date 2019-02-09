@@ -33,6 +33,16 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the navigation bar of the main menu view. This is available
+/// only when the UI type is #UITypePhone.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findMainMenuViewNavigationBar:(XCUIApplication*)app
+{
+  XCUIElement* mainMenuViewNavigationBar = app.navigationBars[@"Main Menu"];
+  return mainMenuViewNavigationBar;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the button that represents the specified game action.
 // -----------------------------------------------------------------------------
 - (XCUIElement*) findGameActionButton:(enum GameAction)gameAction withUiApplication:(XCUIApplication*)app
@@ -91,6 +101,68 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the specified button in the "More game actions" alert.
+/// The alert must be displayed in order for this method to return something
+/// useful.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findMoreGameActionButton:(enum MoreGameActionsButton)moreGameActionsButton withUiApplication:(XCUIApplication*)app
+{
+  NSString* buttonName;
+
+  switch (moreGameActionsButton)
+  {
+    case MoreGameActionsButtonSetupFirstMove:
+      buttonName = @"Set up a side to play first";
+      break;
+    case MoreGameActionsButtonBoardSetup:
+      buttonName = @"Set up board";
+      break;
+    case MoreGameActionsButtonScore:
+      buttonName = @"Score";
+      break;
+    case MoreGameActionsButtonMarkAsSeki:
+      buttonName = @"Start marking as seki";
+      break;
+    case MoreGameActionsButtonMarkAsDead:
+      buttonName = @"Start marking as dead";
+      break;
+    case MoreGameActionsButtonUpdatePlayerInfluence:
+      buttonName = @"Update player influence";
+      break;
+    case MoreGameActionsButtonSetBlackToMove:
+      buttonName = @"Set black to move";
+      break;
+    case MoreGameActionsButtonSetWhiteToMove:
+      buttonName = @"Set white to move";
+      break;
+    case MoreGameActionsButtonResumePlay:
+      buttonName = @"Resume play";
+      break;
+    case MoreGameActionsButtonResign:
+      buttonName = @"Resign";
+      break;
+    case MoreGameActionsButtonUndoResign:
+      buttonName = @"Undo resign";
+      break;
+    case MoreGameActionsButtonSaveGame:
+      buttonName = @"Save game";
+      break;
+    case MoreGameActionsButtonNewGame:
+      buttonName = @"New game";
+      break;
+    case MoreGameActionsButtonCancel:
+      buttonName = @"Cancel";
+      break;
+    default:
+      buttonName = nil;
+      break;
+  }
+
+  XCUIElement* button = app.sheets[@"Game actions"].buttons[buttonName];
+  return button;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the button that represents the specified board navigation.
 // -----------------------------------------------------------------------------
 - (XCUIElement*) findBoardNavigationButton:(enum BoardPositionNavigationButton)boardPositionNavigationButton withUiApplication:(XCUIApplication*)app
@@ -121,6 +193,66 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the UI element that represents the specified UI area.
+///
+/// The UI element can be one of the following:
+/// - A navigation bar button, for #UIAreaPlay (the back button)
+/// - A table cell, for all other #UIArea values
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findUiAreaElement:(enum UIArea)uiArea withUiApplication:(XCUIApplication*)app
+{
+  if (uiArea == UIAreaPlay)
+  {
+    // This is actually the back button in the main menu that returns the user
+    // to the UI area "Play"
+    NSString* buttonName = @"Play";
+    XCUIElement* mainMenuViewNavigationBar = [self findMainMenuViewNavigationBar:app];
+    XCUIElement* button = mainMenuViewNavigationBar.buttons[buttonName];
+    return button;
+  }
+
+  NSString* uiElementName;
+
+  switch (uiArea)
+  {
+    case UIAreaSettings:
+      uiElementName = @"Settings";
+      break;
+    case UIAreaArchive:
+      uiElementName = @"Archive";
+      break;
+    case UIAreaDiagnostics:
+      uiElementName = @"Diagnostics";
+      break;
+    case UIAreaHelp:
+      uiElementName = @"Help";
+      break;
+    case UIAreaAbout:
+      uiElementName = @"About";
+      break;
+    case UIAreaSourceCode:
+      uiElementName = @"Source Code";
+      break;
+    case UIAreaLicenses:
+      uiElementName = @"Licenses";
+      break;
+    case UIAreaCredits:
+      uiElementName = @"Credits";
+      break;
+    case UIAreaChangelog:
+      uiElementName = @"Changelog";
+      break;
+    case UIAreaPlay:  // handled at beginning of method
+    default:
+      uiElementName = nil;
+      break;
+  }
+
+  XCUIElement* uiElement = app.tables.staticTexts[uiElementName];
+  return uiElement;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the button in the UI area "Play" that that pops up the main
 /// menu.
 // -----------------------------------------------------------------------------
@@ -129,6 +261,15 @@
   XCUIElement* playRootViewNavigationBar = [self findPlayRootViewNavigationBar:app];
   XCUIElement* button = playRootViewNavigationBar.buttons[@"main menu"];
   return button;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the back button in the main menu that returns the user to the
+/// UI area "Play".
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findBackButtonPlayWithUiApplication:(XCUIApplication*)app
+{
+  return [self findUiAreaElement:UIAreaPlay withUiApplication:app];
 }
 
 // -----------------------------------------------------------------------------

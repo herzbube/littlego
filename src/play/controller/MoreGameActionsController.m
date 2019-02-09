@@ -42,30 +42,6 @@
 #import "../../utility/NSStringAdditions.h"
 
 
-// -----------------------------------------------------------------------------
-/// @brief Enumerates buttons that are displayed when the user taps the
-/// "More Game Actions" button in #UIAreaPlay.
-///
-/// The order in which buttons are enumerated also defines the order in which
-/// they appear in the alert message.
-// -----------------------------------------------------------------------------
-enum MoreGameActionsButton
-{
-  SetupFirstMoveButton,
-  BoardSetupButton,
-  ScoreButton,
-  MarkModeButton,
-  UpdatePlayerInfluenceButton,
-  SwitchNextMoveColorButton,
-  ResumePlayButton,
-  ResignButton,
-  UndoResignButton,
-  SaveGameButton,
-  NewGameButton,
-  MaxButton     ///< @brief Pseudo enum value, used to iterate over the other enum values
-};
-
-
 @implementation MoreGameActionsController
 
 // -----------------------------------------------------------------------------
@@ -116,13 +92,15 @@ enum MoreGameActionsButton
   enum UIAreaPlayMode uiAreaPlayMode = applicationDelegate.uiSettingsModel.uiAreaPlayMode;
 
   // Add buttons in the order that they appear in the MoreGameActionsButton enum
-  for (int iterButtonIndex = 0; iterButtonIndex < MaxButton; ++iterButtonIndex)
+  for (int iterButtonIndex = 0; iterButtonIndex < MoreGameActionsButtonMax; ++iterButtonIndex)
   {
     NSString* title = nil;
     void (^alertActionBlock) (UIAlertAction*) = nil;
+    UIAlertActionStyle alertActionStyle = UIAlertActionStyleDefault;
+
     switch (iterButtonIndex)
     {
-      case SetupFirstMoveButton:
+      case MoreGameActionsButtonSetupFirstMove:
       {
         if (uiAreaPlayMode != UIAreaPlayModeBoardSetup)
           continue;
@@ -131,7 +109,7 @@ enum MoreGameActionsButton
         break;
 
       }
-      case BoardSetupButton:
+      case MoreGameActionsButtonBoardSetup:
       {
         if (game.boardPosition.currentBoardPosition > 0)
           continue;
@@ -141,7 +119,7 @@ enum MoreGameActionsButton
         alertActionBlock = ^(UIAlertAction* action) { [self setupBoard]; };
         break;
       }
-      case ScoreButton:
+      case MoreGameActionsButtonScore:
       {
         // If game has ended there is a dedicated button for enabling scoring
         // mode, so no need to show this option in our menu
@@ -153,7 +131,8 @@ enum MoreGameActionsButton
         alertActionBlock = ^(UIAlertAction* action) { [self score]; };
         break;
       }
-      case MarkModeButton:
+      case MoreGameActionsButtonMarkAsSeki:
+      case MoreGameActionsButtonMarkAsDead:
       {
         if (uiAreaPlayMode != UIAreaPlayModeScoring)
           continue;
@@ -169,11 +148,15 @@ enum MoreGameActionsButton
         {
           case GoScoreMarkModeDead:
           {
+            if (iterButtonIndex == MoreGameActionsButtonMarkAsDead)
+              continue;
             title = @"Start marking as seki";
             break;
           }
           case GoScoreMarkModeSeki:
           {
+            if (iterButtonIndex == MoreGameActionsButtonMarkAsSeki)
+              continue;
             title = @"Start marking as dead";
             break;
           }
@@ -186,7 +169,7 @@ enum MoreGameActionsButton
         alertActionBlock = ^(UIAlertAction* action) { [self toggleMarkMode]; };
         break;
       }
-      case UpdatePlayerInfluenceButton:
+      case MoreGameActionsButtonUpdatePlayerInfluence:
       {
         BoardViewModel* model = applicationDelegate.boardViewModel;
         if (! model.displayPlayerInfluence)
@@ -197,7 +180,8 @@ enum MoreGameActionsButton
         alertActionBlock = ^(UIAlertAction* action) { [self updatePlayerInfluence]; };
         break;
       }
-      case SwitchNextMoveColorButton:
+      case MoreGameActionsButtonSetBlackToMove:
+      case MoreGameActionsButtonSetWhiteToMove:
       {
         if (uiAreaPlayMode != UIAreaPlayModePlay)
           continue;
@@ -213,12 +197,16 @@ enum MoreGameActionsButton
         if (GoGameTypeComputerVsComputer == game.type)
           continue;
         enum GoColor alternatingNextMoveColor = [GoUtilities alternatingColorForColor:game.nextMoveColor];
+        if (alternatingNextMoveColor == GoColorBlack && iterButtonIndex == MoreGameActionsButtonSetWhiteToMove)
+          continue;
+        else if (alternatingNextMoveColor == GoColorWhite && iterButtonIndex == MoreGameActionsButtonSetBlackToMove)
+          continue;
         NSString* alternatingNextMoveColorName = [[NSString stringWithGoColor:alternatingNextMoveColor] lowercaseString];
         title = [NSString stringWithFormat:@"Set %@ to move", alternatingNextMoveColorName];
         alertActionBlock = ^(UIAlertAction* action) { [self switchNextMoveColor]; };
         break;
       }
-      case ResumePlayButton:
+      case MoreGameActionsButtonResumePlay:
       {
         if (uiAreaPlayMode != UIAreaPlayModePlay)
           continue;
@@ -229,7 +217,7 @@ enum MoreGameActionsButton
         alertActionBlock = ^(UIAlertAction* action) { [self resumePlay]; };
         break;
       }
-      case ResignButton:
+      case MoreGameActionsButtonResign:
       {
         if (uiAreaPlayMode != UIAreaPlayModePlay)
           continue;
@@ -248,7 +236,7 @@ enum MoreGameActionsButton
         alertActionBlock = ^(UIAlertAction* action) { [self resign]; };
         break;
       }
-      case UndoResignButton:
+      case MoreGameActionsButtonUndoResign:
       {
         if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeScoring)
           continue;
@@ -265,16 +253,25 @@ enum MoreGameActionsButton
         alertActionBlock = ^(UIAlertAction* action) { [self undoResign]; };
         break;
       }
-      case SaveGameButton:
+      case MoreGameActionsButtonSaveGame:
       {
         title = @"Save game";
         alertActionBlock = ^(UIAlertAction* action) { [self saveGame]; };
         break;
       }
-      case NewGameButton:
+      case MoreGameActionsButtonNewGame:
       {
         title = @"New game";
-          alertActionBlock = ^(UIAlertAction* action) { [self newGame]; };
+        alertActionBlock = ^(UIAlertAction* action) { [self newGame]; };
+        break;
+      }
+      case MoreGameActionsButtonCancel:
+      {
+        title = @"Cancel";
+        // On the iPad the "Cancel" button is not displayed, but if the user
+        // taps outside of the popover the cancel action's handler is called
+        alertActionBlock = ^(UIAlertAction* action) { [self.delegate moreGameActionsControllerDidFinish:self]; };
+        alertActionStyle = UIAlertActionStyleCancel;
         break;
       }
       default:
@@ -286,19 +283,10 @@ enum MoreGameActionsButton
     }
 
     UIAlertAction* action = [UIAlertAction actionWithTitle:title
-                                                     style:UIAlertActionStyleDefault
+                                                     style:alertActionStyle
                                                    handler:alertActionBlock];
     [alertController addAction:action];
   }
-
-  // On the iPad the "Cancel" button is not displayed, but if the user taps
-  // outside of the popover the cancel action's handler is called
-  UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
-                                                         style:UIAlertActionStyleCancel
-                                                       handler:^(UIAlertAction* action){
-                                                         [self.delegate moreGameActionsControllerDidFinish:self];
-                                                       }];
-  [alertController addAction:cancelAction];
 
   [self.modalMaster presentViewController:alertController animated:YES completion:nil];
 
