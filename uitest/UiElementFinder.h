@@ -30,8 +30,11 @@
 - (XCUIElement*) findMoreGameActionButton:(enum MoreGameActionsButton)moreGameActionsButton withUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findBoardNavigationButton:(enum BoardPositionNavigationButton)boardPositionNavigationButton withUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findUiAreaElement:(enum UIArea)uiArea withUiApplication:(XCUIApplication*)app;
+- (XCUIElement*) findUiAreaNavigationBar:(enum UIArea)uiArea withUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findMainMenuButtonWithUiApplication:(XCUIApplication*)app;
+- (XCUIElement*) findMainMenuNavigationBarWithUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findBackButtonPlayWithUiApplication:(XCUIApplication*)app;
+- (XCUIElement*) findBackButtonMainMenuFromUiAreaNavigationBar:(XCUIElement*)uiAreaNavigationBar;
 - (XCUIElement*) findStatusLabelWithUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findBoardPositionCollectionViewWithUiApplication:(XCUIApplication*)app;
 - (NSArray<XCUIElement*>*) findBoardPositionCellsWithUiApplication:(XCUIApplication*)app;

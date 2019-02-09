@@ -112,4 +112,42 @@
   XCTAssertTrue(firstBoardPositionCell.selected);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Test that all UI areas can be activated.
+// -----------------------------------------------------------------------------
+- (void) testActivateAllUiAreas
+{
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+
+  // Go to main menu
+  XCUIElement* mainMenuButton = [self.uiElementFinder findMainMenuButtonWithUiApplication:app];
+  XCTAssertTrue(mainMenuButton.enabled);
+  [mainMenuButton tap];
+
+  // Check that we have arrived
+  XCUIElement* mainMenuNavigationBar = [self.uiElementFinder findMainMenuNavigationBarWithUiApplication:app];
+  XCTAssertTrue(mainMenuNavigationBar.exists);
+
+  // Loop through all UI areas and go to each one, then return to the main menu
+  for (enum UIArea uiArea = UIAreaSettings; uiArea <= UIAreaChangelog; ++uiArea)
+  {
+    XCUIElement* uiAreaElement = [self.uiElementFinder findUiAreaElement:uiArea withUiApplication:app];
+    [uiAreaElement tap];
+
+    XCUIElement* uiAreaNavigationBar = [self.uiElementFinder findUiAreaNavigationBar:uiArea withUiApplication:app];
+    XCTAssertTrue(uiAreaNavigationBar.exists);
+
+    XCUIElement* backButton = [self.uiElementFinder findBackButtonMainMenuFromUiAreaNavigationBar:uiAreaNavigationBar];
+    [backButton tap];
+
+    mainMenuNavigationBar = [self.uiElementFinder findMainMenuNavigationBarWithUiApplication:app];
+    XCTAssertTrue(mainMenuNavigationBar.exists);
+  }
+
+  // Return to the UI area "Play"
+  XCUIElement* backButton = [self.uiElementFinder findBackButtonPlayWithUiApplication:app];
+  XCTAssertTrue(backButton.enabled);
+  [backButton tap];
+}
+
 @end

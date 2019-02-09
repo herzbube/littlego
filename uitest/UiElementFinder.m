@@ -193,24 +193,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the UI element that represents the specified UI area.
-///
-/// The UI element can be one of the following:
-/// - A navigation bar button, for #UIAreaPlay (the back button)
-/// - A table cell, for all other #UIArea values
+/// @brief Returns the UI element that can be tapped to switch to the specified
+/// UI area.
 // -----------------------------------------------------------------------------
 - (XCUIElement*) findUiAreaElement:(enum UIArea)uiArea withUiApplication:(XCUIApplication*)app
 {
-  if (uiArea == UIAreaPlay)
-  {
-    // This is actually the back button in the main menu that returns the user
-    // to the UI area "Play"
-    NSString* buttonName = @"Play";
-    XCUIElement* mainMenuViewNavigationBar = [self findMainMenuViewNavigationBar:app];
-    XCUIElement* button = mainMenuViewNavigationBar.buttons[buttonName];
-    return button;
-  }
-
   NSString* uiElementName;
 
   switch (uiArea)
@@ -242,14 +229,61 @@
     case UIAreaChangelog:
       uiElementName = @"Changelog";
       break;
-    case UIAreaPlay:  // handled at beginning of method
+    case UIAreaPlay:  // has no UI element
     default:
       uiElementName = nil;
       break;
   }
 
-  XCUIElement* uiElement = app.tables.staticTexts[uiElementName];
+  XCUIElement* uiElement = app.tables.cells.staticTexts[uiElementName];
   return uiElement;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the navigation bar for the specified UI area. The UI area
+/// must be active.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findUiAreaNavigationBar:(enum UIArea)uiArea withUiApplication:(XCUIApplication*)app
+{
+  NSString* navigationBarName;
+
+  switch (uiArea)
+  {
+    case UIAreaSettings:
+      navigationBarName = @"Settings";
+      break;
+    case UIAreaArchive:
+      navigationBarName = @"Archive";
+      break;
+    case UIAreaDiagnostics:
+      navigationBarName = @"Diagnostics";
+      break;
+    case UIAreaHelp:
+      navigationBarName = @"Help";
+      break;
+    case UIAreaAbout:
+      navigationBarName = @"About";
+      break;
+    case UIAreaSourceCode:
+      navigationBarName = @"Source Code";
+      break;
+    case UIAreaLicenses:
+      navigationBarName = @"Licenses";
+      break;
+    case UIAreaCredits:
+      navigationBarName = @"Credits";
+      break;
+    case UIAreaChangelog:
+      navigationBarName = @"Changelog";
+      break;
+    case UIAreaPlay:  // has no navigation bar
+    default:
+      navigationBarName = nil;
+      break;
+  }
+
+  XCUIElement* navigationBar = app.navigationBars[navigationBarName];
+  return navigationBar;
 }
 
 // -----------------------------------------------------------------------------
@@ -264,12 +298,33 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the main menu navigation bar.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findMainMenuNavigationBarWithUiApplication:(XCUIApplication*)app
+{
+  XCUIElement* navigationBar = app.navigationBars[@"Main Menu"];
+  return navigationBar;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the back button in the main menu that returns the user to the
 /// UI area "Play".
 // -----------------------------------------------------------------------------
 - (XCUIElement*) findBackButtonPlayWithUiApplication:(XCUIApplication*)app
 {
-  return [self findUiAreaElement:UIAreaPlay withUiApplication:app];
+  XCUIElement* mainMenuViewNavigationBar = [self findMainMenuViewNavigationBar:app];
+  XCUIElement* button = mainMenuViewNavigationBar.buttons[@"Play"];
+  return button;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the back button in the specified UI area navigation bar that
+/// returns the user to the main menu.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findBackButtonMainMenuFromUiAreaNavigationBar:(XCUIElement*)uiAreaNavigationBar
+{
+  XCUIElement* button = uiAreaNavigationBar.buttons[@"Main Menu"];
+  return button;
 }
 
 // -----------------------------------------------------------------------------
