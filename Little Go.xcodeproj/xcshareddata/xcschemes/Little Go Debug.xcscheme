@@ -34,6 +34,20 @@
                ReferencedContainer = "container:Little Go.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CDB49E212208ABA2006DC1A4"
+               BuildableName = "UI tests.xctest"
+               BlueprintName = "UI tests"
+               ReferencedContainer = "container:Little Go.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -49,6 +63,16 @@
                BlueprintIdentifier = "CDA595AE1401383E00B250D8"
                BuildableName = "Unit tests.xctest"
                BlueprintName = "Unit tests"
+               ReferencedContainer = "container:Little Go.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "CDB49E212208ABA2006DC1A4"
+               BuildableName = "UI tests.xctest"
+               BlueprintName = "UI tests"
                ReferencedContainer = "container:Little Go.xcodeproj">
             </BuildableReference>
          </TestableReference>

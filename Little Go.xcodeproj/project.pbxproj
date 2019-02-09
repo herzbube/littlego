@@ -580,6 +580,16 @@
 		D1180DF100FA850BAE6D58F9 /* libPods-All Targets-Unit tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BB5815F5E765A57F1FEB04D /* libPods-All Targets-Unit tests.a */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		CDB49E272208ABA3006DC1A4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
+			remoteInfo = "Little Go";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		1D6058910D05DD3D006BFB54 /* Little Go.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Little Go.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5EF15C963D408E9DCB73E098 /* Pods-All Targets-Unit tests.distribute_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Unit tests.distribute_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-All Targets-Unit tests/Pods-All Targets-Unit tests.distribute_appstore.xcconfig"; sourceTree = "<group>"; };
@@ -1034,6 +1044,8 @@
 		CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserDefaultsUpdater.m; sourceTree = "<group>"; };
 		CDB457B2147F14480043EDE4 /* UiUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiUtilities.h; sourceTree = "<group>"; };
 		CDB457B3147F14490043EDE4 /* UiUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiUtilities.m; sourceTree = "<group>"; };
+		CDB49E222208ABA2006DC1A4 /* UI tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UI tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CDB49E262208ABA3006DC1A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDB5AE231AC5A86D0075C8DC /* MagnifyingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagnifyingView.h; sourceTree = "<group>"; };
 		CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagnifyingView.m; sourceTree = "<group>"; };
 		CDB5AE271AC5ABA60075C8DC /* MagnifyingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagnifyingViewController.h; sourceTree = "<group>"; };
@@ -1237,6 +1249,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CDB49E1F2208ABA2006DC1A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -1245,6 +1264,7 @@
 			children = (
 				1D6058910D05DD3D006BFB54 /* Little Go.app */,
 				CDA595AF1401383E00B250D8 /* Unit tests.xctest */,
+				CDB49E222208ABA2006DC1A4 /* UI tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1264,6 +1284,7 @@
 				CDEC28A612F4A2BB0069F5B7 /* resource */,
 				CDEC287B12F477E70069F5B7 /* doc */,
 				CDA595BC140142C700B250D8 /* test */,
+				CDB49E232208ABA3006DC1A4 /* uitest */,
 				CD3AE864134A33A500B58E08 /* doxygen */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -2103,6 +2124,14 @@
 			path = storyboard;
 			sourceTree = "<group>";
 		};
+		CDB49E232208ABA3006DC1A4 /* uitest */ = {
+			isa = PBXGroup;
+			children = (
+				CDB49E262208ABA3006DC1A4 /* Info.plist */,
+			);
+			path = uitest;
+			sourceTree = "<group>";
+		};
 		CDC66BBB21EBB029006C73B3 /* changelog */ = {
 			isa = PBXGroup;
 			children = (
@@ -2541,6 +2570,24 @@
 			productReference = CDA595AF1401383E00B250D8 /* Unit tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		CDB49E212208ABA2006DC1A4 /* UI tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CDB49E2D2208ABA3006DC1A4 /* Build configuration list for PBXNativeTarget "UI tests" */;
+			buildPhases = (
+				CDB49E1E2208ABA2006DC1A4 /* Sources */,
+				CDB49E1F2208ABA2006DC1A4 /* Frameworks */,
+				CDB49E202208ABA2006DC1A4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				CDB49E282208ABA3006DC1A4 /* PBXTargetDependency */,
+			);
+			name = "UI tests";
+			productName = "UI tests";
+			productReference = CDB49E222208ABA2006DC1A4 /* UI tests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -2552,6 +2599,10 @@
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = P7NZKNP5L2;
 						ProvisioningStyle = Automatic;
+					};
+					CDB49E212208ABA2006DC1A4 = {
+						CreatedOnToolsVersion = 10.1;
+						TestTargetID = 1D6058900D05DD3D006BFB54;
 					};
 				};
 			};
@@ -2573,6 +2624,7 @@
 				1D6058900D05DD3D006BFB54 /* Little Go */,
 				CD3AE856134A333D00B58E08 /* doxygen */,
 				CDA595AE1401383E00B250D8 /* Unit tests */,
+				CDB49E212208ABA2006DC1A4 /* UI tests */,
 			);
 		};
 /* End PBXProject section */
@@ -2734,6 +2786,13 @@
 			files = (
 				CDA10F18198CCBA70060E934 /* images.xcassets in Resources */,
 				CDE1A19814C1D09A00317ECA /* RegistrationDomainDefaults.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CDB49E202208ABA2006DC1A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3233,7 +3292,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CDB49E1E2208ABA2006DC1A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CDB49E282208ABA3006DC1A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 1D6058900D05DD3D006BFB54 /* Little Go */;
+			targetProxy = CDB49E272208ABA3006DC1A4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
@@ -3576,6 +3650,133 @@
 			};
 			name = Distribute_AdHoc;
 		};
+		CDB49E292208ABA3006DC1A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				INFOPLIST_FILE = uitest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Little Go";
+			};
+			name = Debug;
+		};
+		CDB49E2A2208ABA3006DC1A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				INFOPLIST_FILE = uitest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Little Go";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		CDB49E2B2208ABA3006DC1A4 /* Distribute_AppStore */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				INFOPLIST_FILE = uitest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Little Go";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Distribute_AppStore;
+		};
+		CDB49E2C2208ABA3006DC1A4 /* Distribute_AdHoc */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				INFOPLIST_FILE = uitest/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "Little Go";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Distribute_AdHoc;
+		};
 		CDE3010D1357942E005235F2 /* Distribute_AdHoc */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -3704,6 +3905,17 @@
 				CDA595B21401384000B250D8 /* Release */,
 				CD89232E149FDC8A00A94A7B /* Distribute_AppStore */,
 				CDA595B31401384000B250D8 /* Distribute_AdHoc */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CDB49E2D2208ABA3006DC1A4 /* Build configuration list for PBXNativeTarget "UI tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CDB49E292208ABA3006DC1A4 /* Debug */,
+				CDB49E2A2208ABA3006DC1A4 /* Release */,
+				CDB49E2B2208ABA3006DC1A4 /* Distribute_AppStore */,
+				CDB49E2C2208ABA3006DC1A4 /* Distribute_AdHoc */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
