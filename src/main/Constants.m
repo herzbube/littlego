@@ -25,7 +25,9 @@ const int arraySizeDefaultTabOrder = 9;
 const int defaultTabOrder[arraySizeDefaultTabOrder] = {0, 1, 2, 4, 3, 5, 6, 7, 8};
 
 // Logging constants
+#ifndef LITTLEGO_UITESTS
 const DDLogLevel ddLogLevel = DDLogLevelAll;
+#endif
 
 // Go constants
 const enum GoGameType gDefaultGameType = GoGameTypeComputerVsHuman;

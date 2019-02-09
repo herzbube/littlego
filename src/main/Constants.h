@@ -212,7 +212,9 @@ enum AlertButtonType
 /// preference that can be changed at runtime from within the application. If
 /// logging is enabled the log output goes to a DDFileLogger with default
 /// values.
+#ifndef LITTLEGO_UITESTS
 extern const DDLogLevel ddLogLevel;
+#endif
 //@}
 
 // -----------------------------------------------------------------------------

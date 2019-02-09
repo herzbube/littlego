@@ -435,6 +435,7 @@
 		CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
+		CDB49E32220DF90D006DC1A4 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35A148C2C26004E1A0C /* Constants.m */; };
 		CDB5AE251AC5A86D0075C8DC /* MagnifyingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */; };
 		CDB5AE261AC5A86D0075C8DC /* MagnifyingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */; };
 		CDB5AE291AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */; };
@@ -3296,6 +3297,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDB49E32220DF90D006DC1A4 /* Constants.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3664,6 +3666,13 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+					LITTLEGO_UITESTS,
+				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				INFOPLIST_FILE = uitest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
@@ -3695,6 +3704,12 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					LITTLEGO_UITESTS,
+				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				INFOPLIST_FILE = uitest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
@@ -3727,6 +3742,12 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					LITTLEGO_UITESTS,
+				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				INFOPLIST_FILE = uitest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
@@ -3759,6 +3780,12 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = src/main/Prefix.pch;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					LITTLEGO_UITESTS,
+				);
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				INFOPLIST_FILE = uitest/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;

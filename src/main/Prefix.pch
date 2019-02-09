@@ -19,10 +19,15 @@
   #import <Foundation/Foundation.h>
   #import <UIKit/UIKit.h>
   #import <QuartzCore/QuartzCore.h>
+#if defined(LITTLEGO_UNITTESTS) || defined(LITTLEGO_UITESTS)
+  #import <XCTest/XCTest.h>
+#endif
 
   // Library includes
+#ifndef LITTLEGO_UITESTS
   #import <CocoaLumberjack/CocoaLumberjack.h>
-#ifndef LITTLEGO_UNITTESTS
+#endif
+#if ! defined(LITTLEGO_UNITTESTS) && ! defined(LITTLEGO_UITESTS)
   #import <Firebase.h>
 #endif
 
