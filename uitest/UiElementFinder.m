@@ -131,4 +131,13 @@
   return button;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the status label.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findStatusLabelWithUiApplication:(XCUIApplication*)app
+{
+  XCUIElement* statusLabel = app.staticTexts[statusLabelAccessibilityIdentifier];
+  return statusLabel;
+}
+
 @end

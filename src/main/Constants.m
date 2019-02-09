@@ -432,3 +432,10 @@ NSString* goGameRulesScoringSystemKey = @"ScoringSystem";
 NSString* goGameRulesLifeAndDeathSettlingRuleKey = @"LifeAndDeathSettlingRule";
 NSString* goGameRulesDisputeResolutionRuleKey = @"DisputeResolutionRule";
 NSString* goGameRulesFourPassesRuleKey = @"FourPassesRule";
+
+// -----------------------------------------------------------------------------
+/// @name Constants for UI testing / accessibility
+// -----------------------------------------------------------------------------
+//@{
+NSString* statusLabelAccessibilityIdentifier = @"Status label";
+//@}

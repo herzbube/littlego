@@ -145,6 +145,7 @@
 // -----------------------------------------------------------------------------
 - (void) configureViews
 {
+  self.statusLabel.accessibilityIdentifier = statusLabelAccessibilityIdentifier;
   self.statusLabel.numberOfLines = 0;
   // Font size must strike a balance between remaining legible and accomodating
   // the longest possible status text in the most space-constrained application

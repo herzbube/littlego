@@ -85,6 +85,10 @@
   XCTAssertFalse(nextButton.enabled);
   XCUIElement* forwardToEndButton = [self.uiElementFinder findBoardNavigationButton:BoardPositionNavigationButtonForwardToEnd withUiApplication:app];
   XCTAssertFalse(forwardToEndButton.enabled);
+
+  // Status view
+  XCUIElement* statusLabel = [self.uiElementFinder findStatusLabelWithUiApplication:app];
+  XCTAssertTrue([statusLabel.label isEqualToString:@"Game started Black to move"]);  // Newline character is converted to space
 }
 
 @end

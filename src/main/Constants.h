@@ -1253,3 +1253,10 @@ extern NSString* goGameRulesLifeAndDeathSettlingRuleKey;
 extern NSString* goGameRulesDisputeResolutionRuleKey;
 extern NSString* goGameRulesFourPassesRuleKey;
 //@}
+
+// -----------------------------------------------------------------------------
+/// @name Constants for UI testing / accessibility (a11y)
+// -----------------------------------------------------------------------------
+//@{
+extern NSString* statusLabelAccessibilityIdentifier;
+//@}
