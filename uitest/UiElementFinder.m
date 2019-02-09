@@ -21,4 +21,73 @@
 
 @implementation UiElementFinder
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the navigation bar of the root view of #UIAreaPlay.
+///
+/// @see PlayRootViewController.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findPlayRootViewNavigationBar:(XCUIApplication*)app
+{
+  XCUIElement* playRootViewNavigationBar = app.navigationBars[@"PlayRootView"];
+  return playRootViewNavigationBar;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the button that represents the specified game action.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findGameActionButton:(enum GameAction)gameAction withUiApplication:(XCUIApplication*)app
+{
+  NSString* buttonName;
+
+  switch (gameAction)
+  {
+    case GameActionPass:
+      buttonName = @"pass";
+      break;
+    case GameActionDiscardBoardPosition:
+      buttonName = @"discard";
+      break;
+    case GameActionComputerPlay:
+      buttonName = @"computer play";
+      break;
+    case GameActionPause:
+      buttonName = @"pause";
+      break;
+    case GameActionContinue:
+      buttonName = @"continue";
+      break;
+    case GameActionInterrupt:
+      buttonName = @"interrupt";
+      break;
+    case GameActionScoringStart:
+      buttonName = @"scoring";
+      break;
+    case GameActionPlayStart:
+      buttonName = @"gogrid2x2";
+      break;
+    case GameActionSwitchSetupStoneColorToWhite:
+      buttonName = @"stone black icon";
+      break;
+    case GameActionSwitchSetupStoneColorToBlack:
+      buttonName = @"stone white icon";
+      break;
+    case GameActionDiscardAllSetupStones:
+      buttonName = @"discard";
+      break;
+    case GameActionGameInfo:
+      buttonName = @"game info";
+      break;
+    case GameActionMoreGameActions:
+      buttonName = @"more game actions";
+      break;
+    default:
+      buttonName = nil;
+      break;
+  }
+
+  XCUIElement* playRootViewNavigationBar = [self findPlayRootViewNavigationBar:app];
+  XCUIElement* button = playRootViewNavigationBar.buttons[buttonName];
+  return button;
+}
+
 @end

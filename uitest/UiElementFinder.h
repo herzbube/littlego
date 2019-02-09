@@ -18,8 +18,13 @@
 // -----------------------------------------------------------------------------
 /// @brief The UiElementFinder class is used by user interface tests (UI tests)
 /// to locate UI elements.
+///
+/// General notes regarding the use of XCUIElement:
+/// - Use the "exists" property to test whether the UI element is actually
+///   present
 // -----------------------------------------------------------------------------
 
 @interface UiElementFinder : NSObject
 
+- (XCUIElement*) findGameActionButton:(enum GameAction)gameAction withUiApplication:(XCUIApplication*)app;
 @end

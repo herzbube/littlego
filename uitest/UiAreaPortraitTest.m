@@ -54,4 +54,23 @@
 
 #pragma mark - Tests
 
+// -----------------------------------------------------------------------------
+/// @brief Test that when the app starts up a number of UI elements are present
+/// and have the correct state.
+// -----------------------------------------------------------------------------
+- (void) testUiAreaPlayDefaultState
+{
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+
+  // Game actions
+  XCUIElement* passButton = [self.uiElementFinder findGameActionButton:GameActionPass withUiApplication:app];
+  XCTAssertTrue(passButton.enabled);
+  XCUIElement* computerPlayButton = [self.uiElementFinder findGameActionButton:GameActionComputerPlay withUiApplication:app];
+  XCTAssertTrue(computerPlayButton.enabled);
+  XCUIElement* gameInfoButton = [self.uiElementFinder findGameActionButton:GameActionGameInfo withUiApplication:app];
+  XCTAssertTrue(gameInfoButton.enabled);
+  XCUIElement* moreGameActionsButton = [self.uiElementFinder findGameActionButton:GameActionMoreGameActions withUiApplication:app];
+  XCTAssertTrue(moreGameActionsButton.enabled);
+}
+
 @end
