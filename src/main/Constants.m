@@ -438,4 +438,13 @@ NSString* goGameRulesFourPassesRuleKey = @"FourPassesRule";
 // -----------------------------------------------------------------------------
 //@{
 NSString* statusLabelAccessibilityIdentifier = @"Status label";
+NSString* boardPositionCollectionViewAccessibilityIdentifier = @"Board position collection view";
+NSString* intersectionLabelBoardPositionAccessibilityIdentifier = @"Intersection label";
+NSString* boardPositionLabelBoardPositionAccessibilityIdentifier = @"Board position label";
+NSString* capturedStonesLabelBoardPositionAccessibilityIdentifier = @"Captured stones label";
+NSString* blackStoneImageViewBoardPositionAccessibilityIdentifier = @"Black stone image view";
+NSString* whiteStoneImageViewBoardPositionAccessibilityIdentifier = @"White stone image view";
+NSString* noStoneImageViewBoardPositionAccessibilityIdentifier = @"No stone image view";
+NSString* unselectedBackgroundViewBoardPositionAccessibilityIdentifier = @"Unselected background view";
+NSString* selectedBackgroundViewBoardPositionAccessibilityIdentifier = @"Selected background view";
 //@}

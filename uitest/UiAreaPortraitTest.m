@@ -89,6 +89,19 @@
   // Status view
   XCUIElement* statusLabel = [self.uiElementFinder findStatusLabelWithUiApplication:app];
   XCTAssertTrue([statusLabel.label isEqualToString:@"Game started Black to move"]);  // Newline character is converted to space
+
+  // Board positions
+  NSArray* boardPositionCells = [self.uiElementFinder findBoardPositionCellsWithUiApplication:app];
+  XCTAssertEqual(boardPositionCells.count, 1);
+  XCUIElement* firstBoardPositionCell = boardPositionCells[0];
+  XCUIElement* intersectionLabel = [self.uiElementFinder findIntersectionLabelInBoardPositionCell:firstBoardPositionCell];
+  XCTAssertTrue([intersectionLabel.label isEqualToString:@"Start of the game"]);
+  XCUIElement* boardPositionLabel = [self.uiElementFinder findBoardPositionLabelInBoardPositionCell:firstBoardPositionCell];
+  XCTAssertTrue([boardPositionLabel.label isEqualToString:@"Handicap: 0, Komi: 7½"]);
+  XCUIElement* capturedStonesLabel = [self.uiElementFinder findCapturedStonesLabelInBoardPositionCell:firstBoardPositionCell];
+  XCTAssertFalse(capturedStonesLabel.exists);
+  XCTAssertEqual(firstBoardPositionCell.images.count, 0);
+  XCTAssertTrue(firstBoardPositionCell.selected);
 }
 
 @end

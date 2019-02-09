@@ -140,4 +140,77 @@
   return statusLabel;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the collection view that lists board positions.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findBoardPositionCollectionViewWithUiApplication:(XCUIApplication*)app
+{
+  XCUIElement* boardPositionCollectionView = app.collectionViews[boardPositionCollectionViewAccessibilityIdentifier];
+  return boardPositionCollectionView;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an array of cells that list board positions. Returns nil
+/// if the collection view is currently not visible.
+// -----------------------------------------------------------------------------
+- (NSArray<XCUIElement*>*) findBoardPositionCellsWithUiApplication:(XCUIApplication*)app
+{
+  XCUIElement* boardPositionCollectionView = [self findBoardPositionCollectionViewWithUiApplication:app];
+  if (boardPositionCollectionView.exists)
+  {
+    NSArray<XCUIElement*>* boardPositionCells = boardPositionCollectionView.cells.allElementsBoundByIndex;
+    return boardPositionCells;
+  }
+  else
+  {
+    return nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the label that displays the intersection in a board position
+/// cell.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findIntersectionLabelInBoardPositionCell:(XCUIElement*)boardPositionCell
+{
+  XCUIElement* intersectionLabel = boardPositionCell.staticTexts[intersectionLabelBoardPositionAccessibilityIdentifier];
+  return intersectionLabel;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the label that displays the board position in a board
+/// position cell.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findBoardPositionLabelInBoardPositionCell:(XCUIElement*)boardPositionCell
+{
+  XCUIElement* intersectionLabel = boardPositionCell.staticTexts[boardPositionLabelBoardPositionAccessibilityIdentifier];
+  return intersectionLabel;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the label that displays the captured stones in a board
+/// position cell.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findCapturedStonesLabelInBoardPositionCell:(XCUIElement*)boardPositionCell
+{
+  XCUIElement* intersectionLabel = boardPositionCell.staticTexts[capturedStonesLabelBoardPositionAccessibilityIdentifier];
+  return intersectionLabel;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the image view that displays the stone image of the specified
+/// color @a color in a board position cell.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findStoneImageViewForColor:(enum GoColor)color inBoardPositionCell:(XCUIElement*)boardPositionCell
+{
+  NSString* accessibilityIdentifier;
+  if (color == GoColorBlack)
+    accessibilityIdentifier = blackStoneImageViewBoardPositionAccessibilityIdentifier;
+  else
+    accessibilityIdentifier = whiteStoneImageViewBoardPositionAccessibilityIdentifier;
+
+  XCUIElement* stoneImageView = boardPositionCell.images[accessibilityIdentifier];
+  return stoneImageView;
+}
+
 @end

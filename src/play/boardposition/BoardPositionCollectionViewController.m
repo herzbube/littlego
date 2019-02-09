@@ -105,6 +105,7 @@
 
   [self.collectionView registerClass:[BoardPositionCollectionViewCell class]
           forCellWithReuseIdentifier:self.reuseIdentifierCell];
+  self.collectionView.accessibilityIdentifier = boardPositionCollectionViewAccessibilityIdentifier;
 
   // One of the alternate collection view cell background colors is white. We
   // want to contrast this with a very light gray color so that the user sees

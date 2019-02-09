@@ -217,8 +217,11 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 - (void) configureView
 {
+  self.backgroundView.accessibilityIdentifier = unselectedBackgroundViewBoardPositionAccessibilityIdentifier;
+
   self.selectedBackgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   self.selectedBackgroundView.backgroundColor = currentBoardPositionCellBackgroundColor;
+  self.selectedBackgroundView.accessibilityIdentifier = selectedBackgroundViewBoardPositionAccessibilityIdentifier;
 
   self.intersectionLabel.font = largeFont;
   self.boardPositionLabel.font = smallFont;
@@ -226,6 +229,10 @@ static UIFont* smallFont = nil;
 
   self.capturedStonesLabel.textAlignment = NSTextAlignmentRight;
   self.capturedStonesLabel.textColor = capturedStonesLabelBackgroundColor;
+
+  self.intersectionLabel.accessibilityIdentifier = intersectionLabelBoardPositionAccessibilityIdentifier;
+  self.boardPositionLabel.accessibilityIdentifier = boardPositionLabelBoardPositionAccessibilityIdentifier;
+  self.capturedStonesLabel.accessibilityIdentifier = capturedStonesLabelBoardPositionAccessibilityIdentifier;
 }
 
 // -----------------------------------------------------------------------------
@@ -255,6 +262,19 @@ static UIFont* smallFont = nil;
     self.boardPositionLabel.text = [NSString stringWithFormat:@"Move %d", self.boardPosition];
     self.capturedStonesLabel.text = [self capturedStonesLabelTextForMove:move];
   }
+
+  // Let UI tests distinguish which image is set. Experimentally determined that
+  // we can't set the individual UIImage's accessibilityIdentifier property
+  // (even though it exists), XCTest never finds any UIImages configured like
+  // that. Presumably this is because XCTest only exposes views, and UIImage is
+  // not a view - but UIImageView is.
+  if (self.stoneImageView.image == nil)
+    self.stoneImageView.accessibilityIdentifier = noStoneImageViewBoardPositionAccessibilityIdentifier;
+  else if (self.stoneImageView.image == blackStoneImage)
+    self.stoneImageView.accessibilityIdentifier = blackStoneImageViewBoardPositionAccessibilityIdentifier;
+  else
+    self.stoneImageView.accessibilityIdentifier = whiteStoneImageViewBoardPositionAccessibilityIdentifier;
+
   [self updateBackgroundColor];
 }
 

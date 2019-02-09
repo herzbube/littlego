@@ -1259,4 +1259,13 @@ extern NSString* goGameRulesFourPassesRuleKey;
 // -----------------------------------------------------------------------------
 //@{
 extern NSString* statusLabelAccessibilityIdentifier;
+extern NSString* boardPositionCollectionViewAccessibilityIdentifier;
+extern NSString* intersectionLabelBoardPositionAccessibilityIdentifier;
+extern NSString* boardPositionLabelBoardPositionAccessibilityIdentifier;
+extern NSString* capturedStonesLabelBoardPositionAccessibilityIdentifier;
+extern NSString* blackStoneImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* whiteStoneImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* noStoneImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* unselectedBackgroundViewBoardPositionAccessibilityIdentifier;
+extern NSString* selectedBackgroundViewBoardPositionAccessibilityIdentifier;
 //@}

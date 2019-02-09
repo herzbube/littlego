@@ -30,4 +30,11 @@
 - (XCUIElement*) findBoardNavigationButton:(enum BoardPositionNavigationButton)boardPositionNavigationButton withUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findMainMenuButtonWithUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findStatusLabelWithUiApplication:(XCUIApplication*)app;
+- (XCUIElement*) findBoardPositionCollectionViewWithUiApplication:(XCUIApplication*)app;
+- (NSArray<XCUIElement*>*) findBoardPositionCellsWithUiApplication:(XCUIApplication*)app;
+- (XCUIElement*) findIntersectionLabelInBoardPositionCell:(XCUIElement*)boardPositionCell;
+- (XCUIElement*) findBoardPositionLabelInBoardPositionCell:(XCUIElement*)boardPositionCell;
+- (XCUIElement*) findCapturedStonesLabelInBoardPositionCell:(XCUIElement*)boardPositionCell;
+- (XCUIElement*) findStoneImageViewForColor:(enum GoColor)color inBoardPositionCell:(XCUIElement*)boardPositionCell;
+
 @end
