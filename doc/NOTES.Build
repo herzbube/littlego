@@ -186,7 +186,7 @@ Configuration settings for the "Unit tests" target
   only, i.e. not on a real iOS device, and also not outside of the simulator
   (the latter differs from Xcode 4.x where it was possible to run tests without
   launching the simulator)
-- All source code files that are unit tested must be added to the "Unit test"
+- All source code files that are unit tested must be added to the "Unit tests"
   target so that they are built for that target.
 - The build setting "Header Search Path" is set to the value "./src". Since the
   test sources are completely separated from the normal application sources, I
@@ -194,10 +194,10 @@ Configuration settings for the "Unit tests" target
   application can be seen as third party software from the point of view of the
   unit test bundle.
 - Because application source files depend on the presence of a prefix header,
-  the "Unit test" target has to have the same "Prefix header" build settings
+  the "Unit tests" target has to have the same "Prefix header" build settings
   as the main application target.
 - Compiling ApplicationDelegate pulls in Fuego/Boost (via GTP classes)
-  as dependencies. To prevent this, the "Unit test" target defines the
+  as dependencies. To prevent this, the "Unit tests" target defines the
   preprocessor macro LITTLEGO_UNITTESTS. The effect is that certain #include
   statements and pieces of code are not compiled and the dependency on
   Fuego/Boost goes away.
@@ -215,6 +215,22 @@ Configuration settings for the "Unit tests" target
   Crashlytics thus goes away, in exactly the same as the dependency on
   Fuego/Boost.
 
+Configuration settings for the "UI tests" target
+- All tests in this target are what Apple used to call "user interface tests"
+- These tests do not interface with the app code at all, except for making use
+  of some enumerations, so the regular application source code files do not need
+  to be built for the "UI tests" target and therefore must not be added to the
+  "UI tests" target.
+- Because UI test code makes use of enumerations and accessibility identifiers
+  defined in Constants.h, the "UI tests" target has the same "Prefix header"
+  build settings as the main application target.
+- Compiling Prefix.pch and Constants.h pulls in various third party library
+  headers and types that are not available because the "UI tests" target build
+  settings do not define any compiler search paths for finding those headers.
+  To prevent this, the "UI tests" target defines the preprocessor macro
+  LITTLEGO_UITESTS. The effect is that certain #include statements and pieces of
+  code are not compiled and the dependency on third party libraries goes away.
+
 
 Xcode schemes
 -------------
@@ -225,11 +241,11 @@ a short overview of how I configured those schemes:
   project's targets.
 - Remove the "Unit tests" scheme
 - Rename the "Little Go" scheme to "Little Go Debug"
-- Add the unit test target to the "Little Go Debug" scheme
-- Enable the "Run" action for the unit test target.
-- Make sure that the checkbox "Test" is checked only for the unit test target,
-  but not for the main target. This allows to run the test action (Command + U)
-  for the main target.
+- Add the unit test and UI test targets to the "Little Go Debug" scheme
+- Enable the "Run" action for the unit test and UI test targets.
+- Make sure that the checkbox "Test" is checked only for the unit test and
+  UI test targets, but not for the main target. This allows to run the test
+  action (Command + U) for the main target.
 - Make sure that the "Profile" and "Archive" actions use the "Release" build
   configuration, and all other actions use the "Debug" build configuration
 - Disable the "Archive" action

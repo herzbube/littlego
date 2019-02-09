@@ -15,6 +15,10 @@
 // -----------------------------------------------------------------------------
 
 
+// See the section "Automated UI tests" in the document TESTING for details
+// about how UI testing works.
+
+
 // Project includes
 #import "UiElementFinder.h"
 

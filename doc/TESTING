@@ -16,14 +16,16 @@ I usually make sure that in all of my Xcode schemes the checkbox "Run" is
 checked not only for the main target, but for the unit test target as well.
 Note that the same result can also be achieved by a target dependency.
 
-To run the tests, you must manually select the "Product > Test" menu item. It
-would be preferrable to run the tests automatically as part of the build, but I
-am not aware how this can be achieved in Xcode 5 or later. In Xcode 4.x there
+To run the tests, you must manually select the "Product > Test" menu item. This
+runs not only unit tests, but UI tests as well (see section below).
+
+It would be preferrable to run the tests automatically as part of the build, but
+I am not aware how this can be achieved in Xcode 5 or later. In Xcode 4.x there
 was a built-in script named "RunUnitTests" that could be invoked in a
 "Run Script" build phase. In Xcode 5, however, this is no longer working, the
 built-in script fails with the error message "RunUnitTests is obsolete."
 
-See NOTES.Build for technical details about the "Unit test" build target.
+See NOTES.Build for technical details about the "Unit tests" build target.
 
 A final note about logging: The log file for unit tests run in the simulator
 environment is located in
@@ -32,12 +34,18 @@ environment is located in
 
 Automated UI tests
 ------------------
-There are currently no automated UI tests for this project. An attempt was made
-to implement such tests using the cross-platform test automation framework
-Appium [1], but the attempt was aborted because there was simply too much to do
-in the limited amount of time that I am willing to spend on this project.
+All UI test related files are located in the top-level folder "uitest".
 
-[1] http://appium.io/
+The Xcode project defines a target "UI tests" which builds a UI test bundle.
+To make the UI tests build automatically every time the main target is built,
+I usually make sure that in all of my Xcode schemes the checkbox "Run" is
+checked not only for the main target, but for the UI test target as well.
+Note that the same result can also be achieved by a target dependency.
+
+To run the tests, you must manually select the "Product > Test" menu item. This
+runs not only UI tests, but unit tests as well (see section above).
+
+See NOTES.Build for technical details about the "UI tests" build target.
 
 
 Script for manual testing
