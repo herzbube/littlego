@@ -43,7 +43,9 @@
 {
   self.continueAfterFailure = NO;
 
-  [[[XCUIApplication alloc] init] launch];
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+  app.launchArguments = @[uiTestModeLaunchArgument];
+  [app launch];
 
   [XCUIDevice sharedDevice].orientation = UIDeviceOrientationPortrait;
 

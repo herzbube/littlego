@@ -60,6 +60,7 @@
 #import "../command/CommandProcessor.h"
 #import "../command/HandleDocumentInteractionCommand.h"
 #import "../command/SetupApplicationCommand.h"
+#import "../command/backup/CleanBackupSgfCommand.h"
 #import "../command/diagnostics/RestoreBugReportUserDefaultsCommand.h"
 #import "../command/game/PauseGameCommand.h"
 #import "../go/GoGame.h"
@@ -196,6 +197,11 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 
   // Enable in normal (i.e. not unit testing) environment
   self.writeUserDefaultsEnabled = true;
+
+  // In UI test mode discard state saved by the previous test
+  NSProcessInfo* processInfo = [NSProcessInfo processInfo];
+  if ([processInfo.arguments containsObject:uiTestModeLaunchArgument])
+    [self prepareForUiTests];
 
   // Don't change the following sequence without thoroughly checking the
   // dependencies
@@ -348,6 +354,18 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   // Control returns before the .sgf file is actually loaded
   [[[[HandleDocumentInteractionCommand alloc] init] autorelease] submit];
   return YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Prepares the app for launching in UI test mode.
+// -----------------------------------------------------------------------------
+- (void) prepareForUiTests
+{
+  NSString* appDomain = [[NSBundle mainBundle] bundleIdentifier];
+  [[NSUserDefaults standardUserDefaults] removePersistentDomainForName:appDomain];
+  [[NSUserDefaults standardUserDefaults] synchronize];
+
+  [[[[CleanBackupSgfCommand alloc] init] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------

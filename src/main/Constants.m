@@ -448,3 +448,10 @@ NSString* noStoneImageViewBoardPositionAccessibilityIdentifier = @"No stone imag
 NSString* unselectedBackgroundViewBoardPositionAccessibilityIdentifier = @"Unselected background view";
 NSString* selectedBackgroundViewBoardPositionAccessibilityIdentifier = @"Selected background view";
 //@}
+
+// -----------------------------------------------------------------------------
+/// @name Other UI testing constants
+// -----------------------------------------------------------------------------
+//@{
+NSString* uiTestModeLaunchArgument = @"--ui-test-mode";
+//@}

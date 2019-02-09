@@ -1293,3 +1293,10 @@ extern NSString* noStoneImageViewBoardPositionAccessibilityIdentifier;
 extern NSString* unselectedBackgroundViewBoardPositionAccessibilityIdentifier;
 extern NSString* selectedBackgroundViewBoardPositionAccessibilityIdentifier;
 //@}
+
+// -----------------------------------------------------------------------------
+/// @name Other UI testing constants
+// -----------------------------------------------------------------------------
+//@{
+extern NSString* uiTestModeLaunchArgument;
+//@}
