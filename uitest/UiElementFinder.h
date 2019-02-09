@@ -27,5 +27,6 @@
 @interface UiElementFinder : NSObject
 
 - (XCUIElement*) findGameActionButton:(enum GameAction)gameAction withUiApplication:(XCUIApplication*)app;
+- (XCUIElement*) findBoardNavigationButton:(enum BoardPositionNavigationButton)boardPositionNavigationButton withUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findMainMenuButtonWithUiApplication:(XCUIApplication*)app;
 @end

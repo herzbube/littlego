@@ -123,6 +123,15 @@ enum GameAction
   GameActionLast = GameActionMoreGameActions
 };
 
+/// @brief Enumerates buttons used to navigate between board positions.
+enum BoardPositionNavigationButton
+{
+  BoardPositionNavigationButtonRewindToStart,
+  BoardPositionNavigationButtonPrevious,
+  BoardPositionNavigationButtonNext,
+  BoardPositionNavigationButtonForwardToEnd,
+};
+
 /// @brief Enumerates the possible types of mark up to use for inconsistent
 /// territory during scoring.
 enum InconsistentTerritoryMarkupType

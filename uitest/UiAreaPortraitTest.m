@@ -75,6 +75,16 @@
   /// Main menu
   XCUIElement* mainMenuButton = [self.uiElementFinder findMainMenuButtonWithUiApplication:app];
   XCTAssertTrue(mainMenuButton.enabled);
+
+  // Board position navigation
+  XCUIElement* rewindToStartButton = [self.uiElementFinder findBoardNavigationButton:BoardPositionNavigationButtonRewindToStart withUiApplication:app];
+  XCTAssertFalse(rewindToStartButton.enabled);
+  XCUIElement* previousButton = [self.uiElementFinder findBoardNavigationButton:BoardPositionNavigationButtonPrevious withUiApplication:app];
+  XCTAssertFalse(previousButton.enabled);
+  XCUIElement* nextButton = [self.uiElementFinder findBoardNavigationButton:BoardPositionNavigationButtonNext withUiApplication:app];
+  XCTAssertFalse(nextButton.enabled);
+  XCUIElement* forwardToEndButton = [self.uiElementFinder findBoardNavigationButton:BoardPositionNavigationButtonForwardToEnd withUiApplication:app];
+  XCTAssertFalse(forwardToEndButton.enabled);
 }
 
 @end

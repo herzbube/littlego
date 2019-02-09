@@ -91,6 +91,36 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the button that represents the specified board navigation.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findBoardNavigationButton:(enum BoardPositionNavigationButton)boardPositionNavigationButton withUiApplication:(XCUIApplication*)app
+{
+  NSString* buttonName;
+
+  switch (boardPositionNavigationButton)
+  {
+    case BoardPositionNavigationButtonRewindToStart:
+      buttonName = @"back";
+      break;
+    case BoardPositionNavigationButtonPrevious:
+      buttonName = @"forward";
+      break;
+    case BoardPositionNavigationButtonNext:
+      buttonName = @"rewindtostart";
+      break;
+    case BoardPositionNavigationButtonForwardToEnd:
+      buttonName = @"forwardtoend";
+      break;
+    default:
+      buttonName = nil;
+      break;
+  }
+
+  XCUIElement* button = app.collectionViews.buttons[buttonName];
+  return button;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the button in the UI area "Play" that that pops up the main
 /// menu.
 // -----------------------------------------------------------------------------
