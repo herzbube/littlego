@@ -90,4 +90,15 @@
   return button;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the button in the UI area "Play" that that pops up the main
+/// menu.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findMainMenuButtonWithUiApplication:(XCUIApplication*)app
+{
+  XCUIElement* playRootViewNavigationBar = [self findPlayRootViewNavigationBar:app];
+  XCUIElement* button = playRootViewNavigationBar.buttons[@"main menu"];
+  return button;
+}
+
 @end

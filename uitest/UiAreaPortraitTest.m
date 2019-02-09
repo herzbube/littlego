@@ -71,6 +71,10 @@
   XCTAssertTrue(gameInfoButton.enabled);
   XCUIElement* moreGameActionsButton = [self.uiElementFinder findGameActionButton:GameActionMoreGameActions withUiApplication:app];
   XCTAssertTrue(moreGameActionsButton.enabled);
+
+  /// Main menu
+  XCUIElement* mainMenuButton = [self.uiElementFinder findMainMenuButtonWithUiApplication:app];
+  XCTAssertTrue(mainMenuButton.enabled);
 }
 
 @end
