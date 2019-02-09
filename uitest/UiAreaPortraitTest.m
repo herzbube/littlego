@@ -45,6 +45,8 @@
 
   [[[XCUIApplication alloc] init] launch];
 
+  [XCUIDevice sharedDevice].orientation = UIDeviceOrientationPortrait;
+
   self.uiElementFinder = [[UiElementFinder alloc] init];
 }
 
