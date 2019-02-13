@@ -438,6 +438,7 @@
 		CDB49E252208ABA3006DC1A4 /* UiAreaPortraitTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB49E242208ABA3006DC1A4 /* UiAreaPortraitTest.m */; };
 		CDB49E30220A06C7006DC1A4 /* UiElementFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB49E2E220A0615006DC1A4 /* UiElementFinder.m */; };
 		CDB49E32220DF90D006DC1A4 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35A148C2C26004E1A0C /* Constants.m */; };
+		CDB49E36220F4045006DC1A4 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FA1A915085002FCD78 /* LayoutManager.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CDB5AE251AC5A86D0075C8DC /* MagnifyingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */; };
 		CDB5AE261AC5A86D0075C8DC /* MagnifyingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */; };
 		CDB5AE291AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */; };
@@ -3307,6 +3308,7 @@
 			files = (
 				CDB49E30220A06C7006DC1A4 /* UiElementFinder.m in Sources */,
 				CDB49E252208ABA3006DC1A4 /* UiAreaPortraitTest.m in Sources */,
+				CDB49E36220F4045006DC1A4 /* LayoutManager.m in Sources */,
 				CDB49E32220DF90D006DC1A4 /* Constants.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

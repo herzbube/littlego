@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015-2016 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for EditTextController.
+/// @brief Class extension with private properties for LayoutManager.
 // -----------------------------------------------------------------------------
 @interface LayoutManager()
 /// @name Re-declaration of properties to make them readwrite privately
@@ -97,33 +97,8 @@ static LayoutManager* sharedManager = nil;
 // -----------------------------------------------------------------------------
 - (void) setupUIType
 {
-  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-  {
-    // iPhone 5S and below: 320x480
-    // iPhone 6: 375x667
-    // iPhone 6 Plus: 414x736
-    CGSize screenSize = [UIScreen mainScreen].bounds.size;
-    // The way how UIScreen reports its bounds has changed in iOS 8. By using
-    // MIN() and MAX() we don't care...
-    CGFloat smallerDimension = MIN(screenSize.width, screenSize.height);
-    CGFloat largerDimension = MAX(screenSize.width, screenSize.height);
-    // TODO Not a terribly sophisticated way how to find out whether we are on a
-    // device that supports landscape orientations. In an ideal world we would
-    // like to probe for the size class of the screen when the device is held
-    // in landscape orientation - when the size class is compact we would know
-    // that landscape is a no-go. Unfortunately there doesn't seem to exist
-    // such a probing method. Although UIScreen has a UITraitCollection, we
-    // can't use that because the values always reflect the current user
-    // interface orientation :-(
-    if (smallerDimension >= 400 && largerDimension >= 700)
-      self.uiType = UITypePhone;
-    else
-      self.uiType = UITypePhonePortraitOnly;
-  }
-  else
-  {
-    self.uiType = UITypePad;
-  }
+  self.uiType = [LayoutManager uiTypeForUserInterfaceIdiom:[[UIDevice currentDevice] userInterfaceIdiom]
+                                                screenSize:[UIScreen mainScreen].bounds.size];
 }
 
 // -----------------------------------------------------------------------------
@@ -131,29 +106,7 @@ static LayoutManager* sharedManager = nil;
 // -----------------------------------------------------------------------------
 - (void) setupSupportedInterfaceOrientations
 {
-  switch (self.uiType)
-  {
-    case UITypePhonePortraitOnly:
-    {
-      self.supportedInterfaceOrientations = (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown);
-      break;
-    }
-    case UITypePhone:
-    case UITypePad:
-    {
-      self.supportedInterfaceOrientations = UIInterfaceOrientationMaskAll;
-      break;
-    }
-    default:
-    {
-      NSString* errorMessage = [NSString stringWithFormat:@"Unexpected UI type %d", self.uiType];
-      DDLogError(@"%@: %@", self, errorMessage);
-      NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                       reason:errorMessage
-                                                     userInfo:nil];
-      @throw exception;
-    }
-  }
+  self.supportedInterfaceOrientations = [LayoutManager supportedInterfaceOrientationsForUiType:self.uiType];
 }
 
 #pragma mark - UINavigationControllerDelegate overrides
@@ -166,6 +119,83 @@ static LayoutManager* sharedManager = nil;
 - (UIInterfaceOrientationMask) navigationControllerSupportedInterfaceOrientations:(UINavigationController*)navigationController
 {
   return self.supportedInterfaceOrientations;
+}
+
+#pragma mark - Public interface
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the user interface type that matches the specified user
+/// interface idiom @a userInterfaceIdiom and the specified screen size
+/// @a screenSize.
+///
+/// This method is in LayoutManager's public interface so that the algorithm
+/// for determining the user interface type can be reused during UI tests.
+// -----------------------------------------------------------------------------
++ (enum UIType) uiTypeForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom
+                                 screenSize:(CGSize)screenSize
+{
+  if (userInterfaceIdiom == UIUserInterfaceIdiomPhone)
+  {
+    // iPhone 5S and below: 320x480
+    // iPhone 6: 375x667
+    // iPhone 6 Plus: 414x736
+
+    // The way how UIScreen reports its bounds has changed in iOS 8. By using
+    // MIN() and MAX() we don't care...
+    CGFloat smallerDimension = MIN(screenSize.width, screenSize.height);
+    CGFloat largerDimension = MAX(screenSize.width, screenSize.height);
+
+    // TODO Not a terribly sophisticated way how to find out whether we are on a
+    // device that supports landscape orientations. In an ideal world we would
+    // like to probe for the size class of the screen when the device is held
+    // in landscape orientation - when the size class is compact we would know
+    // that landscape is a no-go. Unfortunately there doesn't seem to exist
+    // such a probing method. Although UIScreen has a UITraitCollection, we
+    // can't use that because the values always reflect the current user
+    // interface orientation :-(
+    if (smallerDimension >= 400 && largerDimension >= 700)
+      return UITypePhone;
+    else
+      return UITypePhonePortraitOnly;
+  }
+  else
+  {
+    return UITypePad;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the interface orientations supported by the specified user
+/// interface type @a uiType.
+///
+/// This method is in LayoutManager's public interface so that the algorithm
+/// for determining the interface orientations can be reused during UI tests.
+// -----------------------------------------------------------------------------
++ (UIInterfaceOrientationMask) supportedInterfaceOrientationsForUiType:(enum UIType)uiType
+{
+  switch (uiType)
+  {
+    case UITypePhonePortraitOnly:
+    {
+      return (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown);
+    }
+    case UITypePhone:
+    case UITypePad:
+    {
+      return UIInterfaceOrientationMaskAll;
+    }
+    default:
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Unexpected UI type %d", uiType];
+#ifndef LITTLEGO_UITESTS
+      DDLogError(@"%@: %@", self, errorMessage);
+#endif
+      NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
 }
 
 @end

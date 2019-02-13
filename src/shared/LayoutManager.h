@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015-2016 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2015-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,6 +38,10 @@
 
 + (LayoutManager*) sharedManager;
 + (void) releaseSharedManager;
+
++ (enum UIType) uiTypeForUserInterfaceIdiom:(UIUserInterfaceIdiom)userInterfaceIdiom
+                                 screenSize:(CGSize)screenSize;
++ (UIInterfaceOrientationMask) supportedInterfaceOrientationsForUiType:(enum UIType)uiType;
 
 /// @brief The user interface type that is currently in effect. The user
 /// interface type is determined upon application launch, based on the current
