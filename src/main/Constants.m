@@ -450,6 +450,8 @@ NSString* selectedBackgroundViewBoardPositionAccessibilityIdentifier = @"Selecte
 NSString* leftNavigationBarAccessibilityIdentifier = @"leftNavigationBar";
 NSString* centerNavigationBarAccessibilityIdentifier = @"centerNavigationBar";
 NSString* rightNavigationBarAccessibilityIdentifier = @"rightNavigationBar";
+NSString* gameActionButtonContainerAccessibilityIdentifier = @"gameActionButtonContainer";
+NSString* boardPositionNavigationButtonContainerAccessibilityIdentifier = @"boardPositionNavigationButtonContainer";
 //@}
 
 // -----------------------------------------------------------------------------

@@ -72,6 +72,14 @@
 // -----------------------------------------------------------------------------
 /// @brief ButtonBoxControllerDataSource method.
 // -----------------------------------------------------------------------------
+- (NSString*) accessibilityIdentifierInButtonBoxController:(ButtonBoxController*)buttonBoxController
+{
+  return boardPositionNavigationButtonContainerAccessibilityIdentifier;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief ButtonBoxControllerDataSource method.
+// -----------------------------------------------------------------------------
 - (int) numberOfSectionsInButtonBoxController:(ButtonBoxController*)buttonBoxController
 {
   return 2;

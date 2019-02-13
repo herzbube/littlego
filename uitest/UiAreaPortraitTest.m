@@ -89,13 +89,13 @@
   XCTAssertTrue(mainMenuButton.enabled);
 
   // Board position navigation
-  XCUIElement* rewindToStartButton = [self.uiElementFinder findBoardNavigationButton:BoardPositionNavigationButtonRewindToStart withUiApplication:app];
+  XCUIElement* rewindToStartButton = [self.uiElementFinder findBoardPositionNavigationButton:BoardPositionNavigationButtonRewindToStart withUiApplication:app];
   XCTAssertFalse(rewindToStartButton.enabled);
-  XCUIElement* previousButton = [self.uiElementFinder findBoardNavigationButton:BoardPositionNavigationButtonPrevious withUiApplication:app];
+  XCUIElement* previousButton = [self.uiElementFinder findBoardPositionNavigationButton:BoardPositionNavigationButtonPrevious withUiApplication:app];
   XCTAssertFalse(previousButton.enabled);
-  XCUIElement* nextButton = [self.uiElementFinder findBoardNavigationButton:BoardPositionNavigationButtonNext withUiApplication:app];
+  XCUIElement* nextButton = [self.uiElementFinder findBoardPositionNavigationButton:BoardPositionNavigationButtonNext withUiApplication:app];
   XCTAssertFalse(nextButton.enabled);
-  XCUIElement* forwardToEndButton = [self.uiElementFinder findBoardNavigationButton:BoardPositionNavigationButtonForwardToEnd withUiApplication:app];
+  XCUIElement* forwardToEndButton = [self.uiElementFinder findBoardPositionNavigationButton:BoardPositionNavigationButtonForwardToEnd withUiApplication:app];
   XCTAssertFalse(forwardToEndButton.enabled);
 
   // Status view

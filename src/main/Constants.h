@@ -1295,6 +1295,8 @@ extern NSString* selectedBackgroundViewBoardPositionAccessibilityIdentifier;
 extern NSString* leftNavigationBarAccessibilityIdentifier;
 extern NSString* centerNavigationBarAccessibilityIdentifier;
 extern NSString* rightNavigationBarAccessibilityIdentifier;
+extern NSString* gameActionButtonContainerAccessibilityIdentifier;
+extern NSString* boardPositionNavigationButtonContainerAccessibilityIdentifier;
 //@}
 
 // -----------------------------------------------------------------------------

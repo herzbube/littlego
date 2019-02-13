@@ -146,6 +146,9 @@
   self.collectionView.delaysContentTouches = NO;
   // Take background color from superview
   self.collectionView.backgroundColor = [UIColor clearColor];
+
+  self.collectionView.accessibilityIdentifier =
+    [self.buttonBoxControllerDataSource accessibilityIdentifierInButtonBoxController:self];
 }
 
 #pragma mark - UICollectionViewDataSource overrides

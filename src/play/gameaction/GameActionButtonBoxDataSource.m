@@ -81,6 +81,14 @@ enum ButtonBoxSection
 // -----------------------------------------------------------------------------
 /// @brief ButtonBoxControllerDataSource method.
 // -----------------------------------------------------------------------------
+- (NSString*) accessibilityIdentifierInButtonBoxController:(ButtonBoxController*)buttonBoxController
+{
+  return gameActionButtonContainerAccessibilityIdentifier;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief ButtonBoxControllerDataSource method.
+// -----------------------------------------------------------------------------
 - (int) numberOfSectionsInButtonBoxController:(ButtonBoxController*)buttonBoxController
 {
   return (int)self.visibleGameActions.count;

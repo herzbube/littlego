@@ -245,9 +245,27 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the button that represents the specified board navigation.
+/// @brief Returns the container that contains board position navigation
+/// buttons.
 // -----------------------------------------------------------------------------
-- (XCUIElement*) findBoardNavigationButton:(enum BoardPositionNavigationButton)boardPositionNavigationButton withUiApplication:(XCUIApplication*)app
+- (XCUIElement*) findBoardPositionNavigationButtonContainerWithUiApplication:(XCUIApplication*)app
+{
+  XCUIElement* boardPositionNavigationButtonContainer;
+
+  if (self.uiTestDeviceInfo.uiType == UITypePhone)
+    boardPositionNavigationButtonContainer = app.collectionViews[boardPositionNavigationButtonContainerAccessibilityIdentifier];
+  else
+    boardPositionNavigationButtonContainer = app.toolbars[boardPositionNavigationButtonContainerAccessibilityIdentifier];
+
+  return boardPositionNavigationButtonContainer;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the button that represents the specified board position
+/// navigation.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findBoardPositionNavigationButton:(enum BoardPositionNavigationButton)boardPositionNavigationButton
+                                 withUiApplication:(XCUIApplication*)app
 {
   NSString* buttonName;
 
@@ -270,7 +288,10 @@
       break;
   }
 
-  XCUIElement* button = app.collectionViews.buttons[buttonName];
+  XCUIElement* boardPositionNavigationButtonContainer =
+    [self findBoardPositionNavigationButtonContainerWithUiApplication:app];
+
+  XCUIElement* button = boardPositionNavigationButtonContainer.buttons[buttonName];
   return button;
 }
 

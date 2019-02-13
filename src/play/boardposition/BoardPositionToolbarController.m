@@ -160,6 +160,7 @@
 - (void) loadView
 {
   self.toolbar = [[[UIToolbar alloc] initWithFrame:CGRectZero] autorelease];
+  self.toolbar.accessibilityIdentifier = boardPositionNavigationButtonContainerAccessibilityIdentifier;
   self.view = self.toolbar;
   self.toolbar.delegate = self;
 

@@ -25,6 +25,7 @@
 // -----------------------------------------------------------------------------
 @protocol ButtonBoxControllerDataSource <NSObject>
 @required
+- (NSString*) accessibilityIdentifierInButtonBoxController:(ButtonBoxController*)buttonBoxController;
 - (int) numberOfSectionsInButtonBoxController:(ButtonBoxController*)buttonBoxController;
 - (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfRowsInSection:(NSInteger)section;
 - (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfColumnsInSection:(NSInteger)section;
