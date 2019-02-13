@@ -452,6 +452,9 @@ NSString* centerNavigationBarAccessibilityIdentifier = @"centerNavigationBar";
 NSString* rightNavigationBarAccessibilityIdentifier = @"rightNavigationBar";
 NSString* gameActionButtonContainerAccessibilityIdentifier = @"gameActionButtonContainer";
 NSString* boardPositionNavigationButtonContainerAccessibilityIdentifier = @"boardPositionNavigationButtonContainer";
+NSString* currentBoardPositionViewAccessibilityIdentifier = @"currentBoardPositionView";
+NSString* currentBoardPositionTableViewAccessibilityIdentifier = @"currentBoardPositionTableView";
+NSString* boardPositionTableViewAccessibilityIdentifier = @"boardPositionTableView";
 //@}
 
 // -----------------------------------------------------------------------------

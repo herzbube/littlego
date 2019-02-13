@@ -177,6 +177,10 @@ static UIImage* whiteStoneImage = nil;
 
   self.capturedStonesLabel.textAlignment = NSTextAlignmentRight;
   self.capturedStonesLabel.textColor = [UIColor redColor];
+
+  self.intersectionLabel.accessibilityIdentifier = intersectionLabelBoardPositionAccessibilityIdentifier;
+  self.boardPositionLabel.accessibilityIdentifier = boardPositionLabelBoardPositionAccessibilityIdentifier;
+  self.capturedStonesLabel.accessibilityIdentifier = capturedStonesLabelBoardPositionAccessibilityIdentifier;
 }
 
 // -----------------------------------------------------------------------------

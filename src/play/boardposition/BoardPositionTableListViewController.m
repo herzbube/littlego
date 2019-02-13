@@ -165,10 +165,12 @@
   self.currentBoardPositionTableView.dataSource = self;
   self.currentBoardPositionTableView.scrollEnabled = NO;
   self.currentBoardPositionTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+  self.currentBoardPositionTableView.accessibilityIdentifier = currentBoardPositionViewAccessibilityIdentifier;
 
   self.boardPositionListTableView.delegate = self;
   self.boardPositionListTableView.dataSource = self;
   self.boardPositionListTableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+  self.boardPositionListTableView.accessibilityIdentifier = boardPositionTableViewAccessibilityIdentifier;
 
   // One of the alternate table view cell background colors is white. We want
   // to contrast this with a very light gray color so that the user sees where
@@ -642,12 +644,27 @@
       move = [game.moveModel moveAtIndex:moveIndexOfCell];
     }
   }
+
   cell.textLabel.text = [self labelTextForMove:move];
+  cell.textLabel.accessibilityIdentifier = intersectionLabelBoardPositionAccessibilityIdentifier;
+
   cell.detailTextLabel.text = [self detailLabelTextForBoardPosition:boardPositionOfCell move:move];
+  cell.detailTextLabel.accessibilityIdentifier = boardPositionLabelBoardPositionAccessibilityIdentifier;
+
   cell.imageView.image = [self stoneImageForMove:move];
+  if (cell.imageView.image == nil)
+    cell.imageView.accessibilityIdentifier = noStoneImageViewBoardPositionAccessibilityIdentifier;
+  else if (cell.imageView.image == self.blackStoneImage)
+    cell.imageView.accessibilityIdentifier = blackStoneImageViewBoardPositionAccessibilityIdentifier;
+  else
+    cell.imageView.accessibilityIdentifier = whiteStoneImageViewBoardPositionAccessibilityIdentifier;
+
   cell.backgroundColor = [self backgroundColorForBoardPosition:boardPositionOfCell];
+  cell.backgroundView.accessibilityIdentifier = unselectedBackgroundViewBoardPositionAccessibilityIdentifier;
+
   cell.selectedBackgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   cell.selectedBackgroundView.backgroundColor = [UIColor darkTangerineColor];
+  cell.selectedBackgroundView.accessibilityIdentifier = selectedBackgroundViewBoardPositionAccessibilityIdentifier;
 
   return cell;
 }

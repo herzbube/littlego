@@ -95,6 +95,7 @@
   boardPositionViewFrame.size = [BoardPositionView boardPositionViewSize];
   self.boardPositionView = [[[BoardPositionView alloc] initWithFrame:boardPositionViewFrame] autorelease];
   self.view = self.boardPositionView;
+  self.boardPositionView.accessibilityIdentifier = currentBoardPositionViewAccessibilityIdentifier;
 
 	[self.boardPositionView addGestureRecognizer:self.tapRecognizer];
   [self setupNotificationResponders];

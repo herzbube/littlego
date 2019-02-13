@@ -38,12 +38,16 @@
 
 - (XCUIElement*) findUiAreaElement:(enum UIArea)uiArea withUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findUiAreaNavigationBar:(enum UIArea)uiArea withUiApplication:(XCUIApplication*)app;
+
 - (XCUIElement*) findMainMenuButtonWithUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findMainMenuNavigationBarWithUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findBackButtonPlayWithUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findBackButtonMainMenuFromUiAreaNavigationBar:(XCUIElement*)uiAreaNavigationBar;
+
 - (XCUIElement*) findStatusLabelWithUiApplication:(XCUIApplication*)app;
-- (XCUIElement*) findBoardPositionCollectionViewWithUiApplication:(XCUIApplication*)app;
+
+- (XCUIElement*) findCurrentBoardPositionCellWithUiApplication:(XCUIApplication*)app;
+- (XCUIElement*) findBoardPositionCellContainerWithUiApplication:(XCUIApplication*)app;
 - (NSArray<XCUIElement*>*) findBoardPositionCellsWithUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findIntersectionLabelInBoardPositionCell:(XCUIElement*)boardPositionCell;
 - (XCUIElement*) findBoardPositionLabelInBoardPositionCell:(XCUIElement*)boardPositionCell;

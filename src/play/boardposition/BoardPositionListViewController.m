@@ -95,6 +95,8 @@
 
   [self.collectionView registerClass:[BoardPositionView class]
           forCellWithReuseIdentifier:self.reuseIdentifierCell];
+  self.collectionView.accessibilityIdentifier = boardPositionCollectionViewAccessibilityIdentifier;
+
   self.collectionView.backgroundColor = [UIColor clearColor];
 
   [self setupNotificationResponders];

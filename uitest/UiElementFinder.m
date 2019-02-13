@@ -453,12 +453,45 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the collection view that lists board positions.
+/// @brief Returns the cell that displays the current board position. This
+/// method returns the correct result only if the UI type is
+/// #UITypePhonePortraitOnly or #UITypePad. Raises
+/// NSInternalInconsistencyException if the UI type is neither
+/// #UITypePhonePortraitOnly nor #UITypePad.
 // -----------------------------------------------------------------------------
-- (XCUIElement*) findBoardPositionCollectionViewWithUiApplication:(XCUIApplication*)app
+- (XCUIElement*) findCurrentBoardPositionCellWithUiApplication:(XCUIApplication*)app
 {
-  XCUIElement* boardPositionCollectionView = app.collectionViews[boardPositionCollectionViewAccessibilityIdentifier];
-  return boardPositionCollectionView;
+  if (self.uiTestDeviceInfo.uiType == UITypePhone)
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unsupported UIType in findCurrentBoardPositionViewWithUiApplication" userInfo:nil];
+
+  if (self.uiTestDeviceInfo.uiType == UITypePhonePortraitOnly)
+  {
+    XCUIElement* boardPositionNavigationButtonContainer =
+    [self findBoardPositionNavigationButtonContainerWithUiApplication:app];
+
+    XCUIElement* currentBoardPositionView = boardPositionNavigationButtonContainer.cells[currentBoardPositionViewAccessibilityIdentifier];
+    return currentBoardPositionView;
+  }
+  else
+  {
+    XCUIElement* currentBoardPositionView = app.tables[currentBoardPositionViewAccessibilityIdentifier].cells.firstMatch;
+    return currentBoardPositionView;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the container that lists board positions.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findBoardPositionCellContainerWithUiApplication:(XCUIApplication*)app
+{
+  XCUIElement* boardPositionCellContainer;
+
+  if (self.uiTestDeviceInfo.uiType == UITypePad)
+    boardPositionCellContainer = app.tables[boardPositionTableViewAccessibilityIdentifier];
+  else
+    boardPositionCellContainer = app.collectionViews[boardPositionCollectionViewAccessibilityIdentifier];
+
+  return boardPositionCellContainer;
 }
 
 // -----------------------------------------------------------------------------
@@ -467,10 +500,10 @@
 // -----------------------------------------------------------------------------
 - (NSArray<XCUIElement*>*) findBoardPositionCellsWithUiApplication:(XCUIApplication*)app
 {
-  XCUIElement* boardPositionCollectionView = [self findBoardPositionCollectionViewWithUiApplication:app];
-  if (boardPositionCollectionView.exists)
+  XCUIElement* boardPositionCellContainer = [self findBoardPositionCellContainerWithUiApplication:app];
+  if (boardPositionCellContainer.exists)
   {
-    NSArray<XCUIElement*>* boardPositionCells = boardPositionCollectionView.cells.allElementsBoundByIndex;
+    NSArray<XCUIElement*>* boardPositionCells = boardPositionCellContainer.cells.allElementsBoundByIndex;
     return boardPositionCells;
   }
   else
@@ -495,8 +528,8 @@
 // -----------------------------------------------------------------------------
 - (XCUIElement*) findBoardPositionLabelInBoardPositionCell:(XCUIElement*)boardPositionCell
 {
-  XCUIElement* intersectionLabel = boardPositionCell.staticTexts[boardPositionLabelBoardPositionAccessibilityIdentifier];
-  return intersectionLabel;
+  XCUIElement* boardPositionLabel = boardPositionCell.staticTexts[boardPositionLabelBoardPositionAccessibilityIdentifier];
+  return boardPositionLabel;
 }
 
 // -----------------------------------------------------------------------------
@@ -505,8 +538,8 @@
 // -----------------------------------------------------------------------------
 - (XCUIElement*) findCapturedStonesLabelInBoardPositionCell:(XCUIElement*)boardPositionCell
 {
-  XCUIElement* intersectionLabel = boardPositionCell.staticTexts[capturedStonesLabelBoardPositionAccessibilityIdentifier];
-  return intersectionLabel;
+  XCUIElement* capturedStonesLabel = boardPositionCell.staticTexts[capturedStonesLabelBoardPositionAccessibilityIdentifier];
+  return capturedStonesLabel;
 }
 
 // -----------------------------------------------------------------------------

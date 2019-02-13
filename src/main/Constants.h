@@ -1300,6 +1300,9 @@ extern NSString* centerNavigationBarAccessibilityIdentifier;
 extern NSString* rightNavigationBarAccessibilityIdentifier;
 extern NSString* gameActionButtonContainerAccessibilityIdentifier;
 extern NSString* boardPositionNavigationButtonContainerAccessibilityIdentifier;
+extern NSString* currentBoardPositionViewAccessibilityIdentifier;
+extern NSString* currentBoardPositionTableViewAccessibilityIdentifier;
+extern NSString* boardPositionTableViewAccessibilityIdentifier;
 //@}
 
 // -----------------------------------------------------------------------------
