@@ -112,6 +112,9 @@ enum GameAction
   GameActionSwitchSetupStoneColorToBlack,
   /// @brief Discards all board setup stones. Handicap stones remain.
   GameActionDiscardAllSetupStones,
+  /// @brief Displays the list of board positions. Used only in #UIAreaPad when
+  /// the interface orientation is Portrait.
+  GameActionMoves,
   /// @brief Displays the "Game Info" view with information about the game in
   /// progress.
   GameActionGameInfo,

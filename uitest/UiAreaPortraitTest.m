@@ -83,6 +83,14 @@
   XCTAssertTrue(gameInfoButton.enabled);
   XCUIElement* moreGameActionsButton = [self.uiElementFinder findGameActionButton:GameActionMoreGameActions withUiApplication:app];
   XCTAssertTrue(moreGameActionsButton.enabled);
+  if (self.uiTestDeviceInfo.uiType == UITypePad)
+  {
+    XCUIElement* movesButton = [self.uiElementFinder findGameActionButton:GameActionMoves withUiApplication:app];
+    XCTAssertTrue(movesButton.enabled);
+
+    // Pop up the board position stuff
+    [movesButton tap];
+  }
 
   /// Main menu
   XCUIElement* mainMenuButton = [self.uiElementFinder findMainMenuButtonWithUiApplication:app];

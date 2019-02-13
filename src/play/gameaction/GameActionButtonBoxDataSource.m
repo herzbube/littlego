@@ -255,6 +255,11 @@ enum ButtonBoxSection
       selector = @selector(discardAllSetupStones:);
       break;
     }
+    case GameActionMoves:
+    {
+      // We don't have support for this game action
+      return nil;
+    }
     case GameActionGameInfo:
     {
       imageResourceName = gameInfoButtonIconResource;

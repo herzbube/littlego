@@ -161,6 +161,9 @@
     case GameActionDiscardAllSetupStones:
       buttonName = @"discard";
       break;
+    case GameActionMoves:
+      buttonName = @"Moves";
+      break;
     case GameActionGameInfo:
       buttonName = @"game info";
       break;
