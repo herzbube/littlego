@@ -447,6 +447,9 @@ NSString* whiteStoneImageViewBoardPositionAccessibilityIdentifier = @"White ston
 NSString* noStoneImageViewBoardPositionAccessibilityIdentifier = @"No stone image view";
 NSString* unselectedBackgroundViewBoardPositionAccessibilityIdentifier = @"Unselected background view";
 NSString* selectedBackgroundViewBoardPositionAccessibilityIdentifier = @"Selected background view";
+NSString* leftNavigationBarAccessibilityIdentifier = @"leftNavigationBar";
+NSString* centerNavigationBarAccessibilityIdentifier = @"centerNavigationBar";
+NSString* rightNavigationBarAccessibilityIdentifier = @"rightNavigationBar";
 //@}
 
 // -----------------------------------------------------------------------------

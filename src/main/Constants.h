@@ -1292,6 +1292,9 @@ extern NSString* whiteStoneImageViewBoardPositionAccessibilityIdentifier;
 extern NSString* noStoneImageViewBoardPositionAccessibilityIdentifier;
 extern NSString* unselectedBackgroundViewBoardPositionAccessibilityIdentifier;
 extern NSString* selectedBackgroundViewBoardPositionAccessibilityIdentifier;
+extern NSString* leftNavigationBarAccessibilityIdentifier;
+extern NSString* centerNavigationBarAccessibilityIdentifier;
+extern NSString* rightNavigationBarAccessibilityIdentifier;
 //@}
 
 // -----------------------------------------------------------------------------

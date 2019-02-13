@@ -48,13 +48,64 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the navigation bar of the root view of #UIAreaPlay.
+/// @brief Returns the navigation bar of the root view of #UIAreaPlay. This
+/// method returns the correct result only if the UI type is #UITypePhone.
+/// Raises NSInternalInconsistencyException if the UI type is not #UITypePhone.
 ///
 /// @see PlayRootViewController.
 // -----------------------------------------------------------------------------
 - (XCUIElement*) findPlayRootViewNavigationBar:(XCUIApplication*)app
 {
+  if (self.uiTestDeviceInfo.uiType != UITypePhone)
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unsupported UIType in findPlayRootViewNavigationBar" userInfo:nil];
+
   XCUIElement* playRootViewNavigationBar = app.navigationBars[@"PlayRootView"];
+  return playRootViewNavigationBar;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the navigation bar of the root view of #UIAreaPlay that
+/// contains the specified game action. This method returns the correct result
+/// only if the UI type is #UITypePhonePortraitOnly or #UITypePad. Raises
+/// NSInternalInconsistencyException if the UI type is neither
+/// #UITypePhonePortraitOnly nor #UITypePad.
+///
+/// @see NavigationBarControllerPhonePortraitOnly.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findPlayRootViewNavigationBarContainingGameAction:(enum GameAction)gameAction
+                                                 withUiApplication:(XCUIApplication*)app
+{
+  if (self.uiTestDeviceInfo.uiType == UITypePhone)
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unsupported UIType in findPlayRootViewNavigationBarContainingGameAction" userInfo:nil];
+
+  NSString* navigationBarName;
+
+  switch (gameAction)
+  {
+    case GameActionPass:
+    case GameActionDiscardBoardPosition:
+    case GameActionComputerPlay:
+    case GameActionPause:
+    case GameActionContinue:
+    case GameActionInterrupt:
+    case GameActionScoringStart:
+    case GameActionPlayStart:
+    case GameActionSwitchSetupStoneColorToWhite:
+    case GameActionSwitchSetupStoneColorToBlack:
+    case GameActionDiscardAllSetupStones:
+      navigationBarName = leftNavigationBarAccessibilityIdentifier;
+      break;
+    case GameActionMoves:
+    case GameActionGameInfo:
+    case GameActionMoreGameActions:
+      navigationBarName = rightNavigationBarAccessibilityIdentifier;
+      break;
+    default:
+      navigationBarName = nil;
+      break;
+  }
+
+  XCUIElement* playRootViewNavigationBar = app.navigationBars[navigationBarName];
   return playRootViewNavigationBar;
 }
 
@@ -121,7 +172,12 @@
       break;
   }
 
-  XCUIElement* playRootViewNavigationBar = [self findPlayRootViewNavigationBar:app];
+  XCUIElement* playRootViewNavigationBar;
+  if (self.uiTestDeviceInfo.uiType == UITypePhone)
+    playRootViewNavigationBar = [self findPlayRootViewNavigationBar:app];
+  else
+    playRootViewNavigationBar = [self findPlayRootViewNavigationBarContainingGameAction:gameAction withUiApplication:app];
+
   XCUIElement* button = playRootViewNavigationBar.buttons[buttonName];
   return button;
 }
