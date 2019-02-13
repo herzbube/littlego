@@ -15,6 +15,10 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class UiTestDeviceInfo;
+
+
 // -----------------------------------------------------------------------------
 /// @brief The UiElementFinder class is used by user interface tests (UI tests)
 /// to locate UI elements.
@@ -25,6 +29,8 @@
 // -----------------------------------------------------------------------------
 
 @interface UiElementFinder : NSObject
+
+- (id) initWithUiTestDeviceInfo:(UiTestDeviceInfo*)uiTestDeviceInfo;
 
 - (XCUIElement*) findGameActionButton:(enum GameAction)gameAction withUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findMoreGameActionButton:(enum MoreGameActionsButton)moreGameActionsButton withUiApplication:(XCUIApplication*)app;

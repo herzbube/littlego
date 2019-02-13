@@ -21,6 +21,7 @@
 
 // Project includes
 #import "UiElementFinder.h"
+#import "UiTestDeviceInfo.h"
 
 
 // -----------------------------------------------------------------------------
@@ -28,6 +29,7 @@
 /// interface is in portrait mode.
 // -----------------------------------------------------------------------------
 @interface UiAreaPortraitTest : XCTestCase
+@property(nonatomic, strong) UiTestDeviceInfo* uiTestDeviceInfo;
 @property(nonatomic, strong) UiElementFinder* uiElementFinder;
 @end
 
@@ -49,7 +51,8 @@
 
   [XCUIDevice sharedDevice].orientation = UIDeviceOrientationPortrait;
 
-  self.uiElementFinder = [[UiElementFinder alloc] init];
+  self.uiTestDeviceInfo = [[UiTestDeviceInfo alloc] initWithUiApplication:app];
+  self.uiElementFinder = [[UiElementFinder alloc] initWithUiTestDeviceInfo:self.uiTestDeviceInfo];
 }
 
 // -----------------------------------------------------------------------------
@@ -58,6 +61,7 @@
 - (void) tearDown
 {
   self.uiElementFinder = nil;
+  self.uiTestDeviceInfo = nil;
 }
 
 #pragma mark - Tests

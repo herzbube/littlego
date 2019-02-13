@@ -17,9 +17,35 @@
 
 // Project includes
 #import "UiElementFinder.h"
+#import "UiTestDeviceInfo.h"
+
+
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for UiElementFinder.
+// -----------------------------------------------------------------------------
+@interface UiElementFinder()
+@property(nonatomic, weak) UiTestDeviceInfo* uiTestDeviceInfo;
+@end
 
 
 @implementation UiElementFinder
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a UiElementFinder object.
+///
+/// @note This is the designated initializer of UiElementFinder.
+// -----------------------------------------------------------------------------
+- (id) initWithUiTestDeviceInfo:(UiTestDeviceInfo*)uiTestDeviceInfo
+{
+  // Call designated initializer of superclass (NSObject)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  self.uiTestDeviceInfo = uiTestDeviceInfo;
+
+  return self;
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the navigation bar of the root view of #UIAreaPlay.
