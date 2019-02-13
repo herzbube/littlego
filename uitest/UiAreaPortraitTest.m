@@ -22,6 +22,7 @@
 // Project includes
 #import "UiElementFinder.h"
 #import "UiTestDeviceInfo.h"
+#import "UiTestHelper.h"
 
 
 // -----------------------------------------------------------------------------
@@ -31,6 +32,7 @@
 @interface UiAreaPortraitTest : XCTestCase
 @property(nonatomic, strong) UiTestDeviceInfo* uiTestDeviceInfo;
 @property(nonatomic, strong) UiElementFinder* uiElementFinder;
+@property(nonatomic, strong) UiTestHelper* uiTestHelper;
 @end
 
 
@@ -53,6 +55,7 @@
 
   self.uiTestDeviceInfo = [[UiTestDeviceInfo alloc] initWithUiApplication:app];
   self.uiElementFinder = [[UiElementFinder alloc] initWithUiTestDeviceInfo:self.uiTestDeviceInfo];
+  self.uiTestHelper = [[UiTestHelper alloc] initWithUiElementFinder:self.uiElementFinder];
 }
 
 // -----------------------------------------------------------------------------
@@ -60,6 +63,7 @@
 // -----------------------------------------------------------------------------
 - (void) tearDown
 {
+  self.uiTestHelper = nil;
   self.uiElementFinder = nil;
   self.uiTestDeviceInfo = nil;
 }
@@ -114,17 +118,73 @@
   XCTAssertTrue([statusLabel.label isEqualToString:@"Game started Black to move"]);  // Newline character is converted to space
 
   // Board positions
-  NSArray* boardPositionCells = [self.uiElementFinder findBoardPositionCellsWithUiApplication:app];
-  XCTAssertEqual(boardPositionCells.count, 1);
-  XCUIElement* firstBoardPositionCell = boardPositionCells[0];
-  XCUIElement* intersectionLabel = [self.uiElementFinder findIntersectionLabelInBoardPositionCell:firstBoardPositionCell];
-  XCTAssertTrue([intersectionLabel.label isEqualToString:@"Start of the game"]);
-  XCUIElement* boardPositionLabel = [self.uiElementFinder findBoardPositionLabelInBoardPositionCell:firstBoardPositionCell];
-  XCTAssertTrue([boardPositionLabel.label isEqualToString:@"Handicap: 0, Komi: 7½"]);
-  XCUIElement* capturedStonesLabel = [self.uiElementFinder findCapturedStonesLabelInBoardPositionCell:firstBoardPositionCell];
-  XCTAssertFalse(capturedStonesLabel.exists);
-  XCTAssertEqual(firstBoardPositionCell.images.count, 0);
-  XCTAssertTrue(firstBoardPositionCell.selected);
+  if (self.uiTestDeviceInfo.uiType == UITypePhone)
+  {
+    NSArray* boardPositionCells = [self.uiElementFinder findBoardPositionCellsWithUiApplication:app];
+    XCTAssertEqual(boardPositionCells.count, 1);
+    XCUIElement* firstBoardPositionCell = boardPositionCells[0];
+
+    XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                              doesContentOfBoardPositionCell:firstBoardPositionCell
+                              matchBoardPositionLabelContent:@"Handicap: 0, Komi: 7½"
+                                    intersectionLabelContent:@"Start of the game"
+                                  capturedStonesLabelContent:nil
+                                                   moveColor:GoColorNone]);
+    XCTAssertTrue(firstBoardPositionCell.selected);
+  }
+  else if (self.uiTestDeviceInfo.uiType == UITypePhonePortraitOnly)
+  {
+    XCUIElement* currentBoardPositionView = [self.uiElementFinder findCurrentBoardPositionCellWithUiApplication:app];
+    XCTAssertTrue(currentBoardPositionView.exists);
+
+    XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                              doesContentOfBoardPositionCell:currentBoardPositionView
+                              matchBoardPositionLabelContent:@"H: 0"
+                                    intersectionLabelContent:@"K: 7½"
+                                  capturedStonesLabelContent:nil
+                                                   moveColor:GoColorNone]);
+
+    [currentBoardPositionView tap];
+
+    NSArray* boardPositionCells = [self.uiElementFinder findBoardPositionCellsWithUiApplication:app];
+    XCTAssertEqual(boardPositionCells.count, 1);
+    XCUIElement* firstBoardPositionCell = boardPositionCells[0];
+
+    XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                              doesContentOfBoardPositionCell:firstBoardPositionCell
+                              matchBoardPositionLabelContent:@"H: 0"
+                                    intersectionLabelContent:@"K: 7½"
+                                  capturedStonesLabelContent:nil
+                                                   moveColor:GoColorNone]);
+  }
+  else if (self.uiTestDeviceInfo.uiType == UITypePad)
+  {
+    XCUIElement* currentBoardPositionView = [self.uiElementFinder findCurrentBoardPositionCellWithUiApplication:app];
+    XCTAssertTrue(currentBoardPositionView.exists);
+
+    XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                              doesContentOfBoardPositionCell:currentBoardPositionView
+                              matchBoardPositionLabelContent:@"Handicap: 0, Komi: 7½"
+                                    intersectionLabelContent:@"Start of the game"
+                                  capturedStonesLabelContent:nil
+                                                   moveColor:GoColorNone]);
+
+    NSArray* boardPositionCells = [self.uiElementFinder findBoardPositionCellsWithUiApplication:app];
+    XCTAssertEqual(boardPositionCells.count, 1);
+    XCUIElement* firstBoardPositionCell = boardPositionCells[0];
+
+    XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                              doesContentOfBoardPositionCell:firstBoardPositionCell
+                              matchBoardPositionLabelContent:@"Handicap: 0, Komi: 7½"
+                                    intersectionLabelContent:@"Start of the game"
+                                  capturedStonesLabelContent:nil
+                                                   moveColor:GoColorNone]);
+    XCTAssertTrue(firstBoardPositionCell.selected);
+  }
+  else
+  {
+    XCTAssertTrue(false);
+  }
 }
 
 // -----------------------------------------------------------------------------

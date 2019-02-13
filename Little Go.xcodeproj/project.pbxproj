@@ -440,6 +440,7 @@
 		CDB49E32220DF90D006DC1A4 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35A148C2C26004E1A0C /* Constants.m */; };
 		CDB49E35220EDAF6006DC1A4 /* UiTestDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB49E34220EDAF6006DC1A4 /* UiTestDeviceInfo.m */; };
 		CDB49E36220F4045006DC1A4 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FA1A915085002FCD78 /* LayoutManager.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
+		CDB49E3922148DE3006DC1A4 /* UiTestHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB49E3722148DE2006DC1A4 /* UiTestHelper.m */; };
 		CDB5AE251AC5A86D0075C8DC /* MagnifyingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */; };
 		CDB5AE261AC5A86D0075C8DC /* MagnifyingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */; };
 		CDB5AE291AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */; };
@@ -1056,6 +1057,8 @@
 		CDB49E31220A07A6006DC1A4 /* UiElementFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiElementFinder.h; sourceTree = "<group>"; };
 		CDB49E33220EDAF5006DC1A4 /* UiTestDeviceInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiTestDeviceInfo.h; sourceTree = "<group>"; };
 		CDB49E34220EDAF6006DC1A4 /* UiTestDeviceInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiTestDeviceInfo.m; sourceTree = "<group>"; };
+		CDB49E3722148DE2006DC1A4 /* UiTestHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiTestHelper.m; sourceTree = "<group>"; };
+		CDB49E3822148DE3006DC1A4 /* UiTestHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiTestHelper.h; sourceTree = "<group>"; };
 		CDB5AE231AC5A86D0075C8DC /* MagnifyingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagnifyingView.h; sourceTree = "<group>"; };
 		CDB5AE241AC5A86D0075C8DC /* MagnifyingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagnifyingView.m; sourceTree = "<group>"; };
 		CDB5AE271AC5ABA60075C8DC /* MagnifyingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagnifyingViewController.h; sourceTree = "<group>"; };
@@ -2137,12 +2140,14 @@
 		CDB49E232208ABA3006DC1A4 /* uitest */ = {
 			isa = PBXGroup;
 			children = (
+				CDB49E262208ABA3006DC1A4 /* Info.plist */,
 				CDB49E242208ABA3006DC1A4 /* UiAreaPortraitTest.m */,
 				CDB49E31220A07A6006DC1A4 /* UiElementFinder.h */,
 				CDB49E2E220A0615006DC1A4 /* UiElementFinder.m */,
-				CDB49E262208ABA3006DC1A4 /* Info.plist */,
 				CDB49E33220EDAF5006DC1A4 /* UiTestDeviceInfo.h */,
 				CDB49E34220EDAF6006DC1A4 /* UiTestDeviceInfo.m */,
+				CDB49E3822148DE3006DC1A4 /* UiTestHelper.h */,
+				CDB49E3722148DE2006DC1A4 /* UiTestHelper.m */,
 			);
 			path = uitest;
 			sourceTree = "<group>";
@@ -3312,6 +3317,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDB49E30220A06C7006DC1A4 /* UiElementFinder.m in Sources */,
+				CDB49E3922148DE3006DC1A4 /* UiTestHelper.m in Sources */,
 				CDB49E252208ABA3006DC1A4 /* UiAreaPortraitTest.m in Sources */,
 				CDB49E36220F4045006DC1A4 /* LayoutManager.m in Sources */,
 				CDB49E32220DF90D006DC1A4 /* Constants.m in Sources */,
