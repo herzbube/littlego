@@ -394,20 +394,30 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the button in the UI area "Play" that that pops up the main
-/// menu.
+/// menu. This method returns the correct result only if the UI type is
+/// #UITypePhone. Raises NSInternalInconsistencyException if the UI type is not
+/// #UITypePhone.
 // -----------------------------------------------------------------------------
 - (XCUIElement*) findMainMenuButtonWithUiApplication:(XCUIApplication*)app
 {
+  if (self.uiTestDeviceInfo.uiType != UITypePhone)
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unsupported UIType in findMainMenuButtonWithUiApplication" userInfo:nil];
+
   XCUIElement* playRootViewNavigationBar = [self findPlayRootViewNavigationBar:app];
   XCUIElement* button = playRootViewNavigationBar.buttons[@"main menu"];
   return button;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the main menu navigation bar.
+/// @brief Returns the main menu navigation bar. This method returns the correct
+/// result only if the UI type is #UITypePhone. Raises
+/// NSInternalInconsistencyException if the UI type is not #UITypePhone.
 // -----------------------------------------------------------------------------
 - (XCUIElement*) findMainMenuNavigationBarWithUiApplication:(XCUIApplication*)app
 {
+  if (self.uiTestDeviceInfo.uiType != UITypePhone)
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unsupported UIType in findMainMenuNavigationBarWithUiApplication" userInfo:nil];
+
   XCUIElement* navigationBar = app.navigationBars[@"Main Menu"];
   return navigationBar;
 }

@@ -93,8 +93,11 @@
   }
 
   /// Main menu
-  XCUIElement* mainMenuButton = [self.uiElementFinder findMainMenuButtonWithUiApplication:app];
-  XCTAssertTrue(mainMenuButton.enabled);
+  if (self.uiTestDeviceInfo.uiType == UITypePhone)
+  {
+    XCUIElement* mainMenuButton = [self.uiElementFinder findMainMenuButtonWithUiApplication:app];
+    XCTAssertTrue(mainMenuButton.enabled);
+  }
 
   // Board position navigation
   XCUIElement* rewindToStartButton = [self.uiElementFinder findBoardPositionNavigationButton:BoardPositionNavigationButtonRewindToStart withUiApplication:app];
