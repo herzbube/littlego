@@ -15,10 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-// See the section "Automated UI tests" in the document TESTING for details
-// about how UI testing works.
-
-
 // Project includes
 #import "UiElementFinder.h"
 #import "UiTestDeviceInfo.h"
@@ -26,17 +22,20 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The UiAreaPortraitTest class tests the #UIAreaPlay when the user
-/// interface is in portrait mode.
+/// @brief The PortraitBasicTest class tests a few basic functions when in
+/// interface orientation Portrait.
+///
+/// See the section "Automated UI tests" in the document TESTING for details
+/// about how UI testing works.
 // -----------------------------------------------------------------------------
-@interface UiAreaPortraitTest : XCTestCase
+@interface PortraitBasicTest : XCTestCase
 @property(nonatomic, strong) UiTestDeviceInfo* uiTestDeviceInfo;
 @property(nonatomic, strong) UiElementFinder* uiElementFinder;
 @property(nonatomic, strong) UiTestHelper* uiTestHelper;
 @end
 
 
-@implementation UiAreaPortraitTest
+@implementation PortraitBasicTest
 
 #pragma mark - setUp and tearDown
 
@@ -188,10 +187,13 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Test that all UI areas can be activated.
+/// @brief Test that all UI areas can be activated for #UITypePhone.
 // -----------------------------------------------------------------------------
-- (void) testActivateAllUiAreas
+- (void) testActivateAllUiAreas_UiTypePhone
 {
+  if (self.uiTestDeviceInfo.uiType != UITypePhone)
+    return;
+
   XCUIApplication* app = [[XCUIApplication alloc] init];
 
   // Go to main menu
@@ -223,6 +225,87 @@
   XCUIElement* backButton = [self.uiElementFinder findBackButtonPlayWithUiApplication:app];
   XCTAssertTrue(backButton.enabled);
   [backButton tap];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Test that all UI areas can be activated for #UITypePhonePortraitOnly
+/// and #UITypePad.
+// -----------------------------------------------------------------------------
+- (void) testActivateAllUiAreas_NotUiTypePhone
+{
+  if (self.uiTestDeviceInfo.uiType == UITypePhone)
+    return;
+
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+
+  NSArray* uiAreas;
+  if (self.uiTestDeviceInfo.uiType == UITypePhonePortraitOnly)
+  {
+    uiAreas = @[[NSNumber numberWithInt:UIAreaSettings],
+                [NSNumber numberWithInt:UIAreaArchive],
+                [NSNumber numberWithInt:UIAreaHelp],
+                [NSNumber numberWithInt:UIAreaPlay],
+                // Last entry so that the first loop ends while the
+                // "More" navigation controller is visible
+                [NSNumber numberWithInt:UIAreaNavigation]];
+  }
+  else
+  {
+    uiAreas = @[[NSNumber numberWithInt:UIAreaSettings],
+                [NSNumber numberWithInt:UIAreaArchive],
+                [NSNumber numberWithInt:UIAreaHelp],
+                [NSNumber numberWithInt:UIAreaDiagnostics],
+                [NSNumber numberWithInt:UIAreaAbout],
+                [NSNumber numberWithInt:UIAreaSourceCode],
+                [NSNumber numberWithInt:UIAreaPlay],
+                // Last entry so that the first loop ends while the
+                // "More" navigation controller is visible
+                [NSNumber numberWithInt:UIAreaNavigation]];
+  }
+
+  for (NSNumber* uiAreaAsNumber in uiAreas)
+  {
+    enum UIArea uiArea = uiAreaAsNumber.intValue;
+
+    XCUIElement* uiAreaElement = [self.uiElementFinder findUiAreaElement:uiArea withUiApplication:app];
+    [uiAreaElement tap];
+
+    XCUIElement* uiAreaNavigationBar = [self.uiElementFinder findUiAreaNavigationBar:uiArea withUiApplication:app];
+    XCTAssertTrue(uiAreaNavigationBar.exists);
+  }
+
+  if (self.uiTestDeviceInfo.uiType == UITypePhonePortraitOnly)
+  {
+    uiAreas = @[[NSNumber numberWithInt:UIAreaDiagnostics],
+                [NSNumber numberWithInt:UIAreaAbout],
+                [NSNumber numberWithInt:UIAreaSourceCode],
+                [NSNumber numberWithInt:UIAreaLicenses],
+                [NSNumber numberWithInt:UIAreaCredits],
+                [NSNumber numberWithInt:UIAreaChangelog]];
+  }
+  else
+  {
+    uiAreas = @[[NSNumber numberWithInt:UIAreaLicenses],
+                [NSNumber numberWithInt:UIAreaCredits],
+                [NSNumber numberWithInt:UIAreaChangelog]];
+  }
+
+  for (NSNumber* uiAreaAsNumber in uiAreas)
+  {
+    enum UIArea uiArea = uiAreaAsNumber.intValue;
+
+    XCUIElement* uiAreaElement = [self.uiElementFinder findUiAreaElement:uiArea withUiApplication:app];
+    [uiAreaElement tap];
+
+    XCUIElement* uiAreaNavigationBar = [self.uiElementFinder findUiAreaNavigationBar:uiArea withUiApplication:app];
+    XCTAssertTrue(uiAreaNavigationBar.exists);
+
+    XCUIElement* backButton = [self.uiElementFinder findBackButtonMoreFromUiAreaNavigationBar:uiAreaNavigationBar];
+    [backButton tap];
+
+    XCUIElement* moreNavigationBar = [self.uiElementFinder findUiAreaNavigationBar:UIAreaNavigation withUiApplication:app];
+    XCTAssertTrue(moreNavigationBar.exists);
+  }
 }
 
 @end

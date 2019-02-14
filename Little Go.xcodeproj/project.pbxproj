@@ -435,7 +435,7 @@
 		CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
-		CDB49E252208ABA3006DC1A4 /* UiAreaPortraitTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB49E242208ABA3006DC1A4 /* UiAreaPortraitTest.m */; };
+		CDB49E252208ABA3006DC1A4 /* PortraitBasicTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB49E242208ABA3006DC1A4 /* PortraitBasicTest.m */; };
 		CDB49E30220A06C7006DC1A4 /* UiElementFinder.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB49E2E220A0615006DC1A4 /* UiElementFinder.m */; };
 		CDB49E32220DF90D006DC1A4 /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35A148C2C26004E1A0C /* Constants.m */; };
 		CDB49E35220EDAF6006DC1A4 /* UiTestDeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB49E34220EDAF6006DC1A4 /* UiTestDeviceInfo.m */; };
@@ -1051,7 +1051,7 @@
 		CDB457B2147F14480043EDE4 /* UiUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiUtilities.h; sourceTree = "<group>"; };
 		CDB457B3147F14490043EDE4 /* UiUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiUtilities.m; sourceTree = "<group>"; };
 		CDB49E222208ABA2006DC1A4 /* UI tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "UI tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		CDB49E242208ABA3006DC1A4 /* UiAreaPortraitTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = UiAreaPortraitTest.m; sourceTree = "<group>"; };
+		CDB49E242208ABA3006DC1A4 /* PortraitBasicTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PortraitBasicTest.m; sourceTree = "<group>"; };
 		CDB49E262208ABA3006DC1A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		CDB49E2E220A0615006DC1A4 /* UiElementFinder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UiElementFinder.m; sourceTree = "<group>"; };
 		CDB49E31220A07A6006DC1A4 /* UiElementFinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiElementFinder.h; sourceTree = "<group>"; };
@@ -2141,7 +2141,7 @@
 			isa = PBXGroup;
 			children = (
 				CDB49E262208ABA3006DC1A4 /* Info.plist */,
-				CDB49E242208ABA3006DC1A4 /* UiAreaPortraitTest.m */,
+				CDB49E242208ABA3006DC1A4 /* PortraitBasicTest.m */,
 				CDB49E31220A07A6006DC1A4 /* UiElementFinder.h */,
 				CDB49E2E220A0615006DC1A4 /* UiElementFinder.m */,
 				CDB49E33220EDAF5006DC1A4 /* UiTestDeviceInfo.h */,
@@ -3318,7 +3318,7 @@
 			files = (
 				CDB49E30220A06C7006DC1A4 /* UiElementFinder.m in Sources */,
 				CDB49E3922148DE3006DC1A4 /* UiTestHelper.m in Sources */,
-				CDB49E252208ABA3006DC1A4 /* UiAreaPortraitTest.m in Sources */,
+				CDB49E252208ABA3006DC1A4 /* PortraitBasicTest.m in Sources */,
 				CDB49E36220F4045006DC1A4 /* LayoutManager.m in Sources */,
 				CDB49E32220DF90D006DC1A4 /* Constants.m in Sources */,
 				CDB49E35220EDAF6006DC1A4 /* UiTestDeviceInfo.m in Sources */,

@@ -44,6 +44,8 @@
 - (XCUIElement*) findBackButtonPlayWithUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findBackButtonMainMenuFromUiAreaNavigationBar:(XCUIElement*)uiAreaNavigationBar;
 
+- (XCUIElement*) findBackButtonMoreFromUiAreaNavigationBar:(XCUIElement*)uiAreaNavigationBar;
+
 - (XCUIElement*) findStatusLabelWithUiApplication:(XCUIApplication*)app;
 
 - (XCUIElement*) findCurrentBoardPositionCellWithUiApplication:(XCUIApplication*)app;

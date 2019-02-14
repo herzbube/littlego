@@ -308,6 +308,12 @@
 
   switch (uiArea)
   {
+    case UIAreaPlay:
+      if (self.uiTestDeviceInfo.uiType == UITypePhone)
+        uiElementName = nil;  // has no UI element
+      else
+        uiElementName = @"Play";
+      break;
     case UIAreaSettings:
       uiElementName = @"Settings";
       break;
@@ -335,13 +341,30 @@
     case UIAreaChangelog:
       uiElementName = @"Changelog";
       break;
-    case UIAreaPlay:  // has no UI element
+    case UIAreaNavigation:
+      if (self.uiTestDeviceInfo.uiType == UITypePhone)
+        uiElementName = nil;  // has no UI element
+      else
+        uiElementName = @"More";
+      break;
     default:
       uiElementName = nil;
       break;
   }
 
-  XCUIElement* uiElement = app.tables.cells.staticTexts[uiElementName];
+  XCUIElement* uiElement;
+
+  if (self.uiTestDeviceInfo.uiType == UITypePhone)
+  {
+    uiElement = app.tables.cells.staticTexts[uiElementName];
+  }
+  else
+  {
+    uiElement = app.tabBars.buttons[uiElementName];
+    if (! uiElement.exists)
+      uiElement = app.cells.staticTexts[uiElementName];
+  }
+
   return uiElement;
 }
 
@@ -440,6 +463,16 @@
 - (XCUIElement*) findBackButtonMainMenuFromUiAreaNavigationBar:(XCUIElement*)uiAreaNavigationBar
 {
   XCUIElement* button = uiAreaNavigationBar.buttons[@"Main Menu"];
+  return button;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the back button in the specified UI area navigation bar that
+/// returns the user to the "More" navigation controller.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findBackButtonMoreFromUiAreaNavigationBar:(XCUIElement*)uiAreaNavigationBar
+{
+  XCUIElement* button = uiAreaNavigationBar.buttons[@"More"];
   return button;
 }
 
