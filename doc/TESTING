@@ -47,6 +47,50 @@ runs not only UI tests, but unit tests as well (see section above).
 
 See NOTES.Build for technical details about the "UI tests" build target.
 
+Test strategy notes:
+- There are no UI tests that check that the board is drawn correctly.
+- The UIAccessibilityContainer category is used to expose model data as UI
+  elements for which there ***SHOULD*** be content drawn with CoreGraphics.
+  Examples:
+  - The board size is exposed as a line grid UI element.
+  - If a GoPoint's stone state indicates that an intersection should be occupied
+    by a black stone, then a UI element for that black stone is exposed.
+  - If the user preference "mark last move" is enabled, a UI element for the
+    "Last move" marker is exposed.
+  Whether or not the model data exposed by UIAccessibilityContainer is actually
+  drawn on the screen is not tested, because that is simply not possible without
+  comparing screenshots. This means that UI tests cannot detect faulty drawing
+  routines. It also means that UI tests cannot detect whether zooming works
+  correctly.
+- There are no UI tests that check what happens to the user interface while a
+  pan gesture to place a stone is in progress. For instance, there is no test
+  that checks whether a blue-colored stone is displayed, and no test that checks
+  the text that is displayed in the status view. The reason is that the test API
+  is limited and does not allow the test code to do something while a gesture
+  is in progress.
+
+Technical notes:
+- The UI testing API is layered on top of the accessibility API. The
+  accessibility API is relatively simple and is described in the
+  "Accessibility Programming Guide for iOS" "[1].
+- UI tests launch an app and interact with the launched app via XCUIApplication.
+- UI tests access UI elements through a tree of XCUIElement objects.
+- As an alternative UI tests can also access locations on the screen via
+  XCUICoordinate.
+- XCUIElement objects are found by running queries that search the object tree.
+  A query is represented by an XCUIElementQuery object. A query locates UI
+  elements via their type and/or a string identifier.
+- Because many UIKit classes (UIView et al.) implement default accessibility
+  behaviour, UI tests can find many UI elements even though the app was not
+  designed with accessibility in mind. For instance, a UILabel exposes itself
+  to the accessibility layer by using its text as the accessibility label.
+- UI components that are not normally accessible (e.g. things drawn in
+  CoreGraphics) can be made accessible if their container overrides methods from
+  the UIAccessibilityContainer category [2].
+
+[1] https://developer.apple.com/library/ios/#documentation/UserExperience/Conceptual/iPhoneAccessibility/Introduction/Introduction.html
+[2] https://developer.apple.com/documentation/uikit/accessibility/uiaccessibilitycontainer?language=objc
+
 
 Script for manual testing
 -------------------------
@@ -1851,7 +1895,7 @@ Board setup and player setup tests in a computer vs. computer game
   - In the "Game info" screen, check that the game is paused.
 
 
-User preferences test
+Board setup user preferences test
 - In the board setup settings, disable the "auto-enable board setup" user
   preference.
 - Start a new human vs. human game
