@@ -47,7 +47,9 @@
   if (numericValue.x < 1 || numericValue.x > 19 || numericValue.y < 1 || numericValue.y > 19)
   {
     NSString* errorMessage = @"Numeric vertex is invalid";
+#ifndef LITTLEGO_UITESTS
     DDLogError(@"%@: %@", self, errorMessage);
+#endif
     NSException* exception = [NSException exceptionWithName:NSRangeException
                                                      reason:errorMessage
                                                    userInfo:nil];
@@ -84,7 +86,9 @@
   if (! stringValue || [stringValue length] < 2 || [stringValue length] > 3)
   {
     NSString* errorMessage = @"String vertex is nil or otherwise malformed";
+#ifndef LITTLEGO_UITESTS
     DDLogError(@"%@: %@", self, errorMessage);
+#endif
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
                                                    userInfo:nil];
@@ -102,7 +106,9 @@
   if (charLetterAxisCompound == charI)
   {
     NSString* errorMessage = @"Letter 'I' may not be used";
+#ifndef LITTLEGO_UITESTS
     DDLogError(@"%@: %@", self, errorMessage);
+#endif
     NSException* exception = [NSException exceptionWithName:NSRangeException
                                                      reason:errorMessage
                                                    userInfo:nil];
@@ -118,7 +124,9 @@
   if (numericValue.x < 1 || numericValue.x > 19 || numericValue.y < 1 || numericValue.y > 19)
   {
     NSString* errorMessage = @"String vertex is invalid";
+#ifndef LITTLEGO_UITESTS
     DDLogError(@"%@: %@", self, errorMessage);
+#endif
     NSException* exception = [NSException exceptionWithName:NSRangeException
                                                      reason:errorMessage
                                                    userInfo:nil];

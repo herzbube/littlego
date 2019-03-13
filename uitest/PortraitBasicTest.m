@@ -19,6 +19,7 @@
 #import "UiElementFinder.h"
 #import "UiTestDeviceInfo.h"
 #import "UiTestHelper.h"
+#import "../src/utility/AccessibilityUtility.h"
 
 
 // -----------------------------------------------------------------------------
@@ -70,8 +71,8 @@
 #pragma mark - Tests
 
 // -----------------------------------------------------------------------------
-/// @brief Test that when the app starts up a number of UI elements are present
-/// and have the correct state.
+/// @brief Test that when the app starts up a number of non-board UI elements
+/// are present and have the correct state.
 // -----------------------------------------------------------------------------
 - (void) testUiAreaPlayDefaultState
 {
@@ -306,6 +307,89 @@
     XCUIElement* moreNavigationBar = [self.uiElementFinder findUiAreaNavigationBar:UIAreaNavigation withUiApplication:app];
     XCTAssertTrue(moreNavigationBar.exists);
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Test that when the app starts up a number of board UI elements
+/// are present.
+// -----------------------------------------------------------------------------
+- (void) testBoardDefaultState
+{
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+
+  enum GoBoardSize boardSize = GoBoardSize9;
+
+  UIAccessibilityElement* boardSizeAccessibilityElement = [AccessibilityUtility uiAccessibilityElementInContainer:self forBoardSize:boardSize];
+  XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                                matchingUiElementExistsFor:boardSizeAccessibilityElement]);
+
+  UIAccessibilityElement* starPointsAccessibilityElement =
+    [AccessibilityUtility uiAccessibilityElementInContainer:self forStarPointVertexes:@[@"C3", @"G3", @"C7", @"G7"]];
+  XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                                matchingUiElementExistsFor:starPointsAccessibilityElement]);
+
+  UIAccessibilityElement* handicapPointsAccessibilityElement =
+    [AccessibilityUtility uiAccessibilityElementInContainer:self forHandicapPointVertexes:@[]];
+  XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                                matchingUiElementDoesNotExistFor:handicapPointsAccessibilityElement]);
+
+  UIAccessibilityElement* blackStonePointsAccessibilityElement =
+    [AccessibilityUtility uiAccessibilityElementInContainer:self
+                                      forStonePointVertexes:@[]
+                                                  withColor:GoColorBlack];
+  XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                          matchingUiElementDoesNotExistFor:blackStonePointsAccessibilityElement]);
+
+  UIAccessibilityElement* whiteStonePointsAccessibilityElement =
+    [AccessibilityUtility uiAccessibilityElementInContainer:self
+                                      forStonePointVertexes:@[]
+                                                  withColor:GoColorWhite];
+  XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                          matchingUiElementDoesNotExistFor:whiteStonePointsAccessibilityElement]);
+
+  UIAccessibilityElement* lineGridAccessibilityElement = [AccessibilityUtility uiAccessibilityElementInContainer:self forLineGridWithSize:boardSize];
+  XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                                matchingUiElementExistsFor:lineGridAccessibilityElement]);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Test that a stone can be placed and the computer player responds with
+/// the correct move.
+// -----------------------------------------------------------------------------
+- (void) testBoardCanPlayAndComputerResponds
+{
+  XCUIApplication* app = [[XCUIApplication alloc] init];
+
+  enum GoBoardSize boardSize = GoBoardSize9;
+
+  UIAccessibilityElement* blackStonePointsAccessibilityElement =
+  [AccessibilityUtility uiAccessibilityElementInContainer:self
+                                    forStonePointVertexes:@[@"C8"]
+                                                withColor:GoColorBlack];
+  XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                          matchingUiElementDoesNotExistFor:blackStonePointsAccessibilityElement]);
+
+  UIAccessibilityElement* whiteStonePointsAccessibilityElement =
+  [AccessibilityUtility uiAccessibilityElementInContainer:self
+                                    forStonePointVertexes:@[@"F3"]
+                                                withColor:GoColorWhite];
+  XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                          matchingUiElementDoesNotExistFor:whiteStonePointsAccessibilityElement]);
+
+  [self.uiTestHelper tapIntersection:@"C8"
+                     onBoardWithSize:boardSize
+                   withUiApplication:app];
+
+  // Wait for the computer player to respond. The opening book is responsible
+  // for it to make the expected move.
+  [self.uiTestHelper waitWithUiApplication:app
+                        onBehalfOfTestCase:self
+                forExistsMatchingUiElement:whiteStonePointsAccessibilityElement];
+
+  XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                                matchingUiElementExistsFor:blackStonePointsAccessibilityElement]);
+  XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                                matchingUiElementExistsFor:whiteStonePointsAccessibilityElement]);
 }
 
 @end

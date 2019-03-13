@@ -28,11 +28,32 @@
 
 - (id) initWithUiElementFinder:(UiElementFinder*)uiElementFinder;
 
+- (CGVector) vectorFromStringVertex:(NSString*)vertex
+                    onBoardWithSize:(enum GoBoardSize)boardSize;
+
+- (void) tapIntersection:(NSString*)vertex
+         onBoardWithSize:(enum GoBoardSize)boardSize
+       withUiApplication:(XCUIApplication*)app;
+
 - (bool) verifyWithUiApplication:(XCUIApplication*)app
   doesContentOfBoardPositionCell:(XCUIElement*)boardPositionCell
   matchBoardPositionLabelContent:(NSString*)boardPositionLabelContent
         intersectionLabelContent:(NSString*)intersectionLabelContent
       capturedStonesLabelContent:(NSString*)capturedStonesLabelContent
                        moveColor:(enum GoColor)moveColor;
+
+- (bool) verifyWithUiApplication:(XCUIApplication*)app
+      matchingUiElementExistsFor:(UIAccessibilityElement*)accessibilityElement;
+- (bool) verifyWithUiApplication:(XCUIApplication*)app
+  matchingUiElementDoesNotExistFor:(UIAccessibilityElement*)accessibilityElement;
+
+- (void) waitWithUiApplication:(XCUIApplication*)app
+            onBehalfOfTestCase:(XCTestCase*)testCase
+    forExistsMatchingUiElement:(UIAccessibilityElement*)accessibilityElement
+                   waitSeconds:(NSTimeInterval)seconds;
+
+- (void) waitWithUiApplication:(XCUIApplication*)app
+            onBehalfOfTestCase:(XCTestCase*)testCase
+    forExistsMatchingUiElement:(UIAccessibilityElement*)accessibilityElement;
 
 @end

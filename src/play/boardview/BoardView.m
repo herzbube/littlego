@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2014-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2014-2019 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 
 // Project includes
 #import "BoardView.h"
+#import "BoardViewAccessibility.h"
 #import "BoardTileView.h"
 #import "../model/BoardViewMetrics.h"
 #import "../model/BoardViewModel.h"
@@ -28,6 +29,7 @@
 // -----------------------------------------------------------------------------
 @interface BoardView()
 @property(nonatomic, assign) float crossHairPointDistanceFromFinger;
+@property(nonatomic, retain) BoardViewAccessibility* boardViewAccessibility;
 @end
 
 
@@ -46,9 +48,12 @@
   self = [super initWithFrame:rect];
   if (! self)
     return nil;
+
   self.crossHairPoint = nil;
   self.crossHairPointIsLegalMove = true;
   self.crossHairPointIsIllegalReason = GoMoveIsIllegalReasonUnknown;
+  self.boardViewAccessibility = [[[BoardViewAccessibility alloc] initWithBoardView:self] autorelease];
+
   return self;
 }
 
@@ -58,6 +63,8 @@
 - (void) dealloc
 {
   self.crossHairPoint = nil;
+  self.boardViewAccessibility = nil;
+
   [super dealloc];
 }
 
@@ -99,6 +106,27 @@
     [tileView notifyLayerDelegates:BVLDEventCrossHairChanged eventInfo:point];
     [tileView delayedDrawLayers];
   }
+}
+
+#pragma mark - UIAccessibilityElement overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIAccessibilityElement method.
+// -----------------------------------------------------------------------------
+- (BOOL) isAccessibilityElement
+{
+  // Because BoardView is an UIAccessibilityContainer
+  return NO;
+}
+
+#pragma mark - UIAccessibilityContainer overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIAccessibilityContainer method.
+// -----------------------------------------------------------------------------
+- (NSArray*) accessibilityElements
+{
+  return self.boardViewAccessibility.accessibilityElements;
 }
 
 @end
