@@ -72,6 +72,8 @@
 {
   [self removeNotificationResponders];
 
+  self.accessibilityElements = nil;
+  
   [super dealloc];
 }
 
