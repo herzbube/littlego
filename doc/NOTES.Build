@@ -218,18 +218,31 @@ Configuration settings for the "Unit tests" target
 Configuration settings for the "UI tests" target
 - All tests in this target are what Apple used to call "user interface tests"
 - These tests do not interface with the app code at all, except for making use
-  of some enumerations, so the regular application source code files do not need
-  to be built for the "UI tests" target and therefore must not be added to the
-  "UI tests" target.
+  of some enumerations, constants and utility classes, so the vast majority of
+  the regular application source code files do not need to be built for the
+  "UI tests" target and therefore must not be added to the "UI tests" target.
 - Because UI test code makes use of enumerations and accessibility identifiers
   defined in Constants.h, the "UI tests" target has the same "Prefix header"
   build settings as the main application target.
-- Compiling Prefix.pch and Constants.h pulls in various third party library
+- Compiling Prefix.pch and Constants.m pulls in various third party library
   headers and types that are not available because the "UI tests" target build
   settings do not define any compiler search paths for finding those headers.
   To prevent this, the "UI tests" target defines the preprocessor macro
   LITTLEGO_UITESTS. The effect is that certain #include statements and pieces of
   code are not compiled and the dependency on third party libraries goes away.
+- The "UI tests" target is built with ARC enabled, but regular application
+  source code is still written for manual memory management. This means that
+  those few regular application source code files that ***ARE*** built for the
+  "Unit tests" target need to be built with the -fno-objc-arc compiler flag.
+  File-specific compiler flags can be specified like this:
+  - Select the main project in the standard editor on the left hand side of the
+    Xcode UI
+  - On the next screen select the "UI tests" target
+  - Select the tab "Build phases"
+  - In the "Compile Sources" build phase the files are listed that are built
+    for the currently selected target
+  - The table has a "Compiler flags" column where you can enter file-specific
+    compiler flags.
 
 
 Xcode schemes

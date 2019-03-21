@@ -23,7 +23,7 @@
 // -----------------------------------------------------------------------------
 /// @brief The NavigationBarControllerPhonePortraitOnly class is responsible for
 /// managing the navigation bar above the Go board in #UIAreaPlay for
-/// #UITypePhonePortraitOnly.
+/// #UITypePhonePortraitOnly and #UITypePad.
 ///
 /// The navigation bar that the user sees actually consists of 3 different
 /// UINavigationBar instances:

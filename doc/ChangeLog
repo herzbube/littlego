@@ -1,4 +1,39 @@
 --------------------------------------------------------------------------------
+Version 1.5.0 (January 17 2019)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- Added a board setup mode (#276). When you start a new game, instead of
+  beginning to play you can now switch to board setup mode. In this mode you can
+  place black or white stones in any order and combination to set up the initial
+  board before you begin to play moves. In addition to placing stones, you can
+  select the side which is to play the first move. Read the "Board setup"
+  section in the in-game manual for a detailed feature description.
+
+========
+Bugfixes
+========
+- Fix for a memory leak in UnarchiveGameCommand (#331)
+
+===========
+Regressions
+===========
+- None
+
+=================
+Technical changes
+=================
+- Added an initial set of a few automated UI tests (#134)
+
+=================
+GitHub issue list
+=================
+A list of all issues closed for this release is available on GitHub:
+https://github.com/herzbube/littlego/milestone/17?closed=1
+
+
+--------------------------------------------------------------------------------
 Version 1.4.1 (January 17 2019)
 --------------------------------------------------------------------------------
 ========
@@ -31,6 +66,7 @@ GitHub issue list
 A list of all issues closed for this release is available on GitHub:
 https://github.com/herzbube/littlego/milestone/16?closed=1
 
+
 --------------------------------------------------------------------------------
 Version 1.4.0 (January 13 2019)
 --------------------------------------------------------------------------------
@@ -45,7 +81,6 @@ Known bugs
 ========
 Features
 ========
-
 - Added support for loading and saving .sgf files that contain stone and/or
   player setup nodes (#323). This kind of .sgf files is frequently used for
   sharing board positions that teach how to play best in certain game

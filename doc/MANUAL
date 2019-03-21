@@ -785,15 +785,14 @@ black and white as the default color.
 When you place a stone, then tap again on the same intersection, the stone
 changes its color. If you tap again on the same intersection, the stone is
 removed. The cycle then begins again. So, depending on which is the default
-stone color, you have one of these two cycles:
+stone color, you get one of these two cycles:
 
 1. Empty intersection > Black stone > White stone > Empty intersection.
 1. Empty intersection > White stone > Black stone > Empty intersection.
 
-These two cycles are broken if tapping on an intersection and following the
-cycle would result in an illegal board position. Read the section after the next
-to learn more about illegal board positions.
-
+The app does not follow these two cycles if doing so would result in an illegal
+board position. Read the section after the next to learn more about illegal
+board positions.
 
 =============
 Board zooming
