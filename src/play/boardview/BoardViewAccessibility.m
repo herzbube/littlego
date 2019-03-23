@@ -225,11 +225,14 @@
     //   as UIKit, i.e. the origin is in the top-left corner, we use the
     //   coordinates of the top-left intersection as the origin of the
     //   UIAccessibilityElement's frame.
-    uiAccessibilityElementLineGrid.accessibilityFrameInContainerSpace = CGRectMake(metrics.topLeftPointX,
-                                                                                   metrics.topLeftPointY,
-                                                                                   metrics.lineLength,
-                                                                                   metrics.lineLength);
-    [accessibilityElements addObject:uiAccessibilityElementLineGrid];
+    if (@available(iOS 10, *))
+    {
+      uiAccessibilityElementLineGrid.accessibilityFrameInContainerSpace = CGRectMake(metrics.topLeftPointX,
+                                                                                     metrics.topLeftPointY,
+                                                                                     metrics.lineLength,
+                                                                                     metrics.lineLength);
+      [accessibilityElements addObject:uiAccessibilityElementLineGrid];
+    }
 
     // Tests use this accessibility element to verify that the board has the
     // correct size
