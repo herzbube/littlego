@@ -9,7 +9,9 @@ Little Go is released under the [Apache License](http://www.apache.org/licenses/
 
 ## Changes in this release
 
-This is the Little Go feature release 1.5.0. It adds a single new feature: Board setup mode (#276). When you start a new game, instead of beginning to play you can now switch to board setup mode. In this mode you can place black or white stones in any order and combination to set up the initial board before you begin to play moves. In addition to placing stones, you can select the side which is to play the first move. Read the "Board setup" section in the in-game manual for a detailed feature description.
+This is the Little Go bugfix release 1.5.1. It contains a fix for a bug that causes the app to crash during launch on iOS 9.x and below (#332). Thanks to Li Chen Ke and Dennis for reporting the issue.
+
+The previous release was the Little Go feature release 1.5.0. It adds a single new feature: Board setup mode (#276). When you start a new game, instead of beginning to play you can now switch to board setup mode. In this mode you can place black or white stones in any order and combination to set up the initial board before you begin to play moves. In addition to placing stones, you can select the side which is to play the first move. Read the "Board setup" section in the in-game manual for a detailed feature description.
 
 The [ChangeLog](doc/ChangeLog) document has more details.
 

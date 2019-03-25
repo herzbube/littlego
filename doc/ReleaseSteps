@@ -180,6 +180,22 @@ Make the release
 ----------------
 - After Apple has completed the review process, the release can now be viewed
   as official and the remaining steps can be performed
+- Download Bitcode dSYMs
+  - When a Bitcode enabled build is uploaded to App Store Connect, Apple
+    generates several new dSYMs that are not available locally.
+  - The dSYMs can be downloaded in Xcode's Organizer window: Select the archived
+    build, then click the button labelled "Download Debug Symbols". To make
+    sure that the download was successful, right-click the archived build, then
+    select "Show in Finder" from the context menu. Open the .xcarchive folder
+    (right-click and select "Show Package Contents") and navigate to the "dSYMs"
+    folder. Here you should now see one dSYM named after the app (i.e.
+    Little Go.app.dSYM) and several dSYMs named with a UUID.
+  - Alternatively you can manually download the Bitcode dSYMs from the App Store
+    Connect website: Navigate to the app's main page, select "Activity" and the
+    build in question, then click the "Download dSYM" link. This downloads a
+    single .zip archive appDsyms.zip that contains all dSYMs. Extract the
+    archive then copy the contents into the "dSYMs" folder within the .xcarchive
+    folder of the archived build.
 - Backup the archive that was uploaded to the App Store. This is important
   because that archive contains the symbols that are required to symbolicate any
   crash reports. Usually you will rely on Crashlytics for this, but you never
@@ -203,6 +219,9 @@ Make the release
   content into the release description.
 - On the Crashlytics website, make sure that the new app version is enabled and
   the previous app version is disabled.
+- Upload the Bitcode dSYMs that you downloaded in a previous step (see above) to
+  the Crashlytics website. Note that the regular dSYM has already been uploaded
+  by a build script in the Xcode project.
 - Update website littlego.herzbube.ch
 - Release the new version to the App Store
 - Advertise the release (check out the NOTES.Marketing file)
