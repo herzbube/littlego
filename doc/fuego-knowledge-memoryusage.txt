@@ -1,0 +1,219 @@
+Purpose of this document
+------------------------
+In 2013 Little Go switched from Fuego version 1.1 to the Fuego trunk version.
+It was discovered then that the Fuego trunk version uses much more memory than
+the 1.1 version. The notes below document the analysis of the problem and what
+the solution was. The notes, although obsolete today, may still be valuable in
+a historical context, to understand certain implementation details.
+
+The issue was tracked in issue #186 [1]. Also cf. issues #8 and #9 in the
+fuego-on-ios GitHub project [2].
+
+[1] https://github.com/herzbube/littlego/issues/186
+[2] https://github.com/herzbube/fuego-on-ios
+
+
+Initial Analysis
+----------------
+Problem: Fuego trunk uses much more memory in its default configuration than Fuego 1.1 did.
+
+How much more memory? These are the numbers for different builds, right after starting the program on the Mac OS X command line:
+* Fuego 1.1 = 63 MB
+* Fuego UEC Cup = 243 MB
+* Fuego trunk = 243 MB
+
+So what's the reason for this increased memory usage?
+* Instruments is our friend - it shows us that GoUctKnowledgeFactory::Create() is creating something large on the heap (using the new operator), and that something is taking up a phenomenal 160 MB
+* Taking a closer look at GoUctKnowledgeFactory::Create() we see that it is possible to create different "knowledge" objects depending on the KnowledgeType enum value that is currently stored in the factory's GoUctPlayoutPolicyParam object.
+* The enumeration has two values: KNOWLEDGE_GREENPEEP and KNOWLEDGE_RULEBASED. Further research shows that it is possible to set one or the other with the GTP command "uct_param_policy knowledge_type 0|1". 0 = KNOWLEDGE_GREENPEEP, 1 = KNOWLEDGE_RULEBASED. - * The default is KNOWLEDGE_GREENPEEP (see the GoUctPlayoutPolicyParam default constructor in GoUctPlayoutPolicy.cpp)
+* GoUctGlobalSearchStateFactory::Create() calls GoUctKnowledgeFactory::Create(), using the knowledge type in GoUctPlayoutPolicyParam. This in turn is triggered by SgUctSearch::CreateThreads() (smartgame/SgUctSearch.cpp), which invokes Create() one time for each thread.
+* The Mac OS X command line version of Fuego creates 4 threads. Let's examine what happens on each call of GoUctKnowledgeFactory::Create()
+  * Before the first call, memory usage is at 57.8 MB
+  * After call 1: 228.5 MB
+  * After call 2: 234.5 MB
+  * After call 3: 240.5 MB
+  * After call 4: 243.0 MB
+* The final analysis identifies the "culprit": GoUctKnowledgeFactory::GreenpeepParam() creates and returns an object of type GoUctAdditiveKnowledgeParamGreenpeep. This object contains 2 arrays of type "unsigned short" (size = 2 bytes)
+  * Array 1 has size NUMPATTERNS9X9 = 67108864 (2^26) elements * 2 bytes = 128 MB
+  * Array 2 has size NUMPATTERNS19X19 = 16777216 (2^24) elemente * 2 bytes = 32 MB
+  * The total size of GoUctAdditiveKnowledgeParamGreenpeep is 167772168 bytes = ca. 160 MB
+* For comparison, let's examine what happens on each call of GoUctKnowledgeFactory::Create() if we use KNOWLEDGE_RULEBASED
+  * Before the first call, memory usage is at 57.8 MB
+  * After call 1: 63.8 MB
+  * After call 2: 69.8 MB
+  * After call 3: 75.8 MB
+  * After call 4: 78.3 MB
+  * So we see that each thread uses up approximately 6 MB, independent of the knowledge type that is in use
+* In comparison with Fuego 1.1
+  * After creating 1 or 2 Threads, memory usage is at 54.9 MB
+  * With 3 threads = 58.6 MB
+  * With 4 threads = 63.3 MB
+  * So for Fuego 1.1 the memory usage per thread is slightly lower, at around 4-5 MB per thread
+
+
+Solutions
+---------
+After this initial analysis, we now know where to look for solutions to reduce memory usage to a tolerable level. After discussion on fuego-devel, the following options emerge:
+
+1) Use KNOWLEDGE_RULEBASED as the default knowledge type. Switch to KNOWLEDGE_GREENPEEP only if the device has sufficient memory.
+2) Use KNOWLEDGE_GREENPEEP more efficiently. Don't waste memory by always allocating both Greenpeep pattern arrays, even though only one of them is ever used at the same time.
+3) Reduce memory usage of KNOWLEDGE_GREENPEEP by halving the size of the Greenpeep pattern arrays. The price to pay is a certain loss of playing strength.
+4) Not really an option: Use both KNOWLEDGE_RULEBASED and KNOWLEDGE_GREENPEEP at the same time. This was mentioned on fuego-devel, but is not an option since it does not reduce memory but makes Fuego even stronger (by an estimated 40-50 ELO).
+
+
+Use KNOWLEDGE_RULEBASED
+-----------------------
+Status: DONE
+
+* Using KNOWLEDGE_RULEBASED totally eliminates the memory cost of the Greenpeep pattern arrays
+* To make this work, KNOWLEDGE_RULEBASED needs to be the default knowledge type so that the Greenpeep stuff is not allocated at all, not even during program startup.
+* When Little Go finds that a device has sufficient memory, it can switch to KNOWLEDGE_GREENPEEP
+* There is only one problem with this solution: According to Martin Mueller (the Fuego lead dev), KNOWLEDGE_RULEBASED in Fuego trunk must be considered an "untested feature"
+* So before we can actually go this way, KNOWLEDGE_RULEBASED must be tested to make sure that it can actually be used
+
+As far as I recall, in the end no tests were performed.
+
+
+Use KNOWLEDGE_GREENPEEP more efficiently
+----------------------------------------
+Status: DONE
+
+* Currently both Greenpeep pattern arrays are always allocated and then never freed
+* This is not efficient: While KNOWLEDGE_GREENPEEP is in place, only one or the other of the two arrays is required; while KNOWLEDGE_RULEBASED is in place, none of the two arrays is required.
+* The following knowledge was gained during implementation of this feature
+  * Board size changes do not trigger new GoUctAdditiveKnowledgeGreenpeep objects to be allocated. This only happens when the number of threads or the knowledge type changes.
+  * At the time when GoUctAdditiveKnowledgeGreenpeep is created, the GoBoard object that is passed to the default constructor of GoUctAdditiveKnowledgeGreenpeep is not set to the correct board size. The board size will change at a later time so that it has the proper value when GoUctAdditiveKnowledgeGreenpeep::ProcessPosition() is called.
+
+These are some stats after the change:
+
+                               Mac OS X cmdline   Little Go   Little Go
+                               4 threads          1 thread    4 threads
+                               (1)
+-----------------------------------------------------------------------
+19x19, KNOWLEDGE_GREENPEEP     107 MB             89.1        146.3
+19x19, KNOWLEDGE_RULEBASED     75 MB              94.7        114.0
+9x9, KNOWLEDGE_RULEBASED       75 MB              98.4        118.1  (2)
+9x9, KNOWLEDGE_GREENPEEP       203 MB             234.1       253.7
+19x19, KNOWLEDGE_GREENPEEP     107 MB             140.4       158.2
+  
+(1) These values come from the command line utility top, column RPRVT because the Activity Monitor application does not seem to display the correct memory usage. For instance memory usage in Activity Monitor does not drop even though the 128 MB array is deallocated.
+
+(2) In Little Go, memory usage probably increases because the "New game" screen has been displayed to create a game with the new board size
+  
+
+Reduce memory usage of KNOWLEDGE_GREENPEEP
+------------------------------------------
+Status: DONE
+
+* According to Martin Mueller on fuego-devel, the Greenpeep predictor arrays can be reduced in size by changing the array type to use only 1 byte (i.e. unsigned char) instead of 2 bytes (i.e. unsigned short)
+* This must be done by mapping 2-byte values from the pattern arrays, which have a value range of 0-65535, to 1-byte values in the predictor arrays, which have a value range of 0-255.
+* For the actual processing, the 1-byte values must be mapped back to their 2-byte equivalent. Obviously this mapping results in a loss of precision. According to Martin this only leads to a certain loss in playing strength, and not a total failure of the program to work. I don't understand the way how these pattern arrays work, so I accept Martin's statement at face value.
+* The estimated loss in playing strength is TODO
+* Instead of just the predictor arrays, the pattern arrays could also be reduced to "unsigned char".
+  * Advantages at runtimes
+    * Memory usage is reduced by 604.5 KB
+    * Initialization of pattern arrays does not involve the mapping calculations
+  * Disadvantages during maintenance
+    * We need to change the source code that initializes the pattern arrays with hard-coded, pre-calculated values. Whenever an upstream update is integrated, we therefore need to check out that the patterns were not changed
+    * In addition, the way how the hard-coded 2-byte values were transformed into hard-coded 1-byte values is not obvious. Someone who looks at the fuego-on-ios source code repository must understand the process of the transformation.
+  * Currently the disadvantages vastly outweigh the advantages, so the pattern arrays are left as they are
+  * How to calculate memory savings
+    * Number of values in the 2 pattern arrays = 381346 + 237855 = 619201
+    * Number of bytes used for these values = 619201 * 2 = 1238402
+    * Number of KB = 1238402 / 1024 = 1209.376953125
+    * After reduction to 1 byte values, the new size would be halved, i.e. 604.5 KB
+
+The following script reads one of the .h files that contains a pattern array and determines the smallest and the largest hard-coded value in the array:
+
+nindalf-mobile:~/dev/littlego/3rdparty/src/fuego-on-ios --> cat ./evalGreenPeepPatterns.sh 
+AWK_SCRIPT_NAME="/tmp/evalGreenPeepPatterns.awk"
+cat << EOF >"$AWK_SCRIPT_NAME"
+BEGIN {
+  min = 65535
+  max = 0
+  numberOfValues = 0
+}
+{
+  line = \$0
+  if (line !~ /^\{/) { next }
+  numberOfValues++
+  gsub(/\},/, "", line)
+  split(line, a, /,/)
+  val = a[2] + 0
+  if (val > max) {max=val}
+  if (val < min) {min=val}
+}
+END {
+  print "min = "min
+  print "max = "max
+  print "number of values = " numberOfValues
+}
+EOF
+
+for PATTERN_FILE in gouct/GoUctGreenpeepPatterns9.h gouct/GoUctGreenpeepPatterns19.h; do
+  echo "Evaluating pattern file $PATTERN_FILE"
+  awk -f "$AWK_SCRIPT_NAME" "$PATTERN_FILE"
+done
+
+rm "$AWK_SCRIPT_NAME"
+
+The results of running the script are:
+* 9x9
+  * min = 4
+  * max = 23120
+  * number of values = 381346
+* 19x19
+  * min = 1
+  * max = 65535
+  * number of values = 237855
+
+
+Finding a function that maps 2-byte values to 1-byte values, and the inverse
+* General function
+    y = a * x + b
+    reducedPredictorValue = a * predictorValue + b
+* Therefore
+    x = (y - b) / a
+    predictorValue = (reducedPredictorValue - b) / a
+* General solution
+  * Two unknowns: a and b
+  * We need two equations to be able to calculate the unknowns
+  * Equation 1: x = minimal value, y = 0
+  * Equation 2: x = maximum value, y = 255
+* Solution for 19x19
+  * y = x * 255 / 65534 - 255 / 65534 = 255 / 65534 * (x - 1)
+  * x = (y + 255 / 65534) / (255 / 65534) = y * 65534 / 255 + 1
+  * Examples
+    * x = 1     > y = 0   > x = 1
+    * x = 65535 > y = 255 > x = 65535
+    * x = 3467  > y = 13  > x = 3341
+    * x = 32972 > y = 128 > x = 32896
+* Solution for 9x9
+  * y = x * 255 / 23116 - 255 / 5779 = 255 / 23116 * (x - 4)
+  * x = (y + 255 / 5779) / (255 / 23116) = y * 23116 / 255 + 4
+  * Examples
+    * x = 4     > y = 0   > x = 4
+    * x = 23120 > y = 255 > x = 23120
+    * x = 2347  > y = 25  > x = 2270
+    * x = 15211 > y = 167 > x = 15142
+* General form of the equations
+  * y = 255 / (max - min) * (x - min) = (255 * (x - min)) / (max - min)
+  * x = y * (max - min) / 255 + min
+* The end result should be rounded to improve precision. Let's take a look of the effect on two constants
+  * NEUTRALPREDICTION = 512
+    * 19x19
+      * Without rounding: y = 1, x = 257
+      * With rounding: y = 2, x = 515
+    * 9x9
+      * Without rounding: y = 5, x = 457
+      * With rounding: y = 6, x = 548
+  * DEFENSIVEPREDICTION = 5 * NEUTRALPREDICTION = 5 * 512 = 2560
+    * 19x19
+      * Without rounding: y = 9, x = 2313
+      * With rounding: y = 10, x = 2571
+    * 9x9
+      * Without rounding: y = 28, x = 2542
+      * With rounding: y = 28, x = 2542
+
+
+

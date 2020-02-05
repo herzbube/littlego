@@ -790,6 +790,7 @@
 		CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = "fuego-on-ios.framework"; path = "3rdparty/install/fuego-on-ios.framework"; sourceTree = "<group>"; };
 		CD6EBE421753FE5200ABB980 /* MediaFiles */ = {isa = PBXFileReference; lastKnownFileType = text; path = MediaFiles; sourceTree = "<group>"; };
 		CD6EBE43175401C200ABB980 /* ProgrammingTopics */ = {isa = PBXFileReference; lastKnownFileType = text; path = ProgrammingTopics; sourceTree = "<group>"; };
+		CD72170423EAF35B008373BA /* fuego-knowledge-memoryusage.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "fuego-knowledge-memoryusage.txt"; sourceTree = "<group>"; };
 		CD72216714633F1D005EAC65 /* TableViewGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewGridCell.h; sourceTree = "<group>"; };
 		CD72216814633F1D005EAC65 /* TableViewGridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewGridCell.m; sourceTree = "<group>"; };
 		CD7C578021F4A3A900694520 /* UnarchiveGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnarchiveGameCommand.m; sourceTree = "<group>"; };
@@ -2372,6 +2373,7 @@
 				CDEC287C12F477E70069F5B7 /* ChangeLog */,
 				CDD7D7F01753FD290068CBBA /* Class diagram of packages go + player.jpg */,
 				CDD7D7E81753F4990068CBBA /* CodingGuidelines */,
+				CD72170423EAF35B008373BA /* fuego-knowledge-memoryusage.txt */,
 				CDD7D7EF1753FD130068CBBA /* littlego.asta */,
 				CD00A34D1487F9CF004E1A0C /* MANUAL */,
 				CD6EBE421753FE5200ABB980 /* MediaFiles */,
