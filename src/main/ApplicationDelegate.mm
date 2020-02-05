@@ -379,7 +379,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   // Disable Firebase Analytics data collection. This can also be disabled via
   // an Info.plist entry: FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED = YES.
   // For details see https://firebase.google.com/support/guides/disable-analytics
-  [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:NO];
+  [FIRAnalytics setAnalyticsCollectionEnabled:NO];
 
   // Another Firebase service, Analytics screen reporting, can only be disabled
   // via an entry in Info.plist: FirebaseScreenReportingEnabled = NO. It seems
