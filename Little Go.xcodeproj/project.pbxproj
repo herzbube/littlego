@@ -3361,7 +3361,6 @@
 			baseConfigurationReference = AC8C42284311F8034BB91177 /* Pods-All Targets-Little Go.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -3381,7 +3380,6 @@
 			baseConfigurationReference = BEAF6B6B3F755DEAC049501E /* Pods-All Targets-Little Go.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -3585,7 +3583,6 @@
 			baseConfigurationReference = BEBE20ABC813BBD1CA8A32AD /* Pods-All Targets-Little Go.distribute_appstore.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
@@ -3907,7 +3904,6 @@
 			baseConfigurationReference = C800DF7BFF18E915311E0E1A /* Pods-All Targets-Little Go.distribute_adhoc.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_ENTITLEMENTS = resource/plist/Entitlements.plist;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
