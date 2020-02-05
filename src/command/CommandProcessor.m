@@ -322,7 +322,7 @@ static CommandProcessor* sharedProcessor = nil;
 // -----------------------------------------------------------------------------
 - (void) asynchronousCommand:(id<AsynchronousCommand>)command setProgressHUDMode:(MBProgressHUDMode)mode
 {
-  NSNumber* modeAsNSNumber = [NSNumber numberWithInt:mode];
+  NSNumber* modeAsNSNumber = [NSNumber numberWithInteger:mode];
   [self performSelectorOnMainThread:@selector(updateProgressHUDModeOnMainThread:) withObject:modeAsNSNumber waitUntilDone:YES];
 }
 
@@ -334,7 +334,7 @@ static CommandProcessor* sharedProcessor = nil;
 - (void) updateProgressHUDModeOnMainThread:(NSNumber*)modeAsNSNumber
 {
   // UI operations must occur on the main thread
-  self.progressHUD.mode = [modeAsNSNumber intValue];
+  self.progressHUD.mode = [modeAsNSNumber integerValue];
 }
 
 // -----------------------------------------------------------------------------
