@@ -84,7 +84,8 @@
   self.computerPlayerSelfPlayUUID = (NSString*)[dictionary valueForKey:computerPlayerSelfPlayKey];
   self.boardSize = [[dictionary valueForKey:boardSizeKey] intValue];
   self.handicap = [[dictionary valueForKey:handicapKey] intValue];
-  self.komi = [[dictionary valueForKey:komiKey] doubleValue];
+  NSNumber* komiAsNumber = [dictionary valueForKey:komiKey];
+  self.komi = [komiAsNumber doubleValue];
   self.koRule = [[dictionary valueForKey:koRuleKey] intValue];
   self.scoringSystem = [[dictionary valueForKey:scoringSystemKey] intValue];
   self.lifeAndDeathSettlingRule = [[dictionary valueForKey:lifeAndDeathSettlingRuleKey] intValue];

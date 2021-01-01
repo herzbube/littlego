@@ -561,7 +561,8 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
     // We are switching the default scoring system from territory to area
     // scoring, so if the user still has the default komi for territory scoring,
     // we switch komi as well
-    double komi = [[newGameDictionaryUpgrade valueForKey:komiKey] doubleValue];
+    NSNumber* komiAsNumber = [newGameDictionaryUpgrade valueForKey:komiKey];
+    double komi = [komiAsNumber doubleValue];
     if (gDefaultKomiTerritoryScoring == komi)
       [newGameDictionaryUpgrade setValue:[NSNumber numberWithDouble:gDefaultKomiAreaScoring] forKey:komiKey];
     [userDefaults setObject:newGameDictionaryUpgrade forKey:newGameKey];

@@ -340,7 +340,8 @@
   // setupTextViewAutoLayoutConstraints()
   self.textViewHeightConstraint.priority = UILayoutPriorityDefaultHigh;
 
-  NSTimeInterval animationDuration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+  NSNumber* animationDurationAsNumber = [userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+  NSTimeInterval animationDuration = [animationDurationAsNumber doubleValue];
   [UIView animateWithDuration:animationDuration animations:^{
     [self.view addConstraint:self.textViewHeightConstraint];
     [self.view layoutIfNeeded];
@@ -356,7 +357,8 @@
 - (void) keyboardWillHide:(NSNotification*)notification
 {
   NSDictionary* userInfo = [notification userInfo];
-  NSTimeInterval animationDuration = [[userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+  NSNumber* animationDurationAsNumber = [userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
+  NSTimeInterval animationDuration = [animationDurationAsNumber doubleValue];
   [UIView animateWithDuration:animationDuration animations:^{
     [self.view removeConstraint:self.textViewHeightConstraint];
     self.textViewHeightConstraint = nil;
