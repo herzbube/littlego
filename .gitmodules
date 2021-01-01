@@ -1,3 +1,6 @@
 [submodule "3rdparty/src/fuego-on-ios"]
 	path = 3rdparty/src/fuego-on-ios
 	url = git@github.com:herzbube/fuego-on-ios.git
+[submodule "3rdparty/src/SgfcKit"]
+	path = 3rdparty/src/SgfcKit
+	url = https://github.com/herzbube/SgfcKit

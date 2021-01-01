@@ -65,6 +65,9 @@
 		CD072711180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD07270B180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m */; };
 		CD072714180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD072713180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m */; };
 		CD072715180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD072713180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m */; };
+		CD093E65259B99670058D170 /* SgfcKit_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD093E64259B99660058D170 /* SgfcKit_static.framework */; };
+		CD093E69259B9B1B0058D170 /* libsgfcplusplus_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD093E68259B9B1B0058D170 /* libsgfcplusplus_static.framework */; };
+		CD093E6D259B9B650058D170 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = CD093E6C259B9B540058D170 /* libiconv.tbd */; };
 		CD0AF19017401C56003BFC21 /* SliderInputController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0AF18F17401C56003BFC21 /* SliderInputController.m */; };
 		CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB69142FE10900A3F869 /* DiagnosticsViewController.m */; };
 		CD0CCB77142FF6ED00A3F869 /* GtpLogModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCB76142FF6ED00A3F869 /* GtpLogModel.m */; };
@@ -669,6 +672,10 @@
 		CD07270B180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToggleTerritoryStatisticsCommand.m; sourceTree = "<group>"; };
 		CD072712180B29E50083B138 /* UpdateTerritoryStatisticsCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UpdateTerritoryStatisticsCommand.h; sourceTree = "<group>"; };
 		CD072713180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UpdateTerritoryStatisticsCommand.m; sourceTree = "<group>"; };
+		CD093E63259A7D300058D170 /* build-sgfckit.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-sgfckit.sh"; sourceTree = "<group>"; };
+		CD093E64259B99660058D170 /* SgfcKit_static.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SgfcKit_static.framework; path = 3rdparty/install/SgfcKit_static.framework; sourceTree = "<group>"; };
+		CD093E68259B9B1B0058D170 /* libsgfcplusplus_static.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libsgfcplusplus_static.framework; path = 3rdparty/install/libsgfcplusplus_static.framework; sourceTree = "<group>"; };
+		CD093E6C259B9B540058D170 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		CD0AF18E17401C56003BFC21 /* SliderInputController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SliderInputController.h; sourceTree = "<group>"; };
 		CD0AF18F17401C56003BFC21 /* SliderInputController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SliderInputController.m; sourceTree = "<group>"; };
 		CD0CCB68142FE10900A3F869 /* DiagnosticsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiagnosticsViewController.h; sourceTree = "<group>"; };
@@ -1259,7 +1266,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD093E6D259B9B650058D170 /* libiconv.tbd in Frameworks */,
 				CD6E846E17FF99D100643576 /* boost.framework in Frameworks */,
+				CD093E69259B9B1B0058D170 /* libsgfcplusplus_static.framework in Frameworks */,
+				CD093E65259B99670058D170 /* SgfcKit_static.framework in Frameworks */,
 				CD6E847017FF99EC00643576 /* fuego-on-ios.framework in Frameworks */,
 				19BC6071EDF78D418FF44E38 /* libPods-All Targets-Little Go.a in Frameworks */,
 			);
@@ -1320,6 +1330,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CD093E6C259B9B540058D170 /* libiconv.tbd */,
+				CD093E68259B9B1B0058D170 /* libsgfcplusplus_static.framework */,
+				CD093E64259B99660058D170 /* SgfcKit_static.framework */,
 				CD6E846D17FF99D000643576 /* boost.framework */,
 				CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */,
 				EFA40757AA3D18B0C541BBC3 /* libPods-All Targets-Little Go.a */,
@@ -2415,6 +2428,7 @@
 			children = (
 				CDE3F58F13117EFE00EC16CC /* build-env.sh */,
 				CDE3F585131147D800EC16CC /* build-fuego.sh */,
+				CD093E63259A7D300058D170 /* build-sgfckit.sh */,
 				CDE3F58E13117E3100EC16CC /* build-software.sh */,
 				CDEC28B212F55F270069F5B7 /* build-3rdparty-software.sh */,
 				CD3D5147147436C70098D8E0 /* makedist.sh */,

@@ -156,7 +156,7 @@ Important configuration settings in Xcode (both for the "Little Go" and the
 - IPHONEOS_DEPLOYMENT_TARGET = 8.1
   - This must match the deployment target in script/build-env.sh and in Podfile.
 - FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install"
-  - This is required to find the Fuego and Boost frameworks.
+  - This is required to find the Fuego, Boost, SgfcKit and libsgfc++ frameworks.
   - Note that FRAMEWORK_SEARCH_PATHS serves both for header file inclusion and
     library linking. Traditional C/C++ has two separate settings for these:
     HEADER_SEARCH_PATHS and LIBRARY_SEARCH_PATHS.

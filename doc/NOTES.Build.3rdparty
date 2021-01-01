@@ -71,6 +71,22 @@ The Fuego build results in this framework bundle:
   3rdparty/install/fuego-on-ios.framework
 
 
+libsgfc++ build/installation issues
+-----------------------------------
+No known issues, build should work out of the box.
+
+The libsgfc++ build results in this framework bundle:
+  3rdparty/install/libsgfcplusplus_static.framework
+
+
+SgfcKit build/installation issues
+---------------------------------
+No known issues, build should work out of the box.
+
+The SgfcKit build results in this framework bundle:
+  3rdparty/install/SgfcKit_static.framework
+
+
 Testing the patched version of Fuego on the Mac OS X command line
 -----------------------------------------------------------------
 Little Go integrates Fuego via the "fuego-for-littlego" branch of the Fuego on
