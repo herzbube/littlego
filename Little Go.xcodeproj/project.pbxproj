@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -167,7 +167,6 @@
 		CD6C7DBC17512152009FBEC4 /* UiSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */; };
 		CD6C7DBD17512152009FBEC4 /* UiSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */; };
 		CD6E846E17FF99D100643576 /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846D17FF99D000643576 /* boost.framework */; };
-		CD6E847017FF99EC00643576 /* fuego-on-ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */; };
 		CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
 		CD7C578221F4A3A900694520 /* UnarchiveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C578021F4A3A900694520 /* UnarchiveGameCommand.m */; };
@@ -476,6 +475,7 @@
 		CDCBA6D0183D8801003697E2 /* MagnifyingGlassSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6CF183D8801003697E2 /* MagnifyingGlassSettingsController.m */; };
 		CDCBA6D3184228A0003697E2 /* TableViewVariableHeightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */; };
 		CDCBA6D4184228A7003697E2 /* TableViewVariableHeightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */; };
+		CDD2183E25A208E80069633B /* fuego-on-ios.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD2183D25A208E80069633B /* fuego-on-ios.xcframework */; };
 		CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C82141034F000188B6A /* ArchiveViewController.m */; };
 		CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
 		CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
@@ -1110,6 +1110,7 @@
 		CDCBA6CF183D8801003697E2 /* MagnifyingGlassSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagnifyingGlassSettingsController.m; sourceTree = "<group>"; };
 		CDCBA6D1184228A0003697E2 /* TableViewVariableHeightCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewVariableHeightCell.h; sourceTree = "<group>"; };
 		CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewVariableHeightCell.m; sourceTree = "<group>"; };
+		CDD2183D25A208E80069633B /* fuego-on-ios.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = "fuego-on-ios.xcframework"; path = "3rdparty/install/fuego-on-ios.xcframework"; sourceTree = "<group>"; };
 		CDD48C81141034F000188B6A /* ArchiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewController.h; sourceTree = "<group>"; };
 		CDD48C82141034F000188B6A /* ArchiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveViewController.m; sourceTree = "<group>"; };
 		CDD48C8E141036D200188B6A /* ArchiveViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewModel.h; sourceTree = "<group>"; };
@@ -1266,11 +1267,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CDD2183E25A208E80069633B /* fuego-on-ios.xcframework in Frameworks */,
 				CD093E6D259B9B650058D170 /* libiconv.tbd in Frameworks */,
 				CD6E846E17FF99D100643576 /* boost.framework in Frameworks */,
 				CD093E69259B9B1B0058D170 /* libsgfcplusplus_static.framework in Frameworks */,
 				CD093E65259B99670058D170 /* SgfcKit_static.framework in Frameworks */,
-				CD6E847017FF99EC00643576 /* fuego-on-ios.framework in Frameworks */,
 				19BC6071EDF78D418FF44E38 /* libPods-All Targets-Little Go.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1330,6 +1331,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CDD2183D25A208E80069633B /* fuego-on-ios.xcframework */,
 				CD093E6C259B9B540058D170 /* libiconv.tbd */,
 				CD093E68259B9B1B0058D170 /* libsgfcplusplus_static.framework */,
 				CD093E64259B99660058D170 /* SgfcKit_static.framework */,
@@ -2644,7 +2646,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1010;
+				LastUpgradeCheck = 1230;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
 						DevelopmentTeam = P7NZKNP5L2;

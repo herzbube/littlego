@@ -20,9 +20,9 @@ BOOST_FRAMEWORK_SRC_DIR="$BOOST_SRC_DIR/ios/framework/$BOOST_FRAMEWORK_NAME"
 BOOST_FRAMEWORK_DEST_DIR="$DEST_DIR/$BOOST_FRAMEWORK_NAME"
 
 FUEGO_SRC_DIR="$SRC_DIR"
-FUEGO_FRAMEWORK_NAME="fuego-on-ios.framework"
-FUEGO_FRAMEWORK_SRC_DIR="$FUEGO_SRC_DIR/ios/framework/$FUEGO_FRAMEWORK_NAME"
-FUEGO_FRAMEWORK_DEST_DIR="$DEST_DIR/$FUEGO_FRAMEWORK_NAME"
+FUEGO_XCFRAMEWORK_NAME="fuego-on-ios.xcframework"
+FUEGO_XCFRAMEWORK_SRC_DIR="$FUEGO_SRC_DIR/ios/framework/$FUEGO_XCFRAMEWORK_NAME"
+FUEGO_XCFRAMEWORK_DEST_DIR="$DEST_DIR/$FUEGO_XCFRAMEWORK_NAME"
 
 
 # +------------------------------------------------------------------------
@@ -113,7 +113,7 @@ INSTALL_STEPS_SOFTWARE()
   if test $? -ne 0; then
     return 1
   fi
-  rm -rf "$FUEGO_FRAMEWORK_DEST_DIR"
+  rm -rf "$FUEGO_XCFRAMEWORK_DEST_DIR"
   if test $? -ne 0; then
     return 1
   fi
@@ -127,8 +127,8 @@ INSTALL_STEPS_SOFTWARE()
     return 1
   fi
 
-  echo "Copying Fuego installation files to $FUEGO_FRAMEWORK_DEST_DIR ..."
-  cp -R "$FUEGO_FRAMEWORK_SRC_DIR" "$FUEGO_FRAMEWORK_DEST_DIR"
+  echo "Copying Fuego installation files to $FUEGO_XCFRAMEWORK_DEST_DIR ..."
+  cp -R "$FUEGO_XCFRAMEWORK_SRC_DIR" "$FUEGO_XCFRAMEWORK_DEST_DIR"
   if test $? -ne 0; then
     return 1
   fi
