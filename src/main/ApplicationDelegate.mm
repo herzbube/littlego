@@ -337,8 +337,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 // -----------------------------------------------------------------------------
 - (BOOL) application:(UIApplication*)application
              openURL:(NSURL*)url
-   sourceApplication:(NSString*)sourceApplication
-          annotation:(id)annotation
+             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id>*)options
 {
   DDLogInfo(@"Document interaction wants to open URL %@", url);
   if (! [url isFileURL])

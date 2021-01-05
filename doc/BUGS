@@ -8,13 +8,25 @@ the issue list on the project's bug tracker.
 
 Compiler warnings
 -----------------
-This compiler warning is generated only sometimes
-  Enable Base Internationalization in Little Go.xcodeproj
-The warning can be ignored since the project does not use translation.
+These compiler warnings are generated when some CocoaPods are built:
+  The iOS deployment target is set to 6.0, but the range of supported deployment target versions for this platform is 8.0 to 12.1. (in target 'CocoaLumberjack')
+  The iOS deployment target is set to 6.0, but the range of supported deployment target versions for this platform is 8.0 to 12.1. (in target 'GoogleUtilities')
+  The iOS deployment target is set to 4.3, but the range of supported deployment target versions for this platform is 8.0 to 12.1. (in target 'nanopb')
+  The iOS deployment target is set to 6.1, but the range of supported deployment target versions for this platform is 8.0 to 12.1. (in target 'ZipKit')
+This occurs if the Xcode/base SDK version that is being used for the build no
+longer supports the IPHONEOS_DEPLOYMENT_TARGET that is set for the CocoaPods
+targets in question. This could result from a Podspec explicitly setting
+IPHONEOS_DEPLOYMENT_TARGET, or from a Podspec using a platform that is lower
+than the platform in Little Go's Podfile (which in turn leads to
+IPHONEOS_DEPLOYMENT_TARGET being set). Little Go's Podfile contains a snippet
+that should prevent this "minimum supported deployment target" compiler warning,
+at the cost of generating other compiler warnings (see next section). If the
+warning still occurs thhis means that the platform version in Little Go's
+Podfile is outdated.
 
 
 This compiler warning is generated when ZipKit is built:
-  /Users/patrick/dev/littlego/Pods/ZipKit/ZipKit/ZKLFHeader.m:47:1: Implementing deprecated method
+  /Users/patrick/dev/littlego/Pods/ZipKit/ZipKit/ZKLFHeader.m:47:1: warning: implementing deprecated method [-Wdeprecated-implementations]
 ZipKit implements the finalize method in the ZKLFHeader class, which is marked
 deprecated in the system headers like this:
   - (void)finalize OBJC_DEPRECATED("Objective-C garbage collection is no longer supported");
@@ -27,43 +39,23 @@ The "removeObservers" method unregisters KVO observers for various properties.
 I am not using any such observers, the question remains: Is ZipKit using KVO
 observers internally?
 
+This compiler warning is generated when ZipKit is built:
+  /Users/patrick/dev/littlego/Pods/ZipKit/ZipKit/ZKArchive.m:27:14: warning: 'getBytes:' is deprecated: first deprecated in iOS 8.0 - This method is unsafe because it could potentially cause buffer overruns. Use -getBytes:length: instead. [-Wdeprecated-declarations]
+This is merely a warning about a potential buffer overrun. I'm counting on
+ZipKit using the getBytes: method correctly. If the IPHONEOS_DEPLOYMENT_TARGET
+is raised to a value that makes these enumerators go away I may have to start
+using a new zip library.
 
-These compiler warnings are generated when some CocoaPods are built:
-  The iOS deployment target is set to 6.0, but the range of supported deployment target versions for this platform is 8.0 to 12.1. (in target 'CocoaLumberjack')
-  The iOS deployment target is set to 6.0, but the range of supported deployment target versions for this platform is 8.0 to 12.1. (in target 'GoogleUtilities')
-  The iOS deployment target is set to 4.3, but the range of supported deployment target versions for this platform is 8.0 to 12.1. (in target 'nanopb')
-  The iOS deployment target is set to 6.1, but the range of supported deployment target versions for this platform is 8.0 to 12.1. (in target 'ZipKit')
-The Podspec of CocoaLumberjack, ZipKit and GoogleUtilities explicitly set a
-platform that, apparently, overrides the platform in Little Go's Podfile. This
-leads to IPHONEOS_DEPLOYMENT_TARGET being set to 6.0 or 6.1, respectively, for
-the build of those libraries. The Podspec of nanopb does not specify a platform,
-so it's not clear why IPHONEOS_DEPLOYMENT_TARGET is set to 4.3 for this library.
-In any case, the following code snippet (taken from [1]) can be used Little Go's
-Podfile to override the Podspec-specific platforms:
-  post_install do |installer|
-    installer.pods_project.targets.each do |target|
-      target.build_configurations.each do |config|
-        config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '8.1'
-      end
-    end
-  end
-Unfortunately setting IPHONEOS_DEPLOYMENT_TARGET=8.1 generates a lot of other
-new compiler warnings for ZipKit. Pretty much all of them are deprecation
-warnings because ZipKit uses APIs that have been deprecated between iOS 6.0 and
-iOS 8.0. So if the intent of the change was to get rid of some compiler
-warnings, the cure is worse than the original illness. Since at the moment the
-compiler warnings are just that, and there are no apparent actual problems at
-runtime, I'm leaving this as an open issue to be resolved later. Hopefully the
-ZipKit library author will update ZipKit, but if worst comes to worst I'll have
-to do the changes myself, or use a new zip library.
-[1] https://stackoverflow.com/a/37289688/1054378
-
-
-This compiler warning is generated when GoogleUtilites is built:
-  'NSURLSession' is only available on iOS 7.0 or newer
-This is a follow-up problem of IPHONEOS_DEPLOYMENT_TARGET being set to 6.0 in
-the Podspec of GoogleUtilities - see the previous section for details. Once the
-IPHONEOS_DEPLOYMENT_TARGET issue is solved, this problem will disappear as well.
+These compiler warnings are generated when ZipKit is built:
+  /Users/patrick/dev/littlego/Pods/ZipKit/ZipKit/NSDate+ZKAdditions.m:25:23: warning: 'NSYearCalendarUnit' is deprecated: first deprecated in iOS 8.0 [-Wdeprecated-declarations]
+  /Users/patrick/dev/littlego/Pods/ZipKit/ZipKit/NSDate+ZKAdditions.m:25:44: warning: 'NSMonthCalendarUnit' is deprecated: first deprecated in iOS 8.0 [-Wdeprecated-declarations]
+  /Users/patrick/dev/littlego/Pods/ZipKit/ZipKit/NSDate+ZKAdditions.m:25:66: warning: 'NSDayCalendarUnit' is deprecated: first deprecated in iOS 8.0 [-Wdeprecated-declarations]
+  /Users/patrick/dev/littlego/Pods/ZipKit/ZipKit/NSDate+ZKAdditions.m:26:5: warning: 'NSHourCalendarUnit' is deprecated: first deprecated in iOS 8.0 [-Wdeprecated-declarations]
+  /Users/patrick/dev/littlego/Pods/ZipKit/ZipKit/NSDate+ZKAdditions.m:26:26: warning: 'NSMinuteCalendarUnit' is deprecated: first deprecated in iOS 8.0 [-Wdeprecated-declarations]
+  /Users/patrick/dev/littlego/Pods/ZipKit/ZipKit/NSDate+ZKAdditions.m:26:49: warning: 'NSSecondCalendarUnit' is deprecated: first deprecated in iOS 8.0 [-Wdeprecated-declarations]
+These are merely deprecation warnings about enumerators that will go away in
+the future. If the IPHONEOS_DEPLOYMENT_TARGET is raised to a value that makes
+these enumerators go away I may have to start using a new zip library.
 
 
 Xcode analyze issues

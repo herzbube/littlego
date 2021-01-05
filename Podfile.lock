@@ -1,7 +1,7 @@
 PODS:
-  - CocoaLumberjack (3.6.2):
-    - CocoaLumberjack/Core (= 3.6.2)
-  - CocoaLumberjack/Core (3.6.2)
+  - CocoaLumberjack (3.7.0):
+    - CocoaLumberjack/Core (= 3.7.0)
+  - CocoaLumberjack/Core (3.7.0)
   - Firebase/CoreOnly (6.34.0):
     - FirebaseCore (= 6.10.4)
   - Firebase/Crashlytics (6.34.0):
@@ -41,7 +41,7 @@ PODS:
     - nanopb/encode (= 1.30906.0)
   - nanopb/decode (1.30906.0)
   - nanopb/encode (1.30906.0)
-  - PromisesObjC (1.2.10)
+  - PromisesObjC (1.2.12)
   - ZipKit (1.0.3)
 
 DEPENDENCIES:
@@ -66,7 +66,7 @@ SPEC REPOS:
     - ZipKit
 
 SPEC CHECKSUMS:
-  CocoaLumberjack: bd155f2dd06c0e0b03f876f7a3ee55693122ec94
+  CocoaLumberjack: e8955b9d337ac307103b0a34fd141c32f27e53c5
   Firebase: c23a36d9e4cdf7877dfcba8dd0c58add66358999
   FirebaseCore: d3a978a3cfa3240bf7e4ba7d137fdf5b22b628ec
   FirebaseCoreDiagnostics: 770ac5958e1372ce67959ae4b4f31d8e127c3ac1
@@ -76,9 +76,9 @@ SPEC CHECKSUMS:
   GoogleUtilities: 7f2f5a07f888cdb145101d6042bc4422f57e70b3
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   nanopb: 59317e09cf1f1a0af72f12af412d54edf52603fc
-  PromisesObjC: b14b1c6b68e306650688599de8a45e49fae81151
+  PromisesObjC: 3113f7f76903778cf4a0586bd1ab89329a0b7b97
   ZipKit: 594735e7ad2fd3ee7349759681a0423a1b296572
 
-PODFILE CHECKSUM: cff1097b25fa88c8c5658f69df4401635b646420
+PODFILE CHECKSUM: 9573656204d8d3af44355224831f3b6b7c727c1d
 
 COCOAPODS: 1.10.0
