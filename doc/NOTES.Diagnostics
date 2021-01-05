@@ -48,26 +48,27 @@ With the demise of QuincyKit there currently is no other open source solution
 for crash reporting, or at least none that I know of. I selected Crashlytics
 from a list of five contenders because it seems trustworthy, friendly and is
 the only solution with (seemingly) no strings attached. For a bit more detail
-read GitHub issue 293 ([2]).
+read GitHub issue 293 ([2]). In the meantime Crashlytics has been acquired by
+Google and integrated into their Firebase platform, which is less than optimal,
+but the effort to switch to some other crash reporting platform is too big
+at the moment.
 
 IMPORTANT: If you are creating a clone of Little Go that you want to distribute
-to the App Store, you must register with Crashlytics to get your own API key
-and build secret. These pieces of information you have to store locally in
-separate files required by the build process and - in the case of the API
-key - also at runtime.
+to the App Store, you must register with Firebase to get your own Firebase
+configuration file. This file you have to store locally, it is required by the
+build process and also at runtime.
 
 Crashlytics integration into the Little Go app hasn't been too difficult, thanks
 to CocoaPods. The main things that I had to fiddle with were:
 
-1) The build phase that submits the dSYM files to the Crashlytics servers. I
+1) The build phase that submits the dSYM files to the Firebase servers. I
    modified the default shell script added by CocoaPods so that dSYM files are
-   submitted only when an App Store distribution build is made. Furthermore, I
-   modified the shell script so that it reads the Fabric API key and the Fabric
-   build secret from external files.
-2) The Info.plist. CocoaPods adds a dictionary with Fabric key/values to
-   Info.plist. This dictionary contained the Fabric API key. I removed the API
-   key and instead added some code to the AppDelegate launch process that reads
-   the API key from the same external file as the dSYM submitting build phase.
+   submitted only when an App Store distribution build is made.
+2) The Info.plist. When Crashlytics was still part of the Fabric framework,
+   CocoaPods added a dictionary with Fabric key/values to Info.plist. This
+   dictionary contained the Fabric API key. I removed the dictionary. I don't
+   know what happens these days when you add Firebase Crashlytics to a new
+   project.
 
 [1] https://www.crashlytics.com/
 [2] https://github.com/herzbube/littlego/issues/293

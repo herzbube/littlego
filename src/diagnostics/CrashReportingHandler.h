@@ -24,10 +24,12 @@
 /// submitting crash reports according to the user preferences in
 /// CrashReportingModel.
 // -----------------------------------------------------------------------------
-@interface CrashReportingHandler : NSObject <CrashlyticsDelegate>
+@interface CrashReportingHandler : NSObject
 {
 }
 
 - (id) initWithModel:(CrashReportingModel*)crashReportingModel;
+
+- (void) handleUnsentCrashReportsOrDoNothing;
 
 @end

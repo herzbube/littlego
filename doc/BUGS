@@ -134,9 +134,6 @@ problem can be safely ignored for the moment.
 
 These are harmless informational messages related to Firebase/Crashlytics
 that appear in Xcode's debug console when the app launches:
-  2019-01-09 22:13:36.884327+0100 Little Go[17873:3109273]  - <AppMeasurement>[I-ACS036001] Analytics screen reporting is disabled. UIViewController transitions will not be logged.
-  2019-01-09 22:13:38.185502+0100 Little Go[17873:3109274] 5.15.0 - [Firebase/Analytics][I-ACS023007] Analytics v.50400000 started
-  2019-01-09 22:13:38.186412+0100 Little Go[17873:3109274] 5.15.0 - [Firebase/Analytics][I-ACS023008] To enable debug logging set the following application argument: -FIRAnalyticsDebugEnabled (see http://goo.gl/RfcP7r)
   2019-01-09 22:13:38.202260+0100 Little Go[17873:3109184] [Crashlytics] Version 3.12.0 (136)
 
 

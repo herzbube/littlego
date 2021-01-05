@@ -53,15 +53,10 @@ additional requirements apply:
   references YOUR account. See the section
   "Code signing and provisioning profiles" below for details.
 - You must create the following files in the project's 'root folder:
-    fabric.apikey
-    fabric.buildsecret
     GoogleService-Info.plist
   These are required for setting up Crashlytics, the crash reporting service
-  used in this project. If you haven't got accounts with Fabric and Firebase
-  yet, now is the time to create them. Once you have your accounts, do this:
-  - In the Fabric web interface create an organization, then get the API key
-    and build secret from the organization page. Put those values into their
-    respective local file in the project's root folder.
+  used in this project. If you haven't got accounts with Firebase yet, now is
+  the time to create them. Once you have your accounts, do this:
   - In the Firebase web interface create a project. During the project setup
     wizard you have to enter a few pieces of information which will result
     in a Firebase configuration file GoogleService-Info.plist being made
@@ -173,10 +168,10 @@ Important configuration settings in Xcode (both for the "Little Go" and the
   specific macro, in this case named LITTLEGO_NDEBUG.
 - The "Little Go" target has a "Run Script" build phase that automatically
   uploads dSYM files to Crashlytics when an App Store build is made. The
-  Fabric API key and the build secret required to perform this upload are
-  ***NOT*** part of the public source code - if you forked the project to
-  create your own App Store build then you must register a Fabric account and
-  get your own API key and build secret.
+  Firebase configuration file GoogleService-Info.plist that is required to
+  perform this upload is ***NOT*** part of the public source code - if you
+  forked the project to create your own App Store build then you must register
+  a Firebase account and get your own Firebase configuration file.
 
 
 Configuration settings for the "Unit tests" target
@@ -201,7 +196,7 @@ Configuration settings for the "Unit tests" target
   preprocessor macro LITTLEGO_UNITTESTS. The effect is that certain #include
   statements and pieces of code are not compiled and the dependency on
   Fuego/Boost goes away.
-- Compiling ApplicationDelegate also pulls in Firebase/Fabric and Crashlytics as
+- Compiling ApplicationDelegate also pulls in Firebase and Crashlytics as
   dependencies. For the unit test target this results either in a linker error
   because of undefined symbols (if the unit test target does not link against
   the third party frameworks), or in a linker error because of duplicate symbols
@@ -210,9 +205,9 @@ Configuration settings for the "Unit tests" target
   against the main bundle, which already contains the third party framework
   symbols). Since crash reporting is not required for unit tests, the simplest
   way to work around these issues was to let the code in the main bundle that
-  works with Firebase/Fabric and Crashlytics not compile when the preprocessor
-  macro LITTLEGO_UNITTESTS is defined. The dependency on Firebase/Fabric and
-  Crashlytics thus goes away, in exactly the same as the dependency on
+  works with Firebase and Crashlytics not compile when the preprocessor
+  macro LITTLEGO_UNITTESTS is defined. The dependency on Firebase and
+  Crashlytics thus goes away, in exactly the same way as the dependency on
   Fuego/Boost.
 
 Configuration settings for the "UI tests" target

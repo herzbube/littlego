@@ -73,7 +73,6 @@
 #import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
 
-
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for ApplicationDelegate.
 // -----------------------------------------------------------------------------
@@ -224,7 +223,6 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   // tab order)
   [self setupGUI];
   // Depends on
-  // - setupResourceBundle, for reading the Fabric API key
   // - setupUserDefaults, for crashReportingModel
   // - setupGUI, for setting up self.window and its rootViewController property,
   //   which is required to present the alert that asks the user for permission
@@ -376,46 +374,14 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 #ifndef LITTLEGO_UNITTESTS
   // TODO: Conditional compile this only when building for App Distribution
 
-  // Disable Firebase Analytics data collection. This can also be disabled via
-  // an Info.plist entry: FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED = YES.
-  // For details see https://firebase.google.com/support/guides/disable-analytics
-  [FIRAnalytics setAnalyticsCollectionEnabled:NO];
-
-  // Another Firebase service, Analytics screen reporting, can only be disabled
-  // via an entry in Info.plist: FirebaseScreenReportingEnabled = NO. It seems
-  // to be impossible to disable this service programmatically.
-  //
   // One way to disable everything programmatically is this:
   //   [[FIRApp defaultApp] setDataCollectionDefaultEnabled:NO];
   // Unfortunately this also disables crash reporting.
 
   [FIRApp configure];
 
-
-  // Reading the bundle resource results in a string with a trailing newline,
-  // character because the resource file also contains a newline. Fabric does
-  // not handle such extraneous whitespace characters, so we have to trim them
-  // ourselves.
-  NSString* fabricAPIKey = [[self contentOfTextResource:fabricAPIKeyResource] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-  if (fabricAPIKey != nil)
-  {
-    // TODO: Don't start the service if the API key has a pre-determined "dummy"
-    // value. This lets collaborators run the app without the need for
-    // disseminating the API key.
-
-    CrashReportingHandler* crashReportingHandler = [[[CrashReportingHandler alloc] initWithModel:self.crashReportingModel] autorelease];
-    // Crashlytics calls [Fabric with:...] behind the scenes
-    [Crashlytics startWithAPIKey:fabricAPIKey delegate:crashReportingHandler];
-  }
-  else
-  {
-    NSString* errorMessage = [NSString stringWithFormat:@"Failed to obtain Fabric API key from resources! Refusing to continue without crash reporting service."];
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSGenericException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
+  CrashReportingHandler* crashReportingHandler = [[[CrashReportingHandler alloc] initWithModel:self.crashReportingModel] autorelease];
+  [crashReportingHandler handleUnsentCrashReportsOrDoNothing];
 #endif
 }
 

@@ -16,9 +16,7 @@ Little Go.xcodeproj/xcuserdata
 # contains anything but the enclosing project, it can be safely ignored.
 Little Go.xcodeproj/project.xcworkspace
 
-# Fabric and Crashlytics files
-fabric.apikey
-fabric.buildsecret
+# Firebase/Crashlytics files
 GoogleService-Info.plist
 
 # CocoaPods files

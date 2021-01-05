@@ -161,9 +161,6 @@ NSString* bugReportLogsArchiveFileName = @ "logs.zip";
 NSString* bugReportEmailRecipient = @"herzbube@herzbube.ch";
 NSString* bugReportEmailSubject = @"Little Go Bug Report";
 
-// Crash reporting constants
-NSString* fabricAPIKeyResource = @"fabric.apikey";
-
 // Resource file names
 NSString* openingBookResource = @"book.dat";
 NSString* aboutDocumentResource = @"About.html";

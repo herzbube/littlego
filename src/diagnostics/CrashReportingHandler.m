@@ -20,9 +20,6 @@
 #import "CrashReportingModel.h"
 #import "../main/ApplicationDelegate.h"
 
-// Typedef to improve code readability
-typedef void (^CrashlyticsCompletionHandler) (BOOL);
-
 /// @brief Enumerates the types of buttons used in alerts presented by this
 /// command.
 enum AlertButtonTypeCrashReport
@@ -38,7 +35,6 @@ enum AlertButtonTypeCrashReport
 // -----------------------------------------------------------------------------
 @interface CrashReportingHandler()
 @property(nonatomic, assign) CrashReportingModel* crashReportingModel;
-@property(nonatomic, copy) CrashlyticsCompletionHandler crashlyticsCompletionHandler;
 @end
 
 
@@ -58,7 +54,6 @@ enum AlertButtonTypeCrashReport
     return nil;
 
   self.crashReportingModel = crashReportingModel;
-  self.crashlyticsCompletionHandler = nil;
 
   return self;
 }
@@ -72,40 +67,50 @@ enum AlertButtonTypeCrashReport
 - (void) dealloc
 {
   self.crashReportingModel = nil;
-  self.crashlyticsCompletionHandler = nil;
   [super dealloc];
 }
 
-#pragma mark - CrashlyticsDelegate overrides
+#pragma mark - Public API
 
 // -----------------------------------------------------------------------------
-/// @brief CrashlyticsDelegate protocol method.
+/// @brief Checks if there are any unset crash reports. If no then this method
+/// does nothing. If yes then this method initiates the asynchronous handling
+/// of the unsent crash reports. This method then immediately returns control to
+/// the caller. Because this method is invoked during application launch, it
+/// MUST return control as soon as possible.
 ///
-/// This method is invoked only if a crash report is pending submission. If it
-/// is invoked, this method is invoked synchronously right away when Crashlytics
-/// is configured with this delegate. Because this happens during application
-/// launch, this method MUST return control as soon as possible.
+/// Handling of unset crash reports is performed asynchronously. The process is
+/// governed by the user preferences in the CrashReportingModel object that was
+/// supplied to the initializer.
 // -----------------------------------------------------------------------------
-- (void) crashlyticsDidDetectReportForLastExecution:(CLSReport*)report completionHandler:(void (^) (BOOL))completionHandler
+- (void) handleUnsentCrashReportsOrDoNothing
+{
+  FIRCrashlytics* crashlytics = [FIRCrashlytics crashlytics];
+
+  // Must be set to NO, otherwise checkForUnsentReportsWithCompletion:()
+  // does not work
+  [crashlytics setCrashlyticsCollectionEnabled:NO];
+
+  // The completion handler is invoked asynchronously
+  [crashlytics checkForUnsentReportsWithCompletion:^(BOOL hasUnsentReports)
+  {
+    if (hasUnsentReports)
+      [self handleUnsentCrashReports];
+  }];
+}
+
+#pragma mark - Private helpers
+
+- (void) handleUnsentCrashReports
 {
   DDLogInfo(@"%@: Crash report detected, automaticReport = %d", self, self.crashReportingModel.automaticReport);
 
-  if (self.crashReportingModel.allowContact)
-  {
-    // Verified that this works! Setting the email address on the shared
-    // Crashlytics object does not seem to work (tested with Crashlytics 3.7.3).
-    report.userEmail = self.crashReportingModel.contactEmail;
-  }
-
   if (self.crashReportingModel.automaticReport)
   {
-    [self runCrashlyticsCompletionHandler:completionHandler
-                         withSubmitReport:YES];
+    [self submitUnsentReports];
   }
   else
   {
-    self.crashlyticsCompletionHandler = completionHandler;
-
     NSString* alertTitle = @"Little Go Unexpectedly Quit";
     NSString* alertMessage = @"Would you like to send a report so we can fix the problem?";
 
@@ -147,6 +152,20 @@ enum AlertButtonTypeCrashReport
   }
 }
 
+- (void) submitUnsentReports
+{
+  DDLogInfo(@"%@: Submitting unset crash reports", self);
+
+  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    FIRCrashlytics* crashlytics = [FIRCrashlytics crashlytics];
+
+    if (self.crashReportingModel.allowContact)
+      [crashlytics setUserID:self.crashReportingModel.contactEmail];
+
+    [crashlytics sendUnsentReports];
+  }];
+}
+
 #pragma mark - Alert handler
 
 // -----------------------------------------------------------------------------
@@ -184,26 +203,13 @@ enum AlertButtonTypeCrashReport
     }
   }
 
-  // Run the completion handler in all cases. Even if the user does not want the
-  // report to be submitted, running the completion handler is necessary to
-  // clear the report from the queue.
-  [self runCrashlyticsCompletionHandler:self.crashlyticsCompletionHandler
-                       withSubmitReport:submitReport];
+  if (submitReport)
+    [self submitUnsentReports];
+  else
+    [[FIRCrashlytics crashlytics] deleteUnsentReports];
 
   // Alert has been handled, so this handler object can now die
   [self autorelease];
-}
-
-#pragma mark - Private helpers
-
-- (void) runCrashlyticsCompletionHandler:(CrashlyticsCompletionHandler)completionHandler
-                        withSubmitReport:(BOOL)submitReport
-{
-  DDLogInfo(@"%@: Running Crashlytics completion handler, submitReport = %d", self, submitReport);
-
-  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-    completionHandler(submitReport);
-  }];
 }
 
 @end
