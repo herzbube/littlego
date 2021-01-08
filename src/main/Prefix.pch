@@ -26,10 +26,10 @@
   // Library includes
 #ifndef LITTLEGO_UITESTS
   #import <CocoaLumberjack/CocoaLumberjack.h>
+  #import <SgfcKit_static/SgfcKit_static.h>
 #endif
 #if ! defined(LITTLEGO_UNITTESTS) && ! defined(LITTLEGO_UITESTS)
   #import <Firebase.h>
-  #import <SgfcKit_static/SgfcKit_static.h>
 #endif
 
   // Project includes

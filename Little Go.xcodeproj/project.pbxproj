@@ -392,6 +392,9 @@
 		CD9A49F21712516D009E7514 /* EditTextController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCAC14194DA00065C93B /* EditTextController.m */; };
 		CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70A146028770012C3EA /* HandicapSelectionController.m */; };
 		CD9AA70E146028770012C3EA /* KomiSelectionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9AA70C146028770012C3EA /* KomiSelectionController.m */; };
+		CD9B63BF25A675ED003E032B /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9B63A925A67465003E032B /* libiconv.tbd */; };
+		CD9B63C425A675F9003E032B /* libsgfcplusplus_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD093E68259B9B1B0058D170 /* libsgfcplusplus_static.framework */; };
+		CD9B63C525A67606003E032B /* SgfcKit_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD093E64259B99660058D170 /* SgfcKit_static.framework */; };
 		CDA096FB1A915085002FCD78 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FA1A915085002FCD78 /* LayoutManager.m */; };
 		CDA096FC1A915085002FCD78 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FA1A915085002FCD78 /* LayoutManager.m */; };
 		CDA096FF1A98CD54002FCD78 /* ButtonBoxController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FE1A98CD54002FCD78 /* ButtonBoxController.m */; };
@@ -1010,6 +1013,7 @@
 		CD9AA70A146028770012C3EA /* HandicapSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandicapSelectionController.m; sourceTree = "<group>"; };
 		CD9AA70B146028770012C3EA /* KomiSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KomiSelectionController.h; sourceTree = "<group>"; };
 		CD9AA70C146028770012C3EA /* KomiSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KomiSelectionController.m; sourceTree = "<group>"; };
+		CD9B63A925A67465003E032B /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/lib/libiconv.tbd; sourceTree = DEVELOPER_DIR; };
 		CDA096F91A915085002FCD78 /* LayoutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutManager.h; sourceTree = "<group>"; };
 		CDA096FA1A915085002FCD78 /* LayoutManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutManager.m; sourceTree = "<group>"; };
 		CDA096FD1A98CD54002FCD78 /* ButtonBoxController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonBoxController.h; sourceTree = "<group>"; };
@@ -1277,6 +1281,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD9B63C525A67606003E032B /* SgfcKit_static.framework in Frameworks */,
+				CD9B63C425A675F9003E032B /* libsgfcplusplus_static.framework in Frameworks */,
+				CD9B63BF25A675ED003E032B /* libiconv.tbd in Frameworks */,
 				D1180DF100FA850BAE6D58F9 /* libPods-All Targets-Unit tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1326,6 +1333,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				CD9B63A925A67465003E032B /* libiconv.tbd */,
 				CDD2183D25A208E80069633B /* fuego-on-ios.xcframework */,
 				CD093E6C259B9B540058D170 /* libiconv.tbd */,
 				CD093E68259B9B1B0058D170 /* libsgfcplusplus_static.framework */,
