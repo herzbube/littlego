@@ -20,6 +20,7 @@
 #import "NewGameCommand.h"
 #import "../backup/BackupGameToSgfCommand.h"
 #import "../backup/CleanBackupSgfCommand.h"
+#import "../boardposition/SyncGTPEngineCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
 #import "../../archive/ArchiveViewModel.h"
 #import "../../go/GoBoard.h"
@@ -29,8 +30,6 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
-#import "../../gtp/GtpResponse.h"
-#import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpUtilities.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../newgame/NewGameModel.h"
@@ -57,9 +56,19 @@ enum ParseMoveStringResult
 /// @brief Class extension with private properties for LoadGameCommand.
 // -----------------------------------------------------------------------------
 @interface LoadGameCommand()
+@property(nonatomic, assign) enum GoBoardSize boardSize;
+@property(nonatomic, retain) NSString* handicap;
+@property(nonatomic, retain) NSString* setup;
+@property(nonatomic, retain) NSString* setupPlayer;
+@property(nonatomic, retain) NSString* komi;
+@property(nonatomic, retain) NSString* moves;
 @property(nonatomic, assign) int totalSteps;
 @property(nonatomic, assign) float stepIncrease;
 @property(nonatomic, assign) float progress;
+@property(nonatomic, retain) SGFCGame* sgfGame;
+@property(nonatomic, retain) NSArray* sgfMainVariationNodes;
+@property(nonatomic, retain) SGFCNode* sgfGameInfoNode;
+@property(nonatomic, retain) NSArray* handicapVertexStrings;
 @end
 
 
@@ -84,16 +93,19 @@ enum ParseMoveStringResult
   self.filePath = filePath;
   self.restoreMode = false;
   self.didTriggerComputerPlayer = false;
-  m_boardSize = GoBoardSizeUndefined;
-  m_handicap = nil;
-  m_setup = nil;
-  m_setupPlayer = nil;
-  m_komi = nil;
-  m_moves = nil;
-  m_oldCurrentDirectory = nil;
-  self.totalSteps = (6 + maxStepsForReplayMoves);  // 6 fixed steps for GTP commands
+  self.boardSize = GoBoardSizeUndefined;
+  self.handicap = nil;
+  self.setup = nil;
+  self.setupPlayer = nil;
+  self.komi = nil;
+  self.moves = nil;
+  self.totalSteps = (6 + maxStepsForReplayMoves);  // 6 fixed steps for SGF parsing
   self.stepIncrease = 1.0 / self.totalSteps;
   self.progress = 0.0;
+  self.sgfGame = nil;
+  self.sgfMainVariationNodes = nil;
+  self.sgfGameInfoNode = nil;
+  self.handicapVertexStrings = nil;
 
   return self;
 }
@@ -114,12 +126,15 @@ enum ParseMoveStringResult
 - (void) dealloc
 {
   self.filePath = nil;
-  [m_handicap release];
-  [m_setup release];
-  [m_setupPlayer release];
-  [m_komi release];
-  [m_moves release];
-  [m_oldCurrentDirectory release];
+  self.handicap = nil;
+  self.setup = nil;
+  self.setupPlayer = nil;
+  self.komi = nil;
+  self.moves = nil;
+  self.sgfGame = nil;
+  self.sgfMainVariationNodes = nil;
+  self.sgfGameInfoNode = nil;
+  self.handicapVertexStrings = nil;
 
   [super dealloc];
 }
@@ -143,7 +158,7 @@ enum ParseMoveStringResult
     [[LongRunningActionCounter sharedCounter] increment];
     [self setupProgressHUD];
     [GtpUtilities stopPondering];
-    bool success = [self doGtpStuff:&errorMessage];
+    bool success = [self loadAndParseSgf:&errorMessage];
     if (! success)
       return false;
     @try
@@ -191,69 +206,35 @@ enum ParseMoveStringResult
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (bool) doGtpStuff:(NSString**)errorMessage
+- (bool) loadAndParseSgf:(NSString**)errorMessage
 {
-  bool success = [self copyArchiveToTempFile:errorMessage];
-  if (! success)
-    return false;
-  success = [self loadSgf:errorMessage];
+  bool success = [self loadSgf:errorMessage];
   if (! success)
     return false;
   [self increaseProgressAndNotifyDelegate];
-  success = [self removeTempFile:errorMessage];
+  success = [self parseSgfDataForBoardSize:errorMessage];
   if (! success)
     return false;
   [self increaseProgressAndNotifyDelegate];
-  success = [self askGtpEngineForBoardSize:errorMessage];
+  success = [self parseSgfDataForKomi:errorMessage];
   if (! success)
     return false;
   [self increaseProgressAndNotifyDelegate];
-  success = [self askGtpEngineForKomi:errorMessage];
+  success = [self parseSgfDataForHandicap:errorMessage];
   if (! success)
     return false;
   [self increaseProgressAndNotifyDelegate];
-  success = [self askGtpEngineForHandicap:errorMessage];
+  success = [self parseSgfDataForSetup:errorMessage];
   if (! success)
     return false;
   [self increaseProgressAndNotifyDelegate];
-  success = [self askGtpEngineForSetup:errorMessage];
+  success = [self parseSgfDataForSetupPlayer:errorMessage];
   if (! success)
     return false;
   [self increaseProgressAndNotifyDelegate];
-  success = [self askGtpEngineForSetupPlayer:errorMessage];
+  success = [self parseSgfDataForMoves:errorMessage];
   if (! success)
     return false;
-  [self increaseProgressAndNotifyDelegate];
-  success = [self askGtpEngineForMoves:errorMessage];
-  if (! success)
-    return false;
-  return true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt()
-// -----------------------------------------------------------------------------
-- (bool) copyArchiveToTempFile:(NSString**)errorMessage
-{
-  // Need to work with temporary file whose name is known and guaranteed to not
-  // contain any characters that are prohibited by GTP
-  NSString* temporaryDirectory = NSTemporaryDirectory();
-  NSString* sgfTemporaryFilePath = [temporaryDirectory stringByAppendingPathComponent:sgfTemporaryFileName];
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  if (! [fileManager fileExistsAtPath:self.filePath])
-  {
-    *errorMessage = @"Internal error: .sgf file not found";
-    return false;
-  }
-  NSError* error;
-  BOOL success = [PathUtilities copyItemAtPath:self.filePath overwritePath:sgfTemporaryFilePath error:&error];
-  if (! success)
-  {
-    *errorMessage = [NSString stringWithFormat:@"Internal error: Failed to copy .sgf file, reason: %@", [error localizedDescription]];
-    return false;
-  }
-  m_oldCurrentDirectory = [[fileManager currentDirectoryPath] retain];
-  [fileManager changeCurrentDirectoryPath:temporaryDirectory];
   return true;
 }
 
@@ -262,142 +243,584 @@ enum ParseMoveStringResult
 // -----------------------------------------------------------------------------
 - (bool) loadSgf:(NSString**)errorMessage
 {
-  // Use the file *NAME* without the path
-  NSString* commandString = [NSString stringWithFormat:@"loadsgf %@", sgfTemporaryFileName];
-  GtpCommand* command = [GtpCommand command:commandString];
-  [command submit];
-  if (! command.response.status)
+  SGFCDocumentReader* reader = [[SGFCDocumentReader alloc] init];
+  SGFCDocumentReadResult* result = [reader readSgfContentFromFile:self.filePath];
+  if (result.isSgfDataValid)
   {
-    *errorMessage = @"The game could not be loaded. Does the game use a board that is too large (maximum board size is 19)? Is the game file in .sgf format?";
+    for (SGFCMessage* message in result.parseResult)
+    {
+      if (message.isCriticalMessage)
+      {
+        switch (message.messageID)
+        {
+          case SGFCMessageIDGameIsNotGo:
+            // Skip this message. If there are no other critical messages we
+            // will detect non-Go games further down and abort there with a
+            // tailored error message.
+            continue;
+          case SGFCMessageIDUnknownEncodingInSgfContent:
+            *errorMessage = @"The SGF data is encoded with an unsupported or unknown/illegal text encoding.";
+            break;
+          case SGFCMessageIDEncodingErrorsDetected:
+            *errorMessage = @"The SGF data encoding is faulty (illegal byte sequence according to the text encoding)";
+            break;
+          default:
+            *errorMessage = [NSString stringWithFormat:@"A critical problem with the SGF data was found. The technical error message is:\n\n%@", message.formattedMessageText];
+            break;
+        }
+        return false;
+      }
+    }
+  }
+  else
+  {
+    for (SGFCMessage* message in result.parseResult)
+    {
+      if (message.messageType == SGFCMessageTypeFatalError)
+      {
+        switch (message.messageID)
+        {
+          case SGFCMessageIDNoSgfData:
+            *errorMessage = @"Unable to find any SGF data.";
+            break;
+          case SGFCMessageIDUnknownIconvError:
+            *errorMessage = [NSString stringWithFormat:@"An unexpected text encoding error occurred in the iconv library. The technical error message is:\n\n%@", message.messageText];
+            break;
+          case SGFCMessageIDEncodingDetectionFailed:
+            *errorMessage = @"Failed to detect the text encoding of the SGF data.";
+            break;
+          case SGFCMessageIDSgfContentHasDifferentEncodingsFatal:
+            *errorMessage = @"The SGF data contains two or more text encodings.";
+            break;
+          default:
+            *errorMessage = [NSString stringWithFormat:@"A fatal error occurred while reading the SGF data. The technical error message is:\n\n%@", message.formattedMessageText];
+            break;
+        }
+        return false;
+      }
+    }
+
+    *errorMessage = @"Reading of the SGF data failed. The SgfcKit library did not specify a reason for the failure.";
     return false;
   }
+
+  SGFCGame* firstGame = result.document.game;
+  if (firstGame && firstGame.hasRootNode)
+  {
+    self.sgfGame = firstGame;
+    self.sgfMainVariationNodes = firstGame.rootNode.mainVariationNodes;
+    // We can't be sure that the main variation actually has a game info node,
+    // therefore we can't take the node from firstGame.gameInfoNodes - that
+    // collection might consist of game info nodes that are all located in
+    // variations that are not the main variation. To guarantee that we get the
+    // correct game info node we have to start the search from the main
+    // variation's last node.
+    SGFCNode* lastNodeOfMainVariation = [self.sgfMainVariationNodes lastObject];
+    self.sgfGameInfoNode = lastNodeOfMainVariation.gameInfoNode;
+  }
+  else
+  {
+    self.sgfGame = [SGFCGame game];
+    self.sgfMainVariationNodes = [NSArray array];
+    self.sgfGameInfoNode = nil;
+  }
+
+  if (self.sgfGame.gameType != SGFCGameTypeGo)
+  {
+    *errorMessage = [NSString stringWithFormat:@"The game is not a Go game. The SGF game number is %ld.", self.sgfGame.gameTypeAsNumber];
+    return false;
+  }
+
   return true;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (bool) removeTempFile:(NSString**)errorMessage
+- (bool) parseSgfDataForBoardSize:(NSString**)errorMessage
 {
-  NSError* error;
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  BOOL success = [fileManager removeItemAtPath:sgfTemporaryFileName error:&error];
-  [fileManager changeCurrentDirectoryPath:m_oldCurrentDirectory];
-  if (! success)
+  SGFCBoardSize boardSize = self.sgfGame.boardSize;
+  if (! SGFCBoardSizeIsSquare(boardSize))
   {
-    *errorMessage = [NSString stringWithFormat:@"Internal error: Failed to remove temporary file after load, reason: %@", [error localizedDescription]];
+    *errorMessage = [NSString stringWithFormat:@"The board size is not square: %ld x %ld.", (long)boardSize.Columns, (long)boardSize.Rows];
     return false;
   }
-  return true;
+
+  switch (boardSize.Columns)
+  {
+    case 7:
+    case 9:
+    case 11:
+    case 13:
+    case 15:
+    case 17:
+    case 19:
+    {
+      self.boardSize = (enum GoBoardSize)boardSize.Columns;
+      return true;
+    }
+    default:
+    {
+      *errorMessage = [NSString stringWithFormat:@"The board size is not supported: %ld.", (long)boardSize.Columns];
+      return false;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (bool) askGtpEngineForBoardSize:(NSString**)errorMessage
+- (bool) parseSgfDataForKomi:(NSString**)errorMessage
 {
-  GtpCommand* command = [GtpCommand command:@"go_point_numbers"];
-  [command submit];
-  if (! command.response.status)
-  {
-    *errorMessage = @"Internal error: Failed to detect board size of the game to be loaded";
-    return false;
-  }
-  // Command and response are expected to look like this for a 19x19 board:
+  // Implementation in Fuego of the "get_komi" GTP command
+  // - Returns the komi that is set in the game's rules
+  // - The komi in the game's rules is set immediately when the "loadsgf"
+  //   GTP command is executed from the node that contains the KM property.
+  // - Searching for the KM property is started in the last node of the main
+  //   variation. The search then continues backwards until the root node is
+  //   reached. The first node that contains a KM property is used.
   //
-  // go_point_numbers
-  // = 381 382 383 384 385 386 387 388 389 390 391 392 393 394 395 396 397 398 399
-  // 361 362 363 364 365 366 367 368 369 370 371 372 373 374 375 376 377 378 379
-  // [...]
-  // [...]
+  // SGFC behaviour
+  // - The first node that contains a game info property is considered to be
+  //   a game info node. If another node further down the tree contains
+  //   another game info property SGFC warns about this with error 44 and
+  //   deletes the later game info property.
   //
-  // So what we do here is simply count the lines to get the size of the board.
-  // Not terribly sophisticated, but I have not found a better, or more
-  // reliable way to query for board size.
-  NSArray* responseLines = [command.response.parsedResponse componentsSeparatedByString:@"\n"];
-  // Cast is required because NSUInteger and int (the underlying type of enums)
-  // differ in size in 64-bit.
-  m_boardSize = (enum GoBoardSize)responseLines.count;
+  // Our handling
+  // - Differently than Fuego, we expect the KM property in the game info node
+
+  self.komi = @"";
+
+  if (! self.sgfGameInfoNode)
+    return true;
+
+  SGFCProperty* komiProperty = [self.sgfGameInfoNode propertyWithType:SGFCPropertyTypeKM];
+  if (! komiProperty)
+    return true;
+
+  self.komi = komiProperty.propertyValue.toSingleValue.rawValue;
+
   return true;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (bool) askGtpEngineForKomi:(NSString**)errorMessage
+- (bool) parseSgfDataForHandicap:(NSString**)errorMessage
 {
-  GtpCommand* command = [GtpCommand command:@"get_komi"];
-  [command submit];
-  if (! command.response.status)
+  // Implementation in Fuego of the "list_handicap" GTP command
+  // - Find the node that contains the HA property. Searching is started in the
+  //   last node of the main variation. The search then continues backwards
+  //   until the root node is reached. The first node that contains a HA
+  //   property is used.
+  // - List all values of the AB property that is in the same node (if there is
+  //   any)
+  // - A difference between the HA value and the number of AB values is ignored,
+  //   in fact the HA value is ignored entirely
+  //
+  // SGFC behaviour
+  // - The first node that contains a game info property is considered to be
+  //   a game info node. If another node further down the tree contains
+  //   another game info property SGFC warns about this with error 44 and
+  //   deletes the later game info property.
+  // - If the node that contains the handicap property contains no AB property
+  //   this is not warned about.
+  //
+  // Our handling
+  // - Differently than Fuego, we expect the HA property in the game info node
+  // - Also differently than Fuego the HA property value actually matters
+  // - If a HA property exists and it has a value > 0, then the same node
+  //   must contain an AB property that sets up at least as many black stones
+  //   as the HA property value requires. If there are less setup stones we
+  //   refuse to process the .sgf file. Extraneous setup stones are not
+  //   treated as handicap stones.
+
+  /// Expected format by later processing is: "vertex vertex vertex[...]"
+  self.handicap = @"";
+  NSMutableArray* handicapVertexStrings = [NSMutableArray array];
+  self.handicapVertexStrings = handicapVertexStrings;
+
+  if (! self.sgfGameInfoNode)
+    return true;
+
+  SGFCProperty* handicapProperty = [self.sgfGameInfoNode propertyWithType:SGFCPropertyTypeHA];
+  if (! handicapProperty)
+    return true;
+
+  SGFCNumber expectedNumberOfHandicapStones = handicapProperty.propertyValue.toSingleValue.toNumberValue.numberValue;
+  if (expectedNumberOfHandicapStones == 0)
+    return true;
+
+  NSUInteger actualNumberOfHandicapStones = 0;
+  SGFCProperty* handicapStonesProperty = [self.sgfGameInfoNode propertyWithType:SGFCPropertyTypeAB];
+  if (handicapStonesProperty)
   {
-    *errorMessage = @"Internal error: Failed to detect komi of the game to be loaded";
+    NSArray* handicapStonesPropertyValues = handicapStonesProperty.propertyValues;
+    for (id<SGFCPropertyValue> handicapStonesPropertyValue in handicapStonesPropertyValues)
+    {
+      SGFCGoPoint* goPoint = handicapStonesPropertyValue.toSingleValue.toStoneValue.toGoStoneValue.goStone.location;
+      if (! goPoint)
+      {
+        *errorMessage = @"SgfcKit interfacing error while determining the handicap: Missing SGFCGoPoint object.";
+        return false;
+      }
+
+      if (! [goPoint hasPositionInGoPointNotation:SGFCGoPointNotationHybrid])
+      {
+        *errorMessage = @"SgfcKit interfacing error while determining the handicap: SGFCGoPoint not available in hybrid notation.";
+        return false;
+      }
+
+      NSString* vertexString = [goPoint positionInGoPointNotation:SGFCGoPointNotationHybrid];
+      [handicapVertexStrings addObject:vertexString];
+      actualNumberOfHandicapStones++;
+
+      // There may be more setup stones than the handicap indicates. We don't
+      // treat these extraneous setup stones as handicap stones.
+      if (actualNumberOfHandicapStones == expectedNumberOfHandicapStones)
+        break;
+    }
+  }
+
+  if (actualNumberOfHandicapStones != expectedNumberOfHandicapStones)
+  {
+    *errorMessage = [NSString stringWithFormat:@"The handicap (%ld) is greater than the number of black setup stones (%ld).", expectedNumberOfHandicapStones, actualNumberOfHandicapStones];
     return false;
   }
-  m_komi = [command.response.parsedResponse copy];
+
+  self.handicap = [handicapVertexStrings componentsJoinedByString:@" "];
+
   return true;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (bool) askGtpEngineForHandicap:(NSString**)errorMessage
+- (bool) parseSgfDataForSetup:(NSString**)errorMessage
 {
-  GtpCommand* command = [GtpCommand command:@"list_handicap"];
-  [command submit];
-  if (! command.response.status)
+  // Implementation in Fuego of the "list_setup" GTP command
+  // - Setup stones are all points that have a stone on them after AB, AW and AE
+  //   properties in all nodes of the main variation have been evaluated, minus
+  //   AB setup stones in the node that contains the HA property (to account for
+  //   how the "list_handicap" GTP command evaluates the handicap).
+  // - Setup properties that operate on the same point
+  //   - Within the same node: Process properties in the order AB, AW, AE
+  //   - Across nodes: The last setup property wins
+  //
+  // SGFC behaviour
+  // - Setup properties are not restricted to the root node or a game info
+  //   node. They can appear in the root node, in a game info node, before or
+  //   after a game info node, before or after nodes that contain move nodes
+  // - Setup and move properties cannot appear in the same node; SGFC issues
+  //   error 30 and splits the properties into two nodes: the setup properties
+  //   are moved to the first node, the move property to the second node
+  //   (regardless of how they appear in the original SGF content); the order
+  //   of the setup properties (if there are several of them) is preserved.
+  // - A move property that places a stone on a point that is already occupied
+  //   (regardless of whether the stone was placed by another move or by a setup
+  //   property) is warned about with warning 58, but the move property is
+  //   retained
+  // - A setup property that places a stone on a point that is already occupied
+  //   with a stone of the same color, or empties an already empty point, is
+  //   warned about with warning 39 and the property value is deleted (because
+  //   it takes no effect)
+  // - Setup properties in different nodes can operate on the same point as
+  //   long as they change something about the point; they overwrite previous
+  //   values, e.g. it's not necessary to remove a stone with AE before placing
+  //   a stone with a different color
+  // - If the same point appears more than once in the same node in one or more
+  //   setup properties, SGFC issues warning 38 and deletes the duplicate
+  //   values; if the same values appears multiple times in the same property
+  //   SGFC deletes the first value; if the same value appears multiple times
+  //   in different properties SGFC retains the value that appears first and
+  //   deletes all values that appear later.
+  // - If the same setup property appears multiple times in the same node
+  //   SGFC issues warning 28 and merges the values of the two properties
+  //   (assuming they don't overlap).
+  // - Black and white moves cannot appear in the same node; SGFC issues
+  //   error 37 and splits the properties into two nodes. the order of the
+  //   properties is preserved.
+  // - Several black or white moves in the same node are an error (a property
+  //   can appear only once per node); SGFC issues error 28 and deletes all
+  //   duplicate properties, only the property that appears first is retained.
+  //
+  // Our handling
+  // - We are happy with all of these things that SGFC does for us, in fact we
+  //   RELY on these things!
+  // - We basically follow the same algorithm as Fuego does, with only two
+  //   differences:
+  //   - We refuse to process the .sgf file if setup properties appear after
+  //     the first move.
+  //   - SGF allows an AE or AW property in a node beyond the one with the HA
+  //     property to clear a handicap stone or change its color. Fuego ignored
+  //     this, we actively check this and refuse to process such an .sgf file.
+
+  /// Expected format by later processing is: "color vertex, color vertex, color vertex[...]"
+  self.setup = @"";
+
+  NSMutableDictionary* setupPointDictionary = [NSMutableDictionary dictionary];
+  bool firstMoveFound = false;
+  for (SGFCNode* sgfNode in self.sgfMainVariationNodes)
   {
-    *errorMessage = @"Internal error: Failed to detect handicap of the game to be loaded";
+    if (firstMoveFound)
+    {
+      NSArray* setupProperties = [sgfNode propertiesWithCategory:SGFCPropertyCategorySetup];
+      for (SGFCProperty* setupProperty in setupProperties)
+      {
+        switch (setupProperty.propertyType)
+        {
+          case SGFCPropertyTypeAB:
+          case SGFCPropertyTypeAW:
+          case SGFCPropertyTypeAE:
+          {
+            *errorMessage = @"The SGF data contains stone setup instructions after the first move.";
+            return false;
+          }
+          default:
+          {
+            // We are not interested in other setup properties
+            continue;
+          }
+        }
+      }
+    }
+    else
+    {
+      NSArray* moveProperties = [sgfNode propertiesWithCategory:SGFCPropertyCategoryMove];
+      if (moveProperties.count > 0)
+      {
+        firstMoveFound = true;
+        continue;
+      }
+
+      // We don't need to follow a particular order in how we process setup
+      // properties. The pre-processing done by SGFC guarantees us that in the
+      // same node the same point can only appear once.
+      NSArray* setupProperties = [sgfNode propertiesWithCategory:SGFCPropertyCategorySetup];
+      for (SGFCProperty* setupProperty in setupProperties)
+      {
+        enum GoColor goColor;
+        SGFCPropertyType propertyType = setupProperty.propertyType;
+        if (propertyType == SGFCPropertyTypeAB)
+          goColor = GoColorBlack;
+        else if (propertyType == SGFCPropertyTypeAW)
+          goColor = GoColorWhite;
+        else if (propertyType == SGFCPropertyTypeAE)
+          goColor = GoColorNone;
+        else
+          continue;  // We are not interested in other setup properties
+
+        NSArray* setupPropertyValues = setupProperty.propertyValues;
+        for (id<SGFCPropertyValue> setupPropertyValue in setupPropertyValues)
+        {
+          SGFCGoPoint* goPoint;
+          if (propertyType == SGFCPropertyTypeAE)
+            goPoint = setupPropertyValue.toSingleValue.toPointValue.toGoPointValue.goPoint;
+          else
+            goPoint = setupPropertyValue.toSingleValue.toStoneValue.toGoStoneValue.goStone.location;
+
+          if (! goPoint)
+          {
+            *errorMessage = @"SgfcKit interfacing error while determining setup stones: Missing SGFCGoPoint object.";
+            return false;
+          }
+          if (! [goPoint hasPositionInGoPointNotation:SGFCGoPointNotationHybrid])
+          {
+            *errorMessage = @"SgfcKit interfacing error while determining setup stones: SGFCGoPoint not available in hybrid notation.";
+            return false;
+          }
+
+          NSString* vertexString = [goPoint positionInGoPointNotation:SGFCGoPointNotationHybrid];
+          // Overwriting previous values works because key are compared for
+          // equality, not for object identity
+          setupPointDictionary[vertexString] = [NSNumber numberWithInt:goColor];
+        }
+      }
+    }
+  }
+
+  // Make a copy so that the original remains the same
+  NSMutableArray* handicapVertexStrings = [self.handicapVertexStrings mutableCopy];
+  NSMutableArray* setupStrings = [NSMutableArray array];
+  [setupPointDictionary enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* goColorAsNumber, BOOL* stop)
+  {
+    enum GoColor goColor = [goColorAsNumber intValue];
+    if (goColor == GoColorNone)
+      return;
+
+    if (goColor == GoColorBlack)
+    {
+      // Works because containsObject: compares equality, not object identity
+      if ([handicapVertexStrings containsObject:vertexString])
+      {
+        [handicapVertexStrings removeObject:vertexString];
+        return;
+      }
+    }
+
+    NSString* colorString = (goColor == GoColorBlack) ? @"B" : @"W";
+    NSString* setupString = [NSString stringWithFormat:@"%@ %@", colorString, vertexString];
+    [setupStrings addObject:setupString];
+  }];
+
+  // If at this point there are still handicap stones in the array this means
+  // that all setup properties combined have manipulated the leftover points
+  // so that they no longer contain a black handicap stone, but instead contain
+  // either a white stone (AW), or are empty (AE). Because Little Go will
+  // continue to use the handicap stones this opens up the possiblity that
+  // certain moves in the SGF will be considered illegal by Little Go (e.g.
+  // a move might attempt to place a stone on point that is now empty). To
+  // avoid this situation we refuse to continue
+  if (handicapVertexStrings.count > 0)
+  {
+    *errorMessage = [NSString stringWithFormat:@"One or more black handicap stones are removed or redefined to white stones after they are set up. Affected handicap stone(s):\n\n%@",
+                     [handicapVertexStrings componentsJoinedByString:@", "]];
     return false;
   }
-  m_handicap = [command.response.parsedResponse copy];
+
+  self.setup = [setupStrings componentsJoinedByString:@", "];
+
   return true;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (bool) askGtpEngineForSetup:(NSString**)errorMessage
+- (bool) parseSgfDataForSetupPlayer:(NSString**)errorMessage
 {
-  GtpCommand* command = [GtpCommand command:@"list_setup"];
-  [command submit];
-  if (! command.response.status)
+  // Implementation in Fuego of the "list_setup_player" GTP command
+  // - Examine nodes of the main variation up to the first node that contains
+  //   a move property
+  // - If a node contains the PL property its value is extracted and used
+  // - If the PL property appears again in a later node its value overwrites
+  //   the previous value
+  //
+  // SGFC behaviour
+  // - The PL property is not restricted to the root node or a game info
+  //   node. It can appear in the root node, in a game info node, before or
+  //   after a game info node, before or after nodes that contain move nodes
+  // - Setup and move properties cannot appear in the same node; SGFC issues
+  //   error 30 and deletes the PL property (unlike with AB, AW and AE where it
+  //   retains those properties and splits them off into a newly created node).
+  // - If the PL property contains an illegal value the property is deleted and
+  //   error 14 is issued
+  // - If the PL property contains a lowercase color value it is converted to
+  //   the proper uppercase value and error 15 is issued
+  //
+  // Our handling
+  // - Same as Fuego, the only difference being that we refuse to process the
+  //   .sgf file if the PL property appears after the first move.
+
+  /// Expected format by later processing is: "B" or "W"
+  self.setupPlayer = @"";
+
+  bool sgfSetupPlayerColorValueFound = false;
+  SGFCColor sgfSetupPlayerColorValue = SGFCColorBlack;
+  bool firstMoveFound = false;
+  for (SGFCNode* sgfNode in self.sgfMainVariationNodes)
   {
-    *errorMessage = @"Internal error: Failed to detect setup of the game to be loaded";
-    return false;
+    if (firstMoveFound)
+    {
+      SGFCProperty* setupPlayerProperty = [sgfNode propertyWithType:SGFCPropertyTypePL];
+      if (setupPlayerProperty)
+      {
+        *errorMessage = @"The SGF data contains player setup instructions after the first move.";
+        return false;
+      }
+    }
+    else
+    {
+      NSArray* moveProperties = [sgfNode propertiesWithCategory:SGFCPropertyCategoryMove];
+      if (moveProperties.count > 0)
+      {
+        firstMoveFound = true;
+        continue;
+      }
+
+      SGFCProperty* setupPlayerProperty = [sgfNode propertyWithType:SGFCPropertyTypePL];
+      if (! setupPlayerProperty)
+        continue;
+
+      sgfSetupPlayerColorValueFound = true;
+      sgfSetupPlayerColorValue = setupPlayerProperty.propertyValue.toSingleValue.toColorValue.colorValue;
+    }
   }
-  m_setup = [command.response.parsedResponse copy];
+
+  if (sgfSetupPlayerColorValueFound)
+  {
+    self.setupPlayer = (sgfSetupPlayerColorValue == SGFCColorBlack) ? @"B" : @"W";
+  }
+
   return true;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (bool) askGtpEngineForSetupPlayer:(NSString**)errorMessage
+- (bool) parseSgfDataForMoves:(NSString**)errorMessage
 {
-  GtpCommand* command = [GtpCommand command:@"list_setup_player"];
-  [command submit];
-  if (! command.response.status)
-  {
-    *errorMessage = @"Internal error: Failed to detect setup player of the game to be loaded";
-    return false;
-  }
-  m_setupPlayer = [command.response.parsedResponse copy];
-  return true;
-}
+  // Implementation in Fuego of the "list_moves" GTP command
+  // - Examine all nodes of the main variation
+  // - If the node contains a move property, list it
+  // - Pass moves are listed as "pass", a resignation is listed as "resign"
+  //
+  // SGFC behaviour
+  // - A move that plays a stone on an occupied intersection is warned about
+  //   with warning 58, but SGFC does nothing about it
+  //
+  // Our handling
+  // - Same as Fuego, the only difference being that we don't have a "resign"
+  //   move
 
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt()
-// -----------------------------------------------------------------------------
-- (bool) askGtpEngineForMoves:(NSString**)errorMessage
-{
-  GtpCommand* command = [GtpCommand command:@"list_moves"];
-  [command submit];
-  if (! command.response.status)
+  /// Expected format by later processing is: "color vertex, color vertex, color vertex[...]"
+  self.moves = @"";
+
+  NSMutableArray* moveStrings = [NSMutableArray array];
+  for (SGFCNode* sgfNode in self.sgfMainVariationNodes)
   {
-    *errorMessage = @"Internal error: Failed to detect moves of the game to be loaded";
-    return false;
+    NSArray* moveProperties = [sgfNode propertiesWithCategory:SGFCPropertyCategoryMove];
+    for (SGFCProperty* moveProperty in moveProperties)
+    {
+      NSString* colorString;
+      SGFCPropertyType propertyType = moveProperty.propertyType;
+      if (propertyType == SGFCPropertyTypeB)
+        colorString = @"B";
+      else if (propertyType == SGFCPropertyTypeW)
+        colorString = @"W";
+      else
+        continue;  // not interested in other move properties
+
+      SGFCGoMove* goMove = moveProperty.propertyValue.toSingleValue.toMoveValue.toGoMoveValue.goMove;
+      if (! goMove)
+      {
+        *errorMessage = @"SgfcKit interfacing error while determining moves: Missing SGFCGoMove object.";
+        return false;
+      }
+
+      NSString* vertexString;
+      if (goMove.isPassMove)
+      {
+        vertexString = @"pass";
+      }
+      else
+      {
+        SGFCGoPoint* goPoint = goMove.stone.location;
+        if (! [goPoint hasPositionInGoPointNotation:SGFCGoPointNotationHybrid])
+        {
+          *errorMessage = @"SgfcKit interfacing error while determining moves: SGFCGoPoint not available in hybrid notation.";
+          return false;
+        }
+
+        vertexString = [goPoint positionInGoPointNotation:SGFCGoPointNotationHybrid];
+      }
+
+      NSString* moveString = [NSString stringWithFormat:@"%@ %@", colorString, vertexString];
+      [moveStrings addObject:moveString];
+    }
   }
-  m_moves = [command.response.parsedResponse copy];
+
+  self.moves = [moveStrings componentsJoinedByString:@", "];
+
   return true;
 }
 
@@ -413,12 +836,14 @@ enum ParseMoveStringResult
   // occurs, handleCommandFailed:() is invoked behind our back to set up a new
   // clean game. All game characteristics that have been set up to then are
   // discarded.
-  [self startNewGameForSuccessfulCommand:true boardSize:m_boardSize];
-  [self setupHandicap:m_handicap];
-  [self setupSetup:m_setup];
-  [self setupSetupPlayer:m_setupPlayer];
-  [self setupKomi:m_komi];
-  [self setupMoves:m_moves];
+  [self startNewGameForSuccessfulCommand:true boardSize:self.boardSize];
+  [self setupHandicap:self.handicap];
+  [self setupSetup:self.setup];
+  [self setupSetupPlayer:self.setupPlayer];
+  [self setupKomi:self.komi];
+  [self setupMoves:self.moves];
+  [self syncGtpEngine];
+
   if (self.restoreMode)
   {
     // Can't invoke notifyGoGameDocument 1) because we are not loading from the
@@ -476,14 +901,12 @@ enum ParseMoveStringResult
   // setup mode only after we know that the .sgf contains no moves, and if we
   // switch we must prevent the computer player from being triggered.
   command.shouldHonorAutoEnableBoardSetupMode = false;
-  // If command was successful, the board was already set up by the "loadsgf"
-  // GTP command. We must not setup the board again, or we will lose all moves
-  // that were just loaded.
-  // If command failed, we must setup the board again to bring the application
-  // and the GTP engine into a defined state
-  command.shouldSetupGtpBoard = (! success);
-  // Ditto for handicap and komi
-  command.shouldSetupGtpHandicapAndKomi = (! success);
+  // It used to be unnecessary to set up the GTP board because it was already
+  // set up by the "loadsgf" GTP command. Now that we load and parse the .sgf
+  // file ourselves this setup has become necessary at all times.
+  command.shouldSetupGtpBoard = true;
+  // Handicap and komi will later be set up by SyncGTPEngineCommand
+  command.shouldSetupGtpHandicapAndKomi = false;
   // We have to do this ourselves, after setting up handicap + moves
   command.shouldTriggerComputerPlayer = false;
   // We want the load game command to proceed as quickly as possible, therefore
@@ -501,17 +924,17 @@ enum ParseMoveStringResult
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up handicap for the new game, using the information in
-/// @a handicapFromGtp.
+/// @a handicapString.
 ///
-/// Expected format for @a handicapFromGtp is: "vertex vertex vertex[...]"
+/// Expected format for @a handicapString is: "vertex vertex vertex[...]"
 ///
-/// @a handicapFromGtp may be empty to indicate that there is no handicap.
+/// @a handicapString may be empty to indicate that there is no handicap.
 // -----------------------------------------------------------------------------
-- (void) setupHandicap:(NSString*)handicapFromGtp
+- (void) setupHandicap:(NSString*)handicapString
 {
   GoGame* game = [GoGame sharedGame];
   NSMutableArray* handicapPoints = [NSMutableArray arrayWithCapacity:0];
-  if (0 == handicapFromGtp.length)
+  if (0 == handicapString.length)
   {
     // do nothing, just leave the empty array to be applied to the GoGame
     // instance; this is important because the GoGame instance might have been
@@ -520,7 +943,7 @@ enum ParseMoveStringResult
   else
   {
     GoBoard* board = game.board;
-    NSArray* handicapVertices = [handicapFromGtp componentsSeparatedByString:@" "];
+    NSArray* handicapVertices = [handicapString componentsSeparatedByString:@" "];
     for (NSString* vertex in handicapVertices)
     {
       GoPoint* point = [board pointAtVertex:vertex];
@@ -533,19 +956,19 @@ enum ParseMoveStringResult
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the setup stones prior to the first move of the game, using
-/// the information in @a setupFromGtp.
+/// the information in @a setupString.
 ///
-/// Expected format for @a setupFromGtp:
+/// Expected format for @a setupString:
 ///   "color vertex, color vertex, color vertex[...]"
 ///
-/// @a setupFromGtp may be empty to indicate that there are no stones to set up.
+/// @a setupString may be empty to indicate that there are no stones to set up.
 ///
 /// @note If an error occurs while this method runs, handleCommandFailed:() is
 /// invoked with an appropriate error message.
 // -----------------------------------------------------------------------------
-- (void) setupSetup:(NSString*)setupFromGtp
+- (void) setupSetup:(NSString*)setupString
 {
-  if (setupFromGtp.length == 0)
+  if (setupString.length == 0)
     return;
 
   GoGame* game = [GoGame sharedGame];
@@ -555,7 +978,7 @@ enum ParseMoveStringResult
   NSMutableArray* blackSetupPoints = [NSMutableArray arrayWithCapacity:0];
   NSMutableArray* whiteSetupPoints = [NSMutableArray arrayWithCapacity:0];
   NSMutableArray* setupVertexes = [NSMutableArray arrayWithCapacity:0];
-  NSArray* setupStoneStrings = [setupFromGtp componentsSeparatedByString:@", "];
+  NSArray* setupStoneStrings = [setupString componentsSeparatedByString:@", "];
 
   for (NSString* setupStoneString in setupStoneStrings)
   {
@@ -638,11 +1061,11 @@ enum ParseMoveStringResult
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the player to play first for the new game, using the
-/// information in @a setupPlayerFromGtp.
+/// information in @a setupPlayerString.
 ///
-/// Expected format for @a setupPlayerFromGtp is: "B" or "W"
+/// Expected format for @a setupPlayerString is: "B" or "W"
 ///
-/// @a setupPlayerFromGtp may be empty to indicate that no player is set up to
+/// @a setupPlayerString may be empty to indicate that no player is set up to
 /// play first. In that case, since there is no explicit setup, the game logic
 /// determines the player who plays first (e.g. in a normal game with no
 /// handicap, black plays first).
@@ -650,21 +1073,21 @@ enum ParseMoveStringResult
 /// @note If an error occurs while this method runs, handleCommandFailed:() is
 /// invoked with an appropriate error message.
 // -----------------------------------------------------------------------------
-- (void) setupSetupPlayer:(NSString*)setupPlayerFromGtp
+- (void) setupSetupPlayer:(NSString*)setupPlayerString
 {
   enum GoColor setupFirstMoveColor;
-  if (0 == setupPlayerFromGtp.length)
+  if (0 == setupPlayerString.length)
   {
     setupFirstMoveColor = GoColorNone;
   }
   else
   {
-    bool success = [self parseColorString:setupPlayerFromGtp
+    bool success = [self parseColorString:setupPlayerString
                                     color:&setupFirstMoveColor];
     if (! success)
     {
       NSString* errorMessageFormat = @"Game attempts to set up an invalid player to play the first move. Invalid player designation: %@. Supported are 'B' for black and 'W' for white.";
-      NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, setupPlayerFromGtp];
+      NSString* errorMessage = [NSString stringWithFormat:errorMessageFormat, setupPlayerString];
       [self handleCommandFailed:errorMessage];
       return;
     }
@@ -676,19 +1099,19 @@ enum ParseMoveStringResult
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up komi for the new game, using the information in
-/// @a komiFromGtp.
+/// @a komiString.
 ///
-/// Expected format for @a komiFromGtp is a fractional number (e.g. "6.5").
+/// Expected format for @a komiString is a fractional number (e.g. "6.5").
 ///
-/// @a komiFromGtp may be empty to indicate that there is no komi.
+/// @a komiString may be empty to indicate that there is no komi.
 // -----------------------------------------------------------------------------
-- (void) setupKomi:(NSString*)komiFromGtp
+- (void) setupKomi:(NSString*)komiString
 {
   double komi;
-  if (0 == komiFromGtp.length)
+  if (0 == komiString.length)
     komi = 0;
   else
-    komi = [komiFromGtp doubleValue];
+    komi = [komiString doubleValue];
 
   GoGame* game = [GoGame sharedGame];
   game.komi = komi;
@@ -696,23 +1119,23 @@ enum ParseMoveStringResult
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the moves for the new game, using the information in
-/// @a movesFromGtp.
+/// @a movesString.
 ///
-/// Expected format for @a movesFromGtp:
+/// Expected format for @a movesString:
 ///   "color vertex, color vertex, color vertex[...]"
 ///
-/// @a movesFromGtp may be empty to indicate that there are no moves.
+/// @a movesString may be empty to indicate that there are no moves.
 ///
 /// @note If an error occurs while this method runs, handleCommandFailed:() is
 /// invoked with an appropriate error message.
 // -----------------------------------------------------------------------------
-- (void) setupMoves:(NSString*)movesFromGtp
+- (void) setupMoves:(NSString*)movesString
 {
   NSArray* moveList;
-  if (0 == movesFromGtp.length)
+  if (0 == movesString.length)
     moveList = [NSArray array];
   else
-    moveList = [movesFromGtp componentsSeparatedByString:@", "];
+    moveList = [movesString componentsSeparatedByString:@", "];
   [self replayMoves:moveList];
 }
 
@@ -1001,6 +1424,27 @@ enum ParseMoveStringResult
   else
   {
     return false;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Synchronizes the state of the GTP engine with the state of the
+/// current GoGame.
+///
+/// This method invokes SyncGTPEngineCommand. It expects that NewGameCommand
+/// has set up the GTP engine with a number of other things, notably the board
+/// size and the game rules.
+///
+/// @note If an error occurs while this method runs, handleCommandFailed:() is
+/// invoked with an appropriate error message.
+// -----------------------------------------------------------------------------
+- (void) syncGtpEngine
+{
+  bool syncSuccess = [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+  if (! syncSuccess)
+  {
+    NSString* errorMessage = @"Failed to synchronize the GTP engine state with the current GoGame state";
+    [self handleCommandFailed:errorMessage];
   }
 }
 

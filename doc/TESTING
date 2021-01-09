@@ -1075,9 +1075,28 @@ Archive, document interaction
   - situational-superko.sgf with positional and situational superko rules
     (rulesets "AGA" and "Chinese", respectively): The game cannot be loaded.
   - not-an-sgf-file.sgf: The game cannot be loaded. An error message is
-    displayed that the file may not be an .sgf file.
-  - 25x25_single_black_move.sgf: The game cannot be loaded. An error message
-    is displayed that the file may not be an .sgf file.
+    displayed that explains the reason (no SGF data found).
+  - 25x25_single_black_move.sgf: The game cannot be loaded. An error message is
+    displayed that explains the reason (board size is not supported).
+  - not-enough-handicap-stones.sgf: The game cannot be loaded. An error message
+    is displayed that explains the reason (not enough handicap stones are set
+    up).
+  - setup-manipulates-handicap.sgf. The game cannot be loaded. An error message
+    is displayed that explains the reason (handicap stones are changed after
+    being set up).
+  - setup-after-first-move.sgf. The game cannot be loaded. An error message is
+    displayed that explains the reason (stone setup appears after first move).
+  - setup-player-after-first-move.sgf. The game cannot be loaded. An error
+    message is displayed that explains the reason (player setup appears after
+    first move).
+  - encoding-detection-fails.sgf. The game cannot be loaded. An error message is
+    displayed that explains the reason (character encoding failed).
+  - encoding-multiple.sgf. The game cannot be loaded. An error message is
+    displayed that explains the reason (SGF data contains multiple character
+    encodings).
+  - encoding-unsupported.sgf. The game cannot be loaded. An error message is
+    displayed that explains the reason (unsupported or unknown character
+    encoding).
 - The following tests may be difficult to perform with modern devices that
   can load games faster than a human tester is able to interfere
 - Load a game, then press the Home button in the middle of the loading process

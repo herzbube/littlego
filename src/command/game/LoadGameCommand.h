@@ -31,13 +31,15 @@
 /// asynchronous command).
 ///
 /// The sequence of operations performed by LoadGameCommand is this:
-/// - Submit the "loadsgf" GTP command to the GTP engine
-/// - Query the GTP engine for the information that was stored in the .sgf file
-///   and that is needed to start a new game (e.g. board size)
+/// - Read the .sgf file into memory using SgfcKit
+/// - Parse the SgfcKit objects to obtain the information that was stored in the
+///   .sgf file and that is needed to start a new game (e.g. board size)
 /// - Start a new game by executing a NewGameCommand instance
-/// - Query the GTP engine for other information that was stored in the .sgf
-///   file (handicap, komi, moves)
-/// - Setup the game with the information gathered via GTP
+/// - Parse the SgfcKit objects to obtain additional information that was stored
+///   in the .sgf file (handicap, komi, moves)
+/// - Setup the game with the additional information
+/// - Invoke SyncGTPEngineCommand to synchronize the computer player with the
+///   information that was read from the .sgf file
 /// - Make a backup
 /// - Notify observers that a game has been loaded
 /// - Trigger the computer player, if it is his turn to move, by executing a
@@ -65,14 +67,6 @@
 // -----------------------------------------------------------------------------
 @interface LoadGameCommand : CommandBase <AsynchronousCommand>
 {
-@private
-  enum GoBoardSize m_boardSize;
-  NSString* m_handicap;
-  NSString* m_setup;
-  NSString* m_setupPlayer;
-  NSString* m_komi;
-  NSString* m_moves;
-  NSString* m_oldCurrentDirectory;
 }
 
 - (id) initWithFilePath:(NSString*)filePath;

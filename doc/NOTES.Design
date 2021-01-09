@@ -92,46 +92,16 @@ the app look right. Here is an overview:
 
 Working with .sgf files
 -----------------------
-The GTP commands "loadsgf" and "savesgf" are used to tell the GTP engine that it
-should load or save a game from/to a specified filename. Unfortunately, due to
-limitations of the GTP protocol not just any path/filename can be specified.
-Notably, the path/filename may not contain spaces, hash signs (#) or control
-characters.
+In older versions of the app .sgf files used to be loaded and saved by the
+GTP engine. This meant that file names had to be transmitted over the GTP
+protocol. GTP has limitations in what characters can be used in file names,
+notably the space character is prohibited.
 
-The workaround here is to let the GTP engine load from/save to a temporary
-file that is in a well-known location and whose filename/path does not violate
-any of the GTP protocol restrictions. The application performs the necessary
-pre-/post-processing via the NSFileManager API, which has none of the GTP
-protocol limitations.
-
-NSFileManager pre-/post-processing:
-- Load game: Copy the real .sgf file to the well-known temporary file, from
-  where it can then be loaded using the "loadsgf" GTP command. After the game
-  has been loaded, the temporary file is removed.
-- Save game: The "savesgf" GTP command is used to save the game to the
-  well-known temporary file. After the game has been saved, the temporary file
-  is moved to its real location.
-
-This approach allows to keep the .sgf files in the application's documents
-folder (which may contain spaces in its path), where they need to be located
-for iTunes's syncing to work. It also allows to use arbitrary characters in the
-filename, including unicode characters which might otherwise be interpreted as
-control characters when sent over the GTP protocol wire.
-
-Experiment has shown that the application's document folder is at the following
-path locations:
-- iOS Simulator environment
-  /Users/<username>/Library/Application Support/iPhone Simulator/4.2/Applications/03C363CC-7330-40A0-A382-74FEA08E6C29/Documents
-- iPhone device
-  /var/mobile/Applications/FD1CCC4F-ECD3-43D8-87B9-359A4CCBFA87/Documents
-
-Design note for code that needs to work with files
-- The code should never assume that the current working directory is set to a
-  specific location
-- The code should not change the current working directory, unless absolutely
-  necessary; working with absolute paths often obviates this need
-- If the current working directory must indeed be changed, it should be changed
-  back to the original location after the desired purpose has been achieved
+This section used to contain extensive information on how the app worked around
+GTP's file naming limitation. The information is no longer here because it has
+become obsolete now that the app uses SgfcKit to load and save .sgf files. This
+placeholder is a reminder of the old days and that the obsolete information can
+be retrieved from version control if it should ever be needed again.
 
 
 Drawing the Go board
