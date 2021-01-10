@@ -158,7 +158,7 @@ INSTALL_STEPS_SOFTWARE()
     return 1
   fi
 
-  echo "Copying Fuego installation files to $SGFCKIT_FRAMEWORK_DEST_DIR ..."
+  echo "Copying SgfcKit installation files to $SGFCKIT_FRAMEWORK_DEST_DIR ..."
   cp -R "$SGFCKIT_FRAMEWORK_SRC_DIR" "$SGFCKIT_FRAMEWORK_DEST_DIR"
   if test $? -ne 0; then
     return 1
