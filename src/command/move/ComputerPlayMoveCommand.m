@@ -261,7 +261,7 @@ enum AlertType
 {
   ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
   NSString* uniqueGameName = [model uniqueGameNameForGame:[GoGame sharedGame]];
-  [[[[SaveGameCommand alloc] initWithSaveGame:uniqueGameName] autorelease] submit];
+  [[[[SaveGameCommand alloc] initWithSaveGame:uniqueGameName gameAlreadyExists:false] autorelease] submit];
 
   NSString* messageFormat = @"Until this bug is fixed, Little Go unfortunately cannot continue with the game in progress. The game has been saved to the archive under the name\n\n%@\n\nA new game is being started now to bring the app back into a good state.";
   NSString* message = [NSString stringWithFormat:messageFormat, uniqueGameName];

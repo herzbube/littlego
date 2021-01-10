@@ -593,7 +593,7 @@
 
       void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
       {
-        [self doSaveGame:editTextController.text];
+        [self doSaveGame:editTextController.text gameAlreadyExists:true];
         [self.delegate moreGameActionsControllerDidFinish:self];
       };
       UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
@@ -617,7 +617,7 @@
     }
     else
     {
-      [self doSaveGame:editTextController.text];
+      [self doSaveGame:editTextController.text gameAlreadyExists:false];
     }
   }
 
@@ -629,9 +629,9 @@
 /// @brief Performs the actual "save game" operation. The saved game is named
 /// @a gameName. If a game with that name already exists, it is overwritten.
 // -----------------------------------------------------------------------------
-- (void) doSaveGame:(NSString*)gameName
+- (void) doSaveGame:(NSString*)gameName gameAlreadyExists:(bool)gameAlreadyExists
 {
-  [[[[SaveGameCommand alloc] initWithSaveGame:gameName] autorelease] submit];
+  [[[[SaveGameCommand alloc] initWithSaveGame:gameName gameAlreadyExists:gameAlreadyExists] autorelease] submit];
 }
 
 #pragma mark - ItemPickerDelegate overrides
