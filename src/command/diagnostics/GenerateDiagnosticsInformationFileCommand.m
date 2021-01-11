@@ -17,11 +17,9 @@
 
 // Project includes
 #import "GenerateDiagnosticsInformationFileCommand.h"
-#import "../boardposition/SyncGTPEngineCommand.h"
+#import "../sgf/SaveSgfCommand.h"
 #import "../../diagnostics/BugReportUtilities.h"
-#import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
-#import "../../go/GoScore.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
@@ -223,66 +221,25 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Saves the current game to an .sgf file. This task is delegated to
-/// the GTP engine.
+/// the SaveSgfCommand.
 // -----------------------------------------------------------------------------
 - (void) saveCurrentGameAsSgf
 {
   DDLogVerbose(@"%@: Saving current game to .sgf file", [self shortDescription]);
 
-  // Temporarily change working directory so that the .sgf file goes into our
-  // folder
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
-  [fileManager changeCurrentDirectoryPath:self.diagnosticsInformationFolderPath];
+  NSString* filePath = [self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportCurrentGameFileName];
 
-  bool temporarilyResyncGTPEngine = false;
-  if (! [GoGame sharedGame].boardPosition.isLastPosition)
-  {
-    temporarilyResyncGTPEngine = true;
-    SyncGTPEngineCommand* command = [[[SyncGTPEngineCommand alloc] init] autorelease];
-    command.syncMoveType = SyncMovesOfEntireGame;
-    bool syncSuccess = [command submit];
-    [self throwIfSyncCommandFailed:syncSuccess];
- }
-
-  NSString* commandString = [NSString stringWithFormat:@"savesgf %@", bugReportCurrentGameFileName];
-  GtpCommand* gtpCommand = [GtpCommand command:commandString];
-  [gtpCommand submit];
-  bool success = gtpCommand.response.status;
-
-  if (temporarilyResyncGTPEngine)
-  {
-    bool syncSuccess = [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
-    [self throwIfSyncCommandFailed:syncSuccess];
-  }
-
-  [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];
-
+  SaveSgfCommand* saveSgfCommand = [[[SaveSgfCommand alloc] initWithSgfFilePath:filePath sgfFileAlreadyExists:true] autorelease];
+  bool success = [saveSgfCommand submit];
   if (! success)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Failed to write current game to .sgf file %@, error while executing 'savesgf' GTP command", bugReportCurrentGameFileName];
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to write current game to .sgf file %@", bugReportCurrentGameFileName];
     DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
                                                      reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Raises an exception if @a syncCommandResult is false. Does nothing if
-/// @a syncCommandResult is true.
-// -----------------------------------------------------------------------------
-- (void) throwIfSyncCommandFailed:(bool)syncCommandResult
-{
-  if (syncCommandResult)
-    return;
-  NSString* errorMessage = [NSString stringWithFormat:@"Failed to synchronize the GTP engine state with the current GoGame state"];
-  DDLogError(@"%@: %@", self, errorMessage);
-  NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                   reason:errorMessage
-                                                 userInfo:nil];
-  @throw exception;
 }
 
 // -----------------------------------------------------------------------------

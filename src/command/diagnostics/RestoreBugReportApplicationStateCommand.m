@@ -17,6 +17,7 @@
 
 // Project includes
 #import "RestoreBugReportApplicationStateCommand.h"
+#import "../boardposition/SyncGTPEngineCommand.h"
 #import "../../diagnostics/BugReportUtilities.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
@@ -76,7 +77,7 @@
   [GoUtilities recalculateZobristHashes:self.unarchivedGame];
 
   [self postNotifications];
-  [self loadCurrentGameFromSgf];
+  [self syncGtpEngine];
   return true;
 }
 
@@ -117,31 +118,17 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Loads the .sgf file from the diagnostics information package into
-/// Fuego.
-///
-/// This method does not execute LoadGameCommand because we only need to send
-/// the "loadsgf" GTP command.
+/// @brief Synchronizes the GTP engine to match the state of the current GoGame.
 // -----------------------------------------------------------------------------
-- (void) loadCurrentGameFromSgf
+- (void) syncGtpEngine
 {
-  DDLogVerbose(@"%@: Loading current game from .sgf file", [self shortDescription]);
+  DDLogVerbose(@"%@: Sync GTP engine with the current GoGame state", [self shortDescription]);
 
-  // Temporarily change working directory so that Fuego finds the .sgf file
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
-  [fileManager changeCurrentDirectoryPath:[BugReportUtilities diagnosticsInformationFolderPath]];
-
-  NSString* commandString = [NSString stringWithFormat:@"loadsgf %@", bugReportCurrentGameFileName];
-  GtpCommand* gtpCommand = [GtpCommand command:commandString];
-  [gtpCommand submit];
-  bool success = gtpCommand.response.status;
-
-  [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];
-
+  SyncGTPEngineCommand* command = [[[SyncGTPEngineCommand alloc] init] autorelease];
+  bool success = [command submit];
   if (! success)
   {
-    NSString* errorMessage = @"Failed to load current game from .sgf file";
+    NSString* errorMessage = @"Failed to synchronize the GTP engine state with the current GoGame state";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
                                                      reason:errorMessage
