@@ -30,12 +30,15 @@
 /// folder, it is visible/accessible neither in iTunes, nor on the in-app tab
 /// "Archive".
 ///
-/// BackupGameToSgfCommand delegates the .sgf saving task to the GTP engine via
-/// the "savesgf" GTP command. The .sgf file is overwritten if it already
-/// exists.
+/// BackupGameToSgfCommand delegates the .sgf saving task to SaveSgfCommand.
+/// The resulting .sgf file includes all moves of the game, even if the user
+/// currently views an old board position. If the backup file already exists it
+/// is overwritten. If an error occurs BackupGameToSgfCommand does not display
+/// an alert, this is the task of whoever invokes BackupGameToSgfCommand.
 ///
 /// BackupGameToSgfCommand executes synchronously.
 ///
+/// @see SaveSgfCommand
 /// @see RestoreGameFromSgfCommand.
 /// @see ApplicationStateManager.
 // -----------------------------------------------------------------------------

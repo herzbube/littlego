@@ -17,7 +17,7 @@
 
 // Project includes
 #import "BackupGameToSgfCommand.h"
-#import "../../gtp/GtpCommand.h"
+#import "../sgf/SaveSgfCommand.h"
 #import "../../utility/PathUtilities.h"
 
 
@@ -29,22 +29,12 @@
 - (bool) doIt
 {
   NSString* backupFolderPath = [PathUtilities backupFolderPath];
+  NSString* filePath = [backupFolderPath stringByAppendingPathComponent:sgfBackupFileName];
 
-  // Secretly and heinously change the working directory so that the .sgf
-  // file goes to a directory that the user cannot look into
-  NSFileManager* fileManager = [NSFileManager defaultManager];
-  NSString* oldCurrentDirectory = [fileManager currentDirectoryPath];
-  [fileManager changeCurrentDirectoryPath:backupFolderPath];
-  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], backupFolderPath);
+  SaveSgfCommand* saveSgfCommand = [[[SaveSgfCommand alloc] initWithSgfFilePath:filePath sgfFileAlreadyExists:true] autorelease];
+  bool success = [saveSgfCommand submit];
 
-  NSString* commandString = [NSString stringWithFormat:@"savesgf %@", sgfBackupFileName];
-  [[GtpCommand command:commandString] submit];
-
-  // Switch back to the original directory
-  [fileManager changeCurrentDirectoryPath:oldCurrentDirectory];
-  DDLogVerbose(@"%@: Working directory changed to %@", [self shortDescription], oldCurrentDirectory);
-
-  return true;
+  return success;
 }
 
 @end
