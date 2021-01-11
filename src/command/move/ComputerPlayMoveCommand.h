@@ -36,7 +36,7 @@
 ///
 /// @note The GTP command is executed asynchronously, i.e. control returns to
 /// the submitter of ComputerPlayMoveCommand before the computer player's move
-/// has actually been generated. This allows the GUI to remains responsive. When
+/// has actually been generated. This allows the GUI to remain responsive. When
 /// the GTP response finally arrives, it triggers a callback to the code in
 /// ComputerPlayMoveCommand.
 // -----------------------------------------------------------------------------

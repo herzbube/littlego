@@ -349,6 +349,13 @@ Working with .sgf files:
   signs (#), or control characters.
 - If coding is involved, the classes SgGameReader and SgGameWriter in the
   SmartGo library will be useful
+- Fuego's implementation of the "loadsgf" GTP command takes an non-standard
+  optional second argument. The argument must be a numeric value between 1 and
+  "number of moves in .sgf + 1". The argument is intended to load a specific
+  board position which corresponds to "the board position before the specified
+  move". The implementation is flawed in that the SGF nodes behind the desired
+  board position remain loaded in memory, which causes "list_moves", for
+  instance, to list moves even if they are behind the desired board position.
 
 Determine if stones are captured as the result of a move, and which stones:
 - The GTP command "list_stones" enumerates the positions that the specified

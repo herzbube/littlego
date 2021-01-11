@@ -108,7 +108,7 @@
 /// @a boardPositionLabelContent, @a intersectionLabelContent,
 /// @a capturedStonesLabelContent and an image that matches @a moveColor.
 /// Returns true if @a boardPositionCell meets all expectations. Returns false
-/// if @a @a boardPositionCell fails to meet any expectation.
+/// if @a boardPositionCell fails to meet any expectation.
 ///
 /// If any one of @a boardPositionLabelContent, @a intersectionLabelContent or
 /// @a capturedStonesLabelContent is nil, this method verifies that the
@@ -153,7 +153,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Verifies that @a label, which is a UILabel inside a board position
 /// cell, contains @a content. Returns true if @a label meets all expectations.
-/// Returns false if @a @a label fails to meet any expectation.
+/// Returns false if @a label fails to meet any expectation.
 ///
 /// If @a content is nil, this method verifies that @a label does not exist.
 ///

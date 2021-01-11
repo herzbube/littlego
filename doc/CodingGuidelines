@@ -7,7 +7,7 @@ Naming
 ------
 - Class names start with an uppercase letter
 - Method names start with a lowercase letter
-- Member variables use the the prefix "_" to distinguish them from variables
+- Member variables use the prefix "_" to distinguish them from variables
   that are local to a method (in a few places with older code, the prefix is
   still "m_")
 - Setter/getter methods should be named after the member variable they
@@ -61,7 +61,7 @@ Properties
 - Consider making properties "readonly" in the public interface of a class, then
   redeclare them as "readwrite" in the private interface in the .m file
 - Always declare a property's setter semantics, i.e. explicitly declare "assign"
-  even though it is the default and might be omitted
+  even though it is the default and could be omitted
 - Use "nonatomic" unless the property really needs to be atomic
 
 

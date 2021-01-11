@@ -507,8 +507,9 @@ enum ApplicationLaunchMode
 /// @name Filesystem related constants
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Simple file name that violates none of the GTP protocol restrictions
-/// for file names. Is used for the "loadsgf" and "savesgf" GTP commands.
+/// @brief Simple but relatively unique file name that violates none of the GTP
+/// protocol restrictions for file names. It can be used for the "loadsgf" and
+/// "savesgf" GTP commands or for other purposes.
 extern NSString* sgfTemporaryFileName;
 /// @brief Name of the primary NSCoding archive file used for backup/restore
 /// when the app goes to/returns from the background. The file is stored in the

@@ -27,7 +27,6 @@
 #import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 
-
 // -----------------------------------------------------------------------------
 /// @brief Enumerates the sections presented in the "Edit Game" table view.
 // -----------------------------------------------------------------------------
