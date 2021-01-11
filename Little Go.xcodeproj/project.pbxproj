@@ -395,6 +395,8 @@
 		CD9B63BF25A675ED003E032B /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = CD9B63A925A67465003E032B /* libiconv.tbd */; };
 		CD9B63C425A675F9003E032B /* libsgfcplusplus_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD093E68259B9B1B0058D170 /* libsgfcplusplus_static.framework */; };
 		CD9B63C525A67606003E032B /* SgfcKit_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD093E64259B99660058D170 /* SgfcKit_static.framework */; };
+		CD9B63EF25AB7804003E032B /* SaveSgfCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9B63EE25AB7804003E032B /* SaveSgfCommand.m */; };
+		CD9B63F025AB7804003E032B /* SaveSgfCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9B63EE25AB7804003E032B /* SaveSgfCommand.m */; };
 		CDA096FB1A915085002FCD78 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FA1A915085002FCD78 /* LayoutManager.m */; };
 		CDA096FC1A915085002FCD78 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FA1A915085002FCD78 /* LayoutManager.m */; };
 		CDA096FF1A98CD54002FCD78 /* ButtonBoxController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FE1A98CD54002FCD78 /* ButtonBoxController.m */; };
@@ -1014,6 +1016,8 @@
 		CD9AA70B146028770012C3EA /* KomiSelectionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KomiSelectionController.h; sourceTree = "<group>"; };
 		CD9AA70C146028770012C3EA /* KomiSelectionController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KomiSelectionController.m; sourceTree = "<group>"; };
 		CD9B63A925A67465003E032B /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/lib/libiconv.tbd; sourceTree = DEVELOPER_DIR; };
+		CD9B63ED25AB7804003E032B /* SaveSgfCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SaveSgfCommand.h; sourceTree = "<group>"; };
+		CD9B63EE25AB7804003E032B /* SaveSgfCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SaveSgfCommand.m; sourceTree = "<group>"; };
 		CDA096F91A915085002FCD78 /* LayoutManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LayoutManager.h; sourceTree = "<group>"; };
 		CDA096FA1A915085002FCD78 /* LayoutManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutManager.m; sourceTree = "<group>"; };
 		CDA096FD1A98CD54002FCD78 /* ButtonBoxController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonBoxController.h; sourceTree = "<group>"; };
@@ -2080,6 +2084,15 @@
 			path = "source-code";
 			sourceTree = "<group>";
 		};
+		CD9B63EC25AB7804003E032B /* sgf */ = {
+			isa = PBXGroup;
+			children = (
+				CD9B63ED25AB7804003E032B /* SaveSgfCommand.h */,
+				CD9B63EE25AB7804003E032B /* SaveSgfCommand.m */,
+			);
+			path = sgf;
+			sourceTree = "<group>";
+		};
 		CDA595BC140142C700B250D8 /* test */ = {
 			isa = PBXGroup;
 			children = (
@@ -2222,6 +2235,7 @@
 				CD05A8C91422803B00214BBE /* move */,
 				CD072705180B292E0083B138 /* playerinfluence */,
 				CD7C57C921FF9E1500694520 /* scoring */,
+				CD9B63EC25AB7804003E032B /* sgf */,
 				CDF9740316C4082200D01D24 /* AsynchronousCommand.h */,
 				CD7C578521F79C2F00694520 /* ChangeUIAreaPlayModeCommand.h */,
 				CD7C578421F79C2F00694520 /* ChangeUIAreaPlayModeCommand.m */,
@@ -3056,6 +3070,7 @@
 				CDA493A7168F26890076E168 /* BoardPositionSettingsController.m in Sources */,
 				CDF630AA168F50BA003C8BEF /* DiscardAndPlayCommand.m in Sources */,
 				CD36594116931F8600D75466 /* GoBoardPosition.m in Sources */,
+				CD9B63EF25AB7804003E032B /* SaveSgfCommand.m in Sources */,
 				CDEE1A0F1946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */,
 				CD3A0999169389A600ABDB5D /* PanGestureController.m in Sources */,
 				CD3A09A116939E2200ABDB5D /* TapGestureController.m in Sources */,
@@ -3196,6 +3211,7 @@
 				CDEE1A0419438AE000DF2389 /* StonesLayerDelegate.m in Sources */,
 				CD7C6A161AB49631009EC5AD /* BoardPositionCollectionViewController.m in Sources */,
 				CD05AB97142516A400214BBE /* GoUtilities.m in Sources */,
+				CD9B63F025AB7804003E032B /* SaveSgfCommand.m in Sources */,
 				CD05ACA91425486100214BBE /* NewGameCommand.m in Sources */,
 				CDFD9F7318F1D3740031CBCF /* ScoringSettingsController.m in Sources */,
 				CD05B136142A745500214BBE /* BackupGameToSgfCommand.m in Sources */,
