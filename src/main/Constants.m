@@ -143,6 +143,12 @@ NSString* sgfMimeType = @"application/x-go-sgf";  // this is not officially regi
 NSString* sgfUTI = @"com.red-bean.sgf";
 NSString* illegalArchiveGameNameCharacters = @"/\\|";
 
+/// SGF settings constants
+const int minimumSyntaxCheckingLevel = 1;
+const int maximumSyntaxCheckingLevel = 4;
+const int defaultSyntaxCheckingLevel = 2;
+const int customSyntaxCheckingLevel = 0;
+
 // Diagnostics view settings default values
 const int gtpLogSizeMinimum = 5;
 const int gtpLogSizeMaximum = 1000;
@@ -283,6 +289,16 @@ NSString* additiveKnowledgeMemoryThresholdKey = @"AdditiveKnowledgeMemoryThresho
 NSString* archiveViewKey = @"ArchiveView";
 NSString* sortCriteriaKey = @"SortCriteria";
 NSString* sortAscendingKey = @"SortAscending";
+// SGF settings
+NSString* sgfSettingsKey = @"Sgf";
+NSString* loadSuccessTypeKey = @"LoadSuccessType";
+NSString* enableRestrictiveCheckingKey = @"EnableRestrictiveChecking";
+NSString* disableAllWarningMessagesKey = @"DisableAllWarningMessages";
+NSString* disabledMessagesKey = @"DisabledMessages";
+NSString* encodingModeKey = @"EncodingMode";
+NSString* defaultEncodingKey = @"DefaultEncoding";
+NSString* forcedEncodingKey = @"ForcedEncoding";
+NSString* reverseVariationOrderingKey = @"ReverseVariationOrdering";
 // GTP Log view settings
 NSString* gtpLogViewKey = @"GtpLogView";
 NSString* gtpLogSizeKey = @"GtpLogSize";

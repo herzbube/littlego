@@ -67,6 +67,7 @@
 #import "../shared/ApplicationStateManager.h"
 #import "../shared/LayoutManager.h"
 #import "../shared/LongRunningActionCounter.h"
+#import "../sgf/SgfSettingsModel.h"
 #import "../ui/MagnifyingViewModel.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiSettingsModel.h"
@@ -153,6 +154,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.uiSettingsModel = nil;
   self.magnifyingViewModel = nil;
   self.boardSetupModel = nil;
+  self.sgfSettingsModel = nil;
   self.fileLogger = nil;
   [MainMenuPresenter releaseSharedPresenter];
   [BoardPositionNavigationManager releaseSharedNavigationManager];
@@ -549,6 +551,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.uiSettingsModel = [[[UiSettingsModel alloc] init] autorelease];
   self.magnifyingViewModel = [[[MagnifyingViewModel alloc] init] autorelease];
   self.boardSetupModel = [[[BoardSetupModel alloc] init] autorelease];
+  self.sgfSettingsModel = [[[SgfSettingsModel alloc] init] autorelease];
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
@@ -563,6 +566,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self.uiSettingsModel readUserDefaults];
   [self.magnifyingViewModel readUserDefaults];
   [self.boardSetupModel readUserDefaults];
+  [self.sgfSettingsModel readUserDefaults];
   // Is dependent on some user defaults in BoardViewModel
   self.boardViewMetrics = [[[BoardViewMetrics alloc] init] autorelease];
 }
@@ -597,6 +601,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self.uiSettingsModel writeUserDefaults];
   [self.magnifyingViewModel writeUserDefaults];
   [self.boardSetupModel writeUserDefaults];
+  [self.sgfSettingsModel writeUserDefaults];
 }
 
 // -----------------------------------------------------------------------------

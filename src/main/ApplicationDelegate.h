@@ -36,6 +36,7 @@
 @class WindowRootViewController;
 @class MagnifyingViewModel;
 @class BoardSetupModel;
+@class SgfSettingsModel;
 
 
 // -----------------------------------------------------------------------------
@@ -149,6 +150,9 @@
 /// @brief Model object that stores attributes related to the game setup prior
 /// to the first move.
 @property(nonatomic, retain) BoardSetupModel* boardSetupModel;
+/// @brief Model object that stores attributes related to the processing of
+/// SGF content.
+@property(nonatomic, retain) SgfSettingsModel* sgfSettingsModel;
 
 @end
 

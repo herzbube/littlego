@@ -916,6 +916,50 @@ enum ArchiveGameNameValidationResult
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name SGF constants
+// -----------------------------------------------------------------------------
+//@{
+extern const int minimumSyntaxCheckingLevel;
+extern const int maximumSyntaxCheckingLevel;
+extern const int defaultSyntaxCheckingLevel;
+extern const int customSyntaxCheckingLevel;
+
+/// @brief Enumerates possible encoding modes used to decode SGF content when
+/// it is loaded.
+enum SgfEncodingMode
+{
+  /// @brief A single encoding is used to decode all game trees in the entire
+  /// SGF content.
+  SgfEncodingModeSingleEncoding,
+  /// @brief Each game tree in the SGF content is decoded separately with the
+  /// encoding specified in the game tree's CA property.
+  SgfEncodingModeMultipleEncodings,
+  ///< @brief An attempt is made to load the SGF content first with
+  /// #SgfEncodingModeSingleEncoding. If that fails a second attempt is made
+  /// with #SgfEncodingModeMultipleEncodings.
+  SgfcEncodingModeBoth,
+  SgfcEncodingModeDefault = SgfEncodingModeSingleEncoding
+};
+
+/// @brief Enumerates what types of messages are allowed in order for loading
+/// of SGF content to be successful. Loading @e always fails when a fatal error
+/// occurs.
+enum SgfLoadSuccessType
+{
+  /// @brief Loading of the SGF content is successful only if loading generates
+  /// no warnings and no errors whatsoever.
+  SgfLoadSuccessTypeNoWarningsOrErrors,
+  /// @brief Loading of the SGF content is successful only if loading generates
+  /// no critical warnings and no critical errors.
+  SgfLoadSuccessTypeNoCriticalWarningsOrErrors,
+  /// @brief Loading of the SGF content is successful even if loading generates
+  /// critical warnings and/or critical errors.
+  SgfLoadSuccessTypeWithCriticalWarningsOrErrors,
+  SgfLoadSuccessTypeDefault = SgfLoadSuccessTypeNoCriticalWarningsOrErrors
+};
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name Diagnostics view settings default values
 // -----------------------------------------------------------------------------
 //@{
@@ -1122,6 +1166,16 @@ extern NSString* additiveKnowledgeMemoryThresholdKey;
 extern NSString* archiveViewKey;
 extern NSString* sortCriteriaKey;
 extern NSString* sortAscendingKey;
+// SGF settings
+extern NSString* sgfSettingsKey;
+extern NSString* loadSuccessTypeKey;
+extern NSString* enableRestrictiveCheckingKey;
+extern NSString* disableAllWarningMessagesKey;
+extern NSString* disabledMessagesKey;
+extern NSString* encodingModeKey;
+extern NSString* defaultEncodingKey;
+extern NSString* forcedEncodingKey;
+extern NSString* reverseVariationOrderingKey;
 // GTP Log view settings
 extern NSString* gtpLogViewKey;
 extern NSString* gtpLogSizeKey;

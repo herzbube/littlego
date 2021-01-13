@@ -328,6 +328,31 @@
 		<key>MarkNextMove</key>
 		<true/>
 	</dict>
+	<key>Sgf</key>
+	<dict>
+		<key>LoadSuccessType</key>
+		<integer>1</integer>
+		<key>EnableRestrictiveChecking</key>
+		<false/>
+		<key>DisableAllWarningMessages</key>
+		<false/>
+		<key>DisabledMessages</key>
+		<array>
+			<integer>17</integer>
+			<integer>40</integer>
+			<integer>55</integer>
+			<integer>19</integer>
+			<integer>60</integer>
+		</array>
+		<key>EncodingMode</key>
+		<integer>0</integer>
+		<key>DefaultEncoding</key>
+		<string></string>
+		<key>ForcedEncoding</key>
+		<string></string>
+		<key>ReverseVariationOrdering</key>
+		<false/>
+	</dict>
 	<key>CrashReportActivated</key>
 	<true/>
 	<key>AutomaticallySendCrashReports</key>

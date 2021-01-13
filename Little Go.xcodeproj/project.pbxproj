@@ -114,6 +114,8 @@
 		CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */; };
 		CD1E9E66171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5C171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m */; };
 		CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
+		CD1F4F6825AE17D90098037A /* SgfSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F6625AE17D90098037A /* SgfSettingsModel.m */; };
+		CD1F4F6925AE17D90098037A /* SgfSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F6625AE17D90098037A /* SgfSettingsModel.m */; };
 		CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
 		CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
 		CD252D9F16A4968E00A088D5 /* CurrentBoardPositionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D9E16A4968D00A088D5 /* CurrentBoardPositionViewController.m */; };
@@ -738,6 +740,8 @@
 		CD1E9E5C171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NavigationBarControllerPhonePortraitOnly.m; sourceTree = "<group>"; };
 		CD1E9E5F171806FE00E1B7D1 /* SoundHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundHandling.h; sourceTree = "<group>"; };
 		CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundHandling.m; sourceTree = "<group>"; };
+		CD1F4F6625AE17D90098037A /* SgfSettingsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SgfSettingsModel.m; sourceTree = "<group>"; };
+		CD1F4F6725AE17D90098037A /* SgfSettingsModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SgfSettingsModel.h; sourceTree = "<group>"; };
 		CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncGTPEngineCommand.h; sourceTree = "<group>"; };
 		CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncGTPEngineCommand.m; sourceTree = "<group>"; };
 		CD252D8216A314D900A088D5 /* ChangeBoardPositionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeBoardPositionCommand.h; sourceTree = "<group>"; };
@@ -1694,6 +1698,15 @@
 			path = controller;
 			sourceTree = "<group>";
 		};
+		CD1F4F6525AE17D90098037A /* sgf */ = {
+			isa = PBXGroup;
+			children = (
+				CD1F4F6625AE17D90098037A /* SgfSettingsModel.m */,
+				CD1F4F6725AE17D90098037A /* SgfSettingsModel.h */,
+			);
+			path = sgf;
+			sourceTree = "<group>";
+		};
 		CD3591DC1735A757000E2963 /* rootview */ = {
 			isa = PBXGroup;
 			children = (
@@ -2391,6 +2404,7 @@
 				CD1088561326CBB300E83543 /* play */,
 				CDE302811360BDA3005235F2 /* player */,
 				CD1088571326CBB300E83543 /* settings */,
+				CD1F4F6525AE17D90098037A /* sgf */,
 				CDF341C317270D0800AEFB20 /* shared */,
 				CDEF3D87140C2F39002D9C1C /* ui */,
 				CDE30138135CA7D5005235F2 /* utility */,
@@ -3039,6 +3053,7 @@
 				CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */,
 				CDDD526314840A540027476B /* DisplaySettingsController.m in Sources */,
 				CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */,
+				CD1F4F6825AE17D90098037A /* SgfSettingsModel.m in Sources */,
 				CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */,
 				CDEE19FB19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
 				CDAF17191968037700271396 /* BoardViewModel.m in Sources */,
@@ -3217,6 +3232,7 @@
 				CD05B136142A745500214BBE /* BackupGameToSgfCommand.m in Sources */,
 				CD05B137142A746100214BBE /* CleanBackupSgfCommand.m in Sources */,
 				CD05B138142A746800214BBE /* RestoreGameFromSgfCommand.m in Sources */,
+				CD1F4F6925AE17D90098037A /* SgfSettingsModel.m in Sources */,
 				CDFD9F8218F1D5F40031CBCF /* GtpLogSettingsController.m in Sources */,
 				CD05B143142A74ED00214BBE /* LoadGameCommand.m in Sources */,
 				CDB5AE2A1AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */,
