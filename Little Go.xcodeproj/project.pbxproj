@@ -116,6 +116,12 @@
 		CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
 		CD1F4F6825AE17D90098037A /* SgfSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F6625AE17D90098037A /* SgfSettingsModel.m */; };
 		CD1F4F6925AE17D90098037A /* SgfSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F6625AE17D90098037A /* SgfSettingsModel.m */; };
+		CD1F4F7425AE81AC0098037A /* SgfSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F7225AE81AB0098037A /* SgfSettingsController.m */; };
+		CD1F4F7525AE81AC0098037A /* SgfSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F7225AE81AB0098037A /* SgfSettingsController.m */; };
+		CD1F4F8025AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F7F25AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m */; };
+		CD1F4F8125AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F7F25AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m */; };
+		CD1F4F8C25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F8B25AF5CB80098037A /* SgfDisabledMessagesController.m */; };
+		CD1F4F8D25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F8B25AF5CB80098037A /* SgfDisabledMessagesController.m */; };
 		CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
 		CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
 		CD252D9F16A4968E00A088D5 /* CurrentBoardPositionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D9E16A4968D00A088D5 /* CurrentBoardPositionViewController.m */; };
@@ -742,6 +748,12 @@
 		CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SoundHandling.m; sourceTree = "<group>"; };
 		CD1F4F6625AE17D90098037A /* SgfSettingsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SgfSettingsModel.m; sourceTree = "<group>"; };
 		CD1F4F6725AE17D90098037A /* SgfSettingsModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SgfSettingsModel.h; sourceTree = "<group>"; };
+		CD1F4F7225AE81AB0098037A /* SgfSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SgfSettingsController.m; sourceTree = "<group>"; };
+		CD1F4F7325AE81AB0098037A /* SgfSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SgfSettingsController.h; sourceTree = "<group>"; };
+		CD1F4F7E25AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SgfSyntaxCheckingLevelSettingsController.h; sourceTree = "<group>"; };
+		CD1F4F7F25AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SgfSyntaxCheckingLevelSettingsController.m; sourceTree = "<group>"; };
+		CD1F4F8A25AF5CB80098037A /* SgfDisabledMessagesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SgfDisabledMessagesController.h; sourceTree = "<group>"; };
+		CD1F4F8B25AF5CB80098037A /* SgfDisabledMessagesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SgfDisabledMessagesController.m; sourceTree = "<group>"; };
 		CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncGTPEngineCommand.h; sourceTree = "<group>"; };
 		CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncGTPEngineCommand.m; sourceTree = "<group>"; };
 		CD252D8216A314D900A088D5 /* ChangeBoardPositionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeBoardPositionCommand.h; sourceTree = "<group>"; };
@@ -1645,6 +1657,12 @@
 				CDDD526114840A540027476B /* ScoringSettingsController.m */,
 				CDE4057313EB081C0091E719 /* SettingsViewController.h */,
 				CDE4057413EB081C0091E719 /* SettingsViewController.m */,
+				CD1F4F8A25AF5CB80098037A /* SgfDisabledMessagesController.h */,
+				CD1F4F8B25AF5CB80098037A /* SgfDisabledMessagesController.m */,
+				CD1F4F7325AE81AB0098037A /* SgfSettingsController.h */,
+				CD1F4F7225AE81AB0098037A /* SgfSettingsController.m */,
+				CD1F4F7E25AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.h */,
+				CD1F4F7F25AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m */,
 				CDE6C547183D820300186E89 /* SoundSettingsController.h */,
 				CDE6C548183D820300186E89 /* SoundSettingsController.m */,
 			);
@@ -3073,6 +3091,7 @@
 				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
 				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
 				CDEE1A171946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
+				CD1F4F8C25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */,
 				CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */,
@@ -3097,6 +3116,7 @@
 				CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */,
 				CDB49E3C2220AFE5006DC1A4 /* AccessibilityUtility.m in Sources */,
 				CD252D9F16A4968E00A088D5 /* CurrentBoardPositionViewController.m in Sources */,
+				CD1F4F8025AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m in Sources */,
 				CD252DA216A4969D00A088D5 /* BoardPositionToolbarController.m in Sources */,
 				CD252DA516A4B97800A088D5 /* UIImageAdditions.m in Sources */,
 				CDAF17111967FAF100271396 /* BoardViewIntersection.m in Sources */,
@@ -3121,6 +3141,7 @@
 				CDB5AE251AC5A86D0075C8DC /* MagnifyingView.m in Sources */,
 				CD1311C217180B45006CE699 /* ScoringModel.m in Sources */,
 				CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */,
+				CD1F4F7425AE81AC0098037A /* SgfSettingsController.m in Sources */,
 				CDEE1A1D19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */,
 				CD1311D2171B5857006CE699 /* LoggingModel.m in Sources */,
 				CDF341C617270D0800AEFB20 /* LongRunningActionCounter.m in Sources */,
@@ -3331,6 +3352,7 @@
 				CDFD9F8118F1D5ED0031CBCF /* GtpLogItemViewController.m in Sources */,
 				CDFD9F8418F1D5FF0031CBCF /* SubmitGtpCommandViewController.m in Sources */,
 				CD1311C417180B53006CE699 /* ScoringModel.m in Sources */,
+				CD1F4F7525AE81AC0098037A /* SgfSettingsController.m in Sources */,
 				CDCBA6D4184228A7003697E2 /* TableViewVariableHeightCell.m in Sources */,
 				CDFD9F7218F1D3700031CBCF /* DisplaySettingsController.m in Sources */,
 				CD1311C717180B67006CE699 /* NavigationBarControllerPhonePortraitOnly.m in Sources */,
@@ -3347,6 +3369,7 @@
 				CDF341D2172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
 				CDF341D4172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
 				CD3591CB17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */,
+				CD1F4F8125AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m in Sources */,
 				CDFD9F7C18F1D5A30031CBCF /* DeleteGameCommand.m in Sources */,
 				CDFD9F7B18F1D5800031CBCF /* ViewGameController.m in Sources */,
 				CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */,
@@ -3356,6 +3379,7 @@
 				CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CDFD9F7918F1D56A0031CBCF /* SectionedDocumentViewController.m in Sources */,
 				CD2D3A9E174C348C0030EDE4 /* EditGtpEngineProfileController.m in Sources */,
+				CD1F4F8D25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */,
 				CD2D3A9F174C34910030EDE4 /* EditPlayerController.m in Sources */,
 				CD2D3AA0174C34A60030EDE4 /* EditPlayingStrengthSettingsController.m in Sources */,
 				CD7C578721F79C3000694520 /* ChangeUIAreaPlayModeCommand.m in Sources */,

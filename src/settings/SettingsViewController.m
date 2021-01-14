@@ -23,6 +23,7 @@
 #import "MagnifyingGlassSettingsController.h"
 #import "PlayerProfileSettingsController.h"
 #import "ScoringSettingsController.h"
+#import "SgfSettingsController.h"
 #import "SoundSettingsController.h"
 #import "../ui/TableViewCellFactory.h"
 
@@ -35,6 +36,7 @@ enum SettingsTableViewSection
   ViewSettingsSection,
   TouchAndSoundSettingsSection,
   PlayersProfilesSection,
+  SgfSettingsSection,
   MaxSection
 };
 
@@ -67,6 +69,15 @@ enum PlayersProfilesSectionItem
 {
   PlayersProfilesSettingsItem,
   MaxPlayersProfilesSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the SgfSettingsSection.
+// -----------------------------------------------------------------------------
+enum SgfSettingsSectionItem
+{
+  SgfSettingsItem,
+  MaxSgfSettingsSectionItem
 };
 
 
@@ -109,6 +120,8 @@ enum PlayersProfilesSectionItem
       return MaxTouchAndSoundSettingsSectionItem;
     case PlayersProfilesSection:
       return MaxPlayersProfilesSectionItem;
+    case SgfSettingsSection:
+      return MaxSgfSettingsSectionItem;
     default:
       assert(0);
       break;
@@ -172,6 +185,11 @@ enum PlayersProfilesSectionItem
     case PlayersProfilesSection:
     {
       cell.textLabel.text = @"Players & Profiles";
+      break;
+    }
+    case SgfSettingsSection:
+    {
+      cell.textLabel.text = @"Smart Game Format (SGF)";
       break;
     }
     default:
@@ -242,6 +260,11 @@ enum PlayersProfilesSectionItem
     case PlayersProfilesSection:
     {
       controller = [PlayerProfileSettingsController controller];
+      break;
+    }
+    case SgfSettingsSection:
+    {
+      controller = [SgfSettingsController controller];
       break;
     }
     default:
