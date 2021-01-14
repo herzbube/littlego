@@ -17,10 +17,11 @@ B7  Players & Profiles
 B8  Scoring
 B9  Preferences
 B10 The archive
-B11 GTP engine
-B12 Go rules
-B13 Sending crash reports
-B14 Reporting bugs
+B11 Smart Game Format (SGF)
+B12 GTP engine
+B13 Go rules
+B14 Sending crash reports
+B15 Reporting bugs
 
 Note to editors: This file is parsed and displayed in game in the "Help" area of
 the app. For this to work, the content of this file must follow certain
@@ -1554,6 +1555,218 @@ be imported into Little Go's archive.
 If you have other applications that are capable of exporting .sgf files (e.g.
 DropBox) you should be able to import those files into Little Go in a similar
 fashion as you did with Mail.
+
+
+--------------------------------------------------------------------------------
+Smart Game Format (SGF)
+--------------------------------------------------------------------------------
+
+==========
+Background
+==========
+Games visible in the "Archive" area of the app are saved in the Smart Game
+Format (https://www.red-bean.com/sgf/index.html), which is generally abbreviated
+to SGF. The format is decades old and widely used to store and transfer Go
+games between computer systems. Little Go internally uses a software package
+named SGFC (https://www.red-bean.com/sgf/sgfc/) to load and save SGF data.
+
+SGFC is very strict and generates many messages when it finds SGF data that does
+not conform to the SGF standard. As long as you load only games from the archive
+that you have saved in Little Go you will be fine and see no such messages,
+becauses Little Go strictly adheres to the standard. When you import SGF files
+from external sources, though, it is likely that you will start to see some
+messages from SGFC that complain about various things in the SGF data that are
+not correct. The reason is simple: Not all applications that generate SGF data
+adhere as strictly to the SGF standard as they should.
+
+To let you deal with situations where you are unable to load a specific game
+from an external source, Little Go offers various settings that influence the
+way how SGF data is processed when you load a game from the archive. The next
+sections in this manual discuss the details of these settings.
+
+====================================================
+Simple vs. advanced configuration of syntax checking
+====================================================
+The simplest way to change the SGF syntax checking settings is to select from a
+number of syntax checking levels when you are on the "Smart Game Format"
+settings screen.
+
+In general, levels range from less syntax checking to more syntax checking. Each
+level represents a different set of predefined settings values. By selecting
+a syntax checking level you are effectively changing several settings with a
+single tap, without having to understand what the individual settings do.
+
+Individual syntax checking settings are also open to manual tweaking. To do so,
+go to the "Advanced configuration" screen from the "Smart Game Format" screen.
+Before you start changing things, however, it is probably a good idea to first
+read through the next sections so that you better understand what you can
+accomplish by manipulating the different settings.
+
+=================
+Load success type
+=================
+This setting defines what kinds of warning and/or error messages may be present
+for Little Go to still accept SGF data and load it.
+
+- With the strictest setting Little Go only loads SGF data if the data is fully
+  SGF conformant and there are no warnings or errors whatsoever.
+- The next setting (which is the default) allows some leeway so that Little Go
+  may load SGF data for which there are non-critical warnings and/or
+  non-critical errors.
+- The last setting is the most relaxed and allows Little Go to load SGF data
+  even if the SGF data has severe problems and there are critical warnings
+  and/or errors.
+
+Note that fatal errors always cause the loading of SGF data to fail.
+
+====================
+Restrictive checking
+====================
+This setting, if enabled, makes SGF data parsing even more pedantic than usual.
+More warnings and errors are generated, and in some cases messages that were
+already generated without this setting are now promoted in severity (e.g.
+warnings may become errors).
+
+This setting is designed to flag all kinds of bad style or uncommon
+characteristics in SGF data. Because it makes it more difficult to load SGF data
+it is mostly intended for those users who are curious to see if SGF data they
+obtained from an external source is well-formed.
+
+=============================
+Disable all warnings messages
+=============================
+Turning on this setting causes all warnings (both critical and non-critical) to
+be disabled, meaning they are not generated in the first place. This setting has
+two main uses:
+- Conveniently get rid of many annoying messages with a single tap.
+- Get rid of one or more critical warnings that prevent SGF data from being
+  loaded. Note that you can also achieve this by manipulating the
+  "Load success type" setting.
+
+This setting is somewhat dangerous as it blanks out many useful messages and
+even avoids warnings that are indicators for critical problems in the SGF data.
+Therefore enable this option only with care!
+
+=================
+Disabled messages
+=================
+This setting lets you disable specific warning and/or error messages (both
+critical and non-critical). Messages are identified by their number. You disable
+a specific message simply by adding its ID number to the list.
+
+Unlike the "Disable all warnings messages" setting which blankets out all
+warning messages indiscriminately, this setting gives you more precision, but
+on the other hand it's more work to maintain the list. If you want to read up
+on the possible messages, their ID numbers and what their meaning is, you can
+consult SGFC's documentation: https://www.red-bean.com/sgf/sgfc/README.
+
+Little Go curates a short list of messages that are disabled by default. Here's
+the list with the reasons why the messages are disabled:
+- Message 17: The SGF data contains an empty property value. The property
+  is deleted because without value it has no meaning. This kind of problem is
+  harmless enough to ignore it.
+- Message 19: The SGF data contains one or more games that are not Go games.
+  This problem does not need to be reported as a message, Little Go
+  automatically ignores all non-Go SGF data.
+- Message 40: The SGF data contains a property that is not defined in the
+  version of the SGF standard denoted by the FF property in the SGF data. This
+  inconsistency commonly occurs because the SGF data does not contain the FF
+  property at all, which implies version 1 of the SGF standard, but in reality
+  the SGF data contains version 4 standard properties. Seeing that the most
+  recent version of the SGF standard, version 4, was published decades ago (in
+  1999) it seems safe to assume that modern-day SGF generating applications
+  actually want to write version 4 SGF data but just forgot to include the FF[4]
+  property.
+- Message 55: The SGF data contains an empty node. Empty nodes are not a problem
+  and can simply be ignored, which is why this message is disabled.
+- Message 60: The SGF data contains more than one game tree. This problem does
+  not need to be reported as a message, Little Go automatically presents all
+  game trees to the user for loading, so there is no danger in surplus game
+  trees being skipped over.
+
+=============
+Text encodings
+=============
+Because Go is played in many countries all over the world the handling of text
+encodings is of particular importance when reading and interpreting SGF data,
+An SGF data processing application such as Little Go cannot make the assumption
+that the SGF data it processes consists of only ASCII data - to the contrary,
+when the SGF data originates in Asian countries it is almost guaranteed that
+the data will contain multi-byte character sets such as Traditional or
+Simplified Chinese, the Korean alphabet Hangul, or a form of the Japanese
+writing system.
+
+For this reason Little Go provides a number of rather technical settings that
+let the user control all aspects of text encoding handling that are supported
+by SGFC.
+
+=============
+Encoding mode
+=============
+This setting defines how the text encoding should be determined with which to
+interpret SGF data when it is loaded.
+
+- "Single encoding" mode means that the SGF data is examined for CA properties
+  that specify the text encoding to use. The first CA property that is found is
+  used. If no CA property is found the default text encoding (see next section)
+  is used. All game trees in the entire SGF data are then interpreted with the
+  single text encoding that has been determined in this way.
+- "Multiple encodings" mode means that each game tree in the SGF data is
+  interpreted separately with its own text encoding. If a game tree has a CA
+  property the text encoding specified by that property is used. If a game tree
+  has no CA property the default text encoding (see next section) is used.
+- "Try both modes" mode means that Little Go first attempts to load SGF data
+  with the "Single encoding" mode. If that fails it makes a second attempt with
+  the "Multiple encodings" mode.
+
+Single encoding mode has the special property that it allows SGF data to be
+read that begins with a Unicode byte-order mark (BOM). If a BOM is found the
+BOM instead of the first CA property determines the text encoding to use. This
+is the **ONLY** way how UTF-16 or UTF-32 encoded SGF data can be loaded.
+
+================
+Default encoding
+================
+This setting defines which text encoding to use if the SGF data does not contain
+a CA property that explicitly specifies the text encoding.
+
+If left blank the default encoding specified by the SGF standard is used, which
+is ISO-8859-1.
+
+This setting is useful if an SGF file in the archive contains no CA property
+but the file is encoded with a text encoding that is not ISO-8859-1.
+
+If you enter a text encoding a check is made in the background whether the
+text encoding is valid and supported on your device. If the check fails an alert
+is displayed. If the check succeeds no alert is displayed.
+
+=================
+Enforced encoding
+=================
+This setting defines which text encoding to use at all times when loading SGF
+data. The encoding overrides any CA properties that exist in the SGF data.
+
+If left blank no text encoding is enforced.
+
+This setting is useful if an SGF file in the archive contains a CA property that
+specifies one encoding, but the file is actually encoded with a different
+encoding. In that case loading of the SGF file will likely fail. If you know
+the file's encoding you can enforce it, which will allow you to load the file.
+
+If you enter a text encoding a check is made in the background whether the
+text encoding is valid and supported on your device. If the check fails an alert
+is displayed. If the check succeeds no alert is displayed.
+
+==========================
+Reverse variation ordering
+==========================
+This setting fixes bad style SGF data, where the main line of a game is not
+in the main branch (variation "A"), but instead is the last variation.
+Effectively, if this setting is turned on variations A,B,C,D are reordered as
+D,C,B,A.
+
+Because Little Go only loads the main variation of a game this setting can be
+important.
 
 
 --------------------------------------------------------------------------------
