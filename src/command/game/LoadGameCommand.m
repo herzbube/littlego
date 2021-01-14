@@ -22,6 +22,7 @@
 #import "../backup/CleanBackupSgfCommand.h"
 #import "../boardposition/SyncGTPEngineCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
+#import "../sgf/LoadSgfCommand.h"
 #import "../../archive/ArchiveViewModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
@@ -35,6 +36,7 @@
 #import "../../newgame/NewGameModel.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
+#import "../../sgf/SgfSettingsModel.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/PathUtilities.h"
 
@@ -243,38 +245,87 @@ enum ParseMoveStringResult
 // -----------------------------------------------------------------------------
 - (bool) loadSgf:(NSString**)errorMessage
 {
-  SGFCDocumentReader* reader = [[SGFCDocumentReader alloc] init];
-  SGFCDocumentReadResult* result = [reader readSgfContentFromFile:self.filePath];
-  if (result.isSgfDataValid)
+  LoadSgfCommand* loadSgfCommand = [[[LoadSgfCommand alloc] initWithSgfFilePath:self.filePath] autorelease];
+  bool success = [loadSgfCommand submit];
+  if (! success)
   {
-    for (SGFCMessage* message in result.parseResult)
+    *errorMessage = @"An internal error occurred: Executing LoadSgfCommand failed for unknown reasons.";
+    return false;
+  }
+
+  SgfSettingsModel* sgfSettingsModel = [ApplicationDelegate sharedDelegate].sgfSettingsModel;
+
+  SGFCDocumentReadResult* readResult;
+  if (sgfSettingsModel.encodingMode == SgfEncodingModeSingleEncoding)
+    readResult = loadSgfCommand.sgfDocumentReadResultSingleEncoding;
+  else if (sgfSettingsModel.encodingMode == SgfEncodingModeMultipleEncodings)
+    readResult = loadSgfCommand.sgfDocumentReadResultMultipleEncodings;
+  else if (loadSgfCommand.sgfDocumentReadResultMultipleEncodings != nil)
+    readResult = loadSgfCommand.sgfDocumentReadResultMultipleEncodings;
+  else
+    readResult = loadSgfCommand.sgfDocumentReadResultSingleEncoding;
+
+  if (readResult.isSgfDataValid)
+  {
+    enum SgfLoadSuccessType loadSuccessType = sgfSettingsModel.loadSuccessType;
+    if (loadSuccessType == SgfLoadSuccessTypeWithCriticalWarningsOrErrors)
     {
-      if (message.isCriticalMessage)
+      // It doesn't matter what kind of messages we have - all are acceptable
+    }
+    else
+    {
+      NSArray* parseResult = readResult.parseResult;
+
+      if (loadSuccessType == SgfLoadSuccessTypeNoWarningsOrErrors)
       {
-        switch (message.messageID)
+        if (parseResult.count > 0)
         {
-          case SGFCMessageIDGameIsNotGo:
-            // Skip this message. If there are no other critical messages we
-            // will detect non-Go games further down and abort there with a
-            // tailored error message.
-            continue;
-          case SGFCMessageIDUnknownEncodingInSgfContent:
-            *errorMessage = @"The SGF data is encoded with an unsupported or unknown/illegal text encoding.";
-            break;
-          case SGFCMessageIDEncodingErrorsDetected:
-            *errorMessage = @"The SGF data encoding is faulty (illegal byte sequence according to the text encoding)";
-            break;
-          default:
-            *errorMessage = [NSString stringWithFormat:@"A critical problem with the SGF data was found. The technical error message is:\n\n%@", message.formattedMessageText];
-            break;
+          int numberOfWarnings = 0;
+          int numberOfErrors = 0;
+          for (SGFCMessage* message in parseResult)
+          {
+            if (message.messageType == SGFCMessageTypeWarning)
+              numberOfWarnings++;
+            else
+              numberOfErrors++;
+          }
+
+          *errorMessage = [NSString stringWithFormat:@"The SGF data is not fully standard conformant. Parsing resulted in %d warning(s) and %d error(s).", numberOfWarnings, numberOfErrors];
+          return false;
         }
-        return false;
+      }
+      else
+      {
+        for (SGFCMessage* message in parseResult)
+        {
+          if (message.isCriticalMessage)
+          {
+            switch (message.messageID)
+            {
+              case SGFCMessageIDGameIsNotGo:
+                // Skip this message. If there are no other critical messages we
+                // will detect non-Go games further down and abort there with a
+                // tailored error message.
+                continue;
+              case SGFCMessageIDUnknownEncodingInSgfContent:
+                *errorMessage = @"The SGF data is encoded with an unsupported or unknown/illegal text encoding.";
+                break;
+              case SGFCMessageIDEncodingErrorsDetected:
+                *errorMessage = @"The SGF data encoding is faulty (illegal byte sequence according to the text encoding)";
+                break;
+              default:
+                *errorMessage = [NSString stringWithFormat:@"A critical problem with the SGF data was found. The technical error message is:\n\n%@", message.formattedMessageText];
+                break;
+            }
+            return false;
+          }
+        }
       }
     }
   }
   else
   {
-    for (SGFCMessage* message in result.parseResult)
+    for (SGFCMessage* message in readResult.parseResult)
     {
       if (message.messageType == SGFCMessageTypeFatalError)
       {
@@ -304,7 +355,7 @@ enum ParseMoveStringResult
     return false;
   }
 
-  SGFCGame* firstGame = result.document.game;
+  SGFCGame* firstGame = readResult.document.game;
   if (firstGame && firstGame.hasRootNode)
   {
     self.sgfGame = firstGame;

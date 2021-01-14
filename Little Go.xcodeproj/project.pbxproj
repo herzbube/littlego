@@ -122,6 +122,10 @@
 		CD1F4F8125AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F7F25AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m */; };
 		CD1F4F8C25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F8B25AF5CB80098037A /* SgfDisabledMessagesController.m */; };
 		CD1F4F8D25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F8B25AF5CB80098037A /* SgfDisabledMessagesController.m */; };
+		CD1F4FAC25B055EB0098037A /* LoadSgfCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4FAA25B055EB0098037A /* LoadSgfCommand.m */; };
+		CD1F4FAD25B055EB0098037A /* LoadSgfCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4FAA25B055EB0098037A /* LoadSgfCommand.m */; };
+		CD1F4FB825B0C1120098037A /* SgfUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4FB725B0C1120098037A /* SgfUtilities.m */; };
+		CD1F4FB925B0C1120098037A /* SgfUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4FB725B0C1120098037A /* SgfUtilities.m */; };
 		CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
 		CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
 		CD252D9F16A4968E00A088D5 /* CurrentBoardPositionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D9E16A4968D00A088D5 /* CurrentBoardPositionViewController.m */; };
@@ -754,6 +758,10 @@
 		CD1F4F7F25AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SgfSyntaxCheckingLevelSettingsController.m; sourceTree = "<group>"; };
 		CD1F4F8A25AF5CB80098037A /* SgfDisabledMessagesController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SgfDisabledMessagesController.h; sourceTree = "<group>"; };
 		CD1F4F8B25AF5CB80098037A /* SgfDisabledMessagesController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SgfDisabledMessagesController.m; sourceTree = "<group>"; };
+		CD1F4FAA25B055EB0098037A /* LoadSgfCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoadSgfCommand.m; sourceTree = "<group>"; };
+		CD1F4FAB25B055EB0098037A /* LoadSgfCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadSgfCommand.h; sourceTree = "<group>"; };
+		CD1F4FB625B0C1120098037A /* SgfUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SgfUtilities.h; sourceTree = "<group>"; };
+		CD1F4FB725B0C1120098037A /* SgfUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SgfUtilities.m; sourceTree = "<group>"; };
 		CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncGTPEngineCommand.h; sourceTree = "<group>"; };
 		CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncGTPEngineCommand.m; sourceTree = "<group>"; };
 		CD252D8216A314D900A088D5 /* ChangeBoardPositionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeBoardPositionCommand.h; sourceTree = "<group>"; };
@@ -1721,6 +1729,8 @@
 			children = (
 				CD1F4F6625AE17D90098037A /* SgfSettingsModel.m */,
 				CD1F4F6725AE17D90098037A /* SgfSettingsModel.h */,
+				CD1F4FB625B0C1120098037A /* SgfUtilities.h */,
+				CD1F4FB725B0C1120098037A /* SgfUtilities.m */,
 			);
 			path = sgf;
 			sourceTree = "<group>";
@@ -2118,6 +2128,8 @@
 		CD9B63EC25AB7804003E032B /* sgf */ = {
 			isa = PBXGroup;
 			children = (
+				CD1F4FAB25B055EB0098037A /* LoadSgfCommand.h */,
+				CD1F4FAA25B055EB0098037A /* LoadSgfCommand.m */,
 				CD9B63ED25AB7804003E032B /* SaveSgfCommand.h */,
 				CD9B63EE25AB7804003E032B /* SaveSgfCommand.m */,
 			);
@@ -3094,6 +3106,7 @@
 				CD1F4F8C25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */,
 				CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
+				CD1F4FAC25B055EB0098037A /* LoadSgfCommand.m in Sources */,
 				CD48ADA515A891B9004A7096 /* BugReportUtilities.m in Sources */,
 				CDEE19F519433EAC00DF2389 /* BoardViewController.m in Sources */,
 				CDB684FE161591760038AADE /* EditPlayingStrengthSettingsController.m in Sources */,
@@ -3107,6 +3120,7 @@
 				CD9B63EF25AB7804003E032B /* SaveSgfCommand.m in Sources */,
 				CDEE1A0F1946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */,
 				CD3A0999169389A600ABDB5D /* PanGestureController.m in Sources */,
+				CD1F4FB825B0C1120098037A /* SgfUtilities.m in Sources */,
 				CD3A09A116939E2200ABDB5D /* TapGestureController.m in Sources */,
 				CD0FE902169A122400053671 /* BoardPositionListViewController.m in Sources */,
 				CD7C69F51AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */,
@@ -3223,11 +3237,13 @@
 				CD7C69E41AA67EAD009EC5AD /* MainTableViewController.m in Sources */,
 				CD85B5C51401C338001715B8 /* PlayerModel.m in Sources */,
 				CD85B5C81401C347001715B8 /* NewGameModel.m in Sources */,
+				CD1F4FB925B0C1120098037A /* SgfUtilities.m in Sources */,
 				CD7C57D12201E89500694520 /* SetupFirstMoveColorCommand.m in Sources */,
 				CD85B5CB1401C354001715B8 /* PlayerStatistics.m in Sources */,
 				CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */,
 				CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */,
 				CDEE19F619433EAC00DF2389 /* BoardViewController.m in Sources */,
+				CD1F4FAD25B055EB0098037A /* LoadSgfCommand.m in Sources */,
 				CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */,
 				CD97FA111AE3D4DD00148C16 /* NewGameAdvancedController.m in Sources */,
 				CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */,
