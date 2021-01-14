@@ -57,8 +57,9 @@
 /// hardcoded) combination of GTP engine settings. Changing a GtpEngineProfile's
 /// playing strength will result in the profile's settings being updated to the
 /// combination of values that represent the new playing strength. Only playing
-/// strengths in the range between 0 and #maximumPlayingStrength can be
-/// assigned. An exception is raised if you try to assign any other value.
+/// strengths in the range between #minimumPlayingStrength and
+/// #maximumPlayingStrength can be assigned. An exception is raised if you try
+/// to assign any other value.
 ///
 /// When querying the property, the value #customPlayingStrength indicates an
 /// unknown (i.e. not pre-defined) combination of profile settings.
