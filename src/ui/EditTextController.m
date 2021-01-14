@@ -419,7 +419,7 @@
 // -----------------------------------------------------------------------------
 - (BOOL) textFieldShouldClear:(UITextField*)aTextField
 {
-  self.navigationItem.rightBarButtonItem.enabled = NO;
+  self.navigationItem.rightBarButtonItem.enabled = (self.acceptEmptyText ? YES : NO);
   return YES;
 }
 
