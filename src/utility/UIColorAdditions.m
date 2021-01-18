@@ -283,6 +283,50 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a color object whose hex code is "0BDA51", and whose alpha
+/// value is 1.0.
+///
+/// This is a relatively bright shade of green that is not as glaring as the
+/// pure green color "00FF00". The color fits well into the
+/// green-yellow-orange-red color cycle formed by malachiteColor(),
+/// ncsYellowColor(), orangeColor() and pantoneRedColor.
+// -----------------------------------------------------------------------------
++ (UIColor*) malachiteColor
+{
+  return [UIColor colorFromHexString:@"0BDA51"];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object whose hex code is "FFD300", and whose alpha
+/// value is 1.0. This is the color yellow in the Natural Color System.
+///
+/// This is a toned down shade of yellow that is not as bright as the
+/// pure yellow color returned by UIColor's own yellow() property, and that has
+/// a good contrast on top of a white background. The color fits well into the
+/// green-yellow-orange-red color cycle formed by malachiteColor(),
+/// ncsYellowColor(), orangeColor() and pantoneRedColor.
+// -----------------------------------------------------------------------------
++ (UIColor*) ncsYellowColor
+{
+  return [UIColor colorFromHexString:@"FFD300"];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object whose hex code is "ED2839", and whose alpha
+/// value is 1.0. This is the color red in the color space defined by the
+/// company Pantone.
+///
+/// This is a relatively bright shade of red that is not as glaring as the
+/// pure red color "FF0000". The color fits well into the
+/// green-yellow-orange-red color cycle formed by malachiteColor(),
+/// ncsYellowColor(), orangeColor() and pantoneRedColor.
+// -----------------------------------------------------------------------------
++ (UIColor*) pantoneRedColor
+{
+  return [UIColor colorFromHexString:@"ED2839"];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a color object whose RGB values are randomly chosen and
 /// whose alpha value is 1.0.
 // -----------------------------------------------------------------------------

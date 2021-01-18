@@ -63,8 +63,7 @@
 ///
 /// Is also @e nil if the "encoding mode" user preference specifies
 /// @e SgfcEncodingModeBoth and the first read operation that was attempted
-/// with #SgfEncodingModeMultipleEncodings was successful, according to the
-/// "load success type" user preference.
+/// with #SgfEncodingModeMultipleEncodings did not fail with a fatal error.
 @property(nonatomic, retain) SGFCDocumentReadResult* sgfDocumentReadResultMultipleEncodings;
 
 @end

@@ -126,6 +126,8 @@
 		CD1F4FAD25B055EB0098037A /* LoadSgfCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4FAA25B055EB0098037A /* LoadSgfCommand.m */; };
 		CD1F4FB825B0C1120098037A /* SgfUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4FB725B0C1120098037A /* SgfUtilities.m */; };
 		CD1F4FB925B0C1120098037A /* SgfUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4FB725B0C1120098037A /* SgfUtilities.m */; };
+		CD1F500725B34EDE0098037A /* GameInfoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F500625B34EDE0098037A /* GameInfoItem.m */; };
+		CD1F500825B34EDE0098037A /* GameInfoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F500625B34EDE0098037A /* GameInfoItem.m */; };
 		CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
 		CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
 		CD252D9F16A4968E00A088D5 /* CurrentBoardPositionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D9E16A4968D00A088D5 /* CurrentBoardPositionViewController.m */; };
@@ -762,6 +764,8 @@
 		CD1F4FAB25B055EB0098037A /* LoadSgfCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoadSgfCommand.h; sourceTree = "<group>"; };
 		CD1F4FB625B0C1120098037A /* SgfUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SgfUtilities.h; sourceTree = "<group>"; };
 		CD1F4FB725B0C1120098037A /* SgfUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SgfUtilities.m; sourceTree = "<group>"; };
+		CD1F500525B34EDE0098037A /* GameInfoItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameInfoItem.h; sourceTree = "<group>"; };
+		CD1F500625B34EDE0098037A /* GameInfoItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameInfoItem.m; sourceTree = "<group>"; };
 		CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncGTPEngineCommand.h; sourceTree = "<group>"; };
 		CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncGTPEngineCommand.m; sourceTree = "<group>"; };
 		CD252D8216A314D900A088D5 /* ChangeBoardPositionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeBoardPositionCommand.h; sourceTree = "<group>"; };
@@ -2259,6 +2263,8 @@
 				CDD48C82141034F000188B6A /* ArchiveViewController.m */,
 				CDD48C8E141036D200188B6A /* ArchiveViewModel.h */,
 				CDD48C8F141036D200188B6A /* ArchiveViewModel.m */,
+				CD1F500525B34EDE0098037A /* GameInfoItem.h */,
+				CD1F500625B34EDE0098037A /* GameInfoItem.m */,
 				CDFABCA614194A420065C93B /* ViewGameController.h */,
 				CDFABCA714194A420065C93B /* ViewGameController.m */,
 			);
@@ -3100,6 +3106,7 @@
 				CDFA32A515A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
 				CD7C6A011AB458CE009EC5AD /* NavigationBarControllerPhone.m in Sources */,
 				CD7C6A111AB4862E009EC5AD /* AutoLayoutConstraintHelper.m in Sources */,
+				CD1F500725B34EDE0098037A /* GameInfoItem.m in Sources */,
 				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
 				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
 				CDEE1A171946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
@@ -3376,6 +3383,7 @@
 				CDACF0B119041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */,
 				CDFD9F7718F1D5600031CBCF /* DocumentViewController.m in Sources */,
 				CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */,
+				CD1F500825B34EDE0098037A /* GameInfoItem.m in Sources */,
 				CD7C57C821FF8E9500694520 /* HandleBoardSetupInteractionCommand.m in Sources */,
 				CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */,
 				CD7C6A121AB4862E009EC5AD /* AutoLayoutConstraintHelper.m in Sources */,

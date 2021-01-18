@@ -19,9 +19,6 @@
 #import "../CommandBase.h"
 #import "../AsynchronousCommand.h"
 
-// Forward declarations
-@class GtpCommand;
-
 
 // -----------------------------------------------------------------------------
 /// @brief The LoadGameCommand class is responsible for loading a game from an
@@ -69,8 +66,10 @@
 {
 }
 
+/// TODO xxx try to get rid of the file-based stuff
 - (id) initWithFilePath:(NSString*)filePath;
 - (id) initWithGameName:(NSString*)gameName;
+- (id) initWithGameInfoNode:(SGFCNode*)sgfGameInfoNode goGameInfo:(SGFCGoGameInfo*)sgfGoGameInfo;
 
 /// @brief Full path to the .sgf file to be loaded.
 @property(nonatomic, retain) NSString* filePath;

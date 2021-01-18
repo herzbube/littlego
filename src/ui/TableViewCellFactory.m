@@ -20,6 +20,7 @@
 #import "TableViewSliderCell.h"
 #import "TableViewGridCell.h"
 #import "TableViewVariableHeightCell.h"
+#import "UIColorAdditions.h"
 
 
 @implementation TableViewCellFactory
@@ -72,6 +73,9 @@
       break;
     case VariableHeightCellType:
       cellID = @"VariableHeightCellType";
+      break;
+    case ActionTextCellType:
+      cellID = @"ActionTextCellType";
       break;
     default:
       DDLogError(@"%@: Unexpected cell type %d", self, type);
@@ -170,7 +174,13 @@
     }
     case DeleteTextCellType:
     {
-      cell.textLabel.textColor = [UIColor redColor];
+      cell.textLabel.textColor = [UIColor systemRedColor];
+      cell.textLabel.textAlignment = NSTextAlignmentCenter;
+      break;
+    }
+    case ActionTextCellType:
+    {
+      cell.textLabel.textColor = [UIColor systemBlueColor];
       cell.textLabel.textAlignment = NSTextAlignmentCenter;
       break;
     }

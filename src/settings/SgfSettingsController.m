@@ -351,7 +351,11 @@ enum OtherSectionItem
 
       int indexOfDefaultItem = self.sgfSettingsModel.encodingMode;
       NSString* screenTitle = @"Select the encoding mode";
-      NSString* footerTitle = [NSString stringWithFormat:@"The recommended encoding mode is \"%@\".", [self encodingModeName:SgfcEncodingModeDefault]];
+      NSString* footerTitle = [NSString stringWithFormat:@"\"%@\" first tries loading SGF data with \"%@\" mode. If that fails with a fatal error it then tries again with \"%@\" mode.\n\nThe recommended encoding mode is \"%@\".",
+                               [self encodingModeName:SgfcEncodingModeBoth],
+                               [self encodingModeName:SgfEncodingModeSingleEncoding],
+                               [self encodingModeName:SgfEncodingModeMultipleEncodings],
+                               [self encodingModeName:SgfcEncodingModeDefault]];
 
       ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
                                                                                     screenTitle:screenTitle

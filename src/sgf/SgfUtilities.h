@@ -35,4 +35,9 @@
 + (bool) isLoadOperationSuccessful:(SGFCDocumentReadResult*)readResult
                withLoadSuccessType:(enum SgfLoadSuccessType)loadSuccessType;
 
++ (NSString*) stringForSgfBoardSize:(SGFCBoardSize)sgfBoardSize;
++ (void) parseSgfGameDates:(NSArray*)sgfGameDates dateArray:(NSArray**)dateArray stringArray:(NSArray**)stringArray;
++ (NSString*) stringForSgfGameResult:(SGFCGameResult)sgfGameResult;
++ (NSString*) stringForSgfGoPlayerRank:(SGFCGoPlayerRank)sgfGoPlayerRank;
+
 @end

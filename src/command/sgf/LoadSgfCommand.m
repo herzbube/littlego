@@ -19,7 +19,6 @@
 #import "LoadSgfCommand.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../sgf/SgfSettingsModel.h"
-#import "../../sgf/SgfUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -123,8 +122,7 @@
   else
     self.sgfDocumentReadResultMultipleEncodings = readResult;
 
-  return [SgfUtilities isLoadOperationSuccessful:readResult
-                             withLoadSuccessType:sgfSettingsModel.loadSuccessType];
+  return readResult.isSgfDataValid;
 }
 
 - (void) setupReaderArguments:(SGFCDocumentReader*)documentReader

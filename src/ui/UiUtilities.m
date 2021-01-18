@@ -308,4 +308,40 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a newly created, autoreleased indicator image with a circular
+/// shape and filled with the solid color @a color. The image is sized to make
+/// it suitable for display in the image view of a table cell view.
+// -----------------------------------------------------------------------------
++ (UIImage*) circularTableCellViewIndicatorWithColor:(UIColor*)color
+{
+  // Create a new bitmap image context
+  const int radius = 7;
+  const int width = radius * 2;
+  const int height = width;
+  UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 0.0f);
+
+  // Get Core Graphics context
+  CGContextRef context = UIGraphicsGetCurrentContext();
+
+  // Push context to make it current (need to do this manually because we are
+  // not drawing in a UIView)
+  UIGraphicsPushContext(context);
+
+  // Draw the actual image
+  const CGPoint center = CGPointMake(radius, radius);
+  [self drawCircleWithContext:context center:center radius:radius fill:true color:color];
+
+  // Pop context to balance UIGraphicsPushContext above
+  UIGraphicsPopContext();
+
+  // Get an (autoreleased) UIImage from the image context
+  UIImage* outputImage = UIGraphicsGetImageFromCurrentImageContext();
+
+  // Clean up drawing environment
+  UIGraphicsEndImageContext();
+
+  return outputImage;
+}
+
 @end

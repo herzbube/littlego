@@ -1715,9 +1715,14 @@ interpret SGF data when it is loaded.
   interpreted separately with its own text encoding. If a game tree has a CA
   property the text encoding specified by that property is used. If a game tree
   has no CA property the default text encoding (see next section) is used.
-- "Try both modes" mode means that Little Go first attempts to load SGF data
-  with the "Single encoding" mode. If that fails it makes a second attempt with
-  the "Multiple encodings" mode.
+- "Try both modes" means that Little Go first attempts to load SGF data with the
+  "Single encoding" mode. If that fails with a fatal error it makes a second
+  attempt with the "Multiple encodings" mode. This setting is intended to be
+  used when most of the time you work with SGF data that contains a single
+  encoding (i.e. "Single encoding" mode works fine), but occasionally you also
+  work with SGF data that contains multiple encodings (i.e. "Single encoding"
+  mode fails with a fatal error) and you don't want to go to the settings screen
+  every time to switch between the two modes.
 
 Single encoding mode has the special property that it allows SGF data to be
 read that begins with a Unicode byte-order mark (BOM). If a BOM is found the

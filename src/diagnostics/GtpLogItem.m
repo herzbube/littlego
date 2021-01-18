@@ -101,53 +101,17 @@
   {
     if (self.responseStatus)
     {
-      if (successImage)
-        return successImage;
+      if (! successImage)
+        successImage = [[UiUtilities circularTableCellViewIndicatorWithColor:[UIColor greenColor]] retain];
+      return successImage;
     }
     else
     {
-      if (failureImage)
-        return failureImage;
+      if (! failureImage)
+        failureImage = [[UiUtilities circularTableCellViewIndicatorWithColor:[UIColor redColor]] retain];
+      return failureImage;
     }
   }
-
-  // Create a new bitmap image context
-  const int radius = 4;
-  const int width = radius * 2;
-  const int height = width;
-  UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 0.0f);
-  // Get Core Graphics context
-	CGContextRef context = UIGraphicsGetCurrentContext();
-	// Push context to make it current (need to do this manually because we are
-  // not drawing in a UIView)
-	UIGraphicsPushContext(context);
-	// Draw the actual image
-  UIColor* color;
-  if (self.responseStatus)
-    color = [UIColor greenColor];
-  else
-    color = [UIColor redColor];
-	CGContextSetFillColorWithColor(context, color.CGColor);
-  const CGPoint center = CGPointMake(radius, radius);
-  const CGFloat startRadius = [UiUtilities radians:0];
-  const CGFloat endRadius = [UiUtilities radians:360];
-  const int clockwise = 0;
-  CGContextAddArc(context, center.x, center.y, radius, startRadius, endRadius, clockwise);
-  CGContextFillPath(context);
-	// Pop context to balance UIGraphicsPushContext above
-	UIGraphicsPopContext();
-	// Get an UIImage from the image context
-	UIImage* outputImage = UIGraphicsGetImageFromCurrentImageContext();
-	// Clean up drawing environment
-	UIGraphicsEndImageContext();
-
-  if (self.responseStatus)
-    successImage = outputImage;
-  else
-    failureImage = outputImage;
-  [outputImage retain];
-
-  return outputImage;
 }
 
 // -----------------------------------------------------------------------------

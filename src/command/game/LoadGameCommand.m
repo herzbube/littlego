@@ -70,6 +70,7 @@ enum ParseMoveStringResult
 @property(nonatomic, retain) SGFCGame* sgfGame;
 @property(nonatomic, retain) NSArray* sgfMainVariationNodes;
 @property(nonatomic, retain) SGFCNode* sgfGameInfoNode;
+@property(nonatomic, retain) SGFCGoGameInfo* sgfGoGameInfo;
 @property(nonatomic, retain) NSArray* handicapVertexStrings;
 @end
 
@@ -107,6 +108,7 @@ enum ParseMoveStringResult
   self.sgfGame = nil;
   self.sgfMainVariationNodes = nil;
   self.sgfGameInfoNode = nil;
+  self.sgfGoGameInfo = nil;
   self.handicapVertexStrings = nil;
 
   return self;
@@ -123,6 +125,23 @@ enum ParseMoveStringResult
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Initializes a LoadGameCommand object that will load the game from
+/// the SGF data referenced by @a sgfGameInfoNode.
+// -----------------------------------------------------------------------------
+- (id) initWithGameInfoNode:(SGFCNode*)sgfGameInfoNode goGameInfo:(SGFCGoGameInfo*)sgfGoGameInfo
+{
+  self = [self initWithFilePath:nil];
+  if (! self)
+    return nil;
+
+  self.sgfGameInfoNode = sgfGameInfoNode;
+  self.sgfGoGameInfo = sgfGoGameInfo;
+  self.sgfMainVariationNodes = sgfGameInfoNode.mainVariationNodes;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Deallocates memory allocated by this LoadGameCommand object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
@@ -136,6 +155,7 @@ enum ParseMoveStringResult
   self.sgfGame = nil;
   self.sgfMainVariationNodes = nil;
   self.sgfGameInfoNode = nil;
+  self.sgfGoGameInfo = nil;
   self.handicapVertexStrings = nil;
 
   [super dealloc];
@@ -146,12 +166,10 @@ enum ParseMoveStringResult
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  if (! self.filePath)
-  {
-    DDLogError(@"%@: No file provided", [self shortDescription]);
-    return false;
-  }
-  DDLogVerbose(@"%@: Loading .sgf file %@", [self shortDescription], self.filePath);
+  if (self.filePath)
+    DDLogVerbose(@"%@: Loading SGF file %@", [self shortDescription], self.filePath);
+  else
+    DDLogVerbose(@"%@: Loading SGF node", [self shortDescription]);
 
   bool runToCompletion = false;
   NSString* errorMessage = @"Internal error";
@@ -210,9 +228,13 @@ enum ParseMoveStringResult
 // -----------------------------------------------------------------------------
 - (bool) loadAndParseSgf:(NSString**)errorMessage
 {
-  bool success = [self loadSgf:errorMessage];
-  if (! success)
-    return false;
+  bool success;
+  if (self.filePath)
+  {
+    success = [self loadSgf:errorMessage];
+    if (! success)
+      return false;
+  }
   [self increaseProgressAndNotifyDelegate];
   success = [self parseSgfDataForBoardSize:errorMessage];
   if (! success)
@@ -390,7 +412,12 @@ enum ParseMoveStringResult
 // -----------------------------------------------------------------------------
 - (bool) parseSgfDataForBoardSize:(NSString**)errorMessage
 {
-  SGFCBoardSize boardSize = self.sgfGame.boardSize;
+  SGFCBoardSize boardSize;
+  if (self.sgfGame)
+    boardSize = self.sgfGame.boardSize;
+  else
+    boardSize = self.sgfGoGameInfo.boardSize;
+
   if (! SGFCBoardSizeIsSquare(boardSize))
   {
     *errorMessage = [NSString stringWithFormat:@"The board size is not square: %ld x %ld.", (long)boardSize.Columns, (long)boardSize.Rows];

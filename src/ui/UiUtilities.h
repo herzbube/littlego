@@ -40,5 +40,6 @@
 + (UIImage*) captureFrame:(CGRect)frame inView:(UIView*)view;
 + (void) drawRectWithContext:(CGContextRef)context rect:(CGRect)rect fill:(bool)fill color:(UIColor*)color;
 + (void) drawCircleWithContext:(CGContextRef)context center:(CGPoint)center radius:(CGFloat)radius fill:(bool)fill color:(UIColor*)color;
++ (UIImage*) circularTableCellViewIndicatorWithColor:(UIColor*)color;
 
 @end

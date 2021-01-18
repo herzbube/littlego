@@ -1026,7 +1026,8 @@ enum TableViewCellType
   GridCellType,          ///< @brief Cell displays configurable number of columns; requires a delegate
   ActivityIndicatorCellType,  ///< @brief Cell with an activity indicator in the accessory view
   DeleteTextCellType,     ///< @brief Cell that displays a "delete" text. Style and color are similar to the delete cell in Apple's address book or calendar apps.
-  VariableHeightCellType  ///< @brief Similar to Value1CellType, but the text label uses a variable number of lines.
+  VariableHeightCellType, ///< @brief Similar to Value1CellType, but the text label uses a variable number of lines.
+  ActionTextCellType      ///< @brief Cell that displays a text that triggers an action. Style is similar to DeleteTextCellType, but not alarming.
 };
 
 /// @brief Enumerates all possible tags for subviews in custom table view cells
