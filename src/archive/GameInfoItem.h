@@ -148,18 +148,26 @@ enum GameInfoItemMissingDataDisplayStyle
 /// @brief The name of the user (or program) who recorded or entered the game
 /// data, exactly as it appears in the SGF property US.
 @property(nonatomic, retain, readonly) NSString* recorderName;
+/// @brief Indicates whether the property @e recorderName has data.
+@property(nonatomic, assign, readonly) bool recorderNameHasData;
 
 /// @brief The name of the source of the game data (e.g. book, journal, etc.),
 /// exactly as it appears in the SGF property SO.
 @property(nonatomic, retain, readonly) NSString* sourceName;
+/// @brief Indicates whether the property @e sourceName has data.
+@property(nonatomic, assign, readonly) bool sourceNameHasData;
 
 /// @brief The name of the person who made the annotations to the game, exactly
 /// as it appears in the SGF property AN.
 @property(nonatomic, retain, readonly) NSString* annotationAuthor;
+/// @brief Indicates whether the property @e annotationAuthor has data.
+@property(nonatomic, assign, readonly) bool annotationAuthorHasData;
 
 /// @brief The copyright information for the game data (including the
 /// annotations), exactly as it appears in the SGF property CP.
 @property(nonatomic, retain, readonly) NSString* copyrightInformation;
+/// @brief Indicates whether the property @e copyrightInformation has data.
+@property(nonatomic, assign, readonly) bool copyrightInformationHasData;
 //@}
 
 /// @name Basic game information
@@ -167,10 +175,14 @@ enum GameInfoItemMissingDataDisplayStyle
 /// @brief The name of the game (e.g. for easily finding the game again within
 /// a collection), exactly as it appears in the SGF property GN.
 @property(nonatomic, retain, readonly) NSString* gameName;
+/// @brief Indicates whether the property @e gameName has data.
+@property(nonatomic, assign, readonly) bool gameNameHasData;
 
 /// @brief Information about the game (e.g. background information, a game
 /// summary, etc.), exactly as it appears in the SGF property GC.
 @property(nonatomic, retain, readonly) NSString* gameInformation;
+/// @brief Indicates whether the property @e gameInformation has data.
+@property(nonatomic, assign, readonly) bool gameInformationHasData;
 
 /// @brief The string representation of the list of dates when the game was
 /// played, based on the data that appears in the SGF property DT.
@@ -189,6 +201,9 @@ enum GameInfoItemMissingDataDisplayStyle
 /// If the interpretation of the data in the SGF property DT fails this property
 /// contains an empty array.
 @property(nonatomic, retain, readonly) NSArray* gameDates;
+/// @brief Indicates whether the properties @e gameDatesAsString and
+/// @e gameDates have data.
+@property(nonatomic, assign, readonly) bool gameDatesHasData;
 
 /// @brief The Go ruleset used for the game, exactly as it appears in the SGF
 /// property RU.
@@ -199,6 +214,9 @@ enum GameInfoItemMissingDataDisplayStyle
 /// If the interpretation of the data in the SGF property DT fails the returned
 /// SGFCGoRuleset has the @e IsValid property set to NO.
 @property(nonatomic, assign, readonly) SGFCGoRuleset goRuleset;
+/// @brief Indicates whether the properties @e rulesName and @e goRuleset have
+/// data.
+@property(nonatomic, assign, readonly) bool goRulesetHasData;
 
 /// @brief The number of handicap stones, exactly as it appears in the SGF
 /// property HA.
@@ -209,6 +227,9 @@ enum GameInfoItemMissingDataDisplayStyle
 /// If the interpretation of the data in the SGF property HA fails this
 /// property has the value 0.
 @property(nonatomic, assign, readonly) SGFCNumber numberOfHandicapStones;
+/// @brief Indicates whether the properties @e numberOfHandicapStonesAsString
+/// and @e numberOfHandicapStones have data.
+@property(nonatomic, assign, readonly) bool numberOfHandicapStonesHasData;
 
 /// @brief The komi value, exactly as it appears in the SGF property KM.
 @property(nonatomic, retain, readonly) NSString* komiAsString;
@@ -218,6 +239,9 @@ enum GameInfoItemMissingDataDisplayStyle
 /// If the interpretation of the data in the SGF property KM fails this
 /// property has the value 0.0.
 @property(nonatomic, assign, readonly) SGFCReal komi;
+/// @brief Indicates whether the properties @e komiAsString and @e komi have
+/// data.
+@property(nonatomic, assign, readonly) bool komiHasData;
 
 /// @brief The string representation of the game result, based on the data that
 /// appears in the SGF property RE.
@@ -235,6 +259,9 @@ enum GameInfoItemMissingDataDisplayStyle
 /// If the interpretation of the data in the SGF property RE fails the returned
 /// SGFCGameResult has the @e IsValid property set to NO.
 @property(nonatomic, assign, readonly) SGFCGameResult gameResult;
+/// @brief Indicates whether the properties @e gameResultAsString and
+/// @e gameResult have data.
+@property(nonatomic, assign, readonly) bool gameResultHasData;
 //@}
 
 /// @name Extra game information
@@ -248,14 +275,21 @@ enum GameInfoItemMissingDataDisplayStyle
 /// If the interpretation of the data in the SGF property TM fails this
 /// property has the value 0.0.
 @property(nonatomic, assign, readonly) SGFCReal timeLimitInSeconds;
+/// @brief Indicates whether the properties @e timeLimitInSecondsAsString and
+/// @e timeLimitInSeconds have data.
+@property(nonatomic, assign, readonly) bool timeLimitInSecondsHasData;
 
 /// @brief The description of the method used for overtime (byo-yomi), exactly
 /// as it appears in the SGF property OT.
 @property(nonatomic, retain, readonly) NSString* overtimeInformation;
+/// @brief Indicates whether the property @e overtimeInformation has data.
+@property(nonatomic, assign, readonly) bool overtimeInformationHasData;
 
 /// @brief Information about the opening played, exactly as it appears in the
 /// SGF property ON.
 @property(nonatomic, retain, readonly) NSString* openingInformation;
+/// @brief Indicates whether the property @e openingInformation has data.
+@property(nonatomic, assign, readonly) bool openingInformationHasData;
 //@}
 
 /// @name Player information
@@ -263,6 +297,8 @@ enum GameInfoItemMissingDataDisplayStyle
 /// @brief The name of the black player, exactly as it appears in the SGF
 /// property PB.
 @property(nonatomic, retain, readonly) NSString* blackPlayerName;
+/// @brief Indicates whether the property @e blackPlayerName has data.
+@property(nonatomic, assign, readonly) bool blackPlayerNameHasData;
 
 /// @brief The rank of the black player, exactly as it appears in the SGF
 /// property BR.
@@ -273,14 +309,21 @@ enum GameInfoItemMissingDataDisplayStyle
 /// If the interpretation of the data in the SGF property BR fails the returned
 /// SGFCGoPlayerRank has the @e IsValid property set to NO.
 @property(nonatomic, assign, readonly) SGFCGoPlayerRank blackPlayerRank;
+/// @brief Indicates whether the properties @e blackPlayerRankAsString and
+/// @e blackPlayerRank have data.
+@property(nonatomic, assign, readonly) bool blackPlayerRankHasData;
 
 /// @brief The name of the black player's team, exactly as it appears in the SGF
 /// property BT.
 @property(nonatomic, retain, readonly) NSString* blackPlayerTeamName;
+/// @brief Indicates whether the property @e blackPlayerTeamName has data.
+@property(nonatomic, assign, readonly) bool blackPlayerTeamNameHasData;
 
 /// @brief The name of the white player, exactly as it appears in the SGF
 /// property PW.
 @property(nonatomic, retain, readonly) NSString* whitePlayerName;
+/// @brief Indicates whether the property @e whitePlayerName has data.
+@property(nonatomic, assign, readonly) bool whitePlayerNameHasData;
 
 /// @brief The rank of the white player, exactly as it appears in the SGF
 /// property WR.
@@ -291,10 +334,15 @@ enum GameInfoItemMissingDataDisplayStyle
 /// If the interpretation of the data in the SGF property WR fails the returned
 /// SGFCGoPlayerRank has the @e IsValid property set to NO.
 @property(nonatomic, assign, readonly) SGFCGoPlayerRank whitePlayerRank;
+/// @brief Indicates whether the properties @e whitePlayerRankAsString and
+/// @e whitePlayerRank have data.
+@property(nonatomic, assign, readonly) bool whitePlayerRankHasData;
 
 /// @brief The name of the white player's team, exactly as it appears in the SGF
 /// property WT.
 @property(nonatomic, retain, readonly) NSString* whitePlayerTeamName;
+/// @brief Indicates whether the property @e whitePlayerTeamName has data.
+@property(nonatomic, assign, readonly) bool whitePlayerTeamNameHasData;
 //@}
 
 /// @name Context in which the game was played
@@ -302,10 +350,14 @@ enum GameInfoItemMissingDataDisplayStyle
 /// @brief The name or description of the location where the game was played,
 /// exactly as it appears in the SGF property PC.
 @property(nonatomic, retain, readonly) NSString* gameLocation;
+/// @brief Indicates whether the property @e gameLocation has data.
+@property(nonatomic, assign, readonly) bool gameLocationHasData;
 
 /// @brief The name of the event (e.g. tournament) where the game was played,
 /// exactly as it appears in the SGF property EV.
 @property(nonatomic, retain, readonly) NSString* eventName;
+/// @brief Indicates whether the property @e eventName has data.
+@property(nonatomic, assign, readonly) bool eventNameHasData;
 
 /// @brief The information that describes the round in which the
 /// game was played, exactly as it appears in the SGF property RO.
@@ -316,6 +368,9 @@ enum GameInfoItemMissingDataDisplayStyle
 /// If the interpretation of the data in the SGF property RO fails the returned
 /// SGFCRoundInformation has the @e IsValid property set to NO.
 @property(nonatomic, assign, readonly) SGFCRoundInformation roundInformation;
+/// @brief Indicates whether the properties @e roundInformationAsString and
+/// @e roundInformation have data.
+@property(nonatomic, assign, readonly) bool roundInformationHasData;
 //@}
 
 @end
