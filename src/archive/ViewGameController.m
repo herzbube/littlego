@@ -21,6 +21,7 @@
 #import "ArchiveUtility.h"
 #import "ArchiveViewModel.h"
 #import "GameInfoItem.h"
+#import "GameInfoItemController.h"
 #import "../command/game/RenameGameCommand.h"
 #import "../command/game/LoadGameCommand.h"
 #import "../command/sgf/LoadSgfCommand.h"
@@ -515,7 +516,8 @@ enum LoadResultType
         {
           case ShowDetailsItem:
           {
-            // TODO xxx call up game details screen
+            GameInfoItemController* gameInfoItemController = [GameInfoItemController controllerWithGameInfoItem:gameInfoItem];
+            [self.navigationController pushViewController:gameInfoItemController animated:YES];
             break;
           }
           case LoadGameItem:
