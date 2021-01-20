@@ -18,6 +18,7 @@
 // Project includes
 #import "RestoreGameFromSgfCommand.h"
 #import "../game/LoadGameCommand.h"
+#import "../sgf/LoadSgfCommand.h"
 #import "../../utility/PathUtilities.h"
 
 
@@ -33,9 +34,59 @@
                                                             fileExists:&fileExists];
   if (! fileExists)
     return false;
-  LoadGameCommand* loadCommand = [[[LoadGameCommand alloc] initWithFilePath:backupFilePath] autorelease];
+
+  LoadSgfCommand* loadSgfCommand = [[[LoadSgfCommand alloc] initWithSgfFilePath:backupFilePath] autorelease];
+  // We don't want weird user settings to prevent the loading of our backup
+  // file. For instance the user could have set up a forced encoding which
+  // might cause the load operation to fail because our backup file is written
+  // with UTF-8 encoding.
+  loadSgfCommand.ignoreSgfSettings = true;
+  bool success = [loadSgfCommand submit];
+  if (! success)
+  {
+    DDLogError(@"%@: LoadSgfCommand failed to load backup file", [self shortDescription]);
+    assert(0);
+    return false;
+  }
+
+  SGFCDocumentReadResult* sgfReadResult = loadSgfCommand.sgfDocumentReadResultSingleEncoding;
+
+  // We perform only basic data validation. The backup file was written by us
+  // and it should never have any errors.
+  if (! sgfReadResult.isSgfDataValid)
+  {
+    DDLogError(@"%@: SGF data loaded by LoadSgfCommand from backup file is invalid", [self shortDescription]);
+    assert(0);
+    return false;
+  }
+  SGFCDocument* sgfDocument = sgfReadResult.document;
+  NSArray* sgfGames = sgfDocument.games;
+  if (sgfGames.count != 1)
+  {
+    DDLogError(@"%@: SGF data loaded by LoadSgfCommand from backup file has more than 1 game", [self shortDescription]);
+    assert(0);
+    return false;
+  }
+  SGFCGame* sgfGame = [sgfGames firstObject];
+  NSArray* sgfGameInfoNodes = sgfGame.gameInfoNodes;
+  if (sgfGameInfoNodes.count != 1)
+  {
+    DDLogError(@"%@: SGF data loaded by LoadSgfCommand from backup file has more than 1 game info node", [self shortDescription]);
+    assert(0);
+    return false;
+  }
+  SGFCNode* sgfGameInfoNode = [sgfGameInfoNodes firstObject];
+  SGFCGoGameInfo* sgfGoGameInfo = sgfGameInfoNode.gameInfo.toGoGameInfo;
+  if (! sgfGoGameInfo)
+  {
+    DDLogError(@"%@: SGF data loaded by LoadSgfCommand from backup file does not contain a Go game", [self shortDescription]);
+    assert(0);
+    return false;
+  }
+
+  LoadGameCommand* loadCommand = [[[LoadGameCommand alloc] initWithGameInfoNode:sgfGameInfoNode goGameInfo:sgfGoGameInfo] autorelease];
   loadCommand.restoreMode = true;
-  bool success = [loadCommand submit];
+  success = [loadCommand submit];
   return success;
 }
 

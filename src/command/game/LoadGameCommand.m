@@ -22,8 +22,6 @@
 #import "../backup/CleanBackupSgfCommand.h"
 #import "../boardposition/SyncGTPEngineCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
-#import "../sgf/LoadSgfCommand.h"
-#import "../../archive/ArchiveViewModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameDocument.h"
@@ -36,7 +34,6 @@
 #import "../../newgame/NewGameModel.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
-#import "../../sgf/SgfSettingsModel.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/PathUtilities.h"
 
@@ -67,7 +64,6 @@ enum ParseMoveStringResult
 @property(nonatomic, assign) int totalSteps;
 @property(nonatomic, assign) float stepIncrease;
 @property(nonatomic, assign) float progress;
-@property(nonatomic, retain) SGFCGame* sgfGame;
 @property(nonatomic, retain) NSArray* sgfMainVariationNodes;
 @property(nonatomic, retain) SGFCNode* sgfGameInfoNode;
 @property(nonatomic, retain) SGFCGoGameInfo* sgfGoGameInfo;
@@ -79,21 +75,23 @@ enum ParseMoveStringResult
 
 @synthesize asynchronousCommandDelegate;
 
-
 // -----------------------------------------------------------------------------
-/// @brief Initializes a LoadGameCommand object that will load the .sgf file
-/// identified by the full file path @a filePath.
+/// @brief Initializes a LoadGameCommand object that will load the game from
+/// the SGF data referenced by @a sgfGameInfoNode.
 ///
 /// @note This is the designated initializer of LoadGameCommand.
 // -----------------------------------------------------------------------------
-- (id) initWithFilePath:(NSString*)filePath
+- (id) initWithGameInfoNode:(SGFCNode*)sgfGameInfoNode goGameInfo:(SGFCGoGameInfo*)sgfGoGameInfo
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];
   if (! self)
     return nil;
 
-  self.filePath = filePath;
+  self.sgfGameInfoNode = sgfGameInfoNode;
+  self.sgfGoGameInfo = sgfGoGameInfo;
+  self.sgfMainVariationNodes = sgfGameInfoNode.mainVariationNodes;
+
   self.restoreMode = false;
   self.didTriggerComputerPlayer = false;
   self.boardSize = GoBoardSizeUndefined;
@@ -102,41 +100,10 @@ enum ParseMoveStringResult
   self.setupPlayer = nil;
   self.komi = nil;
   self.moves = nil;
-  self.totalSteps = (6 + maxStepsForReplayMoves);  // 6 fixed steps for SGF parsing
+  self.totalSteps = (5 + maxStepsForReplayMoves);  // 5 fixed steps for SGF parsing
   self.stepIncrease = 1.0 / self.totalSteps;
   self.progress = 0.0;
-  self.sgfGame = nil;
-  self.sgfMainVariationNodes = nil;
-  self.sgfGameInfoNode = nil;
-  self.sgfGoGameInfo = nil;
   self.handicapVertexStrings = nil;
-
-  return self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Initializes a LoadGameCommand object that will load the .sgf file
-/// from the archive that is identified by @a gameName.
-// -----------------------------------------------------------------------------
-- (id) initWithGameName:(NSString*)gameName
-{
-  ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
-  return [self initWithFilePath:[model filePathForGameWithName:gameName]];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Initializes a LoadGameCommand object that will load the game from
-/// the SGF data referenced by @a sgfGameInfoNode.
-// -----------------------------------------------------------------------------
-- (id) initWithGameInfoNode:(SGFCNode*)sgfGameInfoNode goGameInfo:(SGFCGoGameInfo*)sgfGoGameInfo
-{
-  self = [self initWithFilePath:nil];
-  if (! self)
-    return nil;
-
-  self.sgfGameInfoNode = sgfGameInfoNode;
-  self.sgfGoGameInfo = sgfGoGameInfo;
-  self.sgfMainVariationNodes = sgfGameInfoNode.mainVariationNodes;
 
   return self;
 }
@@ -146,13 +113,11 @@ enum ParseMoveStringResult
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.filePath = nil;
   self.handicap = nil;
   self.setup = nil;
   self.setupPlayer = nil;
   self.komi = nil;
   self.moves = nil;
-  self.sgfGame = nil;
   self.sgfMainVariationNodes = nil;
   self.sgfGameInfoNode = nil;
   self.sgfGoGameInfo = nil;
@@ -166,11 +131,6 @@ enum ParseMoveStringResult
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  if (self.filePath)
-    DDLogVerbose(@"%@: Loading SGF file %@", [self shortDescription], self.filePath);
-  else
-    DDLogVerbose(@"%@: Loading SGF node", [self shortDescription]);
-
   bool runToCompletion = false;
   NSString* errorMessage = @"Internal error";
   @try
@@ -228,15 +188,7 @@ enum ParseMoveStringResult
 // -----------------------------------------------------------------------------
 - (bool) loadAndParseSgf:(NSString**)errorMessage
 {
-  bool success;
-  if (self.filePath)
-  {
-    success = [self loadSgf:errorMessage];
-    if (! success)
-      return false;
-  }
-  [self increaseProgressAndNotifyDelegate];
-  success = [self parseSgfDataForBoardSize:errorMessage];
+  bool success = [self parseSgfDataForBoardSize:errorMessage];
   if (! success)
     return false;
   [self increaseProgressAndNotifyDelegate];
@@ -265,159 +217,9 @@ enum ParseMoveStringResult
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
-- (bool) loadSgf:(NSString**)errorMessage
-{
-  LoadSgfCommand* loadSgfCommand = [[[LoadSgfCommand alloc] initWithSgfFilePath:self.filePath] autorelease];
-  bool success = [loadSgfCommand submit];
-  if (! success)
-  {
-    *errorMessage = @"An internal error occurred: Executing LoadSgfCommand failed for unknown reasons.";
-    return false;
-  }
-
-  SgfSettingsModel* sgfSettingsModel = [ApplicationDelegate sharedDelegate].sgfSettingsModel;
-
-  SGFCDocumentReadResult* readResult;
-  if (sgfSettingsModel.encodingMode == SgfEncodingModeSingleEncoding)
-    readResult = loadSgfCommand.sgfDocumentReadResultSingleEncoding;
-  else if (sgfSettingsModel.encodingMode == SgfEncodingModeMultipleEncodings)
-    readResult = loadSgfCommand.sgfDocumentReadResultMultipleEncodings;
-  else if (loadSgfCommand.sgfDocumentReadResultMultipleEncodings != nil)
-    readResult = loadSgfCommand.sgfDocumentReadResultMultipleEncodings;
-  else
-    readResult = loadSgfCommand.sgfDocumentReadResultSingleEncoding;
-
-  if (readResult.isSgfDataValid)
-  {
-    enum SgfLoadSuccessType loadSuccessType = sgfSettingsModel.loadSuccessType;
-    if (loadSuccessType == SgfLoadSuccessTypeWithCriticalWarningsOrErrors)
-    {
-      // It doesn't matter what kind of messages we have - all are acceptable
-    }
-    else
-    {
-      NSArray* parseResult = readResult.parseResult;
-
-      if (loadSuccessType == SgfLoadSuccessTypeNoWarningsOrErrors)
-      {
-        if (parseResult.count > 0)
-        {
-          int numberOfWarnings = 0;
-          int numberOfErrors = 0;
-          for (SGFCMessage* message in parseResult)
-          {
-            if (message.messageType == SGFCMessageTypeWarning)
-              numberOfWarnings++;
-            else
-              numberOfErrors++;
-          }
-
-          *errorMessage = [NSString stringWithFormat:@"The SGF data is not fully standard conformant. Parsing resulted in %d warning(s) and %d error(s).", numberOfWarnings, numberOfErrors];
-          return false;
-        }
-      }
-      else
-      {
-        for (SGFCMessage* message in parseResult)
-        {
-          if (message.isCriticalMessage)
-          {
-            switch (message.messageID)
-            {
-              case SGFCMessageIDGameIsNotGo:
-                // Skip this message. If there are no other critical messages we
-                // will detect non-Go games further down and abort there with a
-                // tailored error message.
-                continue;
-              case SGFCMessageIDUnknownEncodingInSgfContent:
-                *errorMessage = @"The SGF data is encoded with an unsupported or unknown/illegal text encoding.";
-                break;
-              case SGFCMessageIDEncodingErrorsDetected:
-                *errorMessage = @"The SGF data encoding is faulty (illegal byte sequence according to the text encoding)";
-                break;
-              default:
-                *errorMessage = [NSString stringWithFormat:@"A critical problem with the SGF data was found. The technical error message is:\n\n%@", message.formattedMessageText];
-                break;
-            }
-            return false;
-          }
-        }
-      }
-    }
-  }
-  else
-  {
-    for (SGFCMessage* message in readResult.parseResult)
-    {
-      if (message.messageType == SGFCMessageTypeFatalError)
-      {
-        switch (message.messageID)
-        {
-          case SGFCMessageIDNoSgfData:
-            *errorMessage = @"Unable to find any SGF data.";
-            break;
-          case SGFCMessageIDUnknownIconvError:
-            *errorMessage = [NSString stringWithFormat:@"An unexpected text encoding error occurred in the iconv library. The technical error message is:\n\n%@", message.messageText];
-            break;
-          case SGFCMessageIDEncodingDetectionFailed:
-            *errorMessage = @"Failed to detect the text encoding of the SGF data.";
-            break;
-          case SGFCMessageIDSgfContentHasDifferentEncodingsFatal:
-            *errorMessage = @"The SGF data contains two or more text encodings.";
-            break;
-          default:
-            *errorMessage = [NSString stringWithFormat:@"A fatal error occurred while reading the SGF data. The technical error message is:\n\n%@", message.formattedMessageText];
-            break;
-        }
-        return false;
-      }
-    }
-
-    *errorMessage = @"Reading of the SGF data failed. The SgfcKit library did not specify a reason for the failure.";
-    return false;
-  }
-
-  SGFCGame* firstGame = readResult.document.game;
-  if (firstGame && firstGame.hasRootNode)
-  {
-    self.sgfGame = firstGame;
-    self.sgfMainVariationNodes = firstGame.rootNode.mainVariationNodes;
-    // We can't be sure that the main variation actually has a game info node,
-    // therefore we can't take the node from firstGame.gameInfoNodes - that
-    // collection might consist of game info nodes that are all located in
-    // variations that are not the main variation. To guarantee that we get the
-    // correct game info node we have to start the search from the main
-    // variation's last node.
-    SGFCNode* lastNodeOfMainVariation = [self.sgfMainVariationNodes lastObject];
-    self.sgfGameInfoNode = lastNodeOfMainVariation.gameInfoNode;
-  }
-  else
-  {
-    self.sgfGame = [SGFCGame game];
-    self.sgfMainVariationNodes = [NSArray array];
-    self.sgfGameInfoNode = nil;
-  }
-
-  if (self.sgfGame.gameType != SGFCGameTypeGo)
-  {
-    *errorMessage = [NSString stringWithFormat:@"The game is not a Go game. The SGF game number is %ld.", self.sgfGame.gameTypeAsNumber];
-    return false;
-  }
-
-  return true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt()
-// -----------------------------------------------------------------------------
 - (bool) parseSgfDataForBoardSize:(NSString**)errorMessage
 {
-  SGFCBoardSize boardSize;
-  if (self.sgfGame)
-    boardSize = self.sgfGame.boardSize;
-  else
-    boardSize = self.sgfGoGameInfo.boardSize;
-
+  SGFCBoardSize boardSize = self.sgfGoGameInfo.boardSize;
   if (! SGFCBoardSizeIsSquare(boardSize))
   {
     *errorMessage = [NSString stringWithFormat:@"The board size is not square: %ld x %ld.", (long)boardSize.Columns, (long)boardSize.Rows];
@@ -1532,7 +1334,8 @@ enum ParseMoveStringResult
 // -----------------------------------------------------------------------------
 - (void) notifyGoGameDocument
 {
-  NSString* gameName = [[self.filePath lastPathComponent] stringByDeletingPathExtension];
+  // TODO xxx fix. Possibly change and attach the SgfcKit objects
+  NSString* gameName = @"dummy document name";
   [[GoGame sharedGame].document load:gameName];
 }
 

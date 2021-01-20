@@ -49,11 +49,21 @@
 
 - (id) initWithSgfFilePath:(NSString*)sgfFilePath;
 
+/// @brief True if SGF user preferences should be ignored, false if SGF user
+/// preferences should be honored. This is false by default.
+///
+/// This property can be set to true for internal purposes, e.g. when restoring
+/// a backup file.
+///
+/// When true the command uses #SgfEncodingModeSingleEncoding for reading.
+@property(nonatomic, assign) bool ignoreSgfSettings;
 /// @brief SgfcKit object that encapsulates the result of the read operation
 /// that was performed with #SgfEncodingModeSingleEncoding.
 ///
 /// Is @e nil if the "encoding mode" user preference specifies
 /// #SgfEncodingModeMultipleEncodings.
+///
+/// Is never @e nil if property @e ignoreSgfSettings is true.
 @property(nonatomic, retain) SGFCDocumentReadResult* sgfDocumentReadResultSingleEncoding;
 /// @brief SgfcKit object that encapsulates the result of the read operation
 /// that was perform with #SgfEncodingModeMultipleEncodings.
@@ -64,6 +74,8 @@
 /// Is also @e nil if the "encoding mode" user preference specifies
 /// @e SgfcEncodingModeBoth and the first read operation that was attempted
 /// with #SgfEncodingModeMultipleEncodings did not fail with a fatal error.
+///
+/// Is always @e nil if property @e ignoreSgfSettings is true.
 @property(nonatomic, retain) SGFCDocumentReadResult* sgfDocumentReadResultMultipleEncodings;
 
 @end

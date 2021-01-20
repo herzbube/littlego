@@ -21,16 +21,16 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The LoadGameCommand class is responsible for loading a game from an
-/// .sgf file and starting a new game using the information in that file.
+/// @brief The LoadGameCommand class is responsible for loading a game from
+/// SGF data provided by SgfcKit, and starting a new game using the information
+/// in that file.
 ///
 /// LoadGameCommand is executed asynchronously (unless the executor is another
 /// asynchronous command).
 ///
 /// The sequence of operations performed by LoadGameCommand is this:
-/// - Read the .sgf file into memory using SgfcKit
-/// - Parse the SgfcKit objects to obtain the information that was stored in the
-///   .sgf file and that is needed to start a new game (e.g. board size)
+/// - Parse the SgfcKit objects to obtain the information that is needed to
+///   start a new game (e.g. board size)
 /// - Start a new game by executing a NewGameCommand instance
 /// - Parse the SgfcKit objects to obtain additional information that was stored
 ///   in the .sgf file (handicap, komi, moves)
@@ -48,10 +48,10 @@
 /// application will hang forever.
 ///
 ///
-/// @par Files with illegal content
+/// @par SGF data with illegal content
 ///
 /// LoadGameCommand performs two kinds of sanitary checks for every move it
-/// finds in the .sgf file:
+/// finds in the SGF data:
 /// - Is the move played by the expected player color?
 /// - Is the move legal?
 ///
@@ -66,13 +66,8 @@
 {
 }
 
-/// TODO xxx try to get rid of the file-based stuff
-- (id) initWithFilePath:(NSString*)filePath;
-- (id) initWithGameName:(NSString*)gameName;
 - (id) initWithGameInfoNode:(SGFCNode*)sgfGameInfoNode goGameInfo:(SGFCGoGameInfo*)sgfGoGameInfo;
 
-/// @brief Full path to the .sgf file to be loaded.
-@property(nonatomic, retain) NSString* filePath;
 /// @brief True if the command is executed to restore a backup game. False
 /// (the default) if the command is executed to load a game from the archive.
 @property(nonatomic, assign) bool restoreMode;

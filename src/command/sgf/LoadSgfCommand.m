@@ -45,6 +45,7 @@
     return nil;
 
   self.sgfFilePath = sgfFilePath;
+  self.ignoreSgfSettings = false;
   self.sgfDocumentReadResultSingleEncoding = nil;
   self.sgfDocumentReadResultMultipleEncodings = nil;
 
@@ -77,24 +78,28 @@
   SgfSettingsModel* sgfSettingsModel = [ApplicationDelegate sharedDelegate].sgfSettingsModel;
   SGFCDocumentReader* documentReader = [SGFCDocumentReader documentReader];
 
-  if (sgfSettingsModel.encodingMode == SgfEncodingModeSingleEncoding ||
-      sgfSettingsModel.encodingMode == SgfEncodingModeMultipleEncodings)
+  if (self.ignoreSgfSettings)
   {
     [self performReadOperatonWithReader:documentReader
-                       withEncodingMode:sgfSettingsModel.encodingMode
-                    withValuesFromModel:sgfSettingsModel];
+                       withEncodingMode:SgfEncodingModeSingleEncoding];
+  }
+  else if (sgfSettingsModel.encodingMode == SgfEncodingModeSingleEncoding ||
+      sgfSettingsModel.encodingMode == SgfEncodingModeMultipleEncodings)
+  {
+    [self setupReaderArguments:documentReader withValuesFromModel:sgfSettingsModel];
+    [self performReadOperatonWithReader:documentReader
+                       withEncodingMode:sgfSettingsModel.encodingMode];
   }
   else
   {
+    [self setupReaderArguments:documentReader withValuesFromModel:sgfSettingsModel];
     bool success = [self performReadOperatonWithReader:documentReader
-                                      withEncodingMode:SgfEncodingModeSingleEncoding
-                                   withValuesFromModel:sgfSettingsModel];
+                                      withEncodingMode:SgfEncodingModeSingleEncoding];
 
     if (! success)
     {
       [self performReadOperatonWithReader:documentReader
-                         withEncodingMode:SgfEncodingModeMultipleEncodings
-                      withValuesFromModel:sgfSettingsModel];
+                         withEncodingMode:SgfEncodingModeMultipleEncodings];
     }
   }
 
@@ -105,11 +110,8 @@
 
 - (bool) performReadOperatonWithReader:(SGFCDocumentReader*)documentReader
                       withEncodingMode:(enum SgfEncodingMode)encodingMode
-                   withValuesFromModel:(SgfSettingsModel*)sgfSettingsModel
 {
   SGFCArguments* arguments = documentReader.arguments;
-  [self setupReaderArguments:documentReader withValuesFromModel:sgfSettingsModel];
-
   if (encodingMode == SgfEncodingModeSingleEncoding)
     [arguments addArgumentWithType:SGFCArgumentTypeEncodingMode withIntParameter:1];
   else
