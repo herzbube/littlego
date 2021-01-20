@@ -185,10 +185,10 @@
   switch (sgfGoPlayerRank.RankType)
   {
     case SGFCGoPlayerRankTypeKyu:
-      rankTypeAsString = @"k";
+      rankTypeAsString = @"kyu";
       break;
     case SGFCGoPlayerRankTypeAmateurDan:
-      rankTypeAsString = @"d";
+      rankTypeAsString = @"dan";
       break;
     case SGFCGoPlayerRankTypeProfessionalDan:
       rankTypeAsString = @"p";
@@ -198,8 +198,24 @@
       return @"";
   }
 
-  // We ignore SGFCGoPlayerRatingType
-  return [NSString stringWithFormat:@"%@%ld", rankTypeAsString, (long)sgfGoPlayerRank.Rank];
+  NSString* ratingTypeAsString;
+  switch (sgfGoPlayerRank.RatingType)
+  {
+    case SGFCGoPlayerRatingTypeUncertain:
+      ratingTypeAsString = @" (uncertain)";
+      break;
+    case SGFCGoPlayerRatingTypeEstablished:
+      ratingTypeAsString = @" (established)";
+      break;
+    case SGFCGoPlayerRatingTypeUnspecified:
+      ratingTypeAsString = @"";
+      break;
+    default:
+      assert(0);
+      return @"";
+  }
+
+  return [NSString stringWithFormat:@"%ld %@%@", (long)sgfGoPlayerRank.Rank, rankTypeAsString, ratingTypeAsString];
 }
 
 // -----------------------------------------------------------------------------
