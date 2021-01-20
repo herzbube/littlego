@@ -1163,14 +1163,14 @@ enum LoadResultType
 // -----------------------------------------------------------------------------
 - (enum SgfEncodingMode) encodingModeUsedForLoadResultTableViewRow:(NSInteger)row
 {
-  if (row == 1)
+  if (row == LoadResultItem1)
   {
     if (self.sgfSettingsModel.encodingMode == SgfcEncodingModeBoth)
       return SgfEncodingModeSingleEncoding;
     else
       return self.sgfSettingsModel.encodingMode;
   }
-  else if (row == 2)
+  else if (row == LoadResultItem2)
   {
     return SgfEncodingModeMultipleEncodings;
   }
