@@ -17,6 +17,9 @@
 
 // Project includes
 #import "SgfUtilities.h"
+#import "../ui/UiUtilities.h"
+#import "../utility/UIColorAdditions.h"
+
 
 @implementation SgfUtilities
 
@@ -196,6 +199,143 @@
 
   // We ignore SGFCGoPlayerRatingType
   return [NSString stringWithFormat:@"%@%ld", rankTypeAsString, (long)sgfGoPlayerRank.Rank];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color that represents a load result with no messages.
+// -----------------------------------------------------------------------------
++ (UIColor*) colorForLoadResultWithNoMessages
+{
+  return [UIColor malachiteColor];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color that represents a load result that contains messages
+/// with message type @a messageType and criticality @a isCriticalMessage.
+// -----------------------------------------------------------------------------
++ (UIColor*) colorForLoadResultWithMessagesOfType:(SGFCMessageType)messageType isCriticalMessage:(bool)isCriticalMessage
+{
+  if (messageType == SGFCMessageTypeFatalError || isCriticalMessage)
+    return [UIColor pantoneRedColor];
+  else if (messageType == SGFCMessageTypeError)
+    return [UIColor orangeColor];
+  else
+    return [UIColor ncsYellowColor];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a colored indicator that can be used as the image of a
+/// table view cell that, in some way or other, shows an overall classification
+/// of @a loadResult.
+// -----------------------------------------------------------------------------
++ (UIImage*) coloredIndicatorForLoadResult:(SGFCDocumentReadResult*)loadResult
+{
+  static UIImage* noWarningsAndErrorsImage = nil;
+  static UIImage* someNonCriticalWarningsImage = nil;
+  static UIImage* someNonCriticalErrorsImage = nil;
+  static UIImage* criticalWarningsOrErrorsOrFatalErrorsImage = nil;
+
+  int numberOfNonCriticalWarnings = 0;
+  int numberOfNonCriticalErrors = 0;
+  int numberCriticalMessages = 0;
+  int numberOfFatalErrors = 0;
+  for (SGFCMessage* message in loadResult.parseResult)
+  {
+    if (message.isCriticalMessage)
+      numberCriticalMessages++;
+    else if (message.messageType == SGFCMessageTypeWarning)
+      numberOfNonCriticalWarnings++;
+    else if (message.messageType == SGFCMessageTypeError)
+      numberOfNonCriticalErrors++;
+    else
+      numberOfFatalErrors++;
+  }
+
+  if (loadResult.parseResult.count == 0)
+  {
+    if (! noWarningsAndErrorsImage)
+    {
+      UIColor* color = [SgfUtilities colorForLoadResultWithNoMessages];
+      noWarningsAndErrorsImage = [[UiUtilities circularTableCellViewIndicatorWithColor:color] retain];
+    }
+    return noWarningsAndErrorsImage;
+  }
+  else if (numberOfFatalErrors > 0 || numberCriticalMessages > 0)
+  {
+    if (! criticalWarningsOrErrorsOrFatalErrorsImage)
+    {
+      UIColor* color = [SgfUtilities colorForLoadResultWithMessagesOfType:SGFCMessageTypeFatalError isCriticalMessage:false];
+      criticalWarningsOrErrorsOrFatalErrorsImage = [[UiUtilities circularTableCellViewIndicatorWithColor:color] retain];
+    }
+    return criticalWarningsOrErrorsOrFatalErrorsImage;
+  }
+  else if (numberOfNonCriticalErrors > 0)
+  {
+    if (! someNonCriticalErrorsImage)
+    {
+      UIColor* color = [SgfUtilities colorForLoadResultWithMessagesOfType:SGFCMessageTypeError isCriticalMessage:false];
+      someNonCriticalErrorsImage = [[UiUtilities circularTableCellViewIndicatorWithColor:color] retain];
+    }
+    return someNonCriticalErrorsImage;
+  }
+  else
+  {
+    if (! someNonCriticalWarningsImage)
+    {
+      UIColor* color = [SgfUtilities colorForLoadResultWithMessagesOfType:SGFCMessageTypeWarning isCriticalMessage:false];
+      someNonCriticalWarningsImage = [[UiUtilities circularTableCellViewIndicatorWithColor:color] retain];
+    }
+    return someNonCriticalWarningsImage;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color that represents an SGFCMessage with message type
+/// @a messageType and criticality @a isCriticalMessage.
+// -----------------------------------------------------------------------------
++ (UIColor*) colorForMessageType:(SGFCMessageType)messageType isCriticalMessage:(bool)isCriticalMessage
+{
+  return [SgfUtilities colorForLoadResultWithMessagesOfType:messageType isCriticalMessage:isCriticalMessage];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a colored indicator that can be used as the image of a
+/// table view cell that, in some way or other, shows the classification of
+/// @a message.
+// -----------------------------------------------------------------------------
++ (UIImage*) coloredIndicatorForMessage:(SGFCMessage*)message
+{
+  static UIImage* nonCriticalWarningImage = nil;
+  static UIImage* nonCriticalErrorImage = nil;
+  static UIImage* criticalWarningOrErrorOrFatalErrorImage = nil;
+
+  if (message.messageType == SGFCMessageTypeFatalError || message.isCriticalMessage)
+  {
+    if (! criticalWarningOrErrorOrFatalErrorImage)
+    {
+      UIColor* color = [SgfUtilities colorForMessageType:message.messageType isCriticalMessage:message.isCriticalMessage];
+      criticalWarningOrErrorOrFatalErrorImage = [[UiUtilities circularTableCellViewIndicatorWithColor:color] retain];
+    }
+    return criticalWarningOrErrorOrFatalErrorImage;
+  }
+  else if (message.messageType == SGFCMessageTypeError)
+  {
+    if (! nonCriticalErrorImage)
+    {
+      UIColor* color = [SgfUtilities colorForMessageType:message.messageType isCriticalMessage:message.isCriticalMessage];
+      nonCriticalErrorImage = [[UiUtilities circularTableCellViewIndicatorWithColor:color] retain];
+    }
+    return nonCriticalErrorImage;
+  }
+  else
+  {
+    if (! nonCriticalWarningImage)
+    {
+      UIColor* color = [SgfUtilities colorForMessageType:message.messageType isCriticalMessage:message.isCriticalMessage];
+      nonCriticalWarningImage = [[UiUtilities circularTableCellViewIndicatorWithColor:color] retain];
+    }
+    return nonCriticalWarningImage;
+  }
 }
 
 @end

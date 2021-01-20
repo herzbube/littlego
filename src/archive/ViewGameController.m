@@ -22,6 +22,7 @@
 #import "ArchiveViewModel.h"
 #import "GameInfoItem.h"
 #import "GameInfoItemController.h"
+#import "ViewLoadResultController.h"
 #import "../command/game/RenameGameCommand.h"
 #import "../command/game/LoadGameCommand.h"
 #import "../command/sgf/LoadSgfCommand.h"
@@ -404,7 +405,11 @@ enum LoadResultType
         case LoadResultItem2:
         {
           cell = [TableViewCellFactory cellWithType:SubtitleCellType tableView:tableView];
-          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          cell.accessoryType = [self accessoryTypeForLoadResultTableViewRow:indexPath.row];
+          if (cell.accessoryType == UITableViewCellAccessoryNone)
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+          else
+            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
           cell.textLabel.text = [self textForLoadResultTableViewRow:indexPath.row];
           cell.detailTextLabel.text = [self subTitleForLoadResultTableViewRow:indexPath.row];
           cell.imageView.image = [self coloredIndicatorForLoadResultTableViewRow:indexPath.row];
@@ -503,7 +508,12 @@ enum LoadResultType
     }
     case LoadResultSection:
     {
-      // TODO xxx call up load result screen
+      SGFCDocumentReadResult* loadResult = [self loadResultForTableViewRow:indexPath.row];
+      if (loadResult.parseResult.count > 0)
+      {
+        ViewLoadResultController* viewLoadResultController = [ViewLoadResultController controllerWithLoadResult:loadResult];
+        [self.navigationController pushViewController:viewLoadResultController animated:YES];
+      }
       break;
     }
     default:
@@ -1013,6 +1023,19 @@ enum LoadResultType
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a UITableViewCellAccessoryType value for the table view
+/// cell that is displayed in row @a row of section #LoadResultSection.
+// -----------------------------------------------------------------------------
+- (UITableViewCellAccessoryType) accessoryTypeForLoadResultTableViewRow:(NSInteger)row
+{
+  SGFCDocumentReadResult* loadResult = [self loadResultForTableViewRow:row];
+  if (loadResult.parseResult.count > 0)
+    return UITableViewCellAccessoryDisclosureIndicator;
+  else
+    return UITableViewCellAccessoryNone;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a string that can be used as the main text of the table view
 /// cell that is displayed in row @a row of section #LoadResultSection.
 // -----------------------------------------------------------------------------
@@ -1094,53 +1117,8 @@ enum LoadResultType
 // -----------------------------------------------------------------------------
 - (UIImage*) coloredIndicatorForLoadResultTableViewRow:(NSInteger)row
 {
-  static UIImage* noWarningsAndErrorsImage = 0;
-  static UIImage* someNonCriticalWarningsImage = 0;
-  static UIImage* someNonCriticalErrorsImage = 0;
-  static UIImage* criticalWarningsOrErrorsOrFatalErrorsImage = 0;
-
   SGFCDocumentReadResult* loadResult = [self loadResultForTableViewRow:row];
-
-  int numberOfNonCriticalWarnings = 0;
-  int numberOfNonCriticalErrors = 0;
-  int numberCriticalMessages = 0;
-  int numberOfFatalErrors = 0;
-  for (SGFCMessage* message in loadResult.parseResult)
-  {
-    if (message.isCriticalMessage)
-      numberCriticalMessages++;
-    else if (message.messageType == SGFCMessageTypeWarning)
-      numberOfNonCriticalWarnings++;
-    else if (message.messageType == SGFCMessageTypeError)
-      numberOfNonCriticalErrors++;
-    else
-      numberOfFatalErrors++;
-  }
-
-  if (loadResult.parseResult.count == 0)
-  {
-    if (! noWarningsAndErrorsImage)
-      noWarningsAndErrorsImage = [[UiUtilities circularTableCellViewIndicatorWithColor:[UIColor malachiteColor]] retain];
-    return noWarningsAndErrorsImage;
-  }
-  else if (numberOfFatalErrors > 0 || numberCriticalMessages > 0)
-  {
-    if (! criticalWarningsOrErrorsOrFatalErrorsImage)
-      criticalWarningsOrErrorsOrFatalErrorsImage = [[UiUtilities circularTableCellViewIndicatorWithColor:[UIColor pantoneRedColor]] retain];
-    return criticalWarningsOrErrorsOrFatalErrorsImage;
-  }
-  else if (numberOfNonCriticalErrors > 0)
-  {
-    if (! someNonCriticalErrorsImage)
-      someNonCriticalErrorsImage = [[UiUtilities circularTableCellViewIndicatorWithColor:[UIColor orangeColor]] retain];
-    return someNonCriticalErrorsImage;
-  }
-  else
-  {
-    if (! someNonCriticalWarningsImage)
-      someNonCriticalWarningsImage = [[UiUtilities circularTableCellViewIndicatorWithColor:[UIColor ncsYellowColor]] retain];
-    return someNonCriticalWarningsImage;
-  }
+  return [SgfUtilities coloredIndicatorForLoadResult:loadResult];
 }
 
 // -----------------------------------------------------------------------------

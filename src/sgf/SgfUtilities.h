@@ -39,5 +39,10 @@
 + (void) parseSgfGameDates:(NSArray*)sgfGameDates dateArray:(NSArray**)dateArray stringArray:(NSArray**)stringArray;
 + (NSString*) stringForSgfGameResult:(SGFCGameResult)sgfGameResult;
 + (NSString*) stringForSgfGoPlayerRank:(SGFCGoPlayerRank)sgfGoPlayerRank;
++ (UIColor*) colorForLoadResultWithNoMessages;
++ (UIColor*) colorForLoadResultWithMessagesOfType:(SGFCMessageType)messageType isCriticalMessage:(bool)isCriticalMessage;
++ (UIImage*) coloredIndicatorForLoadResult:(SGFCDocumentReadResult*)loadResult;
++ (UIColor*) colorForMessageType:(SGFCMessageType)messageType isCriticalMessage:(bool)isCriticalMessage;
++ (UIImage*) coloredIndicatorForMessage:(SGFCMessage*)message;
 
 @end

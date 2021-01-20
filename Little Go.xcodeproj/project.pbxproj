@@ -130,6 +130,10 @@
 		CD1F500825B34EDE0098037A /* GameInfoItem.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F500625B34EDE0098037A /* GameInfoItem.m */; };
 		CD1F501325B6591F0098037A /* GameInfoItemController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F501125B6591F0098037A /* GameInfoItemController.m */; };
 		CD1F501425B6591F0098037A /* GameInfoItemController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F501125B6591F0098037A /* GameInfoItemController.m */; };
+		CD1F502725B766680098037A /* ViewLoadResultController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F502625B766680098037A /* ViewLoadResultController.m */; };
+		CD1F502825B766680098037A /* ViewLoadResultController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F502625B766680098037A /* ViewLoadResultController.m */; };
+		CD1F503F25B7A5C20098037A /* ViewLoadResultMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F503E25B7A5C20098037A /* ViewLoadResultMessageController.m */; };
+		CD1F504025B7A5C20098037A /* ViewLoadResultMessageController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F503E25B7A5C20098037A /* ViewLoadResultMessageController.m */; };
 		CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */; };
 		CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */; };
 		CD252D9F16A4968E00A088D5 /* CurrentBoardPositionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252D9E16A4968D00A088D5 /* CurrentBoardPositionViewController.m */; };
@@ -770,6 +774,10 @@
 		CD1F500625B34EDE0098037A /* GameInfoItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameInfoItem.m; sourceTree = "<group>"; };
 		CD1F501125B6591F0098037A /* GameInfoItemController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameInfoItemController.m; sourceTree = "<group>"; };
 		CD1F501225B6591F0098037A /* GameInfoItemController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameInfoItemController.h; sourceTree = "<group>"; };
+		CD1F502525B766670098037A /* ViewLoadResultController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewLoadResultController.h; sourceTree = "<group>"; };
+		CD1F502625B766680098037A /* ViewLoadResultController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewLoadResultController.m; sourceTree = "<group>"; };
+		CD1F503D25B7A5C10098037A /* ViewLoadResultMessageController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ViewLoadResultMessageController.h; sourceTree = "<group>"; };
+		CD1F503E25B7A5C20098037A /* ViewLoadResultMessageController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewLoadResultMessageController.m; sourceTree = "<group>"; };
 		CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SyncGTPEngineCommand.h; sourceTree = "<group>"; };
 		CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SyncGTPEngineCommand.m; sourceTree = "<group>"; };
 		CD252D8216A314D900A088D5 /* ChangeBoardPositionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeBoardPositionCommand.h; sourceTree = "<group>"; };
@@ -2273,6 +2281,10 @@
 				CD1F501125B6591F0098037A /* GameInfoItemController.m */,
 				CDFABCA614194A420065C93B /* ViewGameController.h */,
 				CDFABCA714194A420065C93B /* ViewGameController.m */,
+				CD1F502525B766670098037A /* ViewLoadResultController.h */,
+				CD1F502625B766680098037A /* ViewLoadResultController.m */,
+				CD1F503D25B7A5C10098037A /* ViewLoadResultMessageController.h */,
+				CD1F503E25B7A5C20098037A /* ViewLoadResultMessageController.m */,
 			);
 			path = archive;
 			sourceTree = "<group>";
@@ -3016,6 +3028,7 @@
 				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
 				CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */,
 				CDEE19F919433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */,
+				CD1F503F25B7A5C20098037A /* ViewLoadResultMessageController.m in Sources */,
 				CDE302891360BDA4005235F2 /* Player.m in Sources */,
 				CDE3028A1360BDA4005235F2 /* PlayerModel.m in Sources */,
 				CDE3028B1360BDA4005235F2 /* PlayerStatistics.m in Sources */,
@@ -3063,6 +3076,7 @@
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
 				CD97FA141AED1BD600148C16 /* ResumePlayCommand.m in Sources */,
 				CDCBA6D0183D8801003697E2 /* MagnifyingGlassSettingsController.m in Sources */,
+				CD1F502725B766680098037A /* ViewLoadResultController.m in Sources */,
 				CD0CCB6A142FE10900A3F869 /* DiagnosticsViewController.m in Sources */,
 				CD7C57D02201E89500694520 /* SetupFirstMoveColorCommand.m in Sources */,
 				CD7C578221F4A3A900694520 /* UnarchiveGameCommand.m in Sources */,
@@ -3261,6 +3275,7 @@
 				CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */,
 				CD97FA111AE3D4DD00148C16 /* NewGameAdvancedController.m in Sources */,
 				CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */,
+				CD1F502825B766680098037A /* ViewLoadResultController.m in Sources */,
 				CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */,
 				CDAF17161967FFD500271396 /* BoardViewMetrics.m in Sources */,
 				CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */,
@@ -3299,6 +3314,7 @@
 				CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
 				CDEE1A1E19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */,
+				CD1F504025B7A5C20098037A /* ViewLoadResultMessageController.m in Sources */,
 				CDB5AE2F1AC714CF0075C8DC /* MagnifyingViewModel.m in Sources */,
 				CD00A369148C2C62004E1A0C /* ApplicationDelegate.mm in Sources */,
 				CD00A36A148C2C6A004E1A0C /* Constants.m in Sources */,
