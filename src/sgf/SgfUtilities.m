@@ -146,7 +146,8 @@
           assert(0);
           break;
       }
-      break;
+
+      return gameResultAsString;
     }
     case SGFCGameResultTypeDraw:
     {
