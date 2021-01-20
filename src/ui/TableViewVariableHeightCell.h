@@ -19,10 +19,31 @@
 // -----------------------------------------------------------------------------
 /// @brief The TableViewVariableHeightCell class implements a custom table view
 /// cell that in general looks like UITableViewCellStyleValue1, with the
-/// exception that the description text label is adjusted in width and height to
-/// accommodate text that requires more than 1 line.
+/// exception that the two text labels are adjusted in height to accommodate
+/// text that requires more than 1 line.
 ///
-/// To make TableViewVariableHeightCell work as expected, the
+/// Notes and constraints:
+/// - Due to word wrap, the labels may not use up all the width available to
+///   them, so there is usually some unused spacing between them. In extreme
+///   cases, however, the spacing may shrink to 0. This is in accordance to how
+///   UITableViewCellStyleValue1 cells behave.
+/// - By default the two text labels take up an equal amount of horizontal
+///   space. This can lead to wasted space, because when one of the labels uses
+///   only a short text and does not use its allotted space then the other label
+///   does not automatically get the unused space. The @e widthRatio property
+///   can be set to change the horizontal space distribution.
+/// - TableViewVariableHeightCell does not support indentation or showing an
+///   image
+/// - TableViewVariableHeightCell is not tested in table views that do not have
+///   grouped style
+///
+/// @note The implementation of TableViewVariableHeightCell is based on
+/// UIStackView, which does all of the layouting heavy-lifting, and the use of
+/// layout guides. Before UIStackView and layout guides were available (iOS 8
+/// and before) the implementation of TableViewVariableHeightCell was much more
+/// complicated and there were a lot of limitations.
+///
+/// If the content of TableViewVariableHeightCell work as expected, the
 /// UITableViewDelegate must NOT override tableView:heightForRowAtIndexPath:(),
 /// instead it must set the following UITableView properties:
 /// - rowHeight = UITableViewAutomaticDimension (already the default value)
@@ -39,37 +60,6 @@
 ///   In iOS 9-11 the default for cellLayoutMarginsFollowReadableWidth is YES,
 ///   in iOS 12 and later the default for cellLayoutMarginsFollowReadableWidth
 ///   is NO.
-///
-/// TableViewVariableHeightCell arranges its labels within its content view
-/// according to the following schema:
-///
-/// @verbatim
-/// +-------------------------------------------------------------------------+
-/// |                                                                         |
-/// |  +----------------------------------+                                   |
-/// |  | UILabel (descriptive text)       |           +--------------------+  |
-/// |  | line 2                           |  spacing  | UILabel (value)    |  |
-/// |  | line 3                           |           +--------------------+  |
-/// |  +----------------------------------+                                   |
-/// |                                                                         |
-/// +-------------------------------------------------------------------------+
-/// @endverbatim
-///
-/// Notes and constraints:
-/// - The value label is adjusted in width to accommodate its text on exactly
-///   one line, without truncating the text.
-/// - The value label text is positioned so that it appears 1) right-aligned
-///   and 2) vertically centered inside the cell's content view.
-/// - The description text label is adjusted in width and height to accomodate
-///   its text on multiple lines, without truncating the text.
-/// - Due to word wrap, the description text label may not use up all the width
-///   available to it, so there is usually some unused spacing between the two
-///   labels. In extreme cases, however, the spacing may shrink to 0. This is in
-///   accordance to how UITableViewCellStyleValue1 cells behave
-/// - TableViewVariableHeightCell does not support indentation or showing an
-///   image
-/// - TableViewVariableHeightCell is not tested in table views that do not have
-///   grouped style
 // -----------------------------------------------------------------------------
 @interface TableViewVariableHeightCell : UITableViewCell
 {
@@ -79,5 +69,10 @@
 
 @property(nonatomic, retain, readonly) UILabel* descriptionLabel;
 @property(nonatomic, retain, readonly) UILabel* valueLabel;
+/// @brief Defines the ratio how the horizontal space is distributed between
+/// the two text labels. The ratio is "description label : value label", i.e.
+/// a ratio of 2.5 means the value label's width is 2.5 times the description
+/// label's width. The default ratio is 1.0, i.e. both labels have equal width.
+@property(nonatomic, assign) CGFloat widthRatio;
 
 @end

@@ -17,9 +17,7 @@
 
 // Project includes
 #import "TableViewVariableHeightCell.h"
-#import "AutoLayoutUtility.h"
 #import "UIColorAdditions.h"
-#import "../utility/UIDeviceAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -32,15 +30,11 @@
 @property(nonatomic, retain, readwrite) UILabel* descriptionLabel;
 @property(nonatomic, retain, readwrite) UILabel* valueLabel;
 //@}
-/// @brief True if TableViewVariableHeightCell should layout its content view
-/// using layout guides. Layout guides were introduced in iOS 9.
-///
-/// TODO: Remove this flag when we drop iOS 8 support.
-@property(nonatomic, assign) bool layoutWithLayoutGuides;
-// Only used if layouting is done without layout guides
-@property(nonatomic, assign) CGFloat leftEdgeSpacing;
-// Only used if layouting is done without layout guides
-@property(nonatomic, assign) NSLayoutConstraint* rightEdgeSpacingConstraint;
+/// @brief The stack view that does the layouting heavy lifting for us.
+@property(nonatomic, retain) UIStackView* stackView;
+/// @brief The Auto Layout constraint that controls the width ratio between the
+/// two labels. Is not used if the ratio is 1.0.
+@property(nonatomic, retain) NSLayoutConstraint* widthRatioConstraint;
 @end
 
 @implementation TableViewVariableHeightCell
@@ -72,8 +66,12 @@
               reuseIdentifier:reuseIdentifier];
   if (! self)
     return nil;
-  self.layoutWithLayoutGuides = ([UIDevice systemVersionMajor] >= 9);
+
+  self.widthRatioConstraint = nil;
+  _widthRatio = 1.0;
+
   [self setupContentView];
+
   return self;
 }
 
@@ -84,6 +82,8 @@
 {
   self.descriptionLabel = nil;
   self.valueLabel = nil;
+  self.stackView = nil;
+  self.widthRatioConstraint = nil;
   [super dealloc];
 }
 
@@ -94,14 +94,20 @@
 - (void) setupContentView
 {
   self.descriptionLabel = [[[UILabel alloc] initWithFrame:self.contentView.bounds] autorelease];
-  [self.contentView addSubview:self.descriptionLabel];
   self.descriptionLabel.numberOfLines = 0;
   self.descriptionLabel.lineBreakMode = NSLineBreakByWordWrapping;
 
   self.valueLabel = [[[UILabel alloc] initWithFrame:self.contentView.bounds] autorelease];
-  [self.contentView addSubview:self.valueLabel];
+  self.valueLabel.numberOfLines = 0;
+  self.valueLabel.lineBreakMode = NSLineBreakByWordWrapping;
   self.valueLabel.textAlignment = NSTextAlignmentRight;
   self.valueLabel.textColor = [UIColor tableViewCellDetailTextLabelColor];
+
+  self.stackView = [[UIStackView alloc] initWithArrangedSubviews:[NSArray arrayWithObjects:self.descriptionLabel, self.valueLabel, nil]];
+  [self.contentView addSubview:self.stackView];
+  self.stackView.axis = UILayoutConstraintAxisHorizontal;
+  self.stackView.spacing = 0.0f;
+  self.stackView.distribution = UIStackViewDistributionFillProportionally;
 
   [self layoutContentView];
 }
@@ -112,100 +118,36 @@
 // -----------------------------------------------------------------------------
 - (void) layoutContentView
 {
-  self.descriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  self.valueLabel.translatesAutoresizingMaskIntoConstraints = NO;
-
-  // This is important! The value label now resists compression more strongly
-  // than the description label. If the description label contains a long text
-  // the Auto Layout engine will therefore resize the description label's height
-  // to make room for the long text. To make this work, the description label's
-  // numberOfLines property must also be set 0.
-  [self.valueLabel setContentCompressionResistancePriority:(UILayoutPriorityDefaultHigh + 1) forAxis:UILayoutConstraintAxisHorizontal];
-
-  if (self.layoutWithLayoutGuides)
-    [self layoutContentViewWithLayoutGuides];
-  else
-    [self layoutContentViewWithoutLayoutGuides];
+  self.stackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.stackView.leadingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.leadingAnchor].active = YES;
+  [self.stackView.trailingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.trailingAnchor].active = YES;
+  [self.stackView.topAnchor constraintEqualToAnchor:self.contentView.layoutMarginsGuide.topAnchor].active = YES;
+  [self.stackView.bottomAnchor constraintEqualToAnchor:self.contentView.layoutMarginsGuide.bottomAnchor].active = YES;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates the Auto Layout constraints of the content view that never
-/// change, using layout guides introduced in iOS 9. This is run only once, as
-/// part of setting up the content view.
+// Property is documented in the header file.
 // -----------------------------------------------------------------------------
-- (void) layoutContentViewWithLayoutGuides
+- (void) setWidthRatio:(CGFloat)widthRatio
 {
-  CGFloat verticalSpacingTableViewCell = [AutoLayoutUtility verticalSpacingTableViewCell];
+  if (_widthRatio == widthRatio)
+    return;
+  _widthRatio = widthRatio;
 
-  // Take the anchors from the readable content guide, not from the content
-  // itself. The readable content guide takes visible effect on the iPad in
-  // landscape orientation, severely constraining the available width.
-  [self.descriptionLabel.leadingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.leadingAnchor].active = YES;
-  [self.valueLabel.trailingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.trailingAnchor].active = YES;
+  if (self.widthRatioConstraint)
+    [self.stackView removeConstraint:self.widthRatioConstraint];
 
-  [self.valueLabel.leadingAnchor constraintEqualToAnchor:self.descriptionLabel.trailingAnchor].active = YES;
-
-  [self.descriptionLabel.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:verticalSpacingTableViewCell].active = YES;
-  [self.descriptionLabel.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-verticalSpacingTableViewCell].active = YES;
-  [self.valueLabel.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:verticalSpacingTableViewCell].active = YES;
-  [self.valueLabel.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:-verticalSpacingTableViewCell].active = YES;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Creates the Auto Layout constraints of the content view that never
-/// change, using "traditional" Auto Layout mechanisms instead of layout guides
-/// which were introduced in iOS 9. This is run only once, as part of setting
-/// up the content view.
-// -----------------------------------------------------------------------------
-- (void) layoutContentViewWithoutLayoutGuides
-{
-  CGFloat horizontalSpacingTableViewCell = [AutoLayoutUtility horizontalSpacingTableViewCell];
-  CGFloat verticalSpacingTableViewCell = [AutoLayoutUtility verticalSpacingTableViewCell];
-
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.descriptionLabel, @"descriptionLabel",
-                                   self.valueLabel, @"valueLabel",
-                                   nil];
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            [NSString stringWithFormat:@"H:|-%f-[descriptionLabel]-0-[valueLabel]", horizontalSpacingTableViewCell],
-                            [NSString stringWithFormat:@"V:|-%f-[descriptionLabel]-%f-|", verticalSpacingTableViewCell, verticalSpacingTableViewCell],
-                            [NSString stringWithFormat:@"V:|-%f-[valueLabel]-%f-|", verticalSpacingTableViewCell, verticalSpacingTableViewCell],
-                            nil];
-  [AutoLayoutUtility installVisualFormats:visualFormats
-                                withViews:viewsDictionary
-                                   inView:self.contentView];
-
-  self.leftEdgeSpacing = [AutoLayoutUtility horizontalSpacingTableViewCell];
-  // Later on in layoutSubviews() we may need to change the right edge spacing,
-  // so we need access to the NSLayoutConstraint object.
-  NSArray* rightEdgeSpacingConstraints = [AutoLayoutUtility installVisualFormats:[NSArray arrayWithObject:@"H:[valueLabel]-0-|"]
-                                                                       withViews:viewsDictionary
-                                                                          inView:self.contentView];
-  self.rightEdgeSpacingConstraint = [rightEdgeSpacingConstraints firstObject];
-}
-
-#pragma mark - UIView overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UIView method.
-// -----------------------------------------------------------------------------
-- (void) layoutSubviews
-{
-  if (self.layoutWithLayoutGuides)
+  if (_widthRatio != 1.0)
   {
-    // Nothing to do, the static Auto Layout constraints are sufficient
+    self.widthRatioConstraint = [NSLayoutConstraint constraintWithItem:self.valueLabel
+                                                             attribute:NSLayoutAttributeWidth
+                                                             relatedBy:NSLayoutRelationEqual
+                                                                toItem:self.descriptionLabel
+                                                             attribute:NSLayoutAttributeWidth
+                                                            multiplier:_widthRatio
+                                                              constant:0.0];
+    [self.stackView addConstraint:self.widthRatioConstraint];
   }
-  else
-  {
-    // If there is no accessory view we have to provide our own spacing at the
-    // right edge
-    if (self.accessoryType == UITableViewCellAccessoryNone)
-      self.rightEdgeSpacingConstraint.constant = self.leftEdgeSpacing;
-    else
-      self.rightEdgeSpacingConstraint.constant = 0;
-  }
-
-  [super layoutSubviews];
 }
 
 @end
