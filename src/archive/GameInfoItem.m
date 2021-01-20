@@ -19,6 +19,7 @@
 #import "GameInfoItem.h"
 #import "../sgf/SgfUtilities.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/TableViewVariableHeightCell.h"
 
 
 // -----------------------------------------------------------------------------
@@ -151,6 +152,7 @@ enum DataSourceInfoSectionItem
 @interface GameInfoItem()
 // Private properties
 @property(nonatomic, assign) bool usesDescriptText;
+@property(nonatomic, assign) CGFloat widthRatioForVariableHeightCells;
 
 @property(nonatomic, retain) NSMutableDictionary* summarySectionItems;
 @property(nonatomic, retain) NSMutableDictionary* detailLevelFullSections;
@@ -289,6 +291,14 @@ enum DataSourceInfoSectionItem
   self = [super init];
   if (! self)
     return nil;
+
+  // Experimentally determined value. On an iPhone 5s, the most narrow of the
+  // supported devices, this ratio gives enough space to a
+  // TableViewVariableHeightCell's value label to display the reference text
+  // "Game name" on one line, plus a bit of extra width to create a spacing
+  // between the two labels of the cell. On wider devices this ratio could be
+  // larger, but a dynamically calculated ratio is too much work for now.
+  self.widthRatioForVariableHeightCells = 1.5;
 
   self.goGameInfo = nil;
   self.descriptiveText = descriptiveText;
@@ -571,17 +581,17 @@ enum DataSourceInfoSectionItem
             case GameNameItem:
               return [self gameNameCellWithTableView:tableView];
             case GameInformationItem:
-              return [self cellWithTableView:tableView itemName:@"Game information" itemValue:self.gameInformation];
+              return [self variableHeightCellWithTableView:tableView itemName:@"Game information" itemValue:self.gameInformation];
             case GameDatesItem:
               return [self gameDatesCellWithTableView:tableView];
             case RulesNameItem:
-              return [self cellWithTableView:tableView itemName:@"Rules name" itemValue:self.rulesName];
+              return [self value1CellWithTableView:tableView itemName:@"Rules name" itemValue:self.rulesName];
             case BoardSizeItem:
               return [self boardSizeCellWithTableView:tableView];
             case NumberOfHandicapStonesItem:
-              return [self cellWithTableView:tableView itemName:@"Handicap" itemValue:self.numberOfHandicapStonesAsString];
+              return [self value1CellWithTableView:tableView itemName:@"Handicap" itemValue:self.numberOfHandicapStonesAsString];
             case KomiItem:
-              return [self cellWithTableView:tableView itemName:@"Komi" itemValue:self.komiAsString];
+              return [self value1CellWithTableView:tableView itemName:@"Komi" itemValue:self.komiAsString];
             case GameResultItem:
               return [self gameResultCellWithTableView:tableView];
             default:
@@ -595,11 +605,11 @@ enum DataSourceInfoSectionItem
           switch (row)
           {
             case TimeLimitInSecondsItem:
-              return [self cellWithTableView:tableView itemName:@"Time limit" itemValue:self.timeLimitInSecondsAsString];
+              return [self value1CellWithTableView:tableView itemName:@"Time limit" itemValue:self.timeLimitInSecondsAsString];
             case OvertimeInformationItem:
-              return [self cellWithTableView:tableView itemName:@"Overtime" itemValue:self.overtimeInformation];
+              return [self variableHeightCellWithTableView:tableView itemName:@"Overtime" itemValue:self.overtimeInformation];
             case OpeningInformationItem:
-              return [self cellWithTableView:tableView itemName:@"Opening" itemValue:self.openingInformation];
+              return [self variableHeightCellWithTableView:tableView itemName:@"Opening" itemValue:self.openingInformation];
             default:
               assert(0);
               break;
@@ -613,15 +623,15 @@ enum DataSourceInfoSectionItem
             case BlackPlayerNameItem:
               return [self blackPlayerNameCellWithTableView:tableView];
             case BlackPlayerRankItem:
-              return [self cellWithTableView:tableView itemName:@"Black rank" itemValue:self.blackPlayerRankAsString];
+              return [self value1CellWithTableView:tableView itemName:@"Black rank" itemValue:self.blackPlayerRankAsString];
             case BlackPlayerTeamNameItem:
-              return [self cellWithTableView:tableView itemName:@"Black team" itemValue:self.blackPlayerTeamName];
+              return [self variableHeightCellWithTableView:tableView itemName:@"Black team" itemValue:self.blackPlayerTeamName];
             case WhitePlayerNameItem:
               return [self whitePlayerNameCellWithTableView:tableView];
             case WhitePlayerRankItem:
-              return [self cellWithTableView:tableView itemName:@"White rank" itemValue:self.whitePlayerRankAsString];
+              return [self value1CellWithTableView:tableView itemName:@"White rank" itemValue:self.whitePlayerRankAsString];
             case WhitePlayerTeamNameItem:
-              return [self cellWithTableView:tableView itemName:@"White team" itemValue:self.whitePlayerTeamName];
+              return [self variableHeightCellWithTableView:tableView itemName:@"White team" itemValue:self.whitePlayerTeamName];
             default:
               assert(0);
               break;
@@ -633,11 +643,11 @@ enum DataSourceInfoSectionItem
           switch (row)
           {
             case GameLocationItem:
-              return [self cellWithTableView:tableView itemName:@"Location" itemValue:self.gameLocation];
+              return [self variableHeightCellWithTableView:tableView itemName:@"Location" itemValue:self.gameLocation];
             case EventNameItem:
-              return [self cellWithTableView:tableView itemName:@"Event" itemValue:self.eventName];
+              return [self variableHeightCellWithTableView:tableView itemName:@"Event" itemValue:self.eventName];
             case RoundInformationItem:
-              return [self cellWithTableView:tableView itemName:@"Round" itemValue:self.roundInformationAsString];
+              return [self variableHeightCellWithTableView:tableView itemName:@"Round" itemValue:self.roundInformationAsString];
             default:
               assert(0);
               break;
@@ -649,13 +659,13 @@ enum DataSourceInfoSectionItem
           switch (row)
           {
             case RecorderNameItem:
-              return [self cellWithTableView:tableView itemName:@"Recorder" itemValue:self.recorderName];
+              return [self variableHeightCellWithTableView:tableView itemName:@"Recorder" itemValue:self.recorderName];
             case SourceNameItem:
-              return [self cellWithTableView:tableView itemName:@"Source" itemValue:self.sourceName];
+              return [self variableHeightCellWithTableView:tableView itemName:@"Source" itemValue:self.sourceName];
             case AnnotationAuthorItem:
-              return [self cellWithTableView:tableView itemName:@"Annotations by" itemValue:self.annotationAuthor];
+              return [self variableHeightCellWithTableView:tableView itemName:@"Annotations by" itemValue:self.annotationAuthor];
             case CopyrightInformationItem:
-              return [self cellWithTableView:tableView itemName:@"Copyright" itemValue:self.copyrightInformation];
+              return [self variableHeightCellWithTableView:tableView itemName:@"Copyright" itemValue:self.copyrightInformation];
             default:
               assert(0);
               break;
@@ -998,45 +1008,48 @@ enum DataSourceInfoSectionItem
 
 - (UITableViewCell*) boardSizeCellWithTableView:(UITableView*)tableView
 {
-  return [self cellWithTableView:tableView itemName:@"Board size" itemValue:self.boardSizeAsString];
+  return [self value1CellWithTableView:tableView itemName:@"Board size" itemValue:self.boardSizeAsString];
 }
 
 - (UITableViewCell*) gameNameCellWithTableView:(UITableView*)tableView
 {
-  // TODO xxx use VariableHeightCellType, but add a new mode that
-  // increases the height of the value label. Also may need to set
-  // a distinct reusableCellIdentifier
-  return [self cellWithTableView:tableView itemName:@"Game name" itemValue:self.gameName];
+  return [self variableHeightCellWithTableView:tableView itemName:@"Game name" itemValue:self.gameName];
 }
 
 - (UITableViewCell*) gameDatesCellWithTableView:(UITableView*)tableView
 {
-  // TODO xxx use VariableHeightCellType, see GameNameItem
-  return [self cellWithTableView:tableView itemName:@"Dates" itemValue:self.gameDatesAsString];
+  return [self variableHeightCellWithTableView:tableView itemName:@"Dates" itemValue:self.gameDatesAsString];
 }
 
 - (UITableViewCell*) blackPlayerNameCellWithTableView:(UITableView*)tableView
 {
-  // TODO xxx use VariableHeightCellType, see GameNameItem
-  return [self cellWithTableView:tableView itemName:@"Black" itemValue:self.blackPlayerName];
+  return [self variableHeightCellWithTableView:tableView itemName:@"Black" itemValue:self.blackPlayerName];
 }
 
 - (UITableViewCell*) whitePlayerNameCellWithTableView:(UITableView*)tableView
 {
-  // TODO xxx use VariableHeightCellType, see GameNameItem
-  return [self cellWithTableView:tableView itemName:@"White" itemValue:self.whitePlayerName];
+  return [self variableHeightCellWithTableView:tableView itemName:@"White" itemValue:self.whitePlayerName];
 }
 
 - (UITableViewCell*) gameResultCellWithTableView:(UITableView*)tableView
 {
-  return [self cellWithTableView:tableView itemName:@"Result" itemValue:self.gameResultAsString];
+  return [self variableHeightCellWithTableView:tableView itemName:@"Result" itemValue:self.gameResultAsString];
 }
 
-- (UITableViewCell*) cellWithTableView:(UITableView*)tableView itemName:(NSString*)itemName itemValue:(NSString*)itemValue
+- (UITableViewCell*) value1CellWithTableView:(UITableView*)tableView itemName:(NSString*)itemName itemValue:(NSString*)itemValue
 {
   UITableViewCell* cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
   cell.textLabel.text = itemName;
   cell.detailTextLabel.text = itemValue;
+  return cell;
+}
+
+- (UITableViewCell*) variableHeightCellWithTableView:(UITableView*)tableView itemName:(NSString*)itemName itemValue:(NSString*)itemValue
+{
+  TableViewVariableHeightCell* cell = (TableViewVariableHeightCell*)[TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
+  cell.descriptionLabel.text = itemName;
+  cell.valueLabel.text = itemValue;
+  cell.widthRatio = self.widthRatioForVariableHeightCells;
   return cell;
 }
 
