@@ -21,16 +21,13 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The LoadGameCommand class is responsible for loading a game from
-/// SGF data provided by SgfcKit, and starting a new game using the information
-/// in that file.
+/// @brief The LoadGameCommand class is responsible for starting a new game and
+/// loading the game data from an SgfcKit object tree.
 ///
 /// LoadGameCommand is executed asynchronously (unless the executor is another
 /// asynchronous command).
 ///
 /// The sequence of operations performed by LoadGameCommand is this:
-/// - Parse the SgfcKit objects to obtain the information that is needed to
-///   start a new game (e.g. board size)
 /// - Start a new game by executing a NewGameCommand instance
 /// - Parse the SgfcKit objects to obtain additional information that was stored
 ///   in the .sgf file (handicap, komi, moves)
@@ -50,13 +47,15 @@
 ///
 /// @par SGF data with illegal content
 ///
-/// LoadGameCommand performs two kinds of sanitary checks for every move it
-/// finds in the SGF data:
-/// - Is the move played by the expected player color?
-/// - Is the move legal?
+/// LoadGameCommand relies on SgfcKit (and the underlying SGFC) having performed
+/// many corrections of erroneous SGF content. In addition LoadGameCommand
+/// performs much validation for things that are legal in SGF, but not for
+/// the app. The canonical example is the check whether a move that was played
+/// is legal according to the rules selected by the user when she initiated the
+/// load operation.
 ///
-/// If any one of these checks fails, the entire load operation fails. A new
-/// game is started nonetheless, to bring the app back into a defined state.
+/// If a validation step fails, the entire load operation fails. A new game is
+/// started nonetheless, to bring the app back into a defined state.
 ///
 /// An exception that is raised while the moves in the .sgf file are replayed
 /// is caught and handled. The result is the same as if one of the sanitary
