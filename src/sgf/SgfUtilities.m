@@ -355,4 +355,95 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Maps the app-specific enum value @a goGameHasEndedReason to an
+/// SGFCGameResult struct. If no mapping is possible the returned struct has
+/// the @e IsValid property set to NO.
+// -----------------------------------------------------------------------------
++ (SGFCGameResult) gameResultForGoGameHasEndedReason:(enum GoGameHasEndedReason)goGameHasEndedReason
+{
+  SGFCGameResultType gameResultType;
+  SGFCWinType winType;
+  BOOL isValid;
+  switch (goGameHasEndedReason)
+  {
+    case GoGameHasEndedReasonBlackWinsByResignation:
+      gameResultType = SGFCGameResultTypeBlackWin;
+      winType = SGFCWinTypeWinByResignation;
+      isValid = YES;
+      break;
+    case GoGameHasEndedReasonWhiteWinsByResignation:
+      gameResultType = SGFCGameResultTypeWhiteWin;
+      winType = SGFCWinTypeWinByResignation;
+      isValid = YES;
+      break;
+    case GoGameHasEndedReasonBlackWinsOnTime:
+      gameResultType = SGFCGameResultTypeBlackWin;
+      winType = SGFCWinTypeWinOnTime;;
+      isValid = YES;
+      break;
+    case GoGameHasEndedReasonWhiteWinsOnTime:
+      gameResultType = SGFCGameResultTypeWhiteWin;
+      winType = SGFCWinTypeWinOnTime;
+      isValid = YES;
+      break;
+    case GoGameHasEndedReasonBlackWinsByForfeit:
+      gameResultType = SGFCGameResultTypeBlackWin;
+      winType = SGFCWinTypeWinByForfeit;
+      isValid = YES;
+      break;
+    case GoGameHasEndedReasonWhiteWinsByForfeit:
+      gameResultType = SGFCGameResultTypeWhiteWin;
+      winType = SGFCWinTypeWinByForfeit;
+      isValid = YES;
+      break;
+    default:
+      gameResultType = SGFCGameResultTypeUnknownResult;
+      winType = SGFCWinTypeWinWithScore;
+      isValid = NO;
+      break;
+  }
+
+  return SGFCGameResultMake(gameResultType, winType, 0.0, isValid);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps the SGFCGameResult struct @a gameResult to a value from the
+/// app-specific enum GoGameHasEndedReason. Returns
+/// #GoGameHasEndedReasonNotYetEnded if no mapping is possible.
+// -----------------------------------------------------------------------------
++ (enum GoGameHasEndedReason) goGameHasEndedReasonForGameResult:(SGFCGameResult)gameResult
+{
+  if (! gameResult.IsValid)
+    return GoGameHasEndedReasonNotYetEnded;
+
+  switch (gameResult.GameResultType)
+  {
+    case SGFCGameResultTypeBlackWin:
+    case SGFCGameResultTypeWhiteWin:
+      switch (gameResult.WinType)
+      {
+        case SGFCWinTypeWinByResignation:
+          if (gameResult.GameResultType == SGFCGameResultTypeBlackWin)
+            return GoGameHasEndedReasonBlackWinsByResignation;
+          else
+            return GoGameHasEndedReasonWhiteWinsByResignation;
+        case SGFCWinTypeWinOnTime:
+          if (gameResult.GameResultType == SGFCGameResultTypeBlackWin)
+            return GoGameHasEndedReasonBlackWinsOnTime;
+          else
+            return GoGameHasEndedReasonWhiteWinsOnTime;
+        case SGFCWinTypeWinByForfeit:
+          if (gameResult.GameResultType == SGFCGameResultTypeBlackWin)
+            return GoGameHasEndedReasonBlackWinsByForfeit;
+          else
+            return GoGameHasEndedReasonWhiteWinsByForfeit;
+        default:
+          return GoGameHasEndedReasonNotYetEnded;
+      }
+    default:
+      return GoGameHasEndedReasonNotYetEnded;
+  }  
+}
+
 @end

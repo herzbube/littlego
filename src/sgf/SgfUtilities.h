@@ -44,5 +44,7 @@
 + (UIImage*) coloredIndicatorForLoadResult:(SGFCDocumentReadResult*)loadResult;
 + (UIColor*) colorForMessageType:(SGFCMessageType)messageType isCriticalMessage:(bool)isCriticalMessage;
 + (UIImage*) coloredIndicatorForMessage:(SGFCMessage*)message;
++ (SGFCGameResult) gameResultForGoGameHasEndedReason:(enum GoGameHasEndedReason)goGameHasEndedReason;
++ (enum GoGameHasEndedReason) goGameHasEndedReasonForGameResult:(SGFCGameResult)gameResult;
 
 @end

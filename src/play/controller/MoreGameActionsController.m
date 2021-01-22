@@ -242,7 +242,8 @@
           continue;
         if (GoGameStateGameHasEnded != game.state)
           continue;
-        if (GoGameHasEndedReasonResigned != game.reasonForGameHasEnded)
+        if (GoGameHasEndedReasonBlackWinsByResignation != game.reasonForGameHasEnded &&
+            GoGameHasEndedReasonWhiteWinsByResignation != game.reasonForGameHasEnded)
           continue;
         // Undoing a resignation performs a backup of the game in progress. We
         // can't let that happen if it's not the last board position, otherwise

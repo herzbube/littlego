@@ -30,6 +30,7 @@
 #import "../../gtp/GtpUtilities.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../newgame/NewGameModel.h"
+#import "../../sgf/SgfUtilities.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../utility/NSStringAdditions.h"
@@ -189,6 +190,9 @@ static const int maxStepsForReplayMoves = 10;
     return false;
   [self increaseProgressAndNotifyDelegate];
   success = [self setupMoves:errorMessage];
+  if (! success)
+    return false;
+  success = [self setupGameResult:errorMessage];
   if (! success)
     return false;
   success = [self syncGtpEngine:errorMessage];
@@ -917,6 +921,32 @@ static const int maxStepsForReplayMoves = 10;
     NSString* errorMessageFormat = @"An unexpected error occurred loading the game. To improve this app, please consider submitting a bug report with the game file attached.\n\nException name: %@.\n\nException reason: %@.";
     *errorMessage = [NSString stringWithFormat:errorMessageFormat, [exception name], [exception reason]];
     return false;
+  }
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the result for the new game.
+// -----------------------------------------------------------------------------
+- (bool) setupGameResult:(NSString**)errorMessage
+{
+  GoGame* game = [GoGame sharedGame];
+
+  SGFCGameResult sgfGameResult = self.sgfGoGameInfo.gameResult;
+  if (sgfGameResult.IsValid)
+  {
+    enum GoGameHasEndedReason reasonForGameHasEnded = [SgfUtilities goGameHasEndedReasonForGameResult:sgfGameResult];
+    
+    // Some SGFCGameResult values actually cannot be mapped to a corresponding
+    // GoGameHasEndedReason value
+    if (reasonForGameHasEnded != GoGameHasEndedReasonNotYetEnded)
+    {
+      if (game.state == GoGameStateGameHasEnded)
+        [game revertStateFromEndedToInProgress];
+      game.reasonForGameHasEnded = reasonForGameHasEnded;
+      game.state = GoGameStateGameHasEnded;
+    }
   }
 
   return true;

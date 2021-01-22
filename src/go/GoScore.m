@@ -29,6 +29,7 @@
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
 #import "../play/model/ScoringModel.h"
+#import "../sgf/SgfUtilities.h"
 #import "../ui/UiSettingsModel.h"
 #import "../utility/NSStringAdditions.h"
 
@@ -438,11 +439,14 @@
 
   GoGame* game = [GoGame sharedGame];
   if (game.boardPosition.isLastPosition
-      && GoGameStateGameHasEnded == game.state
-      && GoGameHasEndedReasonResigned == game.reasonForGameHasEnded)
+      && GoGameStateGameHasEnded == game.state)
   {
-    NSString* colorString = [NSString stringWithGoColor:game.nextMoveColor];
-    resultString = [NSString stringWithFormat:@"%@ resigned / %@", colorString, resultString];
+    SGFCGameResult gameResult = [SgfUtilities gameResultForGoGameHasEndedReason:game.reasonForGameHasEnded];
+    if (gameResult.IsValid)
+    {
+      NSString* gameResultString = [SgfUtilities stringForSgfGameResult:gameResult];
+      resultString = [NSString stringWithFormat:@"%@ / %@", gameResultString, resultString];
+    }
   }
 
   return resultString;

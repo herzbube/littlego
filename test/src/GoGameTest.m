@@ -437,7 +437,7 @@
 
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game resign];
-  XCTAssertEqual(GoGameHasEndedReasonResigned, m_game.reasonForGameHasEnded);
+  XCTAssertEqual(GoGameHasEndedReasonWhiteWinsByResignation, m_game.reasonForGameHasEnded);
 
   // Can resume play an arbitrary number of times; each time two passes are made
   // the game ends GoGameHasEndedReasonTwoPasses

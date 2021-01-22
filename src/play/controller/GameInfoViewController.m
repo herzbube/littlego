@@ -32,6 +32,7 @@
 #import "../../player/GtpEngineProfileModel.h"
 #import "../../player/GtpEngineProfile.h"
 #import "../../player/Player.h"
+#import "../../sgf/SgfUtilities.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/TableViewCellFactory.h"
@@ -524,6 +525,7 @@ enum BoardPositionSectionItem
       cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
       cell.textLabel.text = [[GoGame sharedGame].score resultString];
       cell.textLabel.textAlignment = NSTextAlignmentCenter;
+      cell.textLabel.numberOfLines = 0;
       break;
     }
     default:
@@ -614,17 +616,19 @@ enum BoardPositionSectionItem
                 cell.detailTextLabel.text = @"Four pass moves";
                 break;
               }
-              case GoGameHasEndedReasonResigned:
-              {
-                NSString* colorString = [NSString stringWithGoColor:game.nextMoveColor];
-                cell.detailTextLabel.text = [colorString stringByAppendingString:@" resigned"];
-                break;
-              }
               default:
               {
-                cell.detailTextLabel.text = @"Unknown";
-                DDLogError(@"%@: Unexpected reasonForGameHasEnded %d", self, game.reasonForGameHasEnded);
-                assert(0);
+                SGFCGameResult gameResult = [SgfUtilities gameResultForGoGameHasEndedReason:game.reasonForGameHasEnded];
+                if (gameResult.IsValid)
+                {
+                  cell.detailTextLabel.text = [SgfUtilities stringForSgfGameResult:gameResult];;
+                }
+                else
+                {
+                  cell.detailTextLabel.text = @"Unknown";
+                  DDLogError(@"%@: Unexpected reasonForGameHasEnded %d", self, game.reasonForGameHasEnded);
+                  assert(0);
+                }
                 break;
               }
             }

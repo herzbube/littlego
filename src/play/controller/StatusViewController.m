@@ -538,15 +538,25 @@
               statusText = @"Game has ended by four consecutive pass moves";
               break;
             }
-            case GoGameHasEndedReasonResigned:
+            case GoGameHasEndedReasonBlackWinsByResignation:
+            case GoGameHasEndedReasonWhiteWinsByResignation:
             {
-              NSString* color;
-              // TODO fix when GoColor class is added
-              if (game.nextMovePlayer.black)
-                color = @"Black";
-              else
-                color = @"White";
+              NSString* color = game.reasonForGameHasEnded == GoGameHasEndedReasonBlackWinsByResignation ? @"White" : @"Black";
               statusText = [NSString stringWithFormat:@"%@ resigned", color];
+              break;
+            }
+            case GoGameHasEndedReasonBlackWinsOnTime:
+            case GoGameHasEndedReasonWhiteWinsOnTime:
+            {
+              NSString* color = game.reasonForGameHasEnded == GoGameHasEndedReasonBlackWinsByResignation ? @"Black" : @"White";
+              statusText = [NSString stringWithFormat:@"%@ wins on time", color];
+              break;
+            }
+            case GoGameHasEndedReasonBlackWinsByForfeit:
+            case GoGameHasEndedReasonWhiteWinsByForfeit:
+            {
+              NSString* color = game.reasonForGameHasEnded == GoGameHasEndedReasonBlackWinsByResignation ? @"Black" : @"White";
+              statusText = [NSString stringWithFormat:@"%@ wins by forfeit", color];
               break;
             }
             default:

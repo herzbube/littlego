@@ -23,7 +23,9 @@
 #import "../../go/GoMoveModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
+#import "../../sgf/SgfUtilities.h"
 #import "../../utility/PathUtilities.h"
 
 
@@ -165,6 +167,22 @@
                           toNode:gameInfoNode
           withValuesFromGoPoints:handicapPoints
                        boardSize:boardSize];
+  }
+
+  if (goGame.state == GoGameStateGameHasEnded)
+  {
+    SGFCGameResult gameResult = [SgfUtilities gameResultForGoGameHasEndedReason:goGame.reasonForGameHasEnded];
+
+    // Some GoGameHasEndedReason values actually cannot be mapped to
+    // SGFCGameResult
+    if (gameResult.IsValid)
+    {
+      NSString* gameResultAsString = SGFCGameResultToPropertyValue(gameResult);
+
+      SGFCSimpleTextPropertyValue* rePropertyValue = [SGFCPropertyValueFactory propertyValueWithSimpleText:gameResultAsString];
+      SGFCProperty* reProperty = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeRE value:rePropertyValue];
+      [gameInfoNode setProperty:reProperty];
+    }
   }
 }
 

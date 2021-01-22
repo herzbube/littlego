@@ -352,15 +352,12 @@
     @throw exception;
   }
 
-  // At the time of implementing this, setting the dirty flag in reaction to
-  // resigning the game is not strictly necessary, since saving the game will,
-  // at the moment, NOT store the resignation status in the .sgf file. This is
-  // either a bug in Fuego, or a limitation in the SGF file format - which one
-  // it is still needs to be researched. Nevertheless, the dirty flag is set
-  // to remain conceptually correct.
   self.document.dirty = true;
 
-  self.reasonForGameHasEnded = GoGameHasEndedReasonResigned;
+  if (self.nextMoveColor == GoColorBlack)
+    self.reasonForGameHasEnded = GoGameHasEndedReasonWhiteWinsByResignation;
+  else
+    self.reasonForGameHasEnded = GoGameHasEndedReasonBlackWinsByResignation;
   self.state = GoGameStateGameHasEnded;
 }
 
@@ -1124,12 +1121,13 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
 /// game to end, then the most recent pass move should also be discarded after
 /// control returns to the caller.
 ///
-/// If the game has ended due to resignation, invoking this method sets the
-/// document dirty flag. This behaviour exists to remain consistent with the
-/// resignation action, which also sets the document dirty flag. If the game
-/// ended for some reason other than resigning, it is expected that some other
-/// action in addition to invoking revertStateFromEndedToInProgress will cause
-/// the document dirty flag to be set. For instance, if three pass moves caused
+/// If the game has ended due to resignation, win on time or win by forfeit,
+/// invoking this method sets the document dirty flag. This behaviour exists to
+/// remain consistent with the action that ends the game (e.g. resignation),
+/// which also sets the document dirty flag. If the game ended for some reason
+/// other than those mentioned initially, it is expected that some other action
+/// in addition to invoking revertStateFromEndedToInProgress will cause the
+/// document dirty flag to be set. For instance, if three pass moves caused
 /// the game to end, then the document dirty flag needs to be reset by
 /// discarding the third pass move.
 // -----------------------------------------------------------------------------
@@ -1145,8 +1143,19 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
     @throw exception;
   }
 
-  if (GoGameHasEndedReasonResigned == self.reasonForGameHasEnded)
-    self.document.dirty = true;
+  switch (self.reasonForGameHasEnded)
+  {
+    case GoGameHasEndedReasonBlackWinsByResignation:
+    case GoGameHasEndedReasonWhiteWinsByResignation:
+    case GoGameHasEndedReasonBlackWinsOnTime:
+    case GoGameHasEndedReasonWhiteWinsOnTime:
+    case GoGameHasEndedReasonBlackWinsByForfeit:
+    case GoGameHasEndedReasonWhiteWinsByForfeit:
+      self.document.dirty = true;
+      break;
+    default:
+      break;
+  }
 
   self.reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
   if (GoGameTypeComputerVsComputer == self.type)

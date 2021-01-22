@@ -301,8 +301,12 @@ enum GoGameHasEndedReason
                                      ///  occurs only if #GoLifeAndDeathSettlingRuleThreePasses is active.
   GoGameHasEndedReasonFourPasses,    ///< @brief The game ended due to four consecutive pass moves. This
                                      ///  occurs only if #GoFourPassesRuleFourPassesEndTheGame is active.
-  GoGameHasEndedReasonResigned,      ///< @brief The game ended due to one of the players resigning.
-  GoGameHasEndedReasonTimeExceeded   ///< @brief The game ended due to one of the players having no time left.
+  GoGameHasEndedReasonBlackWinsByResignation, ///< @brief The game ended due to the black player winning by resignation.
+  GoGameHasEndedReasonWhiteWinsByResignation, ///< @brief The game ended due to the white player winning by resignation.
+  GoGameHasEndedReasonBlackWinsOnTime,        ///< @brief The game ended due to the black player winning on time.
+  GoGameHasEndedReasonWhiteWinsOnTime,        ///< @brief The game ended due to the white player winning on time.
+  GoGameHasEndedReasonBlackWinsByForfeit,     ///< @brief The game ended due to the black player winning by forfeit.
+  GoGameHasEndedReasonWhiteWinsByForfeit,     ///< @brief The game ended due to the white player winning by forfeit.
 };
 
 /// @brief Enumerates the possible results of a game that has reached the state
