@@ -237,21 +237,42 @@
         break;
       }
       case MoreGameActionsButtonUndoResign:
+      case MoreGameActionsButtonUndoTimeout:
+      case MoreGameActionsButtonUndoForfeit:
       {
         if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeScoring)
           continue;
         if (GoGameStateGameHasEnded != game.state)
           continue;
-        if (GoGameHasEndedReasonBlackWinsByResignation != game.reasonForGameHasEnded &&
-            GoGameHasEndedReasonWhiteWinsByResignation != game.reasonForGameHasEnded)
-          continue;
-        // Undoing a resignation performs a backup of the game in progress. We
-        // can't let that happen if it's not the last board position, otherwise
-        // the backup .sgf file would not contain the full game.
+        // Reverting the game state performs a backup of the game in progress.
+        // We can't let that happen if it's not the last board position,
+        // otherwise the backup SGF file would not contain the full game.
         if (! game.boardPosition.isLastPosition)
           continue;
-        title = @"Undo resign";
-        alertActionBlock = ^(UIAlertAction* action) { [self undoResign]; };
+        switch (game.reasonForGameHasEnded)
+        {
+          case GoGameHasEndedReasonBlackWinsByResignation:
+          case GoGameHasEndedReasonWhiteWinsByResignation:
+            if (iterButtonIndex != MoreGameActionsButtonUndoResign)
+              continue;
+            title = @"Undo resign";
+            break;
+          case GoGameHasEndedReasonBlackWinsOnTime:
+          case GoGameHasEndedReasonWhiteWinsOnTime:
+            if (iterButtonIndex != MoreGameActionsButtonUndoTimeout)
+              continue;
+            title = @"Undo timeout";
+            break;
+          case GoGameHasEndedReasonBlackWinsByForfeit:
+          case GoGameHasEndedReasonWhiteWinsByForfeit:
+            if (iterButtonIndex != MoreGameActionsButtonUndoForfeit)
+              continue;
+            title = @"Undo forfeit";
+            break;
+          default:
+            continue;
+        }
+        alertActionBlock = ^(UIAlertAction* action) { [self revertGameStateFromEndedToInProgress]; };
         break;
       }
       case MoreGameActionsButtonSaveGame:
@@ -474,18 +495,18 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Undo resign" button. Causes the state
-/// of the game to revert from "has ended" to one of the various "in progress"
-/// states.
+/// @brief Reacts to a tap gesture on the "Undo resign", "Undo timeout" or
+/// "Undo forfeit" button. Causes the state of the game to revert from
+/// "has ended" to one of the various "in progress" states.
 // -----------------------------------------------------------------------------
-- (void) undoResign
+- (void) revertGameStateFromEndedToInProgress
 {
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
     GoGame* game = [GoGame sharedGame];
     [game revertStateFromEndedToInProgress];
-    DDLogInfo(@"Undo %@ resignation", [NSString stringWithGoColor:game.nextMoveColor]);
+    DDLogInfo(@"Revert game state from 'ended' to 'in progress'");
   }
   @finally
   {

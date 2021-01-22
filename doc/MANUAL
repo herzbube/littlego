@@ -248,17 +248,6 @@ problem, but as far as I know there is no fix for it. However, a simple
 workaround exists: Temporarily lock the device, then unlock it again; the list
 of archived games should now be up to date.
 
-===============================================================
-Resigned state of a game is lost when a game is saved or loaded
-===============================================================
-When a player resigns and the game is saved, the information about the player
-resigning is lost, i.e. is not part of the resulting .sgf file. Conversely, if
-an .sgf file is loaded that contains a game where one of the players resigned,
-that information is not picked up by Little Go.
-
-This is a known problem. For details see GitHub issue #97
-(https://github.com/herzbube/littlego/issues/97).
-
 ==========================================================
 The computer player plays stupid moves during the end game
 ==========================================================
@@ -607,6 +596,21 @@ resume play, the app presents you with a choice which side (black or white) is
 to play first. If you make the wrong choice, you can tap the "More game actions"
 button and select the menu item "Set &lt;side&gt; to move" to revert your
 decision. This menu item disappears once the first move has been made.
+
+===========================
+Other game-ending scenarios
+===========================
+When you load an SGF file that you obtained from an external source you may see
+the app displaying that a player wins on time, or wins by forfeit. The app
+supports displaying these game results to properly show you what is stored
+in an SGF file. The app itself has no function for ending a game due to running
+out of time because it does not support timed play. Also the app has no concept
+for forfeiting games because it is not designed to be used in tournaments or
+similar serious environments.
+
+You can undo a game-ending timeout or forfeit from the "More game actions" menu,
+exactly the same as you would do to undo the decision to resign. A game-ending
+event is also undone automatically when you discard the last move.
 
 
 --------------------------------------------------------------------------------

@@ -144,6 +144,8 @@ enum MoreGameActionsButton
   MoreGameActionsButtonResumePlay,
   MoreGameActionsButtonResign,
   MoreGameActionsButtonUndoResign,
+  MoreGameActionsButtonUndoTimeout,
+  MoreGameActionsButtonUndoForfeit,
   MoreGameActionsButtonSaveGame,
   MoreGameActionsButtonNewGame,
   MoreGameActionsButtonCancel,
