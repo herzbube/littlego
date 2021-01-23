@@ -28,15 +28,35 @@
 ///
 /// Control immediately returns to the caller who invoked this method.
 // -----------------------------------------------------------------------------
-- (void) presentOkAlertWithTitle:(NSString*)title message:(NSString*)message
+- (void) presentOkAlertWithTitle:(NSString*)title
+                         message:(NSString*)message
+{
+  [self presentOkAlertWithTitle:title message:message okHandler:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays an alert with title @a title, message @a message and a
+/// single button labeled "Ok" which execute @a okHandler when pressed. The
+/// receiver of the message is the presenting view controller.
+///
+/// @a okHandler may be @e nil to indicate that nothing should be done when the
+/// button is pressed.
+///
+/// Control immediately returns to the caller who invoked this method.
+// -----------------------------------------------------------------------------
+- (void) presentOkAlertWithTitle:(NSString*)title
+                         message:(NSString*)message
+                       okHandler:(void (^)(UIAlertAction* action))okHandler
 {
   UIAlertController* alertController = [UIAlertController alertControllerWithTitle:title
                                                                            message:message
                                                                     preferredStyle:UIAlertControllerStyleAlert];
 
+  if (! okHandler)
+    okHandler = ^(UIAlertAction* action) {};
   UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
                                                      style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction* action) {}];
+                                                   handler:okHandler];
   [alertController addAction:okAction];
 
   [self presentViewController:alertController animated:YES completion:nil];

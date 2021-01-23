@@ -258,21 +258,15 @@ enum AlertType
   NSString* messageFormat = @"Until this bug is fixed, Little Go unfortunately cannot continue with the game in progress. The game has been saved to the archive under the name\n\n%@\n\nA new game is being started now to bring the app back into a good state.";
   NSString* message = [NSString stringWithFormat:messageFormat, uniqueGameName];
 
-  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"New game about to begin"
-                                                                           message:message
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-
   void (^okActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
   {
     [self didDismissAlertWithButton:AlertButtonTypeOk
                           alertType:AlertTypeNewGameAfterComputerPlayedIllegalMove];
   };
-  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
-                                                     style:UIAlertActionStyleDefault
-                                                   handler:okActionBlock];
-  [alertController addAction:okAction];
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"New game about to begin"
+                                                                                  message:message
+                                                                                okHandler:okActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }
@@ -286,20 +280,14 @@ enum AlertType
 {
   NSString* message = [NSString stringWithFormat:@"The computer failed to play. The technical reason is this:\n\n%@", gtpResponseString];
 
-  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Unexpected error"
-                                                                           message:message
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-
   void (^okActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
   {
     self.game.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
   };
-  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
-                                                     style:UIAlertActionStyleDefault
-                                                   handler:okActionBlock];
-  [alertController addAction:okAction];
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Unexpected error"
+                                                                                  message:message
+                                                                                okHandler:okActionBlock];
 }
 
 // -----------------------------------------------------------------------------

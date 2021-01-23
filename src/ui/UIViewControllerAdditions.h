@@ -25,7 +25,11 @@
 // -----------------------------------------------------------------------------
 @interface UIViewController(UIViewControllerAdditions)
 
-- (void) presentOkAlertWithTitle:(NSString*)title message:(NSString*)message;
+- (void) presentOkAlertWithTitle:(NSString*)title
+                         message:(NSString*)message;
+- (void) presentOkAlertWithTitle:(NSString*)title
+                         message:(NSString*)message
+                       okHandler:(void (^)(UIAlertAction* action))okHandler;
 - (void) presentYesNoAlertWithTitle:(NSString*)title
                             message:(NSString*)message
                          yesHandler:(void (^)(UIAlertAction* action))yesHandler
