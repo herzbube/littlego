@@ -615,16 +615,8 @@ enum LoadResultType
   else if (aGame == self.game)
     return true;  // ok, user has made no real changes
 
-  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Game already exists"
-                                                                           message:@"Please choose a different name. Another game with that name already exists."
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-
-  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
-                                                     style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction* action) {}];
-  [alertController addAction:okAction];
-
-  [editTextController presentViewController:alertController animated:YES completion:nil];
+  [editTextController presentOkAlertWithTitle:@"Game already exists"
+                                      message:@"Please choose a different name. Another game with that name already exists."];
 
   return false;
 }

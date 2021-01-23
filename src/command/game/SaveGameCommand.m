@@ -23,6 +23,7 @@
 #import "../../go/GoGameDocument.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/ApplicationStateManager.h"
+#import "../../ui/UIViewControllerAdditions.h"
 
 
 @implementation SaveGameCommand
@@ -77,31 +78,14 @@
   }
   else
   {
-    [self showAlertWithMessage:saveSgfCommand.errorMessage];
+    [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Failed to save game"
+                                                                                    message:saveSgfCommand.errorMessage];
   }
 
   if (saveSgfCommand.destinationFolderWasTouched)
     [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
 
   return true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Displays "failed to save game" alert with the error details stored
-/// in @a message.
-// -----------------------------------------------------------------------------
-- (void) showAlertWithMessage:(NSString*)message
-{
-  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Failed to save game"
-                                                                           message:message
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-
-  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
-                                                     style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction* action) {}];
-  [alertController addAction:okAction];
-
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

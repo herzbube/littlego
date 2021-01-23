@@ -22,6 +22,7 @@
 #import "../sgf/SgfSettingsModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
+#import "../ui/UIViewControllerAdditions.h"
 #import "../utility/ExceptionUtility.h"
 #import "../utility/UIColorAdditions.h"
 
@@ -418,14 +419,7 @@ enum OtherSectionItem
     else
       message = [NSString stringWithFormat:@"An unexpected error occurred while trying to find out if \"%@\" is a valid text encoding.\n\nThe system error code is %d.", text, errno];
 
-    UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Text encoding validation failed"
-                                                                             message:message
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:^(UIAlertAction* action) {}];
-    [alertController addAction:okAction];
-    [editTextController presentViewController:alertController animated:YES completion:nil];
+    [editTextController presentOkAlertWithTitle:@"Text encoding validation failed" message:message];
   }
   else
   {

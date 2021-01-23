@@ -20,6 +20,7 @@
 #import "../archive/ArchiveViewModel.h"
 #import "../main/ApplicationDelegate.h"
 #import "../main/MainUtility.h"
+#import "../ui/UIViewControllerAdditions.h"
 #import "../utility/PathUtilities.h"
 
 
@@ -61,11 +62,9 @@
   NSError* error;
   BOOL success = [PathUtilities moveItemAtPath:documentInteractionFilePath overwritePath:uniqueFilePath error:&error];
 
-  NSString* alertTitle;
   NSString* alertMessage;
   if (success)
   {
-    alertTitle = @"Game imported";
     alertMessage = [NSString stringWithFormat:@"The game has been imported and stored in the archive under this name:\n\n%@",
                     uniqueGameName];
   }
@@ -76,21 +75,11 @@
     [PathUtilities deleteItemIfExists:documentInteractionFilePath];
     [PathUtilities deleteItemIfExists:uniqueFilePath];
 
-    alertTitle = @"Game imported";
     alertMessage = [NSString stringWithFormat:@"The game could not be imported. Reason for the failure: %@",
                     [error localizedDescription]];
   }
 
-  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:alertTitle
-                                                                           message:alertMessage
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-
-  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
-                                                     style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction* action) {}];
-  [alertController addAction:okAction];
-
-  [self performSelectorOnMainThread:@selector(showAlert:) withObject:alertController waitUntilDone:YES];
+  [self performSelectorOnMainThread:@selector(showAlert:) withObject:alertMessage waitUntilDone:YES];
 
   return success;
 }
@@ -98,9 +87,10 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for moveDocumentInteractionFileToArchive().
 // -----------------------------------------------------------------------------
-- (void) showAlert:(UIAlertController*)alertController
+- (void) showAlert:(NSString*)alertMessage
 {
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Game imported"
+                                                                                  message:alertMessage];
 }
 
 @end

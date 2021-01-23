@@ -21,6 +21,7 @@
 #import "../go/GoUtilities.h"
 #import "../main/ApplicationDelegate.h"
 #import "../player/GtpEngineProfile.h"
+#import "../ui/UIViewControllerAdditions.h"
 #import "../utility/NSStringAdditions.h"
 
 
@@ -730,16 +731,7 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
                               "This is to preserve any customizations you may have made. If you don't need these "
                               "backups you can simply delete them.");
 
-    UIAlertController* alertController = [UIAlertController alertControllerWithTitle:alertTitle
-                                                                             message:alertMessage
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
-
-    UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
-                                                       style:UIAlertActionStyleDefault
-                                                     handler:^(UIAlertAction* action) {}];
-    [alertController addAction:okAction];
-
-    [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+    [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle message:alertMessage];
   }
 }
 

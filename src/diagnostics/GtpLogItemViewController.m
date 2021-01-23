@@ -22,6 +22,7 @@
 #import "../main/ApplicationDelegate.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
+#import "../ui/UIViewControllerAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -300,16 +301,8 @@ enum ResponseStringSectionItem
   GtpCommandModel* model = delegate.gtpCommandModel;
   [model addCommand:self.logItem.commandString];
 
-  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Command added"
-                                                                           message:@"The command was added to the list of predefined commands."
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-
-  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
-                                                     style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction* action) {}];
-  [alertController addAction:okAction];
-
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Command added"
+                                                                                  message:@"The command was added to the list of predefined commands."];
 
   // Make sure the command cannot be added a second time
   self.navigationItem.rightBarButtonItem = nil;

@@ -17,6 +17,7 @@
 
 // Project includes
 #import "ArchiveUtility.h"
+#import "../ui/UIViewControllerAdditions.h"
 
 
 @implementation ArchiveUtility
@@ -78,16 +79,7 @@
     }
   }
 
-  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:alertTitle
-                                                                           message:alertMessage
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-
-  UIAlertAction* okAction = [UIAlertAction actionWithTitle:@"Ok"
-                                                     style:UIAlertActionStyleDefault
-                                                   handler:^(UIAlertAction* action) {}];
-  [alertController addAction:okAction];
-
-  [presenter presentViewController:alertController animated:YES completion:nil];
+  [presenter presentOkAlertWithTitle:alertTitle message:alertMessage];
 }
 
 @end
