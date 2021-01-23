@@ -229,6 +229,12 @@
     case MoreGameActionsButtonUndoResign:
       buttonName = @"Undo resign";
       break;
+    case MoreGameActionsButtonUndoTimeout:
+      buttonName = @"Undo timeout";
+      break;
+    case MoreGameActionsButtonUndoForfeit:
+      buttonName = @"Undo forfeit";
+      break;
     case MoreGameActionsButtonSaveGame:
       buttonName = @"Save game";
       break;
