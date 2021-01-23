@@ -1211,7 +1211,11 @@ enum LoadResultType
     if (! game.hasRootNode)
       continue;
 
-    for (SGFCNode* gameInfoNode in game.gameInfoNodes)
+    NSArray* gameInfoNodesIteration = game.gameInfoNodes;
+    if (gameInfoNodesIteration.count == 0)
+      gameInfoNodesIteration = @[game.rootNode];
+
+    for (SGFCNode* gameInfoNode in gameInfoNodesIteration)
     {
       SGFCGameInfo* gameInfo = gameInfoNode.gameInfo;
 

@@ -69,7 +69,22 @@
   }
   SGFCGame* sgfGame = [sgfGames firstObject];
   NSArray* sgfGameInfoNodes = sgfGame.gameInfoNodes;
-  if (sgfGameInfoNodes.count != 1)
+  // At the time when this code was written a game info node is always present
+  // in the backup file, because SaveSgfCommand always writes handicap and komi
+  // even if they have the default value 0. It's conceivable, though, that this
+  // might change in the future, so we guard against it and use the root node
+  // as replacement.
+  if (sgfGameInfoNodes.count == 0)
+  {
+    if (! sgfGame.hasRootNode)
+    {
+      DDLogError(@"%@: SGF data loaded by LoadSgfCommand from backup file has no root node", [self shortDescription]);
+      assert(0);
+      return false;
+    }
+    sgfGameInfoNodes = @[sgfGame.rootNode];
+  }
+  else if (sgfGameInfoNodes.count > 1)
   {
     DDLogError(@"%@: SGF data loaded by LoadSgfCommand from backup file has more than 1 game info node", [self shortDescription]);
     assert(0);
