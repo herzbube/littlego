@@ -806,25 +806,42 @@ enum DataSourceInfoSectionItem
     NSArray* stringArray;
     [SgfUtilities parseSgfGameDates:goGameInfo.gameDates dateArray:&dateArray stringArray:&stringArray];
     self.gameDatesAsString = [self stringValue:[stringArray componentsJoinedByString:@", "]
+                             withFallbackValue:goGameInfo.rawGameDates
                     forMissingDataDisplayStyle:missingDataDisplayStyle
                                        hasData:&_gameDatesHasData];
     self.gameDates = dateArray;
     self.rulesName = [self stringValue:goGameInfo.rulesName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_goRulesetHasData];
     self.goRuleset = goGameInfo.goRuleset;
-    self.numberOfHandicapStonesAsString = [self stringValue:[NSString stringWithFormat:@"%ld", (long)goGameInfo.numberOfHandicapStones]
+    NSString* formattedNumberOfHandicapStones;
+    if (goGameInfo.numberOfHandicapStones != 0)
+      formattedNumberOfHandicapStones = [NSString stringWithFormat:@"%ld", (long)goGameInfo.numberOfHandicapStones];
+    else
+      formattedNumberOfHandicapStones = @"";
+    self.numberOfHandicapStonesAsString = [self stringValue:formattedNumberOfHandicapStones
                                  forMissingDataDisplayStyle:missingDataDisplayStyle
                                                     hasData:&_numberOfHandicapStonesHasData];
     self.numberOfHandicapStones = goGameInfo.numberOfHandicapStones;
-    self.komiAsString = [self stringValue:[NSString stringWithFormat:@"%.1f", goGameInfo.komi]
+    NSString* formattedKomi;
+    if (goGameInfo.komi != 0.0)
+      formattedKomi = [NSString stringWithFormat:@"%.1f", goGameInfo.komi];
+    else
+      formattedKomi = @"";
+    self.komiAsString = [self stringValue:formattedKomi
                forMissingDataDisplayStyle:missingDataDisplayStyle
                                   hasData:&_komiHasData];
     self.komi = goGameInfo.komi;
     self.gameResultAsString = [self stringValue:[SgfUtilities stringForSgfGameResult:goGameInfo.gameResult]
+                              withFallbackValue:goGameInfo.rawGameResult
                      forMissingDataDisplayStyle:missingDataDisplayStyle
                                         hasData:&_gameResultHasData];
     self.gameResult = goGameInfo.gameResult;
 
-    self.timeLimitInSecondsAsString = [self stringValue:[NSString stringWithFormat:@"%.1f", goGameInfo.timeLimitInSeconds]
+    NSString* formattedTimeLimitInSeconds;
+    if (goGameInfo.timeLimitInSeconds != 0.0)
+      formattedTimeLimitInSeconds = [NSString stringWithFormat:@"%.1f", goGameInfo.timeLimitInSeconds];
+    else
+      formattedTimeLimitInSeconds = @"";
+    self.timeLimitInSecondsAsString = [self stringValue:formattedTimeLimitInSeconds
                              forMissingDataDisplayStyle:missingDataDisplayStyle
                                                 hasData:&_timeLimitInSecondsHasData];
     self.timeLimitInSeconds = goGameInfo.timeLimitInSeconds;
@@ -833,12 +850,14 @@ enum DataSourceInfoSectionItem
 
     self.blackPlayerName = [self stringValue:goGameInfo.blackPlayerName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_blackPlayerNameHasData];
     self.blackPlayerRankAsString = [self stringValue:[SgfUtilities stringForSgfGoPlayerRank:goGameInfo.goBlackPlayerRank]
+                                   withFallbackValue:goGameInfo.blackPlayerRank
                           forMissingDataDisplayStyle:missingDataDisplayStyle
                                              hasData:&_blackPlayerRankHasData];
     self.blackPlayerRank = goGameInfo.goBlackPlayerRank;
     self.blackPlayerTeamName = [self stringValue:goGameInfo.blackPlayerTeamName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_blackPlayerTeamNameHasData];
     self.whitePlayerName = [self stringValue:goGameInfo.whitePlayerName forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_whitePlayerNameHasData];
     self.whitePlayerRankAsString = [self stringValue:[SgfUtilities stringForSgfGoPlayerRank:goGameInfo.goWhitePlayerRank]
+                                   withFallbackValue:goGameInfo.whitePlayerRank
                           forMissingDataDisplayStyle:missingDataDisplayStyle
                                              hasData:&_whitePlayerRankHasData];
     self.whitePlayerRank = goGameInfo.goWhitePlayerRank;
@@ -849,6 +868,16 @@ enum DataSourceInfoSectionItem
     self.roundInformationAsString = [self stringValue:goGameInfo.rawRoundInformation forMissingDataDisplayStyle:missingDataDisplayStyle hasData:&_roundInformationHasData];
     self.roundInformation = goGameInfo.roundInformation;
   }
+}
+
+- (NSString*) stringValue:(NSString*)stringValue withFallbackValue:(NSString*)fallbackValue forMissingDataDisplayStyle:(enum GameInfoItemMissingDataDisplayStyle)missingDataDisplayStyle hasData:(bool*)hasData
+{
+  NSString* result = [self stringValue:stringValue forMissingDataDisplayStyle:missingDataDisplayStyle hasData:hasData];
+
+  if (! (*hasData))
+    result = [self stringValue:fallbackValue forMissingDataDisplayStyle:missingDataDisplayStyle hasData:hasData];
+
+  return result;
 }
 
 - (NSString*) stringValue:(NSString*)stringValue forMissingDataDisplayStyle:(enum GameInfoItemMissingDataDisplayStyle)missingDataDisplayStyle hasData:(bool*)hasData
