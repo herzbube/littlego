@@ -1225,35 +1225,13 @@ enum LoadResultType
       GameInfoItem* gameInfoItem;
       if (gameInfo.gameType == SGFCGameTypeGo)
       {
-        SGFCBoardSize boardSize = gameInfo.boardSize;
-        if (SGFCBoardSizeIsSquare(boardSize))
-        {
-          switch (boardSize.Columns)
-          {
-            case 7:
-            case 9:
-            case 11:
-            case 13:
-            case 15:
-            case 17:
-            case 19:
-            {
-              gameInfoItem = [GameInfoItem gameInfoItemWithGoGameInfo:gameInfo.toGoGameInfo titleText:titleText];
-              break;
-            }
-            default:
-            {
-              NSString* descriptiveText = [NSString stringWithFormat:@"The board size is not supported: %@.", [SgfUtilities stringForSgfBoardSize:boardSize]];
-              gameInfoItem = [GameInfoItem gameInfoItemWithDescriptiveText:descriptiveText titleText:titleText];
-              break;
-            }
-          }
-        }
+        NSString* errorMessage;
+        enum GoBoardSize goBoardSize = [SgfUtilities goBoardSizeForSgfBoardSize:gameInfo.boardSize
+                                                                   errorMessage:&errorMessage];
+        if (goBoardSize == GoBoardSizeUndefined)
+          gameInfoItem = [GameInfoItem gameInfoItemWithDescriptiveText:errorMessage titleText:titleText];
         else
-        {
-          NSString* descriptiveText = [NSString stringWithFormat:@"The board size is not supported because it is not square: %@.", [SgfUtilities stringForSgfBoardSize:boardSize]];
-          gameInfoItem = [GameInfoItem gameInfoItemWithDescriptiveText:descriptiveText titleText:titleText];
-        }
+          gameInfoItem = [GameInfoItem gameInfoItemWithGoGameInfo:gameInfo.toGoGameInfo titleText:titleText];
       }
       else
       {

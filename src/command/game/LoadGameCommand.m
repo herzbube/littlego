@@ -26,6 +26,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoGameDocument.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpUtilities.h"
 #import "../../main/ApplicationDelegate.h"
@@ -232,39 +233,16 @@ static const int maxStepsForReplayMoves = 10;
 // -----------------------------------------------------------------------------
 - (bool) startNewGame:(NSString**)errorMessage
 {
-  SGFCBoardSize sgfBoardSize = self.sgfGoGameInfo.boardSize;
-  if (! SGFCBoardSizeIsSquare(sgfBoardSize))
-  {
-    *errorMessage = [NSString stringWithFormat:@"The board size is not square: %ld x %ld.", (long)sgfBoardSize.Columns, (long)sgfBoardSize.Rows];
+  enum GoBoardSize goBoardSize = [SgfUtilities goBoardSizeForSgfBoardSize:self.sgfGoGameInfo.boardSize
+                                                             errorMessage:errorMessage];
+  if (goBoardSize == GoBoardSizeUndefined)
     return false;
-  }
-
-  enum GoBoardSize boardSize;
-  switch (sgfBoardSize.Columns)
-  {
-    case 7:
-    case 9:
-    case 11:
-    case 13:
-    case 15:
-    case 17:
-    case 19:
-    {
-      boardSize = (enum GoBoardSize)sgfBoardSize.Columns;
-      break;
-    }
-    default:
-    {
-      *errorMessage = [NSString stringWithFormat:@"The board size is not supported: %ld.", (long)sgfBoardSize.Columns];
-      return false;
-    }
-  }
 
   // Temporarily re-configure NewGameModel with the new board size from the
   // loaded game
   NewGameModel* model = [ApplicationDelegate sharedDelegate].theNewGameModel;
   enum GoBoardSize oldBoardSize = model.boardSize;
-  model.boardSize = boardSize;
+  model.boardSize = goBoardSize;
 
   if (self.restoreMode)
   {

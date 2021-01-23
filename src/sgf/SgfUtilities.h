@@ -36,6 +36,7 @@
                withLoadSuccessType:(enum SgfLoadSuccessType)loadSuccessType;
 
 + (NSString*) stringForSgfBoardSize:(SGFCBoardSize)sgfBoardSize;
++ (enum GoBoardSize) goBoardSizeForSgfBoardSize:(SGFCBoardSize)sgfBoardSize errorMessage:(NSString**)errorMessage;
 + (void) parseSgfGameDates:(NSArray*)sgfGameDates dateArray:(NSArray**)dateArray stringArray:(NSArray**)stringArray;
 + (NSString*) stringForSgfGameResult:(SGFCGameResult)sgfGameResult;
 + (NSString*) stringForSgfGoPlayerRank:(SGFCGoPlayerRank)sgfGoPlayerRank;

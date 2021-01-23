@@ -66,6 +66,53 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the GoBoardSize enumeration value that corresponds to
+/// @a sgfBoardSize. Returns #GoBoardSizeUndefined if conversion is not
+/// possible.
+///
+/// If conversion is not possible, and if the out parameter @a errorMessage is
+/// not @e nil, also sets @a errorMessage to an error message that describes why
+/// the conversion is not possible.
+// -----------------------------------------------------------------------------
++ (enum GoBoardSize) goBoardSizeForSgfBoardSize:(SGFCBoardSize)sgfBoardSize errorMessage:(NSString**)errorMessage
+{
+  if (! SGFCBoardSizeIsValid(sgfBoardSize, SGFCGameTypeGo))
+  {
+    if (errorMessage)
+      *errorMessage = [NSString stringWithFormat:@"The board size is not valid: %ld x %ld.", (long)sgfBoardSize.Columns, (long)sgfBoardSize.Rows];
+    return GoBoardSizeUndefined;
+  }
+
+  if (! SGFCBoardSizeIsSquare(sgfBoardSize))
+  {
+    if (errorMessage)
+      *errorMessage = [NSString stringWithFormat:@"The board size is not supported because it is not square: %ld x %ld.", (long)sgfBoardSize.Columns, (long)sgfBoardSize.Rows];
+    return GoBoardSizeUndefined;
+  }
+
+  switch (sgfBoardSize.Columns)
+  {
+    case 7:
+    case 9:
+    case 11:
+    case 13:
+    case 15:
+    case 17:
+    case 19:
+    {
+      return (enum GoBoardSize)sgfBoardSize.Columns;
+    }
+    default:
+    {
+      if (errorMessage)
+        *errorMessage = [NSString stringWithFormat:@"The board size is not supported: %ld x %ld.", (long)sgfBoardSize.Columns, (long)sgfBoardSize.Rows];
+      return GoBoardSizeUndefined;
+    }
+  }
+}
+
+
+// -----------------------------------------------------------------------------
 /// @brief Parses @e sgfGameDates, whose elements must be NSValue objects
 /// wrapping SGFCDate values, and fills the result into the out variables
 /// @a dateArray (elements are NSDate objects) and @a stringArray (elements are
