@@ -218,15 +218,6 @@ player's memory requirements. If this happens, you probably have increased the
 computer player's "Max. memory" setting and should try to reduce that number
 again to a safe level.
 
-===================================================
-I cannot load a game, the "Load" button is disabled
-===================================================
-When you view the details of a saved game in the "Archive" area of the app, the
-"Load" button is disabled as long as the computer is busy thinking (either for
-itself, or on behalf of a human player who has tapped the "Computer play"
-button). If a computer vs. computer game is currently in progress, you have to
-pause the game for the button to become enabled.
-
 ============================================================
 I cannot load a game, the game is reported to contain errors
 ============================================================

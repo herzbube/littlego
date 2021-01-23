@@ -100,6 +100,8 @@
 		CD15A480168CBE7F00D4472A /* GoMoveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A47F168CBE7F00D4472A /* GoMoveModel.m */; };
 		CD15A481168CE99100D4472A /* GoMoveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A47F168CBE7F00D4472A /* GoMoveModel.m */; };
 		CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A483168D044400D4472A /* GoMoveModelTest.m */; };
+		CD1D606425BC230A00345506 /* UIViewControllerAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */; };
+		CD1D606525BC230A00345506 /* UIViewControllerAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */; };
 		CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60916FE181400C2E648 /* GoGameDocument.m */; };
 		CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60916FE181400C2E648 /* GoGameDocument.m */; };
 		CD1DB60E1702436B00C2E648 /* HandleDocumentInteractionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60D1702436800C2E648 /* HandleDocumentInteractionCommand.m */; };
@@ -748,6 +750,8 @@
 		CD15A47F168CBE7F00D4472A /* GoMoveModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveModel.m; sourceTree = "<group>"; };
 		CD15A482168D044400D4472A /* GoMoveModelTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveModelTest.h; sourceTree = "<group>"; };
 		CD15A483168D044400D4472A /* GoMoveModelTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveModelTest.m; sourceTree = "<group>"; };
+		CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewControllerAdditions.m; sourceTree = "<group>"; };
+		CD1D606325BC230A00345506 /* UIViewControllerAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewControllerAdditions.h; sourceTree = "<group>"; };
 		CD1DB60816FE181400C2E648 /* GoGameDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameDocument.h; sourceTree = "<group>"; };
 		CD1DB60916FE181400C2E648 /* GoGameDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameDocument.m; sourceTree = "<group>"; };
 		CD1DB60C1702436700C2E648 /* HandleDocumentInteractionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandleDocumentInteractionCommand.h; sourceTree = "<group>"; };
@@ -2610,6 +2614,8 @@
 				CD6C7DBB17512152009FBEC4 /* UiSettingsModel.m */,
 				CDB457B2147F14480043EDE4 /* UiUtilities.h */,
 				CDB457B3147F14490043EDE4 /* UiUtilities.m */,
+				CD1D606325BC230A00345506 /* UIViewControllerAdditions.h */,
+				CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -3098,6 +3104,7 @@
 				CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */,
 				CDAF1723196CA81900271396 /* GoVertexNumeric.m in Sources */,
 				CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */,
+				CD1D606425BC230A00345506 /* UIViewControllerAdditions.m in Sources */,
 				CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */,
 				CDA096FF1A98CD54002FCD78 /* ButtonBoxController.m in Sources */,
 				CD97FA101AE3D4DD00148C16 /* NewGameAdvancedController.m in Sources */,
@@ -3284,6 +3291,7 @@
 				CDFD9F7018F1D35C0031CBCF /* BoardPositionSettingsController.m in Sources */,
 				CDEE19F419433EAC00DF2389 /* BoardView.m in Sources */,
 				CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */,
+				CD1D606525BC230A00345506 /* UIViewControllerAdditions.m in Sources */,
 				CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */,
 				CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */,
 				CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */,

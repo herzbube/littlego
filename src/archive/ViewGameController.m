@@ -35,6 +35,7 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
+#import "../ui/UIViewControllerAdditions.h"
 #import "../utility/UIColorAdditions.h"
 #import "../utility/UIDeviceAdditions.h"
 
@@ -132,7 +133,6 @@ enum LoadResultType
 @property(nonatomic, assign) NSUInteger numberOfGameInfoItems;
 @property(nonatomic, retain) NSArray* gameInfoItems;
 @property(nonatomic, retain) NSArray* gameInfoNodes;
-@property(nonatomic, assign) bool loadGameEnabled;
 @property(nonatomic, retain) GameInfoItem* gameInfoItemBeingLoaded;
 @property(nonatomic, retain) SGFCNode* gameInfoNodeBeingLoaded;
 @end
@@ -159,7 +159,6 @@ enum LoadResultType
     controller.numberOfGameInfoItems = 0;
     controller.gameInfoItems = nil;
     controller.gameInfoNodes = nil;
-    controller.loadGameEnabled = true;
     controller.gameInfoItemBeingLoaded = nil;
     controller.gameInfoNodeBeingLoaded = nil;
   }
@@ -171,7 +170,6 @@ enum LoadResultType
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self.game removeObserver:self forKeyPath:@"fileDate"];
   self.game = nil;
   self.model = nil;
@@ -201,12 +199,7 @@ enum LoadResultType
                                                                      action:@selector(action:)] autorelease];
   self.actionButton.style = UIBarButtonItemStylePlain;
   self.navigationItem.rightBarButtonItems = [NSArray arrayWithObject:self.actionButton];
-  [self updateLoadGameEnabled];
 
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
-  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
-  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   // KVO observing
   [self.game addObserver:self forKeyPath:@"fileDate" options:0 context:NULL];
 
@@ -532,11 +525,22 @@ enum LoadResultType
           }
           case LoadGameItem:
           {
-            if (self.loadGameEnabled)
+            bool isLoadGameEnabled = [self isLoadGameEnabled];
+            if (isLoadGameEnabled)
             {
               GameInfoItem* gameInfoItem = [self.gameInfoItems objectAtIndex:indexPath.section - GamesSection];
               SGFCNode* gameInfoNode = [self.gameInfoNodes objectAtIndex:indexPath.section - GamesSection];
               [self loadGame:gameInfoItem gameInfoNode:gameInfoNode];
+            }
+            else
+            {
+              GoGame* game = [GoGame sharedGame];
+              NSString* message;
+              if (game.type == GoGameTypeComputerVsComputer && game.state != GoGameStateGameIsPaused)
+                message = @"A computer vs. computer game is currently in progress. The game cannot be loaded as long as the computer is busy thinking. Please pause the game and then try again.";
+              else
+                message = @"The game cannot be loaded because the computer is currently busy thinking. Please wait a moment until the computer has stopped thinking, then try again.";
+              [self presentOkAlertWithTitle:@"Game cannot be loaded" message:message];
             }
             break;
           }
@@ -561,23 +565,6 @@ enum LoadResultType
 }
 
 #pragma mark - Notification responders
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameStateChanged notification.
-// -----------------------------------------------------------------------------
-- (void) goGameStateChanged:(NSNotification*)notification
-{
-  [self updateLoadGameEnabled];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #computerPlayerThinkingStarts and
-/// #computerPlayerThinkingStops notifications.
-// -----------------------------------------------------------------------------
-- (void) computerPlayerThinkingChanged:(NSNotification*)notification
-{
-  [self updateLoadGameEnabled];
-}
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
@@ -658,6 +645,38 @@ enum LoadResultType
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - Load game - Helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the "load game" function is currently enabled.
+/// Returns false if the function is currently not enabled.
+///
+/// The function is disabled if a computer player is currently thinking, or if a
+/// computer vs. computer game is not paused. With this measure we avoid the
+/// complicated multi-thread handling of the situation where we need to wait for
+/// the computer player to finish thinking before we can discard the current
+/// game in favour of the game to be loaded.
+// -----------------------------------------------------------------------------
+- (bool) isLoadGameEnabled
+{
+  bool isLoadGameEnabled;
+  GoGame* goGame = [GoGame sharedGame];
+
+  if (goGame.type == GoGameTypeComputerVsComputer)
+  {
+    if (goGame.state == GoGameStateGameIsPaused || goGame.state == GoGameStateGameHasEnded)
+      isLoadGameEnabled = (! goGame.isComputerThinking);
+    else
+      isLoadGameEnabled = false;
+  }
+  else
+  {
+    isLoadGameEnabled = (! goGame.isComputerThinking);
+  }
+
+  return isLoadGameEnabled;
+}
+
 #pragma mark - Load game - Action handlers
 
 // -----------------------------------------------------------------------------
@@ -707,48 +726,6 @@ enum LoadResultType
       [self.navigationController popViewControllerAnimated:NO];
     }
   }
-}
-
-#pragma mark - Load game - Button state handling
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the enabled state of the "load game" function.
-///
-/// The function is disabled if a computer player is currently thinking, or if a
-/// computer vs. computer game is not paused. With this measure we avoid the
-/// complicated multi-thread handling of the situation where we need to wait for
-/// the computer player to finish thinking before we can discard the current
-/// game in favour of the game to be loaded.
-// -----------------------------------------------------------------------------
-- (void) updateLoadGameEnabled
-{
-  bool loadGameEnabled = false;
-
-  GoGame* goGame = [GoGame sharedGame];
-  switch (goGame.type)
-  {
-    case GoGameTypeComputerVsComputer:
-    {
-      switch (goGame.state)
-      {
-        case GoGameStateGameIsPaused:
-        case GoGameStateGameHasEnded:
-          if (! goGame.isComputerThinking)
-            loadGameEnabled = true;
-          break;
-        default:
-          break;
-      }
-      break;
-    }
-    default:
-    {
-      if (! goGame.isComputerThinking)
-        loadGameEnabled = true;
-      break;
-    }
-  }
-  self.loadGameEnabled = loadGameEnabled;
 }
 
 #pragma mark - Action button - Action handlers
