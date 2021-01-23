@@ -21,6 +21,7 @@
 #import "../sgf/SgfSettingsModel.h"
 #import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UIViewControllerAdditions.h"
 #import "../utility/ExceptionUtility.h"
 
 
@@ -285,33 +286,18 @@ enum ResetToDefaultsSectionItem
   }
   else if (ResetToDefaultsSection == indexPath.section)
   {
-    UIAlertControllerStyle alertControllerStyle;
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-      alertControllerStyle = UIAlertControllerStyleActionSheet;
-    else
-      alertControllerStyle = UIAlertControllerStyleAlert;
-    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Please confirm"
-                                                                   message:@"This will reset the syntax checking level settings to a set of default values. Any changes you have made will be discarded."
-                                                            preferredStyle:alertControllerStyle];
-
     void (^resetActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
     {
       [self.sgfSettingsModel resetSyntaxCheckingLevelPropertiesToDefaultValues];
       [self.delegate didChangeSyntaxCheckingLevel:self];
       [self.tableView reloadData];
     };
-    UIAlertAction* resetAction = [UIAlertAction actionWithTitle:@"Reset to default values"
-                                                          style:UIAlertActionStyleDestructive
-                                                        handler:resetActionBlock];
-    [alert addAction:resetAction];
 
-    void (^cancelActionBlock) (UIAlertAction*) = ^(UIAlertAction* action) {};
-    UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
-                                                           style:UIAlertActionStyleCancel
-                                                         handler:cancelActionBlock];
-    [alert addAction:cancelAction];
-
-    [self presentViewController:alert animated:YES completion:nil];
+    [self presentDestructiveAlertWithTitle:@"Please confirm"
+                                   message:@"This will reset the syntax checking level settings to a set of default values. Any changes you have made will be discarded."
+                    destructiveActionTitle:@"Reset to default values"
+                        destructiveHandler:resetActionBlock
+                             cancelHandler:nil];
   }
 }
 

@@ -34,5 +34,10 @@
                             message:(NSString*)message
                          yesHandler:(void (^)(UIAlertAction* action))yesHandler
                           noHandler:(void (^)(UIAlertAction* action))noHandler;
+- (void) presentDestructiveAlertWithTitle:(NSString*)title
+                                  message:(NSString*)message
+                   destructiveActionTitle:(NSString*)destructiveActionTitle
+                       destructiveHandler:(void (^)(UIAlertAction* action))destructiveHandler
+                            cancelHandler:(void (^)(UIAlertAction* action))cancelHandler;
 
 @end

@@ -99,7 +99,56 @@
   [alertController addAction:yesAction];
 
   [self presentViewController:alertController animated:YES completion:nil];
+}
 
+// -----------------------------------------------------------------------------
+/// @brief Displays an alert with title @a title, message @a message and two
+/// buttons labeled @a destructiveActionTitle and "Cancel" which execute
+/// @a destructiveHandler and @a cancelHandler, respectively, when pressed.
+/// The receiver of the message is the presenting view controller.
+///
+/// @a destructiveHandler and @a cancelHandler may be @e nil to indicate that
+/// nothing should be done when the respective button is pressed.
+///
+/// The destructive action button uses @e UIAlertActionStyleDestructive, the
+/// "Cancel" button uses @e UIAlertActionStyleCancel.
+///
+/// If the device's idiom is @e UIUserInterfaceIdiomPhone the alert uses
+/// @e UIAlertControllerStyleActionSheet instead of the usual
+/// @e UIAlertControllerStyleAlert.
+///
+/// Control immediately returns to the caller who invoked this method.
+// -----------------------------------------------------------------------------
+- (void) presentDestructiveAlertWithTitle:(NSString*)title
+                                  message:(NSString*)message
+                   destructiveActionTitle:(NSString*)destructiveActionTitle
+                       destructiveHandler:(void (^)(UIAlertAction* action))destructiveHandler
+                            cancelHandler:(void (^)(UIAlertAction* action))cancelHandler
+{
+  UIAlertControllerStyle alertControllerStyle;
+  if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
+    alertControllerStyle = UIAlertControllerStyleActionSheet;
+  else
+    alertControllerStyle = UIAlertControllerStyleAlert;
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:title
+                                                                           message:message
+                                                                    preferredStyle:alertControllerStyle];
+
+  if (! cancelHandler)
+    cancelHandler = ^(UIAlertAction* action) {};
+  UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
+                                                         style:UIAlertActionStyleCancel
+                                                       handler:cancelHandler];
+  [alertController addAction:cancelAction];
+
+  if (! destructiveHandler)
+    destructiveHandler = ^(UIAlertAction* action) {};
+  UIAlertAction* destructiveAction = [UIAlertAction actionWithTitle:destructiveActionTitle
+                                                              style:UIAlertActionStyleDestructive
+                                                            handler:destructiveHandler];
+  [alertController addAction:destructiveAction];
+
+  [self presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

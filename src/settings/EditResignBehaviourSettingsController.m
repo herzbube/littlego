@@ -20,6 +20,7 @@
 #import "../player/GtpEngineProfile.h"
 #import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UIViewControllerAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -325,15 +326,6 @@ enum ResignMinGamesCategory
   }
   else if (ResetToDefaultsSection == indexPath.section)
   {
-    UIAlertControllerStyle alertControllerStyle;
-    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone)
-      alertControllerStyle = UIAlertControllerStyleActionSheet;
-    else
-      alertControllerStyle = UIAlertControllerStyleAlert;
-    UIAlertController* alert = [UIAlertController alertControllerWithTitle:@"Please confirm"
-                                                                   message:@"This will reset the profile's resign behaviour settings to a set of default values. Any changes you have made will be discarded."
-                                                            preferredStyle:alertControllerStyle];
-
     void (^resetActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
     {
       [self.profile resetResignBehaviourPropertiesToDefaultValues];
@@ -343,18 +335,12 @@ enum ResignMinGamesCategory
         self.profile.fuegoResignMinGames = fuegoResignMinGamesDefault;
       [self.tableView reloadData];
     };
-    UIAlertAction* resetAction = [UIAlertAction actionWithTitle:@"Reset to default values"
-                                                          style:UIAlertActionStyleDestructive
-                                                        handler:resetActionBlock];
-    [alert addAction:resetAction];
 
-    void (^cancelActionBlock) (UIAlertAction*) = ^(UIAlertAction* action) {};
-    UIAlertAction* cancelAction = [UIAlertAction actionWithTitle:@"Cancel"
-                                                           style:UIAlertActionStyleCancel
-                                                         handler:cancelActionBlock];
-    [alert addAction:cancelAction];
-
-    [self presentViewController:alert animated:YES completion:nil];
+    [self presentDestructiveAlertWithTitle:@"Please confirm"
+                                   message:@"This will reset the profile's resign behaviour settings to a set of default values. Any changes you have made will be discarded."
+                    destructiveActionTitle:@"Reset to default values"
+                        destructiveHandler:resetActionBlock
+                             cancelHandler:nil];
   }
 }
 
