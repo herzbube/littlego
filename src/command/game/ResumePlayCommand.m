@@ -25,6 +25,7 @@
 #import "../../go/GoUtilities.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/ApplicationStateManager.h"
+#import "../../ui/UIViewControllerAdditions.h"
 #import "../../utility/NSStringAdditions.h"
 
 
@@ -83,29 +84,22 @@
                             "With alternating play, %@ would play first.\n\n"
                             "Which side would you like to play first?", [alternatingColorName lowercaseString]];
 
-  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:alertTitle
-                                                                           message:alertMessage
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-
   void (^blackColorActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
   {
     [self didDismissAlertWithColor:GoColorBlack];
   };
-  UIAlertAction* blackColorAction = [UIAlertAction actionWithTitle:blackColorName
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:blackColorActionBlock];
-  [alertController addAction:blackColorAction];
 
   void (^whiteColorActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
   {
     [self didDismissAlertWithColor:GoColorWhite];
   };
-  UIAlertAction* whiteColorAction = [UIAlertAction actionWithTitle:whiteColorName
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:whiteColorActionBlock];
-  [alertController addAction:whiteColorAction];
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentTwoButtonAlertWithTitle:alertTitle
+                                                                                         message:alertMessage
+                                                                                firstActionTitle:blackColorName
+                                                                              firstActionHandler:blackColorActionBlock
+                                                                               secondActionTitle:whiteColorName
+                                                                             secondActionHandler:whiteColorActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }

@@ -34,6 +34,12 @@
                             message:(NSString*)message
                          yesHandler:(void (^)(UIAlertAction* action))yesHandler
                           noHandler:(void (^)(UIAlertAction* action))noHandler;
+- (void) presentTwoButtonAlertWithTitle:(NSString*)title
+                                message:(NSString*)message
+                       firstActionTitle:(NSString*)firstActionTitle
+                     firstActionHandler:(void (^)(UIAlertAction* action))firstActionHandler
+                      secondActionTitle:(NSString*)secondActionTitle
+                    secondActionHandler:(void (^)(UIAlertAction* action))secondActionHandler;
 - (void) presentDestructiveAlertWithTitle:(NSString*)title
                                   message:(NSString*)message
                    destructiveActionTitle:(NSString*)destructiveActionTitle

@@ -103,6 +103,47 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Displays an alert with title @a title, message @a message and two
+/// buttons labeled @a firstActionTitle and @a secondActionTitle which execute
+/// @a firstActionHandler and @a secondActionHandler, respectively, when
+/// pressed. The receiver of the message is the presenting view controller.
+///
+/// @a firstActionHandler and @a secondActionHandler may be @e nil to indicate
+/// that nothing should be done when the respective button is pressed.
+///
+/// Both buttons use @e UIAlertActionStyleDefault.
+///
+/// Control immediately returns to the caller who invoked this method.
+// -----------------------------------------------------------------------------
+- (void) presentTwoButtonAlertWithTitle:(NSString*)title
+                                message:(NSString*)message
+                       firstActionTitle:(NSString*)firstActionTitle
+                     firstActionHandler:(void (^)(UIAlertAction* action))firstActionHandler
+                      secondActionTitle:(NSString*)secondActionTitle
+                    secondActionHandler:(void (^)(UIAlertAction* action))secondActionHandler
+{
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:title
+                                                                           message:message
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  if (! firstActionHandler)
+    firstActionHandler = ^(UIAlertAction* action) {};
+  UIAlertAction* firstAction = [UIAlertAction actionWithTitle:firstActionTitle
+                                                        style:UIAlertActionStyleDefault
+                                                      handler:firstActionHandler];
+  [alertController addAction:firstAction];
+
+  if (! secondActionHandler)
+    secondActionHandler = ^(UIAlertAction* action) {};
+  UIAlertAction* secondAction = [UIAlertAction actionWithTitle:secondActionTitle
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:secondActionHandler];
+  [alertController addAction:secondAction];
+
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays an alert with title @a title, message @a message and two
 /// buttons labeled @a destructiveActionTitle and "Cancel" which execute
 /// @a destructiveHandler and @a cancelHandler, respectively, when pressed.
 /// The receiver of the message is the presenting view controller.
