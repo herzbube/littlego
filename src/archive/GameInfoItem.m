@@ -500,8 +500,11 @@ enum DataSourceInfoSectionItem
     {
       if (self.usesDescriptText)
       {
-        cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-        cell.textLabel.text = self.descriptiveText;
+        cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
+        TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+        variableHeightCell.descriptionLabel.text = self.descriptiveText;
+        variableHeightCell.valueLabel.text = nil;
+        variableHeightCell.widthRatio = 0;
       }
       else
       {

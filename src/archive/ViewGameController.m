@@ -1251,14 +1251,12 @@ enum LoadResultType
         }
         else
         {
-          NSString* descriptiveText = [NSString stringWithFormat:@"The board size is not square: %@.", [SgfUtilities stringForSgfBoardSize:boardSize]];
+          NSString* descriptiveText = [NSString stringWithFormat:@"The board size is not supported because it is not square: %@.", [SgfUtilities stringForSgfBoardSize:boardSize]];
           gameInfoItem = [GameInfoItem gameInfoItemWithDescriptiveText:descriptiveText titleText:titleText];
         }
       }
       else
       {
-        // TODO xxx not enough space. Either shorten the text or use a
-        // multi-line table view cell
         NSString* descriptiveText = [NSString stringWithFormat:@"The game is not a Go game. The SGF game number is %ld.", gameInfo.gameTypeAsNumber];
         gameInfoItem = [GameInfoItem gameInfoItemWithDescriptiveText:descriptiveText titleText:titleText];
       }
@@ -1266,8 +1264,6 @@ enum LoadResultType
       [gameInfoItems addObject:gameInfoItem];
       [gameInfoNodes addObject:gameInfoNode];
     }
-
-    // TODO xxx if no gameinfoitem then create a placeholder
   }
 
   self.numberOfGameInfoItems = gameInfoItems.count;
