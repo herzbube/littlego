@@ -571,7 +571,10 @@ enum LoadResultType
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  [self.tableView reloadData];
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:LastSavedDateItem
+                                              inSection:ArchiveSection];
+  [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                        withRowAnimation:UITableViewRowAnimationNone];
 }
 
 #pragma mark - Edit game name - Action handlers
@@ -632,7 +635,10 @@ enum LoadResultType
                                                                   newName:editTextController.text] autorelease];
     [command submit];
 
-    [self.tableView reloadData];
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:NameItem
+                                                inSection:ArchiveSection];
+    [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                          withRowAnimation:UITableViewRowAnimationNone];
   }
   [self dismissViewControllerAnimated:YES completion:nil];
 }
