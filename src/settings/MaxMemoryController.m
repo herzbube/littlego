@@ -19,6 +19,7 @@
 #import "MaxMemoryController.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
+#import "../ui/UIViewControllerAdditions.h"
 #import "../utility/UIDeviceAdditions.h"
 
 
@@ -230,26 +231,16 @@ enum PhysicalMemorySectionItem
     NSString* formatString = @"You have increased the maximum amount of memory that the computer is allowed to use for its calculations.\n\nThe previous value was %d MB, the new value is %d MB.\n\nAre you sure you want to do this?";
     NSString* messageString = [NSString stringWithFormat:formatString, self.maxMemory, sliderCell.value];
 
-    UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Please confirm"
-                                                                             message:messageString
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
-
-    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
-                                                       style:UIAlertActionStyleCancel
-                                                     handler:^(UIAlertAction* action) {}];
-    [alertController addAction:noAction];
-
     void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
     {
       self.maxMemory = [self sliderCell].value;
       [self.delegate didEndEditing:self didCancel:false];
     };
-    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
-                                                        style:UIAlertActionStyleDefault
-                                                      handler:yesActionBlock];
-    [alertController addAction:yesAction];
 
-    [self presentViewController:alertController animated:YES completion:nil];
+    [self presentYesNoAlertWithTitle:@"Please confirm"
+                             message:messageString
+                          yesHandler:yesActionBlock
+                           noHandler:nil];
   }
   else
   {

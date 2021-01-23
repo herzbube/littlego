@@ -39,6 +39,7 @@
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/UiSettingsModel.h"
+#import "../../ui/UIViewControllerAdditions.h"
 #import "../../utility/NSStringAdditions.h"
 
 
@@ -609,30 +610,21 @@
     ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
     if ([model gameWithName:editTextController.text])
     {
-      UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Game already exists"
-                                                                               message:@"Another game with that name already exists. Do you want to overwrite that game?"
-                                                                        preferredStyle:UIAlertControllerStyleAlert];
-
       void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
       {
         [self doSaveGame:editTextController.text gameAlreadyExists:true];
         [self.delegate moreGameActionsControllerDidFinish:self];
       };
-      UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
-                                                               style:UIAlertActionStyleDefault
-                                                             handler:yesActionBlock];
-      [alertController addAction:yesAction];
 
       void (^noActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
       {
         [self.delegate moreGameActionsControllerDidFinish:self];
       };
-      UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
-                                                         style:UIAlertActionStyleCancel
-                                                       handler:noActionBlock];
-      [alertController addAction:noAction];
 
-      [self.modalMaster presentViewController:alertController animated:YES completion:nil];
+      [self.modalMaster presentYesNoAlertWithTitle:@"Game already exists"
+                                           message:@"Another game with that name already exists. Do you want to overwrite that game?"
+                                                                                      yesHandler:yesActionBlock
+                                                                                       noHandler:noActionBlock];
 
       // We are not yet finished, user must still confirm/reject the overwrite
       moreGameActionsControllerDidFinish = false;

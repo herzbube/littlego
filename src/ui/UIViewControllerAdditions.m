@@ -42,4 +42,44 @@
   [self presentViewController:alertController animated:YES completion:nil];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Displays an alert with title @a title, message @a message and two
+/// buttons labeled "No" and "Yes" which execute @a yesHandler and @a noHandler,
+/// respectively, when pressed. The receiver of the message is the presenting
+/// view controller.
+///
+/// @a yesHandler and @a noHandler may be @e nil to indicate that nothing should
+/// be done when the respective button is pressed.
+///
+/// The "no" button uses @e UIAlertActionStyleCancel.
+///
+/// Control immediately returns to the caller who invoked this method.
+// -----------------------------------------------------------------------------
+- (void) presentYesNoAlertWithTitle:(NSString*)title
+                            message:(NSString*)message
+                         yesHandler:(void (^)(UIAlertAction* action))yesHandler
+                          noHandler:(void (^)(UIAlertAction* action))noHandler;
+{
+  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:title
+                                                                           message:message
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+
+  if (! noHandler)
+    noHandler = ^(UIAlertAction* action) {};
+  UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
+                                                     style:UIAlertActionStyleCancel
+                                                   handler:noHandler];
+  [alertController addAction:noAction];
+
+  if (! yesHandler)
+    yesHandler = ^(UIAlertAction* action) {};
+  UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
+                                                      style:UIAlertActionStyleDefault
+                                                    handler:yesHandler];
+  [alertController addAction:yesAction];
+
+  [self presentViewController:alertController animated:YES completion:nil];
+
+}
+
 @end

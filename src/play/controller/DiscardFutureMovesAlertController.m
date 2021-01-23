@@ -22,6 +22,7 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../ui/UIViewControllerAdditions.h"
 
 // System includes
 #import <objc/runtime.h>
@@ -141,31 +142,20 @@ enum ActionType
       formatString = @"You are viewing a board position in the middle of the game. %@ all moves that have been made after this position will be discarded.\n\nDo you want to continue?";
     NSString* messageString = [NSString stringWithFormat:formatString, actionDescription];
 
-
-    UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Future moves will be discarded"
-                                                                             message:messageString
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
-
     void (^noActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
     {
       [self didDismissAlertWithButton:AlertButtonTypeNo];
     };
-    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
-                                                       style:UIAlertActionStyleCancel
-                                                     handler:noActionBlock];
-    [alertController addAction:noAction];
 
     void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
     {
       [self didDismissAlertWithButton:AlertButtonTypeYes];
     };
-    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
-                                                        style:UIAlertActionStyleDefault
-                                                      handler:yesActionBlock];
-    [alertController addAction:yesAction];
 
-    [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
-
+    [[ApplicationDelegate sharedDelegate].window.rootViewController presentYesNoAlertWithTitle:@"Future moves will be discarded"
+                                                                                       message:messageString
+                                                                                    yesHandler:yesActionBlock
+                                                                                     noHandler:noActionBlock];
 
     // Store command object for later use by the alert handler
     objc_setAssociatedObject(self, associatedCommandObjectKey, command, OBJC_ASSOCIATION_RETAIN);

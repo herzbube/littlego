@@ -32,6 +32,7 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
+#import "../ui/UIViewControllerAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -395,25 +396,15 @@ enum CellID
                          "be lost if you proceed. Are you sure you want to "
                          "discard the game in progress?";
 
-    UIAlertController* alertController = [UIAlertController alertControllerWithTitle:self.navigationItem.title
-                                                                             message:message
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
-
-    UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
-                                                       style:UIAlertActionStyleCancel
-                                                     handler:^(UIAlertAction* action) {}];
-    [alertController addAction:noAction];
-
     void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
     {
       [self newGame];
     };
-    UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
-                                                        style:UIAlertActionStyleDefault
-                                                      handler:yesActionBlock];
-    [alertController addAction:yesAction];
 
-    [self presentViewController:alertController animated:YES completion:nil];
+    [self presentYesNoAlertWithTitle:self.navigationItem.title
+                             message:message
+                          yesHandler:yesActionBlock
+                           noHandler:nil];
   }
   else
   {

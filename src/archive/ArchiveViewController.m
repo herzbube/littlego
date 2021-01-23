@@ -25,6 +25,7 @@
 #import "../shared/LayoutManager.h"
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UIViewControllerAdditions.h"
 #import "../ui/UiUtilities.h"
 
 
@@ -403,15 +404,6 @@ enum DeleteAllSectionItem
 // -----------------------------------------------------------------------------
 - (void) deleteAllGames
 {
-  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Please confirm"
-                                                                           message:@"Are you sure you want to delete all games?"
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-
-  UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
-                                                     style:UIAlertActionStyleCancel
-                                                   handler:^(UIAlertAction* action) {}];
-  [alertController addAction:noAction];
-
   void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
   {
     // Temporarily disable KVO observer mechanism so that no table view update
@@ -426,12 +418,11 @@ enum DeleteAllSectionItem
     [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
     [self updateArchiveViewAfterLastGameWasDeleted];
   };
-  UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
-                                                      style:UIAlertActionStyleDefault
-                                                    handler:yesActionBlock];
-  [alertController addAction:yesAction];
 
-  [self presentViewController:alertController animated:YES completion:nil];
+  [self presentYesNoAlertWithTitle:@"Please confirm"
+                           message:@"Are you sure you want to delete all games?"
+                        yesHandler:yesActionBlock
+                         noHandler:nil];
 }
 
 @end

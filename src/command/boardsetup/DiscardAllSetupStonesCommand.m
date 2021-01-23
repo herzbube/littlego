@@ -25,6 +25,7 @@
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
+#import "../../ui/UIViewControllerAdditions.h"
 
 
 @implementation DiscardAllSetupStonesCommand
@@ -54,30 +55,20 @@
 
   alertMessage = [alertMessage stringByAppendingString:@"\n\nAre you sure you want to do this?"];
 
-
-  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:alertTitle
-                                                                           message:alertMessage
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-
   void (^noActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
   {
     [self didDismissAlertWithButton:AlertButtonTypeNo];
   };
-  UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
-                                                     style:UIAlertActionStyleDefault
-                                                   handler:noActionBlock];
-  [alertController addAction:noAction];
-
+  
   void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
   {
     [self didDismissAlertWithButton:AlertButtonTypeYes];
   };
-  UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
-                                                      style:UIAlertActionStyleDefault
-                                                    handler:yesActionBlock];
-  [alertController addAction:yesAction];
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentYesNoAlertWithTitle:alertTitle
+                                                                                     message:alertMessage
+                                                                                  yesHandler:yesActionBlock
+                                                                                   noHandler:noActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }

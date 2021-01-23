@@ -30,6 +30,7 @@
 #import "../../main/ApplicationDelegate.h"
 #import "../../main/WindowRootViewController.h"
 #import "../../shared/ApplicationStateManager.h"
+#import "../../ui/UIViewControllerAdditions.h"
 
 
 /// @brief Enumerates the types of alerts presented by this command.
@@ -241,31 +242,22 @@ enum AlertType
     alertType = AlertTypePlayMoveRejectedLoggingDisabled;
   }
 
-  UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Unexpected error"
-                                                                           message:message
-                                                                    preferredStyle:UIAlertControllerStyleAlert];
-
   void (^noActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
   {
     [self didDismissAlertWithButton:AlertButtonTypeNo
                           alertType:alertType];
   };
-  UIAlertAction* noAction = [UIAlertAction actionWithTitle:@"No"
-                                                     style:UIAlertActionStyleCancel
-                                                   handler:noActionBlock];
-  [alertController addAction:noAction];
 
   void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
   {
     [self didDismissAlertWithButton:AlertButtonTypeYes
                           alertType:alertType];
   };
-  UIAlertAction* yesAction = [UIAlertAction actionWithTitle:@"Yes"
-                                                      style:UIAlertActionStyleDefault
-                                                    handler:yesActionBlock];
-  [alertController addAction:yesAction];
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentYesNoAlertWithTitle:@"Unexpected error"
+                                                                                     message:message
+                                                                                  yesHandler:yesActionBlock
+                                                                                   noHandler:noActionBlock];
 
   [self retain];  // must survive until the delegate method is invoked
 }
