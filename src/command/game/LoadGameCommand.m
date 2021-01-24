@@ -1042,10 +1042,38 @@ static const int maxStepsForReplayMoves = 10;
   // - The SGFCGameInfo object is guaranteed to be a SGFCGoGameInfo object
   //   because the default game type is Go.
   // - The default board size is 19x19.
-  // TODO xxx possibly setup up the node with data from NewGameModel?
+
+  NewGameModel* model = [ApplicationDelegate sharedDelegate].theNewGameModel;
+
   self.sgfGameInfoNode = [SGFCNode node];
-  self.sgfGoGameInfo = self.sgfGameInfoNode.gameInfo.toGoGameInfo;
   self.sgfMainVariationNodes = self.sgfGameInfoNode.mainVariationNodes;
+
+  // Setup board size before creating an SGFCGoGameInfo object, because that
+  // object will be initialized with the board size from the game info node
+  enum GoBoardSize goBoardSize = model.boardSize;
+  SGFCBoardSize sgfBoardSize = SGFCBoardSizeMake(goBoardSize, goBoardSize);
+  SGFCNumberPropertyValue* szPropertyValue = [SGFCNumberPropertyValue numberPropertyValueWithNumberValue:goBoardSize];
+  SGFCBoardSizeProperty* szProperty = [SGFCBoardSizeProperty boardSizePropertyWithNumberPropertyValue:szPropertyValue];
+  [self.sgfGameInfoNode setProperty:szProperty];
+
+  NSMutableArray* abPropertyValues = [NSMutableArray array];
+  for (NSString* handicapVertex in [GoUtilities verticesForHandicap:model.handicap boardSize:goBoardSize])
+  {
+    SGFCGoStonePropertyValue* abPropertyValue = [SGFCGoStonePropertyValue goStonePropertyValueWithGoStoneValue:handicapVertex
+                                                                                                     boardSize:sgfBoardSize
+                                                                                                         color:SGFCColorBlack];
+    [abPropertyValues addObject:abPropertyValue];
+  }
+  SGFCProperty* abProperty = [SGFCProperty propertyWithType:SGFCPropertyTypeAB values:abPropertyValues];
+  [self.sgfGameInfoNode setProperty:abProperty];
+
+  self.sgfGoGameInfo = self.sgfGameInfoNode.gameInfo.toGoGameInfo;
+
+  // It's less code for us to write if we let SGFCGoGameInfo write the data
+  // back to the game info node
+  self.sgfGoGameInfo.numberOfHandicapStones = model.handicap;
+  self.sgfGoGameInfo.komi = model.komi;
+  [self.sgfGameInfoNode writeGameInfo:self.sgfGoGameInfo];
 
   // Alert must be shown on main thread, otherwise there is the possibility of
   // a crash (it's real, I've seen the crash reports!)
