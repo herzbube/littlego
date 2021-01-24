@@ -130,18 +130,18 @@
   XCTAssertNotNil(point, @"c3");
 
   // A few invalid vertexes
-  XCTAssertThrowsSpecificNamed([board pointAtVertex:@"I4"],
-                              NSException, NSRangeException, @"letter I used for vertex");
-  XCTAssertThrowsSpecificNamed([board pointAtVertex:@"U1"],
-                              NSException, NSRangeException, @"letter U used for vertex");
-  XCTAssertThrowsSpecificNamed([board pointAtVertex:@"A0"],
-                              NSException, NSRangeException, @"number 0 used for vertex");
+  point = [board pointAtVertex:@"I4"];
+  XCTAssertNil(point, @"letter I used for vertex");
+  point = [board pointAtVertex:@"U1"];
+  XCTAssertNil(point, @"letter U used for vertex");
+  point = [board pointAtVertex:@"A0"];
+  XCTAssertNil(point, @"number 0 used for vertex");
+  point = [board pointAtVertex:@""];
+  XCTAssertNil(point, @"empty string used for vertex");
+  point = [board pointAtVertex:@"foobar"];
+  XCTAssertNil(point, @"malformed string used for vertex");
   XCTAssertThrowsSpecificNamed([board pointAtVertex:nil],
                               NSException, NSInvalidArgumentException, @"nil used for vertex");
-  XCTAssertThrowsSpecificNamed([board pointAtVertex:@""],
-                              NSException, NSInvalidArgumentException, @"empty string used for vertex");
-  XCTAssertThrowsSpecificNamed([board pointAtVertex:@"foobar"],
-                              NSException, NSInvalidArgumentException, @"malformed string used for vertex");
 }
 
 // -----------------------------------------------------------------------------

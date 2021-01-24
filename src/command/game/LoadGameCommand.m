@@ -359,6 +359,13 @@ static const int maxStepsForReplayMoves = 10;
 
           NSString* vertexString = [goPoint positionInGoPointNotation:SGFCGoPointNotationHybrid];
           GoPoint* point = [board pointAtVertex:vertexString];
+          if (! point)
+          {
+            NSString* errorMessageFormat = @"Game contains an invalid handicap stone.\n\nThe intersection %@ is invalid.";
+            *errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString];
+            return false;
+          }
+
           [handicapPoints addObject:point];
 
           actualNumberOfHandicapStones++;
@@ -547,17 +554,9 @@ static const int maxStepsForReplayMoves = 10;
     if (goColor == GoColorNone)
       return;
 
-    GoPoint* point;
-    @try
+    GoPoint* point = [board pointAtVertex:vertexString];
+    if (! point)
     {
-      point = [board pointAtVertex:vertexString];
-    }
-    @catch (NSException* exception)
-    {
-      // If the vertex is not legal an exception is raised:
-      // - NSInvalidArgumentException if vertex is malformed
-      // - NSRangeException if vertex compounds are out of range
-      // For our purposes, both exception types are the same.
       NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move.\n\nThe intersection %@ is invalid.";
       *errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString];
       *stop = YES;
@@ -843,18 +842,11 @@ static const int maxStepsForReplayMoves = 10;
         }
 
         NSString* vertexString = [goPoint positionInGoPointNotation:SGFCGoPointNotationHybrid];
-        @try
+        point = [board pointAtVertex:vertexString];
+        if (! point)
         {
-          point = [board pointAtVertex:vertexString];
-        }
-        @catch (NSException* exception)
-        {
-          // If the vertex is not legal an exception is raised:
-          // - NSInvalidArgumentException if vertex is malformed
-          // - NSRangeException if vertex compounds are out of range
-          // For our purposes, both exception types are the same.
           NSString* errorMessageFormat = @"Move string contains invalid intersection.\n\n%@";
-          *errorMessage = [NSString stringWithFormat:errorMessageFormat, exception.reason];
+          *errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString];
           return false;
         }
       }

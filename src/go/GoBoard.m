@@ -39,6 +39,7 @@
 @interface GoBoard()
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
+@property(nonatomic, assign) bool allowLazyCreationOfGoPointObjects;
 @property(nonatomic, assign, readwrite) enum GoBoardSize size;
 @property(nonatomic, retain, readwrite) NSArray* starPoints;
 @property(nonatomic, retain, readwrite) GoZobristTable* zobristTable;
@@ -229,6 +230,16 @@
   // implementation whose maintenance is much more prone to errors.
   //
   // Bottom line: Let's KISS :-)
+  //
+  // Update 2021: 10 years after this code was written initially, lazy
+  // initialization in pointAtVertex:() seems to be a bad idea when we already
+  // do a complete setup of all possible GoPoints here in this method. Why
+  // should someone be able to invoke pointAtVertex:() for vertex Q16 on a
+  // 9x9 board and receive a valid GoPoint object? This only hides issues in
+  // the client which, obviously, believes to be on a differently sized board.
+  // For this reason we allow lazy creation of GoPoint objects only during the
+  // very short time span of this method.
+  self.allowLazyCreationOfGoPointObjects = true;
 
   // Create an initial GoPoint and GoBoardRegion object
   GoPoint* point = [self pointAtVertex:@"A1"];
@@ -238,6 +249,8 @@
   // Note: Moving to the next point creates the corresponding GoPoint object!
   for (; point != nil; point = point.next)
     [region addPoint:point];
+
+  self.allowLazyCreationOfGoPointObjects = false;
 }
 
 // -----------------------------------------------------------------------------
@@ -287,20 +300,29 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the GoPoint object located at @a vertex.
+/// @brief Returns the GoPoint object located at @a vertex. Returns @e nil if
+/// no such GoPoint exists (can happen only if the vertex is invalid or outside
+/// the board size boundaries).
 ///
 /// See the GoVertex class documentation for a discussion of what a vertex is.
 ///
-/// Raises an @e NSRangeException if one of the vertex compounds stored in
-/// @a stringValue are outside the supported range of values. Raises an
-/// @e NSInvalidArgumentException if @a stringValue is nil or otherwise
-/// fundamentally malformed.
+/// Raises an @e NSInvalidArgumentException if @a stringValue is nil.
 // -----------------------------------------------------------------------------
 - (GoPoint*) pointAtVertex:(NSString*)vertex
 {
+  if (! vertex)
+  {
+    NSString* errorMessage = @"String vertex is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   vertex = [vertex uppercaseString];
   GoPoint* point = [m_vertexDict objectForKey:vertex];
-  if (! point)
+  if (! point && self.allowLazyCreationOfGoPointObjects)
   {
     point = [GoPoint pointAtVertex:[GoVertex vertexFromString:vertex] onBoard:self];
     [m_vertexDict setObject:point forKey:vertex];
