@@ -118,7 +118,7 @@ static const int maxStepsForReplayMoves = 10;
         success = [self setupGoGame:&errorMessage];
         if (! success)
         {
-          errorMessage = @"Loading a game failed. Setting up a game with default values failed, too.";
+          errorMessage = [@"Loading a game failed. Setting up a game with default values failed, too. The error message is:\n\n" stringByAppendingString:errorMessage];
           DDLogError(@"%@: %@", self, errorMessage);
           NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                            reason:errorMessage
@@ -597,7 +597,7 @@ static const int maxStepsForReplayMoves = 10;
     for (GoPoint* handicapPoint in handicapPoints)
       [handicapVertexStrings addObject:handicapPoint.vertex.string];
 
-    *errorMessage = [NSString stringWithFormat:@"One or more black handicap stones are removed or redefined to white stones after they are set up. Affected handicap stone(s):\n\n%@",
+    *errorMessage = [NSString stringWithFormat:@"One or more black handicap stones are removed or redefined to white stones after they are set up.\n\nAffected handicap stone(s): %@",
                      [handicapVertexStrings componentsJoinedByString:@", "]];
     return false;
   }
