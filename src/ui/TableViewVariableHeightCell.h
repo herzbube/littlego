@@ -30,8 +30,8 @@
 /// - By default the two text labels take up an equal amount of horizontal
 ///   space. This can lead to wasted space, because when one of the labels uses
 ///   only a short text and does not use its allotted space then the other label
-///   does not automatically get the unused space. The @e widthRatio property
-///   can be set to change the horizontal space distribution.
+///   does not automatically get the unused space. The @e descriptionLabel
+///   property can be set to change the horizontal space distribution.
 /// - TableViewVariableHeightCell does not support indentation or showing an
 ///   image
 /// - TableViewVariableHeightCell is not tested in table views that do not have
@@ -42,24 +42,6 @@
 /// layout guides. Before UIStackView and layout guides were available (iOS 8
 /// and before) the implementation of TableViewVariableHeightCell was much more
 /// complicated and there were a lot of limitations.
-///
-/// If the content of TableViewVariableHeightCell work as expected, the
-/// UITableViewDelegate must NOT override tableView:heightForRowAtIndexPath:(),
-/// instead it must set the following UITableView properties:
-/// - rowHeight = UITableViewAutomaticDimension (already the default value)
-/// - estimatedRowHeight = a non-zero value; for the best results, the value
-///   should match the actual height of most of the cells in the table view,
-///   because in that case the table view has to make unexpected layout changes
-///   only for occasional outlying cells
-/// - In iOS 9 and later, make sure that cellLayoutMarginsFollowReadableWidth
-///   is set to YES. The reason for this is that in iOS 9 and later,
-///   TableViewVariableHeightCell internally uses the cell content view's
-///   @e readableContentGuide property. If the UITableView has other cells
-///   but cellLayoutMarginsFollowReadableWidth is set to NO, then the default
-///   table view cells use different margins than TableViewVariableHeightCell.
-///   In iOS 9-11 the default for cellLayoutMarginsFollowReadableWidth is YES,
-///   in iOS 12 and later the default for cellLayoutMarginsFollowReadableWidth
-///   is NO.
 // -----------------------------------------------------------------------------
 @interface TableViewVariableHeightCell : UITableViewCell
 {
@@ -69,10 +51,13 @@
 
 @property(nonatomic, retain, readonly) UILabel* descriptionLabel;
 @property(nonatomic, retain, readonly) UILabel* valueLabel;
-/// @brief Defines the ratio how the horizontal space is distributed between
-/// the two text labels. The ratio is "description label : value label", i.e.
-/// a ratio of 2.5 means the value label's width is 2.5 times the description
-/// label's width. The default ratio is 1.0, i.e. both labels have equal width.
-@property(nonatomic, assign) CGFloat widthRatio;
+/// @brief Defines the percentage of the available horizontal space that is
+/// assigned to the description label. The value label gets the remaining space.
+/// The default percentage is 0.5, i.e. both labels get the same amount of
+/// space.
+///
+/// Raises NSInvalidArgumentException if the property is set with a value that
+/// is less than zero, or greater than 1.
+@property(nonatomic, assign) CGFloat descriptionLabelWidthPercentage;
 
 @end

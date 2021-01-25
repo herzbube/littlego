@@ -152,7 +152,7 @@ enum DataSourceInfoSectionItem
 @interface GameInfoItem()
 // Private properties
 @property(nonatomic, assign) bool usesDescriptText;
-@property(nonatomic, assign) CGFloat widthRatioForVariableHeightCells;
+@property(nonatomic, assign) CGFloat descriptionLabelWidthPercentageForVariableHeightCells;
 
 @property(nonatomic, retain) NSMutableDictionary* summarySectionItems;
 @property(nonatomic, retain) NSMutableDictionary* detailLevelFullSections;
@@ -293,12 +293,12 @@ enum DataSourceInfoSectionItem
     return nil;
 
   // Experimentally determined value. On an iPhone 5s, the most narrow of the
-  // supported devices, this ratio gives enough space to a
-  // TableViewVariableHeightCell's value label to display the reference text
-  // "Game name" on one line, plus a bit of extra width to create a spacing
+  // supported devices, this percentage gives enough space to a
+  // TableViewVariableHeightCell's description label to display the reference
+  // text "Game name" on one line, plus a bit of extra width to create a spacing
   // between the two labels of the cell. On wider devices this ratio could be
   // larger, but a dynamically calculated ratio is too much work for now.
-  self.widthRatioForVariableHeightCells = 1.5;
+  self.descriptionLabelWidthPercentageForVariableHeightCells = 0.4;
 
   self.goGameInfo = nil;
   self.descriptiveText = descriptiveText;
@@ -504,7 +504,7 @@ enum DataSourceInfoSectionItem
         TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
         variableHeightCell.descriptionLabel.text = self.descriptiveText;
         variableHeightCell.valueLabel.text = nil;
-        variableHeightCell.widthRatio = 0;
+        variableHeightCell.descriptionLabelWidthPercentage = 1.0;
       }
       else
       {
@@ -1081,7 +1081,7 @@ enum DataSourceInfoSectionItem
   TableViewVariableHeightCell* cell = (TableViewVariableHeightCell*)[TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
   cell.descriptionLabel.text = itemName;
   cell.valueLabel.text = itemValue;
-  cell.widthRatio = self.widthRatioForVariableHeightCells;
+  cell.descriptionLabelWidthPercentage = self.descriptionLabelWidthPercentageForVariableHeightCells;
   return cell;
 }
 

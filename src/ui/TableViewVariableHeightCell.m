@@ -32,9 +32,12 @@
 //@}
 /// @brief The stack view that does the layouting heavy lifting for us.
 @property(nonatomic, retain) UIStackView* stackView;
-/// @brief The Auto Layout constraint that controls the width ratio between the
-/// two labels. Is not used if the ratio is 1.0.
-@property(nonatomic, retain) NSLayoutConstraint* widthRatioConstraint;
+/// @brief The Auto Layout constraint that controls the width of the description
+/// labels. Is not used if the ratio is 0.5.
+@property(nonatomic, retain) NSLayoutConstraint* descriptionLabelWidthConstraint;
+/// @brief The Auto Layout constraint that controls the width of the value
+/// labels. Is not used if the ratio is 0.5.
+@property(nonatomic, retain) NSLayoutConstraint* valueLabelWidthConstraint;
 @end
 
 @implementation TableViewVariableHeightCell
@@ -67,8 +70,9 @@
   if (! self)
     return nil;
 
-  self.widthRatioConstraint = nil;
-  _widthRatio = 1.0;
+  self.descriptionLabelWidthConstraint = nil;
+  self.valueLabelWidthConstraint = nil;
+  _descriptionLabelWidthPercentage = 0.5;
 
   [self setupContentView];
 
@@ -83,7 +87,8 @@
   self.descriptionLabel = nil;
   self.valueLabel = nil;
   self.stackView = nil;
-  self.widthRatioConstraint = nil;
+  self.descriptionLabelWidthConstraint = nil;
+  self.valueLabelWidthConstraint = nil;
   [super dealloc];
 }
 
@@ -93,11 +98,11 @@
 // -----------------------------------------------------------------------------
 - (void) setupContentView
 {
-  self.descriptionLabel = [[[UILabel alloc] initWithFrame:self.contentView.bounds] autorelease];
+  self.descriptionLabel = [[[UILabel alloc] initWithFrame:CGRectNull] autorelease];
   self.descriptionLabel.numberOfLines = 0;
   self.descriptionLabel.lineBreakMode = NSLineBreakByWordWrapping;
 
-  self.valueLabel = [[[UILabel alloc] initWithFrame:self.contentView.bounds] autorelease];
+  self.valueLabel = [[[UILabel alloc] initWithFrame:CGRectNull] autorelease];
   self.valueLabel.numberOfLines = 0;
   self.valueLabel.lineBreakMode = NSLineBreakByWordWrapping;
   self.valueLabel.textAlignment = NSTextAlignmentRight;
@@ -107,7 +112,6 @@
   [self.contentView addSubview:self.stackView];
   self.stackView.axis = UILayoutConstraintAxisHorizontal;
   self.stackView.spacing = 0.0f;
-  self.stackView.distribution = UIStackViewDistributionFillProportionally;
 
   [self layoutContentView];
 }
@@ -119,8 +123,8 @@
 - (void) layoutContentView
 {
   self.stackView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.stackView.leadingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.leadingAnchor].active = YES;
-  [self.stackView.trailingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.trailingAnchor].active = YES;
+  [self.stackView.leadingAnchor constraintEqualToAnchor:self.contentView.layoutMarginsGuide.leadingAnchor].active = YES;
+  [self.stackView.trailingAnchor constraintEqualToAnchor:self.contentView.layoutMarginsGuide.trailingAnchor].active = YES;
   [self.stackView.topAnchor constraintEqualToAnchor:self.contentView.layoutMarginsGuide.topAnchor].active = YES;
   [self.stackView.bottomAnchor constraintEqualToAnchor:self.contentView.layoutMarginsGuide.bottomAnchor].active = YES;
 }
@@ -128,25 +132,50 @@
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
-- (void) setWidthRatio:(CGFloat)widthRatio
+- (void) setDescriptionLabelWidthPercentage:(CGFloat)descriptionLabelWidthPercentage
 {
-  if (_widthRatio == widthRatio)
-    return;
-  _widthRatio = widthRatio;
-
-  if (self.widthRatioConstraint)
-    [self.stackView removeConstraint:self.widthRatioConstraint];
-
-  if (_widthRatio != 1.0)
+  if (descriptionLabelWidthPercentage < 0.0 || descriptionLabelWidthPercentage > 1.0)
   {
-    self.widthRatioConstraint = [NSLayoutConstraint constraintWithItem:self.valueLabel
-                                                             attribute:NSLayoutAttributeWidth
-                                                             relatedBy:NSLayoutRelationEqual
-                                                                toItem:self.descriptionLabel
-                                                             attribute:NSLayoutAttributeWidth
-                                                            multiplier:_widthRatio
-                                                              constant:0.0];
-    [self.stackView addConstraint:self.widthRatioConstraint];
+    assert(0);
+    NSString* errorMessage = [NSString stringWithFormat:@"descriptionLabelWidthPercentage set with illegal value %.1f", descriptionLabelWidthPercentage];
+    DDLogError(@"%@", errorMessage);
+    @throw [NSException exceptionWithName:NSInvalidArgumentException reason:errorMessage userInfo:nil];
+  }
+
+  if (_descriptionLabelWidthPercentage == descriptionLabelWidthPercentage)
+    return;
+  _descriptionLabelWidthPercentage = descriptionLabelWidthPercentage;
+
+  if (self.descriptionLabelWidthConstraint)
+  {
+    [self.stackView removeConstraint:self.descriptionLabelWidthConstraint];
+    self.descriptionLabelWidthConstraint = nil;
+  }
+
+  if (self.valueLabelWidthConstraint)
+  {
+    [self.stackView removeConstraint:self.valueLabelWidthConstraint];
+    self.valueLabelWidthConstraint = nil;
+  }
+
+  if (_descriptionLabelWidthPercentage != 0.5)
+  {
+    self.descriptionLabelWidthConstraint = [NSLayoutConstraint constraintWithItem:self.descriptionLabel
+                                                                        attribute:NSLayoutAttributeWidth
+                                                                        relatedBy:NSLayoutRelationEqual
+                                                                           toItem:self.stackView
+                                                                        attribute:NSLayoutAttributeWidth
+                                                                       multiplier:_descriptionLabelWidthPercentage
+                                                                         constant:0.0];
+    [self.stackView addConstraint:self.descriptionLabelWidthConstraint];
+    self.valueLabelWidthConstraint = [NSLayoutConstraint constraintWithItem:self.valueLabel
+                                                                  attribute:NSLayoutAttributeWidth
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.stackView
+                                                                  attribute:NSLayoutAttributeWidth
+                                                                 multiplier:1.0 - _descriptionLabelWidthPercentage
+                                                                   constant:0.0];
+    [self.stackView addConstraint:self.valueLabelWidthConstraint];
   }
 }
 
