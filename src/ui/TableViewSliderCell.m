@@ -19,7 +19,6 @@
 #import "TableViewSliderCell.h"
 #import "AutoLayoutUtility.h"
 #import "UIColorAdditions.h"
-#import "../utility/UIDeviceAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -31,15 +30,15 @@
 @property(nonatomic, retain, readwrite) UILabel* descriptionLabel;
 @property(nonatomic, retain, readwrite) UILabel* valueLabel;
 @property(nonatomic, retain, readwrite) UISlider* slider;
-/// @brief True if TableViewSliderCell should layout its content view
-/// using layout guides. Layout guides were introduced in iOS 9.
-///
-/// TODO: Remove this flag when we drop iOS 8 support.
-@property(nonatomic, assign) bool layoutWithLayoutGuides;
 @property(nonatomic, assign, readwrite) id delegate;
 @property(nonatomic, assign, readwrite) SEL delegateActionValueDidChange;
 @property(nonatomic, assign, readwrite) SEL delegateActionSliderValueDidChange;
 //@}
+/// @brief The horizontal stack view that contains the two labels
+@property(nonatomic, retain) UIStackView* stackViewLabels;
+/// @brief The vertical stack view that contains the label stack view and the
+/// slider.
+@property(nonatomic, retain) UIStackView* stackViewSlider;
 @end
 
 
@@ -74,7 +73,6 @@
   if (! self)
     return nil;
   _valueLabelHidden = valueLabelHidden;
-  self.layoutWithLayoutGuides = ([UIDevice systemVersionMajor] >= 9);
   [self setupCell];
   [self setupContentView];
   // TODO: instead of duplicating code from the setter, we should invoke the
@@ -98,6 +96,8 @@
   self.descriptionLabel = nil;
   self.valueLabel = nil;
   self.slider = nil;
+  self.stackViewLabels = nil;
+  self.stackViewSlider = nil;
   self.delegate = nil;
   [super dealloc];
 }
@@ -122,6 +122,10 @@
   if (! self.valueLabelHidden)
     [self setupValueLabel];
   [self setupSlider];
+  [self setupStackViews];
+
+  [self.contentView addSubview:self.stackViewSlider];
+
   [self setupAutoLayoutConstraints];
 }
 
@@ -130,11 +134,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupDescriptionLabel
 {
-  self.descriptionLabel = [[[UILabel alloc] initWithFrame:[UIScreen mainScreen].bounds] autorelease];
+  self.descriptionLabel = [[[UILabel alloc] initWithFrame:CGRectNull] autorelease];
   self.descriptionLabel.tag = SliderCellDescriptionLabelTag;
   self.descriptionLabel.textAlignment = NSTextAlignmentLeft;
   self.descriptionLabel.backgroundColor = [UIColor clearColor];
-  [self.contentView addSubview:self.descriptionLabel];
 }
 
 // -----------------------------------------------------------------------------
@@ -142,11 +145,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupValueLabel
 {
-  self.valueLabel = [[[UILabel alloc] initWithFrame:[UIScreen mainScreen].bounds] autorelease];
+  self.valueLabel = [[[UILabel alloc] initWithFrame:CGRectNull] autorelease];
   self.valueLabel.tag = SliderCellValueLabelTag;
   self.valueLabel.textAlignment = NSTextAlignmentRight;
   self.valueLabel.backgroundColor = [UIColor clearColor];
-  [self.contentView addSubview:self.valueLabel];
 }
 
 // -----------------------------------------------------------------------------
@@ -154,11 +156,27 @@
 // -----------------------------------------------------------------------------
 - (void) setupSlider
 {
-  self.slider = [[[UISlider alloc] initWithFrame:[UIScreen mainScreen].bounds] autorelease];
+  self.slider = [[[UISlider alloc] initWithFrame:CGRectNull] autorelease];
   self.slider.tag = SliderCellSliderTag;
   self.slider.continuous = YES;
   [self.slider addTarget:self action:@selector(sliderValueChanged:) forControlEvents:UIControlEventValueChanged];
-  [self.contentView addSubview:self.slider];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupContentView
+// -----------------------------------------------------------------------------
+- (void) setupStackViews
+{
+  if (self.valueLabelHidden)
+    self.stackViewLabels = [[UIStackView alloc] initWithArrangedSubviews:@[self.descriptionLabel]];
+  else
+    self.stackViewLabels = [[UIStackView alloc] initWithArrangedSubviews:@[self.descriptionLabel, self.valueLabel]];
+  self.stackViewLabels.axis = UILayoutConstraintAxisHorizontal;
+  self.stackViewLabels.spacing = [AutoLayoutUtility horizontalSpacingSiblings];
+
+  self.stackViewSlider = [[UIStackView alloc] initWithArrangedSubviews:@[self.stackViewLabels, self.slider]];
+  self.stackViewSlider.axis = UILayoutConstraintAxisVertical;
+  self.stackViewSlider.spacing = [AutoLayoutUtility verticalSpacingSiblings];
 }
 
 // -----------------------------------------------------------------------------
@@ -166,109 +184,11 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.descriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  self.valueLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  self.slider.translatesAutoresizingMaskIntoConstraints = NO;
-
-  if (self.layoutWithLayoutGuides)
-    [self setupAutoLayoutConstraintsWithLayoutGuides];
-  else
-    [self setupAutoLayoutConstraintsWithoutLayoutGuides];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for setupAutoLayoutConstraints
-// -----------------------------------------------------------------------------
-- (void) setupAutoLayoutConstraintsWithLayoutGuides
-{
-  CGFloat horizontalSpacingSiblings = [AutoLayoutUtility horizontalSpacingSiblings];
-  CGFloat verticalSpacingSiblings = [AutoLayoutUtility verticalSpacingSiblings];
-  CGFloat verticalSpacingTableViewCell = [AutoLayoutUtility verticalSpacingTableViewCell];
-
-  // Horizontal constraints
-  if (self.valueLabelHidden)
-  {
-    [self.descriptionLabel.leadingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.leadingAnchor].active = YES;
-    [self.descriptionLabel.trailingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.trailingAnchor].active = YES;
-  }
-  else
-  {
-    [self.descriptionLabel.leadingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.leadingAnchor].active = YES;
-    [self.valueLabel.trailingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.trailingAnchor].active = YES;
-    [self.valueLabel.leadingAnchor constraintEqualToAnchor:self.descriptionLabel.trailingAnchor constant:horizontalSpacingSiblings].active = YES;
-  }
-  [self.slider.leadingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.leadingAnchor].active = YES;
-  [self.slider.trailingAnchor constraintEqualToAnchor:self.contentView.readableContentGuide.trailingAnchor].active = YES;
-
-  // Vertical constraints
-  [self.descriptionLabel.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:verticalSpacingTableViewCell].active = YES;
-  [self.slider.topAnchor constraintEqualToAnchor:self.descriptionLabel.bottomAnchor constant:verticalSpacingSiblings].active = YES;
-  if (! self.valueLabelHidden)
-  {
-    [self.valueLabel.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:verticalSpacingTableViewCell].active = YES;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for setupAutoLayoutConstraints
-// -----------------------------------------------------------------------------
-- (void) setupAutoLayoutConstraintsWithoutLayoutGuides
-{
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                          self.descriptionLabel, @"descriptionLabel",
-                                          self.slider, @"slider",
-                                          nil];
-  CGFloat horizontalSpacingSiblings = [AutoLayoutUtility horizontalSpacingSiblings];
-  CGFloat verticalSpacingSiblings = [AutoLayoutUtility verticalSpacingSiblings];
-  CGFloat horizontalSpacingTableViewCell = [AutoLayoutUtility horizontalSpacingTableViewCell];
-  CGFloat verticalSpacingTableViewCell = [AutoLayoutUtility verticalSpacingTableViewCell];
-  NSString* visualFormat1 = [NSString stringWithFormat:@"H:|-%f-[descriptionLabel]-%f-|", horizontalSpacingTableViewCell, horizontalSpacingTableViewCell];
-  NSString* visualFormat2 = [NSString stringWithFormat:@"H:|-%f-[descriptionLabel]-%f-[valueLabel]-%f-|", horizontalSpacingTableViewCell, horizontalSpacingSiblings, horizontalSpacingTableViewCell];
-  NSString* visualFormat3 = [NSString stringWithFormat:@"H:|-%f-[slider]-%f-|", horizontalSpacingTableViewCell, horizontalSpacingTableViewCell];
-  NSString* visualFormat4 = [NSString stringWithFormat:@"V:|-%f-[descriptionLabel]-%f-[slider]", verticalSpacingTableViewCell, verticalSpacingSiblings];
-  NSString* visualFormat5 = [NSString stringWithFormat:@"V:|-%f-[valueLabel]", verticalSpacingTableViewCell];
-  NSMutableArray* visualFormats = [NSMutableArray arrayWithObjects:
-                                   visualFormat3,
-                                   visualFormat4,
-                                   nil];
-  if (self.valueLabelHidden)
-  {
-    [visualFormats addObject:visualFormat1];
-  }
-  else
-  {
-    [viewsDictionary setObject:self.valueLabel forKey:@"valueLabel"];
-    [visualFormats addObject:visualFormat2];
-    [visualFormats addObject:visualFormat5];
-  }
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.contentView];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the row height for TableViewSliderCell objects.
-// -----------------------------------------------------------------------------
-+ (CGFloat) rowHeightInTableView:(UITableView*)tableView
-{
-  static CGFloat rowHeight = 0;
-  if (0 == rowHeight)
-  {
-    UILabel* dummyLabel = [[[UILabel alloc] initWithFrame:[UIScreen mainScreen].bounds] autorelease];
-    dummyLabel.text = @"A";
-    [dummyLabel setNeedsLayout];
-    [dummyLabel layoutIfNeeded];
-    CGSize labelSize = [dummyLabel systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-
-    UISlider* dummySlider = [[[UISlider alloc] initWithFrame:[UIScreen mainScreen].bounds] autorelease];
-    [dummySlider setNeedsLayout];
-    [dummySlider layoutIfNeeded];
-    CGSize sliderSize = [dummySlider systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-
-    rowHeight = (2 * [AutoLayoutUtility verticalSpacingTableViewCell]
-                 + labelSize.height
-                 + [AutoLayoutUtility verticalSpacingSiblings]
-                 + sliderSize.height);
-  }
-  return rowHeight;
+  self.stackViewSlider.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.stackViewSlider.leadingAnchor constraintEqualToAnchor:self.contentView.layoutMarginsGuide.leadingAnchor].active = YES;
+  [self.stackViewSlider.trailingAnchor constraintEqualToAnchor:self.contentView.layoutMarginsGuide.trailingAnchor].active = YES;
+  [self.stackViewSlider.topAnchor constraintEqualToAnchor:self.contentView.layoutMarginsGuide.topAnchor].active = YES;
+  [self.stackViewSlider.bottomAnchor constraintEqualToAnchor:self.contentView.layoutMarginsGuide.bottomAnchor].active = YES;
 }
 
 // -----------------------------------------------------------------------------

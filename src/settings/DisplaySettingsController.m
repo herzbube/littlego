@@ -22,7 +22,6 @@
 #import "../play/model/BoardViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
-#import "../utility/UIDeviceAdditions.h"
 
 // Constants
 static const float sliderValueFactorForMoveNumbersPercentage = 100.0;
@@ -117,10 +116,6 @@ enum DisplayPlayerInfluenceSectionItem
 {
   [super viewDidLoad];
   self.title = @"Display settings";
-
-  // We set this because of TableViewSliderCell - see the class docs for details
-  if ([UIDevice systemVersionMajor] >= 9)
-    self.tableView.cellLayoutMarginsFollowReadableWidth = YES;
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -260,34 +255,6 @@ enum DisplayPlayerInfluenceSectionItem
 }
 
 #pragma mark - UITableViewDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  CGFloat height = tableView.rowHeight;
-  switch (indexPath.section)
-  {
-    case DisplayMoveNumbersSection:
-    {
-      switch (indexPath.row)
-      {
-        case MoveNumbersPercentageItem:
-          height = [TableViewSliderCell rowHeightInTableView:tableView];
-          break;
-        default:
-          break;
-      }
-      break;
-    }
-    default:
-    {
-      break;
-    }
-  }
-  return height;
-}
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.

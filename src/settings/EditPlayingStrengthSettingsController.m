@@ -22,7 +22,6 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
 #import "../ui/UIViewControllerAdditions.h"
-#import "../utility/UIDeviceAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -169,10 +168,6 @@ enum MaxGamesCategory
 {
   [super viewDidLoad];
   self.navigationItem.title = @"Playing strength";
-
-  // We set this because of TableViewSliderCell - see the class docs for details
-  if ([UIDevice systemVersionMajor] >= 9)
-    self.tableView.cellLayoutMarginsFollowReadableWidth = YES;
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -340,39 +335,6 @@ enum MaxGamesCategory
 }
 
 #pragma mark - UITableViewDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  CGFloat height = tableView.rowHeight;
-  switch (indexPath.section)
-  {
-    case ThreadsSection:
-    {
-      height = [TableViewSliderCell rowHeightInTableView:tableView];
-      break;
-    }
-    case PonderingSection:
-    {
-      if (FuegoMaxPonderTimeItem == indexPath.row)
-        height = [TableViewSliderCell rowHeightInTableView:tableView];
-      break;
-    }
-    case PlayoutLimitsSection:
-    {
-      if (FuegoMaxThinkingTimeItem == indexPath.row)
-        height = [TableViewSliderCell rowHeightInTableView:tableView];
-      break;
-    }
-    default:
-    {
-      break;
-    }
-  }
-  return height;
-}
 
 // -----------------------------------------------------------------------------
 /// @brief UITableViewDelegate protocol method.

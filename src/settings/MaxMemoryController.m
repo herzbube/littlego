@@ -109,10 +109,6 @@ enum PhysicalMemorySectionItem
   self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                           target:self
                                                                                           action:@selector(done:)] autorelease];
-
-  // We set this because of TableViewSliderCell - see the class docs for details
-  if ([UIDevice systemVersionMajor] >= 9)
-    self.tableView.cellLayoutMarginsFollowReadableWidth = YES;
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -193,29 +189,6 @@ enum PhysicalMemorySectionItem
     }
   }
   return cell;
-}
-
-#pragma mark - UITableViewDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UITableViewDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (CGFloat) tableView:(UITableView*)tableView heightForRowAtIndexPath:(NSIndexPath*)indexPath
-{
-  CGFloat height = tableView.rowHeight;
-  switch (indexPath.section)
-  {
-    case MaxMemorySection:
-    {
-      height = [TableViewSliderCell rowHeightInTableView:tableView];
-      break;
-    }
-    default:
-    {
-      break;
-    }
-  }
-  return height;
 }
 
 #pragma mark - Action handlers

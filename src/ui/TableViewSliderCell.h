@@ -48,15 +48,6 @@ enum SliderCellSubViewTag
 /// @endverbatim
 ///
 /// Notes and constraints:
-/// - In iOS 9 and later, make sure that the UITableViewCell property
-///   cellLayoutMarginsFollowReadableWidth is set to YES. The reason for this is
-///   that in iOS 9 and later, TableViewSliderCell internally uses the cell
-///   content view's @e readableContentGuide property. If the UITableView has
-///   other cells but cellLayoutMarginsFollowReadableWidth is set to NO, then
-///   the default table view cells use different margins than
-///   TableViewSliderCell. In iOS 9-11 the default for
-///   cellLayoutMarginsFollowReadableWidth is YES, in iOS 12 and later the
-///   default for cellLayoutMarginsFollowReadableWidth is NO.
 /// - Use the @e value property to set or get the integer value
 /// - Each UI element has its view tag set to a value from the
 ///   #SliderCellSubViewTag enum
@@ -69,7 +60,6 @@ enum SliderCellSubViewTag
 }
 
 + (TableViewSliderCell*) cellWithReuseIdentifier:(NSString*)reuseIdentifier valueLabelHidden:(bool)valueLabelHidden;
-+ (CGFloat) rowHeightInTableView:(UITableView*)tableView;
 - (void) setDelegate:(id)aDelegate actionValueDidChange:(SEL)action1 actionSliderValueDidChange:(SEL)action2;
 
 @property(nonatomic, retain, readonly) UILabel* descriptionLabel;
