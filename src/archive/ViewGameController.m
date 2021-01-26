@@ -37,7 +37,6 @@
 #import "../ui/UiUtilities.h"
 #import "../ui/UIViewControllerAdditions.h"
 #import "../utility/UIColorAdditions.h"
-#import "../utility/UIDeviceAdditions.h"
 
 
 // -----------------------------------------------------------------------------

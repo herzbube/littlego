@@ -25,7 +25,6 @@
 #import "../ui/TableViewVariableHeightCell.h"
 #import "../ui/UiElementMetrics.h"
 #import "../utility/NSStringAdditions.h"
-#import "../utility/UIDeviceAdditions.h"
 
 // Constants
 NSString* disputeResolutionRuleText_NewGameAdvancedController = @"Dispute resolution";
@@ -203,12 +202,6 @@ enum CellID
 {
   [super viewDidLoad];
   self.title = @"Advanced settings";
-
-  // We set this because of TableViewVariableHeightCell - see the class docs
-  // for details.
-  self.tableView.estimatedRowHeight = [UiElementMetrics tableViewCellSizeForDefaultType].height;
-  if ([UIDevice systemVersionMajor] >= 9)
-    self.tableView.cellLayoutMarginsFollowReadableWidth = YES;
 }
 
 #pragma mark - UITableViewDataSource overrides

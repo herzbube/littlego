@@ -179,7 +179,6 @@ enum PlayerListSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-  self.tableView.estimatedRowHeight = [UiElementMetrics tableViewCellSizeForDefaultType].height;
 
   if (self.profileExists)
   {
