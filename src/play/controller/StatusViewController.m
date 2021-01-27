@@ -204,23 +204,6 @@
   self.statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
 
-  int horizontalSpacingSuperview;
-  if ([LayoutManager sharedManager].uiType == UITypePhone)
-    horizontalSpacingSuperview = [AutoLayoutUtility horizontalSpacingTableViewCell];
-  else
-    horizontalSpacingSuperview = 0;
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.statusLabel, @"statusLabel",
-                                   self.activityIndicator, @"activityIndicator",
-                                   nil];
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            [NSString stringWithFormat:@"H:|-%d-[statusLabel]", horizontalSpacingSuperview],
-                            [NSString stringWithFormat:@"H:[activityIndicator]-%d-|", horizontalSpacingSuperview],
-                            @"V:|-0-[statusLabel]-0-|",
-                            nil];
-  [AutoLayoutUtility installVisualFormats:visualFormats
-                                withViews:viewsDictionary
-                                   inView:self.view];
   [AutoLayoutUtility alignFirstView:self.activityIndicator
                      withSecondView:self.statusLabel
                         onAttribute:NSLayoutAttributeCenterY
@@ -241,6 +224,46 @@
                                                                           constant:0.0f];
   [self.view addConstraint:self.activityIndicatorWidthConstraint];
   [self.view addConstraint:self.activityIndicatorSpacingConstraint];
+
+  UIView* anchorView = self.view;
+  NSLayoutXAxisAnchor* leftAnchor;
+  NSLayoutXAxisAnchor* rightAnchor;
+  NSLayoutYAxisAnchor* topAnchor;
+  NSLayoutYAxisAnchor* bottomAnchor;
+  if (@available(iOS 11.0, *))
+  {
+    UILayoutGuide* layoutGuide = anchorView.safeAreaLayoutGuide;
+    leftAnchor = layoutGuide.leftAnchor;
+    rightAnchor = layoutGuide.rightAnchor;
+    topAnchor = layoutGuide.topAnchor;
+    bottomAnchor = layoutGuide.bottomAnchor;
+  }
+  else
+  {
+    leftAnchor = anchorView.leftAnchor;
+    rightAnchor = anchorView.rightAnchor;
+    topAnchor = anchorView.topAnchor;
+    bottomAnchor = anchorView.bottomAnchor;
+  }
+
+  // In case the status view is displayed at the bottom of the screen: On
+  // devices that don't have a physical Home button, the status label should
+  // not be overlapped by the Home indicator. The activity indicator is also
+  // dealt with because its vertical position is tied to the status label (see
+  // constraints above).
+  [self.statusLabel.topAnchor constraintEqualToAnchor:topAnchor].active = YES;
+  [self.statusLabel.bottomAnchor constraintEqualToAnchor:bottomAnchor].active = YES;
+
+  // In case the status view is displayed at the left edge of the screen: On
+  // devices with rounded corners and/or a notch, the status label should not
+  // be clipped by the rounded corners or the notch.
+  int horizontalSpacingSuperview;
+  if ([LayoutManager sharedManager].uiType == UITypePhone)
+    horizontalSpacingSuperview = [AutoLayoutUtility horizontalSpacingTableViewCell];
+  else
+    horizontalSpacingSuperview = 0;
+  [self.statusLabel.leftAnchor constraintEqualToAnchor:leftAnchor constant:horizontalSpacingSuperview].active = YES;
+  [self.activityIndicator.rightAnchor constraintEqualToAnchor:rightAnchor constant:-horizontalSpacingSuperview].active = YES;
 }
 
 // -----------------------------------------------------------------------------

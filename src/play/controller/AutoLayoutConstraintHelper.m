@@ -58,19 +58,19 @@
 
   UIView* superviewOfBoardView = boardView.superview;
 
-  // Choose whichever is the superview's smaller dimension. We know that the
-  // board view is constrained to be square, so we need to constrain only one
-  // dimension to define the view size.
-  NSLayoutAttribute dimensionToConstrain;
+  // We align two of the board view's edges with two of the superview's edges.
+  // The edges are those which delimit the superview's smaller dimension.
+  // Aligning the edges 1) defines the board view's size in that dimension,
+  // and 2) places the board view along that axis.
+  NSLayoutAnchor* boardViewEdge1;
+  NSLayoutAnchor* boardViewEdge2;
+  NSLayoutAnchor* superviewEdge1;
+  NSLayoutAnchor* superviewEdge2;
   // For the makeSquare... method we need to know if the width depends on the
   // height (i.e. the dimension to constrain is the height, and the width is
   // derived from the height), or if the dependency relationship is the other
-  // way around.
+  // way around. Making the board view square fully defines its size.
   bool widthDependsOnHeight;
-  // We also need to place the board view. The first part is to align it to one
-  // of the superview edges from which it can freely flow to take up the entire
-  // extent of the superview.
-  NSLayoutAttribute alignConstraintAxis;
   // The second part of placing the board view is to center it on the axis on
   // which it won't take up the entire extent of the superview. This evenly
   // distributes the remaining space not taken up by the board view. Other
@@ -78,16 +78,36 @@
   UILayoutConstraintAxis centerConstraintAxis;
   if (UIInterfaceOrientationIsPortrait(interfaceOrientation))
   {
-    dimensionToConstrain = NSLayoutAttributeWidth;
+    boardViewEdge1 = boardView.leftAnchor;
+    boardViewEdge2 = boardView.rightAnchor;
+    if (@available(iOS 11.0, *))
+    {
+      superviewEdge1 = superviewOfBoardView.safeAreaLayoutGuide.leftAnchor;
+      superviewEdge2 = superviewOfBoardView.safeAreaLayoutGuide.rightAnchor;
+    }
+    else
+    {
+      superviewEdge1 = superviewOfBoardView.leftAnchor;
+      superviewEdge2 = superviewOfBoardView.rightAnchor;
+    }
     widthDependsOnHeight = false;
-    alignConstraintAxis = NSLayoutAttributeLeft;
     centerConstraintAxis = UILayoutConstraintAxisVertical;
   }
   else
   {
-    dimensionToConstrain = NSLayoutAttributeHeight;
+    boardViewEdge1 = boardView.topAnchor;
+    boardViewEdge2 = boardView.bottomAnchor;
+    if (@available(iOS 11.0, *))
+    {
+      superviewEdge1 = superviewOfBoardView.safeAreaLayoutGuide.topAnchor;
+      superviewEdge2 = superviewOfBoardView.safeAreaLayoutGuide.bottomAnchor;
+    }
+    else
+    {
+      superviewEdge1 = superviewOfBoardView.topAnchor;
+      superviewEdge2 = superviewOfBoardView.bottomAnchor;
+    }
     widthDependsOnHeight = true;
-    alignConstraintAxis = NSLayoutAttributeTop;
     centerConstraintAxis = UILayoutConstraintAxisHorizontal;
   }
 
@@ -96,17 +116,12 @@
                                                            constraintHolder:superviewOfBoardView];
   [constraints addObject:aspectRatioConstraint];
 
-  NSLayoutConstraint* dimensionConstraint = [AutoLayoutUtility alignFirstView:boardView
-                                                               withSecondView:superviewOfBoardView
-                                                                  onAttribute:dimensionToConstrain
-                                                             constraintHolder:superviewOfBoardView];
-  [constraints addObject:dimensionConstraint];
-
-  NSLayoutConstraint* alignConstraint = [AutoLayoutUtility alignFirstView:boardView
-                                                           withSecondView:superviewOfBoardView
-                                                              onAttribute:alignConstraintAxis
-                                                         constraintHolder:superviewOfBoardView];
-  [constraints addObject:alignConstraint];
+  NSLayoutConstraint* constraintEdge1 = [boardViewEdge1 constraintEqualToAnchor:superviewEdge1];
+  NSLayoutConstraint* constraintEdge2 = [boardViewEdge2 constraintEqualToAnchor:superviewEdge2];
+  constraintEdge1.active = YES;
+  constraintEdge2.active = YES;
+  [constraints addObject:constraintEdge1];
+  [constraints addObject:constraintEdge2];
 
   NSLayoutConstraint* centerConstraint = [AutoLayoutUtility centerSubview:boardView
                                                               inSuperview:superviewOfBoardView

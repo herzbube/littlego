@@ -586,7 +586,6 @@ enum ViewHierarchyState
   self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   self.statusViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewMaximumCellSize].height;
-  int statusViewHeight = [UiElementMetrics tableViewCellContentViewHeight];
   viewsDictionary[@"woodenBackgroundView"] = self.woodenBackgroundView;
   viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
   viewsDictionary[@"statusView"] = self.statusViewController.view;
@@ -595,8 +594,21 @@ enum ViewHierarchyState
   [visualFormats addObject:@"H:|-0-[statusView]-0-|"];
   [visualFormats addObject:@"V:|-0-[woodenBackgroundView]-0-[boardPositionCollectionView]-0-[statusView]-0-|"];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight]];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:[statusView(==%d)]", statusViewHeight]];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+
+  // Here we define the statusView height, and by consequence the height of
+  // the woodenBackgroundView. The status view extends upwards from the safe
+  // area bottom so that on devices that don't have a physical Home button the
+  // actual status view content is not overlapped by the Home indicator. For
+  // this to work the status view is required to honor safeAreaLayoutGuide.
+  NSLayoutYAxisAnchor* bottomAnchor;
+  if (@available(iOS 11.0, *))
+    bottomAnchor = self.view.safeAreaLayoutGuide.bottomAnchor;
+  else
+    bottomAnchor = self.view.bottomAnchor;
+  int statusViewContentHeight = [UiElementMetrics tableViewCellContentViewHeight];
+  [self.statusViewController.view.topAnchor constraintEqualToAnchor:bottomAnchor
+                                                           constant:-statusViewContentHeight].active = YES;
 
   [viewsDictionary removeAllObjects];
   [visualFormats removeAllObjects];

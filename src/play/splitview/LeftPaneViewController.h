@@ -20,8 +20,8 @@
 /// intended to be displayed as the left pane of a split view (i.e. the view
 /// managed by UISplitViewController).
 ///
-/// LeftPaneViewController is a container view controller. It is used on the
-/// iPad only.
+/// LeftPaneViewController is a container view controller. It is used for
+/// #UITypePad (both Portrait and Landscape) and #UITypePhone (Landscape only).
 // -----------------------------------------------------------------------------
 @interface LeftPaneViewController : UIViewController
 {

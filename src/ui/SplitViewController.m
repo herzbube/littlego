@@ -449,7 +449,7 @@
   else
   {
     NSArray* visualFormats = [NSArray arrayWithObjects:
-                              [NSString stringWithFormat:@"H:|-0-[leftPaneView(==%d)]-0-[dividerView(==0)]-0-[rightPaneView]-0-|", self.leftPaneWidth],
+                              @"H:|-0-[leftPaneView]-0-[dividerView(==0)]-0-[rightPaneView]-0-|",
                               @"V:|-0-[dividerView]-0-|",
                               @"V:|-0-[leftPaneView]-0-|",
                               @"V:|-0-[rightPaneView]-0-|",
@@ -457,6 +457,14 @@
     self.autoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
                                                                withViews:viewsDictionary
                                                                   inView:self.view];
+
+    NSLayoutXAxisAnchor* leftAnchor;
+    if (@available(iOS 11.0, *))
+      leftAnchor = self.view.safeAreaLayoutGuide.leftAnchor;
+    else
+      leftAnchor = self.view.leftAnchor;
+    [leftPaneView.rightAnchor constraintEqualToAnchor:leftAnchor
+                                             constant:self.leftPaneWidth].active = YES;
   }
 }
 

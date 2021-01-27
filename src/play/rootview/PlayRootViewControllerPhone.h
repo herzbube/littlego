@@ -21,8 +21,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayRootViewControllerPhone class is the root view controller of
-/// the #UIAreaPlay for #UITypePhone. It is used only when the UI is in one of
-/// the Portrait orientations.
+/// the #UIAreaPlay for #UITypePhone. It is used in both Portrait and
+/// Landscape interface orientations.
 ///
 /// The PlayRootViewController class method playRootViewController() should be
 /// used to create a PlayRootViewControllerPhone instance.

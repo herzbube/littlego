@@ -364,11 +364,37 @@
     // The board view is anchored at the horizontal center and has a defined
     // width. By aligning the column edges with the board view edges and by NOT
     // specifying any column widths we guarantee that the column views will
-    // horizontally expand.
-    [visualFormats addObject:@"H:|-0-[leftColumnView]-0-[boardView]-0-[rightColumnView]-0-|"];
-    [visualFormats addObject:@"V:|-0-[leftColumnView]-0-|"];
-    [visualFormats addObject:@"V:|-0-[rightColumnView]-0-|"];
+    // horizontally expand (the column views will be anchored to the superview's
+    // edges further down).
+    [visualFormats addObject:@"H:[leftColumnView]-0-[boardView]-0-[rightColumnView]"];
     [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.woodenBackgroundView];
+
+    UIView* anchorView = self.woodenBackgroundView;
+    NSLayoutXAxisAnchor* leftAnchor;
+    NSLayoutXAxisAnchor* rightAnchor;
+    NSLayoutYAxisAnchor* topAnchor;
+    NSLayoutYAxisAnchor* bottomAnchor;
+    if (@available(iOS 11.0, *))
+    {
+      UILayoutGuide* layoutGuide = anchorView.safeAreaLayoutGuide;
+      leftAnchor = layoutGuide.leftAnchor;
+      rightAnchor = layoutGuide.rightAnchor;
+      topAnchor = layoutGuide.topAnchor;
+      bottomAnchor = layoutGuide.bottomAnchor;
+    }
+    else
+    {
+      leftAnchor = anchorView.leftAnchor;
+      rightAnchor = anchorView.rightAnchor;
+      topAnchor = anchorView.topAnchor;
+      bottomAnchor = anchorView.bottomAnchor;
+    }
+    [self.leftColumnView.leftAnchor constraintEqualToAnchor:leftAnchor].active = YES;
+    [self.leftColumnView.topAnchor constraintEqualToAnchor:topAnchor].active = YES;
+    [self.leftColumnView.bottomAnchor constraintEqualToAnchor:bottomAnchor].active = YES;
+    [self.rightColumnView.topAnchor constraintEqualToAnchor:topAnchor].active = YES;
+    [self.rightColumnView.bottomAnchor constraintEqualToAnchor:bottomAnchor].active = YES;
+    [self.rightColumnView.rightAnchor constraintEqualToAnchor:rightAnchor].active = YES;
 
     [viewsDictionary removeAllObjects];
     [visualFormats removeAllObjects];

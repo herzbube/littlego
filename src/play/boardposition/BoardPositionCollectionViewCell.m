@@ -186,15 +186,13 @@ static UIFont* smallFont = nil;
                                    self.capturedStonesLabel, @"capturedStonesLabel",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            [NSString stringWithFormat:@"H:|-%d-[stoneImageView]", horizontalSpacingSuperview],
                             // Spacing 0 is OK. In setupDummyContents we reserve space for a
                             // 3-digit number of captured stones, which is unlikely to occur.
                             // Numbers with 1 or 2 digits are much more likely, so the space
                             // reserved for a 2nd and/or 3rd digit acts as spacing (the label
                             // text is right-aligned). In the unlikely event that there *IS*
                             // a 3-digit number, spacing 0 is still tolerable.
-                            [NSString stringWithFormat:@"H:[intersectionLabel]-0-[capturedStonesLabel]-%d-|", horizontalSpacingSuperview],
-                            [NSString stringWithFormat:@"H:[boardPositionLabel]-%d-|", horizontalSpacingSuperview],
+                            @"H:[intersectionLabel]-0-[capturedStonesLabel]",
                             [NSString stringWithFormat:@"V:|-%d-[intersectionLabel]-%d-[boardPositionLabel]-%d-|", verticalSpacingSuperview, verticalSpacingSiblings, verticalSpacingSuperview],
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
@@ -208,6 +206,24 @@ static UIFont* smallFont = nil;
                      withSecondView:self.intersectionLabel
                         onAttribute:NSLayoutAttributeCenterY
                    constraintHolder:self];
+
+  UIView* anchorView = self;
+  NSLayoutXAxisAnchor* leftAnchor;
+  NSLayoutXAxisAnchor* rightAnchor;
+  if (@available(iOS 11.0, *))
+  {
+    UILayoutGuide* layoutGuide = anchorView.safeAreaLayoutGuide;
+    leftAnchor = layoutGuide.leftAnchor;
+    rightAnchor = layoutGuide.rightAnchor;
+  }
+  else
+  {
+    leftAnchor = anchorView.leftAnchor;
+    rightAnchor = anchorView.rightAnchor;
+  }
+  [self.stoneImageView.leftAnchor constraintEqualToAnchor:leftAnchor constant:horizontalSpacingSuperview].active = YES;
+  [self.capturedStonesLabel.rightAnchor constraintEqualToAnchor:rightAnchor constant:-horizontalSpacingSuperview].active = YES;
+  [self.boardPositionLabel.rightAnchor constraintEqualToAnchor:rightAnchor constant:-horizontalSpacingSuperview].active = YES;
 
   [self updateDynamicAutoLayoutConstraints];
 }

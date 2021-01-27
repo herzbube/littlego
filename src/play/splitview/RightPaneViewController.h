@@ -27,8 +27,8 @@
 /// intended to be displayed as the right pane of a split view (i.e. the view
 /// managed by UISplitViewController).
 ///
-/// RightPaneViewController's is a container view controller. It is used on the
-/// iPad only.
+/// RightPaneViewController is a container view controller. It is used for
+/// #UITypePad (both Portrait and Landscape) and #UITypePhone (Landscape only).
 // -----------------------------------------------------------------------------
 @interface RightPaneViewController : UIViewController <ButtonBoxControllerDataDelegate>
 {

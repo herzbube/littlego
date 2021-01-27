@@ -235,7 +235,9 @@
   else
   {
     // Vertical scroll direction = all cells have the same size
-    return [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero];
+    CGSize size = [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero];
+    size.width = self.view.frame.size.width;
+    return size;
   }
 }
 

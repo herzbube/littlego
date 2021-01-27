@@ -236,20 +236,44 @@
     self.statusViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
     viewsDictionary[@"statusView"] = self.statusViewController.view;
-    [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]"];
+    [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
     [visualFormats addObject:@"H:|-0-[statusView]-0-|"];
     [visualFormats addObject:@"V:|-0-[boardPositionCollectionView]-0-[statusView]-0-|"];
-    CGFloat boardPositionCollectionViewWidth = self.boardPositionCollectionViewController.boardPositionCollectionViewMaximumCellSize.width;
-    [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewWidth]];
-    // This multiplier was experimentally determined so that even with 4 lines
-    // of text there is a comfortable spacing at the top/bottom of the status
-    // view label. The multiplier is closely linked to the label's font size.
-    CGFloat statusViewHeightMultiplier = 1.4f;
-    int statusViewHeight = [UiElementMetrics tableViewCellContentViewHeight] * statusViewHeightMultiplier;
-    [visualFormats addObject:[NSString stringWithFormat:@"V:[statusView(==%d)]", statusViewHeight]];
   }
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+
+  if (! self.useBoardPositionToolbar)
+  {
+    // Here we define the statusView height, and by consequence the height of
+    // the boardPositionCollectionView. The status view extends upwards from the
+    // safe area bottom so that on devices that don't have a physical Home
+    // button the actual status view content is not overlapped by the Home
+    // indicator. For this to work the status view is required to honor
+    // safeAreaLayoutGuide.
+    //
+    // TODO xxx This does not work if the app directly launches into landscape.
+    // It only works after rotating once to portrait and then rotating back to
+    // landscape. Tried to move this to viewWillLayoutSubviews, but didn't work.
+    UIView* anchorView = self.view;
+    NSLayoutYAxisAnchor* bottomAnchor;
+    if (@available(iOS 11.0, *))
+    {
+      UILayoutGuide* layoutGuide = anchorView.safeAreaLayoutGuide;
+      bottomAnchor = layoutGuide.bottomAnchor;
+    }
+    else
+    {
+      bottomAnchor = anchorView.bottomAnchor;
+    }
+    // This multiplier was experimentally determined so that even with 4 lines
+    // of text there is a comfortable spacing at the top/bottom of the status
+    // view label. The multiplier is closely linked to the label's font size.
+    CGFloat statusViewContentHeightMultiplier = 1.4f;
+    int statusViewContentHeight = [UiElementMetrics tableViewCellContentViewHeight] * statusViewContentHeightMultiplier;
+    [self.statusViewController.view.topAnchor constraintEqualToAnchor:bottomAnchor
+                                                             constant:-statusViewContentHeight].active = YES;
+  }
 
   // Set a color (should be the same as the main window's) because we need to
   // paint over the parent split view background color.
