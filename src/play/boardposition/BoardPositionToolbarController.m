@@ -172,25 +172,38 @@
 
   [self setupBarButtonItems];
   if ([LayoutManager sharedManager].uiType != UITypePad)
-  {
-    // In iOS 11 and later UIToolbar works with an internal content view. If we
-    // just invoke setupBoardPositionViews() without doing anything else, we
-    // add our own subviews to the toolbar, then when the toolbar is laid out
-    // its internal content view is created on top of our own subviews, making
-    // them unresponsive to touches and gestures. By invoking layoutSubviews()
-    // ***NOW*** we force the toolbar to create its internal content view
-    // ***NOW***, so that it ends up lower in the view hierarchy than our own
-    // subviews and does not interfere with their touch/gesture handling. This
-    // solution, which is very neat because it is compatible with older iOS
-    // versions, was suggested here:
-    // https://stackoverflow.com/a/46448751/1054378.
-    [self.toolbar layoutSubviews];
-
-    [self setupBoardPositionViews];
-  }
+    [self setupBoardPositionViews];  // cf. the override of viewDidLayoutSubviews()
 
   self.toolbarNeedsPopulation = true;
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) viewDidLayoutSubviews
+{
+  [super viewDidLayoutSubviews];
+
+  // When we invoked setupBoardPositionViews() during loadView() we added our
+  // own subviews to the toolbar, but when the toolbar is laid out it creates
+  // its own internal views on top of our own subviews, making them unresponsive
+  // to touches and gestures. Here we bring our subviews to the front and make
+  // them responsive. We have to do this only once.
+  //
+  // This kind of special treatment started to be necessary with iOS 11, when
+  // UIToolbar began working with an internal content view
+  // (cf. https://stackoverflow.com/a/46448751/1054378). It used to be
+  // sufficient to invoke layoutSubviews() on the toolbar before invoking our
+  // own setupBoardPositionViews(). Starting with iOS 13 this stopped working,
+  // so now we explicitly bring our subviews to the top of the z-stack.
+  static bool subviewsAreResponsive = false;
+  if (! subviewsAreResponsive)
+  {
+    subviewsAreResponsive = true;
+    [self.view bringSubviewToFront:self.boardPositionListViewController.view];
+    [self.view bringSubviewToFront:self.currentBoardPositionViewController.view];
+  }
 }
 
 // -----------------------------------------------------------------------------
