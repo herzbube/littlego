@@ -116,6 +116,7 @@
 
   // New controller instances may be created in mid-game after a layout change
   self.statusLabelNeedsUpdate = true;
+  self.activityIndicatorNeedsUpdate = true;
   [self delayedUpdate];
 }
 
