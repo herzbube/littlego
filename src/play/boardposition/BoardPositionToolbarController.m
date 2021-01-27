@@ -159,7 +159,13 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.toolbar = [[[UIToolbar alloc] initWithFrame:CGRectZero] autorelease];
+  // As of iOS 13 UIToolbar needs to be initialized with a frame that is
+  // sufficiently sized, otherwise the toolbar will generate an
+  // "Unable to simultaneously satisfy constraints" message when bar button
+  // items are addded. We use an arbitrary size here because the toolbar will
+  // resized later on to its proper dimensions.
+  CGRect initialFrame = CGRectMake(0, 0, 100, 100);
+  self.toolbar = [[[UIToolbar alloc] initWithFrame:initialFrame] autorelease];
   self.toolbar.accessibilityIdentifier = boardPositionNavigationButtonContainerAccessibilityIdentifier;
   self.view = self.toolbar;
   self.toolbar.delegate = self;
