@@ -109,6 +109,10 @@
   [super loadView];
   self.edgesForExtendedLayout = UIRectEdgeNone;
 
+  // A background color is required to support UIModalPresentationAutomatic
+  if (@available(iOS 13.0, *))
+    self.view.backgroundColor = [UIColor systemBackgroundColor];
+
   [self setupNavigationItem];
   switch (self.editTextControllerStyle)
   {
@@ -286,7 +290,6 @@
 // -----------------------------------------------------------------------------
 - (void) setupNavigationItem
 {
-  [super viewDidLoad];
   self.navigationItem.leftBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                          target:self
                                                                                          action:@selector(cancel:)] autorelease];
