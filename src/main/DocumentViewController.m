@@ -133,7 +133,7 @@
       case UIAreaChangelog:
       {
         NSString* resourceContentAsHtmlString =
-          [NSString stringWithFormat:@"<html><head><meta name=\"viewport\" content=\"initial-scale=1.0\"/></head><body><pre>%@</pre></body></html>", resourceContent];;
+          [NSString stringWithFormat:@"<html><head><meta name=\"viewport\" content=\"initial-scale=1.0\"/><style type=\"text/css\">:root { color-scheme: light dark; --link-color: blue; } @media screen and (prefers-color-scheme: dark) { :root { --link-color: #93d5ff; } } a { color: var(--link-color); }</style></head><body><pre>%@</pre></body></html>", resourceContent];;
         [self.webView loadHTMLString:resourceContentAsHtmlString baseURL:nil];
         break;
       }
