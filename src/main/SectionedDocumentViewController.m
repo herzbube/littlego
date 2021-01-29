@@ -54,6 +54,20 @@
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
+- (void) traitCollectionDidChange:(UITraitCollection*)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 12.0, *))
+  {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+      [self updateHeaderViewAppearance];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
 - (void) didReceiveMemoryWarning
 {
   [super didReceiveMemoryWarning];
@@ -152,8 +166,24 @@
   if ([view isKindOfClass:[UITableViewHeaderFooterView class]])
   {
     UITableViewHeaderFooterView* headerFooterView = (UITableViewHeaderFooterView*)view;
-    headerFooterView.contentView.backgroundColor = [UIColor blackColor];
-    headerFooterView.textLabel.textColor = [UIColor whiteColor];
+
+    bool userInterfaceStyleIsLight = true;
+    if (@available(iOS 12.0, *))
+      userInterfaceStyleIsLight = (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight);
+
+    if (userInterfaceStyleIsLight)
+    {
+      headerFooterView.contentView.backgroundColor = [UIColor blackColor];
+      headerFooterView.textLabel.textColor = [UIColor whiteColor];
+    }
+    else
+    {
+      headerFooterView.contentView.backgroundColor = nil;
+      if (@available(iOS 13.0, *))
+        headerFooterView.textLabel.textColor = [UIColor labelColor];
+      else
+        headerFooterView.textLabel.textColor = [UIColor darkTextColor];
+    }
   }
   else
   {
@@ -177,6 +207,17 @@
   NSString* sectionContent = [self.documentGenerator contentForSection:(int)indexPath.row inGroup:(int)indexPath.section];
   DocumentViewController* controller = [DocumentViewController controllerWithTitle:sectionTitle htmlString:sectionContent];
   [self.navigationController pushViewController:controller animated:YES];
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the appearance of the table view's header views to match
+/// the current UIUserInterfaceStyle (light/dark mode).
+// -----------------------------------------------------------------------------
+- (void) updateHeaderViewAppearance
+{
+  [self.tableView reloadData];
 }
 
 @end
