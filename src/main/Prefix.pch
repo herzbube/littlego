@@ -22,6 +22,7 @@
 #if defined(LITTLEGO_UNITTESTS) || defined(LITTLEGO_UITESTS)
   #import <XCTest/XCTest.h>
 #endif
+  #import <WebKit/WebKit.h>
 
   // Library includes
 #ifndef LITTLEGO_UITESTS

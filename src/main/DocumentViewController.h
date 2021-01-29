@@ -17,7 +17,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The DocumentViewController class is responsible for loading an HTML
-/// resource file and displaying the content in its view (a UIWebview object).
+/// resource file and displaying the content in its view (a WKWebView object).
 /// Alternatively, a client may provide the HTML document content as a string to
 /// DocumentViewController upon creation.
 ///
@@ -36,7 +36,7 @@
 /// one instance of the controller/view pair instead of one instance per
 /// document).
 // -----------------------------------------------------------------------------
-@interface DocumentViewController : UIViewController<UIWebViewDelegate>
+@interface DocumentViewController : UIViewController<WKNavigationDelegate>
 {
 }
 

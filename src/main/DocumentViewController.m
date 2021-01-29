@@ -27,7 +27,7 @@
 /// @brief Class extension with private properties for DocumentViewController.
 // -----------------------------------------------------------------------------
 @interface DocumentViewController()
-@property(nonatomic, retain) UIWebView* webView;
+@property(nonatomic, retain) WKWebView* webView;
 @property(nonatomic, retain) NSString* titleString;
 @property(nonatomic, retain) NSString* htmlString;
 @property(nonatomic, retain) NSString* resourceName;
@@ -93,7 +93,7 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
-  self.webView = [[[UIWebView alloc] init] autorelease];
+  self.webView = [[[WKWebView alloc] initWithFrame:CGRectZero] autorelease];
   self.view = self.webView;
 }
 
@@ -104,7 +104,7 @@
 {
   [super viewDidLoad];
 
-  self.webView.delegate = self;
+  self.webView.navigationDelegate = self;
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   if (self.titleString)
@@ -133,7 +133,7 @@
       case UIAreaChangelog:
       {
         NSString* resourceContentAsHtmlString =
-          [NSString stringWithFormat:@"<html><body><pre>%@</pre></body></html>", resourceContent];;
+          [NSString stringWithFormat:@"<html><head><meta name=\"viewport\" content=\"initial-scale=1.0\"/></head><body><pre>%@</pre></body></html>", resourceContent];;
         [self.webView loadHTMLString:resourceContentAsHtmlString baseURL:nil];
         break;
       }
@@ -165,29 +165,36 @@
   }
 }
 
-#pragma mark - UIWebViewDelegate overrides
+#pragma mark - WKNavigationDelegate overrides
 
 // -----------------------------------------------------------------------------
-/// @brief UIWebViewDelegate method.
+/// @brief WKNavigationDelegate method.
 ///
 /// Makes sure that external links embedded in the HTML resource are opened in
 /// Safari (or whatever browser is configured to handle such URL requests).
 // -----------------------------------------------------------------------------
-- (BOOL) webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
+- (void) webView:(WKWebView*)webView decidePolicyForNavigationAction:(WKNavigationAction*)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
-  if (navigationType == UIWebViewNavigationTypeLinkClicked)
+  if (navigationAction.navigationType == WKNavigationTypeLinkActivated)
   {
-    [[UIApplication sharedApplication] openURL:[request URL]];
-    return NO;
+    [[UIApplication sharedApplication] openURL:[navigationAction.request URL]];
+    decisionHandler(WKNavigationActionPolicyAllow);
   }
-  return YES;
+  else if (webView.isLoading)
+  {
+    decisionHandler(WKNavigationActionPolicyAllow);
+  }
+  else
+  {
+    decisionHandler(WKNavigationActionPolicyCancel);
+  }
 }
 
 #pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Replaces a number of tokens known to be present in @a documentContent
-/// before actually displaying the content in the associated UIWebView.
+/// before actually displaying the content in the associated WKWebView.
 // -----------------------------------------------------------------------------
 - (void) showAboutDocument:(NSString*)documentContent
 {

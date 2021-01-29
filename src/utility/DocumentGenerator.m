@@ -521,6 +521,7 @@ static const int numberedIndentationSpaces = 3;
           "<html>"
           "<head>"
           "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>"
+          "<meta name=\"viewport\" content=\"initial-scale=1.0\"/>"
           "<style type=\"text/css\">"
           "body { font-family:helvetica; font-size: small; }"
           "p.section-header { text-align: center; font-weight: bold; background-color: Lavender }"

@@ -22,7 +22,7 @@
 // -----------------------------------------------------------------------------
 /// @brief The DocumentGenerator class parses a text file and generates a set
 /// of HTML documents from the file content. The HTML documents can then be
-/// conveniently displayed in a UIWebView.
+/// conveniently displayed in a WKWebView.
 ///
 /// DocumentGenerator assumes that the text file is structured according to
 /// the following rules:
