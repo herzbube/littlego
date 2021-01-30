@@ -32,6 +32,7 @@
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
 #import "../../ui/TableViewCellFactory.h"
+#import "../../ui/UiUtilities.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIColorAdditions.h"
 #import "../../utility/UIImageAdditions.h"
@@ -53,10 +54,13 @@
 @property(nonatomic, assign) bool numberOfItemsNeedsUpdate;
 @property(nonatomic, assign) bool tappingEnabledNeedsUpdate;
 @property(nonatomic, assign) bool boardPositionZeroNeedsUpdate;
+@property(nonatomic, assign) bool userInterfaceStyleNeedsUpdate;
 @property(nonatomic, retain) UIImage* blackStoneImage;
 @property(nonatomic, retain) UIImage* whiteStoneImage;
 @property(nonatomic, retain) UIColor* alternateCellBackgroundColor1;
 @property(nonatomic, retain) UIColor* alternateCellBackgroundColor2;
+@property(nonatomic, retain) UIColor* alternateCellBackgroundColor1DarkMode;
+@property(nonatomic, retain) UIColor* alternateCellBackgroundColor2DarkMode;
 @end
 
 
@@ -84,10 +88,21 @@
   self.numberOfItemsNeedsUpdate = false;
   self.tappingEnabledNeedsUpdate = false;
   self.boardPositionZeroNeedsUpdate = false;
+  self.userInterfaceStyleNeedsUpdate = false;
   self.blackStoneImage = nil;
   self.whiteStoneImage = nil;
   self.alternateCellBackgroundColor1 = [UIColor lightBlueColor];
   self.alternateCellBackgroundColor2 = [UIColor whiteColor];
+  if (@available(iOS 13.0, *))
+  {
+    self.alternateCellBackgroundColor1DarkMode = [UIColor systemGrayColor];
+    self.alternateCellBackgroundColor2DarkMode = [UIColor systemGray2Color];
+  }
+  else
+  {
+    self.alternateCellBackgroundColor1DarkMode = self.alternateCellBackgroundColor1;
+    self.alternateCellBackgroundColor2DarkMode = self.alternateCellBackgroundColor2;
+  }
   return self;
 }
 
@@ -113,6 +128,8 @@
   self.whiteStoneImage = nil;
   self.alternateCellBackgroundColor1 = nil;
   self.alternateCellBackgroundColor2 = nil;
+  self.alternateCellBackgroundColor1DarkMode = nil;
+  self.alternateCellBackgroundColor2DarkMode = nil;
 }
 
 #pragma mark - UIViewController overrides
@@ -131,6 +148,23 @@
 
   self.currentBoardPositionNeedsUpdate = true;
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 12.0, *))
+  {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+    {
+      self.userInterfaceStyleNeedsUpdate = true;
+      [self delayedUpdate];
+    }
+  }
 }
 
 #pragma mark - Private helpers for loadView
@@ -406,6 +440,7 @@
   [self updateCurrentBoardPosition];
   [self updateBoardPositionZero];
   [self updateTappingEnabled];
+  [self updateUserInterfaceStyle];
 }
 
 // -----------------------------------------------------------------------------
@@ -554,6 +589,20 @@
   {
     self.tappingEnabled = true;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the user interface style of the table view and its cells
+/// (light mode or dark mode).
+// -----------------------------------------------------------------------------
+- (void) updateUserInterfaceStyle
+{
+  if (! self.userInterfaceStyleNeedsUpdate)
+    return;
+  self.userInterfaceStyleNeedsUpdate = false;
+
+  [self.currentBoardPositionTableView reloadData];
+  [self.boardPositionListTableView reloadData];
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -813,10 +862,11 @@
 // -----------------------------------------------------------------------------
 - (UIColor*) backgroundColorForBoardPosition:(int)boardPosition
 {
+  bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
   if (0 == (boardPosition % 2))
-    return self.alternateCellBackgroundColor1;
+    return isLightUserInterfaceStyle ? self.alternateCellBackgroundColor1 : self.alternateCellBackgroundColor1DarkMode;
   else
-    return self.alternateCellBackgroundColor2;
+    return isLightUserInterfaceStyle ? self.alternateCellBackgroundColor2 : self.alternateCellBackgroundColor2DarkMode;
 }
 
 @end
