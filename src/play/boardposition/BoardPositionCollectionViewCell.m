@@ -25,6 +25,7 @@
 #import "../../go/GoVertex.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
+#import "../../ui/UiUtilities.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIColorAdditions.h"
 #import "../../utility/UIImageAdditions.h"
@@ -51,6 +52,8 @@ static UIImage* whiteStoneImage = nil;
 static UIColor* currentBoardPositionCellBackgroundColor = nil;
 static UIColor* alternateCellBackgroundColor1 = nil;
 static UIColor* alternateCellBackgroundColor2 = nil;
+static UIColor* alternateCellBackgroundColor1DarkMode = nil;
+static UIColor* alternateCellBackgroundColor2DarkMode = nil;
 static UIColor* capturedStonesLabelBackgroundColor = nil;
 static UIFont* largeFont = nil;
 static UIFont* smallFont = nil;
@@ -361,10 +364,29 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 - (void) updateBackgroundColor
 {
+  bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
   if (0 == (self.boardPosition % 2))
-    self.backgroundColor = alternateCellBackgroundColor1;
+    self.backgroundColor = isLightUserInterfaceStyle ? alternateCellBackgroundColor1 : alternateCellBackgroundColor1DarkMode;
   else
-    self.backgroundColor = alternateCellBackgroundColor2;
+    self.backgroundColor = isLightUserInterfaceStyle ? alternateCellBackgroundColor2 : alternateCellBackgroundColor2DarkMode;
+}
+
+#pragma mark - UIView overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIView method.
+// -----------------------------------------------------------------------------
+- (void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 12.0, *))
+  {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+    {
+      [self updateBackgroundColor];
+    }
+  }
 }
 
 #pragma mark - Property setters
@@ -493,6 +515,16 @@ static UIFont* smallFont = nil;
   currentBoardPositionCellBackgroundColor = [[UIColor darkTangerineColor] retain];
   alternateCellBackgroundColor1 = [[UIColor lightBlueColor] retain];
   alternateCellBackgroundColor2 = [[UIColor whiteColor] retain];
+  if (@available(iOS 13.0, *))
+  {
+    alternateCellBackgroundColor1DarkMode = [UIColor systemGrayColor];
+    alternateCellBackgroundColor2DarkMode = [UIColor systemGray2Color];
+  }
+  else
+  {
+    alternateCellBackgroundColor1DarkMode = alternateCellBackgroundColor1;
+    alternateCellBackgroundColor2DarkMode = alternateCellBackgroundColor2;
+  }
   capturedStonesLabelBackgroundColor = [[UIColor redColor] retain];
 
   largeFont = [[UIFont systemFontOfSize:17] retain];
