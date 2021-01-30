@@ -35,7 +35,7 @@
 /// about the current board position.
 ///
 /// CurrentBoardPositionViewController is a child view controller. It is used
-/// on the iPhone only.
+/// for #UITypePhonePortraitOnly only.
 ///
 /// CurrentBoardPositionViewController has the following responsibilities:
 /// - Tell the current board position view to update itself when the current

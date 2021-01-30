@@ -17,21 +17,21 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The BoardPositionListViewController class is responsible for managing
-/// the "board position list view", which is a scroll view in #UIAreaPlay that
-/// displays the board positions of the current game.
+/// the "board position list view", which is a collection view in #UIAreaPlay
+/// that displays the board positions of the current game.
 ///
-/// BoardPositionListViewController is a child view controller. It is used on
-/// the iPhone only.
+/// BoardPositionListViewController is a child view controller. It is used for
+/// #UITypePhonePortraitOnly only.
 ///
-/// The board position list view displays a series of small subviews, each of
-/// which represents one of the board positions of the current game. A board
-/// position subview displays information about the move that caused the
-/// board position to come into existence. Even though a pass move does not
+/// The board position list view displays a series of small collection view
+/// cells, each of which represents one of the board positions of the current
+/// game. A board position cell displays information about the move that caused
+/// the board position to come into existence. Even though a pass move does not
 /// place a new stone on the board, it nevertheless creates a new board position
 /// and is therefore listed by the board position list view.
 ///
-/// A special subview is displayed for board position 0, i.e. the beginning of
-/// the game. This subview displays a few bits of information about the game
+/// A special cell is displayed for board position 0, i.e. the beginning of
+/// the game. This cell displays a few bits of information about the game
 /// itself (e.g. komi, handicap).
 ///
 /// The board position in the current game's GoBoardPosition instance (i.e. the
@@ -40,10 +40,10 @@
 ///
 /// @par User interaction
 ///
-/// The board position list view is a scroll view that lets the user browse
-/// through the existing board positions.
+/// The board position list view is a collection view that lets the user browse
+/// through the existing board positions by scrolling.
 ///
-/// The user can select a board position by tapping the subview that represents
+/// The user can select a board position by tapping the cell that represents
 /// it. This results in the Go board being updated to display the selected board
 /// position.
 ///
@@ -63,17 +63,17 @@
 ///
 /// @par Current board position changes
 ///
-/// The scroll position of the move list view is updated in response to a change
-/// of the current board position in the game's GoBoardPosition instance. The
-/// following rules apply:
-/// - The scroll position is not updated if the subview for the new board
-///   position is at least partially visible
-/// - The scroll position is updated if the subview for the new board position
-///   is not visible at all. The scroll position is set so that the subview is
-///   fully in view, either centered in the collection view (if there are other
-///   subviews both on the left and the right) or on the left or on the right
-///   edge of the collection view (if there are no more subviews to the left or
-///   to the right).
+/// The scroll position of the board position list view is updated in response
+/// to a change of the current board position in the game's GoBoardPosition
+/// instance. The following rules apply:
+/// - The scroll position is not updated if the cell for the new board position
+///   is at least partially visible
+/// - The scroll position is updated if the cell for the new board position is
+///   not visible at all. The scroll position is set so that the cell is fully
+///   in view, either centered in the collection view (if there are other cells
+///   both on the left and the right) or on the left or on the right edge of
+///   the collection view (if there are no more cells to the left or to the
+///   right).
 ///
 ///
 /// @par Delayed updates

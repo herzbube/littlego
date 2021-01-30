@@ -86,6 +86,8 @@
   self.tapRecognizer.delegate = self;
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 // -----------------------------------------------------------------------------
@@ -106,6 +108,8 @@
   self.tappingEnabled = true;
   [self delayedUpdate];
 }
+
+#pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for the initializer.
@@ -268,6 +272,8 @@
     [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
   }
 }
+
+#pragma mark - Updaters
 
 // -----------------------------------------------------------------------------
 /// @brief Internal helper that correctly handles delayed updates. See class
