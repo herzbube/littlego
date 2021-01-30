@@ -175,6 +175,10 @@
 - (void) createViews
 {
   [super loadView];
+  // Plain style is required so that the header views stay visible. With
+  // grouped style the header view of boardPositionListTableView scrolls out
+  // of sight. Also plain style headers are much smaller and look better with
+  // the way how we layout our two table views.
   self.currentBoardPositionTableView = [[[UITableView alloc] initWithFrame:CGRectZero
                                                                      style:UITableViewStylePlain] autorelease];
   self.boardPositionListTableView = [[[UITableView alloc] initWithFrame:CGRectZero
@@ -211,11 +215,12 @@
   // the last/first cell of self.boardPositionListTableView begins and ends
   // (e.g. when there are not enough cells to fill the entire vertical extent
   // of self.boardPositionListTableView, but also when the table view bounces
-  // on scroll).
-  self.view.backgroundColor = [UIColor whiteSmokeColor];
-  // The background of self.boardPositionListTableView must be transparent,
-  // otherwise the background of self.view is not visible
-  self.boardPositionListTableView.backgroundColor = [UIColor clearColor];
+  // on scroll). If the table view had grouped style we would not need to do
+  // this because then the view would already have the correct background color.
+  if (@available(iOS 13.0, *))
+    self.boardPositionListTableView.backgroundColor = [UIColor systemGroupedBackgroundColor];
+  else
+    self.boardPositionListTableView.backgroundColor = [UIColor whiteSmokeColor];
 }
 
 // -----------------------------------------------------------------------------
