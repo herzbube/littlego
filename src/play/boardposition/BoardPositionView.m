@@ -209,7 +209,7 @@ static UIImage* whiteStoneImage = nil;
     self.stoneImageView.image = [self stoneImageForMove:move];
     self.capturedStonesLabel.text = [self capturedStonesLabelTextForMove:move];
   }
-  [self setupBackgroundColorForMove:move];
+  [self setupBackgroundColor];
 }
 
 // -----------------------------------------------------------------------------
@@ -261,7 +261,7 @@ static UIImage* whiteStoneImage = nil;
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupRealContent().
 // -----------------------------------------------------------------------------
-- (void) setupBackgroundColorForMove:(GoMove*)move
+- (void) setupBackgroundColor
 {
   if (self.currentBoardPosition)
   {
@@ -269,12 +269,44 @@ static UIImage* whiteStoneImage = nil;
   }
   else
   {
-    if (0 == (self.boardPosition % 2))
-      self.backgroundColor = [UIColor nonPhotoBlueColor];
+    bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
+    if (isLightUserInterfaceStyle)
+      [self setupBackgroundColorForLightMode];
     else
-      self.backgroundColor = [UIColor mayaBlueColor];
+      [self setupBackgroundColorForDarkMode];
   }
 }
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupBackgroundColor().
+// -----------------------------------------------------------------------------
+- (void) setupBackgroundColorForLightMode
+{
+  if (0 == (self.boardPosition % 2))
+    self.backgroundColor = [UIColor nonPhotoBlueColor];
+  else
+    self.backgroundColor = [UIColor mayaBlueColor];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupBackgroundColor().
+// -----------------------------------------------------------------------------
+- (void) setupBackgroundColorForDarkMode
+{
+  if (@available(iOS 13.0, *))
+  {
+    if (0 == (self.boardPosition % 2))
+      self.backgroundColor = [UIColor systemGrayColor];
+    else
+      self.backgroundColor = [UIColor systemGray2Color];
+  }
+  else
+  {
+    [self setupBackgroundColorForLightMode];
+  }
+}
+
+#pragma mark - UIView overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UIView method.
@@ -287,6 +319,25 @@ static UIImage* whiteStoneImage = nil;
     return [super intrinsicContentSize];
   else
     return boardPositionViewSize;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIView method.
+///
+/// This is implemented so that BoardPositionView can switch between Light Mode
+/// and Dark Mode.
+// -----------------------------------------------------------------------------
+- (void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 12.0, *))
+  {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+    {
+      [self setupBackgroundColor];
+    }
+  }
 }
 
 #pragma mark - Property setters

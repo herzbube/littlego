@@ -21,9 +21,10 @@
 #import "DocumentViewController.h"
 #import "MainUtility.h"
 #import "UIAreaInfo.h"
+#import "../ui/TableViewCellFactory.h"
+#import "../ui/UiUtilities.h"
 #import "../utility/DocumentGenerator.h"
 #import "../utility/UIColorAdditions.h"
-#import "../ui/TableViewCellFactory.h"
 
 
 // -----------------------------------------------------------------------------
@@ -167,11 +168,8 @@
   {
     UITableViewHeaderFooterView* headerFooterView = (UITableViewHeaderFooterView*)view;
 
-    bool userInterfaceStyleIsLight = true;
-    if (@available(iOS 12.0, *))
-      userInterfaceStyleIsLight = (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight);
-
-    if (userInterfaceStyleIsLight)
+    bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
+    if (isLightUserInterfaceStyle)
     {
       headerFooterView.contentView.backgroundColor = [UIColor blackColor];
       headerFooterView.textLabel.textColor = [UIColor whiteColor];

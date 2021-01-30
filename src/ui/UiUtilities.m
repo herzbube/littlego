@@ -344,4 +344,18 @@
   return outputImage;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns true if, based on the information in @a traitCollection, the
+/// user interface style is light, false if the user interface style is dark.
+///
+/// This method is used to distinguish between light mode and dark mode.
+// -----------------------------------------------------------------------------
++ (bool) isLightUserInterfaceStyle:(UITraitCollection*)traitCollection
+{
+  if (@available(iOS 12.0, *))
+    return (traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight);
+  else
+    return true;
+}
+
 @end
