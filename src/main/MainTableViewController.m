@@ -68,6 +68,22 @@ enum MainTableViewItem
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) traitCollectionDidChange:(UITraitCollection*)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 12.0, *))
+  {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+      [self updateCellImageTint];
+  }
+}
+
 #pragma mark - UITableViewDataSource overrides
 
 // -----------------------------------------------------------------------------
@@ -168,7 +184,19 @@ enum MainTableViewItem
   // view we must convert them all to the same uniform size. We use the maximum
   // height of a table view cell as the measure.
   CGSize targetSize = CGSizeMake([UiElementMetrics tableViewCellContentViewHeight], [UiElementMetrics tableViewCellContentViewHeight]);
-  return [UIImage paddedImageWithSize:targetSize originalImage:image];
+  if (@available(iOS 13.0, *))
+    return [UIImage paddedImageWithSize:targetSize tintedFor:self.traitCollection.userInterfaceStyle originalImage:image];
+  else
+    return [UIImage paddedImageWithSize:targetSize originalImage:image];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the tinting of the table view's cell images to match the
+/// current UIUserInterfaceStyle (light/dark mode).
+// -----------------------------------------------------------------------------
+- (void) updateCellImageTint
+{
+  [self.tableView reloadData];
 }
 
 @end

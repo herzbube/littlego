@@ -162,6 +162,27 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns an image of size @a size which has @a originalImage at its
+/// center. The original image is expected to have a smaller size than @a size.
+/// The effect is that the original image is padded by a certain amount of
+/// pixels on all 4 sides. The amount of padding depends on the difference in
+/// size of the original and the new image. The padded image is tinted to
+/// contrast a dark/light background matching @a userInterfaceStyle.
+///
+/// One application of this method is to create uniformly sized images from a
+/// number of differently sized original images.
+// -----------------------------------------------------------------------------
++ (UIImage*) paddedImageWithSize:(CGSize)size tintedFor:(UIUserInterfaceStyle)userInterfaceStyle originalImage:(UIImage*)originalImage
+{
+  UIImage* paddedImage = [UIImage paddedImageWithSize:size originalImage:originalImage];
+
+  UIColor* tintColor = (userInterfaceStyle == UIUserInterfaceStyleLight) ? [UIColor blackColor] : [UIColor whiteColor];
+  UIImage* tintedImage = [paddedImage imageWithTintColor:tintColor];
+
+  return tintedImage;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns an image of size @a size which consists of repetitions of
 /// the tile image @a tile. If @a size is smaller than the dimensions of
 /// @a tile, only the upper-left part of @a tile is used.

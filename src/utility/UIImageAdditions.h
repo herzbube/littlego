@@ -29,6 +29,7 @@
 + (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor middleColor:(UIColor*)middleColor endColor:(UIColor*)endColor;
 + (UIImage*) gradientImageWithSize:(CGSize)size startColor1:(UIColor*)startColor1 endColor1:(UIColor*)endColor1 startColor2:(UIColor*)startColor2 endColor2:(UIColor*)endColor2;
 + (UIImage*) paddedImageWithSize:(CGSize)size originalImage:(UIImage*)originalImage;
++ (UIImage*) paddedImageWithSize:(CGSize)size tintedFor:(UIUserInterfaceStyle)userInterfaceStyle originalImage:(UIImage*)originalImage API_AVAILABLE(ios(13.0));
 + (UIImage*) tiledImageWithSize:(CGSize)size fromTile:(UIImage*)tile;
 + (UIImage*) woodenBackgroundTileImage;
 
