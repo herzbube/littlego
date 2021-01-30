@@ -211,6 +211,10 @@
     [[[OffscreenTableListViewController alloc] initWithStyle:tableViewStyle] autorelease];
 
   UITableView* offscreenTableView = offscreenTableListViewController.tableView;
+  // Give the table view an arbitrary non-zero size, otherwise it will not
+  // render any header/footer views. Assumption: The frame must be large enough
+  // so that the full header/footer view height fits into it.
+  offscreenTableView.frame = CGRectMake(0, 0, 1000, 1000);
   [offscreenTableView layoutIfNeeded];
 
   UITableViewHeaderFooterView* headerFooterView;
