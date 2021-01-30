@@ -656,7 +656,10 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 - (void) setupWindow
 {
   self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
-  self.window.backgroundColor = [UIColor whiteColor];
+  if (@available(iOS 13.0, *))
+    self.window.backgroundColor = [UIColor systemBackgroundColor];
+  else
+    self.window.backgroundColor = [UIColor whiteColor];
 }
 
 // -----------------------------------------------------------------------------

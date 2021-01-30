@@ -231,7 +231,7 @@
 - (void) loadView
 {
   [super loadView];
-  self.view.backgroundColor = [UIColor clearColor];
+
   self.dividerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   self.dividerView.backgroundColor = [UIColor blackColor];
 

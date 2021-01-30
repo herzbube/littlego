@@ -435,10 +435,6 @@
 // -----------------------------------------------------------------------------
 - (void) configureViews
 {
-  // Set a color (should be the same as the main window's) because we need to
-  // paint over the parent split view background color.
-  self.view.backgroundColor = [UIColor whiteColor];
-
   // This view provides a wooden texture background not only for the Go board,
   // but for the entire area in which the Go board resides
   self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];

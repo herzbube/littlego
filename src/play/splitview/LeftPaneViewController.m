@@ -274,10 +274,6 @@
     [self.statusViewController.view.topAnchor constraintEqualToAnchor:bottomAnchor
                                                              constant:-statusViewContentHeight].active = YES;
   }
-
-  // Set a color (should be the same as the main window's) because we need to
-  // paint over the parent split view background color.
-  self.view.backgroundColor = [UIColor whiteColor];
 }
 
 @end
