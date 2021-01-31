@@ -136,7 +136,13 @@ enum ViewHierarchyState
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(statusBarOrientationDidChange:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
 
-  [self setupViewHierarchyForInterfaceOrientation:[UiElementMetrics interfaceOrientation]];
+  // If the view hierarchy setup is performed synchronously then the
+  // safeAreaLayoutGuide is not honored in subviews when the app launches while
+  // the device is held in Landscape orientation. The reason is not known.
+  // Try & error resulted in the workaround that setting up the view hierarchy
+  // with a minimal delay fixes the problem.
+  // TODO: This workaround should not be necessary!
+  [self performSelector:@selector(setupViewHierarchyForInterfaceOrientationAsync:) withObject:[NSNumber numberWithLong:[UiElementMetrics interfaceOrientation]] afterDelay:0];
 }
 
 // -----------------------------------------------------------------------------
