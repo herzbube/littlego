@@ -42,9 +42,6 @@
 - (void) gameActionManager:(GameActionManager*)manager
                     enable:(BOOL)enable
                 gameAction:(enum GameAction)gameAction;
-/// @brief The delegate must return a view that can be used to present an
-/// UIAlertController from.
-- (UIView*) viewForPresentingMoreGameActionsByGameActionManager:(GameActionManager*)manager;
 @end
 
 // -----------------------------------------------------------------------------

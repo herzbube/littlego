@@ -148,16 +148,6 @@ enum ButtonBoxSection
   button.enabled = enable;
 }
 
-// -----------------------------------------------------------------------------
-/// @brief GameActionManagerUIDelegate method.
-// -----------------------------------------------------------------------------
-- (UIView*) viewForPresentingMoreGameActionsByGameActionManager:(GameActionManager*)manager
-{
-  NSNumber* gameActionAsNumber = [NSNumber numberWithInt:GameActionMoreGameActions];
-  UIButton* button = self.gameActionButtons[gameActionAsNumber];
-  return button;
-}
-
 #pragma mark - Private helpers - UIButton creation
 
 // -----------------------------------------------------------------------------

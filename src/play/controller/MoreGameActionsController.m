@@ -81,7 +81,42 @@
 // -----------------------------------------------------------------------------
 /// @brief Displays the alert message as described in the class documentation.
 // -----------------------------------------------------------------------------
+- (void) showAlertMessageFromBarButtonItem:(UIBarButtonItem*)barButtonItem
+{
+  UIAlertController* alertController = [self showAlertMessage];
+
+  // As documented in the UIPopoverPresentationController class reference,
+  // we should wait with accessing the presentation controller until after we
+  // initiate the presentation, otherwise the controller may not have been
+  // created yet. Furthermore, a presentation controller is only created on
+  // the iPad, but not on the iPhone, so we check for the controller's
+  // existence before using it.
+  if (alertController.popoverPresentationController)
+    alertController.popoverPresentationController.barButtonItem = barButtonItem;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays the alert message as described in the class documentation.
+// -----------------------------------------------------------------------------
 - (void) showAlertMessageFromRect:(CGRect)rect inView:(UIView*)view
+{
+  UIAlertController* alertController = [self showAlertMessage];
+
+  // See comment in showAlertMessageFromBarButtonItem:()
+  if (alertController.popoverPresentationController)
+  {
+    alertController.popoverPresentationController.sourceView = view;
+    alertController.popoverPresentationController.sourceRect = rect;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initiates displaying the alert message as described in the class
+/// documentation. The caller has to check if the alert is to be presented with
+/// a UIPopoverPresentationController, and if yes must configure that controller
+/// with the correct source.
+// -----------------------------------------------------------------------------
+- (UIAlertController*) showAlertMessage
 {
   UIAlertController* alertController = [UIAlertController alertControllerWithTitle:@"Game actions"
                                                                            message:nil
@@ -164,7 +199,7 @@
           default:
           {
             assert(0);
-            return;
+            return nil;
           }
         }
         alertActionBlock = ^(UIAlertAction* action) { [self toggleMarkMode]; };
@@ -313,17 +348,7 @@
 
   [self.modalMaster presentViewController:alertController animated:YES completion:nil];
 
-  // As documented in the UIPopoverPresentationController class reference,
-  // we should wait with accessing the presentation controller until after we
-  // initiate the presentation, otherwise the controller may not have been
-  // created yet. Furthermore, a presentation controller is only created on
-  // the iPad, but not on the iPhone, so we check for the controller's
-  // existence before using it.
-  if (alertController.popoverPresentationController)
-  {
-    alertController.popoverPresentationController.sourceView = view;
-    alertController.popoverPresentationController.sourceRect = rect;
-  }
+  return alertController;
 }
 
 // -----------------------------------------------------------------------------

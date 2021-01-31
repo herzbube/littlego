@@ -410,12 +410,18 @@ static GameActionManager* sharedGameActionManager = nil;
     return;
   }
 
-  UIView* viewForPresentingMoreGameActions = [self.uiDelegate viewForPresentingMoreGameActionsByGameActionManager:self];
-  if (viewForPresentingMoreGameActions)
+  UIViewController* modalMaster = [ApplicationDelegate sharedDelegate].windowRootViewController;
+  self.moreGameActionsController = [[[MoreGameActionsController alloc] initWithModalMaster:modalMaster delegate:self] autorelease];
+
+  if ([sender isKindOfClass:[UIBarButtonItem class]])
   {
-    UIViewController* modalMaster = [ApplicationDelegate sharedDelegate].windowRootViewController;
-    self.moreGameActionsController = [[[MoreGameActionsController alloc] initWithModalMaster:modalMaster delegate:self] autorelease];
-    [self.moreGameActionsController showAlertMessageFromRect:viewForPresentingMoreGameActions.bounds inView:viewForPresentingMoreGameActions];
+    UIBarButtonItem* barButtonItem = sender;
+    [self.moreGameActionsController showAlertMessageFromBarButtonItem:barButtonItem];
+  }
+  else if ([sender isKindOfClass:[UIButton class]])
+  {
+    UIButton* button = sender;
+    [self.moreGameActionsController showAlertMessageFromRect:button.bounds inView:button];
   }
 }
 

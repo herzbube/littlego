@@ -55,6 +55,7 @@
 }
 
 - (id) initWithModalMaster:(UIViewController*)aController delegate:(id<MoreGameActionsControllerDelegate>)aDelegate;
+- (void) showAlertMessageFromBarButtonItem:(UIBarButtonItem*)barButtonItem;
 - (void) showAlertMessageFromRect:(CGRect)rect inView:(UIView*)view;
 - (void) cancelAlertMessage;
 
