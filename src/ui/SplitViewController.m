@@ -246,7 +246,9 @@
 /// @brief UIViewController method.
 ///
 /// This override handles interface orientation changes while this controller's
-/// view hierarchy is visible.
+/// view hierarchy is visible, and changes that occurred while this controller's
+/// view hierarchy was not visible (this method is invoked when the controller's
+/// view becomes visible again).
 // -----------------------------------------------------------------------------
 - (void) viewWillLayoutSubviews
 {
@@ -257,29 +259,6 @@
     [self completeInterfaceOrientationChange:interfaceOrientation];
     [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-///
-/// This override handles interface orientation changes that occurred while this
-/// controller's view hierarchy was not visible (viewWillLayoutSubviews was not
-/// invoked).
-///
-/// This override is absolutely required for iOS 7. This override is not
-/// required for iOS 8 because there viewWillLayoutSubviews is invoked when the
-/// view hierarchy appears.
-// -----------------------------------------------------------------------------
-- (void) viewWillAppear:(BOOL)animated
-{
-  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
-  if ([self isViewLayoutChangeRequiredForInterfaceOrientation:interfaceOrientation])
-  {
-    [self prepareForInterfaceOrientationChange:interfaceOrientation];
-    [self completeInterfaceOrientationChange:interfaceOrientation];
-    [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
-  }
-  [super viewWillAppear:animated];
 }
 
 #pragma mark - Interface orientation change handling
