@@ -374,8 +374,6 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 {
 #ifndef DEBUG
 #ifndef LITTLEGO_UNITTESTS
-  // TODO: Conditional compile this only when building for App Distribution
-
   // One way to disable everything programmatically is this:
   //   [[FIRApp defaultApp] setDataCollectionDefaultEnabled:NO];
   // Unfortunately this also disables crash reporting.
