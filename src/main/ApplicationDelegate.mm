@@ -372,6 +372,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 // -----------------------------------------------------------------------------
 - (void) setupCrashReporting
 {
+#ifndef DEBUG
 #ifndef LITTLEGO_UNITTESTS
   // TODO: Conditional compile this only when building for App Distribution
 
@@ -383,6 +384,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 
   CrashReportingHandler* crashReportingHandler = [[[CrashReportingHandler alloc] initWithModel:self.crashReportingModel] autorelease];
   [crashReportingHandler handleUnsentCrashReportsOrDoNothing];
+#endif
 #endif
 }
 
