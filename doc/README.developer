@@ -40,6 +40,7 @@ NOTES.build.
 Folder structure
 ----------------
 <root>
+ +-- CONTRIBUTING.md     The project's contributing guidelines.
  +-- LICENSE             The Apache license file.
  +-- LICENSE.html        The Apache license in HTML format (for display on the
  |                       device).
