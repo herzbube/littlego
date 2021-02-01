@@ -278,6 +278,8 @@
                         onAttribute:NSLayoutAttributeCenterY
                    constraintHolder:self.view];
   
+  // Add a fixed space equal to the width of the current board position element to
+  // the toolbar so that the toolbar items can space evenly in the remaining space
   UIBarButtonItem* navigationBarFixedSpacer = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
                                                                                              target:nil
                                                                                              action:nil] autorelease];
