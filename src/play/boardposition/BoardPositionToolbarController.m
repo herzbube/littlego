@@ -211,10 +211,9 @@
 // -----------------------------------------------------------------------------
 - (void) setupBarButtonItems
 {
-  UIBarButtonItem* navigationBarButtonSpacer = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+  UIBarButtonItem* navigationBarButtonSpacer = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                                                               target:nil
                                                                                               action:nil] autorelease];
-  navigationBarButtonSpacer.width = [AutoLayoutUtility horizontalSpacingSiblings];
 
   enum BoardPositionNavigationDirection direction = BoardPositionNavigationDirectionBackward;
   [self addButtonWithImageNamed:rewindToStartButtonIconResource withSelector:@selector(rewindToStart:) navigationDirection:direction];
@@ -225,6 +224,7 @@
   [self addButtonWithImageNamed:forwardButtonIconResource withSelector:@selector(nextBoardPosition:) navigationDirection:direction];
   [self.navigationBarButtonItems addObject:navigationBarButtonSpacer];
   [self addButtonWithImageNamed:forwardToEndButtonIconResource withSelector:@selector(fastForwardToEnd:) navigationDirection:direction];
+  [self.navigationBarButtonItems addObject:navigationBarButtonSpacer];
 }
 
 // -----------------------------------------------------------------------------
@@ -277,6 +277,12 @@
                      withSecondView:self.view
                         onAttribute:NSLayoutAttributeCenterY
                    constraintHolder:self.view];
+  
+  UIBarButtonItem* navigationBarFixedSpacer = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFixedSpace
+                                                                                             target:nil
+                                                                                             action:nil] autorelease];
+  navigationBarFixedSpacer.width = self.currentBoardPositionViewController.view.intrinsicContentSize.width;
+  [self.navigationBarButtonItems addObject:navigationBarFixedSpacer];
 }
 
 #pragma mark - Updaters
