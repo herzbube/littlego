@@ -5,6 +5,19 @@
 # | built on top of them.
 # =========================================================================
 
+VERBOSE_BUILD="-q"
+OPTIONS="v"
+while getopts $OPTIONS OPTION
+do
+  case $OPTION in
+    v)
+      VERBOSE_BUILD=""
+      ;;
+  esac
+done
+
+shift $(($OPTIND - 1))
+
 # Basic information about this script
 SCRIPT_NAME="$(basename $0)"
 SCRIPT_DIR="$(pwd)/$(dirname $0)"
@@ -28,9 +41,10 @@ if test ! -x "$BUILD_SCRIPT"; then
 fi
 
 for SOFTWARE_PACKAGE in $SOFTWARE_PACKAGES; do
-  $BUILD_SCRIPT -q $SOFTWARE_PACKAGE
+  $BUILD_SCRIPT $VERBOSE_BUILD $SOFTWARE_PACKAGE
   if test $? -ne 0; then
     echo "Build failed for software package "$SOFTWARE_PACKAGE""
+    echo "Try running with -v for verbose to see error details."
     exit 1
   fi
   echo ""
