@@ -56,6 +56,7 @@
   self.navigationBarButtonModel = [[[NavigationBarButtonModel alloc] init] autorelease];
   [GameActionManager sharedGameActionManager].uiDelegate = self;
   [self setupNavigationItem];
+  [self setupNotificationResponders];
   return self;
 }
 
@@ -65,6 +66,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self removeNotificationResponders];
   self.navigationItem = nil;
   self.spacerButton = nil;
   self.navigationBar = nil;
@@ -81,6 +83,26 @@
 {
   [self.navigationBarButtonModel updateVisibleGameActions];
   [self populateNavigationItem];
+}
+
+#pragma mark - Setup/remove notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
+  [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - GameActionManagerUIDelegate overrides
@@ -144,6 +166,24 @@
   [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionMoreGameActions]]];
   [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionGameInfo]]];
   self.navigationItem.rightBarButtonItems = barButtonItems;
+}
+
+#pragma mark - Notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewWillDisplayCrossHair notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
+{
+  self.navigationBarButtonModel.mainMenuButton.enabled = NO;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewWillHideCrossHair notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewWillHideCrossHair:(NSNotification*)notification
+{
+  self.navigationBarButtonModel.mainMenuButton.enabled = YES;
 }
 
 @end

@@ -74,6 +74,7 @@
   self.boardViewAutoLayoutConstraints = [NSMutableArray array];
   self.gameActionButtonBoxAutoLayoutConstraints = nil;
   self.mainMenuButton = nil;
+  [self setupNotificationResponders];
   return self;
 }
 
@@ -82,6 +83,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self removeNotificationResponders];
+
   self.navigationBarController = nil;
 
   self.leftColumnView = nil;
@@ -109,6 +112,26 @@
     self.useNavigationBar = false;
   else
     self.useNavigationBar = true;
+}
+
+#pragma mark - Setup/remove notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
+  [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Container view controller handling
@@ -463,6 +486,24 @@
 - (void) buttonBoxButtonsWillChange
 {
   [self updateGameActionButtonBoxAutoLayoutConstraints];
+}
+
+#pragma mark - Notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewWillDisplayCrossHair notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
+{
+  self.mainMenuButton.enabled = NO;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewWillHideCrossHair notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewWillHideCrossHair:(NSNotification*)notification
+{
+  self.mainMenuButton.enabled = YES;
 }
 
 @end
