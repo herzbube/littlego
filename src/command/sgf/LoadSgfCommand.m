@@ -141,7 +141,7 @@
   // The UI does not prevent adding the same ID multiple times, but SgfcKit
   // raises an exception if we pass the same ID multiple times. NSSet performs
   // de-duplication for us.
-  NSSet* disabledMessages = [[NSSet alloc] initWithArray:sgfSettingsModel.disabledMessages];
+  NSSet* disabledMessages = [[[NSSet alloc] initWithArray:sgfSettingsModel.disabledMessages] autorelease];
   for (NSNumber* disabledMessageIDAsNumber in disabledMessages)
   {
     SGFCMessageID disabledMessageID = [disabledMessageIDAsNumber integerValue];

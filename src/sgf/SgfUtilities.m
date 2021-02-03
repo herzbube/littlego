@@ -127,7 +127,7 @@
   NSMutableArray* mutableStringArray = [NSMutableArray array];
 
   NSCalendar* calendar = [NSCalendar calendarWithIdentifier:NSCalendarIdentifierGregorian];
-  NSDateFormatter* dateFormatter = [[NSDateFormatter alloc] init];
+  NSDateFormatter* dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
   [dateFormatter setLocale:[NSLocale currentLocale]];
   [dateFormatter setDateStyle:NSDateFormatterMediumStyle];
 

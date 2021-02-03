@@ -108,7 +108,7 @@
   self.valueLabel.textAlignment = NSTextAlignmentRight;
   self.valueLabel.textColor = [UIColor tableViewCellDetailTextLabelColor];
 
-  self.stackView = [[UIStackView alloc] initWithArrangedSubviews:[NSArray arrayWithObjects:self.descriptionLabel, self.valueLabel, nil]];
+  self.stackView = [[[UIStackView alloc] initWithArrangedSubviews:[NSArray arrayWithObjects:self.descriptionLabel, self.valueLabel, nil]] autorelease];
   [self.contentView addSubview:self.stackView];
   self.stackView.axis = UILayoutConstraintAxisHorizontal;
   self.stackView.spacing = 0.0f;

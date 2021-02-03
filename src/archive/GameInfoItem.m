@@ -321,6 +321,7 @@ enum DataSourceInfoSectionItem
 {
   self.goGameInfo = nil;
   self.descriptiveText = nil;
+  self.titleText = nil;
 
   self.summarySectionItems = nil;
   self.detailLevelFullSections = nil;

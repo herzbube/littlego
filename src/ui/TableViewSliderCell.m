@@ -168,13 +168,13 @@
 - (void) setupStackViews
 {
   if (self.valueLabelHidden)
-    self.stackViewLabels = [[UIStackView alloc] initWithArrangedSubviews:@[self.descriptionLabel]];
+    self.stackViewLabels = [[[UIStackView alloc] initWithArrangedSubviews:@[self.descriptionLabel]] autorelease];
   else
-    self.stackViewLabels = [[UIStackView alloc] initWithArrangedSubviews:@[self.descriptionLabel, self.valueLabel]];
+    self.stackViewLabels = [[[UIStackView alloc] initWithArrangedSubviews:@[self.descriptionLabel, self.valueLabel]] autorelease];
   self.stackViewLabels.axis = UILayoutConstraintAxisHorizontal;
   self.stackViewLabels.spacing = [AutoLayoutUtility horizontalSpacingSiblings];
 
-  self.stackViewSlider = [[UIStackView alloc] initWithArrangedSubviews:@[self.stackViewLabels, self.slider]];
+  self.stackViewSlider = [[[UIStackView alloc] initWithArrangedSubviews:@[self.stackViewLabels, self.slider]] autorelease];
   self.stackViewSlider.axis = UILayoutConstraintAxisVertical;
   self.stackViewSlider.spacing = [AutoLayoutUtility verticalSpacingSiblings];
 }

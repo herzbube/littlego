@@ -276,7 +276,7 @@ enum FormattedTextSectionItem
           cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
           cell.textLabel.text = @"Color code";
           UIImage* image = [SgfUtilities coloredIndicatorForMessage:self.message];
-          UIImageView* accImageView = [[UIImageView alloc] initWithImage:image];
+          UIImageView* accImageView = [[[UIImageView alloc] initWithImage:image] autorelease];
           cell.accessoryView = accImageView;
           break;
         }

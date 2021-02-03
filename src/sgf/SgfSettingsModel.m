@@ -214,8 +214,8 @@
 // -----------------------------------------------------------------------------
 - (bool) isArray:(NSArray*)array1 equalToArrayIgnoringOrder:(NSArray*)array2
 {
-  NSCountedSet* set1 = [[NSCountedSet alloc] initWithArray:array1];
-  NSCountedSet* set2 = [[NSCountedSet alloc] initWithArray:array2];
+  NSCountedSet* set1 = [[[NSCountedSet alloc] initWithArray:array1] autorelease];
+  NSCountedSet* set2 = [[[NSCountedSet alloc] initWithArray:array2] autorelease];
 
   return ([set1 isEqualToSet:set2] == YES) ? true : false;
 }

@@ -127,7 +127,7 @@
   {
     case UITableViewCellEditingStyleDelete:
     {
-      NSMutableArray* mutableDisabledMessages = self.sgfSettingsModel.disabledMessages.mutableCopy;
+      NSMutableArray* mutableDisabledMessages = [self.sgfSettingsModel.disabledMessages.mutableCopy autorelease];
       [mutableDisabledMessages removeObjectAtIndex:indexPath.row];
       self.sgfSettingsModel.disabledMessages = mutableDisabledMessages;
 
@@ -147,7 +147,7 @@
 // -----------------------------------------------------------------------------
 - (void) tableView:(UITableView*)tableView moveRowAtIndexPath:(NSIndexPath*)fromIndexPath toIndexPath:(NSIndexPath*)toIndexPath
 {
-  NSMutableArray* mutableDisabledMessages = self.sgfSettingsModel.disabledMessages.mutableCopy;
+  NSMutableArray* mutableDisabledMessages = [self.sgfSettingsModel.disabledMessages.mutableCopy autorelease];
   id elementToMove = [mutableDisabledMessages objectAtIndex:fromIndexPath.row];
   [mutableDisabledMessages removeObjectAtIndex:fromIndexPath.row];
   [mutableDisabledMessages insertObject:elementToMove atIndex:toIndexPath.row];
@@ -239,7 +239,7 @@
     // The SgfcKit enumeration SGFCMessageID has the underlying type NSInteger,
     // so we can use the NSNumber object as-is
     NSNumber* number = [self numberFromText:editTextController.text];
-    NSMutableArray* mutableDisabledMessages = self.sgfSettingsModel.disabledMessages.mutableCopy;
+    NSMutableArray* mutableDisabledMessages = [self.sgfSettingsModel.disabledMessages.mutableCopy autorelease];
 
     NSInteger context = [editTextController.context integerValue];
     if (-1 == context)
