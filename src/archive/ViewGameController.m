@@ -472,6 +472,9 @@ enum LoadResultType
     }
   }
 
+  if (! cell)
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
+
   return cell;
 }
 
