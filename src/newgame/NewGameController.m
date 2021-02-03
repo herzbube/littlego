@@ -390,26 +390,7 @@ enum CellID
 // -----------------------------------------------------------------------------
 - (void) done:(id)sender
 {
-  if ([GoGame sharedGame].document.isDirty)
-  {
-    NSString* message = @"The game in progress has unsaved changes that will "
-                         "be lost if you proceed. Are you sure you want to "
-                         "discard the game in progress?";
-
-    void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
-    {
-      [self newGame];
-    };
-
-    [self presentYesNoAlertWithTitle:self.navigationItem.title
-                             message:message
-                          yesHandler:yesActionBlock
-                           noHandler:nil];
-  }
-  else
-  {
-    [self newGame];
-  }
+  [self checkForUnsavedChangesWithAlertPresenter:self rematch:false];
 }
 
 // -----------------------------------------------------------------------------
@@ -417,7 +398,7 @@ enum CellID
 // -----------------------------------------------------------------------------
 - (void) cancel:(id)sender
 {
-  [self.delegate newGameController:self didStartNewGame:false];
+  [self.delegate newGameController:self didStartNewGame:false rematch:false];
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -846,6 +827,23 @@ enum CellID
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
+#pragma mark - Public API
+
+// -----------------------------------------------------------------------------
+/// @brief This is invoked instead of presenting NewGameController to perform
+/// actions that are usually performed in the interactive "New game" screen
+/// after the user taps the "Done" button. @a alertPresenter is used to present
+/// alerts.
+///
+/// This method exists to implement the use case where the user wants a rematch,
+/// i.e. the user wants to play again with the same parameters, against the
+/// same opponent.
+// -----------------------------------------------------------------------------
+- (void) rematchWithAlertPresenter:(UIViewController*)alertPresenter
+{
+  [self checkForUnsavedChangesWithAlertPresenter:alertPresenter rematch:true];
+}
+
 #pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
@@ -1211,10 +1209,44 @@ enum CellID
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invoked when the user has finished selecting parameters for a new
-/// game. Informs the delegate that a new game needs to be started.
+/// @brief Performs the "check for unsaved changes" flow.
+///
+/// Informs the delegate that a new game needs to be started if there are no
+/// unsaved changes, or if the user confirmed that the unsaved changes can be
+/// discarded.
+///
+/// Does nothing if there are unsaved changes and the user does not confirm that
+/// they can be discarded.
 // -----------------------------------------------------------------------------
-- (void) newGame
+- (void) checkForUnsavedChangesWithAlertPresenter:(UIViewController*)alertPresenter rematch:(bool)rematch
+{
+  if ([GoGame sharedGame].document.isDirty)
+  {
+    NSString* message = @"The game in progress has unsaved changes that will "
+                         "be lost if you proceed. Are you sure you want to "
+                         "discard the game in progress?";
+
+    void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+    {
+      [self newGame:rematch];
+    };
+
+    NSString* alertTitle = rematch ? @"Rematch" : self.navigationItem.title;
+    [alertPresenter presentYesNoAlertWithTitle:alertTitle
+                             message:message
+                          yesHandler:yesActionBlock
+                           noHandler:nil];
+  }
+  else
+  {
+    [self newGame:rematch];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Informs the delegate that a new game needs to be started.
+// -----------------------------------------------------------------------------
+- (void) newGame:(bool)rematch
 {
   // When the new game is started, the game type is taken from the gameType
   // property, not from gameTypeLastSelected. We write the value for gameType
@@ -1222,7 +1254,7 @@ enum CellID
   // choices in the GUI are valid (only if they are valid is the "Done" button
   // enabled).
   self.theNewGameModel.gameType = self.theNewGameModel.gameTypeLastSelected;
-  [self.delegate newGameController:self didStartNewGame:true];
+  [self.delegate newGameController:self didStartNewGame:true rematch:rematch];
 }
 
 // -----------------------------------------------------------------------------

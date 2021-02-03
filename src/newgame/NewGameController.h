@@ -35,7 +35,12 @@
 /// If @a didStartNewGame is true, the user has requested starting a new game.
 /// The choices made by the user are available from NewGamemodel.
 /// If @a didStartNewGame is false, the user has cancelled starting a new game.
-- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame;
+///
+/// @a rematch is true if @a controller was used to handle the rematch use
+/// case.
+///
+/// @see NewGameController::rematchWithAlertPresenter:()
+- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame rematch:(bool)rematch;
 @end
 
 
@@ -69,5 +74,7 @@
 
 + (NewGameController*) controllerWithDelegate:(id<NewGameControllerDelegate>)delegate
                                      loadGame:(bool)loadGame;
+
+- (void) rematchWithAlertPresenter:(UIViewController*)alertPresenter;
 
 @end

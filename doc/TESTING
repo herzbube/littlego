@@ -201,7 +201,7 @@ Basic game play functionality
 - Tap the "Interrupt" button. The computer immediately stops thinking and plays
   a move.
 - Tap the "More game actions" button. A menu must appear that displays the
-  following buttons: Score, Resign, Save game and New game.
+  following buttons: Score, Resign, Save game, New game and New game - Rematch.
   - iPhone: There is also a Cancel button.
   - iPad: The menu appears as a popover with the arrow pointing to the
     "More game actions" button
@@ -435,6 +435,23 @@ Little Go rules | Simple      | 7.5  | Area      | Two passes     | Alternating 
 - Check that on all segments where a computer player can be selected, only
   computer players are actually available for selection
 - Tap cancel
+
+
+New game - Rematch
+- Start a new game and play a few moves
+- Tap the "More game actions" button and select "New game - Rematch"
+- An alert pops up informing the user that there are unsaved changes.
+- Tap "No"
+  - The alert is dismissed
+  - No new game is started
+- Tap the "More game actions" button and select "New game - Rematch"
+- Tap "Yes"
+  - The alert is dismissed
+  - A new game is started using the same parameters as the current game
+- Play a few moves, then save the game
+- Tap the "More game actions" button and select "New game - Rematch"
+  - No "unsaved changes" alert pops up
+  - A new game is started using the same parameters as the current game
 
 
 End of game: Resigning

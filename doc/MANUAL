@@ -78,9 +78,9 @@ explained from left to right (iPhone 6+: top to bottom).
   score).
 - "More game actions" button: Tapping this displays a menu with these additional
   functions: Switch to scoring mode, resign the game (or undo the decision to
-  resign), save the game, and start a new game. You may find additional or fewer
-  entries in this menu, depending on the current state of the game or your
-  current settings.
+  resign), save the game, and start a new game (with a rematch option). You may
+  find additional or fewer entries in this menu, depending on the current state
+  of the game or your current settings.
 
 This was just a quick overview of the basic features of this app. It's best to
 explore the app a bit for yourself, then come back and read the rest of the
@@ -388,6 +388,19 @@ A short explanation of each rule is shown directly where you can change the rule
 in the "Advanced settings" screen. For the "Life & death settling after ..." and
 "Dispute resolution" rules, more detailed documentation is available in the
 "End of the game" section of this manual.
+
+=======
+Rematch
+=======
+You can also start a new game by selecting the "New game - Rematch" item from
+the "More game actions" menu. This immediately starts a new game without showing
+the "New game" screen. This is a convenient shortcut to quickly start a new
+game with the same parameters as the last one.
+
+Note: On iPhone devices where you can rotate the device to Landscape the rematch
+item may not be immediately visible in the "More game actions" menu because the
+menu contains too many items. If that is the case you need to scroll down a bit
+to make the rematch item visible.
 
 
 --------------------------------------------------------------------------------

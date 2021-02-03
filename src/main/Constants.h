@@ -148,6 +148,7 @@ enum MoreGameActionsButton
   MoreGameActionsButtonUndoForfeit,
   MoreGameActionsButtonSaveGame,
   MoreGameActionsButtonNewGame,
+  MoreGameActionsButtonNewGameRematch,
   MoreGameActionsButtonCancel,
   MoreGameActionsButtonMax,     ///< @brief Pseudo enum value, used to iterate over the other enum values
 };

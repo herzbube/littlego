@@ -699,7 +699,7 @@ enum LoadResultType
 // -----------------------------------------------------------------------------
 /// @brief NewGameControllerDelegate protocol method
 // -----------------------------------------------------------------------------
-- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame
+- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame rematch:(bool)rematch
 {
   if (didStartNewGame)
   {

@@ -29,6 +29,7 @@
 #import "../../command/ChangeUIAreaPlayModeCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoGameDocument.h"
 #import "../../go/GoGameRules.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoScore.h"
@@ -323,6 +324,25 @@
         alertActionBlock = ^(UIAlertAction* action) { [self newGame]; };
         break;
       }
+      case MoreGameActionsButtonNewGameRematch:
+      {
+        title = @"New game - Rematch";
+        alertActionBlock = ^(UIAlertAction* action) { [self newGameRematch]; };
+        break;
+      }
+
+      // For UITypePhone in Landscape interface orientation the maximum number
+      // of actions that are visible at the same time is rather limited (6 if
+      // you include the "Cancel" action). Although UIAlertViewController lets
+      // the user scroll when there are more actions, it's not immediately
+      // obvious that there are hidden actions that one can reach by scrolling.
+      // It is therefore better to avoid having too many actions in the first
+      // place. With the addition of MoreGameActionsButtonNewGameRematch the
+      // limit of 6 actions has already been exceeded. If you're reading this
+      // because you want to add yet another action, instead consider a
+      // different solution, or try to somehow redesign the app so that one or
+      // more of the existing actions can be removed.
+
       case MoreGameActionsButtonCancel:
       {
         title = @"Cancel";
@@ -589,16 +609,31 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "New game - Rematch" button. Starts a
+/// new game, discarding the current game, but without displaying the "new game"
+/// screen.
+// -----------------------------------------------------------------------------
+- (void) newGameRematch
+{
+  NewGameController* newGameController = [[[NewGameController controllerWithDelegate:self loadGame:false] retain] autorelease];
+  [newGameController rematchWithAlertPresenter:self.modalMaster];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief NewGameControllerDelegate protocol method
 // -----------------------------------------------------------------------------
-- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame
+- (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame rematch:(bool)rematch
 {
   if (didStartNewGame)
   {
     [[[[CleanBackupSgfCommand alloc] init] autorelease] submit];
     [[[[NewGameCommand alloc] init] autorelease] submit];
   }
-  [self.modalMaster dismissViewControllerAnimated:YES completion:nil];
+
+  // In the rematch use case NewGameController was not presented
+  if (! rematch)
+    [self.modalMaster dismissViewControllerAnimated:YES completion:nil];
+
   [self.delegate moreGameActionsControllerDidFinish:self];
 }
 
