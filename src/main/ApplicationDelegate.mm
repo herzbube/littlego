@@ -372,9 +372,8 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 // -----------------------------------------------------------------------------
 - (void) setupCrashReporting
 {
+#ifdef LITTLEGO_NDEBUG
 #ifndef LITTLEGO_UNITTESTS
-  // TODO: Conditional compile this only when building for App Distribution
-
   // One way to disable everything programmatically is this:
   //   [[FIRApp defaultApp] setDataCollectionDefaultEnabled:NO];
   // Unfortunately this also disables crash reporting.
@@ -383,6 +382,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 
   CrashReportingHandler* crashReportingHandler = [[[CrashReportingHandler alloc] initWithModel:self.crashReportingModel] autorelease];
   [crashReportingHandler handleUnsentCrashReportsOrDoNothing];
+#endif
 #endif
 }
 
