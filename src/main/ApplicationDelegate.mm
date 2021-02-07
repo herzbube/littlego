@@ -372,7 +372,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 // -----------------------------------------------------------------------------
 - (void) setupCrashReporting
 {
-#ifndef DEBUG
+#ifdef LITTLEGO_NDEBUG
 #ifndef LITTLEGO_UNITTESTS
   // One way to disable everything programmatically is this:
   //   [[FIRApp defaultApp] setDataCollectionDefaultEnabled:NO];
