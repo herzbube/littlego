@@ -1049,15 +1049,14 @@ static const int maxStepsForReplayMoves = 10;
   SGFCBoardSizeProperty* szProperty = [SGFCBoardSizeProperty boardSizePropertyWithNumberPropertyValue:szPropertyValue];
   [self.sgfGameInfoNode setProperty:szProperty];
 
-  NSMutableArray* abPropertyValues = [NSMutableArray array];
+  SGFCProperty* abProperty = [SGFCProperty propertyWithType:SGFCPropertyTypeAB];
   for (NSString* handicapVertex in [GoUtilities verticesForHandicap:model.handicap boardSize:goBoardSize])
   {
     SGFCGoStonePropertyValue* abPropertyValue = [SGFCGoStonePropertyValue goStonePropertyValueWithGoStoneValue:handicapVertex
                                                                                                      boardSize:sgfBoardSize
                                                                                                          color:SGFCColorBlack];
-    [abPropertyValues addObject:abPropertyValue];
+    [abProperty appendPropertyValue:abPropertyValue];
   }
-  SGFCProperty* abProperty = [SGFCProperty propertyWithType:SGFCPropertyTypeAB values:abPropertyValues];
   [self.sgfGameInfoNode setProperty:abProperty];
 
   self.sgfGoGameInfo = self.sgfGameInfoNode.gameInfo.toGoGameInfo;
