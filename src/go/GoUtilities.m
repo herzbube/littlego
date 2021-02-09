@@ -23,6 +23,7 @@
 #import "GoGame.h"
 #import "GoGameRules.h"
 #import "GoMove.h"
+#import "GoMoveModel.h"
 #import "GoPoint.h"
 #import "GoVertex.h"
 #import "GoZobristTable.h"
@@ -656,6 +657,36 @@
 
   for (GoMove* move = game.firstMove; move != nil; move = move.next)
     move.zobristHash = [zobristTable hashForMove:move inGame:game];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Relinks all moves of the specified game. The source is the
+/// GoMoveModel contained by @a game.
+///
+/// The previous/next moves of a GoMove is not archived when a game is archived
+/// to avoid a stack overflow when the game contains a large number of moves.
+// -----------------------------------------------------------------------------
++ (void) relinkMoves:(GoGame*)game
+{
+  GoMoveModel* moveModel = game.moveModel;
+
+  GoMove* moveToSet = nil;
+  GoMove* previousMove = nil;
+
+  int numberOfMoves = moveModel.numberOfMoves;
+  for (int indexOfMove = 0; indexOfMove < numberOfMoves; indexOfMove++)
+  {
+    GoMove* move = [moveModel moveAtIndex:indexOfMove];
+
+    if (moveToSet)
+      [moveToSet setUnarchivedPreviousMove:previousMove nextMove:move];
+
+    previousMove = moveToSet;
+    moveToSet = move;
+  }
+
+  if (moveToSet)
+    [moveToSet setUnarchivedPreviousMove:previousMove nextMove:nil];
 }
 
 @end

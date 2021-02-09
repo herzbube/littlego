@@ -31,8 +31,12 @@
 /// NSCoding archive file is not compatible with the current Go model classes.
 /// The @e game property in this case is nil. In case of an incompatible
 /// archive, UnarchiveGameCommand deletes the NSCoding archive file unless the
-/// the client executing this command prevents this by setting the
+/// client executing this command prevents this by setting the
 /// @e shouldRemoveArchiveFileIfUnarchivingFails property to false.
+///
+/// @note The object tree dangling from the unarchived GoGame object is
+/// incomplete. The client executing UnarchiveGameCommand is responsible for
+/// performing post-processing to complete the setup of the object tree.
 ///
 /// @see SaveApplicationStateCommand.
 // -----------------------------------------------------------------------------

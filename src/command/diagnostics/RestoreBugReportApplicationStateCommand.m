@@ -75,6 +75,7 @@
   }
   [self fixObjectReferences];
   [GoUtilities recalculateZobristHashes:self.unarchivedGame];
+  [GoUtilities relinkMoves:self.unarchivedGame];
 
   [self postNotifications];
   [self syncGtpEngine];

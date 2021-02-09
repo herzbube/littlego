@@ -1261,8 +1261,6 @@ extern NSString* goPlayerIsBlackKey;
 extern NSString* goMoveTypeKey;
 extern NSString* goMovePlayerKey;
 extern NSString* goMovePointKey;
-extern NSString* goMovePreviousKey;
-extern NSString* goMoveNextKey;
 extern NSString* goMoveCapturedStonesKey;
 extern NSString* goMoveMoveNumberKey;
 // GoMoveModel keys

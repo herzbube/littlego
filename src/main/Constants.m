@@ -372,8 +372,6 @@ NSString* goPlayerIsBlackKey = @"IsBlack";
 NSString* goMoveTypeKey = @"Type";
 NSString* goMovePlayerKey = @"Player";
 NSString* goMovePointKey = @"Point";
-NSString* goMovePreviousKey = @"Previous";
-NSString* goMoveNextKey = @"Next";
 NSString* goMoveCapturedStonesKey = @"CapturedStones";
 NSString* goMoveMoveNumberKey = @"MoveNumber";
 // GoMoveModel keys

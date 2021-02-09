@@ -137,8 +137,10 @@
   self.type = [decoder decodeIntForKey:goMoveTypeKey];
   self.player = [decoder decodeObjectForKey:goMovePlayerKey];
   _point = [decoder decodeObjectForKey:goMovePointKey];  // don't use self, otherwise we trigger the setter!
-  self.previous = [decoder decodeObjectForKey:goMovePreviousKey];
-  self.next = [decoder decodeObjectForKey:goMoveNextKey];
+  // The previous/next moves were not archived. Whoever is unarchiving this
+  // GoMove is responsible for setting the previous/next move.
+  self.previous = nil;
+  self.next = nil;
   self.capturedStones = [decoder decodeObjectForKey:goMoveCapturedStonesKey];
   self.moveNumber = [decoder decodeIntForKey:goMoveMoveNumberKey];
   // The hash was not archived. Whoever is unarchiving this GoMove is
@@ -167,6 +169,16 @@
   }
   self.capturedStones = nil;
   [super dealloc];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up this GoMove object with the previous and next GoMove objects
+/// @a previousMove and @a nextMove, repsectively, after unarchiving.
+// -----------------------------------------------------------------------------
+- (void) setUnarchivedPreviousMove:(GoMove*)previousMove nextMove:(GoMove*)nextMove
+{
+  self.previous = previousMove;
+  self.next = nextMove;
 }
 
 // -----------------------------------------------------------------------------
@@ -383,8 +395,10 @@
   [encoder encodeInt:self.type forKey:goMoveTypeKey];
   [encoder encodeObject:self.player forKey:goMovePlayerKey];
   [encoder encodeObject:self.point forKey:goMovePointKey];
-  [encoder encodeObject:self.previous forKey:goMovePreviousKey];
-  [encoder encodeObject:self.next forKey:goMoveNextKey];
+  // The GoMove objects for the next/previous move are not archived because
+  // in a game with many moves (e.g. a thousand moves) the result would be a
+  // stack overflow (archiving the next GoMove object causes that object to
+  // access its own next GoMove object, and so on).
   [encoder encodeObject:self.capturedStones forKey:goMoveCapturedStonesKey];
   [encoder encodeInt:self.moveNumber forKey:goMoveMoveNumberKey];
   // GoZobristTable is not archived, instead a new GoZobristTable object with

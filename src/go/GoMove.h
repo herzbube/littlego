@@ -64,6 +64,7 @@
 + (GoMove*) move:(enum GoMoveType)type by:(GoPlayer*)player after:(GoMove*)move;
 - (void) doIt;
 - (void) undo;
+- (void) setUnarchivedPreviousMove:(GoMove*)previousMove nextMove:(GoMove*)nextMove;
 
 /// @brief The type of this GoMove object.
 @property(nonatomic, assign, readonly) enum GoMoveType type;
