@@ -47,5 +47,6 @@ enum SyncMoveType
 }
 
 @property(nonatomic, assign) enum SyncMoveType syncMoveType;
+@property(nonatomic, retain, readonly) NSString* errorDescription;
 
 @end

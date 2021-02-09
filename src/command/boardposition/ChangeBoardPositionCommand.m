@@ -180,10 +180,11 @@
 
     boardPosition.currentBoardPosition = self.newBoardPosition;
 
-    bool syncSuccess = [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+    SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];
+    bool syncSuccess = [syncCommand submit];
     if (! syncSuccess)
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Failed to synchronize the GTP engine state with the current GoGame state"];
+      NSString* errorMessage = [NSString stringWithFormat:@"Failed to synchronize the GTP engine state with the current GoGame state. GTP engine error message:\n\n%@", syncCommand.errorDescription];
       DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                        reason:errorMessage

@@ -933,14 +933,15 @@ static const int maxStepsForReplayMoves = 10;
 // -----------------------------------------------------------------------------
 - (bool) syncGtpEngine:(NSString**)errorMessage
 {
-  bool syncSuccess = [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+  SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];
+  bool syncSuccess = [syncCommand submit];
   if (syncSuccess)
   {
     return true;
   }
   else
   {
-    *errorMessage = @"Failed to synchronize the GTP engine state with the current GoGame state";
+    *errorMessage = [NSString stringWithFormat:@"Failed to synchronize the GTP engine state with the current GoGame state. GTP engine error message:\n\n%@", syncCommand.errorDescription];
     return false;
   }
 }

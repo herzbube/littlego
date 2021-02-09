@@ -58,10 +58,11 @@
   command.shouldTriggerComputerPlayer = false;
   [command submit];
 
-  success = [[[[SyncGTPEngineCommand alloc] init] autorelease] submit];
+  SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];
+  success = [syncCommand submit];
   if (! success)
   {
-    DDLogError(@"%@: Restoring not possible, cannot sync GTP engine", [self shortDescription]);
+    DDLogError(@"%@: Restoring not possible, cannot sync GTP engine. GTP engine error message:\n\n%@", [self shortDescription], syncCommand.errorDescription);
     return false;
   }
 

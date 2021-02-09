@@ -130,7 +130,7 @@
   if (! success)
   {
     NSString* errorMessage = @"Failed to synchronize the GTP engine state with the current GoGame state";
-    DDLogError(@"%@: %@", self, errorMessage);
+    DDLogError(@"%@: %@. GTP engine error message:\n\n%@", self, errorMessage, command.errorDescription);
     NSException* exception = [NSException exceptionWithName:NSGenericException
                                                      reason:errorMessage
                                                    userInfo:nil];

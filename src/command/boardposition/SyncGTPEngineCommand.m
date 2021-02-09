@@ -29,6 +29,13 @@
 #import "../../gtp/GtpResponse.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for SyncGTPEngineCommand
+// -----------------------------------------------------------------------------
+@interface SyncGTPEngineCommand()
+@property(nonatomic, retain, readwrite) NSString* errorDescription;
+@end
+
 @implementation SyncGTPEngineCommand
 
 
@@ -44,7 +51,17 @@
   if (! self)
     return nil;
   self.syncMoveType = SyncMovesUpToCurrentBoardPosition;
+  self.errorDescription = nil;
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this SyncGTPEngineCommand object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.errorDescription = nil;
+  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
@@ -57,37 +74,37 @@
   // configuration (e.g. UCT parameters) untouched
   if (! [self syncGTPEngineClearBoard])
   {
-    DDLogError(@"%@: Aborting because syncGTPEngineClearBoard failed", [self shortDescription]);
+    DDLogError(@"%@: Aborting because syncGTPEngineClearBoard failed: %@", [self shortDescription], self.errorDescription);
     return false;
   }
 
   if (! [self syncGTPEngineHandicap])
   {
-    DDLogError(@"%@: Aborting because syncGTPEngineHandicap failed", [self shortDescription]);
+    DDLogError(@"%@: Aborting because syncGTPEngineHandicap failed: %@", [self shortDescription], self.errorDescription);
     return false;
   }
 
   if (! [self syncGTPEngineKomi])
   {
-    DDLogError(@"%@: Aborting because syncGTPEngineKomi failed", [self shortDescription]);
+    DDLogError(@"%@: Aborting because syncGTPEngineKomi failed: %@", [self shortDescription], self.errorDescription);
     return false;
   }
 
   if (! [self syncGTPEngineSetupStones])
   {
-    DDLogError(@"%@: Aborting because syncGTPEngineSetupStones failed", [self shortDescription]);
+    DDLogError(@"%@: Aborting because syncGTPEngineSetupStones failed: %@", [self shortDescription], self.errorDescription);
     return false;
   }
 
   if (! [self syncGTPEngineSetupPlayer])
   {
-    DDLogError(@"%@: Aborting because syncGTPEngineSetupPlayer failed", [self shortDescription]);
+    DDLogError(@"%@: Aborting because syncGTPEngineSetupPlayer failed: %@", [self shortDescription], self.errorDescription);
     return false;
   }
 
   if (! [self syncGTPEngineMoves])
   {
-    DDLogError(@"%@: Aborting because syncGTPEngineMoves failed", [self shortDescription]);
+    DDLogError(@"%@: Aborting because syncGTPEngineMoves failed: %@", [self shortDescription], self.errorDescription);
     return false;
   }
   return true;
@@ -101,6 +118,8 @@
   GtpCommand* commandClearBoard = [GtpCommand command:@"clear_board"];
   [commandClearBoard submit];
   assert(commandClearBoard.response.status);
+  if (commandClearBoard.response.status)
+    self.errorDescription = commandClearBoard.response.parsedResponse;
   return commandClearBoard.response.status;
 }
 
@@ -122,6 +141,8 @@
   GtpCommand* command = [GtpCommand command:commandString];
   [command submit];
   assert(command.response.status);
+  if (! command.response.status)
+    self.errorDescription = command.response.parsedResponse;
   return command.response.status;
 }
 
@@ -139,6 +160,8 @@
   GtpCommand* command = [GtpCommand command:[NSString stringWithFormat:@"komi %.1f", game.komi]];
   [command submit];
   assert(command.response.status);
+  if (! command.response.status)
+    self.errorDescription = command.response.parsedResponse;
   return command.response.status;
 }
 
@@ -180,6 +203,8 @@
   GtpCommand* command = [GtpCommand command:commandString];
   [command submit];
   assert(command.response.status);
+  if (! command.response.status)
+    self.errorDescription = command.response.parsedResponse;
   return command.response.status;
 }
 
@@ -203,6 +228,8 @@
   GtpCommand* command = [GtpCommand command:commandString];
   [command submit];
   assert(command.response.status);
+  if (! command.response.status)
+    self.errorDescription = command.response.parsedResponse;
   return command.response.status;
 }
 
@@ -247,6 +274,8 @@
   GtpCommand* commandSetup = [GtpCommand command:commandString];
   [commandSetup submit];
   assert(commandSetup.response.status);
+  if (! commandSetup.response.status)
+    self.errorDescription = commandSetup.response.parsedResponse;
   return commandSetup.response.status;
 }
 
