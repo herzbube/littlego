@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>UserDefaultsVersionRegistrationDomain</key>
-	<integer>11</integer>
+	<integer>12</integer>
 	<key>LoggingEnabled</key>
 	<false/>
 	<key>BoardView</key>
@@ -79,27 +79,6 @@
 		</dict>
 		<dict>
 			<key>UUID</key>
-			<string>766CDA23-0C58-480B-A8B5-1F34BDA41677</string>
-			<key>Name</key>
-			<string>Fuego</string>
-			<key>IsHuman</key>
-			<false/>
-			<key>GtpEngineProfileUUID</key>
-			<string>7C35B47D-363B-4B94-8E44-476BECD0646F</string>
-			<key>Statistics</key>
-			<dict>
-				<key>GamesPlayed</key>
-				<integer>0</integer>
-				<key>GamesWon</key>
-				<integer>0</integer>
-				<key>GamesLost</key>
-				<integer>0</integer>
-				<key>GamesTied</key>
-				<integer>0</integer>
-			</dict>
-		</dict>
-		<dict>
-			<key>UUID</key>
 			<string>143893E4-6B81-40AD-93A7-15425B95BC14</string>
 			<key>Name</key>
 			<string>Fuego (weak)</string>
@@ -119,6 +98,48 @@
 				<integer>0</integer>
 			</dict>
 		</dict>
+		<dict>
+			<key>UUID</key>
+			<string>82FE907A-5E9A-4DCB-AFA5-C2D5CA03ECFA</string>
+			<key>Name</key>
+			<string>Fuego (strong)</string>
+			<key>IsHuman</key>
+			<false/>
+			<key>GtpEngineProfileUUID</key>
+			<string>7C35B47D-363B-4B94-8E44-476BECD0646F</string>
+			<key>Statistics</key>
+			<dict>
+				<key>GamesPlayed</key>
+				<integer>0</integer>
+				<key>GamesWon</key>
+				<integer>0</integer>
+				<key>GamesLost</key>
+				<integer>0</integer>
+				<key>GamesTied</key>
+				<integer>0</integer>
+			</dict>
+		</dict>
+		<dict>
+			<key>UUID</key>
+			<string>766CDA23-0C58-480B-A8B5-1F34BDA41677</string>
+			<key>Name</key>
+			<string>Fuego (extra strong)</string>
+			<key>IsHuman</key>
+			<false/>
+			<key>GtpEngineProfileUUID</key>
+			<string>1051CE0D-D8BA-405C-A93D-7AA140683D11</string>
+			<key>Statistics</key>
+			<dict>
+				<key>GamesPlayed</key>
+				<integer>0</integer>
+				<key>GamesWon</key>
+				<integer>0</integer>
+				<key>GamesLost</key>
+				<integer>0</integer>
+				<key>GamesTied</key>
+				<integer>0</integer>
+			</dict>
+		</dict>
 	</array>
 	<key>GtpEngineProfileList</key>
 	<array>
@@ -126,9 +147,9 @@
 			<key>UUID</key>
 			<string>D341C2B1-94D5-4665-8502-304E55FBA119</string>
 			<key>Name</key>
-			<string>Weak</string>
+			<string></string>
 			<key>Description</key>
-			<string>This profile uses minimal playing strength.</string>
+			<string>This computer player has minimal playing strength.</string>
 			<key>FuegoMaxMemory</key>
 			<integer>32</integer>
 			<key>FuegoThreadCount</key>
@@ -162,9 +183,9 @@
 			<key>UUID</key>
 			<string>7C35B47D-363B-4B94-8E44-476BECD0646F</string>
 			<key>Name</key>
-			<string>Strong</string>
+			<string></string>
 			<key>Description</key>
-			<string>This profile uses maximum playing strength. The &apos;Pondering&apos; feature is enabled, which means that the computer player is also thinking while it is not its turn. This uses more battery power!</string>
+			<string>This computer player has maximum playing strength. The &apos;Pondering&apos; feature is enabled, which means that the computer player is also thinking while it is not its turn. IMPORTANT: This consumes substantial battery power!</string>
 			<key>FuegoMaxMemory</key>
 			<integer>32</integer>
 			<key>FuegoThreadCount</key>
@@ -198,9 +219,9 @@
 			<key>UUID</key>
 			<string>1051CE0D-D8BA-405C-A93D-7AA140683D11</string>
 			<key>Name</key>
-			<string>Extra strong</string>
+			<string></string>
 			<key>Description</key>
-			<string>This profile uses maximum playing strength, doubles the memory used by the &apos;Strong&apos; profile, and makes use of a second processor core.</string>
+			<string>This computer player is like the &apos;Strong&apos; computer player, but in addition doubles the memory available to the computer and makes use of a second processor core. IMPORTANT: Like the &apos;Strong&apos; computer player this computer player also has the &apos;Pondering&apos; feature enabled, which consumes substantial battery power!</string>
 			<key>FuegoMaxMemory</key>
 			<integer>64</integer>
 			<key>FuegoThreadCount</key>
@@ -236,7 +257,7 @@
 			<key>Name</key>
 			<string>Human vs. human games</string>
 			<key>Description</key>
-			<string>This profile cannot be deleted. The computer uses this profile to make calculations in games where both players are human. By default this profile disables the &apos;Pondering&apos; feature so as not to waste too much battery power.</string>
+			<string>The computer uses these settings to make calculations in games where both players are human. By default these settings disable the &apos;Pondering&apos; feature so as not to consume too much battery power.</string>
 			<key>FuegoMaxMemory</key>
 			<integer>32</integer>
 			<key>FuegoThreadCount</key>

@@ -21,6 +21,7 @@
 #import "../go/GoUtilities.h"
 #import "../main/ApplicationDelegate.h"
 #import "../player/GtpEngineProfile.h"
+#import "../player/Player.h"
 #import "../ui/UIViewControllerAdditions.h"
 #import "../utility/NSStringAdditions.h"
 
@@ -752,6 +753,141 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
     [cannedCommandsArrayUpgrade addObject:@"list_setup_player"];
     [userDefaults setObject:cannedCommandsArrayUpgrade forKey:gtpCannedCommandsKey];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs the incremental upgrade to the user defaults format
+/// version 12.
+///
+/// Migration goals:
+/// - Human players remain as they currently are, i.e. no need to migrate.
+/// - Every computer player has its own dedicated GTP engine profile. No two
+///   computer players share the same profile.
+/// - Every GTP engine profile except the human vs. human profile is referenced
+///   by exactly one computer player.
+/// - The human vs. human GTP engine profile is not referenced by any computer
+///   player.
+///
+/// Migration cases:
+/// - Case 1: Profile is the human vs. human profile and it is referenced by
+///   1-n players. Action: For each reference create a new profile that is a
+///   duplicate of the human vs. human profile, then replace the player's
+///   reference to the human vs. human profile with a reference to the new
+///   profile.
+/// - Case 2: Profile is not the human vs. human profile and it is referenced
+///   by 2-n players. Action: For each reference beyond the first create a new
+///   profile that is a duplicate of the original profile, then replace the
+///   player's reference to the original profile with a reference to the new
+///   profile.
+/// - Case 3: Profile is not the human vs. human profile and it is not
+///   referenced by a player. Action: Create a new player that references the
+///   profile.
+// -----------------------------------------------------------------------------
++ (void) upgradeToVersion12:(NSDictionary*)registrationDomainDefaults
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
+  NSArray* userDefaultsPlayers = [userDefaults objectForKey:playerListKey];
+  if (! userDefaultsPlayers)
+    userDefaultsPlayers = [NSArray array];  // should not be possible
+  NSMutableArray* players = [NSMutableArray array];
+  for (NSDictionary* playerDictionary in userDefaultsPlayers)
+  {
+    Player* player = [[[Player alloc] initWithDictionary:playerDictionary] autorelease];
+    [players addObject:player];
+  }
+
+  NSArray* userDefaultsProfiles = [userDefaults objectForKey:gtpEngineProfileListKey];
+  if (! userDefaultsProfiles)
+    userDefaultsProfiles = [NSArray array];  // should not be possible
+  NSMutableArray* profiles = [NSMutableArray array];
+  for (NSDictionary* profileDictionary in userDefaultsProfiles)
+  {
+    GtpEngineProfile* profile = [[[GtpEngineProfile alloc] initWithDictionary:profileDictionary] autorelease];
+    [profiles addObject:profile];
+  }
+
+  NSString* humanVsHumanProfileName = @"Human vs. human games";
+
+  // Use an index-based iteration and check the array count in each iteration
+  // because elements can be added to the array during iteration
+  for (NSUInteger indexOfProfile = 0; indexOfProfile < profiles.count; indexOfProfile++)
+  {
+    GtpEngineProfile* profile = [profiles objectAtIndex:indexOfProfile];
+    bool isHumanVsHumanProfile = [profile.uuid isEqualToString:fallbackGtpEngineProfileUUID];
+
+    int numberOfPlayersReferencingProfile = 0;
+
+    for (Player* player in players)
+    {
+      if (player.isHuman)
+        continue;
+
+      if (! [profile.uuid isEqualToString:player.gtpEngineProfileUUID])
+        continue;
+
+      numberOfPlayersReferencingProfile++;
+
+      // Migration cases 1 and 2
+      if (isHumanVsHumanProfile || numberOfPlayersReferencingProfile > 1)
+      {
+        NSMutableDictionary* duplicateProfileDictionary = [NSMutableDictionary dictionaryWithDictionary:[profile asDictionary]];
+        NSString* duplicateProfileUUID = [NSString UUIDString];
+        [duplicateProfileDictionary setValue:duplicateProfileUUID forKey:gtpEngineProfileUUIDKey];
+
+        GtpEngineProfile* duplicateProfile = [[GtpEngineProfile alloc] initWithDictionary:duplicateProfileDictionary];
+        [profiles addObject:duplicateProfile];
+
+        duplicateProfile.name = @"";
+        if (isHumanVsHumanProfile)
+          duplicateProfile.profileDescription = [NSString stringWithFormat:@"Settings copied from profile '%@'", humanVsHumanProfileName];
+
+        player.gtpEngineProfileUUID = duplicateProfile.uuid;
+      }
+    }
+
+    if (isHumanVsHumanProfile)
+    {
+      // In case the user changed this special profile's name and/or description
+      // we give it back its default name and description. We use the same name
+      // and description as in RegistrationDomainDefaults.plist. Note: From now
+      // on the user will no longer be able to change this profile's name and
+      // description.
+      profile.name = humanVsHumanProfileName;
+      profile.profileDescription = @"The computer uses these settings to make calculations in games where both players are human. By default these settings disable the 'Pondering' feature so as not to consume too much battery power.";
+    }
+    else
+    {
+      // Migration case 3
+      if (numberOfPlayersReferencingProfile == 0)
+      {
+        Player* player = [[Player alloc] initWithDictionary:nil];
+        [players addObject:player];
+
+        // The profiles in RegistrationDomainDefaults.plist up until now were
+        // named "Weak", "Strong", "Extra strong" and players were named
+        // "Fuego (Weak)", "Fuego (Strong)" and "Fuego (Extra strong)". If
+        // the user merely deleted a player but kept the profile name, then
+        // this naming scheme will restore the original player.
+        player.name = [NSString stringWithFormat:@"Fuego (%@)", profile.name];
+        player.human = false;
+        player.gtpEngineProfileUUID = profile.uuid;
+      }
+
+      // We no longer have a use for the profile name.
+      profile.name = @"";
+    }
+  }
+
+  NSMutableArray* userDefaultsPlayersUpgrade = [NSMutableArray array];
+  for (Player* player in players)
+    [userDefaultsPlayersUpgrade addObject:[player asDictionary]];
+  [userDefaults setObject:userDefaultsPlayersUpgrade forKey:playerListKey];
+
+  NSMutableArray* userDefaultsProfilesUpgrade = [NSMutableArray array];
+  for (GtpEngineProfile* profile in profiles)
+    [userDefaultsProfilesUpgrade addObject:[profile asDictionary]];
+  [userDefaults setObject:userDefaultsProfilesUpgrade forKey:gtpEngineProfileListKey];
 }
 
 // -----------------------------------------------------------------------------

@@ -142,8 +142,7 @@
 		CD252DA216A4969D00A088D5 /* BoardPositionToolbarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252DA116A4969D00A088D5 /* BoardPositionToolbarController.m */; };
 		CD252DA516A4B97800A088D5 /* UIImageAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CD252DA416A4B97800A088D5 /* UIImageAdditions.m */; };
 		CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD2BA77B1649D034000C6F09 /* CrashReportingSettingsController.m */; };
-		CD2D3A9E174C348C0030EDE4 /* EditGtpEngineProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */; };
-		CD2D3A9F174C34910030EDE4 /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
+		CD2D3A9E174C348C0030EDE4 /* EditPlayerProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB4579E147AEB590043EDE4 /* EditPlayerProfileController.m */; };
 		CD2D3AA0174C34A60030EDE4 /* EditPlayingStrengthSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */; };
 		CD2D3AA1174C34B20030EDE4 /* EditResignBehaviourSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */; };
 		CD2D3AA2174C34B50030EDE4 /* MaxMemoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */; };
@@ -459,7 +458,7 @@
 		CDB3ABFE1CFB401B00DE4B38 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ABFD1CFB401B00DE4B38 /* Launch Screen.storyboard */; };
 		CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
 		CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
-		CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */; };
+		CDB4579F147AEB590043EDE4 /* EditPlayerProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB4579E147AEB590043EDE4 /* EditPlayerProfileController.m */; };
 		CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */; };
 		CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
@@ -593,7 +592,6 @@
 		CDFABCA814194A420065C93B /* ViewGameController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCA714194A420065C93B /* ViewGameController.m */; };
 		CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFABCAC14194DA00065C93B /* EditTextController.m */; };
 		CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAF1413E95500188B6A /* CommandBase.m */; };
-		CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */; };
 		CDFD9F6F18F1D34A0031CBCF /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE4057413EB081C0091E719 /* SettingsViewController.m */; };
 		CDFD9F7018F1D35C0031CBCF /* BoardPositionSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */; };
 		CDFD9F7118F1D36C0031CBCF /* PlayerProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */; };
@@ -1108,8 +1106,8 @@
 		CDB3ABFD1CFB401B00DE4B38 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		CDB45798147ADEAC0043EDE4 /* GtpEngineProfileModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfileModel.h; sourceTree = "<group>"; };
 		CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfileModel.m; sourceTree = "<group>"; };
-		CDB4579D147AEB590043EDE4 /* EditGtpEngineProfileController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditGtpEngineProfileController.h; sourceTree = "<group>"; };
-		CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditGtpEngineProfileController.m; sourceTree = "<group>"; };
+		CDB4579D147AEB590043EDE4 /* EditPlayerProfileController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayerProfileController.h; sourceTree = "<group>"; };
+		CDB4579E147AEB590043EDE4 /* EditPlayerProfileController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayerProfileController.m; sourceTree = "<group>"; };
 		CDB457AA147DB2010043EDE4 /* UserDefaultsUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserDefaultsUpdater.h; sourceTree = "<group>"; };
 		CDB457AB147DB2010043EDE4 /* UserDefaultsUpdater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserDefaultsUpdater.m; sourceTree = "<group>"; };
 		CDB457B2147F14480043EDE4 /* UiUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiUtilities.h; sourceTree = "<group>"; };
@@ -1304,8 +1302,6 @@
 		CDFABCA714194A420065C93B /* ViewGameController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ViewGameController.m; sourceTree = "<group>"; };
 		CDFABCAB14194DA00065C93B /* EditTextController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditTextController.h; sourceTree = "<group>"; };
 		CDFABCAC14194DA00065C93B /* EditTextController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditTextController.m; sourceTree = "<group>"; };
-		CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayerController.h; sourceTree = "<group>"; };
-		CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayerController.m; sourceTree = "<group>"; };
 		CDFE66AC173EC446003D8776 /* EditResignBehaviourSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditResignBehaviourSettingsController.h; sourceTree = "<group>"; };
 		CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditResignBehaviourSettingsController.m; sourceTree = "<group>"; };
 		CDFF8A87149E2F2900E75B71 /* TESTING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TESTING; sourceTree = "<group>"; };
@@ -1667,10 +1663,8 @@
 				CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */,
 				CD7C57D222024C4600694520 /* BoardSetupSettingsController.h */,
 				CD7C57D322024C4700694520 /* BoardSetupSettingsController.m */,
-				CDB4579D147AEB590043EDE4 /* EditGtpEngineProfileController.h */,
-				CDB4579E147AEB590043EDE4 /* EditGtpEngineProfileController.m */,
-				CDFB49C413F6A84C00FAA5AF /* EditPlayerController.h */,
-				CDFB49C513F6A84C00FAA5AF /* EditPlayerController.m */,
+				CDB4579D147AEB590043EDE4 /* EditPlayerProfileController.h */,
+				CDB4579E147AEB590043EDE4 /* EditPlayerProfileController.m */,
 				CDB684FC161591760038AADE /* EditPlayingStrengthSettingsController.h */,
 				CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */,
 				CDFE66AC173EC446003D8776 /* EditResignBehaviourSettingsController.h */,
@@ -3044,7 +3038,6 @@
 				CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */,
 				CD63B9E221C1F8B100E013B5 /* PipeStreamBuffer.cpp in Sources */,
 				CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */,
-				CDFB49C813F6A84C00FAA5AF /* EditPlayerController.m in Sources */,
 				CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */,
 				CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDAF17151967FFD500271396 /* BoardViewMetrics.m in Sources */,
@@ -3107,7 +3100,7 @@
 				CDAF1723196CA81900271396 /* GoVertexNumeric.m in Sources */,
 				CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CD1D606425BC230A00345506 /* UIViewControllerAdditions.m in Sources */,
-				CDB4579F147AEB590043EDE4 /* EditGtpEngineProfileController.m in Sources */,
+				CDB4579F147AEB590043EDE4 /* EditPlayerProfileController.m in Sources */,
 				CDA096FF1A98CD54002FCD78 /* ButtonBoxController.m in Sources */,
 				CD97FA101AE3D4DD00148C16 /* NewGameAdvancedController.m in Sources */,
 				CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
@@ -3436,9 +3429,8 @@
 				CD3592071735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.m in Sources */,
 				CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CDFD9F7918F1D56A0031CBCF /* SectionedDocumentViewController.m in Sources */,
-				CD2D3A9E174C348C0030EDE4 /* EditGtpEngineProfileController.m in Sources */,
+				CD2D3A9E174C348C0030EDE4 /* EditPlayerProfileController.m in Sources */,
 				CD1F4F8D25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */,
-				CD2D3A9F174C34910030EDE4 /* EditPlayerController.m in Sources */,
 				CD2D3AA0174C34A60030EDE4 /* EditPlayingStrengthSettingsController.m in Sources */,
 				CD7C578721F79C3000694520 /* ChangeUIAreaPlayModeCommand.m in Sources */,
 				CD2D3AA1174C34B20030EDE4 /* EditResignBehaviourSettingsController.m in Sources */,

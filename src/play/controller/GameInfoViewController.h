@@ -16,8 +16,7 @@
 
 
 // Project includes
-#import "../../settings/EditGtpEngineProfileController.h"
-#import "../../settings/EditPlayerController.h"
+#import "../../settings/EditPlayerProfileController.h"
 #import "../../ui/TableViewGridCell.h"
 
 // Forward declarations
@@ -42,8 +41,7 @@
 @interface GameInfoViewController : UIViewController <UITableViewDelegate,
                                                       UITableViewDataSource,
                                                       TableViewGridCellDelegate,
-                                                      EditGtpEngineProfileDelegate,
-                                                      EditPlayerDelegate>
+                                                      EditPlayerProfileDelegate>
 {
 }
 

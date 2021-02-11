@@ -37,28 +37,38 @@
 // -----------------------------------------------------------------------------
 enum PlayerProfileTableViewSection
 {
-  PlayersSection,
-  GtpEngineProfilesSection,
+  HumanPlayersSection,
+  ComputerPlayersSection,
+  HumanVsHumanGamesSection,
   ResetToDefaultsSection,
   MaxSection
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the PlayersSection.
+/// @brief Enumerates items in the HumanPlayersSection.
 // -----------------------------------------------------------------------------
-enum PlayersSectionItem
+enum HumanPlayersSectionItem
 {
-  AddPlayerItem,
-  MaxPlayersSectionItem
+  AddHumanPlayerItem,
+  MaxHumanPlayersSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the GtpEngineProfilesSection.
+/// @brief Enumerates items in the ComputerPlayersSection.
 // -----------------------------------------------------------------------------
-enum GtpEngineProfilesSectionItem
+enum ComputerPlayersSectionItem
 {
-  AddGtpEngineProfileItem,
-  MaxGtpEngineProfilesSectionItem
+  AddComputerPlayerItem,
+  MaxComputerPlayersSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the HumanVsHumanGamesSection.
+// -----------------------------------------------------------------------------
+enum HumanVsHumanGamesSectionItem
+{
+  HumanVsHumanGamesItem,
+  MaxHumanVsHumanGamesSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -133,8 +143,8 @@ enum ResetToDefaultsSectionItem
 // -----------------------------------------------------------------------------
 - (void) setupKVONotificationResponders
 {
-  [self.gtpEngineProfileModel addObserver:self forKeyPath:@"activeProfile" options:NSKeyValueObservingOptionOld context:NULL];
-  [self.gtpEngineProfileModel.activeProfile addObserver:self forKeyPath:@"name" options:0 context:NULL];
+  // We need to observe these because the user can edit the players
+  // participating in the current game in the GameInfo view
   GoGame* game = [GoGame sharedGame];
   [game.playerBlack.player addObserver:self forKeyPath:@"name" options:0 context:NULL];
   [game.playerWhite.player addObserver:self forKeyPath:@"name" options:0 context:NULL];
@@ -154,8 +164,6 @@ enum ResetToDefaultsSectionItem
 // -----------------------------------------------------------------------------
 - (void) removeKVONotificationResponders
 {
-  [self.gtpEngineProfileModel removeObserver:self forKeyPath:@"activeProfile"];
-  [self.gtpEngineProfileModel.activeProfile removeObserver:self forKeyPath:@"name"];
   GoGame* game = [GoGame sharedGame];
   [game.playerBlack.player removeObserver:self forKeyPath:@"name"];
   [game.playerWhite.player removeObserver:self forKeyPath:@"name"];
@@ -169,7 +177,7 @@ enum ResetToDefaultsSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-  self.title = @"Players & Profiles";
+  self.title = @"Players";
   // self.editButtonItem is a standard item provided by UIViewController, which
   // is linked to triggering the view's edit mode
   self.navigationItem.rightBarButtonItem = self.editButtonItem;
@@ -190,7 +198,7 @@ enum ResetToDefaultsSectionItem
   [super setEditing:editing animated:animated];
   // Update footer titles. I have not found a more graceful way how to do this
   // than to reload entire sections
-  NSRange indexSetRange = NSMakeRange(PlayersSection, 3);
+  NSRange indexSetRange = NSMakeRange(HumanPlayersSection, 2);
   NSIndexSet* indexSet = [NSIndexSet indexSetWithIndexesInRange:indexSetRange];
   [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationAutomatic];
 }
@@ -212,10 +220,12 @@ enum ResetToDefaultsSectionItem
 {
   switch (section)
   {
-    case PlayersSection:
-      return MaxPlayersSectionItem + self.playerModel.playerCount;
-    case GtpEngineProfilesSection:
-      return MaxGtpEngineProfilesSectionItem + self.gtpEngineProfileModel.profileCount;
+    case HumanPlayersSection:
+      return MaxHumanPlayersSectionItem + [self.playerModel playerListHuman:true].count;
+    case ComputerPlayersSection:
+      return MaxComputerPlayersSectionItem + [self.playerModel playerListHuman:false].count;
+    case HumanVsHumanGamesSection:
+      return MaxHumanVsHumanGamesSectionItem;
     case ResetToDefaultsSection:
       return MaxResetToDefaultsSectionItem;
     default:
@@ -232,10 +242,12 @@ enum ResetToDefaultsSectionItem
 {
   switch (section)
   {
-    case PlayersSection:
-      return @"Players";
-    case GtpEngineProfilesSection:
-      return @"Profiles";
+    case HumanPlayersSection:
+      return @"Human players";
+    case ComputerPlayersSection:
+      return @"Computer players";
+    case HumanVsHumanGamesSection:
+      return @"Background computer player";
     default:
       break;
   }
@@ -249,18 +261,16 @@ enum ResetToDefaultsSectionItem
 {
   switch (section)
   {
-    case PlayersSection:
+    case HumanPlayersSection:
+    case ComputerPlayersSection:
     {
       if (self.tableView.editing)
         return @"Players that are participating in the current game cannot be deleted.";
       break;
     }
-    case GtpEngineProfilesSection:
+    case HumanVsHumanGamesSection:
     {
-      if (self.tableView.editing)
-        return @"The human vs. human games profile and the active profile (may be the same) cannot be deleted.";
-      else
-        return @"A profile is a collection of technical settings that define how the computer calculates its moves when that profile is active. Profiles can be attached to computer players to adjust their playing strength.";
+      return @"Tap to edit the settings of the computer player that operates in the background during human vs. human games and calculates moves upon request.";
     }
     default:
     {
@@ -278,23 +288,25 @@ enum ResetToDefaultsSectionItem
   UITableViewCell* cell = nil;
   switch (indexPath.section)
   {
-    case PlayersSection:
+    case HumanPlayersSection:
+    case ComputerPlayersSection:
     {
-      cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-      // TODO add icon to player entries to distinguish human from computer
-      // players
-      if (indexPath.row < self.playerModel.playerCount)
+      bool isHuman = (indexPath.section == HumanPlayersSection);
+      NSArray* playerList = [self.playerModel playerListHuman:isHuman];
+      if (indexPath.row < playerList.count)
       {
-        // Cast is required because NSInteger and int differ in size in 64-bit.
-        // Cast is safe because this app was not made to handle more than
-        // pow(2, 31) players.
-        cell.textLabel.text = [self.playerModel playerNameAtIndex:(int)indexPath.row];
+        Player* player = [playerList objectAtIndex:indexPath.row];
+        cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+        cell.textLabel.text = player.name;
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       }
-      else if (indexPath.row == self.playerModel.playerCount)
+      else if (indexPath.row == playerList.count)
       {
-        cell.textLabel.text = @"Add new player";
-        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell = [TableViewCellFactory cellWithType:ActionTextCellType tableView:tableView];
+        if (isHuman)
+          cell.textLabel.text = @"Add new human player";
+        else
+          cell.textLabel.text = @"Add new computer player";
       }
       else
       {
@@ -302,33 +314,17 @@ enum ResetToDefaultsSectionItem
       }
       break;
     }
-    case GtpEngineProfilesSection:
+    case HumanVsHumanGamesSection:
     {
       cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+      cell.textLabel.text = self.gtpEngineProfileModel.fallbackProfile.name;
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-      if (indexPath.row < self.gtpEngineProfileModel.profileCount)
-      {
-        // Cast is required because NSInteger and int differ in size in 64-bit.
-        // Cast is safe because this app was not made to handle more than
-        // pow(2, 31) profiles.
-        cell.textLabel.text = [self.gtpEngineProfileModel profileNameAtIndex:(int)indexPath.row];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-      }
-      else if (indexPath.row == self.gtpEngineProfileModel.profileCount)
-      {
-        cell.textLabel.text = @"Add new profile";
-        cell.accessoryType = UITableViewCellAccessoryNone;
-      }
-      else
-      {
-        assert(0);
-      }
       break;
     }
     case ResetToDefaultsSection:
     {
       cell = [TableViewCellFactory cellWithType:DeleteTextCellType tableView:tableView];
-      cell.textLabel.text = @"Reset to default players & profiles";
+      cell.textLabel.text = @"Reset to defaults";
       if (self.editing)
         cell.textLabel.textColor = [UIColor lightGrayColor];
       else
@@ -353,8 +349,8 @@ enum ResetToDefaultsSectionItem
 {
   switch (indexPath.section)
   {
-    case PlayersSection:
-    case GtpEngineProfilesSection:
+    case HumanPlayersSection:
+    case ComputerPlayersSection:
       // Rows that are editable are indented, the delegate determines which
       // editing style to use in tableView:editingStyleForRowAtIndexPath:()
       return YES;
@@ -376,42 +372,13 @@ enum ResetToDefaultsSectionItem
     {
       switch (indexPath.section)
       {
-        case PlayersSection:
+        case HumanPlayersSection:
+        case ComputerPlayersSection:
         {
-          Player* player = [self.playerModel.playerList objectAtIndex:indexPath.row];
+          bool isHuman = (indexPath.section == HumanPlayersSection);
+          NSArray* playerList = [self.playerModel playerListHuman:isHuman];
+          Player* player = [playerList objectAtIndex:indexPath.row];
           [self.playerModel remove:player];
-          break;
-        }
-        case GtpEngineProfilesSection:
-        {
-          GtpEngineProfile* profileToDelete = [self.gtpEngineProfileModel.profileList objectAtIndex:indexPath.row];
-          NSString* profileToDeleteUUID = profileToDelete.uuid;
-
-          // Players that refer to the profile that is about to be deleted need
-          // a replacement. We use the first profile that we can find that is
-          // not the "human vs. human games" profile. If no such profile exists
-          // we fallback to the "human vs. human games" profile after all.
-          NSString* replacementProfileUUID = fallbackGtpEngineProfileUUID;
-          for (GtpEngineProfile* replacementProfile in self.gtpEngineProfileModel.profileList)
-          {
-            if ([replacementProfile.uuid isEqualToString:profileToDeleteUUID])
-              continue;
-            if ([replacementProfile.uuid isEqualToString:fallbackGtpEngineProfileUUID])
-              continue;
-            replacementProfileUUID = replacementProfile.uuid;
-            break;
-          }
-
-          // Now re-associate players that refer to the profile that is about to
-          // be deleted. Note that it is not possible to delete the active
-          // profile, so we don't have to handle a change of the active profile
-          // here.
-          for (Player* player in self.playerModel.playerList)
-          {
-            if ([profileToDeleteUUID isEqualToString:player.gtpEngineProfileUUID])
-              player.gtpEngineProfileUUID = replacementProfileUUID;
-          }
-          [self.gtpEngineProfileModel remove:profileToDelete];
           break;
         }
         default:
@@ -429,14 +396,11 @@ enum ResetToDefaultsSectionItem
     {
       switch (indexPath.section)
       {
-        case PlayersSection:
+        case HumanPlayersSection:
+        case ComputerPlayersSection:
         {
-          [self newPlayer];
-          break;
-        }
-        case GtpEngineProfilesSection:
-        {
-          [self newProfile];
+          bool isHuman = (indexPath.section == HumanPlayersSection);
+          [self newPlayer:isHuman];
           break;
         }
         default:
@@ -466,24 +430,22 @@ enum ResetToDefaultsSectionItem
 
   switch (indexPath.section)
   {
-    case PlayersSection:
+    case HumanPlayersSection:
+    case ComputerPlayersSection:
     {
-      if (indexPath.row < self.playerModel.playerCount)
-        [self editPlayer:[self.playerModel.playerList objectAtIndex:indexPath.row]];
-      else if (indexPath.row == self.playerModel.playerCount)
-        [self newPlayer];
+      bool isHuman = (indexPath.section == HumanPlayersSection);
+      NSArray* playerList = [self.playerModel playerListHuman:isHuman];
+      if (indexPath.row < playerList.count)
+        [self editPlayer:[playerList objectAtIndex:indexPath.row]];
+      else if (indexPath.row == playerList.count)
+        [self newPlayer:isHuman];
       else
         assert(0);
       break;
     }
-    case GtpEngineProfilesSection:
+    case HumanVsHumanGamesSection:
     {
-      if (indexPath.row < self.gtpEngineProfileModel.profileCount)
-        [self editProfile:[self.gtpEngineProfileModel.profileList objectAtIndex:indexPath.row]];
-      else if (indexPath.row == self.gtpEngineProfileModel.profileCount)
-        [self newProfile];
-      else
-        assert(0);
+      [self editProfile:self.gtpEngineProfileModel.fallbackProfile];
       break;
     }
     case ResetToDefaultsSection:
@@ -498,7 +460,7 @@ enum ResetToDefaultsSectionItem
           };
 
           [self presentYesNoAlertWithTitle:@"Please confirm"
-                                   message:@"The current game has unsaved changes. In order to proceed, the current game must be discarded so that a new game can be started with the restored players and profiles.\n\nAre you sure you want to discard the current game and lose all unsaved changes?"
+                                   message:@"The current game has unsaved changes. In order to proceed, the current game must be discarded so that a new game can be started with the restored players.\n\nAre you sure you want to discard the current game and lose all unsaved changes?"
                                 yesHandler:innerYesActionBlock
                                  noHandler:nil];
         }
@@ -509,7 +471,7 @@ enum ResetToDefaultsSectionItem
       };
 
       [self presentYesNoAlertWithTitle:@"Please confirm"
-                               message:@"This will discard ALL players and profiles that currently exist, and restore those players and profiles that come with the app when it is installed from the App Store.\n\nAre you sure you want to do this?"
+                               message:@"This will discard ALL players that currently exist, and restore those players that come with the app when it is installed from the App Store.\n\nAre you sure you want to do this?"
                             yesHandler:outerYesActionBlock
                              noHandler:nil];
       break;
@@ -528,33 +490,20 @@ enum ResetToDefaultsSectionItem
 {
   switch (indexPath.section)
   {
-    case PlayersSection:
+    case HumanPlayersSection:
+    case ComputerPlayersSection:
     {
-      if (indexPath.row < self.playerModel.playerCount)
+      bool isHuman = (indexPath.section == HumanPlayersSection);
+      NSArray* playerList = [self.playerModel playerListHuman:isHuman];
+      if (indexPath.row < playerList.count)
       {
-        Player* player = [self.playerModel.playerList objectAtIndex:indexPath.row];
+        Player* player = [playerList objectAtIndex:indexPath.row];
         if (player.isPlaying)
           return UITableViewCellEditingStyleNone;
         else
           return UITableViewCellEditingStyleDelete;
       }
-      else if (indexPath.row == self.playerModel.playerCount)
-        return UITableViewCellEditingStyleInsert;
-      else
-        assert(0);
-      break;
-    }
-    case GtpEngineProfilesSection:
-    {
-      if (indexPath.row < self.gtpEngineProfileModel.profileCount)
-      {
-        GtpEngineProfile* profile = [self.gtpEngineProfileModel.profileList objectAtIndex:indexPath.row];
-        if ([profile isFallbackProfile] || profile.isActiveProfile)
-          return UITableViewCellEditingStyleNone;
-        else
-          return UITableViewCellEditingStyleDelete;
-      }
-      else if (indexPath.row == self.gtpEngineProfileModel.profileCount)
+      else if (indexPath.row == playerList.count)
         return UITableViewCellEditingStyleInsert;
       else
         assert(0);
@@ -571,119 +520,87 @@ enum ResetToDefaultsSectionItem
 #pragma mark - Create new player
 
 // -----------------------------------------------------------------------------
-/// @brief Displays EditPlayerController to gather information required to
-/// create a new player.
+/// @brief Displays EditPlayerProfileController to gather information required
+/// to create a new player and profile.
 // -----------------------------------------------------------------------------
-- (void) newPlayer
+- (void) newPlayer:(bool)isHuman
 {
-  EditPlayerController* editPlayerController = [[EditPlayerController controllerWithDelegate:self] retain];
-  [self.navigationController pushViewController:editPlayerController animated:YES];
-  [editPlayerController release];
+  EditPlayerProfileController* editPlayerProfileController = [[EditPlayerProfileController controllerForHumanPlayer:isHuman
+                                                                                                       withDelegate:self] retain];
+  [self.navigationController pushViewController:editPlayerProfileController animated:YES];
+  [editPlayerProfileController release];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief EditPlayerDelegate protocol method.
+/// @brief EditPlayerProfileDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) didCreatePlayer:(EditPlayerController*)editPlayerController
+- (void) didCreatePlayerProfile:(EditPlayerProfileController*)editPlayerProfileController
 {
   [self.navigationController popViewControllerAnimated:YES];
-  int newPlayerRow = self.playerModel.playerCount - 1;
-  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:newPlayerRow inSection:PlayersSection];
+
+  bool isHuman = editPlayerProfileController.player.isHuman;
+  NSArray* playerList = [self.playerModel playerListHuman:isHuman];
+  NSUInteger newPlayerRow = playerList.count - 1;
+  NSInteger section = isHuman ? HumanPlayersSection : ComputerPlayersSection;
+
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:newPlayerRow inSection:section];
+
   [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                         withRowAnimation:UITableViewRowAnimationTop];  
 }
 
-#pragma mark - Edit existing player
+#pragma mark - Edit existing player or profile
 
 // -----------------------------------------------------------------------------
-/// @brief Displays EditPlayerController to allow the user to change player
-/// information.
+/// @brief Displays EditPlayerProfileController to allow the user to change
+/// player and profile information.
 // -----------------------------------------------------------------------------
 - (void) editPlayer:(Player*)player
 {
-  EditPlayerController* editPlayerController = [EditPlayerController controllerForPlayer:player withDelegate:self];
+  EditPlayerProfileController* editPlayerProfileController = [EditPlayerProfileController controllerForPlayer:player withDelegate:self];
   UINavigationController* navigationController = [[[UINavigationController alloc]
-                                                   initWithRootViewController:editPlayerController] autorelease];
+                                                   initWithRootViewController:editPlayerProfileController] autorelease];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
   navigationController.delegate = [LayoutManager sharedManager];
   [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief EditPlayerDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) didChangePlayer:(EditPlayerController*)editPlayerController
-{
-  NSUInteger changedPlayerRow = [self.playerModel.playerList indexOfObject:editPlayerController.player];
-  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:changedPlayerRow inSection:PlayersSection];
-  [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                        withRowAnimation:UITableViewRowAnimationNone];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief EditPlayerDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) didEditPlayer:(EditPlayerController*)editPlayerController
-{
-  [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - Create new profile
-
-// -----------------------------------------------------------------------------
-/// @brief Displays EditGtpEngineProfileController to gather information
-/// required to create a new GtpEngineProfile.
-// -----------------------------------------------------------------------------
-- (void) newProfile
-{
-  EditGtpEngineProfileController* editProfileController = [[EditGtpEngineProfileController controllerWithDelegate:self] retain];
-  [self.navigationController pushViewController:editProfileController animated:YES];
-  [editProfileController release];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief EditGtpEngineProfileDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) didCreateProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController
-{
-  [self.navigationController popViewControllerAnimated:YES];
-  int newProfileRow = self.gtpEngineProfileModel.profileCount - 1;
-  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:newProfileRow inSection:GtpEngineProfilesSection];
-  [self.tableView insertRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                        withRowAnimation:UITableViewRowAnimationTop];  
-}
-
-#pragma mark - Edit existing profile
-
-// -----------------------------------------------------------------------------
-/// @brief Displays EditGtpEngineProfileController to allow the user to change
+/// @brief Displays EditPlayerProfileController to allow the user to change
 /// profile information.
 // -----------------------------------------------------------------------------
 - (void) editProfile:(GtpEngineProfile*)profile
 {
-  EditGtpEngineProfileController* editProfileController = [EditGtpEngineProfileController controllerForProfile:profile withDelegate:self];
+  EditPlayerProfileController* editPlayerProfileController = [EditPlayerProfileController controllerForProfile:profile withDelegate:self];
   UINavigationController* navigationController = [[[UINavigationController alloc]
-                                                   initWithRootViewController:editProfileController] autorelease];
+                                                   initWithRootViewController:editPlayerProfileController] autorelease];
   navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
   navigationController.delegate = [LayoutManager sharedManager];
   [self presentViewController:navigationController animated:YES completion:nil];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief EditGtpEngineProfileDelegate protocol method.
+/// @brief EditPlayerProfileDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) didChangeProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController
+- (void) didChangePlayerProfile:(EditPlayerProfileController*)editPlayerProfileController
 {
-  NSUInteger changedProfileRow = [self.gtpEngineProfileModel.profileList indexOfObject:editGtpEngineProfileController.profile];
-  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:changedProfileRow inSection:GtpEngineProfilesSection];
-  [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                        withRowAnimation:UITableViewRowAnimationNone];
+  if (editPlayerProfileController.player != nil)
+  {
+    // The user might change the player's "is human" flag, which means we would
+    // need to remove the player from one section and it to the other. This is
+    // much too complicated, we're simply reloading both sections. This should
+    // not be a problem since the user is still on the editing screen and does
+    // not see the reloading taking place.
+    NSRange indexSetRange = NSMakeRange(HumanPlayersSection, 2);
+    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndexesInRange:indexSetRange];
+    [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationAutomatic];
+  }
 }
 
 // -----------------------------------------------------------------------------
-/// @brief EditGtpEngineProfileDelegate protocol method.
+/// @brief EditPlayerProfileDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) didEditProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController
+- (void) didEditPlayerProfile:(EditPlayerProfileController*)editPlayerProfileController
 {
   [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -704,6 +621,7 @@ enum ResetToDefaultsSectionItem
 - (void) goGameDidCreate:(NSNotification*)notification
 {
   [self setupKVONotificationResponders];
+
   // Here we are dealing with the (forbidden) scenario that the user can delete
   // a player that is associated with a running game. Imagine this:
   // - We have 3 players, A, B and C
@@ -742,44 +660,16 @@ enum ResetToDefaultsSectionItem
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  if (object == self.gtpEngineProfileModel)
+  if ([object isKindOfClass:[Player class]])
   {
-    GtpEngineProfile* oldProfile = [change objectForKey:NSKeyValueChangeOldKey];
-    if (oldProfile)
-      [oldProfile removeObserver:self forKeyPath:@"name"];
-    GtpEngineProfile* newProfile = self.gtpEngineProfileModel.activeProfile;
-    if (newProfile)
-      [newProfile addObserver:self forKeyPath:@"name" options:0 context:NULL];
-    // New active profile must not be delete-able; old active profile can now
-    // be deleted
-    if (self.tableView.editing)
-    {
-      NSMutableArray* indexPathsToReload = [NSMutableArray array];
-      if (oldProfile)
-      {
-        NSUInteger row = [self.gtpEngineProfileModel.profileList indexOfObject:oldProfile];
-        [indexPathsToReload addObject:[NSIndexPath indexPathForRow:row inSection:GtpEngineProfilesSection]];
-      }
-      if (newProfile)
-      {
-        NSUInteger row = [self.gtpEngineProfileModel.profileList indexOfObject:newProfile];
-        [indexPathsToReload addObject:[NSIndexPath indexPathForRow:row inSection:GtpEngineProfilesSection]];
-      }
-      [self.tableView reloadRowsAtIndexPaths:indexPathsToReload
-                            withRowAnimation:UITableViewRowAnimationNone];
-    }
-  }
-  else if ([object isKindOfClass:[GtpEngineProfile class]])
-  {
-    NSUInteger row = [self.gtpEngineProfileModel.profileList indexOfObject:object];
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row inSection:GtpEngineProfilesSection];
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                          withRowAnimation:UITableViewRowAnimationNone];
-  }
-  else if ([object isKindOfClass:[Player class]])
-  {
-    NSUInteger row = [self.playerModel.playerList indexOfObject:object];
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row inSection:PlayersSection];
+    Player* player = object;
+    bool isHuman = player.isHuman;
+    NSArray* playerList = [self.playerModel playerListHuman:isHuman];
+    NSUInteger row = [playerList indexOfObject:player];
+    NSInteger section = isHuman ? HumanPlayersSection : ComputerPlayersSection;
+
+    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:row inSection:section];
+
     [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
                           withRowAnimation:UITableViewRowAnimationNone];
   }

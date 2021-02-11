@@ -86,7 +86,7 @@ This was just a quick overview of the basic features of this app. It's best to
 explore the app a bit for yourself, then come back and read the rest of the
 manual in case you have more questions. If you don't know yet the rules of the
 game of Go, please consult the "Go rules" section (located near the end of the
-manual.
+manual).
 
 
 --------------------------------------------------------------------------------
@@ -115,21 +115,26 @@ section for the full story.
 =====================================================
 The computer is too strong / too weak, what can I do?
 =====================================================
-1. In the "Play" area, tap the "Game info" button to find out which profile is
-   active (select the "Game" segment then scroll down to the section titled
-   "Players & Profiles" to find this information).
-1. Tap the "Active profile" entry. This will take you directly to a screen
-   where you can edit the profile's settings.
+When you start a new game you can select which computer player to play against.
+The first thing you can do is to select a weaker computer player from the list.
+
+The second thing you can do is, you can edit the settings of a computer player
+to make it weaker.
+1. In the "Play" area, tap the "Game info" button to find out which computer
+   player you are playing against (select the "Game" segment then scroll down
+   to the section titled "Players" to find this information).
+1. Tap the computer player's entry. This will take you directly to a screen
+   where you can edit the player's settings.
 1. Tap on "Playing strength", select a new value, then tap "Done".
-1. Tap "Done" to dismiss the "Edit profile" screen. The new playing strength
-   will immediately take effect.
+1. Tap "Done" again to dismiss the "Edit player" screen. The new playing
+   strength will immediately take effect.
 
 In step 3, you can instead tap "Advanced configuration" if you want to tweak
-individual profile settings. Consult the "Players & Profiles" section of the
-manual to learn about the meaning of each setting, especially "Max. memory"
+individual computer player settings. Consult the "Players & Profiles" section of
+the manual to learn about the meaning of each setting, especially "Max. memory"
 which is a somewhat dangerous setting. You may also be interested in reading the
 chapter "Limiting the computer's playing strength", which appears in the manual
-after the description of the individual profile settings.
+after the description of the individual computer player settings.
 
 =========================================================================
 Player influence is not displayed, or is completely wrong, what can I do?
@@ -443,18 +448,18 @@ this help). If you would like to get a notification when the computer has made
 its move you can turn on audio/vibration feedback options under
 "Settings > Sound & Vibration".
 
-You may have noticed that Little Go has two pre-configured computer players,
-"Fuego" and "Fuego (weak)". If you want to know more about the different playing
-strengths of computer players you should start reading the "Players & Profiles"
-help section.
+You may have noticed that Little Go has several pre-configured computer players
+(e.g. "Fuego (weak)", "Fuego (strong)", etc.). If you want to know more about
+the different playing strengths of computer players you should start reading the
+"Players & Profiles" help section.
 
 ==========================
 Computer vs. computer game
 ==========================
 When you start a new game you can select a computer player to play against
-itself. Because only one profile (see "Players & Profiles" help section) can be
-active at a time, it is not possible to select different players for black and
-white.
+itself. Because only one collection of computer player settings (see
+"Players & Profiles" help section) can be active at a time, it is not possible
+to select different players for black and white.
 
 In a computer vs. computer game you can't do much more than enjoy watching them
 battling it out ☺. The "Interrupt" button lets you cut short the current
@@ -988,7 +993,7 @@ may easily be overlooked. At the same, few playout games also means a weak
 computer player. In effect, there is a direct relationship between computer
 player strength and the accuracy of playout statistics / player influence.
 
-Read the "Players & profiles" section of this manual for more details about how
+Read the "Players & Profiles" section of this manual for more details about how
 to adjust the computer player's playing strength.
 
 =====================================
@@ -1007,41 +1012,35 @@ Players & Profiles
 ========
 Overview
 ========
-You can manage both players and profiles under "Settings > Players & Profiles".
+You can manage players under "Settings > Players".
 
 There are two types of players: Human players and computer players. A human
-player only has a name, while a computer player is additionally associated with
-a profile.
+player only has a name, while a computer player has additional settings, each of
+which defines a certain technical aspect of how that particular computer player
+calculates its moves.
 
-A profile is a collection of settings, each of which defines a certain technical
-aspect of how the computer calculates its moves. The combination of settings in
-a profile directly influences the computer's playing strength. By associating a
-weak or a strong profile with a computer player, you define whether it will be
-a weak or a strong opponent.
+The combination of settings is called the computer player's "profile" and
+determines the computer's playing strength. By choosing a combination of weak
+or strong settings you define whether the computer player will be a weak or a
+strong opponent.
 
-To become active, a profile must be associated with a computer player, and that
-player must participate in a game. If you make changes to the active profile,
-those changes will take effect as soon as you dismiss the "Edit profile" screen.
-
-Only one profile can be active at any given time.
+When a computer player participates in a game and you change its settings,
+those changes will take effect as soon as you dismiss the "Edit player" screen.
 
 ===================================
 The "Human vs. human games" profile
 ===================================
-When you install Little Go for the first time, one of the profiles in the list
-of preconfigured profiles is named "Human vs. human games". Although you are
-allowed to modify its settings, you can never delete the profile. Even if you
-rename the profile, it retains its special non-deletable status.
+When a new game with two human players is started there can still be situations
+when the computer's assistance is required. For instance one of the human
+players might request Little Go to calculate a move for him or her by tapping
+the "Computer play" button. Little Go in this situation uses a special
+"Human vs. human games" profile to calculate the move.
 
-The reason is a technical one: When a new game with two human players is
-started, and one of them requests Little Go to calculate a move for him or her
-by tapping the "Computer play" button, Little Go requires a profile with
-settings that the computer can use for calculating the move. Little Go in this
-situation chooses the specially tagged "Human vs. human games" profile.
-
-You can also think of this from a different angle: Changing the settings of the
-"Human vs. human games" profile will have an influence on the quality of the
-moves generated by tapping the "Computer play" button in human vs. human games.
+The "Human vs. human games" profile effectively works like an invisible computer
+player that performs calculations in the background. Changing the settings of
+the "Human vs. human games" profile is like changing the settings of that
+background computer player and will have an impact on the quality of the moves
+generated by tapping the "Computer play" button in human vs. human games.
 
 <em>Important note:</em> The "Human vs. human games" profile disables the
 "Pondering" setting by default. This is by design: Usually players in a human
@@ -1055,15 +1054,16 @@ setting.
 =====================================================
 Simple vs. advanced configuration of playing strength
 =====================================================
-The simplest way to change the settings of a profile is to select from a number
-of playing strengths when you are on the "Edit profile" screen. Playing strength
-1 is the weakest, playing strength 2 is slightly better, and so on. Each playing
-strength represents a different set of predefined settings values. By selecting
-a playing strength you are effectively changing many profile settings with a
-single tap, without having to understand what the individual settings do.
+The simplest way to change the settings of a computer player is to select from
+a number of playing strengths when you are on the "Edit player" screen. Playing
+strength 1 is the weakest, playing strength 2 is slightly better, and so on.
+Each playing strength represents a different set of predefined settings values.
+By selecting a playing strength you are effectively changing many of the
+computer players' settings with a single tap, without having to understand what
+the individual settings do.
 
-Individual profile settings are also open to manual tweaking. To do so, go to
-the "Advanced configuration" screen from the "Edit profile" screen. Before you
+Individual settings are also open to manual tweaking. To do so, go to
+the "Advanced configuration" screen from the "Edit player" screen. Before you
 start changing things, however, it is probably a good idea to first read through
 the next sections so that you better understand what you can accomplish by
 manipulating the different settings.
@@ -1071,10 +1071,10 @@ manipulating the different settings.
 ================
 Resign behaviour
 ================
-A profile also has a resign behaviour which defines how quickly a computer
-player using the profile will resign the game. The simple configuration lets you
-choose from five predefined resign behaviours, while the advanced configuration
-allows you to define a threshold percentage for each board size.
+A computer player also has a resign behaviour which defines how quickly the
+computer will resign the game. The simple configuration lets you choose from
+five predefined resign behaviours, while the advanced configuration allows you
+to define a threshold percentage for each board size.
 
 Here are a couple of ideas on what you can do with specific resign behaviours:
 - If the computer player is allowed to resign normally, it will often resign
@@ -1186,13 +1186,13 @@ translates into more energy used, hence lower battery life.
 ========================================
 Limiting the computer's playing strength
 ========================================
-The following thoughts might be helpful if you would like to tweak a profile to
-limit the computer player's strength.
+The following thoughts might be helpful if you would like to tweak a computer
+player's settings to limit its playing strength.
 
 - Setting "maximum games" to very low values is guaranteed to cripple the
   computer player, regardless of your device CPU's number crunching power.
 - Alternatively, you could also lower the value for "thinking time", but if you
-  then use this profile on a new iPhone or iPad the computer player will
+  then use this setting on a new iPhone or iPad the computer player will
   probably become stronger because the new device has a faster processor, which
   means it can calculate more in the same amount of time.
 - Assuming you chose "maximum games" as the limiting factor, you can simply
@@ -1219,7 +1219,7 @@ to.
   "maximum memory" value is rather low because it must cater to the oldest iOS
   device still supported by the app. If you have a newer iPhone, or an iPad, you
   may wish to increase the value for maximum memory (and/or the thread count) if
-  you feel that the profile is too weak for you.
+  you feel that the computer player is too weak for you.
 - Playing strength 1 sets "maximum games" to 500.
 - Playing strength 2 sets "maximum games" to 5000.
 - Playing strength 3 sets "maximum games" to 10'000.
@@ -1867,7 +1867,8 @@ This help section contains only a barebones and purely textual introduction to
 the rules of Go. Usually a few illustrations are much more intelligible,
 therefore I strongly suggest that to learn the rules you visit one of the many
 websites dedicated to the game; my personal favourite is "Sensei's Library"
-(http://senseis.xmp.net/).
+(http://senseis.xmp.net/), another more hands-on interactive tutorial is
+available on "Online-Go.com" (https://online-go.com/learn-to-play-go).
 
 =======
 Players
@@ -2148,7 +2149,7 @@ The file is a .zip archive that contains the following pieces of information:
   reproduce the state of Little Go exactly the way it was at the time the
   diagnostics information file was generated
 - Your current preferences (including the players you have defined and the
-  settings you use on GTP engine profiles)
+  settings you use for your computer players)
 - The current game as an .sgf file
 - A screenshot of the "Play" area of the app (excluding the status bar, i.e. the
   name of your carrier is not in the screenshot)

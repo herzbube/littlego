@@ -126,7 +126,7 @@ enum PlayersProfileSectionItem
 {
   BlackPlayerItem,
   WhitePlayerItem,
-  ActiveProfileItem,
+  HumanVsHumanGameProfileItem,
   MaxPlayersProfileSectionItem
 };
 
@@ -286,9 +286,6 @@ enum BoardPositionSectionItem
   if (self.kvoNotificationRespondersAreInstalled)
     return;
   self.kvoNotificationRespondersAreInstalled = true;
-  GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
-  [model addObserver:self forKeyPath:@"activeProfile" options:NSKeyValueObservingOptionOld context:NULL];
-  [model.activeProfile addObserver:self forKeyPath:@"name" options:0 context:NULL];
   GoGame* game = [GoGame sharedGame];
   [game.playerBlack.player addObserver:self forKeyPath:@"name" options:0 context:NULL];
   [game.playerWhite.player addObserver:self forKeyPath:@"name" options:0 context:NULL];
@@ -311,9 +308,6 @@ enum BoardPositionSectionItem
   if (! self.kvoNotificationRespondersAreInstalled)
     return;
   self.kvoNotificationRespondersAreInstalled = false;
-  GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
-  [model removeObserver:self forKeyPath:@"activeProfile"];
-  [model.activeProfile removeObserver:self forKeyPath:@"name"];
   GoGame* game = [GoGame sharedGame];
   [game.playerBlack.player removeObserver:self forKeyPath:@"name"];
   [game.playerWhite.player removeObserver:self forKeyPath:@"name"];
@@ -363,7 +357,10 @@ enum BoardPositionSectionItem
         case GameInfoSection:
           return MaxGameInfoSectionItem;
         case PlayersProfileSection:
-          return MaxPlayersProfileSectionItem;
+          if ([GoGame sharedGame].type == GoGameTypeHumanVsHuman)
+            return MaxPlayersProfileSectionItem;
+          else
+            return MaxPlayersProfileSectionItem - 1;
         case MoveStatisticsSection:
           return MaxMoveStatisticsSectionItem;
         default:
@@ -406,7 +403,7 @@ enum BoardPositionSectionItem
         case GameInfoSection:
           return @"Game information";
         case PlayersProfileSection:
-          return @"Players & profile";
+          return @"Players";
         case MoveStatisticsSection:
           return @"Move statistics";
         default:
@@ -783,37 +780,32 @@ enum BoardPositionSectionItem
     case PlayersProfileSection:
     {
       isCellSelectable = true;
-      cell = [TableViewCellFactory cellWithType:Value1CellType
-                                      tableView:tableView
-                         reusableCellIdentifier:@"Value1CellWithDisclosureIndicator"];
       switch (indexPath.row)
       {
         case BlackPlayerItem:
-        {
-          cell.textLabel.text = @"Black player";
-          cell.detailTextLabel.text = game.playerBlack.player.name;
-          break;
-        }
         case WhitePlayerItem:
         {
-          cell.textLabel.text = @"White player";
-          cell.detailTextLabel.text = game.playerWhite.player.name;
-          break;
-        }
-        case ActiveProfileItem:
-        {
-          cell.textLabel.text = @"Active profile";
-          GtpEngineProfile* profile = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel.activeProfile;
-          assert(profile);
-          if (profile)
+          cell = [TableViewCellFactory cellWithType:Value1CellType
+                                          tableView:tableView
+                             reusableCellIdentifier:@"Value1CellWithDisclosureIndicator"];
+          if (indexPath.row == BlackPlayerItem)
           {
-            cell.detailTextLabel.text = profile.name;
+            cell.textLabel.text = @"Black player";
+            cell.detailTextLabel.text = game.playerBlack.player.name;
           }
           else
           {
-            DDLogError(@"%@: Active GtpEngineProfile is nil", self);
-            cell.detailTextLabel.text = @"n/a";
+            cell.textLabel.text = @"White player";
+            cell.detailTextLabel.text = game.playerWhite.player.name;
+            break;
           }
+          break;
+        }
+        case HumanVsHumanGameProfileItem:
+        {
+          cell = [TableViewCellFactory cellWithType:DefaultCellType
+                                          tableView:tableView];
+          cell.textLabel.text = @"Computer settings";
           break;
         }
         default:
@@ -998,22 +990,22 @@ enum BoardPositionSectionItem
         player = game.playerBlack.player;
       else
         player = game.playerWhite.player;
-      EditPlayerController* editPlayerController = [EditPlayerController controllerForPlayer:player withDelegate:self];
+      EditPlayerProfileController* editPlayerProfileController = [EditPlayerProfileController controllerForPlayer:player withDelegate:self];
       UINavigationController* navigationController = [[[UINavigationController alloc]
-                                                       initWithRootViewController:editPlayerController] autorelease];
+                                                       initWithRootViewController:editPlayerProfileController] autorelease];
       navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
       navigationController.delegate = [LayoutManager sharedManager];
       [self presentViewController:navigationController animated:YES completion:nil];
       break;
     }
-    case ActiveProfileItem:
+    case HumanVsHumanGameProfileItem:
     {
-      GtpEngineProfile* profile = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel.activeProfile;
+      GtpEngineProfile* profile = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel.fallbackProfile;
       if (profile)
       {
-        EditGtpEngineProfileController* editProfileController = [EditGtpEngineProfileController controllerForProfile:profile withDelegate:self];
+        EditPlayerProfileController* editPlayerProfileController = [EditPlayerProfileController controllerForProfile:profile withDelegate:self];
         UINavigationController* navigationController = [[[UINavigationController alloc]
-                                                         initWithRootViewController:editProfileController] autorelease];
+                                                         initWithRootViewController:editPlayerProfileController] autorelease];
         navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
         navigationController.delegate = [LayoutManager sharedManager];
         [self presentViewController:navigationController animated:YES completion:nil];
@@ -1255,28 +1247,7 @@ enum BoardPositionSectionItem
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-  GtpEngineProfileModel* gtpEngineProfileModel = applicationDelegate.gtpEngineProfileModel;
-  if (object == gtpEngineProfileModel)
-  {
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ActiveProfileItem inSection:PlayersProfileSection];
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                          withRowAnimation:UITableViewRowAnimationNone];
-
-    GtpEngineProfile* oldProfile = [change objectForKey:NSKeyValueChangeOldKey];
-    if (oldProfile)
-      [oldProfile removeObserver:self forKeyPath:@"name"];
-    GtpEngineProfile* newProfile = gtpEngineProfileModel.activeProfile;
-    if (newProfile)
-      [newProfile addObserver:self forKeyPath:@"name" options:0 context:NULL];
-  }
-  else if ([object isKindOfClass:[GtpEngineProfile class]])
-  {
-    NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ActiveProfileItem inSection:PlayersProfileSection];
-    [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                          withRowAnimation:UITableViewRowAnimationNone];
-  }
-  else if ([object isKindOfClass:[Player class]])
+  if ([object isKindOfClass:[Player class]])
   {
     int row;
     if (object == [GoGame sharedGame].playerBlack.player)
@@ -1289,41 +1260,29 @@ enum BoardPositionSectionItem
   }
 }
 
-#pragma mark - EditPlayerDelegate overrides
+#pragma mark - EditPlayerProfileDelegate overrides
 
 // -----------------------------------------------------------------------------
-/// @brief EditPlayerDelegate protocol method.
+/// @brief EditPlayerProfileDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) didEditPlayer:(EditPlayerController*)editPlayerController;
+- (void) didEditPlayerProfile:(EditPlayerProfileController*)editPlayerProfileController;
 {
-  GoGame* game = [GoGame sharedGame];
-  NSMutableArray* indexPaths = [NSMutableArray array];
-  if (! editPlayerController.player.isHuman)
+  if (editPlayerProfileController.player != nil)
   {
-    // In case the user selected a different profile or changed the profile
-    // name
-    [indexPaths addObject:[NSIndexPath indexPathForRow:ActiveProfileItem inSection:PlayersProfileSection]];
+    GoGame* game = [GoGame sharedGame];
+    NSMutableArray* indexPaths = [NSMutableArray array];
+    if (editPlayerProfileController.player == game.playerBlack.player)
+      [indexPaths addObject:[NSIndexPath indexPathForRow:BlackPlayerItem inSection:PlayersProfileSection]];
+    else
+      [indexPaths addObject:[NSIndexPath indexPathForRow:WhitePlayerItem inSection:PlayersProfileSection]];
+    [self.tableView reloadRowsAtIndexPaths:indexPaths
+                          withRowAnimation:UITableViewRowAnimationNone];
+    [self dismissViewControllerAnimated:YES completion:nil];
   }
-  if (editPlayerController.player == game.playerBlack.player)
-    [indexPaths addObject:[NSIndexPath indexPathForRow:BlackPlayerItem inSection:PlayersProfileSection]];
   else
-    [indexPaths addObject:[NSIndexPath indexPathForRow:WhitePlayerItem inSection:PlayersProfileSection]];
-  [self.tableView reloadRowsAtIndexPaths:indexPaths
-                        withRowAnimation:UITableViewRowAnimationNone];
-  [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-#pragma mark - EditGtpEngineProfileDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief EditGtpEngineProfileDelegate protocol method.
-// -----------------------------------------------------------------------------
-- (void) didEditProfile:(EditGtpEngineProfileController*)editGtpEngineProfileController
-{
-  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ActiveProfileItem inSection:PlayersProfileSection];
-  [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
-                        withRowAnimation:UITableViewRowAnimationNone];
-  [self dismissViewControllerAnimated:YES completion:nil];
+  {
+    [self dismissViewControllerAnimated:YES completion:nil];
+  }
 }
 
 #pragma mark - Action handlers

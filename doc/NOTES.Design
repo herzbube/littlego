@@ -139,3 +139,35 @@ Layering
   course, is that additional memory is required.
 - To counteract memory usage, layers are dynamically added and removed depending
   on application events that require certain board elements to be displayed.
+
+
+Players & Profiles
+------------------
+Players and GTP engine profiles are conceptually separate entities. Every
+computer players has a reference to one GTP engine profile. GTP engine profiles
+are independent.
+
+Some rules:
+- At any given time there is one GTP engine profile that is active. The active
+  profile's settings are used to configure Fuego.
+- If a computer player is participating in a game (human vs. computer game,
+  computer vs. computer game), the GTP engine profile referenced by that
+  computer player is the active profile. In a computer vs. computer game the
+  same computer player must play both the black side and the white side, because
+  it is not possible to have different GTP engine profiles active at the same
+  time.
+- In a human vs. human game the app uses a special non-deleteable GTP engine
+  profile. This is variously called either the "fallback" profile, or the
+  "human vs. human games" profile.
+
+In older versions of the app the user interface exposed Players and Profiles
+as separate entitites and allowed the user to share a profile among multiple
+players. The user could even assign the "human vs. human games" profile to
+a computer player.
+
+Newer versions of the app no longer allow this level of detail because all that
+flexibility turned out to be more confusing than hepful to users. Instead the
+user interface now lumps Players and Profiles together so that there is now
+an effective 1:1 relatiionship between the two. Only the "human vs. human games"
+profile can still be seen standalone, but the user interface sells this as a
+"background" computer player.

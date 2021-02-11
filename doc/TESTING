@@ -153,8 +153,7 @@ Basic game play functionality
   - Dispute resolution using alternating play
   - Four passes have no special meaning
   - Black player is "Anonymous"
-  - White player is "Fuego"
-  - Active profile is "Strong".
+  - White player is "Fuego (strong)"
 - Tap the button that navigates back to the board view; the "Game Info" screen
   is dismissed and the game board and other UI elements of the Play UI area
   become visible
@@ -883,82 +882,64 @@ Player influence
 
 
 Players & profiles
-- Start a new computer vs. human game with players "Anonymous" and "Fuego"
-- Navigate to the players & profiles preferences screen
+- Start a new computer vs. human game with players "Anonymous" and
+  "Fuego (strong)"
+- Navigate to the Players preferences screen
 - The screen shows the following content
-  - A list of all players and profiles that exist
-  - A cell "Add new player"
-  - A cell "Add new profile"
-  - A cell "Reset to default players & profiles"
-- Tap "Add new player". A screen that allows to enter data for a new player
-  is shown. Tap cancel.
-- Tap "Add new profile". A screen that allows to enter data for a new profile
-  is shown. Tap cancel.
+  - A list of all human and computer players that exist
+  - A cell "Add new player" in both player sections
+  - A cell "Human vs. human games"
+  - A cell "Reset to defaults"
+- Tap "Add new player" in the human players section. A screen that allows to
+  enter data for a new player is shown. The "Human" switch is set to on.
+  Tap cancel.
+- Tap "Add new player" in the computer players section. A screen that allows to
+  enter data for a new player is shown. The "Human" switch is set to off.
+  Tap cancel.
 - Tap the edit button
 - The "Add" cells are marked up with an icon
 - Deleteable players and profiles are marked up with an icon
-- Only the "Fuego (weak)" player can be deleted
-- Only the "Weak" and "Extra strong" profiles can be deleted
+- Only the "Fuego (weak)" and "Fuego (extra strong)" players can be deleted
 - Leave the screen, then come back. Edit mode must now be disabled.
 - iPad and iPhone (not iPhone n+) only
   - Tap edit
-  - Start a new game while the players & profiles preferences screen remains in
+  - Start a new game while the Players preferences screen remains in
     edit mode
-  - Return to the players & profiles preferences screen. Edit mode must now be
+  - Return to the Players preferences screen. Edit mode must now be
     disabled
 - Tap edit
-- Add a new profile
-- The "create" button must be disabled until you enter at least 1 character for
-  the profile name
-- Create the profile using the name "foo"
-- Add a new player
+- Add a new human player
 - The "create" button must be disabled until you enter at least 1 character for
   the player name
 - Turn the "human player" switch off
-- The profile cell must now be displayed with the "Weak" profile being selected
-  (because the "Weak" profile is the first profile that is not the
-  "Human vs. human games" profile)
-- Tap the profile cell
-- A modal selection screen must appear; the "foo" profile which has previously
-  been created must appear in the selection screen
-- Select a profile that is not the "human vs. human games" profile
-- Back on the player edit screen, the selected profile must now be updated
+- Controls must now appear that let the user edit playing strength, resign
+  behavior, and notes. The playing strength is 3 (the default).
+- Change playing strength to 5
 - Turn the "human player" switch on
-- The profile cell must now be hidden
+- The computer player specific controls disappear again.
 - Turn the "human player" switch off
-- The profile cell must again be displayed with the "Weak" profile being
-  selected
-- Select the "foo" profile
-- Create the player using the name "bar"
-- Delete the profile "foo"
-- Edit the player "bar"
-- The player must be configured with the "Weak" profile
+- The computer player specific controls appear again. The playing strength is
+  back to 3.
+- Create the player using the name "foo".
 - Display the "new game" screen. On all segments where a computer player can be
-  selected, select the player "bar".
+  selected, select the player "foo".
 - Tap "cancel"
-- Delete the player "bar"
+- Delete the player "foo"
 - Display the "new game" screen
   - On all segments where a computer player can be selected, the pre-selected
     player is shown as "no player selected" in red color
   - The "Done" button is enabled on the "Human vs. human" segment, and
     disabled on all other segments
-  - One of the remaining computer players "Fuego" and "Fuego (weak") can
-    be selected.
+  - One of the remaining computer players "Fuego (strong)" and "Fuego (weak)"
+    can be selected.
 - Start a new human vs. human game
-- Delete the "Weak" profile
-- Edit the player "Fuego (weak)". The player must be configured with the
-  "Strong" profile.
-- Delete the "Strong" profile
-- Edit players "Fuego" and "Fuego (weak)". Both players must be configured with
-  the "Extra strong" profile.
-- Delete the "Extra strong" profile
-- Edit players "Fuego" and "Fuego (weak)". Both players must be configured with
-  the "Human vs. human games" profile.
-- Tap "Reset to default players & profiles"
+- Delete all computer players
+- Edit the "Human vs. human games" profile and change the playing strength to 1
+- Tap "Reset to defaults"
 - An alert must be displayed that asks the user for confirmation
 - Tap cancel. No changes are made.
-- Tap "Reset to default players & profiles", but this time accept. All
-  players & profiles are reset to their defaults.
+- Tap "Reset to defaults", but this time accept. All players as well as the
+  settings of the "Human vs. human games" profile are reset to their defaults.
 
 
 Archive, document interaction

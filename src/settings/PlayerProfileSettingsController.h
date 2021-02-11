@@ -16,15 +16,14 @@
 
 
 // Project includes
-#import "EditGtpEngineProfileController.h"
-#import "EditPlayerController.h"
+#import "EditPlayerProfileController.h"
 
 
 // -----------------------------------------------------------------------------
 /// @brief The PlayerProfileSettingsController class is responsible for managing
 /// user interaction on the "Players & Profiles" user preferences view.
 // -----------------------------------------------------------------------------
-@interface PlayerProfileSettingsController : UITableViewController <EditPlayerDelegate, EditGtpEngineProfileDelegate>
+@interface PlayerProfileSettingsController : UITableViewController <EditPlayerProfileDelegate>
 {
 }
 

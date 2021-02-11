@@ -184,7 +184,7 @@ enum SgfSettingsSectionItem
     }
     case PlayersProfilesSection:
     {
-      cell.textLabel.text = @"Players & Profiles";
+      cell.textLabel.text = @"Players";
       break;
     }
     case SgfSettingsSection:
