@@ -30,7 +30,7 @@
 		<key>HumanPlayer</key>
 		<string>F1017CAF-BCF5-406F-AC4C-5B4F794C006C</string>
 		<key>ComputerPlayer</key>
-		<string>766CDA23-0C58-480B-A8B5-1F34BDA41677</string>
+		<string>143893E4-6B81-40AD-93A7-15425B95BC14</string>
 		<key>ComputerPlaysWhite</key>
 		<true/>
 		<key>HumanBlackPlayer</key>
@@ -38,7 +38,7 @@
 		<key>HumanWhitePlayer</key>
 		<string>F1017CAF-BCF5-406F-AC4C-5B4F794C006C</string>
 		<key>ComputerPlayerSelfPlay</key>
-		<string>766CDA23-0C58-480B-A8B5-1F34BDA41677</string>
+		<string>143893E4-6B81-40AD-93A7-15425B95BC14</string>
 		<key>BoardSize</key>
 		<integer>9</integer>
 		<key>Handicap</key>
