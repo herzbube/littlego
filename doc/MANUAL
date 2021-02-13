@@ -62,11 +62,9 @@ explained from left to right (iPhone 6+: top to bottom).
 - "Computer play" button: Tap this if you don't know where to play, or are just
   lazy ☺. The computer will then make a move on your behalf.
 - "Discard" button: This button is visible only if you have made at least one
-  move. Tapping this button discards the last move made by you or the computer
-  player. If you discard the computer player's move, it will <em>not</em>
-  automatically replay its move. This way you have the opportunity to tap the
-  button again and thus discard your own move. If, however, you want to let the
-  computer replay its move you can do so by tapping the "Computer play" button.
+  move. Tapping this button discards the last moves made by you and the computer
+  player so that you can then immediately play again and try out a different
+  move. This "double discard" behaviour can be turned off in the app settings.
 - "Interrupt" button: This button is visible only while the computer is
   thinking. You can tap the button to interrupt and force the computer to play
   its best move <em>right now</em>. If the computer was playing on your behalf,
@@ -502,6 +500,12 @@ away the move that was just made. Whoever made that move can now play again,
 either somewhere else on the board or at the same intersection. You can also
 continue to discard more moves.
 
+Only in a computer vs. human game and when you're discarding the computer
+player's move: Your own last move that precedes the computer player's last move
+is discarded as well. The goal is that you can then immediately play again and
+try out a different move. This "double discard" behaviour can be turned off
+under "Settings > Board position > Discard my last move".
+
 When you discard a computer player's move and it is now the computer's turn to
 play, it does not automatically make its move. You can tell it do so by tapping
 the "Computer play" button (as mentioned a little bit further up in the "Making
@@ -737,6 +741,10 @@ When you view an old board position and you tap the "Discard" button, the move
 that created the board position you are viewing will be discarded, along with
 all future moves. As with playing (see above), you will be alerted when this is
 happening, and you can disable the alert in the user preferences.
+
+In a computer vs. human game a "double discard" occurs when you're discarding
+the computer player's move. This can be turned off under
+"Settings > Board position > Discard my last move".
 
 ===========================================
 Scoring while viewing an old board position

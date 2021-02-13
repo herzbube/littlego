@@ -185,9 +185,13 @@ Basic game play functionality
   The "Game state" section must display updated information. Dismiss the
   "Game info" screen.
 - Tap the "Discard" button repeatedly until no stones are left on the board
-- Each discard must remove one move
+- Each discard must remove two moves
 - When all moves have been discarded, the "Discard" button must no longer be
   visible
+- Make a number of moves, with alternating moves made by the computer
+- Go to "Settings > Board position" and turn off "Discard my last move"
+- Tap the "Discard" button repeatedly until no stones are left on the board
+- Each discard must remove one move
 - Display the "Game info" view. The "Game state" section on the "Game" segment
   must show that the game has not yet started. The "move statistics" section
   must show zero moves. Dismiss the "Game info" view.
@@ -760,7 +764,7 @@ Board position
 - Go forward one move. All navigation buttons must be enabled.
 - Tap the "Discard" button. All moves are discarded. The "Discard" button is
   no longer visible. The "Pass" button is visible but disabled (because it is
-  the computer player's cutnr). The "Computer play" button is visible and
+  the computer player's turn). The "Computer play" button is visible and
   enabled. The next move marker "A" is not displayed.
 - Tap the "Computer play" button
 - The "Discard" button is visible and enabled

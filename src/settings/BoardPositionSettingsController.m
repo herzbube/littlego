@@ -32,6 +32,7 @@ NSString* discardFutureMovesAlertText = @"Discard future moves alert";
 enum MoveHistoryTableViewSection
 {
   MarkNextMoveSection,
+  DiscardMyLastMoveSection,
   DiscardFutureMovesAlertSection,
   MaxSection
 };
@@ -43,6 +44,15 @@ enum MarkNextMoveSectionItem
 {
   MarkNextMoveItem,
   MaxMarkNextMoveSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the DiscardMyLastMoveSection.
+// -----------------------------------------------------------------------------
+enum DiscardMyLastMoveSectionItem
+{
+  DiscardMyLastMoveItem,
+  MaxDiscardMyLastMoveSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -123,6 +133,8 @@ enum DiscardFutureMovesAlertSectionItem
   {
     case MarkNextMoveSection:
       return MaxMarkNextMoveSectionItem;
+    case DiscardMyLastMoveSection:
+      return MaxDiscardMyLastMoveSectionItem;
     case DiscardFutureMovesAlertSection:
       return MaxDiscardFutureMovesAlertSectionItem;
     default:
@@ -139,6 +151,8 @@ enum DiscardFutureMovesAlertSectionItem
 {
   switch (section)
   {
+    case DiscardMyLastMoveSection:
+      return @"When you discard the computer player's last move this also discards your own last move, so that you can then immediately play again and try out a different move. Turn this option off to only discard a single last move, regardless of who made that move. Note: This option only affects computer vs. human games.";
     case DiscardFutureMovesAlertSection:
       return @"If you make or discard a move while you are viewing a board position in the middle of the game, all moves that have been made after this position will be discarded. If this option is turned off you will NOT be alerted that this is going to happen.";
     default:
@@ -163,6 +177,15 @@ enum DiscardFutureMovesAlertSectionItem
       cell.textLabel.text = @"Mark next move";
       accessoryView.on = self.boardPositionModel.markNextMove;
       [accessoryView addTarget:self action:@selector(toggleMarkNextMove:) forControlEvents:UIControlEventValueChanged];
+      break;
+    }
+    case DiscardMyLastMoveSection:
+    {
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      cell.textLabel.text = @"Discard my last move";
+      accessoryView.on = self.boardPositionModel.discardMyLastMove;
+      [accessoryView addTarget:self action:@selector(toggleDiscardMyLastMove:) forControlEvents:UIControlEventValueChanged];
       break;
     }
     case DiscardFutureMovesAlertSection:
@@ -201,6 +224,16 @@ enum DiscardFutureMovesAlertSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.boardPositionModel.markNextMove = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Discard two moves in human vs.
+/// computer" switch. Writes the new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleDiscardMyLastMove:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.boardPositionModel.discardMyLastMove = accessoryView.on;
 }
 
 // -----------------------------------------------------------------------------

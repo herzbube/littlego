@@ -21,9 +21,14 @@
 #import "../backup/BackupGameToSgfCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoMove.h"
 #import "../../go/GoMoveModel.h"
+#import "../../go/GoPlayer.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../player/Player.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
+#import "../../play/model/BoardPositionModel.h"
 
 
 @implementation ChangeAndDiscardCommand
@@ -41,6 +46,9 @@
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
     [[LongRunningActionCounter sharedCounter] increment];
+
+    // Before we discard, first change to a board position that will be valid
+    // even after the discard.
     bool success = [self changeBoardPosition];
     if (! success)
     {
@@ -94,10 +102,58 @@
 // -----------------------------------------------------------------------------
 - (bool) changeBoardPosition
 {
-  // Before we discard, first change to a board position that will be valid
-  // even after the discard. Note that because we step back only one board
-  // position, ChangeBoardPositionCommand is executed synchronously.
-  return [[[[ChangeBoardPositionCommand alloc] initWithOffset:-1] autorelease] submit];
+  int numberOfBoardPositionsToDiscard = 1;
+
+  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+  if (boardPositionModel.discardMyLastMove)
+  {
+    GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+    GoMove* currentMove = boardPosition.currentMove;
+
+    // We only trigger the "Discard my last move" behaviour if the current board
+    // position was created by the computer player.
+    // - The main reason is that in a human vs. human game we don't want to
+    //   discard more than one board position.
+    // - Even in a computer vs. human game, though, it is possible to have
+    //   non-alternating play where the human player made several moves in a
+    //   row. If the user is viewing a board position in the middle or at the
+    //   end of such a row of human player moves we also want to discard only
+    //   one board position. It may become necessary to revisit this decision,
+    //   but at the time of writing this routine it seems best not to discard
+    //   too many board positions.
+    if (! currentMove.player.player.human)
+    {
+      GoMove* move = currentMove.previous;
+      while (move && move.player.player.human)
+      {
+        numberOfBoardPositionsToDiscard++;
+        move = move.previous;
+      }
+    }
+  }
+
+  // We want ChangeBoardPositionCommand to execute synchronously because the
+  // remaining parts of ChangeAndDiscardCommand depend on the board position
+  // having changed. ChangeBoardPositionCommand executes synchronously only if
+  // the new board position is not more than a given maximum number of positions
+  // away from the current board position. Because of this we use a loop that
+  // changes board positions in chunks.
+  int changeChunkSize = [ChangeBoardPositionCommand synchronousExecutionThreshold];
+  while (numberOfBoardPositionsToDiscard > 0)
+  {
+    int offset;
+    if (numberOfBoardPositionsToDiscard > changeChunkSize)
+      offset = -changeChunkSize;
+    else
+      offset = -numberOfBoardPositionsToDiscard;
+    numberOfBoardPositionsToDiscard += offset;
+
+    bool success = [[[[ChangeBoardPositionCommand alloc] initWithOffset:offset] autorelease] submit];
+    if (! success)
+      return false;
+  }
+
+  return true;
 }
 
 // -----------------------------------------------------------------------------

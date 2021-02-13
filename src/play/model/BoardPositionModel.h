@@ -29,5 +29,6 @@
 
 @property(nonatomic, assign) bool discardFutureMovesAlert;
 @property(nonatomic, assign) bool markNextMove;
+@property(nonatomic, assign) bool discardMyLastMove;
 
 @end

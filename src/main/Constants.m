@@ -95,6 +95,7 @@ const bool displayPlayerInfluenceDefault = false;
 // Board position settings default values
 const bool discardFutureMovesAlertDefault = true;
 const bool markNextMoveDefault = true;
+const bool discardMyLastMoveDefault = true;
 
 /// Magnifying glass constants
 const CGFloat defaultMagnifyingGlassDimension = 100.0f;
@@ -321,6 +322,7 @@ NSString* contactEmailCrashDataKey = @"CrashDataContactEmailKey";
 NSString* boardPositionKey = @"BoardPosition";
 NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
 NSString* markNextMoveKey = @"MarkNextMove";
+NSString* discardMyLastMoveKey = @"DiscardMyLastMove";
 // Logging settings
 NSString* loggingEnabledKey = @"LoggingEnabled";
 // User interface settings

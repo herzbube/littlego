@@ -60,6 +60,16 @@
 @implementation ChangeBoardPositionCommand
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the maximum number of board positions that
+/// ChangeBoardPositionCommand is willing to change away from the current board
+/// position to still execute synchronously.
+// -----------------------------------------------------------------------------
++ (int) synchronousExecutionThreshold
+{
+  return 10;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Initializes a ChangeBoardPositionCommand object that will change the
 /// current board position to @a aBoardPosition.
 ///
@@ -86,7 +96,7 @@
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   int numberOfBoardPositions = abs(aBoardPosition - boardPosition.currentBoardPosition);
-  if (numberOfBoardPositions <= 10)
+  if (numberOfBoardPositions <= [ChangeBoardPositionCommand synchronousExecutionThreshold])
   {
     self = [self initWithBoardPosition:aBoardPosition isAsynchronous:false];
   }

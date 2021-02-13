@@ -34,6 +34,7 @@
     return nil;
   self.discardFutureMovesAlert = discardFutureMovesAlertDefault;
   self.markNextMove = markNextMoveDefault;
+  self.discardMyLastMove = discardMyLastMoveDefault;
   return self;
 }
 
@@ -46,6 +47,7 @@
   NSDictionary* dictionary = [userDefaults dictionaryForKey:boardPositionKey];
   self.discardFutureMovesAlert = [[dictionary valueForKey:discardFutureMovesAlertKey] boolValue];
   self.markNextMove = [[dictionary valueForKey:markNextMoveKey] boolValue];
+  self.discardMyLastMove = [[dictionary valueForKey:discardMyLastMoveKey] boolValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -57,6 +59,7 @@
   NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:[NSNumber numberWithBool:self.discardFutureMovesAlert] forKey:discardFutureMovesAlertKey];
   [dictionary setValue:[NSNumber numberWithBool:self.markNextMove] forKey:markNextMoveKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.discardMyLastMove] forKey:discardMyLastMoveKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:boardPositionKey];
 }

@@ -348,6 +348,8 @@
 		<true/>
 		<key>MarkNextMove</key>
 		<true/>
+		<key>DiscardMyLastMove</key>
+		<true/>
 	</dict>
 	<key>Sgf</key>
 	<dict>

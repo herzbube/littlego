@@ -773,6 +773,7 @@ extern const float moveNumbersPercentageDefault;
 extern const bool displayPlayerInfluenceDefault;
 extern const bool discardFutureMovesAlertDefault;
 extern const bool markNextMoveDefault;
+extern const bool discardMyLastMoveDefault;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -1206,6 +1207,7 @@ extern NSString* contactEmailCrashDataKey;
 extern NSString* boardPositionKey;
 extern NSString* discardFutureMovesAlertKey;
 extern NSString* markNextMoveKey;
+extern NSString* discardMyLastMoveKey;
 // Logging settings
 extern NSString* loggingEnabledKey;
 // User interface settings
