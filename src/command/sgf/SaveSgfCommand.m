@@ -25,6 +25,7 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
+#import "../../player/Player.h"
 #import "../../sgf/SgfUtilities.h"
 #import "../../utility/PathUtilities.h"
 
@@ -111,6 +112,8 @@
   [self addKomiAndHandicapPropertiesToGameInfoNode:gameInfoNode
                               withValuesFromGoGame:goGame
                                          boardSize:boardSize];
+  [self addPlayerNamesToGameInfoNode:gameInfoNode
+                withValuesFromGoGame:goGame];
 
   SGFCNode* setupNode = [self addSetupNodeAfterGameInfoNode:gameInfoNode
                                        withValuesFromGoGame:goGame
@@ -184,6 +187,21 @@
       [gameInfoNode setProperty:reProperty];
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for createSgfDocument:errorMessage:()
+// -----------------------------------------------------------------------------
+- (void) addPlayerNamesToGameInfoNode:(SGFCNode*)gameInfoNode
+                 withValuesFromGoGame:(GoGame*)goGame
+{
+  SGFCSimpleTextPropertyValue* pbPropertyValue = [SGFCPropertyValueFactory propertyValueWithSimpleText:goGame.playerBlack.player.name];
+  SGFCProperty* pbProperty = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypePB value:pbPropertyValue];
+  [gameInfoNode setProperty:pbProperty];
+
+  SGFCSimpleTextPropertyValue* pwPropertyValue = [SGFCPropertyValueFactory propertyValueWithSimpleText:goGame.playerWhite.player.name];
+  SGFCProperty* pwProperty = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypePW value:pwPropertyValue];
+  [gameInfoNode setProperty:pwProperty];
 }
 
 // -----------------------------------------------------------------------------
