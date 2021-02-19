@@ -197,6 +197,12 @@ enum ButtonBoxSection
       selector = @selector(computerPlay:);
       break;
     }
+    case GameActionComputerSuggestMove:
+    {
+      imageResourceName = computerSuggestMoveButtonIconResource;
+      selector = @selector(computerSuggestMove:);
+      break;
+    }
     case GameActionPause:
     {
       imageResourceName = pauseButtonIconResource;
@@ -304,6 +310,7 @@ enum ButtonBoxSection
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionDiscardAllSetupStones]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionPass]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionComputerPlay]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionComputerSuggestMove]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionDiscardBoardPosition]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionPause]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionContinue]];

@@ -85,6 +85,7 @@
     case GameActionPass:
     case GameActionDiscardBoardPosition:
     case GameActionComputerPlay:
+    case GameActionComputerSuggestMove:
     case GameActionPause:
     case GameActionContinue:
     case GameActionInterrupt:
@@ -136,6 +137,9 @@
       break;
     case GameActionComputerPlay:
       buttonName = @"computer play";
+      break;
+    case GameActionComputerSuggestMove:
+      buttonName = @"computer suggest move";
       break;
     case GameActionPause:
       buttonName = @"pause";

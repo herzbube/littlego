@@ -138,6 +138,12 @@
       selector = @selector(computerPlay:);
       break;
     }
+    case GameActionComputerSuggestMove:
+    {
+      imageResourceName = computerSuggestMoveButtonIconResource;
+      selector = @selector(computerSuggestMove:);
+      break;
+    }
     case GameActionPause:
     {
       imageResourceName = pauseButtonIconResource;
@@ -247,6 +253,7 @@
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionDiscardAllSetupStones]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionPass]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionComputerPlay]];
+  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionComputerSuggestMove]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionDiscardBoardPosition]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionPause]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionContinue]];

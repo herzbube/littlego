@@ -199,6 +199,7 @@ NSString* uiAreaLicensesIconResource = @"licenses.png";
 NSString* uiAreaCreditsIconResource = @"credits.png";
 NSString* uiAreaChangelogIconResource = @"changelog.png";
 NSString* computerPlayButtonIconResource = @"computer-play.png";
+NSString* computerSuggestMoveButtonIconResource = @"computer-suggest-move.png";
 NSString* passButtonIconResource = @"pass.png";
 NSString* discardButtonIconResource = @"discard.png";
 NSString* pauseButtonIconResource = @"pause.png";

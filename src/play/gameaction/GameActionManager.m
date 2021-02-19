@@ -180,6 +180,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.boardSetupModel addObserver:self forKeyPath:@"boardSetupStoneColor" options:0 context:NULL];
+  [appDelegate.boardViewModel addObserver:self forKeyPath:@"computerAssistanceType" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -196,6 +197,7 @@ static GameActionManager* sharedGameActionManager = nil;
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.boardSetupModel removeObserver:self forKeyPath:@"boardSetupStoneColor"];
+  [appDelegate.boardViewModel removeObserver:self forKeyPath:@"computerAssistanceType"];
 }
 
 #pragma mark - Handlers for board interactions
@@ -306,6 +308,13 @@ static GameActionManager* sharedGameActionManager = nil;
   }
   DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initComputerPlay] autorelease];
   [self.commandDelegate gameActionManager:self playOrAlertWithCommand:command];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Handles execution of game action #GameActionComputerSuggestMove.
+// -----------------------------------------------------------------------------
+- (void) computerSuggestMove:(id)sender
+{
 }
 
 // -----------------------------------------------------------------------------
@@ -617,6 +626,14 @@ static GameActionManager* sharedGameActionManager = nil;
       [self delayedUpdate];
     }
   }
+  else if (object == [ApplicationDelegate sharedDelegate].boardViewModel)
+  {
+    if ([keyPath isEqualToString:@"computerAssistanceType"])
+    {
+      self.visibleStatesNeedUpdate = true;
+      [self delayedUpdate];
+    }
+  }
 }
 
 #pragma mark - Delayed updating
@@ -749,7 +766,21 @@ static GameActionManager* sharedGameActionManager = nil;
           }
           else
           {
-            [self addGameAction:GameActionComputerPlay toVisibleStatesDictionary:visibleStates];
+            switch (appDelegate.boardViewModel.computerAssistanceType)
+            {
+              case ComputerAssistanceTypePlayForMe:
+                [self addGameAction:GameActionComputerPlay toVisibleStatesDictionary:visibleStates];
+                break;
+              case ComputerAssistanceTypeSuggestMove:
+                [self addGameAction:GameActionComputerSuggestMove toVisibleStatesDictionary:visibleStates];
+                break;
+              case ComputerAssistanceTypeNone:
+                break;
+              default:
+                assert(0);
+                break;
+            }
+
             [self addGameAction:GameActionPass toVisibleStatesDictionary:visibleStates];
           }
           if (boardPosition.numberOfBoardPositions > 1)
@@ -791,6 +822,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [self updatePassEnabledState];
   [self updateDiscardBoardPositionEnabledState];
   [self updateComputerPlayEnabledState];
+  [self updateComputerSuggestMoveEnabledState];
   [self updatePauseEnabledState];
   [self updateContinueEnabledState];
   [self updateInterruptEnabledState];
@@ -871,6 +903,25 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) updateComputerPlayEnabledState
 {
+  [self updateComputerPlayOrSuggestMoveEnabledState:GameActionComputerPlay];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of game action
+/// #GameActionComputerSuggestMove.
+// -----------------------------------------------------------------------------
+- (void) updateComputerSuggestMoveEnabledState
+{
+  [self updateComputerPlayOrSuggestMoveEnabledState:GameActionComputerSuggestMove];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper for updateComputerPlayEnabledState() and
+/// updateComputerSuggestMoveEnabledState(). The two game actions have
+/// identical enabled/disabled criteria.
+// -----------------------------------------------------------------------------
+- (void) updateComputerPlayOrSuggestMoveEnabledState:(enum GameAction)gameAction
+{
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
   if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
@@ -898,7 +949,7 @@ static GameActionManager* sharedGameActionManager = nil;
       }
     }
   }
-  [self updateEnabledState:enabled forGameAction:GameActionComputerPlay];
+  [self updateEnabledState:enabled forGameAction:gameAction];
 }
 
 // -----------------------------------------------------------------------------

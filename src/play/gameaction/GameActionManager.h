@@ -117,6 +117,7 @@
 - (void) pass:(id)sender;
 - (void) discardBoardPosition:(id)sender;
 - (void) computerPlay:(id)sender;
+- (void) computerSuggestMove:(id)sender;
 - (void) pause:(id)sender;
 - (void) continue:(id)sender;
 - (void) interrupt:(id)sender;

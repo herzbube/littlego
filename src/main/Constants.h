@@ -89,6 +89,9 @@ enum GameAction
   /// @brief Causes the computer player to generate a move, either for itself or
   /// on behalf of the human player whose turn it currently is.
   GameActionComputerPlay,
+  /// @brief Causes the computer player to generate a move suggestion for the
+  /// human player whose turn it currently is.
+  GameActionComputerSuggestMove,
   /// @brief Pauses the game in a computer vs. computer game.
   GameActionPause,
   /// @brief Continues the game if it is paused in a computer vs. computer game.
@@ -1094,6 +1097,7 @@ extern NSString* uiAreaLicensesIconResource;
 extern NSString* uiAreaCreditsIconResource;
 extern NSString* uiAreaChangelogIconResource;
 extern NSString* computerPlayButtonIconResource;
+extern NSString* computerSuggestMoveButtonIconResource;
 extern NSString* passButtonIconResource;
 extern NSString* discardButtonIconResource;
 extern NSString* pauseButtonIconResource;
