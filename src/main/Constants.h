@@ -847,6 +847,20 @@ extern const CGFloat defaultMagnifyingGlassMagnification;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Computer assistance constants
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Enumerates the possible types of how the computer can assist a human
+/// player in making a move.
+enum ComputerAssistanceType
+{
+  ComputerAssistanceTypePlayForMe,    ///< @brief The computer assists by generating an actual move on behalf of the human player whose turn it currently is.
+  ComputerAssistanceTypeSuggestMove,  ///< @brief The computer assists by generating a move suggestion for the human player whose turn it currently is.
+  ComputerAssistanceTypeNone          ///< @brief The computer provides no assistance.
+};
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name GTP engine profile constants
 ///
 /// @brief See GtpEngineProfile for attribute documentation.
@@ -1124,6 +1138,7 @@ extern NSString* moveNumbersPercentageKey;
 extern NSString* playSoundKey;
 extern NSString* vibrateKey;
 extern NSString* infoTypeLastSelectedKey;
+extern NSString* computerAssistanceTypeKey;
 // New game settings
 extern NSString* newGameKey;
 extern NSString* gameTypeKey;

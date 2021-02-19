@@ -20,6 +20,8 @@
 		<false/>
 		<key>Vibrate</key>
 		<false/>
+		<key>ComputerAssistanceType</key>
+		<integer>0</integer>
 	</dict>
 	<key>NewGame</key>
 	<dict>

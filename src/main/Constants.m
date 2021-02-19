@@ -239,6 +239,7 @@ NSString* moveNumbersPercentageKey = @"MoveNumbersPercentage";
 NSString* playSoundKey = @"PlaySound";
 NSString* vibrateKey = @"Vibrate";
 NSString* infoTypeLastSelectedKey = @"InfoTypeLastSelected";
+NSString* computerAssistanceTypeKey = @"ComputerAssistanceType";
 // New game settings
 NSString* newGameKey = @"NewGame";
 NSString* gameTypeKey = @"GameType";
