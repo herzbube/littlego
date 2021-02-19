@@ -45,7 +45,7 @@
 - (id) initWithFrame:(CGRect)rect
 {
   // Call designated initializer of superclass (TiledScrollView)
-  self = [super initWithFrame:rect];
+  self = [super initWithFrame:rect tileViewClass:[BoardTileView class]];
   if (! self)
     return nil;
 
@@ -101,8 +101,11 @@
   _crossHairPointIsIllegalReason = illegalReason;
   self.crossHairPoint = point;
 
-  for (BoardTileView* tileView in [self.tileContainerView subviews])
+  for (id subview in [self.tileContainerView subviews])
   {
+    if (! [subview isKindOfClass:[BoardTileView class]])
+      continue;
+    BoardTileView* tileView = subview;
     [tileView notifyLayerDelegates:BVLDEventCrossHairChanged eventInfo:point];
     [tileView delayedDrawLayers];
   }

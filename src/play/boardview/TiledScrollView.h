@@ -78,6 +78,8 @@
 {
 }
 
+- (id) initWithFrame:(CGRect)rect tileViewClass:(Class)tileViewClass;
+
 - (UIView*) dequeueReusableTileView;
 - (void) reloadData;
 

@@ -28,6 +28,7 @@
 @property(nonatomic, retain, readwrite) UIView* tileContainerView;
 /// @brief Tile views that are no longer visible are placed into this container.
 @property(nonatomic, retain) NSMutableSet* reusableTiles;
+@property(nonatomic, assign) Class tileViewClass;
 @property(nonatomic, assign) int indexOfFirstVisibleRow;
 @property(nonatomic, assign) int indexOfFirstVisibleColumn;
 @property(nonatomic, assign) int indexOfLastVisibleRow;
@@ -41,10 +42,11 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a TiledScrollView object with frame rectangle @a rect.
+/// The tile views that this view works with have class @a tileViewClass.
 ///
 /// @note This is the designated initializer of TiledScrollView.
 // -----------------------------------------------------------------------------
-- (id) initWithFrame:(CGRect)rect
+- (id) initWithFrame:(CGRect)rect tileViewClass:(Class)tileViewClass
 {
   // Call designated initializer of superclass (UIScrollView)
   self = [super initWithFrame:rect];
@@ -57,6 +59,7 @@
   self.tileSize = CGSizeZero;
   self.annotateTiles = false;
   self.reusableTiles = [[[NSMutableSet alloc] init] autorelease];
+  self.tileViewClass = tileViewClass;
   self.indexOfFirstVisibleRow = pow(2, 31);     // just any number higher than can ever occur in reality
   self.indexOfFirstVisibleColumn = pow(2, 31);  // ditto
   self.indexOfLastVisibleRow = -1;              // just any number lower than can ever occur in reality
@@ -119,6 +122,9 @@
 {
   for (UIView* tile in [self.tileContainerView subviews])
   {
+    if (! [tile isKindOfClass:self.tileViewClass])
+      continue;
+
     [self.reusableTiles addObject:tile];
     [tile removeFromSuperview];
   }
@@ -178,6 +184,9 @@
   // Check if any tiles are no longer visible
   for (UIView* tile in [self.tileContainerView subviews])
   {
+    if (! [tile isKindOfClass:self.tileViewClass])
+      continue;
+
     // In order to compare the tile view frame with our own visible bounds, we
     // must first convert the tile view frame into our own coordinate system.
     // Important: The tile view frame takes the current zoom scale into account
