@@ -310,6 +310,7 @@ enum ResetToDefaultsSectionItem
       }
       else
       {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
         assert(0);
       }
       break;
