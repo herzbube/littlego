@@ -217,6 +217,24 @@ Basic game play functionality
     the UI rotates in the background
   - iPad: The "More game actions" menu is dismissed automatically, then the UI
     rotates.
+- Go to "Settings > Computer assistance" and switch to "Suggest move".
+- When you return to the Play UI area the "Computer play" button has been
+  replaced by the "Computer suggests move" button
+- Tap the "Computer suggests move". While the computer is thinking
+  - The status view displays a message that a move suggestion is being
+    calculated
+  - All other interactive elements are disabled and an "Interrupt" button is
+    displayed, just like when the "Computer play" button is tapped.
+- Tap the "Interrupt" button. The computer immediately stops thinking and makes
+  the move suggestion.
+- A stone blinks three times on the intersection where the computer suggests to
+  play a stone. While the animation runs all other interactive elements are
+  disabled.
+- Go to "Settings > Computer assistance" and switch to "No assistance".
+- When you return to the Play UI area neither the "Computer play" nor the
+  "Computer suggests move" button is displayed.
+- Go to "Settings > Computer assistance" and switch to "Computer play".
+- When you return to the Play UI area the "Computer play" button is displayed
 
 
 New game factory defaults

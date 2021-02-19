@@ -60,7 +60,9 @@ explained from left to right (iPhone 6+: top to bottom).
 
 - "Pass" button: Tap this if you want to pass instead of placing a stone.
 - "Computer play" button: Tap this if you don't know where to play, or are just
-  lazy ☺. The computer will then make a move on your behalf.
+  lazy ☺. The computer will then make a move on your behalf. If you prefer to
+  only receive a move suggestion you can change the behaviour in the app
+  settings.
 - "Discard" button: This button is visible only if you have made at least one
   move. Tapping this button discards the last moves made by you and the computer
   player so that you can then immediately play again and try out a different
@@ -482,6 +484,20 @@ play for you by tapping the "Computer play" button. Even though the computer is
 now playing on your behalf, you can interrupt it by tapping the "Interrupt"
 button. If your opponent is a computer player, that player will immediately
 take over, just as if you had made your own move.
+
+If you don't like the computer immediately playing a move for you, you can tell
+it to insted only make a suggestion how to play. You can then follow the
+suggestion and play the move, or ignore the suggestion and play somewhere else.
+You find the setting that controls the behaviour under
+"Settings > Computer assistance". If the temptation to consult the computer all
+the time is too big you can choose to play without computer assistance.
+
+After you've changed the setting you will notice that the "Computer play" button
+has been replaced by the "Computer suggests move" button, which displays a
+different icon. Calculating a move suggestion may take some time and can
+be interrupted. The app indicates which intersection the computer suggests to
+play on by blinking a stone a few of times to get your attention. If the
+suggestion is a pass move or a resignation the app displays an alert.
 
 ==============================
 Making a move for the computer
