@@ -835,7 +835,7 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
         NSString* duplicateProfileUUID = [NSString UUIDString];
         [duplicateProfileDictionary setValue:duplicateProfileUUID forKey:gtpEngineProfileUUIDKey];
 
-        GtpEngineProfile* duplicateProfile = [[GtpEngineProfile alloc] initWithDictionary:duplicateProfileDictionary];
+        GtpEngineProfile* duplicateProfile = [[[GtpEngineProfile alloc] initWithDictionary:duplicateProfileDictionary] autorelease];
         [profiles addObject:duplicateProfile];
 
         duplicateProfile.name = @"";
@@ -861,7 +861,7 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
       // Migration case 3
       if (numberOfPlayersReferencingProfile == 0)
       {
-        Player* player = [[Player alloc] initWithDictionary:nil];
+        Player* player = [[[Player alloc] initWithDictionary:nil] autorelease];
         [players addObject:player];
 
         // The profiles in RegistrationDomainDefaults.plist up until now were
