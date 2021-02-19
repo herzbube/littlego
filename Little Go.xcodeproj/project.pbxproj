@@ -258,6 +258,9 @@
 		CD81791825DC606700F39091 /* BoardAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD81791525DC606700F39091 /* BoardAnimationController.m */; };
 		CD81794D25DD897B00F39091 /* ComputerAssistanceSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD81794C25DD897B00F39091 /* ComputerAssistanceSettingsController.m */; };
 		CD81794E25DD897B00F39091 /* ComputerAssistanceSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD81794C25DD897B00F39091 /* ComputerAssistanceSettingsController.m */; };
+		CD81795C25DDEDDF00F39091 /* computer-suggest-move.png in Resources */ = {isa = PBXBuildFile; fileRef = CD81795825DDEDDF00F39091 /* computer-suggest-move.png */; };
+		CD81795E25DDEDDF00F39091 /* computer-suggest-move@3.png in Resources */ = {isa = PBXBuildFile; fileRef = CD81795925DDEDDF00F39091 /* computer-suggest-move@3.png */; };
+		CD81796025DDEDDF00F39091 /* computer-suggest-move@2.png in Resources */ = {isa = PBXBuildFile; fileRef = CD81795A25DDEDDF00F39091 /* computer-suggest-move@2.png */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -938,6 +941,10 @@
 		CD81791625DC606700F39091 /* BoardAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardAnimationController.h; sourceTree = "<group>"; };
 		CD81794B25DD897B00F39091 /* ComputerAssistanceSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerAssistanceSettingsController.h; sourceTree = "<group>"; };
 		CD81794C25DD897B00F39091 /* ComputerAssistanceSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComputerAssistanceSettingsController.m; sourceTree = "<group>"; };
+		CD81795825DDEDDF00F39091 /* computer-suggest-move.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "computer-suggest-move.png"; sourceTree = "<group>"; };
+		CD81795925DDEDDF00F39091 /* computer-suggest-move@3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "computer-suggest-move@3.png"; sourceTree = "<group>"; };
+		CD81795A25DDEDDF00F39091 /* computer-suggest-move@2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "computer-suggest-move@2.png"; sourceTree = "<group>"; };
+		CD81799C25DDF4C200F39091 /* noun_hint_3194435.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = noun_hint_3194435.svg; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E5B164875A800329154 /* CrashReportingModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingModel.h; sourceTree = "<group>"; };
@@ -1901,6 +1908,17 @@
 			path = gameaction;
 			sourceTree = "<group>";
 		};
+		CD81795725DDEDDF00F39091 /* computer-suggest-move */ = {
+			isa = PBXGroup;
+			children = (
+				CD81795825DDEDDF00F39091 /* computer-suggest-move.png */,
+				CD81795A25DDEDDF00F39091 /* computer-suggest-move@2.png */,
+				CD81795925DDEDDF00F39091 /* computer-suggest-move@3.png */,
+				CD81799C25DDF4C200F39091 /* noun_hint_3194435.svg */,
+			);
+			path = "computer-suggest-move";
+			sourceTree = "<group>";
+		};
 		CD968ADB1B026DD200984AEE /* stones */ = {
 			isa = PBXGroup;
 			children = (
@@ -2366,6 +2384,7 @@
 				CD968AE91B026E2300984AEE /* archive */,
 				CDC66BBB21EBB029006C73B3 /* changelog */,
 				CD968AEE1B026E2300984AEE /* computer-play */,
+				CD81795725DDEDDF00F39091 /* computer-suggest-move */,
 				CD968AF51B026E2300984AEE /* continue */,
 				CD968AFA1B026E2300984AEE /* credits */,
 				CD968AFF1B026E2300984AEE /* diagnostics */,
@@ -2804,6 +2823,7 @@
 				CD00A34E1487F9CF004E1A0C /* MANUAL in Resources */,
 				CD968BBE1B026E2300984AEE /* settings.png in Resources */,
 				CD968B821B026E2300984AEE /* computer-vs-computer@2x.png in Resources */,
+				CD81796025DDEDDF00F39091 /* computer-suggest-move@2.png in Resources */,
 				CDC66BC021EBB052006C73B3 /* changelog@2.png in Resources */,
 				CDE1A16214C1CED200317ECA /* About.html in Resources */,
 				CDE1A16314C1CED200317ECA /* BoostSoftwareLicense.html in Resources */,
@@ -2824,6 +2844,7 @@
 				CD968B9C1B026E2300984AEE /* main-menu@2x.png in Resources */,
 				CDE1A16614C1CED200317ECA /* Credits.html in Resources */,
 				CD968B671B026E2300984AEE /* computer-play.png in Resources */,
+				CD81795C25DDEDDF00F39091 /* computer-suggest-move.png in Resources */,
 				CD968BC31B026E2300984AEE /* source-code@2x.png in Resources */,
 				CDC66BC121EBB052006C73B3 /* changelog@3.png in Resources */,
 				CDC66BC321EBB052006C73B3 /* changelog.png in Resources */,
@@ -2925,6 +2946,7 @@
 				CD968B751B026E2300984AEE /* diagnostics.png in Resources */,
 				CD968B811B026E2300984AEE /* computer-vs-computer.png in Resources */,
 				CD7C57B621FCB0D100694520 /* stone-white-icon.svg in Resources */,
+				CD81795E25DDEDDF00F39091 /* computer-suggest-move@3.png in Resources */,
 				CD968B861B026E2300984AEE /* human-vs-computer@2x.png in Resources */,
 				CD968BBC1B026E2300984AEE /* scoring@3x.png in Resources */,
 				CD968B781B026E2300984AEE /* noun_27633_cc.svg in Resources */,
