@@ -126,6 +126,8 @@
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
   [center addObserver:self selector:@selector(handicapPointDidChange:) name:handicapPointDidChange object:nil];
+  [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
+  [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -250,6 +252,24 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewAnimationWillBegin notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewAnimationWillBegin:(NSNotification*)notification
+{
+  self.tappingEnabledNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewAnimationDidEnd notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewAnimationDidEnd:(NSNotification*)notification
+{
+  self.tappingEnabledNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -353,13 +373,16 @@
     return;
   self.tappingEnabledNeedsUpdate = false;
   GoGame* game = [GoGame sharedGame];
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   if (! game)
     self.tappingEnabled = false;
   else if (game.isComputerThinking)
     self.tappingEnabled = false;
   else if (game.score.scoringInProgress)
     self.tappingEnabled = false;
-  else if ([ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
+  else if (appDelegate.boardViewModel.boardViewDisplaysCrossHair)
+    self.tappingEnabled = false;
+  else if (appDelegate.boardViewModel.boardViewDisplaysAnimation)
     self.tappingEnabled = false;
   else
     self.tappingEnabled = true;

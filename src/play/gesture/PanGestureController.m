@@ -111,6 +111,8 @@
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
+  [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
+  [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
   // KVO observing
   [self setupBoardPositionObserver:[GoGame sharedGame].boardPosition];
 }
@@ -356,6 +358,22 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewAnimationWillBegin notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewAnimationWillBegin:(NSNotification*)notification
+{
+  [self updatePanningEnabled];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewAnimationDidEnd notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewAnimationDidEnd:(NSNotification*)notification
+{
+  [self updatePanningEnabled];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
@@ -381,7 +399,14 @@
     return;
   }
 
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModePlay)
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  if (appDelegate.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModePlay)
+  {
+    self.panningEnabled = false;
+    return;
+  }
+
+  if (appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     self.panningEnabled = false;
     return;

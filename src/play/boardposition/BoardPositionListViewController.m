@@ -126,6 +126,8 @@
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
   [center addObserver:self selector:@selector(handicapPointDidChange:) name:handicapPointDidChange object:nil];
+  [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
+  [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -297,6 +299,24 @@
 - (void) handicapPointDidChange:(NSNotification*)notification
 {
   self.boardPositionZeroNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewAnimationWillBegin notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewAnimationWillBegin:(NSNotification*)notification
+{
+  self.userInteractionEnabledNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewAnimationDidEnd notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewAnimationDidEnd:(NSNotification*)notification
+{
+  self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -532,10 +552,12 @@
     return;
   self.userInteractionEnabledNeedsUpdate = false;
   GoGame* game = [GoGame sharedGame];
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   if (! game ||
       game.isComputerThinking ||
       game.score.scoringInProgress ||
-      [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
+      appDelegate.boardViewModel.boardViewDisplaysCrossHair ||
+      appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     self.collectionView.userInteractionEnabled = NO;
   }

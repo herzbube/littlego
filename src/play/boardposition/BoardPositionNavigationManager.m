@@ -123,6 +123,8 @@ static BoardPositionNavigationManager* sharedNavigationManager = nil;
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+  [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
+  [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -214,6 +216,24 @@ static BoardPositionNavigationManager* sharedNavigationManager = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewAnimationWillBegin notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewAnimationWillBegin:(NSNotification*)notification
+{
+  self.navigationStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewAnimationDidEnd notifications.
+// -----------------------------------------------------------------------------
+- (void) boardViewAnimationDidEnd:(NSNotification*)notification
+{
+  self.navigationStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -261,10 +281,12 @@ static BoardPositionNavigationManager* sharedNavigationManager = nil;
   self.navigationStatesNeedUpdate = false;
 
   GoGame* game = [GoGame sharedGame];
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   if (! game ||
       game.isComputerThinking ||
       game.score.scoringInProgress ||
-      [ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
+      appDelegate.boardViewModel.boardViewDisplaysCrossHair ||
+      appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     self.isForwardNavigationEnabled = false;
     self.isBackwardNavigationEnabled = false;
