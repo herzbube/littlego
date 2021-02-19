@@ -19,6 +19,7 @@
 #import "SettingsViewController.h"
 #import "BoardPositionSettingsController.h"
 #import "BoardSetupSettingsController.h"
+#import "ComputerAssistanceSettingsController.h"
 #import "DisplaySettingsController.h"
 #import "MagnifyingGlassSettingsController.h"
 #import "PlayerProfileSettingsController.h"
@@ -47,6 +48,7 @@ enum ViewSettingsSectionItem
 {
   DisplaySettingsItem,
   BoardPositionSettingsItem,
+  ComputerAssistanceSettingsItem,
   ScoringSettingsItem,
   BoardSetupItem,
   MaxViewSettingsSectionItem
@@ -152,6 +154,11 @@ enum SgfSettingsSectionItem
           cell.textLabel.text = @"Board position";
           break;
         }
+        case ComputerAssistanceSettingsItem:
+        {
+          cell.textLabel.text = @"Computer assistance";
+          break;
+        }
         case ScoringSettingsItem:
         {
           cell.textLabel.text = @"Scoring";
@@ -225,6 +232,11 @@ enum SgfSettingsSectionItem
         case BoardPositionSettingsItem:
         {
           controller = [BoardPositionSettingsController controller];
+          break;
+        }
+        case ComputerAssistanceSettingsItem:
+        {
+          controller = [ComputerAssistanceSettingsController controller];
           break;
         }
         case ScoringSettingsItem:

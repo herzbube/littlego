@@ -250,6 +250,8 @@
 		CD7C6A1A1AB4990D009EC5AD /* BoardPositionCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A181AB4990D009EC5AD /* BoardPositionCollectionViewCell.m */; };
 		CD7C6A1D1AB61893009EC5AD /* ButtonBoxCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A1C1AB61893009EC5AD /* ButtonBoxCell.m */; };
 		CD7C6A1E1AB61893009EC5AD /* ButtonBoxCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A1C1AB61893009EC5AD /* ButtonBoxCell.m */; };
+		CD81794D25DD897B00F39091 /* ComputerAssistanceSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD81794C25DD897B00F39091 /* ComputerAssistanceSettingsController.m */; };
+		CD81794E25DD897B00F39091 /* ComputerAssistanceSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD81794C25DD897B00F39091 /* ComputerAssistanceSettingsController.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -922,6 +924,8 @@
 		CD7C6A181AB4990D009EC5AD /* BoardPositionCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionCollectionViewCell.m; sourceTree = "<group>"; };
 		CD7C6A1B1AB61893009EC5AD /* ButtonBoxCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonBoxCell.h; sourceTree = "<group>"; };
 		CD7C6A1C1AB61893009EC5AD /* ButtonBoxCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonBoxCell.m; sourceTree = "<group>"; };
+		CD81794B25DD897B00F39091 /* ComputerAssistanceSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerAssistanceSettingsController.h; sourceTree = "<group>"; };
+		CD81794C25DD897B00F39091 /* ComputerAssistanceSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComputerAssistanceSettingsController.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E5B164875A800329154 /* CrashReportingModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingModel.h; sourceTree = "<group>"; };
@@ -1663,6 +1667,8 @@
 				CDA493A6168F26890076E168 /* BoardPositionSettingsController.m */,
 				CD7C57D222024C4600694520 /* BoardSetupSettingsController.h */,
 				CD7C57D322024C4700694520 /* BoardSetupSettingsController.m */,
+				CD81794B25DD897B00F39091 /* ComputerAssistanceSettingsController.h */,
+				CD81794C25DD897B00F39091 /* ComputerAssistanceSettingsController.m */,
 				CDB4579D147AEB590043EDE4 /* EditPlayerProfileController.h */,
 				CDB4579E147AEB590043EDE4 /* EditPlayerProfileController.m */,
 				CDB684FC161591760038AADE /* EditPlayingStrengthSettingsController.h */,
@@ -3155,6 +3161,7 @@
 				CD7C69F51AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */,
 				CD0FE906169A135400053671 /* BoardPositionView.m in Sources */,
 				CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */,
+				CD81794D25DD897B00F39091 /* ComputerAssistanceSettingsController.m in Sources */,
 				CD7C69BA1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
 				CD252D8416A314D900A088D5 /* ChangeBoardPositionCommand.m in Sources */,
 				CDB49E3C2220AFE5006DC1A4 /* AccessibilityUtility.m in Sources */,
@@ -3324,6 +3331,7 @@
 				CD7C6A0E1AB47C22009EC5AD /* MainMenuPresenter.m in Sources */,
 				CD99EC6314B10749007B3B67 /* GoPointTest.m in Sources */,
 				CDEE19F219433EAC00DF2389 /* BoardTileView.m in Sources */,
+				CD81794E25DD897B00F39091 /* ComputerAssistanceSettingsController.m in Sources */,
 				CD7C69F21AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */,
 				CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */,
 				CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */,
