@@ -130,49 +130,49 @@
   switch (gameAction)
   {
     case GameActionPass:
-      buttonName = @"pass";
+      buttonName = passButtonIconResource;
       break;
     case GameActionDiscardBoardPosition:
-      buttonName = @"discard";
+      buttonName = discardButtonIconResource;
       break;
     case GameActionComputerPlay:
-      buttonName = @"computer play";
+      buttonName = computerPlayButtonIconResource;
       break;
     case GameActionComputerSuggestMove:
-      buttonName = @"computer suggest move";
+      buttonName = computerSuggestMoveButtonIconResource;
       break;
     case GameActionPause:
-      buttonName = @"pause";
+      buttonName = pauseButtonIconResource;
       break;
     case GameActionContinue:
-      buttonName = @"continue";
+      buttonName = continueButtonIconResource;
       break;
     case GameActionInterrupt:
-      buttonName = @"interrupt";
+      buttonName = interruptButtonIconResource;
       break;
     case GameActionScoringStart:
-      buttonName = @"scoring";
+      buttonName = scoringStartButtonIconResource;
       break;
     case GameActionPlayStart:
-      buttonName = @"gogrid2x2";
+      buttonName = playStartButtonIconResource;
       break;
     case GameActionSwitchSetupStoneColorToWhite:
-      buttonName = @"stone black icon";
+      buttonName = stoneBlackButtonIconResource;
       break;
     case GameActionSwitchSetupStoneColorToBlack:
-      buttonName = @"stone white icon";
+      buttonName = stoneWhiteButtonIconResource;
       break;
     case GameActionDiscardAllSetupStones:
-      buttonName = @"discard";
+      buttonName = discardButtonIconResource;
       break;
     case GameActionMoves:
       buttonName = @"Moves";
       break;
     case GameActionGameInfo:
-      buttonName = @"game info";
+      buttonName = gameInfoButtonIconResource;
       break;
     case GameActionMoreGameActions:
-      buttonName = @"more game actions";
+      buttonName = moreGameActionsButtonIconResource;
       break;
     default:
       buttonName = nil;
@@ -437,7 +437,7 @@
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unsupported UIType in findMainMenuButtonWithUiApplication" userInfo:nil];
 
   XCUIElement* playRootViewNavigationBar = [self findPlayRootViewNavigationBar:app];
-  XCUIElement* button = playRootViewNavigationBar.buttons[@"main menu"];
+  XCUIElement* button = playRootViewNavigationBar.buttons[mainMenuIconResource];
   return button;
 }
 

@@ -276,6 +276,7 @@ enum ButtonBoxSection
 
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
   button.tag = gameAction;
+  button.accessibilityIdentifier = imageResourceName;
   [button setImage:[UIImage imageNamed:imageResourceName]
           forState:UIControlStateNormal];
   [button addTarget:[GameActionManager sharedGameActionManager]

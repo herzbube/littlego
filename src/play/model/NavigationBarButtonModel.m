@@ -220,6 +220,7 @@
                                                              target:[GameActionManager sharedGameActionManager]
                                                              action:selector] autorelease];
   button.tag = gameAction;
+  button.accessibilityIdentifier = imageResourceName;
   return button;
 }
 
@@ -229,10 +230,13 @@
 // -----------------------------------------------------------------------------
 + (UIBarButtonItem*) mainMenuButton
 {
-  return [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:mainMenuIconResource]
-                                           style:UIBarButtonItemStylePlain
-                                          target:[MainMenuPresenter sharedPresenter]
-                                          action:@selector(presentMainMenu:)] autorelease];
+  UIBarButtonItem* mainMenuButton =
+    [[[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:mainMenuIconResource]
+                                      style:UIBarButtonItemStylePlain
+                                     target:[MainMenuPresenter sharedPresenter]
+                                     action:@selector(presentMainMenu:)] autorelease];
+  mainMenuButton.accessibilityLabel = mainMenuIconResource;
+  return mainMenuButton;
 }
 
 #pragma mark - Private helpers - Button order

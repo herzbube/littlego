@@ -450,6 +450,7 @@
   [self.mainMenuButton addTarget:[MainMenuPresenter sharedPresenter]
                           action:@selector(presentMainMenu:)
                 forControlEvents:UIControlEventTouchUpInside];
+  self.mainMenuButton.accessibilityLabel = mainMenuIconResource;
   // Same tint as button box
   self.mainMenuButton.tintColor = [UIColor blackColor];
 }
