@@ -29,7 +29,7 @@ NSString* discardFutureMovesAlertText = @"Discard future moves alert";
 /// @brief Enumerates the sections presented in the "Board position" user
 /// preferences table view.
 // -----------------------------------------------------------------------------
-enum MoveHistoryTableViewSection
+enum BoardPositionTableViewSection
 {
   MarkNextMoveSection,
   DiscardMyLastMoveSection,
@@ -166,8 +166,8 @@ enum DiscardFutureMovesAlertSectionItem
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
-  UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+  UITableViewCell* cell = nil;
+
   switch (indexPath.section)
   {
     case MarkNextMoveSection:
@@ -190,6 +190,8 @@ enum DiscardFutureMovesAlertSectionItem
     }
     case DiscardFutureMovesAlertSection:
     {
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = discardFutureMovesAlertText;
       cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
       cell.textLabel.numberOfLines = 0;
@@ -203,6 +205,7 @@ enum DiscardFutureMovesAlertSectionItem
       break;
     }
   }
+  
   return cell;
 }
 

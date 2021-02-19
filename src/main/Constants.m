@@ -100,7 +100,7 @@ const bool discardFutureMovesAlertDefault = true;
 const bool markNextMoveDefault = true;
 const bool discardMyLastMoveDefault = true;
 
-/// Magnifying glass constants
+// Magnifying glass constants
 const CGFloat defaultMagnifyingGlassDimension = 100.0f;
 const CGFloat defaultMagnifyingGlassMagnification = 1.25f;
 
@@ -154,7 +154,7 @@ NSString* sgfMimeType = @"application/x-go-sgf";  // this is not officially regi
 NSString* sgfUTI = @"com.red-bean.sgf";
 NSString* illegalArchiveGameNameCharacters = @"/\\|";
 
-/// SGF settings constants
+// SGF settings constants
 const int minimumSyntaxCheckingLevel = 1;
 const int maximumSyntaxCheckingLevel = 4;
 const int defaultSyntaxCheckingLevel = 2;
@@ -458,10 +458,7 @@ NSString* goGameRulesLifeAndDeathSettlingRuleKey = @"LifeAndDeathSettlingRule";
 NSString* goGameRulesDisputeResolutionRuleKey = @"DisputeResolutionRule";
 NSString* goGameRulesFourPassesRuleKey = @"FourPassesRule";
 
-// -----------------------------------------------------------------------------
-/// @name Constants for UI testing / accessibility
-// -----------------------------------------------------------------------------
-//@{
+// Constants for UI testing / accessibility
 NSString* statusLabelAccessibilityIdentifier = @"Status label";
 NSString* boardPositionCollectionViewAccessibilityIdentifier = @"Board position collection view";
 NSString* intersectionLabelBoardPositionAccessibilityIdentifier = @"Intersection label";
@@ -480,11 +477,6 @@ NSString* boardPositionNavigationButtonContainerAccessibilityIdentifier = @"boar
 NSString* currentBoardPositionViewAccessibilityIdentifier = @"currentBoardPositionView";
 NSString* currentBoardPositionTableViewAccessibilityIdentifier = @"currentBoardPositionTableView";
 NSString* boardPositionTableViewAccessibilityIdentifier = @"boardPositionTableView";
-//@}
 
-// -----------------------------------------------------------------------------
-/// @name Other UI testing constants
-// -----------------------------------------------------------------------------
-//@{
+// Other UI testing constants
 NSString* uiTestModeLaunchArgument = @"--ui-test-mode";
-//@}
