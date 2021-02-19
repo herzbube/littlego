@@ -24,6 +24,7 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoPlayer.h"
 #import "../../go/GoScore.h"
 #import "../../command/gtp/InterruptComputerCommand.h"
 #import "../../command/boardposition/ChangeAndDiscardCommand.h"
@@ -32,6 +33,7 @@
 #import "../../command/boardsetup/HandleBoardSetupInteractionCommand.h"
 #import "../../command/boardsetup/SetupFirstMoveColorCommand.h"
 #import "../../command/game/PauseGameCommand.h"
+#import "../../command/move/ComputerSuggestMoveCommand.h"
 #import "../../command/scoring/ToggleScoringStateOfStoneGroupCommand.h"
 #import "../../command/ChangeUIAreaPlayModeCommand.h"
 #import "../../main/ApplicationDelegate.h"
@@ -315,6 +317,16 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) computerSuggestMove:(id)sender
 {
+  if ([self shouldIgnoreUserInteraction])
+  {
+    DDLogWarn(@"%@: Ignoring GameActionComputerSuggestMove", self);
+    return;
+  }
+
+  GoGame* game = [GoGame sharedGame];
+  enum GoColor color = game.nextMovePlayer.color;
+
+  [[[[ComputerSuggestMoveCommand alloc] initWithColor:color] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------

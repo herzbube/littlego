@@ -43,5 +43,10 @@
 /// This property does not store a user preference, it stores a part of the
 /// current application state.
 @property(nonatomic, assign) bool boardViewDisplaysCrossHair;
+/// @brief Is true if the board view currently displays an animation.
+///
+/// This property does not store a user preference, it stores a part of the
+/// current application state.
+@property(nonatomic, assign) bool boardViewDisplaysAnimation;
 
 @end

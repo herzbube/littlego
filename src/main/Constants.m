@@ -57,6 +57,7 @@ NSString* goGameStateChanged = @"GoGameStateChanged";
 // Computer player notifications
 NSString* computerPlayerThinkingStarts = @"ComputerPlayerThinkingStarts";
 NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
+NSString* computerPlayerGeneratedMoveSuggestion = @"ComputerPlayerGeneratedMoveSuggestion";
 // Archive related notifications
 NSString* archiveContentChanged = @"ArchiveContentChanged";
 // GTP log related notifications
@@ -85,6 +86,8 @@ NSString* handicapPointDidChange = @"HandicapPointDidChange";
 NSString* setupPointDidChange = @"SetupPointDidChange";
 NSString* allSetupStonesWillDiscard = @"AllSetupStonesWillDiscard";
 NSString* allSetupStonesDidDiscard = @"AllSetupStonesDidDiscard";
+NSString* boardViewAnimationWillBegin = @"BoardViewAnimationWillBegin";
+NSString* boardViewAnimationDidEnd = @"BoardViewAnimationDidEnd";
 
 // Default values for properties that define how the Go board is displayed
 const float iPhoneMaximumZoomScale = 2.5;
@@ -101,7 +104,14 @@ const bool discardMyLastMoveDefault = true;
 const CGFloat defaultMagnifyingGlassDimension = 100.0f;
 const CGFloat defaultMagnifyingGlassMagnification = 1.25f;
 
-/// GTP engine profile constants
+// Computer assistance constants
+NSString* moveSuggestionColorKey = @"moveSuggestionColor";
+NSString* moveSuggestionTypeKey = @"moveSuggestionType";;
+NSString* moveSuggestionPointKey = @"moveSuggestionPoint";
+NSString* moveSuggestionErrorMessageKey = @"moveSuggestionErrorMessage";
+const int moveSuggestionAnimationRepeatCount = 3;
+
+// GTP engine profile constants
 const int minimumPlayingStrength = 1;
 const int maximumPlayingStrength = 5;
 const int customPlayingStrength = 0;

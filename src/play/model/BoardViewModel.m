@@ -42,6 +42,7 @@
   self.infoTypeLastSelected = ScoreInfoType;
   self.computerAssistanceType = ComputerAssistanceTypeNone;
   self.boardViewDisplaysCrossHair = false;
+  self.boardViewDisplaysAnimation = false;
   return self;
 }
 

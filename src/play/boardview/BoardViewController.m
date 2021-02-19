@@ -17,6 +17,7 @@
 
 // Project includes
 #import "BoardViewController.h"
+#import "BoardAnimationController.h"
 #import "BoardTileView.h"
 #import "BoardView.h"
 #import "CoordinateLabelsTileView.h"
@@ -47,6 +48,7 @@
 @property(nonatomic, retain) TapGestureController* tapGestureController;
 @property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
 @property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
+@property(nonatomic, retain) BoardAnimationController* boardAnimationController;
 @end
 
 
@@ -89,6 +91,7 @@
   self.tapGestureController = nil;
   self.doubleTapGestureController = nil;
   self.twoFingerTapGestureController = nil;
+  self.boardAnimationController = nil;
   [super dealloc];
 }
 
@@ -101,6 +104,7 @@
   self.tapGestureController = [[[TapGestureController alloc] init] autorelease];
   self.doubleTapGestureController = [[[DoubleTapGestureController alloc] init] autorelease];
   self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] init] autorelease];
+  self.boardAnimationController = [[[BoardAnimationController alloc] init ] autorelease];
 }
 
 #pragma mark - loadView and helpers
@@ -177,6 +181,7 @@
   self.tapGestureController.boardView = self.boardView;
   self.doubleTapGestureController.scrollView = self.boardView;
   self.twoFingerTapGestureController.scrollView = self.boardView;
+  self.boardAnimationController.boardView = self.boardView;
 }
 
 #pragma mark - viewDidLayoutSubviews

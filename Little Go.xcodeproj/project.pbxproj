@@ -250,6 +250,12 @@
 		CD7C6A1A1AB4990D009EC5AD /* BoardPositionCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A181AB4990D009EC5AD /* BoardPositionCollectionViewCell.m */; };
 		CD7C6A1D1AB61893009EC5AD /* ButtonBoxCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A1C1AB61893009EC5AD /* ButtonBoxCell.m */; };
 		CD7C6A1E1AB61893009EC5AD /* ButtonBoxCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A1C1AB61893009EC5AD /* ButtonBoxCell.m */; };
+		CD8178FF25D8553100F39091 /* ComputerSuggestMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8178FD25D8553000F39091 /* ComputerSuggestMoveCommand.m */; };
+		CD81790025D8553100F39091 /* ComputerSuggestMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8178FD25D8553000F39091 /* ComputerSuggestMoveCommand.m */; };
+		CD81790B25DC5AA700F39091 /* StoneView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD81790A25DC5AA600F39091 /* StoneView.m */; };
+		CD81790C25DC5AA700F39091 /* StoneView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD81790A25DC5AA600F39091 /* StoneView.m */; };
+		CD81791725DC606700F39091 /* BoardAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD81791525DC606700F39091 /* BoardAnimationController.m */; };
+		CD81791825DC606700F39091 /* BoardAnimationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD81791525DC606700F39091 /* BoardAnimationController.m */; };
 		CD81794D25DD897B00F39091 /* ComputerAssistanceSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD81794C25DD897B00F39091 /* ComputerAssistanceSettingsController.m */; };
 		CD81794E25DD897B00F39091 /* ComputerAssistanceSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD81794C25DD897B00F39091 /* ComputerAssistanceSettingsController.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
@@ -924,6 +930,12 @@
 		CD7C6A181AB4990D009EC5AD /* BoardPositionCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionCollectionViewCell.m; sourceTree = "<group>"; };
 		CD7C6A1B1AB61893009EC5AD /* ButtonBoxCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonBoxCell.h; sourceTree = "<group>"; };
 		CD7C6A1C1AB61893009EC5AD /* ButtonBoxCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonBoxCell.m; sourceTree = "<group>"; };
+		CD8178FD25D8553000F39091 /* ComputerSuggestMoveCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComputerSuggestMoveCommand.m; sourceTree = "<group>"; };
+		CD8178FE25D8553100F39091 /* ComputerSuggestMoveCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerSuggestMoveCommand.h; sourceTree = "<group>"; };
+		CD81790925DC5AA600F39091 /* StoneView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StoneView.h; sourceTree = "<group>"; };
+		CD81790A25DC5AA600F39091 /* StoneView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StoneView.m; sourceTree = "<group>"; };
+		CD81791525DC606700F39091 /* BoardAnimationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardAnimationController.m; sourceTree = "<group>"; };
+		CD81791625DC606700F39091 /* BoardAnimationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardAnimationController.h; sourceTree = "<group>"; };
 		CD81794B25DD897B00F39091 /* ComputerAssistanceSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ComputerAssistanceSettingsController.h; sourceTree = "<group>"; };
 		CD81794C25DD897B00F39091 /* ComputerAssistanceSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ComputerAssistanceSettingsController.m; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
@@ -1470,6 +1482,8 @@
 			children = (
 				CD05A9A41422A46200214BBE /* ComputerPlayMoveCommand.h */,
 				CD05A9A51422A46200214BBE /* ComputerPlayMoveCommand.m */,
+				CD8178FE25D8553100F39091 /* ComputerSuggestMoveCommand.h */,
+				CD8178FD25D8553000F39091 /* ComputerSuggestMoveCommand.m */,
 				CD05A8CA1422803B00214BBE /* PlayMoveCommand.h */,
 				CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */,
 			);
@@ -2534,6 +2548,8 @@
 			isa = PBXGroup;
 			children = (
 				CDEE19E919433EAC00DF2389 /* layer */,
+				CD81791625DC606700F39091 /* BoardAnimationController.h */,
+				CD81791525DC606700F39091 /* BoardAnimationController.m */,
 				CDEE19E319433EAC00DF2389 /* BoardTileView.h */,
 				CDEE19E419433EAC00DF2389 /* BoardTileView.m */,
 				CDEE19E519433EAC00DF2389 /* BoardView.h */,
@@ -2544,6 +2560,8 @@
 				CDEE19E819433EAC00DF2389 /* BoardViewController.m */,
 				CDAFAE27195DB6B800EF84A9 /* CoordinateLabelsTileView.h */,
 				CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */,
+				CD81790925DC5AA600F39091 /* StoneView.h */,
+				CD81790A25DC5AA600F39091 /* StoneView.m */,
 				CDAFAE23195A1DCA00EF84A9 /* TiledScrollView.h */,
 				CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */,
 				CDAFAE2B195DB78200EF84A9 /* Tile.h */,
@@ -3018,6 +3036,7 @@
 			files = (
 				CD7C69E31AA67EAD009EC5AD /* MainTableViewController.m in Sources */,
 				CDEE1A0B1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,
+				CD8178FF25D8553100F39091 /* ComputerSuggestMoveCommand.m in Sources */,
 				CD1087891323D83F00E83543 /* GtpClient.mm in Sources */,
 				CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */,
 				CD108812132559DE00E83543 /* GtpCommand.m in Sources */,
@@ -3057,6 +3076,7 @@
 				CD7C57D422024C4700694520 /* BoardSetupSettingsController.m in Sources */,
 				CD7C69FD1AB43B3F009EC5AD /* NavigationBarController.m in Sources */,
 				CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */,
+				CD81790B25DC5AA700F39091 /* StoneView.m in Sources */,
 				CDFABCA814194A420065C93B /* ViewGameController.m in Sources */,
 				CDFABCAD14194DA00065C93B /* EditTextController.m in Sources */,
 				CDB5AE291AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */,
@@ -3095,6 +3115,7 @@
 				CD0CCEC61439147D00A3F869 /* GtpLogSettingsController.m in Sources */,
 				CD7C69DF1AA67C31009EC5AD /* MainUtility.m in Sources */,
 				CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */,
+				CD81791725DC606700F39091 /* BoardAnimationController.m in Sources */,
 				CDA097071A9954A3002FCD78 /* MainNavigationController.m in Sources */,
 				CDCBA6D3184228A0003697E2 /* TableViewVariableHeightCell.m in Sources */,
 				CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */,
@@ -3302,6 +3323,7 @@
 				CDEE1A0419438AE000DF2389 /* StonesLayerDelegate.m in Sources */,
 				CD7C6A161AB49631009EC5AD /* BoardPositionCollectionViewController.m in Sources */,
 				CD05AB97142516A400214BBE /* GoUtilities.m in Sources */,
+				CD81790C25DC5AA700F39091 /* StoneView.m in Sources */,
 				CD9B63F025AB7804003E032B /* SaveSgfCommand.m in Sources */,
 				CD05ACA91425486100214BBE /* NewGameCommand.m in Sources */,
 				CDFD9F7318F1D3740031CBCF /* ScoringSettingsController.m in Sources */,
@@ -3366,6 +3388,7 @@
 				CDFD9F7F18F1D5E20031CBCF /* DiagnosticsViewController.m in Sources */,
 				CD1DB60F170244CF00C2E648 /* HandleDocumentInteractionCommand.m in Sources */,
 				CD7C6A1E1AB61893009EC5AD /* ButtonBoxCell.m in Sources */,
+				CD81791825DC606700F39091 /* BoardAnimationController.m in Sources */,
 				CD7C69BB1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
 				CD1DB610170257C000C2E648 /* NewGameController.m in Sources */,
 				CD1DB611170257F400C2E648 /* HandicapSelectionController.m in Sources */,
@@ -3428,6 +3451,7 @@
 				CDF341D2172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
 				CDF341D4172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
 				CD3591CB17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */,
+				CD81790025D8553100F39091 /* ComputerSuggestMoveCommand.m in Sources */,
 				CD1F4F8125AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m in Sources */,
 				CDFD9F7C18F1D5A30031CBCF /* DeleteGameCommand.m in Sources */,
 				CDFD9F7B18F1D5800031CBCF /* ViewGameController.m in Sources */,

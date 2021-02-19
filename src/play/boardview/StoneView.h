@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2021 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,22 +15,19 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class BoardViewMetrics;
+
+
 // -----------------------------------------------------------------------------
-/// @brief The ExceptionUtility class is a container for various utility
-/// functions related to throwing/handling exceptions.
-///
-/// All functions in ExceptionUtility are class methods, so there is no need to
-/// create an instance of ExceptionUtility.
+/// @brief The StoneView class is a custom view that draws a single black or
+/// white stone without symbols of any kind, in exactly the same size and
+/// appearance as does the BoardView.
 // -----------------------------------------------------------------------------
-@interface ExceptionUtility : NSObject
+@interface StoneView : UIView
 {
 }
 
-+ (void) throwInvalidUIType:(enum UIType)uiType;
-+ (void) throwInvalidArgumentExceptionWithFormat:(NSString*)format
-                                   argumentValue:(int)argumentValue;
-+ (void) throwInvalidArgumentExceptionWithErrorMessage:(NSString*)errorMessage;
-+ (void) throwAbstractMethodException;
-+ (void) throwNotImplementedException;
+- (id) initWithFrame:(CGRect)frame stoneColor:(enum GoColor)stoneColor metrics:(BoardViewMetrics*)metrics;
 
 @end

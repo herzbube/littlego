@@ -40,6 +40,15 @@
                                    argumentValue:(int)argumentValue
 {
   NSString* errorMessage = [NSString stringWithFormat:format, argumentValue];
+  [self throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Throws an NSInvalidArgumentException that uses @a errorMessage as
+/// its message.
+// -----------------------------------------------------------------------------
++ (void) throwInvalidArgumentExceptionWithErrorMessage:(NSString*)errorMessage
+{
   DDLogError(@"%@", errorMessage);
   NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                    reason:errorMessage

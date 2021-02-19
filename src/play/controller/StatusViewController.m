@@ -469,6 +469,11 @@
             statusText = [NSString stringWithFormat:@"Computer is playing for %@...", playerName];
           break;
         }
+        case GoGameComputerIsThinkingReasonMoveSuggestion:
+        {
+          statusText = @"Calculating move suggestion...";
+          break;
+        }
         case GoGameComputerIsThinkingReasonPlayerInfluence:
         {
           statusText = @"Updating player influence...";
