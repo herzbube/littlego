@@ -371,8 +371,9 @@
   {
     if ([self coordinateLabelsViewsExist])
       return;
-    self.coordinateLabelsLetterView = [[[TiledScrollView alloc] initWithFrame:CGRectZero] autorelease];
-    self.coordinateLabelsNumberView = [[[TiledScrollView alloc] initWithFrame:CGRectZero] autorelease];
+    Class coordinateLabelsTileViewClass = [CoordinateLabelsTileView class];
+    self.coordinateLabelsLetterView = [[[TiledScrollView alloc] initWithFrame:CGRectZero tileViewClass:coordinateLabelsTileViewClass] autorelease];
+    self.coordinateLabelsNumberView = [[[TiledScrollView alloc] initWithFrame:CGRectZero tileViewClass:coordinateLabelsTileViewClass] autorelease];
     [self.view addSubview:self.coordinateLabelsLetterView];
     [self.view addSubview:self.coordinateLabelsNumberView];
     [self addCoordinateLabelsViewConstraints];
