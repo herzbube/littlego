@@ -37,6 +37,7 @@ Before the release
   - Make sure to read the relevant release notes
 - Make sure that no debugging stuff has been forgotten in the code (e.g. search
   for "xxx")
+- Mention new contributions in Credits.html and the AUTHORS file
 - Update the ChangeLog
   - The main source for this are the issues on the bug tracker
   - The git commit log may also have useful information
