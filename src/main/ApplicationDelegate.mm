@@ -415,8 +415,13 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   if (loggingEnabled)
   {
     [DDLog addLogger:self.fileLogger withLevel:ddLogLevel];
+    id<DDLogger> logger;
+    if (@available(iOS 10.0, *))
+      logger = [DDOSLogger sharedInstance];  // uses os_log
+    else
+      logger = [DDTTYLogger sharedInstance];  // uses stderr
     // Increase log level if you want to see more logging in the Debug console
-    [DDLog addLogger:[DDTTYLogger sharedInstance] withLevel:DDLogLevelWarning];
+    [DDLog addLogger:logger withLevel:DDLogLevelWarning];
     DDLogInfo(@"Logging enabled. Log folder is %@", [self logFolder]);
   }
   else
