@@ -70,7 +70,6 @@
   self.prefabricatedGame = game;
   self.shouldResetUIAreaPlayMode = true;
   self.shouldHonorAutoEnableBoardSetupMode = true;
-  self.shouldSetupGtpBoard = true;
   self.shouldSetupGtpHandicapAndKomi = true;
   self.shouldSetupComputerPlayer = true;
   self.shouldTriggerComputerPlayer = true;
@@ -86,8 +85,7 @@
     [self resetUIAreaPlayMode];
   [self newGame];
   [self setupGtpRules];
-  if (self.shouldSetupGtpBoard)
-    [self setupGtpBoard];
+  [self setupGtpBoard];
   if (self.shouldSetupGtpHandicapAndKomi)
     [self setupGtpHandicapAndKomi];
   if (self.shouldSetupComputerPlayer)

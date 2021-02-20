@@ -266,10 +266,6 @@ static const int maxStepsForReplayMoves = 10;
   // setup mode only after we know that the .sgf contains no moves, and if we
   // switch we must prevent the computer player from being triggered.
   command.shouldHonorAutoEnableBoardSetupMode = false;
-  // It used to be unnecessary to set up the GTP board because it was already
-  // set up by the "loadsgf" GTP command. Now that we load and parse the .sgf
-  // file ourselves this setup has become necessary at all times.
-  command.shouldSetupGtpBoard = true;
   // Handicap and komi will later be set up by SyncGTPEngineCommand
   command.shouldSetupGtpHandicapAndKomi = false;
   // We have to do this ourselves, after setting up handicap + moves
