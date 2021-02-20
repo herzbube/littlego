@@ -186,6 +186,7 @@ NSString* apacheLicenseDocumentResource = @"LICENSE.html";
 NSString* GPLDocumentResource = @"COPYING.html";
 NSString* LGPLDocumentResource = @"COPYING.LESSER.html";
 NSString* boostLicenseDocumentResource = @"BoostSoftwareLicense.html";
+NSString* SGFCLicenseDocumentResource = @"SGFCSoftwareLicense.html";
 NSString* MBProgressHUDLicenseDocumentResource = @"MBProgressHUD-license.html";
 NSString* lumberjackLicenseDocumentResource = @"Lumberjack-LICENSE.txt.html";
 NSString* zipkitLicenseDocumentResource = @"ZipKit-COPYING.TXT.html";

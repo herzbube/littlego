@@ -39,6 +39,7 @@ enum LicensesSectionItem
   GPLItem,
   LGPLItem,
   BoostLicenseItem,
+  SGFCLicenseItem,
   MBProgressHUDLicenseItem,
   LumberjackLicenseItem,
   ZipKitLicenseItem,
@@ -146,6 +147,11 @@ enum LicensesSectionItem
       return @"Boost License";
       break;
     }
+    case SGFCLicenseItem:
+    {
+      return @"SGFC License";
+      break;
+    }
     case MBProgressHUDLicenseItem:
     {
       return @"MBProgressHUD License";
@@ -205,6 +211,11 @@ enum LicensesSectionItem
     case BoostLicenseItem:
     {
       return boostLicenseDocumentResource;
+      break;
+    }
+    case SGFCLicenseItem:
+    {
+      return SGFCLicenseDocumentResource;
       break;
     }
     case MBProgressHUDLicenseItem:

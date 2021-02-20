@@ -176,6 +176,7 @@
 		CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA415A891B8004A7096 /* BugReportUtilities.m */; };
 		CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A715A0A3E400439B4E /* PathUtilities.m */; };
 		CD55D0331D6FAE7E00A9A5BC /* CrashReportingHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD55D0321D6FAE7E00A9A5BC /* CrashReportingHandler.m */; };
+		CD5B406625E05AD300C4D947 /* SGFCSoftwareLicense.html in Resources */ = {isa = PBXBuildFile; fileRef = CD5B406525E05AD300C4D947 /* SGFCSoftwareLicense.html */; };
 		CD5E6B361D7CCB610089D0B3 /* MoreGameActionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */; };
 		CD5E6B371D7CD0500089D0B3 /* MoreGameActionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */; };
 		CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
@@ -839,6 +840,7 @@
 		CD48ADA415A891B8004A7096 /* BugReportUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BugReportUtilities.m; sourceTree = "<group>"; };
 		CD55D0311D6FAE7E00A9A5BC /* CrashReportingHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingHandler.h; sourceTree = "<group>"; };
 		CD55D0321D6FAE7E00A9A5BC /* CrashReportingHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingHandler.m; sourceTree = "<group>"; };
+		CD5B406525E05AD300C4D947 /* SGFCSoftwareLicense.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = SGFCSoftwareLicense.html; sourceTree = "<group>"; };
 		CD5E6B341D7CCB610089D0B3 /* MoreGameActionsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoreGameActionsController.h; sourceTree = "<group>"; };
 		CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoreGameActionsController.m; sourceTree = "<group>"; };
 		CD613D98143CD1B70002759E /* GtpCommandModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandModel.h; sourceTree = "<group>"; };
@@ -2371,6 +2373,7 @@
 				CDC66BB721E3D383006C73B3 /* Firebase-oss.html */,
 				CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */,
 				CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */,
+				CD5B406525E05AD300C4D947 /* SGFCSoftwareLicense.html */,
 				CDE1A13A14C1CED200317ECA /* SourceCode.html */,
 				CDFA329E15A0920200439B4E /* ZipKit-COPYING.TXT.html */,
 			);
@@ -2878,6 +2881,7 @@
 				CD3B1EC421D7BDA100D1DCAD /* GoogleService-Info.plist in Resources */,
 				CD968BB11B026E2300984AEE /* pass.png in Resources */,
 				CD968B651B026E2300984AEE /* archive@3x.png in Resources */,
+				CD5B406625E05AD300C4D947 /* SGFCSoftwareLicense.html in Resources */,
 				CD968BB61B026E2300984AEE /* pause@2x.png in Resources */,
 				CD7C57AF21FCB0C300694520 /* stone-black-icon.svg in Resources */,
 				CD7C57B521FCB0D100694520 /* stone-white-icon@3x.png in Resources */,

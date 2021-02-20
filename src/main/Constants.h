@@ -1117,6 +1117,7 @@ extern NSString* apacheLicenseDocumentResource;
 extern NSString* GPLDocumentResource;
 extern NSString* LGPLDocumentResource;
 extern NSString* boostLicenseDocumentResource;
+extern NSString* SGFCLicenseDocumentResource;
 extern NSString* MBProgressHUDLicenseDocumentResource;
 extern NSString* lumberjackLicenseDocumentResource;
 extern NSString* zipkitLicenseDocumentResource;
