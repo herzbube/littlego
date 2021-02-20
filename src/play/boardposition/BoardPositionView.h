@@ -39,8 +39,6 @@
 
 + (CGSize) boardPositionViewSize;
 
-- (void) invalidateContent;
-
 /// @brief The board position that this view represents. A value of -1 for this
 /// property causes the BoardPositionView to display nothing.
 @property(nonatomic, assign) int boardPosition;

@@ -34,7 +34,6 @@
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
 @property(nonatomic, assign) bool allDataNeedsUpdate;
 @property(nonatomic, assign) bool boardPositionViewNeedsUpdate;
-@property(nonatomic, assign) bool boardPositionZeroNeedsUpdate;
 @property(nonatomic, assign) bool tappingEnabledNeedsUpdate;
 @property(nonatomic, assign, getter=isTappingEnabled) bool tappingEnabled;
 @end
@@ -58,7 +57,6 @@
   [self setupTapGestureRecognizer];
   self.allDataNeedsUpdate = false;
   self.boardPositionViewNeedsUpdate = false;
-  self.boardPositionZeroNeedsUpdate = false;
   self.tappingEnabledNeedsUpdate = false;
   self.tappingEnabled = false;
   return self;
@@ -246,9 +244,11 @@
 // -----------------------------------------------------------------------------
 - (void) handicapPointDidChange:(NSNotification*)notification
 {
-  self.boardPositionViewNeedsUpdate = true;
-  self.boardPositionZeroNeedsUpdate = true;
-  [self delayedUpdate];
+  if (self.boardPositionView.boardPosition == 0)
+  {
+    self.boardPositionViewNeedsUpdate = true;
+    [self delayedUpdate];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -316,17 +316,11 @@
   if (! self.allDataNeedsUpdate)
     return;
   self.allDataNeedsUpdate = false;
+
   GoGame* game = [GoGame sharedGame];
   if (game)
   {
-    // BoardPositionView only updates its content if a new board position is
-    // set. In this updater, however, we have to force the content update, to
-    // cover the following scenario: Old board position is 0, new game is
-    // started with a different komi or handicap, new board position is
-    // again 0. The BoardPositionView must display the new komi/handicap values.
-    [self.boardPositionView invalidateContent];
-
-    GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+    GoBoardPosition* boardPosition = game.boardPosition;
     self.boardPositionView.boardPosition = boardPosition.currentBoardPosition;
   }
   else
@@ -347,14 +341,6 @@
   GoGame* game = [GoGame sharedGame];
   if (game)
   {
-    if (self.boardPositionZeroNeedsUpdate)
-    {
-      self.boardPositionZeroNeedsUpdate = false;
-
-      if (self.boardPositionView.boardPosition == 0)
-        [self.boardPositionView invalidateContent];
-    }
-
     GoBoardPosition* boardPosition = game.boardPosition;
     self.boardPositionView.boardPosition = boardPosition.currentBoardPosition;
   }

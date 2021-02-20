@@ -40,7 +40,6 @@
 @property(nonatomic, assign) bool numberOfItemsNeedsUpdate;
 @property(nonatomic, assign) bool userInteractionEnabledNeedsUpdate;
 @property(nonatomic, assign) bool boardPositionZeroNeedsUpdate;
-@property(nonatomic, assign) bool isBoardPositionZeroCellContentInvalid;
 @property(nonatomic, assign) bool ignoreCurrentBoardPositionChange;
 @property(nonatomic, retain) NSIndexPath* indexPathForDelayedSelectItemOperation;
 @end
@@ -75,7 +74,6 @@
   self.numberOfItemsNeedsUpdate = false;
   self.userInteractionEnabledNeedsUpdate = false;
   self.boardPositionZeroNeedsUpdate = false;
-  self.isBoardPositionZeroCellContentInvalid = false;
   self.ignoreCurrentBoardPositionChange = false;
   self.indexPathForDelayedSelectItemOperation = nil;
   [self setupNotificationResponders];
@@ -193,12 +191,6 @@
 {
   BoardPositionCollectionViewCell* cell = [collectionView dequeueReusableCellWithReuseIdentifier:self.reuseIdentifierCell
                                                                                     forIndexPath:indexPath];
-
-  if (self.isBoardPositionZeroCellContentInvalid)
-  {
-    [cell invalidateContent];
-    self.isBoardPositionZeroCellContentInvalid = false;
-  }
 
   // Cast is safe, we know that we cannot have more than pow(2, 31) board
   // positions
@@ -552,9 +544,6 @@
   if (! self.boardPositionZeroNeedsUpdate)
     return;
   self.boardPositionZeroNeedsUpdate = false;
-
-  // Causes the cell to be invalidated when it is reloaded the next time
-  self.isBoardPositionZeroCellContentInvalid = true;
 
   [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathWithIndex:0]]];
 }

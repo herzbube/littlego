@@ -70,7 +70,6 @@ static UIFont* smallFont = nil;
 @property(nonatomic, assign) UILabel* boardPositionLabel;
 @property(nonatomic, assign) UILabel* capturedStonesLabel;
 @property(nonatomic, retain) NSArray* dynamicAutoLayoutConstraints;
-@property(nonatomic, assign) bool isBoardPositionValid;
 @end
 
 
@@ -94,7 +93,6 @@ static UIFont* smallFont = nil;
   self.offscreenMode = false;
   _boardPosition = -1;             // don't use self, we don't want to trigger the setter
   self.dynamicAutoLayoutConstraints = nil;
-  self.isBoardPositionValid = false;
 
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
@@ -396,18 +394,6 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 - (void) setBoardPosition:(int)newValue
 {
-  if (self.isBoardPositionValid)
-  {
-    // No need to change anything if the board position didn't change and the
-    // content is still valid
-    if (_boardPosition == newValue)
-      return;
-  }
-  else
-  {
-    self.isBoardPositionValid = true;
-  }
-
   bool oldPositionIsGreaterThanZero = (_boardPosition > 0);
   bool newPositionIsGreaterThanZero = (newValue > 0);
   _boardPosition = newValue;
@@ -547,18 +533,6 @@ static UIFont* smallFont = nil;
                                                                ceilf(boardPositionCollectionViewCellSizePositionZero.height));
   boardPositionCollectionViewCellSizePositionNonZero = CGSizeMake(ceilf(boardPositionCollectionViewCellSizePositionNonZero.width),
                                                                   ceilf(boardPositionCollectionViewCellSizePositionNonZero.height));
-}
-
-#pragma mark - Other methods
-
-// -----------------------------------------------------------------------------
-/// @brief Invalidates the content of this BoardPositionCollectionViewCell.
-/// The cell content is guaranteed to be updated when @e boardPosition is set
-/// the next time.
-// -----------------------------------------------------------------------------
-- (void) invalidateContent
-{
-  self.isBoardPositionValid = false;
 }
 
 @end
