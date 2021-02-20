@@ -18,6 +18,15 @@ by the Boost library. Boost is released under the Boost Software license, the
 original software is available from
   http://www.boost.org/
 
+SgfcKit, libsgfc++ and SGFC are used for reading and writing SGF data. SgfcKit
+and libsgfc++ are both wrapper libraries around SGFC. SgfcKit and libsgfc++ are
+copyright by Patrick Näf and released under the Apache License, version 2.0.
+SGFC is copyright by Arno Hollosi and released under the BSD 3-Clause license.
+The respective original software is available from these sites:
+  https://github.com/herzbube/SgfcKit
+  https://github.com/herzbube/libsgfcplusplus
+  https://www.red-bean.com/sgf/sgfc/
+
 MBProgressHUD is used in this product to display progress meters. The original
 source code, which is copyright by Matej Bukovinski and released under the MIT
 license, is available from
