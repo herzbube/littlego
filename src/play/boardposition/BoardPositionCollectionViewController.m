@@ -344,6 +344,8 @@
 - (void) handicapPointDidChange:(NSNotification*)notification
 {
   self.boardPositionZeroNeedsUpdate = true;
+  // After updating the zero board position it needs to be re-selected
+  self.currentBoardPositionNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -424,8 +426,8 @@
     return;
   [self updateAllData];
   [self updateNumberOfItems];
-  [self updateCurrentBoardPosition];
   [self updateBoardPositionZero];
+  [self updateCurrentBoardPosition];
   [self updateUserInteractionEnabled];
 }
 
