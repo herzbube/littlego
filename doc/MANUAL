@@ -1534,27 +1534,40 @@ Game Format) and the .sgf file extension.
 ====================
 Managing the archive
 ====================
-The "Archive" area of the app lists previously saved games, or games that were
-transferred to the device via file sharing in iTunes or via import from an
-external application (e.g. Mail). Tap the "Edit" toolbar button if you want to
-delete one or more saved games. At the bottom of the screen (scroll down if you
-have many saved games) there is a button that allows you to delete all saved
-games in one fell swoop.
+The "Archive" area of the app displays an alphabetically sorted list of all the
+SGF files that you have currently stored within the app. These SGF files are
+either previously saved games, or SGF files that were transferred to the device
+via file sharing in iTunes or via import from an external application (e.g.
+Mail).
 
-When you tap the entry for a saved game, a screen with detail info for that game
-is displayed. You can rename the game by tapping on its name. To load the game
-tap the "Load" toolbar button. To export the game file to an external
-application (e.g. Mail, DropBox, or another Go application that can import .sgf
-files) tap the "Share" toolbar button.
+Tap the "Edit" toolbar button if you want to delete one or more archive entries.
+At the bottom of the screen (scroll down if you have many archive entries) there
+is a button that allows you to delete all archive entries in one fell swoop.
+
+When you tap an archive entry a screen with detail info about the content of the
+SGF file that is behind the archive entry is displayed. You can rename the SGF
+file by tapping on its name. Tap the "Load game" item of any one of the listed
+games to load that game and inspect its content on the Go board. To export the
+SGF file to an external application (e.g. Mail, DropBox, or another Go
+application that can import SGF files) tap the "Share" toolbar button.
+
+See the top-level section "Smart Game Format (SGF)" in the in-game manual for
+details about the SGF format, and specifically the "SGF processing" subsection
+for an in-depth discussion of what the "Load result" item means and how an SGF
+file's data is processed when you tap an archive entry.
 
 ====================
 Loading a saved game
 ====================
-When you view the details of a saved game in the "Archive" area of the app, you
-will find in the toolbar a button labelled "Load". Tapping the button will
-initiate the procedure to load the saved game, which overall is very similar to
-starting a new game from scratch. The difference is that you cannot choose board
-size, komi or handicap, as these parameters are part of the saved game.
+When you view the details of an archive entry in the "Archive" area of the app,
+you will see a list of games that are stored in the SGF file that is behind the
+selected archive entry. For each game there is a "Load game" item which, when
+tapped, initiates the procedure to load the game so that you can inspect its
+content on the Go board. Overall the procedure is very similar to starting a new
+game from scratch. The difference is that you cannot choose board size, komi or
+handicap, as these parameters are part of the saved game.
+
+Note: Most SGF files contain only a single game.
 
 ======================
 File sharing in iTunes
@@ -1596,25 +1609,59 @@ Smart Game Format (SGF)
 ==========
 Background
 ==========
-Games visible in the "Archive" area of the app are saved in the Smart Game
+Entries in the "Archive" area of the app are games saved in the Smart Game
 Format (https://www.red-bean.com/sgf/index.html), which is generally abbreviated
 to SGF. The format is decades old and widely used to store and transfer Go
 games between computer systems. Little Go internally uses a software package
 named SGFC (https://www.red-bean.com/sgf/sgfc/) to load and save SGF data.
 
-SGFC is very strict and generates many messages when it finds SGF data that does
-not conform to the SGF standard. As long as you load only games from the archive
-that you have saved in Little Go you will be fine and see no such messages,
-becauses Little Go strictly adheres to the standard. When you import SGF files
-from external sources, though, it is likely that you will start to see some
-messages from SGFC that complain about various things in the SGF data that are
-not correct. The reason is simple: Not all applications that generate SGF data
-adhere as strictly to the SGF standard as they should.
+==============
+SGF processing
+==============
+Behind every entry that is listed in the "Archive" area of the app there is one
+SGF file. Tapping the archive entry loads the SGF file's content and puts it
+through SGFC to parse the SGF data. Whenever SGFC finds something suspicious or
+wrong in the data it generates a message. It does this separately for each issue
+it finds, so that in the end parsing the data of a single SGF file can result
+in many different messages.
 
-To let you deal with situations where you are unable to load a specific game
-from an external source, Little Go offers various settings that influence the
-way how SGF data is processed when you load a game from the archive. The next
-sections in this manual discuss the details of these settings.
+Messages are classified with two criteria:
+- The message type. Message types in ascending order of severity are: Warning,
+  Error, Fatal Error. Warnings and errors still allow the SGF data to be parsed,
+  but a fatal error generally means the SGF data is broken in some fundamental
+  way and cannot be parsed.
+- The message criticality. A warning or error message can be critical or
+  non-critial. A critical warning is more severe than a non-critical error. A
+  critical message indicates that the SGF data may be severely damaged. Fatal
+  errors are neither critical nor non-critical - they are, well, fatal.
+
+You see SGFC messages when you tap an archive entry and Little Go displays the
+"View archive content" screen. Near the top of that screen is a section titled
+"Load result". This shows you at a glance a summary of the messages generated
+by SGFC when it parsed the SGF data. Ideally the load result is
+"0 warnings, 0 errors", which means that SGFC did not find any issues with the
+SGF data. If the load result is anything else than "0 warnings, 0 errors" then
+you can tap the load result summary entry to see the actual list of messages
+that were generated by SGFC. If you wish you can even drill down into an
+individual message to see the low-level data of which the message consists.
+This might be interesting because most messages contain the actual line and
+column number where SGFC found the issue in the SGF file.
+
+SGFC is very strict and generates many messages when it finds SGF data that does
+not conform to the SGF standard. As long as you load only SGF files from the
+archive that you have saved in Little Go you will be fine and see no messages
+(i.e. you will see the "0 warnings, 0 errors" load result), because Little Go
+strictly adheres to the SGF standard. When you import SGF files from external
+sources, though, it is likely that you will start to see some messages from SGFC
+that complain about various things in the SGF data that are not correct. The
+reason is simple: Not all applications that generate SGF data adhere as strictly
+to the SGF standard as they should.
+
+To let you deal with situations where you are unable to load an SGF file from an
+external source, Little Go offers various settings that influence the way how
+SGF data is processed when you load a game from the archive. The next sections
+in this manual discuss the details of these settings. You find the settings in
+the app under "Settings > Smart Game Format (SGF)".
 
 ====================================================
 Simple vs. advanced configuration of syntax checking
@@ -1649,7 +1696,13 @@ for Little Go to still accept SGF data and load it.
   even if the SGF data has severe problems and there are critical warnings
   and/or errors.
 
-Note that fatal errors always cause the loading of SGF data to fail.
+When you tap an archive entry and the currently selected load success type
+causes the loading of SGF data to fail you will see an item
+"No games available". Below that item there is a "Force loading" button that
+you can tap to override Little Go's decision to not load the SGF data.
+
+Note: Fatal errors always cause the loading of SGF data to fail. SGF data with a
+fatal error cannot be force-loaded.
 
 ====================
 Restrictive checking
