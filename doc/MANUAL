@@ -226,14 +226,14 @@ again to a safe level.
 ============================================================
 I cannot load a game, the game is reported to contain errors
 ============================================================
-Little Go was not designed to be a general purpose .sgf file processor/editor,
-so it is perfectly possible that an .sgf file which you imported from an
+Little Go was not designed to be a general purpose SGF file processor/editor,
+so it is perfectly possible that an SGF file which you imported from an
 external source may contain data that Little Go does not understand. For
 instance, it is not possible (and probably will never be) to load a game with a
 board that is larger than 19x19.
 
-If you believe that Little Go should be able to load one of your .sgf game
-files, then please write an email and attach the .sgf file in question.
+If you believe that Little Go should be able to load one of your SGF game
+files, then please write an email and attach the SGF file in question.
 
 ===================================================
 File sharing via iTunes does not update the archive
@@ -1572,32 +1572,34 @@ Note: Most SGF files contain only a single game.
 ======================
 File sharing in iTunes
 ======================
-You can transfer saved games to your computer via file sharing in iTunes:
+You can transfer SGF files from the archive to your computer via file sharing in
+iTunes:
 1. Select the iOS device in iTunes
 1. Activate the "Apps" tab
 1. Scroll down to the bottom of the page
 1. Under the "File Sharing" section, you should see Little Go among the list
    of applications that support file sharing
-1. Select Little Go to copy the saved games to your computer
+1. Select Little Go to copy the SGF files to your computer
 
 Of course you can also do the transfer the other way round. When you upload an
-.sgf file into Little Go, the file will not automatically show up in the list of
+SGF file into Little Go, the file will not automatically show up in the list of
 games in the "Archive" area of the app. Use any one of the following workarounds
 to make the file appear:
 - Temporarily lock the screen of your iOS device, then unlock it again
 - Switch to a different app, then switch back to Little Go
-- Press the Home button of your iOS device, then re-activate Little Go
+- Activate the Home screen (which sends Little Go to the background), then
+  re-activate Little Go
 
-========================================================
-Importing .sgf files from other applications (e.g. Mail)
-========================================================
-If you have an email message with an .sgf file attachment, you can open that
+=======================================================
+Importing SGF files from other applications (e.g. Mail)
+=======================================================
+If you have an email message with an SGF file attachment, you can open that
 message in the Mail app on your device, then tap on the file attachment. Mail
 will offer a selection of the applications that can process the file. You should
 see Little Go among those applications; if you select Little Go the file will
 be imported into Little Go's archive.
 
-If you have other applications that are capable of exporting .sgf files (e.g.
+If you have other applications that are capable of exporting SGF files (e.g.
 DropBox) you should be able to import those files into Little Go in a similar
 fashion as you did with Mail.
 
@@ -2227,7 +2229,7 @@ The file is a .zip archive that contains the following pieces of information:
   diagnostics information file was generated
 - Your current preferences (including the players you have defined and the
   settings you use for your computer players)
-- The current game as an .sgf file
+- The current game as an SGF file
 - A screenshot of the "Play" area of the app (excluding the status bar, i.e. the
   name of your carrier is not in the screenshot)
 - The output of the "showboard" GTP command
