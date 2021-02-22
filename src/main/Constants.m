@@ -153,6 +153,15 @@ NSString* fallbackGtpEngineProfileUUID = @"5154D01A-1292-453F-B767-BE7389E3589F"
 NSString* sgfMimeType = @"application/x-go-sgf";  // this is not officially registered with IANA, but seems to be in wide use
 NSString* sgfUTI = @"com.red-bean.sgf";
 NSString* illegalArchiveGameNameCharacters = @"/\\|";
+// The Fuego constant GO_MAX_NUM_MOVES is defined as
+//   4 * SG_MAX_SIZE * SG_MAX_SIZE
+// SG_MAX_SIZE is the maximum board size, which is 19 (unless Fuego is
+// recompiled with an explicit maximum board size of 25, which is not the case
+// for Little Go). According to a comment in the Fuego source code:
+//   3 * 19 * 19 was reached in several CGOS games
+// The final -50 is an arbitrary seeming reserve that Fuego's GTP engine
+// subtracts from SG_MAX_SIZE. The final value of the constant is 1394.
+const int maximumNumberOfMoves = 4 * 19 * 19 - 50;
 
 // SGF settings constants
 const int minimumSyntaxCheckingLevel = 1;

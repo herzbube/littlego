@@ -760,6 +760,14 @@ static const int maxStepsForReplayMoves = 10;
     }
   }
 
+  // If we don't perform this check here the game fails to load during the GTP
+  // engine sync. However, the error message in that case is much less nice.
+  if (moveProperties.count > maximumNumberOfMoves)
+  {
+    *errorMessage = [NSString stringWithFormat:@"The SGF data contains %lu moves. This is more than the maximum number of moves (%d) that the computer player Fuego can process.", (unsigned long)moveProperties.count, maximumNumberOfMoves];
+    return false;
+  }
+
   return [self replayMoves:moveProperties errorMessage:errorMessage];
 }
 

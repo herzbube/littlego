@@ -965,6 +965,11 @@ enum AdditiveKnowledgeType
 extern NSString* sgfMimeType;
 extern NSString* sgfUTI;
 extern NSString* illegalArchiveGameNameCharacters;
+/// @brief Maximum number of moves that a game can have for it to be loadable.
+///
+/// The limiting factor is Fuego. The value of this constant is hardcoded to be
+/// equal to the limit that is in use in Fuego's GTP engine.
+extern const int maximumNumberOfMoves;
 
 /// @brief Enumerates the supported sort criteria on the Archive tab.
 enum ArchiveSortCriteria
