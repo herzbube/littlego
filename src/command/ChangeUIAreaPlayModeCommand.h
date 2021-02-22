@@ -29,6 +29,6 @@
 {
 }
 
-- (id) initWithUIAreayPlayMode:(enum UIAreaPlayMode)uiAreaPlayMode;
+- (id) initWithUIAreaPlayMode:(enum UIAreaPlayMode)uiAreaPlayMode;
 
 @end

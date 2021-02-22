@@ -185,7 +185,7 @@
       assert(boardPosition.currentBoardPosition == 0);
       // Since we are about to change the board position, we have to disable
       // board setup mode first.
-      [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModePlay] autorelease] submit];
+      [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease] submit];
     }
 
     boardPosition.currentBoardPosition = self.newBoardPosition;

@@ -432,7 +432,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupBoard
 {
-  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModeBoardSetup] autorelease] submit];
+  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModeBoardSetup] autorelease] submit];
   [self.delegate moreGameActionsControllerDidFinish:self];
 }
 

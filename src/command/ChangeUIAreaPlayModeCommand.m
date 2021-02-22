@@ -44,7 +44,7 @@
 ///
 /// @note This is the designated initializer of ChangeUIAreaPlayModeCommand.
 // -----------------------------------------------------------------------------
-- (id) initWithUIAreayPlayMode:(enum UIAreaPlayMode)uiAreaPlayMode
+- (id) initWithUIAreaPlayMode:(enum UIAreaPlayMode)uiAreaPlayMode
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];

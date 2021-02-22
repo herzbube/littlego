@@ -109,7 +109,7 @@
   else
     uiAreaPlayMode = UIAreaPlayModePlay;
 
-  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:uiAreaPlayMode] autorelease] submit];
+  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:uiAreaPlayMode] autorelease] submit];
 }
 
   // -----------------------------------------------------------------------------

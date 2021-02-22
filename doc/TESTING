@@ -1938,11 +1938,11 @@ Board setup user preferences test
 - In the board setup settings, disable the "auto-enable board setup" user
   preference.
 - Start a new human vs. human game
-- Check that the UI areay "Play" is in play mode.
+- Check that the UI area "Play" is in play mode.
 - In the board setup settings, enable the "auto-enable board setup" user
   preference.
 - Start a new human vs. human game with handicap
-- Check that the UI areay "Play" is in board setup mode.
+- Check that the UI area "Play" is in board setup mode.
 - Make sure that the default setup stone color is black.
 - In the board setup settings, enable the "double-tap to zoom" user preference.
 - Check that double-tapping the board zooms the board in.

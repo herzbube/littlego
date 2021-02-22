@@ -129,7 +129,7 @@
       if (delegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
       {
         if ([GoGame sharedGame].boardPosition.currentBoardPosition != 0)
-          [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModePlay] autorelease] submit];
+          [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease] submit];
       }
 
       // Special scoring mode considerations:

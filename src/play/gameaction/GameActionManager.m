@@ -362,7 +362,7 @@ static GameActionManager* sharedGameActionManager = nil;
 - (void) scoringStart:(id)sender
 {
   // This triggers a notification to which this manager reacts
-  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModeScoring] autorelease] submit];
+  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModeScoring] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -370,7 +370,7 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) playStart:(id)sender
 {
-  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModePlay] autorelease] submit];
+  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -1313,7 +1313,7 @@ static GameActionManager* sharedGameActionManager = nil;
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
-    [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreayPlayMode:UIAreaPlayModeScoring] autorelease] submit];
+    [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModeScoring] autorelease] submit];
   }
   @finally
   {
