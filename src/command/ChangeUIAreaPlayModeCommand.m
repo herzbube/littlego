@@ -51,6 +51,7 @@
   if (! self)
     return nil;
 
+  self.newGameSetupIsInProgress = false;
   self.newUIAreaPlayMode = uiAreaPlayMode;
   self.oldAndNewModes = nil;
 
@@ -169,6 +170,17 @@
 // -----------------------------------------------------------------------------
 - (void) autoResumePlayIfNecessary
 {
+  // ResumePlayCommand may show an alert. If it does then control returns to us
+  // and eventually our caller before the user has had a chance to dismiss the
+  // alert. When the user finally dismisses the alert a new game has already
+  // been set up and ResumePlayCommand acts on the wrong GoGame. The result is
+  // a crash because ResumePlayCommand tries to revert the game state to
+  // "in progress", but the state is already "in progress".
+  // We counteract this by not invoking ResumePlayCommand if a new game is being
+  // set up.
+  if (self.newGameSetupIsInProgress)
+    return;
+
   if (! [ApplicationDelegate sharedDelegate].scoringModel.autoScoringAndResumingPlay)
     return;
   GoGame* game = [GoGame sharedGame];

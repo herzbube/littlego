@@ -31,4 +31,6 @@
 
 - (id) initWithUIAreaPlayMode:(enum UIAreaPlayMode)uiAreaPlayMode;
 
+@property(nonatomic, assign) bool newGameSetupIsInProgress;
+
 @end

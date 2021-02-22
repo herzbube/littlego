@@ -109,7 +109,9 @@
   else
     uiAreaPlayMode = UIAreaPlayModePlay;
 
-  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:uiAreaPlayMode] autorelease] submit];
+  ChangeUIAreaPlayModeCommand* changeUIAreaPlayModeCommand = [[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:uiAreaPlayMode] autorelease];
+  changeUIAreaPlayModeCommand.newGameSetupIsInProgress = true;
+  [changeUIAreaPlayModeCommand submit];
 }
 
   // -----------------------------------------------------------------------------
