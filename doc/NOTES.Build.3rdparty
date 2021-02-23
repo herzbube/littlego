@@ -87,12 +87,12 @@ The SgfcKit build results in this framework bundle:
   3rdparty/install/SgfcKit_static.framework
 
 
-Testing the patched version of Fuego on the Mac OS X command line
------------------------------------------------------------------
+Testing the patched version of Fuego on the macOS command line
+--------------------------------------------------------------
 Little Go integrates Fuego via the "fuego-for-littlego" branch of the Fuego on
 iOS project. This branch has a few modifications of the original Fuego source
-code that one might wish to test on the Mac OS X command line, i.e. with a
-Mac OS X build of Fuego. The following instructions should help you along to
+code that one might wish to test on the macOS command line, i.e. with a
+macOS build of Fuego. The following instructions should help you along to
 create such a build.
 
 Preconditions
@@ -103,13 +103,13 @@ Preconditions
 These are the commands to build/install Fuego:
   cd /path/to/littlego/3rdparty/src/fuego-on-ios
   autoreconf -i
-  ./configure --prefix="$(pwd)/../../install/fuego-macosx"
+  ./configure --prefix="$(pwd)/../../install/fuego-macos"
   make
   make install
 
 Run Fuego
-  cd /path/to/littlego/3rdparty/install/fuego-macosx
+  cd /path/to/littlego/3rdparty/install/fuego-macos
   ./bin fuego
 
 GTP commands can now be typed to control Fuego. To get rid of everything, simply
-remove the "fuego-macosx" folder.
+remove the "fuego-macos" folder.

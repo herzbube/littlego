@@ -1,7 +1,7 @@
 #!/usr/bin/env /bin/bash
 
 # Different 3rd party software packages should be built using the same
-# environment for a given platform (iOS Device, iPhone Simulator, Mac OS X),
+# environment for a given platform (iOS Device, iPhone Simulator, macOS),
 # otherwise they won't work together. The build script of each 3rd party
 # software package should therefore source this script and use the variables
 # defined here to setup the software-specific build process.
