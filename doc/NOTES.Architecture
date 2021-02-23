@@ -16,7 +16,7 @@ Communication with Fuego
 - The problem: iOS does not allow to launch other processes, therefore a
   different solution is required
 - The solution: What works very nicely is to run the Fuego engine in a
-  secondary thread and to let it attach its input/output streams to a pair
+  secondary thread and to let it attach its input/output streams to a pair of
   in-memory pipe streams. The Fuego client also runs in a secondary thread and
   attaches two complementary streams to the same pair of in-memory pipe streams.
   Synchronization between the two threads is achieved through the pipe streams'
@@ -29,7 +29,7 @@ Communication with Fuego
   points of an in-memory pipe.
 - An earlier, much simpler implementation without the need of a custom I/O
   stream buffer made use of named pipes, but this had to be abandoned when the
-  project switched to the C++ standard library implementation libc++ due to a
+  project switched to the C++ standard library implementation libc++, due to a
   bug in that library. See [1] for details.
   [1] https://bugs.llvm.org/show_bug.cgi?id=23078
 
@@ -47,26 +47,26 @@ Thread architecture
   first asynchronous command is submitted, and remains alive until the
   application shuts down.
 - GTP client secondary thread: Reacts to commands submitted by the main
-  thread; sends the commands to the GTP engine via file stream which is
-  attached to a named pipe NP1; wakes up when it receives the response from
-  the GTP engine via file stream which is attached to another named pipe NP2;
-  notifies the main thread of the response.
+  thread; sends the commands to the GTP engine via output stream which is
+  attached to an in-memory pipe stream IMPS1; wakes up when it receives the
+  response from the GTP engine via input stream which is attached to another
+  in-memory pipe stream IMPS2; notifies the main thread of the response.
 - GTP engine secondary thread: Reacts to commands received from the GTP
-  client via file stream which is attached to named pipe NP1; processes the
-  command, then sends the response back to the GTP client via file stream
-  which is attached to a named pipe NP2.
+  client via input stream which is attached to in-memory pipe stream IMPS1;
+  processes the command, then sends the response back to the GTP client via
+  output stream which is attached to an in-memory pipe stream IMPS2.
 - Communication between main thread and GTP client secondary thread happens
   entirely within the GtpClient class; synchronization occurs with the help
   of the NSObject method performSelector:onThread:withObject:waitUntilDone:().
 - Communication between GTP client and GTP engine secondary threads is routed
-  through named pipes; synchronization occurs via the file streams' blocking
-  read behaviour.
-- Because of file streams' blocking reads, communication between GTP client
-  and GTP engine is essentially synchronous. As a consequence, the main thread
-  will be blocked if it wants to submit a command to the GTP client while the
-  client is still waiting for the response to a previous command. For this
-  reason, all GUI elements that trigger a GTP command should be disabled
-  while a command is being processed.
+  through in-memory pipe streams; synchronization occurs via the pipe streams'
+  blocking behaviour.
+- Because of input/output streams' blocking reads and writes, communication
+  between GTP client and GTP engine is essentially synchronous. As a
+  consequence, the main thread will be blocked if it wants to submit a command
+  to the GTP client while the client is still waiting for the response to a
+  previous command. For this reason, all GUI elements that trigger a GTP command
+  should be disabled while a command is being processed.
 - Read the GtpClient class documentation for details about how GtpClient
   notifies clients of command submission and response receipt.
 
