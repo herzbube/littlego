@@ -277,7 +277,7 @@ enum DeleteAllSectionItem
     case DeleteAllSection:
     {
       cell = [TableViewCellFactory cellWithType:DeleteTextCellType tableView:tableView];
-      cell.textLabel.text = @"Delete all games";
+      cell.textLabel.text = @"Delete all entries";
       break;
     }
     default:
@@ -399,7 +399,7 @@ enum DeleteAllSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initiates the process to delete all games. First displays an alert
+/// @brief Initiates the process to delete all entries. First displays an alert
 /// that asks the user to confirm that she really wants to do this.
 // -----------------------------------------------------------------------------
 - (void) deleteAllGames
@@ -407,8 +407,8 @@ enum DeleteAllSectionItem
   void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
   {
     // Temporarily disable KVO observer mechanism so that no table view update
-    // is triggered while we are deleting games. When we are finished we will
-    // reload all data.
+    // is triggered while we are deleting. When we are finished we will reload
+    // all data.
     [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
     while (self.archiveViewModel.gameCount > 0)
     {
@@ -420,7 +420,7 @@ enum DeleteAllSectionItem
   };
 
   [self presentYesNoAlertWithTitle:@"Please confirm"
-                           message:@"Are you sure you want to delete all games?"
+                           message:@"Are you sure you want to delete the entire archive?"
                         yesHandler:yesActionBlock
                          noHandler:nil];
 }
