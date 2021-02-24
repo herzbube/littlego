@@ -71,6 +71,7 @@
 #import "../ui/MagnifyingViewModel.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiSettingsModel.h"
+#import "../utility/LogFormatter.h"
 #import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
 
@@ -415,11 +416,14 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   if (loggingEnabled)
   {
     [DDLog addLogger:self.fileLogger withLevel:ddLogLevel];
+    self.fileLogger.logFormatter = [[[LogFormatter alloc] init] autorelease];
     id<DDLogger> logger;
     if (@available(iOS 10.0, *))
       logger = [DDOSLogger sharedInstance];  // uses os_log
     else
       logger = [DDTTYLogger sharedInstance];  // uses stderr
+    // The Xcode console adds its own timestamp
+    logger.logFormatter = [[[LogFormatter alloc] initWithLogFormatStyle:LogFormatStyleWithoutTimestamp] autorelease];
     // Increase log level if you want to see more logging in the Debug console
     [DDLog addLogger:logger withLevel:DDLogLevelWarning];
     DDLogInfo(@"Logging enabled. Log folder is %@", [self logFolder]);
