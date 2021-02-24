@@ -102,4 +102,14 @@
   return [self.gameInfoItem tableView:tableView cellForRowAtIndexPath:indexPath detailLevel:GameInfoItemDetailLevelFull];
 }
 
+#pragma mark - UITableViewDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UITableViewDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
+{
+  [tableView deselectRowAtIndexPath:indexPath animated:NO];
+}
+
 @end
