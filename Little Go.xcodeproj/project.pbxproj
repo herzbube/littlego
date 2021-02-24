@@ -524,6 +524,8 @@
 		CDD7D7E5175257850068CBBA /* ResetPlayersAndProfilesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */; };
 		CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
+		CDDC968E25E697B300598CF7 /* PlaceholderView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDC968D25E697B300598CF7 /* PlaceholderView.m */; };
+		CDDC968F25E697B300598CF7 /* PlaceholderView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDC968D25E697B300598CF7 /* PlaceholderView.m */; };
 		CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */; };
 		CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
 		CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */; };
@@ -1212,6 +1214,8 @@
 		CDD961001662A8E300B54E09 /* render-readme.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = "render-readme.rb"; sourceTree = "<group>"; };
 		CDDAB6ED14FA728D00DEBAAF /* UIDeviceAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDeviceAdditions.h; sourceTree = "<group>"; };
 		CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceAdditions.m; sourceTree = "<group>"; };
+		CDDC968C25E697B300598CF7 /* PlaceholderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaceholderView.h; sourceTree = "<group>"; };
+		CDDC968D25E697B300598CF7 /* PlaceholderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaceholderView.m; sourceTree = "<group>"; };
 		CDDCD0A4173BC1F000359DE7 /* MaxMemoryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaxMemoryController.h; sourceTree = "<group>"; };
 		CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MaxMemoryController.m; sourceTree = "<group>"; };
 		CDDD52591482DD9F0027476B /* ItemPickerController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ItemPickerController.h; sourceTree = "<group>"; };
@@ -2646,6 +2650,8 @@
 				CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */,
 				CDB5AE2C1AC714CF0075C8DC /* MagnifyingViewModel.h */,
 				CDB5AE2D1AC714CF0075C8DC /* MagnifyingViewModel.m */,
+				CDDC968C25E697B300598CF7 /* PlaceholderView.h */,
+				CDDC968D25E697B300598CF7 /* PlaceholderView.m */,
 				CD0AF18E17401C56003BFC21 /* SliderInputController.h */,
 				CD0AF18F17401C56003BFC21 /* SliderInputController.m */,
 				CDA097091A99F77F002FCD78 /* SplitViewController.h */,
@@ -3256,6 +3262,7 @@
 				CDF341D1172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
 				CD5E6B361D7CCB610089D0B3 /* MoreGameActionsController.m in Sources */,
 				CDF341D3172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
+				CDDC968E25E697B300598CF7 /* PlaceholderView.m in Sources */,
 				CD3591CA17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */,
 				CD3591DA1735A711000E2963 /* BoardPositionModel.m in Sources */,
 				CD3592021735A757000E2963 /* PlayRootViewController.m in Sources */,
@@ -3427,6 +3434,7 @@
 				CD81791825DC606700F39091 /* BoardAnimationController.m in Sources */,
 				CD7C69BB1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
 				CD1DB610170257C000C2E648 /* NewGameController.m in Sources */,
+				CDDC968F25E697B300598CF7 /* PlaceholderView.m in Sources */,
 				CD1DB611170257F400C2E648 /* HandicapSelectionController.m in Sources */,
 				CDFD9F7D18F1D5AB0031CBCF /* RenameGameCommand.m in Sources */,
 				CD7C69FA1AB43758009EC5AD /* PlayRootViewControllerPhone.m in Sources */,

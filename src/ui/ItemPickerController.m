@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2016 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2021 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,10 @@
 
 // Project includes
 #import "ItemPickerController.h"
-#import "../ui/TableViewCellFactory.h"
+#import "AutoLayoutUtility.h"
+#import "PlaceholderView.h"
+#import "TableViewCellFactory.h"
+#import "UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -31,6 +34,8 @@
 @property(nonatomic, assign, readwrite) int indexOfSelectedItem;
 @property(nonatomic, retain, readwrite) NSArray* itemList;
 //@}
+@property(nonatomic, retain) PlaceholderView* placeholderView;
+@property(nonatomic, retain) UITableView* tableView;
 @end
 
 
@@ -72,18 +77,21 @@
 // -----------------------------------------------------------------------------
 - (id) init
 {
-  // Call designated initializer of superclass (UITableViewController)
-  self = [super initWithStyle:UITableViewStyleGrouped];
+  // Call designated initializer of superclass (UIViewController)
+  self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
   self.itemPickerControllerMode = ItemPickerControllerModeModal;
   self.context = nil;
   self.screenTitle = nil;
   self.footerTitle = nil;
+  self.placeholderText = nil;
   self.delegate = nil;
   self.indexOfDefaultItem = -1;
   self.indexOfSelectedItem = -1;
   self.itemList = nil;
+  self.placeholderView = nil;
+  self.tableView = nil;
   return self;
 }
 
@@ -96,8 +104,11 @@
   self.context = nil;
   self.screenTitle = nil;
   self.footerTitle = nil;
+  self.placeholderText = nil;
   self.delegate = nil;
   self.itemList = nil;
+  self.placeholderView = nil;
+  self.tableView = nil;
   [super dealloc];
 }
 
@@ -109,6 +120,9 @@
 - (void) viewDidLoad
 {
   [super viewDidLoad];
+
+  [self setupViewContent];
+
   self.navigationItem.title = self.screenTitle;
   if (ItemPickerControllerModeModal == self.itemPickerControllerMode)
   {
@@ -119,6 +133,30 @@
                                                                                             target:self
                                                                                             action:@selector(done:)] autorelease];
     self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+  }
+}
+
+#pragma mark - Private helpers for view setup
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the content of this controller's view.
+// -----------------------------------------------------------------------------
+- (void) setupViewContent
+{
+  if (0 == self.itemList.count)
+  {
+    self.placeholderView = [[[PlaceholderView alloc] initWithFrame:CGRectZero placeholderText:self.placeholderText] autorelease];
+    [self.view addSubview:self.placeholderView];
+    self.placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
+    [AutoLayoutUtility fillSuperview:self.view withSubview:self.placeholderView];
+  }
+  else
+  {
+    self.tableView = [UiUtilities createTableViewWithStyle:UITableViewStyleGrouped
+                                 withDelegateAndDataSource:self];
+    [self.view addSubview:self.tableView];
+    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+    [AutoLayoutUtility fillSuperview:self.view withSubview:self.tableView];
   }
 }
 

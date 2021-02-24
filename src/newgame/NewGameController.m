@@ -699,6 +699,11 @@ enum CellID
                                                                                        delegate:self];
       itemPickerController.context = [NSNumber numberWithInt:cellID];
       itemPickerController.footerTitle = footerTitle;
+      NSString* placeholderFormatText = @"No %@ players available. New players can be added unter Settings > Players.";
+      if (cellID == HumanPlayerCellID || cellID == BlackPlayerCellID || cellID == WhitePlayerCellID)
+        itemPickerController.placeholderText = [NSString stringWithFormat:placeholderFormatText, @"human"];
+      else
+        itemPickerController.placeholderText = [NSString stringWithFormat:placeholderFormatText, @"computer"];
       modalController = itemPickerController;
       break;
     }

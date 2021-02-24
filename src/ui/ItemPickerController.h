@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2016 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2021 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -85,7 +85,7 @@ enum ItemPickerControllerMode
 /// notified when the user has finished picking an item. For this to work, the
 /// delegate must implement the protocol ItemPickerDelegate.
 // -----------------------------------------------------------------------------
-@interface ItemPickerController : UITableViewController
+@interface ItemPickerController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 {
 }
 
@@ -109,6 +109,9 @@ enum ItemPickerControllerMode
 @property(nonatomic, retain, readonly) NSString* screenTitle;
 /// @brief The string to be displayed as the title of the table view's footer.
 @property(nonatomic, retain) NSString* footerTitle;
+/// @brief The string to be displayed as the placeholder when there are no items
+/// to pick.
+@property(nonatomic, retain) NSString* placeholderText;
 /// @brief This is the delegate that will be informed when the user has finished
 /// picking an item.
 @property(nonatomic, assign) id<ItemPickerDelegate> delegate;
