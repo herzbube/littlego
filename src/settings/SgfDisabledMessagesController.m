@@ -22,6 +22,7 @@
 #import "../shared/LayoutManager.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UIViewControllerAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -218,13 +219,31 @@
 // -----------------------------------------------------------------------------
 - (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text
 {
+  NSString* title = nil;
+  NSString* message = nil;
+
   NSNumber* number = [self numberFromText:text];
   bool isValidNumber = false;
   if (number)
   {
     if ([number integerValue] > 0)
+    {
       isValidNumber = true;
+    }
+    else
+    {
+      title = @"Not a positive number";
+      message = [NSString stringWithFormat:@"The number \"%@\" is zero or negative. Please enter a number greater than zero.", text];
+    }
   }
+  else
+  {
+    title = @"Input not numeric";
+    message = [NSString stringWithFormat:@"The text \"%@\" is not numeric. Please enter a valid number.", text];
+  }
+
+  if (! isValidNumber)
+    [editTextController presentOkAlertWithTitle:title message:message];
 
   return isValidNumber;
 }
