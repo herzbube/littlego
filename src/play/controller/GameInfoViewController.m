@@ -804,7 +804,8 @@ enum BoardPositionSectionItem
         case HumanVsHumanGameProfileItem:
         {
           cell = [TableViewCellFactory cellWithType:DefaultCellType
-                                          tableView:tableView];
+                                          tableView:tableView
+                             reusableCellIdentifier:@"ComputerSettingsCell"];
           cell.textLabel.text = @"Computer settings";
           break;
         }
