@@ -98,6 +98,9 @@
 
     if (! success)
     {
+      // Invoke this again so that arguments from previous attempt are cleared.
+      // Specifically, SGFCArgumentTypeEncodingMode must be removed.
+      [self setupReaderArguments:documentReader withValuesFromModel:sgfSettingsModel];
       [self performReadOperatonWithReader:documentReader
                          withEncodingMode:SgfEncodingModeMultipleEncodings];
     }
