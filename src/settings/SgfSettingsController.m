@@ -413,13 +413,20 @@ enum OtherSectionItem
   {
     shouldEndEditingWithText = false;
 
+    NSString* title = nil;
     NSString* message = nil;
     if (errno == EINVAL)
-      message = [NSString stringWithFormat:@"Conversion from text encoding \"%@\" is not possible on this system.\n\nThe text encoding is either invalid, or it is not supported on this system.", text];
+    {
+      title = @"Invalid text encoding";
+      message = [NSString stringWithFormat:@"Text encoding \"%@\" is either not valid, or not supported on this device.", text];
+    }
     else
+    {
+      title = @"Unexpected error";
       message = [NSString stringWithFormat:@"An unexpected error occurred while trying to find out if \"%@\" is a valid text encoding.\n\nThe system error code is %d.", text, errno];
+    }
 
-    [editTextController presentOkAlertWithTitle:@"Text encoding validation failed" message:message];
+    [editTextController presentOkAlertWithTitle:title message:message];
   }
   else
   {
