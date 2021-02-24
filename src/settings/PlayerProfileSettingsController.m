@@ -196,11 +196,11 @@ enum ResetToDefaultsSectionItem
 {
   // Invoke super implementation, as per API documentation
   [super setEditing:editing animated:animated];
-  // Update footer titles. I have not found a more graceful way how to do this
-  // than to reload entire sections
-  NSRange indexSetRange = NSMakeRange(HumanPlayersSection, 2);
-  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndexesInRange:indexSetRange];
-  [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationAutomatic];
+
+  // Update visual style of reset cell
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:ResetToDefaultsItem inSection:ResetToDefaultsSection];
+  [self.tableView reloadRowsAtIndexPaths:[NSArray arrayWithObject:indexPath]
+                        withRowAnimation:UITableViewRowAnimationNone];
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -264,9 +264,15 @@ enum ResetToDefaultsSectionItem
     case HumanPlayersSection:
     case ComputerPlayersSection:
     {
-      if (self.tableView.editing)
-        return @"Players that are participating in the current game cannot be deleted.";
-      break;
+      // Ideally we should display this footer only while editing is active.
+      // The problem is that showing/hiding this footer in reaction to editing
+      // becoming enabled/disabled breaks the table view's rendering of cells
+      // in various ways on various iOS versions / iOS devices. Note that
+      // editing can be enabled in two ways: 1) For the entire table view, when
+      // the user taps the "Edit" toolbar button; and 2) For an individual cell,
+      // when the user left-swipes the cell and iOS displays a "Delete" button
+      // for that cell only.
+      return @"Players that are participating in the current game cannot be deleted.";
     }
     case HumanVsHumanGamesSection:
     {
