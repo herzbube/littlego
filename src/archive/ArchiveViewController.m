@@ -24,6 +24,7 @@
 #import "../main/ApplicationDelegate.h"
 #import "../shared/LayoutManager.h"
 #import "../ui/AutoLayoutUtility.h"
+#import "../ui/PlaceholderView.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UIViewControllerAdditions.h"
 #import "../ui/UiUtilities.h"
@@ -53,8 +54,7 @@ enum DeleteAllSectionItem
 /// @brief Class extension with private properties for ArchiveViewController.
 // -----------------------------------------------------------------------------
 @interface ArchiveViewController()
-@property(nonatomic, retain) UIView* placeholderView;
-@property(nonatomic, retain) UILabel* placeholderLabel;
+@property(nonatomic, retain) PlaceholderView* placeholderView;
 @property(nonatomic, retain) UITableView* tableView;
 @end
 
@@ -75,7 +75,6 @@ enum DeleteAllSectionItem
   if (! self)
     return nil;
   self.placeholderView = nil;
-  self.placeholderLabel = nil;
   self.tableView = nil;
   self.archiveViewModel = [ApplicationDelegate sharedDelegate].archiveViewModel;
   [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
@@ -88,7 +87,6 @@ enum DeleteAllSectionItem
 - (void) dealloc
 {
   self.placeholderView = nil;
-  self.placeholderLabel = nil;
   self.tableView = nil;
   [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
   self.archiveViewModel = nil;
@@ -128,22 +126,8 @@ enum DeleteAllSectionItem
 // -----------------------------------------------------------------------------
 - (void) setupPlaceholderView
 {
-  self.placeholderView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  self.placeholderView = [[[PlaceholderView alloc] initWithFrame:CGRectZero placeholderText:@"No archived games."] autorelease];
   [self.view addSubview:self.placeholderView];
-
-  // The following font size factors have been experimentally determined, i.e.
-  // what looks good to me on a simulator
-  CGFloat fontSizeFactor;
-  if ([LayoutManager sharedManager].uiType != UITypePad)
-    fontSizeFactor = 1.5;
-  else
-    fontSizeFactor = 2.0;
-
-  self.placeholderLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
-  [self.placeholderView addSubview:self.placeholderLabel];
-  self.placeholderLabel.text = @"No archived games.";
-  self.placeholderLabel.font = [UIFont boldSystemFontOfSize:[UIFont systemFontSize] * fontSizeFactor];
-  self.placeholderLabel.textAlignment = NSTextAlignmentCenter;
 }
 
 // -----------------------------------------------------------------------------
@@ -164,10 +148,8 @@ enum DeleteAllSectionItem
   self.edgesForExtendedLayout = UIRectEdgeNone;
 
   self.placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.placeholderLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
   [AutoLayoutUtility fillSuperview:self.view withSubview:self.placeholderView];
-  [AutoLayoutUtility centerSubview:self.placeholderLabel inSuperview:self.placeholderView];
   [AutoLayoutUtility fillSuperview:self.view withSubview:self.tableView];
 }
 
