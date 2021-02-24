@@ -34,8 +34,8 @@
   bool success = [self moveDocumentInteractionFileToArchive];
   if (success)
   {
-    [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
-    [MainUtility activateUIArea:UIAreaArchive];
+    // UI changes must be made in the main thread context
+    [self performSelectorOnMainThread:@selector(activateUIAreaArchive) withObject:nil waitUntilDone:YES];
   }
   return success;
 }
@@ -91,6 +91,15 @@
 {
   [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Game imported"
                                                                                   message:alertMessage];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for doIt().
+// -----------------------------------------------------------------------------
+- (void) activateUIAreaArchive
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
+  [MainUtility activateUIArea:UIAreaArchive];
 }
 
 @end
