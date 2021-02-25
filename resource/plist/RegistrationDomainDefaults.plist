@@ -102,9 +102,30 @@
 		</dict>
 		<dict>
 			<key>UUID</key>
-			<string>766CDA23-0C58-480B-A8B5-1F34BDA41677</string>
+			<string>DCC5EB7E-307B-4FEC-AF1F-A3CD4A1AE233</string>
 			<key>Name</key>
 			<string>Fuego (strong)</string>
+			<key>IsHuman</key>
+			<false/>
+			<key>GtpEngineProfileUUID</key>
+			<string>49A700EB-B1A2-40F5-8C7E-1CE5FC6F2413</string>
+			<key>Statistics</key>
+			<dict>
+				<key>GamesPlayed</key>
+				<integer>0</integer>
+				<key>GamesWon</key>
+				<integer>0</integer>
+				<key>GamesLost</key>
+				<integer>0</integer>
+				<key>GamesTied</key>
+				<integer>0</integer>
+			</dict>
+		</dict>
+		<dict>
+			<key>UUID</key>
+			<string>766CDA23-0C58-480B-A8B5-1F34BDA41677</string>
+			<key>Name</key>
+			<string>Fuego (strong + pondering)</string>
 			<key>IsHuman</key>
 			<false/>
 			<key>GtpEngineProfileUUID</key>
@@ -125,7 +146,7 @@
 			<key>UUID</key>
 			<string>82FE907A-5E9A-4DCB-AFA5-C2D5CA03ECFA</string>
 			<key>Name</key>
-			<string>Fuego (extra strong)</string>
+			<string>Fuego (extra strong + pondering)</string>
 			<key>IsHuman</key>
 			<false/>
 			<key>GtpEngineProfileUUID</key>
@@ -183,11 +204,47 @@
 		</dict>
 		<dict>
 			<key>UUID</key>
+			<string>49A700EB-B1A2-40F5-8C7E-1CE5FC6F2413</string>
+			<key>Name</key>
+			<string></string>
+			<key>Description</key>
+			<string>This computer player has the second-to-highest playing strength. The &apos;Pondering&apos; feature is disabled, which means that the computer player is performing calculations only while it is its turn to play. Battery power consumption is moderate.</string>
+			<key>FuegoMaxMemory</key>
+			<integer>32</integer>
+			<key>FuegoThreadCount</key>
+			<integer>1</integer>
+			<key>FuegoPondering</key>
+			<false/>
+			<key>FuegoMaxPonderTime</key>
+			<integer>300</integer>
+			<key>FuegoReuseSubtree</key>
+			<true/>
+			<key>FuegoMaxThinkingTime</key>
+			<integer>10</integer>
+			<key>FuegoMaxGames</key>
+			<integer>-1</integer>
+			<key>AutoSelectFuegoResignMinGames</key>
+			<true/>
+			<key>FuegoResignMinGames</key>
+			<integer>5000</integer>
+			<key>FuegoResignThreshold</key>
+			<array>
+				<integer>5</integer>
+				<integer>5</integer>
+				<integer>5</integer>
+				<integer>5</integer>
+				<integer>8</integer>
+				<integer>8</integer>
+				<integer>8</integer>
+			</array>
+		</dict>
+		<dict>
+			<key>UUID</key>
 			<string>7C35B47D-363B-4B94-8E44-476BECD0646F</string>
 			<key>Name</key>
 			<string></string>
 			<key>Description</key>
-			<string>This computer player has maximum playing strength. The &apos;Pondering&apos; feature is enabled, which means that the computer player is also thinking while it is not its turn. IMPORTANT: This consumes substantial battery power!</string>
+			<string>This computer player has maximum playing strength. The &apos;Pondering&apos; feature is enabled, which means that the computer player is performing calculations also while it is not its turn to play. IMPORTANT: This consumes substantial battery power!</string>
 			<key>FuegoMaxMemory</key>
 			<integer>32</integer>
 			<key>FuegoThreadCount</key>
