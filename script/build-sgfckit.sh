@@ -91,11 +91,31 @@ PRE_BUILD_STEPS_SOFTWARE()
 # +------------------------------------------------------------------------
 BUILD_STEPS_SOFTWARE()
 {
+  # Bitcode notes
+  # - The CMake option -DCMAKE_XCODE_ATTRIBUTE_ENABLE_BITCODE=YES adds the
+  #   option ENABLE_BITCODE=YES to the Xcode build. This in turn causes the
+  #   Clang compiler option -fembed-bitcode-marker to be used. This does not
+  #   really add bitcode to the built object files, instead it merely adds a
+  #   placeholder. When the final build of Little Go is archived this causes
+  #   the archiving to fail because of missing Bitcode. For this reason
+  #   ENABLE_BITCODE=YES is not used.
+  #   Causes the compiler option -fembed-bitcode-marker to be used.
+  # - The CMake option -DCMAKE_XCODE_ATTRIBUTE_BITCODE_GENERATION_MODE=bitcode
+  #   adds the option BITCODE_GENERATION_MODE=bitcode to the Xcode build. This
+  #   in turn causes the Clang compiler option -fembed-bitcode to be used. This
+  #   actually generates and embeds the necessary Bitcode into the built object
+  #   files so that the archiving of the final Little Go build can succeed.
+  #
+  # StackOverflow references
+  # - https://stackoverflow.com/a/34965178/1054378
+  # - https://stackoverflow.com/a/31486233/1054378
+  # - https://stackoverflow.com/a/31346742/1054378
+
   echo "Begin building libsgfc++ ..."
   pushd "$LIBSGFCPLUSPLUS_SRC_DIR" >/dev/null
   mkdir "$BUILD_FOLDER"
   cd "$BUILD_FOLDER"
-  cmake .. -G Xcode -T buildsystem=1 -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO -DCMAKE_IOS_INSTALL_COMBINED=YES -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCMAKE_OSX_DEPLOYMENT_TARGET=$IPHONEOS_DEPLOYMENT_TARGET
+  cmake .. -G Xcode -T buildsystem=1 -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO -DCMAKE_XCODE_ATTRIBUTE_BITCODE_GENERATION_MODE=bitcode -DCMAKE_IOS_INSTALL_COMBINED=YES -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCMAKE_OSX_DEPLOYMENT_TARGET=$IPHONEOS_DEPLOYMENT_TARGET
   RETVAL=$?
   if test $RETVAL -eq 0; then
     cmake --build . --config $CONFIGURATION --target install
@@ -110,7 +130,7 @@ BUILD_STEPS_SOFTWARE()
   pushd "$SGFCKIT_SRC_DIR" >/dev/null
   mkdir "$BUILD_FOLDER"
   cd "$BUILD_FOLDER"
-  cmake .. -G Xcode -T buildsystem=1 -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO -DCMAKE_IOS_INSTALL_COMBINED=YES -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCMAKE_OSX_DEPLOYMENT_TARGET=$IPHONEOS_DEPLOYMENT_TARGET
+  cmake .. -G Xcode -T buildsystem=1 -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_XCODE_ATTRIBUTE_ONLY_ACTIVE_ARCH=NO -DCMAKE_XCODE_ATTRIBUTE_BITCODE_GENERATION_MODE=bitcode -DCMAKE_IOS_INSTALL_COMBINED=YES -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX -DCMAKE_OSX_DEPLOYMENT_TARGET=$IPHONEOS_DEPLOYMENT_TARGET
   RETVAL=$?
   if test $RETVAL -eq 0; then
     cmake --build . --config $CONFIGURATION --target install
