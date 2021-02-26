@@ -252,7 +252,7 @@
     // indicator. For this to work the status view is required to honor
     // safeAreaLayoutGuide.
     //
-    // TODO xxx This does not work if the app directly launches into landscape.
+    // TODO This does not work if the app directly launches into landscape.
     // It only works after rotating once to portrait and then rotating back to
     // landscape. Tried to move this to viewWillLayoutSubviews, but didn't work.
     UIView* anchorView = self.view;

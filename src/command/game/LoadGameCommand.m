@@ -956,7 +956,6 @@ static const int maxStepsForReplayMoves = 10;
 // -----------------------------------------------------------------------------
 - (void) notifyGoGameDocument
 {
-  // TODO xxx fix. Possibly change and attach the SgfcKit objects
   NSString* gameName = @"dummy document name";
   [[GoGame sharedGame].document load:gameName];
 }
