@@ -30,7 +30,7 @@
 /// returned is slightly larger than the original image.
 ///
 /// The code for this method is based on
-/// http://stackoverflow.com/questions/11083335/no-shadow-emboss-on-uibarbuttonitem
+/// https://stackoverflow.com/questions/11083335/no-shadow-emboss-on-uibarbuttonitem
 // -----------------------------------------------------------------------------
 + (UIImage*) imageByApplyingUIBarButtonItemStyling:(UIImage*)image
 {

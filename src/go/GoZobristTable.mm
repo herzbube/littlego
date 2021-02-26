@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2019 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2021 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -123,7 +123,7 @@
 - (long long) random64BitNumber
 {
   // Implementation taken from
-  // http://stackoverflow.com/questions/8120062/generate-random-64-bit-integer
+  // https://stackoverflow.com/questions/8120062/generate-random-64-bit-integer
   // TODO switch to an algorithm from <random> once we are allowed to use C++11
   long long r30 = RAND_MAX*rand()+rand();
   long long s30 = RAND_MAX*rand()+rand();

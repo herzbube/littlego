@@ -6,10 +6,10 @@ and while coding.
 
 Go Engines
 ----------
-List of Go-playing programs: http://senseis.xmp.net/?GoPlayingPrograms
+List of Go-playing programs: https://senseis.xmp.net/?GoPlayingPrograms
 
 Aya
-- http://www32.ocn.ne.jp/~yss/
+- http://www32.ocn.ne.jp/~yss/ (URL defunct)
 - The program is labelled as "free software"
 - The most recent version from 2008 is made available for download without
   source and for the Windows platform only
@@ -17,7 +17,7 @@ Aya
   Mac OS X / iOS under a closed-source agreement?
 
 NeuroGo
-- http://webdocs.cs.ualberta.ca/~emarkus/neurogo/
+- http://webdocs.cs.ualberta.ca/~emarkus/neurogo/ (URL defunct)
 - No source code, not even a downloadable binary
 
 Fuego
@@ -29,7 +29,7 @@ Fuego
   with an inquiry as to whether they think I could include the library
 
 SmartGo
-- http://www.smartgo.com/en/index.htm
+- https://www.smartgo.com/
 - Commercial product
 - Already offers the iPhone applications "SmartGo" and "SmartGo Pro"; both apps
   cost money
@@ -40,7 +40,7 @@ Steenvreter, Magog and Migos
 - I'm not sure if the source code of these programs is available
 
 Explorer
-- http://webdocs.cs.ualberta.ca/~mmueller/cgo/explorer.html
+- https://webdocs.cs.ualberta.ca/~mmueller/cgo/explorer.html
 - Program is freeware
 - Googling for "Explorer.sit.hqx" leads to the following download location
   ftp://ftp.icsi.berkeley.edu/pub/theory/mmueller/Explorer.sit.hqx
@@ -53,7 +53,7 @@ Indigo
 - Linux binary that understands GTP
 
 Dave Dyer's Go Program
-- http://www.andromeda.com/people/ddyer/go-program.html
+- http://www.andromeda.com/people/ddyer/go-program.html (URL defunct)
 - Doesn't play
 
 Pachi
@@ -76,20 +76,21 @@ terms of services of the iTunes Store and the App Store. Period. There are two
 articles on fsf.org that describe a case where GNU Go was distributed over the
 App Store. The second article explains where the GPL conflicts with Apple's
 terms of services.
-- http://www.fsf.org/news/2010-05-app-store-compliance/
-- http://www.fsf.org/news/blogs/licensing/more-about-the-app-store-gpl-enforcement
+- https://www.fsf.org/news/2010-05-app-store-compliance/
+- https://www.fsf.org/news/blogs/licensing/more-about-the-app-store-gpl-enforcement
 
 Another interesting article explains that it's ok from a legal point of view to
 distribute GPL'ed software via the App Store if you have the copyright on the
 software (i.e. you wrote the software yourself)
-- http://bonsansnom.wordpress.com/2011/01/08/about-apple-store-gpls-vlc-and-betrains/
+- https://bonsansnom.wordpress.com/2011/01/08/about-apple-store-gpls-vlc-and-betrains/
 
 An article written by someone who believes that it's ok to use GPL'ed software:
 - http://www.geoffeg.org/wordpress/2009/10/07/the-iphone-and-the-gpl-v2-are-not-incompatible/
+  (URL defunct)
 
 An older discussion on the subject. There are many opinions and no conclusions,
 though.
-- http://diveintomark.org/archives/2008/03/07/iphone-gpl
+- http://diveintomark.org/archives/2008/03/07/iphone-gpl (URL defunct)
 - One of the more interesting opinions is one that tries to refute the "spirit
   of the license" argument (where it is argued that it is difficult or expensive
   for an app user to customize an app with a modified version of the software)
@@ -107,34 +108,35 @@ Articles about the LGPL and iPhone apps:
 - This one believes it's possible, although it's not in the spirit of the
   license
   http://huyzing.com/2009/08/24/compatibility-between-the-iphone-app-store-and-the-lgpl/
+  (URL defunct)
 - This one believes it's not possible because of the $99/year cost
-  http://loufranco.com/blog/files/lgpl-and-the-iphone.html
+  https://loufranco.com/blog/lgpl-and-the-iphone
 
 
 Programming my own Go engine
 ----------------------------
 Fuego is a so-called "Monte Carlo" engine, so that's what I am going to
 research.
-- A basic description what it's about: http://senseis.xmp.net/?MonteCarlo
+- A basic description what it's about: https://senseis.xmp.net/?MonteCarlo
 - MCTS = Monte Carlo Tree Search
 - "The principles of MCTS algorithms were published in the proceedings of the
   Computer and Games conference, which was held together with the Olympiad."
-  (the ICGA Computer Olympiad, http://senseis.xmp.net/?ComputerOlympiad)
+  (the ICGA Computer Olympiad, https://senseis.xmp.net/?ComputerOlympiad)
 - UCT is a simple but effective form of MCTS, following link includes
-  pseudo-code: http://senseis.xmp.net/?UCT
+  pseudo-code: https://senseis.xmp.net/?UCT
 - RAVE seems to be another method of MCTS, but one that is a heuristic
   (refers to experience-based techniques for problem solving, learning, and
   discovery. Heuristic methods are used to speed up the process of finding a
   good enough solution, where an exhaustive search is impractical)
-- MCTS publications: http://webdocs.cs.ualberta.ca/~mmueller/mcts.html
-- Computer Go page: http://senseis.xmp.net/?ComputerGo
+- MCTS publications: https://webdocs.cs.ualberta.ca/~mmueller/mcts.html
+- Computer Go page: https://senseis.xmp.net/?ComputerGo
 
 Research stopped for the moment because I haved decided to use Fuego.
 
 
 GTP - Go Text Protocol
 ----------------------
-The reference is here: http://www.lysator.liu.se/~gunnar/gtp/
+The reference is here: https://www.lysator.liu.se/~gunnar/gtp/
 
 Apparently there are two versions of GTP:
 - GTP version 1: Although superseded by GTP version 2, this protocol version
@@ -410,7 +412,7 @@ Setup a position
 Territory statistics
 - The "uct_stat_territory" GTP command displays territory statistics
 - For a detailed explanation of how to enable this, see
-  http://sourceforge.net/apps/trac/fuego/wiki/ShowingTerritoryStatistics
+  https://sourceforge.net/p/fuego/wiki/ShowingTerritoryStatistics/
 - Apparently the result of this command is a percentage for each vertex, based
   on which the sizes of the squares in the screenshot on the above page are
   drawn
@@ -421,7 +423,7 @@ Interrupting long-running GTP commands
 - A long-running GTP command such as "genmove" can be interrupted by sending
   the special string "# interrupt". Apparently this has been implemented in
   Fuego to accomodate the GoGui client. See chapter 10 in the GoGui manual for
-  some details (http://gogui.sourceforge.net/doc/interrupt.html)
+  some details (http://gogui.sourceforge.net/doc/interrupt.html, URL defunct]
 - Fuego also understands the GTP command "gogui-interrupt". The comments in
   Fuego's source code explain that this command does not actually do anything,
   its presence in the output of "list_commands" (another GTP command) merely
@@ -464,8 +466,8 @@ Ko rules
 - The default is positional superko
 - Resources that explain what a superko is, and what the difference is between
   situational and positional superko
-  - http://senseis.xmp.net/?Superko
-  - http://en.wikipedia.org/wiki/Rules_of_Go#Repetition
+  - https://senseis.xmp.net/?Superko
+  - https://en.wikipedia.org/wiki/Rules_of_Go#Repetition
 
 Other useful stuff
 - The "go_point_info" GTP command allows to query Fuego about various properties
@@ -565,16 +567,16 @@ void inspectNode(SgNode* node)
 Go topics
 ---------
 Collection of computer Go algorithms:
-- http://senseis.xmp.net/?ComputerGoAlgorithms
+- https://senseis.xmp.net/?ComputerGoAlgorithms
 
 Scoring
-- http://senseis.xmp.net/?Scoring
-- http://senseis.xmp.net/?TerritoryAndAreaScoring
-- http://senseis.xmp.net/?InternationalRules
+- https://senseis.xmp.net/?Scoring
+- https://senseis.xmp.net/?TerritoryAndAreaScoring
+- https://senseis.xmp.net/?InternationalRules
 
 Benson's Algorithm
-- http://senseis.xmp.net/?BensonSAlgorithm
-- http://senseis.xmp.net/?BensonsDefinitionOfUnconditionalLife%2FExamples
+- https://senseis.xmp.net/?BensonSAlgorithm
+- https://senseis.xmp.net/?BensonsDefinitionOfUnconditionalLife%2FExamples
 - Fuego's GTP command for this is "go_safe_gfx benson". The result simply lists
   all points for each color that are unconditionally alive. The client needs to
   find out itself which points are connected. The result of the GTP command
@@ -686,7 +688,7 @@ Fuego resigning mechanics
 
 Fuego territory statistics
 --------------------------
-Cf. http://sourceforge.net/apps/trac/fuego/wiki/ShowingTerritoryStatistics
+Cf. https://sourceforge.net/p/fuego/wiki/ShowingTerritoryStatistics/
 - First, switch on the collection of territory statistics in Fuego with the
   following GTP command:
   uct_param_globalsearch territory_statistics 1
@@ -769,9 +771,9 @@ the game. Here are some notable exceptions:
   wants to play by AGA rules might find irritating or even wrong.
 
 
-[1] http://senseis.xmp.net/?RulesOfGo
-[2] http://www.britgo.org/rules/compare.html
-[3] http://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html#sec:fixed-handicap-placement
+[1] https://senseis.xmp.net/?RulesOfGo
+[2] https://www.britgo.org/rules/compare.html
+[3] https://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html#sec:fixed-handicap-placement
 
 
 Scoring and counting
@@ -822,21 +824,21 @@ Finally, some clarification of terms:
   interchangeably with Territory scoring.
 
 Links & resources
-- http://senseis.xmp.net/?Scoring
+- https://senseis.xmp.net/?Scoring
   - Has basic rules for the two scoring systems
-- http://www.britgo.org/rules/compare.html
+- https://www.britgo.org/rules/compare.html
   - Very good comparison of different Go rulesets, including some clarification
     regarding the handling of handicap compensation in the various rulesets
   - Also has an enlightening "Scoring" section that explains how the AGA rules
     use Area scoring, while at the same time supporting both territory AND area
     counting methods.
-- http://senseis.xmp.net/?TerritoryAndAreaScoring
+- https://senseis.xmp.net/?TerritoryAndAreaScoring
   - Compares the two scoring systems
-- http://senseis.xmp.net/?ChineseCounting
+- https://senseis.xmp.net/?ChineseCounting
   - The counting method most often used for area scoring
-- http://senseis.xmp.net/?JapaneseCounting
+- https://senseis.xmp.net/?JapaneseCounting
   - The counting method most often used for territory scoring
-- http://senseis.xmp.net/?Komi
+- https://senseis.xmp.net/?Komi
   - Explains which Komi should be used for the different scoring systems
 
 GTP commands involved in scoring
@@ -982,18 +984,18 @@ Area scoring
       white's score
 
 
-[1] http://www-2.cs.cmu.edu/~wjh/go/rules/Japanese.html
-[2] http://senseis.xmp.net/?JapaneseRules
-[3] http://senseis.xmp.net/?JapaneseCounting
-[4] http://home.snafu.de/jasiek/c2002.pdf
-[5] http://senseis.xmp.net/?ChineseRules
-[6] http://senseis.xmp.net/?ChineseCounting
-[7] http://www.usgo.org/files/pdf/completerules.pdf
-[8] http://www.cs.cmu.edu/~wjh/go/rules/AGA.commentary.html
-[9] http://senseis.xmp.net/?AGARules
-[10] http://www.lifein19x19.com/forum/viewtopic.php?f=45&t=10634
-[11] http://www.britgo.org/rules/compare.html
-[12] http://senseis.xmp.net/?TerritoryAndAreaScoring
+[1] https://www.cs.cmu.edu/~wjh/go/rules/Japanese.html
+[2] https://senseis.xmp.net/?JapaneseRules
+[3] https://senseis.xmp.net/?JapaneseCounting
+[4] https://home.snafu.de/jasiek/c2002.pdf
+[5] https://senseis.xmp.net/?ChineseRules
+[6] https://senseis.xmp.net/?ChineseCounting
+[7] https://www.usgo.org/files/pdf/completerules.pdf
+[8] https://www.cs.cmu.edu/~wjh/go/rules/AGA.commentary.html
+[9] https://senseis.xmp.net/?AGARules
+[10] https://www.lifein19x19.com/forum/viewtopic.php?f=45&t=10634
+[11] https://www.britgo.org/rules/compare.html
+[12] https://senseis.xmp.net/?TerritoryAndAreaScoring
 
 
 Settling life & death disputes
@@ -1042,13 +1044,13 @@ Special AGA rules (from [3], [5], [6] and, especially, [7])
   pass moves at the end of the game can vary between 2-5
 
 
-[1] http://www-2.cs.cmu.edu/~wjh/go/rules/Japanese.html
-[2] http://home.snafu.de/jasiek/c2002.pdf
-[3] http://www.usgo.org/files/pdf/completerules.pdf
-[4] http://home.snafu.de/jasiek/igsrules.html
-[5] http://www.cs.cmu.edu/~wjh/go/rules/AGA.commentary.html
-[6] http://senseis.xmp.net/?AGARules
-[7] http://www.lifein19x19.com/forum/viewtopic.php?f=45&t=10634
+[1] https://www.cs.cmu.edu/~wjh/go/rules/Japanese.html
+[2] https://home.snafu.de/jasiek/c2002.pdf
+[3] https://www.usgo.org/files/pdf/completerules.pdf
+[4] https://home.snafu.de/jasiek/igsrules.html
+[5] https://www.cs.cmu.edu/~wjh/go/rules/AGA.commentary.html
+[6] https://senseis.xmp.net/?AGARules
+[7] https://www.lifein19x19.com/forum/viewtopic.php?f=45&t=10634
 
 
 Redesigning the drawing mechanism in PlayView (v0.8)
@@ -1288,7 +1290,7 @@ Conclusions
   Another measurement should be made where it is possible to dynamically turn
   on/off the background image, i.e. without having to recompile the app.
 
-[1] http://en.wikipedia.org/wiki/List_of_iOS_devices
+[1] https://en.wikipedia.org/wiki/List_of_iOS_devices
 
 
 Redesigning the drawing mechanism to use tiling (v1.1.0)

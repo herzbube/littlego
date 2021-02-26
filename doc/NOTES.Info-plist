@@ -25,8 +25,8 @@ Although I don't have a use for CFBundleVersion, and the Xcode user guide
 (section "Building and Running Your Code") does not even mention it, the App
 Store validation process forces me to add this key to Info.plist.
 
-[1] developer.apple.com/library/mac/#documentation/General/Reference/InfoPlistKeyReference/
-[2] http://developer.apple.com/library/ios/#documentation/ToolsLanguages/Conceptual/Xcode4UserGuide/Building/Building.html
+[1] https://developer.apple.com/library/mac/#documentation/General/Reference/InfoPlistKeyReference/
+[2] https://developer.apple.com/library/ios/#documentation/ToolsLanguages/Conceptual/Xcode4UserGuide/Building/Building.html
 
 
 Application icons

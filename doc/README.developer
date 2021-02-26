@@ -107,7 +107,7 @@ littlego.asta
   of the project. There are also a few UML diagrams floating around as .jpg
   files. The origin of these diagrams is the Astah project file littlego.asta.
   To open that file you need to install the UML tool Astah - a free community
-  edition is available for download here: http://astah.net/
+  edition is available for download here: https://astah.net/
 
 NOTES.Diagnostics
   This document contains instructions what to do with the diagnostics
@@ -145,7 +145,7 @@ repository currently resides on GitHub:
 - URL for browsing: https://github.com/herzbube/littlego
 
 The branching model adopted by the project is described in this article:
-http://nvie.com/posts/a-successful-git-branching-model/.
+https://nvie.com/posts/a-successful-git-branching-model/.
 
 
 Bugtracking

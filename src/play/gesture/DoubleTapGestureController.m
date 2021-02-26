@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2019 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2021 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -132,7 +132,7 @@
 - (CGRect) rectForPointToZoomTo:(CGPoint)point zoomScale:(CGFloat)zoomScale
 {
   // The implementation of this method comes from
-  // http://www.raywenderlich.com/10518/how-to-use-uiscrollview-to-scroll-and-zoom-content
+  // https://www.raywenderlich.com/5758454-uiscrollview-tutorial-getting-started
   CGSize scrollViewSize = self.scrollView.bounds.size;
   CGFloat width = scrollViewSize.width / zoomScale;
   CGFloat height = scrollViewSize.height / zoomScale;

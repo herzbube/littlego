@@ -263,7 +263,7 @@ a short overview of how I configured those schemes:
 - Ditto, but name the new scheme "Little Go AppStore Distribution" and let the
   actions use the "Distribute_AppStore" build configuration.
 
-[1] http://stackoverflow.com/questions/7144316/adding-xcode-workspace-schemes-to-version-control
+[1] https://stackoverflow.com/questions/7144316/adding-xcode-workspace-schemes-to-version-control
 
 
 Platform notes

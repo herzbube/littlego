@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2021 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -99,6 +99,7 @@
     // do not support vibration, AudioServicesPlayAlertSound() plays a beep
     // sound, whereas AudioServicesPlaySystemSound() does nothing.
     // http://blog.mugunthkumar.com/coding/iphone-tutorial-better-way-to-check-capabilities-of-ios-devices/
+    // (URL defunct)
     //
     // On developer.apple.com there are two articles that refer to vibration:
     // - Multimedia Programming Guide: This one says to use

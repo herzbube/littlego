@@ -346,7 +346,7 @@
 /// linear gradient. The color returned by this method is the gradient's start
 /// color. See this stackoverflow.com question for information about how the
 /// color can be experimentally determined:
-/// http://stackoverflow.com/questions/5736515/ipad-grouped-tableview-background-color-what-is-it/
+/// https://stackoverflow.com/questions/5736515/ipad-grouped-tableview-background-color-what-is-it/
 // -----------------------------------------------------------------------------
 + (UIColor*) iPadGroupTableViewBackgroundGradientStartColor
 {

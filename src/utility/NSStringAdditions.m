@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2019 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2021 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@
 /// The image size increases slightly when a shadow is used.
 ///
 /// The code for this method is based on
-/// http://stackoverflow.com/questions/2765537/how-do-i-use-the-nsstring-draw-functionality-to-create-a-uiimage-from-text
+/// https://stackoverflow.com/questions/2765537/how-do-i-use-the-nsstring-draw-functionality-to-create-a-uiimage-from-text
 // -----------------------------------------------------------------------------
 - (UIImage*) imageWithFont:(UIFont*)font drawShadow:(bool)drawShadow
 {

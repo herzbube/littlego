@@ -144,7 +144,7 @@
 /// to the bottom-middle point of @a rect.
 ///
 /// The code for this method is based on
-/// http://www.raywenderlich.com/2033/core-graphics-101-lines-rectangles-and-gradients
+/// https://www.raywenderlich.com/475829-core-graphics-tutorial-lines-rectangles-and-gradients
 // -----------------------------------------------------------------------------
 + (void) drawLinearGradientWithContext:(CGContextRef)context rect:(CGRect)rect startColor:(CGColorRef)startColor endColor:(CGColorRef)endColor
 {
@@ -197,7 +197,7 @@
 /// an image, then returns that image.
 ///
 /// The code for this method is based on
-/// http://stackoverflow.com/questions/2200736/how-to-take-a-screenshot-programmatically
+/// https://stackoverflow.com/questions/2200736/how-to-take-a-screenshot-programmatically
 ///
 /// Keyword for search: screenshot
 // -----------------------------------------------------------------------------

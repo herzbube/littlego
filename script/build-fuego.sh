@@ -5,7 +5,7 @@
 # | a main build script. This snippet provides the required environment
 # | variables and functions to build the Boost and Fuego libraries.
 # |
-# | http://www.boost.org/
+# | https://www.boost.org/
 # | http://fuego.sourceforge.net/
 # |
 # | See the main build script for more information.

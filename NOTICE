@@ -16,7 +16,7 @@ from
 Fuego, and by inheritance this product, make use of various facilities provided
 by the Boost library. Boost is released under the Boost Software license, the
 original software is available from
-  http://www.boost.org/
+  https://www.boost.org/
 
 SgfcKit, libsgfc++ and SGFC are used for reading and writing SGF data. SgfcKit
 and libsgfc++ are both wrapper libraries around SGFC. SgfcKit and libsgfc++ are
@@ -77,9 +77,9 @@ The modifications consist of manually adding a preamble, as well as deleting
 all inline JavaScript parts and all references to external JavaScripts and CSS
 stylesheets from the header and footer of the document.
 
-The following icons are all from the Noun Project (http://thenounproject.com/).
+The following icons are all from the Noun Project (https://thenounproject.com/).
 - The Main Menu button is "Menu by John Caserta"
-  http://thenounproject.com/term/menu/36901/
+  https://thenounproject.com/term/menu/36901/
 - The Computer Play button is a composite of
     "Imac by Aaron K. Kim"
     https://thenounproject.com/term/imac/123922/
@@ -87,24 +87,24 @@ The following icons are all from the Noun Project (http://thenounproject.com/).
     "Play by P.J. Onori"
     https://thenounproject.com/term/play/2873/
 - The Pass button is "Dots by Alex Fuller"
-  http://thenounproject.com/term/dots/10554/
+  https://thenounproject.com/term/dots/10554/
 - The Discard button is "Eraser by Terrence Kevin Oleary"
-  http://thenounproject.com/term/eraser/3715/
+  https://thenounproject.com/term/eraser/3715/
 - The Interrupt button is "Delete by Kenan Sulayman"
-  http://thenounproject.com/term/delete/5763/
+  https://thenounproject.com/term/delete/5763/
 - The Pause button is "Pause by P.J. Onori"
-  http://thenounproject.com/term/pause/2866/
+  https://thenounproject.com/term/pause/2866/
 - The Continue button is "Arrow by Naomi Atkinson"
-  http://thenounproject.com/term/arrow/5582/
+  https://thenounproject.com/term/arrow/5582/
 - The board position navigation buttons are all derived from
     "Step Forward by useiconic.com"
-    http://thenounproject.com/term/step-forward/45526/
+    https://thenounproject.com/term/step-forward/45526/
 - The Game Info button is "line chart by Richard Schumann"
-  http://thenounproject.com/term/graph/50837/
+  https://thenounproject.com/term/graph/50837/
 - The Scoring button is a modified version of "Abacus by Cris Dobbins"
-  http://thenounproject.com/term/abacus/8926/
+  https://thenounproject.com/term/abacus/8926/
 - The More Game Actions button is "Right-Arrow by Icons8"
-  http://thenounproject.com/term/right-arrow/61422/
+  https://thenounproject.com/term/right-arrow/61422/
 - The Settings icon is "Gears by Simple Icons"
   https://thenounproject.com/term/gears/31893/
 - The Archive icon is "Archive by Gustav Salomonsson"

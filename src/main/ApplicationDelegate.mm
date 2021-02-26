@@ -683,7 +683,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   // Auto Layout and install constraints in UIWindow. In fact, doing so causes
   // trouble later on during the application's lifetime, when VCs are dismissed
   // after being presented modally. The problem is discussed here:
-  // http://stackoverflow.com/q/23313112/1054378
+  // https://stackoverflow.com/q/23313112/1054378
 }
 
 // -----------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2019 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2021 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -106,7 +106,7 @@
 /// are based on a coordinate system whose origin is in the top-left corner.
 /// UIKit and Core Animation use such a coordinate system, while Core Graphics
 /// uses a coordinate system with the origin in the lower-left corner. Also see
-/// http://developer.apple.com/library/ios/#documentation/2DDrawing/Conceptual/DrawingPrintingiOS/GraphicsDrawingOverview/GraphicsDrawingOverview.html
+/// https://developer.apple.com/library/ios/#documentation/2DDrawing/Conceptual/DrawingPrintingiOS/GraphicsDrawingOverview/GraphicsDrawingOverview.html
 ///
 /// As a small reminder for how to calculate distances, lengths and sizes in the
 /// graphics system: The coordinate system is zero-based, and the distance
@@ -119,7 +119,7 @@
 /// Most calculations are made with integer types. If necessary, the actual
 /// drawing then uses a half-pixel translation to prevent anti-aliasing for
 /// straight lines. Half-pixel translation is usually needed when lines have an
-/// odd-numbered width (e.g. 1, 3, ...). See http://stackoverflow.com/questions/2488115/how-to-set-up-a-user-quartz2d-coordinate-system-with-scaling-that-avoids-fuzzy-dr
+/// odd-numbered width (e.g. 1, 3, ...). See https://stackoverflow.com/questions/2488115/how-to-set-up-a-user-quartz2d-coordinate-system-with-scaling-that-avoids-fuzzy-dr
 /// for details. Half-pixel translation may also be necessary if something is
 /// drawn with its center at an intersection on the Go board, and the
 /// intersection coordinate has fractional x.5 values.

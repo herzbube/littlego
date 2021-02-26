@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2019 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2021 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,9 +40,9 @@
 /// universally accepted that the chance for a hash collision is extremely (!)
 /// small when 64 bit values are used (e.g. [3]).
 ///
-/// [1] http://en.wikipedia.org/wiki/Zobrist_hashing
-/// [2] http://www.cwi.nl/~tromp/java/go/GoGame.java
-/// [3] http://osdir.com/ml/games.devel.go/2002-09/msg00006.html
+/// [1] https://en.wikipedia.org/wiki/Zobrist_hashing
+/// [2] http://www.cwi.nl/~tromp/java/go/GoGame.java (URL defunct)
+/// [3] http://osdir.com/ml/games.devel.go/2002-09/msg00006.html (URL defunct)
 // -----------------------------------------------------------------------------
 @interface GoZobristTable : NSObject
 {

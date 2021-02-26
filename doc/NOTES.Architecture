@@ -115,7 +115,7 @@ Application states and transitions
 transitions. Little Go does nothing out of the ordinary, the two classes that
 are interesting to study are ApplicationDelegate and ApplicationStateManager.
 
-[1] http://www.cocoanetics.com/2010/07/understanding-ios-4-backgrounding-and-delegate-messaging/
+[1] https://www.cocoanetics.com/2010/07/understanding-ios-4-backgrounding-and-delegate-messaging/
 
 
 Preferences
@@ -259,7 +259,7 @@ exception-triggering bug makes it into production. This is a price I am willing
 to pay, also there is now a crash reporting service in place which vastly
 improves chances that I get notified about the problem.
 
-[1] http://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/Exceptions/Exceptions.html
+[1] https://developer.apple.com/library/mac/#documentation/Cocoa/Conceptual/Exceptions/Exceptions.html
 
 
 Strategy for saving data / preventing data loss

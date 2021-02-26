@@ -108,7 +108,7 @@ Make an ad-hoc distribution (beta release)
 - Most important is that what you enter in the "Application URL" field matches
   exactly the URL of the .ipa file as it is going to be available for download
 - Sensible values are
-  - Application URL = http://www.herzbube.ch/software/littlego/0.7/littlego-0.7.ipa
+  - Application URL = https://www.herzbube.ch/software/littlego/0.7/littlego-0.7.ipa
   - Title = Little Go 0.7 Beta Test
 - You must also specify a save location and a name. This step creates both a
   .plist and an .ipa file, where the specified name serves as the base name for

@@ -29,7 +29,7 @@ extern const float gHalfPixel;
 /// table view cell) appear disabled.
 ///
 /// This is based on
-/// http://stackoverflow.com/questions/5905608/how-do-i-make-a-uitableviewcell-appear-disabled
+/// https://stackoverflow.com/questions/5905608/how-do-i-make-a-uitableviewcell-appear-disabled
 extern const float gDisabledViewAlpha;
 /// @brief The alpha value used to draw black influence rectangles.
 extern const float gInfluenceColorAlphaBlack;

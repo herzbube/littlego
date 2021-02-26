@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2021 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,8 +65,8 @@
   if (! buildDate)
   {
     // Specs for __DATE__ and __TIME preprocessor macros:
-    // http://www.cplusplus.com/doc/tutorial/preprocessor/
-    // http://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
+    // https://www.cplusplus.com/doc/tutorial/preprocessor/
+    // https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html
     // Experimentation shows that the result looks like this:
     //   "May 9 2013 19:02:02"
     // The month is an abbreviation in English, the day is not prefixed with 0,
@@ -74,7 +74,7 @@
     // local time.
     NSString* buildDateString = [NSString stringWithFormat:@"%@ %@", @__DATE__, @__TIME__];
     // The following code is largely taken from the answer to this SO question:
-    // http://stackoverflow.com/questions/2862469/iphone-sdk-objective-c-date-compile-date-cant-be-converted-to-an-nsdate
+    // https://stackoverflow.com/questions/2862469/iphone-sdk-objective-c-date-compile-date-cant-be-converted-to-an-nsdate
     NSDateFormatter* dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
     dateFormatter.dateFormat = @"MMM d yyyy HH:mm:ss";
     NSLocale* usLocale = [[[NSLocale alloc] initWithLocaleIdentifier:@"en_US"] autorelease];

@@ -273,7 +273,7 @@ Little Go lets you play the game of Go on the iPhone or iPad. If you don't know
 the rules of Go you can find an extremely short, text-only introduction in one
 of the last sections of this manual (titled "Go rules"). For a more thorough
 approach I recommend visiting one of the many websites dedicated to the game;
-my personal favourite is "Sensei's Library" (http://senseis.xmp.net/).
+my personal favourite is "Sensei's Library" (https://senseis.xmp.net/).
 
 When you launch the app it displays the same area of the user interface that was
 last active in your previous session. Usually this the "Play" area, i.e. the
@@ -1144,7 +1144,7 @@ better use of this time in a single thread of straightforward calculations.
 Note that the iPhone 4S is the first iOS device that has a processor with 2
 cores, so on older devices you should leave the number of threads set to 1. If
 you don't know how many processor cores your device has, you can consult this
-Wikipedia page: http://en.wikipedia.org/wiki/List_of_iOS_devices.
+Wikipedia page: https://en.wikipedia.org/wiki/List_of_iOS_devices.
 
 =========
 Pondering
@@ -1320,7 +1320,7 @@ Area scoring and territory scoring
 When you start a new game you can choose whether you want to play according to
 area or territory scoring rules (sometimes also known as Chinese or Japanese
 rules). Details about the two scoring systems can be found at
-http://senseis.xmp.net/?Scoring. Because the scoring rules may affect decisions
+https://senseis.xmp.net/?Scoring. Because the scoring rules may affect decisions
 how to play, you are not allowed to change the scoring rules in the middle of
 the game.
 
@@ -1946,7 +1946,7 @@ This help section contains only a barebones and purely textual introduction to
 the rules of Go. Usually a few illustrations are much more intelligible,
 therefore I strongly suggest that to learn the rules you visit one of the many
 websites dedicated to the game; my personal favourite is "Sensei's Library"
-(http://senseis.xmp.net/), another more hands-on interactive tutorial is
+(https://senseis.xmp.net/), another more hands-on interactive tutorial is
 available on "Online-Go.com" (https://online-go.com/learn-to-play-go).
 
 =======
@@ -2112,7 +2112,7 @@ from following certain points of etiquette that have developed over the long
 history and tradition of the game. In Little Go, most of the time you will play
 against the computer, so there is not much point in going into the details of
 this subject. If you are keen on reading more, though, I would like to refer you
-once more to Sensei's Library (http://senseis.xmp.net/?GoEtiquette).
+once more to Sensei's Library (https://senseis.xmp.net/?GoEtiquette).
 
 
 --------------------------------------------------------------------------------
