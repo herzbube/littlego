@@ -337,28 +337,9 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
-  CGLayerRef blackStoneLayer = [cache layerOfType:BlackStoneLayerType];
-  if (! blackStoneLayer)
-  {
-    blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, self.boardViewMetrics);
-    [cache setLayer:blackStoneLayer ofType:BlackStoneLayerType];
-    CGLayerRelease(blackStoneLayer);
-  }
-  CGLayerRef whiteStoneLayer = [cache layerOfType:WhiteStoneLayerType];
-  if (! whiteStoneLayer)
-  {
-    whiteStoneLayer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, self.boardViewMetrics);
-    [cache setLayer:whiteStoneLayer ofType:WhiteStoneLayerType];
-    CGLayerRelease(whiteStoneLayer);
-  }
-  CGLayerRef crossHairStoneLayer = [cache layerOfType:CrossHairStoneLayerType];
-  if (! crossHairStoneLayer)
-  {
-    crossHairStoneLayer = CreateStoneLayerWithImage(context, stoneCrosshairImageResource, self.boardViewMetrics);
-    [cache setLayer:crossHairStoneLayer ofType:CrossHairStoneLayerType];
-    CGLayerRelease(crossHairStoneLayer);
-  }
+  CGLayerRef blackStoneLayer = [BoardViewDrawingHelper cachedBlackStoneLayerWithContext:context withMetrics:self.boardViewMetrics];
+  CGLayerRef whiteStoneLayer = [BoardViewDrawingHelper cachedWhiteStoneLayerWithContext:context withMetrics:self.boardViewMetrics];
+  CGLayerRef crossHairStoneLayer = [BoardViewDrawingHelper cachedBCrossHairStoneLayerWithContext:context withMetrics:self.boardViewMetrics];
 
   GoGame* game = [GoGame sharedGame];
   GoBoard* board = game.board;

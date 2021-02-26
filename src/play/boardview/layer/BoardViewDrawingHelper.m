@@ -17,6 +17,7 @@
 
 // Project includes
 #import "BoardViewDrawingHelper.h"
+#import "BoardViewCGLayerCache.h"
 #import "../Tile.h"
 #import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoPoint.h"
@@ -490,6 +491,72 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
                                                              inTileWithRect:tileRect];
   }
   return drawingRectForPoint;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a layer from the cache in which a black stone is drawn
+/// sized according to the definitions in @a metrics. If the cache does not
+/// contain the requested layer this method draws the layer and populates the
+/// cache with it.
+// -----------------------------------------------------------------------------
++ (CGLayerRef) cachedBlackStoneLayerWithContext:(CGContextRef)context
+                                    withMetrics:(BoardViewMetrics*)metrics
+{
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+
+  CGLayerRef blackStoneLayer = [cache layerOfType:BlackStoneLayerType];
+  if (! blackStoneLayer)
+  {
+    blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, metrics);
+    [cache setLayer:blackStoneLayer ofType:BlackStoneLayerType];
+    CGLayerRelease(blackStoneLayer);
+  }
+
+  return blackStoneLayer;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a layer from the cache in which a white stone is drawn
+/// sized according to the definitions in @a metrics. If the cache does not
+/// contain the requested layer this method draws the layer and populates the
+/// cache with it.
+// -----------------------------------------------------------------------------
++ (CGLayerRef) cachedWhiteStoneLayerWithContext:(CGContextRef)context
+                                    withMetrics:(BoardViewMetrics*)metrics
+{
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+
+  CGLayerRef whiteStoneLayer = [cache layerOfType:WhiteStoneLayerType];
+  if (! whiteStoneLayer)
+  {
+    whiteStoneLayer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, metrics);
+    [cache setLayer:whiteStoneLayer ofType:WhiteStoneLayerType];
+    CGLayerRelease(whiteStoneLayer);
+  }
+
+  return whiteStoneLayer;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a layer from the cache in which a crosshair stone is drawn
+/// sized according to the definitions in @a metrics. If the cache does not
+/// contain the requested layer this method draws the layer and populates the
+/// cache with it.
+// -----------------------------------------------------------------------------
++ (CGLayerRef) cachedBCrossHairStoneLayerWithContext:(CGContextRef)context
+                                         withMetrics:(BoardViewMetrics*)metrics
+{
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+
+  CGLayerRef crossHairStoneLayer = [cache layerOfType:CrossHairStoneLayerType];
+  if (! crossHairStoneLayer)
+  {
+    crossHairStoneLayer = CreateStoneLayerWithImage(context, stoneCrosshairImageResource, metrics);
+    [cache setLayer:crossHairStoneLayer ofType:CrossHairStoneLayerType];
+    CGLayerRelease(crossHairStoneLayer);
+  }
+
+  return crossHairStoneLayer;
 }
 
 @end

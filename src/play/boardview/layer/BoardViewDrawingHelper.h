@@ -90,4 +90,14 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
                   withMetrics:(BoardViewMetrics*)metrics;
 //@}
 
+/// @name Drawing and caching helpers
+//@{
++ (CGLayerRef) cachedBlackStoneLayerWithContext:(CGContextRef)context
+                                    withMetrics:(BoardViewMetrics*)metrics;
++ (CGLayerRef) cachedWhiteStoneLayerWithContext:(CGContextRef)context
+                                    withMetrics:(BoardViewMetrics*)metrics;
++ (CGLayerRef) cachedBCrossHairStoneLayerWithContext:(CGContextRef)context
+                                         withMetrics:(BoardViewMetrics*)metrics;
+//@}
+
 @end

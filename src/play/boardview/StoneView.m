@@ -17,8 +17,8 @@
 
 // Project includes
 #import "StoneView.h"
-#import "layer/BoardViewCGLayerCache.h"
 #import "layer/BoardViewDrawingHelper.h"
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for StoneView.
@@ -29,6 +29,7 @@
 @end
 
 @implementation StoneView
+
 
 #pragma mark - Initialization and deallocation
 
@@ -77,29 +78,11 @@
 
   CGContextRef context = UIGraphicsGetCurrentContext();
 
-  // TODO xxx: Here we use the same caching mechanism as in StoneLayerDelegate.
-  // This should be a reusable function.
-  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
-  CGLayerRef blackStoneLayer = [cache layerOfType:BlackStoneLayerType];
-  if (! blackStoneLayer)
-  {
-    blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, self.boardViewMetrics);
-    [cache setLayer:blackStoneLayer ofType:BlackStoneLayerType];
-    CGLayerRelease(blackStoneLayer);
-  }
-  CGLayerRef whiteStoneLayer = [cache layerOfType:WhiteStoneLayerType];
-  if (! whiteStoneLayer)
-  {
-    whiteStoneLayer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, self.boardViewMetrics);
-    [cache setLayer:whiteStoneLayer ofType:WhiteStoneLayerType];
-    CGLayerRelease(whiteStoneLayer);
-  }
-
   CGLayerRef stoneLayer;
   if (self.stoneColor == GoColorBlack)
-    stoneLayer = blackStoneLayer;
+    stoneLayer = [BoardViewDrawingHelper cachedBlackStoneLayerWithContext:context withMetrics:self.boardViewMetrics];
   else
-    stoneLayer = whiteStoneLayer;
+    stoneLayer = [BoardViewDrawingHelper cachedWhiteStoneLayerWithContext:context withMetrics:self.boardViewMetrics];
 
   // Limit the drawing to the rectangle passed to us by CGRect
   CGContextDrawLayerInRect(context, rect, stoneLayer);
