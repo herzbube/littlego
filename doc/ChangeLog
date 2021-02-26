@@ -1,4 +1,115 @@
 --------------------------------------------------------------------------------
+Version 1.6.0 (Feburary 26 2021)
+--------------------------------------------------------------------------------
+========
+Features
+========
+Smart Game Format (SGF) data processing:
+- Added an SGF parser (#112). Little Go can now read and write SGF data on its
+  own without having to delegate this task to Fuego (the built-in computer
+  player library). The core piece of software is SGFC, the SGF Syntax Checker &
+  Converter. A big thank you to Arno Hollosi for writing this tool and making it
+  available under a free license, and also for helping with integrating it into
+  Little Go.
+- When you select an SGF file in the archive you can now see if the file
+  contains more than just one game. For each game you now get a preview of its
+  content and you can select which game to load (#338).
+- In the Settings screen there are now a number of user preferences that give
+  you some control over how SGF files are processed (#337). The defaults should
+  be fine, especially for files that were created by Little Go, but if you have
+  imported files from an external source you might need to make adjustments.
+  The in-game manual has all the details.
+
+Other features:
+- Added a new user preference to the "Board position" settings screen that lets
+  you choose whether discarding the computer player's last move also discards
+  your own last move (#99). The goal is that if the option is enabled you can
+  immediately play again after a discard and try out a different move.
+- Added a new entry to the "More game actions" menu that lets you play a rematch
+  without showing the "New game" screen first (#313). This is a convenient
+  shortcut to quickly start a new game with the same parameters as the last one.
+- Added a new user preference that lets you choose what kind of computer
+  assistance you would like to receive. The default is, just like before, to let
+  the computer make a move on your behalf. What's new is that if you prefer you
+  can now tell the computer to insted only make a suggestion how to play (#28).
+  Note that the feature is still a bit rough on the edges. Known issues have
+  been collected in #363, the polish will come in one of the next releases.
+
+========================
+Improvements and changes
+========================
+- The buttons that let the user navigate between board positions have now more
+  space between them (#346), making it less likely that the user taps the wrong
+  button. Thanks to Dan Hassin for both reporting the issue and implementing the
+  fix.
+- Loading a game from the archive now benefits from improved error handling.
+  If a game cannot be loaded you will now get better error messages that should
+  be more helpful.
+- When a game is saved to the archive the current player names are now written
+  to the SGF data (#237).
+- The user interface has been adapted to newer iOS devices with a sensor notch,
+  rounded corners and/or a Home indicator instead of a Home button (#336).
+- The app now supports Dark Mode (#345). A new, darker wooden background for
+  the board still needs to be found (#360).
+- When Little Go is newly installed from the App Store the default computer
+  player is now weaker (#358). This should give more users a positive first
+  app experience. Users who want a challenge can still increase the difficulty
+  by switching to a stronger computer player. A side effect of this change is
+  that the default computer player no longer uses the "Pondering" setting, which
+  means that the iOS device's battery should now be used up a lot less.
+- Added another predefined computer player that has "Pondering" disabled. Users
+  who already have the app installed need to select "Reset to defaults" in the
+  "Players" settings screen to see the new player.
+- The app's user interface no longer exposes GTP engine profiles as a separate
+  entity, instead the user interface now only displays players (#211). It should
+  now be easier for users to find the settings for adjusting the computer
+  player's strength.
+
+========
+Bugfixes
+========
+- The app no longer crashes when a game with many moves (500 or more) is
+  archived or unarchived (#357).
+- The app no longer crashes when a game is loaded while an ended game with
+  non-alternating dispute resolution is present (#361).
+- Speculative fix for a potential app crash when an SGF file is imported (#362).
+- The information which player resigned is no longer lost when the user switches
+  to an earlier board position (#341).
+- On iPhone devices with larger displays, when the device is rotated while the
+  activity indicator is displayed in the status view the activity indicator is
+  now still displayed after the rotation (#343).
+
+===========
+Regressions
+===========
+- All iPhones: When board setup mode was added in version 1.5.0 a bug was
+  introduced that made it possible for board position lists to show erroneous
+  information when moves were discarded and then replayed, or when games were
+  restarted with different characteristics. This bug has now been fixed (#359).
+- iPhone devices with smaller displays: When iOS 13 or newer was installed on
+  these devices the current board position view stopped responding to taps.
+  This bug has now been fixed (#344).
+
+=================
+Technical changes
+=================
+- The project has been upgraded to the iOS 14.3 SDK (#335) and
+  Xcode 12.3 (#334).
+- The migration from Twitter Fabric to Google Firebase is now complete (#322).
+- Support for iOS 8 has been dropped, the minimum required version is now iOS
+  9.0 (#305). This should not affect any devices unless they are artificially
+  held back at iOS 8.
+- The project's software build should now work out of the box for new
+  contributors. Thanks to Dan Hassin for contributing the necessary changes.
+
+=================
+GitHub issue list
+=================
+A list of all issues closed for this release is available on GitHub:
+https://github.com/herzbube/littlego/milestone/18?closed=1
+
+
+--------------------------------------------------------------------------------
 Version 1.5.1 (March 23 2019)
 --------------------------------------------------------------------------------
 ========

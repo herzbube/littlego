@@ -7,7 +7,8 @@ Before the release
 ------------------
 - Create a release branch. All remaining work will be done in this branch.
   git checkout -b release-0.9.0 develop
-- Run Xcode's analyze tool and fix all problems that are reported
+- Run Xcode's analyze tool for both the simulator and a device target and fix
+  all problems that are reported
 - Make sure that the issues in the bugtracker are up to date
 - Analyze any crash reports that are still outstanding
   - Crashlytics dashboard
@@ -25,10 +26,11 @@ Before the release
     - NOTES.Build
   - Make sure to read the Xcode release notes
 - If a new deployment target was used to build the project, update the following
-  files
+  files (search for the old version)
   - README.md
   - NOTES.Build
   - NOTES.Marketing
+  - index.html on the gh-ages branch
 - If 3rd party software has been updated
   - Make sure that the third party software version numbers in About.html are
     up to date (including the fuego-on-ios commit ID)

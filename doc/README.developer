@@ -8,10 +8,11 @@ or years :-)
 
 Quick-start guide on how to build and run Little Go
 ---------------------------------------------------
-The current build should work out of the box for Xcode 10.1 and the iOS base
-SDK 12.1 (read NOTES.Build if you need help setting up this combination). If you
-want to build with a different setup you will probably encounter errors. Consult
-NOTES.build and NOTES.Build.3rdparty, but mostly you will be on your own.
+The current build should work out of the box for Xcode 12.3 and the iOS base
+SDK 14.3 (read NOTES.Build if you need help setting up this combination). If you
+want to build with a different setup (especially an older Xcode version) you
+will probably encounter errors. Consult NOTES.build and NOTES.Build.3rdparty,
+but mostly you will be on your own.
 
 Before you begin, make sure that you have CocoaPods installed on your machine.
 Visit the CocoaPods website (https://cocoapods.org/) for instructions how to do

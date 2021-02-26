@@ -7,15 +7,16 @@ to advertise the app in Apple's app store.
 App Store page content
 ----------------------
 
-Little Go is a free and open source iOS application that lets you play the game of Go on the iPhone or iPad. You can play against another human (on the same device), or against the computer. The computer player is powered by the open source software library Fuego (http://fuego.sf.net/). The minimum requirement for running this version of Little Go is iOS 8.1.
+Little Go is a free and open source iOS application that lets you play the game of Go on the iPhone or iPad. You can play against another human (on the same device), or against the computer. The computer player is powered by the open source software library Fuego (http://fuego.sf.net/). The minimum requirement for running this version of Little Go is iOS 9.0.
 
 Features:
 - Board sizes between 7x7 and 19x19 (start a new game to change the board size)
-- Let the computer player make a move for you
+- Let the computer player suggest a move or immediately play the move for you
 - Calculate the score at any time during the game (area scoring is the default, territory scoring can be selected at the start of a new game)
 - Adjust the computer's playing strength and resign behaviour by selecting from a number of presets, or by fine-tuning advanced settings
 - Play even games, or games with 2-9 handicap stones (fixed stone placement)
 - Select from 5 pre-defined rulesets when you start a new game, or adjust game rules to your preference (komi, ko rule, area/territory scoring system, number of passes to end game, resume play by alternating/non-alternating play, four passes end game)
+- Place arbitrary black and white stones for initial board setup before a game starts
 - View board positions for moves played earlier during the game (no support for game variations, though)
 - Discard moves (aka "undo")
 - Display move numbers and coordinate labels
@@ -29,9 +30,21 @@ Features:
 - Submit bug report email from inside the app (yes, this *is* a feature :-))
 - For the technically inclined: Watch what happens behind the scenes when Little Go and Fuego talk to each other over the Go Text Protocol (GTP)
 
-Your contribution in any form (coding, UI design, testing, bug reports, creating an app video preview, website design) is welcome - please contact me or visit the project website (http://littlego.herzbube.ch/) to find out more.
+Your contribution in any form (coding, UI design, testing, bug reports, creating an app video preview, website design) is welcome - please contact me or visit the support website to find out more.
+
+A note about the project state: Several years of development have gone into Little Go since its inception in January 2011. The app now has a feature set that is, I believe, quite nice :-) for a free program. My main focus therefore lies on fixing any remaining bugs (of which I am sure there are plenty) and keeping the app running under future versions of iOS.
 
 Little Go is released under the Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0).
+
+
+App Store keywords
+------------------
+Go, weiqi, igo, baduk, free, computer go, 圍棋, 围棋, 바둑, 圍棋, (위기, 囲碁, 碁, いご, ご
+
+Note: The keywords in non-latin characters were copy & pasted from the Wikipedia
+page on Go [1].
+
+[1] https://en.wikipedia.org/wiki/Go_(game)
 
 
 App Store screenshots
@@ -54,17 +67,25 @@ Before starting to take screenshots, prepare each simulator as follows:
   - Lee's Broken Ladder Game.sgf
   - Fuego vs. Fuego.sgf
 - Launch the app
-- Load "Lee's Broken Ladder Game.sgf"
+- Load "Lee's Broken Ladder Game.sgf" as a human vs. human game
 - Go to board position 97
 
 
 Screenshots
 - Screenshot 1: Start placing a stone, then take a screenshot while the
-  magnifying glass is visible
-- Screenshot 2: Take a screenshot from the "Settings > Display" screen
-- Screenshot 3: Take a screenshot from the "Archive" screen
-- Screenshot 4: Take a screenshot from the "Help" screen
-- Screenshot 3: Take a screenshot from the "Diagnostics > GTP Log" screen
+  magnifying glass is visible and the cross-hair is at intersection L14
+- Screenshot 2: Take a screenshot from the "Human vs. computer" tab in the
+  "New game" screen
+- Load "Ear-reddening game.sgf", then switch to scoring mode
+- Screenshot 3: Take a screenshot from board
+- Screenshot 4: Take a screenshot from the "Score" tab in the "Game info" screen
+- Screenshot 5: Take a screenshot from the "Settings" screen
+- Screenshot 6: Take a screenshot from the "Settings > Display" screen
+- Screenshot 7: Take a screenshot from the "Archive" screen
+- Screenshot 8: Take a screenshot from the "View archive content" screen when
+  viewing "Lee's Broken Ladder Game.sgf".
+- Screenshot 9: Take a screenshot from the "Help" screen
+- Screenshot 10: Take a screenshot from the "Diagnostics > GTP Log" screen
 
 
 App Store app preview
@@ -72,9 +93,12 @@ App Store app preview
 This section contains a possible "screenplay" for an App Store app preview
 movie. The aim is to highlight the most important features of the app. An
 initial attempt to realize this showed, however, that the screenplay is probably
-too long: Even with a severly compressed timeline and rather aggressive cutting,
+too long: Even with a severely compressed timeline and rather aggressive cutting,
 the resulting movie was almost 1.5 minutes long, which is 3 times as long as
 the maximum length allowed by Apple.
+
+Note: When a new screenplay is written it needs to take into account the new
+features that were added since the screenplay below was originally written.
 
 Preparations
 - Select the device on which to record

@@ -14,7 +14,7 @@ UI elements design notes
 TableViewCell
 - TableViewCellFactory creates a couple of table cell types that are not
   available from the UIKit
-- For the cell type that has a slider, I did a bit off debugging/inspection of
+- For the cell type that has a slider, I did a bit of debugging/inspection of
   the default UITableViewCell and its subviews; following are the results
 - Size of a UITableViewCell (from its frame rect) = 320x45
 - In a cell with style UITableViewCellStyleValue1 and accessoryType

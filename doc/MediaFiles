@@ -25,7 +25,7 @@ wood-on-wood-12.aiff
   the tool a second time. The values should now be correctly adjusted to the
   noise level in the recording, so that you can simply click the "OK" button.
   After the tool has applied its effect, you can playback the recording to
-  confirm that the noise has really been eliminiated.
+  confirm that the noise has really been eliminated.
 - Select the portion of the recording that you want to use as the media file.
   Select "File > Export Selection", in the following dialog click the "Clear"
   button to remove the metadata stored by the iPhone in the recording, then

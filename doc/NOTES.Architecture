@@ -6,6 +6,7 @@ This document contains architecture notes on a variety of subjects.
 Memory management
 -----------------
 This project uses manual reference counting using retain/release, i.e. no ARC.
+An exception is the source code built for the "UI tests" target, which uses ARC.
 
 
 Communication with Fuego
@@ -139,7 +140,7 @@ About the Play UI area
   hierarchy. With a few exceptions, the view hierarchy is represented by a
   corresponding hierarchy of container/child UIViewControllers. Not all
   controller classes are view controllers, though: There are also a number of
-  controllers that manage gesture recognizing and alert messages.
+  controllers that manage gesture recognizing, animations and alert messages.
 - Dynamic design: When the application launches, the main application view
   controller creates an instance of the appropriate PlayRootViewController
   subclass. This starts a first cascade of object creation during which all the
@@ -166,7 +167,7 @@ iPhone UI design:
     that the user can place a stone. 3) Display scoring information (territory
     markup, dead stones, etc.). 4) Provide user interaction so that the user
     can mark dead stones during scoring.
-  - Because the Go board is square, but iOS device screens are oblong, the
+  - Because the Go board is square, but iOS device screens are rectangular, the
     game view cannot take full advantage of all the available screen estate.
     The game view is responsible for making the most of the current situation,
     dynamically adjusting to any changes such as device orientation changes.
