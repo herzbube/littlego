@@ -410,6 +410,13 @@
   // small delay.
   if (! [GoGame sharedGame])
     return;
+
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(drawLayers) withObject:nil waitUntilDone:YES];
+    return;
+  }
+
   self.drawLayersWasDelayed = false;
 
   if (self.currentBoardPositionChangedWasDelayed)

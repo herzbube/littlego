@@ -99,6 +99,12 @@
   if (! self.boardView)
     return;
 
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(computerPlayerGeneratedMoveSuggestion:) withObject:notification waitUntilDone:YES];
+    return;
+  }
+
   // Unpack notification data
   NSDictionary* dictionary = notification.userInfo;
   NSNumber* colorAsNumber = dictionary[moveSuggestionColorKey];

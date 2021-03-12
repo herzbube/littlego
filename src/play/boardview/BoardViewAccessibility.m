@@ -166,7 +166,11 @@
 {
   if ([LongRunningActionCounter sharedCounter].counter > 0)
     return;
-
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(delayedUpdate) withObject:nil waitUntilDone:YES];
+    return;
+  }
   [self postLayoutChangedNotification];
 }
 

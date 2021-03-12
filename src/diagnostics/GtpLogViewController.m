@@ -365,6 +365,12 @@
 // -----------------------------------------------------------------------------
 - (void) gtpLogContentChanged:(NSNotification*)notification
 {
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(gtpLogContentChanged:) withObject:notification waitUntilDone:YES];
+    return;
+  }
+
   if (self.lastRowIsVisible)
   {
     // The delay value must be in the range of
@@ -389,6 +395,12 @@
 // -----------------------------------------------------------------------------
 - (void) gtpLogItemChanged:(NSNotification*)notification
 {
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(gtpLogItemChanged:) withObject:notification waitUntilDone:YES];
+    return;
+  }
+
   GtpLogItem* logItem = [notification object];
 
   // Ignore updateScheduledByGtpLogContentChanged for backside view updating

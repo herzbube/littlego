@@ -550,6 +550,11 @@ enum BugReportSectionItem
   bool shouldDisableBugReportSection = [self shouldDisableBugReportSection];
   if (shouldDisableBugReportSection == self.bugReportSectionIsDisabled)
     return;
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(updateBugReportSection) withObject:nil waitUntilDone:YES];
+    return;
+  }
   self.bugReportSectionIsDisabled = shouldDisableBugReportSection;
   NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:BugReportSection];
   [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
