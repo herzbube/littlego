@@ -24,6 +24,10 @@
 /// the UI area "Play" to a desired mode, and for notifying the rest of the
 /// application about the change. ChangeUIAreaPlayModeCommand does nothing if
 /// the UI area "Play" is already in the desired mode.
+///
+/// ChangeUIAreaPlayModeCommand displays an alert, and command execution fails,
+/// if #UIAreaPlayModeBoardSetup is requested but the current board position
+/// is not 0.
 // -----------------------------------------------------------------------------
 @interface ChangeUIAreaPlayModeCommand : CommandBase
 {

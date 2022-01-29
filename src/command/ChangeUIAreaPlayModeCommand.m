@@ -18,6 +18,7 @@
 // Project includes
 #import "ChangeUIAreaPlayModeCommand.h"
 #import "game/ResumePlayCommand.h"
+#import "../go/GoBoardPosition.h"
 #import "../go/GoGame.h"
 #import "../go/GoScore.h"
 #import "../go/GoUtilities.h"
@@ -25,6 +26,7 @@
 #import "../play/model/ScoringModel.h"
 #import "../shared/ApplicationStateManager.h"
 #import "../ui/UiSettingsModel.h"
+#import "../ui/UIViewControllerAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -88,6 +90,16 @@
     return true;
   }
 
+  GoGame* game = [GoGame sharedGame];
+  if (self.newUIAreaPlayMode == UIAreaPlayModeBoardSetup && game.boardPosition.currentBoardPosition != 0)
+  {
+    // A rare scenario has been found where this is possible - for details
+    // see https://github.com/herzbube/littlego/issues/366. This block handles
+    // case 1.
+    [self showAlertNotOnBoardPositionZero:game.boardPosition.currentBoardPosition];
+    return false;
+  }
+
   self.oldAndNewModes = @[[NSNumber numberWithInt:oldUIAreaPlayMode],
                           [NSNumber numberWithInt:self.newUIAreaPlayMode]];
 
@@ -111,14 +123,14 @@
   // already must have the new value.
   if (oldUIAreaPlayMode == UIAreaPlayModeScoring)
   {
-    GoScore* score = [GoGame sharedGame].score;
+    GoScore* score = game.score;
     [score disableScoring];
 
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
   }
   else if (self.newUIAreaPlayMode == UIAreaPlayModeScoring)
   {
-    GoScore* score = [GoGame sharedGame].score;
+    GoScore* score = game.score;
     [score enableScoring];
     [score calculateWaitUntilDone:false];
 
@@ -190,6 +202,31 @@
   // ResumePlayCommand may show an alert, so code execution may return to us
   // before play is actually resumed
   [[[[ResumePlayCommand alloc] init] autorelease] submit];
+}
+
+#pragma mark - Alert handler
+
+// -----------------------------------------------------------------------------
+/// @brief Shows an alert that informs the user that the UI areay "Play" cannot
+/// be changed to board setup mode because the board is currently not showing
+/// board position 0.
+// -----------------------------------------------------------------------------
+- (void) showAlertNotOnBoardPositionZero:(int)currentBoardPosition
+{
+  NSString* alertTitle = @"Board setup mode canceled";
+  NSString* alertMessage = [NSString stringWithFormat:@"Switching to board setup mode was canceled because the board no longer shows board position 0 (instead it shows board position %d).", currentBoardPosition];
+  DDLogWarn(@"%@: %@", self, alertMessage);
+
+  void (^okActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+  {
+    [self autorelease];  // balance retain that is sent before an alert is shown
+  };
+
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
+                                                                                  message:alertMessage
+                                                                                okHandler:okActionBlock];
+
+  [self retain];  // must survive until the handler method is invoked
 }
 
 @end
