@@ -25,6 +25,8 @@
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
+#import "../../ui/UiSettingsModel.h"
+#import "../../ui/UIViewControllerAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -62,15 +64,26 @@
 - (bool) doIt
 {
   GoGame* game = [GoGame sharedGame];
+  int currentBoardPosition = game.boardPosition.currentBoardPosition;
 
-  if (game.boardPosition.currentBoardPosition != 0)
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  if (appDelegate.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeBoardSetup)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Current board position is %d, but should be 0", game.boardPosition.currentBoardPosition];
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
+    // Some rare scenarios have been found where this is possible - for details
+    // see https://github.com/herzbube/littlego/issues/366. This block handles
+    // case 3.
+    [self showAlertNotInBoardSetupMode:currentBoardPosition];
+    return false;
+  }
+
+  if (currentBoardPosition != 0)
+  {
+    // Currently there is no known scenario for this. In the known scenarios
+    // where the current board position is not 0 the app is also no longer in
+    // board setup mode, and that case was already handled above. To be
+    // waterproof error handling must also include this check.
+    [self showAlertNotOnBoardPositionZero:currentBoardPosition];
+    return false;
   }
 
   @try
@@ -117,6 +130,57 @@
   }
 
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Shows an alert that informs the user that discarding all setup stones
+/// is not possible because the application is currently not in board setup
+/// mode.
+// -----------------------------------------------------------------------------
+- (void) showAlertNotInBoardSetupMode:(int)currentBoardPosition
+{
+  NSString* alertTitle = @"Setting up a side to play first canceled";
+  NSString* alertMessage;
+  // Try to find out why we are no longer in board setup mode so that we can
+  // display a more informative alert message
+  if (currentBoardPosition != 0)
+    alertMessage = [NSString stringWithFormat:@"Setting up a side to play first was canceled because the board no longer shows board position 0 (instead it shows board position %d) and is no longer in setup mode.", currentBoardPosition];
+  else
+    alertMessage = @"Setting up a side to play first was canceled because the board is no longer in setup mode.";
+  DDLogWarn(@"%@: %@", self, alertMessage);
+
+  void (^okActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+  {
+    [self autorelease];  // balance retain that is sent before an alert is shown
+  };
+
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
+                                                                                  message:alertMessage
+                                                                                okHandler:okActionBlock];
+
+  [self retain];  // must survive until the handler method is invoked
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Shows an alert that informs the user that discarding all setup stones
+/// is not possible because the board is currently not showing board position 0.
+// -----------------------------------------------------------------------------
+- (void) showAlertNotOnBoardPositionZero:(int)currentBoardPosition
+{
+  NSString* alertTitle = @"Setting up a side to play first canceled";
+  NSString* alertMessage = [NSString stringWithFormat:@"Setting up a side to play first was canceled because the board no longer shows board position 0 (instead it shows board position %d).", currentBoardPosition];
+  DDLogWarn(@"%@: %@", self, alertMessage);
+
+  void (^okActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
+  {
+    [self autorelease];  // balance retain that is sent before an alert is shown
+  };
+
+  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
+                                                                                  message:alertMessage
+                                                                                okHandler:okActionBlock];
+
+  [self retain];  // must survive until the handler method is invoked
 }
 
 @end

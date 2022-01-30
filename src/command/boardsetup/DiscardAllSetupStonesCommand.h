@@ -40,8 +40,9 @@
 /// actually discarded.
 ///
 /// It is expected that this command is only executed while the UI area "Play"
-/// is in board setup mode. Also, DiscardAllSetupStonesCommand raises
-/// NSInternalInconsistencyException if the current board position is not 0.
+/// is in board setup mode and the current board position is 0. If any of these
+/// conditions is not met an alert is displayed (but command execution still
+/// succeeds, as explained further up).
 // -----------------------------------------------------------------------------
 @interface DiscardAllSetupStonesCommand : CommandBase
 {
