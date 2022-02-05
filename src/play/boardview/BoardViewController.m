@@ -27,7 +27,6 @@
 #import "../gesture/TwoFingerTapGestureController.h"
 #import "../model/BoardViewMetrics.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../utility/UIColorAdditions.h"
 
@@ -157,9 +156,6 @@
 - (void) configureViews
 {
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
-
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
-    self.view.backgroundColor = [UIColor woodenBackgroundColor];
 
   self.boardView.backgroundColor = [UIColor clearColor];
   self.boardView.delegate = self;

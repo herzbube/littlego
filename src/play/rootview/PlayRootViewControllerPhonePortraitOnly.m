@@ -19,10 +19,12 @@
 #import "PlayRootViewControllerPhonePortraitOnly.h"
 #import "../boardposition/BoardPositionToolbarController.h"
 #import "../boardview/BoardViewController.h"
+#import "../controller/AutoLayoutConstraintHelper.h"
 #import "../controller/NavigationBarController.h"
 #import "../controller/StatusViewController.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
+#import "../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -33,6 +35,8 @@
 @property(nonatomic, retain) NavigationBarController* navigationBarController;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
+@property(nonatomic, retain) UIView* woodenBackgroundView;
+@property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
 @end
 
 
@@ -74,6 +78,8 @@
   self.navigationBarController = nil;
   self.boardPositionToolbarController = nil;
   self.boardViewController = nil;
+  self.woodenBackgroundView = nil;
+  self.boardViewAutoLayoutConstraints = nil;
 }
 
 #pragma mark - Container view controller handling
@@ -182,9 +188,15 @@
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
+  self.woodenBackgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+
   [self.view addSubview:self.navigationBarController.view];
   [self.view addSubview:self.boardPositionToolbarController.view];
-  [self.view addSubview:self.boardViewController.view];
+  [self.view addSubview:self.woodenBackgroundView];
+
+  [self.woodenBackgroundView addSubview:self.boardViewController.view];
+
+  self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
 }
 
 // -----------------------------------------------------------------------------
@@ -194,21 +206,28 @@
 {
   self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.navigationBarController.view, @"navigationBarView",
                                    self.boardPositionToolbarController.view, @"boardPositionToolbarView",
-                                   self.boardViewController.view, @"boardView",
+                                   self.woodenBackgroundView, @"woodenBackgroundView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             @"H:|-0-[navigationBarView]-0-|",
-                            @"H:|-0-[boardView]-0-|",
+                            @"H:|-0-[woodenBackgroundView]-0-|",
                             @"H:|-0-[boardPositionToolbarView]-0-|",
                             [NSString stringWithFormat:@"V:|-%d-[navigationBarView]", [UiElementMetrics statusBarHeight]],
-                            @"V:[navigationBarView]-0-[boardView]-0-[boardPositionToolbarView]-0-|",
+                            @"V:[navigationBarView]-0-[woodenBackgroundView]-0-[boardPositionToolbarView]-0-|",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+
+  self.boardViewAutoLayoutConstraints = [NSMutableArray array];
+  self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
+                                              ofBoardView:self.boardViewController.view
+                                  forInterfaceOrientation:UIInterfaceOrientationPortrait
+                                         constraintHolder:self.boardViewController.view.superview];
 }
 
 @end
