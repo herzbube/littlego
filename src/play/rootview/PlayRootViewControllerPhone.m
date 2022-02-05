@@ -64,6 +64,7 @@ enum ViewHierarchyState
 /// @name Properties used for portrait
 //@{
 @property(nonatomic, retain) UIView* woodenBackgroundView;
+@property(nonatomic, retain) UIView* boardContainerView;
 @property(nonatomic, retain) NavigationBarControllerPhone* navigationBarController;
 @property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
 @property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
@@ -115,6 +116,7 @@ enum ViewHierarchyState
   self.leftPaneViewController = nil;
   self.rightPaneViewController = nil;
   self.woodenBackgroundView = nil;
+  self.boardContainerView = nil;
   self.navigationBarController = nil;
   self.boardPositionButtonBoxController = nil;
   self.boardPositionButtonBoxDataSource = nil;
@@ -512,12 +514,18 @@ enum ViewHierarchyState
     // but for the entire area in which the Go board resides
     self.woodenBackgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 
+    // This is a simple container view that takes up all the unused vertical
+    // space and within which the board view is then vertically centered.
+    self.boardContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+
     [self.view addSubview:self.woodenBackgroundView];
     [self.view addSubview:self.boardPositionCollectionViewController.view];
     [self.view addSubview:self.statusViewController.view];
 
+    [self.woodenBackgroundView addSubview:self.boardContainerView];
     [self.woodenBackgroundView addSubview:self.boardPositionButtonBoxController.view];
-    [self.woodenBackgroundView addSubview:self.boardViewController.view];
+
+    [self.boardContainerView addSubview:self.boardViewController.view];
   }
   else
   {
@@ -586,7 +594,7 @@ enum ViewHierarchyState
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
                                   forInterfaceOrientation:(self.hasPortraitOrientationViewHierarchy ? UIInterfaceOrientationPortrait : UIInterfaceOrientationLandscapeLeft)
-                                         constraintHolder:self.woodenBackgroundView];
+                                         constraintHolder:self.boardViewController.view.superview];
 
   self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -618,13 +626,16 @@ enum ViewHierarchyState
 
   [viewsDictionary removeAllObjects];
   [visualFormats removeAllObjects];
+  self.boardContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
   int horizontalSpacingButtonBox = [AutoLayoutUtility horizontalSpacingSiblings];
   int verticalSpacingButtonBox = [AutoLayoutUtility verticalSpacingSiblings];
   CGSize buttonBoxSize = self.boardPositionButtonBoxController.buttonBoxSize;
+  viewsDictionary[@"boardContainerView"] = self.boardContainerView;
   viewsDictionary[@"boardPositionButtonBox"] = self.boardPositionButtonBoxController.view;
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-0-[boardContainerView]-0-|"]];
   [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[boardPositionButtonBox]", horizontalSpacingButtonBox]];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox]-%d-|", verticalSpacingButtonBox]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[boardContainerView]-0-[boardPositionButtonBox]-%d-|", verticalSpacingButtonBox]];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox(==%f)]", buttonBoxSize.width]];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]", buttonBoxSize.height]];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.woodenBackgroundView];
