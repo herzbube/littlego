@@ -317,6 +317,9 @@ enum GoGameHasEndedReason
 
 /// @brief Enumerates the possible results of a game that has reached the state
 /// #GoGameStateGameHasEnded.
+///
+/// This enumeration is similar to the enumeration #GoScoreSummary, but due to
+/// slight semantic differences the two enumerations are kept separate.
 enum GoGameResult
 {
   GoGameResultNone,         ///< @brief The game has not been decided yet, usually because the game has not yet ended.
@@ -487,6 +490,55 @@ enum GoRuleset
   GoRulesetMin = GoRulesetAGA,
   GoRulesetMax = GoRulesetLittleGo,
   GoRulesetDefault = GoRulesetLittleGo
+};
+
+/// @brief Enumerates possible valuations of a position on the Go board.
+enum GoBoardPositionValuation
+{
+  GoBoardPositionValuationNone,               ///< @brief The position is not valuated. Corresponds to the absence of the SGF properties GB, GW, DM and UC.
+  GoBoardPositionValuationGoodForBlack,       ///< @brief The position is good for black. Corresponds to the SGF property value GB[1].
+  GoBoardPositionValuationVeryGoodForBlack,   ///< @brief The position is very good for black. Corresponds to the SGF property value GB[2].
+  GoBoardPositionValuationGoodForWhite,       ///< @brief The position is good for white. Corresponds to the SGF property value GW[1].
+  GoBoardPositionValuationVeryGoodForWhite,   ///< @brief The position is very good for white. Corresponds to the SGF property value GW[2].
+  GoBoardPositionValuationEven,               ///< @brief The position is even. Corresponds to the SGF property value DM[1].
+  GoBoardPositionValuationVeryEven,           ///< @brief The position is very even. Corresponds to the SGF property value DM[2].
+  GoBoardPositionValuationUnclear,            ///< @brief The position is unclear. Corresponds to the SGF property value UC[1].
+  GoBoardPositionValuationVeryUnclear         ///< @brief The position is very unclear. Corresponds to the SGF property value UC[2].
+};
+
+/// @brief Enumerates possible hotspot designations of a position on the Go
+/// board.
+enum GoBoardPositionHotspotDesignation
+{
+  GoBoardPositionHotspotDesignationNone,           ///< @brief The position is not a hotspot. Corresponds to the absence of the SGF property HO.
+  GoBoardPositionHotspotDesignationYes,            ///< @brief The position is a hotspot, the move that created the position is interesting. Corresponds to the SGF property value HO[1].
+  GoBoardPositionHotspotDesignationYesEmphasized   ///< @brief The position is a hotspot, the move that created the position is even more interesting, possibly a game-deciding move. Corresponds to the SGF property value HO[2].
+};
+
+/// @brief Enumerates possible valuations of a move.
+enum GoMoveValuation
+{
+  GoMoveValuationNone,              ///< @brief The move is not valuated. Corresponds to the absence of the SGF properties TE, BM, IT and DO.
+  GoMoveValuationGood,              ///< @brief The played move is good (tesuji). Corresponds to the SGF property value TE[1].
+  GoMoveValuationVeryGood,          ///< @brief The played move is very good (tesuji). Corresponds to the SGF property value TE[2].
+  GoMoveValuationBad,               ///< @brief The played move is bad. Corresponds to the SGF property value BM[1].
+  GoMoveValuationVeryBad,           ///< @brief The played move is very bad. Corresponds to the SGF property value BM[2].
+  GoMoveValuationInteresting,       ///< @brief The played move is interesting. Corresponds to the SGF property value IT[1].
+  GoMoveValuationVeryInteresting,   ///< @brief The played move is very interesting. Corresponds to the SGF property value IT[2].
+  GoMoveValuationDoubtful,          ///< @brief The played move is doubtful. Corresponds to the SGF property value DO[1].
+  GoMoveValuationVeryDoubtful       ///< @brief The played move is very doubtful. Corresponds to the SGF property value DO[2].
+};
+
+/// @brief Enumerates possible summary scores.
+///
+/// This enumeration is similar to the enumeration #GoGameResult, but due to
+/// slight semantic differences the two enumerations are kept separate.
+enum GoScoreSummary
+{
+  GoScoreSummaryNone,        ///< @brief The score summary is not available. Corresponds to the absence of the SGF property V.
+  GoScoreSummaryBlackWins,   ///< @brief The score summary is that black wins. Corresponds to a positive value of the SGF property V.
+  GoScoreSummaryWhiteWins,   ///< @brief The score summary is that white wins. Corresponds to a negative value of the SGF property V.
+  GoScoreSummaryTie          ///< @brief The score summary is that the game is a tie. Corresponds to value 0 (zero) of the SGF property V.
 };
 
 extern const enum GoGameType gDefaultGameType;
@@ -1333,6 +1385,15 @@ extern NSString* goMovePlayerKey;
 extern NSString* goMovePointKey;
 extern NSString* goMoveCapturedStonesKey;
 extern NSString* goMoveMoveNumberKey;
+extern NSString* goMoveMoveInfoKey;
+// GoMoveInfo keys
+extern NSString* goMoveInfoShortDescriptionKey;
+extern NSString* goMoveInfoLongDescriptionKey;
+extern NSString* goMoveInfoGoBoardPositionValuationKey;
+extern NSString* goMoveInfoGoBoardPositionHotspotDesignationKey;
+extern NSString* goMoveInfoEstimatedScoreSummaryKey;
+extern NSString* goMoveInfoEstimatedScoreValueKey;
+extern NSString* goMoveInfoGoMoveValuationKey;
 // GoMoveModel keys
 extern NSString* goMoveModelGameKey;
 extern NSString* goMoveModelMoveListKey;
