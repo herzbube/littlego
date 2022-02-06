@@ -22,6 +22,7 @@
 #import <go/GoBoard.h>
 #import <go/GoGame.h>
 #import <go/GoMove.h>
+#import <go/GoMoveInfo.h>
 #import <go/GoPlayer.h>
 #import <go/GoPoint.h>
 
@@ -415,6 +416,24 @@
   XCTAssertTrue(move1.zobristHash != 0);
   XCTAssertTrue(move2.zobristHash != 0);
   XCTAssertEqual(move1.zobristHash, move2.zobristHash);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e moveInfo property
+// -----------------------------------------------------------------------------
+- (void) testMoveInfo
+{
+  enum GoMoveType moveType = GoMoveTypePlay;
+  GoPlayer* player = m_game.playerBlack;
+  GoMove* movePrevious = nil;
+
+  GoMoveInfo* expectedMoveInfo = nil;
+  GoMove* move = [GoMove move:moveType by:player after:movePrevious];
+  XCTAssertEqual(expectedMoveInfo, move.moveInfo);
+
+  expectedMoveInfo = [[[GoMoveInfo alloc] init] autorelease];
+  move.moveInfo = expectedMoveInfo;
+  XCTAssertEqual(expectedMoveInfo, move.moveInfo);
 }
 
 @end

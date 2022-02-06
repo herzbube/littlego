@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2021 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,20 +20,20 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoMoveTest class contains unit tests that exercise the GoMove
-/// class.
+/// @brief The GoMoveInfoTest class contains unit tests that exercise the
+/// GoMoveInfo class.
 // -----------------------------------------------------------------------------
-@interface GoMoveTest : BaseTestCase
+@interface GoMoveInfoTest : BaseTestCase
 {
 }
 
-- (void) testMoveByAfter;
-- (void) testPoint;
-- (void) testCapturedStones;
-- (void) testDoIt;
-- (void) testUndo;
-- (void) testMoveNumber;
-- (void) testZobristHash;
-- (void) testMoveInfo;
+- (void) testShortDescription;
+- (void) testLongDescription;
+- (void) testGoBoardPositionValuation;
+- (void) testGoBoardPositionHotspotDesignation;
+- (void) testEstimatedScoreSummary;
+- (void) testEstimatedScoreValue;
+- (void) testSetEstimatedScoreSummaryValue;
+- (void) testGoMoveValuation;
 
 @end
