@@ -25,6 +25,8 @@
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameDocument.h"
+#import "../../go/GoMove.h"
+#import "../../go/GoMoveInfo.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
@@ -745,7 +747,7 @@ static const int maxStepsForReplayMoves = 10;
   // - Same as Fuego, the only difference being that we don't have a "resign"
   //   move
 
-  NSMutableArray* moveProperties = [NSMutableArray array];
+  NSMutableArray* moveList = [NSMutableArray array];
 
   for (SGFCNode* sgfNode in self.sgfMainVariationNodes)
   {
@@ -756,26 +758,156 @@ static const int maxStepsForReplayMoves = 10;
       if (propertyType != SGFCPropertyTypeB && propertyType != SGFCPropertyTypeW)
         continue;  // not interested in other move properties
 
-      [moveProperties addObject:moveCategoryProperty];
+      GoMoveInfo* moveInfo = [self createMoveInfoWithPropertiesFromNode:sgfNode];
+
+      id moveListTupleSecondValue = (moveInfo != nil) ? moveInfo : [NSNull null];
+      NSArray* moveListTuple = [NSArray arrayWithObjects:moveCategoryProperty, moveListTupleSecondValue, nil];
+      [moveList addObject:moveListTuple];
+
+      // Although the node should never contain both SGFCPropertyTypeB and
+      // SGFCPropertyTypeW at the same time, here we make sure that we only
+      // process the first of these two.
+      break;
     }
   }
 
   // If we don't perform this check here the game fails to load during the GTP
   // engine sync. However, the error message in that case is much less nice.
-  if (moveProperties.count > maximumNumberOfMoves)
+  if (moveList.count > maximumNumberOfMoves)
   {
-    *errorMessage = [NSString stringWithFormat:@"The SGF data contains %lu moves. This is more than the maximum number of moves (%d) that the computer player Fuego can process.", (unsigned long)moveProperties.count, maximumNumberOfMoves];
+    *errorMessage = [NSString stringWithFormat:@"The SGF data contains %lu moves. This is more than the maximum number of moves (%d) that the computer player Fuego can process.", (unsigned long)moveList.count, maximumNumberOfMoves];
     return false;
   }
 
-  return [self replayMoves:moveProperties errorMessage:errorMessage];
+  return [self replayMoves:moveList errorMessage:errorMessage];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates a new GoMoveInfo object and populates it with values from
+/// relevant SGF properties found in @a sgfNode. Returns the GoMoveInfo object
+/// if at least one relevant SGF property was found. Returns @e nil if no
+/// relevant SGF properties were found.
+// -----------------------------------------------------------------------------
+- (GoMoveInfo*) createMoveInfoWithPropertiesFromNode:(SGFCNode*)sgfNode
+{
+  GoMoveInfo* moveInfo = [[[GoMoveInfo alloc] init] autorelease];
+  bool atLeastOneRelevantPropertyWasFound = false;
+
+  for (SGFCProperty* property in [sgfNode properties])
+  {
+    if (property.propertyType == SGFCPropertyTypeN)
+    {
+      moveInfo.shortDescription = property.propertyValue.toSingleValue.toSimpleTextValue.simpleTextValue;
+      atLeastOneRelevantPropertyWasFound = true;
+    }
+    else if (property.propertyType == SGFCPropertyTypeC)
+    {
+      moveInfo.longDescription = property.propertyValue.toSingleValue.toTextValue.textValue;
+      atLeastOneRelevantPropertyWasFound = true;
+    }
+    else if (property.propertyType == SGFCPropertyTypeGB)
+    {
+      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        moveInfo.goBoardPositionValuation = GoBoardPositionValuationGoodForBlack;
+      else
+        moveInfo.goBoardPositionValuation = GoBoardPositionValuationVeryGoodForBlack;
+      atLeastOneRelevantPropertyWasFound = true;
+    }
+    else if (property.propertyType == SGFCPropertyTypeGW)
+    {
+      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        moveInfo.goBoardPositionValuation = GoBoardPositionValuationGoodForWhite;
+      else
+        moveInfo.goBoardPositionValuation = GoBoardPositionValuationVeryGoodForWhite;
+      atLeastOneRelevantPropertyWasFound = true;
+    }
+    else if (property.propertyType == SGFCPropertyTypeDM)
+    {
+      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        moveInfo.goBoardPositionValuation = GoBoardPositionValuationEven;
+      else
+        moveInfo.goBoardPositionValuation = GoBoardPositionValuationVeryEven;
+      atLeastOneRelevantPropertyWasFound = true;
+    }
+    else if (property.propertyType == SGFCPropertyTypeUC)
+    {
+      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        moveInfo.goBoardPositionValuation = GoBoardPositionValuationUnclear;
+      else
+        moveInfo.goBoardPositionValuation = GoBoardPositionValuationVeryUnclear;
+      atLeastOneRelevantPropertyWasFound = true;
+    }
+    else if (property.propertyType == SGFCPropertyTypeHO)
+    {
+      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        moveInfo.goBoardPositionHotspotDesignation = GoBoardPositionHotspotDesignationYes;
+      else
+        moveInfo.goBoardPositionHotspotDesignation = GoBoardPositionHotspotDesignationYesEmphasized;
+      atLeastOneRelevantPropertyWasFound = true;
+    }
+    else if (property.propertyType == SGFCPropertyTypeV)
+    {
+      SGFCReal estimatedScoreValue = property.propertyValue.toSingleValue.toRealValue.realValue;
+      enum GoScoreSummary estimatedScoreSummary;
+      if (estimatedScoreValue > 0)
+        estimatedScoreSummary = GoScoreSummaryBlackWins;
+      else if (estimatedScoreValue < 0)
+        estimatedScoreSummary = GoScoreSummaryWhiteWins;
+      else
+        estimatedScoreSummary = GoScoreSummaryTie;
+      [moveInfo setEstimatedScoreSummary:estimatedScoreSummary value:estimatedScoreValue];
+      atLeastOneRelevantPropertyWasFound = true;
+    }
+    else if (property.propertyType == SGFCPropertyTypeTE)
+    {
+      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        moveInfo.goMoveValuation = GoMoveValuationGood;
+      else
+        moveInfo.goMoveValuation = GoMoveValuationVeryGood;
+      atLeastOneRelevantPropertyWasFound = true;
+    }
+    else if (property.propertyType == SGFCPropertyTypeBM)
+    {
+      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        moveInfo.goMoveValuation = GoMoveValuationBad;
+      else
+        moveInfo.goMoveValuation = GoMoveValuationVeryBad;
+      atLeastOneRelevantPropertyWasFound = true;
+    }
+    else if (property.propertyType == SGFCPropertyTypeIT)
+    {
+      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        moveInfo.goMoveValuation = GoMoveValuationInteresting;
+      else
+        moveInfo.goMoveValuation = GoMoveValuationVeryInteresting;
+      atLeastOneRelevantPropertyWasFound = true;
+    }
+    else if (property.propertyType == SGFCPropertyTypeDO)
+    {
+      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        moveInfo.goMoveValuation = GoMoveValuationDoubtful;
+      else
+        moveInfo.goMoveValuation = GoMoveValuationVeryDoubtful;
+      atLeastOneRelevantPropertyWasFound = true;
+    }
+  }
+
+  if (atLeastOneRelevantPropertyWasFound)
+    return moveInfo;
+  else
+    return nil;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Replays the moves in @a moveList.
 ///
-/// @a moveList is expected to contain SGFCProperty objects of type
-/// #SGFCPropertyTypeB and #SGFCPropertyTypeW.
+/// @a moveList is expected to contain tuples with two objects each:
+/// - The first object is an SGFCProperty object of type #SGFCPropertyTypeB or
+///   #SGFCPropertyTypeW. A move is being played using the information in this
+///   object.
+/// - The second object is either a GoMoveInfo object, which needs to be
+///   associated with the move that is being played, or @e NSNull if there is
+///   no move information that needs to be associated.
 ///
 /// The asynchronous command delegate is updated continuously with progress
 /// information as the moves are replayed. In an ideal world we would have
@@ -811,8 +943,9 @@ static const int maxStepsForReplayMoves = 10;
   {
     int movesReplayed = 0;
     float nextProgressUpdate = movesPerStep;  // use float in case movesPerStep has fractions
-    for (SGFCProperty* moveProperty in moveList)
+    for (NSArray* moveListTuple in moveList)
     {
+      SGFCProperty* moveProperty = [moveListTuple firstObject];
       SGFCGoMove* goMove = moveProperty.propertyValue.toSingleValue.toMoveValue.toGoMoveValue.goMove;
       if (! goMove)
       {
@@ -882,6 +1015,10 @@ static const int maxStepsForReplayMoves = 10;
         }
         [game play:point];
       }
+
+      id moveListTupleSecondValue = [moveListTuple lastObject];
+      if (moveListTupleSecondValue != [NSNull null])
+        game.lastMove.moveInfo = moveListTupleSecondValue;
 
       ++movesReplayed;
       if (movesReplayed >= nextProgressUpdate)

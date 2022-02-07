@@ -20,6 +20,7 @@
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
+#import "../../go/GoMoveInfo.h"
 #import "../../go/GoMoveModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
@@ -333,6 +334,176 @@
   SGFCProperty* property = [SGFCPropertyFactory propertyWithType:propertyType
                                                            value:movePropertyValue];
   [node setProperty:property];
+
+  if (goMove.moveInfo)
+  {
+    [self addSgfPropertiesToNode:node
+          withValuesFromMoveInfo:goMove.moveInfo];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for
+/// addSgfPropertyToNode:withValueFromMove:boardSize
+// -----------------------------------------------------------------------------
+- (void) addSgfPropertiesToNode:(SGFCNode*)node
+         withValuesFromMoveInfo:(GoMoveInfo*)moveInfo
+{
+  if (moveInfo.shortDescription != nil)
+  {
+    SGFCPropertyType propertyType = SGFCPropertyTypeN;
+    SGFCSimpleTextPropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithSimpleText:moveInfo.shortDescription];
+    SGFCProperty* property = [SGFCPropertyFactory propertyWithType:propertyType
+                                                             value:propertyValue];
+    [node setProperty:property];
+  }
+
+  if (moveInfo.longDescription != nil)
+  {
+    SGFCPropertyType propertyType = SGFCPropertyTypeC;
+    SGFCTextPropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithText:moveInfo.longDescription];
+    SGFCProperty* property = [SGFCPropertyFactory propertyWithType:propertyType
+                                                             value:propertyValue];
+    [node setProperty:property];
+  }
+
+  if (moveInfo.goBoardPositionValuation != GoBoardPositionValuationNone)
+  {
+    SGFCPropertyType propertyType;
+    SGFCDouble doubleValue;
+    switch (moveInfo.goBoardPositionValuation)
+    {
+      case GoBoardPositionValuationGoodForBlack:
+        propertyType = SGFCPropertyTypeGB;
+        doubleValue = SGFCDoubleNormal;
+        break;
+      case GoBoardPositionValuationVeryGoodForBlack:
+        propertyType = SGFCPropertyTypeGB;
+        doubleValue = SGFCDoubleEmphasized;
+        break;
+      case GoBoardPositionValuationGoodForWhite:
+        propertyType = SGFCPropertyTypeGW;
+        doubleValue = SGFCDoubleNormal;
+        break;
+      case GoBoardPositionValuationVeryGoodForWhite:
+        propertyType = SGFCPropertyTypeGW;
+        doubleValue = SGFCDoubleEmphasized;
+        break;
+      case GoBoardPositionValuationEven:
+        propertyType = SGFCPropertyTypeDM;
+        doubleValue = SGFCDoubleNormal;
+        break;
+      case GoBoardPositionValuationVeryEven:
+        propertyType = SGFCPropertyTypeDM;
+        doubleValue = SGFCDoubleEmphasized;
+        break;
+      case GoBoardPositionValuationUnclear:
+        propertyType = SGFCPropertyTypeUC;
+        doubleValue = SGFCDoubleNormal;
+        break;
+      case GoBoardPositionValuationVeryUnclear:
+        propertyType = SGFCPropertyTypeUC;
+        doubleValue = SGFCDoubleEmphasized;
+        break;
+      default:
+        assert(0);
+        DDLogError(@"%@: Unexpected GoBoardPositionValuation value %d", self, (int)moveInfo.goBoardPositionValuation);
+        return;
+    }
+    SGFCDoublePropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithDouble:doubleValue];
+    SGFCProperty* property = [SGFCPropertyFactory propertyWithType:propertyType
+                                                             value:propertyValue];
+    [node setProperty:property];
+  }
+
+  if (moveInfo.goBoardPositionHotspotDesignation != GoBoardPositionHotspotDesignationNone)
+  {
+    SGFCPropertyType propertyType = SGFCPropertyTypeHO;
+    SGFCDouble doubleValue;
+    if (moveInfo.goBoardPositionHotspotDesignation == GoBoardPositionHotspotDesignationYes)
+      doubleValue = SGFCDoubleNormal;
+    else
+      doubleValue = SGFCDoubleEmphasized;
+    SGFCDoublePropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithDouble:doubleValue];
+    SGFCProperty* property = [SGFCPropertyFactory propertyWithType:propertyType
+                                                             value:propertyValue];
+    [node setProperty:property];
+  }
+
+  if (moveInfo.estimatedScoreSummary != GoScoreSummaryNone)
+  {
+    SGFCPropertyType propertyType = SGFCPropertyTypeV;
+    SGFCReal realValue;
+    switch (moveInfo.estimatedScoreSummary)
+    {
+      case GoScoreSummaryBlackWins:
+        realValue = moveInfo.estimatedScoreValue;
+        break;
+      case GoScoreSummaryWhiteWins:
+        realValue = -moveInfo.estimatedScoreValue;
+        break;
+      case GoScoreSummaryTie:
+        realValue = 0.0;
+        break;
+      default:
+        assert(0);
+        DDLogError(@"%@: Unexpected GoScoreSummary value %d", self, (int)moveInfo.estimatedScoreSummary);
+        return;
+    }
+    SGFCRealPropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithReal:realValue];
+    SGFCProperty* property = [SGFCPropertyFactory propertyWithType:propertyType
+                                                             value:propertyValue];
+    [node setProperty:property];
+  }
+
+  if (moveInfo.goMoveValuation != GoMoveValuationNone)
+  {
+    SGFCPropertyType propertyType;
+    SGFCDouble doubleValue;
+    switch (moveInfo.goMoveValuation)
+    {
+      case GoMoveValuationGood:
+        propertyType = SGFCPropertyTypeTE;
+        doubleValue = SGFCDoubleNormal;
+        break;
+      case GoMoveValuationVeryGood:
+        propertyType = SGFCPropertyTypeTE;
+        doubleValue = SGFCDoubleEmphasized;
+        break;
+      case GoMoveValuationBad:
+        propertyType = SGFCPropertyTypeBM;
+        doubleValue = SGFCDoubleNormal;
+        break;
+      case GoMoveValuationVeryBad:
+        propertyType = SGFCPropertyTypeBM;
+        doubleValue = SGFCDoubleEmphasized;
+        break;
+      case GoMoveValuationInteresting:
+        propertyType = SGFCPropertyTypeIT;
+        doubleValue = SGFCDoubleNormal;
+        break;
+      case GoMoveValuationVeryInteresting:
+        propertyType = SGFCPropertyTypeIT;
+        doubleValue = SGFCDoubleEmphasized;
+        break;
+      case GoMoveValuationDoubtful:
+        propertyType = SGFCPropertyTypeDO;
+        doubleValue = SGFCDoubleNormal;
+        break;
+      case GoMoveValuationVeryDoubtful:
+        propertyType = SGFCPropertyTypeDO;
+        doubleValue = SGFCDoubleEmphasized;
+        break;
+      default:
+        assert(0);
+        DDLogError(@"%@: Unexpected GoMoveValuation value %d", self, (int)moveInfo.goMoveValuation);
+        return;
+    }
+    SGFCDoublePropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithDouble:doubleValue];
+    SGFCProperty* property = [SGFCPropertyFactory propertyWithType:propertyType
+                                                             value:propertyValue];
+    [node setProperty:property];
+  }
 }
 
 // -----------------------------------------------------------------------------
