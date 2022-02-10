@@ -849,12 +849,19 @@ static const int maxStepsForReplayMoves = 10;
     {
       SGFCReal estimatedScoreValue = property.propertyValue.toSingleValue.toRealValue.realValue;
       enum GoScoreSummary estimatedScoreSummary;
-      if (estimatedScoreValue > 0)
+      if (estimatedScoreValue > 0.0)
+      {
         estimatedScoreSummary = GoScoreSummaryBlackWins;
-      else if (estimatedScoreValue < 0)
+      }
+      else if (estimatedScoreValue < 0.0)
+      {
         estimatedScoreSummary = GoScoreSummaryWhiteWins;
+        estimatedScoreValue = -estimatedScoreValue;
+      }
       else
+      {
         estimatedScoreSummary = GoScoreSummaryTie;
+      }
       [moveInfo setEstimatedScoreSummary:estimatedScoreSummary value:estimatedScoreValue];
       atLeastOneRelevantPropertyWasFound = true;
     }
