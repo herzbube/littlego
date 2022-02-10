@@ -221,8 +221,8 @@
   enum GoMoveValuation expectedGoMoveValuation = GoMoveValuationNone;
   XCTAssertEqual(moveInfo.goMoveValuation, expectedGoMoveValuation);
 
-  enum GoMoveValuation goMoveValuation = GoMoveValuationVeryDoubtful;
-  expectedGoMoveValuation = GoMoveValuationVeryDoubtful;
+  enum GoMoveValuation goMoveValuation = GoMoveValuationDoubtful;
+  expectedGoMoveValuation = GoMoveValuationDoubtful;
   moveInfo.goMoveValuation = goMoveValuation;
   XCTAssertEqual(moveInfo.goMoveValuation, expectedGoMoveValuation);
 }
