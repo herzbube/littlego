@@ -138,10 +138,14 @@
 // -----------------------------------------------------------------------------
 - (void) setShortDescription:(NSString*)shortDescription
 {
-  if (shortDescription)
-    _shortDescription = [shortDescription stringByReplacingOccurrencesOfString:@"\n" withString:@" "];
-  else
+  if (_shortDescription)
+  {
+    [_shortDescription autorelease];
     _shortDescription = nil;
+  }
+
+  if (shortDescription)
+    _shortDescription = [[shortDescription stringByReplacingOccurrencesOfString:@"\n" withString:@" "] retain];
 }
 
 @end
