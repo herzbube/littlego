@@ -523,10 +523,8 @@ enum GoMoveValuation
   GoMoveValuationVeryGood,          ///< @brief The played move is very good (tesuji). Corresponds to the SGF property value TE[2].
   GoMoveValuationBad,               ///< @brief The played move is bad. Corresponds to the SGF property value BM[1].
   GoMoveValuationVeryBad,           ///< @brief The played move is very bad. Corresponds to the SGF property value BM[2].
-  GoMoveValuationInteresting,       ///< @brief The played move is interesting. Corresponds to the SGF property value IT[1].
-  GoMoveValuationVeryInteresting,   ///< @brief The played move is very interesting. Corresponds to the SGF property value IT[2].
-  GoMoveValuationDoubtful,          ///< @brief The played move is doubtful. Corresponds to the SGF property value DO[1].
-  GoMoveValuationVeryDoubtful       ///< @brief The played move is very doubtful. Corresponds to the SGF property value DO[2].
+  GoMoveValuationInteresting,       ///< @brief The played move is interesting. Corresponds to the SGF property value IT[].
+  GoMoveValuationDoubtful           ///< @brief The played move is doubtful. Corresponds to the SGF property value DO[].
 };
 
 /// @brief Enumerates possible summary scores.
