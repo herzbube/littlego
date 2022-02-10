@@ -876,18 +876,12 @@ static const int maxStepsForReplayMoves = 10;
     }
     else if (property.propertyType == SGFCPropertyTypeIT)
     {
-      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        moveInfo.goMoveValuation = GoMoveValuationInteresting;
-      else
-        moveInfo.goMoveValuation = GoMoveValuationVeryInteresting;
+      moveInfo.goMoveValuation = GoMoveValuationInteresting;
       atLeastOneRelevantPropertyWasFound = true;
     }
     else if (property.propertyType == SGFCPropertyTypeDO)
     {
-      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        moveInfo.goMoveValuation = GoMoveValuationDoubtful;
-      else
-        moveInfo.goMoveValuation = GoMoveValuationVeryDoubtful;
+      moveInfo.goMoveValuation = GoMoveValuationDoubtful;
       atLeastOneRelevantPropertyWasFound = true;
     }
   }

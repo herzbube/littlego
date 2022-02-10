@@ -349,7 +349,7 @@
 - (void) addSgfPropertiesToNode:(SGFCNode*)node
          withValuesFromMoveInfo:(GoMoveInfo*)moveInfo
 {
-  if (moveInfo.shortDescription != nil)
+  if (moveInfo.shortDescription)
   {
     SGFCPropertyType propertyType = SGFCPropertyTypeN;
     SGFCSimpleTextPropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithSimpleText:moveInfo.shortDescription];
@@ -358,7 +358,7 @@
     [node setProperty:property];
   }
 
-  if (moveInfo.longDescription != nil)
+  if (moveInfo.longDescription)
   {
     SGFCPropertyType propertyType = SGFCPropertyTypeC;
     SGFCTextPropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithText:moveInfo.longDescription];
@@ -459,12 +459,12 @@
   if (moveInfo.goMoveValuation != GoMoveValuationNone)
   {
     SGFCPropertyType propertyType;
-    SGFCDouble doubleValue;
+    SGFCDouble doubleValue = SGFCDoubleNormal;
+    bool isDoubleValuePropertyType = true;
     switch (moveInfo.goMoveValuation)
     {
       case GoMoveValuationGood:
         propertyType = SGFCPropertyTypeTE;
-        doubleValue = SGFCDoubleNormal;
         break;
       case GoMoveValuationVeryGood:
         propertyType = SGFCPropertyTypeTE;
@@ -472,7 +472,6 @@
         break;
       case GoMoveValuationBad:
         propertyType = SGFCPropertyTypeBM;
-        doubleValue = SGFCDoubleNormal;
         break;
       case GoMoveValuationVeryBad:
         propertyType = SGFCPropertyTypeBM;
@@ -480,28 +479,29 @@
         break;
       case GoMoveValuationInteresting:
         propertyType = SGFCPropertyTypeIT;
-        doubleValue = SGFCDoubleNormal;
-        break;
-      case GoMoveValuationVeryInteresting:
-        propertyType = SGFCPropertyTypeIT;
-        doubleValue = SGFCDoubleEmphasized;
+        isDoubleValuePropertyType = false;
         break;
       case GoMoveValuationDoubtful:
         propertyType = SGFCPropertyTypeDO;
-        doubleValue = SGFCDoubleNormal;
-        break;
-      case GoMoveValuationVeryDoubtful:
-        propertyType = SGFCPropertyTypeDO;
-        doubleValue = SGFCDoubleEmphasized;
+        isDoubleValuePropertyType = false;
         break;
       default:
         assert(0);
         DDLogError(@"%@: Unexpected GoMoveValuation value %d", self, (int)moveInfo.goMoveValuation);
         return;
     }
-    SGFCDoublePropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithDouble:doubleValue];
-    SGFCProperty* property = [SGFCPropertyFactory propertyWithType:propertyType
-                                                             value:propertyValue];
+
+    SGFCProperty* property;
+    if (isDoubleValuePropertyType)
+    {
+      SGFCDoublePropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithDouble:doubleValue];
+      property = [SGFCPropertyFactory propertyWithType:propertyType
+                                                 value:propertyValue];
+    }
+    else
+    {
+      property = [SGFCPropertyFactory propertyWithType:propertyType];
+    }
     [node setProperty:property];
   }
 }
