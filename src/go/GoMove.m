@@ -17,7 +17,6 @@
 
 // Project includes
 #import "GoMove.h"
-#import "GoMoveInfo.h"
 #import "GoBoard.h"
 #import "GoGame.h"
 #import "GoPlayer.h"
@@ -120,7 +119,7 @@
   self.capturedStones = [NSMutableArray arrayWithCapacity:0];
   self.moveNumber = 1;
   self.zobristHash = 0;
-  self.moveInfo = nil;
+  self.goMoveValuation = GoMoveValuationNone;
 
   return self;
 }
@@ -149,7 +148,7 @@
   // The hash was not archived. Whoever is unarchiving this GoMove is
   // responsible for re-calculating the hash.
   self.zobristHash = 0;
-  self.moveInfo = [decoder decodeObjectForKey:goMoveMoveInfoKey];
+  self.goMoveValuation = [decoder decodeIntForKey:goMoveGoMoveValuationKey];
 
   return self;
 }
@@ -172,7 +171,6 @@
     self.next = nil;  // not strictly necessary since we don't retain it
   }
   self.capturedStones = nil;
-  self.moveInfo = nil;
   [super dealloc];
 }
 
@@ -406,8 +404,7 @@
   // access its own next GoMove object, and so on).
   [encoder encodeObject:self.capturedStones forKey:goMoveCapturedStonesKey];
   [encoder encodeInt:self.moveNumber forKey:goMoveMoveNumberKey];
-  if (self.moveInfo)
-    [encoder encodeObject:self.moveInfo forKey:goMoveMoveInfoKey];
+  [encoder encodeInt:self.goMoveValuation forKey:goMoveGoMoveValuationKey];
   // GoZobristTable is not archived, instead a new GoZobristTable object with
   // random values is created each time when a game is unarchived. Zobrist
   // hashes created by the previous GoZobristTable object are thus invalid.

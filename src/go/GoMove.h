@@ -16,7 +16,6 @@
 
 
 // Forward declarations
-@class GoMoveInfo;
 @class GoPlayer;
 @class GoPoint;
 
@@ -92,9 +91,10 @@
 /// @brief Zobrist hash that identifies the board position created by this move.
 /// Zobrist hashes are used to detect ko, and especially superko.
 @property(nonatomic, assign) long long zobristHash;
-/// @brief A collection of non-essential information about the move represented
-/// by this GoMove object. Is @e nil if there is no such information. The
-/// default value is @e nil.
-@property(nonatomic, retain) GoMoveInfo* moveInfo;
+/// @brief The valuation of the move. The default value is #GoMoveValuationNone.
+///
+/// This property corresponds to the presence or absence of the SGF move
+/// annotation properties TE, BM, IT and DO.
+@property(nonatomic, assign) enum GoMoveValuation goMoveValuation;
 
 @end

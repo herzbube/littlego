@@ -1383,11 +1383,11 @@ extern NSString* goMovePlayerKey;
 extern NSString* goMovePointKey;
 extern NSString* goMoveCapturedStonesKey;
 extern NSString* goMoveMoveNumberKey;
-extern NSString* goMoveMoveInfoKey;
 // GoMoveModel keys
 extern NSString* goMoveModelGameKey;
 extern NSString* goMoveModelMoveListKey;
 extern NSString* goMoveModelNumberOfMovesKey;
+extern NSString* goMoveGoMoveValuationKey;
 // GoBoardPosition keys
 extern NSString* goBoardPositionGameKey;
 extern NSString* goBoardPositionCurrentBoardPositionKey;

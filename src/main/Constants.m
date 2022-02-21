@@ -398,11 +398,11 @@ NSString* goMovePlayerKey = @"Player";
 NSString* goMovePointKey = @"Point";
 NSString* goMoveCapturedStonesKey = @"CapturedStones";
 NSString* goMoveMoveNumberKey = @"MoveNumber";
-NSString* goMoveMoveInfoKey = @"MoveInfo";
 // GoMoveModel keys
 NSString* goMoveModelGameKey = @"Game";
 NSString* goMoveModelMoveListKey = @"MoveList";
 NSString* goMoveModelNumberOfMovesKey = @"NumberOfMoves";
+NSString* goMoveGoMoveValuationKey = @"MoveValuation";
 // GoBoardPosition keys
 NSString* goBoardPositionGameKey = @"Game";
 NSString* goBoardPositionCurrentBoardPositionKey = @"CurrentBoardPosition";
