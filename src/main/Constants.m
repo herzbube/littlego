@@ -399,14 +399,6 @@ NSString* goMovePointKey = @"Point";
 NSString* goMoveCapturedStonesKey = @"CapturedStones";
 NSString* goMoveMoveNumberKey = @"MoveNumber";
 NSString* goMoveMoveInfoKey = @"MoveInfo";
-// GoMoveInfo keys
-NSString* goMoveInfoShortDescriptionKey = @"ShortDescription";
-NSString* goMoveInfoLongDescriptionKey = @"LongDescription";
-NSString* goMoveInfoGoBoardPositionValuationKey = @"GoBoardPositionValuation";
-NSString* goMoveInfoGoBoardPositionHotspotDesignationKey = @"GoBoardPositionHotspotDesignation";
-NSString* goMoveInfoEstimatedScoreSummaryKey = @"EstimatedScoreSummary";
-NSString* goMoveInfoEstimatedScoreValueKey = @"EstimatedScoreValue";
-NSString* goMoveInfoGoMoveValuationKey = @"GoMoveValuation";
 // GoMoveModel keys
 NSString* goMoveModelGameKey = @"Game";
 NSString* goMoveModelMoveListKey = @"MoveList";
@@ -436,6 +428,13 @@ NSString* goNodeNextSiblingKey = @"NextSibling";
 NSString* goNodeParentKey = @"Parent";
 NSString* goNodeGoMoveKey = @"GoMove";
 NSString* goNodeGoNodeAnnotationKey = @"GoNodeAnnotation";
+// GoNodeAnnotation keys
+NSString* goNodeAnnotationShortDescriptionKey = @"ShortDescription";
+NSString* goNodeAnnotationLongDescriptionKey = @"LongDescription";
+NSString* goNodeAnnotationGoBoardPositionValuationKey = @"GoBoardPositionValuation";
+NSString* goNodeAnnotationGoBoardPositionHotspotDesignationKey = @"GoBoardPositionHotspotDesignation";
+NSString* goNodeAnnotationEstimatedScoreSummaryKey = @"EstimatedScoreSummary";
+NSString* goNodeAnnotationEstimatedScoreValueKey = @"EstimatedScoreValue";
 // GoPoint keys
 NSString* goPointVertexKey = @"Vertex";
 NSString* goPointBoardKey = @"Board";

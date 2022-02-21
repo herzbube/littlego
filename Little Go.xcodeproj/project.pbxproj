@@ -77,9 +77,9 @@
 		CD0CCBF214311AD300A3F869 /* GtpLogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCBF114311AD300A3F869 /* GtpLogViewController.m */; };
 		CD0CCC98143140E300A3F869 /* GtpLogItemViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCC97143140E300A3F869 /* GtpLogItemViewController.m */; };
 		CD0CCEC61439147D00A3F869 /* GtpLogSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0CCEC51439147C00A3F869 /* GtpLogSettingsController.m */; };
-		CD0F6BE627B02C91002DBE6B /* GoMoveInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0F6BE527B02C91002DBE6B /* GoMoveInfo.m */; };
-		CD0F6BE727B02C91002DBE6B /* GoMoveInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0F6BE527B02C91002DBE6B /* GoMoveInfo.m */; };
 		CD0F6BEB27B068BE002DBE6B /* GoMoveInfoTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0F6BE927B068BE002DBE6B /* GoMoveInfoTest.m */; };
+		CD0F6BE627B02C91002DBE6B /* GoNodeAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0F6BE527B02C91002DBE6B /* GoNodeAnnotation.m */; };
+		CD0F6BE727B02C91002DBE6B /* GoNodeAnnotation.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0F6BE527B02C91002DBE6B /* GoNodeAnnotation.m */; };
 		CD0FE902169A122400053671 /* BoardPositionListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE8FF169A122400053671 /* BoardPositionListViewController.m */; };
 		CD0FE906169A135400053671 /* BoardPositionView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0FE905169A134C00053671 /* BoardPositionView.m */; };
 		CD1087891323D83F00E83543 /* GtpClient.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1087871323D83F00E83543 /* GtpClient.mm */; };
@@ -735,10 +735,10 @@
 		CD0CCC97143140E300A3F869 /* GtpLogItemViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpLogItemViewController.m; sourceTree = "<group>"; };
 		CD0CCEC41439147C00A3F869 /* GtpLogSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpLogSettingsController.h; sourceTree = "<group>"; };
 		CD0CCEC51439147C00A3F869 /* GtpLogSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpLogSettingsController.m; sourceTree = "<group>"; };
-		CD0F6BE427B02C90002DBE6B /* GoMoveInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveInfo.h; sourceTree = "<group>"; };
-		CD0F6BE527B02C91002DBE6B /* GoMoveInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveInfo.m; sourceTree = "<group>"; };
 		CD0F6BE927B068BE002DBE6B /* GoMoveInfoTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveInfoTest.m; sourceTree = "<group>"; };
 		CD0F6BEA27B068BE002DBE6B /* GoMoveInfoTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveInfoTest.h; sourceTree = "<group>"; };
+		CD0F6BE427B02C90002DBE6B /* GoNodeAnnotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeAnnotation.h; sourceTree = "<group>"; };
+		CD0F6BE527B02C91002DBE6B /* GoNodeAnnotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeAnnotation.m; sourceTree = "<group>"; };
 		CD0FE8FE169A122400053671 /* BoardPositionListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionListViewController.h; sourceTree = "<group>"; };
 		CD0FE8FF169A122400053671 /* BoardPositionListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionListViewController.m; sourceTree = "<group>"; };
 		CD0FE904169A134C00053671 /* BoardPositionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionView.h; sourceTree = "<group>"; };
@@ -1633,13 +1633,13 @@
 				CDC97A8D18301CC100755EB2 /* GoGameRules.m */,
 				CD10881D13255A6100E83543 /* GoMove.h */,
 				CD10881E13255A6100E83543 /* GoMove.m */,
-				CD0F6BE427B02C90002DBE6B /* GoMoveInfo.h */,
-				CD0F6BE527B02C91002DBE6B /* GoMoveInfo.m */,
 				CD15A47E168CBE7F00D4472A /* GoMoveModel.h */,
 				CD15A47F168CBE7F00D4472A /* GoMoveModel.m */,
 				CD85068527B95046000D2CCD /* GoNode.h */,
 				CD85068427B95046000D2CCD /* GoNode.m */,
 				CD85069027C00B30000D2CCD /* GoNodeAdditions.h */,
+				CD0F6BE427B02C90002DBE6B /* GoNodeAnnotation.h */,
+				CD0F6BE527B02C91002DBE6B /* GoNodeAnnotation.m */,
 				CD10882013255A6B00E83543 /* GoPlayer.h */,
 				CD10882113255A6B00E83543 /* GoPlayer.m */,
 				CD10882313255AA600E83543 /* GoPoint.h */,
@@ -2251,12 +2251,12 @@
 				CD85B58F1401C137001715B8 /* GoGameTest.m */,
 				CDC97A901832E2E700755EB2 /* GoGameRulesTest.h */,
 				CDC97A911832E2E700755EB2 /* GoGameRulesTest.m */,
-				CD0F6BEA27B068BE002DBE6B /* GoMoveInfoTest.h */,
-				CD0F6BE927B068BE002DBE6B /* GoMoveInfoTest.m */,
 				CD15A482168D044400D4472A /* GoMoveModelTest.h */,
 				CD15A483168D044400D4472A /* GoMoveModelTest.m */,
 				CDA6F0A814B1C88F00F71BC0 /* GoMoveTest.h */,
 				CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */,
+				CD0F6BEA27B068BE002DBE6B /* GoNodeAnnotationTest.h */,
+				CD0F6BE927B068BE002DBE6B /* GoNodeAnnotationTest.m */,
 				CD99EC6414B12058007B3B67 /* GoPlayerTest.h */,
 				CD99EC6514B12059007B3B67 /* GoPlayerTest.m */,
 				CD99EC6114B10746007B3B67 /* GoPointTest.h */,
@@ -3133,7 +3133,7 @@
 				CDD48FB01413E95500188B6A /* CommandBase.m in Sources */,
 				CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */,
 				CD7C57D422024C4700694520 /* BoardSetupSettingsController.m in Sources */,
-				CD0F6BE627B02C91002DBE6B /* GoMoveInfo.m in Sources */,
+				CD0F6BE627B02C91002DBE6B /* GoNodeAnnotation.m in Sources */,
 				CD7C69FD1AB43B3F009EC5AD /* NavigationBarController.m in Sources */,
 				CDFABB881416DD880065C93B /* ArchiveGame.m in Sources */,
 				CD81790B25DC5AA700F39091 /* StoneView.m in Sources */,
@@ -3547,7 +3547,7 @@
 				CD072715180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
 				CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */,
 				CDC97A8F18301CC100755EB2 /* GoGameRules.m in Sources */,
-				CD0F6BE727B02C91002DBE6B /* GoMoveInfo.m in Sources */,
+				CD0F6BE727B02C91002DBE6B /* GoNodeAnnotation.m in Sources */,
 				CDFD9F8318F1D5F70031CBCF /* GtpLogViewController.m in Sources */,
 				CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */,
 				CDC97A951832E52E00755EB2 /* GoZobristTableTest.m in Sources */,

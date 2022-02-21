@@ -16,13 +16,12 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoMoveInfo class collects non-essential information about a move
-/// made by one of the players, and/or the board position that results from
-/// playing the move.
+/// @brief The GoNodeAnnotation class collects information that is not related
+/// to any specific place on the Go board, but marks the whole node instead.
 ///
 /// @ingroup go
 // -----------------------------------------------------------------------------
-@interface GoMoveInfo : NSObject <NSCoding>
+@interface GoNodeAnnotation : NSObject <NSCoding>
 {
 }
 
@@ -44,9 +43,8 @@
 /// must be zero, otherwise this method returns false.
 - (bool) setEstimatedScoreSummary:(enum GoScoreSummary)goScoreSummary value:(double)goScoreValue;
 
-/// @brief A short text without newlines, describing the move or position
-/// resulting from the move. Is @e nil if no short description is available.
-/// The default value is @e nil.
+/// @brief A short text without newlines, describing the node. Is @e nil if no
+/// short description is available. The default value is @e nil.
 ///
 /// There is no guarantee that the description is actually short. When the
 /// property is set no attempt is made to restrict the length of the string.
@@ -58,9 +56,9 @@
 /// name).
 @property(nonatomic, retain) NSString* shortDescription;
 
-/// @brief A long text which may include newlines, describing in detail the move
-/// or position resulting from the move. Is @e nil if no long description is
-/// available. The default value is @e nil.
+/// @brief A long text which may include newlines, describing in detail the
+/// node. Is @e nil if no long description is available. The default value is
+/// @e nil.
 ///
 /// There is no guarantee that the description is actually long. The presence
 /// of a long description is no guarantee that a short description exists.
@@ -69,24 +67,22 @@
 /// text).
 @property(nonatomic, retain) NSString* longDescription;
 
-/// @brief The valuation of the board position that results from playing the
-/// move that the move information is associated with. The default value is
+/// @brief The valuation of the board position in the node. The default value is
 /// #GoBoardPositionValuationNone.
 ///
 /// This property corresponds to the presence or absence of the SGF node
 /// annotation properties GB, GW, DM and UC.
 @property(nonatomic, assign) enum GoBoardPositionValuation goBoardPositionValuation;
 
-/// @brief The valuation of the board position that results from playing the
-/// move that the move information is associated with. The default value is
+/// @brief The hotspot designation of the node. The default value is
 /// #GoBoardPositionHotspotDesignationNone.
 ///
 /// This property corresponds to the SGF node annotation property HO.
 @property(nonatomic, assign) enum GoBoardPositionHotspotDesignation goBoardPositionHotspotDesignation;
 
-/// @brief The summary of the estimated score at the board position that results
-/// from playing the move that the move information is associated with. The
-/// default value is #GoScoreSummaryNone.
+/// @brief The summary of the estimated score at the position in the node. To
+/// find out the actual score the property @e estimatedScoreValue must be
+/// evaluated. The default value is #GoScoreSummaryNone.
 ///
 /// To avoid illegal combinations of values, the method
 /// setEstimatedScoreSummary:value:() must always be used to update this
@@ -96,12 +92,13 @@
 /// the SGF node annotation property V (node value).
 @property(nonatomic, assign, readonly) enum GoScoreSummary estimatedScoreSummary;
 
-/// @brief The estimated score value at the board position that results from
-/// playing the move that the move information is associated with. To find out
+/// @brief The estimated score value at the position in the node. To find out
 /// whether a non-zero value indicates a win for black or white the property
 /// @e estimatedScoreSummary must be evaluated. The default value is 0.0.
 ///
-/// The value of this property is never negative.
+/// The value of this property is never negative. The value of this property
+/// is always 0.0 (zero) if the property @e estimatedScoreSummary has value
+/// #GoScoreSummaryTie or #GoScoreSummaryNone.
 ///
 /// To avoid illegal combinations of values, the method
 /// setEstimatedScoreSummary:value:() must always be used to update this
@@ -110,12 +107,5 @@
 /// This property, together with the property @e estimatedScoreSummary,
 /// corresponds to the SGF node annotation property V (node value).
 @property(nonatomic, assign, readonly) double estimatedScoreValue;
-
-/// @brief The valuation of the move that the move information is associated
-/// with. The default value is #GoMoveValuationNone.
-///
-/// This property corresponds to the presence or absence of the SGF move
-/// annotation properties TE, BM, IT and DO.
-@property(nonatomic, assign) enum GoMoveValuation goMoveValuation;
 
 @end

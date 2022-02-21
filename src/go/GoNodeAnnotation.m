@@ -16,13 +16,13 @@
 
 
 // Project includes
-#import "GoMoveInfo.h"
+#import "GoNodeAnnotation.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for GoMoveInfo.
+/// @brief Class extension with private properties for GoNodeAnnotation.
 // -----------------------------------------------------------------------------
-@interface GoMoveInfo()
+@interface GoNodeAnnotation()
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, assign, readwrite) enum GoScoreSummary estimatedScoreSummary;
@@ -31,12 +31,12 @@
 @end
 
 
-@implementation GoMoveInfo
+@implementation GoNodeAnnotation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a GoMoveInfo object with default values.
+/// @brief Initializes a GoNodeAnnotation object with default values.
 ///
-/// @note This is the designated initializer of GoMoveInfo.
+/// @note This is the designated initializer of GoNodeAnnotation.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -51,8 +51,7 @@
   self.goBoardPositionHotspotDesignation = GoBoardPositionHotspotDesignationNone;
   self.estimatedScoreSummary = GoScoreSummaryNone;
   self.estimatedScoreValue = 0.0;
-  self.goMoveValuation = GoMoveValuationNone;
-
+ 
   return self;
 }
 
@@ -68,19 +67,18 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
-  self.shortDescription = [decoder decodeObjectForKey:goMoveInfoShortDescriptionKey];
-  self.longDescription = [decoder decodeObjectForKey:goMoveInfoLongDescriptionKey];
-  self.goBoardPositionValuation = [decoder decodeIntForKey:goMoveInfoGoBoardPositionValuationKey];
-  self.goBoardPositionHotspotDesignation = [decoder decodeIntForKey:goMoveInfoGoBoardPositionHotspotDesignationKey];
-  self.estimatedScoreSummary = [decoder decodeIntForKey:goMoveInfoEstimatedScoreSummaryKey];
-  self.estimatedScoreValue = [decoder decodeDoubleForKey:goMoveInfoEstimatedScoreValueKey];
-  self.goMoveValuation = [decoder decodeIntForKey:goMoveInfoGoMoveValuationKey];
+  self.shortDescription = [decoder decodeObjectForKey:goNodeAnnotationShortDescriptionKey];
+  self.longDescription = [decoder decodeObjectForKey:goNodeAnnotationLongDescriptionKey];
+  self.goBoardPositionValuation = [decoder decodeIntForKey:goNodeAnnotationGoBoardPositionValuationKey];
+  self.goBoardPositionHotspotDesignation = [decoder decodeIntForKey:goNodeAnnotationGoBoardPositionHotspotDesignationKey];
+  self.estimatedScoreSummary = [decoder decodeIntForKey:goNodeAnnotationEstimatedScoreSummaryKey];
+  self.estimatedScoreValue = [decoder decodeDoubleForKey:goNodeAnnotationEstimatedScoreValueKey];
 
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this GoMoveInfo object.
+/// @brief Deallocates memory allocated by this GoNodeAnnotation object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -93,13 +91,12 @@
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
-  [encoder encodeObject:self.shortDescription forKey:goMoveInfoShortDescriptionKey];
-  [encoder encodeObject:self.longDescription forKey:goMoveInfoLongDescriptionKey];
-  [encoder encodeInt:self.goBoardPositionValuation forKey:goMoveInfoGoBoardPositionValuationKey];
-  [encoder encodeInt:self.goBoardPositionHotspotDesignation forKey:goMoveInfoGoBoardPositionHotspotDesignationKey];
-  [encoder encodeInt:self.estimatedScoreSummary forKey:goMoveInfoEstimatedScoreSummaryKey];
-  [encoder encodeDouble:self.estimatedScoreValue forKey:goMoveInfoEstimatedScoreValueKey];
-  [encoder encodeInt:self.goMoveValuation forKey:goMoveInfoGoMoveValuationKey];
+  [encoder encodeObject:self.shortDescription forKey:goNodeAnnotationShortDescriptionKey];
+  [encoder encodeObject:self.longDescription forKey:goNodeAnnotationLongDescriptionKey];
+  [encoder encodeInt:self.goBoardPositionValuation forKey:goNodeAnnotationGoBoardPositionValuationKey];
+  [encoder encodeInt:self.goBoardPositionHotspotDesignation forKey:goNodeAnnotationGoBoardPositionHotspotDesignationKey];
+  [encoder encodeInt:self.estimatedScoreSummary forKey:goNodeAnnotationEstimatedScoreSummaryKey];
+  [encoder encodeDouble:self.estimatedScoreValue forKey:goNodeAnnotationEstimatedScoreValueKey];
 }
 
 // -----------------------------------------------------------------------------
