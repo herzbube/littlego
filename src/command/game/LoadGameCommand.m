@@ -26,7 +26,9 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoGameDocument.h"
 #import "../../go/GoMove.h"
-#import "../../go/GoMoveInfo.h"
+#import "../../go/GoNode.h"
+#import "../../go/GoNodeAnnotation.h"
+#import "../../go/GoNodeModel.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
@@ -758,10 +760,8 @@ static const int maxStepsForReplayMoves = 10;
       if (propertyType != SGFCPropertyTypeB && propertyType != SGFCPropertyTypeW)
         continue;  // not interested in other move properties
 
-      GoMoveInfo* moveInfo = [self createMoveInfoWithPropertiesFromNode:sgfNode];
-
-      id moveListTupleSecondValue = (moveInfo != nil) ? moveInfo : [NSNull null];
-      NSArray* moveListTuple = [NSArray arrayWithObjects:moveCategoryProperty, moveListTupleSecondValue, nil];
+      NSArray* moveListTuple = [self createMoveListTupleWithMoveProperty:moveCategoryProperty
+                                                   andPropertiesFromNode:sgfNode];
       [moveList addObject:moveListTuple];
 
       // Although the node should never contain both SGFCPropertyTypeB and
@@ -783,67 +783,77 @@ static const int maxStepsForReplayMoves = 10;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates a new GoMoveInfo object and populates it with values from
-/// relevant SGF properties found in @a sgfNode. Returns the GoMoveInfo object
-/// if at least one relevant SGF property was found. Returns @e nil if no
-/// relevant SGF properties were found.
+/// @brief Creates a tuple of values (an NSArray object) that together represent
+/// one move.
+///
+/// The first tuple value always is @a moveProperty.
+///
+/// The second tuple value is an NSNumber of type "int" which encapsulates a
+/// GoMoveValuation value. If a move valuation property exists in @a sgfNode
+/// that property's value is used, otherwise #GoMoveValuationNone is used.
+///
+/// The third tuple value is a GoNodeAnnotation object populated with node
+/// annotation property values found in @a sgfNode, or an @e NSNull object if
+/// no node annotation properties exist in @a sgfNode.
 // -----------------------------------------------------------------------------
-- (GoMoveInfo*) createMoveInfoWithPropertiesFromNode:(SGFCNode*)sgfNode
+- (NSArray*) createMoveListTupleWithMoveProperty:(SGFCProperty*)moveProperty
+                           andPropertiesFromNode:(SGFCNode*)sgfNode
 {
-  GoMoveInfo* moveInfo = [[[GoMoveInfo alloc] init] autorelease];
-  bool atLeastOneRelevantPropertyWasFound = false;
+  enum GoMoveValuation moveValuation = GoMoveValuationNone;
+  GoNodeAnnotation* nodeAnnotation = [[[GoNodeAnnotation alloc] init] autorelease];
+  bool atLeastOneAnnotationPropertyWasFound = false;
 
   for (SGFCProperty* property in [sgfNode properties])
   {
     if (property.propertyType == SGFCPropertyTypeN)
     {
-      moveInfo.shortDescription = property.propertyValue.toSingleValue.toSimpleTextValue.simpleTextValue;
-      atLeastOneRelevantPropertyWasFound = true;
+      nodeAnnotation.shortDescription = property.propertyValue.toSingleValue.toSimpleTextValue.simpleTextValue;
+      atLeastOneAnnotationPropertyWasFound = true;
     }
     else if (property.propertyType == SGFCPropertyTypeC)
     {
-      moveInfo.longDescription = property.propertyValue.toSingleValue.toTextValue.textValue;
-      atLeastOneRelevantPropertyWasFound = true;
+      nodeAnnotation.longDescription = property.propertyValue.toSingleValue.toTextValue.textValue;
+      atLeastOneAnnotationPropertyWasFound = true;
     }
     else if (property.propertyType == SGFCPropertyTypeGB)
     {
       if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        moveInfo.goBoardPositionValuation = GoBoardPositionValuationGoodForBlack;
+        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationGoodForBlack;
       else
-        moveInfo.goBoardPositionValuation = GoBoardPositionValuationVeryGoodForBlack;
-      atLeastOneRelevantPropertyWasFound = true;
+        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryGoodForBlack;
+      atLeastOneAnnotationPropertyWasFound = true;
     }
     else if (property.propertyType == SGFCPropertyTypeGW)
     {
       if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        moveInfo.goBoardPositionValuation = GoBoardPositionValuationGoodForWhite;
+        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationGoodForWhite;
       else
-        moveInfo.goBoardPositionValuation = GoBoardPositionValuationVeryGoodForWhite;
-      atLeastOneRelevantPropertyWasFound = true;
+        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryGoodForWhite;
+      atLeastOneAnnotationPropertyWasFound = true;
     }
     else if (property.propertyType == SGFCPropertyTypeDM)
     {
       if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        moveInfo.goBoardPositionValuation = GoBoardPositionValuationEven;
+        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationEven;
       else
-        moveInfo.goBoardPositionValuation = GoBoardPositionValuationVeryEven;
-      atLeastOneRelevantPropertyWasFound = true;
+        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryEven;
+      atLeastOneAnnotationPropertyWasFound = true;
     }
     else if (property.propertyType == SGFCPropertyTypeUC)
     {
       if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        moveInfo.goBoardPositionValuation = GoBoardPositionValuationUnclear;
+        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationUnclear;
       else
-        moveInfo.goBoardPositionValuation = GoBoardPositionValuationVeryUnclear;
-      atLeastOneRelevantPropertyWasFound = true;
+        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryUnclear;
+      atLeastOneAnnotationPropertyWasFound = true;
     }
     else if (property.propertyType == SGFCPropertyTypeHO)
     {
       if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        moveInfo.goBoardPositionHotspotDesignation = GoBoardPositionHotspotDesignationYes;
+        nodeAnnotation.goBoardPositionHotspotDesignation = GoBoardPositionHotspotDesignationYes;
       else
-        moveInfo.goBoardPositionHotspotDesignation = GoBoardPositionHotspotDesignationYesEmphasized;
-      atLeastOneRelevantPropertyWasFound = true;
+        nodeAnnotation.goBoardPositionHotspotDesignation = GoBoardPositionHotspotDesignationYesEmphasized;
+      atLeastOneAnnotationPropertyWasFound = true;
     }
     else if (property.propertyType == SGFCPropertyTypeV)
     {
@@ -862,53 +872,54 @@ static const int maxStepsForReplayMoves = 10;
       {
         estimatedScoreSummary = GoScoreSummaryTie;
       }
-      [moveInfo setEstimatedScoreSummary:estimatedScoreSummary value:estimatedScoreValue];
-      atLeastOneRelevantPropertyWasFound = true;
+      [nodeAnnotation setEstimatedScoreSummary:estimatedScoreSummary value:estimatedScoreValue];
+      atLeastOneAnnotationPropertyWasFound = true;
     }
     else if (property.propertyType == SGFCPropertyTypeTE)
     {
       if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        moveInfo.goMoveValuation = GoMoveValuationGood;
+        moveValuation = GoMoveValuationGood;
       else
-        moveInfo.goMoveValuation = GoMoveValuationVeryGood;
-      atLeastOneRelevantPropertyWasFound = true;
+        moveValuation = GoMoveValuationVeryGood;
     }
     else if (property.propertyType == SGFCPropertyTypeBM)
     {
       if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        moveInfo.goMoveValuation = GoMoveValuationBad;
+        moveValuation = GoMoveValuationBad;
       else
-        moveInfo.goMoveValuation = GoMoveValuationVeryBad;
-      atLeastOneRelevantPropertyWasFound = true;
+        moveValuation = GoMoveValuationVeryBad;
     }
     else if (property.propertyType == SGFCPropertyTypeIT)
     {
-      moveInfo.goMoveValuation = GoMoveValuationInteresting;
-      atLeastOneRelevantPropertyWasFound = true;
+      moveValuation = GoMoveValuationInteresting;
     }
     else if (property.propertyType == SGFCPropertyTypeDO)
     {
-      moveInfo.goMoveValuation = GoMoveValuationDoubtful;
-      atLeastOneRelevantPropertyWasFound = true;
+      moveValuation = GoMoveValuationDoubtful;
     }
   }
 
-  if (atLeastOneRelevantPropertyWasFound)
-    return moveInfo;
-  else
-    return nil;
+  NSArray* moveListTuple = @[
+    moveProperty,
+    [NSNumber numberWithInt:moveValuation],
+    atLeastOneAnnotationPropertyWasFound ? nodeAnnotation : [NSNull null]
+  ];
+  return moveListTuple;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Replays the moves in @a moveList.
 ///
-/// @a moveList is expected to contain tuples with two objects each:
+/// @a moveList is expected to contain tuples with three objects each:
 /// - The first object is an SGFCProperty object of type #SGFCPropertyTypeB or
 ///   #SGFCPropertyTypeW. A move is being played using the information in this
 ///   object.
-/// - The second object is either a GoMoveInfo object, which needs to be
-///   associated with the move that is being played, or @e NSNull if there is
-///   no move information that needs to be associated.
+/// - The second object is an NSNumber that encapsulates a GoMoveValuation value
+///   as integer.
+/// - The third object is either a GoNodeAnnotation object, which needs to be
+///   associated with the same node as the move that is being played, or
+///   @e NSNull if there is no GoNodeAnnotation object that needs to be
+///   associated.
 ///
 /// The asynchronous command delegate is updated continuously with progress
 /// information as the moves are replayed. In an ideal world we would have
@@ -1017,9 +1028,15 @@ static const int maxStepsForReplayMoves = 10;
         [game play:point];
       }
 
-      id moveListTupleSecondValue = [moveListTuple lastObject];
-      if (moveListTupleSecondValue != [NSNull null])
-        game.lastMove.moveInfo = moveListTupleSecondValue;
+      GoNode* nodeCreatedByReplayedMove = game.nodeModel.leafNode;
+
+      GoMove* replayedMove = nodeCreatedByReplayedMove.goMove;
+      NSNumber* moveListTupleSecondValue = [moveListTuple objectAtIndex:1];
+      replayedMove.goMoveValuation = moveListTupleSecondValue.intValue;
+
+      id moveListTupleThirdValue = [moveListTuple lastObject];
+      if (moveListTupleThirdValue != [NSNull null])
+        nodeCreatedByReplayedMove.goNodeAnnotation = moveListTupleThirdValue;
 
       ++movesReplayed;
       if (movesReplayed >= nextProgressUpdate)
