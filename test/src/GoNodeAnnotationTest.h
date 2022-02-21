@@ -20,10 +20,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoMoveInfoTest class contains unit tests that exercise the
-/// GoMoveInfo class.
+/// @brief The GoNodeAnnotationTest class contains unit tests that exercise the
+/// GoNodeAnnotation class.
 // -----------------------------------------------------------------------------
-@interface GoMoveInfoTest : BaseTestCase
+@interface GoNodeAnnotationTest : BaseTestCase
 {
 }
 
@@ -34,6 +34,5 @@
 - (void) testEstimatedScoreSummary;
 - (void) testEstimatedScoreValue;
 - (void) testSetEstimatedScoreSummaryValue;
-- (void) testGoMoveValuation;
 
 @end

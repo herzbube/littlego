@@ -22,7 +22,6 @@
 #import <go/GoBoard.h>
 #import <go/GoGame.h>
 #import <go/GoMove.h>
-#import <go/GoMoveInfo.h>
 #import <go/GoPlayer.h>
 #import <go/GoPoint.h>
 
@@ -419,21 +418,19 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the @e moveInfo property
+/// @brief Exercises the @e goMoveValuation property
 // -----------------------------------------------------------------------------
-- (void) testMoveInfo
+- (void) testGoMoveValuation
 {
   enum GoMoveType moveType = GoMoveTypePlay;
   GoPlayer* player = m_game.playerBlack;
   GoMove* movePrevious = nil;
-
-  GoMoveInfo* expectedMoveInfo = nil;
   GoMove* move = [GoMove move:moveType by:player after:movePrevious];
-  XCTAssertEqual(expectedMoveInfo, move.moveInfo);
 
-  expectedMoveInfo = [[[GoMoveInfo alloc] init] autorelease];
-  move.moveInfo = expectedMoveInfo;
-  XCTAssertEqual(expectedMoveInfo, move.moveInfo);
+  XCTAssertEqual(move.goMoveValuation, GoMoveValuationNone);
+
+  move.goMoveValuation = GoMoveValuationInteresting;
+  XCTAssertEqual(move.goMoveValuation, GoMoveValuationInteresting);
 }
 
 @end

@@ -34,6 +34,6 @@
 - (void) testUndo;
 - (void) testMoveNumber;
 - (void) testZobristHash;
-- (void) testMoveInfo;
+- (void) testGoMoveValuation;
 
 @end
