@@ -378,7 +378,7 @@ NSString* goGamePlayerBlackKey = @"PlayerBlack";
 NSString* goGamePlayerWhiteKey = @"PlayerWhite";
 NSString* goGameNextMoveColorKey = @"NextMoveColor";
 NSString* goGameAlternatingPlayKey = @"AlternatingPlay";
-NSString* goGameMoveModelKey = @"MoveModel";
+NSString* goGameNodeModelKey = @"NodeModel";
 NSString* goGameStateKey = @"State";
 NSString* goGameReasonForGameHasEndedKey = @"ReasonForGameHasEnded";
 NSString* goGameReasonForComputerIsThinking = @"ReasonForComputerIsThinking";
@@ -398,10 +398,6 @@ NSString* goMovePlayerKey = @"Player";
 NSString* goMovePointKey = @"Point";
 NSString* goMoveCapturedStonesKey = @"CapturedStones";
 NSString* goMoveMoveNumberKey = @"MoveNumber";
-// GoMoveModel keys
-NSString* goMoveModelGameKey = @"Game";
-NSString* goMoveModelMoveListKey = @"MoveList";
-NSString* goMoveModelNumberOfMovesKey = @"NumberOfMoves";
 NSString* goMoveGoMoveValuationKey = @"MoveValuation";
 // GoBoardPosition keys
 NSString* goBoardPositionGameKey = @"Game";
@@ -435,6 +431,12 @@ NSString* goNodeAnnotationGoBoardPositionValuationKey = @"GoBoardPositionValuati
 NSString* goNodeAnnotationGoBoardPositionHotspotDesignationKey = @"GoBoardPositionHotspotDesignation";
 NSString* goNodeAnnotationEstimatedScoreSummaryKey = @"EstimatedScoreSummary";
 NSString* goNodeAnnotationEstimatedScoreValueKey = @"EstimatedScoreValue";
+// GoNodeModel keys
+NSString* goNodeModelGameKey = @"Game";
+NSString* goNodeModelRootNodeKey = @"RootNode";
+NSString* goNodeModelNodeListKey = @"NodeList";
+NSString* goNodeModelNumberOfNodesKey = @"NumberOfNodes";
+NSString* goNodeModelNumberOfMovesKey = @"NumberOfMoves";
 // GoPoint keys
 NSString* goPointVertexKey = @"Vertex";
 NSString* goPointBoardKey = @"Board";

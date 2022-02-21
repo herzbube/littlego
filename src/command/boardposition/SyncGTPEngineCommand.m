@@ -20,7 +20,8 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
-#import "../../go/GoMoveModel.h"
+#import "../../go/GoNode.h"
+#import "../../go/GoNodeModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
@@ -131,7 +132,7 @@
   GoGame* game = [GoGame sharedGame];
 
   // The previously sent GTP command "clear_board" has left Fuego without a
-  // handicap, so we need to setup handicap only if there is one. The GTP
+  // handicap, so we need to setup handicap only if there is one.
   NSUInteger handicap = game.handicapPoints.count;
   if (0 == handicap)
     return true;
@@ -241,35 +242,39 @@
   GoGame* game = [GoGame sharedGame];
   GoMove* syncUpToThisMove = nil;
   if (SyncMovesUpToCurrentBoardPosition == self.syncMoveType)
-    syncUpToThisMove = game.boardPosition.currentMove;
+    syncUpToThisMove = game.boardPosition.currentNode.goMove;
   else
     syncUpToThisMove = game.lastMove;
   if (! syncUpToThisMove)
     return true;
   NSString* commandString = @"gogui-play_sequence";
-  GoMove* move = game.moveModel.firstMove;
+  GoNode* node = game.nodeModel.rootNode;
   while (true)
   {
-    if (move.player.black)
-      commandString = [commandString stringByAppendingString:@" B "];
-    else
-      commandString = [commandString stringByAppendingString:@" W "];
-    switch (move.type)
+    GoMove* move = node.goMove;
+    if (move)
     {
-      case GoMoveTypePlay:
-        commandString = [commandString stringByAppendingString:move.point.vertex.string];
+      if (move.player.black)
+        commandString = [commandString stringByAppendingString:@" B "];
+      else
+        commandString = [commandString stringByAppendingString:@" W "];
+      switch (move.type)
+      {
+        case GoMoveTypePlay:
+          commandString = [commandString stringByAppendingString:move.point.vertex.string];
+          break;
+        case GoMoveTypePass:
+          commandString = [commandString stringByAppendingString:@" PASS"];
+          break;
+        default:
+          DDLogError(@"%@: Unexpected move type %d", [self shortDescription], move.type);
+          assert(0);
+          return false;
+      }
+      if (move == syncUpToThisMove)
         break;
-      case GoMoveTypePass:
-        commandString = [commandString stringByAppendingString:@" PASS"];
-        break;
-      default:
-        DDLogError(@"%@: Unexpected move type %d", [self shortDescription], move.type);
-        assert(0);
-        return false;
     }
-    if (move == syncUpToThisMove)
-      break;
-    move = move.next;
+    node = node.firstChild;
   }
   GtpCommand* commandSetup = [GtpCommand command:commandString];
   [commandSetup submit];

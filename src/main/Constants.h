@@ -1363,7 +1363,7 @@ extern NSString* goGamePlayerBlackKey;
 extern NSString* goGamePlayerWhiteKey;
 extern NSString* goGameNextMoveColorKey;
 extern NSString* goGameAlternatingPlayKey;
-extern NSString* goGameMoveModelKey;
+extern NSString* goGameNodeModelKey;
 extern NSString* goGameStateKey;
 extern NSString* goGameReasonForGameHasEndedKey;
 extern NSString* goGameReasonForComputerIsThinking;
@@ -1383,10 +1383,6 @@ extern NSString* goMovePlayerKey;
 extern NSString* goMovePointKey;
 extern NSString* goMoveCapturedStonesKey;
 extern NSString* goMoveMoveNumberKey;
-// GoMoveModel keys
-extern NSString* goMoveModelGameKey;
-extern NSString* goMoveModelMoveListKey;
-extern NSString* goMoveModelNumberOfMovesKey;
 extern NSString* goMoveGoMoveValuationKey;
 // GoBoardPosition keys
 extern NSString* goBoardPositionGameKey;
@@ -1420,6 +1416,12 @@ extern NSString* goNodeAnnotationGoBoardPositionValuationKey;
 extern NSString* goNodeAnnotationGoBoardPositionHotspotDesignationKey;
 extern NSString* goNodeAnnotationEstimatedScoreSummaryKey;
 extern NSString* goNodeAnnotationEstimatedScoreValueKey;
+// GoNodeModel keys
+extern NSString* goNodeModelGameKey;
+extern NSString* goNodeModelRootNodeKey;
+extern NSString* goNodeModelNodeListKey;
+extern NSString* goNodeModelNumberOfNodesKey;
+extern NSString* goNodeModelNumberOfMovesKey;
 // GoPoint keys
 extern NSString* goPointVertexKey;
 extern NSString* goPointBoardKey;

@@ -22,7 +22,7 @@
 #import "../move/PlayMoveCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
-#import "../../go/GoMoveModel.h"
+#import "../../go/GoNodeModel.h"
 #import "../../shared/LongRunningActionCounter.h"
 
 
@@ -200,10 +200,10 @@ enum PlayCommandType
 {
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
-  int indexOfFirstMoveToDiscard = boardPosition.currentBoardPosition;
-  DDLogInfo(@"%@: Index position of first move to discard = %d", [self shortDescription], indexOfFirstMoveToDiscard);
-  GoMoveModel* moveModel = game.moveModel;
-  [moveModel discardMovesFromIndex:indexOfFirstMoveToDiscard];
+  int indexOfFirstNodeToDiscard = boardPosition.currentBoardPosition;
+  DDLogInfo(@"%@: Index position of first node to discard = %d", [self shortDescription], indexOfFirstNodeToDiscard);
+  GoNodeModel* nodeModel = game.nodeModel;
+  [nodeModel discardNodesFromIndex:indexOfFirstNodeToDiscard];
   return true;
 }
 

@@ -99,9 +99,7 @@
 		CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311CD17180D57006CE699 /* StatusViewController.m */; };
 		CD1311D2171B5857006CE699 /* LoggingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311D1171B5854006CE699 /* LoggingModel.m */; };
 		CD1311D3171B5FFF006CE699 /* LoggingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311D1171B5854006CE699 /* LoggingModel.m */; };
-		CD15A480168CBE7F00D4472A /* GoMoveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A47F168CBE7F00D4472A /* GoMoveModel.m */; };
-		CD15A481168CE99100D4472A /* GoMoveModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A47F168CBE7F00D4472A /* GoMoveModel.m */; };
-		CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A483168D044400D4472A /* GoMoveModelTest.m */; };
+		CD15A484168D044400D4472A /* GoNodeModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A483168D044400D4472A /* GoNodeModelTest.m */; };
 		CD1D606425BC230A00345506 /* UIViewControllerAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */; };
 		CD1D606525BC230A00345506 /* UIViewControllerAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */; };
 		CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60916FE181400C2E648 /* GoGameDocument.m */; };
@@ -268,6 +266,8 @@
 		CD81796025DDEDDF00F39091 /* computer-suggest-move@2.png in Resources */ = {isa = PBXBuildFile; fileRef = CD81795A25DDEDDF00F39091 /* computer-suggest-move@2.png */; };
 		CD85068627B95046000D2CCD /* GoNode.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85068427B95046000D2CCD /* GoNode.m */; };
 		CD85068727B95046000D2CCD /* GoNode.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85068427B95046000D2CCD /* GoNode.m */; };
+		CD85068A27BB18D6000D2CCD /* GoNodeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85068927BB18D6000D2CCD /* GoNodeModel.m */; };
+		CD85068B27BB18D6000D2CCD /* GoNodeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85068927BB18D6000D2CCD /* GoNodeModel.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -768,10 +768,8 @@
 		CD1311CD17180D57006CE699 /* StatusViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatusViewController.m; sourceTree = "<group>"; };
 		CD1311D0171B5853006CE699 /* LoggingModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LoggingModel.h; sourceTree = "<group>"; };
 		CD1311D1171B5854006CE699 /* LoggingModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoggingModel.m; sourceTree = "<group>"; };
-		CD15A47E168CBE7F00D4472A /* GoMoveModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveModel.h; sourceTree = "<group>"; };
-		CD15A47F168CBE7F00D4472A /* GoMoveModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveModel.m; sourceTree = "<group>"; };
-		CD15A482168D044400D4472A /* GoMoveModelTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveModelTest.h; sourceTree = "<group>"; };
-		CD15A483168D044400D4472A /* GoMoveModelTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveModelTest.m; sourceTree = "<group>"; };
+		CD15A482168D044400D4472A /* GoNodeModelTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeModelTest.h; sourceTree = "<group>"; };
+		CD15A483168D044400D4472A /* GoNodeModelTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeModelTest.m; sourceTree = "<group>"; };
 		CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewControllerAdditions.m; sourceTree = "<group>"; };
 		CD1D606325BC230A00345506 /* UIViewControllerAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewControllerAdditions.h; sourceTree = "<group>"; };
 		CD1DB60816FE181400C2E648 /* GoGameDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameDocument.h; sourceTree = "<group>"; };
@@ -964,6 +962,8 @@
 		CD81799C25DDF4C200F39091 /* noun_hint_3194435.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = noun_hint_3194435.svg; sourceTree = "<group>"; };
 		CD85068427B95046000D2CCD /* GoNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNode.m; sourceTree = "<group>"; };
 		CD85068527B95046000D2CCD /* GoNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNode.h; sourceTree = "<group>"; };
+		CD85068827BB18D6000D2CCD /* GoNodeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeModel.h; sourceTree = "<group>"; };
+		CD85068927BB18D6000D2CCD /* GoNodeModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeModel.m; sourceTree = "<group>"; };
 		CD85069027C00B30000D2CCD /* GoNodeAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeAdditions.h; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
@@ -1632,13 +1632,13 @@
 				CDC97A8D18301CC100755EB2 /* GoGameRules.m */,
 				CD10881D13255A6100E83543 /* GoMove.h */,
 				CD10881E13255A6100E83543 /* GoMove.m */,
-				CD15A47E168CBE7F00D4472A /* GoMoveModel.h */,
-				CD15A47F168CBE7F00D4472A /* GoMoveModel.m */,
 				CD85068527B95046000D2CCD /* GoNode.h */,
 				CD85068427B95046000D2CCD /* GoNode.m */,
 				CD85069027C00B30000D2CCD /* GoNodeAdditions.h */,
 				CD0F6BE427B02C90002DBE6B /* GoNodeAnnotation.h */,
 				CD0F6BE527B02C91002DBE6B /* GoNodeAnnotation.m */,
+				CD85068827BB18D6000D2CCD /* GoNodeModel.h */,
+				CD85068927BB18D6000D2CCD /* GoNodeModel.m */,
 				CD10882013255A6B00E83543 /* GoPlayer.h */,
 				CD10882113255A6B00E83543 /* GoPlayer.m */,
 				CD10882313255AA600E83543 /* GoPoint.h */,
@@ -2250,12 +2250,12 @@
 				CD85B58F1401C137001715B8 /* GoGameTest.m */,
 				CDC97A901832E2E700755EB2 /* GoGameRulesTest.h */,
 				CDC97A911832E2E700755EB2 /* GoGameRulesTest.m */,
-				CD15A482168D044400D4472A /* GoMoveModelTest.h */,
-				CD15A483168D044400D4472A /* GoMoveModelTest.m */,
 				CDA6F0A814B1C88F00F71BC0 /* GoMoveTest.h */,
 				CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */,
 				CD0F6BEA27B068BE002DBE6B /* GoNodeAnnotationTest.h */,
 				CD0F6BE927B068BE002DBE6B /* GoNodeAnnotationTest.m */,
+				CD15A482168D044400D4472A /* GoNodeModelTest.h */,
+				CD15A483168D044400D4472A /* GoNodeModelTest.m */,
 				CD99EC6414B12058007B3B67 /* GoPlayerTest.h */,
 				CD99EC6514B12059007B3B67 /* GoPlayerTest.m */,
 				CD99EC6114B10746007B3B67 /* GoPointTest.h */,
@@ -3145,6 +3145,7 @@
 				CDEE19F119433EAC00DF2389 /* BoardTileView.m in Sources */,
 				CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */,
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
+				CD85068A27BB18D6000D2CCD /* GoNodeModel.m in Sources */,
 				CD05AAB91424BF1000214BBE /* LoadGameCommand.m in Sources */,
 				CD7C6A091AB462CB009EC5AD /* NavigationBarButtonModel.m in Sources */,
 				CD05AB961425169500214BBE /* GoUtilities.m in Sources */,
@@ -3229,7 +3230,6 @@
 				CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */,
 				CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */,
 				CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */,
-				CD15A480168CBE7F00D4472A /* GoMoveModel.m in Sources */,
 				CDA493A7168F26890076E168 /* BoardPositionSettingsController.m in Sources */,
 				CDF630AA168F50BA003C8BEF /* DiscardAndPlayCommand.m in Sources */,
 				CD36594116931F8600D75466 /* GoBoardPosition.m in Sources */,
@@ -3436,9 +3436,8 @@
 				CDA096FC1A915085002FCD78 /* LayoutManager.m in Sources */,
 				CD931EE31684E4A6002E1262 /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
 				CD931EED16851E5C002E1262 /* SaveGameCommand.m in Sources */,
-				CD15A481168CE99100D4472A /* GoMoveModel.m in Sources */,
 				CDEE1A181946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
-				CD15A484168D044400D4472A /* GoMoveModelTest.m in Sources */,
+				CD15A484168D044400D4472A /* GoNodeModelTest.m in Sources */,
 				CD3659421693533600D75466 /* GoBoardPosition.m in Sources */,
 				CDBFCBBE16C3EFB0001D78C0 /* SetupApplicationCommand.m in Sources */,
 				CD96A44B16C71BB0000C2792 /* ChangeBoardPositionCommand.m in Sources */,
@@ -3485,6 +3484,7 @@
 				CD9A49E6171250D4009E7514 /* LeftPaneViewController.m in Sources */,
 				CD9A49E7171250D6009E7514 /* RightPaneViewController.m in Sources */,
 				CDFD9F8518F1D6170031CBCF /* DocumentGenerator.m in Sources */,
+				CD85068B27BB18D6000D2CCD /* GoNodeModel.m in Sources */,
 				CD9A49E8171250FA009E7514 /* ChangeAndDiscardCommand.m in Sources */,
 				CD9A49E917125106009E7514 /* DiscardAndPlayCommand.m in Sources */,
 				CD9A49EA17125115009E7514 /* ContinueGameCommand.m in Sources */,

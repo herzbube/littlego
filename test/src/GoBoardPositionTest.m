@@ -22,7 +22,8 @@
 #import <go/GoBoard.h>
 #import <go/GoBoardPosition.h>
 #import <go/GoGame.h>
-#import <go/GoMoveModel.h>
+#import <go/GoNode.h>
+#import <go/GoNodeModel.h>
 #import <go/GoPoint.h>
 #import <go/GoUtilities.h>
 
@@ -50,7 +51,8 @@
   XCTAssertEqual(boardPosition.numberOfBoardPositions, 1);
   XCTAssertTrue(boardPosition.isFirstPosition);
   XCTAssertTrue(boardPosition.isLastPosition);
-  XCTAssertNil(boardPosition.currentMove);
+  XCTAssertNotNil(boardPosition.currentNode);
+  XCTAssertNil(boardPosition.currentNode.goMove);
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
   XCTAssertFalse(m_game.nextMovePlayerIsComputerPlayer);
@@ -85,7 +87,7 @@
   XCTAssertEqual(boardPosition.numberOfBoardPositions, 2);
   XCTAssertFalse(boardPosition.isFirstPosition);
   XCTAssertTrue(boardPosition.isLastPosition);
-  XCTAssertNotNil(boardPosition.currentMove);
+  XCTAssertNotNil(boardPosition.currentNode);
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
   XCTAssertFalse(m_game.nextMovePlayerIsComputerPlayer);
@@ -171,7 +173,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Checks the state of the GoBoardPosition object after a move has been
+/// @brief Checks the state of the GoBoardPosition object after a node has been
 /// discarded.
 // -----------------------------------------------------------------------------
 - (void) testStateAfterDiscard
@@ -186,10 +188,11 @@
   XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
 
   // Discarding automatically adjusts the board position
-  GoMoveModel* moveModel = m_game.moveModel;
-  XCTAssertNotNil(moveModel);
-  XCTAssertEqual(moveModel.numberOfMoves, 2);
-  [moveModel discardMovesFromIndex:1];
+  GoNodeModel* nodeModel = m_game.nodeModel;
+  XCTAssertNotNil(nodeModel);
+  XCTAssertEqual(nodeModel.numberOfNodes, 3);
+  XCTAssertEqual(nodeModel.numberOfMoves, 2);
+  [nodeModel discardNodesFromIndex:2];
   XCTAssertEqual(boardPosition.currentBoardPosition, 1);
   XCTAssertEqual(boardPosition.numberOfBoardPositions, 2);
 }

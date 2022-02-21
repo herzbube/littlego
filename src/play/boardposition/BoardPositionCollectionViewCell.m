@@ -19,7 +19,8 @@
 #import "BoardPositionCollectionViewCell.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
-#import "../../go/GoMoveModel.h"
+#import "../../go/GoNode.h"
+#import "../../go/GoNodeModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
@@ -272,8 +273,18 @@ static UIFont* smallFont = nil;
   }
   else
   {
-    int moveIndex = self.boardPosition - 1;
-    move = [game.moveModel moveAtIndex:moveIndex];
+    int nodeIndex = self.boardPosition;
+    GoNode* node = [game.nodeModel nodeAtIndex:nodeIndex];
+    move = node.goMove;
+    if (! move)
+    {
+      // TODO xxx Instead of this check this cell must be changed to fully
+      // support displaying nodes that do not contain moves. Currently this
+      // cell is restricted to displaying nodes that contain moves.
+      DDLogError(@"%@: Unsupported node: Can only display nodes that contain moves", self);
+      assert(0);
+      return;
+    }
     self.stoneImageView.image = [self stoneImageForMove:move];
     self.intersectionLabel.text = [self intersectionLabelTextForMove:move];
     self.boardPositionLabel.text = [NSString stringWithFormat:@"Move %d", self.boardPosition];

@@ -23,6 +23,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoGameRules.h"
 #import "../../go/GoMove.h"
+#import "../../go/GoNode.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
@@ -916,7 +917,8 @@ enum BoardPositionSectionItem
       if (boardPosition.isFirstPosition)
         cell.detailTextLabel.text = @"n/a";
       else
-        cell.detailTextLabel.text = [self descriptionOfMove:boardPosition.currentMove];
+        // TODO xxx support nodes that don't have moves
+        cell.detailTextLabel.text = [self descriptionOfMove:boardPosition.currentNode.goMove];
       break;
     }
     case MovesAfterCurrentBoardPositionItem:

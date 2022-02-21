@@ -23,7 +23,8 @@
 #import "GoGame.h"
 #import "GoGameRules.h"
 #import "GoMove.h"
-#import "GoMoveModel.h"
+#import "GoNode.h"
+#import "GoNodeModel.h"
 #import "GoPoint.h"
 #import "GoVertex.h"
 #import "GoZobristTable.h"
@@ -661,28 +662,32 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Relinks all moves of the specified game. The source is the
-/// GoMoveModel contained by @a game.
+/// GoNodeModel contained by @a game.
 ///
 /// The previous/next moves of a GoMove is not archived when a game is archived
 /// to avoid a stack overflow when the game contains a large number of moves.
 // -----------------------------------------------------------------------------
 + (void) relinkMoves:(GoGame*)game
 {
-  GoMoveModel* moveModel = game.moveModel;
+  GoNodeModel* nodeModel = game.nodeModel;
 
   GoMove* moveToSet = nil;
   GoMove* previousMove = nil;
 
-  int numberOfMoves = moveModel.numberOfMoves;
-  for (int indexOfMove = 0; indexOfMove < numberOfMoves; indexOfMove++)
+  // TODO xxx Add support for variations
+  GoNode* node = nodeModel.rootNode;
+  while (node)
   {
-    GoMove* move = [moveModel moveAtIndex:indexOfMove];
+    GoMove* move = node.goMove;
+    if (move)
+    {
+      if (moveToSet)
+        [moveToSet setUnarchivedPreviousMove:previousMove nextMove:move];
 
-    if (moveToSet)
-      [moveToSet setUnarchivedPreviousMove:previousMove nextMove:move];
-
-    previousMove = moveToSet;
-    moveToSet = move;
+      previousMove = moveToSet;
+      moveToSet = move;
+    }
+    node = node.firstChild;
   }
 
   if (moveToSet)

@@ -21,6 +21,7 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
+#import "../../go/GoNode.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
@@ -612,7 +613,8 @@
   GoBoardPosition* boardPosition = game.boardPosition;
 
   NSString* statusTextCurrentBoardPosition;
-  GoMove* currentMove = boardPosition.currentMove;
+  // TODO xxx support nodes that don't have moves
+  GoMove* currentMove = boardPosition.currentNode.goMove;
   GoMove* nextMove;
   if (currentMove)
   {

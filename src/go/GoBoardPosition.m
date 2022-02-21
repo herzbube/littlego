@@ -18,8 +18,8 @@
 // Project includes
 #import "GoBoardPosition.h"
 #import "../go/GoGame.h"
-#import "../go/GoMove.h"
-#import "../go/GoMoveModel.h"
+#import "../go/GoNode.h"
+#import "../go/GoNodeModel.h"
 #import "../go/GoPlayer.h"
 #import "../go/GoUtilities.h"
 #import "../player/Player.h"
@@ -56,7 +56,7 @@
     return nil;
   self.game = aGame;
   _currentBoardPosition = 0;  // don't use self to avoid the setter
-  _numberOfBoardPositions = self.game.moveModel.numberOfMoves + 1;
+  _numberOfBoardPositions = self.game.nodeModel.numberOfNodes;
   [self setupKVOObserving];
   return self;
 }
@@ -84,7 +84,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [self.game.moveModel removeObserver:self forKeyPath:@"numberOfMoves"];
+  [self.game.nodeModel removeObserver:self forKeyPath:@"numberOfNodes"];
   self.game = nil;
   [super dealloc];
 }
@@ -94,7 +94,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupKVOObserving
 {
-  [self.game.moveModel addObserver:self forKeyPath:@"numberOfMoves" options:0 context:NULL];
+  [self.game.nodeModel addObserver:self forKeyPath:@"numberOfNodes" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -105,13 +105,13 @@
   if (newBoardPosition == _currentBoardPosition)
     return;
 
-  int indexOfTargetMove = newBoardPosition - 1;
-  GoMoveModel* moveModel = self.game.moveModel;
-  int numberOfMoves = moveModel.numberOfMoves;
-  int indexOfLastMove = numberOfMoves - 1;
-  if (newBoardPosition < 0 || indexOfTargetMove > indexOfLastMove)
+  int indexOfTargetNode = newBoardPosition;
+  GoNodeModel* nodeModel = self.game.nodeModel;
+  int numberOfNodes = nodeModel.numberOfNodes;
+  int indexOfLeafNode = numberOfNodes - 1;
+  if (newBoardPosition < 0 || indexOfTargetNode > indexOfLeafNode)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Illegal board position %d is either <0 or exceeds number of moves (%d) in current game", newBoardPosition, numberOfMoves];
+    NSString* errorMessage = [NSString stringWithFormat:@"Illegal board position %d is either <0 or exceeds index of leaf node (%d) in current variation", newBoardPosition, indexOfLeafNode];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSRangeException
                                                      reason:errorMessage
@@ -122,7 +122,7 @@
   [self updateGoObjectsToNewPosition:newBoardPosition];
   _currentBoardPosition = newBoardPosition;
   if (self.game.alternatingPlay)
-    self.game.nextMoveColor = [GoUtilities playerAfter:self.currentMove inGame:self.game].color;
+    self.game.nextMoveColor = [GoUtilities playerAfter:self.currentNode.goMove inGame:self.game].color;
 }
 
 // -----------------------------------------------------------------------------
@@ -131,24 +131,24 @@
 - (void) updateGoObjectsToNewPosition:(int)newBoardPosition
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  GoMoveModel* moveModel = self.game.moveModel;
-  int indexOfTargetMove = newBoardPosition - 1;
-  int indexOfCurrentMove = self.currentBoardPosition - 1;
+  GoNodeModel* nodeModel = self.game.nodeModel;
+  int indexOfTargetNode = newBoardPosition;
+  int indexOfCurrentNode = self.currentBoardPosition;
   if (newBoardPosition > self.currentBoardPosition)
   {
-    for (int indexOfMove = indexOfCurrentMove + 1; indexOfMove <= indexOfTargetMove; ++indexOfMove)
+    for (int indexOfNode = indexOfCurrentNode + 1; indexOfNode <= indexOfTargetNode; ++indexOfNode)
     {
-      GoMove* move = [moveModel moveAtIndex:indexOfMove];
-      [move doIt];
+      GoNode* node = [nodeModel nodeAtIndex:indexOfNode];
+      [node modifyBoard];
       [center postNotificationName:boardPositionChangeProgress object:nil];
     }
   }
   else
   {
-    for (int indexOfMove = indexOfCurrentMove; indexOfMove > indexOfTargetMove; --indexOfMove)
+    for (int indexOfNode = indexOfCurrentNode; indexOfNode > indexOfTargetNode; --indexOfNode)
     {
-      GoMove* move = [moveModel moveAtIndex:indexOfMove];
-      [move undo];
+      GoNode* node = [nodeModel nodeAtIndex:indexOfNode];
+      [node revertBoard];
       [center postNotificationName:boardPositionChangeProgress object:nil];
     }
   }
@@ -157,12 +157,10 @@
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
-- (GoMove*) currentMove
+- (GoNode*) currentNode
 {
-  if (0 == self.currentBoardPosition)
-    return nil;
-  int indexOfCurrentMove = self.currentBoardPosition - 1;
-  return [self.game.moveModel moveAtIndex:indexOfCurrentMove];
+  int indexOfCurrentNode = self.currentBoardPosition;
+  return [self.game.nodeModel nodeAtIndex:indexOfCurrentNode];
 }
 
 // -----------------------------------------------------------------------------
@@ -178,72 +176,78 @@
 // -----------------------------------------------------------------------------
 - (bool) isLastPosition
 {
-  int numberOfMoves = self.game.moveModel.numberOfMoves;
-  int indexOfLastMove = numberOfMoves - 1;
-  int indexOfCurrentMove = self.currentBoardPosition - 1;
-  return (indexOfCurrentMove == indexOfLastMove);
+  int numberOfNodes = self.game.nodeModel.numberOfNodes;
+  int indexOfLeafNode = numberOfNodes - 1;
+  int indexOfCurrentNode = self.currentBoardPosition;
+  return (indexOfCurrentNode == indexOfLeafNode);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to KVO notifications from GoMoveModel. If the response
+/// @brief Responds to KVO notifications from GoNodeModel. If the response
 /// includes changes to numberOfBoardPositions and/or currentBoardPosition, the
 /// appropriate KVO notifications are also generated.
 ///
 /// @note The following details are rather deep implementation notes made to
 /// understand the maybe not-so-obvious interaction between the board view
-/// classes, GoMoveModel and GoBoardPosition. If any changes are made to this
+/// classes, GoNodeModel and GoBoardPosition. If any changes are made to this
 /// method, the scenarios described must be taken into account.
 ///
 /// This method responds in the following ways:
-/// - If the current board position is larger than the number of moves in
-///   GoMoveModel, the current board position is adjusted so that it refers to
-///   the last move in GoMoveModel. This is purely a safety mechanism, it is not
+/// - If the current board position points to a node beyond the leaf node in
+///   GoNodeModel, the current board position is adjusted so that it refers to
+///   the leaf node in GoNodeModel. This is purely a safety mechanism, it is not
 ///   expected that this scenario actually occurs.
-/// - If the current board position refers to the previous-to-last move in
-///   GoMoveModel, then the current board position is advanced to refer to the
-///   last move in GoMoveModel. This covers the following "regular play"
-///   scenario: The Go board displays the most recent board position, a new
-///   move is made, the Go board should update itself to display the board
-///   position after the new move.
-/// - If the current board position refers to any other move in GoMoveModel,
+/// - If the current board position refers to the parent node of the leaf node
+///   in GoNodeModel ("previous-to-last node"), then the current board position
+///   is advanced to refer to the leaf node in GoNodeModel. This covers the
+///   following "regular play" scenario: The Go board displays the most recent
+///   board position, a new move is made, the Go board should update itself to
+///   display the board position after the new move. All other scenarios where
+///   a new node is created are also covered.
+/// - If the current board position refers to any other node in GoNodeModel,
 ///   nothing happens and the KVO notification is ignored. This covers the
-///   scenarios where 1) a new move is made while viewing a board position in
-///   the middle of the game; and 2) all moves after the current board position
+///   scenarios where 1) a new node is created while viewing a board position in
+///   the middle of the game; and 2) all nodes after the current board position
 ///   are discarded.
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  GoMoveModel* moveModel = object;
-  int numberOfMoves = moveModel.numberOfMoves;
+  GoNodeModel* nodeModel = object;
+  int numberOfNodes = nodeModel.numberOfNodes;
 
   // Trigger KVO notification for numberOfBoardPositions before notification
   // for currentBoardPosition. This order is defined in the class docs; it is
-  // important for observers that observer both properties.
-  self.numberOfBoardPositions = numberOfMoves + 1;
+  // important for observers that observe both properties.
+  self.numberOfBoardPositions = numberOfNodes;
 
-  if (self.currentBoardPosition > numberOfMoves)
+  int indexOfLeafNode = numberOfNodes - 1;
+  int indexOfCurrentNode = self.currentBoardPosition;
+
+  if (indexOfCurrentNode > indexOfLeafNode)
   {
     // Unexpected scenario (see method docs)
-    DDLogWarn(@"Current board position %d is greater than the number of moves %d", self.currentBoardPosition, numberOfMoves);
+    DDLogWarn(@"Current board position %d is greater than the number of nodes %d", self.currentBoardPosition, numberOfNodes);
   }
-  else if ((self.currentBoardPosition + 1) == numberOfMoves)
+  else if ((indexOfCurrentNode + 1) == indexOfLeafNode)
   {
     // Scenario "regular play" (see method docs)
   }
   else
   {
-    // Scenario "a new move is made while viewing a board position in the
+    // Scenario "a new node is created while viewing a board position in the
     // middle of the game" (see method docs)
     return;
   }
+
+  int newBoardPosition = indexOfLeafNode;
 
   // Don't invoke property's setter since there is no need to update the state
   // of Go objects. The drawback is that we have to perform some additional
   // bookkeeping and generate KVO notifications ourselves.
   [self willChangeValueForKey:@"currentBoardPosition"];
-  _currentBoardPosition = numberOfMoves;
+  _currentBoardPosition = newBoardPosition;
   if (self.game.alternatingPlay)
-    self.game.nextMoveColor = [GoUtilities playerAfter:self.currentMove inGame:self.game].color;
+    self.game.nextMoveColor = [GoUtilities playerAfter:self.currentNode.goMove inGame:self.game].color;
   [self didChangeValueForKey:@"currentBoardPosition"];
 }
 

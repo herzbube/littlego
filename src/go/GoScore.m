@@ -23,6 +23,7 @@
 #import "GoGame.h"
 #import "GoGameRules.h"
 #import "GoMove.h"
+#import "GoNode.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
 #import "../main/ApplicationDelegate.h"
@@ -1022,7 +1023,8 @@
   // Captured stones (up to the current board position) and move statistics (for
   // the entire game)
   self.numberOfMoves = 0;
-  GoMove* currentBoardPositionMove = self.game.boardPosition.currentMove;
+  // TODO xxx Add support for nodes that do not contain moves
+  GoMove* currentBoardPositionMove = self.game.boardPosition.currentNode.goMove;
   bool loopHasPassedCurrentBoardPosition = false;
   GoMove* move = self.game.lastMove;
   while (move != nil)

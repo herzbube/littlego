@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2012-2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2012-2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,21 +20,22 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoMoveModelTest class contains unit tests that exercise the
-/// GoMoveModel class.
+/// @brief The GoNodeModelTest class contains unit tests that exercise the
+/// GoNodeModel class.
 // -----------------------------------------------------------------------------
-@interface GoMoveModelTest : BaseTestCase
+@interface GoNodeModelTest : BaseTestCase
 {
 }
 
 - (void) testInitialState;
-- (void) testAppendMove;
-- (void) testDiscardLastMove;
-- (void) testDiscardMovesFromIndex;
-- (void) testDiscardAllMoves;
-- (void) testMoveAtIndex;
+- (void) testNodeAtIndex;
+- (void) testAppendNode;
+- (void) testDiscardNodesFromIndex;
+- (void) testDiscardLeafNode;
+- (void) testDiscardAllNodes;
+- (void) testNumberOfNodes;
 - (void) testNumberOfMoves;
-- (void) testFirstMove;
-- (void) testLastMove;
+- (void) testRootNode;
+- (void) testLeafNode;
 
 @end

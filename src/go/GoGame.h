@@ -21,7 +21,7 @@
 @class GoGameDocument;
 @class GoGameRules;
 @class GoMove;
-@class GoMoveModel;
+@class GoNodeModel;
 @class GoPlayer;
 @class GoPoint;
 @class GoScore;
@@ -142,24 +142,24 @@
 @property(nonatomic, assign, readonly) bool nextMovePlayerIsComputerPlayer;
 /// @brief Denotes whether alternating play is enabled or disabled. If
 /// alternating play is enabled, invoking play:() and pass() or modifying the
-/// content of the GoMoveModel object causes the @e nextMovePlayer and
+/// content of the GoNodeModel object causes the @e nextMovePlayer and
 /// @e nextMoveColor properties to change. If alternating play is not enabled,
 /// the mentioned properties do not change so that the same player can make
 /// several consecutive moves.
 @property(nonatomic, assign) bool alternatingPlay;
-/// @brief The model object that stores the moves of the game.
-@property(nonatomic, retain) GoMoveModel* moveModel;
+/// @brief The model object that stores the nodes of the game tree.
+@property(nonatomic, retain) GoNodeModel* nodeModel;
 /// @brief The GoMove object that represents the first move of the game. nil if
 /// no moves have been made yet.
 ///
 /// This is a convenience property that serves as a shortcut so that clients do
-/// not have to obtain the desired GoMove object from @e moveModel.
+/// not have to obtain the desired GoMove object from @e nodeModel.
 @property(nonatomic, assign, readonly) GoMove* firstMove;
 /// @brief The GoMove object that represents the last move of the game. nil if
 /// no moves have been made yet.
 ///
 /// This is a convenience property that serves as a shortcut so that clients do
-/// not have to obtain the desired GoMove object from @e moveModel.
+/// not have to obtain the desired GoMove object from @e nodeModel.
 @property(nonatomic, assign, readonly) GoMove* lastMove;
 /// @brief The state of the game. Note that this property is tied to the LAST
 /// board position, not the CURRENT board position.

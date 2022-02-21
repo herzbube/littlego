@@ -22,7 +22,8 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
-#import "../../go/GoMoveModel.h"
+#import "../../go/GoNode.h"
+#import "../../go/GoNodeModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
@@ -709,7 +710,7 @@
   {
     GoBoardPosition* boardPosition = game.boardPosition;
     boardPositionOfCell = boardPosition.currentBoardPosition;
-    move = boardPosition.currentMove;
+    move = boardPosition.currentNode.goMove;
   }
   else
   {
@@ -721,10 +722,14 @@
       move = nil;
     else
     {
-      int moveIndexOfCell = boardPositionOfCell - 1;
-      move = [game.moveModel moveAtIndex:moveIndexOfCell];
+      int nodeIndexOfCell = boardPositionOfCell;
+      GoNode* node = [game.nodeModel nodeAtIndex:nodeIndexOfCell];
+      move = node.goMove;
     }
   }
+
+  // TODO xxx This currently does not support nodes without moves - if such
+  // a node is encountered it is assumed to be the start of the game.
 
   cell.textLabel.text = [self labelTextForMove:move];
   cell.textLabel.accessibilityIdentifier = intersectionLabelBoardPositionAccessibilityIdentifier;

@@ -25,7 +25,8 @@
 #import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoMove.h"
-#import "../../../go/GoMoveModel.h"
+#import "../../../go/GoNode.h"
+#import "../../../go/GoNodeModel.h"
 #import "../../../go/GoPlayer.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoScore.h"
@@ -194,7 +195,7 @@
     {
       if (self.boardViewModel.markLastMove)
       {
-        GoMove* lastMove = game.boardPosition.currentMove;
+        GoMove* lastMove = game.boardPosition.currentNode.goMove;
         if (lastMove && GoMoveTypePlay == lastMove.type)
         {
           CGLayerRef lastMoveLayer;
@@ -266,8 +267,8 @@
   // Use CGFloat here to guarantee that at least 1 move number is displayed.
   // If we were using an integer type here, the result would be truncated,
   // which for very low numbers (e.g. 0.3) would result in 0 move numbers.
-  CGFloat numberOfMovesToBeNumbered = game.moveModel.numberOfMoves * self.boardViewModel.moveNumbersPercentage;
-  GoMove* moveToBeNumbered = game.boardPosition.currentMove;
+  CGFloat numberOfMovesToBeNumbered = game.nodeModel.numberOfMoves * self.boardViewModel.moveNumbersPercentage;
+  GoMove* moveToBeNumbered = game.boardPosition.currentNode.goMove;
   GoMove* lastMove = moveToBeNumbered;
   for (;
        moveToBeNumbered && numberOfMovesToBeNumbered > 0;
@@ -315,9 +316,23 @@
     return;
   GoMove* nextMove;
   if (game.boardPosition.isFirstPosition)
+  {
     nextMove = game.firstMove;
+  }
   else
-    nextMove = game.boardPosition.currentMove.next;
+  {
+    GoMove* currentMove = game.boardPosition.currentNode.goMove;
+    // TODO xxx Instead of this check this method should properly handle
+    // nodes without moves. Currently this only works if the current node has
+    // a move.
+    if (currentMove)
+      nextMove = currentMove.next;
+    else
+      nextMove = nil;
+  }
+  // TODO xxx This check should also not be necessary, see comment above
+  if (! nextMove)
+    return;
   if (GoMoveTypePlay != nextMove.type)
     return;
 

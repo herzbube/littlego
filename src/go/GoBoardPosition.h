@@ -17,8 +17,7 @@
 
 // Forward declarations
 @class GoGame;
-@class GoMove;
-@class GoPlayer;
+@class GoNode;
 
 
 // -----------------------------------------------------------------------------
@@ -26,19 +25,25 @@
 /// currently described by the GoPoint and GoBoardRegion objects attached to a
 /// given GoGame.
 ///
-/// A board position is how the Go board looks like after a move has been made
-/// by a player. Although the Go board does not look differently after a pass
-/// move has been made, the board before and after the move is considered to be
+/// A board position is how the Go board looks like after the information in a
+/// game tree node has been applied to the board. This can be a move made by a
+/// player, a series of stones set or cleared by board setup, markup being
+/// drawn on one or more intersections, etc. Although in some cases the Go
+/// board does not look differently after a node's information has been applied
+/// (e.g. a pass move that does not play a stone, a node that only contains a
+/// comment, etc.), the board before and after such a node is considered to be
 /// in a different position.
 ///
-/// In the course of a game, a new board position is created by each move made
-/// by a player. GoBoardPosition provides a simple way how to refer to a board
-/// position: The reference is made with a numeric value:
-/// - Board position 0 refers to the beginning of the game, i.e. when no moves
-///   have been played yet. If the game uses handicap, handicap stones have
-///   already been placed in this position.
-/// - Board positions 1, 2, etc. refer to the position after move 1, 2, etc.
-///   have been played.
+/// In the course of a game, a new board position is created by each node
+/// created by user interaction (e.g. a move made by a player). GoBoardPosition
+/// provides a simple way how to refer to a board position: The reference is
+/// made with a numeric value:
+/// - Board position 0 refers to game tree root node, the beginning of the game
+///   when no moves have been played yet. If the game uses handicap and/or board
+///   setup, handicap and/or board setup stones have already been placed in this
+///   position.
+/// - Board positions 1, 2, etc. refer to the position after the information in
+///   node 1, 2, etc. have been applied to the board.
 ///
 ///
 /// @par Synchronization of current board position and object states
@@ -93,12 +98,13 @@
 /// documentation.
 ///
 /// Raises @e NSRangeException if a new board position is set that is <0 or
-/// exceeds the number of moves in the GoGame associated with this
+/// exceeds the number of nodes in the GoGame associated with this
 /// GoBoardPosition.
 @property(nonatomic, assign) int currentBoardPosition;
-/// @brief Returns the GoMove object that corresponds to
-/// @e currentBoardPosition. Returns nil for board position 0.
-@property(nonatomic, assign, readonly) GoMove* currentMove;
+/// @brief Returns the GoNode object that corresponds to
+/// @e currentBoardPosition. Returns the game tree's root node for board
+/// position 0.
+@property(nonatomic, assign, readonly) GoNode* currentNode;
 /// @brief Returns true if the current board position is the first position of
 /// the GoGame associated with this GoBoardPosition.
 ///
@@ -109,7 +115,7 @@
 /// the GoGame associated with this GoBoardPosition.
 ///
 /// This is a convenience property that returns true if the current board
-/// position displays the last move of the game.
+/// position displays the last node of the game.
 @property(nonatomic, assign, readonly) bool isLastPosition;
 /// @brief The number of board positions in the GoGame associated with this
 /// GoBoardPosition.

@@ -22,7 +22,8 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
-#import "../../go/GoMoveModel.h"
+#import "../../go/GoNode.h"
+#import "../../go/GoNodeModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../player/Player.h"
@@ -61,10 +62,10 @@
       DDLogError(@"%@: Aborting because revertGameStateIfNecessary failed", [self shortDescription]);
       return false;
     }
-    success = [self discardMoves];
+    success = [self discardNodes];
     if (! success)
     {
-      DDLogError(@"%@: Aborting because discardMoves failed", [self shortDescription]);
+      DDLogError(@"%@: Aborting because discardNodes failed", [self shortDescription]);
       return false;
     }
     success = [self backupGame];
@@ -102,13 +103,18 @@
 // -----------------------------------------------------------------------------
 - (bool) changeBoardPosition
 {
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  if (boardPosition.currentBoardPosition == 0)
+    return true;
+
   int numberOfBoardPositionsToDiscard = 1;
 
+  // TODO xxx The next block probably needs to be adjusted when it becomes
+  // possible to have nodes without moves
   BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
   if (boardPositionModel.discardMyLastMove)
   {
-    GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-    GoMove* currentMove = boardPosition.currentMove;
+    GoMove* currentMove = boardPosition.currentNode.goMove;
 
     // We only trigger the "Discard my last move" behaviour if the current board
     // position was created by the computer player.
@@ -121,7 +127,7 @@
     //   one board position. It may become necessary to revisit this decision,
     //   but at the time of writing this routine it seems best not to discard
     //   too many board positions.
-    if (! currentMove.player.player.human)
+    if (currentMove && ! currentMove.player.player.human)
     {
       GoMove* move = currentMove.previous;
       while (move && move.player.player.human)
@@ -148,6 +154,9 @@
       offset = -numberOfBoardPositionsToDiscard;
     numberOfBoardPositionsToDiscard += offset;
 
+    // initWithOffset:() is permissive and allows us to specify an offset that
+    // would result in an invalid board position. The offset is adjusted in that
+    // case to result in a valid board position.
     bool success = [[[[ChangeBoardPositionCommand alloc] initWithOffset:offset] autorelease] submit];
     if (! success)
       return false;
@@ -170,14 +179,14 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt(). Returns true on success, false on failure.
 // -----------------------------------------------------------------------------
-- (bool) discardMoves
+- (bool) discardNodes
 {
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
-  int indexOfFirstMoveToDiscard = boardPosition.currentBoardPosition;
-  DDLogInfo(@"%@: Index position of first move to discard = %d", [self shortDescription], indexOfFirstMoveToDiscard);
-  GoMoveModel* moveModel = game.moveModel;
-  [moveModel discardMovesFromIndex:indexOfFirstMoveToDiscard];
+  int indexOfFirstNodeToDiscard = boardPosition.currentBoardPosition + 1;
+  DDLogInfo(@"%@: Index position of first node to discard = %d", [self shortDescription], indexOfFirstNodeToDiscard);
+  GoNodeModel* nodeModel = game.nodeModel;
+  [nodeModel discardNodesFromIndex:indexOfFirstNodeToDiscard];
   return true;
 }
 

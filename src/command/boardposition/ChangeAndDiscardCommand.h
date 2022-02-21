@@ -33,8 +33,8 @@
 /// board positions can be discarded if there are several consecutive human
 /// player moves.
 ///
-/// If there is only one board position (i.e. no moves have been made yet),
-/// ChangeAndDiscardCommand does nothing.
+/// If there is only one board position (i.e. no moves have been made yet and
+/// no other nodes have been created yet), ChangeAndDiscardCommand does nothing.
 ///
 /// After it has made the discard, ChangeAndDiscardCommand performs a backup
 /// of the current game.

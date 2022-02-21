@@ -23,7 +23,8 @@
 #import "GoGameDocument.h"
 #import "GoGameRules.h"
 #import "GoMove.h"
-#import "GoMoveModel.h"
+#import "GoNode.h"
+#import "GoNodeModel.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
 #import "GoScore.h"
@@ -67,12 +68,12 @@
   _playerWhite = nil;
   _nextMoveColor = GoColorBlack;
   _alternatingPlay = true;
-  _moveModel = [[GoMoveModel alloc] initWithGame:self];
+  _nodeModel = [[GoNodeModel alloc] initWithGame:self];
   _state = GoGameStateGameHasStarted;
   _reasonForGameHasEnded = GoGameHasEndedReasonNotYetEnded;
   _reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
-  // Create GoBoardPosition after GoMoveModel because GoBoardPosition requires
-  // GoMoveModel to be already around
+  // Create GoBoardPosition after GoNodeModel because GoBoardPosition requires
+  // GoNodeModel to be already around
   _boardPosition = [[GoBoardPosition alloc] initWithGame:self];
   _rules = [[GoGameRules alloc] init];
   _document = [[GoGameDocument alloc] init];
@@ -106,7 +107,7 @@
   _playerWhite = [[decoder decodeObjectForKey:goGamePlayerWhiteKey] retain];
   _nextMoveColor = [decoder decodeIntForKey:goGameNextMoveColorKey];
   _alternatingPlay = ([decoder decodeBoolForKey:goGameAlternatingPlayKey] == YES);
-  _moveModel = [[decoder decodeObjectForKey:goGameMoveModelKey] retain];
+  _nodeModel = [[decoder decodeObjectForKey:goGameNodeModelKey] retain];
   _state = [decoder decodeIntForKey:goGameStateKey];
   _reasonForGameHasEnded = [decoder decodeIntForKey:goGameReasonForGameHasEndedKey];
   _reasonForComputerIsThinking = [decoder decodeIntForKey:goGameReasonForComputerIsThinking];
@@ -140,10 +141,10 @@
   }
   self.playerBlack = nil;
   self.playerWhite = nil;
-  // Deallocate GoBoardPosition before GoMoveModel because GoBoardPosition
-  // requires GoMoveModel to still be around
+  // Deallocate GoBoardPosition before GoNodeModel because GoBoardPosition
+  // requires GoNodeModel to still be around
   self.boardPosition = nil;
-  self.moveModel = nil;
+  self.nodeModel = nil;
   self.rules = nil;
   self.document = nil;
   self.score = nil;
@@ -167,7 +168,15 @@
 // -----------------------------------------------------------------------------
 - (GoMove*) firstMove
 {
-  return self.moveModel.firstMove;
+  GoNode* node = self.nodeModel.rootNode;
+  while (node)
+  {
+    if (node.goMove)
+      return node.goMove;
+    else
+      node = node.firstChild;
+  }
+  return nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -175,7 +184,15 @@
 // -----------------------------------------------------------------------------
 - (GoMove*) lastMove
 {
-  return self.moveModel.lastMove;
+  GoNode* node = self.nodeModel.leafNode;
+  while (node)
+  {
+    if (node.goMove)
+      return node.goMove;
+    else
+      node = node.parent;
+  }
+  return nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -254,10 +271,11 @@
     @throw newException;
   }
 
-  [move doIt];
+  GoNode* node = [GoNode nodeWithMove:move];
+  [node modifyBoard];
   // Sets the document dirty flag and, if alternating play is enabled, switches
   // the nextMovePlayer
-  [self.moveModel appendMove:move];
+  [self.nodeModel appendNode:node];
 }
 
 // -----------------------------------------------------------------------------
@@ -285,10 +303,11 @@
 
   GoMove* move = [GoMove move:GoMoveTypePass by:self.nextMovePlayer after:self.lastMove];
 
-  [move doIt];
+  GoNode* node = [GoNode nodeWithMove:move];
+  [node modifyBoard];
   // Sets the document dirty flag and, if alternating play is enabled, switches
   // the nextMovePlayer
-  [self.moveModel appendMove:move];
+  [self.nodeModel appendNode:node];
 
   // This may change the game state. Such a change must occur after the move was
   // generated; this order is important for observer notifications.
@@ -782,7 +801,8 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
   //
   // IMPORTANT: Ko detection must be based on the current board position, so
   // we must not use self.lastMove!
-  GoMove* lastMove = self.boardPosition.currentMove;
+  // TODO xxx fix this to work with nodes that don't have moves
+  GoMove* lastMove = self.boardPosition.currentNode.goMove;
   if (! lastMove)
     return false;
   GoMove* previousToLastMove = lastMove.previous;
@@ -1084,7 +1104,7 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
   [encoder encodeObject:self.playerWhite forKey:goGamePlayerWhiteKey];
   [encoder encodeInt:self.nextMoveColor forKey:goGameNextMoveColorKey];
   [encoder encodeBool:(self.alternatingPlay ? YES : NO) forKey:goGameAlternatingPlayKey];
-  [encoder encodeObject:self.moveModel forKey:goGameMoveModelKey];
+  [encoder encodeObject:self.nodeModel forKey:goGameNodeModelKey];
   [encoder encodeInt:self.state forKey:goGameStateKey];
   [encoder encodeInt:self.reasonForGameHasEnded forKey:goGameReasonForGameHasEndedKey];
   [encoder encodeInt:self.reasonForComputerIsThinking forKey:goGameReasonForComputerIsThinking];
