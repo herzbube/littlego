@@ -1415,6 +1415,12 @@ extern NSString* goBoardRegionCachedIsStoneGroupKey;
 extern NSString* goBoardRegionCachedColorKey;
 extern NSString* goBoardRegionCachedLibertiesKey;
 extern NSString* goBoardRegionCachedAdjacentRegionsKey;
+// GoNode keys
+extern NSString* goNodeFirstChildKey;
+extern NSString* goNodeNextSiblingKey;
+extern NSString* goNodeParentKey;
+extern NSString* goNodeGoMoveKey;
+extern NSString* goNodeGoNodeAnnotationKey;
 // GoPoint keys
 extern NSString* goPointVertexKey;
 extern NSString* goPointBoardKey;

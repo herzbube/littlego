@@ -430,6 +430,12 @@ NSString* goBoardRegionCachedIsStoneGroupKey = @"CachedIsStoneGroup";
 NSString* goBoardRegionCachedColorKey = @"CachedColor";
 NSString* goBoardRegionCachedLibertiesKey = @"CachedLiberties";
 NSString* goBoardRegionCachedAdjacentRegionsKey = @"CachedAdjacentRegions";
+// GoNode keys
+NSString* goNodeFirstChildKey = @"FirstChild";
+NSString* goNodeNextSiblingKey = @"NextSibling";
+NSString* goNodeParentKey = @"Parent";
+NSString* goNodeGoMoveKey = @"GoMove";
+NSString* goNodeGoNodeAnnotationKey = @"GoNodeAnnotation";
 // GoPoint keys
 NSString* goPointVertexKey = @"Vertex";
 NSString* goPointBoardKey = @"Board";

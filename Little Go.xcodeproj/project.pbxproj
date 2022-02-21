@@ -267,6 +267,8 @@
 		CD81795C25DDEDDF00F39091 /* computer-suggest-move.png in Resources */ = {isa = PBXBuildFile; fileRef = CD81795825DDEDDF00F39091 /* computer-suggest-move.png */; };
 		CD81795E25DDEDDF00F39091 /* computer-suggest-move@3.png in Resources */ = {isa = PBXBuildFile; fileRef = CD81795925DDEDDF00F39091 /* computer-suggest-move@3.png */; };
 		CD81796025DDEDDF00F39091 /* computer-suggest-move@2.png in Resources */ = {isa = PBXBuildFile; fileRef = CD81795A25DDEDDF00F39091 /* computer-suggest-move@2.png */; };
+		CD85068627B95046000D2CCD /* GoNode.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85068427B95046000D2CCD /* GoNode.m */; };
+		CD85068727B95046000D2CCD /* GoNode.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85068427B95046000D2CCD /* GoNode.m */; };
 		CD85B5901401C137001715B8 /* GoGameTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85B58F1401C137001715B8 /* GoGameTest.m */; };
 		CD85B5951401C1A5001715B8 /* GoGame.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881B13255A4700E83543 /* GoGame.m */; };
 		CD85B5981401C1B7001715B8 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
@@ -961,6 +963,9 @@
 		CD81795925DDEDDF00F39091 /* computer-suggest-move@3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "computer-suggest-move@3.png"; sourceTree = "<group>"; };
 		CD81795A25DDEDDF00F39091 /* computer-suggest-move@2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "computer-suggest-move@2.png"; sourceTree = "<group>"; };
 		CD81799C25DDF4C200F39091 /* noun_hint_3194435.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = noun_hint_3194435.svg; sourceTree = "<group>"; };
+		CD85068427B95046000D2CCD /* GoNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNode.m; sourceTree = "<group>"; };
+		CD85068527B95046000D2CCD /* GoNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNode.h; sourceTree = "<group>"; };
+		CD85069027C00B30000D2CCD /* GoNodeAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeAdditions.h; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD899E5B164875A800329154 /* CrashReportingModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingModel.h; sourceTree = "<group>"; };
@@ -1632,6 +1637,9 @@
 				CD0F6BE527B02C91002DBE6B /* GoMoveInfo.m */,
 				CD15A47E168CBE7F00D4472A /* GoMoveModel.h */,
 				CD15A47F168CBE7F00D4472A /* GoMoveModel.m */,
+				CD85068527B95046000D2CCD /* GoNode.h */,
+				CD85068427B95046000D2CCD /* GoNode.m */,
+				CD85069027C00B30000D2CCD /* GoNodeAdditions.h */,
 				CD10882013255A6B00E83543 /* GoPlayer.h */,
 				CD10882113255A6B00E83543 /* GoPlayer.m */,
 				CD10882313255AA600E83543 /* GoPoint.h */,
@@ -3260,6 +3268,7 @@
 				CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */,
 				CD1E9E66171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m in Sources */,
 				CD7C69ED1AA9F697009EC5AD /* ExceptionUtility.m in Sources */,
+				CD85068627B95046000D2CCD /* GoNode.m in Sources */,
 				CD7C57D7220257B800694520 /* BoardSetupModel.m in Sources */,
 				CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */,
 				CDB5AE251AC5A86D0075C8DC /* MagnifyingView.m in Sources */,
@@ -3366,6 +3375,7 @@
 				CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDEF3F4A140D5E4F002D9C1C /* NSStringAdditions.m in Sources */,
 				CD7C69E01AA67C31009EC5AD /* MainUtility.m in Sources */,
+				CD85068727B95046000D2CCD /* GoNode.m in Sources */,
 				CDFD9F7018F1D35C0031CBCF /* BoardPositionSettingsController.m in Sources */,
 				CDEE19F419433EAC00DF2389 /* BoardView.m in Sources */,
 				CDD48C9714103A9100188B6A /* ArchiveViewModel.m in Sources */,
