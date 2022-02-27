@@ -201,7 +201,6 @@ static UIFont* smallFont = nil;
                                    self.intersectionLabel, @"intersectionLabel",
                                    self.boardPositionLabel, @"boardPositionLabel",
                                    self.capturedStonesLabel, @"capturedStonesLabel",
-                                   self.infoIconImageView, @"infoIconImageView",
                                    self.hotspotIconImageView, @"hotspotIconImageView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
@@ -211,7 +210,10 @@ static UIFont* smallFont = nil;
                             // reserved for a 2nd and/or 3rd digit acts as spacing (the label
                             // text is right-aligned). In the unlikely event that there *IS*
                             // a 3-digit number, spacing 0 is still tolerable.
-                            @"H:[intersectionLabel]-0-[capturedStonesLabel]-0-[infoIconImageView]",
+                            @"H:[intersectionLabel]-0-[capturedStonesLabel]",
+                            // Spacing 0 is OK. boardPositionLabel gets more than enough width
+                            // so that even with the longest text in it there is always a bit
+                            // of leftover space at the right to act as spacing.
                             @"H:[boardPositionLabel]-0-[hotspotIconImageView]",
                             [NSString stringWithFormat:@"V:|-%d-[intersectionLabel]-%d-[boardPositionLabel]-%d-|", verticalSpacingSuperview, verticalSpacingSiblings, verticalSpacingSuperview],
                             nil];
@@ -226,14 +228,6 @@ static UIFont* smallFont = nil;
                      withSecondView:self.intersectionLabel
                         onAttribute:NSLayoutAttributeCenterY
                    constraintHolder:self];
-//  [AutoLayoutUtility alignFirstView:self.infoIconImageView
-//                     withSecondView:self.intersectionLabel
-//                        onAttribute:NSLayoutAttributeCenterY
-//                   constraintHolder:self];
-//  [AutoLayoutUtility alignFirstView:self.hotspotIconImageView
-//                     withSecondView:self.boardPositionLabel
-//                        onAttribute:NSLayoutAttributeCenterY
-//                   constraintHolder:self];
 
   UIView* anchorView = self;
   NSLayoutXAxisAnchor* leftAnchor;
@@ -375,7 +369,7 @@ static UIFont* smallFont = nil;
     // The longest string is actually "No move", but this is used only when the
     // stone image is not displayed, which compensates for the longer string
     self.intersectionLabel.text = @"Q19";
-    self.boardPositionLabel.text = @"Position 999";
+    self.boardPositionLabel.text = @"Move 999";
     self.capturedStonesLabel.text = @"999";
     self.infoIconImageView.image = infoIconImage;
     self.hotspotIconImageView.image = hotspotIconImage;
@@ -569,6 +563,7 @@ static UIFont* smallFont = nil;
   int horizontalSpacingStoneImageView = 0;
   int infoIconImageViewWidth = 0;
   int hotspotIconImageViewWidth = 0;
+  int horizontalSpacingInfoIconImageView = 0;
   if (self.boardPosition > 0)
   {
     if (self.stoneImageView.image)
@@ -583,9 +578,18 @@ static UIFont* smallFont = nil;
     }
 
     if (self.infoIconImageView.image)
+    {
       infoIconImageViewWidth = iconImageWidthAndHeight;
+      // If there are no captured stones the spacing can remain 0 - the info
+      // icon image is then directly adjacent to intersectionLabel, and in that
+      // label there is always sufficient space left to act as spacing.
+      if (self.capturedStonesLabel.text)
+        horizontalSpacingInfoIconImageView = horizontalSpacingSiblings;
+    }
     else
+    {
       infoIconImageViewWidth = 0;
+    }
 
     if (self.hotspotIconImageView.image)
       hotspotIconImageViewWidth = iconImageWidthAndHeight;
@@ -604,9 +608,11 @@ static UIFont* smallFont = nil;
   [visualFormats addObject:[NSString stringWithFormat:@"H:[stoneImageView(==%d)]", stoneImageWidth]];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[stoneImageView]-%d-[intersectionLabel]", horizontalSpacingStoneImageView]];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[stoneImageView]-%d-[boardPositionLabel]", horizontalSpacingStoneImageView]];
+  if (! self.boardPositionLabel.text)
+    [visualFormats addObject:@"V:[boardPositionLabel(==0)]"];
   if (nil == self.capturedStonesLabel.text)
     [visualFormats addObject:@"H:[capturedStonesLabel(==0)]"];
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[infoIconImageView(==%d)]", infoIconImageViewWidth]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[capturedStonesLabel]-%d-[infoIconImageView(==%d)]", horizontalSpacingInfoIconImageView, infoIconImageViewWidth]];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[hotspotIconImageView(==%d)]", hotspotIconImageViewWidth]];
   NSArray* visualFormatsAutoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
                                                                               withViews:viewsDictionary
