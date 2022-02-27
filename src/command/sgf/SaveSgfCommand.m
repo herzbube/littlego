@@ -123,10 +123,10 @@
                                                 treeBuilder:treeBuilder];
 
   SGFCNode* previousNode = (setupNode != nil) ? setupNode : gameInfoNode;
-  [self addMoveNodesAfterNode:previousNode
-         withValuesFromGoGame:goGame
-                    boardSize:boardSize
-                  treeBuilder:treeBuilder];
+  [self addRemainingNodesAfterNode:previousNode
+              withValuesFromGoGame:goGame
+                         boardSize:boardSize
+                       treeBuilder:treeBuilder];
 
   return true;
 }
@@ -253,29 +253,35 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for createSgfDocument:errorMessage:()
 // -----------------------------------------------------------------------------
-- (void) addMoveNodesAfterNode:(SGFCNode*)previousNode
-          withValuesFromGoGame:(GoGame*)goGame
-                     boardSize:(SGFCBoardSize)boardSize
-                   treeBuilder:(SGFCTreeBuilder*)treeBuilder
+- (void) addRemainingNodesAfterNode:(SGFCNode*)previousNode
+               withValuesFromGoGame:(GoGame*)goGame
+                          boardSize:(SGFCBoardSize)boardSize
+                        treeBuilder:(SGFCTreeBuilder*)treeBuilder
 {
-  // TODO xxx This method does not have variation support. It also does not
-  // support nodes having no moves.
-  GoNode* goNode = goGame.nodeModel.rootNode;
+  // TODO xxx This method does not have variation support.
+
+  // Start with first child, root node cannot contain GoMove or GoNodeAnnotation
+  // objects
+  GoNode* goNode = goGame.nodeModel.rootNode.firstChild;
   while (goNode)
   {
-    GoMove* goMove = goNode.goMove;
-    if (goMove)
+    SGFCNode* node = [SGFCNode node];
+    [treeBuilder setFirstChild:node ofNode:previousNode];
+
+    if (goNode.goMove)
     {
-      SGFCNode* moveNode = [SGFCNode node];
-      [treeBuilder setFirstChild:moveNode ofNode:previousNode];
-
-      [self addSgfPropertiesToNode:moveNode
-                withValuesFromMove:goMove
-      withValuesFromNodeAnnotation:goNode.goNodeAnnotation
+      [self addSgfPropertiesToNode:node
+                    withGoMoveMove:goNode.goMove
                          boardSize:boardSize];
-
-      previousNode = moveNode;
     }
+
+    if (goNode.goNodeAnnotation)
+    {
+      [self addSgfPropertiesToNode:node
+        withGoNodeAnnotationValues:goNode.goNodeAnnotation];
+    }
+
+    previousNode = node;
     goNode = goNode.firstChild;
   }
 }
@@ -311,8 +317,7 @@
 /// addMoveNodesAfterNode:withValuesFromGoGame:boardSize:treeBuilder:()
 // -----------------------------------------------------------------------------
 - (void) addSgfPropertiesToNode:(SGFCNode*)node
-             withValuesFromMove:(GoMove*)goMove
-   withValuesFromNodeAnnotation:(GoNodeAnnotation*)goNodeAnnotation
+                 withGoMoveMove:(GoMove*)goMove
                       boardSize:(SGFCBoardSize)boardSize
 {
   SGFCColor playerColor;
@@ -348,12 +353,6 @@
   {
     [self addSgfPropertyToNode:node
       withGoMoveValuationValue:goMove.goMoveValuation];
-  }
-
-  if (goNodeAnnotation)
-  {
-    [self addSgfPropertiesToNode:node
-    withValuesFromNodeAnnotation:goNodeAnnotation];
   }
 }
 
@@ -413,10 +412,10 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for
-/// addSgfPropertyToNode:withValueFromMove:boardSize
+/// addMoveNodesAfterNode:withValuesFromGoGame:boardSize:treeBuilder:()
 // -----------------------------------------------------------------------------
 - (void) addSgfPropertiesToNode:(SGFCNode*)node
-   withValuesFromNodeAnnotation:(GoNodeAnnotation*)goNodeAnnotation
+     withGoNodeAnnotationValues:(GoNodeAnnotation*)goNodeAnnotation
 {
   if (goNodeAnnotation.shortDescription)
   {

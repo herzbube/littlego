@@ -42,7 +42,7 @@
 #import "../../utility/NSStringAdditions.h"
 
 // Constants
-static const int maxStepsForReplayMoves = 10;
+static const int maxStepsForCreateNodes = 10;
 
 
 // -----------------------------------------------------------------------------
@@ -82,7 +82,7 @@ static const int maxStepsForReplayMoves = 10;
   self.restoreMode = false;
   self.didTriggerComputerPlayer = false;
 
-  self.totalSteps = (6 + maxStepsForReplayMoves);  // 6 steps before move replay begins
+  self.totalSteps = (6 + maxStepsForCreateNodes);  // 6 steps before node creation begins
   self.stepIncrease = 1.0 / self.totalSteps;
   self.progress = 0.0;
 
@@ -195,7 +195,7 @@ static const int maxStepsForReplayMoves = 10;
   if (! success)
     return false;
   [self increaseProgressAndNotifyDelegate];
-  success = [self setupMoves:errorMessage];
+  success = [self setupNodes:errorMessage];
   if (! success)
     return false;
   success = [self setupGameResult:errorMessage];
@@ -732,9 +732,27 @@ static const int maxStepsForReplayMoves = 10;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up the moves for the new game.
+/// @brief Sets up the nodes for the new game.
+///
+/// Iterates over the main variation and creates a GoNode object for every
+/// SGFCNode object that contains a property recognized by the app (list see
+/// below). SGFCNode objects that do not contain a property recognized by the
+/// app are skipped.
+///
+/// If the root SGFCNode contains any of the recognized properties listed below
+/// an extra GoNode object is created as a child node of the root node to hold
+/// those properties. One SGFCNode object in this case results in two GoNode
+/// objects. This is specifically important for move properties, because the app
+/// is modeled to expect moves to be in their own nodes. This is supported by
+/// the SGF specification, according to which move properties in the root node
+/// are not illegal but bad style.
+///
+/// Properties recognized by the app:
+/// - Move properties B and W. Properties KO and MN are currently ignored.
+/// - All node annotation properties C, N, GB, GW, DM, UC, V, HO.
+/// - All move annotation properties TE, DO, BM, IT.
 // -----------------------------------------------------------------------------
-- (bool) setupMoves:(NSString**)errorMessage
+- (bool) setupNodes:(NSString**)errorMessage
 {
   // Implementation in Fuego of the "list_moves" GTP command
   // - Examine all nodes of the main variation
@@ -749,44 +767,37 @@ static const int maxStepsForReplayMoves = 10;
   // - Same as Fuego, the only difference being that we don't have a "resign"
   //   move
 
-  NSMutableArray* moveList = [NSMutableArray array];
+  NSMutableArray* tuples = [NSMutableArray array];
+  int numberOfMovesFound = 0;
 
   for (SGFCNode* sgfNode in self.sgfMainVariationNodes)
   {
-    NSArray* moveCategoryProperties = [sgfNode propertiesWithCategory:SGFCPropertyCategoryMove];
-    for (SGFCProperty* moveCategoryProperty in moveCategoryProperties)
-    {
-      SGFCPropertyType propertyType = moveCategoryProperty.propertyType;
-      if (propertyType != SGFCPropertyTypeB && propertyType != SGFCPropertyTypeW)
-        continue;  // not interested in other move properties
+    NSArray* tuple = [self createTupleWithPropertiesFromNode:sgfNode];
 
-      NSArray* moveListTuple = [self createMoveListTupleWithMoveProperty:moveCategoryProperty
-                                                   andPropertiesFromNode:sgfNode];
-      [moveList addObject:moveListTuple];
+    if (tuple.firstObject != [NSNull null])
+      numberOfMovesFound++;
 
-      // Although the node should never contain both SGFCPropertyTypeB and
-      // SGFCPropertyTypeW at the same time, here we make sure that we only
-      // process the first of these two.
-      break;
-    }
+    [tuples addObject:tuple];
   }
 
   // If we don't perform this check here the game fails to load during the GTP
   // engine sync. However, the error message in that case is much less nice.
-  if (moveList.count > maximumNumberOfMoves)
+  if (numberOfMovesFound > maximumNumberOfMoves)
   {
-    *errorMessage = [NSString stringWithFormat:@"The SGF data contains %lu moves. This is more than the maximum number of moves (%d) that the computer player Fuego can process.", (unsigned long)moveList.count, maximumNumberOfMoves];
+    *errorMessage = [NSString stringWithFormat:@"The SGF data contains %lu moves. This is more than the maximum number of moves (%d) that the computer player Fuego can process.", (unsigned long)tuples.count, maximumNumberOfMoves];
     return false;
   }
 
-  return [self replayMoves:moveList errorMessage:errorMessage];
+  return [self createNodesWithValues:tuples errorMessage:errorMessage];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Creates a tuple of values (an NSArray object) that together represent
 /// one move.
 ///
-/// The first tuple value always is @a moveProperty.
+/// The first tuple value is either an SGFCProperty of type #SGFCPropertyTypeB
+/// or #SGFCPropertyTypeW, if such a property exists in @a sgfNode, or an
+/// @e NSNull object if no such property exists in @a sgfNode.
 ///
 /// The second tuple value is an NSNumber of type "int" which encapsulates a
 /// GoMoveValuation value. If a move valuation property exists in @a sgfNode
@@ -796,16 +807,22 @@ static const int maxStepsForReplayMoves = 10;
 /// annotation property values found in @a sgfNode, or an @e NSNull object if
 /// no node annotation properties exist in @a sgfNode.
 // -----------------------------------------------------------------------------
-- (NSArray*) createMoveListTupleWithMoveProperty:(SGFCProperty*)moveProperty
-                           andPropertiesFromNode:(SGFCNode*)sgfNode
+- (NSArray*) createTupleWithPropertiesFromNode:(SGFCNode*)sgfNode
 {
+  SGFCProperty* moveProperty = nil;
   enum GoMoveValuation moveValuation = GoMoveValuationNone;
   GoNodeAnnotation* nodeAnnotation = [[[GoNodeAnnotation alloc] init] autorelease];
   bool atLeastOneAnnotationPropertyWasFound = false;
 
   for (SGFCProperty* property in [sgfNode properties])
   {
-    if (property.propertyType == SGFCPropertyTypeN)
+    if (property.propertyType == SGFCPropertyTypeB || property.propertyType == SGFCPropertyTypeW)
+    {
+      // SGFC makes sure that the node never contains both SGFCPropertyTypeB and
+      // SGFCPropertyTypeW at the same time
+      moveProperty = property;
+    }
+    else if (property.propertyType == SGFCPropertyTypeN)
     {
       nodeAnnotation.shortDescription = property.propertyValue.toSingleValue.toSimpleTextValue.simpleTextValue;
       atLeastOneAnnotationPropertyWasFound = true;
@@ -899,53 +916,62 @@ static const int maxStepsForReplayMoves = 10;
     }
   }
 
-  NSArray* moveListTuple = @[
-    moveProperty,
+  NSArray* tuple = @[
+    moveProperty ? moveProperty : [NSNull null],
     [NSNumber numberWithInt:moveValuation],
     atLeastOneAnnotationPropertyWasFound ? nodeAnnotation : [NSNull null]
   ];
-  return moveListTuple;
+  return tuple;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Replays the moves in @a moveList.
+/// @brief Creates a GoNode object for each tuple in @a tuples and places the
+/// values that the tuple contains in the node.
 ///
-/// @a moveList is expected to contain tuples with three objects each:
-/// - The first object is an SGFCProperty object of type #SGFCPropertyTypeB or
-///   #SGFCPropertyTypeW. A move is being played using the information in this
-///   object.
+/// @a tuples is expected to contain NSArray objects which are tuples with three
+/// objects each:
+/// - The first object is either an SGFCProperty object of type
+///   #SGFCPropertyTypeB or #SGFCPropertyTypeW, or @e NSNull. If the object is
+///   an SGFCProperty object, a move is being played using the information in
+///   this object and the resulting GoMove object is associated with the GoNode
+///   created for the tuple. If the object is @e NSNull, no move is being
+///   played.
 /// - The second object is an NSNumber that encapsulates a GoMoveValuation value
-///   as integer.
-/// - The third object is either a GoNodeAnnotation object, which needs to be
-///   associated with the same node as the move that is being played, or
-///   @e NSNull if there is no GoNodeAnnotation object that needs to be
-///   associated.
+///   as integer. If a move was played for the first tuple value, then the
+///   GoMove property @e goMoveValuation is set with the GoMoveValuation value.
+///   If no move was played for the first tuple value, then the GoMoveValuation
+///   value is discarded.
+/// - The third object is either a GoNodeAnnotation object or @e NSNull.
+///   If the object is a GoNodeAnnotation object then it is associated with the
+///   GoNode object created for the tuple. If the object is @e NSNull the third
+///   object in the tuple is ignored.
 ///
 /// The asynchronous command delegate is updated continuously with progress
-/// information as the moves are replayed. In an ideal world we would have
-/// fine-grained progress updates with as many steps as there are moves.
-/// However, when there are many moves to be replayed this wastes a lot of
+/// information as the nodes are created, because playing moves is a relatively
+/// slow operation that takes significant time. In an ideal world we would have
+/// fine-grained progress updates with as many steps as there are nodes.
+/// However, when there are many nodes to be created this wastes a lot of
 /// precious CPU cycles for GUI updates, considerably slowing down the process
 /// of loading a game - on older devices to an intolerable level. In the real
 /// world, we therefore limit the number of progress updates to a fixed,
 /// hard-coded number.
 // -----------------------------------------------------------------------------
-- (bool) replayMoves:(NSArray*)moveList errorMessage:(NSString**)errorMessage
+- (bool) createNodesWithValues:(NSArray*)tuples errorMessage:(NSString**)errorMessage
 {
   GoGame* game = [GoGame sharedGame];
-  GoBoard* board = game.board;
+  GoNodeModel* nodeModel = game.nodeModel;
 
-  float movesPerStep;
+  float nodesPerStep;
   NSUInteger remainingNumberOfSteps;
-  if (moveList.count <= maxStepsForReplayMoves)
+  if (tuples.count <= maxStepsForCreateNodes)
   {
-    movesPerStep = 1;
-    remainingNumberOfSteps = moveList.count;
+    nodesPerStep = 1;
+    remainingNumberOfSteps = tuples.count;
   }
   else
   {
-    movesPerStep = moveList.count / maxStepsForReplayMoves;
-    remainingNumberOfSteps = maxStepsForReplayMoves;
+    nodesPerStep = tuples.count / maxStepsForCreateNodes;
+    remainingNumberOfSteps = maxStepsForCreateNodes;
   }
   float remainingProgress = 1.0 - self.progress;
   // Adjust for increaseProgressAndNotifyDelegate()
@@ -953,95 +979,53 @@ static const int maxStepsForReplayMoves = 10;
 
   @try
   {
-    int movesReplayed = 0;
-    float nextProgressUpdate = movesPerStep;  // use float in case movesPerStep has fractions
-    for (NSArray* moveListTuple in moveList)
+    int numberOfNodesCreated = 0;
+    float nextProgressUpdate = nodesPerStep;  // use float in case nodesPerStep has fractions
+
+    for (NSArray* tuple in tuples)
     {
-      SGFCProperty* moveProperty = [moveListTuple firstObject];
-      SGFCGoMove* goMove = moveProperty.propertyValue.toSingleValue.toMoveValue.toGoMoveValue.goMove;
-      if (! goMove)
-      {
-        *errorMessage = @"SgfcKit interfacing error while determining moves: Missing SGFCGoMove object.";
-        return false;
-      }
+      GoNode* node;
 
-      enum GoColor moveColor;
-      SGFCPropertyType propertyType = moveProperty.propertyType;
-      if (propertyType == SGFCPropertyTypeB)
-        moveColor = GoColorBlack;
-      else if (propertyType == SGFCPropertyTypeW)
-        moveColor = GoColorWhite;
-
-      enum GoMoveType moveType;
-      GoPoint* point;
-      if (goMove.isPassMove)
+      id tupleFirstValue = [tuple firstObject];
+      if (tupleFirstValue != [NSNull null])
       {
-        moveType = GoMoveTypePass;
-        point = nil;
+        SGFCProperty* moveProperty = tupleFirstValue;
+        bool result = [self playMove:moveProperty errorMessage:errorMessage];
+        if (!result)
+          return false;
+
+        node = game.nodeModel.leafNode;  // node was created by playing the move
       }
       else
       {
-        moveType = GoMoveTypePlay;
+        node = [GoNode node];
+        [nodeModel appendNode:node];
+      }
 
-        SGFCGoPoint* goPoint = goMove.stone.location;
-        if (! [goPoint hasPositionInGoPointNotation:SGFCGoPointNotationHybrid])
+      NSNumber* tupleSecondValue = [tuple objectAtIndex:1];
+      enum GoMoveValuation moveValuation = tupleSecondValue.intValue;
+      if (moveValuation != GoMoveValuationNone)
+      {
+        if (node.goMove)
         {
-          *errorMessage = @"SgfcKit interfacing error while determining moves: SGFCGoPoint not available in hybrid notation.";
-          return false;
+          node.goMove.goMoveValuation = moveValuation;
         }
-
-        NSString* vertexString = [goPoint positionInGoPointNotation:SGFCGoPointNotationHybrid];
-        point = [board pointAtVertex:vertexString];
-        if (! point)
+        else
         {
-          NSString* errorMessageFormat = @"Move string contains invalid intersection.\n\n%@";
-          *errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString];
-          return false;
+          // SGFC should have cleaned up the data so that this does not occur
+          NSString* message = [NSString stringWithFormat:@"Node with index position %d contains move valuation %d without a move property", (numberOfNodesCreated + 1), moveValuation];
+          DDLogInfo(@"%@", message);
         }
       }
 
-      // Here we support if the .sgf contains moves by non-alternating colors,
-      // anywhere in the game. Thus the user can ***VIEW*** almost any .sgf
-      // game, even though the app itself is not capable of producing such
-      // games.
-      game.nextMoveColor = moveColor;
+      id tupleThirdValue = [tuple lastObject];
+      if (tupleThirdValue != [NSNull null])
+        node.goNodeAnnotation = tupleThirdValue;
 
-      NSString* colorName = [NSString stringWithGoColor:moveColor];
-      if (GoGameStateGameHasEnded == game.state)
+      ++numberOfNodesCreated;
+      if (numberOfNodesCreated >= nextProgressUpdate)
       {
-        [game revertStateFromEndedToInProgress];
-      }
-      if (GoMoveTypePass == moveType)
-      {
-        [game pass];
-      }
-      else
-      {
-        enum GoMoveIsIllegalReason illegalReason;
-        if (! [game isLegalMove:point byColor:moveColor isIllegalReason:&illegalReason])
-        {
-          NSString* errorMessageFormat = @"Game contains an illegal move: Move %d, played by %@, on intersection %@. Reason: %@.";
-          NSString* illegalReasonString = [NSString stringWithMoveIsIllegalReason:illegalReason];
-          *errorMessage = [NSString stringWithFormat:errorMessageFormat, (movesReplayed + 1), colorName, point.vertex.string, illegalReasonString];
-          return false;
-        }
-        [game play:point];
-      }
-
-      GoNode* nodeCreatedByReplayedMove = game.nodeModel.leafNode;
-
-      GoMove* replayedMove = nodeCreatedByReplayedMove.goMove;
-      NSNumber* moveListTupleSecondValue = [moveListTuple objectAtIndex:1];
-      replayedMove.goMoveValuation = moveListTupleSecondValue.intValue;
-
-      id moveListTupleThirdValue = [moveListTuple lastObject];
-      if (moveListTupleThirdValue != [NSNull null])
-        nodeCreatedByReplayedMove.goNodeAnnotation = moveListTupleThirdValue;
-
-      ++movesReplayed;
-      if (movesReplayed >= nextProgressUpdate)
-      {
-        nextProgressUpdate += movesPerStep;
+        nextProgressUpdate += nodesPerStep;
         [self increaseProgressAndNotifyDelegate];
       }
     }
@@ -1051,6 +1035,87 @@ static const int maxStepsForReplayMoves = 10;
     NSString* errorMessageFormat = @"An unexpected error occurred loading the game. To improve this app, please consider submitting a bug report with the game file attached.\n\nException name: %@.\n\nException reason: %@.";
     *errorMessage = [NSString stringWithFormat:errorMessageFormat, [exception name], [exception reason]];
     return false;
+  }
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Plays a move using the information in @a moveProperty.
+// -----------------------------------------------------------------------------
+- (bool) playMove:(SGFCProperty*)moveProperty errorMessage:(NSString**)errorMessage
+{
+  GoGame* game = [GoGame sharedGame];
+
+  SGFCGoMove* goMove = moveProperty.propertyValue.toSingleValue.toMoveValue.toGoMoveValue.goMove;
+  if (! goMove)
+  {
+    *errorMessage = @"SgfcKit interfacing error while determining moves: Missing SGFCGoMove object.";
+    return false;
+  }
+
+  enum GoColor moveColor;
+  SGFCPropertyType propertyType = moveProperty.propertyType;
+  if (propertyType == SGFCPropertyTypeB)
+    moveColor = GoColorBlack;
+  else
+    moveColor = GoColorWhite;
+
+  enum GoMoveType moveType;
+  GoPoint* point;
+  if (goMove.isPassMove)
+  {
+    moveType = GoMoveTypePass;
+    point = nil;
+  }
+  else
+  {
+    moveType = GoMoveTypePlay;
+
+    SGFCGoPoint* goPoint = goMove.stone.location;
+    if (! [goPoint hasPositionInGoPointNotation:SGFCGoPointNotationHybrid])
+    {
+      *errorMessage = @"SgfcKit interfacing error while determining moves: SGFCGoPoint not available in hybrid notation.";
+      return false;
+    }
+
+    NSString* vertexString = [goPoint positionInGoPointNotation:SGFCGoPointNotationHybrid];
+    point = [game.board pointAtVertex:vertexString];
+    if (! point)
+    {
+      NSString* errorMessageFormat = @"Move string contains invalid intersection.\n\n%@";
+      *errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString];
+      return false;
+    }
+  }
+
+  // Here we support if the .sgf contains moves by non-alternating colors,
+  // anywhere in the game. Thus the user can ***VIEW*** almost any .sgf
+  // game, even though the app itself is not capable of producing such
+  // games.
+  game.nextMoveColor = moveColor;
+
+  if (GoGameStateGameHasEnded == game.state)
+  {
+    [game revertStateFromEndedToInProgress];
+  }
+
+  if (GoMoveTypePass == moveType)
+  {
+    [game pass];
+  }
+  else
+  {
+    enum GoMoveIsIllegalReason illegalReason;
+    if (! [game isLegalMove:point byColor:moveColor isIllegalReason:&illegalReason])
+    {
+      NSString* errorMessageFormat = @"Game contains an illegal move: Move %d, played by %@, on intersection %@. Reason: %@.";
+      NSString* colorName = [NSString stringWithGoColor:moveColor];
+      NSString* illegalReasonString = [NSString stringWithMoveIsIllegalReason:illegalReason];
+      *errorMessage = [NSString stringWithFormat:errorMessageFormat, (game.nodeModel.numberOfMoves + 1), colorName, point.vertex.string, illegalReasonString];
+      return false;
+    }
+    [game play:point];
   }
 
   return true;
