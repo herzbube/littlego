@@ -25,6 +25,7 @@
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
+#import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../player/Player.h"
@@ -552,7 +553,7 @@
             GoGameStateGameIsPaused == gameState ||
             (GoGameStateGameHasEnded == gameState && ! game.boardPosition.isLastPosition))
         {
-          statusText = [self statusTextForCurrentAndNextBoardPosition];
+          statusText = [self statusTextForMostRecentAndNextMove];
         }
         else if (GoGameStateGameHasEnded == gameState)
         {
@@ -607,49 +608,55 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for updateStatusLabel.
 // -----------------------------------------------------------------------------
-- (NSString*) statusTextForCurrentAndNextBoardPosition
+- (NSString*) statusTextForMostRecentAndNextMove
 {
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
 
-  NSString* statusTextCurrentBoardPosition;
-  // TODO xxx support nodes that don't have moves
-  GoMove* currentMove = boardPosition.currentNode.goMove;
+  GoMove* mostRecentMove;
   GoMove* nextMove;
-  if (currentMove)
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:boardPosition.currentNode];
+  if (nodeWithMostRecentMove)
   {
-    nextMove = currentMove.next;
-    NSString* colorCurrentBoardPosition = [NSString stringWithGoColor:currentMove.player.color];
-    if (GoMoveTypePlay == currentMove.type)
-      statusTextCurrentBoardPosition = [NSString stringWithFormat:@"%@ played %@", colorCurrentBoardPosition, currentMove.point.vertex.string];
-    else
-      statusTextCurrentBoardPosition = [NSString stringWithFormat:@"%@ passed", colorCurrentBoardPosition];
+    mostRecentMove = nodeWithMostRecentMove.goMove;
+    nextMove = mostRecentMove.next;
   }
   else
   {
-    if (boardPosition.isFirstPosition)
-      nextMove = game.firstMove;  // could still be nil if no moves have been made yet
-    else
-      nextMove = nil;
-    statusTextCurrentBoardPosition = @"Game started";
+    mostRecentMove = nil;
+    nextMove = nil;
   }
 
-  NSString* statusTextNextBoardPosition;
+  NSString* statusTextMostRecentMove;
+  if (mostRecentMove)
+  {
+    NSString* colorMostRecentMove = [NSString stringWithGoColor:mostRecentMove.player.color];
+    if (GoMoveTypePlay == mostRecentMove.type)
+      statusTextMostRecentMove = [NSString stringWithFormat:@"%@ played %@", colorMostRecentMove, mostRecentMove.point.vertex.string];
+    else
+      statusTextMostRecentMove = [NSString stringWithFormat:@"%@ passed", colorMostRecentMove];
+  }
+  else
+  {
+    statusTextMostRecentMove = @"Game started";
+  }
+
+  NSString* statusTextNextMove;
   if (nextMove)
   {
-    NSString* colorNextBoardPosition = [NSString stringWithGoColor:nextMove.player.color];
+    NSString* colorNextMove = [NSString stringWithGoColor:nextMove.player.color];
     if (GoMoveTypePlay == nextMove.type)
-      statusTextNextBoardPosition = [NSString stringWithFormat:@"%@ will play %@", colorNextBoardPosition, nextMove.point.vertex.string];
+      statusTextNextMove = [NSString stringWithFormat:@"%@ will play %@", colorNextMove, nextMove.point.vertex.string];
     else
-      statusTextNextBoardPosition = [NSString stringWithFormat:@"%@ will pass", colorNextBoardPosition];
+      statusTextNextMove = [NSString stringWithFormat:@"%@ will pass", colorNextMove];
   }
   else
   {
-    NSString* colorNextBoardPosition = [NSString stringWithGoColor:game.nextMoveColor];
-    statusTextNextBoardPosition = [NSString stringWithFormat:@"%@ to move", colorNextBoardPosition];
+    NSString* colorNextMove = [NSString stringWithGoColor:game.nextMoveColor];
+    statusTextNextMove = [NSString stringWithFormat:@"%@ to move", colorNextMove];
   }
 
-  return [NSString stringWithFormat:@"%@\n%@", statusTextCurrentBoardPosition, statusTextNextBoardPosition];
+  return [NSString stringWithFormat:@"%@\n%@", statusTextMostRecentMove, statusTextNextMove];
 }
 
 // -----------------------------------------------------------------------------

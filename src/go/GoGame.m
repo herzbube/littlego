@@ -168,15 +168,12 @@
 // -----------------------------------------------------------------------------
 - (GoMove*) firstMove
 {
-  GoNode* node = self.nodeModel.rootNode;
-  while (node)
-  {
-    if (node.goMove)
-      return node.goMove;
-    else
-      node = node.firstChild;
-  }
-  return nil;
+  // The root node cannot contain a move, therefore it is ok to use GoUtilities
+  GoNode* nodeWithNextMove = [GoUtilities nodeWithNextMove:self.nodeModel.rootNode];
+  if (nodeWithNextMove)
+    return nodeWithNextMove.goMove;
+  else
+    return nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -184,15 +181,11 @@
 // -----------------------------------------------------------------------------
 - (GoMove*) lastMove
 {
-  GoNode* node = self.nodeModel.leafNode;
-  while (node)
-  {
-    if (node.goMove)
-      return node.goMove;
-    else
-      node = node.parent;
-  }
-  return nil;
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:self.nodeModel.leafNode];
+  if (nodeWithMostRecentMove)
+    return nodeWithMostRecentMove.goMove;
+  else
+    return nil;
 }
 
 // -----------------------------------------------------------------------------

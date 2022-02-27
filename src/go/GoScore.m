@@ -24,6 +24,7 @@
 #import "GoGameRules.h"
 #import "GoMove.h"
 #import "GoNode.h"
+#import "GoNodeModel.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
 #import "../main/ApplicationDelegate.h"
@@ -1023,60 +1024,64 @@
   // Captured stones (up to the current board position) and move statistics (for
   // the entire game)
   self.numberOfMoves = 0;
-  // TODO xxx Add support for nodes that do not contain moves
-  GoMove* currentBoardPositionMove = self.game.boardPosition.currentNode.goMove;
+  GoNode* currentBoardPositionNode = self.game.boardPosition.currentNode;
   bool loopHasPassedCurrentBoardPosition = false;
-  GoMove* move = self.game.lastMove;
-  while (move != nil)
+  GoNode* node = self.game.nodeModel.leafNode;
+  while (node != nil)
   {
     if (! loopHasPassedCurrentBoardPosition)
     {
-      if (move == currentBoardPositionMove)
+      if (node == currentBoardPositionNode)
         loopHasPassedCurrentBoardPosition = true;
     }
 
-    self.numberOfMoves++;
-    bool moveByBlack = move.player.black;
-    switch (move.type)
+    GoMove* move = node.goMove;
+    if (move)
     {
-      case GoMoveTypePlay:
+      self.numberOfMoves++;
+      bool moveByBlack = move.player.black;
+      switch (move.type)
       {
-        if (moveByBlack)
+        case GoMoveTypePlay:
         {
-          if (loopHasPassedCurrentBoardPosition)
+          if (moveByBlack)
           {
-            // Cast is required because NSUInteger and int differ in size in
-            // 64-bit. Cast is safe because the number of captured stones can
-            // never exceed pow(2, 32).
-            self.capturedByBlack += (int)move.capturedStones.count;
+            if (loopHasPassedCurrentBoardPosition)
+            {
+              // Cast is required because NSUInteger and int differ in size in
+              // 64-bit. Cast is safe because the number of captured stones can
+              // never exceed pow(2, 32).
+              self.capturedByBlack += (int)move.capturedStones.count;
+            }
+            self.stonesPlayedByBlack++;
           }
-          self.stonesPlayedByBlack++;
+          else
+          {
+            if (loopHasPassedCurrentBoardPosition)
+            {
+              // Cast is required because NSUInteger and int differ in size in
+              // 64-bit. Cast is safe because the number of captured stones can
+              // never exceed pow(2, 32).
+              self.capturedByWhite += (int)move.capturedStones.count;
+            }
+            self.stonesPlayedByWhite++;
+          }
+          break;
         }
-        else
+        case GoMoveTypePass:
         {
-          if (loopHasPassedCurrentBoardPosition)
-          {
-            // Cast is required because NSUInteger and int differ in size in
-            // 64-bit. Cast is safe because the number of captured stones can
-            // never exceed pow(2, 32).
-            self.capturedByWhite += (int)move.capturedStones.count;
-          }
-          self.stonesPlayedByWhite++;
+          if (moveByBlack)
+            self.passesPlayedByBlack++;
+          else
+            self.passesPlayedByWhite++;
+          break;
         }
-        break;
+        default:
+          break;
       }
-      case GoMoveTypePass:
-      {
-        if (moveByBlack)
-          self.passesPlayedByBlack++;
-        else
-          self.passesPlayedByWhite++;
-        break;
-      }
-      default:
-        break;
     }
-    move = move.previous;
+
+    node = node.parent;
   }
 
   // Area, territory & dead stones (for current board position)

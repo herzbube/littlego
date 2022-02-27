@@ -694,4 +694,38 @@
     [moveToSet setUnarchivedPreviousMove:previousMove nextMove:nil];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Examines @a node and its ancestors. Returns the first node found that
+/// contains a move. Returns @a node if it contains a move. Returns @e nil if
+/// no move can be found.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithMostRecentMove:(GoNode*)node
+{
+  while (node)
+  {
+    if (node.goMove)
+      return node;
+    node = node.parent;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines the direct descendants  of @a node (excluding @a node).
+/// Returns the first node found that contains a move. Returns @e nil if no move
+/// can be found.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithNextMove:(GoNode*)node
+{
+  if (node)
+    node = node.firstChild;
+  while (node)
+  {
+    if (node.goMove)
+      return node;
+    node = node.firstChild;
+  }
+  return nil;
+}
+
 @end

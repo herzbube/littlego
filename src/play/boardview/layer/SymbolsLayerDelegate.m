@@ -30,6 +30,7 @@
 #import "../../../go/GoPlayer.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoScore.h"
+#import "../../../go/GoUtilities.h"
 #import "../../../ui/UiSettingsModel.h"
 
 
@@ -195,17 +196,22 @@
     {
       if (self.boardViewModel.markLastMove)
       {
-        GoMove* lastMove = game.boardPosition.currentNode.goMove;
-        if (lastMove && GoMoveTypePlay == lastMove.type)
+        GoMove* mostRecentMove;
+        GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.boardPosition.currentNode];
+        if (nodeWithMostRecentMove)
+          mostRecentMove = nodeWithMostRecentMove.goMove;
+        else
+          mostRecentMove = nil;
+        if (mostRecentMove && GoMoveTypePlay == mostRecentMove.type)
         {
           CGLayerRef lastMoveLayer;
-          if (lastMove.player.isBlack)
+          if (mostRecentMove.player.isBlack)
             lastMoveLayer = whiteLastMoveLayer;
           else
             lastMoveLayer = blackLastMoveLayer;
           [BoardViewDrawingHelper drawLayer:lastMoveLayer
                                 withContext:context
-                            centeredAtPoint:lastMove.point
+                            centeredAtPoint:mostRecentMove.point
                              inTileWithRect:tileRect
                                 withMetrics:self.boardViewMetrics];
         }
@@ -312,27 +318,10 @@
                 inTileWithRect:(CGRect)tileRect
 {
   GoGame* game = [GoGame sharedGame];
-  if (game.boardPosition.isLastPosition)
+  GoNode* nodeWithNextMove = [GoUtilities nodeWithNextMove:game.boardPosition.currentNode];
+  if (! nodeWithNextMove)
     return;
-  GoMove* nextMove;
-  if (game.boardPosition.isFirstPosition)
-  {
-    nextMove = game.firstMove;
-  }
-  else
-  {
-    GoMove* currentMove = game.boardPosition.currentNode.goMove;
-    // TODO xxx Instead of this check this method should properly handle
-    // nodes without moves. Currently this only works if the current node has
-    // a move.
-    if (currentMove)
-      nextMove = currentMove.next;
-    else
-      nextMove = nil;
-  }
-  // TODO xxx This check should also not be necessary, see comment above
-  if (! nextMove)
-    return;
+  GoMove* nextMove = nodeWithNextMove.goMove;
   if (GoMoveTypePlay != nextMove.type)
     return;
 

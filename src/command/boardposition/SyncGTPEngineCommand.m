@@ -242,9 +242,15 @@
   GoGame* game = [GoGame sharedGame];
   GoMove* syncUpToThisMove = nil;
   if (SyncMovesUpToCurrentBoardPosition == self.syncMoveType)
-    syncUpToThisMove = game.boardPosition.currentNode.goMove;
+  {
+    GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.boardPosition.currentNode];
+    if (nodeWithMostRecentMove)
+      syncUpToThisMove = nodeWithMostRecentMove.goMove;
+  }
   else
+  {
     syncUpToThisMove = game.lastMove;
+  }
   if (! syncUpToThisMove)
     return true;
   NSString* commandString = @"gogui-play_sequence";

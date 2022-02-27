@@ -19,6 +19,7 @@
 @class GoGame;
 @class GoGameRules;
 @class GoMove;
+@class GoNode;
 @class GoPlayer;
 @class GoPoint;
 
@@ -53,5 +54,7 @@
 + (NSString*) verticesStringForPoints:(NSArray*)points;
 + (void) recalculateZobristHashes:(GoGame*)game;
 + (void) relinkMoves:(GoGame*)game;
++ (GoNode*) nodeWithMostRecentMove:(GoNode*)node;
++ (GoNode*) nodeWithNextMove:(GoNode*)node;
 
 @end

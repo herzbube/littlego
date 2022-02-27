@@ -39,6 +39,8 @@ enum SyncMoveType
 /// Optionally SyncGTPEngineCommand may be configured so that it synchronizes
 /// the GTP engine with all moves of the entire game.
 ///
+/// Board positions for nodes that do not contain a move are ignored.
+///
 /// If execution of SyncGTPEngineCommand fails, the GTP engine is left in an
 /// unknown state.
 // -----------------------------------------------------------------------------
