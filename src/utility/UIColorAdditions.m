@@ -467,4 +467,25 @@
   return [UIColor colorWithPatternImage:tiledImage];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object that matches
+/// @a goBoardPositionHotspotDesignation. The color can be used, for instance,
+/// to apply a tint to an image.
+// -----------------------------------------------------------------------------
++ (UIColor*) hotspotColor:(enum GoBoardPositionHotspotDesignation)goBoardPositionHotspotDesignation
+{
+  switch (goBoardPositionHotspotDesignation)
+  {
+    case GoBoardPositionHotspotDesignationYes:
+      return [UIColor ncsYellowColor];
+    case GoBoardPositionHotspotDesignationYesEmphasized:
+      return [UIColor pantoneRedColor];
+    case GoBoardPositionHotspotDesignationNone:
+      return [UIColor grayColor];
+    default:
+      assert(0);
+      return nil;
+  }
+}
+
 @end

@@ -75,6 +75,17 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a new image by resizing the current image to @a newSize. The
+/// new image is always rendered as a template image. This allows to apply a
+/// tint color to it when it is rendered in an image view or web view.
+// -----------------------------------------------------------------------------
+- (UIImage*) templateImageByResizingToSize:(CGSize)newSize
+{
+  UIImage* resizedImage = [self imageByResizingToSize:newSize];
+  return [resizedImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns an image of size @a size with a linear gradient drawn along
 /// the axis that runs from the top-middle to the bottom-middle point.
 // -----------------------------------------------------------------------------

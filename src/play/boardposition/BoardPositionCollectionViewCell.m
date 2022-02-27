@@ -20,6 +20,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
+#import "../../go/GoNodeAnnotation.h"
 #import "../../go/GoNodeModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
@@ -48,8 +49,12 @@ static int horizontalSpacingSiblings = 0;
 static int verticalSpacingSuperview = 0;
 static int verticalSpacingSiblings = 0;
 static int stoneImageWidthAndHeight = 0;
+static int iconImageWidthAndHeight = 0;
+static int verticalSpacingIconImages = 0;
 static UIImage* blackStoneImage = nil;
 static UIImage* whiteStoneImage = nil;
+static UIImage* infoIconImage = nil;
+static UIImage* hotspotIconImage = nil;
 static UIColor* currentBoardPositionCellBackgroundColor = nil;
 static UIColor* alternateCellBackgroundColor1 = nil;
 static UIColor* alternateCellBackgroundColor2 = nil;
@@ -70,6 +75,8 @@ static UIFont* smallFont = nil;
 @property(nonatomic, assign) UILabel* intersectionLabel;
 @property(nonatomic, assign) UILabel* boardPositionLabel;
 @property(nonatomic, assign) UILabel* capturedStonesLabel;
+@property(nonatomic, assign) UIImageView* infoIconImageView;
+@property(nonatomic, assign) UIImageView* hotspotIconImageView;
 @property(nonatomic, retain) NSArray* dynamicAutoLayoutConstraints;
 @end
 
@@ -150,6 +157,8 @@ static UIFont* smallFont = nil;
   self.intersectionLabel = nil;
   self.boardPositionLabel = nil;
   self.capturedStonesLabel = nil;
+  self.infoIconImageView = nil;
+  self.hotspotIconImageView = nil;
   self.dynamicAutoLayoutConstraints = nil;
   [super dealloc];
 }
@@ -165,10 +174,14 @@ static UIFont* smallFont = nil;
   self.intersectionLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
   self.boardPositionLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
   self.capturedStonesLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  self.infoIconImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
+  self.hotspotIconImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
   [self addSubview:self.stoneImageView];
   [self addSubview:self.intersectionLabel];
   [self addSubview:self.boardPositionLabel];
   [self addSubview:self.capturedStonesLabel];
+  [self addSubview:self.infoIconImageView];
+  [self addSubview:self.hotspotIconImageView];
 }
 
 // -----------------------------------------------------------------------------
@@ -180,12 +193,16 @@ static UIFont* smallFont = nil;
   self.intersectionLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.capturedStonesLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.infoIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.hotspotIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.stoneImageView, @"stoneImageView",
                                    self.intersectionLabel, @"intersectionLabel",
                                    self.boardPositionLabel, @"boardPositionLabel",
                                    self.capturedStonesLabel, @"capturedStonesLabel",
+                                   self.infoIconImageView, @"infoIconImageView",
+                                   self.hotspotIconImageView, @"hotspotIconImageView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             // Spacing 0 is OK. In setupDummyContents we reserve space for a
@@ -194,7 +211,8 @@ static UIFont* smallFont = nil;
                             // reserved for a 2nd and/or 3rd digit acts as spacing (the label
                             // text is right-aligned). In the unlikely event that there *IS*
                             // a 3-digit number, spacing 0 is still tolerable.
-                            @"H:[intersectionLabel]-0-[capturedStonesLabel]",
+                            @"H:[intersectionLabel]-0-[capturedStonesLabel]-0-[infoIconImageView]",
+                            @"H:[boardPositionLabel]-0-[hotspotIconImageView]",
                             [NSString stringWithFormat:@"V:|-%d-[intersectionLabel]-%d-[boardPositionLabel]-%d-|", verticalSpacingSuperview, verticalSpacingSiblings, verticalSpacingSuperview],
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
@@ -208,6 +226,14 @@ static UIFont* smallFont = nil;
                      withSecondView:self.intersectionLabel
                         onAttribute:NSLayoutAttributeCenterY
                    constraintHolder:self];
+//  [AutoLayoutUtility alignFirstView:self.infoIconImageView
+//                     withSecondView:self.intersectionLabel
+//                        onAttribute:NSLayoutAttributeCenterY
+//                   constraintHolder:self];
+//  [AutoLayoutUtility alignFirstView:self.hotspotIconImageView
+//                     withSecondView:self.boardPositionLabel
+//                        onAttribute:NSLayoutAttributeCenterY
+//                   constraintHolder:self];
 
   UIView* anchorView = self;
   NSLayoutXAxisAnchor* leftAnchor;
@@ -224,8 +250,8 @@ static UIFont* smallFont = nil;
     rightAnchor = anchorView.rightAnchor;
   }
   [self.stoneImageView.leftAnchor constraintEqualToAnchor:leftAnchor constant:horizontalSpacingSuperview].active = YES;
-  [self.capturedStonesLabel.rightAnchor constraintEqualToAnchor:rightAnchor constant:-horizontalSpacingSuperview].active = YES;
-  [self.boardPositionLabel.rightAnchor constraintEqualToAnchor:rightAnchor constant:-horizontalSpacingSuperview].active = YES;
+  [self.infoIconImageView.rightAnchor constraintEqualToAnchor:rightAnchor constant:-horizontalSpacingSuperview].active = YES;
+  [self.hotspotIconImageView.rightAnchor constraintEqualToAnchor:rightAnchor constant:-horizontalSpacingSuperview].active = YES;
 
   [self updateDynamicAutoLayoutConstraints];
 }
@@ -262,7 +288,6 @@ static UIFont* smallFont = nil;
   if (-1 == self.boardPosition)
     return;
   GoGame* game = [GoGame sharedGame];
-  GoMove* move = nil;
   if (0 == self.boardPosition)
   {
     self.stoneImageView.image = nil;
@@ -270,25 +295,46 @@ static UIFont* smallFont = nil;
     NSString* komiString = [NSString stringWithKomi:game.komi numericZeroValue:true];
     self.boardPositionLabel.text = [NSString stringWithFormat:@"Handicap: %1lu, Komi: %@", (unsigned long)game.handicapPoints.count, komiString];
     self.capturedStonesLabel.text = nil;
+    self.infoIconImageView.image = nil;
+    self.hotspotIconImageView.image = nil;
   }
   else
   {
     int nodeIndex = self.boardPosition;
     GoNode* node = [game.nodeModel nodeAtIndex:nodeIndex];
-    move = node.goMove;
-    if (! move)
+
+    self.boardPositionLabel.text = [NSString stringWithFormat:@"Position %d", self.boardPosition];
+
+    if ([self showsMoveData:node])
     {
-      // TODO xxx Instead of this check this cell must be changed to fully
-      // support displaying nodes that do not contain moves. Currently this
-      // cell is restricted to displaying nodes that contain moves.
-      DDLogError(@"%@: Unsupported node: Can only display nodes that contain moves", self);
-      assert(0);
-      return;
+      GoMove* move = node.goMove;
+      self.stoneImageView.image = [self stoneImageForMove:move];
+      self.intersectionLabel.text = [self intersectionLabelTextForMove:move];
+      self.boardPositionLabel.text = [NSString stringWithFormat:@"Move %d", node.goMove.moveNumber];
+      self.capturedStonesLabel.text = [self capturedStonesLabelTextForMove:move];
     }
-    self.stoneImageView.image = [self stoneImageForMove:move];
-    self.intersectionLabel.text = [self intersectionLabelTextForMove:move];
-    self.boardPositionLabel.text = [NSString stringWithFormat:@"Move %d", self.boardPosition];
-    self.capturedStonesLabel.text = [self capturedStonesLabelTextForMove:move];
+    else
+    {
+      self.stoneImageView.image = nil;
+      self.intersectionLabel.text = @"No move";
+      self.boardPositionLabel.text = nil;
+      self.capturedStonesLabel.text = nil;
+    }
+
+    if ([self showsInfoIcon:node])
+      self.infoIconImageView.image = infoIconImage;
+    else
+      self.infoIconImageView.image = nil;
+
+    if ([self showsHotspotIcon:node])
+    {
+      self.hotspotIconImageView.image = hotspotIconImage;
+      self.hotspotIconImageView.tintColor = [UIColor hotspotColor:node.goNodeAnnotation.goBoardPositionHotspotDesignation];
+    }
+    else
+    {
+      self.hotspotIconImageView.image = nil;
+    }
   }
 
   // Let UI tests distinguish which image is set. Experimentally determined that
@@ -320,13 +366,19 @@ static UIFont* smallFont = nil;
     self.boardPositionLabel.text = @"Handicap: 9, Komi: 7½";
     // Dynamic Auto Layout constraint calculation requires that we set nil here
     self.capturedStonesLabel.text = nil;
+    self.infoIconImageView.image = nil;
+    self.hotspotIconImageView.image = nil;
   }
   else
   {
     self.stoneImageView.image = blackStoneImage;
+    // The longest string is actually "No move", but this is used only when the
+    // stone image is not displayed, which compensates for the longer string
     self.intersectionLabel.text = @"Q19";
-    self.boardPositionLabel.text = @"Move 999";
+    self.boardPositionLabel.text = @"Position 999";
     self.capturedStonesLabel.text = @"999";
+    self.infoIconImageView.image = infoIconImage;
+    self.hotspotIconImageView.image = hotspotIconImage;
   }
 }
 
@@ -380,6 +432,68 @@ static UIFont* smallFont = nil;
     self.backgroundColor = isLightUserInterfaceStyle ? alternateCellBackgroundColor2 : alternateCellBackgroundColor2DarkMode;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupRealContent().
+// -----------------------------------------------------------------------------
+- (bool) showsMoveData:(GoNode*)node
+{
+  if (self.offscreenMode)
+    return true;
+
+  if (node.goMove)
+    return true;
+  else
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupRealContent().
+// -----------------------------------------------------------------------------
+- (bool) showsInfoIcon:(GoNode*)node
+{
+  if (self.offscreenMode)
+    return true;
+
+  GoMove* move = node.goMove;
+  if (move && move.goMoveValuation != GoMoveValuationNone)
+    return true;
+
+  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
+  if (! nodeAnnotation)
+    return false;
+
+  // GoNodeAnnotation must contain something else besides the hotspot
+  // designation
+  if (nodeAnnotation.shortDescription != nil ||
+      nodeAnnotation.longDescription != nil ||
+      nodeAnnotation.goBoardPositionValuation != GoBoardPositionValuationNone ||
+      nodeAnnotation.estimatedScoreSummary != GoScoreSummaryNone)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupRealContent().
+// -----------------------------------------------------------------------------
+- (bool) showsHotspotIcon:(GoNode*)node
+{
+  if (self.offscreenMode)
+    return true;
+
+  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
+  if (! nodeAnnotation)
+    return false;
+  else if (nodeAnnotation.goBoardPositionHotspotDesignation == GoBoardPositionHotspotDesignationNone)
+    return false;
+  else
+    return true;
+}
+
 #pragma mark - UIView overrides
 
 // -----------------------------------------------------------------------------
@@ -409,15 +523,24 @@ static UIFont* smallFont = nil;
   bool newPositionIsGreaterThanZero = (newValue > 0);
   _boardPosition = newValue;
 
+  bool oldPositionShowsMove = (self.stoneImageView.image != nil);
   bool oldPositionHasCapturedStones = (self.capturedStonesLabel.text != nil);
+  bool oldPositionShowsInfoIcon = (self.infoIconImageView.image != nil);
+  bool oldPositionShowsHotspotIcon = (self.hotspotIconImageView.image != nil);
   // Setup content first because dynamic Auto Layout constraint calculation
   // examines the content
   [self setupRealContent];
+  bool newPositionShowsMove = (self.stoneImageView.image != nil);
   bool newPositionHasCapturedStones = (self.capturedStonesLabel.text != nil);
+  bool newPositionShowsInfoIcon = (self.infoIconImageView.image != nil);
+  bool newPositionShowsHotspotIcon = (self.hotspotIconImageView.image != nil);
 
   // Optimization: Change Auto Layout constraints only if absolutely necessary
   if (oldPositionIsGreaterThanZero != newPositionIsGreaterThanZero ||
-      oldPositionHasCapturedStones != newPositionHasCapturedStones)
+      oldPositionShowsMove != newPositionShowsMove ||
+      oldPositionHasCapturedStones != newPositionHasCapturedStones ||
+      oldPositionShowsInfoIcon != newPositionShowsInfoIcon ||
+      oldPositionShowsHotspotIcon != newPositionShowsHotspotIcon)
   {
     [self updateDynamicAutoLayoutConstraints];
   }
@@ -439,18 +562,42 @@ static UIFont* smallFont = nil;
                                    self.intersectionLabel, @"intersectionLabel",
                                    self.boardPositionLabel, @"boardPositionLabel",
                                    self.capturedStonesLabel, @"capturedStonesLabel",
+                                   self.infoIconImageView, @"infoIconImageView",
+                                   self.hotspotIconImageView, @"hotspotIconImageView",
                                    nil];
   int stoneImageWidth = 0;
   int horizontalSpacingStoneImageView = 0;
+  int infoIconImageViewWidth = 0;
+  int hotspotIconImageViewWidth = 0;
   if (self.boardPosition > 0)
   {
-    stoneImageWidth = stoneImageWidthAndHeight;
-    horizontalSpacingStoneImageView = horizontalSpacingSiblings;
+    if (self.stoneImageView.image)
+    {
+      stoneImageWidth = stoneImageWidthAndHeight;
+      horizontalSpacingStoneImageView = horizontalSpacingSiblings;
+    }
+    else
+    {
+      stoneImageWidth = 0;
+      horizontalSpacingStoneImageView = 0;
+    }
+
+    if (self.infoIconImageView.image)
+      infoIconImageViewWidth = iconImageWidthAndHeight;
+    else
+      infoIconImageViewWidth = 0;
+
+    if (self.hotspotIconImageView.image)
+      hotspotIconImageViewWidth = iconImageWidthAndHeight;
+    else
+      hotspotIconImageViewWidth = 0;
   }
   else
   {
     stoneImageWidth = 0;
     horizontalSpacingStoneImageView = 0;
+    infoIconImageViewWidth = 0;
+    hotspotIconImageViewWidth = 0;
   }
 
   NSMutableArray* visualFormats = [NSMutableArray array];
@@ -459,9 +606,68 @@ static UIFont* smallFont = nil;
   [visualFormats addObject:[NSString stringWithFormat:@"H:[stoneImageView]-%d-[boardPositionLabel]", horizontalSpacingStoneImageView]];
   if (nil == self.capturedStonesLabel.text)
     [visualFormats addObject:@"H:[capturedStonesLabel(==0)]"];
-  self.dynamicAutoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
-                                                                    withViews:viewsDictionary
-                                                                       inView:self];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[infoIconImageView(==%d)]", infoIconImageViewWidth]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[hotspotIconImageView(==%d)]", hotspotIconImageViewWidth]];
+  NSArray* visualFormatsAutoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
+                                                                              withViews:viewsDictionary
+                                                                                 inView:self];
+
+  // Because boardPositionLabel is sometimes not displayed the vertical
+  // positioning of the icon images needs to be dynamic. If boardPositionLabel
+  // is not shown, the hotspot icon image is aligned instead on the center of
+  // intersectionLabel. In addition if both icon images are shown they need to
+  // have a bit of spacing in between.
+  CGFloat infoIconAlignModifier = 0.0f;
+  UIView* hotspotIconAlignView = nil;
+  CGFloat hotspotIconAlignModifier = 0.0f;
+  if (self.intersectionLabel.text && self.boardPositionLabel.text)
+  {
+    hotspotIconAlignView = self.boardPositionLabel;
+  }
+  // The else branch relies on intersectionLabel being always shown
+  else
+  {
+    hotspotIconAlignView = self.intersectionLabel;
+
+    if (self.infoIconImageView.image && self.hotspotIconImageView.image)
+    {
+      infoIconAlignModifier = -((infoIconImageViewWidth + verticalSpacingIconImages) / 2.0f);
+      hotspotIconAlignModifier = (hotspotIconImageViewWidth + verticalSpacingIconImages) / 2.0f;
+    }
+  }
+
+  NSLayoutConstraint* infoIconAutoLayoutConstraints = nil;
+  NSLayoutConstraint* hotspotIconAutoLayoutConstraints = nil;
+  if (self.infoIconImageView.image)
+  {
+    infoIconAutoLayoutConstraints = [AutoLayoutUtility alignFirstView:self.infoIconImageView
+                                                       withSecondView:self.intersectionLabel
+                                                          onAttribute:NSLayoutAttributeCenterY
+                                                         withConstant:infoIconAlignModifier
+                                                     constraintHolder:self];
+  }
+  if (self.hotspotIconImageView.image)
+  {
+    hotspotIconAutoLayoutConstraints = [AutoLayoutUtility alignFirstView:self.hotspotIconImageView
+                                                          withSecondView:hotspotIconAlignView
+                                                             onAttribute:NSLayoutAttributeCenterY
+                                                            withConstant:hotspotIconAlignModifier
+                                                        constraintHolder:self];
+  }
+
+  if (infoIconAutoLayoutConstraints || hotspotIconAlignView)
+  {
+    NSMutableArray* dynamicAutoLayoutConstraints = [NSMutableArray arrayWithArray:visualFormatsAutoLayoutConstraints];
+    if (infoIconAutoLayoutConstraints)
+      [dynamicAutoLayoutConstraints addObject:infoIconAutoLayoutConstraints];
+    if (hotspotIconAutoLayoutConstraints)
+      [dynamicAutoLayoutConstraints addObject:hotspotIconAutoLayoutConstraints];
+    self.dynamicAutoLayoutConstraints = dynamicAutoLayoutConstraints;
+  }
+  else
+  {
+    self.dynamicAutoLayoutConstraints = visualFormatsAutoLayoutConstraints;
+  }
 }
 
 #pragma mark - One-time view size calculation
@@ -503,11 +709,17 @@ static UIFont* smallFont = nil;
   horizontalSpacingSiblings = [UiElementMetrics horizontalSpacingSiblings];
   verticalSpacingSuperview = [UiElementMetrics horizontalSpacingSiblings] / 2;
   verticalSpacingSiblings = 0;
+  verticalSpacingIconImages = [UiElementMetrics verticalSpacingSiblings] / 2;
 
   stoneImageWidthAndHeight = floor([UiElementMetrics tableViewCellContentViewHeight] * 0.7);
   CGSize stoneImageSize = CGSizeMake(stoneImageWidthAndHeight, stoneImageWidthAndHeight);
   blackStoneImage = [[[UIImage imageNamed:stoneBlackImageResource] imageByResizingToSize:stoneImageSize] retain];
   whiteStoneImage = [[[UIImage imageNamed:stoneWhiteImageResource] imageByResizingToSize:stoneImageSize] retain];
+
+  iconImageWidthAndHeight = floor([UiElementMetrics tableViewCellContentViewHeight] * 0.3);
+  CGSize iconImageSize = CGSizeMake(iconImageWidthAndHeight, iconImageWidthAndHeight);
+  infoIconImage = [[[UIImage imageNamed:uiAreaAboutIconResource] imageByResizingToSize:iconImageSize] retain];
+  hotspotIconImage = [[[UIImage imageNamed:hotspotIconResource] templateImageByResizingToSize:iconImageSize] retain];
 
   currentBoardPositionCellBackgroundColor = [[UIColor darkTangerineColor] retain];
   alternateCellBackgroundColor1 = [[UIColor lightBlueColor] retain];

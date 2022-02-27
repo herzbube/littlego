@@ -58,4 +58,5 @@
 + (UIColor*) tableViewCellDetailTextLabelColor;
 + (UIColor*) navigationbarBackgroundColor;
 + (UIColor*) woodenBackgroundColor;
++ (UIColor*) hotspotColor:(enum GoBoardPositionHotspotDesignation)goBoardPositionHotspotDesignation;
 @end

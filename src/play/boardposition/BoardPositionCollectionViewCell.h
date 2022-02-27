@@ -22,22 +22,24 @@
 /// All BoardPositionCollectionViewCell instances have the same pre-calculated
 /// size.
 ///
-/// The view layout is similar to table view cells with style
-/// UITableViewCellStyleSubtitle. It looks like this:
+/// The view layout looks like this:
 ///
 /// @verbatim
-/// +-------------------------------------------------------------------+
-/// | +-UIImageView-----------+  +-UILabel--------+ +-UILabel---------+ |
-/// | |                       |  | Intersection   | | Captured stones | |
-/// | | Stone image           |  +----------------+ +-----------------+ |
-/// | | (vertically centered) |  +-UILabel----------------------------+ |
-/// | |                       |  | Board position                     | |
-/// | +-----------------------+  +------------------------------------+ |
-/// +-------------------------------------------------------------------+
+/// +-------------------------------------------------------------------------------------+
+/// | +-UIImageView-----------+  +-UILabel--------+ +-UILabel---------+ +-UIImageView---+ |
+/// | |                       |  | Intersection   | | Captured stones | | Info icon     | |
+/// | | Stone image           |  +----------------+ +-----------------+ +---------------+ |
+/// | | (vertically centered) |  +-UILabel----------------------------+ +-UIImageView---+ |
+/// | |                       |  | Board position                     | | Hotspot icon  | |
+/// | +-----------------------+  +------------------------------------+ +---------------+ |
+/// +-------------------------------------------------------------------------------------+
 /// @endverbatim
 ///
 /// The size ratios depicted in the above scheme are incorrect because the
 /// labels have different font sizes.
+///
+/// BoardPositionCollectionViewCell is used for #UITypePad (both Portrait
+/// and Landscape) and #UITypePhone (Landscape only).
 // -----------------------------------------------------------------------------
 @interface BoardPositionCollectionViewCell : UICollectionViewCell
 {

@@ -19,6 +19,9 @@
 // -----------------------------------------------------------------------------
 /// @brief The BoardPositionCollectionViewController class is responsible for
 /// managing a collection view that displays a list of all board positions.
+///
+/// BoardPositionCollectionViewController is used for #UITypePad (both Portrait
+/// and Landscape) and #UITypePhone (Landscape only).
 // -----------------------------------------------------------------------------
 @interface BoardPositionCollectionViewController : UICollectionViewController <UICollectionViewDelegateFlowLayout>
 {

@@ -235,6 +235,7 @@ NSString* forwardButtonIconResource = @"forward.png";
 NSString* forwardToEndButtonIconResource = @"forwardtoend.png";
 NSString* backButtonIconResource = @"back.png";
 NSString* rewindToStartButtonIconResource = @"rewindtostart.png";
+NSString* hotspotIconResource = @"hotspot.png";
 NSString* stoneBlackImageResource = @"stone-black.png";
 NSString* stoneWhiteImageResource = @"stone-white.png";
 NSString* stoneCrosshairImageResource = @"stone-crosshair.png";

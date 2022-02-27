@@ -42,6 +42,11 @@
                         withSecondView:(UIView*)secondView
                            onAttribute:(NSLayoutAttribute)attribute
                       constraintHolder:(UIView*)constraintHolder;
++ (NSLayoutConstraint*) alignFirstView:(UIView*)firstView
+                        withSecondView:(UIView*)secondView
+                           onAttribute:(NSLayoutAttribute)attribute
+                          withConstant:(CGFloat)constant
+                      constraintHolder:(UIView*)constraintHolder;
 + (NSLayoutConstraint*) makeSquare:(UIView*)view
               widthDependsOnHeight:(bool)widthDependsOnHeight
                   constraintHolder:(UIView*)constraintHolder;

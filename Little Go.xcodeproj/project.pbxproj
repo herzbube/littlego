@@ -264,6 +264,10 @@
 		CD81795C25DDEDDF00F39091 /* computer-suggest-move.png in Resources */ = {isa = PBXBuildFile; fileRef = CD81795825DDEDDF00F39091 /* computer-suggest-move.png */; };
 		CD81795E25DDEDDF00F39091 /* computer-suggest-move@3.png in Resources */ = {isa = PBXBuildFile; fileRef = CD81795925DDEDDF00F39091 /* computer-suggest-move@3.png */; };
 		CD81796025DDEDDF00F39091 /* computer-suggest-move@2.png in Resources */ = {isa = PBXBuildFile; fileRef = CD81795A25DDEDDF00F39091 /* computer-suggest-move@2.png */; };
+		CD85068027B5C414000D2CCD /* hotspot@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD85067C27B5C414000D2CCD /* hotspot@3x.png */; };
+		CD85068127B5C414000D2CCD /* hotspot@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD85067D27B5C414000D2CCD /* hotspot@2x.png */; };
+		CD85068227B5C414000D2CCD /* noun-flame-4575899.svg in Resources */ = {isa = PBXBuildFile; fileRef = CD85067E27B5C414000D2CCD /* noun-flame-4575899.svg */; };
+		CD85068327B5C414000D2CCD /* hotspot.png in Resources */ = {isa = PBXBuildFile; fileRef = CD85067F27B5C414000D2CCD /* hotspot.png */; };
 		CD85068627B95046000D2CCD /* GoNode.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85068427B95046000D2CCD /* GoNode.m */; };
 		CD85068727B95046000D2CCD /* GoNode.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85068427B95046000D2CCD /* GoNode.m */; };
 		CD85068A27BB18D6000D2CCD /* GoNodeModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD85068927BB18D6000D2CCD /* GoNodeModel.m */; };
@@ -960,6 +964,10 @@
 		CD81795925DDEDDF00F39091 /* computer-suggest-move@3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "computer-suggest-move@3.png"; sourceTree = "<group>"; };
 		CD81795A25DDEDDF00F39091 /* computer-suggest-move@2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "computer-suggest-move@2.png"; sourceTree = "<group>"; };
 		CD81799C25DDF4C200F39091 /* noun_hint_3194435.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = noun_hint_3194435.svg; sourceTree = "<group>"; };
+		CD85067C27B5C414000D2CCD /* hotspot@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "hotspot@3x.png"; sourceTree = "<group>"; };
+		CD85067D27B5C414000D2CCD /* hotspot@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "hotspot@2x.png"; sourceTree = "<group>"; };
+		CD85067E27B5C414000D2CCD /* noun-flame-4575899.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "noun-flame-4575899.svg"; sourceTree = "<group>"; };
+		CD85067F27B5C414000D2CCD /* hotspot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = hotspot.png; sourceTree = "<group>"; };
 		CD85068427B95046000D2CCD /* GoNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNode.m; sourceTree = "<group>"; };
 		CD85068527B95046000D2CCD /* GoNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNode.h; sourceTree = "<group>"; };
 		CD85068827BB18D6000D2CCD /* GoNodeModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeModel.h; sourceTree = "<group>"; };
@@ -1947,6 +1955,17 @@
 			path = "computer-suggest-move";
 			sourceTree = "<group>";
 		};
+		CD85067B27B5C414000D2CCD /* hotspot */ = {
+			isa = PBXGroup;
+			children = (
+				CD85067F27B5C414000D2CCD /* hotspot.png */,
+				CD85067D27B5C414000D2CCD /* hotspot@2x.png */,
+				CD85067C27B5C414000D2CCD /* hotspot@3x.png */,
+				CD85067E27B5C414000D2CCD /* noun-flame-4575899.svg */,
+			);
+			path = hotspot;
+			sourceTree = "<group>";
+		};
 		CD968ADB1B026DD200984AEE /* stones */ = {
 			isa = PBXGroup;
 			children = (
@@ -2424,6 +2443,7 @@
 				CD968B0E1B026E2300984AEE /* game-types */,
 				CD968B1A1B026E2300984AEE /* gogrid2x2 */,
 				CD968B1F1B026E2300984AEE /* help */,
+				CD85067B27B5C414000D2CCD /* hotspot */,
 				CD968B231B026E2300984AEE /* interrupt */,
 				CD968B281B026E2300984AEE /* licenses */,
 				CD968B2D1B026E2300984AEE /* main-menu */,
@@ -2853,6 +2873,7 @@
 				CD968BA51B026E2300984AEE /* back@3x.png in Resources */,
 				CD968BBB1B026E2300984AEE /* scoring@2x.png in Resources */,
 				CD3AE6EA1343F14200B58E08 /* LICENSE.html in Resources */,
+				CD85068127B5C414000D2CCD /* hotspot@2x.png in Resources */,
 				CD968BB81B026E2300984AEE /* noun_8926_cc-modified.svg in Resources */,
 				CD968B721B026E2300984AEE /* credits@2x.png in Resources */,
 				CD00A34E1487F9CF004E1A0C /* MANUAL in Resources */,
@@ -2864,6 +2885,7 @@
 				CDE1A16314C1CED200317ECA /* BoostSoftwareLicense.html in Resources */,
 				CDE1A16414C1CED200317ECA /* COPYING.html in Resources */,
 				CD968B691B026E2300984AEE /* computer-play@2x.png in Resources */,
+				CD85068027B5C414000D2CCD /* hotspot@3x.png in Resources */,
 				CDE1A16514C1CED200317ECA /* COPYING.LESSER.html in Resources */,
 				CD968B851B026E2300984AEE /* human-vs-computer.png in Resources */,
 				CD968B911B026E2300984AEE /* help@2x.png in Resources */,
@@ -2890,6 +2912,7 @@
 				CD968B991B026E2300984AEE /* licenses@3x.png in Resources */,
 				CDA96F281D1EC97800CEE129 /* Crashlytics-opensource.txt in Resources */,
 				CD968B901B026E2300984AEE /* help.png in Resources */,
+				CD85068327B5C414000D2CCD /* hotspot.png in Resources */,
 				CDC66BB821E3D383006C73B3 /* Firebase-oss.html in Resources */,
 				CDA96F261D1E2A2F00CEE129 /* Crashlytics-opensource.txt.html in Resources */,
 				CD968B8F1B026E2300984AEE /* gogrid2x2@3x.png in Resources */,
@@ -2899,6 +2922,7 @@
 				CDE1A16714C1CED200317ECA /* SourceCode.html in Resources */,
 				CD968B891B026E2300984AEE /* human-vs-human@2x.png in Resources */,
 				CD968AE31B026DD200984AEE /* stones.svg in Resources */,
+				CD85068227B5C414000D2CCD /* noun-flame-4575899.svg in Resources */,
 				CD968BB21B026E2300984AEE /* pass@2x.png in Resources */,
 				CD968B711B026E2300984AEE /* credits.png in Resources */,
 				CDA10F17198CCBA70060E934 /* images.xcassets in Resources */,
