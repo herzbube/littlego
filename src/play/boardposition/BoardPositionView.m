@@ -20,20 +20,25 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
+#import "../../go/GoNodeAnnotation.h"
 #import "../../go/GoNodeModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIColorAdditions.h"
+#import "../../utility/UIImageAdditions.h"
 
 
 // This variable must be accessed via [BoardPositionView boardPositionViewSize]
 static CGSize boardPositionViewSize = { 0.0f, 0.0f };
 static UIImage* blackStoneImage = nil;
 static UIImage* whiteStoneImage = nil;
+static UIImage* infoIconImage = nil;
+static UIImage* hotspotIconImage = nil;
 
 
 // -----------------------------------------------------------------------------
@@ -45,6 +50,8 @@ static UIImage* whiteStoneImage = nil;
 @property(nonatomic, assign) UILabel* intersectionLabel;
 @property(nonatomic, assign) UILabel* capturedStonesLabel;
 @property(nonatomic, assign) UIImageView* stoneImageView;
+@property(nonatomic, assign) UIImageView* infoIconImageView;
+@property(nonatomic, assign) UIImageView* hotspotIconImageView;
 @end
 
 
@@ -85,14 +92,20 @@ static UIImage* whiteStoneImage = nil;
 // -----------------------------------------------------------------------------
 - (id) initOffscreenView
 {
-  // The frame for the off-screen view can be pretty much any size, the view
-  // will be resized by setupStaticViewMetrics to UILayoutFittingCompressedSize
-  // anyway. There is one restriction though: The frame must be large enough to
-  // accomodate all spacings set up by setupAutoLayoutConstraints(). If the
-  // frame is not large enough (e.g. CGRectZero) Auto Layout will print a
-  // warning to the debug console, but continue by breaking one of the
-  // constraints.
-  CGRect frame = CGRectMake(0, 0, 100, 100);
+  // Notes regarding the initial frame we choose here for the off-screen view:
+  // - The frame should be smaller than the actual minimal size that will result
+  //   from laying the view out with dummy content. The actual minimal size will
+  //   be calculated by setupStaticViewMetrics by.
+  // - In earlier iOS base SDKs it was possible to have an initial frame larger
+  //   than the actual minimal size, and it would get compressed - this no
+  //   longer seems to work with base SDK 15. E.g. a frame with width 100 will
+  //   stay at this width.
+  // - The frame must not be CGRectZero, or a very small size. If the frame is
+  //   not large enough Auto Layout will print a warning to the debug console,
+  //   but continue by breaking one of the constraints. It is likely that the
+  //   frame must be large enough to accomodate all spacings set up by
+  //   setupAutoLayoutConstraints().
+  CGRect frame = CGRectMake(0, 0, 20, 20);
   // Call designated initializer of superclass (UIView)
   self = [super initWithFrame:frame];
   if (! self)
@@ -103,6 +116,20 @@ static UIImage* whiteStoneImage = nil;
   [self configureSubviews];
   [self setupDummyContent];
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this BoardPositionView object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.boardPositionLabel = nil;
+  self.intersectionLabel = nil;
+  self.capturedStonesLabel = nil;
+  self.stoneImageView = nil;
+  self.infoIconImageView = nil;
+  self.hotspotIconImageView = nil;
+  [super dealloc];
 }
 
 #pragma mark - View setup
@@ -116,10 +143,14 @@ static UIImage* whiteStoneImage = nil;
   self.intersectionLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
   self.capturedStonesLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
   self.stoneImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
+  self.infoIconImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
+  self.hotspotIconImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
   [self addSubview:self.boardPositionLabel];
   [self addSubview:self.intersectionLabel];
   [self addSubview:self.capturedStonesLabel];
   [self addSubview:self.stoneImageView];
+  [self addSubview:self.infoIconImageView];
+  [self addSubview:self.hotspotIconImageView];
 }
 
 // -----------------------------------------------------------------------------
@@ -131,34 +162,44 @@ static UIImage* whiteStoneImage = nil;
   self.intersectionLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.capturedStonesLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.stoneImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.infoIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.hotspotIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.boardPositionLabel, @"boardPositionLabel",
                                    self.intersectionLabel, @"intersectionLabel",
                                    self.capturedStonesLabel, @"capturedStonesLabel",
                                    self.stoneImageView, @"stoneImageView",
+                                   self.infoIconImageView, @"infoIconImageView",
+                                   self.hotspotIconImageView, @"hotspotIconImageView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-2-[boardPositionLabel]",
-                            // boardPositionLabel will never overlap
-                            // stoneImageView, so we don't have to specify a
-                            // spacing between the two. This is important
-                            // because it saves us another constraint where we
-                            // would have to specify that the label can expand
-                            // while the image must hug its content.
-                            @"H:[stoneImageView]-2-|",
-                            @"H:|-2-[intersectionLabel]-2-[capturedStonesLabel]-2-|",
+                            @"H:|-5-[boardPositionLabel]-0-[stoneImageView]-5-[infoIconImageView]-5-|",
+                            @"H:|-5-[intersectionLabel]-5-[capturedStonesLabel]-5-[hotspotIconImageView]-5-|",
                             @"V:|-2-[boardPositionLabel]-0-[intersectionLabel]-2-|",
                             @"V:[capturedStonesLabel]-2-|",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
                                    inView:self];
-  // Experimentally determined that pinning the baseline looks best with how we
-  // currently calculate the stone image size (see setupStaticViewMetrics())
+
+  // Avoid images being horizontally stretched. Labels will get more space
+  // because of this.
+  [self.stoneImageView setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
+  [self.infoIconImageView setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
+  [self.hotspotIconImageView setContentHuggingPriority:UILayoutPriorityDefaultHigh forAxis:UILayoutConstraintAxisHorizontal];
+
   [AutoLayoutUtility alignFirstView:self.stoneImageView
                      withSecondView:self.boardPositionLabel
-                        onAttribute:NSLayoutAttributeBaseline
+                        onAttribute:NSLayoutAttributeCenterY
+                   constraintHolder:self];
+  [AutoLayoutUtility alignFirstView:self.infoIconImageView
+                     withSecondView:self.stoneImageView
+                        onAttribute:NSLayoutAttributeCenterY
+                   constraintHolder:self];
+  [AutoLayoutUtility alignFirstView:self.hotspotIconImageView
+                     withSecondView:self.intersectionLabel
+                        onAttribute:NSLayoutAttributeCenterY
                    constraintHolder:self];
 }
 
@@ -187,8 +228,8 @@ static UIImage* whiteStoneImage = nil;
 {
   if (-1 == self.boardPosition)
     return;
+
   GoGame* game = [GoGame sharedGame];
-  GoMove* move = nil;
   if (0 == self.boardPosition)
   {
     self.boardPositionLabel.text = [NSString stringWithFormat:@"H: %1lu", (unsigned long)game.handicapPoints.count];
@@ -196,25 +237,44 @@ static UIImage* whiteStoneImage = nil;
     self.intersectionLabel.text = [NSString stringWithFormat:@"K: %@", komiString];
     self.stoneImageView.image = nil;
     self.capturedStonesLabel.text = nil;
+    self.infoIconImageView.image = nil;
+    self.hotspotIconImageView.image = nil;
   }
   else
   {
     int nodeIndex = self.boardPosition;
     GoNode* node = [game.nodeModel nodeAtIndex:nodeIndex];
-    move = node.goMove;
-    if (! move)
+
+    if ([self showsMoveData:node])
     {
-      // TODO xxx Instead of this check this view must be changed to fully
-      // support displaying nodes that do not contain moves. Currently this
-      // view is restricted to displaying nodes that contain moves.
-      DDLogError(@"%@: Unsupported node: Can only display nodes that contain moves", self);
-      assert(0);
-      return;
+      GoMove* move = node.goMove;
+      self.boardPositionLabel.text = [NSString stringWithFormat:@"%d", move.moveNumber];
+      self.intersectionLabel.text = [self intersectionLabelTextForMove:move];
+      self.stoneImageView.image = [self stoneImageForMove:move];
+      self.capturedStonesLabel.text = [self capturedStonesLabelTextForMove:move];
     }
-    self.boardPositionLabel.text = [NSString stringWithFormat:@"%d", self.boardPosition];
-    self.intersectionLabel.text = [self intersectionLabelTextForMove:move];
-    self.stoneImageView.image = [self stoneImageForMove:move];
-    self.capturedStonesLabel.text = [self capturedStonesLabelTextForMove:move];
+    else
+    {
+      self.boardPositionLabel.text = @"No";
+      self.intersectionLabel.text = @"move";
+      self.stoneImageView.image = nil;
+      self.capturedStonesLabel.text = nil;
+    }
+
+    if ([self showsInfoIcon:node])
+      self.infoIconImageView.image = infoIconImage;
+    else
+      self.infoIconImageView.image = nil;
+
+    if ([self showsHotspotIcon:node])
+    {
+      self.hotspotIconImageView.image = hotspotIconImage;
+      self.hotspotIconImageView.tintColor = [UIColor hotspotColor:node.goNodeAnnotation.goBoardPositionHotspotDesignation];
+    }
+    else
+    {
+      self.hotspotIconImageView.image = nil;
+    }
   }
   [self setupBackgroundColor];
 }
@@ -311,6 +371,42 @@ static UIImage* whiteStoneImage = nil;
   {
     [self setupBackgroundColorForLightMode];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupRealContent().
+// -----------------------------------------------------------------------------
+- (bool) showsMoveData:(GoNode*)node
+{
+  if (self.offscreenMode)
+    return true;
+
+  if (node.goMove)
+    return true;
+  else
+    return false;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupRealContent().
+// -----------------------------------------------------------------------------
+- (bool) showsInfoIcon:(GoNode*)node
+{
+  if (self.offscreenMode)
+    return true;
+  else
+    return [GoUtilities showInfoIndicatorForNode:node];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupRealContent().
+// -----------------------------------------------------------------------------
+- (bool) showsHotspotIcon:(GoNode*)node
+{
+  if (self.offscreenMode)
+    return true;
+  else
+    return [GoUtilities showHotspotIndicatorForNode:node];
 }
 
 #pragma mark - UIView overrides
@@ -419,6 +515,12 @@ static UIImage* whiteStoneImage = nil;
                                                           color:[UIColor blackColor]] retain];
   whiteStoneImage = [[BoardPositionView stoneImageWithDimension:stoneImageDimension
                                                           color:[UIColor whiteColor]] retain];
+
+  // The icon image size is based on the stone image size
+  CGFloat iconImageDimension = stoneImageDimension;
+  CGSize iconImageSize = CGSizeMake(iconImageDimension, iconImageDimension);
+  infoIconImage = [[[UIImage imageNamed:uiAreaAboutIconResource] imageByResizingToSize:iconImageSize] retain];
+  hotspotIconImage = [[[UIImage imageNamed:hotspotIconResource] templateImageByResizingToSize:iconImageSize] retain];
 }
 
 // -----------------------------------------------------------------------------

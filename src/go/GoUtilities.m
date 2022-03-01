@@ -24,6 +24,7 @@
 #import "GoGameRules.h"
 #import "GoMove.h"
 #import "GoNode.h"
+#import "GoNodeAnnotation.h"
 #import "GoNodeModel.h"
 #import "GoPoint.h"
 #import "GoVertex.h"
@@ -726,6 +727,50 @@
     node = node.firstChild;
   }
   return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the content of @a node warrants showing an "info"
+/// indicator to the user when displaying an overview of @a node.
+// -----------------------------------------------------------------------------
++ (bool) showInfoIndicatorForNode:(GoNode*)node
+{
+  GoMove* move = node.goMove;
+  if (move && move.goMoveValuation != GoMoveValuationNone)
+    return true;
+
+  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
+  if (! nodeAnnotation)
+    return false;
+
+  // GoNodeAnnotation must contain something else besides the hotspot
+  // designation
+  if (nodeAnnotation.shortDescription != nil ||
+      nodeAnnotation.longDescription != nil ||
+      nodeAnnotation.goBoardPositionValuation != GoBoardPositionValuationNone ||
+      nodeAnnotation.estimatedScoreSummary != GoScoreSummaryNone)
+  {
+    return true;
+  }
+  else
+  {
+    return false;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the content of @a node warrants showing a "hotspot"
+/// indicator to the user when displaying an overview of @a node.
+// -----------------------------------------------------------------------------
++ (bool) showHotspotIndicatorForNode:(GoNode*)node
+{
+  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
+  if (! nodeAnnotation)
+    return false;
+  else if (nodeAnnotation.goBoardPositionHotspotDesignation == GoBoardPositionHotspotDesignationNone)
+    return false;
+  else
+    return true;
 }
 
 @end

@@ -24,6 +24,7 @@
 #import "../../go/GoNodeModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
@@ -447,28 +448,8 @@ static UIFont* smallFont = nil;
 {
   if (self.offscreenMode)
     return true;
-
-  GoMove* move = node.goMove;
-  if (move && move.goMoveValuation != GoMoveValuationNone)
-    return true;
-
-  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
-  if (! nodeAnnotation)
-    return false;
-
-  // GoNodeAnnotation must contain something else besides the hotspot
-  // designation
-  if (nodeAnnotation.shortDescription != nil ||
-      nodeAnnotation.longDescription != nil ||
-      nodeAnnotation.goBoardPositionValuation != GoBoardPositionValuationNone ||
-      nodeAnnotation.estimatedScoreSummary != GoScoreSummaryNone)
-  {
-    return true;
-  }
   else
-  {
-    return false;
-  }
+    return [GoUtilities showInfoIndicatorForNode:node];
 }
 
 // -----------------------------------------------------------------------------
@@ -478,14 +459,8 @@ static UIFont* smallFont = nil;
 {
   if (self.offscreenMode)
     return true;
-
-  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
-  if (! nodeAnnotation)
-    return false;
-  else if (nodeAnnotation.goBoardPositionHotspotDesignation == GoBoardPositionHotspotDesignationNone)
-    return false;
   else
-    return true;
+    return [GoUtilities showHotspotIndicatorForNode:node];
 }
 
 #pragma mark - UIView overrides
@@ -493,7 +468,7 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 /// @brief UIView method.
 // -----------------------------------------------------------------------------
-- (void) traitCollectionDidChange:(UITraitCollection *)previousTraitCollection
+- (void) traitCollectionDidChange:(UITraitCollection*)previousTraitCollection
 {
   [super traitCollectionDidChange:previousTraitCollection];
 
