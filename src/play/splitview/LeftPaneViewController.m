@@ -18,7 +18,6 @@
 // Project includes
 #import "LeftPaneViewController.h"
 #import "../boardposition/BoardPositionCollectionViewController.h"
-#import "../boardposition/BoardPositionTableListViewController.h"
 #import "../boardposition/BoardPositionToolbarController.h"
 #import "../controller/StatusViewController.h"
 #import "../../shared/LayoutManager.h"
@@ -33,7 +32,6 @@
 @property(nonatomic, assign) bool useBoardPositionToolbar;
 @property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
-@property(nonatomic, retain) BoardPositionTableListViewController* boardPositionTableListViewController;
 @property(nonatomic, retain) StatusViewController* statusViewController;
 @end
 
@@ -64,8 +62,6 @@
 - (void) dealloc
 {
   self.boardPositionToolbarController = nil;
-  self.boardPositionTableListViewController = nil;
-
   self.boardPositionCollectionViewController = nil;
   self.statusViewController = nil;
   
@@ -93,7 +89,7 @@
   if (self.useBoardPositionToolbar)
   {
     self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
-    self.boardPositionTableListViewController = [[[BoardPositionTableListViewController alloc] init] autorelease];
+    self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
   }
   else
   {
@@ -124,31 +120,6 @@
     [boardPositionToolbarController didMoveToParentViewController:self];
     [boardPositionToolbarController retain];
     _boardPositionToolbarController = boardPositionToolbarController;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
-// -----------------------------------------------------------------------------
-- (void) setBoardPositionTableListViewController:(BoardPositionTableListViewController*)boardPositionTableListViewController
-{
-  if (_boardPositionTableListViewController == boardPositionTableListViewController)
-    return;
-  if (_boardPositionTableListViewController)
-  {
-    [_boardPositionTableListViewController willMoveToParentViewController:nil];
-    // Automatically calls didMoveToParentViewController:
-    [_boardPositionTableListViewController removeFromParentViewController];
-    [_boardPositionTableListViewController release];
-    _boardPositionTableListViewController = nil;
-  }
-  if (boardPositionTableListViewController)
-  {
-    // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:boardPositionTableListViewController];
-    [boardPositionTableListViewController didMoveToParentViewController:self];
-    [boardPositionTableListViewController retain];
-    _boardPositionTableListViewController = boardPositionTableListViewController;
   }
 }
 
@@ -217,16 +188,16 @@
   if (self.useBoardPositionToolbar)
   {
     [self.view addSubview:self.boardPositionToolbarController.view];
-    [self.view addSubview:self.boardPositionTableListViewController.view];
+    [self.view addSubview:self.boardPositionCollectionViewController.view];
     self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    self.boardPositionTableListViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+    self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     viewsDictionary[@"boardPositionToolbar"] = self.boardPositionToolbarController.view;
-    viewsDictionary[@"boardPositionTableListView"] = self.boardPositionTableListViewController.view;
+    viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
     [visualFormats addObject:@"H:|-0-[boardPositionToolbar]-0-|"];
-    [visualFormats addObject:@"H:|-0-[boardPositionTableListView]-0-|"];
+    [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
     // Don't need to specify a height value for boardPositionToolbar because
     // UIToolbar specifies a height value in its intrinsic content size
-    [visualFormats addObject:@"V:|-0-[boardPositionToolbar]-0-[boardPositionTableListView]-0-|"];
+    [visualFormats addObject:@"V:|-0-[boardPositionToolbar]-0-[boardPositionCollectionView]-0-|"];
   }
   else
   {

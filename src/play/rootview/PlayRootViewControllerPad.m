@@ -18,6 +18,7 @@
 // Project includes
 #import "PlayRootViewControllerPad.h"
 #import "../boardposition/BoardPositionButtonBoxDataSource.h"
+#import "../boardposition/BoardPositionCollectionViewCell.h"
 #import "../boardposition/BoardPositionCollectionViewController.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/AutoLayoutConstraintHelper.h"
@@ -150,6 +151,10 @@
     self.leftPaneViewController = [[[LeftPaneViewController alloc] init] autorelease];
     self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
     self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
+    // Apply an experimentally determined factor - the navigation buttons at
+    // the top of the left pane are squashed together too tightly if we use the
+    // minimal cell width.
+    self.splitViewControllerChild.leftPaneWidth = ceilf(1.5 * [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero].width);
 
     // Cast is safe because we know that the NavigationBarController object
     // is a subclass of NavigationBarController that adopts the
