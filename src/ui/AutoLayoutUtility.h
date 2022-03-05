@@ -31,6 +31,8 @@
 + (NSArray*) fillSuperview:(UIView*)superview
                withSubview:(UIView*)subview
                    margins:(UIEdgeInsets)margins;
++ (NSArray*) fillAreaBetweenLayoutGuidesOfSuperview:(UIView*)superview
+                                        withSubview:(UIView*)subview;
 + (NSArray*) fillAreaBetweenGuidesOfViewController:(UIViewController*)viewController
                                        withSubview:(UIView*)subview;
 + (NSArray*) centerSubview:(UIView*)subview
@@ -47,6 +49,9 @@
                            onAttribute:(NSLayoutAttribute)attribute
                           withConstant:(CGFloat)constant
                       constraintHolder:(UIView*)constraintHolder;
++ (NSLayoutConstraint*) alignFirstView:(UIView*)firstView
+                        withSecondView:(UIView*)secondView
+           onSafeAreaLayoutGuideAnchor:(NSLayoutAttribute)attribute;
 + (NSLayoutConstraint*) makeSquare:(UIView*)view
               widthDependsOnHeight:(bool)widthDependsOnHeight
                   constraintHolder:(UIView*)constraintHolder;
