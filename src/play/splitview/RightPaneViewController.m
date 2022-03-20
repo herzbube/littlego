@@ -20,11 +20,8 @@
 #import "../boardposition/BoardPositionButtonBoxDataSource.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/AutoLayoutConstraintHelper.h"
-#import "../controller/NavigationBarController.h"
-#import "../controller/StatusViewController.h"
 #import "../gameaction/GameActionButtonBoxDataSource.h"
 #import "../gameaction/GameActionManager.h"
-#import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/ButtonBoxController.h"
 #import "../../ui/UiElementMetrics.h"
@@ -35,7 +32,6 @@
 /// @brief Class extension with private properties for RightPaneViewController.
 // -----------------------------------------------------------------------------
 @interface RightPaneViewController()
-@property(nonatomic, assign) bool useNavigationBar;
 @property(nonatomic, retain) UIView* woodenBackgroundView;
 @property(nonatomic, retain) UIView* leftColumnView;
 @property(nonatomic, retain) UIView* middleColumnView;
@@ -65,7 +61,6 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-  [self setupUseNavigationBar];
   [self setupChildControllers];
   self.woodenBackgroundView = nil;
   self.leftColumnView = nil;
@@ -81,8 +76,6 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.navigationBarController = nil;
-
   self.leftColumnView = nil;
   self.middleColumnView = nil;
   self.rightColumnView = nil;
@@ -99,17 +92,6 @@
   [super dealloc];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Private helper for initializer.
-// -----------------------------------------------------------------------------
-- (void) setupUseNavigationBar
-{
-  if ([LayoutManager sharedManager].uiType == UITypePhone)
-    self.useNavigationBar = false;
-  else
-    self.useNavigationBar = true;
-}
-
 #pragma mark - Container view controller handling
 
 // -----------------------------------------------------------------------------
@@ -117,51 +99,17 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  if (self.useNavigationBar)
-  {
-    self.navigationBarController = [NavigationBarController navigationBarController];
-  }
-  else
-  {
-    self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
-    self.gameActionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
-  }
+  self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
+  self.gameActionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
+
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
 
-  if (! self.useNavigationBar)
-  {
-    self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
-    self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;
-    self.gameActionButtonBoxDataSource = [[[GameActionButtonBoxDataSource alloc] init] autorelease];
-    self.gameActionButtonBoxDataSource.buttonBoxController = self.gameActionButtonBoxController;
-    self.gameActionButtonBoxController.buttonBoxControllerDataSource = self.gameActionButtonBoxDataSource;
-    self.gameActionButtonBoxController.buttonBoxControllerDelegate = self;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
-// -----------------------------------------------------------------------------
-- (void) setNavigationBarController:(NavigationBarController*)navigationBarController
-{
-  if (_navigationBarController == navigationBarController)
-    return;
-  if (_navigationBarController)
-  {
-    [_navigationBarController willMoveToParentViewController:nil];
-    // Automatically calls didMoveToParentViewController:
-    [_navigationBarController removeFromParentViewController];
-    [_navigationBarController release];
-    _navigationBarController = nil;
-  }
-  if (navigationBarController)
-  {
-    // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:navigationBarController];
-    [navigationBarController didMoveToParentViewController:self];
-    [navigationBarController retain];
-    _navigationBarController = navigationBarController;
-  }
+  self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
+  self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;
+  self.gameActionButtonBoxDataSource = [[[GameActionButtonBoxDataSource alloc] init] autorelease];
+  self.gameActionButtonBoxDataSource.buttonBoxController = self.gameActionButtonBoxController;
+  self.gameActionButtonBoxController.buttonBoxControllerDataSource = self.gameActionButtonBoxDataSource;
+  self.gameActionButtonBoxController.buttonBoxControllerDelegate = self;
 }
 
 // -----------------------------------------------------------------------------
@@ -277,25 +225,18 @@
 {
   self.woodenBackgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   [self.view addSubview:self.woodenBackgroundView];
-  if (self.useNavigationBar)
-  {
-    [self.woodenBackgroundView addSubview:self.boardViewController.view];
-    [self.view addSubview:self.navigationBarController.view];
-  }
-  else
-  {
-    self.leftColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-    [self.woodenBackgroundView addSubview:self.leftColumnView];
-    [self.leftColumnView addSubview:self.boardPositionButtonBoxController.view];
 
-    self.middleColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-    [self.woodenBackgroundView addSubview:self.middleColumnView];
-    [self.middleColumnView addSubview:self.boardViewController.view];
+  self.leftColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.woodenBackgroundView addSubview:self.leftColumnView];
+  [self.leftColumnView addSubview:self.boardPositionButtonBoxController.view];
 
-    self.rightColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-    [self.woodenBackgroundView addSubview:self.rightColumnView];
-    [self.rightColumnView addSubview:self.gameActionButtonBoxController.view];
-  }
+  self.middleColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.woodenBackgroundView addSubview:self.middleColumnView];
+  [self.middleColumnView addSubview:self.boardViewController.view];
+
+  self.rightColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.woodenBackgroundView addSubview:self.rightColumnView];
+  [self.rightColumnView addSubview:self.gameActionButtonBoxController.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -309,99 +250,84 @@
                                   forInterfaceOrientation:[UiElementMetrics interfaceOrientation]
                                          constraintHolder:self.boardViewController.view.superview];
 
+  int horizontalSpacingButtonBox = [AutoLayoutUtility horizontalSpacingSiblings];
+  int verticalSpacingButtonBox = [AutoLayoutUtility verticalSpacingSiblings];
+
+  self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.woodenBackgroundView];
+
+  self.leftColumnView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.middleColumnView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.rightColumnView.translatesAutoresizingMaskIntoConstraints = NO;
+
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
-  if (self.useNavigationBar)
+  // Here we define the width of the middle column. The width of the left and
+  // right columns are defined by the width of the button boxes they contain.
+  // This is set up further down.
+  [viewsDictionary setObject:self.leftColumnView forKey:@"leftColumnView"];
+  [viewsDictionary setObject:self.middleColumnView forKey:@"middleColumnView"];
+  [viewsDictionary setObject:self.rightColumnView forKey:@"rightColumnView"];
+  [visualFormats addObject:@"H:[leftColumnView]-0-[middleColumnView]-0-[rightColumnView]"];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.woodenBackgroundView];
+
+  // Here we anchor the column views' edges. This defines the height of all
+  // of the columns, and the left/right position of the left/right column
+  // view.
+  UIView* anchorView = self.woodenBackgroundView;
+  NSLayoutXAxisAnchor* leftAnchor;
+  NSLayoutXAxisAnchor* rightAnchor;
+  NSLayoutYAxisAnchor* topAnchor;
+  NSLayoutYAxisAnchor* bottomAnchor;
+  if (@available(iOS 11.0, *))
   {
-    self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    [viewsDictionary setObject:self.navigationBarController.view forKey:@"navigationBarView"];
-    [viewsDictionary setObject:self.woodenBackgroundView forKey:@"woodenBackgroundView"];
-    [visualFormats addObject:@"H:|-0-[navigationBarView]-0-|"];
-    [visualFormats addObject:@"H:|-0-[woodenBackgroundView]-0-|"];
-    // Don't need to specify height value for navigationBarView because
-    // UINavigationBar specifies a height value in its intrinsic content size
-    [visualFormats addObject:@"V:|-0-[navigationBarView]-0-[woodenBackgroundView]-0-|"];
-    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+    UILayoutGuide* layoutGuide = anchorView.safeAreaLayoutGuide;
+    leftAnchor = layoutGuide.leftAnchor;
+    rightAnchor = layoutGuide.rightAnchor;
+    topAnchor = layoutGuide.topAnchor;
+    bottomAnchor = layoutGuide.bottomAnchor;
   }
   else
   {
-    int horizontalSpacingButtonBox = [AutoLayoutUtility horizontalSpacingSiblings];
-    int verticalSpacingButtonBox = [AutoLayoutUtility verticalSpacingSiblings];
-
-    self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-    [AutoLayoutUtility fillSuperview:self.view withSubview:self.woodenBackgroundView];
-
-    self.leftColumnView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.middleColumnView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.rightColumnView.translatesAutoresizingMaskIntoConstraints = NO;
-    // Here we define the width of the middle column. The width of the left and
-    // right columns are defined by the width of the button boxes they contain.
-    // This is set up further down.
-    [viewsDictionary setObject:self.leftColumnView forKey:@"leftColumnView"];
-    [viewsDictionary setObject:self.middleColumnView forKey:@"middleColumnView"];
-    [viewsDictionary setObject:self.rightColumnView forKey:@"rightColumnView"];
-    [visualFormats addObject:@"H:[leftColumnView]-0-[middleColumnView]-0-[rightColumnView]"];
-    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.woodenBackgroundView];
-
-    // Here we anchor the column views' edges. This defines the height of all
-    // of the columns, and the left/right position of the left/right column
-    // view.
-    UIView* anchorView = self.woodenBackgroundView;
-    NSLayoutXAxisAnchor* leftAnchor;
-    NSLayoutXAxisAnchor* rightAnchor;
-    NSLayoutYAxisAnchor* topAnchor;
-    NSLayoutYAxisAnchor* bottomAnchor;
-    if (@available(iOS 11.0, *))
-    {
-      UILayoutGuide* layoutGuide = anchorView.safeAreaLayoutGuide;
-      leftAnchor = layoutGuide.leftAnchor;
-      rightAnchor = layoutGuide.rightAnchor;
-      topAnchor = layoutGuide.topAnchor;
-      bottomAnchor = layoutGuide.bottomAnchor;
-    }
-    else
-    {
-      leftAnchor = anchorView.leftAnchor;
-      rightAnchor = anchorView.rightAnchor;
-      topAnchor = anchorView.topAnchor;
-      bottomAnchor = anchorView.bottomAnchor;
-    }
-    [self.leftColumnView.leftAnchor constraintEqualToAnchor:leftAnchor].active = YES;
-    [self.leftColumnView.topAnchor constraintEqualToAnchor:topAnchor].active = YES;
-    [self.leftColumnView.bottomAnchor constraintEqualToAnchor:bottomAnchor].active = YES;
-    [self.middleColumnView.topAnchor constraintEqualToAnchor:topAnchor].active = YES;
-    [self.middleColumnView.bottomAnchor constraintEqualToAnchor:bottomAnchor].active = YES;
-    [self.rightColumnView.topAnchor constraintEqualToAnchor:topAnchor].active = YES;
-    [self.rightColumnView.bottomAnchor constraintEqualToAnchor:bottomAnchor].active = YES;
-    [self.rightColumnView.rightAnchor constraintEqualToAnchor:rightAnchor].active = YES;
-
-    // Here we define the width and positioning of the button box in the left
-    // column view, as well as the width of the left column view itself.
-    [viewsDictionary removeAllObjects];
-    [visualFormats removeAllObjects];
-    self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [viewsDictionary setObject:self.boardPositionButtonBoxController.view forKey:@"boardPositionButtonBox"];
-    [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[boardPositionButtonBox]-%d-|", horizontalSpacingButtonBox, horizontalSpacingButtonBox]];
-    [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox]-%d-|", verticalSpacingButtonBox]];
-    [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox(==%f)]", self.boardPositionButtonBoxController.buttonBoxSize.width]];
-    [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]", self.boardPositionButtonBoxController.buttonBoxSize.height]];
-    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.leftColumnView];
-
-    // Here we define the width and positioning of the button box in the right
-    // column view, as well as the width of the right column view itself.
-    [viewsDictionary removeAllObjects];
-    [visualFormats removeAllObjects];
-    self.gameActionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [viewsDictionary setObject:self.gameActionButtonBoxController.view forKey:@"gameActionButtonBox"];
-    [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[gameActionButtonBox]-%d-|", horizontalSpacingButtonBox, horizontalSpacingButtonBox]];
-    [visualFormats addObject:[NSString stringWithFormat:@"V:[gameActionButtonBox]-%d-|", verticalSpacingButtonBox]];
-    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.rightColumnView];
-
-    // Size (specifically height) of gameActionButtonBox is variable,
-    // constraints are managed dynamically
-    [self updateGameActionButtonBoxAutoLayoutConstraints];
+    leftAnchor = anchorView.leftAnchor;
+    rightAnchor = anchorView.rightAnchor;
+    topAnchor = anchorView.topAnchor;
+    bottomAnchor = anchorView.bottomAnchor;
   }
+  [self.leftColumnView.leftAnchor constraintEqualToAnchor:leftAnchor].active = YES;
+  [self.leftColumnView.topAnchor constraintEqualToAnchor:topAnchor].active = YES;
+  [self.leftColumnView.bottomAnchor constraintEqualToAnchor:bottomAnchor].active = YES;
+  [self.middleColumnView.topAnchor constraintEqualToAnchor:topAnchor].active = YES;
+  [self.middleColumnView.bottomAnchor constraintEqualToAnchor:bottomAnchor].active = YES;
+  [self.rightColumnView.topAnchor constraintEqualToAnchor:topAnchor].active = YES;
+  [self.rightColumnView.bottomAnchor constraintEqualToAnchor:bottomAnchor].active = YES;
+  [self.rightColumnView.rightAnchor constraintEqualToAnchor:rightAnchor].active = YES;
+
+  // Here we define the width and positioning of the button box in the left
+  // column view, as well as the width of the left column view itself.
+  [viewsDictionary removeAllObjects];
+  [visualFormats removeAllObjects];
+  self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [viewsDictionary setObject:self.boardPositionButtonBoxController.view forKey:@"boardPositionButtonBox"];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[boardPositionButtonBox]-%d-|", horizontalSpacingButtonBox, horizontalSpacingButtonBox]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox]-%d-|", verticalSpacingButtonBox]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox(==%f)]", self.boardPositionButtonBoxController.buttonBoxSize.width]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]", self.boardPositionButtonBoxController.buttonBoxSize.height]];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.leftColumnView];
+
+  // Here we define the width and positioning of the button box in the right
+  // column view, as well as the width of the right column view itself.
+  [viewsDictionary removeAllObjects];
+  [visualFormats removeAllObjects];
+  self.gameActionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [viewsDictionary setObject:self.gameActionButtonBoxController.view forKey:@"gameActionButtonBox"];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[gameActionButtonBox]-%d-|", horizontalSpacingButtonBox, horizontalSpacingButtonBox]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[gameActionButtonBox]-%d-|", verticalSpacingButtonBox]];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.rightColumnView];
+
+  // Size (specifically height) of gameActionButtonBox is variable,
+  // constraints are managed dynamically
+  [self updateGameActionButtonBoxAutoLayoutConstraints];
 }
 
 // -----------------------------------------------------------------------------

@@ -16,7 +16,8 @@
 
 
 // Project includes
-#include "PlayRootViewController.h"
+#import "PlayRootViewController.h"
+#import "GameActionManager.h"
 
 
 // -----------------------------------------------------------------------------
@@ -26,7 +27,7 @@
 /// The PlayRootViewController class method playRootViewController() should be
 /// used to create a PlayRootViewControllerPad instance.
 // -----------------------------------------------------------------------------
-@interface PlayRootViewControllerPad : PlayRootViewController
+@interface PlayRootViewControllerPad : PlayRootViewController <GameActionManagerUIDelegate>
 {
 }
 

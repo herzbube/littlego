@@ -40,9 +40,6 @@
     case UITypePhonePortraitOnly:
       navigationBarController = [[[NavigationBarControllerPhonePortraitOnly alloc] init] autorelease];
       break;
-    case UITypePad:
-      navigationBarController = [[[NavigationBarControllerPhonePortraitOnly alloc] init] autorelease];
-      break;
     default:
       [ExceptionUtility throwInvalidUIType:[LayoutManager sharedManager].uiType];
       navigationBarController = nil;  // make compiler happy

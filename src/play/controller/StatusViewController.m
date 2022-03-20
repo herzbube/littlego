@@ -222,7 +222,7 @@
   self.statusLabel.lineBreakMode = NSLineBreakByWordWrapping;
   self.statusLabel.textAlignment = NSTextAlignmentCenter;
 
-  if ([LayoutManager sharedManager].uiType == UITypePhone)
+  if ([LayoutManager sharedManager].uiType != UITypePhonePortraitOnly)
   {
     UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
     bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);

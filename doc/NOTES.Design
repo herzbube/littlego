@@ -99,6 +99,48 @@ View controller hierarchy for UITypePhone:
                             +-- UICollectionView (game action cells)
 
 
+View controller hierarchy for UITypePad:
+
+    MainTabBarController : UITabBarController
+    +-- PlayRootViewNavigationController : UINavigationController
+        +-- PlayRootViewControllerPad : PlayRootViewController
+            +-- Portrait orientation
+            |   +-- StatusViewController (titleView of navigation bar of PlayRootViewNavigationController)
+            |   |   +-- UILabel
+            |   |   +-- UIActivityIndicatorView
+            |   +-- BoardViewController
+            |   |   +-- PanGestureController
+            |   |   +-- TapGestureController
+            |   |   +-- DoubleTapGestureController
+            |   |   +-- TwoFingerTapGestureController
+            |   |   +-- BoardAnimationController
+            |   |   +-- BoardView
+            |   +-- ButtonBoxController : UICollectionViewController
+            |   |   +-- UICollectionView (board position navigation cells)
+            |   +-- BoardPositionCollectionViewController : UICollectionViewController
+            |   |   +-- UICollectionView (BoardPositionCollectionViewCell cells)
+            +-- Landscape orientation
+                +-- SplitViewController
+                    +-- LeftPaneViewController
+                    |   +-- StatusViewController
+                    |   |   +-- UILabel
+                    |   |   +-- UIActivityIndicatorView
+                    |   +-- BoardPositionCollectionViewController : UICollectionViewController
+                    |   |   +-- UICollectionView (BoardPositionCollectionViewCell cells)
+                    +-- RightPaneViewController
+                        +-- ButtonBoxController : UICollectionViewController
+                        |   +-- UICollectionView (board position navigation cells)
+                        +-- BoardViewController
+                        |    +-- PanGestureController
+                        |    +-- TapGestureController
+                        |    +-- DoubleTapGestureController
+                        |    +-- TwoFingerTapGestureController
+                        |    +-- BoardAnimationController
+                        |    +-- BoardView
+                        +-- ButtonBoxController : UICollectionViewController
+                            +-- UICollectionView (game action cells)
+
+
 iOS 7 and Auto Layout
 ---------------------
 In iOS 7 Apple added the concept of translucent / transparent bars (tab bars,

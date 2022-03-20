@@ -18,9 +18,6 @@
 // Project includes
 #import "../../ui/ButtonBoxController.h"
 
-// Forward declarations
-@class NavigationBarController;
-
 
 // -----------------------------------------------------------------------------
 /// @brief The RightPaneViewController class manages a simple container view
@@ -33,7 +30,5 @@
 @interface RightPaneViewController : UIViewController <ButtonBoxControllerDataDelegate>
 {
 }
-
-@property(nonatomic, retain) NavigationBarController* navigationBarController;
 
 @end
