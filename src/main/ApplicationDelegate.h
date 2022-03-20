@@ -33,7 +33,7 @@
 @class CrashReportingModel;
 @class LoggingModel;
 @class UiSettingsModel;
-@class WindowRootViewController;
+@protocol MagnifyingGlassOwner;
 @class MagnifyingViewModel;
 @class BoardSetupModel;
 @class SgfSettingsModel;
@@ -77,7 +77,7 @@
 /// @brief The main application window.
 @property(nonatomic, retain) UIWindow* window;
 /// @brief The main application window's root view controller.
-@property(nonatomic, retain) WindowRootViewController* windowRootViewController;
+@property(nonatomic, retain) UIViewController<MagnifyingGlassOwner>* windowRootViewController;
 /// @brief Set this to true to create a fake UI that can be used to take
 /// screenshots that serve as the basis for launch images.
 @property(nonatomic, assign) bool launchImageModeEnabled;

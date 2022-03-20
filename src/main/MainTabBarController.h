@@ -15,18 +15,24 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "MagnifyingGlassOwner.h"
+
+
 // -----------------------------------------------------------------------------
-/// @brief The MainTabBarController class is one of several alternative main
-/// application view controllers. Its responsibility is to let the user navigate
-/// to the different main areas of the application.
+/// @brief The MainTabBarController class is the application window's root view
+/// controller. Its responsibility is to let the user navigate to the different
+/// main areas of the application.
 ///
 /// MainTabBarController uses a tab bar to provide the user with navigation
 /// capabilities. MainTabBarController displays whichever tab was active when
 /// the application was active the last time.
 ///
-/// @see WindowRootViewController
+/// MainTabBarController is also responsible for defining which interface
+/// orientations are supported on the device, and for handling changes to the
+/// interface orientation.
 // -----------------------------------------------------------------------------
-@interface MainTabBarController : UITabBarController <UITabBarControllerDelegate, UINavigationControllerDelegate>
+@interface MainTabBarController : UITabBarController <UITabBarControllerDelegate, UINavigationControllerDelegate, MagnifyingGlassOwner>
 {
 }
 

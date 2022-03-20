@@ -50,8 +50,6 @@
     default:
       [ExceptionUtility throwInvalidUIType:[LayoutManager sharedManager].uiType];
   }
-  playRootViewController.edgesForExtendedLayout = UIRectEdgeNone;
-  playRootViewController.automaticallyAdjustsScrollViewInsets = NO;
   return playRootViewController;
 }
 

@@ -22,11 +22,33 @@
 #import "UIAreaInfo.h"
 #import "../play/rootview/PlayRootViewNavigationController.h"
 #import "../shared/LayoutManager.h"
+#import "../ui/MagnifyingViewController.h"
 #import "../ui/UiSettingsModel.h"
 #import "../utility/UIColorAdditions.h"
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for MainTabBarController.
+// -----------------------------------------------------------------------------
+@interface MainTabBarController()
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, assign, readwrite) bool magnifyingGlassEnabled;
+@property(nonatomic, retain, readwrite) MagnifyingViewController* magnifyingViewController;
+//@}
+@end
+
+
 @implementation MainTabBarController
+
+#pragma mark - Property synthesizing
+
+// Auto-synthesizing does not work for properties declared in a protocol, so we
+// have to explicitly synthesize the properties declared in the
+// MagnifyingGlassOwner protocol.
+@synthesize magnifyingGlassEnabled = _magnifyingGlassEnabled;
+@synthesize magnifyingViewController = _magnifyingViewController;
+
 
 #pragma mark - Initialization and deallocation
 
@@ -46,7 +68,19 @@
   self.moreNavigationController.uiArea = UIAreaNavigation;
   [self setupTabControllers];
   [self restoreTabBarControllerAppearanceToUserDefaults];
+  self.magnifyingGlassEnabled = false;
+  self.magnifyingViewController = nil;
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this MainTabBarController object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.magnifyingGlassEnabled = false;
+  self.magnifyingViewController = nil;
+  [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
@@ -86,7 +120,7 @@
   UIViewController* rootViewController = [self rootViewControllerForUIArea:uiArea];
   NSString* iconResourceName = [self iconResourceNameForUIArea:uiArea];
 
-  UINavigationController* tabRootViewController;
+  UIViewController* tabRootViewController;
   if (UIAreaPlay == uiArea)
     tabRootViewController = [[[PlayRootViewNavigationController alloc] initWithRootViewController:rootViewController] autorelease];
   else
@@ -156,6 +190,22 @@
     // and not as intensely blue as the default.
     self.tabBar.tintColor = [UIColor bleuDeFranceColor];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method
+// -----------------------------------------------------------------------------
+- (BOOL) shouldAutorotate
+{
+  return [LayoutManager sharedManager].shouldAutorotate;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method
+// -----------------------------------------------------------------------------
+- (UIInterfaceOrientationMask) supportedInterfaceOrientations
+{
+  return [LayoutManager sharedManager].supportedInterfaceOrientations;
 }
 
 #pragma mark - UITabBarControllerDelegate overrides
@@ -319,6 +369,34 @@
     // programmatically
     [MainUtility mainApplicationViewController:self didDisplayUIArea:uiArea];
   }
+}
+
+#pragma mark - MagnifyingGlassOwner overrides
+
+// -----------------------------------------------------------------------------
+/// @brief MagnifyingGlassOwner method.
+// -----------------------------------------------------------------------------
+- (void) enableMagnifyingGlass:(id<MagnifyingViewControllerDelegate>)magnifyingViewControllerDelegate
+{
+  if (self.magnifyingGlassEnabled)
+    return;
+  self.magnifyingGlassEnabled = true;
+  self.magnifyingViewController = [[[MagnifyingViewController alloc] init] autorelease];
+  self.magnifyingViewController.magnifyingViewControllerDelegate = magnifyingViewControllerDelegate;
+  // MagnifyingViewController manages the frame
+  [self.view addSubview:self.magnifyingViewController.view];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief MagnifyingGlassOwner method.
+// -----------------------------------------------------------------------------
+- (void) disableMagnifyingGlass
+{
+  if (! self.magnifyingGlassEnabled)
+    return;
+  self.magnifyingGlassEnabled = false;
+  [self.magnifyingViewController.view removeFromSuperview];
+  self.magnifyingViewController = nil;
 }
 
 @end

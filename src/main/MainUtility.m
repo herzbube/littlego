@@ -24,7 +24,6 @@
 #import "MainTabBarController.h"
 #import "SectionedDocumentViewController.h"
 #import "UIAreaInfo.h"
-#import "WindowRootViewController.h"
 #import "../archive/ArchiveViewController.h"
 #import "../diagnostics/DiagnosticsViewController.h"
 #import "../play/rootview/PlayRootViewController.h"
@@ -156,16 +155,15 @@
 // -----------------------------------------------------------------------------
 + (UIView*) rootViewForUIAreaPlay
 {
-  WindowRootViewController* windowRootViewController = [ApplicationDelegate sharedDelegate].windowRootViewController;
-  UIViewController* mainApplicationViewController = windowRootViewController.mainApplicationViewController;
+  UIViewController* windowRootViewController = [ApplicationDelegate sharedDelegate].windowRootViewController;
   if ([LayoutManager sharedManager].uiType != UITypePhone)
   {
-    MainTabBarController* tabBarController = (MainTabBarController*)mainApplicationViewController;
+    MainTabBarController* tabBarController = (MainTabBarController*)windowRootViewController;
     return [tabBarController tabViewForUIArea:UIAreaPlay];
   }
   else
   {
-    MainNavigationController* mainNavigationController = (MainNavigationController*)mainApplicationViewController;
+    MainNavigationController* mainNavigationController = (MainNavigationController*)windowRootViewController;
     return [mainNavigationController rootViewForUIAreaPlay];
   }
 }
@@ -206,16 +204,15 @@
 // -----------------------------------------------------------------------------
 + (void) activateUIArea:(enum UIArea)uiArea
 {
-  WindowRootViewController* windowRootViewController = [ApplicationDelegate sharedDelegate].windowRootViewController;
-  UIViewController* mainApplicationViewController = windowRootViewController.mainApplicationViewController;
+  UIViewController* windowRootViewController = [ApplicationDelegate sharedDelegate].windowRootViewController;
   if ([LayoutManager sharedManager].uiType != UITypePhone)
   {
-    MainTabBarController* tabBarController = (MainTabBarController*)mainApplicationViewController;
+    MainTabBarController* tabBarController = (MainTabBarController*)windowRootViewController;
     [tabBarController activateTabForUIArea:uiArea];
   }
   else
   {
-    MainNavigationController* mainNavigationController = (MainNavigationController*)mainApplicationViewController;
+    MainNavigationController* mainNavigationController = (MainNavigationController*)windowRootViewController;
     [mainNavigationController activateUIArea:uiArea];
   }
 }

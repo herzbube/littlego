@@ -37,7 +37,6 @@
 #import "../../command/scoring/ToggleScoringStateOfStoneGroupCommand.h"
 #import "../../command/ChangeUIAreaPlayModeCommand.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/WindowRootViewController.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../shared/LayoutManager.h"
@@ -433,7 +432,7 @@ static GameActionManager* sharedGameActionManager = nil;
     return;
   }
 
-  UIViewController* modalMaster = [ApplicationDelegate sharedDelegate].windowRootViewController;
+  UIViewController* modalMaster = [ApplicationDelegate sharedDelegate].window.rootViewController;
   self.moreGameActionsController = [[[MoreGameActionsController alloc] initWithModalMaster:modalMaster delegate:self] autorelease];
 
   if ([sender isKindOfClass:[UIBarButtonItem class]])

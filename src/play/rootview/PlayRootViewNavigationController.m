@@ -17,6 +17,7 @@
 
 // Project includes
 #import "PlayRootViewNavigationController.h"
+#import "../../ui/UiElementMetrics.h"
 
 
 @implementation PlayRootViewNavigationController
@@ -52,24 +53,63 @@
   [super dealloc];
 }
 
+#pragma mark - UIViewController overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+///
+/// This override handles interface orientation changes while this controller's
+/// view hierarchy is visible, and changes that occurred while this controller's
+/// view hierarchy was not visible (this method is invoked when the controller's
+/// view becomes visible again).
+// -----------------------------------------------------------------------------
+- (void) viewWillLayoutSubviews
+{
+  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
+  [self updateNavigationBarHiddenForInterfaceOrientation:interfaceOrientation];
+}
+
 #pragma mark - UINavigationControllerDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UINavigationControllerDelegate protocol method.
-///
-/// This override hides the navigation bar when the root view controller is
-/// displayed, and shows the navigation bar when any other view controller is
-/// pushed on the stack.
 // -----------------------------------------------------------------------------
 - (void) navigationController:(UINavigationController*)navigationController
        willShowViewController:(UIViewController*)viewController
                      animated:(BOOL)animated
 {
-  NSUInteger navigationStackSize = self.viewControllers.count;
-  if (1 == navigationStackSize)
-    self.navigationBarHidden = YES;
-  else
+  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
+  [self updateNavigationBarHiddenForInterfaceOrientation:interfaceOrientation];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper that is invoked from several places and that updates
+/// the value of property self.navigationBarHidden.
+///
+/// In portrait orientation the navigation bar is always shown. When the root
+/// view controller is diplayed this is necessary because game actions and the
+/// status view are displayed in the navigation bar.
+///
+/// In landscape orientation the navigation bar is hidden when the root view
+/// controller is displayed (game actions and status view are displayed
+/// somewhere else than in the navigation bar, to provide more vertical room for
+/// the board), and shown when any other view controller is pushed on the stack.
+// -----------------------------------------------------------------------------
+- (void) updateNavigationBarHiddenForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  if (isPortraitOrientation)
+  {
     self.navigationBarHidden = NO;
+  }
+  else
+  {
+    NSUInteger navigationStackSize = self.viewControllers.count;
+    if (1 == navigationStackSize)
+      self.navigationBarHidden = YES;
+    else
+      self.navigationBarHidden = NO;
+  }
 }
 
 #pragma mark - GameInfoViewControllerPresenter overrides

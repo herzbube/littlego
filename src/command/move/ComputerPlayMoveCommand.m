@@ -32,7 +32,6 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/WindowRootViewController.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../ui/UIViewControllerAdditions.h"
 

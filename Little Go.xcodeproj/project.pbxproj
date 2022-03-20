@@ -94,8 +94,6 @@
 		CD1311C717180B67006CE699 /* NavigationBarControllerPhonePortraitOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5C171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m */; };
 		CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
 		CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */; };
-		CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311CD17180D57006CE699 /* StatusViewController.m */; };
-		CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311CD17180D57006CE699 /* StatusViewController.m */; };
 		CD1311D2171B5857006CE699 /* LoggingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311D1171B5854006CE699 /* LoggingModel.m */; };
 		CD1311D3171B5FFF006CE699 /* LoggingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311D1171B5854006CE699 /* LoggingModel.m */; };
 		CD15A484168D044400D4472A /* GoNodeModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A483168D044400D4472A /* GoNodeModelTest.m */; };
@@ -234,8 +232,6 @@
 		CD7C69F21AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */; };
 		CD7C69F51AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F41AB2CB4A009EC5AD /* PlayRootViewNavigationController.m */; };
 		CD7C69F61AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F41AB2CB4A009EC5AD /* PlayRootViewNavigationController.m */; };
-		CD7C69F91AB43758009EC5AD /* PlayRootViewControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F81AB43758009EC5AD /* PlayRootViewControllerPhone.m */; };
-		CD7C69FA1AB43758009EC5AD /* PlayRootViewControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F81AB43758009EC5AD /* PlayRootViewControllerPhone.m */; };
 		CD7C69FD1AB43B3F009EC5AD /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69FC1AB43B3F009EC5AD /* NavigationBarController.m */; };
 		CD7C69FE1AB43B3F009EC5AD /* NavigationBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69FC1AB43B3F009EC5AD /* NavigationBarController.m */; };
 		CD7C6A011AB458CE009EC5AD /* NavigationBarControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C6A001AB458CE009EC5AD /* NavigationBarControllerPhone.m */; };
@@ -442,8 +438,6 @@
 		CDA096FC1A915085002FCD78 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FA1A915085002FCD78 /* LayoutManager.m */; };
 		CDA096FF1A98CD54002FCD78 /* ButtonBoxController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FE1A98CD54002FCD78 /* ButtonBoxController.m */; };
 		CDA097001A98CD54002FCD78 /* ButtonBoxController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA096FE1A98CD54002FCD78 /* ButtonBoxController.m */; };
-		CDA097031A994D01002FCD78 /* WindowRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA097021A994D01002FCD78 /* WindowRootViewController.m */; };
-		CDA097041A994D01002FCD78 /* WindowRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA097021A994D01002FCD78 /* WindowRootViewController.m */; };
 		CDA097071A9954A3002FCD78 /* MainNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA097061A9954A3002FCD78 /* MainNavigationController.m */; };
 		CDA097081A9954A3002FCD78 /* MainNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA097061A9954A3002FCD78 /* MainNavigationController.m */; };
 		CDA0970B1A99F77F002FCD78 /* SplitViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA0970A1A99F77F002FCD78 /* SplitViewController.m */; };
@@ -553,6 +547,10 @@
 		CDE3028A1360BDA4005235F2 /* PlayerModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302851360BDA3005235F2 /* PlayerModel.m */; };
 		CDE3028B1360BDA4005235F2 /* PlayerStatistics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302871360BDA3005235F2 /* PlayerStatistics.m */; };
 		CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE4057413EB081C0091E719 /* SettingsViewController.m */; };
+		CDE5D7CE27E509200096858C /* StatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311CD17180D57006CE699 /* StatusViewController.m */; };
+		CDE5D7CF27E509210096858C /* StatusViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311CD17180D57006CE699 /* StatusViewController.m */; };
+		CDE5D7D027E512120096858C /* PlayRootViewControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F81AB43758009EC5AD /* PlayRootViewControllerPhone.m */; };
+		CDE5D7D127E512130096858C /* PlayRootViewControllerPhone.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C69F81AB43758009EC5AD /* PlayRootViewControllerPhone.m */; };
 		CDE6A52616AA017500932B05 /* ChangeAndDiscardCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE6A52516AA017500932B05 /* ChangeAndDiscardCommand.m */; };
 		CDE6C549183D820300186E89 /* SoundSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE6C548183D820300186E89 /* SoundSettingsController.m */; };
 		CDEE19F119433EAC00DF2389 /* BoardTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEE19E419433EAC00DF2389 /* BoardTileView.m */; };
@@ -1112,8 +1110,6 @@
 		CDA096FA1A915085002FCD78 /* LayoutManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LayoutManager.m; sourceTree = "<group>"; };
 		CDA096FD1A98CD54002FCD78 /* ButtonBoxController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonBoxController.h; sourceTree = "<group>"; };
 		CDA096FE1A98CD54002FCD78 /* ButtonBoxController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ButtonBoxController.m; sourceTree = "<group>"; };
-		CDA097011A994D01002FCD78 /* WindowRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WindowRootViewController.h; sourceTree = "<group>"; };
-		CDA097021A994D01002FCD78 /* WindowRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WindowRootViewController.m; sourceTree = "<group>"; };
 		CDA097051A9954A3002FCD78 /* MainNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainNavigationController.h; sourceTree = "<group>"; };
 		CDA097061A9954A3002FCD78 /* MainNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainNavigationController.m; sourceTree = "<group>"; };
 		CDA097091A99F77F002FCD78 /* SplitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SplitViewController.h; sourceTree = "<group>"; };
@@ -1485,8 +1481,6 @@
 				CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */,
 				CD7C69EF1AB0F1F3009EC5AD /* UIAreaInfo.h */,
 				CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */,
-				CDA097011A994D01002FCD78 /* WindowRootViewController.h */,
-				CDA097021A994D01002FCD78 /* WindowRootViewController.m */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -3123,7 +3117,6 @@
 				CDA096FB1A915085002FCD78 /* LayoutManager.m in Sources */,
 				CD7C6A191AB4990D009EC5AD /* BoardPositionCollectionViewCell.m in Sources */,
 				CD7C69F11AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */,
-				CDA097031A994D01002FCD78 /* WindowRootViewController.m in Sources */,
 				CD7C6A151AB49631009EC5AD /* BoardPositionCollectionViewController.m in Sources */,
 				CD10882213255A6B00E83543 /* GoPlayer.m in Sources */,
 				CD10882513255AA600E83543 /* GoPoint.m in Sources */,
@@ -3217,6 +3210,7 @@
 				CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */,
 				CDDD526314840A540027476B /* DisplaySettingsController.m in Sources */,
 				CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */,
+				CDE5D7D027E512120096858C /* PlayRootViewControllerPhone.m in Sources */,
 				CD1F4F6825AE17D90098037A /* SgfSettingsModel.m in Sources */,
 				CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */,
 				CDEE19FB19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
@@ -3279,7 +3273,6 @@
 				CD30BAA816F7B28A00C95DCF /* TwoFingerTapGestureController.m in Sources */,
 				CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */,
 				CD1DB60E1702436B00C2E648 /* HandleDocumentInteractionCommand.m in Sources */,
-				CD7C69F91AB43758009EC5AD /* PlayRootViewControllerPhone.m in Sources */,
 				CD9A49AB17107BC9009E7514 /* FontRange.m in Sources */,
 				CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */,
 				CD1E9E66171806FE00E1B7D1 /* NavigationBarControllerPhonePortraitOnly.m in Sources */,
@@ -3289,7 +3282,7 @@
 				CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */,
 				CDB5AE251AC5A86D0075C8DC /* MagnifyingView.m in Sources */,
 				CD1311C217180B45006CE699 /* ScoringModel.m in Sources */,
-				CD1311CE17181E97006CE699 /* StatusViewController.m in Sources */,
+				CDE5D7CE27E509200096858C /* StatusViewController.m in Sources */,
 				CD1F4F7425AE81AC0098037A /* SgfSettingsController.m in Sources */,
 				CDEE1A1D19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */,
 				CD1311D2171B5857006CE699 /* LoggingModel.m in Sources */,
@@ -3445,7 +3438,6 @@
 				CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CDAF171A1968037700271396 /* BoardViewModel.m in Sources */,
-				CDA097041A994D01002FCD78 /* WindowRootViewController.m in Sources */,
 				CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */,
 				CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */,
 				CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */,
@@ -3461,6 +3453,7 @@
 				CD96A44C16C71BBF000C2792 /* SyncGTPEngineCommand.m in Sources */,
 				CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */,
 				CDEE1A08194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */,
+				CDE5D7CF27E509210096858C /* StatusViewController.m in Sources */,
 				CD7C69C41A9D2086009EC5AD /* GameActionManager.m in Sources */,
 				CD5E6B371D7CD0500089D0B3 /* MoreGameActionsController.m in Sources */,
 				CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */,
@@ -3474,7 +3467,6 @@
 				CDDC968F25E697B300598CF7 /* PlaceholderView.m in Sources */,
 				CD1DB611170257F400C2E648 /* HandicapSelectionController.m in Sources */,
 				CDFD9F7D18F1D5AB0031CBCF /* RenameGameCommand.m in Sources */,
-				CD7C69FA1AB43758009EC5AD /* PlayRootViewControllerPhone.m in Sources */,
 				CD1DB612170257F900C2E648 /* KomiSelectionController.m in Sources */,
 				CD1DB6131702581100C2E648 /* TableViewCellFactory.m in Sources */,
 				CDAF1724196CA81900271396 /* GoVertexNumeric.m in Sources */,
@@ -3524,7 +3516,6 @@
 				CD1F500825B34EDE0098037A /* GameInfoItem.m in Sources */,
 				CD7C57C821FF8E9500694520 /* HandleBoardSetupInteractionCommand.m in Sources */,
 				CD1F501425B6591F0098037A /* GameInfoItemController.m in Sources */,
-				CD1311CF17181E9C006CE699 /* StatusViewController.m in Sources */,
 				CD7C6A121AB4862E009EC5AD /* AutoLayoutConstraintHelper.m in Sources */,
 				CD1311D3171B5FFF006CE699 /* LoggingModel.m in Sources */,
 				CDF341C7172742D700AEFB20 /* LongRunningActionCounter.m in Sources */,
@@ -3561,6 +3552,7 @@
 				CD072715180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
 				CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */,
 				CDC97A8F18301CC100755EB2 /* GoGameRules.m in Sources */,
+				CDE5D7D127E512130096858C /* PlayRootViewControllerPhone.m in Sources */,
 				CD0F6BE727B02C91002DBE6B /* GoNodeAnnotation.m in Sources */,
 				CDFD9F8318F1D5F70031CBCF /* GtpLogViewController.m in Sources */,
 				CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */,

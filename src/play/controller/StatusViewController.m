@@ -32,6 +32,7 @@
 #import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiSettingsModel.h"
 #import "../../utility/ExceptionUtility.h"
 #import "../../utility/NSStringAdditions.h"
@@ -44,6 +45,8 @@
 /// @brief Prevents unregistering by dealloc if registering hasn't happened
 /// yet. Registering may not happen if the controller's view is never loaded.
 @property(nonatomic, assign) bool notificationRespondersAreSetup;
+@property(nonatomic, assign) bool autoLayoutConstraintsAreSetup;
+@property(nonatomic, retain) UIView* containerView;
 @property(nonatomic, retain) UILabel* statusLabel;
 @property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
 @property(nonatomic, assign) bool activityIndicatorNeedsUpdate;
@@ -72,6 +75,7 @@
     return nil;
   [self releaseObjects];
   self.notificationRespondersAreSetup = false;
+  self.autoLayoutConstraintsAreSetup = false;
   self.activityIndicatorNeedsUpdate = false;
   self.statusLabelNeedsUpdate = false;
   self.shouldDisplayActivityIndicator = false;
@@ -95,6 +99,7 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
+  self.containerView = nil;
   self.statusLabel = nil;
   self.activityIndicator = nil;
   self.crossHairInformation = nil;
@@ -109,17 +114,47 @@
 // -----------------------------------------------------------------------------
 - (void) loadView
 {
+  [super loadView];
+
   [self createViews];
   [self setupViewHierarchy];
   [self configureViews];
-  [self setupAutoLayoutConstraints];
-  [self updateAutoLayoutConstraints];
   [self setupNotificationResponders];
 
   // New controller instances may be created in mid-game after a layout change
   self.statusLabelNeedsUpdate = true;
   self.activityIndicatorNeedsUpdate = true;
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+///
+/// This override handles interface orientation changes while this controller's
+/// view hierarchy is visible, and changes that occurred while this controller's
+/// view hierarchy was not visible (this method is invoked when the controller's
+/// view becomes visible again).
+// -----------------------------------------------------------------------------
+- (void) viewWillLayoutSubviews
+{
+  if (self.autoLayoutConstraintsAreSetup)
+    return;
+
+  // We don't setup Auto Layout constraints in loadView, instead we delay until
+  // viewWillLayoutSubviews. Reason: When on UITypePhone and in landscape
+  // orientation, UIKit temporarily "thinks" that the safe area layout guide of
+  // this view controller's main view should honor the tab bar, even though
+  // this view controller's main view does not come even near the tab bar. As
+  // a result there is a temporary Auto Layout constraint that causes problems
+  // if the status view is less high than 70 (the height of a tab bar).
+  // Unfortunately the container view controller of this view controller does
+  // exactly that - it sets up a height for the status view that is less than
+  // 70. At the time viewWillLayoutSubviews is invoked, the temporary and
+  // erroneous Auto Layout constraint has gone, so by delaying creation of our
+  // Auto Layout constraints we work around the problem.
+  [self setupAutoLayoutConstraints];
+  [self updateAutoLayoutConstraints];
+  self.autoLayoutConstraintsAreSetup = true;
 }
 
 #pragma mark - Private helpers for loadView
@@ -129,7 +164,7 @@
 // -----------------------------------------------------------------------------
 - (void) createViews
 {
-  [super loadView];
+  self.containerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   self.statusLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
   self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectZero] autorelease];
 }
@@ -139,8 +174,9 @@
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
-  [self.view addSubview:self.statusLabel];
-  [self.view addSubview:self.activityIndicator];
+  [self.view addSubview:self.containerView];
+  [self.containerView addSubview:self.statusLabel];
+  [self.containerView addSubview:self.activityIndicator];
 }
 
 // -----------------------------------------------------------------------------
@@ -172,7 +208,7 @@
       // Portrait: See UITypePad.
       // Landscape: Label can have 4 lines. Player names about 40 characters
       // long are OK but must consist of several words for line breaks.
-      fontSize = 11.0f;
+      fontSize = 10.0f;
       break;
     case UITypePad:
       // Label can have 3 lines. Player names can be insanely long and can
@@ -188,9 +224,14 @@
 
   if ([LayoutManager sharedManager].uiType == UITypePhone)
   {
-    self.view.backgroundColor = [UIColor blackColor];
-    self.statusLabel.textColor = [UIColor whiteColor];
-    self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
+    UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
+    bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+    if (! isPortraitOrientation)
+    {
+      self.view.backgroundColor = [UIColor blackColor];
+      self.statusLabel.textColor = [UIColor whiteColor];
+      self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
+    }
   }
   else
   {
@@ -203,13 +244,34 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
+  self.containerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.statusLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.activityIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+
+  // The container view makes sure that the status view content is within the
+  // safe area, while the view controller's main view that has a background
+  // color can extend to any screen edges that are outside the safe area.
+  [AutoLayoutUtility fillSafeAreaOfSuperview:self.view withSubview:self.containerView];
+
+  int horizontalSpacingSuperview;
+  if ([LayoutManager sharedManager].uiType == UITypePhone)
+    horizontalSpacingSuperview = [AutoLayoutUtility horizontalSpacingTableViewCell];
+  else
+    horizontalSpacingSuperview = 0;
+
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+  viewsDictionary[@"statusLabel"] = self.statusLabel;
+  viewsDictionary[@"activityIndicator"] = self.activityIndicator;
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[statusLabel]", horizontalSpacingSuperview]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[activityIndicator]-%d-|", horizontalSpacingSuperview]];
+  [visualFormats addObject:@"V:|-0-[statusLabel]-0-|"];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 
   [AutoLayoutUtility alignFirstView:self.activityIndicator
                      withSecondView:self.statusLabel
                         onAttribute:NSLayoutAttributeCenterY
-                   constraintHolder:self.view];
+                   constraintHolder:self.containerView];
   self.activityIndicatorWidthConstraint = [NSLayoutConstraint constraintWithItem:self.activityIndicator
                                                                        attribute:NSLayoutAttributeWidth
                                                                        relatedBy:NSLayoutRelationEqual
@@ -224,48 +286,8 @@
                                                                          attribute:NSLayoutAttributeRight
                                                                         multiplier:1.0f
                                                                           constant:0.0f];
-  [self.view addConstraint:self.activityIndicatorWidthConstraint];
-  [self.view addConstraint:self.activityIndicatorSpacingConstraint];
-
-  UIView* anchorView = self.view;
-  NSLayoutXAxisAnchor* leftAnchor;
-  NSLayoutXAxisAnchor* rightAnchor;
-  NSLayoutYAxisAnchor* topAnchor;
-  NSLayoutYAxisAnchor* bottomAnchor;
-  if (@available(iOS 11.0, *))
-  {
-    UILayoutGuide* layoutGuide = anchorView.safeAreaLayoutGuide;
-    leftAnchor = layoutGuide.leftAnchor;
-    rightAnchor = layoutGuide.rightAnchor;
-    topAnchor = layoutGuide.topAnchor;
-    bottomAnchor = layoutGuide.bottomAnchor;
-  }
-  else
-  {
-    leftAnchor = anchorView.leftAnchor;
-    rightAnchor = anchorView.rightAnchor;
-    topAnchor = anchorView.topAnchor;
-    bottomAnchor = anchorView.bottomAnchor;
-  }
-
-  // In case the status view is displayed at the bottom of the screen: On
-  // devices that don't have a physical Home button, the status label should
-  // not be overlapped by the Home indicator. The activity indicator is also
-  // dealt with because its vertical position is tied to the status label (see
-  // constraints above).
-  [self.statusLabel.topAnchor constraintEqualToAnchor:topAnchor].active = YES;
-  [self.statusLabel.bottomAnchor constraintEqualToAnchor:bottomAnchor].active = YES;
-
-  // In case the status view is displayed at the left edge of the screen: On
-  // devices with rounded corners and/or a notch, the status label should not
-  // be clipped by the rounded corners or the notch.
-  int horizontalSpacingSuperview;
-  if ([LayoutManager sharedManager].uiType == UITypePhone)
-    horizontalSpacingSuperview = [AutoLayoutUtility horizontalSpacingTableViewCell];
-  else
-    horizontalSpacingSuperview = 0;
-  [self.statusLabel.leftAnchor constraintEqualToAnchor:leftAnchor constant:horizontalSpacingSuperview].active = YES;
-  [self.activityIndicator.rightAnchor constraintEqualToAnchor:rightAnchor constant:-horizontalSpacingSuperview].active = YES;
+  [self.containerView addConstraint:self.activityIndicatorWidthConstraint];
+  [self.containerView addConstraint:self.activityIndicatorSpacingConstraint];
 }
 
 // -----------------------------------------------------------------------------

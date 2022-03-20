@@ -24,7 +24,6 @@
 #import "../controller/StatusViewController.h"
 #import "../gameaction/GameActionButtonBoxDataSource.h"
 #import "../gameaction/GameActionManager.h"
-#import "../../main/MainMenuPresenter.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/ButtonBoxController.h"
@@ -48,7 +47,6 @@
 @property(nonatomic, retain) GameActionButtonBoxDataSource* gameActionButtonBoxDataSource;
 @property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
 @property(nonatomic, retain) NSArray* gameActionButtonBoxAutoLayoutConstraints;
-@property(nonatomic, retain) UIButton* mainMenuButton;
 @end
 
 
@@ -75,8 +73,6 @@
   self.rightColumnView = nil;
   self.boardViewAutoLayoutConstraints = [NSMutableArray array];
   self.gameActionButtonBoxAutoLayoutConstraints = nil;
-  self.mainMenuButton = nil;
-  [self setupNotificationResponders];
   return self;
 }
 
@@ -85,8 +81,6 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [self removeNotificationResponders];
-
   self.navigationBarController = nil;
 
   self.leftColumnView = nil;
@@ -97,7 +91,6 @@
   self.gameActionButtonBoxController = nil;
   self.gameActionButtonBoxDataSource = nil;
   self.gameActionButtonBoxAutoLayoutConstraints = nil;
-  self.mainMenuButton = nil;
 
   self.woodenBackgroundView = nil;
   self.boardViewController = nil;
@@ -115,26 +108,6 @@
     self.useNavigationBar = false;
   else
     self.useNavigationBar = true;
-}
-
-#pragma mark - Setup/remove notification responders
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-// -----------------------------------------------------------------------------
-- (void) setupNotificationResponders
-{
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
-  [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-// -----------------------------------------------------------------------------
-- (void) removeNotificationResponders
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Container view controller handling
@@ -322,9 +295,6 @@
     self.rightColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
     [self.woodenBackgroundView addSubview:self.rightColumnView];
     [self.rightColumnView addSubview:self.gameActionButtonBoxController.view];
-
-    self.mainMenuButton = [UIButton buttonWithType:UIButtonTypeSystem];
-    [self.rightColumnView addSubview:self.mainMenuButton];
   }
 }
 
@@ -422,21 +392,11 @@
     // column view, as well as the width of the right column view itself.
     [viewsDictionary removeAllObjects];
     [visualFormats removeAllObjects];
-    self.mainMenuButton.translatesAutoresizingMaskIntoConstraints = NO;
     self.gameActionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
-    [viewsDictionary setObject:self.mainMenuButton forKey:@"mainMenuButton"];
     [viewsDictionary setObject:self.gameActionButtonBoxController.view forKey:@"gameActionButtonBox"];
-    [visualFormats addObject:[NSString stringWithFormat:@"V:|-%d-[mainMenuButton]", verticalSpacingButtonBox]];
     [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[gameActionButtonBox]-%d-|", horizontalSpacingButtonBox, horizontalSpacingButtonBox]];
     [visualFormats addObject:[NSString stringWithFormat:@"V:[gameActionButtonBox]-%d-|", verticalSpacingButtonBox]];
     [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.rightColumnView];
-    // The main menu button is not in a box, so has not the same width as the
-    // game action button box. To make it look good we horizontally center it on
-    // the game action button box.
-    [AutoLayoutUtility alignFirstView:self.mainMenuButton
-                       withSecondView:self.gameActionButtonBoxController.view
-                          onAttribute:NSLayoutAttributeCenterX
-                     constraintHolder:self.rightColumnView];
 
     // Size (specifically height) of gameActionButtonBox is variable,
     // constraints are managed dynamically
@@ -455,15 +415,6 @@
 
   [self.boardPositionButtonBoxController applyTransparentStyle];
   [self.gameActionButtonBoxController applyTransparentStyle];
-
-  [self.mainMenuButton setImage:[UIImage imageNamed:mainMenuIconResource]
-                       forState:UIControlStateNormal];
-  [self.mainMenuButton addTarget:[MainMenuPresenter sharedPresenter]
-                          action:@selector(presentMainMenu:)
-                forControlEvents:UIControlEventTouchUpInside];
-  self.mainMenuButton.accessibilityLabel = mainMenuIconResource;
-  // Same tint as button box
-  self.mainMenuButton.tintColor = [UIColor blackColor];
 }
 
 #pragma mark - Dynamic Auto Layout constraint handling
@@ -498,24 +449,6 @@
 - (void) buttonBoxButtonsWillChange
 {
   [self updateGameActionButtonBoxAutoLayoutConstraints];
-}
-
-#pragma mark - Notification responders
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillDisplayCrossHair notifications.
-// -----------------------------------------------------------------------------
-- (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
-{
-  self.mainMenuButton.enabled = NO;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillHideCrossHair notifications.
-// -----------------------------------------------------------------------------
-- (void) boardViewWillHideCrossHair:(NSNotification*)notification
-{
-  self.mainMenuButton.enabled = YES;
 }
 
 @end

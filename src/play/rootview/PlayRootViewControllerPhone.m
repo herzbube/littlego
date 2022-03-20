@@ -22,26 +22,15 @@
 #import "../boardposition/BoardPositionCollectionViewController.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/AutoLayoutConstraintHelper.h"
-#import "../controller/NavigationBarControllerPhone.h"
 #import "../controller/StatusViewController.h"
+#import "../model/NavigationBarButtonModel.h"
 #import "../splitview/LeftPaneViewController.h"
 #import "../splitview/RightPaneViewController.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/ButtonBoxController.h"
-#import "../../ui/UiElementMetrics.h"
 #import "../../ui/SplitViewController.h"
-#import "../../utility/ExceptionUtility.h"
+#import "../../ui/UiElementMetrics.h"
 #import "../../utility/UIColorAdditions.h"
-
-
-/// @brief Enumerates the states that the view hierarchy of
-/// PlayRootViewControllerPhone can have.
-enum ViewHierarchyState
-{
-  ViewHierarchyNotSetup,
-  ViewHierarchyPortrait,
-  ViewHierarchyLandscape
-};
 
 
 // -----------------------------------------------------------------------------
@@ -49,10 +38,25 @@ enum ViewHierarchyState
 /// PlayRootViewControllerPhone.
 // -----------------------------------------------------------------------------
 @interface PlayRootViewControllerPhone()
-/// @name Properties not related to a specific orientation
+/// @name Properties used for both interface orientations
 //@{
-@property(nonatomic, assign) enum ViewHierarchyState viewHierarchyState;
+@property (nonatomic, assign) bool viewsAreInPortraitOrientation;
+@property (nonatomic, retain) NSMutableArray* autoLayoutConstraints;
+@property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
 //@}
+
+/// @name Properties used for portrait
+//@{
+@property(nonatomic, retain) UIView* woodenBackgroundView;
+@property(nonatomic, retain) UIView* boardContainerView;
+@property(nonatomic, retain) NavigationBarButtonModel* navigationBarButtonModel;
+@property(nonatomic, retain) StatusViewController* statusViewController;
+@property(nonatomic, retain) BoardViewController* boardViewController;
+@property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
+@property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
+@property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
+//@}
+
 /// @name Properties used for landscape
 //@{
 // Cannot name this property splitViewController, there already is a property
@@ -60,18 +64,6 @@ enum ViewHierarchyState
 @property(nonatomic, retain) SplitViewController* splitViewControllerChild;
 @property(nonatomic, retain) LeftPaneViewController* leftPaneViewController;
 @property(nonatomic, retain) RightPaneViewController* rightPaneViewController;
-//@}
-/// @name Properties used for portrait
-//@{
-@property(nonatomic, retain) UIView* woodenBackgroundView;
-@property(nonatomic, retain) UIView* boardContainerView;
-@property(nonatomic, retain) NavigationBarControllerPhone* navigationBarController;
-@property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
-@property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
-@property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
-@property(nonatomic, retain) StatusViewController* statusViewController;
-@property(nonatomic, retain) BoardViewController* boardViewController;
-@property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
 //@}
 @end
 
@@ -91,8 +83,9 @@ enum ViewHierarchyState
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-  self.viewHierarchyState = ViewHierarchyNotSetup;
-  [self releaseObjects];
+  self.viewsAreInPortraitOrientation = true;
+  self.autoLayoutConstraints = nil;
+  self.boardViewAutoLayoutConstraints = nil;
   return self;
 }
 
@@ -102,260 +95,62 @@ enum ViewHierarchyState
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self releaseObjects];
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper during initialization.
+/// @brief Private helper.
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
-  self.splitViewControllerChild = nil;
-  self.leftPaneViewController = nil;
-  self.rightPaneViewController = nil;
+  self.view = nil;
+  self.autoLayoutConstraints = nil;
+  self.boardViewAutoLayoutConstraints = nil;
   self.woodenBackgroundView = nil;
   self.boardContainerView = nil;
-  self.navigationBarController = nil;
+  self.navigationBarButtonModel = nil;
+  self.statusViewController = nil;
+  self.boardViewController = nil;
   self.boardPositionButtonBoxController = nil;
   self.boardPositionButtonBoxDataSource = nil;
   self.boardPositionCollectionViewController = nil;
-  self.statusViewController = nil;
-  self.boardViewController = nil;
-  self.boardViewAutoLayoutConstraints = nil;
+  self.splitViewControllerChild = nil;
+  self.leftPaneViewController = nil;
+  self.rightPaneViewController = nil;
 }
 
-#pragma mark - UIViewController overrides
+#pragma mark - Container view controller handling
 
 // -----------------------------------------------------------------------------
-/// @brief UIViewController method
+/// @brief Updates the child view controllers hierarchy managed by this view
+/// controller to match the specified interface orientation.
 // -----------------------------------------------------------------------------
-- (void) loadView
+- (void) setupChildControllersForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-  [super loadView];
-
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(statusBarOrientationDidChange:) name:UIApplicationDidChangeStatusBarOrientationNotification object:nil];
-
-  // If the view hierarchy setup is performed synchronously then the
-  // safeAreaLayoutGuide is not honored in subviews when the app launches while
-  // the device is held in Landscape orientation. The reason is not known.
-  // Try & error resulted in the workaround that setting up the view hierarchy
-  // with a minimal delay fixes the problem.
-  // TODO: This workaround should not be necessary!
-  [self performSelector:@selector(setupViewHierarchyForInterfaceOrientationAsync:) withObject:[NSNumber numberWithLong:[UiElementMetrics interfaceOrientation]] afterDelay:0];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method
-///
-/// This method is invoked when the interface orientation is about to change
-/// AND the view hierarchy of this view controller is visible.
-///
-/// This method immediately tears down the current view hierarchy to prevent any
-/// complaints by the Auto Layout subsystem about constraints that are currently
-/// in place but cannot be satisfied in the new interface orientation.
-///
-/// This method then queues the setup of a new hierarchy in an asynchronous
-/// manner. The new view hierarchy cannot be setup immediately because the Auto
-/// Layout subsystem would complain about constraints that cannot be satisfied
-/// while the old interface orientation is still in place.
-///
-/// This override is NOT invoked if the view hierarchy of this view controller
-/// is not visible, e.g. because it is buried in a navigation controller's
-/// stack. In this situation, a combination of statusBarOrientationDidChange:()
-/// and viewWillAppear:() will perform the tasks that this method usually
-/// performs:
-/// - statusBarOrientationDidChange:() immediately tears down the old view
-///   hierarchy
-/// - viewWillAppear:() sets up the new view hierarchy
-///
-/// @note If the user rotates back to the original interface orientation while
-/// the view hierarchy of this view controller is not visible, the teardown of
-/// the view hierarchy by statusBarOrientationDidChange:() has been unnecessary.
-/// This is unfortunate, but unavoidable because the teardown cannot be delayed:
-/// Besides #UIApplicationDidChangeStatusBarOrientationNotification there is no
-/// other override or event that occurs early enough to trigger the teardown
-/// before the Auto Layout subsystem starts complaininig.
-///
-/// Some background information about why this complicated view hierarchy
-/// management is necessary:
-/// - The Auto Layout constraints required for the landscape view hierarchy are
-///   at the root of the problem.
-/// - A combination of the constraints required for sizing/placement of the
-///   board view, and the constraints required for sizing/placement of the
-///   left/right columns that flank the board view, confuse the Auto Layout
-///   subsystem so much that it has to temporarily break one of those
-///   constraints during interface orientation changes. While running the app
-///   in debug mode, the result is the notorious warning printed by the Auto
-///   Layout subsystem to the debug output.
-/// - After exhaustive analsys it seems clear to me that the constraints should
-///   be valid. This reasoning is supported by the fact that the Auto Layout
-///   subsystem accepts the constraints without complaint if the app is launched
-///   directly into landscape.
-/// - Due to timing issues, the view hierarchy management process had to be
-///   split into two parts: teardown and setup.
-/// - Teardown must occur as early as possible during the interface orientation
-///   change, while the app is still in a state that largely matches the old
-///   interface orientation, and the Auto Layout subsystem has not had a chance
-///   to detect any flaws in the constraints.
-/// - Setup must occur as late as possible during the interface orientation
-///   change, when the app is already in a state that matches the new interface
-///   orientation, and the Auto Layout subsystem accepts the constraints as
-///   valid.
-/// - Unfortunately the gap between teardown and setup is visible by the user
-// -----------------------------------------------------------------------------
-- (void) viewWillTransitionToSize:(CGSize)size
-       withTransitionCoordinator :(id<UIViewControllerTransitionCoordinator>)coordinator
-{
-  [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
-
-  // This override is called even if the view has not been loaded yet. We don't
-  // want to be the cause of the view being loaded, so we abort here. A scenario
-  // where the view is not yet loaded is when the app launches directly into the
-  // main menu, without first showing UIAreaPlay.
-  if (! self.isViewLoaded)
-    return;
-
-  // This override is called even if the the view hierarchy of this view
-  // controller is not visible (e.g. buried in a navigation controller's stack).
-  //
-  // Because we already have the statusBarOrientationDidChange:() and
-  // viewWillAppear:() combination that takes care of the interface rotation
-  // in the "view hierarchy is not visible" scenario, we simply abort here.
-  //
-  // Also note: If the view hierarchy is not visible, the size parameter is
-  // still set to dimensions that match the interface orientation before the
-  // rotation. This totally screws up the logic below that attempts to derive
-  // the target interface orientation from the size.
-  if (!self.view.window)
-    return;
-
-  UIInterfaceOrientation toInterfaceOrientation;
-  if (size.height > size.width)
-    toInterfaceOrientation = UIInterfaceOrientationPortrait;
-  else
-    toInterfaceOrientation = UIInterfaceOrientationLandscapeLeft;
-  [self tearDownViewHierarchyIfNotInterfaceOrientation:toInterfaceOrientation];
-  [self performSelector:@selector(setupViewHierarchyForInterfaceOrientationAsync:) withObject:[NSNumber numberWithLong:toInterfaceOrientation] afterDelay:0];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method
-///
-/// This override performs part of the tasks usually performed by
-/// viewWillTransitionToSize:withTransitionCoordinator:() - see the
-/// documentation of that method for details.
-// -----------------------------------------------------------------------------
-- (void) viewWillAppear:(BOOL)animated
-{
-  [super viewWillAppear:animated];
-
-  UIInterfaceOrientation toInterfaceOrientation = [UiElementMetrics interfaceOrientation];
-  [self performSelector:@selector(setupViewHierarchyForInterfaceOrientationAsync:) withObject:[NSNumber numberWithLong:toInterfaceOrientation] afterDelay:0];
-}
-
-#pragma mark - Notification responders
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the
-/// #UIApplicationDidChangeStatusBarOrientationNotification notification.
-///
-/// This notification handler performs part of the tasks usually performed by
-/// viewWillTransitionToSize:withTransitionCoordinator:() - see the
-/// documentation of that method for details.
-// -----------------------------------------------------------------------------
-- (void) statusBarOrientationDidChange:(NSNotification*)notification
-{
-  // Checking the presence of self.view.window is how we check for view
-  // visibility. Checking self.isViewLoaded is necessary because we don't want
-  // to trigger view loading by accessing self.view. A scenario where the view
-  // is not yet loaded is when the app launches directly into the main menu,
-  // without first showing UIAreaPlay.
-  //
-  // Note: This notification handler is also invoked if a view controller is
-  // modally presented on iPhone while in
-  // UIInterfaceOrientationPortraitUpsideDown. This is unexpected, but not
-  // harmful because the statusbar orientation did not really change from
-  // portrait to landscape, so the teardown method will not do anything.
-  if (self.isViewLoaded && ! self.view.window)
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  if (isPortraitOrientation)
   {
-    UIInterfaceOrientation toInterfaceOrientation = [UIApplication sharedApplication].statusBarOrientation;
-    [self tearDownViewHierarchyIfNotInterfaceOrientation:toInterfaceOrientation];
-    // Now that the teardown is complete, a new view hierarchy needs to be
-    // created, but this is the responsibility of viewWillAppear:().
-  }
-}
+    self.navigationBarButtonModel = [[[NavigationBarButtonModel alloc] init] autorelease];
+    [GameActionManager sharedGameActionManager].uiDelegate = self;
 
-#pragma mark - View hierarchy setup and teardown
-
-// -----------------------------------------------------------------------------
-/// @brief Directs the setup of a new view hierarchy whose state will match
-/// @a interfaceOrientation. Does nothing the current view hierarchy already
-/// matches @a interfaceOrientation.
-// -----------------------------------------------------------------------------
-- (void) setupViewHierarchyForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-  if ([self viewHierarchyStateMatchesInterfaceOrientation:interfaceOrientation])
-    return;
-  [self updateViewHierarchyStateToInterfaceOrientation:interfaceOrientation];
-
-  [self setupChildControllers];
-  [self setupViewHierarchy];
-  [self setupAutoLayoutConstraints];
-  [self configureViews];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Extracts a UIInterfaceOrientation value from @a interfaceOrientation
-/// and invokes setupViewHierarchyForInterfaceOrientation:() using that value as
-/// the parameter.
-///
-/// This is a helper method that is intended to be invoked by one of NSObject's
-/// delayed execution helpers (e.g. performSelector:withObject:afterDelay:()).
-// -----------------------------------------------------------------------------
-- (void) setupViewHierarchyForInterfaceOrientationAsync:(NSNumber*)interfaceOrientation
-{
-  [self setupViewHierarchyForInterfaceOrientation:[interfaceOrientation longValue]];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Tears down the currently set up view hierarchy if it does not match
-/// @a interfaceOrientation. Afterwards the view hierarchy state is
-/// #ViewHierarchyNotSetup. Does nothing if the view hierarchy state already is
-/// #ViewHierarchyNotSetup.
-// -----------------------------------------------------------------------------
-- (void) tearDownViewHierarchyIfNotInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-  if (self.viewHierarchyState == ViewHierarchyNotSetup)
-    return;
-  if ([self viewHierarchyStateMatchesInterfaceOrientation:interfaceOrientation])
-    return;
-
-  [self removeAutoLayoutConstraints];
-  [self tearDownViewHierarchy];
-  [self removeChildControllers];
-
-  self.viewHierarchyState = ViewHierarchyNotSetup;
-}
-
-#pragma mark - Child view controller setup and removal
-
-// -----------------------------------------------------------------------------
-/// @brief Sets up child controllers as part of the view hierarchy setup
-/// process. The current view hierarchy state is examined to determine whether a
-/// portrait or a landscape view hierarchy is desired.
-// -----------------------------------------------------------------------------
-- (void) setupChildControllers
-{
-  if ([self hasPortraitOrientationViewHierarchy])
-  {
-    self.navigationBarController = [[[NavigationBarControllerPhone alloc] initWithNavigationItem:self.navigationItem] autorelease];
-    self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
-    self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
+    // We don't treat this as a child view controller. Reason:
+    // - The status view is set as the title view of this container view
+    //   controller's navigation item.
+    // - This causes UIKit to add the status view as a subview to the navigation
+    //   bar of the navigation controller that shows this container view
+    //   controller.
+    // - When we add StatusViewController as a child VC to this container VC,
+    //   UIKit complains with the message that StatusViewController should be a
+    //   child VC of the navigation VC.
+    // - An attempt to follow this advice failed: When StatusViewController is
+    //   made into a child VC of the navigation VC, StatusViewController is also
+    //   added to the navigation VC's navigation stack - which is absolutely not
+    //   what we want!
     self.statusViewController = [[[StatusViewController alloc] init] autorelease];
     self.boardViewController = [[[BoardViewController alloc] init] autorelease];
+    self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
+    self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
 
     self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
     self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;
@@ -364,8 +159,9 @@ enum ViewHierarchyState
   {
     self.splitViewControllerChild = [[[SplitViewController alloc] init] autorelease];
 
-    // These are not child controllers of our own. We are setting them up on
-    // behalf of the generic SplitViewController.
+    // These are not direct child controllers. We are setting them up on behalf
+    // of UISplitViewController because we don't want to create a
+    // UISplitViewController subclass.
     self.leftPaneViewController = [[[LeftPaneViewController alloc] init] autorelease];
     self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
     self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
@@ -374,30 +170,47 @@ enum ViewHierarchyState
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Removes child controllers as part of the view hierarchy teardown
-/// process. The current view hierarchy state is examined to determine whether a
-/// portrait or a landscape view hierarchy is in place.
+/// @brief Removes all child view controllers from this view controller.
 // -----------------------------------------------------------------------------
 - (void) removeChildControllers
 {
-  if ([self hasPortraitOrientationViewHierarchy])
-  {
-    self.navigationBarController = nil;
-    self.boardPositionButtonBoxController = nil;
-    self.boardPositionCollectionViewController = nil;
-    self.statusViewController = nil;
-    self.boardViewController = nil;
-    self.boardPositionButtonBoxDataSource = nil;
-  }
-  else
-  {
-    self.splitViewControllerChild = nil;
-    self.leftPaneViewController = nil;
-    self.rightPaneViewController = nil;
-  }
+  self.navigationBarButtonModel = nil;
+  if ([GameActionManager sharedGameActionManager].uiDelegate == self)
+    [GameActionManager sharedGameActionManager].uiDelegate = nil;
+  self.statusViewController = nil;
+  self.boardViewController = nil;
+  self.boardPositionButtonBoxController = nil;
+  self.boardPositionButtonBoxDataSource = nil;
+  self.boardPositionCollectionViewController = nil;
+  self.splitViewControllerChild = nil;
+  self.leftPaneViewController = nil;
+  self.rightPaneViewController = nil;
 }
 
-#pragma mark - Child view controller setters
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setBoardViewController:(BoardViewController*)boardViewController
+{
+  if (_boardViewController == boardViewController)
+    return;
+  if (_boardViewController)
+  {
+    [_boardViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_boardViewController removeFromParentViewController];
+    [_boardViewController release];
+    _boardViewController = nil;
+  }
+  if (boardViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:boardViewController];
+    [boardViewController didMoveToParentViewController:self];
+    [boardViewController retain];
+    _boardViewController = boardViewController;
+  }
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Private setter implementation.
@@ -452,63 +265,138 @@ enum ViewHierarchyState
 // -----------------------------------------------------------------------------
 /// @brief Private setter implementation.
 // -----------------------------------------------------------------------------
-- (void) setStatusViewController:(StatusViewController*)statusViewController
+- (void) setSplitViewControllerChild:(SplitViewController*)splitViewControllerChild
 {
-  if (_statusViewController == statusViewController)
+  if (_splitViewControllerChild == splitViewControllerChild)
     return;
-  if (_statusViewController)
+  if (_splitViewControllerChild)
   {
-    [_statusViewController willMoveToParentViewController:nil];
+    [_splitViewControllerChild willMoveToParentViewController:nil];
     // Automatically calls didMoveToParentViewController:
-    [_statusViewController removeFromParentViewController];
-    [_statusViewController release];
-    _statusViewController = nil;
+    [_splitViewControllerChild removeFromParentViewController];
+    [_splitViewControllerChild release];
+    _splitViewControllerChild = nil;
   }
-  if (statusViewController)
+  if (splitViewControllerChild)
   {
     // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:statusViewController];
-    [statusViewController didMoveToParentViewController:self];
-    [statusViewController retain];
-    _statusViewController = statusViewController;
+    [self addChildViewController:splitViewControllerChild];
+    [splitViewControllerChild didMoveToParentViewController:self];
+    [splitViewControllerChild retain];
+    _splitViewControllerChild = splitViewControllerChild;
   }
 }
 
+#pragma mark - UIViewController overrides
+
 // -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
+/// @brief UIViewController method.
 // -----------------------------------------------------------------------------
-- (void) setBoardViewController:(BoardViewController*)boardViewController
+- (void) loadView
 {
-  if (_boardViewController == boardViewController)
-    return;
-  if (_boardViewController)
+  [super loadView];
+
+  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
+  [self setupChildControllersForInterfaceOrientation:interfaceOrientation];
+  [self updateViewHierarchyForInterfaceOrientation:interfaceOrientation];
+  [self configureViewsForInterfaceOrientation:interfaceOrientation];
+  [self updateAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
+  [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+///
+/// This override handles interface orientation changes while this controller's
+/// view hierarchy is visible, and changes that occurred while this controller's
+/// view hierarchy was not visible (this method is invoked when the controller's
+/// view becomes visible again).
+// -----------------------------------------------------------------------------
+- (void) viewWillLayoutSubviews
+{
+  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
+  if ([self isViewLayoutChangeRequiredForInterfaceOrientation:interfaceOrientation])
   {
-    [_boardViewController willMoveToParentViewController:nil];
-    // Automatically calls didMoveToParentViewController:
-    [_boardViewController removeFromParentViewController];
-    [_boardViewController release];
-    _boardViewController = nil;
-  }
-  if (boardViewController)
-  {
-    // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:boardViewController];
-    [boardViewController didMoveToParentViewController:self];
-    [boardViewController retain];
-    _boardViewController = boardViewController;
+    [self prepareForInterfaceOrientationChange:interfaceOrientation];
+    [self completeInterfaceOrientationChange:interfaceOrientation];
+    [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
   }
 }
 
-#pragma mark - View hierarchy setup and teardown
+#pragma mark - Interface orientation change handling
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up the actual view hierarchy as part of the view hierarchy setup
-/// process. The current view hierarchy state is examined to determine whether a
-/// portrait or a landscape view hierarchy is desired.
+/// @brief Returns true if rotating to the specified interface orientation
+/// requires a change to the view layout of this view controller.
 // -----------------------------------------------------------------------------
-- (void) setupViewHierarchy
+- (bool) isViewLayoutChangeRequiredForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-  if ([self hasPortraitOrientationViewHierarchy])
+  bool newOrientationIsPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  return (self.viewsAreInPortraitOrientation != newOrientationIsPortraitOrientation);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the internal state of this view controller to remember
+/// that the current view layout now matches @a interfaceOrientation.
+// -----------------------------------------------------------------------------
+- (void) viewLayoutDidChangeToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  self.viewsAreInPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Prepares this view controller for an upcoming interface orientation
+/// change. The new orientation is @a interfaceOrientation.
+///
+/// This method should only be invoked if
+/// isViewLayoutChangeRequiredForInterfaceOrientation:() returns true for the
+/// specified interface orientation.
+// -----------------------------------------------------------------------------
+- (void) prepareForInterfaceOrientationChange:(UIInterfaceOrientation)interfaceOrientation
+{
+  // Remove constraints before views are resized (at the time
+  // willAnimateRotationToInterfaceOrientation:duration:() is invoked it is too
+  // late, views are already resized to match the new interface orientation). If
+  // we don't remove constraints here, Auto Layout will have trouble resizing
+  // views (although the reason why is unknown).
+  [self removeAutoLayoutConstraints];
+  // Since we don't have any constraints anymore, we must also remove the view
+  // hierarchy
+  [self removeViewHierarchy];
+  [self removeChildControllers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Completes the interface orientation change that was begun when
+/// prepareForInterfaceOrientationChange:() was invoked. The new orientation is
+/// @a interfaceOrientation.
+///
+/// This method should only be invoked if
+/// isViewLayoutChangeRequiredForInterfaceOrientation:() returns true for the
+/// specified interface orientation.
+///
+/// Clients that invoke this method must have previously also called
+/// prepareForInterfaceOrientationChange:() to perform the first step of the
+/// orientation change.
+// -----------------------------------------------------------------------------
+- (void) completeInterfaceOrientationChange:(UIInterfaceOrientation)interfaceOrientation
+{
+  [self setupChildControllersForInterfaceOrientation:interfaceOrientation];
+  [self updateViewHierarchyForInterfaceOrientation:interfaceOrientation];
+  [self configureViewsForInterfaceOrientation:interfaceOrientation];
+  [self updateAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
+}
+
+#pragma mark - View hierarchy handling
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the view hierarchy managed by this view controller to
+/// match the specified interface orientation.
+// -----------------------------------------------------------------------------
+- (void) updateViewHierarchyForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  if (isPortraitOrientation)
   {
     // This view provides a wooden texture background not only for the Go board,
     // but for the entire area in which the Go board resides
@@ -520,109 +408,118 @@ enum ViewHierarchyState
 
     [self.view addSubview:self.woodenBackgroundView];
     [self.view addSubview:self.boardPositionCollectionViewController.view];
-    [self.view addSubview:self.statusViewController.view];
 
     [self.woodenBackgroundView addSubview:self.boardContainerView];
     [self.woodenBackgroundView addSubview:self.boardPositionButtonBoxController.view];
 
     [self.boardContainerView addSubview:self.boardViewController.view];
+
+    self.navigationItem.titleView = self.statusViewController.view;
+    [self.navigationBarButtonModel updateVisibleGameActions];
+    [self populateNavigationBar];
   }
   else
   {
     [self.view addSubview:self.splitViewControllerChild.view];
   }
-
-  // Now that the view hierarchy is in place we can remove the transitional
-  // background image that was installed by tearDownViewHierarchy
-  self.view.backgroundColor = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Tears down the actual view hierarchy as part of the view hierarchy
-/// teardown process. The current view hierarchy state is examined to determine
-/// whether a portrait or a landscape view hierarchy is in place.
+/// @brief Removes all subviews from the view of this view controller.
 // -----------------------------------------------------------------------------
-- (void) tearDownViewHierarchy
+- (void) removeViewHierarchy
 {
-  // Removing subviews from their superviews also removes the Auto Layout
-  // constraints associated with those subviews from the superview
-  if ([self hasPortraitOrientationViewHierarchy])
+  for (UIView* subview in self.view.subviews)
+    [subview removeFromSuperview];
+
+  self.woodenBackgroundView = nil;
+  self.boardContainerView = nil;
+  self.navigationItem.titleView = nil;
+  [self depopulateNavigationBar];
+}
+
+#pragma mark - View configuration
+
+// -----------------------------------------------------------------------------
+/// @brief Configures views as part of the view hierarchy setup process.
+// -----------------------------------------------------------------------------
+- (void) configureViewsForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  // self.edgesForExtendedLayout is UIRectEdgeAll, therefore we have to provide
+  // a background color that is visible behind the tab bar at the bottom and
+  // (in portrait orientation) behind the navigation bar at the top (which
+  // extends behind the statusbar).
+  //
+  // Any sort of whiteish color is OK as long as it doesn't deviate too much
+  // from the background colors on the other tabs (typically a table view
+  // background color).
+  self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  if (isPortraitOrientation)
   {
-    [self.woodenBackgroundView removeFromSuperview];
-    self.woodenBackgroundView = nil;
-    [self.boardPositionCollectionViewController.view removeFromSuperview];
-    [self.statusViewController.view removeFromSuperview];
+    self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
+
+    [self.boardPositionButtonBoxController applyTransparentStyle];
+
+    [self.boardPositionButtonBoxController reloadData];
   }
   else
   {
-    [self.splitViewControllerChild.view removeFromSuperview];
+    // Nothing to configure in landscape orientation - this is all done by
+    // child view controllers
   }
-
-  // Installing this generic and repeating background image makes the transition
-  // from the old to the new view hierarchy much less jarring. Without the
-  // background image, only a simple gray background is visible. Obviously, a
-  // nice rotation animation would be better, but also more difficult to
-  // implement.
-  self.view.backgroundColor = [UIColor woodenBackgroundColor];
 }
 
-#pragma mark - Auto Layout constraints setup and removal
+#pragma mark - Auto layout constraint handling
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up auto layout constraints as part of the view hierarchy setup
-/// process. The current view hierarchy state is examined to determine whether a
-/// portrait or a landscape view hierarchy is desired.
+/// @brief Sets up the auto layout constraints of the view of this view
+/// controller to match the specified interface orientation.
 // -----------------------------------------------------------------------------
-- (void) setupAutoLayoutConstraints
+- (void) updateAutoLayoutConstraintsForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
-  if ([self hasPortraitOrientationViewHierarchy])
-    [self setupAutoLayoutConstraintsPortrait];
+  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  if (isPortraitOrientation)
+    [self updateAutoLayoutConstraintsPortrait];
   else
-    [self setupAutoLayoutConstraintsLandscape];
+    [self updateAutoLayoutConstraintsLandscape];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for setupAutoLayoutConstraints.
+/// @brief Private helper for
+/// updateAutoLayoutConstraintsForInterfaceOrientation:().
 // -----------------------------------------------------------------------------
-- (void) setupAutoLayoutConstraintsPortrait
+- (void) updateAutoLayoutConstraintsPortrait
 {
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
 
-  self.boardViewAutoLayoutConstraints = [NSMutableArray array];
-  self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
-                                              ofBoardView:self.boardViewController.view
-                                  forInterfaceOrientation:(self.hasPortraitOrientationViewHierarchy ? UIInterfaceOrientationPortrait : UIInterfaceOrientationLandscapeLeft)
-                                         constraintHolder:self.boardViewController.view.superview];
-
-  self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.statusViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
   CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewMaximumCellSize].height;
   viewsDictionary[@"woodenBackgroundView"] = self.woodenBackgroundView;
   viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
-  viewsDictionary[@"statusView"] = self.statusViewController.view;
   [visualFormats addObject:@"H:|-0-[woodenBackgroundView]-0-|"];
   [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
-  [visualFormats addObject:@"H:|-0-[statusView]-0-|"];
-  [visualFormats addObject:@"V:|-0-[woodenBackgroundView]-0-[boardPositionCollectionView]-0-[statusView]-0-|"];
+  [visualFormats addObject:@"V:[woodenBackgroundView]-0-[boardPositionCollectionView]"];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight]];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+  NSArray* visualFormatsConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
+                                                                    withViews:viewsDictionary
+                                                                       inView:self.view];
+  self.autoLayoutConstraints = [NSMutableArray arrayWithArray:visualFormatsConstraints];
 
-  // Here we define the statusView height, and by consequence the height of
-  // the woodenBackgroundView. The status view extends upwards from the safe
-  // area bottom so that on devices that don't have a physical Home button the
-  // actual status view content is not overlapped by the Home indicator. For
-  // this to work the status view is required to honor safeAreaLayoutGuide.
-  NSLayoutYAxisAnchor* bottomAnchor;
-  if (@available(iOS 11.0, *))
-    bottomAnchor = self.view.safeAreaLayoutGuide.bottomAnchor;
-  else
-    bottomAnchor = self.view.bottomAnchor;
-  int statusViewContentHeight = [UiElementMetrics tableViewCellContentViewHeight];
-  [self.statusViewController.view.topAnchor constraintEqualToAnchor:bottomAnchor
-                                                           constant:-statusViewContentHeight].active = YES;
+  // Align views with the top/bottom of the safe area - this prevents them from
+  // extending behind the navigation bar at the top or the tab bar at the bottom
+  NSLayoutConstraint* topConstraint = [AutoLayoutUtility alignFirstView:self.woodenBackgroundView
+                                                         withSecondView:self.view
+                                            onSafeAreaLayoutGuideAnchor:NSLayoutAttributeTop];
+  [self.autoLayoutConstraints addObject:topConstraint];
+  NSLayoutConstraint* bottomConstraint = [AutoLayoutUtility alignFirstView:self.boardPositionCollectionViewController.view
+                                                            withSecondView:self.view
+                                               onSafeAreaLayoutGuideAnchor:NSLayoutAttributeBottom];
+  [self.autoLayoutConstraints addObject:bottomConstraint];
 
   [viewsDictionary removeAllObjects];
   [visualFormats removeAllObjects];
@@ -639,124 +536,124 @@ enum ViewHierarchyState
   [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox(==%f)]", buttonBoxSize.width]];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]", buttonBoxSize.height]];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.woodenBackgroundView];
+
+  self.boardViewAutoLayoutConstraints = [NSMutableArray array];
+  self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
+                                              ofBoardView:self.boardViewController.view
+                                  forInterfaceOrientation:UIInterfaceOrientationPortrait
+                                         constraintHolder:self.boardViewController.view.superview];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for setupAutoLayoutConstraints.
+/// @brief Private helper for
+/// updateAutoLayoutConstraintsForInterfaceOrientation:().
 // -----------------------------------------------------------------------------
-- (void) setupAutoLayoutConstraintsLandscape
+- (void) updateAutoLayoutConstraintsLandscape
 {
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
   self.splitViewControllerChild.view.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutUtility fillSuperview:self.view withSubview:self.splitViewControllerChild.view];
+
+  viewsDictionary[@"splitView"] = self.splitViewControllerChild.view;
+  // Let the split view extend all the way to the left/right edges of our
+  // view. The left/right pane controllers take care of the safe area handling.
+  [visualFormats addObject:@"H:|-0-[splitView]-0-|"];
+  [visualFormats addObject:@"V:|-0-[splitView]"];
+  NSArray* visualFormatsConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
+                                                                    withViews:viewsDictionary
+                                                                       inView:self.view];
+  self.autoLayoutConstraints = [NSMutableArray arrayWithArray:visualFormatsConstraints];
+
+  // Align split view with the bottom of the safe area - this prevents it from
+  // extending behind the tab bar at the bottom
+  [AutoLayoutUtility alignFirstView:self.splitViewControllerChild.view
+                     withSecondView:self.view
+                    onSafeAreaEdges:UIRectEdgeBottom];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Removes auto layout constraints as part of the view hierarchy
-/// teardown process. The current view hierarchy state is examined to determine
-/// whether a portrait or a landscape view hierarchy is in place.
+/// @brief Removes all auto layout constraints from the view of this view
+/// controller.
 // -----------------------------------------------------------------------------
 - (void) removeAutoLayoutConstraints
 {
-  if ([self hasPortraitOrientationViewHierarchy])
+  if (self.autoLayoutConstraints)
   {
-    self.boardViewAutoLayoutConstraints = nil;
-  }
-  else
-  {
+    [self.view removeConstraints:self.autoLayoutConstraints];
+    self.autoLayoutConstraints = nil;
   }
 }
 
-#pragma mark - View configuration
+#pragma mark - GameActionManagerUIDelegate overrides
 
 // -----------------------------------------------------------------------------
-/// @brief Configures views as part of the view hierarchy setup process. The
-/// current view hierarchy state is examined to determine whether a portrait or
-/// a landscape view hierarchy is desired.
+/// @brief GameActionManagerUIDelegate method.
 // -----------------------------------------------------------------------------
-- (void) configureViews
+- (void) gameActionManager:(GameActionManager*)manager
+       updateVisibleStates:(NSDictionary*)gameActions
 {
-  if ([self hasPortraitOrientationViewHierarchy])
-  {
-    self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
-
-    [self.boardPositionButtonBoxController applyTransparentStyle];
-
-    self.navigationBarController.navigationBar = self.navigationController.navigationBar;
-    [self.boardPositionButtonBoxController reloadData];
-  }
-  else
-  {
-  }
-}
-
-#pragma mark - View hierarchy state helpers
-
-// -----------------------------------------------------------------------------
-/// @brief Returns true if the view hierarchy is currently in a state that
-/// matches @a interfaceOrientation. Returns false otherwise. Always returns
-/// false if the view hierarchy is currently not set up because this state is
-/// neither portrait nor landscape.
-///
-/// @a interfaceOrientation must describe either a portrait or a landscape
-/// orientation. If #UIInterfaceOrientationUnknown is specified the result is
-/// not defined.
-// -----------------------------------------------------------------------------
-- (bool) viewHierarchyStateMatchesInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
-  switch (self.viewHierarchyState)
-  {
-    case ViewHierarchyNotSetup:
-      return false;
-    case ViewHierarchyPortrait:
-      return isPortraitOrientation;
-    case ViewHierarchyLandscape:
-      return !isPortraitOrientation;
-  }
+  [self.navigationBarButtonModel updateVisibleGameActionsWithVisibleStates:gameActions];
+  [self populateNavigationBar];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the property @e viewHierarchyState to a value that matches
-/// @a interfaceOrientation.
-///
-/// @a interfaceOrientation must describe either a portrait or a landscape
-/// orientation. If #UIInterfaceOrientationUnknown is specified the content of
-/// the property is not defined.
+/// @brief GameActionManagerUIDelegate method.
 // -----------------------------------------------------------------------------
-- (void) updateViewHierarchyStateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) gameActionManager:(GameActionManager*)manager
+                    enable:(BOOL)enable
+                gameAction:(enum GameAction)gameAction
 {
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
-  if (isPortraitOrientation)
-    self.viewHierarchyState = ViewHierarchyPortrait;
-  else
-    self.viewHierarchyState = ViewHierarchyLandscape;
+  NSNumber* gameActionAsNumber = [NSNumber numberWithInt:gameAction];
+  UIBarButtonItem* button = self.navigationBarButtonModel.gameActionButtons[gameActionAsNumber];
+  button.enabled = enable;
+}
+
+#pragma mark - Navigation bar population
+
+// -----------------------------------------------------------------------------
+/// @brief Populates the navigation bar with buttons that are appropriate for
+/// the current application state.
+// -----------------------------------------------------------------------------
+- (void) populateNavigationBar
+{
+  [self populateLeftBarButtonItems];
+  [self populateRightBarButtonItems];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns true if the view hierarchy is currently in a state that
-/// matches a portrait orientation, false if it is in a state that matches a
-/// landscape orientation. Throws an exception if the view hierarchy is
-/// currently not set up.
-///
-/// This method must only be invoked after a target view hierarchy state has
-/// been determined. The usual places to invoke this method are during setup of
-/// a new view hierarchy, or during teardown of the existing view hierarchy.
+/// @brief This is an internal helper invoked by populateNavigationBar().
 // -----------------------------------------------------------------------------
-- (bool) hasPortraitOrientationViewHierarchy
+- (void) populateLeftBarButtonItems
 {
-  switch (self.viewHierarchyState)
+  NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
+  for (NSNumber* gameActionAsNumber in self.navigationBarButtonModel.visibleGameActions)
   {
-    case ViewHierarchyPortrait:
-      return true;
-    case ViewHierarchyLandscape:
-      return false;
-    default:
-      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"hasPortraitOrientationViewHierarchy: Invalid view hierarchy state %d"
-                                                  argumentValue:self.viewHierarchyState];
-      // Dummy return to make compiler happy (compiler does not see that an
-      // exception is thrown)
-      return false;
+    UIBarButtonItem* button = self.navigationBarButtonModel.gameActionButtons[gameActionAsNumber];
+    [barButtonItems addObject:button];
   }
+  self.navigationItem.leftBarButtonItems = barButtonItems;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by populateNavigationBar().
+// -----------------------------------------------------------------------------
+- (void) populateRightBarButtonItems
+{
+  NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
+  [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionMoreGameActions]]];
+  [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionGameInfo]]];
+  self.navigationItem.rightBarButtonItems = barButtonItems;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes all buttons from the navigation bar.
+// -----------------------------------------------------------------------------
+- (void) depopulateNavigationBar
+{
+  self.navigationItem.leftBarButtonItems = nil;
+  self.navigationItem.rightBarButtonItems = nil;
 }
 
 @end

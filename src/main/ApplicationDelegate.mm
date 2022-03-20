@@ -30,7 +30,7 @@
 // Project includes
 #import "ApplicationDelegate.h"
 #import "MainMenuPresenter.h"
-#import "WindowRootViewController.h"
+#import "MainTabBarController.h"
 #import "../gtp/GtpClient.h"
 #import "../gtp/GtpEngine.h"
 #import "../gtp/GtpUtilities.h"
@@ -665,10 +665,12 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 - (void) setupWindow
 {
   self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
-  if (@available(iOS 13.0, *))
-    self.window.backgroundColor = [UIColor systemBackgroundColor];
-  else
-    self.window.backgroundColor = [UIColor whiteColor];
+
+  // Don't set up a default window background color - it is the job of the
+  // root view controllers of the MainTabBarController to do this, and to use
+  // extended layout properly so that their background extends behind the
+  // status bar. If the window ever becomes visible it will show with a black
+  // background.
 }
 
 // -----------------------------------------------------------------------------
@@ -676,7 +678,11 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 // -----------------------------------------------------------------------------
 - (void) setupWindowRootViewController
 {
-  self.windowRootViewController = [[[WindowRootViewController alloc] init] autorelease];
+  // It's important that a UITabBarController is used directly as the window
+  // root VC. If UITabBarController is used as the child VC of some other view
+  // controller, the extended layout handling of navigation bars does not work
+  // correctly.
+  self.windowRootViewController = [[[MainTabBarController alloc] init] autorelease];
   self.window.rootViewController = self.windowRootViewController;
   // UIWindow automatically adds the root VC's view as a subview to itself.
   // It also manages the layout of that view, so there is no need to use
