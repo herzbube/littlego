@@ -37,5 +37,6 @@
 - (void) testGoMoveValuation;
 - (void) testDealloc;
 - (void) testIssue369;
+- (void) testIssue370;
 
 @end

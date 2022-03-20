@@ -568,4 +568,68 @@
   XCTAssertEqual(move2b.previous, move1);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Regression test for GitHub issue 370 ("Crash due to GoMove dealloc
+/// accessing already deallocated GoMove object"). Exercises the dealloc()
+/// method in conjunction with the move:by:after:() convenience constructor.
+// -----------------------------------------------------------------------------
+- (void) testIssue370
+{
+  enum GoMoveType moveType = GoMoveTypePlay;
+  GoPlayer* player = m_game.playerBlack;
+
+  GoMove* move1;
+  GoMove* move2a;
+  GoMove* move2b;
+
+  // The usage of an explicit autorelease pool is a testing device that allows
+  // us to enforce the deallocation of move1 and move2b.
+  @autoreleasepool
+  {
+    move1 = [GoMove move:moveType by:player after:nil];
+    move2a = [GoMove move:moveType by:player after:move1];
+    XCTAssertEqual(move1.next, move2a);
+    XCTAssertEqual(move2a.previous, move1);
+
+    // Imagine that at this point the user discards move2a, but for some reason
+    // the retain count is not immediately decreased to zero and move2a is not
+    // immediately deallocated.
+    // - This could be something in the system that is still holding a
+    //   reference to move2a.
+    // - This could also be a pending autorelease message.
+    //
+    // We simulate this by explicitly increasing the retain count so that
+    // move2a will not be deallocated when the autorelease pool scope ends.
+    [move2a retain];
+
+    // From the user's point of view move2a no longer exists, although the
+    // object still lingers and awaits deallocation. The user at this point
+    // creates a new move (move2b) which overwrites the "next" reference that
+    // move1 still has and that is still pointing at move2a.
+    move2b = [GoMove move:moveType by:player after:move1];
+    XCTAssertEqual(move1.next, move2b);
+    XCTAssertEqual(move2b.previous, move1);
+
+    // When move2b overwrote the "next" reference in move1 that pointed to
+    // move2a, it used the private GoMove method replaceNext:() to do so. This
+    // ensured that the corresponding "previous" reference in move2a was set
+    // to nil so that it no longer points at move1.
+    XCTAssertNil(move2a.previous);
+
+    // Imagine that the user is now creating a new game. All moves are now
+    // discarded. For some reason the retain counts of move1 and move2b
+    // decrease to zero sooner than the retain count of move2a, causing
+    // move1 and move2b to be deallocated BEFORE move2a.
+    //
+    // We simulate this by letting the autorelease pool scope end. Since we
+    // did not explicitly increase the retain count of move1 and move2b, they
+    // are now deallocated.
+  }
+
+  // move2a is still alive at this point. We deallocate it by explicitly
+  // decreasing its retain count. move2a no longer has a "previous" reference
+  // to move1, so this should not cause any problems.
+  XCTAssertNoThrow([move2a release]);
+}
+
 @end
