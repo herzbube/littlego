@@ -433,4 +433,139 @@
   XCTAssertEqual(move.goMoveValuation, GoMoveValuationInteresting);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Exercises the dealloc property
+// -----------------------------------------------------------------------------
+- (void) testDealloc
+{
+  enum GoMoveType moveType = GoMoveTypePlay;
+  GoPlayer* player = m_game.playerBlack;
+
+  GoMove* move1;
+  GoMove* move2;
+  GoMove* move3;
+  GoMove* move4;
+  GoMove* move5;
+
+  // Use an autorelease pool to get rid of the effect of autorelease messages.
+  // Instead we retain the objects so that we can then release/deallocate them
+  // in the order that we want.
+  @autoreleasepool
+  {
+    move1 = [GoMove move:moveType by:player after:nil];
+    move2 = [GoMove move:moveType by:player after:move1];
+    move3 = [GoMove move:moveType by:player after:move2];
+    move4 = [GoMove move:moveType by:player after:move3];
+    move5 = [GoMove move:moveType by:player after:move4];
+
+    [move1 retain];
+    [move2 retain];
+    [move3 retain];
+    [move4 retain];
+    [move5 retain];
+  }
+
+  XCTAssertNil(move1.previous);
+  XCTAssertEqual(move1.next, move2);
+  XCTAssertEqual(move2.previous, move1);
+  XCTAssertEqual(move2.next, move3);
+  XCTAssertEqual(move3.previous, move2);
+  XCTAssertEqual(move3.next, move4);
+  XCTAssertEqual(move4.previous, move3);
+  XCTAssertEqual(move4.next, move5);
+  XCTAssertEqual(move5.previous, move4);
+  XCTAssertNil(move5.next);
+
+  // Deallocate at the beginning of the chain > removes reference to next
+  [move1 release];
+  XCTAssertNil(move2.previous);
+  XCTAssertEqual(move2.next, move3);
+  XCTAssertEqual(move3.previous, move2);
+  XCTAssertEqual(move3.next, move4);
+  XCTAssertEqual(move4.previous, move3);
+  XCTAssertEqual(move4.next, move5);
+  XCTAssertEqual(move5.previous, move4);
+  XCTAssertNil(move5.next);
+
+  // Deallocate at the end of the chain > removes reference to previous
+  [move5 release];
+  XCTAssertNil(move2.previous);
+  XCTAssertEqual(move2.next, move3);
+  XCTAssertEqual(move3.previous, move2);
+  XCTAssertEqual(move3.next, move4);
+  XCTAssertEqual(move4.previous, move3);
+  XCTAssertNil(move4.next);
+
+  // Deallocate in the middle of the chain > removes reference both to next and
+  // previous
+  [move3 release];
+  XCTAssertNil(move2.previous);
+  XCTAssertNil(move2.next);
+  XCTAssertNil(move4.previous);
+  XCTAssertNil(move4.next);
+
+  // Deallocate without next/previous references.
+  // Also cleans up / avoids a memory leak.
+  [move2 release];
+  [move4 release];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Regression test for GitHub issue 369 ("GoMove dealloc removes
+/// references in other GoMove objects that are != self"). Exercises the
+/// dealloc() method.
+///
+/// Note that it is not possible to test
+// -----------------------------------------------------------------------------
+- (void) testIssue369
+{
+  enum GoMoveType moveType = GoMoveTypePlay;
+  GoPlayer* player = m_game.playerBlack;
+
+  GoMove* move1;
+  GoMove* move2a;
+  GoMove* move2b;
+
+  // The usage of an explicit autorelease pool is a testing device that allows
+  // us to enforce the deallocation of move2a.
+  @autoreleasepool
+  {
+    move1 = [GoMove move:moveType by:player after:nil];
+    move2a = [GoMove move:moveType by:player after:move1];
+
+    // Imagine that at this point the user discards move2a, but for some reason
+    // the object's retain count is not immediately decreased to zero and
+    // move2a is not immediately deallocated.
+    // - This could be something in the system that is still holding a
+    //   reference to move2a.
+    // - This could also be a pending autorelease message.
+    // Whatever the reason is: Because move2a is not deallocated the
+    // next/previous references in move1 and move2a remain intact.
+    XCTAssertEqual(move1.next, move2a);
+    XCTAssertEqual(move2a.previous, move1);
+
+    // From the user's point of view move2a no longer exists, although the
+    // object still lingers and awaits deallocation. The user at this point
+    // creates a new move (move2b) which overwrites the "next" reference that
+    // move1 still has and that is still pointing at move2a.
+    move2b = [GoMove move:moveType by:player after:move1];
+    XCTAssertEqual(move1.next, move2b);
+    XCTAssertEqual(move2b.previous, move1);
+
+    // Increase the retain count of move1 and move2b so that they survive the
+    // end of the autorelease pool scope
+    [move1 retain];
+    [move2b retain];
+
+    // Since we did not explicitly increase the retain count of move2a, it is
+    // now deallocated at the end of the autorelease pool scope.
+  }
+
+  // Verify that deallocation of move2a did not change the previous reference
+  // in move1
+  XCTAssertEqual(move1.next, move2b);
+  // For good measure, verify the back reference as well
+  XCTAssertEqual(move2b.previous, move1);
+}
+
 @end

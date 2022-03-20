@@ -162,12 +162,23 @@
   _point = nil;  // don't use self, otherwise we trigger the setter!
   if (self.previous)
   {
-    self.previous.next = nil;  // remove reference to self
+    // Only remove reference to self if this GoMove was not already replaced
+    // by another GoMove. See GitHub issue 369.
+    if (self.previous.next == self)
+      self.previous.next = nil;  // remove reference to self
     self.previous = nil;  // not strictly necessary since we don't retain it
   }
   if (self.next)
   {
-    self.next.previous = nil;  // remove reference to self
+    // Only remove reference to self if this GoMove was not already replaced
+    // by another GoMove. See GitHub issue 369.
+    // In practice it should not be possible that another GoMove has replaced
+    // this GoMove, because the whole app is designed so that when a move is
+    // discarded all of its successor moves are also discarded - so the
+    // "previous" reference in the "next" move should never be overwritten by
+    // anyone. We still do the check to be on the safe side.
+    if (self.next.previous == self)
+      self.next.previous = nil;  // remove reference to self
     self.next = nil;  // not strictly necessary since we don't retain it
   }
   self.capturedStones = nil;
