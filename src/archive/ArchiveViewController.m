@@ -102,6 +102,13 @@ enum DeleteAllSectionItem
 {
   [super loadView];
 
+  // self.edgesForExtendedLayout is UIRectEdgeAll, therefore we have to provide
+  // a background color that is visible behind the navigation bar at the top
+  // (which on smaller iPhones extends behind the statusbar) and the tab bar
+  // at the bottom. The background is only visible when the placeholder view
+  // is shown.
+  self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+
   [self setupPlaceholderView];
   [self setupTableView];
   [self setupAutoLayoutConstraints];
@@ -145,8 +152,6 @@ enum DeleteAllSectionItem
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.edgesForExtendedLayout = UIRectEdgeNone;
-
   self.placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
   self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
   [AutoLayoutUtility fillSuperview:self.view withSubview:self.placeholderView];
