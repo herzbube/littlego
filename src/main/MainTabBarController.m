@@ -179,12 +179,33 @@
 {
   [super loadView];
 
-  if ([LayoutManager sharedManager].uiType != UITypePad)
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
   {
     // The default bar is translucent, so we see the white background. On the
     // iPhone this does not look good because we have a toolbar stacked on top
     // of the tab bar.
-    self.tabBar.barTintColor = [UIColor blackColor];
+    UIColor* barTintColor = [UIColor blackColor];
+
+    // Setting barTintColor was good enough up until iOS 14, but since iOS 15
+    // the property does not have an effect if the edge of a scroll view's
+    // content aligns with the edge of the tab bar. In that case the value of
+    // property scrollEdgeAppearance takes precedence. Since all of our tabs
+    // use scroll views, and those scroll views extend behind the tab bar due
+    // to extended layout, we do have to set scrollEdgeAppearance.
+    if (@available(iOS 15.0, *))
+    {
+      // Let the new object take its initial values from the standard
+      // appearance so that any changes in future iOS versions are automatically
+      // taken care of. We only change the background color.
+      UITabBarAppearance* tabBarAppearance = [[[UITabBarAppearance alloc] initWithBarAppearance:self.tabBar.standardAppearance] autorelease];
+      tabBarAppearance.backgroundColor = barTintColor;
+      self.tabBar.scrollEdgeAppearance = tabBarAppearance;
+    }
+    else
+    {
+      self.tabBar.barTintColor = barTintColor;
+    }
+
     // The default tint color is a rather dark/intense blue which does not look
     // good on a black background. The color we select here is slightly lighter
     // and not as intensely blue as the default.
