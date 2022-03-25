@@ -18,7 +18,6 @@
 // Project includes
 #import "EditTextController.h"
 #import "../ui/AutoLayoutUtility.h"
-#import "../ui/UiElementMetrics.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -26,6 +25,7 @@
 /// @brief Class extension with private properties for EditTextController.
 // -----------------------------------------------------------------------------
 @interface EditTextController()
+@property(nonatomic, assign) UIView* contentView;
 @property(nonatomic, retain) UITextField* textField;
 @property(nonatomic, retain) UITextView* textView;
 @property(nonatomic, assign) UIResponder* firstResponderWhenViewWillAppear;
@@ -66,6 +66,7 @@
   if (! self)
     return nil;
 
+  self.contentView = nil;
   self.textField = nil;
   self.textView = nil;
   self.firstResponderWhenViewWillAppear = nil;
@@ -88,6 +89,7 @@
 - (void) dealloc
 {
   [self removeNotificationResponders];
+  self.contentView = nil;
   self.textField = nil;
   self.textView = nil;
   self.firstResponderWhenViewWillAppear = nil;
@@ -107,11 +109,14 @@
 - (void) loadView
 {
   [super loadView];
-  self.edgesForExtendedLayout = UIRectEdgeNone;
+
+  self.contentView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.view addSubview:self.contentView];
+  self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSafeAreaOfSuperview:self.view withSubview:self.contentView];
 
   // A background color is required to support UIModalPresentationAutomatic
-  if (@available(iOS 13.0, *))
-    self.view.backgroundColor = [UIColor systemBackgroundColor];
+  self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
 
   [self setupNavigationItem];
   switch (self.editTextControllerStyle)
@@ -158,7 +163,7 @@
 - (void) setupTextField
 {
   self.textField = [[[UITextField alloc] initWithFrame:CGRectZero] autorelease];
-  [self.view addSubview:self.textField];
+  [self.contentView addSubview:self.textField];
   [self setupTextFieldAutoLayoutConstraints];
   [self configureTextField];
 }
@@ -174,16 +179,11 @@
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             @"H:|-[textField]-|",
-                            // We want the text field to be offset from the
-                            // superview's top edge. We can't use AutoLayout's
-                            // default (i.e. visual format "V:|-[textField]")
-                            // for this because starting with iOS 8 this default
-                            // has become 0.
-                            [NSString stringWithFormat:@"V:|-%f-[textField]", [UiElementMetrics verticalSpacingSuperview]],
+                            @"V:|-[textField]",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
-                                   inView:self.view];
+                                   inView:self.contentView];
 }
 
 // -----------------------------------------------------------------------------
@@ -213,7 +213,7 @@
 - (void) setupTextView
 {
   self.textView = [[[UITextView alloc] initWithFrame:CGRectZero] autorelease];
-  [self.view addSubview:self.textView];
+  [self.contentView addSubview:self.textView];
   [self setupTextViewAutoLayoutConstraints];
   [self configureTextView];
   [self setupNotificationResponders];
@@ -229,29 +229,29 @@
                                    self.textView, @"textView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[textView]-0-|",
-                            @"V:|-0-[textView]",
+                            @"H:|-[textView]-|",
+                            @"V:|-[textView]",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
-                                   inView:self.view];
+                                   inView:self.contentView];
 
   // Constraint that allows the text view to extend its bottom down to the
-  // bottom of this VC's root view. This constraint is permanently installed.
+  // bottom of the content view. This constraint is permanently installed.
   // It has a low priority so that it can be overridden by the second, optional
   // constraint that is active only while the keyboard is displayed.
   // Note: Although the visual format string for this constraint is quite
-  // simple ("V:[textView]|"), we can't use the visual format API because it
+  // simple ("V:[textView]-|"), we can't use the visual format API because it
   // does not allow us to set a priority for the constraint.
   NSLayoutConstraint* textViewHeightConstraintLowPriority = [NSLayoutConstraint constraintWithItem:self.textView
                                                                                          attribute:NSLayoutAttributeBottom
                                                                                          relatedBy:NSLayoutRelationEqual
-                                                                                            toItem:self.view
+                                                                                            toItem:self.contentView.layoutMarginsGuide
                                                                                          attribute:NSLayoutAttributeBottom
                                                                                         multiplier:1.0f
                                                                                           constant:0];
   textViewHeightConstraintLowPriority.priority = UILayoutPriorityDefaultLow;
-  [self.view addConstraint:textViewHeightConstraintLowPriority];
+  [self.contentView addConstraint:textViewHeightConstraintLowPriority];
 }
 
 // -----------------------------------------------------------------------------
@@ -310,6 +310,11 @@
 // -----------------------------------------------------------------------------
 - (void) keyboardWillShow:(NSNotification*)notification
 {
+  // keyboardWillShow is sometimes invoked multiple times without a
+  // balancing keyboardWillHide in between
+  if (self.textViewHeightConstraint)
+    [self removeTextViewHeightConstraint];
+
   NSDictionary* userInfo = [notification userInfo];
 
   // The frame we get from the notification is in screen coordinates where width
@@ -319,7 +324,7 @@
   // complexities for us.
   NSValue* keyboardFrameAsValue = [userInfo objectForKey:UIKeyboardFrameEndUserInfoKey];
   CGRect keyboardFrame = [keyboardFrameAsValue CGRectValue];
-  keyboardFrame = [self.view convertRect:keyboardFrame fromView:nil];
+  keyboardFrame = [self.contentView convertRect:keyboardFrame fromView:nil];
   CGFloat distanceFromViewBottom = keyboardFrame.size.height;
 
   // Constraint that allows the text view to extend its bottom down to the top
@@ -327,15 +332,15 @@
   self.textViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.textView
                                                                attribute:NSLayoutAttributeBottom
                                                                relatedBy:NSLayoutRelationEqual
-                                                                  toItem:self.view
+                                                                  toItem:self.contentView.layoutMarginsGuide
                                                                attribute:NSLayoutAttributeBottom
                                                               multiplier:1.0f
                                                                 constant:0];
   // The constraint uses the negative of distanceFromViewBottom because we want
   // to express the **difference** of the bottom of the two views involved in
-  // the constraint (self.textView and self.view). In order for this to work,
-  // this VC's root view must extend to the bottom of the screen to where the
-  // keyboard pops up from. This should be the case if this VC is presented
+  // the constraint (self.textView and self.contentView). In order for this to
+  // work, the content view must extend to the bottom of the screen to where
+  // the keyboard pops up from. This should be the case if this VC is presented
   // modally in a nagivation controller.
   self.textViewHeightConstraint.constant = -distanceFromViewBottom;
   // While this constraint is installed, it will take precedence over the
@@ -346,8 +351,8 @@
   NSNumber* animationDurationAsNumber = [userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
   NSTimeInterval animationDuration = [animationDurationAsNumber doubleValue];
   [UIView animateWithDuration:animationDuration animations:^{
-    [self.view addConstraint:self.textViewHeightConstraint];
-    [self.view layoutIfNeeded];
+    [self.contentView addConstraint:self.textViewHeightConstraint];
+    [self.contentView layoutIfNeeded];
   }];
 }
 
@@ -359,14 +364,27 @@
 // -----------------------------------------------------------------------------
 - (void) keyboardWillHide:(NSNotification*)notification
 {
+  // keyboardWillHide is sometimes invoked multiple times although
+  // keyboardWillShow has been invoked only once
+  if (!self.textViewHeightConstraint)
+    return;
+
   NSDictionary* userInfo = [notification userInfo];
   NSNumber* animationDurationAsNumber = [userInfo objectForKey:UIKeyboardAnimationDurationUserInfoKey];
   NSTimeInterval animationDuration = [animationDurationAsNumber doubleValue];
   [UIView animateWithDuration:animationDuration animations:^{
-    [self.view removeConstraint:self.textViewHeightConstraint];
-    self.textViewHeightConstraint = nil;
-    [self.view layoutIfNeeded];
+    [self removeTextViewHeightConstraint];
+    [self.contentView layoutIfNeeded];
   }];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper that removes self.textViewHeightConstraint.
+// -----------------------------------------------------------------------------
+- (void) removeTextViewHeightConstraint
+{
+  [self.contentView removeConstraint:self.textViewHeightConstraint];
+  self.textViewHeightConstraint = nil;
 }
 
 #pragma mark - Action handlers
