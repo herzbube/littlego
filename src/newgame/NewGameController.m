@@ -31,7 +31,6 @@
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
-#import "../ui/UiUtilities.h"
 #import "../ui/UIViewControllerAdditions.h"
 
 
@@ -149,8 +148,9 @@ enum CellID
 @property(nonatomic, assign) NewGameModel* theNewGameModel;
 @property(nonatomic, assign) PlayerModel* playerModel;
 @property(nonatomic, assign) bool advancedScreenWasShown;
-@property(nonatomic, assign) UITableView* tableView;
+@property(nonatomic, assign) UIView* contentView;
 @property(nonatomic, assign) UISegmentedControl* segmentedControl;
+@property(nonatomic, assign) UITableView* tableView;
 @end
 
 
@@ -287,6 +287,7 @@ enum CellID
 // -----------------------------------------------------------------------------
 - (void) createSubviews
 {
+  self.contentView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   self.segmentedControl = [[[UISegmentedControl alloc] initWithItems:nil] autorelease];
   self.tableView = [[[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStyleGrouped] autorelease];
 }
@@ -296,8 +297,9 @@ enum CellID
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
-  [self.view addSubview:self.segmentedControl];
-  [self.view addSubview:self.tableView];
+  [self.view addSubview:self.contentView];
+  [self.contentView addSubview:self.segmentedControl];
+  [self.contentView addSubview:self.tableView];
 }
 
 // -----------------------------------------------------------------------------
@@ -305,7 +307,9 @@ enum CellID
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.edgesForExtendedLayout = UIRectEdgeNone;
+  self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSafeAreaOfSuperview:self.view withSubview:self.contentView];
+
   self.segmentedControl.translatesAutoresizingMaskIntoConstraints = NO;
   self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -322,7 +326,7 @@ enum CellID
                             // starting with iOS 8 this default has become 0.
                             [NSString stringWithFormat:@"V:|-%f-[segmentedControl]-[tableView]-|", [UiElementMetrics verticalSpacingSuperview]],
                             nil];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.contentView];
 }
 
 // -----------------------------------------------------------------------------
@@ -330,7 +334,12 @@ enum CellID
 // -----------------------------------------------------------------------------
 - (void) configureViews
 {
-  [UiUtilities addGroupTableViewBackgroundToView:self.view];
+  // self.edgesForExtendedLayout is UIRectEdgeAll, therefore we have to provide
+  // a background color that is visible behind the navigation bar at the top
+  // (which on smaller iPhones extends behind the statusbar). Also provides the
+  // background for the segmented control. Note: We use the same background
+  // color as the table view to avoid any gaps.
+  self.view.backgroundColor = self.tableView.backgroundColor;
   [self configureSegmentedControl];
   [self configureTableView];
   [self configureNavigationItem];
