@@ -84,7 +84,7 @@ View controller hierarchy for UITypePhone:
                     |   |   +-- UILabel
                     |   |   +-- UIActivityIndicatorView
                     |   +-- BoardPositionCollectionViewController : UICollectionViewController
-                    |   |   +-- UICollectionView (BoardPositionCollectionViewCell cells)
+                    |       +-- UICollectionView (BoardPositionCollectionViewCell cells)
                     +-- RightPaneViewController
                         +-- ButtonBoxController : UICollectionViewController
                         |   +-- UICollectionView (board position navigation cells)
@@ -126,7 +126,7 @@ View controller hierarchy for UITypePad:
                     |   |   +-- UILabel
                     |   |   +-- UIActivityIndicatorView
                     |   +-- BoardPositionCollectionViewController : UICollectionViewController
-                    |   |   +-- UICollectionView (BoardPositionCollectionViewCell cells)
+                    |       +-- UICollectionView (BoardPositionCollectionViewCell cells)
                     +-- RightPaneViewController
                         +-- ButtonBoxController : UICollectionViewController
                         |   +-- UICollectionView (board position navigation cells)
@@ -156,12 +156,10 @@ View controller hierarchy for UITypePhonePortraitOnly:
             |   +-- TwoFingerTapGestureController
             |   +-- BoardAnimationController
             |   +-- BoardView
-            +-- BoardPositionToolbarController
-                +-- BoardPositionListViewController : UICollectionViewController
-                |   +-- UICollectionView (BoardPositionView cells)
-                +-- CurrentBoardPositionViewController
-                |   +-- BoardPositionView
-                +-- UIToolbar (either navigation bar button items + current board position, or board position list)
+            +-- ButtonBoxController : UICollectionViewController
+            |   +-- UICollectionView (board position navigation cells)
+            +-- BoardPositionCollectionViewController : UICollectionViewController
+                +-- UICollectionView (BoardPositionCollectionViewCell cells)
 
 
 iOS 7 and Auto Layout

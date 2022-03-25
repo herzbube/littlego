@@ -17,7 +17,9 @@
 
 // Project includes
 #import "PlayRootViewControllerPhonePortraitOnly.h"
-#import "../boardposition/BoardPositionToolbarController.h"
+#import "../boardposition/BoardPositionButtonBoxDataSource.h"
+#import "../boardposition/BoardPositionCollectionViewCell.h"
+#import "../boardposition/BoardPositionCollectionViewController.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/AutoLayoutConstraintHelper.h"
 #import "../controller/StatusViewController.h"
@@ -34,9 +36,12 @@
 @interface PlayRootViewControllerPhonePortraitOnly()
 @property(nonatomic, retain) NavigationBarButtonModel* navigationBarButtonModel;
 @property(nonatomic, retain) StatusViewController* statusViewController;
-@property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
+@property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
+@property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
+@property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
 @property(nonatomic, retain) UIView* woodenBackgroundView;
+@property(nonatomic, retain) UIView* boardContainerView;
 @property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
 @end
 
@@ -78,9 +83,12 @@
 {
   self.navigationBarButtonModel = nil;
   self.statusViewController = nil;
-  self.boardPositionToolbarController = nil;
   self.boardViewController = nil;
+  self.boardPositionButtonBoxController = nil;
+  self.boardPositionButtonBoxDataSource = nil;
+  self.boardPositionCollectionViewController = nil;
   self.woodenBackgroundView = nil;
+  self.boardContainerView = nil;
   self.boardViewAutoLayoutConstraints = nil;
 }
 
@@ -109,33 +117,13 @@
   //   what we want!
   self.statusViewController = [[[StatusViewController alloc] init] autorelease];
 
-  self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
-}
 
-// -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
-// -----------------------------------------------------------------------------
-- (void) setBoardPositionToolbarController:(BoardPositionToolbarController*)boardPositionToolbarController
-{
-  if (_boardPositionToolbarController == boardPositionToolbarController)
-    return;
-  if (_boardPositionToolbarController)
-  {
-    [_boardPositionToolbarController willMoveToParentViewController:nil];
-    // Automatically calls didMoveToParentViewController:
-    [_boardPositionToolbarController removeFromParentViewController];
-    [_boardPositionToolbarController release];
-    _boardPositionToolbarController = nil;
-  }
-  if (boardPositionToolbarController)
-  {
-    // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:boardPositionToolbarController];
-    [boardPositionToolbarController didMoveToParentViewController:self];
-    [boardPositionToolbarController retain];
-    _boardPositionToolbarController = boardPositionToolbarController;
-  }
+  self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
+  self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
+
+  self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
+  self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;
 }
 
 // -----------------------------------------------------------------------------
@@ -163,6 +151,56 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setBoardPositionButtonBoxController:(ButtonBoxController*)boardPositionButtonBoxController
+{
+  if (_boardPositionButtonBoxController == boardPositionButtonBoxController)
+    return;
+  if (_boardPositionButtonBoxController)
+  {
+    [_boardPositionButtonBoxController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_boardPositionButtonBoxController removeFromParentViewController];
+    [_boardPositionButtonBoxController release];
+    _boardPositionButtonBoxController = nil;
+  }
+  if (boardPositionButtonBoxController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:boardPositionButtonBoxController];
+    [boardPositionButtonBoxController didMoveToParentViewController:self];
+    [boardPositionButtonBoxController retain];
+    _boardPositionButtonBoxController = boardPositionButtonBoxController;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setBoardPositionCollectionViewController:(BoardPositionCollectionViewController*)boardPositionCollectionViewController
+{
+  if (_boardPositionCollectionViewController == boardPositionCollectionViewController)
+    return;
+  if (_boardPositionCollectionViewController)
+  {
+    [_boardPositionCollectionViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_boardPositionCollectionViewController removeFromParentViewController];
+    [_boardPositionCollectionViewController release];
+    _boardPositionCollectionViewController = nil;
+  }
+  if (boardPositionCollectionViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:boardPositionCollectionViewController];
+    [boardPositionCollectionViewController didMoveToParentViewController:self];
+    [boardPositionCollectionViewController retain];
+    _boardPositionCollectionViewController = boardPositionCollectionViewController;
+  }
+}
+
 #pragma mark - UIViewController overrides
 
 // -----------------------------------------------------------------------------
@@ -172,6 +210,7 @@
 {
   [super loadView];
   [self setupViewHierarchy];
+  [self configureViews];
   [self setupAutoLayoutConstraints];
 }
 
@@ -182,15 +221,32 @@
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
+  // This view provides a wooden texture background not only for the Go board,
+  // but for the entire area in which the Go board resides
   self.woodenBackgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 
-  [self.view addSubview:self.boardPositionToolbarController.view];
+  // This is a simple container view that takes up all the unused vertical
+  // space and within which the board view is then vertically centered.
+  self.boardContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+
   [self.view addSubview:self.woodenBackgroundView];
+  [self.view addSubview:self.boardPositionCollectionViewController.view];
 
-  [self.woodenBackgroundView addSubview:self.boardViewController.view];
+  [self.woodenBackgroundView addSubview:self.boardContainerView];
+  [self.woodenBackgroundView addSubview:self.boardPositionButtonBoxController.view];
 
-  self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
+  [self.boardContainerView addSubview:self.boardViewController.view];
 
+  self.navigationItem.titleView = self.statusViewController.view;
+  [self.navigationBarButtonModel updateVisibleGameActions];
+  [self populateNavigationBar];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) configureViews
+{
   // self.edgesForExtendedLayout is UIRectEdgeAll, therefore we have to provide
   // a background color that is visible behind the tab bar at the bottom and
   // (in portrait orientation) behind the navigation bar at the top (which
@@ -201,9 +257,11 @@
   // background color).
   self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
 
-  self.navigationItem.titleView = self.statusViewController.view;
-  [self.navigationBarButtonModel updateVisibleGameActions];
-  [self populateNavigationBar];
+  self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
+
+  [self.boardPositionButtonBoxController applyTransparentStyle];
+
+  [self.boardPositionButtonBoxController reloadData];
 }
 
 // -----------------------------------------------------------------------------
@@ -211,18 +269,19 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
 
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.boardPositionToolbarController.view, @"boardPositionToolbarView",
-                                   self.woodenBackgroundView, @"woodenBackgroundView",
-                                   nil];
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[woodenBackgroundView]-0-|",
-                            @"H:|-0-[boardPositionToolbarView]-0-|",
-                            @"V:[woodenBackgroundView]-0-[boardPositionToolbarView]",
-                            nil];
+  self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
+  CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewMaximumCellSize].height;
+  viewsDictionary[@"woodenBackgroundView"] = self.woodenBackgroundView;
+  viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
+  [visualFormats addObject:@"H:|-0-[woodenBackgroundView]-0-|"];
+  [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
+  [visualFormats addObject:@"V:[woodenBackgroundView]-0-[boardPositionCollectionView]"];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight]];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 
   // Align views with the top/bottom of the safe area - this prevents them from
@@ -230,9 +289,25 @@
   [AutoLayoutUtility alignFirstView:self.woodenBackgroundView
                      withSecondView:self.view
         onSafeAreaLayoutGuideAnchor:NSLayoutAttributeTop];
-  [AutoLayoutUtility alignFirstView:self.boardPositionToolbarController.view
+  [AutoLayoutUtility alignFirstView:self.boardPositionCollectionViewController.view
                      withSecondView:self.view
         onSafeAreaLayoutGuideAnchor:NSLayoutAttributeBottom];
+
+  [viewsDictionary removeAllObjects];
+  [visualFormats removeAllObjects];
+  self.boardContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  int horizontalSpacingButtonBox = [AutoLayoutUtility horizontalSpacingSiblings];
+  int verticalSpacingButtonBox = [AutoLayoutUtility verticalSpacingSiblings];
+  CGSize buttonBoxSize = self.boardPositionButtonBoxController.buttonBoxSize;
+  viewsDictionary[@"boardContainerView"] = self.boardContainerView;
+  viewsDictionary[@"boardPositionButtonBox"] = self.boardPositionButtonBoxController.view;
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-0-[boardContainerView]-0-|"]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[boardPositionButtonBox]", horizontalSpacingButtonBox]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[boardContainerView]-0-[boardPositionButtonBox]-%d-|", verticalSpacingButtonBox]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox(==%f)]", buttonBoxSize.width]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]", buttonBoxSize.height]];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.woodenBackgroundView];
 
   self.boardViewAutoLayoutConstraints = [NSMutableArray array];
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
