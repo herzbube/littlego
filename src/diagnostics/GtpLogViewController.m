@@ -31,6 +31,7 @@
 // -----------------------------------------------------------------------------
 @interface GtpLogViewController()
 @property(nonatomic, retain) GtpLogModel* model;
+@property(nonatomic, assign) UIView* contentView;
 /// @brief The frontside view. Log items are represented by table view cells.
 @property(nonatomic, retain) UITableView* frontSideView;
 /// @brief The backside view. Log items are represented by raw text.
@@ -71,6 +72,7 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   self.model = nil;
+  self.contentView = nil;
   self.frontSideView = nil;
   self.backSideView = nil;
   [super dealloc];
@@ -85,6 +87,12 @@
 {
   [super loadView];
 
+  // self.edgesForExtendedLayout is UIRectEdgeAll, therefore we have to provide
+  // a background color that is visible behind the navigation bar at the top
+  // (which may extend behind the statusbar) and the tab bar at the bottom.
+  self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+
+  [self setupContentView];
   [self setupFrontSideView];
   [self setupBackSideView];
   [self setupNavigationItem];
@@ -121,6 +129,17 @@
   }
 }
 
+#pragma mark - Setup content view
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper
+// -----------------------------------------------------------------------------
+- (void) setupContentView
+{
+  self.contentView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.view addSubview:self.contentView];
+}
+
 #pragma mark - Setup frontside view
 
 // -----------------------------------------------------------------------------
@@ -131,7 +150,7 @@
   self.frontSideView = [[[UITableView alloc] initWithFrame:CGRectZero
                                                      style:UITableViewStylePlain] autorelease];
 
-  [self.view addSubview:self.frontSideView];
+  [self.contentView addSubview:self.frontSideView];
   [self configureFrontSideView];
 }
 
@@ -156,7 +175,7 @@
 - (void) setupBackSideView
 {
   self.backSideView = [[[UITextView alloc] initWithFrame:CGRectZero] autorelease];
-  [self.view addSubview:self.backSideView];
+  [self.contentView addSubview:self.backSideView];
   [self configureBackSideView];
 }
 
@@ -196,12 +215,18 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.edgesForExtendedLayout = UIRectEdgeNone;
+  // It's important to only fill the safe area. If the main view is filled
+  // completelely to its edges, then scrolling of the backside view does not
+  // work on iOS 14 and 15. At least this unexpected behaviour was observed
+  // on the iPhone 12 Pro Max simulator for the mentioned iOS versions. Older
+  // iOS versions did not have this scrolling problem.
+  self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSafeAreaOfSuperview:self.view withSubview:self.contentView];
 
   self.frontSideView.translatesAutoresizingMaskIntoConstraints = NO;
   self.backSideView.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutUtility fillSuperview:self.view withSubview:self.frontSideView];
-  [AutoLayoutUtility fillSuperview:self.view withSubview:self.backSideView];
+  [AutoLayoutUtility fillSuperview:self.contentView withSubview:self.frontSideView];
+  [AutoLayoutUtility fillSuperview:self.contentView withSubview:self.backSideView];
 }
 
 #pragma mark - Managing content of backside view
@@ -476,13 +501,13 @@
   bool flipToFrontSideView = ! self.model.gtpLogViewFrontSideIsVisible;
   if (flipToFrontSideView)
   {
-    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:self.view cache:YES];
+    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:self.contentView cache:YES];
     self.backSideView.hidden = YES;
     self.frontSideView.hidden = NO;
   }
   else
   {
-    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.view cache:YES];
+    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.contentView cache:YES];
     self.frontSideView.hidden = YES;
     self.backSideView.hidden = NO;
     // Content must be reloaded explicitly
