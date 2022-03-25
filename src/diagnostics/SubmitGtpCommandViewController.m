@@ -23,7 +23,6 @@
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
-#import "../ui/UiElementMetrics.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -33,6 +32,7 @@
 // -----------------------------------------------------------------------------
 @interface SubmitGtpCommandViewController()
 @property(nonatomic, retain) GtpCommandModel* model;
+@property(nonatomic, assign) UIView* contentView;
 @property(nonatomic, retain) UITextField* textField;
 @property(nonatomic, retain) UITableView* tableView;
 @end
@@ -63,6 +63,7 @@
 - (void) dealloc
 {
   self.model = nil;
+  self.contentView = nil;
   self.textField = nil;
   self.tableView = nil;
   [super dealloc];
@@ -77,10 +78,27 @@
 {
   [super loadView];
 
+  // self.edgesForExtendedLayout is UIRectEdgeAll, therefore we have to provide
+  // a background color that is visible behind the navigation bar at the top
+  // (which may extend behind the statusbar) and the tab bar at the bottom.
+  self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+
+  [self setupContentView];
   [self setupTextField];
   [self setupTableView];
   [self setupNavigationItem];
   [self setupAutoLayoutConstraints];
+}
+
+#pragma mark - Setup content view
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper
+// -----------------------------------------------------------------------------
+- (void) setupContentView
+{
+  self.contentView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.view addSubview:self.contentView];
 }
 
 #pragma mark - Setup text field
@@ -91,7 +109,7 @@
 - (void) setupTextField
 {
   self.textField = [[[UITextField alloc] initWithFrame:CGRectZero] autorelease];
-  [self.view addSubview:self.textField];
+  [self.contentView addSubview:self.textField];
   [self configureTextField];
 }
 
@@ -122,7 +140,7 @@
 {
   self.tableView = [[[UITableView alloc] initWithFrame:CGRectZero
                                                  style:UITableViewStylePlain] autorelease];
-  [self.view addSubview:self.tableView];
+  [self.contentView addSubview:self.tableView];
   [self configureTableView];
 }
 
@@ -156,7 +174,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.edgesForExtendedLayout = UIRectEdgeNone;
+  self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSafeAreaOfSuperview:self.view withSubview:self.contentView];
 
   self.textField.translatesAutoresizingMaskIntoConstraints = NO;
   self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -166,17 +185,12 @@
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             @"H:|-[textField]-|",
-                            @"H:|-0-[tableView]-0-|",
-                            // We want the text field to be offset from the
-                            // superview's top edge. We can't use AutoLayout's
-                            // default (i.e. visual format "V:|-[textField]")
-                            // for this because starting with iOS 8 this default
-                            // has become 0.
-                            [NSString stringWithFormat:@"V:|-%f-[textField]-[tableView]-|", [UiElementMetrics verticalSpacingSuperview]],
+                            @"H:|-[tableView]-|",
+                            @"V:|-[textField]-[tableView]-|",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
-                                   inView:self.view];
+                                   inView:self.contentView];
 }
 
 #pragma mark - UITableViewDataSource overrides
