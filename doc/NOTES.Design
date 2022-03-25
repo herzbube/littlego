@@ -141,6 +141,29 @@ View controller hierarchy for UITypePad:
                             +-- UICollectionView (game action cells)
 
 
+View controller hierarchy for UITypePhonePortraitOnly:
+
+    MainTabBarController : UITabBarController
+    +-- PlayRootViewNavigationController : UINavigationController
+        +-- PlayRootViewControllerPhonePortraitOnly : PlayRootViewController
+            +-- StatusViewController (titleView of navigation bar of PlayRootViewNavigationController)
+            |   +-- UILabel
+            |   +-- UIActivityIndicatorView
+            +-- BoardViewController
+            |   +-- PanGestureController
+            |   +-- TapGestureController
+            |   +-- DoubleTapGestureController
+            |   +-- TwoFingerTapGestureController
+            |   +-- BoardAnimationController
+            |   +-- BoardView
+            +-- BoardPositionToolbarController
+                +-- BoardPositionListViewController : UICollectionViewController
+                |   +-- UICollectionView (BoardPositionView cells)
+                +-- CurrentBoardPositionViewController
+                |   +-- BoardPositionView
+                +-- UIToolbar (either navigation bar button items + current board position, or board position list)
+
+
 iOS 7 and Auto Layout
 ---------------------
 In iOS 7 Apple added the concept of translucent / transparent bars (tab bars,

@@ -20,8 +20,8 @@
 #import "../boardposition/BoardPositionToolbarController.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/AutoLayoutConstraintHelper.h"
-#import "../controller/NavigationBarController.h"
 #import "../controller/StatusViewController.h"
+#import "../model/NavigationBarButtonModel.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
 #import "../../utility/UIColorAdditions.h"
@@ -32,7 +32,8 @@
 /// PlayRootViewControllerPhonePortraitOnly.
 // -----------------------------------------------------------------------------
 @interface PlayRootViewControllerPhonePortraitOnly()
-@property(nonatomic, retain) NavigationBarController* navigationBarController;
+@property(nonatomic, retain) NavigationBarButtonModel* navigationBarButtonModel;
+@property(nonatomic, retain) StatusViewController* statusViewController;
 @property(nonatomic, retain) BoardPositionToolbarController* boardPositionToolbarController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @property(nonatomic, retain) UIView* woodenBackgroundView;
@@ -75,7 +76,8 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
-  self.navigationBarController = nil;
+  self.navigationBarButtonModel = nil;
+  self.statusViewController = nil;
   self.boardPositionToolbarController = nil;
   self.boardViewController = nil;
   self.woodenBackgroundView = nil;
@@ -89,34 +91,26 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  self.navigationBarController = [NavigationBarController navigationBarController];
+  self.navigationBarButtonModel = [[[NavigationBarButtonModel alloc] init] autorelease];
+  [GameActionManager sharedGameActionManager].uiDelegate = self;
+
+  // We don't treat this as a child view controller. Reason:
+  // - The status view is set as the title view of this container view
+  //   controller's navigation item.
+  // - This causes UIKit to add the status view as a subview to the navigation
+  //   bar of the navigation controller that shows this container view
+  //   controller.
+  // - When we add StatusViewController as a child VC to this container VC,
+  //   UIKit complains with the message that StatusViewController should be a
+  //   child VC of the navigation VC.
+  // - An attempt to follow this advice failed: When StatusViewController is
+  //   made into a child VC of the navigation VC, StatusViewController is also
+  //   added to the navigation VC's navigation stack - which is absolutely not
+  //   what we want!
+  self.statusViewController = [[[StatusViewController alloc] init] autorelease];
+
   self.boardPositionToolbarController = [[[BoardPositionToolbarController alloc] init] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
-// -----------------------------------------------------------------------------
-- (void) setNavigationBarController:(NavigationBarController*)navigationBarController
-{
-  if (_navigationBarController == navigationBarController)
-    return;
-  if (_navigationBarController)
-  {
-    [_navigationBarController willMoveToParentViewController:nil];
-    // Automatically calls didMoveToParentViewController:
-    [_navigationBarController removeFromParentViewController];
-    [_navigationBarController release];
-    _navigationBarController = nil;
-  }
-  if (navigationBarController)
-  {
-    // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:navigationBarController];
-    [navigationBarController didMoveToParentViewController:self];
-    [navigationBarController retain];
-    _navigationBarController = navigationBarController;
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -190,13 +184,26 @@
 {
   self.woodenBackgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 
-  [self.view addSubview:self.navigationBarController.view];
   [self.view addSubview:self.boardPositionToolbarController.view];
   [self.view addSubview:self.woodenBackgroundView];
 
   [self.woodenBackgroundView addSubview:self.boardViewController.view];
 
   self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
+
+  // self.edgesForExtendedLayout is UIRectEdgeAll, therefore we have to provide
+  // a background color that is visible behind the tab bar at the bottom and
+  // (in portrait orientation) behind the navigation bar at the top (which
+  // extends behind the statusbar).
+  //
+  // Any sort of whiteish color is OK as long as it doesn't deviate too much
+  // from the background colors on the other tabs (typically a table view
+  // background color).
+  self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+
+  self.navigationItem.titleView = self.statusViewController.view;
+  [self.navigationBarButtonModel updateVisibleGameActions];
+  [self populateNavigationBar];
 }
 
 // -----------------------------------------------------------------------------
@@ -204,23 +211,28 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.navigationBarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionToolbarController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.navigationBarController.view, @"navigationBarView",
                                    self.boardPositionToolbarController.view, @"boardPositionToolbarView",
                                    self.woodenBackgroundView, @"woodenBackgroundView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-0-[navigationBarView]-0-|",
                             @"H:|-0-[woodenBackgroundView]-0-|",
                             @"H:|-0-[boardPositionToolbarView]-0-|",
-                            [NSString stringWithFormat:@"V:|-%d-[navigationBarView]", [UiElementMetrics statusBarHeight]],
-                            @"V:[navigationBarView]-0-[woodenBackgroundView]-0-[boardPositionToolbarView]-0-|",
+                            @"V:[woodenBackgroundView]-0-[boardPositionToolbarView]",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+
+  // Align views with the top/bottom of the safe area - this prevents them from
+  // extending behind the navigation bar at the top or the tab bar at the bottom
+  [AutoLayoutUtility alignFirstView:self.woodenBackgroundView
+                     withSecondView:self.view
+        onSafeAreaLayoutGuideAnchor:NSLayoutAttributeTop];
+  [AutoLayoutUtility alignFirstView:self.boardPositionToolbarController.view
+                     withSecondView:self.view
+        onSafeAreaLayoutGuideAnchor:NSLayoutAttributeBottom];
 
   self.boardViewAutoLayoutConstraints = [NSMutableArray array];
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -228,6 +240,76 @@
                                               ofBoardView:self.boardViewController.view
                                   forInterfaceOrientation:UIInterfaceOrientationPortrait
                                          constraintHolder:self.boardViewController.view.superview];
+}
+
+#pragma mark - GameActionManagerUIDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief GameActionManagerUIDelegate method.
+// -----------------------------------------------------------------------------
+- (void) gameActionManager:(GameActionManager*)manager
+       updateVisibleStates:(NSDictionary*)gameActions
+{
+  [self.navigationBarButtonModel updateVisibleGameActionsWithVisibleStates:gameActions];
+  [self populateNavigationBar];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief GameActionManagerUIDelegate method.
+// -----------------------------------------------------------------------------
+- (void) gameActionManager:(GameActionManager*)manager
+                    enable:(BOOL)enable
+                gameAction:(enum GameAction)gameAction
+{
+  NSNumber* gameActionAsNumber = [NSNumber numberWithInt:gameAction];
+  UIBarButtonItem* button = self.navigationBarButtonModel.gameActionButtons[gameActionAsNumber];
+  button.enabled = enable;
+}
+
+#pragma mark - Navigation bar population
+
+// -----------------------------------------------------------------------------
+/// @brief Populates the navigation bar with buttons that are appropriate for
+/// the current application state.
+// -----------------------------------------------------------------------------
+- (void) populateNavigationBar
+{
+  [self populateLeftBarButtonItems];
+  [self populateRightBarButtonItems];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by populateNavigationBar().
+// -----------------------------------------------------------------------------
+- (void) populateLeftBarButtonItems
+{
+  NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
+  for (NSNumber* gameActionAsNumber in self.navigationBarButtonModel.visibleGameActions)
+  {
+    UIBarButtonItem* button = self.navigationBarButtonModel.gameActionButtons[gameActionAsNumber];
+    [barButtonItems addObject:button];
+  }
+  self.navigationItem.leftBarButtonItems = barButtonItems;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief This is an internal helper invoked by populateNavigationBar().
+// -----------------------------------------------------------------------------
+- (void) populateRightBarButtonItems
+{
+  NSMutableArray* barButtonItems = [NSMutableArray arrayWithCapacity:0];
+  [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionMoreGameActions]]];
+  [barButtonItems addObject:self.navigationBarButtonModel.gameActionButtons[[NSNumber numberWithInt:GameActionGameInfo]]];
+  self.navigationItem.rightBarButtonItems = barButtonItems;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes all buttons from the navigation bar.
+// -----------------------------------------------------------------------------
+- (void) depopulateNavigationBar
+{
+  self.navigationItem.leftBarButtonItems = nil;
+  self.navigationItem.rightBarButtonItems = nil;
 }
 
 @end
