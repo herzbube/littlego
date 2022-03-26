@@ -124,8 +124,8 @@
       // - We can either change the board position or change UIAreaPlayMode to
       //   resolve the situation.
       // - Because changing board positions is non-trivial and may take
-      //   considerable time to execute, the solution is that what is in the
-      //   Go model objects takes precedence over the UIAreaPlayMode value.
+      //   considerable time to execute, the solution is to change the
+      //   UIAreaPlayMode value.
       if (delegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
       {
         if ([GoGame sharedGame].boardPosition.currentBoardPosition != 0)

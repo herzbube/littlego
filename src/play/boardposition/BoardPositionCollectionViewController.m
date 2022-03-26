@@ -105,6 +105,8 @@
           forCellWithReuseIdentifier:self.reuseIdentifierCell];
   self.collectionView.accessibilityIdentifier = boardPositionCollectionViewAccessibilityIdentifier;
 
+  // The collection view by default has a background color (i.e. it's not nil
+  // or [UIColor clearColor]), but that color is unsuitable for our needs.
   // One of the alternate collection view cell background colors is white. We
   // want to contrast this with a very light gray color so that the user sees
   // where the last/first cell begins and ends (e.g. when there are not enough

@@ -17,7 +17,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The NavigationBarButtonModel class manages UIBarButtonItems objects
-/// that represent game actions.
+/// that are displayed in a UINavigationBar and that represent game actions.
 // -----------------------------------------------------------------------------
 @interface NavigationBarButtonModel : NSObject
 {

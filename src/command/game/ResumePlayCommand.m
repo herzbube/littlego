@@ -18,7 +18,6 @@
 // Project includes
 #import "ResumePlayCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
-#import "../ChangeUIAreaPlayModeCommand.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameRules.h"
 #import "../../go/GoScore.h"

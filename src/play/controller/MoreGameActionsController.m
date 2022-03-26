@@ -46,6 +46,8 @@
 
 @implementation MoreGameActionsController
 
+#pragma mark - Initialization and deallocation
+
 // -----------------------------------------------------------------------------
 /// @brief Initializes a MoreGameActionsController object.
 ///
@@ -78,6 +80,8 @@
   self.modalMaster = nil;
   [super dealloc];
 }
+
+#pragma mark - Displaying and canceling the alert message
 
 // -----------------------------------------------------------------------------
 /// @brief Displays the alert message as described in the class documentation.
@@ -385,6 +389,8 @@
   // Don't do anything else, informing the delegate that we are done (see above)
   // caused this MoreGameActionsController to be deallocated
 }
+
+#pragma mark - Handling tap gestures
 
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Set up a side to play first" button.

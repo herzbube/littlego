@@ -34,7 +34,15 @@
 /// @a constraints. The new set is then added to @a constraintHolder.
 ///
 /// The generated constraints satisfy the following layout requirements:
-/// - The board view is square
+/// - The board view is square. This is important so that coordinate labels
+///   are laid out directly next to the board's edge lines. The following
+///   facts are important to understand this:
+///   - The coordinate labels are laid out at the edges of the board view.
+///   - The board drawing routines always draw the board square and centered on
+///     the canvas with a size that matches the smaller dimension of the canvas.
+///     The canvas size is defined by the board view's visible bounds.
+///   So if the board view was rectangular there would be a gap between one set
+///   of coordinate labels and one edge line of the board.
 /// - The board view size matches either the width or the height of the
 ///   superview, depending on which is the superview's smaller dimension. The
 ///   specified interface orientation @a interfaceOrientation, not the current

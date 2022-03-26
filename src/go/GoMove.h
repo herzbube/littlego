@@ -71,12 +71,12 @@
 /// @brief The player who made this GoMove.
 @property(nonatomic, retain, readonly) GoPlayer* player;
 /// @brief The GoPoint object registering where the stone was placed for this
-/// GoMove. Is nil if this GoMove is @e not a #GoMoveTypePlay.
+/// GoMove. Is @e nil if this GoMove is @e not a #GoMoveTypePlay.
 @property(nonatomic, assign) GoPoint* point;
-/// @brief The predecessor to this GoMove object. nil if this is the first move
-/// of the game.
+/// @brief The predecessor to this GoMove object. @e nil if this is the first
+/// move of the game.
 @property(nonatomic, assign, readonly) GoMove* previous;
-/// @brief The successor to this GoMove object. nil if this is the last move
+/// @brief The successor to this GoMove object. @e nil if this is the last move
 /// of the game.
 @property(nonatomic, assign, readonly) GoMove* next;
 /// @brief Keeps track of stones that were captured by this move.

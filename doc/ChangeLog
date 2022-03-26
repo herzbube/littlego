@@ -31,7 +31,7 @@ Other features:
 - Added a new user preference that lets you choose what kind of computer
   assistance you would like to receive. The default is, just like before, to let
   the computer make a move on your behalf. What's new is that if you prefer you
-  can now tell the computer to insted only make a suggestion how to play (#28).
+  can now tell the computer to instead only make a suggestion how to play (#28).
   Note that the feature is still a bit rough on the edges. Known issues have
   been collected in #363, the polish will come in one of the next releases.
 
