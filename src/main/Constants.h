@@ -1184,7 +1184,6 @@ extern NSString* creditsDocumentResource;
 extern NSString* changelogDocumentResource;
 extern NSString* registrationDomainDefaultsResource;
 extern NSString* playStoneSoundFileResource;
-extern NSString* mainMenuIconResource;
 extern NSString* uiAreaPlayIconResource;
 extern NSString* uiAreaSettingsIconResource;
 extern NSString* uiAreaArchiveIconResource;

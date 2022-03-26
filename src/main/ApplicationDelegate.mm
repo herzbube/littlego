@@ -29,7 +29,6 @@
 
 // Project includes
 #import "ApplicationDelegate.h"
-#import "MainMenuPresenter.h"
 #import "MainTabBarController.h"
 #import "../gtp/GtpClient.h"
 #import "../gtp/GtpEngine.h"
@@ -157,7 +156,6 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.boardSetupModel = nil;
   self.sgfSettingsModel = nil;
   self.fileLogger = nil;
-  [MainMenuPresenter releaseSharedPresenter];
   [BoardPositionNavigationManager releaseSharedNavigationManager];
   [GameActionManager releaseSharedGameActionManager];
   [BoardViewCGLayerCache releaseSharedCache];

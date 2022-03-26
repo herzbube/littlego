@@ -20,7 +20,6 @@
 #import "ApplicationDelegate.h"
 #import "DocumentViewController.h"
 #import "LicensesViewController.h"
-#import "MainNavigationController.h"
 #import "MainTabBarController.h"
 #import "SectionedDocumentViewController.h"
 #import "UIAreaInfo.h"
@@ -156,16 +155,8 @@
 + (UIView*) rootViewForUIAreaPlay
 {
   UIViewController* windowRootViewController = [ApplicationDelegate sharedDelegate].windowRootViewController;
-  if ([LayoutManager sharedManager].uiType != UITypePhone)
-  {
-    MainTabBarController* tabBarController = (MainTabBarController*)windowRootViewController;
-    return [tabBarController tabViewForUIArea:UIAreaPlay];
-  }
-  else
-  {
-    MainNavigationController* mainNavigationController = (MainNavigationController*)windowRootViewController;
-    return [mainNavigationController rootViewForUIAreaPlay];
-  }
+  MainTabBarController* tabBarController = (MainTabBarController*)windowRootViewController;
+  return [tabBarController tabViewForUIArea:UIAreaPlay];
 }
 
 // -----------------------------------------------------------------------------
@@ -205,16 +196,8 @@
 + (void) activateUIArea:(enum UIArea)uiArea
 {
   UIViewController* windowRootViewController = [ApplicationDelegate sharedDelegate].windowRootViewController;
-  if ([LayoutManager sharedManager].uiType != UITypePhone)
-  {
-    MainTabBarController* tabBarController = (MainTabBarController*)windowRootViewController;
-    [tabBarController activateTabForUIArea:uiArea];
-  }
-  else
-  {
-    MainNavigationController* mainNavigationController = (MainNavigationController*)windowRootViewController;
-    [mainNavigationController activateUIArea:uiArea];
-  }
+  MainTabBarController* tabBarController = (MainTabBarController*)windowRootViewController;
+  [tabBarController activateTabForUIArea:uiArea];
 }
 
 // -----------------------------------------------------------------------------

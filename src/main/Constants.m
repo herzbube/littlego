@@ -207,7 +207,6 @@ NSString* creditsDocumentResource = @"Credits.html";
 NSString* changelogDocumentResource = @"ChangeLog";
 NSString* registrationDomainDefaultsResource = @"RegistrationDomainDefaults.plist";
 NSString* playStoneSoundFileResource = @"wood-on-wood-12.aiff";
-NSString* mainMenuIconResource = @"main-menu.png";
 NSString* uiAreaPlayIconResource = @"gogrid2x2.png";
 NSString* uiAreaSettingsIconResource = @"settings.png";
 NSString* uiAreaArchiveIconResource = @"archive.png";
