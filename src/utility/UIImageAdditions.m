@@ -63,15 +63,55 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a new image by resizing the current image to @a newSize.
+///
+/// Returns the current image if @a newSize is equal to the size of the current
+/// image.
 // -----------------------------------------------------------------------------
 - (UIImage*) imageByResizingToSize:(CGSize)newSize
 {
+  if (CGSizeEqualToSize(self.size, newSize))
+    return self;
+
   UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
   CGRect resizedImageRect = CGRectMake(0, 0, newSize.width, newSize.height);
   [self drawInRect:resizedImageRect];
   UIImage* resizedImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return resizedImage;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a new image by scaling the current image by @a factor in both
+/// directions (width and height).
+///
+/// Returns the current image if @a factor is 1.0f.
+// -----------------------------------------------------------------------------
+- (UIImage*) imageByScalingWithFactor:(CGFloat)factor
+{
+  CGSize newSize = self.size;
+  newSize.width *= factor;
+  newSize.height *= factor;
+  return [self imageByResizingToSize:newSize];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a new image by scaling the current image so that its new
+/// height is @a height.
+///
+/// Returns the current image if @a newHeight is equal to the height of the
+/// current image.
+// -----------------------------------------------------------------------------
+- (UIImage*) imageByScalingToHeight:(CGFloat)newHeight
+{
+  if (self.size.height == newHeight)
+    return self;
+
+  CGFloat factor = newHeight / self.size.height;
+  CGSize newSize = self.size;
+  newSize.width *= factor;
+  newSize.height = newHeight;
+
+  return [self imageByResizingToSize:newSize];
 }
 
 // -----------------------------------------------------------------------------
@@ -82,6 +122,30 @@
 - (UIImage*) templateImageByResizingToSize:(CGSize)newSize
 {
   UIImage* resizedImage = [self imageByResizingToSize:newSize];
+  return [resizedImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a new image by scaling the current image by @a factor in both
+/// directions (width and height). The new image is always rendered as a
+/// template image. This allows to apply a tint color to it when it is rendered
+/// in an image view or web view.
+// -----------------------------------------------------------------------------
+- (UIImage*) templateImageByScalingWithFactor:(CGFloat)factor
+{
+  UIImage* resizedImage = [self imageByScalingWithFactor:factor];
+  return [resizedImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a new image by scaling the current image so that its new
+/// height is @a height. The new image is always rendered as a template image.
+/// This allows to apply a tint color to it when it is rendered in an image view
+/// or web view.
+// -----------------------------------------------------------------------------
+- (UIImage*) templateImageByScalingToHeight:(CGFloat)newHeight
+{
+  UIImage* resizedImage = [self imageByScalingToHeight:newHeight];
   return [resizedImage imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
@@ -231,6 +295,114 @@
                                                         ofType:nil];
   NSData* imageData = [NSData dataWithContentsOfFile:imagePath];
   return [UIImage imageWithData:imageData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an icon image that describes @a boardPositionValuation.
+// -----------------------------------------------------------------------------
++ (UIImage*) iconForBoardPositionValuation:(enum GoBoardPositionValuation)boardPositionValuation
+{
+  switch (boardPositionValuation)
+  {
+    case GoBoardPositionValuationGoodForBlack:
+      return [UIImage imageNamed:stoneBlackButtonIconResource];
+    case GoBoardPositionValuationVeryGoodForBlack:
+      return [UIImage imageNamed:stonesOverlappingBlackButtonIconResource];
+    case GoBoardPositionValuationGoodForWhite:
+      return [UIImage imageNamed:stoneWhiteButtonIconResource];
+    case GoBoardPositionValuationVeryGoodForWhite:
+      return [UIImage imageNamed:stonesOverlappingWhiteButtonIconResource];
+    case GoBoardPositionValuationEven:
+      return [UIImage imageNamed:stoneBlackAndWhiteButtonIconResource];
+    case GoBoardPositionValuationVeryEven:
+      return [UIImage imageNamed:stonesOverlappingBlackAndWhiteButtonIconResource];
+    case GoBoardPositionValuationUnclear:
+      return [UIImage imageNamed:unclearButtonIconResource];
+    case GoBoardPositionValuationVeryUnclear:
+      return [UIImage imageNamed:veryUnclearButtonIconResource];
+    case GoBoardPositionValuationNone:
+      return [UIImage imageNamed:noneButtonIconResource];
+    default:
+      return nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an icon image that describes @a moveValuation.
+// -----------------------------------------------------------------------------
++ (UIImage*) iconForMoveValuation:(enum GoMoveValuation)moveValuation
+{
+  switch (moveValuation)
+  {
+    case GoMoveValuationGood:
+      return [UIImage imageNamed:goodButtonIconResource];
+    case GoMoveValuationVeryGood:
+      return [UIImage imageNamed:veryGoodButtonIconResource];
+    case GoMoveValuationBad:
+      return [UIImage imageNamed:badButtonIconResource];
+    case GoMoveValuationVeryBad:
+      return [UIImage imageNamed:veryBadButtonIconResource];
+    case GoMoveValuationInteresting:
+      return [UIImage imageNamed:interestingButtonIconResource];
+    case GoMoveValuationDoubtful:
+      return [UIImage imageNamed:doubtfulButtonIconResource];
+    case GoMoveValuationNone:
+      return [UIImage imageNamed:noneButtonIconResource];
+    default:
+      return nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an icon image that describes @a scoreSummary and @a scoreValue.
+// -----------------------------------------------------------------------------
++ (UIImage*) iconForScoreSummary:(enum GoScoreSummary)scoreSummary
+{
+  switch (scoreSummary)
+  {
+    case GoScoreSummaryBlackWins:
+      return [UIImage imageNamed:stoneBlackButtonIconResource];
+    case GoScoreSummaryWhiteWins:
+      return [UIImage imageNamed:stoneWhiteButtonIconResource];
+    case GoScoreSummaryTie:
+      return [UIImage imageNamed:stoneBlackAndWhiteButtonIconResource];
+    case GoScoreSummaryNone:
+      return [UIImage imageNamed:noneButtonIconResource];
+    default:
+      return nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an icon image that describes @a boardPositionHotspotDesignation.
+// -----------------------------------------------------------------------------
++ (UIImage*) iconForBoardPositionHotspotDesignation:(enum GoBoardPositionHotspotDesignation)boardPositionHotspotDesignation
+{
+  switch (boardPositionHotspotDesignation)
+  {
+    case GoBoardPositionHotspotDesignationYes:
+      return [UIImage imageNamed:hotspotIconResource];
+    case GoBoardPositionHotspotDesignationYesEmphasized:
+      // TODO xxx in iOS 13 and newer there is an imageWithTintColor method
+      // https://developer.apple.com/documentation/uikit/uiimage/3327300-imagewithtintcolor?language=objc
+      return [UIImage imageNamed:hotspotIconResource];
+    case GoBoardPositionHotspotDesignationNone:
+      return [UIImage imageNamed:noneButtonIconResource];
+    default:
+      return nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an edit icon image.
+// -----------------------------------------------------------------------------
++ (UIImage*) editIcon
+{
+  // TODO xxx test
+  if (@available(iOS 13, *))
+    return [UIImage systemImageNamed:@"square.and.pencil"];
+  else
+    return [UIImage imageNamed:editButtonIconResource];
 }
 
 @end

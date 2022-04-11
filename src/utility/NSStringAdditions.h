@@ -42,4 +42,10 @@
 + (NSString*) stringWithLifeAndDeathSettlingRule:(enum GoLifeAndDeathSettlingRule)lifeAndDeathSettlingRule;
 + (NSString*) stringWithDisputeResolutionRule:(enum GoDisputeResolutionRule)disputeResolutionRule;
 + (NSString*) stringWithFourPassesRule:(enum GoFourPassesRule)fourPassesRule;
++ (NSString*) stringWithBoardPositionValuation:(enum GoBoardPositionValuation)boardPositionValuation;
++ (NSString*) stringWithMoveValuation:(enum GoMoveValuation)moveValuation;
++ (NSString*) shortStringWithScoreSummary:(enum GoScoreSummary)scoreSummary scoreValue:(double)scoreValue;
++ (NSString*) stringWithScoreSummary:(enum GoScoreSummary)scoreSummary scoreValue:(double)scoreValue;
++ (NSString*) stringWithBoardPositionHotspotDesignation:(enum GoBoardPositionHotspotDesignation)boardPositionHotspotDesignation;
+
 @end

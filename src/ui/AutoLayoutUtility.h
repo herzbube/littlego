@@ -51,6 +51,17 @@
                            onAttribute:(NSLayoutAttribute)attribute
                           withConstant:(CGFloat)constant
                       constraintHolder:(UIView*)constraintHolder;
++ (NSLayoutConstraint*) alignFirstView:(UIView*)firstView
+                        withSecondView:(UIView*)secondView
+                           onAttribute:(NSLayoutAttribute)attribute
+                        withMultiplier:(CGFloat)multiplier
+                      constraintHolder:(UIView*)constraintHolder;
++ (NSLayoutConstraint*) alignFirstView:(UIView*)firstView
+                        withSecondView:(UIView*)secondView
+                           onAttribute:(NSLayoutAttribute)attribute
+                        withMultiplier:(CGFloat)multiplier
+                          withConstant:(CGFloat)constant
+                      constraintHolder:(UIView*)constraintHolder;
 + (NSArray*) alignFirstView:(UIView*)firstView
              withSecondView:(UIView*)secondView
             onSafeAreaEdges:(UIRectEdge)edges;

@@ -477,7 +477,7 @@
   switch (goBoardPositionHotspotDesignation)
   {
     case GoBoardPositionHotspotDesignationYes:
-      return [UIColor ncsYellowColor];
+      return [UIColor blackColor];
     case GoBoardPositionHotspotDesignationYesEmphasized:
       return [UIColor pantoneRedColor];
     case GoBoardPositionHotspotDesignationNone:
@@ -486,6 +486,30 @@
       assert(0);
       return nil;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object to use as the text color for labels that
+/// display regular text, i.e. text that is not a placeholder text.
+// -----------------------------------------------------------------------------
++ (UIColor*) labelTextColorRegularText
+{
+  if (@available(iOS 13, *))
+    return [UIColor labelColor];
+  else
+    return [UIColor blackColor];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a color object to use as the text color for labels that
+/// display a placeholder text.
+// -----------------------------------------------------------------------------
++ (UIColor*) labelTextColorPlaceholderText
+{
+  if (@available(iOS 13, *))
+    return [UIColor placeholderTextColor];
+  else
+    return [UIColor grayColor];
 }
 
 @end

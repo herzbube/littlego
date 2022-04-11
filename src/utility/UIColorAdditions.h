@@ -59,4 +59,7 @@
 + (UIColor*) navigationbarBackgroundColor;
 + (UIColor*) woodenBackgroundColor;
 + (UIColor*) hotspotColor:(enum GoBoardPositionHotspotDesignation)goBoardPositionHotspotDesignation;
++ (UIColor*) labelTextColorRegularText;
++ (UIColor*) labelTextColorPlaceholderText;
+
 @end

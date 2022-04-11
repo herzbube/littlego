@@ -363,4 +363,118 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a boardPositionValuation.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithBoardPositionValuation:(enum GoBoardPositionValuation)boardPositionValuation
+{
+  switch (boardPositionValuation)
+  {
+    case GoBoardPositionValuationGoodForBlack:
+      return @"Good for black";
+    case GoBoardPositionValuationVeryGoodForBlack:
+      return @"Very good for black";
+    case GoBoardPositionValuationGoodForWhite:
+      return @"Good for white";
+    case GoBoardPositionValuationVeryGoodForWhite:
+      return @"Very good for white";
+    case GoBoardPositionValuationEven:
+      return @"Even";
+    case GoBoardPositionValuationVeryEven:
+      return @"Very even";
+    case GoBoardPositionValuationUnclear:
+      return @"Unclear";
+    case GoBoardPositionValuationVeryUnclear:
+      return @"Very unclear";
+    case GoBoardPositionValuationNone:
+      return @"<No position valuation information>";
+    default:
+      return @"Unknown";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a moveValuation.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithMoveValuation:(enum GoMoveValuation)moveValuation
+{
+  switch (moveValuation)
+  {
+    case GoMoveValuationGood:
+      return @"Good move";
+    case GoMoveValuationVeryGood:
+      return @"Very good move";
+    case GoMoveValuationBad:
+      return @"Bad move";
+    case GoMoveValuationVeryBad:
+      return @"Very bad move";
+    case GoMoveValuationInteresting:
+      return @"Interesting move";
+    case GoMoveValuationDoubtful:
+      return @"Doubtful move";
+    case GoMoveValuationNone:
+      return @"<No move valuation information>";
+    default:
+      return @"Unknown";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a scoreSummary and @a scoreValue.
+// -----------------------------------------------------------------------------
++ (NSString*) shortStringWithScoreSummary:(enum GoScoreSummary)scoreSummary scoreValue:(double)scoreValue
+{
+  switch (scoreSummary)
+  {
+    case GoScoreSummaryBlackWins:
+      return [NSString stringWithFormat:@"B+%.1f", scoreValue];
+    case GoScoreSummaryWhiteWins:
+      return [NSString stringWithFormat:@"W+%.1f", scoreValue];
+    case GoScoreSummaryTie:
+      return @"Tie";
+    case GoScoreSummaryNone:
+      return @"-";
+    default:
+      return @"Unknown";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a scoreSummary and @a scoreValue.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithScoreSummary:(enum GoScoreSummary)scoreSummary scoreValue:(double)scoreValue
+{
+  switch (scoreSummary)
+  {
+    case GoScoreSummaryBlackWins:
+      return [NSString stringWithFormat:@"Black wins by %.1f", scoreValue];
+    case GoScoreSummaryWhiteWins:
+      return [NSString stringWithFormat:@"White wins by %.1f", scoreValue];
+    case GoScoreSummaryTie:
+      return @"Game is a tie";
+    case GoScoreSummaryNone:
+      return @"<No score information>";
+    default:
+      return @"Unknown";
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a boardPositionHotspotDesignation.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithBoardPositionHotspotDesignation:(enum GoBoardPositionHotspotDesignation)boardPositionHotspotDesignation
+{
+  switch (boardPositionHotspotDesignation)
+  {
+    case GoBoardPositionHotspotDesignationYes:
+      return @"Position is a hot spot";
+    case GoBoardPositionHotspotDesignationYesEmphasized:
+      return @"Position is an intense hot spot";
+    case GoBoardPositionHotspotDesignationNone:
+      return @"<No position hotspot information>";
+    default:
+      return @"Unknown";
+  }
+}
+
 @end

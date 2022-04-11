@@ -162,3 +162,81 @@ go-motifs: stone-black-icon.svg, stone-white-icon.svg
                              use 3 px here because this causes the small glare
                              shape inside the stone shape to become an
                              unrecognizable pixel mess.
+
+go-motifs: stones-overlapping-black-icon.svg
+--------------------------------------------
+- Duplicate stone-black-icon.svg
+- Select the stone shape
+- Duplicate the stone shape
+- Move the second stone shape 22px to the right (in the toolbar select the
+  display unit to "px" instead of "mm"), simply by pressing the cursor-right
+  key 11 times (each key press moves the shape by 2px)
+- Duplicate the second stone shape
+- Temporarily move the third stone shape downwards out of the way. It's best to
+  use the cursor-down key again, so that the shape can be easily moved back to
+  its original position later on with the cursor-up key.
+- Select stone shapes 1+2
+- Select Path > Difference
+- Select the "Erase Existing Paths" tool (Shift+E)
+- In the top toolbar, change the mode to "Cut out from paths and shapes"
+- In the top toolbar, change the width of the eraser to something like 20
+- Erase the black glare shape on the right
+- Select the "Select and transform objects" tool
+- Select the third stone shape and move it upwards until it is again in its
+  original location.
+- Shift the third stone shape 1px to the left, e.g. via toolbar. This covers a
+  small gap that was left by the difference operation and that, if it remained
+  uncovered, would lead to some whitish pixels when the .png is exported.
+- Select both objects, then select Object > Group
+- Save the .svg file
+- Export to .png in varying sizes
+  - For details on how to repetitively adjust stroke width and shape size, see
+    the section above covering stone-black-icon.svg and stone-white-icon.svg
+
+go-motifs: stones-overlapping-white-icon.svg
+--------------------------------------------
+- Duplicate stone-white-icon.svg
+- Follow the instructions for stones-overlapping-black-icon.svg up to the
+  "Path > Difference" operation
+- The difference operation has to be done a bit different: Select only the two
+  circle shapes, do not select the white glare shapes. Then select
+  Path > Difference.
+- The result is that the circle on the left now has two gaps in it. Use the
+  erase method explained for stones-overlapping-black-icon.svg to erase the
+  segment on the right of the two gaps.
+- The remaining steps are, again, the same as for
+  stones-overlapping-black-icon.svg.
+
+go-motifs: stone-black-and-white-icon.svg, stones-overlapping-black-and-white-icon.svg
+--------------------------------------------------------------------------------------
+- stone-black-and-white-icon.svg is exactly the same as noun-go-stone-3961179.svg
+- stones-overlapping-black-and-white-icon.svg is an overlapping version of
+  stone-black-and-white-icon.svg, using the same technique as in
+  stones-overlapping-black-icon.svg.
+- Exporting to .png in varying sizes uses the same technique as in
+  stone-black-icon.svg and stone-white-icon.svg
+
+unclear.svg, very-unclear.svg
+-----------------------------
+- unclear.svg is exactly the same as noun-question-mark-2647217.svg
+- very-unclear.svg is an overlapping version of unclear.svg, using the same
+  technique as in stones-overlapping-black-icon.svg.
+- Exporting to .png in varying sizes uses the same technique as in
+  stone-black-icon.svg and stone-white-icon.svg
+
+good.svg, very-good.svg, bad.svg, very-bad.svg
+----------------------------------------------
+- good.svg and bad.svg are exactly the same as noun-like-3323435.svg and
+  noun-dislike-3323410.svg
+- very-good.svg and very-bad.svg are an overlapping version of good.svg and
+  bad.svg, respectively, using the same technique as in
+  stones-overlapping-black-icon.svg.
+- Exporting to .png in varying sizes uses the same technique as in
+  stone-black-icon.svg and stone-white-icon.svg
+
+interesting.svg, doubtful.svg
+-----------------------------
+- interesting.svg and doubtful.svg are exactly the same as
+  noun-exclamation-1678344.svg and noun-questions-3550357.svg
+- Exporting to .png in varying sizes uses the same technique as in
+  stone-black-icon.svg and stone-white-icon.svg

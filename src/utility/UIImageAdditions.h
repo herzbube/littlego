@@ -25,7 +25,11 @@
 
 + (UIImage*) imageByApplyingUIBarButtonItemStyling:(UIImage*)image;
 - (UIImage*) imageByResizingToSize:(CGSize)newSize;
+- (UIImage*) imageByScalingWithFactor:(CGFloat)factor;
+- (UIImage*) imageByScalingToHeight:(CGFloat)newHeight;
 - (UIImage*) templateImageByResizingToSize:(CGSize)newSize;
+- (UIImage*) templateImageByScalingWithFactor:(CGFloat)factor;
+- (UIImage*) templateImageByScalingToHeight:(CGFloat)newHeight;
 + (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor endColor:(UIColor*)endColor;
 + (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor middleColor:(UIColor*)middleColor endColor:(UIColor*)endColor;
 + (UIImage*) gradientImageWithSize:(CGSize)size startColor1:(UIColor*)startColor1 endColor1:(UIColor*)endColor1 startColor2:(UIColor*)startColor2 endColor2:(UIColor*)endColor2;
@@ -33,5 +37,10 @@
 + (UIImage*) paddedImageWithSize:(CGSize)size tintedFor:(UIUserInterfaceStyle)userInterfaceStyle originalImage:(UIImage*)originalImage API_AVAILABLE(ios(13.0));
 + (UIImage*) tiledImageWithSize:(CGSize)size fromTile:(UIImage*)tile;
 + (UIImage*) woodenBackgroundTileImage;
++ (UIImage*) iconForBoardPositionValuation:(enum GoBoardPositionValuation)boardPositionValuation;
++ (UIImage*) iconForMoveValuation:(enum GoMoveValuation)moveValuation;
++ (UIImage*) iconForScoreSummary:(enum GoScoreSummary)scoreSummary;
++ (UIImage*) iconForBoardPositionHotspotDesignation:(enum GoBoardPositionHotspotDesignation)boardPositionHotspotDesignation;
++ (UIImage*) editIcon;
 
 @end
