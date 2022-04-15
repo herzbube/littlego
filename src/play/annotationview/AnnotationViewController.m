@@ -44,6 +44,7 @@
   switch ([LayoutManager sharedManager].uiType)
   {
     case UITypePhonePortraitOnly:
+    case UITypePhone:
       annotationViewController = [[[AnnotationViewControllerPhonePortraitOnly alloc] init] autorelease];
       break;
     default:

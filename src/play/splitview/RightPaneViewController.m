@@ -17,6 +17,7 @@
 
 // Project includes
 #import "RightPaneViewController.h"
+#import "../annotationview/AnnotationViewController.h"
 #import "../boardposition/BoardPositionButtonBoxDataSource.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/AutoLayoutConstraintHelper.h"
@@ -39,6 +40,7 @@
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
 @property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
+@property(nonatomic, retain) AnnotationViewController* annotationViewController;
 @property(nonatomic, retain) ButtonBoxController* gameActionButtonBoxController;
 @property(nonatomic, retain) GameActionButtonBoxDataSource* gameActionButtonBoxDataSource;
 @property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
@@ -81,6 +83,7 @@
   self.rightColumnView = nil;
   self.boardPositionButtonBoxController = nil;
   self.boardPositionButtonBoxDataSource = nil;
+  self.annotationViewController = nil;
   self.gameActionButtonBoxController = nil;
   self.gameActionButtonBoxDataSource = nil;
   self.gameActionButtonBoxAutoLayoutConstraints = nil;
@@ -99,6 +102,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
+  self.annotationViewController = [AnnotationViewController annotationViewController];
   self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
   self.gameActionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
 
@@ -110,6 +114,31 @@
   self.gameActionButtonBoxDataSource.buttonBoxController = self.gameActionButtonBoxController;
   self.gameActionButtonBoxController.buttonBoxControllerDataSource = self.gameActionButtonBoxDataSource;
   self.gameActionButtonBoxController.buttonBoxControllerDelegate = self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setAnnotationViewController:(AnnotationViewController*)annotationViewController
+{
+  if (_annotationViewController == annotationViewController)
+    return;
+  if (_annotationViewController)
+  {
+    [_annotationViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_annotationViewController removeFromParentViewController];
+    [_annotationViewController release];
+    _annotationViewController = nil;
+  }
+  if (annotationViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:annotationViewController];
+    [annotationViewController didMoveToParentViewController:self];
+    [annotationViewController retain];
+    _annotationViewController = annotationViewController;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -228,6 +257,7 @@
 
   self.leftColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   [self.woodenBackgroundView addSubview:self.leftColumnView];
+  [self.leftColumnView addSubview:self.annotationViewController.view];
   [self.leftColumnView addSubview:self.boardPositionButtonBoxController.view];
 
   self.middleColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
@@ -263,7 +293,7 @@
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
   // Here we define the width of the middle column. The width of the left and
-  // right columns are defined by the width of the button boxes they contain.
+  // right columns are defined by the width of the subviews they contain.
   // This is set up further down.
   [viewsDictionary setObject:self.leftColumnView forKey:@"leftColumnView"];
   [viewsDictionary setObject:self.middleColumnView forKey:@"middleColumnView"];
@@ -303,16 +333,26 @@
   [self.rightColumnView.bottomAnchor constraintEqualToAnchor:bottomAnchor].active = YES;
   [self.rightColumnView.rightAnchor constraintEqualToAnchor:rightAnchor].active = YES;
 
-  // Here we define the width and positioning of the button box in the left
-  // column view, as well as the width of the left column view itself.
+  // Here we define the width and positioning of the annotation view and the
+  // button box in the left column view. The width of the annotation view
+  // defines the width of the left column view itself.
+  CGSize buttonBoxSize = self.boardPositionButtonBoxController.buttonBoxSize;
+  // The annotation view should be wide enough to display most description
+  // texts without scrolling. It can't be arbitrarily wide because it must
+  // leave enough space for the board view.
+  int annotationViewWidth = buttonBoxSize.width * 2;
   [viewsDictionary removeAllObjects];
   [visualFormats removeAllObjects];
+  self.annotationViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [viewsDictionary setObject:self.annotationViewController.view forKey:@"annotationView"];
   [viewsDictionary setObject:self.boardPositionButtonBoxController.view forKey:@"boardPositionButtonBox"];
-  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[boardPositionButtonBox]-%d-|", horizontalSpacingButtonBox, horizontalSpacingButtonBox]];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox]-%d-|", verticalSpacingButtonBox]];
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox(==%f)]", self.boardPositionButtonBoxController.buttonBoxSize.width]];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]", self.boardPositionButtonBoxController.buttonBoxSize.height]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[annotationView]-%d-|", horizontalSpacingButtonBox, horizontalSpacingButtonBox]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[boardPositionButtonBox]", horizontalSpacingButtonBox]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-%d-[annotationView]-%d-[boardPositionButtonBox]-%d-|", verticalSpacingButtonBox, verticalSpacingButtonBox, verticalSpacingButtonBox]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[annotationView(==%d)]", annotationViewWidth]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox(==%f)]", buttonBoxSize.width]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]", buttonBoxSize.height]];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.leftColumnView];
 
   // Here we define the width and positioning of the button box in the right
@@ -339,6 +379,7 @@
   // but for the entire area in which the Go board resides
   self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
 
+  [self.annotationViewController applyTransparentStyle];
   [self.boardPositionButtonBoxController applyTransparentStyle];
   [self.gameActionButtonBoxController applyTransparentStyle];
 }

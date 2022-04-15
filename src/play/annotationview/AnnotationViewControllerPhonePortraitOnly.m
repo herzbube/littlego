@@ -24,6 +24,7 @@
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeAnnotation.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/PageViewController.h"
@@ -46,8 +47,6 @@
 @property(nonatomic, assign) int buttonVerticalSpacing;
 @property(nonatomic, retain) PageViewController* customPageViewController;
 @property(nonatomic, retain) UIViewController* valuationViewController;
-@property(nonatomic, retain) UIScrollView* valuationScrollView;
-@property(nonatomic, retain) UIView* valuationContentView;
 @property(nonatomic, retain) UIStackView* valuationViewStackView;
 @property(nonatomic, retain) UILabel* positionValuationLabel;
 @property(nonatomic, retain) UIButton* positionValuationButton;
@@ -91,8 +90,15 @@
 
   // Sizes were experimentally determined to not cause vertical scrolling or
   // any kind of layout shifts on an iPhone 5S, even when a three-digit score
-  // is displayed.
-  self.labelFontSize = 10;
+  // is displayed. On larger iPhones there is more space available, so a
+  // slightly larger font size can be used for UITypePhone. The font size
+  // must not be too large, though, otherwise the layout no longer looks good
+  // (esp. button labels must not gain too much weight when compared with
+  // button icons).
+  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
+    self.labelFontSize = 10;
+  else
+    self.labelFontSize = 11;
   self.iconHeight = 22;
   // Margins and spacings were chosen experimentally to look good but not waste
   // too much vertical space (important for smaller iPhones were space is at a
@@ -124,8 +130,6 @@
 {
   self.customPageViewController = nil;
   self.valuationViewController = nil;
-  self.valuationScrollView = nil;
-  self.valuationContentView = nil;
   self.valuationViewStackView = nil;
   self.positionValuationLabel = nil;
   self.positionValuationButton = nil;
@@ -179,7 +183,7 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   if (boardPosition)
-    [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
+    [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
 }
 
 #pragma mark - Container view controller handling
@@ -195,9 +199,27 @@
   NSArray* pageViewControllers = @[self.valuationViewController, self.descriptionViewController];
   self.customPageViewController = [PageViewController pageViewControllerWithViewControllers:pageViewControllers];
 
-  self.customPageViewController.pageControlHeight = 8;
   self.customPageViewController.pageControlPageIndicatorTintColor = [UIColor blackColor];
   self.customPageViewController.pageControlCurrentPageIndicatorTintColor = [UIColor whiteColor];
+
+  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
+  bool orientationIsPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  if (orientationIsPortraitOrientation)
+  {
+    // In portrait orientation there is not a lot of vertical space, so we have
+    // to constrain the page control's default intrinsic size to give the pages
+    // more room (specifically, the buttons and their labels on the valuation
+    // page).
+    self.customPageViewController.pageControlHeight = 8;
+  }
+  else
+  {
+    // In landscape orientation there is not a lot of horizontal space. Since
+    // iOS 14 if UIPageControl does not get enough horizontal space it hides
+    // the page indicator. We don't do anything to counteract this behaviour
+    // here, because we assume that the annotation view will always be laid out
+    // sufficiently wide.
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -237,6 +259,10 @@
   [self setupChildControllers];
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
+
+  self.contentNeedsUpdate = true;
+  self.buttonStatesNeedsUpdate = true;
+  [self delayedUpdate];
 }
 
 #pragma mark - View hierarchy setup
@@ -257,23 +283,38 @@
 // -----------------------------------------------------------------------------
 - (void) setupValuationView:(UIView*)superview
 {
-  self.valuationScrollView = [self createScrollViewInSuperView:superview];
-  self.valuationContentView = [self createViewInSuperView:self.valuationScrollView];
-
-  self.valuationViewStackView = [self createStackViewInSuperView:self.valuationContentView];
-  self.valuationViewStackView.distribution = UIStackViewDistributionFillEqually;
+  self.valuationViewStackView = [self createStackViewInSuperView:superview];
+  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
+  bool orientationIsPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  if (orientationIsPortraitOrientation)
+  {
+    self.valuationViewStackView.axis = UILayoutConstraintAxisHorizontal;
+    self.valuationViewStackView.distribution = UIStackViewDistributionFillEqually;
+    // self.estimatedScoreButton uses a different title label font size than
+    // the other buttons, which causes it to use less vertical size. With the
+    // default stack view alignment (UIStackViewAlignmentFill) this causes the
+    // button and its label to be positioned in a slightly different vertical
+    // location than the other buttons/labels. By aligning the stack view
+    // subviews to the stack view's top edge everything remains nicely aligned.
+    self.valuationViewStackView.alignment = UIStackViewAlignmentTop;
+  }
+  else
+  {
+    self.valuationViewStackView.axis = UILayoutConstraintAxisVertical;
+    self.valuationViewStackView.distribution = UIStackViewDistributionEqualSpacing;
+  }
 
   self.positionValuationLabel = [self createTitleLabelInStackView:self.valuationViewStackView withTitleText:@"Position"];
-  self.positionValuationButton = [self createButtonInSuperView:self.valuationContentView];
+  self.positionValuationButton = [self createButtonInSuperView:self.positionValuationLabel.superview];
 
   self.moveValuationLabel = [self createTitleLabelInStackView:self.valuationViewStackView withTitleText:@"Move"];
-  self.moveValuationButton = [self createButtonInSuperView:self.valuationContentView];
+  self.moveValuationButton = [self createButtonInSuperView:self.moveValuationLabel.superview];
 
   self.hotspotLabel = [self createTitleLabelInStackView:self.valuationViewStackView withTitleText:@"Hotspot"];
-  self.hotspotButton = [self createButtonInSuperView:self.valuationContentView];
+  self.hotspotButton = [self createButtonInSuperView:self.hotspotLabel.superview];
 
   self.estimatedScoreLabel = [self createTitleLabelInStackView:self.valuationViewStackView withTitleText:@"Score"];
-  self.estimatedScoreButton = [self createButtonInSuperView:self.valuationContentView];
+  self.estimatedScoreButton = [self createButtonInSuperView:self.estimatedScoreLabel.superview];
 
   UIFont* buttonTitleLabelFont = [UIFont systemFontOfSize:self.labelFontSize];
   self.estimatedScoreButton.titleLabel.font = buttonTitleLabelFont;
@@ -339,10 +380,13 @@
 // -----------------------------------------------------------------------------
 - (UILabel*) createTitleLabelInStackView:(UIStackView*)stackView withTitleText:(NSString*)titleText
 {
-  UILabel* label = [self createLabelInSuperView:stackView];
-  [stackView addArrangedSubview:label];
+  UIView* positionValuationBox = [self createViewInSuperView:stackView];
+  [stackView addArrangedSubview:positionValuationBox];
+
+  UILabel* label = [self createLabelInSuperView:positionValuationBox];
   label.text = titleText;
   label.textAlignment = NSTextAlignmentCenter;
+
   return label;
 }
 
@@ -394,41 +438,32 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsValuationView
 {
-  [self setupAutoLayoutConstraintsScrollView:self.valuationScrollView
-                              andContentView:self.valuationContentView];
-
   self.valuationViewStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.positionValuationLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  self.positionValuationButton.translatesAutoresizingMaskIntoConstraints = NO;
-  self.moveValuationLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  self.moveValuationButton.translatesAutoresizingMaskIntoConstraints = NO;
-  self.hotspotLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  self.hotspotButton.translatesAutoresizingMaskIntoConstraints = NO;
-  self.estimatedScoreLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  self.estimatedScoreButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [AutoLayoutUtility fillSuperview:self.valuationViewStackView.superview withSubview:self.valuationViewStackView];
+
+  [self setupAutoLayoutConstraintsForLabel:self.positionValuationLabel button:self.positionValuationButton];
+  [self setupAutoLayoutConstraintsForLabel:self.moveValuationLabel button:self.moveValuationButton];
+  [self setupAutoLayoutConstraintsForLabel:self.hotspotLabel button:self.hotspotButton];
+  [self setupAutoLayoutConstraintsForLabel:self.estimatedScoreLabel button:self.estimatedScoreButton];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraintsValuationView.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsForLabel:(UILabel*)label button:(UIButton*)button
+{
+  label.translatesAutoresizingMaskIntoConstraints = NO;
+  button.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
+  viewsDictionary[@"label"] = label;
+  viewsDictionary[@"button"] = button;
+  [visualFormats addObject:@"H:|-0-[label]-0-|"];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[label]-%d-[button]-0-|", self.buttonVerticalSpacing]];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:label.superview];
 
-  viewsDictionary[@"valuationViewStackView"] = self.valuationViewStackView;
-  viewsDictionary[@"positionValuationButton"] = self.positionValuationButton;
-  viewsDictionary[@"moveValuationButton"] = self.moveValuationButton;
-  viewsDictionary[@"hotspotButton"] = self.hotspotButton;
-  viewsDictionary[@"estimatedScoreButton"] = self.estimatedScoreButton;
-  [visualFormats addObject:@"H:|-0-[valuationViewStackView]-0-|"];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[valuationViewStackView]-%d-[positionValuationButton]-0-|", self.buttonVerticalSpacing]];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[valuationViewStackView]-%d-[moveValuationButton]-0-|", self.buttonVerticalSpacing]];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[valuationViewStackView]-%d-[hotspotButton]-0-|", self.buttonVerticalSpacing]];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[valuationViewStackView]-%d-[estimatedScoreButton]-0-|", self.buttonVerticalSpacing]];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.valuationViewStackView.superview];
-
-  // The stack view takes care for us of distributing the labels uniformly
-  // across the available width. By aligning the buttons to the horizontal
-  // label centers the buttons will be distributed evenly as well.
-  [AutoLayoutUtility alignFirstView:self.positionValuationButton withSecondView:self.positionValuationLabel onAttribute:NSLayoutAttributeCenterX constraintHolder:self.valuationViewStackView.superview];
-  [AutoLayoutUtility alignFirstView:self.moveValuationButton withSecondView:self.moveValuationLabel onAttribute:NSLayoutAttributeCenterX constraintHolder:self.valuationViewStackView.superview];
-  [AutoLayoutUtility alignFirstView:self.hotspotButton withSecondView:self.hotspotLabel onAttribute:NSLayoutAttributeCenterX constraintHolder:self.valuationViewStackView.superview];
-  [AutoLayoutUtility alignFirstView:self.estimatedScoreButton withSecondView:self.estimatedScoreLabel onAttribute:NSLayoutAttributeCenterX constraintHolder:self.valuationViewStackView.superview];
+  [AutoLayoutUtility alignFirstView:button withSecondView:label onAttribute:NSLayoutAttributeCenterX constraintHolder:label.superview];
 }
 
 // -----------------------------------------------------------------------------
