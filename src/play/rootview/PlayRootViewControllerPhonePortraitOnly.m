@@ -40,11 +40,12 @@
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
 @property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
+@property(nonatomic, retain) AnnotationViewController* annotationViewController;
 @property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
 @property(nonatomic, retain) UIView* woodenBackgroundView;
 @property(nonatomic, retain) UIView* boardContainerView;
+@property(nonatomic, retain) UIView* boardPositionButtonBoxContainerView;
 @property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
-@property(nonatomic, retain) AnnotationViewController* annotationViewController;
 @end
 
 
@@ -88,11 +89,12 @@
   self.boardViewController = nil;
   self.boardPositionButtonBoxController = nil;
   self.boardPositionButtonBoxDataSource = nil;
+  self.annotationViewController = nil;
   self.boardPositionCollectionViewController = nil;
   self.woodenBackgroundView = nil;
   self.boardContainerView = nil;
+  self.boardPositionButtonBoxContainerView = nil;
   self.boardViewAutoLayoutConstraints = nil;
-  self.annotationViewController = nil;
 }
 
 #pragma mark - Container view controller handling
@@ -119,16 +121,14 @@
   //   added to the navigation VC's navigation stack - which is absolutely not
   //   what we want!
   self.statusViewController = [[[StatusViewController alloc] init] autorelease];
-
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
-
   self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
+  self.annotationViewController = [AnnotationViewController annotationViewController];
   self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
 
   self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
   self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;
 
-  self.annotationViewController = [AnnotationViewController annotationViewController];
 }
 
 // -----------------------------------------------------------------------------
@@ -178,6 +178,31 @@
     [boardPositionButtonBoxController didMoveToParentViewController:self];
     [boardPositionButtonBoxController retain];
     _boardPositionButtonBoxController = boardPositionButtonBoxController;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setAnnotationViewController:(AnnotationViewController*)annotationViewController
+{
+  if (_annotationViewController == annotationViewController)
+    return;
+  if (_annotationViewController)
+  {
+    [_annotationViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_annotationViewController removeFromParentViewController];
+    [_annotationViewController release];
+    _annotationViewController = nil;
+  }
+  if (annotationViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:annotationViewController];
+    [annotationViewController didMoveToParentViewController:self];
+    [annotationViewController retain];
+    _annotationViewController = annotationViewController;
   }
 }
 
@@ -234,14 +259,21 @@
   // space and within which the board view is then vertically centered.
   self.boardContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 
+  // This container view contains the button box and the annotation view.
+  // The higher of the two determines how much vertical space the container
+  // view consumes.
+  self.boardPositionButtonBoxContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+
   [self.view addSubview:self.woodenBackgroundView];
   [self.view addSubview:self.boardPositionCollectionViewController.view];
 
   [self.woodenBackgroundView addSubview:self.boardContainerView];
-  [self.woodenBackgroundView addSubview:self.boardPositionButtonBoxController.view];
-  [self.woodenBackgroundView addSubview:self.annotationViewController.view];
+  [self.woodenBackgroundView addSubview:self.boardPositionButtonBoxContainerView];
 
   [self.boardContainerView addSubview:self.boardViewController.view];
+
+  [self.boardPositionButtonBoxContainerView addSubview:self.boardPositionButtonBoxController.view];
+  [self.boardPositionButtonBoxContainerView addSubview:self.annotationViewController.view];
 
   self.navigationItem.titleView = self.statusViewController.view;
   [self.navigationBarButtonModel updateVisibleGameActions];
@@ -266,13 +298,10 @@
   self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
 
   [self.boardPositionButtonBoxController applyTransparentStyle];
+  [self.annotationViewController applyTransparentStyle];
 
   [self.boardPositionButtonBoxController reloadData];
 
-  // Applies the same "transparent" style to the annotation view that is also
-  // used by ButtonBoxController
-  self.annotationViewController.view.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.6f];
-  self.annotationViewController.view.layer.borderWidth = 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -304,20 +333,41 @@
                      withSecondView:self.view
         onSafeAreaLayoutGuideAnchor:NSLayoutAttributeBottom];
 
+  // Here we define the layout of the container views within the wooden
+  // background view. The height of the button box container view is defined
+  // further down. The board container view gets the remaining height.
   [viewsDictionary removeAllObjects];
   [visualFormats removeAllObjects];
   self.boardContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  int horizontalSpacingButtonBox = [AutoLayoutUtility horizontalSpacingSiblings];
-  CGSize buttonBoxSize = self.boardPositionButtonBoxController.buttonBoxSize;
+  self.boardPositionButtonBoxContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   viewsDictionary[@"boardContainerView"] = self.boardContainerView;
+  viewsDictionary[@"boardPositionButtonBoxContainerView"] = self.boardPositionButtonBoxContainerView;
+  [visualFormats addObject:@"H:|-0-[boardContainerView]-0-|"];
+  [visualFormats addObject:@"H:|-0-[boardPositionButtonBoxContainerView]-0-|"];
+  [visualFormats addObject:@"V:|-0-[boardContainerView]-0-[boardPositionButtonBoxContainerView]-0-|"];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.woodenBackgroundView];
+
+  // Here we define the height and positioning of the annotation view and the
+  // button box in the button box container view. The height of the annotation
+  // view defines the height of the button box container view itself.
+  CGSize buttonBoxSize = self.boardPositionButtonBoxController.buttonBoxSize;
+  // The annotation view should be high enough to display most description
+  // texts without scrolling. It can't be arbitrarily high because it must
+  // leave enough space for the board view.
+  int annotationViewHeight = buttonBoxSize.height * 1.0;
+  [viewsDictionary removeAllObjects];
+  [visualFormats removeAllObjects];
+  self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.annotationViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   viewsDictionary[@"boardPositionButtonBox"] = self.boardPositionButtonBoxController.view;
-  [visualFormats addObject:[NSString stringWithFormat:@"H:|-0-[boardContainerView]-0-|"]];
-  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[boardPositionButtonBox]", horizontalSpacingButtonBox]];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[boardContainerView]-0-[boardPositionButtonBox]-|"]];
+  viewsDictionary[@"annotationView"] = self.annotationViewController.view;
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-[boardPositionButtonBox]-[annotationView]-|"]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox]-|"]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-[annotationView]-|"]];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox(==%f)]", buttonBoxSize.width]];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]", buttonBoxSize.height]];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.woodenBackgroundView];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[annotationView(==%d)]", annotationViewHeight]];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.annotationViewController.view.superview];
 
   self.boardViewAutoLayoutConstraints = [NSMutableArray array];
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -325,16 +375,6 @@
                                               ofBoardView:self.boardViewController.view
                                   forInterfaceOrientation:UIInterfaceOrientationPortrait
                                          constraintHolder:self.boardViewController.view.superview];
-
-  [viewsDictionary removeAllObjects];
-  [visualFormats removeAllObjects];
-  self.annotationViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  viewsDictionary[@"boardContainerView"] = self.boardContainerView;
-  viewsDictionary[@"boardPositionButtonBox"] = self.boardPositionButtonBoxController.view;
-  viewsDictionary[@"annotationView"] = self.annotationViewController.view;
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox]-[annotationView]-|"]];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardContainerView]-0-[annotationView]-|"]];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.annotationViewController.view.superview];
 }
 
 #pragma mark - GameActionManagerUIDelegate overrides
