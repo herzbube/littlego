@@ -82,7 +82,7 @@
 // -----------------------------------------------------------------------------
 - (int) numberOfSectionsInButtonBoxController:(ButtonBoxController*)buttonBoxController
 {
-  return 2;
+  return 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -90,10 +90,7 @@
 // -----------------------------------------------------------------------------
 - (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfRowsInSection:(NSInteger)section
 {
-  if (buttonBoxController.scrollDirection == UICollectionViewScrollDirectionHorizontal)
-    return 1;
-  else
-    return 2;
+  return 2;
 }
 
 // -----------------------------------------------------------------------------
@@ -101,10 +98,7 @@
 // -----------------------------------------------------------------------------
 - (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfColumnsInSection:(NSInteger)section
 {
-  if (buttonBoxController.scrollDirection == UICollectionViewScrollDirectionHorizontal)
-    return 2;
-  else
-    return 1;
+  return 2;
 }
 
 // -----------------------------------------------------------------------------
@@ -115,7 +109,7 @@
   NSString* imageResourceName;
   SEL selector;
   enum BoardPositionNavigationDirection boardPositionNavigationDirection;
-  enum BoardPositionNavigationButton buttonID = [self buttonIDForIndexPath:indexPath];
+  enum BoardPositionNavigationButton buttonID = [self buttonBoxController:buttonBoxController buttonIDForIndexPath:indexPath];
   switch (buttonID)
   {
     case BoardPositionNavigationButtonRewindToStart:
@@ -211,21 +205,44 @@
 /// @brief Returns the #BoardPositionNavigationButton value that corresponds to
 /// @a indexPath.
 // -----------------------------------------------------------------------------
-- (enum BoardPositionNavigationButton) buttonIDForIndexPath:(NSIndexPath*)indexPath
+- (enum BoardPositionNavigationButton) buttonBoxController:(ButtonBoxController*)buttonBoxController
+                                      buttonIDForIndexPath:(NSIndexPath*)indexPath
 {
-  if (0 == indexPath.section)
+  if (buttonBoxController.scrollDirection == UICollectionViewScrollDirectionHorizontal)
   {
-    if (0 == indexPath.row)
-      return BoardPositionNavigationButtonRewindToStart;
-    else
-      return BoardPositionNavigationButtonPrevious;
+    switch (indexPath.row)
+    {
+      case 0:
+        return BoardPositionNavigationButtonPrevious;
+      case 1:
+        return BoardPositionNavigationButtonRewindToStart;
+      case 2:
+        return BoardPositionNavigationButtonNext;
+      case 3:
+        return BoardPositionNavigationButtonForwardToEnd;
+      default:
+        assert(0);
+        // Dummy return to make compiler happy
+        return BoardPositionNavigationButtonRewindToStart;
+    }
   }
   else
   {
-    if (0 == indexPath.row)
-      return BoardPositionNavigationButtonNext;
-    else
-      return BoardPositionNavigationButtonForwardToEnd;
+    switch (indexPath.row)
+    {
+      case 0:
+        return BoardPositionNavigationButtonRewindToStart;
+      case 1:
+        return BoardPositionNavigationButtonPrevious;
+      case 2:
+        return BoardPositionNavigationButtonNext;
+      case 3:
+        return BoardPositionNavigationButtonForwardToEnd;
+      default:
+        assert(0);
+        // Dummy return to make compiler happy
+        return BoardPositionNavigationButtonRewindToStart;
+    }
   }
 }
 

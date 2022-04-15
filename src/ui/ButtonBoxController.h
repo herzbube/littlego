@@ -29,10 +29,24 @@
 - (int) numberOfSectionsInButtonBoxController:(ButtonBoxController*)buttonBoxController;
 - (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfRowsInSection:(NSInteger)section;
 - (int) buttonBoxController:(ButtonBoxController*)buttonBoxController numberOfColumnsInSection:(NSInteger)section;
-/// @brief The property @e indexPath.row is a one-dimensional index into the
-/// button box grid, indicating which button is requested. Example for a button
-/// box grid with 2 rows and 2 columns: index 0 = row/column 0/0, index 1 =
-/// row/column 0/1, index 2 = row/column 1/0, index 3 = row/column 1/1.
+/// @brief The @e row property of parameter @e indexPath is a one-dimensional
+/// index into the button box grid, indicating which button is requested. The
+/// meaning of the index changes depending on the direction in which the button
+/// box extends (see property @e scrollDirection of @a buttonBoxController).
+///
+/// Example for a button box grid with 2 rows and 2 columns, when the button box
+/// extends horizontally, i.e. in @e UICollectionViewScrollDirectionHorizontal):
+/// - @e indexPath.row 0 = row/column 0/0
+/// - @e indexPath.row 1 = row/column 1/0
+/// - @e indexPath.row 2 = row/column 0/1
+/// - @e indexPath.row 3 = row/column 1/1.
+///
+/// Example for a button box grid with 2 rows and 2 columns, when the button box
+/// extends vertically, i.e. in @e UICollectionViewScrollDirectionVertical):
+/// - @e indexPath.row 0 = row/column 0/0
+/// - @e indexPath.row 1 = row/column 0/1
+/// - @e indexPath.row 2 = row/column 1/0
+/// - @e indexPath.row 3 = row/column 1/1.
 - (UIButton*) buttonBoxController:(ButtonBoxController*)buttonBoxController buttonAtIndexPath:(NSIndexPath*)indexPath;
 @end
 
@@ -117,12 +131,12 @@
 /// +-----------+
 /// @endverbatim
 ///
-/// @todo ButtonBoxController has not been tested for grids larger than 1 row
-/// (if horizontally extending) or 1 column (if vertically extending). The
-/// current implementation probably does not work as documented by the above
-/// box model because we don't tell the flow layout to generate a "line break"
-/// within a section. Possibly the flow layout API doesn't even provide this
-/// capability?
+/// @todo ButtonBoxController has been tested for grids with 1 row and n columns
+/// distributed across multiple sections (if horizontally extending), 1 column
+/// and n rows distributed across multiple sections (if vertically extending)
+/// and 2 rows and 2 columns in a single section (if vertically extending). The
+/// current implementation may not work as documented by the above box model for
+/// other configurations.
 // -----------------------------------------------------------------------------
 @interface ButtonBoxController : UICollectionViewController <UICollectionViewDelegateFlowLayout>
 {
