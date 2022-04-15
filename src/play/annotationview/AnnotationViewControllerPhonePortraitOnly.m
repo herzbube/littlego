@@ -789,10 +789,22 @@
   GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
 
   NSString* shortDescriptionText = nodeAnnotation ? nodeAnnotation.shortDescription : nil;
-  self.shortDescriptionLabel.text = shortDescriptionText;
-
   NSString* longDescriptionText = nodeAnnotation ? nodeAnnotation.longDescription : nil;
+
+  UIColor* shortDescriptionTextColor;
+  if (! shortDescriptionText && ! longDescriptionText)
+  {
+    shortDescriptionText = @"No description. Tap the Edit button to add one.";
+    shortDescriptionTextColor = [UIColor labelTextColorPlaceholderText];
+  }
+  else
+  {
+    shortDescriptionTextColor = [UIColor labelTextColorRegularText];
+  }
+
+  self.shortDescriptionLabel.text = shortDescriptionText;
   self.longDescriptionLabel.text = longDescriptionText;
+  self.shortDescriptionLabel.textColor = shortDescriptionTextColor;
 
   if (shortDescriptionText && longDescriptionText)
     self.descriptionLabelsVerticalSpacingConstraint.constant = [UiElementMetrics verticalSpacingSiblings];
