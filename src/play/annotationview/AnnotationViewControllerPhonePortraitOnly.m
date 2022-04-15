@@ -24,11 +24,11 @@
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeAnnotation.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/PageViewController.h"
 #import "../../ui/UiElementMetrics.h"
+#import "../../utility/ExceptionUtility.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIColorAdditions.h"
 #import "../../utility/UIImageAdditions.h"
@@ -74,11 +74,12 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes an AnnotationViewControllerPhonePortraitOnly object.
+/// It adjusts the view layout to the specified @a uiType.
 ///
 /// @note This is the designated initializer of
 /// AnnotationViewControllerPhonePortraitOnly.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithUiType:(enum UIType)uiType
 {
   // Call designated initializer of superclass (AnnotationViewController)
   self = [super initWithNibName:nil bundle:nil];
@@ -90,15 +91,26 @@
 
   // Sizes were experimentally determined to not cause vertical scrolling or
   // any kind of layout shifts on an iPhone 5S, even when a three-digit score
-  // is displayed. On larger iPhones there is more space available, so a
-  // slightly larger font size can be used for UITypePhone. The font size
-  // must not be too large, though, otherwise the layout no longer looks good
-  // (esp. button labels must not gain too much weight when compared with
-  // button icons).
-  if ([LayoutManager sharedManager].uiType == UITypePhonePortraitOnly)
-    self.labelFontSize = 10;
-  else
-    self.labelFontSize = 11;
+  // is displayed. On larger iPhones or iPads there is more space available, so
+  // a slightly larger font size can be used for UITypePhone or UITypePad. The
+  // font size must not be too large, though, otherwise the layout no longer
+  // looks good (esp. valuation button labels must not gain too much weight
+  // when compared to valuation button icons).
+  switch (uiType)
+  {
+    case UITypePhonePortraitOnly:
+      self.labelFontSize = 10;
+      break;
+    case UITypePhone:
+      self.labelFontSize = 11;
+      break;
+    case UITypePad:
+      self.labelFontSize = 12;
+      break;
+    default:
+      [ExceptionUtility throwInvalidUIType:uiType];
+      break;
+  }
   self.iconHeight = 22;
   // Margins and spacings were chosen experimentally to look good but not waste
   // too much vertical space (important for smaller iPhones were space is at a

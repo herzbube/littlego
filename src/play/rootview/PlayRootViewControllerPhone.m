@@ -603,7 +603,7 @@
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
-                                  forInterfaceOrientation:UIInterfaceOrientationPortrait
+                                                  forAxis:UILayoutConstraintAxisHorizontal
                                          constraintHolder:self.boardViewController.view.superview];
 }
 

@@ -28,7 +28,7 @@
 
 + (void) updateAutoLayoutConstraints:(NSMutableArray*)constraints
                          ofBoardView:(UIView*)boardView
-             forInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+                             forAxis:(UILayoutConstraintAxis)axis
                     constraintHolder:(UIView*)constraintHolder;
 
 @end

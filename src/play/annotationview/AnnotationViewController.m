@@ -41,11 +41,13 @@
 + (AnnotationViewController*) annotationViewController
 {
   AnnotationViewController* annotationViewController = nil;
-  switch ([LayoutManager sharedManager].uiType)
+  enum UIType uiType = [LayoutManager sharedManager].uiType;
+  switch (uiType)
   {
     case UITypePhonePortraitOnly:
     case UITypePhone:
-      annotationViewController = [[[AnnotationViewControllerPhonePortraitOnly alloc] init] autorelease];
+    case UITypePad:
+      annotationViewController = [[[AnnotationViewControllerPhonePortraitOnly alloc] initWithUiType:uiType] autorelease];
       break;
     default:
       [ExceptionUtility throwInvalidUIType:[LayoutManager sharedManager].uiType];

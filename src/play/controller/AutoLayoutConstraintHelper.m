@@ -45,12 +45,14 @@
 ///   of coordinate labels and one edge line of the board.
 /// - The board view size matches either the width or the height of the
 ///   superview, depending on which is the superview's smaller dimension. The
-///   specified interface orientation @a interfaceOrientation, not the current
-///   view size at the time this method is invoked, decides which is the smaller
-///   dimension: A portrait orientation means that the width is smaller, a
-///   landscape orientation means that the height is smaller. The reason for
+///   specified layout axis @a axis, not the current view size at the time this
+///   method is invoked, decides which is the smaller dimension. The reason for
 ///   this approach is that during interface orientation changes the superview's
-///   current size may not be accurate.
+///   current size may not be accurate. Note that it is also not possible to
+///   use the current interface orientation as an indicator for which dimension
+///   should be used, because sometimes other views take away space from the
+///   board view on current interface orientation's longer axis. In short, the
+///   caller has to know which axis to use.
 /// - The board view is horizontally or vertically centered within its
 ///   superview, the axis depending on which is the superview's larger
 ///   dimension. The logic that determines the larger dimension is the inverse
@@ -58,7 +60,7 @@
 // -----------------------------------------------------------------------------
 + (void) updateAutoLayoutConstraints:(NSMutableArray*)constraints
                          ofBoardView:(UIView*)boardView
-             forInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+                             forAxis:(UILayoutConstraintAxis)axis
                     constraintHolder:(UIView*)constraintHolder;
 {
   [constraintHolder removeConstraints:constraints];
@@ -84,7 +86,7 @@
   // distributes the remaining space not taken up by the board view. Other
   // content can then be placed into that space.
   UILayoutConstraintAxis centerConstraintAxis;
-  if (UIInterfaceOrientationIsPortrait(interfaceOrientation))
+  if (axis == UILayoutConstraintAxisHorizontal)
   {
     boardViewEdge1 = boardView.leftAnchor;
     boardViewEdge2 = boardView.rightAnchor;

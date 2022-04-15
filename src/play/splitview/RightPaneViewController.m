@@ -241,7 +241,7 @@
 {
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
-                                  forInterfaceOrientation:[UiElementMetrics interfaceOrientation]
+                                                  forAxis:UILayoutConstraintAxisHorizontal
                                          constraintHolder:self.boardViewController.view.superview];
 }
 
@@ -277,7 +277,7 @@
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
-                                  forInterfaceOrientation:[UiElementMetrics interfaceOrientation]
+                                                  forAxis:UILayoutConstraintAxisHorizontal
                                          constraintHolder:self.boardViewController.view.superview];
 
   int horizontalSpacingButtonBox = [AutoLayoutUtility horizontalSpacingSiblings];

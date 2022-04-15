@@ -30,4 +30,6 @@
 {
 }
 
+- (id) initWithUiType:(enum UIType)uiType;
+
 @end
