@@ -25,6 +25,7 @@
 /// @brief Class extension with private properties for PlaceholderView.
 // -----------------------------------------------------------------------------
 @interface PlaceholderView()
+@property(nonatomic, assign, readwrite) enum PlaceholderViewStyle placeholderViewStyle;
 @property(nonatomic, retain) UIView* twoThirdsView;
 @property(nonatomic, retain, readwrite) UILabel* placeholderLabel;
 @end
@@ -36,17 +37,31 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes an PlaceholderView object that displays the specified
-/// text @a placeholderText.
+/// text @a placeholderText. The PlaceholderView lays out its content using
+/// @e PlaceholderViewStyleThirds.
+// -----------------------------------------------------------------------------
+- (id) initWithFrame:(CGRect)rect placeholderText:(NSString*)placeholderText
+{
+  return [self initWithFrame:rect placeholderText:placeholderText style:PlaceholderViewStyleThirds];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes an PlaceholderView object that displays the specified
+/// text @a placeholderText. The PlaceholderView lays out its content according
+/// to @a placeholderViewStyle.
 ///
 /// @note This is the designated initializer of PlaceholderView.
 // -----------------------------------------------------------------------------
-- (id) initWithFrame:(CGRect)rect placeholderText:(NSString*)placeholderText
+- (id) initWithFrame:(CGRect)rect placeholderText:(NSString*)placeholderText style:(enum PlaceholderViewStyle)placeholderViewStyle
 {
   self = [super initWithFrame:rect];
   if (! self)
     return nil;
 
-  [self setupViewContent];
+  self.placeholderViewStyle = placeholderViewStyle;
+  
+  [self setupViewHierarchy];
+  [self configurePlaceholderLabel];
   [self setupAutoLayoutConstraints];
 
   self.placeholderLabel.text = placeholderText;
@@ -67,16 +82,30 @@
 #pragma mark - View setup
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up the view content.
+/// @brief Sets up the view hierarchy.
 // -----------------------------------------------------------------------------
-- (void) setupViewContent
+- (void) setupViewHierarchy
 {
-  self.twoThirdsView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-  [self addSubview:self.twoThirdsView];
+  if (self.placeholderViewStyle == PlaceholderViewStyleThirds)
+  {
+    self.twoThirdsView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+    [self addSubview:self.twoThirdsView];
 
-  self.placeholderLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
-  [self.twoThirdsView addSubview:self.placeholderLabel];
+    self.placeholderLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+    [self.twoThirdsView addSubview:self.placeholderLabel];
+  }
+  else
+  {
+    self.placeholderLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+    [self addSubview:self.placeholderLabel];
+  }
+}
 
+// -----------------------------------------------------------------------------
+/// @brief Configures the placehholder label.
+// -----------------------------------------------------------------------------
+- (void) configurePlaceholderLabel
+{
   // The following font size factors have been experimentally determined, i.e.
   // what looks good on a simulator
   CGFloat fontSizeFactor;
@@ -91,9 +120,20 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up the placeholder label's Auto Layout constraints.
+/// @brief Sets up Auto Layout constraints.
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
+{
+  if (self.placeholderViewStyle == PlaceholderViewStyleThirds)
+    [self setupAutoLayoutConstraintsThirds];
+  else
+    [self setupAutoLayoutConstraintsCenter];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method for setupAutoLayoutConstraints().
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsThirds
 {
   self.twoThirdsView.translatesAutoresizingMaskIntoConstraints = NO;
   self.placeholderLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -119,6 +159,18 @@
   [self.placeholderLabel.topAnchor constraintEqualToAnchor:self.twoThirdsView.topAnchor].active = YES;
   [self.placeholderLabel.leftAnchor constraintEqualToAnchor:self.twoThirdsView.leftAnchor].active = YES;
   [self.placeholderLabel.rightAnchor constraintEqualToAnchor:self.twoThirdsView.rightAnchor].active = YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method for setupAutoLayoutConstraints().
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsCenter
+{
+  self.placeholderLabel.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [self.layoutMarginsGuide.leftAnchor constraintEqualToAnchor:self.placeholderLabel.leftAnchor].active = YES;
+  [self.layoutMarginsGuide.rightAnchor constraintEqualToAnchor:self.placeholderLabel.rightAnchor].active = YES;
+  [self.centerYAnchor constraintEqualToAnchor:self.placeholderLabel.centerYAnchor].active = YES;
 }
 
 @end
