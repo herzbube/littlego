@@ -459,6 +459,8 @@
 	<integer>768</integer>
 	<key>VisibleUIArea</key>
 	<integer>0</integer>
+	<key>VisibleAnnotationViewPage</key>
+	<integer>0</integer>
 	<key>MagnifyingGlassEnableMode</key>
 	<integer>0</integer>
 	<key>MagnifyingGlassAutoThreshold</key>

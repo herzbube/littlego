@@ -38,6 +38,7 @@
   for (int arrayIndex = 0; arrayIndex < arraySizeDefaultTabOrder; ++arrayIndex)
     [(NSMutableArray*)_tabOrder addObject:[NSNumber numberWithInt:defaultTabOrder[arrayIndex]]];
   _uiAreaPlayMode = UIAreaPlayModeDefault;
+  self.visibleAnnotationViewPage = ValuationAnnotationViewPage;
 
   return self;
 }
@@ -60,6 +61,7 @@
   self.visibleUIArea = (enum UIArea)[[userDefaults valueForKey:visibleUIAreaKey] intValue];
   self.tabOrder = [userDefaults arrayForKey:tabOrderKey];
   self.uiAreaPlayMode = (enum UIAreaPlayMode)[[userDefaults valueForKey:uiAreaPlayModeKey] intValue];
+  self.visibleAnnotationViewPage = (enum AnnotationViewPage)[[userDefaults valueForKey:visibleAnnotationViewPageKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -72,6 +74,7 @@
   [userDefaults setValue:[NSNumber numberWithInt:self.visibleUIArea] forKey:visibleUIAreaKey];
   [userDefaults setObject:self.tabOrder forKey:tabOrderKey];
   [userDefaults setValue:[NSNumber numberWithInt:self.uiAreaPlayMode] forKey:uiAreaPlayModeKey];
+  [userDefaults setValue:[NSNumber numberWithInt:self.visibleAnnotationViewPage] forKey:visibleAnnotationViewPageKey];
 }
 
 @end

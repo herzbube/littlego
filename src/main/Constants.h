@@ -217,6 +217,13 @@ enum InfoType
   BoardInfoType
 };
 
+/// @brief Enumerates the pages that the Annotation view can display.
+enum AnnotationViewPage
+{
+  ValuationAnnotationViewPage,
+  DescriptionAnnotationViewPage
+};
+
 /// @brief Enumerates the axis' displayed around the Go board. "A1" is in the
 /// lower-left corner of the Go board.
 enum CoordinateLabelAxis
@@ -1346,6 +1353,7 @@ extern NSString* loggingEnabledKey;
 extern NSString* visibleUIAreaKey;
 extern NSString* tabOrderKey;
 extern NSString* uiAreaPlayModeKey;
+extern NSString* visibleAnnotationViewPageKey;
 // Magnifying glass settings
 extern NSString* magnifyingGlassEnableModeKey;
 extern NSString* magnifyingGlassAutoThresholdKey;

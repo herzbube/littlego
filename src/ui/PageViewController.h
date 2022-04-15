@@ -15,6 +15,42 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class PageViewController;
+
+
+// -----------------------------------------------------------------------------
+/// @brief The PageViewControllerDelegate protocol must be implemented by the
+/// delegate of PageViewController.
+// -----------------------------------------------------------------------------
+@protocol PageViewControllerDelegate <NSObject>
+@optional
+/// @brief Indicates that @a pageViewController is about to hide
+/// @a currentViewController and show @a nextViewController instead.
+///
+/// @a currentViewController is @e nil if @a nextViewController is the initial
+/// view controller being shown.
+///
+/// @a pageViewController has not yet made any changes to the view hierarchy
+/// when it invokes this delegate method.
+- (void) pageViewController:(PageViewController*)pageViewController
+     willHideViewController:(UIViewController*)currentViewController
+     willShowViewController:(UIViewController*)nextViewController;
+
+/// @brief Indicates that @a pageViewController has completed
+/// hiding @a currentViewController and showing @a nextViewController instead.
+///
+/// @a currentViewController is @e nil if @a nextViewController is the initial
+/// view controller being shown.
+///
+/// @a pageViewController has completed all changes to the view hierarchy
+/// when it invokes this delegate method.
+- (void) pageViewController:(PageViewController*)pageViewController
+     didHideViewController:(UIViewController*)currentViewController
+     didShowViewController:(UIViewController*)nextViewController;
+@end
+
+
 // -----------------------------------------------------------------------------
 /// @brief The PageViewController class is a container view controller that
 /// re-implements a reduced set of functionality of the UIKit class
@@ -49,6 +85,11 @@
 }
 
 + (PageViewController*) pageViewControllerWithViewControllers:(NSArray*)viewControllers;
++ (PageViewController*) pageViewControllerWithViewControllers:(NSArray*)viewControllers
+                                        initialViewController:(UIViewController*)initialViewController;
+
+/// @brief The delegate of PageViewController.
+@property (nonatomic, assign) id<PageViewControllerDelegate> delegate;
 
 /// @brief The duration in seconds of the slide animation when the
 /// PageViewController replaces the current page with a new page.

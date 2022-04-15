@@ -17,6 +17,7 @@
 
 // Project includes
 #include "AnnotationViewController.h"
+#import "../../ui/PageViewController.h"
 
 
 // -----------------------------------------------------------------------------
@@ -26,7 +27,7 @@
 /// The AnnotationViewController class method annotationViewController() should
 /// be used to create a AnnotationViewControllerPhonePortraitOnly instance.
 // -----------------------------------------------------------------------------
-@interface AnnotationViewControllerPhonePortraitOnly : AnnotationViewController
+@interface AnnotationViewControllerPhonePortraitOnly : AnnotationViewController <PageViewControllerDelegate>
 {
 }
 

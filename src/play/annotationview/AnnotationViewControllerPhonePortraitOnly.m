@@ -26,8 +26,8 @@
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
-#import "../../ui/PageViewController.h"
 #import "../../ui/UiElementMetrics.h"
+#import "../../ui/UiSettingsModel.h"
 #import "../../utility/ExceptionUtility.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIColorAdditions.h"
@@ -140,6 +140,8 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
+  self.customPageViewController.delegate = nil;
+
   self.customPageViewController = nil;
   self.valuationViewController = nil;
   self.valuationViewStackView = nil;
@@ -208,9 +210,19 @@
   self.valuationViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
   self.descriptionViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
 
-  NSArray* pageViewControllers = @[self.valuationViewController, self.descriptionViewController];
-  self.customPageViewController = [PageViewController pageViewControllerWithViewControllers:pageViewControllers];
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  UiSettingsModel* uiSettingsModel = appDelegate.uiSettingsModel;
+  UIViewController* initialViewController;
+  if (uiSettingsModel.visibleAnnotationViewPage == ValuationAnnotationViewPage)
+    initialViewController = self.valuationViewController;
+  else
+    initialViewController = self.descriptionViewController;
 
+  NSArray* pageViewControllers = @[self.valuationViewController, self.descriptionViewController];
+  self.customPageViewController = [PageViewController pageViewControllerWithViewControllers:pageViewControllers
+                                                                      initialViewController:initialViewController];
+
+  self.customPageViewController.delegate = self;
   self.customPageViewController.pageControlPageIndicatorTintColor = [UIColor blackColor];
   self.customPageViewController.pageControlCurrentPageIndicatorTintColor = [UIColor whiteColor];
 
@@ -578,6 +590,23 @@
                                attribute:NSLayoutAttributeWidth
                               multiplier:1.0f
                                 constant:0.0f].active = YES;
+}
+
+#pragma mark - PageViewControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief PageViewControllerDelegate method.
+// -----------------------------------------------------------------------------
+- (void) pageViewController:(PageViewController*)pageViewController
+     didHideViewController:(UIViewController*)currentViewController
+     didShowViewController:(UIViewController*)nextViewController
+{
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  UiSettingsModel* uiSettingsModel = appDelegate.uiSettingsModel;
+  if (nextViewController == self.valuationViewController)
+    uiSettingsModel.visibleAnnotationViewPage = ValuationAnnotationViewPage;
+  else
+    uiSettingsModel.visibleAnnotationViewPage = DescriptionAnnotationViewPage;
 }
 
 #pragma mark - Notification responders

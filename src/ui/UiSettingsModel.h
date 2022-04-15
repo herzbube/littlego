@@ -42,5 +42,7 @@
 @property(nonatomic, retain) NSArray* tabOrder;
 /// @brief The mode that the "Play" UI area is currently in.
 @property(nonatomic, assign) enum UIAreaPlayMode uiAreaPlayMode;
+/// @brief The page that is currently visible in the annotation view.
+@property(nonatomic, assign) enum AnnotationViewPage visibleAnnotationViewPage;
 
 @end

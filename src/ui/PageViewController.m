@@ -29,6 +29,7 @@
 @property (nonatomic, assign) bool animationIsInProgress;
 @property (nonatomic, assign) NSInteger indexOfCurrentPage;
 @property (nonatomic, copy) NSArray* viewControllers;
+@property (nonatomic, assign) UIViewController* initialViewController;
 @property (nonatomic, retain) UIPageControl* pageControl;
 @property (nonatomic, retain) UISwipeGestureRecognizer* swipeLeftGestureRecognizer;
 @property (nonatomic, retain) UISwipeGestureRecognizer* swipeRightGestureRecognizer;
@@ -43,14 +44,30 @@
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor that returns a UI type-dependent controller
-/// object that knows how to set up the correct view hierarchy for the current
-/// UI type.
+/// @brief Convenience constructor that returns a PageViewController configured
+/// to display @a viewControllers. The initial view controller being displayed
+/// is the first element in @a viewControllers.
 // -----------------------------------------------------------------------------
 + (PageViewController*) pageViewControllerWithViewControllers:(NSArray*)viewControllers
 {
   PageViewController* pageViewController = [[[PageViewController alloc] init] autorelease];
   pageViewController.viewControllers = viewControllers;
+  if (viewControllers.count > 0)
+    pageViewController.initialViewController = [viewControllers objectAtIndex:0];
+  return pageViewController;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Convenience constructor that returns a PageViewController configured
+/// to display @a viewControllers. The initial view controller being displayed
+/// is the first element in @a viewControllers.
+// -----------------------------------------------------------------------------
++ (PageViewController*) pageViewControllerWithViewControllers:(NSArray*)viewControllers
+                                        initialViewController:(UIViewController*)initialViewController
+{
+  PageViewController* pageViewController = [[[PageViewController alloc] init] autorelease];
+  pageViewController.viewControllers = viewControllers;
+  pageViewController.initialViewController = initialViewController;
   return pageViewController;
 }
 
@@ -65,6 +82,9 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+
+  self.delegate = nil;
+  self.initialViewController = nil;
 
   // The default value is an arbitrary value that was experimentally determined
   // to look good
@@ -97,6 +117,9 @@
 - (void) dealloc
 {
   self.deallocating = true;
+
+  self.delegate = nil;
+  self.initialViewController = nil;
 
   // First, let the property setter get rid of all child view controllers and
   // their subviews
@@ -270,13 +293,26 @@
 // -----------------------------------------------------------------------------
 - (void) setupInitialPage
 {
-  if (self.numberOfPages > 0)
-    self.indexOfCurrentPage = 0;
+  if (self.initialViewController)
+  {
+    [self notifyDelegateWillHideViewController:nil
+                        willShowViewController:self.initialViewController];
+
+    self.indexOfCurrentPage = [self.viewControllers indexOfObject:self.initialViewController];
+  }
   else
+  {
     self.indexOfCurrentPage = -1;
+  }
 
   [self configurePageControlToMatchContent];
   [self addInitialPageToViewHierarchyIfAny];
+
+  if (self.initialViewController)
+  {
+    [self notifyDelegateDidHideViewController:nil
+                        didShowViewController:self.initialViewController];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -306,7 +342,7 @@
   [self setupAutoLayoutConstraintsForPage:self.indexOfCurrentPage];
 }
 
-#pragma mark - Add/remove pages
+#pragma mark - Add/remove pages to/from view hierarchy
 
 // -----------------------------------------------------------------------------
 /// @brief Adds the page view specified by @a indexOfPage to the view hierarchy
@@ -406,6 +442,50 @@
   return pageView;
 }
 
+#pragma mark - Delegate notifications
+
+// -----------------------------------------------------------------------------
+/// @brief Invokes the delegate method
+/// pageViewController:willHideViewController:willShowViewController: if a
+/// delegate has been configured and it responds to the selector.
+// -----------------------------------------------------------------------------
+- (void) notifyDelegateWillHideViewController:(UIViewController*)currentViewController
+                       willShowViewController:(UIViewController*)nextViewController
+
+{
+  if (! self.delegate)
+    return;
+
+  SEL selector = @selector(pageViewController:willHideViewController:willShowViewController:);
+  if (! [self.delegate respondsToSelector:selector])
+    return;
+
+  [self.delegate pageViewController:self
+             willHideViewController:currentViewController
+             willShowViewController:nextViewController];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invokes the delegate method
+/// pageViewController:didHideViewController:didShowViewController: if a
+/// delegate has been configured and it responds to the selector.
+// -----------------------------------------------------------------------------
+- (void) notifyDelegateDidHideViewController:(UIViewController*)currentViewController
+                       didShowViewController:(UIViewController*)nextViewController
+
+{
+  if (! self.delegate)
+    return;
+
+  SEL selector = @selector(pageViewController:didHideViewController:didShowViewController:);
+  if (! [self.delegate respondsToSelector:selector])
+    return;
+
+  [self.delegate pageViewController:self
+              didHideViewController:currentViewController
+              didShowViewController:nextViewController];
+}
+
 #pragma mark - Gesture handling
 
 // -----------------------------------------------------------------------------
@@ -484,6 +564,9 @@
   if (self.animationIsInProgress)
     return;
   self.animationIsInProgress = true;
+
+  [self notifyDelegateWillHideViewController:[self.viewControllers objectAtIndex:self.indexOfCurrentPage]
+                      willShowViewController:[self.viewControllers objectAtIndex:indexOfNextPage]];
 
   NSArray* temporaryConstraints = [self createTemporaryConstraintsForSwipeToNextPage:indexOfNextPage
                                                                      fromCurrentPage:self.indexOfCurrentPage
@@ -588,6 +671,9 @@
     self.indexOfCurrentPage = indexOfNextPage;
 
     self.animationIsInProgress = false;
+
+    [self notifyDelegateDidHideViewController:[self.viewControllers objectAtIndex:indexOfCurrentPage]
+                        didShowViewController:[self.viewControllers objectAtIndex:indexOfNextPage]];
   }];
 }
 

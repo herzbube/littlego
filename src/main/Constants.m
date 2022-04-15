@@ -365,6 +365,7 @@ NSString* loggingEnabledKey = @"LoggingEnabled";
 NSString* visibleUIAreaKey = @"VisibleUIArea";
 NSString* tabOrderKey = @"TabOrder";
 NSString* uiAreaPlayModeKey = @"UiAreaPlayMode";
+NSString* visibleAnnotationViewPageKey = @"VisibleAnnotationViewPage";
 // Magnifying glass settings
 NSString* magnifyingGlassEnableModeKey = @"MagnifyingGlassEnableMode";
 NSString* magnifyingGlassAutoThresholdKey = @"MagnifyingGlassAutoThreshold";
