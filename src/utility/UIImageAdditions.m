@@ -398,11 +398,21 @@
 // -----------------------------------------------------------------------------
 + (UIImage*) editIcon
 {
-  // TODO xxx test
   if (@available(iOS 13, *))
     return [UIImage systemImageNamed:@"square.and.pencil"];
   else
     return [UIImage imageNamed:editButtonIconResource];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a trashcan icon image.
+// -----------------------------------------------------------------------------
++ (UIImage*) trashcanIcon
+{
+  if (@available(iOS 13, *))
+    return [UIImage systemImageNamed:@"trash"];
+  else
+    return [UIImage imageNamed:trashcanButtonIconResource];
 }
 
 @end

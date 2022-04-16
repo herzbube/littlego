@@ -42,5 +42,6 @@
 + (UIImage*) iconForScoreSummary:(enum GoScoreSummary)scoreSummary;
 + (UIImage*) iconForBoardPositionHotspotDesignation:(enum GoBoardPositionHotspotDesignation)boardPositionHotspotDesignation;
 + (UIImage*) editIcon;
++ (UIImage*) trashcanIcon;
 
 @end

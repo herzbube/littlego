@@ -237,6 +237,11 @@
 		CD5E6B361D7CCB610089D0B3 /* MoreGameActionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */; };
 		CD5E6B371D7CD0500089D0B3 /* MoreGameActionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */; };
 		CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
+		CD607BC0280AF114000C111E /* trashcan@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD607BBB280AF114000C111E /* trashcan@2x.png */; };
+		CD607BC1280AF115000C111E /* trashcan@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD607BBC280AF114000C111E /* trashcan@3x.png */; };
+		CD607BC2280AF115000C111E /* trashcan.svg in Resources */ = {isa = PBXBuildFile; fileRef = CD607BBD280AF114000C111E /* trashcan.svg */; };
+		CD607BC3280AF115000C111E /* trashcan.png in Resources */ = {isa = PBXBuildFile; fileRef = CD607BBE280AF114000C111E /* trashcan.png */; };
+		CD607BC4280AF115000C111E /* noun-trash-428421.svg in Resources */ = {isa = PBXBuildFile; fileRef = CD607BBF280AF114000C111E /* noun-trash-428421.svg */; };
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
@@ -952,6 +957,11 @@
 		CD5B406B25E0A21000C4D947 /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
 		CD5E6B341D7CCB610089D0B3 /* MoreGameActionsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoreGameActionsController.h; sourceTree = "<group>"; };
 		CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoreGameActionsController.m; sourceTree = "<group>"; };
+		CD607BBB280AF114000C111E /* trashcan@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trashcan@2x.png"; sourceTree = "<group>"; };
+		CD607BBC280AF114000C111E /* trashcan@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trashcan@3x.png"; sourceTree = "<group>"; };
+		CD607BBD280AF114000C111E /* trashcan.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = trashcan.svg; sourceTree = "<group>"; };
+		CD607BBE280AF114000C111E /* trashcan.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trashcan.png; sourceTree = "<group>"; };
+		CD607BBF280AF114000C111E /* noun-trash-428421.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "noun-trash-428421.svg"; sourceTree = "<group>"; };
 		CD613D98143CD1B70002759E /* GtpCommandModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandModel.h; sourceTree = "<group>"; };
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
@@ -2009,6 +2019,18 @@
 			path = text;
 			sourceTree = "<group>";
 		};
+		CD607BBA280AF114000C111E /* trashcan */ = {
+			isa = PBXGroup;
+			children = (
+				CD607BBF280AF114000C111E /* noun-trash-428421.svg */,
+				CD607BBE280AF114000C111E /* trashcan.png */,
+				CD607BBD280AF114000C111E /* trashcan.svg */,
+				CD607BBB280AF114000C111E /* trashcan@2x.png */,
+				CD607BBC280AF114000C111E /* trashcan@3x.png */,
+			);
+			path = trashcan;
+			sourceTree = "<group>";
+		};
 		CD7C578821FBC17900694520 /* go-motifs */ = {
 			isa = PBXGroup;
 			children = (
@@ -2621,6 +2643,7 @@
 				CD968B551B026E2300984AEE /* settings */,
 				CD968B5A1B026E2300984AEE /* source-code */,
 				CD2AB1D32802FCA500BF0B4D /* thumbs-up-down */,
+				CD607BBA280AF114000C111E /* trashcan */,
 			);
 			path = icon;
 			sourceTree = "<group>";
@@ -3080,6 +3103,7 @@
 				CD968BAD1B026E2300984AEE /* rewindtostart.png in Resources */,
 				CD968B981B026E2300984AEE /* licenses@2x.png in Resources */,
 				CDE1A16614C1CED200317ECA /* Credits.html in Resources */,
+				CD607BC4280AF115000C111E /* noun-trash-428421.svg in Resources */,
 				CD968B671B026E2300984AEE /* computer-play.png in Resources */,
 				CD2AB1C32800D63500BF0B4D /* unclear@2x.png in Resources */,
 				CD2AB1B32800CECC00BF0B4D /* stones-overlapping-black-and-white-icon@3x.png in Resources */,
@@ -3156,6 +3180,7 @@
 				CD968BA31B026E2300984AEE /* back.png in Resources */,
 				CD968B931B026E2300984AEE /* interrupt.png in Resources */,
 				CD968B6B1B026E2300984AEE /* noun_123922_cc.svg in Resources */,
+				CD607BC3280AF115000C111E /* trashcan.png in Resources */,
 				CDE1A19614C1CF4D00317ECA /* RegistrationDomainDefaults.plist in Resources */,
 				CD968BB31B026E2300984AEE /* pass@3x.png in Resources */,
 				CD2AB20028030D2F00BF0B4D /* doubtful.png in Resources */,
@@ -3168,10 +3193,12 @@
 				CD968B7C1B026E2300984AEE /* noun_3715.svg in Resources */,
 				CDFA329F15A0920200439B4E /* Lumberjack-LICENSE.txt.html in Resources */,
 				CD968B6F1B026E2300984AEE /* continue@3x.png in Resources */,
+				CD607BC1280AF115000C111E /* trashcan@3x.png in Resources */,
 				CD968B7A1B026E2300984AEE /* discard@2x.png in Resources */,
 				CDFA32A015A0920200439B4E /* MBProgressHUD-license.html in Resources */,
 				CD968B6D1B026E2300984AEE /* continue.png in Resources */,
 				CDB3ABFE1CFB401B00DE4B38 /* Launch Screen.storyboard in Resources */,
+				CD607BC2280AF115000C111E /* trashcan.svg in Resources */,
 				CD7C57B721FCB0D100694520 /* stone-white-icon@2x.png in Resources */,
 				CD968B9F1B026E2300984AEE /* more-game-actions.png in Resources */,
 				CDFA32A115A0920200439B4E /* ZipKit-COPYING.TXT.html in Resources */,
@@ -3198,6 +3225,7 @@
 				CD2AB20F28030D4B00BF0B4D /* noun-exclamation-1678344.svg in Resources */,
 				CD968B791B026E2300984AEE /* discard.png in Resources */,
 				CD968BA81B026E2300984AEE /* forward@3x.png in Resources */,
+				CD607BC0280AF114000C111E /* trashcan@2x.png in Resources */,
 				CD2AB20B28030D4B00BF0B4D /* interesting.svg in Resources */,
 				CD968B601B026E2300984AEE /* about@2x.png in Resources */,
 				CD2AB1EE280301CF00BF0B4D /* bad.png in Resources */,

@@ -1227,6 +1227,7 @@ extern NSString* interestingButtonIconResource;
 extern NSString* doubtfulButtonIconResource;
 extern NSString* noneButtonIconResource;
 extern NSString* editButtonIconResource;
+extern NSString* trashcanButtonIconResource;
 extern NSString* moreGameActionsButtonIconResource;
 extern NSString* forwardButtonIconResource;
 extern NSString* forwardToEndButtonIconResource;

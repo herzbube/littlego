@@ -243,6 +243,7 @@ NSString* interestingButtonIconResource = @"interesting.png";
 NSString* doubtfulButtonIconResource = @"doubtful.png";
 NSString* noneButtonIconResource = @"none.png";
 NSString* editButtonIconResource = @"edit.png";
+NSString* trashcanButtonIconResource = @"trashcan.png";
 NSString* moreGameActionsButtonIconResource = @"more-game-actions.png";
 NSString* forwardButtonIconResource = @"forward.png";
 NSString* forwardToEndButtonIconResource = @"forwardtoend.png";

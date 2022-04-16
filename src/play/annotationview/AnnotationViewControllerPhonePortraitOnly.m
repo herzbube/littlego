@@ -39,6 +39,7 @@
 /// AnnotationViewControllerPhonePortraitOnly.
 // -----------------------------------------------------------------------------
 @interface AnnotationViewControllerPhonePortraitOnly()
+@property(nonatomic, assign) bool displayDescriptionRemoveButton;
 @property(nonatomic, assign) bool contentNeedsUpdate;
 @property(nonatomic, assign) bool buttonStatesNeedsUpdate;
 @property(nonatomic, assign) int labelFontSize;
@@ -65,6 +66,7 @@
 @property(nonatomic, retain) UIView* descriptionSpacerView;
 @property(nonatomic, retain) UIView* descriptionButtonContainerView;
 @property(nonatomic, retain) UIButton* descriptionEditButton;
+@property(nonatomic, retain) UIButton* descriptionRemoveButton;
 @property(nonatomic, retain) UIView* descriptionButtonSpacerView;
 @property(nonatomic, retain) NSLayoutConstraint* descriptionLabelsVerticalSpacingConstraint;
 @end
@@ -99,12 +101,19 @@
   switch (uiType)
   {
     case UITypePhonePortraitOnly:
+      // Not enough vertical space to display two buttons, so leaving away the
+      // remove description button because it's a convenience thing only (the
+      // same functionality can be achieved by going to the edit description
+      // screen)
+      self.displayDescriptionRemoveButton = false;
       self.labelFontSize = 10;
       break;
     case UITypePhone:
+      self.displayDescriptionRemoveButton = true;
       self.labelFontSize = 11;
       break;
     case UITypePad:
+      self.displayDescriptionRemoveButton = true;
       self.labelFontSize = 12;
       break;
     default:
@@ -162,6 +171,7 @@
   self.descriptionSpacerView = nil;
   self.descriptionButtonContainerView = nil;
   self.descriptionEditButton = nil;
+  self.descriptionRemoveButton = nil;
   self.descriptionButtonSpacerView = nil;
   self.descriptionLabelsVerticalSpacingConstraint = nil;
 }
@@ -367,6 +377,13 @@
 
   [self.descriptionEditButton setImage:[[UIImage editIcon] imageByScalingToHeight:self.iconHeight]
                               forState:UIControlStateNormal];
+
+  if (self.displayDescriptionRemoveButton)
+  {
+    self.descriptionRemoveButton = [self createButtonInSuperView:self.descriptionButtonContainerView];
+    [self.descriptionRemoveButton setImage:[[UIImage trashcanIcon] imageByScalingToHeight:self.iconHeight]
+                                  forState:UIControlStateNormal];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -504,6 +521,8 @@
   self.descriptionSpacerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.descriptionButtonContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.descriptionEditButton.translatesAutoresizingMaskIntoConstraints = NO;
+  if (self.displayDescriptionRemoveButton)
+    self.descriptionRemoveButton.translatesAutoresizingMaskIntoConstraints = NO;
   self.descriptionButtonSpacerView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
@@ -554,17 +573,29 @@
   [viewsDictionary removeAllObjects];
   [visualFormats removeAllObjects];
   viewsDictionary[@"descriptionEditButton"] = self.descriptionEditButton;
+  if (self.displayDescriptionRemoveButton)
+    viewsDictionary[@"descriptionRemoveButton"] = self.descriptionRemoveButton;
   viewsDictionary[@"descriptionButtonSpacerView"] = self.descriptionButtonSpacerView;
   if (orientationIsPortraitOrientation)
   {
     [visualFormats addObject:@"H:|-0-[descriptionEditButton]-0-|"];
+    if (self.displayDescriptionRemoveButton)
+      [visualFormats addObject:@"H:|-0-[descriptionRemoveButton]-0-|"];
     [visualFormats addObject:@"H:|-0-[descriptionButtonSpacerView]-0-|"];
-    [visualFormats addObject:@"V:|-0-[descriptionEditButton]-0-[descriptionButtonSpacerView]-0-|"];
+    if (self.displayDescriptionRemoveButton)
+      [visualFormats addObject:@"V:|-0-[descriptionEditButton]-[descriptionRemoveButton]-0-[descriptionButtonSpacerView]-0-|"];
+    else
+      [visualFormats addObject:@"V:|-0-[descriptionEditButton]-0-[descriptionButtonSpacerView]-0-|"];
   }
   else
   {
-    [visualFormats addObject:@"H:|-0-[descriptionEditButton]-0-[descriptionButtonSpacerView]-0-|"];
+    if (self.displayDescriptionRemoveButton)
+      [visualFormats addObject:@"H:|-0-[descriptionEditButton]-[descriptionRemoveButton]-0-[descriptionButtonSpacerView]-0-|"];
+    else
+      [visualFormats addObject:@"H:|-0-[descriptionEditButton]-0-[descriptionButtonSpacerView]-0-|"];
     [visualFormats addObject:@"V:|-0-[descriptionEditButton]-0-|"];
+    if (self.displayDescriptionRemoveButton)
+      [visualFormats addObject:@"V:|-0-[descriptionRemoveButton]-0-|"];
     [visualFormats addObject:@"V:|-0-[descriptionButtonSpacerView]-0-|"];
   }
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.descriptionEditButton.superview];
@@ -854,6 +885,7 @@
   BOOL isHotspotButtonEnabled = NO;
   BOOL isEstimatedScoreButtonEnabled = NO;
   BOOL isDescriptionEditButtonEnabled = NO;
+  BOOL isDescriptionRemoveButtonEnabled = NO;
 
   if (! game ||
       ! node ||
@@ -866,6 +898,7 @@
     isHotspotButtonEnabled = NO;
     isEstimatedScoreButtonEnabled = NO;
     isDescriptionEditButtonEnabled = NO;
+    isDescriptionRemoveButtonEnabled = NO;
   }
   else
   {
@@ -887,6 +920,7 @@
     isHotspotButtonEnabled = game.boardPosition.isFirstPosition ? NO : YES;
     isEstimatedScoreButtonEnabled = game.boardPosition.isFirstPosition ? NO : YES;
     isDescriptionEditButtonEnabled = YES;
+    isDescriptionRemoveButtonEnabled = (node.goNodeAnnotation.shortDescription || node.goNodeAnnotation.longDescription) ? YES : NO;
   }
 
   self.positionValuationButton.enabled = isPositionValuationButtonEnabled;
@@ -894,6 +928,8 @@
   self.hotspotButton.enabled = isHotspotButtonEnabled;
   self.estimatedScoreButton.enabled = isEstimatedScoreButtonEnabled;
   self.descriptionEditButton.enabled = isDescriptionEditButtonEnabled;
+  if (self.displayDescriptionRemoveButton)
+    self.descriptionRemoveButton.enabled = isDescriptionRemoveButtonEnabled;
 }
 
 @end
