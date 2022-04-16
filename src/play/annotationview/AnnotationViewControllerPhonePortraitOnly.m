@@ -57,14 +57,14 @@
 @property(nonatomic, retain) UILabel* estimatedScoreLabel;
 @property(nonatomic, retain) UIButton* estimatedScoreButton;
 @property(nonatomic, retain) UIViewController* descriptionViewController;
-@property(nonatomic, retain) UIView* descriptionLabelColumnView;
+@property(nonatomic, retain) UIView* descriptionLabelContainerView;
 @property(nonatomic, retain) UIScrollView* descriptionScrollView;
 @property(nonatomic, retain) UIView* descriptionContentView;
 @property(nonatomic, retain) UILabel* shortDescriptionLabel;
 @property(nonatomic, retain) UILabel* longDescriptionLabel;
-@property(nonatomic, retain) UIView* descriptionLabelSpacerColumnView;
-@property(nonatomic, retain) UIView* descriptionButtonColumnView;
-@property(nonatomic, retain) UIButton* descriptionButton;
+@property(nonatomic, retain) UIView* descriptionSpacerView;
+@property(nonatomic, retain) UIView* descriptionButtonContainerView;
+@property(nonatomic, retain) UIButton* descriptionEditButton;
 @property(nonatomic, retain) UIView* descriptionButtonSpacerView;
 @property(nonatomic, retain) NSLayoutConstraint* descriptionLabelsVerticalSpacingConstraint;
 @end
@@ -154,14 +154,14 @@
   self.estimatedScoreLabel = nil;
   self.estimatedScoreButton = nil;
   self.descriptionViewController = nil;
-  self.descriptionLabelColumnView = nil;
+  self.descriptionLabelContainerView = nil;
   self.descriptionScrollView = nil;
   self.descriptionContentView = nil;
   self.shortDescriptionLabel = nil;
   self.longDescriptionLabel = nil;
-  self.descriptionLabelSpacerColumnView = nil;
-  self.descriptionButtonColumnView = nil;
-  self.descriptionButton = nil;
+  self.descriptionSpacerView = nil;
+  self.descriptionButtonContainerView = nil;
+  self.descriptionEditButton = nil;
   self.descriptionButtonSpacerView = nil;
   self.descriptionLabelsVerticalSpacingConstraint = nil;
 }
@@ -349,9 +349,9 @@
 // -----------------------------------------------------------------------------
 - (void) setupDescriptionView:(UIView*)superview
 {
-  self.descriptionLabelColumnView = [self createViewInSuperView:superview];
+  self.descriptionLabelContainerView = [self createViewInSuperView:superview];
 
-  self.descriptionScrollView = [self createScrollViewInSuperView:self.descriptionLabelColumnView];
+  self.descriptionScrollView = [self createScrollViewInSuperView:self.descriptionLabelContainerView];
   self.descriptionContentView = [self createViewInSuperView:self.descriptionScrollView];
 
   self.shortDescriptionLabel = [self createLabelInSuperView:self.descriptionContentView];
@@ -359,14 +359,14 @@
   self.longDescriptionLabel = [self createLabelInSuperView:self.descriptionContentView];
   self.longDescriptionLabel.numberOfLines = 0;
 
-  self.descriptionLabelSpacerColumnView = [self createViewInSuperView:superview];
+  self.descriptionSpacerView = [self createViewInSuperView:superview];
 
-  self.descriptionButtonColumnView = [self createViewInSuperView:superview];
-  self.descriptionButton = [self createButtonInSuperView:self.descriptionButtonColumnView];
-  self.descriptionButtonSpacerView = [self createViewInSuperView:self.descriptionButtonColumnView];
+  self.descriptionButtonContainerView = [self createViewInSuperView:superview];
+  self.descriptionEditButton = [self createButtonInSuperView:self.descriptionButtonContainerView];
+  self.descriptionButtonSpacerView = [self createViewInSuperView:self.descriptionButtonContainerView];
 
-  [self.descriptionButton setImage:[[UIImage editIcon] imageByScalingToHeight:self.iconHeight]
-                          forState:UIControlStateNormal];
+  [self.descriptionEditButton setImage:[[UIImage editIcon] imageByScalingToHeight:self.iconHeight]
+                              forState:UIControlStateNormal];
 }
 
 // -----------------------------------------------------------------------------
@@ -495,25 +495,38 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsDescriptionView
 {
-  self.descriptionLabelColumnView.translatesAutoresizingMaskIntoConstraints = NO;
+  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
+  bool orientationIsPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+
+  self.descriptionLabelContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.shortDescriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.longDescriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  self.descriptionLabelSpacerColumnView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.descriptionButtonColumnView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.descriptionButton.translatesAutoresizingMaskIntoConstraints = NO;
+  self.descriptionSpacerView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.descriptionButtonContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.descriptionEditButton.translatesAutoresizingMaskIntoConstraints = NO;
   self.descriptionButtonSpacerView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
 
-  viewsDictionary[@"descriptionLabelColumnView"] = self.descriptionLabelColumnView;
-  viewsDictionary[@"descriptionLabelSpacerColumnView"] = self.descriptionLabelSpacerColumnView;
-  viewsDictionary[@"descriptionButtonColumnView"] = self.descriptionButtonColumnView;
-  [visualFormats addObject:@"H:|-0-[descriptionLabelColumnView]-0-[descriptionLabelSpacerColumnView]-[descriptionButtonColumnView]-0-|"];
-  [visualFormats addObject:@"V:|-0-[descriptionLabelColumnView]-0-|"];
-  [visualFormats addObject:@"V:|-0-[descriptionLabelSpacerColumnView]-0-|"];
-  [visualFormats addObject:@"V:|-0-[descriptionButtonColumnView]-0-|"];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.descriptionLabelColumnView.superview];
+  viewsDictionary[@"descriptionLabelContainerView"] = self.descriptionLabelContainerView;
+  viewsDictionary[@"descriptionSpacerView"] = self.descriptionSpacerView;
+  viewsDictionary[@"descriptionButtonContainerView"] = self.descriptionButtonContainerView;
+  if (orientationIsPortraitOrientation)
+  {
+    [visualFormats addObject:@"H:|-0-[descriptionLabelContainerView]-0-[descriptionSpacerView]-[descriptionButtonContainerView]-0-|"];
+    [visualFormats addObject:@"V:|-0-[descriptionLabelContainerView]-0-|"];
+    [visualFormats addObject:@"V:|-0-[descriptionSpacerView]-0-|"];
+    [visualFormats addObject:@"V:|-0-[descriptionButtonContainerView]-0-|"];
+  }
+  else
+  {
+    [visualFormats addObject:@"H:|-0-[descriptionButtonContainerView]-0-|"];
+    [visualFormats addObject:@"H:|-0-[descriptionSpacerView]-0-|"];
+    [visualFormats addObject:@"H:|-0-[descriptionLabelContainerView]-0-|"];
+    [visualFormats addObject:@"V:|-0-[descriptionButtonContainerView]-0-[descriptionSpacerView]-[descriptionLabelContainerView]-0-|"];
+  }
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.descriptionLabelContainerView.superview];
 
   [self setupAutoLayoutConstraintsScrollView:self.descriptionScrollView
                               andContentView:self.descriptionContentView];
@@ -540,16 +553,25 @@
 
   [viewsDictionary removeAllObjects];
   [visualFormats removeAllObjects];
-  viewsDictionary[@"descriptionButton"] = self.descriptionButton;
+  viewsDictionary[@"descriptionEditButton"] = self.descriptionEditButton;
   viewsDictionary[@"descriptionButtonSpacerView"] = self.descriptionButtonSpacerView;
-  [visualFormats addObject:@"H:|-0-[descriptionButton]-0-|"];
-  [visualFormats addObject:@"H:|-0-[descriptionButtonSpacerView]-0-|"];
-  [visualFormats addObject:@"V:|-0-[descriptionButton]-0-[descriptionButtonSpacerView]-0-|"];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.descriptionButton.superview];
+  if (orientationIsPortraitOrientation)
+  {
+    [visualFormats addObject:@"H:|-0-[descriptionEditButton]-0-|"];
+    [visualFormats addObject:@"H:|-0-[descriptionButtonSpacerView]-0-|"];
+    [visualFormats addObject:@"V:|-0-[descriptionEditButton]-0-[descriptionButtonSpacerView]-0-|"];
+  }
+  else
+  {
+    [visualFormats addObject:@"H:|-0-[descriptionEditButton]-0-[descriptionButtonSpacerView]-0-|"];
+    [visualFormats addObject:@"V:|-0-[descriptionEditButton]-0-|"];
+    [visualFormats addObject:@"V:|-0-[descriptionButtonSpacerView]-0-|"];
+  }
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.descriptionEditButton.superview];
 
   // The button must resist compression more than the labels in
-  // self.descriptionLabelColumnView, otherwise a long label text can cause the
-  // button to be squashed (observed in layouts slightly different than the
+  // self.descriptionLabelContainerView, otherwise a long label text can cause
+  // the button to be squashed (observed in layouts slightly different than the
   // current one). More important, the increased compression resistance also
   // fixes a weird problem with the current layout, where shortDescriptionLabel
   // sometimes truncates its text when the text becomes too long (e.g. longer
@@ -559,7 +581,8 @@
   // As soon as both labels have text, though, the workaround is no longer
   // possible. In any case, invoking setContentCompressionResistancePriority
   // with the highest value completely fixes the truncation problem.
-  [self.descriptionButton setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
+  if (orientationIsPortraitOrientation)
+    [self.descriptionEditButton setContentCompressionResistancePriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisHorizontal];
 }
 
 // -----------------------------------------------------------------------------
@@ -830,7 +853,7 @@
   BOOL isMoveValuationButtonEnabled = NO;
   BOOL isHotspotButtonEnabled = NO;
   BOOL isEstimatedScoreButtonEnabled = NO;
-  BOOL isDescriptionButtonEnabled = NO;
+  BOOL isDescriptionEditButtonEnabled = NO;
 
   if (! game ||
       ! node ||
@@ -842,7 +865,7 @@
     isMoveValuationButtonEnabled = NO;
     isHotspotButtonEnabled = NO;
     isEstimatedScoreButtonEnabled = NO;
-    isDescriptionButtonEnabled = NO;
+    isDescriptionEditButtonEnabled = NO;
   }
   else
   {
@@ -863,14 +886,14 @@
       isMoveValuationButtonEnabled = NO;
     isHotspotButtonEnabled = game.boardPosition.isFirstPosition ? NO : YES;
     isEstimatedScoreButtonEnabled = game.boardPosition.isFirstPosition ? NO : YES;
-    isDescriptionButtonEnabled = YES;
+    isDescriptionEditButtonEnabled = YES;
   }
 
   self.positionValuationButton.enabled = isPositionValuationButtonEnabled;
   self.moveValuationButton.enabled = isMoveValuationButtonEnabled;
   self.hotspotButton.enabled = isHotspotButtonEnabled;
   self.estimatedScoreButton.enabled = isEstimatedScoreButtonEnabled;
-  self.descriptionButton.enabled = isDescriptionButtonEnabled;
+  self.descriptionEditButton.enabled = isDescriptionEditButtonEnabled;
 }
 
 @end
