@@ -23,8 +23,8 @@
 #import "../controller/AutoLayoutConstraintHelper.h"
 #import "../gameaction/GameActionButtonBoxDataSource.h"
 #import "../gameaction/GameActionManager.h"
+#import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
-#import "../../ui/ButtonBoxController.h"
 #import "../../ui/UiElementMetrics.h"
 #import "../../utility/UIColorAdditions.h"
 
@@ -35,7 +35,7 @@
 @interface RightPaneViewController()
 @property(nonatomic, retain) UIView* woodenBackgroundView;
 @property(nonatomic, retain) UIView* leftColumnView;
-@property(nonatomic, retain) UIView* middleColumnView;
+@property(nonatomic, retain) OrientationChangeNotifyingView* middleColumnView;
 @property(nonatomic, retain) UIView* rightColumnView;
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
@@ -43,6 +43,7 @@
 @property(nonatomic, retain) AnnotationViewController* annotationViewController;
 @property(nonatomic, retain) ButtonBoxController* gameActionButtonBoxController;
 @property(nonatomic, retain) GameActionButtonBoxDataSource* gameActionButtonBoxDataSource;
+@property(nonatomic, assign) UILayoutConstraintAxis boardViewSmallerDimension;
 @property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
 @property(nonatomic, retain) NSArray* gameActionButtonBoxAutoLayoutConstraints;
 @end
@@ -68,6 +69,7 @@
   self.leftColumnView = nil;
   self.middleColumnView = nil;
   self.rightColumnView = nil;
+  self.boardViewSmallerDimension = UILayoutConstraintAxisVertical;
   self.boardViewAutoLayoutConstraints = [NSMutableArray array];
   self.gameActionButtonBoxAutoLayoutConstraints = nil;
   return self;
@@ -229,22 +231,6 @@
   [self configureViews];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-///
-/// This override handles interface orientation changes while this controller's
-/// view hierarchy is visible, and changes that occurred while this controller's
-/// view hierarchy was not visible (this method is invoked when the controller's
-/// view becomes visible again).
-// -----------------------------------------------------------------------------
-- (void) viewWillLayoutSubviews
-{
-  [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
-                                              ofBoardView:self.boardViewController.view
-                                                  forAxis:UILayoutConstraintAxisHorizontal
-                                         constraintHolder:self.boardViewController.view.superview];
-}
-
 #pragma mark - Private helpers for loadView
 
 // -----------------------------------------------------------------------------
@@ -260,7 +246,8 @@
   [self.leftColumnView addSubview:self.annotationViewController.view];
   [self.leftColumnView addSubview:self.boardPositionButtonBoxController.view];
 
-  self.middleColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  self.middleColumnView = [[[OrientationChangeNotifyingView alloc] initWithFrame:CGRectZero] autorelease];
+  self.middleColumnView.delegate = self;
   [self.woodenBackgroundView addSubview:self.middleColumnView];
   [self.middleColumnView addSubview:self.boardViewController.view];
 
@@ -274,10 +261,17 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
+  CGFloat annotationViewWidthMultiplier;
+  enum UIType uiType = [LayoutManager sharedManager].uiType;
+  if (uiType == UITypePhone)
+    annotationViewWidthMultiplier = 1.75;
+  else
+    annotationViewWidthMultiplier = 2.00;
+
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
-                                                  forAxis:UILayoutConstraintAxisHorizontal
+                                                  forAxis:self.boardViewSmallerDimension
                                          constraintHolder:self.boardViewController.view.superview];
 
   int horizontalSpacingButtonBox = [AutoLayoutUtility horizontalSpacingSiblings];
@@ -340,7 +334,7 @@
   // The annotation view should be wide enough to display most description
   // texts without scrolling. It can't be arbitrarily wide because it must
   // leave enough space for the board view.
-  int annotationViewWidth = buttonBoxSize.width * 2;
+  int annotationViewWidth = buttonBoxSize.width * annotationViewWidthMultiplier;
   [viewsDictionary removeAllObjects];
   [visualFormats removeAllObjects];
   self.annotationViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -416,6 +410,43 @@
 - (void) buttonBoxButtonsWillChange
 {
   [self updateGameActionButtonBoxAutoLayoutConstraints];
+}
+
+#pragma mark - OrientationChangeNotifyingViewDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief OrientationChangeNotifyingViewDelegate protocol method.
+///
+/// This delegate method is important for finding out which is the smaller
+/// dimension of the board view after layouting has finished, so that in a final
+/// round of layouting the board view can be constrained to be square for that
+/// dimension.
+///
+/// This delegate method handles interface orientation changes while this
+/// controller's view hierarchy is visible, and changes that occurred while this
+/// controller's view hierarchy was not visible (this method is invoked when the
+/// controller's view becomes visible again). Typically an override of
+/// the UIViewController method viewWillLayoutSubviews could also be used for
+/// this.
+///
+/// The reason why viewWillLayoutSubviews is not overridden is that UIKit does
+/// not invoke viewWillLayoutSubviews every time that the bounds of
+/// self.middleColumnView change, so it can't be relied on to find out the
+/// board view's smaller dimension.
+// -----------------------------------------------------------------------------
+- (void) orientationChangeNotifyingView:(OrientationChangeNotifyingView*)orientationChangeNotifyingView
+             didChangeToLargerDimension:(UILayoutConstraintAxis)largerDimension
+                       smallerDimension:(UILayoutConstraintAxis)smallerDimension
+{
+  if (self.boardViewSmallerDimension != smallerDimension)
+  {
+    self.boardViewSmallerDimension = smallerDimension;
+
+    [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
+                                                ofBoardView:self.boardViewController.view
+                                                    forAxis:self.boardViewSmallerDimension
+                                           constraintHolder:self.boardViewController.view.superview];
+  }
 }
 
 @end

@@ -18,6 +18,7 @@
 // Project includes
 #import "PlayRootViewController.h"
 #import "GameActionManager.h"
+#import "../../ui/OrientationChangeNotifyingView.h"
 
 
 // -----------------------------------------------------------------------------
@@ -27,7 +28,7 @@
 /// The PlayRootViewController class method playRootViewController() should be
 /// used to create a PlayRootViewControllerPad instance.
 // -----------------------------------------------------------------------------
-@interface PlayRootViewControllerPad : PlayRootViewController <GameActionManagerUIDelegate>
+@interface PlayRootViewControllerPad : PlayRootViewController <GameActionManagerUIDelegate, OrientationChangeNotifyingViewDelegate>
 {
 }
 

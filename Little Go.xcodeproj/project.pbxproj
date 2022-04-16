@@ -242,6 +242,8 @@
 		CD607BC2280AF115000C111E /* trashcan.svg in Resources */ = {isa = PBXBuildFile; fileRef = CD607BBD280AF114000C111E /* trashcan.svg */; };
 		CD607BC3280AF115000C111E /* trashcan.png in Resources */ = {isa = PBXBuildFile; fileRef = CD607BBE280AF114000C111E /* trashcan.png */; };
 		CD607BC4280AF115000C111E /* noun-trash-428421.svg in Resources */ = {isa = PBXBuildFile; fileRef = CD607BBF280AF114000C111E /* noun-trash-428421.svg */; };
+		CD607BC7280B1AB3000C111E /* OrientationChangeNotifyingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD607BC6280B1AB3000C111E /* OrientationChangeNotifyingView.m */; };
+		CD607BC8280B1AB3000C111E /* OrientationChangeNotifyingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD607BC6280B1AB3000C111E /* OrientationChangeNotifyingView.m */; };
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
@@ -962,6 +964,8 @@
 		CD607BBD280AF114000C111E /* trashcan.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = trashcan.svg; sourceTree = "<group>"; };
 		CD607BBE280AF114000C111E /* trashcan.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = trashcan.png; sourceTree = "<group>"; };
 		CD607BBF280AF114000C111E /* noun-trash-428421.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "noun-trash-428421.svg"; sourceTree = "<group>"; };
+		CD607BC5280B1AB3000C111E /* OrientationChangeNotifyingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrientationChangeNotifyingView.h; sourceTree = "<group>"; };
+		CD607BC6280B1AB3000C111E /* OrientationChangeNotifyingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrientationChangeNotifyingView.m; sourceTree = "<group>"; };
 		CD613D98143CD1B70002759E /* GtpCommandModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandModel.h; sourceTree = "<group>"; };
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
@@ -2861,6 +2865,8 @@
 		CDEF3D87140C2F39002D9C1C /* ui */ = {
 			isa = PBXGroup;
 			children = (
+				CD607BC5280B1AB3000C111E /* OrientationChangeNotifyingView.h */,
+				CD607BC6280B1AB3000C111E /* OrientationChangeNotifyingView.m */,
 				CDACF0AE19041C1200A0DAD7 /* AutoLayoutUtility.h */,
 				CDACF0AF19041C1200A0DAD7 /* AutoLayoutUtility.m */,
 				CD7C6A1B1AB61893009EC5AD /* ButtonBoxCell.h */,
@@ -3468,6 +3474,7 @@
 				CD97FA101AE3D4DD00148C16 /* NewGameAdvancedController.m in Sources */,
 				CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
 				CDEE19F719433EAC00DF2389 /* BoardViewDrawingHelper.m in Sources */,
+				CD607BC7280B1AB3000C111E /* OrientationChangeNotifyingView.m in Sources */,
 				CDA0970B1A99F77F002FCD78 /* SplitViewController.m in Sources */,
 				CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */,
 				CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */,
@@ -3781,6 +3788,7 @@
 				CD1F4F8125AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m in Sources */,
 				CDFD9F7C18F1D5A30031CBCF /* DeleteGameCommand.m in Sources */,
 				CDFD9F7B18F1D5800031CBCF /* ViewGameController.m in Sources */,
+				CD607BC8280B1AB3000C111E /* OrientationChangeNotifyingView.m in Sources */,
 				CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */,
 				CD3592031735A757000E2963 /* PlayRootViewController.m in Sources */,
 				CD3592051735A757000E2963 /* PlayRootViewControllerPad.m in Sources */,

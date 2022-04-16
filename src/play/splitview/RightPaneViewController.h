@@ -17,6 +17,7 @@
 
 // Project includes
 #import "../../ui/ButtonBoxController.h"
+#import "../../ui/OrientationChangeNotifyingView.h"
 
 
 // -----------------------------------------------------------------------------
@@ -27,7 +28,7 @@
 /// RightPaneViewController is a container view controller. It is used for
 /// #UITypePad (both Portrait and Landscape) and #UITypePhone (Landscape only).
 // -----------------------------------------------------------------------------
-@interface RightPaneViewController : UIViewController <ButtonBoxControllerDataDelegate>
+@interface RightPaneViewController : UIViewController <ButtonBoxControllerDataDelegate, OrientationChangeNotifyingViewDelegate>
 {
 }
 

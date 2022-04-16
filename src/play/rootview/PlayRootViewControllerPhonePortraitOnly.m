@@ -43,8 +43,9 @@
 @property(nonatomic, retain) AnnotationViewController* annotationViewController;
 @property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
 @property(nonatomic, retain) UIView* woodenBackgroundView;
-@property(nonatomic, retain) UIView* boardContainerView;
+@property(nonatomic, retain) OrientationChangeNotifyingView* boardContainerView;
 @property(nonatomic, retain) UIView* boardPositionButtonBoxContainerView;
+@property(nonatomic, assign) UILayoutConstraintAxis boardViewSmallerDimension;
 @property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
 @end
 
@@ -65,6 +66,7 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+  self.boardViewSmallerDimension = UILayoutConstraintAxisHorizontal;
   [self setupChildControllers];
   return self;
 }
@@ -257,7 +259,8 @@
 
   // This is a simple container view that takes up all the unused vertical
   // space and within which the board view is then vertically centered.
-  self.boardContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  self.boardContainerView = [[[OrientationChangeNotifyingView alloc] initWithFrame:CGRectZero] autorelease];
+  self.boardContainerView.delegate = self;
 
   // This container view contains the button box and the annotation view.
   // The higher of the two determines how much vertical space the container
@@ -373,8 +376,45 @@
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
-                                                  forAxis:UILayoutConstraintAxisHorizontal
+                                                  forAxis:self.boardViewSmallerDimension
                                          constraintHolder:self.boardViewController.view.superview];
+}
+
+#pragma mark - OrientationChangeNotifyingViewDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief OrientationChangeNotifyingViewDelegate protocol method.
+///
+/// This delegate method is important for finding out which is the smaller
+/// dimension of the board view after layouting has finished, so that in a final
+/// round of layouting the board view can be constrained to be square for that
+/// dimension.
+///
+/// This delegate method handles interface orientation changes while this
+/// controller's view hierarchy is visible, and changes that occurred while this
+/// controller's view hierarchy was not visible (this method is invoked when the
+/// controller's view becomes visible again). Typically an override of
+/// the UIViewController method viewWillLayoutSubviews could also be used for
+/// this.
+///
+/// The reason why viewWillLayoutSubviews is not overridden is that UIKit does
+/// not invoke viewWillLayoutSubviews every time that the bounds of
+/// self.middleColumnView change, so it can't be relied on to find out the
+/// board view's smaller dimension.
+// -----------------------------------------------------------------------------
+- (void) orientationChangeNotifyingView:(OrientationChangeNotifyingView*)orientationChangeNotifyingView
+             didChangeToLargerDimension:(UILayoutConstraintAxis)largerDimension
+                       smallerDimension:(UILayoutConstraintAxis)smallerDimension
+{
+  if (self.boardViewSmallerDimension != smallerDimension)
+  {
+    self.boardViewSmallerDimension = smallerDimension;
+
+    [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
+                                                ofBoardView:self.boardViewController.view
+                                                    forAxis:self.boardViewSmallerDimension
+                                           constraintHolder:self.boardViewController.view.superview];
+  }
 }
 
 #pragma mark - GameActionManagerUIDelegate overrides
