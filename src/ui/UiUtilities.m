@@ -358,4 +358,17 @@
     return true;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Applies a "transparent" style to @a view. The transparency makes it
+/// appear as if the view "floats" on top of its superview.
+///
+/// The style applied by this method is the same "transparent" style  that is
+/// also used by ButtonBoxController.
+// -----------------------------------------------------------------------------
++ (void) applyTransparentStyleToView:(UIView*)view
+{
+  view.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.6f];
+  view.layer.borderWidth = 1;
+}
+
 @end

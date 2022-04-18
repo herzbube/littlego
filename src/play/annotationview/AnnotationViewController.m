@@ -56,18 +56,4 @@
   return annotationViewController;
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Applies a "transparent" style to the view managed by this
-/// AnnotationViewController, the transparency making it appear as if the view
-/// "floats" on top of its superview.
-///
-/// The style applied by this method is the same "transparent" style  that is
-/// also used by ButtonBoxController.
-// -----------------------------------------------------------------------------
-- (void) applyTransparentStyle
-{
-  self.view.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.6f];
-  self.view.layer.borderWidth = 1;
-}
-
 @end

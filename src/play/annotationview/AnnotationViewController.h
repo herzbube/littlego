@@ -33,6 +33,4 @@
 
 + (AnnotationViewController*) annotationViewController;
 
-- (void) applyTransparentStyle;
-
 @end

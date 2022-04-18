@@ -298,22 +298,4 @@ referenceSizeForHeaderInSection:(NSInteger)section
   [self.collectionView reloadData];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Applies a "transparent" style to the collection view managed by this
-/// ButtonBoxController, the transparency making it appear as if the button box
-/// "floats" on top of its superview.
-///
-/// TODO The style applied by this method is probably unsuitable for generic
-/// consumption, i.e. the style only looks good in a very specific view
-/// hierarchy. This method should therefore be placed into some utility class
-/// that is aware of the specific needs of that view hierarchy.
-// -----------------------------------------------------------------------------
-- (void) applyTransparentStyle
-{
-  self.collectionView.backgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-  self.collectionView.backgroundView.backgroundColor = [UIColor whiteColor];
-  self.collectionView.backgroundView.layer.borderWidth = 1;
-  self.collectionView.backgroundView.alpha = 0.6f;
-}
-
 @end

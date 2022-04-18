@@ -31,6 +31,7 @@
 #import "../../ui/ButtonBoxController.h"
 #import "../../ui/SplitViewController.h"
 #import "../../ui/UiElementMetrics.h"
+#import "../../ui/UiUtilities.h"
 #import "../../utility/UIColorAdditions.h"
 
 
@@ -504,8 +505,8 @@
   {
     self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
 
-    [self.boardPositionButtonBoxController applyTransparentStyle];
-    [self.annotationViewController applyTransparentStyle];
+    [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxController.view];
+    [UiUtilities applyTransparentStyleToView:self.annotationViewController.view];
 
     [self.boardPositionButtonBoxController reloadData];
   }

@@ -26,6 +26,7 @@
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
+#import "../../ui/UiUtilities.h"
 #import "../../utility/UIColorAdditions.h"
 
 
@@ -373,9 +374,9 @@
   // but for the entire area in which the Go board resides
   self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
 
-  [self.annotationViewController applyTransparentStyle];
-  [self.boardPositionButtonBoxController applyTransparentStyle];
-  [self.gameActionButtonBoxController applyTransparentStyle];
+  [UiUtilities applyTransparentStyleToView:self.annotationViewController.view];
+  [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxController.view];
+  [UiUtilities applyTransparentStyleToView:self.gameActionButtonBoxController.view];
 }
 
 #pragma mark - Dynamic Auto Layout constraint handling
