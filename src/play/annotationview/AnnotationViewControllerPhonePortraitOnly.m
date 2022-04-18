@@ -46,6 +46,7 @@
 @property(nonatomic, assign) int iconHeight;
 @property(nonatomic, assign) int mainViewMargin;
 @property(nonatomic, assign) int buttonVerticalSpacing;
+@property(nonatomic, assign) UIStackViewAlignment valuationViewStackViewAlignment;
 @property(nonatomic, retain) PageViewController* customPageViewController;
 @property(nonatomic, retain) UIViewController* valuationViewController;
 @property(nonatomic, retain) UIStackView* valuationViewStackView;
@@ -107,14 +108,27 @@
       // screen)
       self.displayDescriptionRemoveButton = false;
       self.labelFontSize = 10;
+      // self.estimatedScoreButton uses a different title label font size than
+      // the other buttons, which causes it to use less vertical size. With the
+      // default stack view alignment (UIStackViewAlignmentFill) this causes the
+      // button and its label to be positioned in a slightly different vertical
+      // location than the other buttons/labels. By aligning the stack view
+      // subviews to the stack view's top edge everything remains nicely
+      // aligned. Using UIStackViewAlignmentCenter would have the same effect,
+      // but for UITypePhonePortraitOnly the annotation view has very little
+      // height, so aligning to the top gives a bit of extra spacing between
+      // the buttons and the page view control.
+      self.valuationViewStackViewAlignment = UIStackViewAlignmentTop;
       break;
     case UITypePhone:
       self.displayDescriptionRemoveButton = true;
       self.labelFontSize = 11;
+      self.valuationViewStackViewAlignment = UIStackViewAlignmentCenter;
       break;
     case UITypePad:
       self.displayDescriptionRemoveButton = true;
       self.labelFontSize = 12;
+      self.valuationViewStackViewAlignment = UIStackViewAlignmentCenter;
       break;
     default:
       [ExceptionUtility throwInvalidUIType:uiType];
@@ -324,19 +338,14 @@
   {
     self.valuationViewStackView.axis = UILayoutConstraintAxisHorizontal;
     self.valuationViewStackView.distribution = UIStackViewDistributionFillEqually;
-    // self.estimatedScoreButton uses a different title label font size than
-    // the other buttons, which causes it to use less vertical size. With the
-    // default stack view alignment (UIStackViewAlignmentFill) this causes the
-    // button and its label to be positioned in a slightly different vertical
-    // location than the other buttons/labels. By aligning the stack view
-    // subviews to the stack view's top edge everything remains nicely aligned.
-    self.valuationViewStackView.alignment = UIStackViewAlignmentTop;
   }
   else
   {
     self.valuationViewStackView.axis = UILayoutConstraintAxisVertical;
     self.valuationViewStackView.distribution = UIStackViewDistributionEqualSpacing;
   }
+
+  self.valuationViewStackView.alignment = self.valuationViewStackViewAlignment;
 
   self.positionValuationLabel = [self createTitleLabelInStackView:self.valuationViewStackView withTitleText:@"Position"];
   self.positionValuationButton = [self createButtonInSuperView:self.positionValuationLabel.superview];
