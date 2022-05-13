@@ -34,15 +34,16 @@ enum EditTextControllerStyle
 /// @brief The EditTextDelegate protocol must be implemented by the delegate
 /// of EditTextController.
 // -----------------------------------------------------------------------------
-@protocol EditTextDelegate
+@protocol EditTextDelegate <NSObject>
 /// @brief Asks the delegate if editing should end using @a text as the result.
 /// This method is invoked when the user taps the "done" button.
 ///
-/// The delegate should return true if @a text is acceptable, false if not.
-/// If the delegate returns false, it should display an alert prior to returning
-/// that informs the user why the text cannot be accepted. If no such alert is
-/// displayed, the user will have no feedback why tapping the "done" button
-/// has no effect.
+/// The delegate should return true if @a text is valid, false if not.
+/// If the delegate returns false and does not implement the delegate method
+/// controller:isTextValid:validationErrorMessage:(), it should display an alert
+/// prior to returning that informs the user why the text cannot be accepted. If
+/// no such alert is displayed, the user will have no feedback why tapping the
+/// "done" button has no effect.
 - (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text;
 /// @brief Notifies the delegate that the editing session has ended. This method
 /// is invoked when the user taps either the "done" or the "cancel" button (in
@@ -55,6 +56,19 @@ enum EditTextControllerStyle
 /// The delegate should dismiss the EditTextController in response to this
 /// method invocation.
 - (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
+
+@optional
+/// @brief Asks the delegate if @a text is a valid text. This method is invoked
+/// whenever the user makes a change to the text field or text view input
+/// control.
+///
+/// The delegate should return true if @a text is valid, false if not.
+///
+/// If the delegate returns false it can optionally populate
+/// @a validationErrorMessage with a validation error message text that
+/// @a controller will then display to the user below the text field or text
+/// view input control.
+- (bool) controller:(EditTextController*)editTextController isTextValid:(NSString*)text validationErrorMessage:(NSString**)validationErrorMessage;
 @end
 
 
@@ -83,7 +97,10 @@ enum EditTextControllerStyle
 /// notified when the user intends to end the editing session by tapping the
 /// "done" button. The delegate can refuse the entered text and prevent the
 /// editing session from ending (it should also display an alert to provide
-/// feedback to the user why tapping the "done" button has no effect).
+/// feedback to the user why tapping the "done" button has no effect). An
+/// optional delegate method allows to validate the text string whenever the
+/// user performs edits, and in case of error to display a validation error
+/// message.
 // -----------------------------------------------------------------------------
 @interface EditTextController : UIViewController <UITextFieldDelegate, UITextViewDelegate>
 {

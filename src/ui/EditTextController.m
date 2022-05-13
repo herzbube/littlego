@@ -28,8 +28,13 @@
 @property(nonatomic, assign) UIView* contentView;
 @property(nonatomic, retain) UITextField* textField;
 @property(nonatomic, retain) UITextView* textView;
+@property(nonatomic, retain) UILabel* validationErrorLabel;
 @property(nonatomic, assign) UIResponder* firstResponderWhenViewWillAppear;
 @property(nonatomic, retain) NSLayoutConstraint* textViewHeightConstraint;
+@property(nonatomic, assign) CGFloat validTextBorderWidth;
+@property(nonatomic, retain) UIColor* validTextBorderColor;
+@property(nonatomic, assign) CGFloat invalidTextBorderWidth;
+@property(nonatomic, retain) UIColor* inValidTextBorderColor;
 @end
 
 
@@ -69,6 +74,7 @@
   self.contentView = nil;
   self.textField = nil;
   self.textView = nil;
+  self.validationErrorLabel = nil;
   self.firstResponderWhenViewWillAppear = nil;
   self.textViewHeightConstraint = nil;
   self.context = nil;
@@ -79,6 +85,10 @@
   self.placeholder = nil;
   self.acceptEmptyText = false;
   self.textHasChanged = false;
+  self.validTextBorderWidth = 0.0f;
+  self.validTextBorderColor = nil;
+  self.invalidTextBorderWidth = 0.5f;
+  self.inValidTextBorderColor = [UIColor redColor];
 
   return self;
 }
@@ -92,6 +102,7 @@
   self.contentView = nil;
   self.textField = nil;
   self.textView = nil;
+  self.validationErrorLabel = nil;
   self.firstResponderWhenViewWillAppear = nil;
   self.textViewHeightConstraint = nil;
   self.context = nil;
@@ -115,6 +126,11 @@
   self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
   [AutoLayoutUtility fillSafeAreaOfSuperview:self.view withSubview:self.contentView];
 
+  self.validationErrorLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  [self.contentView addSubview:self.validationErrorLabel];
+  self.validationErrorLabel.textColor = [UIColor redColor];
+  self.validationErrorLabel.numberOfLines = 0;
+
   // A background color is required to support UIModalPresentationAutomatic
   self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
 
@@ -125,12 +141,16 @@
     {
       [self setupTextField];
       self.firstResponderWhenViewWillAppear = self.textField;
+      self.validTextBorderWidth = self.textField.layer.borderWidth;
+      self.validTextBorderColor = [UIColor colorWithCGColor:self.textField.layer.borderColor];
       break;
     }
     case EditTextControllerStyleTextView:
     {
       [self setupTextView];
       self.firstResponderWhenViewWillAppear = self.textView;
+      self.validTextBorderWidth = self.textView.layer.borderWidth;
+      self.validTextBorderColor = [UIColor colorWithCGColor:self.textView.layer.borderColor];
       break;
     }
     default:
@@ -143,6 +163,8 @@
       @throw exception;
     }
   }
+
+  [self validateText:self.text];
 }
 
 // -----------------------------------------------------------------------------
@@ -174,12 +196,15 @@
 - (void) setupTextFieldAutoLayoutConstraints
 {
   self.textField.translatesAutoresizingMaskIntoConstraints = NO;
+  self.validationErrorLabel.translatesAutoresizingMaskIntoConstraints = NO;
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.textField, @"textField",
+                                   self.validationErrorLabel, @"validationErrorLabel",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             @"H:|-[textField]-|",
-                            @"V:|-[textField]",
+                            @"H:|-[validationErrorLabel]-|",
+                            @"V:|-[textField]-[validationErrorLabel]",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
@@ -225,12 +250,15 @@
 - (void) setupTextViewAutoLayoutConstraints
 {
   self.textView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.validationErrorLabel.translatesAutoresizingMaskIntoConstraints = NO;
   NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
                                    self.textView, @"textView",
+                                   self.validationErrorLabel, @"validationErrorLabel",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
                             @"H:|-[textView]-|",
-                            @"V:|-[textView]",
+                            @"H:|-[validationErrorLabel]-|",
+                            @"V:|-[textView]-[validationErrorLabel]",
                             nil];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
@@ -243,7 +271,7 @@
   // Note: Although the visual format string for this constraint is quite
   // simple ("V:[textView]-|"), we can't use the visual format API because it
   // does not allow us to set a priority for the constraint.
-  NSLayoutConstraint* textViewHeightConstraintLowPriority = [NSLayoutConstraint constraintWithItem:self.textView
+  NSLayoutConstraint* textViewHeightConstraintLowPriority = [NSLayoutConstraint constraintWithItem:self.validationErrorLabel
                                                                                          attribute:NSLayoutAttributeBottom
                                                                                          relatedBy:NSLayoutRelationEqual
                                                                                             toItem:self.contentView.layoutMarginsGuide
@@ -296,8 +324,6 @@
   self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                                                                                           target:self
                                                                                           action:@selector(done:)] autorelease];
-
-  self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:self.text];
 }
 
 #pragma mark - Adjust text view size when keyboard appears/disappears
@@ -328,8 +354,9 @@
   CGFloat distanceFromViewBottom = keyboardFrame.size.height;
 
   // Constraint that allows the text view to extend its bottom down to the top
-  // of the keyboard
-  self.textViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.textView
+  // of the keyboard. The validation error label resists vertical expansion
+  // more than the text view, so the text view will get the height.
+  self.textViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.validationErrorLabel
                                                                attribute:NSLayoutAttributeBottom
                                                                relatedBy:NSLayoutRelationEqual
                                                                   toItem:self.contentView.layoutMarginsGuide
@@ -429,7 +456,7 @@
   NSString* newText = [aTextField.text stringByReplacingCharactersInRange:range withString:string];
   // Make sure that, if the text is not acceptable input, the view cannot be
   // left except by cancelling
-  self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:newText];
+  [self validateText:newText];
   // Accept all changes, even those that make the text not acceptable input
   // -> the user must simply continue editing until the text becomes acceptable
   return YES;
@@ -440,7 +467,8 @@
 // -----------------------------------------------------------------------------
 - (BOOL) textFieldShouldClear:(UITextField*)aTextField
 {
-  self.navigationItem.rightBarButtonItem.enabled = (self.acceptEmptyText ? YES : NO);
+  NSString* newText = @"";
+  [self validateText:newText];
   return YES;
 }
 
@@ -449,32 +477,83 @@
 // -----------------------------------------------------------------------------
 - (BOOL) textFieldShouldReturn:(UITextField*)aTextField
 {
-  if (! [self isTextAcceptable:self.textField.text])
+  bool isTextValid = [self validateText:self.textField.text];
+  if (! isTextValid)
     return NO;
   [self done:nil];
   return YES;
 }
 
-#pragma mark - UITextViewdDelegate overrides
+#pragma mark - UITextViewDelegate overrides
 
 // -----------------------------------------------------------------------------
-/// @brief UITextViewdDelegate protocol method.
+/// @brief UITextViewDelegate protocol method.
 // -----------------------------------------------------------------------------
 - (void) textViewDidChange:(UITextView*)aTextView
 {
-  self.navigationItem.rightBarButtonItem.enabled = [self isTextAcceptable:aTextView.text];
+  [self validateText:aTextView.text];
 }
 
 #pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
-/// @brief Returns true if @a text is acceptable as valid input.
+/// @brief Returns true if @a text is a valid input. As a side effect, updates
+/// the UI to reflect the result of the validation.
 // -----------------------------------------------------------------------------
-- (bool) isTextAcceptable:(NSString*)aText
+- (bool) validateText:(NSString*)text
 {
-  if (self.acceptEmptyText)
-    return true;
-  return (aText.length > 0);
+  bool isTextValid;
+  NSString* validationErrorMessage;
+
+  SEL selector = @selector(controller:isTextValid:validationErrorMessage:);
+  if ([self.delegate respondsToSelector:selector])
+  {
+    // Initialize in case the delegate does not set anything
+    validationErrorMessage = nil;
+    
+    isTextValid = [self.delegate controller:self
+                                isTextValid:text
+                     validationErrorMessage:&validationErrorMessage];
+  }
+  else
+  {
+    // The only error that can occur is an empty text. Applying a colored border
+    // to the input control should be sufficient as an indicator.
+    validationErrorMessage = nil;
+
+    if (self.acceptEmptyText)
+      isTextValid = true;
+    else
+      isTextValid = (text.length > 0);
+  }
+
+  CGFloat borderWith;
+  UIColor* borderColor;
+  if (isTextValid)
+  {
+    borderWith = self.validTextBorderWidth;
+    borderColor = self.validTextBorderColor;
+  }
+  else
+  {
+    borderWith = self.invalidTextBorderWidth;
+    borderColor = self.inValidTextBorderColor;
+  }
+
+  if (EditTextControllerStyleTextField == self.editTextControllerStyle)
+  {
+    self.textField.layer.borderWidth = borderWith;
+    self.textField.layer.borderColor = borderColor.CGColor;
+  }
+  else
+  {
+    self.textView.layer.borderWidth = borderWith;
+    self.textView.layer.borderColor = borderColor.CGColor;
+  }
+
+  self.validationErrorLabel.text = isTextValid ? nil : validationErrorMessage;
+  self.navigationItem.rightBarButtonItem.enabled = isTextValid ? YES : NO;
+  return isTextValid;
 }
 
 @end
