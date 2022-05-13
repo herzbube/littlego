@@ -30,11 +30,14 @@
 - (UIImage*) templateImageByResizingToSize:(CGSize)newSize;
 - (UIImage*) templateImageByScalingWithFactor:(CGFloat)factor;
 - (UIImage*) templateImageByScalingToHeight:(CGFloat)newHeight;
+- (UIImage*) imageByPaddingToWidth:(CGFloat)newWidth;
+- (UIImage*) imageByPaddingToSize:(CGSize)newSize;
+- (UIImage*) imageByPaddingToSize:(CGSize)newSize tintedFor:(UIUserInterfaceStyle)userInterfaceStyle API_AVAILABLE(ios(12.0));
+- (UIImage*) imageByPaddingToSize:(CGSize)newSize tintedWith:(UIColor*)tintColor;
+- (UIImage*) imageByTintingWithColor:(UIColor*)tintColor API_DEPRECATED("use built-in imageWithTintColor: instead", ios(2.0, 13.0));
 + (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor endColor:(UIColor*)endColor;
 + (UIImage*) gradientImageWithSize:(CGSize)size startColor:(UIColor*)startColor middleColor:(UIColor*)middleColor endColor:(UIColor*)endColor;
 + (UIImage*) gradientImageWithSize:(CGSize)size startColor1:(UIColor*)startColor1 endColor1:(UIColor*)endColor1 startColor2:(UIColor*)startColor2 endColor2:(UIColor*)endColor2;
-+ (UIImage*) paddedImageWithSize:(CGSize)size originalImage:(UIImage*)originalImage;
-+ (UIImage*) paddedImageWithSize:(CGSize)size tintedFor:(UIUserInterfaceStyle)userInterfaceStyle originalImage:(UIImage*)originalImage API_AVAILABLE(ios(13.0));
 + (UIImage*) tiledImageWithSize:(CGSize)size fromTile:(UIImage*)tile;
 + (UIImage*) woodenBackgroundTileImage;
 + (UIImage*) iconForBoardPositionValuation:(enum GoBoardPositionValuation)boardPositionValuation;

@@ -150,6 +150,124 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a new image by padding the current image so that the new
+/// image has @a newWidth. The current image is expected to have a smaller width
+/// than @a newWidth. The padding is applied uniformly on both sides of the
+/// image, i.e. the original image is centered within the new image. The padding
+/// has a transparent background.
+///
+/// Returns the current image if @a newWidth is equal to the width of the
+/// current image.
+// -----------------------------------------------------------------------------
+- (UIImage*) imageByPaddingToWidth:(CGFloat)newWidth
+{
+  CGSize newSize = CGSizeMake(newWidth, self.size.height);
+  return [self imageByPaddingToSize:newSize];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a new image by padding the current image so that the new
+/// image has @a newSize. The current image is expected to have a smaller size
+/// than @a newSize. The padding is applied uniformly on all 4 sides of the
+/// image, i.e. the original image is horizontally and vertically centered
+/// within the new image. The padding has a transparent background.
+///
+/// Returns the current image if @a newSize is equal to the size of the
+/// current image.
+// -----------------------------------------------------------------------------
+- (UIImage*) imageByPaddingToSize:(CGSize)newSize
+{
+  CGSize originalSize = self.size;
+  if (CGSizeEqualToSize(originalSize, newSize))
+    return self;
+
+  BOOL opaque = NO;
+  CGFloat scale = 0.0f;
+  UIGraphicsBeginImageContextWithOptions(newSize, opaque, scale);
+
+  CGFloat leftEdgePadding = (newSize.width - originalSize.width) / 2.0f;
+  CGFloat topEdgePadding = (newSize.height - originalSize.height) / 2.0f;
+  CGRect drawingRect = CGRectMake(leftEdgePadding, topEdgePadding, originalSize.width, originalSize.height);
+  [self drawInRect:drawingRect];
+
+  UIImage* paddedImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return paddedImage;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a new image by padding the current image so that the new
+/// image has @a newSize. The current image is expected to have a smaller size
+/// than @a newSize. The padding is applied uniformly on all 4 sides of the
+/// image, i.e. the original image is horizontally and vertically centered
+/// within the new image. The padding has a transparent background. The padded
+/// image is tinted to contrast a dark/light background matching
+/// @a userInterfaceStyle.
+///
+/// Returns the current image if @a newSize is equal to the size of the
+/// current image.
+// -----------------------------------------------------------------------------
+- (UIImage*) imageByPaddingToSize:(CGSize)newSize tintedFor:(UIUserInterfaceStyle)userInterfaceStyle
+{
+  UIColor* tintColor = (userInterfaceStyle == UIUserInterfaceStyleLight) ? [UIColor blackColor] : [UIColor whiteColor];
+  UIImage* paddedAndTintedImage = [self imageByPaddingToSize:newSize tintedWith:tintColor];
+  return paddedAndTintedImage;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a new image by padding the current image so that the new
+/// image has @a newSize. The current image is expected to have a smaller size
+/// than @a newSize. The padding is applied uniformly on all 4 sides of the
+/// image, i.e. the original image is horizontally and vertically centered
+/// within the new image. The padding has a transparent background. The padded
+/// image is tinted with @a tintColor.
+///
+/// Returns the current image if @a newSize is equal to the size of the
+/// current image.
+// -----------------------------------------------------------------------------
+- (UIImage*) imageByPaddingToSize:(CGSize)newSize tintedWith:(UIColor*)tintColor
+{
+  UIImage* paddedImage = [self imageByPaddingToSize:newSize];
+
+  if (@available(iOS 13, *))
+    return [paddedImage imageWithTintColor:tintColor];
+  else
+    return [paddedImage imageByTintingWithColor:tintColor];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a new image by tinting the current image with @a tintColor.
+///
+/// The code for this method is based on https://stackoverflow.com/a/19275079.
+/// It has not been analyzed for correctness or tested thoroughly.
+///
+/// This method exists only to support tinting in iOS versions older than 13.0.
+/// Beginning with iOS 13.0 the native UIImage::imageWithTintColor:() should
+/// be used.
+// -----------------------------------------------------------------------------
+- (UIImage*) imageByTintingWithColor:(UIColor*)tintColor
+{
+  BOOL opaque = NO;
+  UIGraphicsBeginImageContextWithOptions(self.size, opaque, self.scale);
+
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  CGContextTranslateCTM(context, 0, self.size.height);
+  CGContextScaleCTM(context, 1.0, -1.0);
+
+  CGContextSetBlendMode(context, kCGBlendModeNormal);
+
+  CGRect drawingRect = CGRectMake(0, 0, self.size.width, self.size.height);
+  CGContextClipToMask(context, drawingRect, self.CGImage);
+
+  [tintColor setFill];
+  CGContextFillRect(context, drawingRect);
+
+  UIImage* tintedImage = UIGraphicsGetImageFromCurrentImageContext();
+  UIGraphicsEndImageContext();
+  return tintedImage;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns an image of size @a size with a linear gradient drawn along
 /// the axis that runs from the top-middle to the bottom-middle point.
 // -----------------------------------------------------------------------------
@@ -207,54 +325,6 @@
   UIImage* gradientImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   return gradientImage;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns an image of size @a size which has @a originalImage at its
-/// center. The original image is expected to have a smaller size than @a size.
-/// The effect is that the original image is padded by a certain amount of
-/// pixels on all 4 sides. The amount of padding depends on the difference in
-/// size of the original and the new image.
-///
-/// One application of this method is to create uniformly sized images from a
-/// number of differently sized original images.
-// -----------------------------------------------------------------------------
-+ (UIImage*) paddedImageWithSize:(CGSize)size originalImage:(UIImage*)originalImage
-{
-  CGSize originalImageSize = originalImage.size;
-  CGFloat leftEdgePadding = (size.width - originalImageSize.width) / 2.0f;
-  CGFloat topEdgePadding = (size.height - originalImageSize.height) / 2.0f;
-  CGRect drawingRect = CGRectMake(leftEdgePadding, topEdgePadding, originalImageSize.width, originalImageSize.height);
-
-  BOOL opaque = NO;
-  CGFloat scale = 0.0f;
-  UIGraphicsBeginImageContextWithOptions(size, opaque, scale);
-  [originalImage drawInRect:drawingRect];
-
-  UIImage* paddedImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return paddedImage;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns an image of size @a size which has @a originalImage at its
-/// center. The original image is expected to have a smaller size than @a size.
-/// The effect is that the original image is padded by a certain amount of
-/// pixels on all 4 sides. The amount of padding depends on the difference in
-/// size of the original and the new image. The padded image is tinted to
-/// contrast a dark/light background matching @a userInterfaceStyle.
-///
-/// One application of this method is to create uniformly sized images from a
-/// number of differently sized original images.
-// -----------------------------------------------------------------------------
-+ (UIImage*) paddedImageWithSize:(CGSize)size tintedFor:(UIUserInterfaceStyle)userInterfaceStyle originalImage:(UIImage*)originalImage
-{
-  UIImage* paddedImage = [UIImage paddedImageWithSize:size originalImage:originalImage];
-
-  UIColor* tintColor = (userInterfaceStyle == UIUserInterfaceStyleLight) ? [UIColor blackColor] : [UIColor whiteColor];
-  UIImage* tintedImage = [paddedImage imageWithTintColor:tintColor];
-
-  return tintedImage;
 }
 
 // -----------------------------------------------------------------------------

@@ -573,6 +573,10 @@
 		CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
 		CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
 		CDD7D7E5175257850068CBBA /* ResetPlayersAndProfilesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */; };
+		CDD86B4A2827E91500AA0A6B /* StaticTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B482827E91400AA0A6B /* StaticTableView.m */; };
+		CDD86B4B2827E91500AA0A6B /* StaticTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B482827E91400AA0A6B /* StaticTableView.m */; };
+		CDD86B4E2827FA2800AA0A6B /* SpacerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B4D2827FA2800AA0A6B /* SpacerView.m */; };
+		CDD86B4F2827FA2800AA0A6B /* SpacerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B4D2827FA2800AA0A6B /* SpacerView.m */; };
 		CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDC968E25E697B300598CF7 /* PlaceholderView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDC968D25E697B300598CF7 /* PlaceholderView.m */; };
@@ -1324,6 +1328,10 @@
 		CDD7D7EE1753FA710068CBBA /* NOTES.Info-plist */ = {isa = PBXFileReference; lastKnownFileType = text; path = "NOTES.Info-plist"; sourceTree = "<group>"; };
 		CDD7D7EF1753FD130068CBBA /* littlego.asta */ = {isa = PBXFileReference; lastKnownFileType = file; path = littlego.asta; sourceTree = "<group>"; };
 		CDD7D7F01753FD290068CBBA /* Class diagram of packages go + player.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Class diagram of packages go + player.jpg"; sourceTree = "<group>"; };
+		CDD86B482827E91400AA0A6B /* StaticTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticTableView.m; sourceTree = "<group>"; };
+		CDD86B492827E91500AA0A6B /* StaticTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticTableView.h; sourceTree = "<group>"; };
+		CDD86B4C2827FA2800AA0A6B /* SpacerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpacerView.h; sourceTree = "<group>"; };
+		CDD86B4D2827FA2800AA0A6B /* SpacerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpacerView.m; sourceTree = "<group>"; };
 		CDD961001662A8E300B54E09 /* render-readme.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = "render-readme.rb"; sourceTree = "<group>"; };
 		CDDAB6ED14FA728D00DEBAAF /* UIDeviceAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDeviceAdditions.h; sourceTree = "<group>"; };
 		CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceAdditions.m; sourceTree = "<group>"; };
@@ -2889,8 +2897,12 @@
 				CDDC968D25E697B300598CF7 /* PlaceholderView.m */,
 				CD0AF18E17401C56003BFC21 /* SliderInputController.h */,
 				CD0AF18F17401C56003BFC21 /* SliderInputController.m */,
+				CDD86B4C2827FA2800AA0A6B /* SpacerView.h */,
+				CDD86B4D2827FA2800AA0A6B /* SpacerView.m */,
 				CDA097091A99F77F002FCD78 /* SplitViewController.h */,
 				CDA0970A1A99F77F002FCD78 /* SplitViewController.m */,
+				CDD86B492827E91500AA0A6B /* StaticTableView.h */,
+				CDD86B482827E91400AA0A6B /* StaticTableView.m */,
 				CDEF3DD6140C55AB002D9C1C /* TableViewCellFactory.h */,
 				CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */,
 				CD72216714633F1D005EAC65 /* TableViewGridCell.h */,
@@ -3407,6 +3419,7 @@
 				CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDAF17151967FFD500271396 /* BoardViewMetrics.m in Sources */,
 				CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */,
+				CDD86B4A2827E91500AA0A6B /* StaticTableView.m in Sources */,
 				CDEF3D8A140C2F39002D9C1C /* TableViewSliderCell.m in Sources */,
 				CDEF3DD8140C55AB002D9C1C /* TableViewCellFactory.m in Sources */,
 				CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */,
@@ -3554,6 +3567,7 @@
 				CDEE1A1D19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */,
 				CD1311D2171B5857006CE699 /* LoggingModel.m in Sources */,
 				CDF341C617270D0800AEFB20 /* LongRunningActionCounter.m in Sources */,
+				CDD86B4E2827FA2800AA0A6B /* SpacerView.m in Sources */,
 				CD7C57CC21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m in Sources */,
 				CDF341CA1727507900AEFB20 /* ApplicationStateManager.m in Sources */,
 				CDF341D1172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
@@ -3683,6 +3697,7 @@
 				CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */,
 				CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */,
 				CD8EFEAB14676C4400A700B1 /* GoScore.m in Sources */,
+				CDD86B4B2827E91500AA0A6B /* StaticTableView.m in Sources */,
 				CDA097001A98CD54002FCD78 /* ButtonBoxController.m in Sources */,
 				CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
@@ -3706,6 +3721,7 @@
 				CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */,
 				CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */,
 				CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */,
+				CDD86B4F2827FA2800AA0A6B /* SpacerView.m in Sources */,
 				CD931EE11684E48C002E1262 /* SendBugReportController.m in Sources */,
 				CDA096FC1A915085002FCD78 /* LayoutManager.m in Sources */,
 				CD931EE31684E4A6002E1262 /* GenerateDiagnosticsInformationFileCommand.m in Sources */,

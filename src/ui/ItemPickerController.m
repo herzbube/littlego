@@ -19,8 +19,10 @@
 #import "ItemPickerController.h"
 #import "AutoLayoutUtility.h"
 #import "PlaceholderView.h"
+#import "StaticTableView.h"
 #import "TableViewCellFactory.h"
 #import "UiUtilities.h"
+#import "../utility/UIImageAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -31,11 +33,9 @@
 //@{
 @property(nonatomic, retain, readwrite) NSString* screenTitle;
 @property(nonatomic, assign, readwrite) int indexOfDefaultItem;
-@property(nonatomic, assign, readwrite) int indexOfSelectedItem;
-@property(nonatomic, retain, readwrite) NSArray* itemList;
 //@}
 @property(nonatomic, retain) PlaceholderView* placeholderView;
-@property(nonatomic, retain) UITableView* tableView;
+@property(nonatomic, retain) StaticTableView* staticTableView;
 @end
 
 
@@ -84,14 +84,16 @@
   self.itemPickerControllerMode = ItemPickerControllerModeModal;
   self.context = nil;
   self.screenTitle = nil;
+  self.notifyDelegateOnlyWhenSelectionChanges = false;
   self.footerTitle = nil;
   self.placeholderText = nil;
   self.delegate = nil;
+  self.displayCancelItem = false;
   self.indexOfDefaultItem = -1;
   self.indexOfSelectedItem = -1;
   self.itemList = nil;
   self.placeholderView = nil;
-  self.tableView = nil;
+  self.staticTableView = nil;
   return self;
 }
 
@@ -108,8 +110,76 @@
   self.delegate = nil;
   self.itemList = nil;
   self.placeholderView = nil;
-  self.tableView = nil;
+  self.staticTableView = nil;
   [super dealloc];
+}
+
+#pragma mark - Property implementation
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setIndexOfSelectedItem:(int)indexOfSelectedItem
+{
+  if (indexOfSelectedItem == _indexOfSelectedItem)
+    return;
+  if (indexOfSelectedItem < -1 || indexOfSelectedItem + 1 > _itemList.count)
+    indexOfSelectedItem = -1;
+
+  int previousIndexOfSelectedItem = _indexOfSelectedItem;
+  _indexOfSelectedItem = indexOfSelectedItem;
+
+  if (self.isViewLoaded)
+  {
+    // Remove the checkmark from the previously selected cell
+    if (previousIndexOfSelectedItem >= 0)
+    {
+      NSIndexPath* previousIndexPath = [NSIndexPath indexPathForRow:previousIndexOfSelectedItem inSection:0];
+      UITableViewCell* previousCell = [self.staticTableView.tableView cellForRowAtIndexPath:previousIndexPath];
+      if (previousCell.accessoryType == UITableViewCellAccessoryCheckmark)
+        previousCell.accessoryType = UITableViewCellAccessoryNone;
+    }
+
+    // Add the checkmark to the newly selected cell
+    if (indexOfSelectedItem)
+    {
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:indexOfSelectedItem inSection:0];
+      UITableViewCell* newCell = [self.staticTableView.tableView cellForRowAtIndexPath:indexPath];
+      if (newCell.accessoryType == UITableViewCellAccessoryNone)
+        newCell.accessoryType = UITableViewCellAccessoryCheckmark;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setItemList:(NSArray*)itemList
+{
+  if (itemList && _itemList && [itemList isEqualToArray:_itemList])
+    return;
+
+  if (_itemList)
+  {
+    [_itemList release];
+    _itemList = nil;
+  }
+
+  if (itemList)
+  {
+    _itemList = itemList;
+    [_itemList retain];
+
+    if (_indexOfSelectedItem + 1 > _itemList.count)
+      _indexOfSelectedItem = -1;
+  }
+  else
+  {
+    _indexOfSelectedItem = -1;
+  }
+
+  if (self.isViewLoaded)
+    [self.staticTableView.tableView reloadData];
 }
 
 #pragma mark - UIViewController overrides
@@ -123,6 +193,7 @@
 
   [self setupViewContent];
 
+  self.title = self.screenTitle;
   self.navigationItem.title = self.screenTitle;
   if (ItemPickerControllerModeModal == self.itemPickerControllerMode)
   {
@@ -152,12 +223,86 @@
   }
   else
   {
-    self.tableView = [UiUtilities createTableViewWithStyle:UITableViewStyleGrouped
-                                 withDelegateAndDataSource:self];
-    [self.view addSubview:self.tableView];
-    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
-    [AutoLayoutUtility fillSuperview:self.view withSubview:self.tableView];
+    self.staticTableView = [[[StaticTableView alloc] initWithFrame:CGRectZero
+                                                             style:UITableViewStyleGrouped] autorelease];
+    self.staticTableView.tableView.delegate = self;
+    self.staticTableView.tableView.dataSource = self;
+    [self.view addSubview:self.staticTableView];
+    self.staticTableView.translatesAutoresizingMaskIntoConstraints = NO;
+    [AutoLayoutUtility fillSuperview:self.view withSubview:self.staticTableView];
+
+    self.itemList = [self itemListWithUniformWidthImages];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a new item list with item images that have a uniform width.
+///
+/// If the original item list does not contain any item images, or the item
+/// images already have uniform width, then this method returns the original
+/// item list.
+// -----------------------------------------------------------------------------
+- (NSArray*) itemListWithUniformWidthImages
+{
+  bool atLeastOneItemHasImage = false;
+  bool atLeastOneImageNeedsPadding = false;
+  CGFloat widthOfWidestImage = 0.0f;
+
+  for (id item in self.itemList)
+  {
+    UIImage* itemImage = [self itemImageIfAny:item];
+    if (! itemImage)
+      continue;
+
+    if (itemImage.size.width != widthOfWidestImage)
+    {
+      if (atLeastOneItemHasImage)
+        atLeastOneImageNeedsPadding = true;
+      else
+        atLeastOneItemHasImage = true;
+
+      if (itemImage.size.width > widthOfWidestImage)
+        widthOfWidestImage = itemImage.size.width;
+    }
+  }
+
+  if (! atLeastOneImageNeedsPadding)
+    return self.itemList;
+
+  NSMutableArray* newItemList = [NSMutableArray array];
+
+  for (id item in self.itemList)
+  {
+    UIImage* itemImage = [self itemImageIfAny:item];
+    if (itemImage)
+    {
+      UIImage* paddedItemImage = [itemImage imageByPaddingToWidth:widthOfWidestImage];
+
+      NSArray* itemArray = item;
+      NSArray* newItem = @[itemArray.firstObject, paddedItemImage];
+
+      [newItemList addObject:newItem];
+    }
+    else
+    {
+      [newItemList addObject:item];
+    }
+  }
+
+  return newItemList;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines @a item whether it contains an image. If yes, returns the
+/// item image. If no, returns @e nil.
+// -----------------------------------------------------------------------------
+- (UIImage*) itemImageIfAny:(id)item
+{
+  if ([item isKindOfClass:[NSString class]])
+    return nil;
+  NSArray* itemArray = item;
+  UIImage* itemImage = itemArray.lastObject;
+  return itemImage;
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -167,7 +312,10 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  return 1;
+  if (self.displayCancelItem)
+    return 2;
+  else
+    return 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -175,7 +323,10 @@
 // -----------------------------------------------------------------------------
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return self.itemList.count;
+  if (section == 0)
+    return self.itemList.count;
+  else
+    return 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -183,7 +334,10 @@
 // -----------------------------------------------------------------------------
 - (NSString*) tableView:(UITableView*)tableView titleForFooterInSection:(NSInteger)section
 {
-  return self.footerTitle;
+  if (section == 0)
+    return self.footerTitle;
+  else
+    return nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -191,13 +345,40 @@
 // -----------------------------------------------------------------------------
 - (UITableViewCell*) tableView:(UITableView*)tableView cellForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-  UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
-  cell.textLabel.text = [self.itemList objectAtIndex:indexPath.row];
-  if (indexPath.row == self.indexOfSelectedItem)
-    cell.accessoryType = UITableViewCellAccessoryCheckmark;
+  if (indexPath.section == 0)
+  {
+    UITableViewCell* cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+
+    NSString* itemText = nil;
+    UIImage* itemImage = nil;
+    id item = [self.itemList objectAtIndex:indexPath.row];
+    if ([item isKindOfClass:[NSString class]])
+    {
+      itemText = item;
+    }
+    else
+    {
+      NSArray* itemArray = item;
+      itemText = itemArray.firstObject;
+      itemImage = itemArray.lastObject;
+    }
+
+    cell.textLabel.text = itemText;
+    cell.imageView.image = itemImage;
+
+    if (indexPath.row == self.indexOfSelectedItem)
+      cell.accessoryType = UITableViewCellAccessoryCheckmark;
+    else
+      cell.accessoryType = UITableViewCellAccessoryNone;
+
+    return cell;
+  }
   else
-    cell.accessoryType = UITableViewCellAccessoryNone;
-  return cell;
+  {
+    UITableViewCell* cell = [TableViewCellFactory cellWithType:ActionTextCellType tableView:tableView];
+    cell.textLabel.text = @"Cancel";
+    return cell;
+  }
 }
 
 #pragma mark - UITableViewDelegate overrides
@@ -213,29 +394,37 @@
   // is safe because this controller was not made to handle more than pow(2, 31)
   // items.
   int indexOfNewSelectedItem = (int)indexPath.row;
-  // Do nothing if the selection did not change
-  if (self.indexOfSelectedItem == indexOfNewSelectedItem)
-    return;
-  // Remove the checkmark from the previously selected cell
-  NSIndexPath* previousIndexPath = [NSIndexPath indexPathForRow:self.indexOfSelectedItem inSection:0];
-  UITableViewCell* previousCell = [tableView cellForRowAtIndexPath:previousIndexPath];
-  if (previousCell.accessoryType == UITableViewCellAccessoryCheckmark)
-    previousCell.accessoryType = UITableViewCellAccessoryNone;
-  // Add the checkmark to the newly selected cell
-  UITableViewCell* newCell = [tableView cellForRowAtIndexPath:indexPath];
-  if (newCell.accessoryType == UITableViewCellAccessoryNone)
-    newCell.accessoryType = UITableViewCellAccessoryCheckmark;
-  // Last but not least, remember the new selection
-  self.indexOfSelectedItem = indexOfNewSelectedItem;
 
-  if (ItemPickerControllerModeModal == self.itemPickerControllerMode)
+  if (indexPath.section == 0)
   {
-    self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+    // Special handing if the selection did not change
+    if (self.indexOfSelectedItem == indexOfNewSelectedItem)
+    {
+      if (ItemPickerControllerModeNonModal == self.itemPickerControllerMode &&
+          ! self.notifyDelegateOnlyWhenSelectionChanges)
+      {
+        [self.delegate itemPickerController:self didMakeSelection:true];
+      }
+    }
+    else
+    {
+      // Setter updates the table view
+      self.indexOfSelectedItem = indexOfNewSelectedItem;
+
+      if (ItemPickerControllerModeModal == self.itemPickerControllerMode)
+      {
+        self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+      }
+      else
+      {
+        if ([self isSelectionValid])
+          [self.delegate itemPickerController:self didMakeSelection:true];
+      }
+    }
   }
   else
   {
-    if ([self isSelectionValid])
-      [self.delegate itemPickerController:self didMakeSelection:true];
+    [self.delegate itemPickerController:self didMakeSelection:false];
   }
 }
 

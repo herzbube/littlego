@@ -44,13 +44,17 @@ enum ItemPickerControllerMode
 /// @a controller.
 ///
 /// In non-modal mode this method is invoked every time the user selects a
-/// different item. Typically the delegate will not dismiss @a controller
-/// because the user can do so by tapping the back button.
+/// different item. If @a controller is presented on top of a navigation stack
+/// the delegate will typically not dismiss @a controller because the user can
+/// do so by tapping the back button. However, if @a controller is presented in
+/// a popover the delegate is responsible for dismissing @a controller.
 ///
 /// If @a didMakeSelection is true, the user has made a selection; the index of
 /// the selected item can be queried from the ItemPickerController object's
 /// property @a indexOfSelectedItem. If @a didMakeSelection is false, the user
-/// has cancelled the selection (only available in modal mode).
+/// has cancelled the selection, either by tapping the "cancel" button
+/// (in mode #ItemPickerControllerModeModal) or the "cancel" item (in both
+/// modes).
 - (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection;
 @end
 
@@ -66,14 +70,17 @@ enum ItemPickerControllerMode
 /// items with which it is initialized.
 ///
 /// ItemPickerController can be run in one of two modes:
-/// - Modal mode: In this mode, ItemPickerController expects to be displayed
+/// - Modal mode: In this mode, ItemPickerController expects to be presented
 ///   modally by a navigation controller. ItemPickerController populates its
 ///   own navigation item with controls that are then expected to be displayed
 ///   in the navigation bar of the parent navigation controller.
-/// - Non-modal mode: In this mode, ItemPickerController expects to be
-///   pushed on top of a navigation stack. ItemPickerController does not create
-///   any additional buttons, it is the caller's responsibility to setup a
-///   back button.
+/// - Non-modal mode: In this mode, ItemPickerController expects to be presented
+///   in some non-modal way (e.g. pushed on top of a navigation stack, or
+///   displayed in a popover). ItemPickerController does not create any
+///   additional buttons, it is the caller's responsibility to setup an
+///   appropriate way to dismiss ItemPickerController (e.g. create a back button
+///   to be displayed in the navigation bar, or let the delegate dismiss
+///   ItemPickerController when the user selects an item).
 ///
 /// The controls created in modal mode are:
 /// - A "cancel" button used to end the selection process and notify the
@@ -115,15 +122,66 @@ enum ItemPickerControllerMode
 /// @brief This is the delegate that will be informed when the user has finished
 /// picking an item.
 @property(nonatomic, assign) id<ItemPickerDelegate> delegate;
+/// @brief True if ItemPickerController should notify the delegate only when the
+/// user selects a different item than the currently selected one. False if
+/// ItemPickerController should notify the delegate even when the user selects
+/// the same item again. The default is false.
+///
+/// When ItemPickerController is presented in a popover (i.e. in non-modal mode)
+/// and the device is an iPad, then the user can tap outside the popover frame
+/// to dismiss the popover without a change. However when the device is not an
+/// iPad the user cannot tap outside the popover frame - in that case the user
+/// can select the item that is already selected by default, and the delegate
+/// is still notified and can dismiss ItemPickerController without a change.
+/// If this notification is not desired for some reason, this property can be
+/// set to false.
+@property(nonatomic, assign) bool notifyDelegateOnlyWhenSelectionChanges;
+/// @brief True if ItemPickerController should display a "cancel" item alongside
+/// the regular items to pick. False if ItemPickerController should not display
+/// a "cancel" item. The default is false.
+///
+/// Setting this property to true can be useful in mode
+/// #ItemPickerControllerModeNonModal to give the user a clear way out of the
+/// selection process when no other screen elements exist to do so (e.g. when
+/// ItemPickerController is presented in a popover on iPhone devices). Setting
+/// this property to true does not make sense in mode
+/// #ItemPickerControllerModeModal because ItemPickerController already creates
+/// a "cancel" button in that mode.
+///
+/// When the user taps the "cancel" item ItemPickerController notifies the
+/// delegate with the @e didMakeSelection parameter set to false.
+@property(nonatomic, assign) bool displayCancelItem;
 /// @brief This contains the index of the item that is selected by default when
 /// the selection process begins. Can be -1 to indicate no default selection.
 @property(nonatomic, assign, readonly) int indexOfDefaultItem;
-/// @brief When the selection process finishes with the user tapping "done",
-/// this contains the index of the item picked by the user.
-@property(nonatomic, assign, readonly) int indexOfSelectedItem;
-/// @brief Array of NSString* objects with texts that should be displayed as the
-/// items available for selection. Items appear in the GUI in the same order as
-/// objects in this array.
-@property(nonatomic, retain, readonly) NSArray* itemList;
+/// @brief When the selection process finishes with the user tapping "done", or
+/// when the delegate dismisses ItemPickerController, this property contains
+/// the index of the item picked by the user.
+///
+/// Changing this property causes ItemPickerController to update its display.
+/// The new index position must match an array element in @e itemList, otherwise
+/// @e indexOfSelectedItem will be set to -1 and no item will be selected. Any
+/// negative value that is not -1 will be changed to -1. Value -1 means that
+/// no item is selected.
+@property(nonatomic, assign) int indexOfSelectedItem;
+/// @brief Array with items available for selection. Items appear in the GUI in
+/// the same order as objects in this array.
+///
+/// ItemPickerController supports two kinds of array elements:
+/// - NSString object. ItemPickerController uses the string to represent the
+///   item to pick.
+/// - An array containing an NSString and an UIImage object.
+///   ItemPickerController uses both the string and the image to represent the
+///   item to pick.
+///
+/// If item images are present but not of a uniform width, the images are padded
+/// to the widest item image so that the item strings appear left-aligned.
+///
+/// Changing this property causes ItemPickerController to update its display.
+/// If possible ItemPickerController retains the previously selected item
+/// (according to the index position in the item list). However, if the new item
+/// list is smaller than the previous one ItemPickerController discards the
+/// selection (@e indexOfSelectedItem will become -1).
+@property(nonatomic, retain) NSArray* itemList;
 
 @end
