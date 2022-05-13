@@ -43,6 +43,11 @@
 /// must be zero, otherwise this method returns false.
 - (bool) setEstimatedScoreSummary:(enum GoScoreSummary)goScoreSummary value:(double)goScoreValue;
 
+/// @brief Returns true if @a goScoreSummary together with @a goScoreValue
+/// constitutes a valid estimated score that will be accepted by
+/// setEstimatedScoreSummary:value:(). Returns false if not.
++ (bool) isValidEstimatedScoreSummary:(enum GoScoreSummary)goScoreSummary value:(double)goScoreValue;
+
 /// @brief A short text without newlines, describing the node. Is @e nil if no
 /// short description is available. The default value is @e nil.
 ///

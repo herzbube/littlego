@@ -44,6 +44,7 @@
 + (NSString*) stringWithFourPassesRule:(enum GoFourPassesRule)fourPassesRule;
 + (NSString*) stringWithBoardPositionValuation:(enum GoBoardPositionValuation)boardPositionValuation;
 + (NSString*) stringWithMoveValuation:(enum GoMoveValuation)moveValuation;
++ (NSString*) stringWithScoreSummary:(enum GoScoreSummary)scoreSummary;
 + (NSString*) shortStringWithScoreSummary:(enum GoScoreSummary)scoreSummary scoreValue:(double)scoreValue;
 + (NSString*) stringWithScoreSummary:(enum GoScoreSummary)scoreSummary scoreValue:(double)scoreValue;
 + (NSString*) stringWithBoardPositionHotspotDesignation:(enum GoBoardPositionHotspotDesignation)boardPositionHotspotDesignation;

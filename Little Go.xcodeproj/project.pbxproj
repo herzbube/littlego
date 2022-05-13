@@ -244,6 +244,8 @@
 		CD607BC4280AF115000C111E /* noun-trash-428421.svg in Resources */ = {isa = PBXBuildFile; fileRef = CD607BBF280AF114000C111E /* noun-trash-428421.svg */; };
 		CD607BC7280B1AB3000C111E /* OrientationChangeNotifyingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD607BC6280B1AB3000C111E /* OrientationChangeNotifyingView.m */; };
 		CD607BC8280B1AB3000C111E /* OrientationChangeNotifyingView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD607BC6280B1AB3000C111E /* OrientationChangeNotifyingView.m */; };
+		CD607BCB28109A7E000C111E /* EditEstimatedScoreController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD607BC928109A7D000C111E /* EditEstimatedScoreController.m */; };
+		CD607BCC28109A7E000C111E /* EditEstimatedScoreController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD607BC928109A7D000C111E /* EditEstimatedScoreController.m */; };
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
@@ -970,6 +972,8 @@
 		CD607BBF280AF114000C111E /* noun-trash-428421.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "noun-trash-428421.svg"; sourceTree = "<group>"; };
 		CD607BC5280B1AB3000C111E /* OrientationChangeNotifyingView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OrientationChangeNotifyingView.h; sourceTree = "<group>"; };
 		CD607BC6280B1AB3000C111E /* OrientationChangeNotifyingView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OrientationChangeNotifyingView.m; sourceTree = "<group>"; };
+		CD607BC928109A7D000C111E /* EditEstimatedScoreController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditEstimatedScoreController.m; sourceTree = "<group>"; };
+		CD607BCA28109A7D000C111E /* EditEstimatedScoreController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditEstimatedScoreController.h; sourceTree = "<group>"; };
 		CD613D98143CD1B70002759E /* GtpCommandModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandModel.h; sourceTree = "<group>"; };
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
@@ -2531,6 +2535,8 @@
 				CDBEBA3A27B1A218000F9BF5 /* AnnotationViewController.m */,
 				CDBEBA3727B1A057000F9BF5 /* AnnotationViewControllerPhonePortraitOnly.h */,
 				CDBEBA3627B1A057000F9BF5 /* AnnotationViewControllerPhonePortraitOnly.m */,
+				CD607BCA28109A7D000C111E /* EditEstimatedScoreController.h */,
+				CD607BC928109A7D000C111E /* EditEstimatedScoreController.m */,
 			);
 			path = annotationview;
 			sourceTree = "<group>";
@@ -3499,6 +3505,7 @@
 				CD1F4F6825AE17D90098037A /* SgfSettingsModel.m in Sources */,
 				CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */,
 				CDEE19FB19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
+				CD607BCB28109A7E000C111E /* EditEstimatedScoreController.m in Sources */,
 				CDAF17191968037700271396 /* BoardViewModel.m in Sources */,
 				CD55D0331D6FAE7E00A9A5BC /* CrashReportingHandler.m in Sources */,
 				CD00A363148C2C26004E1A0C /* ApplicationDelegate.mm in Sources */,
@@ -3713,6 +3720,7 @@
 				CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */,
 				CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */,
 				CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */,
+				CD607BCC28109A7E000C111E /* EditEstimatedScoreController.m in Sources */,
 				CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */,
 				CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
 				CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,

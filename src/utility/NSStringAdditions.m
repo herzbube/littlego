@@ -420,6 +420,26 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a scoreSummary.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithScoreSummary:(enum GoScoreSummary)scoreSummary
+{
+  switch (scoreSummary)
+  {
+    case GoScoreSummaryBlackWins:
+      return @"Black wins";
+    case GoScoreSummaryWhiteWins:
+      return @"White wins";
+    case GoScoreSummaryTie:
+      return @"Tie";
+    case GoScoreSummaryNone:
+      return @"No score information";
+    default:
+      return @"Unknown";
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a string that describes @a scoreSummary and @a scoreValue.
 // -----------------------------------------------------------------------------
 + (NSString*) shortStringWithScoreSummary:(enum GoScoreSummary)scoreSummary scoreValue:(double)scoreValue
@@ -453,7 +473,7 @@
     case GoScoreSummaryTie:
       return @"Game is a tie";
     case GoScoreSummaryNone:
-      return @"<No score information>";
+      return @"No score information";
     default:
       return @"Unknown";
   }

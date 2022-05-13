@@ -540,10 +540,12 @@ enum GoMoveValuation
 /// slight semantic differences the two enumerations are kept separate.
 enum GoScoreSummary
 {
-  GoScoreSummaryNone,        ///< @brief The score summary is not available. Corresponds to the absence of the SGF property V.
   GoScoreSummaryBlackWins,   ///< @brief The score summary is that black wins. Corresponds to a positive value of the SGF property V.
   GoScoreSummaryWhiteWins,   ///< @brief The score summary is that white wins. Corresponds to a negative value of the SGF property V.
-  GoScoreSummaryTie          ///< @brief The score summary is that the game is a tie. Corresponds to value 0 (zero) of the SGF property V.
+  GoScoreSummaryTie,         ///< @brief The score summary is that the game is a tie. Corresponds to value 0 (zero) of the SGF property V.
+  GoScoreSummaryNone,        ///< @brief The score summary is not available. Corresponds to the absence of the SGF property V.
+  GoScoreSummaryFirst = GoScoreSummaryBlackWins,   ///< @brief Pseudo score summary, used as the starting value during a for-loop.
+  GoScoreSummaryLast = GoScoreSummaryNone          ///< @brief Pseudo score summary, used as the end value during a for-loop.
 };
 
 extern const enum GoGameType gDefaultGameType;

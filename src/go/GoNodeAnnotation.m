@@ -104,30 +104,37 @@
 // -----------------------------------------------------------------------------
 - (bool) setEstimatedScoreSummary:(enum GoScoreSummary)goScoreSummary value:(double)goScoreValue
 {
-  switch (goScoreSummary)
-  {
-    case GoScoreSummaryNone:
-      goScoreValue = 0.0;
-      break;
-    case GoScoreSummaryBlackWins:
-    case GoScoreSummaryWhiteWins:
-      if (goScoreValue <= 0.0)
-        return false;
-      break;
-    case GoScoreSummaryTie:
-      if (goScoreValue != 0.0)
-        return false;
-      break;
-    default:
-      DDLogError(@"%@: Unexpected go score summary %d", self, goScoreSummary);
-      assert(0);
-      return false;
-  }
+  if (! [GoNodeAnnotation isValidEstimatedScoreSummary:goScoreSummary value:goScoreValue])
+    return false;
+
+  if (goScoreSummary == GoScoreSummaryNone)
+    goScoreValue = 0.0f;
 
   self.estimatedScoreSummary = goScoreSummary;
   self.estimatedScoreValue = goScoreValue;
 
   return true;
+}
+
+// -----------------------------------------------------------------------------
+// Method is documented in header file.
+// -----------------------------------------------------------------------------
++ (bool) isValidEstimatedScoreSummary:(enum GoScoreSummary)goScoreSummary value:(double)goScoreValue
+{
+  switch (goScoreSummary)
+  {
+    case GoScoreSummaryNone:
+      return true;
+    case GoScoreSummaryBlackWins:
+    case GoScoreSummaryWhiteWins:
+      return (goScoreValue > 0.0f);
+    case GoScoreSummaryTie:
+      return (goScoreValue == 0.0f);
+    default:
+      DDLogError(@"%@: Unexpected go score summary %d", self, goScoreSummary);
+      assert(0);
+      return false;
+  }
 }
 
 // -----------------------------------------------------------------------------
