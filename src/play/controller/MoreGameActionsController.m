@@ -664,7 +664,7 @@
 // -----------------------------------------------------------------------------
 /// @brief EditTextDelegate protocol method
 // -----------------------------------------------------------------------------
-- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
+- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel
 {
   // Dismiss EditTextController here so that self.modalMaster becomes free
   // to present the UIAlertController

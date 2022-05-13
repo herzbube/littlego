@@ -629,7 +629,7 @@ enum LoadResultType
 // -----------------------------------------------------------------------------
 /// @brief EditTextDelegate protocol method
 // -----------------------------------------------------------------------------
-- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel;
+- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel
 {
   if (! didCancel)
   {

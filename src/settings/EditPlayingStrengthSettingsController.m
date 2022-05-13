@@ -409,7 +409,7 @@ enum MaxGamesCategory
 // -----------------------------------------------------------------------------
 /// @brief MaxMemoryControllerDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) didEndEditing:(MaxMemoryController*)maxMemoryController didCancel:(bool)didCancel;
+- (void) didEndEditing:(MaxMemoryController*)maxMemoryController didCancel:(bool)didCancel
 {
   if (! didCancel)
   {
