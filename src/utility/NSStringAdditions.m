@@ -497,4 +497,17 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns YES if @a string1 and @a string2 are both not @e nil and
+/// are equal using a literal Unicode-based comparison. Also returns YES if
+/// @a string1 and @a string2 are both @e nil. Returns NO in all other cases.
+// -----------------------------------------------------------------------------
++ (BOOL) nullableString:(NSString*)string1 isEqualToNullableString:(NSString*)string2
+{
+  if (string1 && string2)
+    return [string1 isEqualToString:string2];
+  else
+    return string1 == string2;
+}
+
 @end

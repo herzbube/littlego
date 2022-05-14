@@ -48,5 +48,6 @@
 + (NSString*) shortStringWithScoreSummary:(enum GoScoreSummary)scoreSummary scoreValue:(double)scoreValue;
 + (NSString*) stringWithScoreSummary:(enum GoScoreSummary)scoreSummary scoreValue:(double)scoreValue;
 + (NSString*) stringWithBoardPositionHotspotDesignation:(enum GoBoardPositionHotspotDesignation)boardPositionHotspotDesignation;
++ (BOOL) nullableString:(NSString*)string1 isEqualToNullableString:(NSString*)string2;
 
 @end
