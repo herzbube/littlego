@@ -727,7 +727,7 @@ enum ItemPickerContext
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillDisplayCrossHair notifications.
+/// @brief Responds to the #boardViewWillDisplayCrossHair notification.
 // -----------------------------------------------------------------------------
 - (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
 {
@@ -736,7 +736,7 @@ enum ItemPickerContext
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillHideCrossHair notifications.
+/// @brief Responds to the #boardViewWillHideCrossHair notification.
 // -----------------------------------------------------------------------------
 - (void) boardViewWillHideCrossHair:(NSNotification*)notification
 {
@@ -745,7 +745,7 @@ enum ItemPickerContext
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewAnimationWillBegin notifications.
+/// @brief Responds to the #boardViewAnimationWillBegin notification.
 // -----------------------------------------------------------------------------
 - (void) boardViewAnimationWillBegin:(NSNotification*)notification
 {
@@ -754,7 +754,7 @@ enum ItemPickerContext
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewAnimationDidEnd notifications.
+/// @brief Responds to the #boardViewAnimationDidEnd notification.
 // -----------------------------------------------------------------------------
 - (void) boardViewAnimationDidEnd:(NSNotification*)notification
 {
@@ -763,7 +763,7 @@ enum ItemPickerContext
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #nodeAnnotationDataDidChange notifications.
+/// @brief Responds to the #nodeAnnotationDataDidChange notification.
 // -----------------------------------------------------------------------------
 - (void) nodeAnnotationDataDidChange:(NSNotification*)notification
 {

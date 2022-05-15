@@ -505,7 +505,7 @@ enum BugReportSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreCalculationStarts notifications.
+/// @brief Responds to the #goScoreCalculationStarts notification.
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationStarts:(NSNotification*)notification
 {
@@ -513,7 +513,7 @@ enum BugReportSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreCalculationEnds notifications.
+/// @brief Responds to the #goScoreCalculationEnds notification.
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {

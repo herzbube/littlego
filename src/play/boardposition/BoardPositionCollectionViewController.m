@@ -312,7 +312,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreCalculationStarts notifications.
+/// @brief Responds to the #goScoreCalculationStarts notification.
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationStarts:(NSNotification*)notification
 {
@@ -321,7 +321,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreCalculationEnds notifications.
+/// @brief Responds to the #goScoreCalculationEnds notification.
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
@@ -330,7 +330,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillDisplayCrossHair notifications.
+/// @brief Responds to the #boardViewWillDisplayCrossHair notification.
 // -----------------------------------------------------------------------------
 - (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
 {
@@ -339,7 +339,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillHideCrossHair notifications.
+/// @brief Responds to the #boardViewWillHideCrossHair notification.
 // -----------------------------------------------------------------------------
 - (void) boardViewWillHideCrossHair:(NSNotification*)notification
 {
@@ -348,7 +348,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #handicapPointDidChange notifications.
+/// @brief Responds to the #handicapPointDidChange notification.
 // -----------------------------------------------------------------------------
 - (void) handicapPointDidChange:(NSNotification*)notification
 {
@@ -359,7 +359,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewAnimationWillBegin notifications.
+/// @brief Responds to the #boardViewAnimationWillBegin notification.
 // -----------------------------------------------------------------------------
 - (void) boardViewAnimationWillBegin:(NSNotification*)notification
 {
@@ -368,7 +368,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewAnimationDidEnd notifications.
+/// @brief Responds to the #boardViewAnimationDidEnd notification.
 // -----------------------------------------------------------------------------
 - (void) boardViewAnimationDidEnd:(NSNotification*)notification
 {
@@ -377,7 +377,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #nodeAnnotationDataDidChange notifications.
+/// @brief Responds to the #nodeAnnotationDataDidChange notification.
 // -----------------------------------------------------------------------------
 - (void) nodeAnnotationDataDidChange:(NSNotification*)notification
 {

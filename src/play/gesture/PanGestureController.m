@@ -358,7 +358,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewAnimationWillBegin notifications.
+/// @brief Responds to the #boardViewAnimationWillBegin notification.
 // -----------------------------------------------------------------------------
 - (void) boardViewAnimationWillBegin:(NSNotification*)notification
 {
@@ -366,7 +366,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewAnimationDidEnd notifications.
+/// @brief Responds to the #boardViewAnimationDidEnd notification.
 // -----------------------------------------------------------------------------
 - (void) boardViewAnimationDidEnd:(NSNotification*)notification
 {

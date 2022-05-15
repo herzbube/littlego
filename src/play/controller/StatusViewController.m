@@ -738,7 +738,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreCalculationEnds notifications.
+/// @brief Responds to the #goScoreCalculationEnds notification.
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
@@ -749,7 +749,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #askGtpEngineForDeadStonesStarts notifications.
+/// @brief Responds to the #askGtpEngineForDeadStonesStarts notification.
 // -----------------------------------------------------------------------------
 - (void) askGtpEngineForDeadStonesStarts:(NSNotification*)notification
 {
@@ -767,7 +767,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #askGtpEngineForDeadStonesEnds notifications.
+/// @brief Responds to the #askGtpEngineForDeadStonesEnds notification.
 // -----------------------------------------------------------------------------
 - (void) askGtpEngineForDeadStonesEnds:(NSNotification*)notification
 {
@@ -778,7 +778,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewDidChangeCrossHair notifications.
+/// @brief Responds to the #boardViewDidChangeCrossHair notification.
 // -----------------------------------------------------------------------------
 - (void) boardViewDidChangeCrossHair:(NSNotification*)notification
 {

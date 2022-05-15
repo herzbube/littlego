@@ -494,7 +494,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goScoreCalculationEnds notifications.
+/// @brief Responds to the #goScoreCalculationEnds notification.
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationEnds:(NSNotification*)notification
 {
@@ -503,7 +503,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #territoryStatisticsChanged notifications.
+/// @brief Responds to the #territoryStatisticsChanged notification.
 // -----------------------------------------------------------------------------
 - (void) territoryStatisticsChanged:(NSNotification*)notification
 {
@@ -512,7 +512,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillDisplayCrossHair notifications.
+/// @brief Responds to the #boardViewWillDisplayCrossHair notification.
 // -----------------------------------------------------------------------------
 - (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
 {
@@ -521,7 +521,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillHideCrossHair notifications.
+/// @brief Responds to the #boardViewWillHideCrossHair notification.
 // -----------------------------------------------------------------------------
 - (void) boardViewWillHideCrossHair:(NSNotification*)notification
 {
@@ -530,7 +530,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #handicapPointDidChange notifications.
+/// @brief Responds to the #handicapPointDidChange notification.
 // -----------------------------------------------------------------------------
 - (void) handicapPointDidChange:(NSNotification*)notification
 {
@@ -539,7 +539,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #setupPointDidChange notifications.
+/// @brief Responds to the #setupPointDidChange notification.
 // -----------------------------------------------------------------------------
 - (void) setupPointDidChange:(NSNotification*)notification
 {
@@ -548,7 +548,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #allSetupStonesDidDiscard notifications.
+/// @brief Responds to the #allSetupStonesDidDiscard notification.
 // -----------------------------------------------------------------------------
 - (void) allSetupStonesDidDiscard:(NSNotification*)notification
 {
