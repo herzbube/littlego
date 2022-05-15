@@ -252,26 +252,38 @@
 // -----------------------------------------------------------------------------
 - (void) setupTextViewAutoLayoutConstraints
 {
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
   self.textView.translatesAutoresizingMaskIntoConstraints = NO;
   self.validationErrorLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.textView, @"textView",
-                                   self.validationErrorLabel, @"validationErrorLabel",
-                                   nil];
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            @"H:|-[textView]-|",
-                            @"H:|-[validationErrorLabel]-|",
-                            // Important: Don't attach the bottom of
-                            // validationErrorLabel! This is managed by
-                            // KeyboardHeightAdjustment.
-                            @"V:|-[textView]-[validationErrorLabel]",
-                            nil];
+  viewsDictionary[@"textView"] = self.textView;
+  viewsDictionary[@"validationErrorLabel"] = self.validationErrorLabel;
+  [visualFormats addObject:@"H:|-[textView]-|"];
+  [visualFormats addObject:@"H:|-[validationErrorLabel]-|"];
+  // Important: Don't attach the bottom of validationErrorLabel! This is
+  // managed by KeyboardHeightAdjustment.
+  [visualFormats addObject:@"V:|-[textView]-[validationErrorLabel]"];
   [AutoLayoutUtility installVisualFormats:visualFormats
                                 withViews:viewsDictionary
                                    inView:self.contentView];
 
-  [self beginObservingKeyboardWithViewToAdjustHeight:self.validationErrorLabel
-                                       referenceView:self.validationErrorLabel.superview];
+  // If this controller is presented in a popover then we assume that we are
+  // on iPadOS and that the OS will automatically adjust the popover size or
+  // location to accomodate the keyboard when it appears.
+  if (self.popoverPresentationController)
+  {
+    [viewsDictionary removeAllObjects];
+    [visualFormats removeAllObjects];
+    viewsDictionary[@"validationErrorLabel"] = self.validationErrorLabel;
+    [visualFormats addObject:@"V:[validationErrorLabel]-|"];
+    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.validationErrorLabel.superview];
+  }
+  else
+  {
+    [self beginObservingKeyboardWithViewToAdjustHeight:self.validationErrorLabel
+                                         referenceView:self.validationErrorLabel.superview];
+  }
 }
 
 // -----------------------------------------------------------------------------

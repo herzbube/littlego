@@ -253,8 +253,22 @@
   [visualFormats addObject:@"V:|-[shortDescriptionLabel]-[shortDescriptionTextField]-[longDescriptionLabel]-[longDescriptionTextView]"];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.shortDescriptionLabel.superview];
 
-  [self beginObservingKeyboardWithViewToAdjustHeight:self.longDescriptionTextView
-                                       referenceView:self.longDescriptionTextView.superview];
+  // If this controller is presented in a popover then we assume that we are
+  // on iPadOS and that the OS will automatically adjust the popover size or
+  // location to accomodate the keyboard when it appears.
+  if (self.popoverPresentationController)
+  {
+    [viewsDictionary removeAllObjects];
+    [visualFormats removeAllObjects];
+    viewsDictionary[@"longDescriptionTextView"] = self.longDescriptionTextView;
+    [visualFormats addObject:@"V:[longDescriptionTextView]-|"];
+    [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.longDescriptionTextView.superview];
+  }
+  else
+  {
+    [self beginObservingKeyboardWithViewToAdjustHeight:self.longDescriptionTextView
+                                         referenceView:self.longDescriptionTextView.superview];
+  }
 }
 
 #pragma mark - Action handlers
