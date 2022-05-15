@@ -1479,7 +1479,6 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
   }
 
   [[NSNotificationCenter defaultCenter] postNotificationName:handicapPointDidChange object:point];
-
 }
 
 // -----------------------------------------------------------------------------

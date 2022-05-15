@@ -307,7 +307,7 @@
 // implementation were in another .m file it would be unable to access the
 // member variables.
 //
-// The GoNodeAdditions implementation is an adapation of the SgfcTreeBuilder
+// The GoNodeAdditions implementation is an adaptation of the SgfcTreeBuilder
 // class in libsgfc++.
 // -----------------------------------------------------------------------------
 
