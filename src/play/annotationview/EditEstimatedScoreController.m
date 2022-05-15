@@ -145,9 +145,12 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  self.scoreSummaryPickerController = [ItemPickerController controllerWithItemList:[NSArray array]
+  // ItemPickerController lets us set a default selection only if we provide it
+  // with an item list to match
+  NSArray* initialScoreSummaries = [self currentScoreSummaries];
+  self.scoreSummaryPickerController = [ItemPickerController controllerWithItemList:initialScoreSummaries
                                                                        screenTitle:nil
-                                                                indexOfDefaultItem:self.estimatedScoreSummary
+                                                                indexOfDefaultItem:self.currentScoreSummary
                                                                           delegate:self];
   [self updateScoreSummaries];
   self.scoreSummaryPickerController.itemPickerControllerMode = ItemPickerControllerModeNonModal;
@@ -381,6 +384,16 @@
 // -----------------------------------------------------------------------------
 - (void) updateScoreSummaries
 {
+  NSArray* currentScoreSummaries = [self currentScoreSummaries];
+  self.scoreSummaryPickerController.itemList = currentScoreSummaries;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a newly created array with the score summaries available for
+/// selection from the currently entered data.
+// -----------------------------------------------------------------------------
+- (NSArray*) currentScoreSummaries
+{
   bool currentScoreSummaryAllowsEnteringScoreValue = [self currentScoreSummaryAllowsEnteringScoreValue];
 
   NSMutableArray* itemList = [NSMutableArray array];
@@ -394,7 +407,8 @@
     UIImage* scoreSummaryIcon = [UIImage iconForScoreSummary:scoreSummary];
     [itemList addObject:@[scoreSummaryText, scoreSummaryIcon]];
   }
-  self.scoreSummaryPickerController.itemList = itemList;
+
+  return itemList;
 }
 
 // -----------------------------------------------------------------------------

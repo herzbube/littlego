@@ -59,7 +59,7 @@
 /// navigation item with controls that are then expected to be displayed in the
 /// navigation bar of the parent navigation controller.
 // -----------------------------------------------------------------------------
-@interface EditEstimatedScoreController : UIViewController <ItemPickerDelegate, UITextFieldDelegate, EditTextDelegate>
+@interface EditEstimatedScoreController : UIViewController <ItemPickerDelegate, EditTextDelegate>
 {
 }
 
