@@ -105,6 +105,11 @@ enum ItemPickerControllerMode
 /// default is ItemPickerControllerModeModal. The value of this property should
 /// not be changed after ItemPickerController's view has been loaded.
 @property(nonatomic, assign) enum ItemPickerControllerMode itemPickerControllerMode;
+/// @brief True if ItemPickerController should display a regular scrolling table
+/// view. False if ItemPickerController should display a static non-scrolling
+/// table view. The default is true. Changing the value of this property after
+/// after ItemPickerController's view has been loaded has no effect.
+@property(nonatomic, assign) bool useScrollingTableView;
 /// @brief A context object that can be set by the client to identify the
 /// context or purpose that an instance of ItemPickerController was created for.
 ///

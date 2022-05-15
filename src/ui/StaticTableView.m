@@ -115,7 +115,8 @@
   if ([keyPath isEqualToString:@"contentSize"])
   {
     CGFloat contentHeight = self.tableView.contentSize.height;
-    self.heightConstraint.constant = contentHeight;
+    if (self.heightConstraint.constant != contentHeight)
+      self.heightConstraint.constant = contentHeight;
   }
 }
 

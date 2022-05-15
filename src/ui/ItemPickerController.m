@@ -36,6 +36,7 @@
 //@}
 @property(nonatomic, retain) PlaceholderView* placeholderView;
 @property(nonatomic, retain) StaticTableView* staticTableView;
+@property(nonatomic, retain) UITableView* regularTableView;
 @end
 
 
@@ -82,6 +83,7 @@
   if (! self)
     return nil;
   self.itemPickerControllerMode = ItemPickerControllerModeModal;
+  self.useScrollingTableView = true;
   self.context = nil;
   self.screenTitle = nil;
   self.notifyDelegateOnlyWhenSelectionChanges = false;
@@ -94,6 +96,7 @@
   self.itemList = nil;
   self.placeholderView = nil;
   self.staticTableView = nil;
+  self.regularTableView = nil;
   return self;
 }
 
@@ -111,6 +114,7 @@
   self.itemList = nil;
   self.placeholderView = nil;
   self.staticTableView = nil;
+  self.regularTableView = nil;
   [super dealloc];
 }
 
@@ -131,11 +135,13 @@
 
   if (self.isViewLoaded)
   {
+    UITableView* tableView = [self itemPickerTableView];
+
     // Remove the checkmark from the previously selected cell
     if (previousIndexOfSelectedItem >= 0)
     {
       NSIndexPath* previousIndexPath = [NSIndexPath indexPathForRow:previousIndexOfSelectedItem inSection:0];
-      UITableViewCell* previousCell = [self.staticTableView.tableView cellForRowAtIndexPath:previousIndexPath];
+      UITableViewCell* previousCell = [tableView cellForRowAtIndexPath:previousIndexPath];
       if (previousCell.accessoryType == UITableViewCellAccessoryCheckmark)
         previousCell.accessoryType = UITableViewCellAccessoryNone;
     }
@@ -144,7 +150,7 @@
     if (indexOfSelectedItem)
     {
       NSIndexPath* indexPath = [NSIndexPath indexPathForRow:indexOfSelectedItem inSection:0];
-      UITableViewCell* newCell = [self.staticTableView.tableView cellForRowAtIndexPath:indexPath];
+      UITableViewCell* newCell = [tableView cellForRowAtIndexPath:indexPath];
       if (newCell.accessoryType == UITableViewCellAccessoryNone)
         newCell.accessoryType = UITableViewCellAccessoryCheckmark;
     }
@@ -179,7 +185,10 @@
   }
 
   if (self.isViewLoaded)
-    [self.staticTableView.tableView reloadData];
+  {
+    UITableView* tableView = [self itemPickerTableView];
+    [tableView reloadData];
+  }
 }
 
 #pragma mark - UIViewController overrides
@@ -223,15 +232,29 @@
   }
   else
   {
-    self.staticTableView = [[[StaticTableView alloc] initWithFrame:CGRectZero
-                                                             style:UITableViewStyleGrouped] autorelease];
-    self.staticTableView.tableView.delegate = self;
-    self.staticTableView.tableView.dataSource = self;
-    [self.view addSubview:self.staticTableView];
-    self.staticTableView.translatesAutoresizingMaskIntoConstraints = NO;
-    [AutoLayoutUtility fillSuperview:self.view withSubview:self.staticTableView];
-
     self.itemList = [self itemListWithUniformWidthImages];
+
+    UIView* subview;
+    if (self.useScrollingTableView)
+    {
+      self.regularTableView = [[[UITableView alloc] initWithFrame:CGRectZero
+                                                            style:UITableViewStyleGrouped] autorelease];
+      subview = self.regularTableView;
+    }
+    else
+    {
+      self.staticTableView = [[[StaticTableView alloc] initWithFrame:CGRectZero
+                                                               style:UITableViewStyleGrouped] autorelease];
+      subview = self.staticTableView;
+    }
+
+    [self.view addSubview:subview];
+    subview.translatesAutoresizingMaskIntoConstraints = NO;
+    [AutoLayoutUtility fillSuperview:self.view withSubview:subview];
+
+    UITableView* tableView = [self itemPickerTableView];
+    tableView.delegate = self;
+    tableView.dataSource = self;
   }
 }
 
@@ -457,6 +480,20 @@
     return false;
   else
     return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the table view object that displays the items to pick.
+///
+/// Implementation note: Don't use a simple name like "tableView" in order to
+/// avoid potential naming clashes with future UIKit properties.
+// -----------------------------------------------------------------------------
+- (UITableView*) itemPickerTableView
+{
+  if (self.useScrollingTableView)
+    return self.regularTableView;
+  else
+    return self.staticTableView.tableView;
 }
 
 @end

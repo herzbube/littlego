@@ -38,6 +38,15 @@
 /// can interact with the UITableView in the usual way, i.e. set the delegate
 /// and/or data source. StaticTableView will detect and changes to the
 /// UITableView's content size.
+///
+/// @todo StaticTableView has been found to work unreliably, depending on
+/// the context in which it is used. For instance, when embedded into
+/// ItemPickerController it works nicely on iPhones when the controller is
+/// presented in a popover, but when the controller is presented modally
+/// the internal UITableView does not set its content size to a correct value,
+/// resulting in the UITableView being sized with insufficient height. The
+/// reason for this has not been investigated. Also, no other experiments with
+/// embedding StaticTableView have been made.
 // -----------------------------------------------------------------------------
 @interface StaticTableView : UIView
 {
