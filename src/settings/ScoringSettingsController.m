@@ -19,10 +19,10 @@
 #import "ScoringSettingsController.h"
 #import "../main/ApplicationDelegate.h"
 #import "../play/model/ScoringModel.h"
-#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
 #import "../ui/UiElementMetrics.h"
+#import "../ui/UIViewControllerAdditions.h"
 
 // Constants
 NSString* markDeadStonesIntelligentlyText = @"Mark dead stones intelligently";
@@ -314,12 +314,7 @@ enum InconsistentTerritoryMarkupTypeSectionItem
                                                                     indexOfDefaultItem:self.scoringModel.inconsistentTerritoryMarkupType
                                                                               delegate:self];
   modalController.footerTitle = @"Select neutral to not mark inconsistent territory at all, thus making it look as if it were neutral territory. Select this option if you are confident that you don't need any help picking out inconsistencies.";
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:modalController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self presentViewController:navigationController animated:YES completion:nil];
-  [navigationController release];
+  [self presentNavigationControllerWithRootViewController:modalController];
 }
 
 #pragma mark - ItemPickerDelegate overrides

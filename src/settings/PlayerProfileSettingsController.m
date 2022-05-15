@@ -26,7 +26,6 @@
 #import "../player/GtpEngineProfile.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
-#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UIViewControllerAdditions.h"
 
@@ -565,11 +564,7 @@ enum ResetToDefaultsSectionItem
 - (void) editPlayer:(Player*)player
 {
   EditPlayerProfileController* editPlayerProfileController = [EditPlayerProfileController controllerForPlayer:player withDelegate:self];
-  UINavigationController* navigationController = [[[UINavigationController alloc]
-                                                   initWithRootViewController:editPlayerProfileController] autorelease];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self presentViewController:navigationController animated:YES completion:nil];
+  [self presentNavigationControllerWithRootViewController:editPlayerProfileController];
 }
 
 // -----------------------------------------------------------------------------
@@ -579,11 +574,7 @@ enum ResetToDefaultsSectionItem
 - (void) editProfile:(GtpEngineProfile*)profile
 {
   EditPlayerProfileController* editPlayerProfileController = [EditPlayerProfileController controllerForProfile:profile withDelegate:self];
-  UINavigationController* navigationController = [[[UINavigationController alloc]
-                                                   initWithRootViewController:editPlayerProfileController] autorelease];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self presentViewController:navigationController animated:YES completion:nil];
+  [self presentNavigationControllerWithRootViewController:editPlayerProfileController];
 }
 
 // -----------------------------------------------------------------------------

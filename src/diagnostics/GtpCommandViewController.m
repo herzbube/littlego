@@ -19,9 +19,9 @@
 #import "GtpCommandViewController.h"
 #import "GtpCommandModel.h"
 #import "../main/ApplicationDelegate.h"
-#import "../shared/LayoutManager.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
+#import "../ui/UIViewControllerAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -177,12 +177,7 @@
                                                                           delegate:self] retain];
   editTextController.title = @"New command";
   editTextController.context = [NSNumber numberWithInt:-1];
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:editTextController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self presentViewController:navigationController animated:YES completion:nil];
-  [navigationController release];
+  [self presentNavigationControllerWithRootViewController:editTextController];
   [editTextController release];
 }
 
@@ -198,12 +193,7 @@
                                                                           delegate:self] retain];
   editTextController.title = @"Edit command";
   editTextController.context = [NSNumber numberWithInt:index];
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:editTextController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self presentViewController:navigationController animated:YES completion:nil];
-  [navigationController release];
+  [self presentNavigationControllerWithRootViewController:editTextController];
   [editTextController release];
 }
 

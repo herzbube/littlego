@@ -19,9 +19,9 @@
 #import "CrashReportingSettingsController.h"
 #import "../main/ApplicationDelegate.h"
 #import "../diagnostics/CrashReportingModel.h"
-#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
+#import "../ui/UIViewControllerAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -248,12 +248,7 @@ enum ContactSectionItem
     editTextController.title = @"Edit email";
     editTextController.acceptEmptyText = false;
     editTextController.keyboardType = UIKeyboardTypeEmailAddress;
-    UINavigationController* navigationController = [[UINavigationController alloc]
-                                                    initWithRootViewController:editTextController];
-    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    navigationController.delegate = [LayoutManager sharedManager];
-    [self presentViewController:navigationController animated:YES completion:nil];
-    [navigationController release];
+    [self presentNavigationControllerWithRootViewController:editTextController];
     [editTextController release];
   }
 }

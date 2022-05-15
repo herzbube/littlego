@@ -38,7 +38,6 @@
 #import "../../play/model/BoardViewModel.h"
 #import "../../play/model/ScoringModel.h"
 #import "../../shared/ApplicationStateManager.h"
-#import "../../shared/LayoutManager.h"
 #import "../../ui/UiSettingsModel.h"
 #import "../../ui/UIViewControllerAdditions.h"
 #import "../../utility/NSStringAdditions.h"
@@ -414,14 +413,7 @@
                                                                          indexOfDefaultItem:indexOfDefaultItem
                                                                                    delegate:self];
   itemPickerController.footerTitle = footerTitle;
-
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:itemPickerController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self.modalMaster presentViewController:navigationController animated:YES completion:nil];
-
-  [navigationController release];
+  [self.modalMaster presentNavigationControllerWithRootViewController:itemPickerController];
 }
 
 // -----------------------------------------------------------------------------
@@ -581,12 +573,7 @@
                                                                              style:EditTextControllerStyleTextField
                                                                           delegate:self] retain];
   editTextController.title = @"Game name";
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:editTextController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self.modalMaster presentViewController:navigationController animated:YES completion:nil];
-  [navigationController release];
+  [self.modalMaster presentNavigationControllerWithRootViewController:editTextController];
   [editTextController release];
 }
 
@@ -598,19 +585,7 @@
 {
   // This controller manages the actual "New Game" view
   NewGameController* newGameController = [[NewGameController controllerWithDelegate:self loadGame:false] retain];
-
-  // This controller provides a navigation bar at the top of the screen where
-  // it will display the navigation item that represents the "new game"
-  // controller. The "new game" controller internally configures this
-  // navigation item according to its needs.
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:newGameController];
-  // Present the navigation controller, not the "new game" controller.
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self.modalMaster presentViewController:navigationController animated:YES completion:nil];
-  // Cleanup
-  [navigationController release];
+  [self.modalMaster presentNavigationControllerWithRootViewController:newGameController];
   [newGameController release];
 }
 

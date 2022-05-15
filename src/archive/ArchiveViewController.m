@@ -22,7 +22,6 @@
 #import "ViewGameController.h"
 #import "../command/game/DeleteGameCommand.h"
 #import "../main/ApplicationDelegate.h"
-#import "../shared/LayoutManager.h"
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/PlaceholderView.h"
 #import "../ui/TableViewCellFactory.h"

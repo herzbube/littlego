@@ -24,11 +24,11 @@
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeAnnotation.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiSettingsModel.h"
+#import "../../ui/UIViewControllerAdditions.h"
 #import "../../utility/ExceptionUtility.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIColorAdditions.h"
@@ -1100,7 +1100,9 @@ enum ItemPickerContext
   EditEstimatedScoreController* editEstimatedScoreController = [EditEstimatedScoreController controllerWithEstimatedScoreSummary:estimatedScoreSummary
                                                                                                              estimatedScoreValue:estimatedScoreValue
                                                                                                                         delegate:self];
-  [self presentViewController:editEstimatedScoreController sourceView:sender];
+  [self presentNavigationControllerWithRootViewController:editEstimatedScoreController
+                                        usingPopoverStyle:self.presentViewControllersInPopover
+                                        popoverSourceView:sender];
 }
 
 // -----------------------------------------------------------------------------
@@ -1117,7 +1119,9 @@ enum ItemPickerContext
   EditNodeDescriptionController* editNodeDescriptionController = [EditNodeDescriptionController controllerWithShortDescription:shortDescription
                                                                                                                longDescription:longDescription
                                                                                                                       delegate:self];
-  [self presentViewController:editNodeDescriptionController sourceView:sender];
+  [self presentNavigationControllerWithRootViewController:editNodeDescriptionController
+                                        usingPopoverStyle:self.presentViewControllersInPopover
+                                        popoverSourceView:sender];
 }
 
 // -----------------------------------------------------------------------------
@@ -1183,37 +1187,9 @@ enum ItemPickerContext
     itemPickerController.displayCancelItem = true;
   }
 
-  [self presentViewController:itemPickerController sourceView:sourceView];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Helper that presents @a viewController either modally or in a
-/// popover, depending on the value of property
-/// @e self.presentViewControllersInPopover. If popover presentation is enabled,
-/// @a sourceView is used as the popover source view.
-// -----------------------------------------------------------------------------
-- (void) presentViewController:(UIViewController*)viewController sourceView:(UIView*)sourceView
-{
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:viewController];
-  navigationController.delegate = [LayoutManager sharedManager];
-
-  if (self.presentViewControllersInPopover)
-  {
-    navigationController.modalPresentationStyle = UIModalPresentationPopover;
-    if (navigationController.popoverPresentationController)
-    {
-      navigationController.popoverPresentationController.sourceView = sourceView;
-      navigationController.popoverPresentationController.sourceRect = sourceView.bounds;
-    }
-  }
-  else
-  {
-    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  }
-
-  [self presentViewController:navigationController animated:YES completion:nil];
-  [navigationController release];
+  [self presentNavigationControllerWithRootViewController:itemPickerController
+                                        usingPopoverStyle:self.presentViewControllersInPopover
+                                        popoverSourceView:sourceView];
 }
 
 #pragma mark - ItemPickerDelegate overrides

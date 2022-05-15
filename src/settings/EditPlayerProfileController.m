@@ -22,10 +22,10 @@
 #import "../player/GtpEngineProfileModel.h"
 #import "../player/Player.h"
 #import "../player/PlayerModel.h"
-#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UiUtilities.h"
+#import "../ui/UIViewControllerAdditions.h"
 #import "../utility/UIColorAdditions.h"
 
 
@@ -467,12 +467,7 @@ enum ProfileNotesSectionItem
         editTextController.title = @"Edit name";
         editTextController.acceptEmptyText = false;
         editTextController.context = [NSNumber numberWithInteger:section];
-        UINavigationController* navigationController = [[UINavigationController alloc]
-                                                        initWithRootViewController:editTextController];
-        navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-        navigationController.delegate = [LayoutManager sharedManager];
-        [self presentViewController:navigationController animated:YES completion:nil];
-        [navigationController release];
+        [self presentNavigationControllerWithRootViewController:editTextController];
         [editTextController release];
         break;
       }
@@ -504,12 +499,7 @@ enum ProfileNotesSectionItem
                                                                           indexOfDefaultItem:indexOfDefaultPlayingStrength
                                                                                     delegate:self];
         modalController.context = [NSNumber numberWithInteger:section];
-        UINavigationController* navigationController = [[UINavigationController alloc]
-                                                        initWithRootViewController:modalController];
-        navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-        navigationController.delegate = [LayoutManager sharedManager];
-        [self presentViewController:navigationController animated:YES completion:nil];
-        [navigationController release];
+        [self presentNavigationControllerWithRootViewController:modalController];
         break;
       }
       case PlayingStrengthAdvancedConfigurationItem:
@@ -548,12 +538,7 @@ enum ProfileNotesSectionItem
                                                                           indexOfDefaultItem:indexOfDefaultResignBehaviour
                                                                                     delegate:self];
         modalController.context = [NSNumber numberWithInteger:section];
-        UINavigationController* navigationController = [[UINavigationController alloc]
-                                                        initWithRootViewController:modalController];
-        navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-        navigationController.delegate = [LayoutManager sharedManager];
-        [self presentViewController:navigationController animated:YES completion:nil];
-        [navigationController release];
+        [self presentNavigationControllerWithRootViewController:modalController];
         break;
       }
       case ResignBehaviourAdvancedConfigurationItem:
@@ -584,12 +569,7 @@ enum ProfileNotesSectionItem
     editTextController.title = @"Edit notes";
     editTextController.acceptEmptyText = true;
     editTextController.context = [NSNumber numberWithInteger:section];
-    UINavigationController* navigationController = [[UINavigationController alloc]
-                                                    initWithRootViewController:editTextController];
-    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    navigationController.delegate = [LayoutManager sharedManager];
-    [self presentViewController:navigationController animated:YES completion:nil];
-    [navigationController release];
+    [self presentNavigationControllerWithRootViewController:editTextController];
     [editTextController release];
   }
 }

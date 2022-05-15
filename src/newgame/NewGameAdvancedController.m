@@ -20,10 +20,10 @@
 #import "NewGameModel.h"
 #import "../go/GoUtilities.h"
 #import "../main/ApplicationDelegate.h"
-#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
 #import "../ui/UiElementMetrics.h"
+#import "../ui/UIViewControllerAdditions.h"
 #import "../utility/NSStringAdditions.h"
 
 // Constants
@@ -515,12 +515,7 @@ enum CellID
       break;
     }
   }
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:modalController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self presentViewController:navigationController animated:YES completion:nil];
-  [navigationController release];
+  [self presentNavigationControllerWithRootViewController:modalController];
 }
 
 #pragma mark - KomiSelectionDelegate overrides

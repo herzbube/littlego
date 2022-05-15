@@ -19,7 +19,6 @@
 #import "SgfSyntaxCheckingLevelSettingsController.h"
 #import "../main/ApplicationDelegate.h"
 #import "../sgf/SgfSettingsModel.h"
-#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UIViewControllerAdditions.h"
 #import "../utility/ExceptionUtility.h"

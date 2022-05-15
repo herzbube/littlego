@@ -17,6 +17,7 @@
 
 // Project includes
 #import "UIViewControllerAdditions.h"
+#import "../shared/LayoutManager.h"
 
 
 @implementation UIViewController(UIViewControllerAdditions)
@@ -190,6 +191,61 @@
   [alertController addAction:destructiveAction];
 
   [self presentViewController:alertController animated:YES completion:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates a new UINavigationController using @a rootViewController as
+/// the navigation stack's root view controller. Presents the navigation
+/// controller in the automatic style.
+///
+/// Control immediately returns to the caller who invoked this method.
+///
+/// The caller is responsible for dismissing the presented navigation
+/// controller.
+// -----------------------------------------------------------------------------
+- (void) presentNavigationControllerWithRootViewController:(UIViewController*)rootViewController
+{
+  [self presentNavigationControllerWithRootViewController:rootViewController
+                                        usingPopoverStyle:false
+                                        popoverSourceView:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates a new UINavigationController using @a rootViewController as
+/// the navigation stack's root view controller. Presents the navigation
+/// controller either in a popover pointing to @a sourceView if
+/// @a usePopoverStyle is true, or in the automatic style if @a usePopoverStyle
+/// is false.
+///
+/// Control immediately returns to the caller who invoked this method.
+///
+/// The caller is responsible for dismissing the presented navigation
+/// controller.
+// -----------------------------------------------------------------------------
+- (void) presentNavigationControllerWithRootViewController:(UIViewController*)rootViewController
+                                         usingPopoverStyle:(bool)usePopoverStyle
+                                         popoverSourceView:(UIView*)sourceView;
+{
+  UINavigationController* navigationController = [[UINavigationController alloc]
+                                                  initWithRootViewController:rootViewController];
+  navigationController.delegate = [LayoutManager sharedManager];
+
+  if (usePopoverStyle)
+  {
+    navigationController.modalPresentationStyle = UIModalPresentationPopover;
+    if (navigationController.popoverPresentationController)
+    {
+      navigationController.popoverPresentationController.sourceView = sourceView;
+      navigationController.popoverPresentationController.sourceRect = sourceView.bounds;
+    }
+  }
+  else
+  {
+    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  }
+
+  [self presentViewController:navigationController animated:YES completion:nil];
+  [navigationController release];
 }
 
 @end

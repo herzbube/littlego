@@ -29,7 +29,6 @@
 #import "../go/GoGame.h"
 #import "../main/ApplicationDelegate.h"
 #import "../main/MainUtility.h"
-#import "../shared/LayoutManager.h"
 #import "../sgf/SgfSettingsModel.h"
 #import "../sgf/SgfUtilities.h"
 #import "../ui/TableViewCellFactory.h"
@@ -591,12 +590,7 @@ enum LoadResultType
                                                                              style:EditTextControllerStyleTextField
                                                                           delegate:self] retain];
   editTextController.title = @"Game name";
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:editTextController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self presentViewController:navigationController animated:YES completion:nil];
-  [navigationController release];
+  [self presentNavigationControllerWithRootViewController:editTextController];
   [editTextController release];
 }
 
@@ -688,12 +682,7 @@ enum LoadResultType
   self.gameInfoItemBeingLoaded = gameInfoItem;
   self.gameInfoNodeBeingLoaded = gameInfoNode;
   NewGameController* newGameController = [[NewGameController controllerWithDelegate:self loadGame:true] retain];
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:newGameController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self presentViewController:navigationController animated:YES completion:nil];
-  [navigationController release];
+  [self presentNavigationControllerWithRootViewController:newGameController];
   [newGameController release];
 }
 

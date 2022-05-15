@@ -34,12 +34,12 @@
 #import "../../player/GtpEngineProfile.h"
 #import "../../player/Player.h"
 #import "../../sgf/SgfUtilities.h"
-#import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/TableViewCellFactory.h"
 #import "../../ui/TableViewVariableHeightCell.h"
 #import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiSettingsModel.h"
+#import "../../ui/UIViewControllerAdditions.h"
 #import "../../utility/NSStringAdditions.h"
 
 // Constants
@@ -994,11 +994,7 @@ enum BoardPositionSectionItem
       else
         player = game.playerWhite.player;
       EditPlayerProfileController* editPlayerProfileController = [EditPlayerProfileController controllerForPlayer:player withDelegate:self];
-      UINavigationController* navigationController = [[[UINavigationController alloc]
-                                                       initWithRootViewController:editPlayerProfileController] autorelease];
-      navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-      navigationController.delegate = [LayoutManager sharedManager];
-      [self presentViewController:navigationController animated:YES completion:nil];
+      [self presentNavigationControllerWithRootViewController:editPlayerProfileController];
       break;
     }
     case HumanVsHumanGameProfileItem:
@@ -1007,11 +1003,7 @@ enum BoardPositionSectionItem
       if (profile)
       {
         EditPlayerProfileController* editPlayerProfileController = [EditPlayerProfileController controllerForProfile:profile withDelegate:self];
-        UINavigationController* navigationController = [[[UINavigationController alloc]
-                                                         initWithRootViewController:editPlayerProfileController] autorelease];
-        navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-        navigationController.delegate = [LayoutManager sharedManager];
-        [self presentViewController:navigationController animated:YES completion:nil];
+        [self presentNavigationControllerWithRootViewController:editPlayerProfileController];
       }
       break;
     }

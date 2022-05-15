@@ -18,7 +18,6 @@
 // Project includes
 #import "EditPlayingStrengthSettingsController.h"
 #import "../player/GtpEngineProfile.h"
-#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
 #import "../ui/UIViewControllerAdditions.h"
@@ -348,12 +347,7 @@ enum MaxGamesCategory
     MaxMemoryController* modalController = [[[MaxMemoryController alloc] init] autorelease];
     modalController.delegate = self;
     modalController.maxMemory = self.profile.fuegoMaxMemory;
-    UINavigationController* navigationController = [[UINavigationController alloc]
-                                                    initWithRootViewController:modalController];
-    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-    navigationController.delegate = [LayoutManager sharedManager];
-    [self presentViewController:navigationController animated:YES completion:nil];
-    [navigationController release];
+    [self presentNavigationControllerWithRootViewController:modalController];
   }
   else if (PlayoutLimitsSection == indexPath.section)
   {
@@ -379,12 +373,7 @@ enum MaxGamesCategory
                                                                            screenTitle:@"Max. games"
                                                                     indexOfDefaultItem:indexOfDefaultMaxGamesCategory
                                                                               delegate:self];
-      UINavigationController* navigationController = [[UINavigationController alloc]
-                                                      initWithRootViewController:modalController];
-      navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-      navigationController.delegate = [LayoutManager sharedManager];
-      [self presentViewController:navigationController animated:YES completion:nil];
-      [navigationController release];
+      [self presentNavigationControllerWithRootViewController:modalController];
     }
   }
   else if (ResetToDefaultsSection == indexPath.section)

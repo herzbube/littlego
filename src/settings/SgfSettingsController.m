@@ -18,7 +18,6 @@
 // Project includes
 #import "SgfSettingsController.h"
 #import "../main/ApplicationDelegate.h"
-#import "../shared/LayoutManager.h"
 #import "../sgf/SgfSettingsModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
@@ -319,12 +318,7 @@ enum OtherSectionItem
                                                                                          delegate:self];
         itemPickerController.context = indexPath;
         itemPickerController.footerTitle = footerTitle;
-        UINavigationController* navigationController = [[UINavigationController alloc]
-                                                        initWithRootViewController:itemPickerController];
-        navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-        navigationController.delegate = [LayoutManager sharedManager];
-        [self presentViewController:navigationController animated:YES completion:nil];
-        [navigationController release];
+        [self presentNavigationControllerWithRootViewController:itemPickerController];
         break;
       }
       case SyntaxCheckingLevelAdvancedConfigurationItem:
@@ -387,12 +381,7 @@ enum OtherSectionItem
       editTextController.title = title;
       editTextController.acceptEmptyText = true;
       editTextController.context = indexPath;
-      UINavigationController* navigationController = [[UINavigationController alloc]
-                                                      initWithRootViewController:editTextController];
-      navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-      navigationController.delegate = [LayoutManager sharedManager];
-      [self presentViewController:navigationController animated:YES completion:nil];
-      [navigationController release];
+      [self presentNavigationControllerWithRootViewController:editTextController];
     }
   }
 }

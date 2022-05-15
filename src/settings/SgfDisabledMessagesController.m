@@ -19,7 +19,6 @@
 #import "SgfDisabledMessagesController.h"
 #import "../sgf/SgfSettingsModel.h"
 #import "../main/ApplicationDelegate.h"
-#import "../shared/LayoutManager.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UIViewControllerAdditions.h"
@@ -184,12 +183,7 @@
                                                                          delegate:self];
   editTextController.title = @"Add message number";
   editTextController.context = [NSNumber numberWithInteger:-1];
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:editTextController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self presentViewController:navigationController animated:YES completion:nil];
-  [navigationController release];
+  [self presentNavigationControllerWithRootViewController:editTextController];
 }
 
 // -----------------------------------------------------------------------------
@@ -204,12 +198,7 @@
                                                                          delegate:self];
   editTextController.title = @"Edit message number";
   editTextController.context = [NSNumber numberWithInteger:index];
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:editTextController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self presentViewController:navigationController animated:YES completion:nil];
-  [navigationController release];
+  [self presentNavigationControllerWithRootViewController:editTextController];
 }
 
 #pragma mark - EditTextDelegate overrides

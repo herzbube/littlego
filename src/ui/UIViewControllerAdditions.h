@@ -45,5 +45,9 @@
                    destructiveActionTitle:(NSString*)destructiveActionTitle
                        destructiveHandler:(void (^)(UIAlertAction* action))destructiveHandler
                             cancelHandler:(void (^)(UIAlertAction* action))cancelHandler;
+- (void) presentNavigationControllerWithRootViewController:(UIViewController*)rootViewController;
+- (void) presentNavigationControllerWithRootViewController:(UIViewController*)rootViewController
+                                         usingPopoverStyle:(bool)usePopoverStyle
+                                         popoverSourceView:(UIView*)sourceView;
 
 @end

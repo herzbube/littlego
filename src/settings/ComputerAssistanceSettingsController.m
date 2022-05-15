@@ -19,9 +19,9 @@
 #import "ComputerAssistanceSettingsController.h"
 #import "../main/ApplicationDelegate.h"
 #import "../play/model/BoardViewModel.h"
-#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
+#import "../ui/UIViewControllerAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -201,12 +201,7 @@ enum ComputerAssistanceSectionItem
                                                                     indexOfDefaultItem:self.boardViewModel.computerAssistanceType
                                                                               delegate:self];
 
-  UINavigationController* navigationController = [[UINavigationController alloc]
-                                                  initWithRootViewController:modalController];
-  navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-  navigationController.delegate = [LayoutManager sharedManager];
-  [self presentViewController:navigationController animated:YES completion:nil];
-  [navigationController release];
+  [self presentNavigationControllerWithRootViewController:modalController];
 }
 
 #pragma mark - ItemPickerDelegate overrides

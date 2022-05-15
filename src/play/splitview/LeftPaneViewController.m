@@ -19,7 +19,6 @@
 #import "LeftPaneViewController.h"
 #import "../boardposition/BoardPositionCollectionViewController.h"
 #import "../controller/StatusViewController.h"
-#import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
 

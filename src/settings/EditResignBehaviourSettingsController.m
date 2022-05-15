@@ -18,7 +18,6 @@
 // Project includes
 #import "EditResignBehaviourSettingsController.h"
 #import "../player/GtpEngineProfile.h"
-#import "../shared/LayoutManager.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UIViewControllerAdditions.h"
 
@@ -316,12 +315,7 @@ enum ResignMinGamesCategory
                                                                            screenTitle:@"Resign min. games"
                                                                     indexOfDefaultItem:indexOfDefaultResignMinGamesCategory
                                                                               delegate:self];
-      UINavigationController* navigationController = [[UINavigationController alloc]
-                                                      initWithRootViewController:modalController];
-      navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
-      navigationController.delegate = [LayoutManager sharedManager];
-      [self presentViewController:navigationController animated:YES completion:nil];
-      [navigationController release];
+      [self presentNavigationControllerWithRootViewController:modalController];
     }
   }
   else if (ResetToDefaultsSection == indexPath.section)
