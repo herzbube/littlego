@@ -581,7 +581,7 @@
     return;
   self.boardPositionZeroNeedsUpdate = false;
 
-  [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathWithIndex:0]]];
+  [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]]];
 }
 
 // -----------------------------------------------------------------------------
