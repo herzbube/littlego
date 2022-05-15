@@ -35,7 +35,7 @@ enum ItemPickerControllerMode
 /// @brief The ItemPickerDelegate protocol must be implemented by the delegate
 /// of ItemPickerController.
 // -----------------------------------------------------------------------------
-@protocol ItemPickerDelegate
+@protocol ItemPickerDelegate <NSObject>
 /// @brief This method is invoked when the user has finished working with
 /// @a controller.
 ///
@@ -56,6 +56,21 @@ enum ItemPickerControllerMode
 /// (in mode #ItemPickerControllerModeModal) or the "cancel" item (in both
 /// modes).
 - (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection;
+
+@optional
+/// @brief This method is invoked when the user has changed the selection.
+///
+/// This method is useful in modal mode, if the delegate wants to be continously
+/// notified of selection changes even though the user has not yet confirmed
+/// a selection by tapping the "done" button.
+///
+/// In non-modal mode this method will be invoked in addition (and prior) to
+/// itemPickerController:didMakeSelection:().
+///
+/// If the ItemPickerController property @e displayCancelItem is set to true
+/// and the user selects the "cancel" item, ItemPickerController does not invoke
+/// this method.
+- (void) itemPickerControllerSelectionDidChange:(ItemPickerController*)controller;
 @end
 
 
@@ -154,7 +169,8 @@ enum ItemPickerControllerMode
 /// a "cancel" button in that mode.
 ///
 /// When the user taps the "cancel" item ItemPickerController notifies the
-/// delegate with the @e didMakeSelection parameter set to false.
+/// delegate by invoking itemPickerController:didMakeSelection:() with the
+/// @e didMakeSelection parameter set to false.
 @property(nonatomic, assign) bool displayCancelItem;
 /// @brief This contains the index of the item that is selected by default when
 /// the selection process begins. Can be -1 to indicate no default selection.

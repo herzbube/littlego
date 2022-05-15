@@ -50,7 +50,9 @@
 ///
 /// @a indexOfDefaultItem is the index of the item that is selected by default
 /// when the selection process begins. Can be -1 to indicate no default
-/// selection.
+/// selection. @a indexOfDefaultItem must match an array element in @a itemList,
+/// otherwise @e indexOfDefaultItem will be set to -1 and no item will be
+/// selected. Any negative value that is not -1 will be changed to -1.
 // -----------------------------------------------------------------------------
 + (ItemPickerController*) controllerWithItemList:(NSArray*)itemList
                                      screenTitle:(NSString*)screenTitle
@@ -64,8 +66,10 @@
     controller.itemList = itemList;
     controller.screenTitle = screenTitle;
     controller.footerTitle = nil;
-    controller.indexOfDefaultItem = indexOfDefaultItem;
     controller.indexOfSelectedItem = indexOfDefaultItem;
+    // indexOfSelectedItem property setter adapts invalid values, let's take
+    // the value from there to avoid duplicated logic
+    controller.indexOfDefaultItem = controller.indexOfSelectedItem;
     controller.delegate = delegate;
   }
   return controller;
@@ -420,28 +424,42 @@
 
   if (indexPath.section == 0)
   {
-    // Special handing if the selection did not change
-    if (self.indexOfSelectedItem == indexOfNewSelectedItem)
-    {
-      if (ItemPickerControllerModeNonModal == self.itemPickerControllerMode &&
-          ! self.notifyDelegateOnlyWhenSelectionChanges)
-      {
-        [self.delegate itemPickerController:self didMakeSelection:true];
-      }
-    }
-    else
+    int indexOfPreviousSelectedItem = self.indexOfSelectedItem;
+    bool selectionDidChange = (indexOfNewSelectedItem != indexOfPreviousSelectedItem);
+
+    if (selectionDidChange)
     {
       // Setter updates the table view
       self.indexOfSelectedItem = indexOfNewSelectedItem;
 
-      if (ItemPickerControllerModeModal == self.itemPickerControllerMode)
+      if (self.notifyDelegateOnlyWhenSelectionChanges)
       {
-        self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+        // ItemPickerController was configured not to notify the delegate
       }
       else
       {
-        if ([self isSelectionValid])
+        SEL selector = @selector(itemPickerControllerSelectionDidChange:);
+        if ([self.delegate respondsToSelector:selector])
+          [self.delegate itemPickerControllerSelectionDidChange:self];
+      }
+    }
+
+    if (ItemPickerControllerModeModal == self.itemPickerControllerMode)
+    {
+      self.navigationItem.rightBarButtonItem.enabled = [self isSelectionValid];
+    }
+    else
+    {
+      if ([self isSelectionValid])
+      {
+        if (self.notifyDelegateOnlyWhenSelectionChanges && ! selectionDidChange)
+        {
+          // ItemPickerController was configured not to notify the delegate
+        }
+        else
+        {
           [self.delegate itemPickerController:self didMakeSelection:true];
+        }
       }
     }
   }
@@ -473,6 +491,10 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns true if the currently selected item is valid.
+///
+/// This method is important when ItemPickerController is displayed with no
+/// default selection. In theory, the user might later also somehow be able to
+/// return to the state where no item is selected.
 // -----------------------------------------------------------------------------
 - (bool) isSelectionValid
 {
