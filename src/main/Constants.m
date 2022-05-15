@@ -88,6 +88,7 @@ NSString* allSetupStonesWillDiscard = @"AllSetupStonesWillDiscard";
 NSString* allSetupStonesDidDiscard = @"AllSetupStonesDidDiscard";
 NSString* boardViewAnimationWillBegin = @"BoardViewAnimationWillBegin";
 NSString* boardViewAnimationDidEnd = @"BoardViewAnimationDidEnd";
+NSString* nodeAnnotationDataDidChange = @"NodeAnnotationDataDidChange";
 
 // Default values for properties that define how the Go board is displayed
 const float iPhoneMaximumZoomScale = 2.5;
