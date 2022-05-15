@@ -387,7 +387,7 @@
     case GoBoardPositionValuationVeryUnclear:
       return @"Very unclear";
     case GoBoardPositionValuationNone:
-      return @"<No position valuation information>";
+      return @"No position valuation";
     default:
       return @"Unknown";
   }
@@ -413,7 +413,7 @@
     case GoMoveValuationDoubtful:
       return @"Doubtful move";
     case GoMoveValuationNone:
-      return @"<No move valuation information>";
+      return @"No move valuation";
     default:
       return @"Unknown";
   }
@@ -491,7 +491,7 @@
     case GoBoardPositionHotspotDesignationYesEmphasized:
       return @"Position is an intense hot spot";
     case GoBoardPositionHotspotDesignationNone:
-      return @"<No position hotspot information>";
+      return @"Position is not a hotspot";
     default:
       return @"Unknown";
   }

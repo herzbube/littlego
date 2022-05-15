@@ -17,6 +17,9 @@
 
 // Project includes
 #include "AnnotationViewController.h"
+#import "EditEstimatedScoreController.h"
+#import "EditNodeDescriptionController.h"
+#import "../../ui/ItemPickerController.h"
 #import "../../ui/PageViewController.h"
 
 
@@ -27,7 +30,7 @@
 /// The AnnotationViewController class method annotationViewController() should
 /// be used to create a AnnotationViewControllerPhonePortraitOnly instance.
 // -----------------------------------------------------------------------------
-@interface AnnotationViewControllerPhonePortraitOnly : AnnotationViewController <PageViewControllerDelegate>
+@interface AnnotationViewControllerPhonePortraitOnly : AnnotationViewController <PageViewControllerDelegate, ItemPickerDelegate, EditEstimatedScoreControllerDelegate, EditNodeDescriptionControllerDelegate>
 {
 }
 

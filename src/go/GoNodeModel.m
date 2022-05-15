@@ -126,6 +126,43 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the index position at which the GoNode object @a node is
+/// located. The index position is a location within the sequence of nodes that
+/// make up the current variation. The root node is at index position 0.
+///
+/// Raises @e NSInvalidArgumentException if @a node is nil, or if @a node is
+/// not in the current variation.
+// -----------------------------------------------------------------------------
+- (int) indexOfNode:(GoNode*)node
+{
+  if (! node)
+  {
+    NSString* errorMessage = @"indexOfNode: failed: node is nil object";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  NSUInteger index = [_nodeList indexOfObject:node];
+  if (index == NSNotFound)
+  {
+    NSString* errorMessage = @"indexOfNode: failed: node not found";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  // Cast is required because NSUInteger and int differ in size in 64-bit.
+  // Cast is safe because this app was not made to handle more than
+  // pow(2, 31) nodes.
+  return (int)index;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Adds the GoNode object @a node to the end of the current variation.
 ///
 /// Raises @e NSInvalidArgumentException if @a node is nil, or if @a node is

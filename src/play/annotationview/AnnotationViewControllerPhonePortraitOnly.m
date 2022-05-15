@@ -24,6 +24,7 @@
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeAnnotation.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
@@ -34,11 +35,20 @@
 #import "../../utility/UIImageAdditions.h"
 
 
+enum ItemPickerContext
+{
+  BoardPositionValuationItemPickerContext,
+  MoveValuationItemPickerContext,
+  BoardPositionHotspotDesignationItemPickerContext,
+};
+
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
 /// AnnotationViewControllerPhonePortraitOnly.
 // -----------------------------------------------------------------------------
 @interface AnnotationViewControllerPhonePortraitOnly()
+@property(nonatomic, assign) bool presentViewControllersInPopover;
 @property(nonatomic, assign) bool displayDescriptionRemoveButton;
 @property(nonatomic, assign) bool contentNeedsUpdate;
 @property(nonatomic, assign) bool buttonStatesNeedsUpdate;
@@ -102,6 +112,7 @@
   switch (uiType)
   {
     case UITypePhonePortraitOnly:
+      self.presentViewControllersInPopover = false;
       // Not enough vertical space to display two buttons, so leaving away the
       // remove description button because it's a convenience thing only (the
       // same functionality can be achieved by going to the edit description
@@ -121,11 +132,13 @@
       self.valuationViewStackViewAlignment = UIStackViewAlignmentTop;
       break;
     case UITypePhone:
+      self.presentViewControllersInPopover = false;
       self.displayDescriptionRemoveButton = true;
       self.labelFontSize = 11;
       self.valuationViewStackViewAlignment = UIStackViewAlignmentCenter;
       break;
     case UITypePad:
+      self.presentViewControllersInPopover = true;
       self.displayDescriptionRemoveButton = true;
       self.labelFontSize = 12;
       self.valuationViewStackViewAlignment = UIStackViewAlignmentCenter;
@@ -206,7 +219,9 @@
   [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
+  [center addObserver:self selector:@selector(nodeAnnotationDataDidChange:) name:nodeAnnotationDataDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+  [center addObserver:self selector:@selector(statusBarOrientationWillChange:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   if (boardPosition)
@@ -348,16 +363,16 @@
   self.valuationViewStackView.alignment = self.valuationViewStackViewAlignment;
 
   self.positionValuationLabel = [self createTitleLabelInStackView:self.valuationViewStackView withTitleText:@"Position"];
-  self.positionValuationButton = [self createButtonInSuperView:self.positionValuationLabel.superview];
+  self.positionValuationButton = [self createButtonInSuperView:self.positionValuationLabel.superview selector:@selector(editPositionValuation:)];
 
   self.moveValuationLabel = [self createTitleLabelInStackView:self.valuationViewStackView withTitleText:@"Move"];
-  self.moveValuationButton = [self createButtonInSuperView:self.moveValuationLabel.superview];
+  self.moveValuationButton = [self createButtonInSuperView:self.moveValuationLabel.superview selector:@selector(editMoveValuation:)];
 
   self.hotspotLabel = [self createTitleLabelInStackView:self.valuationViewStackView withTitleText:@"Hotspot"];
-  self.hotspotButton = [self createButtonInSuperView:self.hotspotLabel.superview];
+  self.hotspotButton = [self createButtonInSuperView:self.hotspotLabel.superview selector:@selector(editHotspotDesignation:)];
 
   self.estimatedScoreLabel = [self createTitleLabelInStackView:self.valuationViewStackView withTitleText:@"Score"];
-  self.estimatedScoreButton = [self createButtonInSuperView:self.estimatedScoreLabel.superview];
+  self.estimatedScoreButton = [self createButtonInSuperView:self.estimatedScoreLabel.superview selector:@selector(editEstimatedScore:)];
 
   UIFont* buttonTitleLabelFont = [UIFont systemFontOfSize:self.labelFontSize];
   self.estimatedScoreButton.titleLabel.font = buttonTitleLabelFont;
@@ -381,7 +396,7 @@
   self.descriptionSpacerView = [self createViewInSuperView:superview];
 
   self.descriptionButtonContainerView = [self createViewInSuperView:superview];
-  self.descriptionEditButton = [self createButtonInSuperView:self.descriptionButtonContainerView];
+  self.descriptionEditButton = [self createButtonInSuperView:self.descriptionButtonContainerView selector:@selector(editDescription:)];
   self.descriptionButtonSpacerView = [self createViewInSuperView:self.descriptionButtonContainerView];
 
   [self.descriptionEditButton setImage:[[UIImage editIcon] imageByScalingToHeight:self.iconHeight]
@@ -389,7 +404,7 @@
 
   if (self.displayDescriptionRemoveButton)
   {
-    self.descriptionRemoveButton = [self createButtonInSuperView:self.descriptionButtonContainerView];
+    self.descriptionRemoveButton = [self createButtonInSuperView:self.descriptionButtonContainerView selector:@selector(removeDescription:)];
     [self.descriptionRemoveButton setImage:[[UIImage trashcanIcon] imageByScalingToHeight:self.iconHeight]
                                   forState:UIControlStateNormal];
   }
@@ -455,11 +470,14 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupValuationView and setupDescriptionView.
 // -----------------------------------------------------------------------------
-- (UIButton*) createButtonInSuperView:(UIView*)superview
+- (UIButton*) createButtonInSuperView:(UIView*)superview selector:(SEL)selector
 {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
   [superview addSubview:button];
   button.tintColor = [UIColor blackColor];
+  [button addTarget:self
+             action:selector
+   forControlEvents:UIControlEventTouchUpInside];
   return button;
 }
 
@@ -744,11 +762,45 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeAnnotationDataDidChange notifications.
+// -----------------------------------------------------------------------------
+- (void) nodeAnnotationDataDidChange:(NSNotification*)notification
+{
+  GoNode* node = [self nodeWithAnnotationData];
+  if (node != notification.object)
+    return;
+
+  self.contentNeedsUpdate = true;
+  self.buttonStatesNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the
+/// #UIApplicationWillChangeStatusBarOrientationNotification notification.
+// -----------------------------------------------------------------------------
+- (void) statusBarOrientationWillChange:(NSNotification*)notification
+{
+  // When the interface orientation changes this controller will be deallocated.
+  // Presented view controllers have this controller set as their delegate, so
+  // we must dismiss them now to avoid access to a deallocated object.
+  //
+  // Note: On UITypePhone we don't support landscape, but when the interface
+  // orientation changes from UIInterfaceOrientationPortrait to
+  // UIInterfaceOrientationPortraitUpsideDown or vice versa the notification
+  // UIApplicationWillChangeStatusBarOrientationNotification is still sent,
+  // causing the dismissal of the presented view controller even though it
+  // would not be necessary.
+  if (self.presentedViewController)
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - KVO responder
@@ -797,9 +849,7 @@
     return;
   self.contentNeedsUpdate = false;
 
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  GoNode* node = boardPosition.currentNode;
-
+  GoNode* node = [self nodeWithAnnotationData];
   if (node)
   {
     [self updateValuationViewContent:node];
@@ -939,6 +989,422 @@
   self.descriptionEditButton.enabled = isDescriptionEditButtonEnabled;
   if (self.displayDescriptionRemoveButton)
     self.descriptionRemoveButton.enabled = isDescriptionRemoveButtonEnabled;
+}
+
+#pragma mark - Button handlers
+
+// -----------------------------------------------------------------------------
+/// @brief Displays a pop up that allows the user to change the position
+/// valuation.
+// -----------------------------------------------------------------------------
+- (void) editPositionValuation:(id)sender
+{
+  NSMutableArray* itemList = [NSMutableArray array];
+  for (enum GoBoardPositionValuation positionValuation = GoBoardPositionValuationFirst; positionValuation <= GoBoardPositionValuationLast; positionValuation++)
+  {
+    NSString* positionValuationText = [NSString stringWithBoardPositionValuation:positionValuation];
+    UIImage* positionValuationIcon = [UIImage iconForBoardPositionValuation:positionValuation];
+    [itemList addObject:@[positionValuationText, positionValuationIcon]];
+  }
+
+  GoNode* node = [self nodeWithAnnotationData];
+  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
+
+  int indexOfDefaultItem = nodeAnnotation ? nodeAnnotation.goBoardPositionValuation : GoBoardPositionValuationNone;
+  NSString* screenTitle = @"Select position valuation";
+  NSString* footerTitle = @"Select a position valuation.";
+  id context = [NSNumber numberWithInt:BoardPositionValuationItemPickerContext];
+  UIButton* button = sender;
+
+  [self presentItemPickerControllerWithItemList:itemList
+                             indexOfDefaultItem:indexOfDefaultItem
+                                    screenTitle:screenTitle
+                                    footerTitle:footerTitle
+                                        context:context
+                                     sourceView:button];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays a pop up that allows the user to change the move valuation.
+// -----------------------------------------------------------------------------
+- (void) editMoveValuation:(id)sender
+{
+  NSMutableArray* itemList = [NSMutableArray array];
+  for (enum GoMoveValuation moveValuation = GoMoveValuationFirst; moveValuation <= GoMoveValuationLast; moveValuation++)
+  {
+    NSString* moveValuationText = [NSString stringWithMoveValuation:moveValuation];
+    UIImage* moveValuationIcon = [UIImage iconForMoveValuation:moveValuation];
+    [itemList addObject:@[moveValuationText, moveValuationIcon]];
+  }
+
+  GoNode* node = [self nodeWithAnnotationData];
+  GoMove* move = node.goMove;
+
+  int indexOfDefaultItem = move ? move.goMoveValuation : GoMoveValuationNone;
+  NSString* screenTitle = @"Select move valuation";
+  NSString* footerTitle = @"Select a move valuation.";
+  id context = [NSNumber numberWithInt:MoveValuationItemPickerContext];
+  UIButton* button = sender;
+
+  [self presentItemPickerControllerWithItemList:itemList
+                             indexOfDefaultItem:indexOfDefaultItem
+                                    screenTitle:screenTitle
+                                    footerTitle:footerTitle
+                                        context:context
+                                     sourceView:button];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays a pop up that allows the user to change the hotspot
+/// designation.
+// -----------------------------------------------------------------------------
+- (void) editHotspotDesignation:(id)sender
+{
+  NSMutableArray* itemList = [NSMutableArray array];
+  for (enum GoBoardPositionHotspotDesignation hotspotDesignation = GoBoardPositionHotspotDesignationFirst; hotspotDesignation <= GoBoardPositionHotspotDesignationLast; hotspotDesignation++)
+  {
+    NSString* hotspotDesignationText = [NSString stringWithBoardPositionHotspotDesignation:hotspotDesignation];
+    UIImage* hotspotDesignationIcon = [UIImage iconForBoardPositionHotspotDesignation:hotspotDesignation];
+    if (hotspotDesignation == GoBoardPositionHotspotDesignationYesEmphasized)
+      hotspotDesignationIcon = [hotspotDesignationIcon imageByTintingWithColor:[UIColor hotspotColor:hotspotDesignation]];
+    [itemList addObject:@[hotspotDesignationText, hotspotDesignationIcon]];
+  }
+
+  GoNode* node = [self nodeWithAnnotationData];
+  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
+
+  int indexOfDefaultItem = nodeAnnotation ? nodeAnnotation.goBoardPositionHotspotDesignation : GoBoardPositionHotspotDesignationNone;
+  NSString* screenTitle = @"Select hotspot designation";
+  NSString* footerTitle = @"Select a hotspot designation.";
+  id context = [NSNumber numberWithInt:BoardPositionHotspotDesignationItemPickerContext];
+  UIButton* button = sender;
+
+  [self presentItemPickerControllerWithItemList:itemList
+                             indexOfDefaultItem:indexOfDefaultItem
+                                    screenTitle:screenTitle
+                                    footerTitle:footerTitle
+                                        context:context
+                                     sourceView:button];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays a pop up that allows the user to change the estimated score.
+// -----------------------------------------------------------------------------
+- (void) editEstimatedScore:(id)sender
+{
+  GoNode* node = [self nodeWithAnnotationData];
+  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
+
+  enum GoScoreSummary estimatedScoreSummary = nodeAnnotation ? nodeAnnotation.estimatedScoreSummary : GoScoreSummaryNone;
+  double estimatedScoreValue = nodeAnnotation ? nodeAnnotation.estimatedScoreValue : 0.0f;
+  EditEstimatedScoreController* editEstimatedScoreController = [EditEstimatedScoreController controllerWithEstimatedScoreSummary:estimatedScoreSummary
+                                                                                                             estimatedScoreValue:estimatedScoreValue
+                                                                                                                        delegate:self];
+  [self presentViewController:editEstimatedScoreController sourceView:sender];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays a pop up that allows the user to change the short and long
+/// description texts.
+// -----------------------------------------------------------------------------
+- (void) editDescription:(id)sender
+{
+  GoNode* node = [self nodeWithAnnotationData];
+  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
+
+  NSString* shortDescription = nodeAnnotation ? nodeAnnotation.shortDescription : nil;
+  NSString* longDescription = nodeAnnotation ? nodeAnnotation.longDescription : nil;
+  EditNodeDescriptionController* editNodeDescriptionController = [EditNodeDescriptionController controllerWithShortDescription:shortDescription
+                                                                                                               longDescription:longDescription
+                                                                                                                      delegate:self];
+  [self presentViewController:editNodeDescriptionController sourceView:sender];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes both the short and long description.
+// -----------------------------------------------------------------------------
+- (void) removeDescription:(id)sender
+{
+  GoNode* node = [self nodeWithAnnotationData];
+  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
+
+  bool atLeastOneDescriptionWasRemoved = false;
+
+  if (nodeAnnotation.shortDescription)
+  {
+    nodeAnnotation.shortDescription = nil;
+    atLeastOneDescriptionWasRemoved = true;
+  }
+
+  if (nodeAnnotation.longDescription)
+  {
+    nodeAnnotation.longDescription = nil;
+    atLeastOneDescriptionWasRemoved = true;
+  }
+
+  [self removeAnnotationFromNodeIfEmpty:node];
+
+  if (atLeastOneDescriptionWasRemoved)
+    [[NSNotificationCenter defaultCenter] postNotificationName:nodeAnnotationDataDidChange object:node];
+}
+
+#pragma mark - View controller presentation
+
+// -----------------------------------------------------------------------------
+/// @brief Helper for editPositionValuation:(), editMoveValuation:() and
+/// editHotspotDesignation:()
+// -----------------------------------------------------------------------------
+- (void) presentItemPickerControllerWithItemList:(NSArray*)itemList
+                              indexOfDefaultItem:(int)indexOfDefaultItem
+                                     screenTitle:(NSString*)screenTitle
+                                     footerTitle:(NSString*)footerTitle
+                                         context:(id)context
+                                      sourceView:(UIView*)sourceView
+{
+  ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
+                                                                                screenTitle:screenTitle
+                                                                         indexOfDefaultItem:indexOfDefaultItem
+                                                                                   delegate:self];
+  itemPickerController.footerTitle = footerTitle;
+  itemPickerController.context = context;
+
+  // Unlike editing of the estimated score summary and the node descriptions,
+  // which require "cancel" and "done" buttons because of the more complex
+  // nature of the editing process, for the simple ItemPickerController use
+  // case we want the user be able to select a new value with a single tap.
+  // We therefore present the ItemPickerController in non-modal mode.
+  itemPickerController.itemPickerControllerMode = ItemPickerControllerModeNonModal;
+
+  if (! self.presentViewControllersInPopover)
+  {
+    // In modal presentation style we display a "cancel" item to provide the
+    // user with a means to cancel. To contrast: In popover presentation style
+    // the means to cancel exists by simply tapping outside the popover.
+    itemPickerController.displayCancelItem = true;
+  }
+
+  [self presentViewController:itemPickerController sourceView:sourceView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper that presents @a viewController either modally or in a
+/// popover, depending on the value of property
+/// @e self.presentViewControllersInPopover. If popover presentation is enabled,
+/// @a sourceView is used as the popover source view.
+// -----------------------------------------------------------------------------
+- (void) presentViewController:(UIViewController*)viewController sourceView:(UIView*)sourceView
+{
+  UINavigationController* navigationController = [[UINavigationController alloc]
+                                                  initWithRootViewController:viewController];
+  navigationController.delegate = [LayoutManager sharedManager];
+
+  if (self.presentViewControllersInPopover)
+  {
+    navigationController.modalPresentationStyle = UIModalPresentationPopover;
+    if (navigationController.popoverPresentationController)
+    {
+      navigationController.popoverPresentationController.sourceView = sourceView;
+      navigationController.popoverPresentationController.sourceRect = sourceView.bounds;
+    }
+  }
+  else
+  {
+    navigationController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+  }
+
+  [self presentViewController:navigationController animated:YES completion:nil];
+  [navigationController release];
+}
+
+#pragma mark - ItemPickerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief ItemPickerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection
+{
+  if (! didMakeSelection)
+  {
+    [self dismissViewControllerAnimated:YES completion:nil];
+    return;
+  }
+
+  GoNode* node = [self nodeWithAnnotationData];
+  [self createAnnotationIfNotExistsInNode:node];
+  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
+
+  bool valueDidChange = false;
+
+  enum ItemPickerContext itemPickerContext = [controller.context intValue];
+  if (itemPickerContext == BoardPositionValuationItemPickerContext)
+  {
+    if (nodeAnnotation.goBoardPositionValuation != controller.indexOfSelectedItem)
+    {
+      nodeAnnotation.goBoardPositionValuation = controller.indexOfSelectedItem;
+      valueDidChange = true;
+    }
+  }
+  else if (itemPickerContext == MoveValuationItemPickerContext)
+  {
+    GoMove* move = node.goMove;
+    if (! move)
+    {
+      NSString* errorMessage = @"Move valuation cannot be changed if there is no move";
+      DDLogError(@"%@: %@", self, errorMessage);
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:errorMessage
+                                   userInfo:nil];
+    }
+
+    if (move.goMoveValuation != controller.indexOfSelectedItem)
+    {
+      move.goMoveValuation = controller.indexOfSelectedItem;
+      valueDidChange = true;
+    }
+  }
+  else if (itemPickerContext == BoardPositionHotspotDesignationItemPickerContext)
+  {
+    if (nodeAnnotation.goBoardPositionHotspotDesignation != controller.indexOfSelectedItem)
+    {
+      nodeAnnotation.goBoardPositionHotspotDesignation = controller.indexOfSelectedItem;
+      valueDidChange = true;
+    }
+  }
+  else
+  {
+    assert(0);
+  }
+
+  // Check is not tied to valueDidChange == true - a new annotation object is
+  // created above even if the user picked a "none" value
+  [self removeAnnotationFromNodeIfEmpty:node];
+
+  if (valueDidChange)
+    [[NSNotificationCenter defaultCenter] postNotificationName:nodeAnnotationDataDidChange object:node];
+
+  [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - EditEstimatedScoreControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief EditEstimatedScoreControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) editEstimatedScoreControllerDidEndEditing:(EditEstimatedScoreController*)controller didChangeEstimatedScore:(bool)didChangeEstimatedScore
+{
+  enum GoScoreSummary newEstimatedScoreSummary = controller.estimatedScoreSummary;
+  double newEstimatedScoreValue = controller.estimatedScoreValue;
+
+  [self dismissViewControllerAnimated:YES completion:nil];
+
+  if (! didChangeEstimatedScore)
+    return;
+
+  GoNode* node = [self nodeWithAnnotationData];
+  [self createAnnotationIfNotExistsInNode:node];
+  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
+
+  bool valueDidChange = false;
+
+  if (nodeAnnotation.estimatedScoreSummary != newEstimatedScoreSummary ||
+      nodeAnnotation.estimatedScoreValue != newEstimatedScoreValue)
+  {
+    [nodeAnnotation setEstimatedScoreSummary:newEstimatedScoreSummary
+                                       value:newEstimatedScoreValue];
+    valueDidChange = true;
+  }
+
+  // Check is not tied to valueDidChange == true - a new annotation object is
+  // created above even if the user picked a "none" value
+  [self removeAnnotationFromNodeIfEmpty:node];
+
+  if (valueDidChange)
+    [[NSNotificationCenter defaultCenter] postNotificationName:nodeAnnotationDataDidChange object:node];
+}
+
+#pragma mark - EditNodeDescriptionControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief EditNodeDescriptionControllerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) editNodeDescriptionControllerDidEndEditing:(EditNodeDescriptionController*)controller didChangeDescriptions:(bool)didChangeDescriptions
+{
+  NSString* newShortDescription = controller.shortDescription;
+  NSString* newLongDescription = controller.longDescription;
+
+  [self dismissViewControllerAnimated:YES completion:nil];
+
+  if (! didChangeDescriptions)
+    return;
+
+  GoNode* node = [self nodeWithAnnotationData];
+  [self createAnnotationIfNotExistsInNode:node];
+  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
+
+  bool valueDidChange = false;
+
+  if (![NSString nullableString:nodeAnnotation.shortDescription isEqualToNullableString:newShortDescription])
+  {
+    nodeAnnotation.shortDescription = newShortDescription;
+    valueDidChange = true;
+  }
+  if (![NSString nullableString:nodeAnnotation.longDescription isEqualToNullableString:newLongDescription])
+  {
+    nodeAnnotation.longDescription = newLongDescription;
+    valueDidChange = true;
+  }
+
+  // Check is not tied to valueDidChange == true - a new annotation object is
+  // created above even if the user removed both description texts
+  [self removeAnnotationFromNodeIfEmpty:node];
+
+  if (valueDidChange)
+    [[NSNotificationCenter defaultCenter] postNotificationName:nodeAnnotationDataDidChange object:node];
+}
+
+#pragma mark - Helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoNode object whose annotation data is displayed and
+/// edited by the controller.
+// -----------------------------------------------------------------------------
+- (GoNode*) nodeWithAnnotationData
+{
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  GoNode* node = boardPosition.currentNode;
+  return node;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates a new GoNodeAnnotation object if none exists in @a node, then
+/// adds it to @a node.
+// -----------------------------------------------------------------------------
+- (void) createAnnotationIfNotExistsInNode:(GoNode*)node
+{
+  if (node.goNodeAnnotation)
+    return;
+
+  GoNodeAnnotation* nodeAnnotation = [[[GoNodeAnnotation alloc] init] autorelease];
+  node.goNodeAnnotation = nodeAnnotation;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes the GoNodeAnnotation object from @a node if it exists but
+/// it is empty, i.e. all of its properties have default values.
+// -----------------------------------------------------------------------------
+- (void) removeAnnotationFromNodeIfEmpty:(GoNode*)node
+{
+  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
+
+  if (nodeAnnotation &&
+      nodeAnnotation.shortDescription == nil &&
+      nodeAnnotation.longDescription == nil &&
+      nodeAnnotation.goBoardPositionValuation == GoBoardPositionValuationNone &&
+      nodeAnnotation.goBoardPositionHotspotDesignation == GoBoardPositionHotspotDesignationNone &&
+      nodeAnnotation.estimatedScoreSummary == GoScoreSummaryNone)
+  {
+    node.goNodeAnnotation = nil;
+  }
 }
 
 @end

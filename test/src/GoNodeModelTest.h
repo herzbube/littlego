@@ -29,6 +29,7 @@
 
 - (void) testInitialState;
 - (void) testNodeAtIndex;
+- (void) testIndexOfNode;
 - (void) testAppendNode;
 - (void) testDiscardNodesFromIndex;
 - (void) testDiscardLeafNode;

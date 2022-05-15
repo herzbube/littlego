@@ -502,7 +502,6 @@ enum GoRuleset
 /// @brief Enumerates possible valuations of a position on the Go board.
 enum GoBoardPositionValuation
 {
-  GoBoardPositionValuationNone,               ///< @brief The position is not valuated. Corresponds to the absence of the SGF properties GB, GW, DM and UC.
   GoBoardPositionValuationGoodForBlack,       ///< @brief The position is good for black. Corresponds to the SGF property value GB[1].
   GoBoardPositionValuationVeryGoodForBlack,   ///< @brief The position is very good for black. Corresponds to the SGF property value GB[2].
   GoBoardPositionValuationGoodForWhite,       ///< @brief The position is good for white. Corresponds to the SGF property value GW[1].
@@ -510,28 +509,35 @@ enum GoBoardPositionValuation
   GoBoardPositionValuationEven,               ///< @brief The position is even. Corresponds to the SGF property value DM[1].
   GoBoardPositionValuationVeryEven,           ///< @brief The position is very even. Corresponds to the SGF property value DM[2].
   GoBoardPositionValuationUnclear,            ///< @brief The position is unclear. Corresponds to the SGF property value UC[1].
-  GoBoardPositionValuationVeryUnclear         ///< @brief The position is very unclear. Corresponds to the SGF property value UC[2].
+  GoBoardPositionValuationVeryUnclear,        ///< @brief The position is very unclear. Corresponds to the SGF property value UC[2].
+  GoBoardPositionValuationNone,               ///< @brief The position is not valuated. Corresponds to the absence of the SGF properties GB, GW, DM and UC.
+  GoBoardPositionValuationFirst = GoBoardPositionValuationGoodForBlack,   ///< @brief Pseudo position valuation, used as the starting value during a for-loop.
+  GoBoardPositionValuationLast = GoBoardPositionValuationNone             ///< @brief Pseudo position valuation, used as the end value during a for-loop.
 };
 
 /// @brief Enumerates possible hotspot designations of a position on the Go
 /// board.
 enum GoBoardPositionHotspotDesignation
 {
-  GoBoardPositionHotspotDesignationNone,           ///< @brief The position is not a hotspot. Corresponds to the absence of the SGF property HO.
   GoBoardPositionHotspotDesignationYes,            ///< @brief The position is a hotspot, the move that created the position is interesting. Corresponds to the SGF property value HO[1].
-  GoBoardPositionHotspotDesignationYesEmphasized   ///< @brief The position is a hotspot, the move that created the position is even more interesting, possibly a game-deciding move. Corresponds to the SGF property value HO[2].
+  GoBoardPositionHotspotDesignationYesEmphasized,  ///< @brief The position is a hotspot, the move that created the position is even more interesting, possibly a game-deciding move. Corresponds to the SGF property value HO[2].
+  GoBoardPositionHotspotDesignationNone,           ///< @brief The position is not a hotspot. Corresponds to the absence of the SGF property HO.
+  GoBoardPositionHotspotDesignationFirst = GoBoardPositionHotspotDesignationYes,   ///< @brief Pseudo hotspot designation, used as the starting value during a for-loop.
+  GoBoardPositionHotspotDesignationLast = GoBoardPositionHotspotDesignationNone    ///< @brief Pseudo hotspot designation, used as the end value during a for-loop.
 };
 
 /// @brief Enumerates possible valuations of a move.
 enum GoMoveValuation
 {
-  GoMoveValuationNone,              ///< @brief The move is not valuated. Corresponds to the absence of the SGF properties TE, BM, IT and DO.
   GoMoveValuationGood,              ///< @brief The played move is good (tesuji). Corresponds to the SGF property value TE[1].
   GoMoveValuationVeryGood,          ///< @brief The played move is very good (tesuji). Corresponds to the SGF property value TE[2].
   GoMoveValuationBad,               ///< @brief The played move is bad. Corresponds to the SGF property value BM[1].
   GoMoveValuationVeryBad,           ///< @brief The played move is very bad. Corresponds to the SGF property value BM[2].
   GoMoveValuationInteresting,       ///< @brief The played move is interesting. Corresponds to the SGF property value IT[].
-  GoMoveValuationDoubtful           ///< @brief The played move is doubtful. Corresponds to the SGF property value DO[].
+  GoMoveValuationDoubtful,          ///< @brief The played move is doubtful. Corresponds to the SGF property value DO[].
+  GoMoveValuationNone,              ///< @brief The move is not valuated. Corresponds to the absence of the SGF properties TE, BM, IT and DO.
+  GoMoveValuationFirst = GoMoveValuationGood,   ///< @brief Pseudo move valuation, used as the starting value during a for-loop.
+  GoMoveValuationLast = GoMoveValuationNone     ///< @brief Pseudo move valuation, used as the end value during a for-loop.
 };
 
 /// @brief Enumerates possible summary scores.
@@ -850,6 +856,10 @@ extern NSString* boardViewAnimationWillBegin;
 /// @brief Is sent after an animation has ended on the board view. This is the
 /// balancing notification to #boardAnimationWillBegin.
 extern NSString* boardViewAnimationDidEnd;
+/// @brief Is sent to indicate that the annotation data in a node changed. The
+/// GoNode object that identifies the node with the changed data is associated
+/// with the notification.
+extern NSString* nodeAnnotationDataDidChange;
 //@}
 
 // -----------------------------------------------------------------------------

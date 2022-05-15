@@ -36,6 +36,7 @@
 - (id) initWithGame:(GoGame*)game;
 
 - (GoNode*) nodeAtIndex:(int)index;
+- (int) indexOfNode:(GoNode*)node;
 - (void) appendNode:(GoNode*)node;
 - (void) discardNodesFromIndex:(int)index;
 - (void) discardLeafNode;

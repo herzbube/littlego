@@ -72,6 +72,33 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Exercises the indexOfNode:() method.
+// -----------------------------------------------------------------------------
+- (void) testIndexOfNode
+{
+  GoNodeModel* nodeModel = m_game.nodeModel;
+  GoNode* rootNode = nodeModel.rootNode;
+
+  GoNode* node1 = [GoNode node];
+  GoNode* node2 = [GoNode node];
+  GoNode* node3 = [GoNode node];
+  [nodeModel appendNode:node1];
+  [nodeModel appendNode:node2];
+  [nodeModel appendNode:node3];
+  XCTAssertEqual(nodeModel.numberOfNodes, 4);
+  XCTAssertEqual(0, [nodeModel indexOfNode:rootNode]);
+  XCTAssertEqual(1, [nodeModel indexOfNode:node1]);
+  XCTAssertEqual(2, [nodeModel indexOfNode:node2]);
+  XCTAssertEqual(3, [nodeModel indexOfNode:node3]);
+
+  XCTAssertThrowsSpecificNamed([nodeModel indexOfNode:nil],
+                               NSException, NSInvalidArgumentException, @"indexOfNode with nil object");
+  GoNode* nodeNotInVariation = [GoNode node];
+  XCTAssertThrowsSpecificNamed([nodeModel indexOfNode:nodeNotInVariation],
+                               NSException, NSInvalidArgumentException, @"indexOfNode with node not in current variation");
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Exercises the appendNode:() method.
 // -----------------------------------------------------------------------------
 - (void) testAppendNode
