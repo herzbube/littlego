@@ -303,6 +303,43 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Is invoked to indicate that the annotation data in @a node changed.
+///
+/// Raises @e NSInvalidArgumentException if @a node is nil, or if @a node is
+/// not in the current variation.
+///
+/// Invoking this method sets the GoGameDocument dirty flag and posts
+/// #nodeAnnotationDataDidChange to the default notification center.
+// -----------------------------------------------------------------------------
+- (void) nodeAnnotationDataDidChange:(GoNode*)node
+{
+  if (! node)
+  {
+    NSString* errorMessage = @"nodeAnnotationDataDidChange: failed: node is nil object";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  BOOL containsNode = [_nodeList containsObject:node];
+  if (! containsNode)
+  {
+    NSString* errorMessage = @"nodeAnnotationDataDidChange: failed: node not found";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  self.game.document.dirty = true;
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:nodeAnnotationDataDidChange object:node];
+}
+
+// -----------------------------------------------------------------------------
 // Property is documented in header file
 // -----------------------------------------------------------------------------
 - (GoNode*) leafNode

@@ -41,6 +41,7 @@
 - (void) discardNodesFromIndex:(int)index;
 - (void) discardLeafNode;
 - (void) discardAllNodes;
+- (void) nodeAnnotationDataDidChange:(GoNode*)node;
 
 /// @brief The game tree's root node. This always returns a non-nil value, i.e.
 /// when a new game is created it already has a root node.

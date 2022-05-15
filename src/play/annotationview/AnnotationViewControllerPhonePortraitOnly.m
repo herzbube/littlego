@@ -23,6 +23,7 @@
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeAnnotation.h"
+#import "../../go/GoNodeModel.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
@@ -1149,7 +1150,7 @@ enum ItemPickerContext
   [self removeAnnotationFromNodeIfEmpty:node];
 
   if (atLeastOneDescriptionWasRemoved)
-    [[NSNotificationCenter defaultCenter] postNotificationName:nodeAnnotationDataDidChange object:node];
+    [[GoGame sharedGame].nodeModel nodeAnnotationDataDidChange:node];
 }
 
 #pragma mark - View controller presentation
@@ -1256,7 +1257,7 @@ enum ItemPickerContext
   [self removeAnnotationFromNodeIfEmpty:node];
 
   if (valueDidChange)
-    [[NSNotificationCenter defaultCenter] postNotificationName:nodeAnnotationDataDidChange object:node];
+    [[GoGame sharedGame].nodeModel nodeAnnotationDataDidChange:node];
 
   [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -1295,7 +1296,7 @@ enum ItemPickerContext
   [self removeAnnotationFromNodeIfEmpty:node];
 
   if (valueDidChange)
-    [[NSNotificationCenter defaultCenter] postNotificationName:nodeAnnotationDataDidChange object:node];
+    [[GoGame sharedGame].nodeModel nodeAnnotationDataDidChange:node];
 }
 
 #pragma mark - EditNodeDescriptionControllerDelegate overrides
@@ -1335,7 +1336,7 @@ enum ItemPickerContext
   [self removeAnnotationFromNodeIfEmpty:node];
 
   if (valueDidChange)
-    [[NSNotificationCenter defaultCenter] postNotificationName:nodeAnnotationDataDidChange object:node];
+    [[GoGame sharedGame].nodeModel nodeAnnotationDataDidChange:node];
 }
 
 #pragma mark - Helpers
