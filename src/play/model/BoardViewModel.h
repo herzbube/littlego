@@ -38,6 +38,7 @@
 /// displayed the last time.
 @property(nonatomic, assign) enum InfoType infoTypeLastSelected;
 @property(nonatomic, assign) enum ComputerAssistanceType computerAssistanceType;
+@property(nonatomic, assign) enum SelectedSymbolMarkupStyle selectedSymbolMarkupStyle;
 /// @brief Is true if the cross-hair is currently visible on the board view.
 ///
 /// This property does not store a user preference, it stores a part of the

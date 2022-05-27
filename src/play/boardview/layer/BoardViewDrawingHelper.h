@@ -18,6 +18,7 @@
 // Forward declarations
 @class GoPoint;
 @class BoardViewMetrics;
+@class BoardViewModel;
 @protocol Tile;
 
 
@@ -42,6 +43,8 @@
 //@{
 CGLayerRef CreateStarPointLayer(CGContextRef context, BoardViewMetrics* metrics);
 CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, BoardViewMetrics* metrics);
+CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, UIColor* symbolFillColor, UIColor* symbolStrokeColor, BoardViewModel* boardViewModel, BoardViewMetrics* metrics);
+CGLayerRef CreateConnectionLayer(CGContextRef context, enum GoMarkupConnection connection, UIColor* connectionFillColor, UIColor* connectionStrokeColor, GoPoint* fromPoint, GoPoint* toPoint, CGRect canvasRect, BoardViewMetrics* metrics);
 CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, BoardViewMetrics* metrics);
 CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, BoardViewMetrics* metrics);
 CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle territoryMarkupStyle, BoardViewMetrics* metrics);
@@ -52,6 +55,12 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 + (void) drawLayer:(CGLayerRef)layer
        withContext:(CGContextRef)context
    centeredAtPoint:(GoPoint*)point
+    inTileWithRect:(CGRect)tileRect
+       withMetrics:(BoardViewMetrics*)metrics;
+
++ (void) drawLayer:(CGLayerRef)layer
+       withContext:(CGContextRef)context
+      inCanvasRect:(CGRect)canvasRect
     inTileWithRect:(CGRect)tileRect
        withMetrics:(BoardViewMetrics*)metrics;
 
@@ -74,13 +83,15 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
                      metrics:(BoardViewMetrics*)metrics;
 + (CGRect) canvasRectForStoneAtPoint:(GoPoint*)point
                              metrics:(BoardViewMetrics*)metrics;
++ (CGRect) canvasRectFromPoint:(GoPoint*)fromPoint
+                       toPoint:(GoPoint*)toPoint
+                       metrics:(BoardViewMetrics*)metrics;
 + (CGRect) canvasRectForScaledLayer:(CGLayerRef)layer
                     centeredAtPoint:(GoPoint*)point
                             metrics:(BoardViewMetrics*)metrics;
 + (CGRect) canvasRectForSize:(CGSize)size
              centeredAtPoint:(GoPoint*)point
                      metrics:(BoardViewMetrics*)metrics;
-
 + (CGRect) drawingRectForScaledLayer:(CGLayerRef)layer
                          withMetrics:(BoardViewMetrics*)metrics;
 + (CGRect) drawingRectFromCanvasRect:(CGRect)canvasRect
@@ -98,6 +109,26 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
                                     withMetrics:(BoardViewMetrics*)metrics;
 + (CGLayerRef) cachedBCrossHairStoneLayerWithContext:(CGContextRef)context
                                          withMetrics:(BoardViewMetrics*)metrics;
+//@}
+
+/// @name Drawing arrows
+//@{
+#define kArrowPointCount 7
+
++ (CGPathRef) pathWithArrowFromPoint:(CGPoint)startPoint
+                             toPoint:(CGPoint)endPoint
+                           tailWidth:(CGFloat)tailWidth
+                           headWidth:(CGFloat)headWidth
+                          headLength:(CGFloat)headLength;
++ (void) getAxisAlignedArrowPoints:(CGPoint[kArrowPointCount])points
+                    forArrowLength:(CGFloat)arrowLength
+                         tailWidth:(CGFloat)tailWidth
+                         headWidth:(CGFloat)headWidth
+                        headLength:(CGFloat)headLength;
++ (CGAffineTransform) transformForStartPoint:(CGPoint)startPoint
+                                    endPoint:(CGPoint)endPoint
+                                 arrowLength:(CGFloat)arrowLength;
++ (CGFloat) distanceFromPoint:(CGPoint)fromPoint toPoint:(CGPoint)toPoint;
 //@}
 
 @end

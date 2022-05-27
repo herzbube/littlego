@@ -35,6 +35,16 @@ enum LayerType
   DeadStoneSymbolLayerType,
   BlackSekiStoneSymbolLayerType,
   WhiteSekiStoneSymbolLayerType,
+  BlackCircleSymbolLayerType,
+  WhiteCircleSymbolLayerType,
+  BlackSquareSymbolLayerType,
+  WhiteSquareSymbolLayerType,
+  BlackTriangleSymbolLayerType,
+  WhiteTriangleSymbolLayerType,
+  BlackXSymbolLayerType,
+  WhiteXSymbolLayerType,
+  BlackSelectedSymbolLayerType,
+  WhiteSelectedSymbolLayerType,
   MaxLayerType  // Helper enum value used for iteration etc.
 };
 

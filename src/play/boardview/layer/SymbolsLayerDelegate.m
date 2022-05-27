@@ -22,16 +22,19 @@
 #import "../../model/BoardPositionModel.h"
 #import "../../model/BoardViewMetrics.h"
 #import "../../model/BoardViewModel.h"
+#import "../../../go/GoBoard.h"
 #import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoMove.h"
 #import "../../../go/GoNode.h"
+#import "../../../go/GoNodeMarkup.h"
 #import "../../../go/GoNodeModel.h"
 #import "../../../go/GoPlayer.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoScore.h"
 #import "../../../go/GoUtilities.h"
 #import "../../../ui/UiSettingsModel.h"
+#import "../../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -42,7 +45,11 @@
 @property(nonatomic, assign) BoardPositionModel* boardPositionModel;
 @property(nonatomic, assign) UiSettingsModel* uiSettingsModel;
 @property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
-@property(nonatomic, retain) NSShadow* nextMoveShadow;
+@property(nonatomic, retain) NSShadow* whiteTextShadow;
+@property(nonatomic, retain) UIColor* connectionFillColor;
+@property(nonatomic, retain) UIColor* connectionStrokeColor;
+@property(nonatomic, retain) NSDictionary* blackStrokeSymbolLayerTypes;
+@property(nonatomic, retain) NSDictionary* whiteStrokeSymbolLayerTypes;
 @end
 
 
@@ -68,10 +75,27 @@
   _uiSettingsModel = uiSettingsModel;
   self.paragraphStyle = [[[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
   self.paragraphStyle.alignment = NSTextAlignmentCenter;
-  self.nextMoveShadow = [[[NSShadow alloc] init] autorelease];
-  self.nextMoveShadow.shadowColor = [UIColor blackColor];
-  self.nextMoveShadow.shadowBlurRadius = 5.0;
-  self.nextMoveShadow.shadowOffset = CGSizeMake(1.0, 1.0);
+  self.whiteTextShadow = [[[NSShadow alloc] init] autorelease];
+  self.whiteTextShadow.shadowColor = [UIColor blackColor];
+  self.whiteTextShadow.shadowBlurRadius = 5.0;
+  self.whiteTextShadow.shadowOffset = CGSizeMake(1.0, 1.0);
+  self.connectionFillColor = [UIColor whiteColor];
+  self.connectionStrokeColor = [UIColor blackColor];
+
+  self.blackStrokeSymbolLayerTypes = @{
+    [NSNumber numberWithInt:GoMarkupSymbolCircle] : [NSNumber numberWithInt:BlackCircleSymbolLayerType],
+    [NSNumber numberWithInt:GoMarkupSymbolSquare] : [NSNumber numberWithInt:BlackSquareSymbolLayerType],
+    [NSNumber numberWithInt:GoMarkupSymbolTriangle] : [NSNumber numberWithInt:BlackTriangleSymbolLayerType],
+    [NSNumber numberWithInt:GoMarkupSymbolX] : [NSNumber numberWithInt:BlackXSymbolLayerType],
+    [NSNumber numberWithInt:GoMarkupSymbolSelected] : [NSNumber numberWithInt:BlackSelectedSymbolLayerType],
+  };
+  self.whiteStrokeSymbolLayerTypes = @{
+    [NSNumber numberWithInt:GoMarkupSymbolCircle] : [NSNumber numberWithInt:WhiteCircleSymbolLayerType],
+    [NSNumber numberWithInt:GoMarkupSymbolSquare] : [NSNumber numberWithInt:WhiteSquareSymbolLayerType],
+    [NSNumber numberWithInt:GoMarkupSymbolTriangle] : [NSNumber numberWithInt:WhiteTriangleSymbolLayerType],
+    [NSNumber numberWithInt:GoMarkupSymbolX] : [NSNumber numberWithInt:WhiteXSymbolLayerType],
+    [NSNumber numberWithInt:GoMarkupSymbolSelected] : [NSNumber numberWithInt:WhiteSelectedSymbolLayerType],
+  };
   return self;
 }
 
@@ -88,7 +112,7 @@
   self.boardViewModel = nil;
   self.boardPositionModel = nil;
   self.paragraphStyle = nil;
-  self.nextMoveShadow = nil;
+  self.whiteTextShadow = nil;
   [super dealloc];
 }
 
@@ -100,6 +124,16 @@
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
   [cache invalidateLayerOfType:BlackLastMoveLayerType];
   [cache invalidateLayerOfType:WhiteLastMoveLayerType];
+  [self.blackStrokeSymbolLayerTypes enumerateKeysAndObjectsUsingBlock:^(NSNumber* symbolAsNumber, NSNumber* layerTypeAsNumber, BOOL* stop)
+  {
+    enum LayerType layerType = layerTypeAsNumber.intValue;
+    [cache invalidateLayerOfType:layerType];
+  }];
+  [self.whiteStrokeSymbolLayerTypes enumerateKeysAndObjectsUsingBlock:^(NSNumber* symbolAsNumber, NSNumber* layerTypeAsNumber, BOOL* stop)
+  {
+    enum LayerType layerType = layerTypeAsNumber.intValue;
+    [cache invalidateLayerOfType:layerType];
+  }];
 }
 
 // -----------------------------------------------------------------------------
@@ -147,6 +181,14 @@
       self.dirty = true;
       break;
     }
+    case BVLDEventSelectedSymbolMarkupStyleChanged:
+    {
+      BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+      [cache invalidateLayerOfType:BlackSelectedSymbolLayerType];
+      [cache invalidateLayerOfType:WhiteSelectedSymbolLayerType];
+      self.dirty = true;
+      break;
+    }
     default:
     {
       break;
@@ -167,21 +209,9 @@
 
   GoGame* game = [GoGame sharedGame];
 
-  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
-  CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
-  if (! blackLastMoveLayer)
-  {
-    blackLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor blackColor], self.boardViewMetrics);
-    [cache setLayer:blackLastMoveLayer ofType:BlackLastMoveLayerType];
-    CGLayerRelease(blackLastMoveLayer);
-  }
-  CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
-  if (! whiteLastMoveLayer)
-  {
-    whiteLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor whiteColor], self.boardViewMetrics);
-    [cache setLayer:whiteLastMoveLayer ofType:WhiteLastMoveLayerType];
-    CGLayerRelease(whiteLastMoveLayer);
-  }
+  // Make sure that layers are created before drawing methods that use them are
+  // invoked
+  [self createLayersIfNecessaryWithContext:context];
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
                                                       metrics:self.boardViewMetrics];
@@ -196,6 +226,10 @@
     {
       if (self.boardViewModel.markLastMove)
       {
+        BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+        CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
+        CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
+
         GoMove* mostRecentMove;
         GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.boardPosition.currentNode];
         if (nodeWithMostRecentMove)
@@ -222,9 +256,14 @@
     {
       [self drawNextMoveInContext:context inTileWithRect:tileRect];
     }
+
+    [self drawMarkupInContext:context inTileWithRect:tileRect];
   }
   else if (uiAreaPlayMode == UIAreaPlayModeBoardSetup)
   {
+    BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+    CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
+
     for (GoPoint* handicapPoint in game.handicapPoints)
     {
       [BoardViewDrawingHelper drawLayer:whiteLastMoveLayer
@@ -237,7 +276,51 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for drawLayer:inContext:
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (void) createLayersIfNecessaryWithContext:(CGContextRef)context
+{
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
+  if (! blackLastMoveLayer)
+  {
+    blackLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor blackColor], self.boardViewMetrics);
+    [cache setLayer:blackLastMoveLayer ofType:BlackLastMoveLayerType];
+    CGLayerRelease(blackLastMoveLayer);
+  }
+  CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
+  if (! whiteLastMoveLayer)
+  {
+    whiteLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor whiteColor], self.boardViewMetrics);
+    [cache setLayer:whiteLastMoveLayer ofType:WhiteLastMoveLayerType];
+    CGLayerRelease(whiteLastMoveLayer);
+  }
+  [self createSymbolLayersIfNecessary:self.blackStrokeSymbolLayerTypes withFillColor:[UIColor whiteColor] strokeColor:[UIColor blackColor] context:context];
+  [self createSymbolLayersIfNecessary:self.whiteStrokeSymbolLayerTypes withFillColor:[UIColor blackColor] strokeColor:[UIColor whiteColor] context:context];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for createLayersIfNecessaryWithContext:().
+// -----------------------------------------------------------------------------
+- (void) createSymbolLayersIfNecessary:(NSDictionary*)symbolLayerTypes withFillColor:(UIColor*)fillColor strokeColor:(UIColor*)strokeColor context:(CGContextRef)context
+{
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  [symbolLayerTypes enumerateKeysAndObjectsUsingBlock:^(NSNumber* symbolAsNumber, NSNumber* layerTypeAsNumber, BOOL* stop)
+  {
+    enum LayerType layerType = layerTypeAsNumber.intValue;
+    CGLayerRef layer = [cache layerOfType:layerType];
+    if (! layer)
+    {
+      enum GoMarkupSymbol symbol = symbolAsNumber.intValue;
+      layer = CreateSymbolLayer(context, symbol, fillColor, strokeColor, self.boardViewModel, self.boardViewMetrics);
+      [cache setLayer:layer ofType:layerType];
+      CGLayerRelease(layer);
+    }
+  }];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
 // -----------------------------------------------------------------------------
 - (bool) shouldDisplayMoveNumbers
 {
@@ -250,7 +333,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for drawLayer:inContext:
+/// @brief Private helper for drawLayer:inContext:().
 // -----------------------------------------------------------------------------
 - (bool) shouldDisplayNextMoveLabel
 {
@@ -260,7 +343,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for drawLayer:inContext:
+/// @brief Private helper for drawLayer:inContext:().
 // -----------------------------------------------------------------------------
 - (void) drawMoveNumbersInContext:(CGContextRef)context
                    inTileWithRect:(CGRect)tileRect
@@ -312,7 +395,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for drawLayer:inContext:
+/// @brief Private helper for drawLayer:inContext:().
 // -----------------------------------------------------------------------------
 - (void) drawNextMoveInContext:(CGContextRef)context
                 inTileWithRect:(CGRect)tileRect
@@ -329,7 +412,7 @@
   NSDictionary* textAttributes = @{ NSFontAttributeName : self.boardViewMetrics.nextMoveLabelFont,
                                     NSForegroundColorAttributeName : [UIColor whiteColor],
                                     NSParagraphStyleAttributeName : self.paragraphStyle,
-                                    NSShadowAttributeName: self.nextMoveShadow };
+                                    NSShadowAttributeName: self.whiteTextShadow };
   [BoardViewDrawingHelper drawString:nextMoveLabelText
                          withContext:context
                           attributes:textAttributes
@@ -337,6 +420,157 @@
                      centeredAtPoint:nextMove.point
                       inTileWithRect:tileRect
                          withMetrics:self.boardViewMetrics];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (void) drawMarkupInContext:(CGContextRef)context
+              inTileWithRect:(CGRect)tileRect
+{
+  GoGame* game = [GoGame sharedGame];
+  GoBoardPosition* boardPosition = game.boardPosition;
+  GoNode* currentNode = boardPosition.currentNode;
+  GoNodeMarkup* nodeMarkup = currentNode.goNodeMarkup;
+  if (! nodeMarkup)
+    return;
+
+  GoBoard* board = game.board;
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+
+  if (nodeMarkup.symbols)
+  {
+    [nodeMarkup.symbols enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* symbolAsNumber, BOOL* stop)
+    {
+      GoPoint* point = [board pointAtVertex:vertexString];
+      enum GoMarkupSymbol symbol = [symbolAsNumber intValue];
+
+      NSDictionary* symbolLayerTypes;
+      if (symbol == GoMarkupSymbolSelected && self.boardViewModel.selectedSymbolMarkupStyle == SelectedSymbolMarkupStyleDotSymbol)
+      {
+        // The "dot" symbol not only consist of a stroke, it is also filled
+        // with the color opposite to the stroke color. Because of that the
+        // symbol's primary color is the fill color and we have to invert the
+        // logic that is used for the other symbols.
+        if (point.stoneState == GoColorWhite)
+          symbolLayerTypes = self.whiteStrokeSymbolLayerTypes;
+        else
+          symbolLayerTypes = self.blackStrokeSymbolLayerTypes;  // use white filled dot also when intersection is not occupied
+      }
+      else
+      {
+        if (point.stoneState == GoColorBlack)
+          symbolLayerTypes = self.whiteStrokeSymbolLayerTypes;
+        else
+          symbolLayerTypes = self.blackStrokeSymbolLayerTypes;  // use black also when intersection is not occupied
+      }
+
+      NSNumber* layerTypeAsNumber = symbolLayerTypes[symbolAsNumber];
+      enum LayerType layerType = layerTypeAsNumber.intValue;
+      CGLayerRef layer = [cache layerOfType:layerType];
+
+      [BoardViewDrawingHelper drawLayer:layer
+                            withContext:context
+                        centeredAtPoint:point
+                         inTileWithRect:tileRect
+                            withMetrics:self.boardViewMetrics];
+    }];
+  }
+
+  if (nodeMarkup.connections)
+  {
+    [nodeMarkup.connections enumerateKeysAndObjectsUsingBlock:^(NSArray* vertexStrings, NSNumber* connectionAsNumber, BOOL* stop)
+    {
+      enum GoMarkupConnection connection = connectionAsNumber.intValue;
+      GoPoint* fromPoint = [board pointAtVertex:[vertexStrings firstObject]];
+      GoPoint* toPoint = [board pointAtVertex:[vertexStrings lastObject]];
+
+      // For symbols which have a fixed size and appearance we can use a
+      // pre-drawn and cached layer. This is not possible for connections
+      // because they vary in size and angle - every connection has to be drawn
+      // on demand. Because of this we try to avoid the drawing if it is
+      // not necessary. Unlike with symbols we make the tile intersection check
+      // already here in the layer delegate.
+      CGRect canvasRect = [BoardViewDrawingHelper canvasRectFromPoint:fromPoint
+                                                              toPoint:toPoint
+                                                              metrics:self.boardViewMetrics];
+      if (! CGRectIntersectsRect(tileRect, canvasRect))
+        return;
+
+      CGLayerRef layer = CreateConnectionLayer(context,
+                                               connection,
+                                               self.connectionFillColor,
+                                               self.connectionStrokeColor,
+                                               fromPoint,
+                                               toPoint,
+                                               canvasRect,
+                                               self.boardViewMetrics);
+
+      [BoardViewDrawingHelper drawLayer:layer
+                            withContext:context
+                           inCanvasRect:canvasRect
+                         inTileWithRect:tileRect
+                            withMetrics:self.boardViewMetrics];
+    }];
+  }
+
+  if (nodeMarkup.labels)
+  {
+    UIFont* labelFont = self.boardViewMetrics.moveNumberFont;
+    // Don't limit the label width. Of course, too long labels look ugly, but
+    // that's a data problem.
+    CGSize labelMaximumSize = CGSizeMake(self.boardViewMetrics.canvasSize.width,
+                                         self.boardViewMetrics.moveNumberMaximumSize.height);
+
+    [nodeMarkup.labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSString* labelText, BOOL* stop)
+    {
+      if (! labelFont)
+      {
+        *stop = YES;
+        return;
+      }
+
+      GoPoint* point = [board pointAtVertex:vertexString];
+
+      // Use white text color when intersection is not occupied, because black
+      // colored text is difficult to read on the board's wooden background.
+      UIColor* textColor;
+      if (point.stoneState == GoColorWhite)
+        textColor = [UIColor blackColor];
+      else
+        textColor = [UIColor whiteColor];
+
+      // For unoccupied intersections add a shadow to the white colored text to
+      // improve readability even more
+      NSDictionary* textAttributes;
+      if (point.stoneState == GoColorNone)
+      {
+        textAttributes = @{ NSFontAttributeName : labelFont,
+                            NSForegroundColorAttributeName : textColor,
+                            NSParagraphStyleAttributeName : self.paragraphStyle,
+                            NSShadowAttributeName: self.whiteTextShadow };
+      }
+      else
+      {
+        textAttributes = @{ NSFontAttributeName : labelFont,
+                            NSForegroundColorAttributeName : textColor,
+                            NSParagraphStyleAttributeName : self.paragraphStyle };
+      }
+
+      [BoardViewDrawingHelper drawString:labelText
+                             withContext:context
+                              attributes:textAttributes
+                          inRectWithSize:labelMaximumSize
+                         centeredAtPoint:point
+                          inTileWithRect:tileRect
+                             withMetrics:self.boardViewMetrics];
+    }];
+  }
+
+  if (nodeMarkup.dimmings)
+  {
+    // Dimming is currently not supported
+  }
 }
 
 @end

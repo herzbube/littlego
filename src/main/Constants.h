@@ -565,6 +565,13 @@ enum GoMarkupSymbol
   GoMarkupSymbolSelected    ///< @brief Markup the point as "selected". Corresponds to the SGF property MA.
 };
 
+/// @brief Enumerates the possible styles how to render #GoMarkupSymbolSelected.
+enum SelectedSymbolMarkupStyle
+{
+  SelectedSymbolMarkupStyleDotSymbol,  ///< @brief Use a dot symbol to render #GoMarkupSymbolSelected.
+  SelectedSymbolMarkupStyleCheckmark,  ///< @brief Use a check mark symbol to render #GoMarkupSymbolSelected.
+};
+
 /// @brief Enumerates markup connections that can be drawn between intersections
 /// on the Go board.
 enum GoMarkupConnection
@@ -1295,6 +1302,7 @@ extern NSString* playSoundKey;
 extern NSString* vibrateKey;
 extern NSString* infoTypeLastSelectedKey;
 extern NSString* computerAssistanceTypeKey;
+extern NSString* selectedSymbolMarkupStyleKey;
 // New game settings
 extern NSString* newGameKey;
 extern NSString* gameTypeKey;

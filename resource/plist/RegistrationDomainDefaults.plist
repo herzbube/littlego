@@ -22,6 +22,8 @@
 		<false/>
 		<key>ComputerAssistanceType</key>
 		<integer>0</integer>
+		<key>SelectedSymbolMarkupStyle</key>
+		<integer>0</integer>
 	</dict>
 	<key>NewGame</key>
 	<dict>

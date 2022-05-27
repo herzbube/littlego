@@ -277,6 +277,7 @@ NSString* playSoundKey = @"PlaySound";
 NSString* vibrateKey = @"Vibrate";
 NSString* infoTypeLastSelectedKey = @"InfoTypeLastSelected";
 NSString* computerAssistanceTypeKey = @"ComputerAssistanceType";
+NSString* selectedSymbolMarkupStyleKey = @"SelectedSymbolMarkupStyle";
 // New game settings
 NSString* newGameKey = @"NewGame";
 NSString* gameTypeKey = @"GameType";

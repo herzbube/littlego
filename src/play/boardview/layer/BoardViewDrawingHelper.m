@@ -20,6 +20,7 @@
 #import "BoardViewCGLayerCache.h"
 #import "../Tile.h"
 #import "../../model/BoardViewMetrics.h"
+#import "../../model/BoardViewModel.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
 #import "../../../shared/LayoutManager.h"
@@ -130,6 +131,262 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
 /// context @a context and contains the drawing operations to draw a symbol that
 /// fits into the "inner square" rectangle (cf. BoardViewMetrics property
 /// @e stoneInnerSquareSize). The symbol uses the specified color
+/// @a symbolColor as the stroke color.
+///
+/// @see CreateDeadStoneSymbolLayer().
+// -----------------------------------------------------------------------------
+CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, UIColor* symbolFillColor, UIColor* symbolStrokeColor, BoardViewModel* boardViewModel, BoardViewMetrics* metrics)
+{
+  CGRect layerRect;
+  layerRect.origin = CGPointZero;
+  layerRect.size = metrics.stoneInnerSquareSize;
+  layerRect.size.width *= metrics.contentsScale;
+  layerRect.size.height *= metrics.contentsScale;
+  // It looks better if the marker is slightly inset, and on the iPad we can
+  // afford to waste the space
+  if ([LayoutManager sharedManager].uiType == UITypePad)
+  {
+    layerRect.size.width -= 2 * metrics.contentsScale;
+    layerRect.size.height -= 2 * metrics.contentsScale;
+  }
+
+  // If the layer size is large enough (look at the size after scaling) we use a
+  // heavier stroke to give the markup symbol more weight. If the layer size is
+  // below a certain threshold (unzoomed big board on small devices) we use the
+  // regular stroke because the heavy stroke looks "blocky".
+  // The threshold was experimentally determined to look good on an iPhone 5S.
+  CGFloat strokeWeight;
+  if (layerRect.size.width <= 30.0f)
+    strokeWeight = 1.0f;
+  else
+    strokeWeight = 2.0f;
+  CGFloat strokeLineWidth = metrics.normalLineWidth * strokeWeight * metrics.contentsScale;
+
+  // Inset the drawing rect so that the stroke is not clipped
+  CGRect drawingRect = CGRectInset(layerRect, strokeLineWidth, strokeLineWidth);
+
+  CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  CGContextRef layerContext = CGLayerGetContext(layer);
+
+  // Half-pixel translation is added at the time when the layer is actually
+  // drawn
+  CGContextBeginPath(layerContext);
+
+  switch (symbol)
+  {
+    case GoMarkupSymbolCircle:
+    {
+      CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
+      CGFloat radius = floorf(drawingRect.size.width / 2.0f);
+      const CGFloat startRadius = [UiUtilities radians:0];
+      const CGFloat endRadius = [UiUtilities radians:360];
+      const int clockwise = 0;
+      CGContextAddArc(layerContext,
+                      layerCenter.x,
+                      layerCenter.y,
+                      radius,
+                      startRadius,
+                      endRadius,
+                      clockwise);
+
+      CGContextSetStrokeColorWithColor(layerContext, symbolStrokeColor.CGColor);
+      CGContextSetLineWidth(layerContext, strokeLineWidth);
+      CGContextStrokePath(layerContext);
+      break;
+    }
+    case GoMarkupSymbolSquare:
+    {
+      CGContextAddRect(layerContext, drawingRect);
+
+      CGContextSetStrokeColorWithColor(layerContext, symbolStrokeColor.CGColor);
+      CGContextSetLineWidth(layerContext, strokeLineWidth);
+      CGContextStrokePath(layerContext);
+      break;
+    }
+    case GoMarkupSymbolTriangle:
+    {
+      // Slightly adjust the triangle's y-position so that it looks properly
+      // centered on the intersection.
+      drawingRect.origin.y -= 1.0f * metrics.contentsScale;
+
+      // Draw path from A => B => C
+      //     C
+      //     /\
+      //    /  \
+      // A /____\ B
+      CGContextBeginPath(layerContext);
+      CGContextMoveToPoint(layerContext, drawingRect.origin.x, drawingRect.origin.y + drawingRect.size.height);
+      CGContextAddLineToPoint(layerContext, drawingRect.origin.x + drawingRect.size.width, drawingRect.origin.y + drawingRect.size.height);
+      CGContextAddLineToPoint(layerContext, drawingRect.origin.x + floorf(drawingRect.size.width / 2.0f), drawingRect.origin.y);
+      CGContextAddLineToPoint(layerContext, drawingRect.origin.x, drawingRect.origin.y + drawingRect.size.height);
+
+      CGContextSetStrokeColorWithColor(layerContext, symbolStrokeColor.CGColor);
+      CGContextSetLineWidth(layerContext, strokeLineWidth);
+      CGContextStrokePath(layerContext);
+      break;
+    }
+    case GoMarkupSymbolX:
+    {
+      // Draw path from A => B, then from C => D
+      //  C    B
+      //   \  /
+      //    \/
+      //    /\
+      // A /  \ D
+      CGContextBeginPath(layerContext);
+      CGContextMoveToPoint(layerContext, drawingRect.origin.x, drawingRect.origin.y + drawingRect.size.height);
+      CGContextAddLineToPoint(layerContext, drawingRect.origin.x + drawingRect.size.width, drawingRect.origin.y);
+      CGContextMoveToPoint(layerContext, drawingRect.origin.x, drawingRect.origin.y);
+      CGContextAddLineToPoint(layerContext, drawingRect.origin.x + drawingRect.size.width, drawingRect.origin.y + drawingRect.size.height);
+
+      CGContextSetStrokeColorWithColor(layerContext, symbolStrokeColor.CGColor);
+      CGContextSetLineWidth(layerContext, strokeLineWidth);
+      CGContextStrokePath(layerContext);
+      break;
+    }
+    case GoMarkupSymbolSelected:
+    {
+      if (boardViewModel.selectedSymbolMarkupStyle == SelectedSymbolMarkupStyleDotSymbol)
+      {
+        CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
+        CGFloat radius = floorf(drawingRect.size.width / 2.0f);
+        const CGFloat startRadius = [UiUtilities radians:0];
+        const CGFloat endRadius = [UiUtilities radians:360];
+        const int clockwise = 0;
+        CGContextAddArc(layerContext,
+                        layerCenter.x,
+                        layerCenter.y,
+                        radius,
+                        startRadius,
+                        endRadius,
+                        clockwise);
+
+        CGContextSetFillColorWithColor(layerContext, symbolFillColor.CGColor);
+        CGContextSetStrokeColorWithColor(layerContext, symbolStrokeColor.CGColor);
+        CGContextSetLineWidth(layerContext, 1.0f);
+        CGContextDrawPath(layerContext, kCGPathFillStroke);
+      }
+      else
+      {
+        // Draw path from A => B => C
+        //         C
+        //        /
+        //  A    /
+        //   \  /
+        //    \/
+        //     B
+        CGContextBeginPath(layerContext);
+        CGContextMoveToPoint(layerContext, drawingRect.origin.x, drawingRect.origin.y + floorf(2.0f * drawingRect.size.height / 3.0f));
+        CGContextAddLineToPoint(layerContext, drawingRect.origin.x + floorf(drawingRect.size.width / 3.0f), drawingRect.origin.y + drawingRect.size.height);
+        CGContextAddLineToPoint(layerContext, drawingRect.origin.x + drawingRect.size.width, drawingRect.origin.y);
+
+        CGContextSetStrokeColorWithColor(layerContext, symbolStrokeColor.CGColor);
+        CGContextSetLineWidth(layerContext, strokeLineWidth);
+        CGContextStrokePath(layerContext);
+      }
+      break;
+    }
+  }
+
+  return layer;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates and returns a CGLayer object that is associated with graphics
+/// context @a context and contains the drawing operations to draw a connection
+/// between two intersections on the board. @a canvasRect describes a rectangle
+/// that has the two intersections at diagonally opposed corners. The connection
+/// uses @a connectionFillColor and @a connectionStrokeColor to fill and stroke
+/// the connection.
+///
+/// Drawing the connection with a stroke is important so that it remains
+/// distinguishable even if it is drawn over content that has the same color as
+/// the connection fill color (e.g. white connection over a white stone).
+// -----------------------------------------------------------------------------
+CGLayerRef CreateConnectionLayer(CGContextRef context, enum GoMarkupConnection connection, UIColor* connectionFillColor, UIColor* connectionStrokeColor, GoPoint* fromPoint, GoPoint* toPoint, CGRect canvasRect, BoardViewMetrics* metrics)
+{
+  CGRect layerRect = CGRectMake(0.0f, 0.0f, canvasRect.size.width, canvasRect.size.height);
+  layerRect.size.width *= metrics.contentsScale;
+  layerRect.size.height *= metrics.contentsScale;
+
+  CGPoint fromPointCoordinates = [metrics coordinatesFromPoint:fromPoint];
+  fromPointCoordinates.x -= canvasRect.origin.x;
+  fromPointCoordinates.y -= canvasRect.origin.y;
+  fromPointCoordinates.x *= metrics.contentsScale;
+  fromPointCoordinates.y *= metrics.contentsScale;
+
+  CGPoint toPointCoordinates = [metrics coordinatesFromPoint:toPoint];
+  toPointCoordinates.x -= canvasRect.origin.x;
+  toPointCoordinates.y -= canvasRect.origin.y;
+  toPointCoordinates.x *= metrics.contentsScale;
+  toPointCoordinates.y *= metrics.contentsScale;
+
+  CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  CGContextRef layerContext = CGLayerGetContext(layer);
+
+  // Half-pixel translation is added at the time when the layer is actually
+  // drawn
+  CGContextBeginPath(layerContext);
+
+  // In theory we could use a lighter weight if metrics.pointCellSize falls
+  // below a certain threshold (same way we do for symbols drawing). However,
+  // in practice connection lines become too thin with a lighter weight - so
+  // currently we always use a weight heavier than 1.0.
+  static const CGFloat connectionWeight = 2.0f;
+  // Use the wider bounding line, not the normal line, as the base value,
+  // otherwise connections are not noticeable enough
+  CGFloat tailWidth = metrics.boundingLineWidth * connectionWeight * metrics.contentsScale;
+  CGFloat headWidth;
+  CGFloat headLength;
+
+  if (connection == GoMarkupConnectionArrow)
+  {
+    // Use a relatively wide arrow head to make it distinct. On smaller
+    // metrics.pointCellSize this can look quite blocky and a bit ugly, but
+    // it has to be to remain noticeable. On the smallest metrics.pointCellSize
+    // (smallest devices like iPhone 5S, board size 19) this results in an arrow
+    // head that is as large as the entire metrics.pointCellSize - for that
+    // reason we make sure that the head does not get wider than two thirds of
+    // metrics.pointCellSize.
+    //
+    // In theory we could make the head smaller if the distance between the
+    // points falls below a certain threshold. However, this could result in
+    // arrows with differently sized heads being visible at the same time. Not
+    // only does this look ugly - it looks ***WRONG***. So whatever criteria
+    // might be chosen in the future - make sure that all arrows use the same
+    // heads size on the same zoom level.
+    static const CGFloat headWeight = 4.0f;
+    headWidth = tailWidth * headWeight;
+    headWidth = fminf(headWidth, metrics.pointCellSize.width * metrics.contentsScale * 2.0 / 3.0f);
+    // Make the arrow head square
+    headLength = headWidth;
+  }
+  else
+  {
+    headWidth = 0;
+    headLength = 0;
+  }
+
+  CGPathRef arrowPath = [BoardViewDrawingHelper pathWithArrowFromPoint:fromPointCoordinates
+                                                               toPoint:toPointCoordinates
+                                                             tailWidth:tailWidth
+                                                             headWidth:headWidth
+                                                            headLength:headLength];
+  CGContextAddPath(layerContext, arrowPath);
+
+  CGContextSetFillColorWithColor(layerContext, connectionFillColor.CGColor);
+  CGContextSetStrokeColorWithColor(layerContext, connectionStrokeColor.CGColor);
+  CGContextSetLineWidth(layerContext, 1.0f);
+  CGContextDrawPath(layerContext, kCGPathFillStroke);
+
+  return layer;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates and returns a CGLayer object that is associated with graphics
+/// context @a context and contains the drawing operations to draw a square
+/// symbol that fits into the "inner square" rectangle (cf. BoardViewMetrics
+/// property @e stoneInnerSquareSize). The symbol uses the specified color
 /// @a symbolColor.
 ///
 /// @see CreateDeadStoneSymbolLayer().
@@ -148,15 +405,21 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, B
     layerRect.size.width -= 2 * metrics.contentsScale;
     layerRect.size.height -= 2 * metrics.contentsScale;
   }
+
+  CGFloat strokeLineWidth = metrics.normalLineWidth * metrics.contentsScale;
+
+  // Inset the drawing rect so that the stroke is not clipped
+  CGRect drawingRect = CGRectInset(layerRect, strokeLineWidth, strokeLineWidth);
+
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   // Half-pixel translation is added at the time when the layer is actually
   // drawn
   CGContextBeginPath(layerContext);
-  CGContextAddRect(layerContext, layerRect);
+  CGContextAddRect(layerContext, drawingRect);
   CGContextSetStrokeColorWithColor(layerContext, symbolColor.CGColor);
-  CGContextSetLineWidth(layerContext, metrics.normalLineWidth * metrics.contentsScale);
+  CGContextSetLineWidth(layerContext, strokeLineWidth);
   CGContextStrokePath(layerContext);
 
   return layer;
@@ -194,8 +457,8 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, BoardViewMetrics* me
 
   CGContextBeginPath(layerContext);
   CGContextMoveToPoint(layerContext, layerRect.origin.x, layerRect.origin.y);
-  CGContextAddLineToPoint(layerContext, layerRect.origin.x + layerRect.size.width, layerRect.origin.y + layerRect.size.width);
-  CGContextMoveToPoint(layerContext, layerRect.origin.x, layerRect.origin.y + layerRect.size.width);
+  CGContextAddLineToPoint(layerContext, layerRect.origin.x + layerRect.size.width, layerRect.origin.y + layerRect.size.height);
+  CGContextMoveToPoint(layerContext, layerRect.origin.x, layerRect.origin.y + layerRect.size.height);
   CGContextAddLineToPoint(layerContext, layerRect.origin.x + layerRect.size.width, layerRect.origin.y);
   CGContextSetStrokeColorWithColor(layerContext, metrics.deadStoneSymbolColor.CGColor);
   CGContextSetLineWidth(layerContext, metrics.normalLineWidth * metrics.contentsScale);
@@ -294,6 +557,29 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Draws the layer @a layer using the specified drawing context in the
+/// canvas rectangle @a canvasRect.
+///
+/// This method makes a number of assumptions:
+/// - The layer size is assumed to be the size of @a canvasRect plus applied
+///   @e contentsScale from @a metrics.
+/// - No check is made whether @a canvasRect and @a tileRect intersect - this
+///   method assumes that the check has already been made by the caller.
+///
+/// The origin of @a tileRect must be in the canvas coordinate system.
+// -----------------------------------------------------------------------------
++ (void) drawLayer:(CGLayerRef)layer
+       withContext:(CGContextRef)context
+      inCanvasRect:(CGRect)canvasRect
+    inTileWithRect:(CGRect)tileRect
+       withMetrics:(BoardViewMetrics*)metrics
+{
+  CGRect drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:canvasRect
+                                                          inTileWithRect:tileRect];
+  CGContextDrawLayerInRect(context, drawingRect, layer);
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Draws the string @a string using the specified drawing context. The
 /// text is drawn into a rectangle of the specified size, and the rectangle is
 /// positioned so that it is centered at the intersection specified by @a point.
@@ -385,6 +671,35 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   return [BoardViewDrawingHelper canvasRectForSize:metrics.pointCellSize
                                    centeredAtPoint:point
                                            metrics:metrics];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the rectangle defined by two intersections @a fromPoint and
+/// @a toPoint on the "canvas", i.e. the area covered by the entire board view.
+/// The intersections are located on two diagonally opposite corners of the
+/// rectangle. The rectangle is padded by half of @e metrics.pointCellSize on
+/// all sides so that there is sufficient room for drawing symbols on the corner
+/// points. The origin is in the upper-left corner.
+// -----------------------------------------------------------------------------
++ (CGRect) canvasRectFromPoint:(GoPoint*)fromPoint
+                       toPoint:(GoPoint*)toPoint
+                       metrics:(BoardViewMetrics*)metrics
+{
+  CGPoint fromPointCoordinates = [metrics coordinatesFromPoint:fromPoint];
+  CGPoint toPointCoordinates = [metrics coordinatesFromPoint:toPoint];
+
+  CGFloat xMin = fminf(fromPointCoordinates.x, toPointCoordinates.x);
+  CGFloat yMin = fminf(fromPointCoordinates.y, toPointCoordinates.y);
+  CGFloat xDistanceBetweenPoints = fabs(toPointCoordinates.x - fromPointCoordinates.x);
+  CGFloat yDistanceBetweenPoints = fabs(toPointCoordinates.y - fromPointCoordinates.y);
+
+  CGSize paddingSize = metrics.pointCellSize;
+
+  CGRect canvasRect = CGRectMake(xMin - (paddingSize.width / 2.0f),
+                                 yMin - (paddingSize.height / 2.0f),
+                                 xDistanceBetweenPoints + paddingSize.width,
+                                 yDistanceBetweenPoints + paddingSize.height);
+  return canvasRect;
 }
 
 // -----------------------------------------------------------------------------
@@ -557,6 +872,108 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   }
 
   return crossHairStoneLayer;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a CGPath object that describes an arrow between the two
+/// points @a startPoint and @a endPoint. The arrow characteristics are defined
+/// by @a tailWidth, @a headWidth and @a headLength. If @a headLength is zero
+/// the result is a line.
+///
+/// @verbatim
+///                              4\ <---------------+
+///                              | \                |
+///        +-->  6---------------5  \               |
+///        |     |                   \              |
+/// tail   |     X start point        3 end point   | head
+/// width  |     |                   /              | width
+///        +-->  0---------------1  / ^             |
+///                              | /  |             |
+///                              2/ <-+-------------+
+///                                   |
+///                              ^    |
+///                              |    |
+///                              +----+
+///                              head length
+/// @endverbatim
+///
+/// Diagram notes
+/// - Note the 7 points numbered from 0-6. These are the points that make up
+///   the path and that are calculated by the method
+///   getAxisAlignedArrowPoints:forLength:tailWidth:headWith:headLength:().
+///
+/// The code of this method and its helper methods was adapted from this
+/// StackOverflow answer: https://stackoverflow.com/a/13559449/1054378 (the code
+/// itself was taken from the Gist https://gist.github.com/mayoff/4146780 that
+/// is referenced by the SO answer).
+// -----------------------------------------------------------------------------
++ (CGPathRef) pathWithArrowFromPoint:(CGPoint)startPoint
+                             toPoint:(CGPoint)endPoint
+                           tailWidth:(CGFloat)tailWidth
+                           headWidth:(CGFloat)headWidth
+                          headLength:(CGFloat)headLength
+{
+  CGFloat arrowLength = [BoardViewDrawingHelper distanceFromPoint:startPoint toPoint:endPoint];
+
+  CGPoint points[kArrowPointCount];
+  [self getAxisAlignedArrowPoints:points
+                   forArrowLength:arrowLength
+                        tailWidth:tailWidth
+                        headWidth:headWidth
+                       headLength:headLength];
+
+  CGAffineTransform transform = [self transformForStartPoint:startPoint
+                                                    endPoint:endPoint
+                                                 arrowLength:arrowLength];
+
+  CGMutablePathRef cgPath = CGPathCreateMutable();
+  CGPathAddLines(cgPath, &transform, points, kArrowPointCount);
+  CGPathCloseSubpath(cgPath);
+
+  return cgPath;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method for
+/// pathWithArrowFromPoint:toPoint:tailWidth:headWidth:headLength:().
+// -----------------------------------------------------------------------------
++ (void) getAxisAlignedArrowPoints:(CGPoint[kArrowPointCount])points
+                    forArrowLength:(CGFloat)arrowLength
+                         tailWidth:(CGFloat)tailWidth
+                         headWidth:(CGFloat)headWidth
+                        headLength:(CGFloat)headLength
+{
+    CGFloat tailLength = arrowLength - headLength;
+    points[0] = CGPointMake(0, tailWidth / 2);
+    points[1] = CGPointMake(tailLength, tailWidth / 2);
+    points[2] = CGPointMake(tailLength, headWidth / 2);
+    points[3] = CGPointMake(arrowLength, 0);
+    points[4] = CGPointMake(tailLength, -headWidth / 2);
+    points[5] = CGPointMake(tailLength, -tailWidth / 2);
+    points[6] = CGPointMake(0, -tailWidth / 2);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method for
+/// pathWithArrowFromPoint:toPoint:tailWidth:headWidth:headLength:().
+// -----------------------------------------------------------------------------
++ (CGAffineTransform) transformForStartPoint:(CGPoint)startPoint
+                                    endPoint:(CGPoint)endPoint
+                                 arrowLength:(CGFloat)arrowLength
+{
+    CGFloat cosine = (endPoint.x - startPoint.x) / arrowLength;
+    CGFloat sine = (endPoint.y - startPoint.y) / arrowLength;
+    return (CGAffineTransform) { cosine, sine, -sine, cosine, startPoint.x, startPoint.y };
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method for
+/// pathWithArrowFromPoint:toPoint:tailWidth:headWidth:headLength:().
+// -----------------------------------------------------------------------------
++ (CGFloat) distanceFromPoint:(CGPoint)fromPoint toPoint:(CGPoint)toPoint
+{
+  CGFloat distance = hypotf(toPoint.x - fromPoint.x, toPoint.y - fromPoint.y);
+  return distance;
 }
 
 @end

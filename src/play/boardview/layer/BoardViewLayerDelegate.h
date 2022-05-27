@@ -60,6 +60,7 @@ enum BoardViewLayerDelegateEvent
   /// object that identifies the intersection that changed.
   BVLDEventSetupPointChanged,
   BVLDEventAllSetupStonesDiscarded,
+  BVLDEventSelectedSymbolMarkupStyleChanged,
 };
 
 

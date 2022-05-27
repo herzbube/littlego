@@ -22,6 +22,8 @@
 #import "../play/model/BoardViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
+#import "../ui/TableViewVariableHeightCell.h"
+#import "../ui/UIViewControllerAdditions.h"
 
 // Constants
 static const float sliderValueFactorForMoveNumbersPercentage = 100.0;
@@ -35,6 +37,7 @@ NSString* displayPlayerInfluenceText = @"Display player influence";
 enum DisplayTableViewSection
 {
   ViewSection,
+  DisplayCoordinatesSection,
   DisplayMoveNumbersSection,
   DisplayPlayerInfluenceSection,
   MaxSection
@@ -46,8 +49,17 @@ enum DisplayTableViewSection
 enum ViewSectionItem
 {
   MarkLastMoveItem,
-  DisplayCoordinatesItem,
+  SelectedSymbolMarkupStyleItem,
   MaxViewSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the DisplayCoordinatesSection.
+// -----------------------------------------------------------------------------
+enum DisplayCoordinatesSectionItem
+{
+  DisplayCoordinatesItem,
+  MaxDisplayCoordinatesSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -137,6 +149,8 @@ enum DisplayPlayerInfluenceSectionItem
   {
     case ViewSection:
       return MaxViewSectionItem;
+    case DisplayCoordinatesSection:
+      return MaxDisplayCoordinatesSectionItem;
     case DisplayMoveNumbersSection:
       return MaxDisplayMoveNumbersSectionItem;
     case DisplayPlayerInfluenceSection:
@@ -156,6 +170,8 @@ enum DisplayPlayerInfluenceSectionItem
   switch (section)
   {
     case ViewSection:
+      return @"The style to use when marking up an intersection with the \"selected\" symbol.";
+    case DisplayCoordinatesSection:
       return @"On the iPhone you may need to zoom in to see coordinate labels.";
     case DisplayMoveNumbersSection:
       return @"The lowest setting displays no move numbers, the highest setting displays all move numbers. On the iPhone you may need to zoom in to see move numbers.";
@@ -188,6 +204,28 @@ enum DisplayPlayerInfluenceSectionItem
           [accessoryView addTarget:self action:@selector(toggleMarkLastMove:) forControlEvents:UIControlEventValueChanged];
           break;
         }
+        case SelectedSymbolMarkupStyleItem:
+        {
+          cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
+          TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+          variableHeightCell.descriptionLabel.text = @"\"Selected\" symbol style";
+          variableHeightCell.valueLabel.text = [self selectedSymbolMarkupStyleAsString:self.boardViewModel.selectedSymbolMarkupStyle];
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          break;
+        }
+        default:
+        {
+          assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
+          break;
+        }
+      }
+      break;
+    }
+    case DisplayCoordinatesSection:
+    {
+      switch (indexPath.row)
+      {
         case DisplayCoordinatesItem:
         {
           cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
@@ -262,6 +300,29 @@ enum DisplayPlayerInfluenceSectionItem
 - (void) tableView:(UITableView*)tableView didSelectRowAtIndexPath:(NSIndexPath*)indexPath
 {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
+
+  switch (indexPath.section)
+  {
+    case ViewSection:
+    {
+      switch (indexPath.row)
+      {
+        case SelectedSymbolMarkupStyleItem:
+        {
+          [self pickSelectedSymbolMarkupStyle];
+        }
+        default:
+        {
+          break;
+        }
+      }
+      break;
+    }
+    default:
+    {
+      break;
+    }
+  }
 }
 
 #pragma mark - Action handlers
@@ -274,6 +335,23 @@ enum DisplayPlayerInfluenceSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.boardViewModel.markLastMove = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays ItemPickerController to allow the user to pick a new value
+/// for the SelectedSymbolMarkupStyle property.
+// -----------------------------------------------------------------------------
+- (void) pickSelectedSymbolMarkupStyle
+{
+  NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
+  [itemList addObject:[self selectedSymbolMarkupStyleAsString:SelectedSymbolMarkupStyleDotSymbol]];
+  [itemList addObject:[self selectedSymbolMarkupStyleAsString:SelectedSymbolMarkupStyleCheckmark]];
+  ItemPickerController* modalController = [ItemPickerController controllerWithItemList:itemList
+                                                                           screenTitle:@"Select symbol style"
+                                                                    indexOfDefaultItem:self.boardViewModel.selectedSymbolMarkupStyle
+                                                                              delegate:self];
+
+  [self presentNavigationControllerWithRootViewController:modalController];
 }
 
 // -----------------------------------------------------------------------------
@@ -303,6 +381,47 @@ enum DisplayPlayerInfluenceSectionItem
   UISwitch* accessoryView = (UISwitch*)sender;
   self.boardViewModel.displayPlayerInfluence = accessoryView.on;
   [[[[ToggleTerritoryStatisticsCommand alloc] init] autorelease] submit];
+}
+
+#pragma mark - ItemPickerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief ItemPickerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection
+{
+  if (didMakeSelection)
+  {
+    if (self.boardViewModel.selectedSymbolMarkupStyle != controller.indexOfSelectedItem)
+    {
+      self.boardViewModel.selectedSymbolMarkupStyle = controller.indexOfSelectedItem;
+      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:SelectedSymbolMarkupStyleItem inSection:ViewSection];
+      [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                            withRowAnimation:UITableViewRowAnimationNone];
+    }
+  }
+  [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a short string for @a computerAssistanceType that is suitable
+/// for display in a cell in the table view managed by this controller.
+// -----------------------------------------------------------------------------
+- (NSString*) selectedSymbolMarkupStyleAsString:(enum SelectedSymbolMarkupStyle)selectedSymbolMarkupStyle
+{
+  switch (selectedSymbolMarkupStyle)
+  {
+    case SelectedSymbolMarkupStyleDotSymbol:
+      return @"Dot symbol";
+    case SelectedSymbolMarkupStyleCheckmark:
+      return @"Check mark";
+    default:
+      assert(0);
+      break;
+  }
+  return nil;
 }
 
 @end
