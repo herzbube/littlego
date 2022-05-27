@@ -151,7 +151,7 @@
     }
 
     // Add the checkmark to the newly selected cell
-    if (indexOfSelectedItem)
+    if (indexOfSelectedItem >= 0)
     {
       NSIndexPath* indexPath = [NSIndexPath indexPathForRow:indexOfSelectedItem inSection:0];
       UITableViewCell* newCell = [tableView cellForRowAtIndexPath:indexPath];
