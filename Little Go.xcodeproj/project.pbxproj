@@ -88,6 +88,7 @@
 		CD10882213255A6B00E83543 /* GoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882113255A6B00E83543 /* GoPlayer.m */; };
 		CD10882513255AA600E83543 /* GoPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882413255AA600E83543 /* GoPoint.m */; };
 		CD12193A2840D4FE0093A57D /* GoNodeMarkupTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1219382840D4FD0093A57D /* GoNodeMarkupTest.m */; };
+		CD12193B2840D5040093A57D /* GoNodeAnnotationTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD0F6BE927B068BE002DBE6B /* GoNodeAnnotationTest.m */; };
 		CD1311C217180B45006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
 		CD1311C417180B53006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
 		CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
@@ -3753,6 +3754,7 @@
 				CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CDAF171A1968037700271396 /* BoardViewModel.m in Sources */,
+				CD12193B2840D5040093A57D /* GoNodeAnnotationTest.m in Sources */,
 				CDBCF1FD282FD5C700411CA6 /* KeyboardHeightAdjustment.m in Sources */,
 				CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */,
 				CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */,
