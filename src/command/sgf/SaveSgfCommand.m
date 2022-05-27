@@ -22,6 +22,7 @@
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeAnnotation.h"
+#import "../../go/GoNodeMarkup.h"
 #import "../../go/GoNodeModel.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
@@ -33,6 +34,8 @@
 
 
 @implementation SaveSgfCommand
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a SaveSgfCommand object.
@@ -64,6 +67,8 @@
   [super dealloc];
 }
 
+#pragma mark - CommandBase methods
+
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
 // -----------------------------------------------------------------------------
@@ -91,6 +96,8 @@
 
   return success;
 }
+
+#pragma mark - Create SGF document
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt()
@@ -131,6 +138,8 @@
   return true;
 }
 
+#pragma mark - Create SGF document - Root node
+
 // -----------------------------------------------------------------------------
 /// @brief Private helper for createSgfDocument:errorMessage:()
 // -----------------------------------------------------------------------------
@@ -147,6 +156,8 @@
   SGFCBoardSizeProperty* szProperty = [SGFCPropertyFactory boardSizePropertyWithNumberPropertyValue:szPropertyValue];
   [rootNode setProperty:szProperty];
 }
+
+#pragma mark - Create SGF document - Game info node
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for createSgfDocument:errorMessage:()
@@ -206,6 +217,8 @@
   [gameInfoNode setProperty:pwProperty];
 }
 
+#pragma mark - Create SGF document - Node for board setup and player setup
+
 // -----------------------------------------------------------------------------
 /// @brief Private helper for createSgfDocument:errorMessage:()
 // -----------------------------------------------------------------------------
@@ -250,6 +263,8 @@
   return setupNode;
 }
 
+#pragma mark - Create SGF document - All other nodes
+
 // -----------------------------------------------------------------------------
 /// @brief Private helper for createSgfDocument:errorMessage:()
 // -----------------------------------------------------------------------------
@@ -266,6 +281,14 @@
   while (goNode)
   {
     SGFCNode* node = [SGFCNode node];
+
+    // We add the node to the document even if we don't add any properties to
+    // it. If we were skipping the ndoe there would be a gap between the
+    // in-memory model and the saved data, which could cause trouble or at least
+    // irritation later on (e.g. user saves a game, then loads it again => where
+    // the heck did the empty node go?).
+    // Note: SGFC has an option to skip empty nodes (-n), but by default it
+    // retains them.
     [treeBuilder setFirstChild:node ofNode:previousNode];
 
     if (goNode.goMove)
@@ -281,40 +304,23 @@
         withGoNodeAnnotationValues:goNode.goNodeAnnotation];
     }
 
+    if (goNode.goNodeMarkup)
+    {
+      [self addSgfPropertiesToNode:node
+            withGoNodeMarkupValues:goNode.goNodeMarkup
+                         boardSize:boardSize];
+    }
+
     previousNode = node;
     goNode = goNode.firstChild;
   }
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Private helper for
-/// addKomiAndHandicapPropertiesToGameInfoNode:withValuesFromGoGame:boardSize:()
-/// and
-/// addSetupNodeAfterGameInfoNode:withValuesFromGoGame:boardSize:treeBuilder:().
-// -----------------------------------------------------------------------------
-- (void) addSgfPropertyWithType:(SGFCPropertyType)propertyType
-                         toNode:(SGFCNode*)node
-         withValuesFromGoPoints:(NSArray*)goPoints
-                      boardSize:(SGFCBoardSize)boardSize
-{
-  NSMutableArray* propertyValues = [NSMutableArray array];
-  for (GoPoint* goPoint in goPoints)
-  {
-    SGFCColor color = (propertyType == SGFCPropertyTypeAB) ? SGFCColorBlack : SGFCColorWhite;
-    SGFCStonePropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithGoStone:goPoint.vertex.string
-                                                                                     boardSize:boardSize
-                                                                                         color:color];
-    [propertyValues addObject:propertyValue];
-  }
-
-  SGFCProperty* property = [SGFCPropertyFactory propertyWithType:propertyType
-                                                          values:propertyValues];
-  [node setProperty:property];
-}
+#pragma mark - Create SGF document - Move + move valuation data
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for
-/// addMoveNodesAfterNode:withValuesFromGoGame:boardSize:treeBuilder:()
+/// addRemainingNodesAfterNode:withValuesFromGoGame:boardSize:treeBuilder:()
 // -----------------------------------------------------------------------------
 - (void) addSgfPropertiesToNode:(SGFCNode*)node
                  withGoMoveMove:(GoMove*)goMove
@@ -410,9 +416,11 @@
   [node setProperty:property];
 }
 
+#pragma mark - Create SGF document - Node annotation data
+
 // -----------------------------------------------------------------------------
 /// @brief Private helper for
-/// addMoveNodesAfterNode:withValuesFromGoGame:boardSize:treeBuilder:()
+/// addRemainingNodesAfterNode:withValuesFromGoGame:boardSize:treeBuilder:()
 // -----------------------------------------------------------------------------
 - (void) addSgfPropertiesToNode:(SGFCNode*)node
      withGoNodeAnnotationValues:(GoNodeAnnotation*)goNodeAnnotation
@@ -525,6 +533,120 @@
   }
 }
 
+#pragma mark - Create SGF document - Markup data
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for
+/// addRemainingNodesAfterNode:withValuesFromGoGame:boardSize:treeBuilder:()
+// -----------------------------------------------------------------------------
+- (void) addSgfPropertiesToNode:(SGFCNode*)node
+     withGoNodeMarkupValues:(GoNodeMarkup*)goNodeMarkup
+                      boardSize:(SGFCBoardSize)boardSize
+{
+  if (goNodeMarkup.symbols)
+  {
+    NSMutableDictionary* sgfProperties = [NSMutableDictionary dictionary];
+    sgfProperties[[NSNumber numberWithInt:GoMarkupSymbolCircle]] = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeCR];
+    sgfProperties[[NSNumber numberWithInt:GoMarkupSymbolSquare]] = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeSQ];
+    sgfProperties[[NSNumber numberWithInt:GoMarkupSymbolTriangle]] = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeTR];
+    sgfProperties[[NSNumber numberWithInt:GoMarkupSymbolX]] = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeMA];
+    sgfProperties[[NSNumber numberWithInt:GoMarkupSymbolSelected]] = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeSL];
+
+    [goNodeMarkup.symbols enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* symbolAsNumber, BOOL* stop)
+    {
+      SGFCPointPropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithGoPoint:vertexString
+                                                                                       boardSize:boardSize];
+      SGFCProperty* property = sgfProperties[symbolAsNumber];
+      [property appendPropertyValue:propertyValue];
+    }];
+
+    [sgfProperties enumerateKeysAndObjectsUsingBlock:^(NSNumber* symbolAsNumber, SGFCProperty* property, BOOL* stop)
+    {
+      if (property.hasPropertyValues)
+        [node setProperty:property];
+    }];
+  }
+
+  if (goNodeMarkup.connections)
+  {
+    NSMutableDictionary* sgfProperties = [NSMutableDictionary dictionary];
+    sgfProperties[[NSNumber numberWithInt:GoMarkupConnectionArrow]] = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeAR];
+    sgfProperties[[NSNumber numberWithInt:GoMarkupConnectionLine]] = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeLN];
+
+    [goNodeMarkup.connections enumerateKeysAndObjectsUsingBlock:^(NSArray* vertexStrings, NSNumber* connectionAsNumber, BOOL* stop)
+    {
+      SGFCComposedPropertyValue* propertyValue = [SGFCPropertyValueFactory composedPropertyValueWithGoPoint:[vertexStrings firstObject]
+                                                                                                    goPoint:[vertexStrings lastObject]
+                                                                                                  boardSize:boardSize];
+      SGFCProperty* property = sgfProperties[connectionAsNumber];
+      [property appendPropertyValue:propertyValue];
+    }];
+
+    [sgfProperties enumerateKeysAndObjectsUsingBlock:^(NSNumber* connectionAsNumber, SGFCProperty* property, BOOL* stop)
+    {
+      if (property.hasPropertyValues)
+        [node setProperty:property];
+    }];
+  }
+
+  if (goNodeMarkup.labels)
+  {
+    SGFCProperty* property = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeLB];
+    [node setProperty:property];
+
+    [goNodeMarkup.labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSString* labelText, BOOL* stop)
+    {
+      SGFCComposedPropertyValue* propertyValue = [SGFCPropertyValueFactory composedPropertyValueWithGoPoint:vertexString
+                                                                                                  boardSize:boardSize
+                                                                                                 simpleText:labelText];
+      [property appendPropertyValue:propertyValue];
+    }];
+  }
+
+  if (goNodeMarkup.dimmings)
+  {
+    SGFCProperty* property = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeDD];
+    [node setProperty:property];
+
+    for (NSString* vertexString in goNodeMarkup.dimmings)
+    {
+      SGFCPointPropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithGoPoint:vertexString
+                                                                                       boardSize:boardSize];
+      [property appendPropertyValue:propertyValue];
+    }
+  }
+}
+
+#pragma mark - Create SGF document - Helper methods
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for
+/// addKomiAndHandicapPropertiesToGameInfoNode:withValuesFromGoGame:boardSize:()
+/// and
+/// addSetupNodeAfterGameInfoNode:withValuesFromGoGame:boardSize:treeBuilder:().
+// -----------------------------------------------------------------------------
+- (void) addSgfPropertyWithType:(SGFCPropertyType)propertyType
+                         toNode:(SGFCNode*)node
+         withValuesFromGoPoints:(NSArray*)goPoints
+                      boardSize:(SGFCBoardSize)boardSize
+{
+  NSMutableArray* propertyValues = [NSMutableArray array];
+  for (GoPoint* goPoint in goPoints)
+  {
+    SGFCColor color = (propertyType == SGFCPropertyTypeAB) ? SGFCColorBlack : SGFCColorWhite;
+    SGFCStonePropertyValue* propertyValue = [SGFCPropertyValueFactory propertyValueWithGoStone:goPoint.vertex.string
+                                                                                     boardSize:boardSize
+                                                                                         color:color];
+    [propertyValues addObject:propertyValue];
+  }
+
+  SGFCProperty* property = [SGFCPropertyFactory propertyWithType:propertyType
+                                                          values:propertyValues];
+  [node setProperty:property];
+}
+
+#pragma mark - Validate SGF document
+
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt()
 // -----------------------------------------------------------------------------
@@ -550,6 +672,8 @@
                         usingContextString:errorMessageContextString
                               errorMessage:errorMessage];
 }
+
+#pragma mark - Save SGF document
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt()
@@ -638,6 +762,8 @@
 
   return true;
 }
+
+#pragma mark - Helper methods
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for validateSgfDocument:errorMessage:() and

@@ -18,6 +18,7 @@
 // Forward declarations
 @class GoMove;
 @class GoNodeAnnotation;
+@class GoNodeMarkup;
 
 
 // -----------------------------------------------------------------------------
@@ -134,6 +135,10 @@
 /// @brief The node annotation data associated with this node. @e nil if this
 /// node has no associated node annotation data. The default value is @e nil.
 @property(nonatomic, retain) GoNodeAnnotation* goNodeAnnotation;
+
+/// @brief The markup data associated with this node. @e nil if this
+/// node has no associated markup data. The default value is @e nil.
+@property(nonatomic, retain) GoNodeMarkup* goNodeMarkup;
 //@}
 
 /// @name Changing the board based upon the node's data

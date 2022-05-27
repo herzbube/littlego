@@ -87,6 +87,7 @@
 		CD10881F13255A6100E83543 /* GoMove.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10881E13255A6100E83543 /* GoMove.m */; };
 		CD10882213255A6B00E83543 /* GoPlayer.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882113255A6B00E83543 /* GoPlayer.m */; };
 		CD10882513255AA600E83543 /* GoPoint.m in Sources */ = {isa = PBXBuildFile; fileRef = CD10882413255AA600E83543 /* GoPoint.m */; };
+		CD12193A2840D4FE0093A57D /* GoNodeMarkupTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1219382840D4FD0093A57D /* GoNodeMarkupTest.m */; };
 		CD1311C217180B45006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
 		CD1311C417180B53006CE699 /* ScoringModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311C017180B45006CE699 /* ScoringModel.m */; };
 		CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
@@ -556,6 +557,8 @@
 		CDBEBA3D27B1A218000F9BF5 /* AnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBEBA3A27B1A218000F9BF5 /* AnnotationViewController.m */; };
 		CDBFCBBD16C3ED01001D78C0 /* SetupApplicationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */; };
 		CDBFCBBE16C3EFB0001D78C0 /* SetupApplicationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */; };
+		CDC0C5B02832D20300EA467C /* GoNodeMarkup.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC0C5AF2832D20300EA467C /* GoNodeMarkup.m */; };
+		CDC0C5B12832D20300EA467C /* GoNodeMarkup.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC0C5AF2832D20300EA467C /* GoNodeMarkup.m */; };
 		CDC66BB821E3D383006C73B3 /* Firebase-oss.html in Resources */ = {isa = PBXBuildFile; fileRef = CDC66BB721E3D383006C73B3 /* Firebase-oss.html */; };
 		CDC66BC021EBB052006C73B3 /* changelog@2.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC66BBC21EBB051006C73B3 /* changelog@2.png */; };
 		CDC66BC121EBB052006C73B3 /* changelog@3.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC66BBD21EBB051006C73B3 /* changelog@3.png */; };
@@ -817,6 +820,8 @@
 		CD10882113255A6B00E83543 /* GoPlayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPlayer.m; sourceTree = "<group>"; };
 		CD10882313255AA600E83543 /* GoPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoPoint.h; sourceTree = "<group>"; };
 		CD10882413255AA600E83543 /* GoPoint.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoPoint.m; sourceTree = "<group>"; };
+		CD1219382840D4FD0093A57D /* GoNodeMarkupTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeMarkupTest.m; sourceTree = "<group>"; };
+		CD1219392840D4FD0093A57D /* GoNodeMarkupTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeMarkupTest.h; sourceTree = "<group>"; };
 		CD1311BF17180B45006CE699 /* ScoringModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScoringModel.h; sourceTree = "<group>"; };
 		CD1311C017180B45006CE699 /* ScoringModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScoringModel.m; sourceTree = "<group>"; };
 		CD1311CC17180D57006CE699 /* StatusViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatusViewController.h; sourceTree = "<group>"; };
@@ -1301,6 +1306,8 @@
 		CDBEBA3B27B1A218000F9BF5 /* AnnotationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnnotationViewController.h; sourceTree = "<group>"; };
 		CDBFCBBB16C3ED00001D78C0 /* SetupApplicationCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupApplicationCommand.h; sourceTree = "<group>"; };
 		CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetupApplicationCommand.m; sourceTree = "<group>"; };
+		CDC0C5AE2832D20300EA467C /* GoNodeMarkup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeMarkup.h; sourceTree = "<group>"; };
+		CDC0C5AF2832D20300EA467C /* GoNodeMarkup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeMarkup.m; sourceTree = "<group>"; };
 		CDC66BB721E3D383006C73B3 /* Firebase-oss.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Firebase-oss.html"; sourceTree = "<group>"; };
 		CDC66BBC21EBB051006C73B3 /* changelog@2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "changelog@2.png"; path = "resource/icon/changelog/changelog@2.png"; sourceTree = SOURCE_ROOT; };
 		CDC66BBD21EBB051006C73B3 /* changelog@3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "changelog@3.png"; path = "resource/icon/changelog/changelog@3.png"; sourceTree = SOURCE_ROOT; };
@@ -1741,6 +1748,8 @@
 				CD85069027C00B30000D2CCD /* GoNodeAdditions.h */,
 				CD0F6BE427B02C90002DBE6B /* GoNodeAnnotation.h */,
 				CD0F6BE527B02C91002DBE6B /* GoNodeAnnotation.m */,
+				CDC0C5AE2832D20300EA467C /* GoNodeMarkup.h */,
+				CDC0C5AF2832D20300EA467C /* GoNodeMarkup.m */,
 				CD85068827BB18D6000D2CCD /* GoNodeModel.h */,
 				CD85068927BB18D6000D2CCD /* GoNodeModel.m */,
 				CD10882013255A6B00E83543 /* GoPlayer.h */,
@@ -2469,6 +2478,8 @@
 				CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */,
 				CD0F6BEA27B068BE002DBE6B /* GoNodeAnnotationTest.h */,
 				CD0F6BE927B068BE002DBE6B /* GoNodeAnnotationTest.m */,
+				CD1219392840D4FD0093A57D /* GoNodeMarkupTest.h */,
+				CD1219382840D4FD0093A57D /* GoNodeMarkupTest.m */,
 				CD15A482168D044400D4472A /* GoNodeModelTest.h */,
 				CD15A483168D044400D4472A /* GoNodeModelTest.m */,
 				CD99EC6414B12058007B3B67 /* GoPlayerTest.h */,
@@ -3467,6 +3478,7 @@
 				CD05AC7C1425470B00214BBE /* NewGameCommand.m in Sources */,
 				CD05AC7D1425470B00214BBE /* RenameGameCommand.m in Sources */,
 				CD2AB19127F9F80500BF0B4D /* PageViewController.m in Sources */,
+				CDC0C5B02832D20300EA467C /* GoNodeMarkup.m in Sources */,
 				CD05AC7E1425470B00214BBE /* SaveGameCommand.m in Sources */,
 				CD05B11C142A606400214BBE /* BackupGameToSgfCommand.m in Sources */,
 				CDB49E412221A981006DC1A4 /* BoardViewAccessibility.m in Sources */,
@@ -3632,6 +3644,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDAFAE26195A1DCA00EF84A9 /* TiledScrollView.m in Sources */,
+				CDC0C5B12832D20300EA467C /* GoNodeMarkup.m in Sources */,
 				CD63B9E321C1F8B100E013B5 /* PipeStreamBuffer.cpp in Sources */,
 				CDA596131401741800B250D8 /* GoVertexTest.m in Sources */,
 				CDA597521401825600B250D8 /* GoVertex.m in Sources */,
@@ -3835,6 +3848,7 @@
 				CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CDFD9F7918F1D56A0031CBCF /* SectionedDocumentViewController.m in Sources */,
 				CD2D3A9E174C348C0030EDE4 /* EditPlayerProfileController.m in Sources */,
+				CD12193A2840D4FE0093A57D /* GoNodeMarkupTest.m in Sources */,
 				CD1F4F8D25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */,
 				CD2D3AA0174C34A60030EDE4 /* EditPlayingStrengthSettingsController.m in Sources */,
 				CD7C578721F79C3000694520 /* ChangeUIAreaPlayModeCommand.m in Sources */,

@@ -441,6 +441,7 @@ NSString* goNodeNextSiblingKey = @"NextSibling";
 NSString* goNodeParentKey = @"Parent";
 NSString* goNodeGoMoveKey = @"GoMove";
 NSString* goNodeGoNodeAnnotationKey = @"GoNodeAnnotation";
+NSString* goNodeGoNodeMarkupKey = @"GoNodeMarkup";
 // GoNodeAnnotation keys
 NSString* goNodeAnnotationShortDescriptionKey = @"ShortDescription";
 NSString* goNodeAnnotationLongDescriptionKey = @"LongDescription";
@@ -448,6 +449,11 @@ NSString* goNodeAnnotationGoBoardPositionValuationKey = @"GoBoardPositionValuati
 NSString* goNodeAnnotationGoBoardPositionHotspotDesignationKey = @"GoBoardPositionHotspotDesignation";
 NSString* goNodeAnnotationEstimatedScoreSummaryKey = @"EstimatedScoreSummary";
 NSString* goNodeAnnotationEstimatedScoreValueKey = @"EstimatedScoreValue";
+// GoNodeMarkup keys
+NSString* goNodeMarkupSymbolsKey = @"Symbols";
+NSString* goNodeMarkupConnectionsKey = @"Connections";
+NSString* goNodeMarkupLabelsKey = @"Labels";
+NSString* goNodeMarkupDimmingsKey = @"Dimmings";
 // GoNodeModel keys
 NSString* goNodeModelGameKey = @"Game";
 NSString* goNodeModelRootNodeKey = @"RootNode";

@@ -554,6 +554,25 @@ enum GoScoreSummary
   GoScoreSummaryLast = GoScoreSummaryNone          ///< @brief Pseudo score summary, used as the end value during a for-loop.
 };
 
+/// @brief Enumerates markup symbols that can be draw on intersections on the
+/// Go board.
+enum GoMarkupSymbol
+{
+  GoMarkupSymbolCircle,     ///< @brief A circle symbol. Corresponds to the SGF property CR.
+  GoMarkupSymbolSquare,     ///< @brief A square symbol. Corresponds to the SGF property SQ.
+  GoMarkupSymbolTriangle,   ///< @brief A triangle symbol. Corresponds to the SGF property TR.
+  GoMarkupSymbolX,          ///< @brief An "X" symbol. Corresponds to the SGF property MA.
+  GoMarkupSymbolSelected    ///< @brief Markup the point as "selected". Corresponds to the SGF property MA.
+};
+
+/// @brief Enumerates markup connections that can be drawn between intersections
+/// on the Go board.
+enum GoMarkupConnection
+{
+  GoMarkupConnectionArrow,   ///< @brief An arrow pointing from intersection A to B. Corresponds to the SGF property AR.
+  GoMarkupConnectionLine,    ///< @brief A simple line connecting intersection A and B. Corresponds to the SGF property LN.
+};
+
 extern const enum GoGameType gDefaultGameType;
 extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
@@ -1444,6 +1463,7 @@ extern NSString* goNodeNextSiblingKey;
 extern NSString* goNodeParentKey;
 extern NSString* goNodeGoMoveKey;
 extern NSString* goNodeGoNodeAnnotationKey;
+extern NSString* goNodeGoNodeMarkupKey;
 // GoNodeAnnotation keys
 extern NSString* goNodeAnnotationShortDescriptionKey;
 extern NSString* goNodeAnnotationLongDescriptionKey;
@@ -1451,6 +1471,11 @@ extern NSString* goNodeAnnotationGoBoardPositionValuationKey;
 extern NSString* goNodeAnnotationGoBoardPositionHotspotDesignationKey;
 extern NSString* goNodeAnnotationEstimatedScoreSummaryKey;
 extern NSString* goNodeAnnotationEstimatedScoreValueKey;
+// GoNodeMarkup keys
+extern NSString* goNodeMarkupSymbolsKey;
+extern NSString* goNodeMarkupConnectionsKey;
+extern NSString* goNodeMarkupLabelsKey;
+extern NSString* goNodeMarkupDimmingsKey;
 // GoNodeModel keys
 extern NSString* goNodeModelGameKey;
 extern NSString* goNodeModelRootNodeKey;

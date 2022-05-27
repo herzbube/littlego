@@ -18,6 +18,7 @@
 // Project includes
 #import "GoNode.h"
 #import "GoMove.h"
+#import "GoNodeMarkup.h"
 #import "../utility/ExceptionUtility.h"
 
 
@@ -77,6 +78,7 @@
 
   self.goMove = nil;
   self.goNodeAnnotation = nil;
+  self.goNodeMarkup = nil;
 
   return self;
 }
@@ -106,6 +108,7 @@
 
   self.goMove = nil;
   self.goNodeAnnotation = nil;
+  self.goNodeMarkup = nil;
 
   [super dealloc];
 }
@@ -134,6 +137,7 @@
   _parent = [decoder decodeObjectForKey:goNodeParentKey];  // do not retain to avoid retain cycle between parent and its first child
   self.goMove = [decoder decodeObjectForKey:goNodeGoMoveKey];
   self.goNodeAnnotation = [decoder decodeObjectForKey:goNodeGoNodeAnnotationKey];
+  self.goNodeMarkup = [decoder decodeObjectForKey:goNodeGoNodeMarkupKey];
 
   return self;
 }
@@ -154,6 +158,8 @@
     [encoder encodeObject:self.goMove forKey:goNodeGoMoveKey];
   if (self.goNodeAnnotation)
     [encoder encodeObject:self.goNodeAnnotation forKey:goNodeGoNodeAnnotationKey];
+  if (self.goNodeMarkup)
+    [encoder encodeObject:self.goNodeMarkup forKey:goNodeGoNodeMarkupKey];
 }
 
 #pragma mark - Public API - Game tree navigation

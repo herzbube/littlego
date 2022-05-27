@@ -28,6 +28,7 @@
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeAnnotation.h"
+#import "../../go/GoNodeMarkup.h"
 #import "../../go/GoNodeModel.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
@@ -61,6 +62,8 @@ static const int maxStepsForCreateNodes = 10;
 @implementation LoadGameCommand
 
 @synthesize asynchronousCommandDelegate;
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a LoadGameCommand object that will load the game from
@@ -99,6 +102,8 @@ static const int maxStepsForCreateNodes = 10;
   self.sgfGoGameInfo = nil;
   [super dealloc];
 }
+
+#pragma mark - CommandBase methods
 
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
@@ -232,6 +237,8 @@ static const int maxStepsForCreateNodes = 10;
   return true;
 }
 
+#pragma mark - Step 1: Start new game
+
 // -----------------------------------------------------------------------------
 /// @brief Starts the new game.
 // -----------------------------------------------------------------------------
@@ -294,6 +301,8 @@ static const int maxStepsForCreateNodes = 10;
   return success;
 }
 
+#pragma mark - Step 2: Setup handicap
+
 // -----------------------------------------------------------------------------
 /// @brief Sets up handicap for the new game.
 // -----------------------------------------------------------------------------
@@ -344,25 +353,12 @@ static const int maxStepsForCreateNodes = 10;
         NSArray* handicapStonesPropertyValues = handicapStonesProperty.propertyValues;
         for (id<SGFCPropertyValue> handicapStonesPropertyValue in handicapStonesPropertyValues)
         {
-          SGFCGoPoint* goPoint = handicapStonesPropertyValue.toSingleValue.toStoneValue.toGoStoneValue.goStone.location;
-          if (! goPoint)
-          {
-            *errorMessage = @"SgfcKit interfacing error while determining the handicap: Missing SGFCGoPoint object.";
-            return false;
-          }
-
-          if (! [goPoint hasPositionInGoPointNotation:SGFCGoPointNotationHybrid])
-          {
-            *errorMessage = @"SgfcKit interfacing error while determining the handicap: SGFCGoPoint not available in hybrid notation.";
-            return false;
-          }
-
-          NSString* vertexString = [goPoint positionInGoPointNotation:SGFCGoPointNotationHybrid];
-          GoPoint* point = [board pointAtVertex:vertexString];
+          GoPoint* point = [self goPointForSgfGoPoint:handicapStonesPropertyValue.toSingleValue.toStoneValue.toGoStoneValue.goStone.location
+                                              onBoard:board
+                                         errorMessage:errorMessage];
           if (! point)
           {
-            NSString* errorMessageFormat = @"Game contains an invalid handicap stone.\n\nThe intersection %@ is invalid.";
-            *errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString];
+            *errorMessage = [@"SgfcKit interfacing error while determining the handicap: " stringByAppendingString:*errorMessage];
             return false;
           }
 
@@ -393,6 +389,8 @@ static const int maxStepsForCreateNodes = 10;
 
   return true;
 }
+
+#pragma mark - Steps 3 + 4: Board setup + player setup
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the setup stones prior to the first move of the game.
@@ -519,18 +517,13 @@ static const int maxStepsForCreateNodes = 10;
           else
             goPoint = setupPropertyValue.toSingleValue.toStoneValue.toGoStoneValue.goStone.location;
 
-          if (! goPoint)
+          NSString* vertexString = [self vertexForSgfGoPoint:goPoint errorMessage:errorMessage];
+          if (! vertexString)
           {
-            *errorMessage = @"SgfcKit interfacing error while determining setup stones: Missing SGFCGoPoint object.";
-            return false;
-          }
-          if (! [goPoint hasPositionInGoPointNotation:SGFCGoPointNotationHybrid])
-          {
-            *errorMessage = @"SgfcKit interfacing error while determining setup stones: SGFCGoPoint not available in hybrid notation.";
+            *errorMessage = [@"SgfcKit interfacing error while determining setup stones: " stringByAppendingString:*errorMessage];
             return false;
           }
 
-          NSString* vertexString = [goPoint positionInGoPointNotation:SGFCGoPointNotationHybrid];
           // Overwriting previous values works because keys are compared for
           // equality, not for object identity
           setupPointsDictionary[vertexString] = [NSNumber numberWithInt:goColor];
@@ -691,6 +684,8 @@ static const int maxStepsForCreateNodes = 10;
   return true;
 }
 
+#pragma mark - Step 5: Setup komi
+
 // -----------------------------------------------------------------------------
 /// @brief Sets up komi for the new game.
 // -----------------------------------------------------------------------------
@@ -731,6 +726,8 @@ static const int maxStepsForCreateNodes = 10;
   return true;
 }
 
+#pragma mark - Step 6: Setup nodes + play moves
+
 // -----------------------------------------------------------------------------
 /// @brief Sets up the nodes for the new game.
 ///
@@ -751,6 +748,7 @@ static const int maxStepsForCreateNodes = 10;
 /// - Move properties B and W. Properties KO and MN are currently ignored.
 /// - All node annotation properties C, N, GB, GW, DM, UC, V, HO.
 /// - All move annotation properties TE, DO, BM, IT.
+/// - All markup properties CR, SQ, TR, MA, SL, AR, LN, LB, DD
 // -----------------------------------------------------------------------------
 - (bool) setupNodes:(NSString**)errorMessage
 {
@@ -772,7 +770,9 @@ static const int maxStepsForCreateNodes = 10;
 
   for (SGFCNode* sgfNode in self.sgfMainVariationNodes)
   {
-    NSArray* tuple = [self createTupleWithPropertiesFromNode:sgfNode];
+    NSArray* tuple = [self createTupleWithPropertiesFromNode:sgfNode errorMessage:errorMessage];
+    if (! tuple)
+      return false;
 
     if (tuple.firstObject != [NSNull null])
       numberOfMovesFound++;
@@ -793,7 +793,7 @@ static const int maxStepsForCreateNodes = 10;
 
 // -----------------------------------------------------------------------------
 /// @brief Creates a tuple of values (an NSArray object) that together represent
-/// one move.
+/// one node.
 ///
 /// The first tuple value is either an SGFCProperty of type #SGFCPropertyTypeB
 /// or #SGFCPropertyTypeW, if such a property exists in @a sgfNode, or an
@@ -806,13 +806,18 @@ static const int maxStepsForCreateNodes = 10;
 /// The third tuple value is a GoNodeAnnotation object populated with node
 /// annotation property values found in @a sgfNode, or an @e NSNull object if
 /// no node annotation properties exist in @a sgfNode.
+///
+/// The fourth tuple value is a GoNodeMarkup object populated with markup
+/// property values found in @a sgfNode, or an @e NSNull object if no markup
+/// properties exist in @a sgfNode.
 // -----------------------------------------------------------------------------
-- (NSArray*) createTupleWithPropertiesFromNode:(SGFCNode*)sgfNode
+- (NSArray*) createTupleWithPropertiesFromNode:(SGFCNode*)sgfNode errorMessage:(NSString**)errorMessage
 {
   SGFCProperty* moveProperty = nil;
   enum GoMoveValuation moveValuation = GoMoveValuationNone;
   GoNodeAnnotation* nodeAnnotation = [[[GoNodeAnnotation alloc] init] autorelease];
   bool atLeastOneAnnotationPropertyWasFound = false;
+  GoNodeMarkup* nodeMarkup = [[[GoNodeMarkup alloc] init] autorelease];
 
   for (SGFCProperty* property in [sgfNode properties])
   {
@@ -914,13 +919,69 @@ static const int maxStepsForCreateNodes = 10;
     {
       moveValuation = GoMoveValuationDoubtful;
     }
+    else if (property.propertyType == SGFCPropertyTypeCR)
+    {
+      bool success = [self setSymbols:GoMarkupSymbolCircle inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      if (! success)
+        return false;
+    }
+    else if (property.propertyType == SGFCPropertyTypeSQ)
+    {
+      bool success = [self setSymbols:GoMarkupSymbolSquare inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      if (! success)
+        return false;
+    }
+    else if (property.propertyType == SGFCPropertyTypeTR)
+    {
+      bool success = [self setSymbols:GoMarkupSymbolTriangle inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      if (! success)
+        return false;
+    }
+    else if (property.propertyType == SGFCPropertyTypeMA)
+    {
+      bool success = [self setSymbols:GoMarkupSymbolX inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      if (! success)
+        return false;
+    }
+    else if (property.propertyType == SGFCPropertyTypeSL)
+    {
+      bool success = [self setSymbols:GoMarkupSymbolSelected inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      if (! success)
+        return false;
+    }
+    else if (property.propertyType == SGFCPropertyTypeAR)
+    {
+      bool success = [self setConnections:GoMarkupConnectionArrow inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      if (! success)
+        return false;
+    }
+    else if (property.propertyType == SGFCPropertyTypeLN)
+    {
+      bool success = [self setConnections:GoMarkupConnectionLine inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      if (! success)
+        return false;
+    }
+    else if (property.propertyType == SGFCPropertyTypeLB)
+    {
+      bool success = [self setLabelsInMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      if (! success)
+        return false;
+    }
+    else if (property.propertyType == SGFCPropertyTypeDD)
+    {
+      bool success = [self setDimmingsInMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      if (! success)
+        return false;
+    }
   }
 
   NSArray* tuple = @[
     moveProperty ? moveProperty : [NSNull null],
     [NSNumber numberWithInt:moveValuation],
-    atLeastOneAnnotationPropertyWasFound ? nodeAnnotation : [NSNull null]
+    atLeastOneAnnotationPropertyWasFound ? nodeAnnotation : [NSNull null],
+    nodeMarkup.hasMarkup ? nodeMarkup : [NSNull null]
   ];
+  
   return tuple;
 }
 
@@ -944,6 +1005,10 @@ static const int maxStepsForCreateNodes = 10;
 /// - The third object is either a GoNodeAnnotation object or @e NSNull.
 ///   If the object is a GoNodeAnnotation object then it is associated with the
 ///   GoNode object created for the tuple. If the object is @e NSNull the third
+///   object in the tuple is ignored.
+/// - The fourth object is either a GoNodeMarkup object or @e NSNull.
+///   If the object is a GoNodeMarkup object then it is associated with the
+///   GoNode object created for the tuple. If the object is @e NSNull the fourth
 ///   object in the tuple is ignored.
 ///
 /// The asynchronous command delegate is updated continuously with progress
@@ -1018,9 +1083,13 @@ static const int maxStepsForCreateNodes = 10;
         }
       }
 
-      id tupleThirdValue = [tuple lastObject];
+      id tupleThirdValue = [tuple objectAtIndex:2];
       if (tupleThirdValue != [NSNull null])
         node.goNodeAnnotation = tupleThirdValue;
+
+      id tupleFourthValue = [tuple objectAtIndex:3];
+      if (tupleFourthValue != [NSNull null])
+        node.goNodeMarkup = tupleFourthValue;
 
       ++numberOfNodesCreated;
       if (numberOfNodesCreated >= nextProgressUpdate)
@@ -1072,19 +1141,10 @@ static const int maxStepsForCreateNodes = 10;
   {
     moveType = GoMoveTypePlay;
 
-    SGFCGoPoint* goPoint = goMove.stone.location;
-    if (! [goPoint hasPositionInGoPointNotation:SGFCGoPointNotationHybrid])
-    {
-      *errorMessage = @"SgfcKit interfacing error while determining moves: SGFCGoPoint not available in hybrid notation.";
-      return false;
-    }
-
-    NSString* vertexString = [goPoint positionInGoPointNotation:SGFCGoPointNotationHybrid];
-    point = [game.board pointAtVertex:vertexString];
+    point = [self goPointForSgfGoPoint:goMove.stone.location onBoard:game.board errorMessage:errorMessage];
     if (! point)
     {
-      NSString* errorMessageFormat = @"Move string contains invalid intersection.\n\n%@";
-      *errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString];
+      *errorMessage = [@"SgfcKit interfacing error while determining moves: " stringByAppendingString:*errorMessage];
       return false;
     }
   }
@@ -1121,6 +1181,8 @@ static const int maxStepsForCreateNodes = 10;
   return true;
 }
 
+#pragma mark - Step 7: Setup game result
+
 // -----------------------------------------------------------------------------
 /// @brief Sets up the result for the new game.
 // -----------------------------------------------------------------------------
@@ -1147,6 +1209,8 @@ static const int maxStepsForCreateNodes = 10;
   return true;
 }
 
+#pragma mark - Step 8: Sync GTP engine
+
 // -----------------------------------------------------------------------------
 /// @brief Synchronizes the state of the GTP engine with the state of the
 /// current GoGame.
@@ -1169,6 +1233,8 @@ static const int maxStepsForCreateNodes = 10;
     return false;
   }
 }
+
+#pragma mark - Helper methods to complete game setup and handle errors
 
 // -----------------------------------------------------------------------------
 /// @brief Notifies the GoGameDocument associated with the new game that the
@@ -1294,6 +1360,210 @@ static const int maxStepsForCreateNodes = 10;
   // a crash (it's real, I've seen the crash reports!)
   [self performSelectorOnMainThread:@selector(showAlert:) withObject:message waitUntilDone:YES];
   DDLogError(@"%@", message);
+}
+
+#pragma mark - Markup helper methods
+
+// -----------------------------------------------------------------------------
+/// @brief Invokes setSymbol:atVertex:() on @a nodeMarkup once for every value
+/// in @a propertyValues, using the symbol type @a symbol. Returns true if no
+/// error was encountered. Returns false if an error was encountered and sets
+/// @a errorMessage with a string that describes the error encountered.
+// -----------------------------------------------------------------------------
+- (bool) setSymbols:(enum GoMarkupSymbol)symbol inMarkup:(GoNodeMarkup*)nodeMarkup forPropertyValues:(NSArray*)propertyValues errorMessage:(NSString**)errorMessage
+{
+  GoGame* game = [GoGame sharedGame];
+  GoBoard* board = game.board;
+
+  for (id<SGFCPropertyValue> propertyValue in propertyValues)
+  {
+    NSString* vertexString = [self vertexForSgfGoPoint:propertyValue.toSingleValue.toPointValue.toGoPointValue.goPoint onBoard:board errorMessage:errorMessage];
+    if (! vertexString)
+    {
+      *errorMessage = [@"SgfcKit interfacing error while determining markup: " stringByAppendingString:*errorMessage];
+      return false;
+    }
+
+    [nodeMarkup setSymbol:symbol atVertex:vertexString];
+  }
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invokes setConnection:fromVertex:toVertex:() on @a nodeMarkup once
+/// for every value in @a propertyValues, using the connection type
+/// @a connection. Returns true if no error was encountered. Returns false if
+/// an error was encountered and sets @a errorMessage with a string that
+/// describes the error encountered.
+// -----------------------------------------------------------------------------
+- (bool) setConnections:(enum GoMarkupConnection)connection inMarkup:(GoNodeMarkup*)nodeMarkup forPropertyValues:(NSArray*)propertyValues errorMessage:(NSString**)errorMessage
+{
+  GoGame* game = [GoGame sharedGame];
+  GoBoard* board = game.board;
+
+  // According to the SGF standard, the same pair of points legally can appear
+  // only once. However, SGFC does not enforce this, so here we may encounter
+  // the same pair multiple times. We don't care, though, because GoNodeMarkup
+  // simply overwrites a previous pair when we set it again.
+  for (id<SGFCPropertyValue> propertyValue in propertyValues)
+  {
+    NSString* fromVertexString = [self vertexForSgfGoPoint:propertyValue.toComposedValue.value1.toSingleValue.toPointValue.toGoPointValue.goPoint onBoard:board errorMessage:errorMessage];
+    if (! fromVertexString)
+    {
+      *errorMessage = [@"SgfcKit interfacing error while determining markup: " stringByAppendingString:*errorMessage];
+      return false;
+    }
+
+    NSString* toVertexString = [self vertexForSgfGoPoint:propertyValue.toComposedValue.value2.toSingleValue.toPointValue.toGoPointValue.goPoint onBoard:board errorMessage:errorMessage];
+    if (! toVertexString)
+    {
+      *errorMessage = [@"SgfcKit interfacing error while determining markup: " stringByAppendingString:*errorMessage];
+      return false;
+    }
+
+    // SgfcKit / SGFC should delete values with same start/end point, but we
+    // make the check anyway to guard against unexpected data because
+    // GoNodeMarkup raises an exception (which crashes the app) if the vertices
+    // are the same.
+    if ([fromVertexString isEqualToString:toVertexString])
+      continue;
+
+    [nodeMarkup setConnection:connection fromVertex:fromVertexString toVertex:toVertexString];
+  }
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invokes setLabel:atVertex:() on @a nodeMarkup once for every value
+/// in @a propertyValues. Returns true if no error was encountered. Returns
+/// false if an error was encountered and sets @a errorMessage with a string
+/// that describes the error encountered.
+// -----------------------------------------------------------------------------
+- (bool) setLabelsInMarkup:(GoNodeMarkup*)nodeMarkup forPropertyValues:(NSArray*)propertyValues errorMessage:(NSString**)errorMessage
+{
+  GoGame* game = [GoGame sharedGame];
+  GoBoard* board = game.board;
+
+  for (id<SGFCPropertyValue> propertyValue in propertyValues)
+  {
+    NSString* vertexString = [self vertexForSgfGoPoint:propertyValue.toComposedValue.value1.toSingleValue.toPointValue.toGoPointValue.goPoint onBoard:board errorMessage:errorMessage];
+    if (! vertexString)
+    {
+      *errorMessage = [@"SgfcKit interfacing error while determining markup: " stringByAppendingString:*errorMessage];
+      return false;
+    }
+
+    NSString* labelText = propertyValue.toComposedValue.value2.toSingleValue.toSimpleTextValue.simpleTextValue;
+
+    // SgfcKit / SGFC should trim trailing (not leading!) whitespace from label
+    // texts, replace newline characters with space characters, and delete
+    // property values that contain an empty label text (after trimming and
+    // replacing), but we make the check anyway to guard against unexpected data
+    // because GoNodeMarkup raises an exception (which crashes the app) if the
+    // cleaned up label text is empty.
+    labelText = [GoNodeMarkup removeNewlinesAndTrimLabel:labelText];
+    if (labelText.length == 0)
+      continue;
+
+    [nodeMarkup setLabel:labelText atVertex:vertexString];
+  }
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invokes setDimmingAtVertex:() on @a nodeMarkup once for every value
+/// in @a propertyValues. Returns true if no error was encountered. Returns
+/// false if an error was encountered and sets @a errorMessage with a string
+/// that describes the error encountered.
+// -----------------------------------------------------------------------------
+- (bool) setDimmingsInMarkup:(GoNodeMarkup*)nodeMarkup forPropertyValues:(NSArray*)propertyValues errorMessage:(NSString**)errorMessage
+{
+  GoGame* game = [GoGame sharedGame];
+  GoBoard* board = game.board;
+
+  for (id<SGFCPropertyValue> propertyValue in propertyValues)
+  {
+    NSString* vertexString = [self vertexForSgfGoPoint:propertyValue.toSingleValue.toPointValue.toGoPointValue.goPoint onBoard:board errorMessage:errorMessage];
+    if (! vertexString)
+    {
+      *errorMessage = [@"SgfcKit interfacing error while determining markup: " stringByAppendingString:*errorMessage];
+      return false;
+    }
+
+    [nodeMarkup setDimmingAtVertex:vertexString];
+  }
+
+  return true;
+}
+
+#pragma mark - Helper methods
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoPoint object on the board @a board that corresponds to
+/// the intersection referred to by @a sgfGoPoint. Returns @e nil if an error
+/// was encountered and sets @a errorMessage with a string that describes the
+/// error encountered.
+// -----------------------------------------------------------------------------
+- (GoPoint*) goPointForSgfGoPoint:(SGFCGoPoint*)sgfGoPoint onBoard:(GoBoard*)board errorMessage:(NSString**)errorMessage
+{
+  NSString* vertexString = [self vertexForSgfGoPoint:sgfGoPoint errorMessage:errorMessage];
+  GoPoint* goPoint = [board pointAtVertex:vertexString];
+  if (! goPoint)
+  {
+    *errorMessage = [NSString stringWithFormat:@"Invalid intersection.\n\n%@", vertexString];
+    return nil;
+  }
+
+  return goPoint;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the vertex string that corresponds to the intersection
+/// referred to by @a sgfGoPoint. The vertex is in the hybrid notation (e.g.
+/// "A1") used throughout this project. A chheck is made that @a board contains
+/// a GoPoint object for the vertex string. Returns @e nil if an error was
+/// encountered and sets @a errorMessage with a string that describes the
+/// error encountered.
+// -----------------------------------------------------------------------------
+- (NSString*) vertexForSgfGoPoint:(SGFCGoPoint*)sgfGoPoint onBoard:(GoBoard*)board errorMessage:(NSString**)errorMessage
+{
+  NSString* vertexString = [self vertexForSgfGoPoint:sgfGoPoint errorMessage:errorMessage];
+  GoPoint* goPoint = [board pointAtVertex:vertexString];
+  if (! goPoint)
+  {
+    *errorMessage = [NSString stringWithFormat:@"Invalid intersection.\n\n%@", vertexString];
+    return nil;
+  }
+
+  return vertexString;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the vertex string that corresponds to the intersection
+/// referred to by @a sgfGoPoint. The vertex is in the hybrid notation (e.g.
+/// "A1") used throughout this project. Returns @e nil if an error was
+/// encountered and sets @a errorMessage with a string that describes the
+/// error encountered.
+// -----------------------------------------------------------------------------
+- (NSString*) vertexForSgfGoPoint:(SGFCGoPoint*)sgfGoPoint errorMessage:(NSString**)errorMessage
+{
+  if (! sgfGoPoint)
+  {
+    *errorMessage = @"Missing SGFCGoPoint object.";
+    return nil;
+  }
+
+  if (! [sgfGoPoint hasPositionInGoPointNotation:SGFCGoPointNotationHybrid])
+  {
+    *errorMessage = @"SGFCGoPoint not available in hybrid notation.";
+    return nil;
+  }
+
+  NSString* vertexString = [sgfGoPoint positionInGoPointNotation:SGFCGoPointNotationHybrid];
+  return vertexString;
 }
 
 @end
