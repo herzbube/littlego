@@ -243,6 +243,21 @@ enum TerritoryMarkupStyle
   TerritoryMarkupStyleInconsistentDotSymbol
 };
 
+/// @brief Enumerates the possible styles how to render #GoMarkupSymbolSelected.
+enum SelectedSymbolMarkupStyle
+{
+  SelectedSymbolMarkupStyleDotSymbol,  ///< @brief Use a dot symbol to render #GoMarkupSymbolSelected.
+  SelectedSymbolMarkupStyleCheckmark,  ///< @brief Use a check mark symbol to render #GoMarkupSymbolSelected.
+};
+
+/// @brief Enumerates the order of precedence cases when multiple markup types
+/// should be drawn on the same intersection.
+enum MarkupPrecedence
+{
+  MarkupPrecedenceSymbols,  ///< @brief When both a symbol and a label should be drawn on an intersection, draw the symbol.
+  MarkupPrecedenceLabels,   ///< @brief When both a symbol and a label should be drawn on an intersection, draw the label.
+};
+
 /// @brief Enumerates a number of standard alert button types.
 enum AlertButtonType
 {
@@ -563,13 +578,6 @@ enum GoMarkupSymbol
   GoMarkupSymbolTriangle,   ///< @brief A triangle symbol. Corresponds to the SGF property TR.
   GoMarkupSymbolX,          ///< @brief An "X" symbol. Corresponds to the SGF property MA.
   GoMarkupSymbolSelected    ///< @brief Markup the point as "selected". Corresponds to the SGF property MA.
-};
-
-/// @brief Enumerates the possible styles how to render #GoMarkupSymbolSelected.
-enum SelectedSymbolMarkupStyle
-{
-  SelectedSymbolMarkupStyleDotSymbol,  ///< @brief Use a dot symbol to render #GoMarkupSymbolSelected.
-  SelectedSymbolMarkupStyleCheckmark,  ///< @brief Use a check mark symbol to render #GoMarkupSymbolSelected.
 };
 
 /// @brief Enumerates markup connections that can be drawn between intersections
@@ -1303,6 +1311,7 @@ extern NSString* vibrateKey;
 extern NSString* infoTypeLastSelectedKey;
 extern NSString* computerAssistanceTypeKey;
 extern NSString* selectedSymbolMarkupStyleKey;
+extern NSString* markupPrecedenceKey;
 // New game settings
 extern NSString* newGameKey;
 extern NSString* gameTypeKey;

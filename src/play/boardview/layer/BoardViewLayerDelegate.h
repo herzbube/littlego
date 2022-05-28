@@ -61,6 +61,7 @@ enum BoardViewLayerDelegateEvent
   BVLDEventSetupPointChanged,
   BVLDEventAllSetupStonesDiscarded,
   BVLDEventSelectedSymbolMarkupStyleChanged,
+  BVLDEventMarkupPrecedenceChanged,
 };
 
 

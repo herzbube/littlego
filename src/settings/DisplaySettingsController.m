@@ -37,6 +37,7 @@ NSString* displayPlayerInfluenceText = @"Display player influence";
 enum DisplayTableViewSection
 {
   ViewSection,
+  MarkupPrecedenceSection,
   DisplayCoordinatesSection,
   DisplayMoveNumbersSection,
   DisplayPlayerInfluenceSection,
@@ -51,6 +52,15 @@ enum ViewSectionItem
   MarkLastMoveItem,
   SelectedSymbolMarkupStyleItem,
   MaxViewSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the MarkupPrecedenceSection.
+// -----------------------------------------------------------------------------
+enum MarkupPrecedenceSectionItem
+{
+  MarkupPrecedenceItem,
+  MaxMarkupPrecedenceSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -149,6 +159,8 @@ enum DisplayPlayerInfluenceSectionItem
   {
     case ViewSection:
       return MaxViewSectionItem;
+    case MarkupPrecedenceSection:
+      return MaxMarkupPrecedenceSectionItem;
     case DisplayCoordinatesSection:
       return MaxDisplayCoordinatesSectionItem;
     case DisplayMoveNumbersSection:
@@ -171,6 +183,8 @@ enum DisplayPlayerInfluenceSectionItem
   {
     case ViewSection:
       return @"The style to use when marking up an intersection with the \"selected\" symbol.";
+    case MarkupPrecedenceSection:
+      return @"The order of precedence for drawing symbol and label markup on the board. When both symbol and label markup exists for a given intersection, only one of them can be drawn. This setting determines which of the two should be drawn.";
     case DisplayCoordinatesSection:
       return @"On the iPhone you may need to zoom in to see coordinate labels.";
     case DisplayMoveNumbersSection:
@@ -210,6 +224,28 @@ enum DisplayPlayerInfluenceSectionItem
           TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
           variableHeightCell.descriptionLabel.text = @"\"Selected\" symbol style";
           variableHeightCell.valueLabel.text = [self selectedSymbolMarkupStyleAsString:self.boardViewModel.selectedSymbolMarkupStyle];
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          break;
+        }
+        default:
+        {
+          assert(0);
+          @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"invalid index path %@", indexPath] userInfo:nil];
+          break;
+        }
+      }
+      break;
+    }
+    case MarkupPrecedenceSection:
+    {
+      switch (indexPath.row)
+      {
+        case MarkupPrecedenceItem:
+        {
+          cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
+          TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+          variableHeightCell.descriptionLabel.text = @"Markup precedence";
+          variableHeightCell.valueLabel.text = [self markupPrecedenceAsString:self.boardViewModel.markupPrecedence];
           cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         }
@@ -318,6 +354,21 @@ enum DisplayPlayerInfluenceSectionItem
       }
       break;
     }
+    case MarkupPrecedenceSection:
+    {
+      switch (indexPath.row)
+      {
+        case MarkupPrecedenceItem:
+        {
+          [self pickMarkupPrecedence];
+        }
+        default:
+        {
+          break;
+        }
+      }
+      break;
+    }
     default:
     {
       break;
@@ -346,12 +397,31 @@ enum DisplayPlayerInfluenceSectionItem
   NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
   [itemList addObject:[self selectedSymbolMarkupStyleAsString:SelectedSymbolMarkupStyleDotSymbol]];
   [itemList addObject:[self selectedSymbolMarkupStyleAsString:SelectedSymbolMarkupStyleCheckmark]];
-  ItemPickerController* modalController = [ItemPickerController controllerWithItemList:itemList
-                                                                           screenTitle:@"Select symbol style"
-                                                                    indexOfDefaultItem:self.boardViewModel.selectedSymbolMarkupStyle
-                                                                              delegate:self];
+  ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
+                                                                                screenTitle:@"Select symbol style"
+                                                                         indexOfDefaultItem:self.boardViewModel.selectedSymbolMarkupStyle
+                                                                                   delegate:self];
+  itemPickerController.context = [NSNumber numberWithInt:ViewSection];
 
-  [self presentNavigationControllerWithRootViewController:modalController];
+  [self presentNavigationControllerWithRootViewController:itemPickerController];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Displays ItemPickerController to allow the user to pick a new value
+/// for the MarkupPrecedence property.
+// -----------------------------------------------------------------------------
+- (void) pickMarkupPrecedence
+{
+  NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
+  [itemList addObject:[self markupPrecedenceAsString:MarkupPrecedenceSymbols]];
+  [itemList addObject:[self markupPrecedenceAsString:MarkupPrecedenceLabels]];
+  ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
+                                                                                screenTitle:@"Select markup precedence"
+                                                                         indexOfDefaultItem:self.boardViewModel.markupPrecedence
+                                                                                   delegate:self];
+  itemPickerController.context = [NSNumber numberWithInt:MarkupPrecedenceSection];
+
+  [self presentNavigationControllerWithRootViewController:itemPickerController];
 }
 
 // -----------------------------------------------------------------------------
@@ -392,12 +462,26 @@ enum DisplayPlayerInfluenceSectionItem
 {
   if (didMakeSelection)
   {
-    if (self.boardViewModel.selectedSymbolMarkupStyle != controller.indexOfSelectedItem)
+    NSNumber* context = controller.context;
+    if (context.intValue == ViewSection)
     {
-      self.boardViewModel.selectedSymbolMarkupStyle = controller.indexOfSelectedItem;
-      NSIndexPath* indexPath = [NSIndexPath indexPathForRow:SelectedSymbolMarkupStyleItem inSection:ViewSection];
-      [self.tableView reloadRowsAtIndexPaths:@[indexPath]
-                            withRowAnimation:UITableViewRowAnimationNone];
+      if (self.boardViewModel.selectedSymbolMarkupStyle != controller.indexOfSelectedItem)
+      {
+        self.boardViewModel.selectedSymbolMarkupStyle = controller.indexOfSelectedItem;
+        NSIndexPath* indexPath = [NSIndexPath indexPathForRow:SelectedSymbolMarkupStyleItem inSection:ViewSection];
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                              withRowAnimation:UITableViewRowAnimationNone];
+      }
+    }
+    else
+    {
+      if (self.boardViewModel.markupPrecedence != controller.indexOfSelectedItem)
+      {
+        self.boardViewModel.markupPrecedence = controller.indexOfSelectedItem;
+        NSIndexPath* indexPath = [NSIndexPath indexPathForRow:MarkupPrecedenceItem inSection:MarkupPrecedenceSection];
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                              withRowAnimation:UITableViewRowAnimationNone];
+      }
     }
   }
   [self dismissViewControllerAnimated:YES completion:nil];
@@ -406,8 +490,8 @@ enum DisplayPlayerInfluenceSectionItem
 #pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a short string for @a computerAssistanceType that is suitable
-/// for display in a cell in the table view managed by this controller.
+/// @brief Returns a short string for @a selectedSymbolMarkupStyle that is
+/// suitable for display in a cell in the table view managed by this controller.
 // -----------------------------------------------------------------------------
 - (NSString*) selectedSymbolMarkupStyleAsString:(enum SelectedSymbolMarkupStyle)selectedSymbolMarkupStyle
 {
@@ -417,6 +501,25 @@ enum DisplayPlayerInfluenceSectionItem
       return @"Dot symbol";
     case SelectedSymbolMarkupStyleCheckmark:
       return @"Check mark";
+    default:
+      assert(0);
+      break;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a short string for @a markupPrecedence that is suitable
+/// for display in a cell in the table view managed by this controller.
+// -----------------------------------------------------------------------------
+- (NSString*) markupPrecedenceAsString:(enum MarkupPrecedence)markupPrecedence
+{
+  switch (markupPrecedence)
+  {
+    case MarkupPrecedenceSymbols:
+      return @"Draw symbols first";
+    case MarkupPrecedenceLabels:
+      return @"Draw labels first";
     default:
       assert(0);
       break;

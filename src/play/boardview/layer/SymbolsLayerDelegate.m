@@ -165,6 +165,7 @@
     // note that the layer is removed/added dynamically as a result of scoring
     // mode becoming enabled/disabled.
     case BVLDEventUIAreaPlayModeChanged:
+    case BVLDEventMarkupPrecedenceChanged:
     {
       self.dirty = true;
       break;
@@ -366,148 +367,202 @@
     return;
 
   GoBoard* board = game.board;
+
+  if (self.boardViewModel.markupPrecedence == MarkupPrecedenceSymbols)
+    [self drawSymbolsMarkup:nodeMarkup.symbols inContext:context inTileWithRect:tileRect board:board pointsWithMarkup:pointsWithMarkup];
+  else
+    [self drawLabelsMarkup:nodeMarkup.labels inContext:context inTileWithRect:tileRect board:board pointsWithMarkup:pointsWithMarkup];
+
+  [self drawConnectionsMarkup:nodeMarkup.connections inContext:context inTileWithRect:tileRect board:board];
+
+  if (self.boardViewModel.markupPrecedence == MarkupPrecedenceSymbols)
+    [self drawLabelsMarkup:nodeMarkup.labels inContext:context inTileWithRect:tileRect board:board pointsWithMarkup:pointsWithMarkup];
+  else
+    [self drawSymbolsMarkup:nodeMarkup.symbols inContext:context inTileWithRect:tileRect board:board pointsWithMarkup:pointsWithMarkup];
+
+  [self drawDimmingsMarkup:nodeMarkup.dimmings inContext:context inTileWithRect:tileRect board:board];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for
+/// drawMarkupInContext:inTileWithRect:pointsWithMarkup:().
+// -----------------------------------------------------------------------------
+- (void) drawSymbolsMarkup:(NSDictionary*)symbols
+                 inContext:(CGContextRef)context
+            inTileWithRect:(CGRect)tileRect
+                     board:(GoBoard*)board
+          pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
+{
+  if (! symbols)
+    return;
+
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
 
-  if (nodeMarkup.symbols)
+  [symbols enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* symbolAsNumber, BOOL* stop)
   {
-    [nodeMarkup.symbols enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* symbolAsNumber, BOOL* stop)
+    GoPoint* pointWithSymbol = [board pointAtVertex:vertexString];
+    if ([pointsWithMarkup containsObject:pointWithSymbol])
+      return;
+    [pointsWithMarkup addObject:pointWithSymbol];
+
+    enum GoMarkupSymbol symbol = [symbolAsNumber intValue];
+
+    NSDictionary* symbolLayerTypes;
+    if (symbol == GoMarkupSymbolSelected && self.boardViewModel.selectedSymbolMarkupStyle == SelectedSymbolMarkupStyleDotSymbol)
     {
-      GoPoint* pointWithSymbol = [board pointAtVertex:vertexString];
-      if ([pointsWithMarkup containsObject:pointWithSymbol])
-        return;
-      [pointsWithMarkup addObject:pointWithSymbol];
-
-      enum GoMarkupSymbol symbol = [symbolAsNumber intValue];
-
-      NSDictionary* symbolLayerTypes;
-      if (symbol == GoMarkupSymbolSelected && self.boardViewModel.selectedSymbolMarkupStyle == SelectedSymbolMarkupStyleDotSymbol)
-      {
-        // The "dot" symbol not only consist of a stroke, it is also filled
-        // with the color opposite to the stroke color. Because of that the
-        // symbol's primary color is the fill color and we have to invert the
-        // logic that is used for the other symbols.
-        if (pointWithSymbol.stoneState == GoColorWhite)
-          symbolLayerTypes = self.whiteStrokeSymbolLayerTypes;
-        else
-          symbolLayerTypes = self.blackStrokeSymbolLayerTypes;  // use white filled dot also when intersection is not occupied
-      }
+      // The "dot" symbol not only consist of a stroke, it is also filled
+      // with the color opposite to the stroke color. Because of that the
+      // symbol's primary color is the fill color and we have to invert the
+      // logic that is used for the other symbols.
+      if (pointWithSymbol.stoneState == GoColorWhite)
+        symbolLayerTypes = self.whiteStrokeSymbolLayerTypes;
       else
-      {
-        if (pointWithSymbol.stoneState == GoColorBlack)
-          symbolLayerTypes = self.whiteStrokeSymbolLayerTypes;
-        else
-          symbolLayerTypes = self.blackStrokeSymbolLayerTypes;  // use black also when intersection is not occupied
-      }
-
-      NSNumber* layerTypeAsNumber = symbolLayerTypes[symbolAsNumber];
-      enum LayerType layerType = layerTypeAsNumber.intValue;
-      CGLayerRef layer = [cache layerOfType:layerType];
-
-      [BoardViewDrawingHelper drawLayer:layer
-                            withContext:context
-                        centeredAtPoint:pointWithSymbol
-                         inTileWithRect:tileRect
-                            withMetrics:self.boardViewMetrics];
-    }];
-  }
-
-  if (nodeMarkup.connections)
-  {
-    [nodeMarkup.connections enumerateKeysAndObjectsUsingBlock:^(NSArray* vertexStrings, NSNumber* connectionAsNumber, BOOL* stop)
+        symbolLayerTypes = self.blackStrokeSymbolLayerTypes;  // use white filled dot also when intersection is not occupied
+    }
+    else
     {
-      enum GoMarkupConnection connection = connectionAsNumber.intValue;
-      GoPoint* fromPoint = [board pointAtVertex:[vertexStrings firstObject]];
-      GoPoint* toPoint = [board pointAtVertex:[vertexStrings lastObject]];
+      if (pointWithSymbol.stoneState == GoColorBlack)
+        symbolLayerTypes = self.whiteStrokeSymbolLayerTypes;
+      else
+        symbolLayerTypes = self.blackStrokeSymbolLayerTypes;  // use black also when intersection is not occupied
+    }
 
-      // For symbols which have a fixed size and appearance we can use a
-      // pre-drawn and cached layer. This is not possible for connections
-      // because they vary in size and angle - every connection has to be drawn
-      // on demand. Because of this we try to avoid the drawing if it is
-      // not necessary. Unlike with symbols we make the tile intersection check
-      // already here in the layer delegate.
-      CGRect canvasRect = [BoardViewDrawingHelper canvasRectFromPoint:fromPoint
-                                                              toPoint:toPoint
-                                                              metrics:self.boardViewMetrics];
-      if (! CGRectIntersectsRect(tileRect, canvasRect))
-        return;
+    NSNumber* layerTypeAsNumber = symbolLayerTypes[symbolAsNumber];
+    enum LayerType layerType = layerTypeAsNumber.intValue;
+    CGLayerRef layer = [cache layerOfType:layerType];
 
-      CGLayerRef layer = CreateConnectionLayer(context,
-                                               connection,
-                                               self.connectionFillColor,
-                                               self.connectionStrokeColor,
-                                               fromPoint,
-                                               toPoint,
-                                               canvasRect,
-                                               self.boardViewMetrics);
+    [BoardViewDrawingHelper drawLayer:layer
+                          withContext:context
+                      centeredAtPoint:pointWithSymbol
+                       inTileWithRect:tileRect
+                          withMetrics:self.boardViewMetrics];
+  }];
+}
 
-      [BoardViewDrawingHelper drawLayer:layer
-                            withContext:context
-                           inCanvasRect:canvasRect
-                         inTileWithRect:tileRect
-                            withMetrics:self.boardViewMetrics];
-    }];
-  }
+// -----------------------------------------------------------------------------
+/// @brief Private helper for
+/// drawMarkupInContext:inTileWithRect:pointsWithMarkup:().
+// -----------------------------------------------------------------------------
+- (void) drawConnectionsMarkup:(NSDictionary*)connections
+                     inContext:(CGContextRef)context
+                inTileWithRect:(CGRect)tileRect
+                         board:(GoBoard*)board
+{
+  if (! connections)
+    return;
 
-  if (nodeMarkup.labels)
+  [connections enumerateKeysAndObjectsUsingBlock:^(NSArray* vertexStrings, NSNumber* connectionAsNumber, BOOL* stop)
   {
-    UIFont* labelFont = self.boardViewMetrics.moveNumberFont;
-    // Don't limit the label width. Of course, too long labels look ugly, but
-    // that's a data problem.
-    CGSize labelMaximumSize = CGSizeMake(self.boardViewMetrics.canvasSize.width,
-                                         self.boardViewMetrics.moveNumberMaximumSize.height);
+    enum GoMarkupConnection connection = connectionAsNumber.intValue;
+    GoPoint* fromPoint = [board pointAtVertex:[vertexStrings firstObject]];
+    GoPoint* toPoint = [board pointAtVertex:[vertexStrings lastObject]];
 
-    [nodeMarkup.labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSString* labelText, BOOL* stop)
+    // For symbols which have a fixed size and appearance we can use a
+    // pre-drawn and cached layer. This is not possible for connections
+    // because they vary in size and angle - every connection has to be drawn
+    // on demand. Because of this we try to avoid the drawing if it is
+    // not necessary. Unlike with symbols we make the tile intersection check
+    // already here in the layer delegate.
+    CGRect canvasRect = [BoardViewDrawingHelper canvasRectFromPoint:fromPoint
+                                                            toPoint:toPoint
+                                                            metrics:self.boardViewMetrics];
+    if (! CGRectIntersectsRect(tileRect, canvasRect))
+      return;
+
+    CGLayerRef layer = CreateConnectionLayer(context,
+                                             connection,
+                                             self.connectionFillColor,
+                                             self.connectionStrokeColor,
+                                             fromPoint,
+                                             toPoint,
+                                             canvasRect,
+                                             self.boardViewMetrics);
+
+    [BoardViewDrawingHelper drawLayer:layer
+                          withContext:context
+                         inCanvasRect:canvasRect
+                       inTileWithRect:tileRect
+                          withMetrics:self.boardViewMetrics];
+  }];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for
+/// drawMarkupInContext:inTileWithRect:pointsWithMarkup:().
+// -----------------------------------------------------------------------------
+- (void) drawLabelsMarkup:(NSDictionary*)labels
+                inContext:(CGContextRef)context
+           inTileWithRect:(CGRect)tileRect
+                    board:(GoBoard*)board
+         pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
+{
+  if (! labels)
+    return;
+
+  UIFont* labelFont = self.boardViewMetrics.moveNumberFont;
+  if (! labelFont)
+    return;
+
+  // Don't limit the label width. Of course, too long labels look ugly, but
+  // that's a data problem.
+  CGSize labelMaximumSize = CGSizeMake(self.boardViewMetrics.canvasSize.width,
+                                       self.boardViewMetrics.moveNumberMaximumSize.height);
+
+  [labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSString* labelText, BOOL* stop)
+  {
+    GoPoint* pointWithLabel = [board pointAtVertex:vertexString];
+    if ([pointsWithMarkup containsObject:pointWithLabel])
+      return;
+    [pointsWithMarkup addObject:pointWithLabel];
+
+    // Use white text color when intersection is not occupied, because black
+    // colored text is difficult to read on the board's wooden background.
+    UIColor* textColor;
+    if (pointWithLabel.stoneState == GoColorWhite)
+      textColor = [UIColor blackColor];
+    else
+      textColor = [UIColor whiteColor];
+
+    // For unoccupied intersections add a shadow to the white colored text to
+    // improve readability even more
+    NSDictionary* textAttributes;
+    if (pointWithLabel.stoneState == GoColorNone)
     {
-      if (! labelFont)
-      {
-        *stop = YES;
-        return;
-      }
+      textAttributes = @{ NSFontAttributeName : labelFont,
+                          NSForegroundColorAttributeName : textColor,
+                          NSParagraphStyleAttributeName : self.paragraphStyle,
+                          NSShadowAttributeName: self.whiteTextShadow };
+    }
+    else
+    {
+      textAttributes = @{ NSFontAttributeName : labelFont,
+                          NSForegroundColorAttributeName : textColor,
+                          NSParagraphStyleAttributeName : self.paragraphStyle };
+    }
 
-      GoPoint* pointWithLabel = [board pointAtVertex:vertexString];
-      if ([pointsWithMarkup containsObject:pointWithLabel])
-        return;
-      [pointsWithMarkup addObject:pointWithLabel];
+    [BoardViewDrawingHelper drawString:labelText
+                           withContext:context
+                            attributes:textAttributes
+                        inRectWithSize:labelMaximumSize
+                       centeredAtPoint:pointWithLabel
+                        inTileWithRect:tileRect
+                           withMetrics:self.boardViewMetrics];
+  }];
+}
 
-      // Use white text color when intersection is not occupied, because black
-      // colored text is difficult to read on the board's wooden background.
-      UIColor* textColor;
-      if (pointWithLabel.stoneState == GoColorWhite)
-        textColor = [UIColor blackColor];
-      else
-        textColor = [UIColor whiteColor];
+// -----------------------------------------------------------------------------
+/// @brief Private helper for
+/// drawMarkupInContext:inTileWithRect:pointsWithMarkup:().
+// -----------------------------------------------------------------------------
+- (void) drawDimmingsMarkup:(NSArray*)dimmings
+                  inContext:(CGContextRef)context
+             inTileWithRect:(CGRect)tileRect
+                      board:(GoBoard*)board
+{
+  if (! dimmings)
+    return;
 
-      // For unoccupied intersections add a shadow to the white colored text to
-      // improve readability even more
-      NSDictionary* textAttributes;
-      if (pointWithLabel.stoneState == GoColorNone)
-      {
-        textAttributes = @{ NSFontAttributeName : labelFont,
-                            NSForegroundColorAttributeName : textColor,
-                            NSParagraphStyleAttributeName : self.paragraphStyle,
-                            NSShadowAttributeName: self.whiteTextShadow };
-      }
-      else
-      {
-        textAttributes = @{ NSFontAttributeName : labelFont,
-                            NSForegroundColorAttributeName : textColor,
-                            NSParagraphStyleAttributeName : self.paragraphStyle };
-      }
-
-      [BoardViewDrawingHelper drawString:labelText
-                             withContext:context
-                              attributes:textAttributes
-                          inRectWithSize:labelMaximumSize
-                         centeredAtPoint:pointWithLabel
-                          inTileWithRect:tileRect
-                             withMetrics:self.boardViewMetrics];
-    }];
-  }
-
-  if (nodeMarkup.dimmings)
-  {
-    // Dimming is currently not supported
-  }
+  // Dimming is currently not supported by this app
 }
 
 // -----------------------------------------------------------------------------

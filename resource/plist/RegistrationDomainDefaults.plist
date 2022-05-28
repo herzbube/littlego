@@ -24,6 +24,8 @@
 		<integer>0</integer>
 		<key>SelectedSymbolMarkupStyle</key>
 		<integer>0</integer>
+		<key>MarkupPrecedence</key>
+		<integer>0</integer>
 	</dict>
 	<key>NewGame</key>
 	<dict>

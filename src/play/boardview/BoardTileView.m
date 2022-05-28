@@ -146,6 +146,7 @@
   [boardViewModel addObserver:self forKeyPath:@"displayPlayerInfluence" options:0 context:NULL];
   [boardViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
   [boardViewModel addObserver:self forKeyPath:@"selectedSymbolMarkupStyle" options:0 context:NULL];
+  [boardViewModel addObserver:self forKeyPath:@"markupPrecedence" options:0 context:NULL];
   [boardViewModel addObserver:self forKeyPath:@"moveNumbersPercentage" options:0 context:NULL];
   [scoringModel addObserver:self forKeyPath:@"inconsistentTerritoryMarkupType" options:0 context:NULL];
   GoGame* game = [GoGame sharedGame];
@@ -181,6 +182,7 @@
   [boardViewModel removeObserver:self forKeyPath:@"displayPlayerInfluence"];
   [boardViewModel removeObserver:self forKeyPath:@"markLastMove"];
   [boardViewModel removeObserver:self forKeyPath:@"selectedSymbolMarkupStyle"];
+  [boardViewModel removeObserver:self forKeyPath:@"markupPrecedence"];
   [boardViewModel removeObserver:self forKeyPath:@"moveNumbersPercentage"];
   [scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
   GoGame* game = [GoGame sharedGame];
@@ -630,6 +632,11 @@
     else if ([keyPath isEqualToString:@"selectedSymbolMarkupStyle"])
     {
       [self notifyLayerDelegates:BVLDEventSelectedSymbolMarkupStyleChanged eventInfo:nil];
+      [self delayedDrawLayers];
+    }
+    else if ([keyPath isEqualToString:@"markupPrecedence"])
+    {
+      [self notifyLayerDelegates:BVLDEventMarkupPrecedenceChanged eventInfo:nil];
       [self delayedDrawLayers];
     }
     else if ([keyPath isEqualToString:@"moveNumbersPercentage"])
