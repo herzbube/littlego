@@ -58,5 +58,6 @@
 + (GoNode*) nodeWithNextMove:(GoNode*)node;
 + (bool) showInfoIndicatorForNode:(GoNode*)node;
 + (bool) showHotspotIndicatorForNode:(GoNode*)node;
++ (bool) showMarkupIndicatorForNode:(GoNode*)node;
 
 @end

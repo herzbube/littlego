@@ -521,6 +521,11 @@
 		CDAFAE6E195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
 		CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
 		CDB3ABFE1CFB401B00DE4B38 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ABFD1CFB401B00DE4B38 /* Launch Screen.storyboard */; };
+		CDB3ECD2284285DD007512F6 /* noun-code-4410725.svg in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ECCD284285DD007512F6 /* noun-code-4410725.svg */; };
+		CDB3ECD3284285DD007512F6 /* markup@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ECCE284285DD007512F6 /* markup@2x.png */; };
+		CDB3ECD4284285DD007512F6 /* markup@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ECCF284285DD007512F6 /* markup@3x.png */; };
+		CDB3ECD5284285DD007512F6 /* markup.svg in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ECD0284285DD007512F6 /* markup.svg */; };
+		CDB3ECD6284285DD007512F6 /* markup.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ECD1284285DD007512F6 /* markup.png */; };
 		CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
 		CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
 		CDB4579F147AEB590043EDE4 /* EditPlayerProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB4579E147AEB590043EDE4 /* EditPlayerProfileController.m */; };
@@ -1263,6 +1268,11 @@
 		CDAFAE6C195F811D00EF84A9 /* BoardViewCGLayerCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewCGLayerCache.h; sourceTree = "<group>"; };
 		CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewCGLayerCache.m; sourceTree = "<group>"; };
 		CDB3ABFD1CFB401B00DE4B38 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
+		CDB3ECCD284285DD007512F6 /* noun-code-4410725.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "noun-code-4410725.svg"; sourceTree = "<group>"; };
+		CDB3ECCE284285DD007512F6 /* markup@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "markup@2x.png"; sourceTree = "<group>"; };
+		CDB3ECCF284285DD007512F6 /* markup@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "markup@3x.png"; sourceTree = "<group>"; };
+		CDB3ECD0284285DD007512F6 /* markup.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = markup.svg; sourceTree = "<group>"; };
+		CDB3ECD1284285DD007512F6 /* markup.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = markup.png; sourceTree = "<group>"; };
 		CDB45798147ADEAC0043EDE4 /* GtpEngineProfileModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfileModel.h; sourceTree = "<group>"; };
 		CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfileModel.m; sourceTree = "<group>"; };
 		CDB4579D147AEB590043EDE4 /* EditPlayerProfileController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayerProfileController.h; sourceTree = "<group>"; };
@@ -2533,6 +2543,18 @@
 			path = storyboard;
 			sourceTree = "<group>";
 		};
+		CDB3ECCC284285DD007512F6 /* markup */ = {
+			isa = PBXGroup;
+			children = (
+				CDB3ECD1284285DD007512F6 /* markup.png */,
+				CDB3ECD0284285DD007512F6 /* markup.svg */,
+				CDB3ECCE284285DD007512F6 /* markup@2x.png */,
+				CDB3ECCF284285DD007512F6 /* markup@3x.png */,
+				CDB3ECCD284285DD007512F6 /* noun-code-4410725.svg */,
+			);
+			path = markup;
+			sourceTree = "<group>";
+		};
 		CDB49E232208ABA3006DC1A4 /* uitest */ = {
 			isa = PBXGroup;
 			children = (
@@ -2673,6 +2695,7 @@
 				CD2AB20528030D4B00BF0B4D /* interesting */,
 				CD968B231B026E2300984AEE /* interrupt */,
 				CD968B281B026E2300984AEE /* licenses */,
+				CDB3ECCC284285DD007512F6 /* markup */,
 				CD968B321B026E2300984AEE /* more-game-actions */,
 				CD968B371B026E2300984AEE /* navigation */,
 				CD2AB1CA2800D8FE00BF0B4D /* none */,
@@ -3135,6 +3158,7 @@
 				CD2AB1F8280301DB00BF0B4D /* very-bad@2x.png in Resources */,
 				CD85068027B5C414000D2CCD /* hotspot@3x.png in Resources */,
 				CDE1A16514C1CED200317ECA /* COPYING.LESSER.html in Resources */,
+				CDB3ECD4284285DD007512F6 /* markup@3x.png in Resources */,
 				CD968B851B026E2300984AEE /* human-vs-computer.png in Resources */,
 				CD2AB1F7280301DB00BF0B4D /* very-bad.png in Resources */,
 				CD2AB1F9280301DB00BF0B4D /* very-bad@3x.png in Resources */,
@@ -3217,6 +3241,7 @@
 				CD968B5F1B026E2300984AEE /* about.png in Resources */,
 				CD968BA71B026E2300984AEE /* forward@2x.png in Resources */,
 				CDE1A18114C1CED200317ECA /* wood-on-wood-12.aiff in Resources */,
+				CDB3ECD2284285DD007512F6 /* noun-code-4410725.svg in Resources */,
 				CD968B641B026E2300984AEE /* archive@2x.png in Resources */,
 				CD968B6C1B026E2300984AEE /* noun_2873_cc.svg in Resources */,
 				CD968B8A1B026E2300984AEE /* human-vs-human@3x.png in Resources */,
@@ -3267,6 +3292,7 @@
 				CD968B8E1B026E2300984AEE /* gogrid2x2@2x.png in Resources */,
 				CD968B951B026E2300984AEE /* interrupt@3x.png in Resources */,
 				CD968B831B026E2300984AEE /* computer-vs-computer@3x.png in Resources */,
+				CDB3ECD5284285DD007512F6 /* markup.svg in Resources */,
 				CD968BB01B026E2300984AEE /* noun_10554_cc.svg in Resources */,
 				CD968BB51B026E2300984AEE /* pause.png in Resources */,
 				CD2AB1992800AFBF00BF0B4D /* stones-overlapping-black-icon.png in Resources */,
@@ -3282,6 +3308,7 @@
 				CD968B8C1B026E2300984AEE /* gogrid2x2.png in Resources */,
 				CD968B941B026E2300984AEE /* interrupt@2x.png in Resources */,
 				CD968BAA1B026E2300984AEE /* forwardtoend@2x.png in Resources */,
+				CDB3ECD3284285DD007512F6 /* markup@2x.png in Resources */,
 				CD968B8D1B026E2300984AEE /* gogrid2x2.svg in Resources */,
 				CD968BA61B026E2300984AEE /* forward.png in Resources */,
 				CD968BBD1B026E2300984AEE /* noun_31893_cc.svg in Resources */,
@@ -3297,6 +3324,7 @@
 				CD968B811B026E2300984AEE /* computer-vs-computer.png in Resources */,
 				CD7C57B621FCB0D100694520 /* stone-white-icon.svg in Resources */,
 				CD81795E25DDEDDF00F39091 /* computer-suggest-move@3.png in Resources */,
+				CDB3ECD6284285DD007512F6 /* markup.png in Resources */,
 				CD968B861B026E2300984AEE /* human-vs-computer@2x.png in Resources */,
 				CD2AB1C42800D63500BF0B4D /* very-unclear.svg in Resources */,
 				CD2AB20328030D2F00BF0B4D /* doubtful@3x.png in Resources */,

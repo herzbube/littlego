@@ -25,6 +25,7 @@
 #import "GoMove.h"
 #import "GoNode.h"
 #import "GoNodeAnnotation.h"
+#import "GoNodeMarkup.h"
 #import "GoNodeModel.h"
 #import "GoPoint.h"
 #import "GoVertex.h"
@@ -771,6 +772,19 @@
     return false;
   else
     return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the content of @a node warrants showing a "markup"
+/// indicator to the user when displaying an overview of @a node.
+// -----------------------------------------------------------------------------
++ (bool) showMarkupIndicatorForNode:(GoNode*)node
+{
+  GoNodeMarkup* nodeMarkup = node.goNodeMarkup;
+  if (! nodeMarkup)
+    return false;
+  else
+    return [nodeMarkup hasMarkup];
 }
 
 @end

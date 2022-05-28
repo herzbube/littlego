@@ -56,6 +56,7 @@ static UIImage* blackStoneImage = nil;
 static UIImage* whiteStoneImage = nil;
 static UIImage* infoIconImage = nil;
 static UIImage* hotspotIconImage = nil;
+static UIImage* markupIconImage = nil;
 static UIColor* currentBoardPositionCellBackgroundColor = nil;
 static UIColor* alternateCellBackgroundColor1 = nil;
 static UIColor* alternateCellBackgroundColor2 = nil;
@@ -78,6 +79,7 @@ static UIFont* smallFont = nil;
 @property(nonatomic, assign) UILabel* capturedStonesLabel;
 @property(nonatomic, assign) UIImageView* infoIconImageView;
 @property(nonatomic, assign) UIImageView* hotspotIconImageView;
+@property(nonatomic, assign) UIImageView* markupIconImageView;
 @property(nonatomic, retain) NSArray* dynamicAutoLayoutConstraints;
 @end
 
@@ -133,18 +135,21 @@ static UIFont* smallFont = nil;
   self = [super initWithFrame:frame];
   if (! self)
     return nil;
+
   self.offscreenMode = true;
   if (cellType == BoardPositionCollectionViewCellTypePositionZero)
     _boardPosition = 0;
   else
     _boardPosition = 1;
   self.dynamicAutoLayoutConstraints = nil;
+
   [self setupViewHierarchy];
   // Setup content first because dynamic Auto Layout constraint calculation
   // examines the content
   [self setupDummyContent];
   [self setupAutoLayoutConstraints];
   [self configureView];
+
   return self;
 }
 
@@ -160,6 +165,7 @@ static UIFont* smallFont = nil;
   self.capturedStonesLabel = nil;
   self.infoIconImageView = nil;
   self.hotspotIconImageView = nil;
+  self.markupIconImageView = nil;
   self.dynamicAutoLayoutConstraints = nil;
   [super dealloc];
 }
@@ -177,12 +183,14 @@ static UIFont* smallFont = nil;
   self.capturedStonesLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
   self.infoIconImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
   self.hotspotIconImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
+  self.markupIconImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
   [self addSubview:self.stoneImageView];
   [self addSubview:self.intersectionLabel];
   [self addSubview:self.boardPositionLabel];
   [self addSubview:self.capturedStonesLabel];
   [self addSubview:self.infoIconImageView];
   [self addSubview:self.hotspotIconImageView];
+  [self addSubview:self.markupIconImageView];
 }
 
 // -----------------------------------------------------------------------------
@@ -196,31 +204,28 @@ static UIFont* smallFont = nil;
   self.capturedStonesLabel.translatesAutoresizingMaskIntoConstraints = NO;
   self.infoIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
   self.hotspotIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.markupIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.stoneImageView, @"stoneImageView",
-                                   self.intersectionLabel, @"intersectionLabel",
-                                   self.boardPositionLabel, @"boardPositionLabel",
-                                   self.capturedStonesLabel, @"capturedStonesLabel",
-                                   self.hotspotIconImageView, @"hotspotIconImageView",
-                                   nil];
-  NSArray* visualFormats = [NSArray arrayWithObjects:
-                            // Spacing 0 is OK. In setupDummyContents we reserve space for a
-                            // 3-digit number of captured stones, which is unlikely to occur.
-                            // Numbers with 1 or 2 digits are much more likely, so the space
-                            // reserved for a 2nd and/or 3rd digit acts as spacing (the label
-                            // text is right-aligned). In the unlikely event that there *IS*
-                            // a 3-digit number, spacing 0 is still tolerable.
-                            @"H:[intersectionLabel]-0-[capturedStonesLabel]",
-                            // Spacing 0 is OK. boardPositionLabel gets more than enough width
-                            // so that even with the longest text in it there is always a bit
-                            // of leftover space at the right to act as spacing.
-                            @"H:[boardPositionLabel]-0-[hotspotIconImageView]",
-                            [NSString stringWithFormat:@"V:|-%d-[intersectionLabel]-%d-[boardPositionLabel]-%d-|", verticalSpacingSuperview, verticalSpacingSiblings, verticalSpacingSuperview],
-                            nil];
-  [AutoLayoutUtility installVisualFormats:visualFormats
-                                withViews:viewsDictionary
-                                   inView:self];
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
+  viewsDictionary[@"intersectionLabel"] = self.intersectionLabel;
+  viewsDictionary[@"boardPositionLabel"] = self.boardPositionLabel;
+  viewsDictionary[@"capturedStonesLabel"] = self.capturedStonesLabel;
+  viewsDictionary[@"hotspotIconImageView"] = self.hotspotIconImageView;
+  // Spacing 0 is OK. In setupDummyContents we reserve space for a
+  // 3-digit number of captured stones, which is unlikely to occur.
+  // Numbers with 1 or 2 digits are much more likely, so the space
+  // reserved for a 2nd and/or 3rd digit acts as spacing (the label
+  // text is right-aligned). In the unlikely event that there *IS*
+  // a 3-digit number, spacing 0 is still tolerable.
+  [visualFormats addObject:@"H:[intersectionLabel]-0-[capturedStonesLabel]"];
+  // Spacing 0 is OK. boardPositionLabel gets more than enough width
+  // so that even with the longest text in it there is always a bit
+  // of leftover space at the right to act as spacing.
+  [visualFormats addObject:@"H:[boardPositionLabel]-0-[hotspotIconImageView]"];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-%d-[intersectionLabel]-%d-[boardPositionLabel]-%d-|", verticalSpacingSuperview, verticalSpacingSiblings, verticalSpacingSuperview]];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.intersectionLabel.superview];
 
   [AutoLayoutUtility centerSubview:self.stoneImageView
                        inSuperview:self
@@ -246,7 +251,7 @@ static UIFont* smallFont = nil;
   }
   [self.stoneImageView.leftAnchor constraintEqualToAnchor:leftAnchor constant:horizontalSpacingSuperview].active = YES;
   [self.infoIconImageView.rightAnchor constraintEqualToAnchor:rightAnchor constant:-horizontalSpacingSuperview].active = YES;
-  [self.hotspotIconImageView.rightAnchor constraintEqualToAnchor:rightAnchor constant:-horizontalSpacingSuperview].active = YES;
+  [self.markupIconImageView.rightAnchor constraintEqualToAnchor:rightAnchor constant:-horizontalSpacingSuperview].active = YES;
 
   [self updateDynamicAutoLayoutConstraints];
 }
@@ -292,6 +297,7 @@ static UIFont* smallFont = nil;
     self.capturedStonesLabel.text = nil;
     self.infoIconImageView.image = nil;
     self.hotspotIconImageView.image = nil;
+    self.markupIconImageView.image = nil;
   }
   else
   {
@@ -330,6 +336,11 @@ static UIFont* smallFont = nil;
     {
       self.hotspotIconImageView.image = nil;
     }
+
+    if ([self showsMarkupIcon:node])
+      self.markupIconImageView.image = markupIconImage;
+    else
+      self.markupIconImageView.image = nil;
   }
 
   // Let UI tests distinguish which image is set. Experimentally determined that
@@ -363,6 +374,7 @@ static UIFont* smallFont = nil;
     self.capturedStonesLabel.text = nil;
     self.infoIconImageView.image = nil;
     self.hotspotIconImageView.image = nil;
+    self.markupIconImageView.image = nil;
   }
   else
   {
@@ -374,6 +386,7 @@ static UIFont* smallFont = nil;
     self.capturedStonesLabel.text = @"999";
     self.infoIconImageView.image = infoIconImage;
     self.hotspotIconImageView.image = hotspotIconImage;
+    self.markupIconImageView.image = markupIconImage;
   }
 }
 
@@ -463,6 +476,17 @@ static UIFont* smallFont = nil;
     return [GoUtilities showHotspotIndicatorForNode:node];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupRealContent().
+// -----------------------------------------------------------------------------
+- (bool) showsMarkupIcon:(GoNode*)node
+{
+  if (self.offscreenMode)
+    return true;
+  else
+    return [GoUtilities showMarkupIndicatorForNode:node];
+}
+
 #pragma mark - UIView overrides
 
 // -----------------------------------------------------------------------------
@@ -496,6 +520,7 @@ static UIFont* smallFont = nil;
   bool oldPositionHasCapturedStones = (self.capturedStonesLabel.text != nil);
   bool oldPositionShowsInfoIcon = (self.infoIconImageView.image != nil);
   bool oldPositionShowsHotspotIcon = (self.hotspotIconImageView.image != nil);
+  bool oldPositionShowsMarkupIcon = (self.markupIconImageView.image != nil);
   // Setup content first because dynamic Auto Layout constraint calculation
   // examines the content
   [self setupRealContent];
@@ -503,13 +528,15 @@ static UIFont* smallFont = nil;
   bool newPositionHasCapturedStones = (self.capturedStonesLabel.text != nil);
   bool newPositionShowsInfoIcon = (self.infoIconImageView.image != nil);
   bool newPositionShowsHotspotIcon = (self.hotspotIconImageView.image != nil);
+  bool newPositionShowsMarkupIcon = (self.markupIconImageView.image != nil);
 
   // Optimization: Change Auto Layout constraints only if absolutely necessary
   if (oldPositionIsGreaterThanZero != newPositionIsGreaterThanZero ||
       oldPositionShowsMove != newPositionShowsMove ||
       oldPositionHasCapturedStones != newPositionHasCapturedStones ||
       oldPositionShowsInfoIcon != newPositionShowsInfoIcon ||
-      oldPositionShowsHotspotIcon != newPositionShowsHotspotIcon)
+      oldPositionShowsHotspotIcon != newPositionShowsHotspotIcon ||
+      oldPositionShowsMarkupIcon != newPositionShowsMarkupIcon)
   {
     [self updateDynamicAutoLayoutConstraints];
   }
@@ -533,12 +560,15 @@ static UIFont* smallFont = nil;
                                    self.capturedStonesLabel, @"capturedStonesLabel",
                                    self.infoIconImageView, @"infoIconImageView",
                                    self.hotspotIconImageView, @"hotspotIconImageView",
+                                   self.markupIconImageView, @"markupIconImageView",
                                    nil];
   int stoneImageWidth = 0;
   int horizontalSpacingStoneImageView = 0;
   int infoIconImageViewWidth = 0;
   int hotspotIconImageViewWidth = 0;
+  int markupIconImageViewWidth = 0;
   int horizontalSpacingInfoIconImageView = 0;
+  int horizontalSpacingBottomIcons = 0;
   if (self.boardPosition > 0)
   {
     if (self.stoneImageView.image)
@@ -570,6 +600,16 @@ static UIFont* smallFont = nil;
       hotspotIconImageViewWidth = iconImageWidthAndHeight;
     else
       hotspotIconImageViewWidth = 0;
+
+    if (self.markupIconImageView.image)
+      markupIconImageViewWidth = iconImageWidthAndHeight;
+    else
+      markupIconImageViewWidth = 0;
+
+    if (self.hotspotIconImageView.image && self.markupIconImageView.image)
+      horizontalSpacingBottomIcons = horizontalSpacingSiblings / 2.0f;  // a bit of spacing is required, but as minimal as possible
+    else
+      horizontalSpacingBottomIcons = 0;
   }
   else
   {
@@ -577,6 +617,8 @@ static UIFont* smallFont = nil;
     horizontalSpacingStoneImageView = 0;
     infoIconImageViewWidth = 0;
     hotspotIconImageViewWidth = 0;
+    markupIconImageViewWidth = 0;
+    horizontalSpacingBottomIcons = 0;
   }
 
   NSMutableArray* visualFormats = [NSMutableArray array];
@@ -589,36 +631,43 @@ static UIFont* smallFont = nil;
     [visualFormats addObject:@"H:[capturedStonesLabel(==0)]"];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[capturedStonesLabel]-%d-[infoIconImageView(==%d)]", horizontalSpacingInfoIconImageView, infoIconImageViewWidth]];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[hotspotIconImageView(==%d)]", hotspotIconImageViewWidth]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[markupIconImageView(==%d)]", markupIconImageViewWidth]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[hotspotIconImageView]-%d-[markupIconImageView]", horizontalSpacingBottomIcons]];
   NSArray* visualFormatsAutoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
                                                                               withViews:viewsDictionary
                                                                                  inView:self];
 
   // Because boardPositionLabel is sometimes not displayed the vertical
   // positioning of the icon images needs to be dynamic. If boardPositionLabel
-  // is not shown, the hotspot icon image is aligned instead on the center of
-  // intersectionLabel. In addition if both icon images are shown they need to
-  // have a bit of spacing in between.
+  // is not shown, the hotspot icon and markup icon images are aligned instead
+  // on the center of intersectionLabel. In addition if both the info icon
+  // image in the top row and one or both of the icon images in the bottom row
+  // are shown, the two rows need to have a bit of spacing in between.
   CGFloat infoIconAlignModifier = 0.0f;
-  UIView* hotspotIconAlignView = nil;
-  CGFloat hotspotIconAlignModifier = 0.0f;
-  if (self.intersectionLabel.text && self.boardPositionLabel.text)
+  UIView* bottomIconsAlignView = nil;
+  CGFloat bottomIconsAlignModifier = 0.0f;
+  if (self.boardPositionLabel.text)
   {
-    hotspotIconAlignView = self.boardPositionLabel;
+    bottomIconsAlignView = self.boardPositionLabel;
   }
   // The else branch relies on intersectionLabel being always shown
   else
   {
-    hotspotIconAlignView = self.intersectionLabel;
+    bottomIconsAlignView = self.intersectionLabel;
 
-    if (self.infoIconImageView.image && self.hotspotIconImageView.image)
+    if (self.infoIconImageView.image && (self.hotspotIconImageView.image || self.markupIconImageView.image))
     {
       infoIconAlignModifier = -((infoIconImageViewWidth + verticalSpacingIconImages) / 2.0f);
-      hotspotIconAlignModifier = (hotspotIconImageViewWidth + verticalSpacingIconImages) / 2.0f;
+      if (self.hotspotIconImageView.image)
+        bottomIconsAlignModifier = (hotspotIconImageViewWidth + verticalSpacingIconImages) / 2.0f;
+      else
+        bottomIconsAlignModifier = (markupIconImageViewWidth + verticalSpacingIconImages) / 2.0f;
     }
   }
 
   NSLayoutConstraint* infoIconAutoLayoutConstraints = nil;
   NSLayoutConstraint* hotspotIconAutoLayoutConstraints = nil;
+  NSLayoutConstraint* markupIconAutoLayoutConstraints = nil;
   if (self.infoIconImageView.image)
   {
     infoIconAutoLayoutConstraints = [AutoLayoutUtility alignFirstView:self.infoIconImageView
@@ -630,19 +679,29 @@ static UIFont* smallFont = nil;
   if (self.hotspotIconImageView.image)
   {
     hotspotIconAutoLayoutConstraints = [AutoLayoutUtility alignFirstView:self.hotspotIconImageView
-                                                          withSecondView:hotspotIconAlignView
+                                                          withSecondView:bottomIconsAlignView
                                                              onAttribute:NSLayoutAttributeCenterY
-                                                            withConstant:hotspotIconAlignModifier
+                                                            withConstant:bottomIconsAlignModifier
                                                         constraintHolder:self];
   }
+  if (self.markupIconImageView.image)
+  {
+    markupIconAutoLayoutConstraints = [AutoLayoutUtility alignFirstView:self.markupIconImageView
+                                                         withSecondView:bottomIconsAlignView
+                                                            onAttribute:NSLayoutAttributeCenterY
+                                                           withConstant:bottomIconsAlignModifier
+                                                       constraintHolder:self];
+  }
 
-  if (infoIconAutoLayoutConstraints || hotspotIconAlignView)
+  if (infoIconAutoLayoutConstraints || bottomIconsAlignView)
   {
     NSMutableArray* dynamicAutoLayoutConstraints = [NSMutableArray arrayWithArray:visualFormatsAutoLayoutConstraints];
     if (infoIconAutoLayoutConstraints)
       [dynamicAutoLayoutConstraints addObject:infoIconAutoLayoutConstraints];
     if (hotspotIconAutoLayoutConstraints)
       [dynamicAutoLayoutConstraints addObject:hotspotIconAutoLayoutConstraints];
+    if (markupIconAutoLayoutConstraints)
+      [dynamicAutoLayoutConstraints addObject:markupIconAutoLayoutConstraints];
     self.dynamicAutoLayoutConstraints = dynamicAutoLayoutConstraints;
   }
   else
@@ -700,6 +759,7 @@ static UIFont* smallFont = nil;
   iconImageWidthAndHeight = floor([UiElementMetrics tableViewCellContentViewHeight] * 0.3);
   CGSize iconImageSize = CGSizeMake(iconImageWidthAndHeight, iconImageWidthAndHeight);
   infoIconImage = [[[UIImage imageNamed:uiAreaAboutIconResource] imageByResizingToSize:iconImageSize] retain];
+  markupIconImage = [[[UIImage imageNamed:markupIconResource] imageByResizingToSize:iconImageSize] retain];
   hotspotIconImage = [[[UIImage imageNamed:hotspotIconResource] templateImageByResizingToSize:iconImageSize] retain];
 
   currentBoardPositionCellBackgroundColor = [[UIColor darkTangerineColor] retain];

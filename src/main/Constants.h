@@ -1280,6 +1280,7 @@ extern NSString* forwardToEndButtonIconResource;
 extern NSString* backButtonIconResource;
 extern NSString* rewindToStartButtonIconResource;
 extern NSString* hotspotIconResource;
+extern NSString* markupIconResource;
 extern NSString* stoneBlackImageResource;
 extern NSString* stoneWhiteImageResource;
 extern NSString* stoneCrosshairImageResource;
