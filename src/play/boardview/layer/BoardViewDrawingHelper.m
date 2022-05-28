@@ -142,13 +142,6 @@ CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, U
   layerRect.size = metrics.stoneInnerSquareSize;
   layerRect.size.width *= metrics.contentsScale;
   layerRect.size.height *= metrics.contentsScale;
-  // It looks better if the marker is slightly inset, and on the iPad we can
-  // afford to waste the space
-  if ([LayoutManager sharedManager].uiType == UITypePad)
-  {
-    layerRect.size.width -= 2 * metrics.contentsScale;
-    layerRect.size.height -= 2 * metrics.contentsScale;
-  }
 
   // If the layer size is large enough (look at the size after scaling) we use a
   // heavier stroke to give the markup symbol more weight. If the layer size is
@@ -409,13 +402,6 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, B
   layerRect.size = metrics.stoneInnerSquareSize;
   layerRect.size.width *= metrics.contentsScale;
   layerRect.size.height *= metrics.contentsScale;
-  // It looks better if the marker is slightly inset, and on the iPad we can
-  // afford to waste the space
-  if ([LayoutManager sharedManager].uiType == UITypePad)
-  {
-    layerRect.size.width -= 2 * metrics.contentsScale;
-    layerRect.size.height -= 2 * metrics.contentsScale;
-  }
 
   CGFloat strokeLineWidth = metrics.normalLineWidth * metrics.contentsScale;
 
