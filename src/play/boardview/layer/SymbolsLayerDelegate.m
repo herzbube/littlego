@@ -207,8 +207,6 @@
   if (uiAreaPlayMode == UIAreaPlayModeScoring)
     return;
 
-  GoGame* game = [GoGame sharedGame];
-
   // Make sure that layers are created before drawing methods that use them are
   // invoked
   [self createLayersIfNecessaryWithContext:context];
@@ -218,60 +216,29 @@
 
   if (uiAreaPlayMode == UIAreaPlayModePlay)
   {
-    if ([self shouldDisplayMoveNumbers])
-    {
-      [self drawMoveNumbersInContext:context inTileWithRect:tileRect];
-    }
-    else
-    {
-      if (self.boardViewModel.markLastMove)
-      {
-        BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
-        CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
-        CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
+    // A method that wants to draw a piece of markup on a GoPoint must first
+    // check this array if the GoPoint is already in the array. If not the
+    // method is allowed to draw on the GoPoint. The method must also add the
+    // GoPoint to the array, indicating to later methods that markup is already
+    // present on the GoPoint. Thus the order in which drawing methods are
+    // invoked determines which markup has precedence.
+    NSMutableArray* pointsWithMarkup = [NSMutableArray array];
 
-        GoMove* mostRecentMove;
-        GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.boardPosition.currentNode];
-        if (nodeWithMostRecentMove)
-          mostRecentMove = nodeWithMostRecentMove.goMove;
-        else
-          mostRecentMove = nil;
-        if (mostRecentMove && GoMoveTypePlay == mostRecentMove.type)
-        {
-          CGLayerRef lastMoveLayer;
-          if (mostRecentMove.player.isBlack)
-            lastMoveLayer = whiteLastMoveLayer;
-          else
-            lastMoveLayer = blackLastMoveLayer;
-          [BoardViewDrawingHelper drawLayer:lastMoveLayer
-                                withContext:context
-                            centeredAtPoint:mostRecentMove.point
-                             inTileWithRect:tileRect
-                                withMetrics:self.boardViewMetrics];
-        }
-      }
-    }
+    if ([self shouldDisplayMoveNumbers])
+      [self drawMoveNumbersInContext:context inTileWithRect:tileRect pointsWithMarkup:pointsWithMarkup];
+
+    [self drawMarkupInContext:context inTileWithRect:tileRect pointsWithMarkup:pointsWithMarkup];
+
+    if ([self shouldDisplayLastMoveSymbol])
+      [self drawLastMoveSymbolInContext:context inTileWithRect:tileRect pointsWithMarkup:pointsWithMarkup];
 
     if ([self shouldDisplayNextMoveLabel])
-    {
-      [self drawNextMoveInContext:context inTileWithRect:tileRect];
-    }
+      [self drawNextMoveLabelInContext:context inTileWithRect:tileRect pointsWithMarkup:pointsWithMarkup];
 
-    [self drawMarkupInContext:context inTileWithRect:tileRect];
   }
   else if (uiAreaPlayMode == UIAreaPlayModeBoardSetup)
   {
-    BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
-    CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
-
-    for (GoPoint* handicapPoint in game.handicapPoints)
-    {
-      [BoardViewDrawingHelper drawLayer:whiteLastMoveLayer
-                            withContext:context
-                        centeredAtPoint:handicapPoint
-                         inTileWithRect:tileRect
-                            withMetrics:self.boardViewMetrics];
-    }
+    [self drawHandicapStoneSymbolInContext:context inTileWithRect:tileRect];
   }
 }
 
@@ -335,22 +302,12 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for drawLayer:inContext:().
 // -----------------------------------------------------------------------------
-- (bool) shouldDisplayNextMoveLabel
-{
-  if (! self.boardViewMetrics.nextMoveLabelFont)
-    return false;
-  return self.boardPositionModel.markNextMove;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for drawLayer:inContext:().
-// -----------------------------------------------------------------------------
 - (void) drawMoveNumbersInContext:(CGContextRef)context
                    inTileWithRect:(CGRect)tileRect
+                 pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
 {
   UIFont* moveNumberFont = self.boardViewMetrics.moveNumberFont;
 
-  NSMutableArray* pointsAlreadyNumbered = [NSMutableArray arrayWithCapacity:0];
   GoGame* game = [GoGame sharedGame];
 
   // Use CGFloat here to guarantee that at least 1 move number is displayed.
@@ -369,9 +326,9 @@
     GoPoint* pointToBeNumbered = moveToBeNumbered.point;
     if (GoColorNone == pointToBeNumbered.stoneState)
       continue;  // stone placed by this move was captured by a later move
-    if ([pointsAlreadyNumbered containsObject:pointToBeNumbered])
+    if ([pointsWithMarkup containsObject:pointToBeNumbered])
       continue;
-    [pointsAlreadyNumbered addObject:pointToBeNumbered];
+    [pointsWithMarkup addObject:pointToBeNumbered];
 
     UIColor* textColor;
     if (moveToBeNumbered == lastMove && self.boardViewModel.markLastMove)
@@ -397,36 +354,9 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for drawLayer:inContext:().
 // -----------------------------------------------------------------------------
-- (void) drawNextMoveInContext:(CGContextRef)context
-                inTileWithRect:(CGRect)tileRect
-{
-  GoGame* game = [GoGame sharedGame];
-  GoNode* nodeWithNextMove = [GoUtilities nodeWithNextMove:game.boardPosition.currentNode];
-  if (! nodeWithNextMove)
-    return;
-  GoMove* nextMove = nodeWithNextMove.goMove;
-  if (GoMoveTypePlay != nextMove.type)
-    return;
-
-  NSString* nextMoveLabelText = @"A";
-  NSDictionary* textAttributes = @{ NSFontAttributeName : self.boardViewMetrics.nextMoveLabelFont,
-                                    NSForegroundColorAttributeName : [UIColor whiteColor],
-                                    NSParagraphStyleAttributeName : self.paragraphStyle,
-                                    NSShadowAttributeName: self.whiteTextShadow };
-  [BoardViewDrawingHelper drawString:nextMoveLabelText
-                         withContext:context
-                          attributes:textAttributes
-                      inRectWithSize:self.boardViewMetrics.nextMoveLabelMaximumSize
-                     centeredAtPoint:nextMove.point
-                      inTileWithRect:tileRect
-                         withMetrics:self.boardViewMetrics];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for drawLayer:inContext:().
-// -----------------------------------------------------------------------------
 - (void) drawMarkupInContext:(CGContextRef)context
               inTileWithRect:(CGRect)tileRect
+            pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
 {
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
@@ -442,7 +372,11 @@
   {
     [nodeMarkup.symbols enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* symbolAsNumber, BOOL* stop)
     {
-      GoPoint* point = [board pointAtVertex:vertexString];
+      GoPoint* pointWithSymbol = [board pointAtVertex:vertexString];
+      if ([pointsWithMarkup containsObject:pointWithSymbol])
+        return;
+      [pointsWithMarkup addObject:pointWithSymbol];
+
       enum GoMarkupSymbol symbol = [symbolAsNumber intValue];
 
       NSDictionary* symbolLayerTypes;
@@ -452,14 +386,14 @@
         // with the color opposite to the stroke color. Because of that the
         // symbol's primary color is the fill color and we have to invert the
         // logic that is used for the other symbols.
-        if (point.stoneState == GoColorWhite)
+        if (pointWithSymbol.stoneState == GoColorWhite)
           symbolLayerTypes = self.whiteStrokeSymbolLayerTypes;
         else
           symbolLayerTypes = self.blackStrokeSymbolLayerTypes;  // use white filled dot also when intersection is not occupied
       }
       else
       {
-        if (point.stoneState == GoColorBlack)
+        if (pointWithSymbol.stoneState == GoColorBlack)
           symbolLayerTypes = self.whiteStrokeSymbolLayerTypes;
         else
           symbolLayerTypes = self.blackStrokeSymbolLayerTypes;  // use black also when intersection is not occupied
@@ -471,7 +405,7 @@
 
       [BoardViewDrawingHelper drawLayer:layer
                             withContext:context
-                        centeredAtPoint:point
+                        centeredAtPoint:pointWithSymbol
                          inTileWithRect:tileRect
                             withMetrics:self.boardViewMetrics];
     }];
@@ -530,12 +464,15 @@
         return;
       }
 
-      GoPoint* point = [board pointAtVertex:vertexString];
+      GoPoint* pointWithLabel = [board pointAtVertex:vertexString];
+      if ([pointsWithMarkup containsObject:pointWithLabel])
+        return;
+      [pointsWithMarkup addObject:pointWithLabel];
 
       // Use white text color when intersection is not occupied, because black
       // colored text is difficult to read on the board's wooden background.
       UIColor* textColor;
-      if (point.stoneState == GoColorWhite)
+      if (pointWithLabel.stoneState == GoColorWhite)
         textColor = [UIColor blackColor];
       else
         textColor = [UIColor whiteColor];
@@ -543,7 +480,7 @@
       // For unoccupied intersections add a shadow to the white colored text to
       // improve readability even more
       NSDictionary* textAttributes;
-      if (point.stoneState == GoColorNone)
+      if (pointWithLabel.stoneState == GoColorNone)
       {
         textAttributes = @{ NSFontAttributeName : labelFont,
                             NSForegroundColorAttributeName : textColor,
@@ -561,7 +498,7 @@
                              withContext:context
                               attributes:textAttributes
                           inRectWithSize:labelMaximumSize
-                         centeredAtPoint:point
+                         centeredAtPoint:pointWithLabel
                           inTileWithRect:tileRect
                              withMetrics:self.boardViewMetrics];
     }];
@@ -570,6 +507,117 @@
   if (nodeMarkup.dimmings)
   {
     // Dimming is currently not supported
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (bool) shouldDisplayLastMoveSymbol
+{
+  return self.boardViewModel.markLastMove;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (void) drawLastMoveSymbolInContext:(CGContextRef)context
+                      inTileWithRect:(CGRect)tileRect
+                    pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
+{
+  GoGame* game = [GoGame sharedGame];
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.boardPosition.currentNode];
+  if (! nodeWithMostRecentMove)
+    return;
+
+  GoMove* mostRecentMove = nodeWithMostRecentMove.goMove;
+  if (GoMoveTypePlay != mostRecentMove.type)
+    return;
+
+  GoPoint* pointWithLastMoveSymbol = mostRecentMove.point;
+  if ([pointsWithMarkup containsObject:pointWithLastMoveSymbol])
+    return;
+  [pointsWithMarkup addObject:pointWithLastMoveSymbol];
+
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
+  CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
+
+  CGLayerRef lastMoveLayer;
+  if (mostRecentMove.player.isBlack)
+    lastMoveLayer = whiteLastMoveLayer;
+  else
+    lastMoveLayer = blackLastMoveLayer;
+
+  [BoardViewDrawingHelper drawLayer:lastMoveLayer
+                        withContext:context
+                    centeredAtPoint:pointWithLastMoveSymbol
+                     inTileWithRect:tileRect
+                        withMetrics:self.boardViewMetrics];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (bool) shouldDisplayNextMoveLabel
+{
+  if (! self.boardViewMetrics.nextMoveLabelFont)
+    return false;
+  return self.boardPositionModel.markNextMove;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (void) drawNextMoveLabelInContext:(CGContextRef)context
+                     inTileWithRect:(CGRect)tileRect
+                   pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
+{
+  GoGame* game = [GoGame sharedGame];
+  GoNode* nodeWithNextMove = [GoUtilities nodeWithNextMove:game.boardPosition.currentNode];
+  if (! nodeWithNextMove)
+    return;
+
+  GoMove* nextMove = nodeWithNextMove.goMove;
+  if (GoMoveTypePlay != nextMove.type)
+    return;
+
+  GoPoint* pointWithNextMoveLabel = nextMove.point;
+  if ([pointsWithMarkup containsObject:pointWithNextMoveLabel])
+    return;
+  [pointsWithMarkup addObject:pointWithNextMoveLabel];
+
+  NSString* nextMoveLabelText = @"A";
+  NSDictionary* textAttributes = @{ NSFontAttributeName : self.boardViewMetrics.nextMoveLabelFont,
+                                    NSForegroundColorAttributeName : [UIColor whiteColor],
+                                    NSParagraphStyleAttributeName : self.paragraphStyle,
+                                    NSShadowAttributeName: self.whiteTextShadow };
+  [BoardViewDrawingHelper drawString:nextMoveLabelText
+                         withContext:context
+                          attributes:textAttributes
+                      inRectWithSize:self.boardViewMetrics.nextMoveLabelMaximumSize
+                     centeredAtPoint:pointWithNextMoveLabel
+                      inTileWithRect:tileRect
+                         withMetrics:self.boardViewMetrics];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (void) drawHandicapStoneSymbolInContext:(CGContextRef)context
+                           inTileWithRect:(CGRect)tileRect
+{
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
+
+  GoGame* game = [GoGame sharedGame];
+  for (GoPoint* handicapPoint in game.handicapPoints)
+  {
+    [BoardViewDrawingHelper drawLayer:whiteLastMoveLayer
+                          withContext:context
+                      centeredAtPoint:handicapPoint
+                       inTileWithRect:tileRect
+                          withMetrics:self.boardViewMetrics];
   }
 }
 
