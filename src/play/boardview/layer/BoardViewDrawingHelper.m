@@ -165,6 +165,21 @@ CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, U
   // Inset the drawing rect so that the stroke is not clipped
   CGRect drawingRect = CGRectInset(layerRect, strokeLineWidth, strokeLineWidth);
 
+  if (symbol == GoMarkupSymbolTriangle)
+  {
+    // Slightly adjust the triangle's y-position, by one point, so that it looks
+    // properly centered on the intersection. We can't do this by adjusting the
+    // drawing rect (drawingRect.origin.y -= 1.0f * metrics.contentsScale)
+    // because then the stroke of the triangle will be clipped. Instead we
+    // adjust the layer rect height AFTER the drawing rect was calculated - the
+    // drawing rect is now no longer vertically centered within the layer rect
+    // but slightly shifted upwards. Because we know that later on the layer
+    // will be drawn centered on an intersection, we have to add TWO points to
+    // the layer rect height, to make sure that the layer's vertical center does
+    // not change when it will be drawn eventually.
+    layerRect.size.height += 2.0f * metrics.contentsScale;
+  }
+
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   CGContextRef layerContext = CGLayerGetContext(layer);
 
@@ -205,10 +220,6 @@ CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, U
     }
     case GoMarkupSymbolTriangle:
     {
-      // Slightly adjust the triangle's y-position so that it looks properly
-      // centered on the intersection.
-      drawingRect.origin.y -= 1.0f * metrics.contentsScale;
-
       // Draw path from A => B => C
       //     C
       //     /\
