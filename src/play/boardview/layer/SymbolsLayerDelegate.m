@@ -46,6 +46,8 @@
 @property(nonatomic, assign) UiSettingsModel* uiSettingsModel;
 @property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
 @property(nonatomic, retain) NSShadow* whiteTextShadow;
+@property(nonatomic, retain) UIColor* lastMoveColorOnBlackStone;
+@property(nonatomic, retain) UIColor* lastMoveColorOnWhiteStone;
 @property(nonatomic, retain) UIColor* connectionFillColor;
 @property(nonatomic, retain) UIColor* connectionStrokeColor;
 @property(nonatomic, retain) NSDictionary* blackStrokeSymbolLayerTypes;
@@ -79,6 +81,10 @@
   self.whiteTextShadow.shadowColor = [UIColor blackColor];
   self.whiteTextShadow.shadowBlurRadius = 5.0;
   self.whiteTextShadow.shadowOffset = CGSizeMake(1.0, 1.0);
+  // Use colors that are not black and white, to distinguish the last move
+  // marker from the square symbol
+  self.lastMoveColorOnBlackStone = [UIColor redColor];  // relatively low contrast, but good enough for the moment
+  self.lastMoveColorOnWhiteStone = [UIColor redColor];
   self.connectionFillColor = [UIColor whiteColor];
   self.connectionStrokeColor = [UIColor blackColor];
 
@@ -252,14 +258,14 @@
   CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
   if (! blackLastMoveLayer)
   {
-    blackLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor blackColor], self.boardViewMetrics);
+    blackLastMoveLayer = CreateSquareSymbolLayer(context, self.lastMoveColorOnWhiteStone, self.boardViewMetrics);
     [cache setLayer:blackLastMoveLayer ofType:BlackLastMoveLayerType];
     CGLayerRelease(blackLastMoveLayer);
   }
   CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
   if (! whiteLastMoveLayer)
   {
-    whiteLastMoveLayer = CreateSquareSymbolLayer(context, [UIColor whiteColor], self.boardViewMetrics);
+    whiteLastMoveLayer = CreateSquareSymbolLayer(context, self.lastMoveColorOnBlackStone, self.boardViewMetrics);
     [cache setLayer:whiteLastMoveLayer ofType:WhiteLastMoveLayerType];
     CGLayerRelease(whiteLastMoveLayer);
   }
@@ -333,11 +339,20 @@
 
     UIColor* textColor;
     if (moveToBeNumbered == lastMove && self.boardViewModel.markLastMove)
-      textColor = [UIColor redColor];
+    {
+      if (moveToBeNumbered.player.isBlack)
+        textColor = self.lastMoveColorOnBlackStone;
+      else
+        textColor = self.lastMoveColorOnWhiteStone;
+    }
     else if (moveToBeNumbered.player.isBlack)
+    {
       textColor = [UIColor whiteColor];
+    }
     else
+    {
       textColor = [UIColor blackColor];
+    }
     NSString* moveNumberText = [NSString stringWithFormat:@"%d", moveToBeNumbered.moveNumber];
     NSDictionary* textAttributes = @{ NSFontAttributeName : moveNumberFont,
                                       NSForegroundColorAttributeName : textColor,
