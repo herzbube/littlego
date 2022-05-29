@@ -46,8 +46,8 @@
 
   GoGame* unarchivedGame = unarchiveGameCommand.game;
 
-  [GoUtilities recalculateZobristHashes:unarchivedGame];
   [GoUtilities relinkMoves:unarchivedGame];
+  [GoUtilities recalculateZobristHashes:unarchivedGame];
 
   NewGameCommand* command = [[[NewGameCommand alloc] initWithGame:unarchivedGame] autorelease];
   // We want to keep the mode of the UI area "Play" from the previous session

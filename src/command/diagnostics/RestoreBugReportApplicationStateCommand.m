@@ -74,8 +74,8 @@
     return false;
   }
   [self fixObjectReferences];
-  [GoUtilities recalculateZobristHashes:self.unarchivedGame];
   [GoUtilities relinkMoves:self.unarchivedGame];
+  [GoUtilities recalculateZobristHashes:self.unarchivedGame];
 
   [self postNotifications];
   [self syncGtpEngine];
