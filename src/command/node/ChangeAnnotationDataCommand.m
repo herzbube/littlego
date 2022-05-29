@@ -17,6 +17,7 @@
 
 // Project includes
 #import "ChangeAnnotationDataCommand.h"
+#import "../backup/BackupGameToSgfCommand.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameDocument.h"
 #import "../../go/GoMove.h"
@@ -216,6 +217,7 @@ enum AnnotationDataChangeType
     if (dataDidChange)
     {
       [GoGame sharedGame].document.dirty = true;
+      [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
       [[NSNotificationCenter defaultCenter] postNotificationName:nodeAnnotationDataDidChange object:self.node];
     }
   }

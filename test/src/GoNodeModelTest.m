@@ -294,24 +294,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the nodeAnnotationDataDidChange() method.
-// -----------------------------------------------------------------------------
-- (void) testNodeAnnotationDataDidChange
-{
-  GoNodeModel* nodeModel = m_game.nodeModel;
-
-  XCTAssertFalse(m_game.document.dirty);
-  [nodeModel nodeAnnotationDataDidChange:nodeModel.rootNode];
-  XCTAssertTrue(m_game.document.dirty);
-
-  XCTAssertThrowsSpecificNamed([nodeModel nodeAnnotationDataDidChange:nil],
-                               NSException, NSInvalidArgumentException, @"nodeAnnotationDataDidChange with nil object");
-  GoNode* nodeNotInVariation = [GoNode node];
-  XCTAssertThrowsSpecificNamed([nodeModel nodeAnnotationDataDidChange:nodeNotInVariation],
-                               NSException, NSInvalidArgumentException, @"nodeAnnotationDataDidChange with node not in current variation");
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Exercises the @e numberOfNodes property.
 // -----------------------------------------------------------------------------
 - (void) testNumberOfNodes

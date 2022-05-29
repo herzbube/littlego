@@ -34,7 +34,6 @@
 - (void) testDiscardNodesFromIndex;
 - (void) testDiscardLeafNode;
 - (void) testDiscardAllNodes;
-- (void) testNodeAnnotationDataDidChange;
 - (void) testNumberOfNodes;
 - (void) testNumberOfMoves;
 - (void) testRootNode;
