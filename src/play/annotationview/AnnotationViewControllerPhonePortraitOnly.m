@@ -18,12 +18,12 @@
 // Project includes
 #import "AnnotationViewControllerPhonePortraitOnly.h"
 #import "../model/BoardViewModel.h"
+#import "../../command/node/ChangeAnnotationDataCommand.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeAnnotation.h"
-#import "../../go/GoNodeModel.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
@@ -1131,26 +1131,7 @@ enum ItemPickerContext
 - (void) removeDescription:(id)sender
 {
   GoNode* node = [self nodeWithAnnotationData];
-  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
-
-  bool atLeastOneDescriptionWasRemoved = false;
-
-  if (nodeAnnotation.shortDescription)
-  {
-    nodeAnnotation.shortDescription = nil;
-    atLeastOneDescriptionWasRemoved = true;
-  }
-
-  if (nodeAnnotation.longDescription)
-  {
-    nodeAnnotation.longDescription = nil;
-    atLeastOneDescriptionWasRemoved = true;
-  }
-
-  [self removeAnnotationFromNodeIfEmpty:node];
-
-  if (atLeastOneDescriptionWasRemoved)
-    [[GoGame sharedGame].nodeModel nodeAnnotationDataDidChange:node];
+  [[[[ChangeAnnotationDataCommand alloc] initWithNode:node shortDescription:nil longDescription:nil] autorelease] submit];
 }
 
 #pragma mark - View controller presentation
@@ -1207,57 +1188,16 @@ enum ItemPickerContext
   }
 
   GoNode* node = [self nodeWithAnnotationData];
-  [self createAnnotationIfNotExistsInNode:node];
-  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
-
-  bool valueDidChange = false;
 
   enum ItemPickerContext itemPickerContext = [controller.context intValue];
   if (itemPickerContext == BoardPositionValuationItemPickerContext)
-  {
-    if (nodeAnnotation.goBoardPositionValuation != controller.indexOfSelectedItem)
-    {
-      nodeAnnotation.goBoardPositionValuation = controller.indexOfSelectedItem;
-      valueDidChange = true;
-    }
-  }
+    [[[[ChangeAnnotationDataCommand alloc] initWithNode:node boardPositionValuation:controller.indexOfSelectedItem] autorelease] submit];
   else if (itemPickerContext == MoveValuationItemPickerContext)
-  {
-    GoMove* move = node.goMove;
-    if (! move)
-    {
-      NSString* errorMessage = @"Move valuation cannot be changed if there is no move";
-      DDLogError(@"%@: %@", self, errorMessage);
-      @throw [NSException exceptionWithName:NSInternalInconsistencyException
-                                     reason:errorMessage
-                                   userInfo:nil];
-    }
-
-    if (move.goMoveValuation != controller.indexOfSelectedItem)
-    {
-      move.goMoveValuation = controller.indexOfSelectedItem;
-      valueDidChange = true;
-    }
-  }
+    [[[[ChangeAnnotationDataCommand alloc] initWithNode:node moveValuation:controller.indexOfSelectedItem] autorelease] submit];
   else if (itemPickerContext == BoardPositionHotspotDesignationItemPickerContext)
-  {
-    if (nodeAnnotation.goBoardPositionHotspotDesignation != controller.indexOfSelectedItem)
-    {
-      nodeAnnotation.goBoardPositionHotspotDesignation = controller.indexOfSelectedItem;
-      valueDidChange = true;
-    }
-  }
+    [[[[ChangeAnnotationDataCommand alloc] initWithNode:node boardPositionHotspotDesignation:controller.indexOfSelectedItem] autorelease] submit];
   else
-  {
     assert(0);
-  }
-
-  // Check is not tied to valueDidChange == true - a new annotation object is
-  // created above even if the user picked a "none" value
-  [self removeAnnotationFromNodeIfEmpty:node];
-
-  if (valueDidChange)
-    [[GoGame sharedGame].nodeModel nodeAnnotationDataDidChange:node];
 
   [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -1278,25 +1218,10 @@ enum ItemPickerContext
     return;
 
   GoNode* node = [self nodeWithAnnotationData];
-  [self createAnnotationIfNotExistsInNode:node];
-  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
 
-  bool valueDidChange = false;
-
-  if (nodeAnnotation.estimatedScoreSummary != newEstimatedScoreSummary ||
-      nodeAnnotation.estimatedScoreValue != newEstimatedScoreValue)
-  {
-    [nodeAnnotation setEstimatedScoreSummary:newEstimatedScoreSummary
-                                       value:newEstimatedScoreValue];
-    valueDidChange = true;
-  }
-
-  // Check is not tied to valueDidChange == true - a new annotation object is
-  // created above even if the user picked a "none" value
-  [self removeAnnotationFromNodeIfEmpty:node];
-
-  if (valueDidChange)
-    [[GoGame sharedGame].nodeModel nodeAnnotationDataDidChange:node];
+  [[[[ChangeAnnotationDataCommand alloc] initWithNode:node
+                                estimatedScoreSummary:newEstimatedScoreSummary
+                                                value:newEstimatedScoreValue] autorelease] submit];
 }
 
 #pragma mark - EditNodeDescriptionControllerDelegate overrides
@@ -1315,28 +1240,10 @@ enum ItemPickerContext
     return;
 
   GoNode* node = [self nodeWithAnnotationData];
-  [self createAnnotationIfNotExistsInNode:node];
-  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
 
-  bool valueDidChange = false;
-
-  if (![NSString nullableString:nodeAnnotation.shortDescription isEqualToNullableString:newShortDescription])
-  {
-    nodeAnnotation.shortDescription = newShortDescription;
-    valueDidChange = true;
-  }
-  if (![NSString nullableString:nodeAnnotation.longDescription isEqualToNullableString:newLongDescription])
-  {
-    nodeAnnotation.longDescription = newLongDescription;
-    valueDidChange = true;
-  }
-
-  // Check is not tied to valueDidChange == true - a new annotation object is
-  // created above even if the user removed both description texts
-  [self removeAnnotationFromNodeIfEmpty:node];
-
-  if (valueDidChange)
-    [[GoGame sharedGame].nodeModel nodeAnnotationDataDidChange:node];
+  [[[[ChangeAnnotationDataCommand alloc] initWithNode:node
+                                     shortDescription:newShortDescription
+                                      longDescription:newLongDescription] autorelease] submit];
 }
 
 #pragma mark - Helpers
@@ -1350,38 +1257,6 @@ enum ItemPickerContext
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   GoNode* node = boardPosition.currentNode;
   return node;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Creates a new GoNodeAnnotation object if none exists in @a node, then
-/// adds it to @a node.
-// -----------------------------------------------------------------------------
-- (void) createAnnotationIfNotExistsInNode:(GoNode*)node
-{
-  if (node.goNodeAnnotation)
-    return;
-
-  GoNodeAnnotation* nodeAnnotation = [[[GoNodeAnnotation alloc] init] autorelease];
-  node.goNodeAnnotation = nodeAnnotation;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Removes the GoNodeAnnotation object from @a node if it exists but
-/// it is empty, i.e. all of its properties have default values.
-// -----------------------------------------------------------------------------
-- (void) removeAnnotationFromNodeIfEmpty:(GoNode*)node
-{
-  GoNodeAnnotation* nodeAnnotation = node.goNodeAnnotation;
-
-  if (nodeAnnotation &&
-      nodeAnnotation.shortDescription == nil &&
-      nodeAnnotation.longDescription == nil &&
-      nodeAnnotation.goBoardPositionValuation == GoBoardPositionValuationNone &&
-      nodeAnnotation.goBoardPositionHotspotDesignation == GoBoardPositionHotspotDesignationNone &&
-      nodeAnnotation.estimatedScoreSummary == GoScoreSummaryNone)
-  {
-    node.goNodeAnnotation = nil;
-  }
 }
 
 @end

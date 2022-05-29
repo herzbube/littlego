@@ -526,6 +526,8 @@
 		CDB3ECD4284285DD007512F6 /* markup@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ECCF284285DD007512F6 /* markup@3x.png */; };
 		CDB3ECD5284285DD007512F6 /* markup.svg in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ECD0284285DD007512F6 /* markup.svg */; };
 		CDB3ECD6284285DD007512F6 /* markup.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ECD1284285DD007512F6 /* markup.png */; };
+		CDB3ECDA2843ADD7007512F6 /* ChangeAnnotationDataCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB3ECD92843ADD6007512F6 /* ChangeAnnotationDataCommand.m */; };
+		CDB3ECDB2843ADD7007512F6 /* ChangeAnnotationDataCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB3ECD92843ADD6007512F6 /* ChangeAnnotationDataCommand.m */; };
 		CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
 		CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */; };
 		CDB4579F147AEB590043EDE4 /* EditPlayerProfileController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB4579E147AEB590043EDE4 /* EditPlayerProfileController.m */; };
@@ -1273,6 +1275,8 @@
 		CDB3ECCF284285DD007512F6 /* markup@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "markup@3x.png"; sourceTree = "<group>"; };
 		CDB3ECD0284285DD007512F6 /* markup.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = markup.svg; sourceTree = "<group>"; };
 		CDB3ECD1284285DD007512F6 /* markup.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = markup.png; sourceTree = "<group>"; };
+		CDB3ECD82843ADD6007512F6 /* ChangeAnnotationDataCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeAnnotationDataCommand.h; sourceTree = "<group>"; };
+		CDB3ECD92843ADD6007512F6 /* ChangeAnnotationDataCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangeAnnotationDataCommand.m; sourceTree = "<group>"; };
 		CDB45798147ADEAC0043EDE4 /* GtpEngineProfileModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpEngineProfileModel.h; sourceTree = "<group>"; };
 		CDB45799147ADEAD0043EDE4 /* GtpEngineProfileModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpEngineProfileModel.m; sourceTree = "<group>"; };
 		CDB4579D147AEB590043EDE4 /* EditPlayerProfileController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayerProfileController.h; sourceTree = "<group>"; };
@@ -2555,6 +2559,15 @@
 			path = markup;
 			sourceTree = "<group>";
 		};
+		CDB3ECD72843ADD6007512F6 /* node */ = {
+			isa = PBXGroup;
+			children = (
+				CDB3ECD82843ADD6007512F6 /* ChangeAnnotationDataCommand.h */,
+				CDB3ECD92843ADD6007512F6 /* ChangeAnnotationDataCommand.m */,
+			);
+			path = node;
+			sourceTree = "<group>";
+		};
 		CDB49E232208ABA3006DC1A4 /* uitest */ = {
 			isa = PBXGroup;
 			children = (
@@ -2632,6 +2645,7 @@
 				CD05A8CD1422807300214BBE /* game */,
 				CDAA57E0184FE9BE0049A90D /* gtp */,
 				CD05A8C91422803B00214BBE /* move */,
+				CDB3ECD72843ADD6007512F6 /* node */,
 				CD072705180B292E0083B138 /* playerinfluence */,
 				CD7C57C921FF9E1500694520 /* scoring */,
 				CD9B63EC25AB7804003E032B /* sgf */,
@@ -3632,6 +3646,7 @@
 				CDD86B4E2827FA2800AA0A6B /* SpacerView.m in Sources */,
 				CD7C57CC21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m in Sources */,
 				CDF341CA1727507900AEFB20 /* ApplicationStateManager.m in Sources */,
+				CDB3ECDA2843ADD7007512F6 /* ChangeAnnotationDataCommand.m in Sources */,
 				CDF341D1172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
 				CD5E6B361D7CCB610089D0B3 /* MoreGameActionsController.m in Sources */,
 				CDF341D3172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
@@ -3715,6 +3730,7 @@
 				CD7C57D12201E89500694520 /* SetupFirstMoveColorCommand.m in Sources */,
 				CD85B5CB1401C354001715B8 /* PlayerStatistics.m in Sources */,
 				CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */,
+				CDB3ECDB2843ADD7007512F6 /* ChangeAnnotationDataCommand.m in Sources */,
 				CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */,
 				CDEE19F619433EAC00DF2389 /* BoardViewController.m in Sources */,
 				CD2230B825E6640A00187C57 /* LogFormatter.m in Sources */,
