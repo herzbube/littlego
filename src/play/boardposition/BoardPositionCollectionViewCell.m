@@ -512,8 +512,18 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 - (void) setBoardPosition:(int)newValue
 {
-  bool oldPositionIsGreaterThanZero = (_boardPosition > 0);
-  bool newPositionIsGreaterThanZero = (newValue > 0);
+  bool newBoardPositionRequiresAutoLayoutConstraintUpdate;
+  if (_boardPosition == -1)
+  {
+    newBoardPositionRequiresAutoLayoutConstraintUpdate = true;
+  }
+  else
+  {
+    bool oldPositionIsGreaterThanZero = (_boardPosition > 0);
+    bool newPositionIsGreaterThanZero = (newValue > 0);
+    newBoardPositionRequiresAutoLayoutConstraintUpdate = (oldPositionIsGreaterThanZero != newPositionIsGreaterThanZero);
+  }
+
   _boardPosition = newValue;
 
   bool oldPositionShowsMove = (self.stoneImageView.image != nil);
@@ -531,7 +541,7 @@ static UIFont* smallFont = nil;
   bool newPositionShowsMarkupIcon = (self.markupIconImageView.image != nil);
 
   // Optimization: Change Auto Layout constraints only if absolutely necessary
-  if (oldPositionIsGreaterThanZero != newPositionIsGreaterThanZero ||
+  if (newBoardPositionRequiresAutoLayoutConstraintUpdate ||
       oldPositionShowsMove != newPositionShowsMove ||
       oldPositionHasCapturedStones != newPositionHasCapturedStones ||
       oldPositionShowsInfoIcon != newPositionShowsInfoIcon ||
