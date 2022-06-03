@@ -122,7 +122,11 @@
   [self updateGoObjectsToNewPosition:newBoardPosition];
   _currentBoardPosition = newBoardPosition;
   if (self.game.alternatingPlay)
-    self.game.nextMoveColor = [GoUtilities playerAfter:self.currentNode.goMove inGame:self.game].color;
+  {
+    GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:self.currentNode];
+    GoMove* mostRecentMove = nodeWithMostRecentMove ? nodeWithMostRecentMove.goMove : nil;
+    self.game.nextMoveColor = [GoUtilities playerAfter:mostRecentMove inGame:self.game].color;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -212,6 +216,11 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
+  // !!! IMPORTANT !!!
+  // This method must NOT query the GoNodeModel property numberOfMoves! See
+  // documentation of property numberOfNodes.
+  // !!! IMPORTANT !!!
+
   GoNodeModel* nodeModel = object;
   int numberOfNodes = nodeModel.numberOfNodes;
 
@@ -247,7 +256,11 @@
   [self willChangeValueForKey:@"currentBoardPosition"];
   _currentBoardPosition = newBoardPosition;
   if (self.game.alternatingPlay)
-    self.game.nextMoveColor = [GoUtilities playerAfter:self.currentNode.goMove inGame:self.game].color;
+  {
+    GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:self.currentNode];
+    GoMove* mostRecentMove = nodeWithMostRecentMove ? nodeWithMostRecentMove.goMove : nil;
+    self.game.nextMoveColor = [GoUtilities playerAfter:mostRecentMove inGame:self.game].color;
+  }
   [self didChangeValueForKey:@"currentBoardPosition"];
 }
 

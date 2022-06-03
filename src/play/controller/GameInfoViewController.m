@@ -430,8 +430,10 @@ enum BoardPositionSectionItem
     case ScoreInfoType:
     {
       GoGame* game = [GoGame sharedGame];
+      GoBoardPosition* boardPosition = game.boardPosition;
+      int numberOfMovesAfterCurrentBoardPosition = [GoUtilities numberOfMovesAfterNode:boardPosition.currentNode];
       NSString* titlePartOne = nil;
-      if (! game.boardPosition.isLastPosition)
+      if (numberOfMovesAfterCurrentBoardPosition > 0)
         titlePartOne = @"This score reflects the board position you are currently viewing, NOT the final score. Navigate to the last move of the game to see the final score.";
 
       NSString* titlePartTwo = nil;
@@ -467,9 +469,10 @@ enum BoardPositionSectionItem
     case BoardInfoType:
     {
       GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-      if (boardPosition.isFirstPosition)
+      GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:boardPosition.currentNode];
+      if (! nodeWithMostRecentMove)
         return @"You are viewing the board position at the beginning of the game, i.e. before the first move was played.";
-      else if (boardPosition.isLastPosition)
+      else if (! nodeWithMostRecentMove.goMove.next)
         return @"You are viewing the board position after the most recent move of the game has been played.";
       else
         return @"You are viewing a board position in the middle of the game.";
@@ -905,26 +908,26 @@ enum BoardPositionSectionItem
     case CurrentBoardPositionItem:
     {
       cell.textLabel.text = @"You are viewing";
-      if (boardPosition.isFirstPosition)
-        cell.detailTextLabel.text = @"Start of game";
+      GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:boardPosition.currentNode];
+      if (nodeWithMostRecentMove)
+        cell.detailTextLabel.text = [NSString stringWithFormat:@"Move %d", nodeWithMostRecentMove.goMove.moveNumber];
       else
-        cell.detailTextLabel.text = [NSString stringWithFormat:@"Move %d", boardPosition.currentBoardPosition];
+        cell.detailTextLabel.text = @"Start of game";
       break;
     }
     case CurrentBoardPositionMoveItem:
     {
       cell.textLabel.text = @"Move info";
-      if (boardPosition.isFirstPosition)
-        cell.detailTextLabel.text = @"n/a";
+      GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:boardPosition.currentNode];
+      if (nodeWithMostRecentMove)
+        cell.detailTextLabel.text = [self descriptionOfMove:nodeWithMostRecentMove.goMove];
       else
-        // TODO xxx support nodes that don't have moves
-        cell.detailTextLabel.text = [self descriptionOfMove:boardPosition.currentNode.goMove];
+        cell.detailTextLabel.text = @"n/a";
       break;
     }
     case MovesAfterCurrentBoardPositionItem:
     {
-      int indexOfLastBoardPosition = boardPosition.numberOfBoardPositions - 1;
-      int numberOfMovesAfterCurrentBoardPosition =  indexOfLastBoardPosition - boardPosition.currentBoardPosition;
+      int numberOfMovesAfterCurrentBoardPosition = [GoUtilities numberOfMovesAfterNode:boardPosition.currentNode];
       cell.textLabel.text = @"Moves after current position";
       cell.detailTextLabel.text = [NSString stringWithFormat:@"%d", numberOfMovesAfterCurrentBoardPosition];
       break;

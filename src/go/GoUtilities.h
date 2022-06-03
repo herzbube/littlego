@@ -56,6 +56,9 @@
 + (void) relinkMoves:(GoGame*)game;
 + (GoNode*) nodeWithMostRecentMove:(GoNode*)node;
 + (GoNode*) nodeWithNextMove:(GoNode*)node;
++ (bool) nodeWithNextMoveExists:(GoNode*)node;
++ (int) numberOfMovesBeforeNode:(GoNode*)node;
++ (int) numberOfMovesAfterNode:(GoNode*)node;
 + (bool) showInfoIndicatorForNode:(GoNode*)node;
 + (bool) showHotspotIndicatorForNode:(GoNode*)node;
 + (bool) showMarkupIndicatorForNode:(GoNode*)node;

@@ -53,10 +53,18 @@
 
 /// @brief Returns the number of nodes in the current variation. Always returns
 /// at least 1 because there always is at least a root node.
+///
+/// Note that when KVO observing is used on this property, this property will
+/// change value before property @e numberOfMoves. An observer that queries
+/// @e numberOfMoves will therefore get the wrong value (unless the node being
+/// added or removed does not contain a move).
 @property(nonatomic, assign, readonly) int numberOfNodes;
 
 /// @brief Returns the number of moves in the current variation. Returns 0 if
 /// there are no moves.
+///
+/// Note that when KVO observing is used on this property, this property will
+/// change value after property @e numberOfNodes.
 @property(nonatomic, assign, readonly) int numberOfMoves;
 
 @end

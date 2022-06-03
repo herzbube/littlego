@@ -109,31 +109,27 @@
 
   int numberOfBoardPositionsToDiscard = 1;
 
-  // TODO xxx The next block probably needs to be adjusted when it becomes
-  // possible to have nodes without moves
   BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
   if (boardPositionModel.discardMyLastMove)
   {
     GoMove* currentMove = boardPosition.currentNode.goMove;
 
-    // We only trigger the "Discard my last move" behaviour if the current board
-    // position was created by the computer player.
-    // - The main reason is that in a human vs. human game we don't want to
-    //   discard more than one board position.
-    // - Even in a computer vs. human game, though, it is possible to have
-    //   non-alternating play where the human player made several moves in a
-    //   row. If the user is viewing a board position in the middle or at the
-    //   end of such a row of human player moves we also want to discard only
-    //   one board position. It may become necessary to revisit this decision,
-    //   but at the time of writing this routine it seems best not to discard
-    //   too many board positions.
+    // The idea of the "Discard my last move" feature is to make the user's life
+    // easier when a computer vs. human game is going on. For the feature to
+    // have any effect the current board position must therefore be created by
+    // a move played by the computer player, and the previous board position
+    // must be created by a move played by the human player. Only then do we
+    // discard more than 1 board position. Multiple human player moves (which
+    // means non-alternating play) are all discarded together. This can occur
+    // even in a computer vs. human game. Any board positions that are non-moves
+    // break the discard chain.
     if (currentMove && ! currentMove.player.player.human)
     {
-      GoMove* move = currentMove.previous;
-      while (move && move.player.player.human)
+      GoNode* node = boardPosition.currentNode.parent;
+      while (node && node.goMove && node.goMove.player.player.human)
       {
         numberOfBoardPositionsToDiscard++;
-        move = move.previous;
+        node = node.parent;
       }
     }
   }

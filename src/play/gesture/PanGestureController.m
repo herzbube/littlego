@@ -23,6 +23,7 @@
 #import "../model/BoardViewModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoUtilities.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../main/MainUtility.h"
 #import "../../main/MagnifyingGlassOwner.h"
@@ -420,7 +421,7 @@
 
   if (GoGameStateGameHasEnded == game.state)
   {
-    if (game.boardPosition.isLastPosition)
+    if (! [GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode])
     {
       self.panningEnabled = false;
       return;
@@ -429,7 +430,8 @@
 
   // We get here in two cases
   // 1) The game is still in progress
-  // 2) The game has ended, but the user is viewing an old board position
+  // 2) The game has ended, but the user is viewing a board position that does
+  //    not reflect the last move of the game
   if (game.isComputerThinking)
     self.panningEnabled = false;
   else if (game.nextMovePlayerIsComputerPlayer)

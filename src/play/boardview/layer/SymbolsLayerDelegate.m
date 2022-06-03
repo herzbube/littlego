@@ -321,7 +321,11 @@
   // If we were using an integer type here, the result would be truncated,
   // which for very low numbers (e.g. 0.3) would result in 0 move numbers.
   CGFloat numberOfMovesToBeNumbered = game.nodeModel.numberOfMoves * self.boardViewModel.moveNumbersPercentage;
-  GoMove* moveToBeNumbered = game.boardPosition.currentNode.goMove;
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.boardPosition.currentNode];
+  if (! nodeWithMostRecentMove)
+    return;
+
+  GoMove* moveToBeNumbered = nodeWithMostRecentMove.goMove;
   GoMove* lastMove = moveToBeNumbered;
   for (;
        moveToBeNumbered && numberOfMovesToBeNumbered > 0;

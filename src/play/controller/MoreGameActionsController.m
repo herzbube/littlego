@@ -267,10 +267,7 @@
           continue;
         if (game.nextMovePlayerIsComputerPlayer)
           continue;
-        // Resigning the game performs a backup of the game in progress. We
-        // can't let that happen if it's not the last board position, otherwise
-        // the backup .sgf file would not contain the full game.
-        if (! game.boardPosition.isLastPosition)
+        if ([GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode])
           continue;
         title = @"Resign";
         alertActionBlock = ^(UIAlertAction* action) { [self resign]; };
@@ -284,10 +281,7 @@
           continue;
         if (GoGameStateGameHasEnded != game.state)
           continue;
-        // Reverting the game state performs a backup of the game in progress.
-        // We can't let that happen if it's not the last board position,
-        // otherwise the backup SGF file would not contain the full game.
-        if (! game.boardPosition.isLastPosition)
+        if ([GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode])
           continue;
         switch (game.reasonForGameHasEnded)
         {

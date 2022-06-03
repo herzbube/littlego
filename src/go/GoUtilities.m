@@ -545,12 +545,28 @@
   if (GoGameStateGameHasStarted != game.state)
     return false;
 
+  // Resumed play is not possible if no moves were played yet
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.boardPosition.currentNode];
+  if (! nodeWithMostRecentMove)
+    return false;
+
+  // Resumed play is only possible if the user views a board position that
+  // reflects the position after the last move was played. If this happens to
+  // be also the last node of the game then the user will be able to continue
+  // to play immediately. If there are other nodes (without moves) then the user
+  // will have to discard those nodes, or change board position to the last
+  // node of the game.
+  GoMove* mostRecentMove = nodeWithMostRecentMove.goMove;
+  bool mostRecentMoveIsLastMove = (mostRecentMove.next == nil);
+  if (! mostRecentMoveIsLastMove)
+    return false;
+
   // An even number of consecutive pass moves must have been made at the end of
   // the game. If GoFourPassesRuleFourPassesEndTheGame is in effect it will
   // cause the game to end after 4 passes, so that's not a problem we have to
   // deal with here.
   int numberOfConsecutivePassMoves = 0;
-  GoMove* potentialPassMove = game.lastMove;
+  GoMove* potentialPassMove = mostRecentMove;
   while (potentialPassMove && GoMoveTypePass == potentialPassMove.type)
   {
     ++numberOfConsecutivePassMoves;
@@ -559,11 +575,6 @@
   if (0 == numberOfConsecutivePassMoves)
     return false;
   if (numberOfConsecutivePassMoves % 2 != 0)
-    return false;
-
-  // Resumed play is only possible if the user views the last board position,
-  // i.e. is ready to continue to play
-  if (!game.boardPosition.isLastPosition)
     return false;
 
   return true;
@@ -594,10 +605,10 @@
   if (GoGameTypeComputerVsComputer == game.type)
     return false;
 
-  // If the user is not viewing the last board position, we assume that he is
-  // not interested in resuming play, so we don't allow it. More importantly: We
-  // MUST not resume play if GoDisputeResolutionRuleNonAlternatingPlay is active
-  // because:
+  // If the user is not viewing a board position that reflects the position
+  // after the last move was played, we assume that she is not interested in
+  // resuming play, so we don't allow it. More importantly: We MUST not resume
+  // play in case GoDisputeResolutionRuleNonAlternatingPlay is active, because:
   // 1) The client would probably have to display an alert that lets the user
   //    choose the side to play first after play is resumed. Such an alert is
   //    probably inappropriate since at the moment the user is viewing an old
@@ -609,8 +620,9 @@
   //    position.
   // 3) In response to the alert, the value of game.nextMoveColor might have to
   //    be changed which, again, is inappropriate because game.nextMoveColor is
-  //    tied to the CURRENT board position, not the LAST board position.
-  if (!game.boardPosition.isLastPosition)
+  //    tied to the CURRENT board position, not the board position with the LAST
+  //    move.
+  if ([GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode])
     return false;
 
   return true;
@@ -728,6 +740,58 @@
     node = node.firstChild;
   }
   return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines the direct descendants of @a node (excluding @a node).
+/// Returns true if at least one descendant node contains a move. Returns false
+/// if no descendant node contains a node.
+// -----------------------------------------------------------------------------
++ (bool) nodeWithNextMoveExists:(GoNode*)node
+{
+  return [GoUtilities nodeWithNextMove:node] != nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines the ancestors of @a node (excluding @a node). Returns the
+/// number of ancestor nodes that contain a move. Returns zero if @a node is
+/// @e nil.
+// -----------------------------------------------------------------------------
++ (int) numberOfMovesBeforeNode:(GoNode*)node
+{
+  int numberOfMovesBeforeNode = 0;
+
+  if (node)
+    node = node.parent;
+  while (node)
+  {
+    if (node.goMove)
+      numberOfMovesBeforeNode++;
+    node = node.parent;
+  }
+
+  return numberOfMovesBeforeNode;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines the direct descendants of @a node (excluding @a node).
+/// Returns the number of direct descendant nodes that contain a move. Returns
+/// zero if @a node is @e nil.
+// -----------------------------------------------------------------------------
++ (int) numberOfMovesAfterNode:(GoNode*)node
+{
+  int numberOfMovesAfterNode = 0;
+
+  if (node)
+    node = node.firstChild;
+  while (node)
+  {
+    if (node.goMove)
+      numberOfMovesAfterNode++;
+    node = node.firstChild;
+  }
+
+  return numberOfMovesAfterNode;
 }
 
 // -----------------------------------------------------------------------------

@@ -794,10 +794,13 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
   //
   // IMPORTANT: Ko detection must be based on the current board position, so
   // we must not use self.lastMove!
-  // TODO xxx fix this to work with nodes that don't have moves
-  GoMove* lastMove = self.boardPosition.currentNode.goMove;
-  if (! lastMove)
+  // ALSO IMPORTANT: The current board position's node might be a non-move node,
+  // so we have to search through the variation backwards until we find a move.
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:self.boardPosition.currentNode];
+  if (! nodeWithMostRecentMove)
     return false;
+
+  GoMove* lastMove = lastMove = nodeWithMostRecentMove.goMove;
   GoMove* previousToLastMove = lastMove.previous;
 
   long long zobristHashOfHypotheticalMove = [self zobristHashOfHypotheticalMoveAtPoint:point

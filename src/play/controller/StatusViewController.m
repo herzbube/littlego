@@ -534,8 +534,8 @@
           else
             tapString = @" - Tap to mark stones in seki";
 
-          if (! game.boardPosition.isLastPosition
-              || GoGameStateGameHasEnded != game.state)
+          if (GoGameStateGameHasEnded != game.state ||
+              [GoUtilities numberOfMovesAfterNode:game.boardPosition.currentNode] > 0)
           {
             // If the user is viewing an old board position we don't care
             // whether the game has ended, nor what the reason was - we always
@@ -573,53 +573,13 @@
         enum GoGameState gameState = game.state;
         if (GoGameStateGameHasStarted == gameState ||
             GoGameStateGameIsPaused == gameState ||
-            (GoGameStateGameHasEnded == gameState && ! game.boardPosition.isLastPosition))
+            (GoGameStateGameHasEnded == gameState && [GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode]))
         {
-          statusText = [self statusTextForMostRecentAndNextMove];
+          statusText = [self statusTextForMostRecentAndNextMove:game];
         }
         else if (GoGameStateGameHasEnded == gameState)
         {
-          switch (game.reasonForGameHasEnded)
-          {
-            case GoGameHasEndedReasonTwoPasses:
-            {
-              statusText = @"Game has ended by two consecutive pass moves";
-              break;
-            }
-            case GoGameHasEndedReasonThreePasses:
-            {
-              statusText = @"Game has ended by three consecutive pass moves";
-              break;
-            }
-            case GoGameHasEndedReasonFourPasses:
-            {
-              statusText = @"Game has ended by four consecutive pass moves";
-              break;
-            }
-            case GoGameHasEndedReasonBlackWinsByResignation:
-            case GoGameHasEndedReasonWhiteWinsByResignation:
-            {
-              NSString* color = game.reasonForGameHasEnded == GoGameHasEndedReasonBlackWinsByResignation ? @"White" : @"Black";
-              statusText = [NSString stringWithFormat:@"%@ resigned", color];
-              break;
-            }
-            case GoGameHasEndedReasonBlackWinsOnTime:
-            case GoGameHasEndedReasonWhiteWinsOnTime:
-            {
-              NSString* color = game.reasonForGameHasEnded == GoGameHasEndedReasonBlackWinsByResignation ? @"Black" : @"White";
-              statusText = [NSString stringWithFormat:@"%@ wins on time", color];
-              break;
-            }
-            case GoGameHasEndedReasonBlackWinsByForfeit:
-            case GoGameHasEndedReasonWhiteWinsByForfeit:
-            {
-              NSString* color = game.reasonForGameHasEnded == GoGameHasEndedReasonBlackWinsByResignation ? @"Black" : @"White";
-              statusText = [NSString stringWithFormat:@"%@ wins by forfeit", color];
-              break;
-            }
-            default:
-              break;
-          }
+          statusText = [self statusTextForMostRecentMoveAndGameEndedReason:game];
         }
       }
     }
@@ -630,55 +590,133 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for updateStatusLabel.
 // -----------------------------------------------------------------------------
-- (NSString*) statusTextForMostRecentAndNextMove
+- (NSString*) statusTextForMostRecentAndNextMove:(GoGame*)game
 {
-  GoGame* game = [GoGame sharedGame];
-  GoBoardPosition* boardPosition = game.boardPosition;
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.boardPosition.currentNode];
+  GoMove* nextMove = nodeWithMostRecentMove ? nodeWithMostRecentMove.goMove.next : nil;
 
-  GoMove* mostRecentMove;
-  GoMove* nextMove;
-  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:boardPosition.currentNode];
-  if (nodeWithMostRecentMove)
-  {
-    mostRecentMove = nodeWithMostRecentMove.goMove;
-    nextMove = mostRecentMove.next;
-  }
-  else
-  {
-    mostRecentMove = nil;
-    nextMove = nil;
-  }
+  NSString* statusTextMostRecentMove = [self statusTextForMostRecentMove:nodeWithMostRecentMove];
+  NSString* statusTextNextMove = [self statusTextForNextMove:nextMove inGame:game];
 
-  NSString* statusTextMostRecentMove;
+  return [NSString stringWithFormat:@"%@\n%@", statusTextMostRecentMove, statusTextNextMove];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for updateStatusLabel.
+// -----------------------------------------------------------------------------
+- (NSString*) statusTextForMostRecentMoveAndGameEndedReason:(GoGame*)game
+{
+  NSString* statusTextForGameEndedReason = [self statusTextForGameEndedReason:game];
+
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.boardPosition.currentNode];
+  if (! nodeWithMostRecentMove)
+    return statusTextForGameEndedReason;
+
+  NSString* statusTextMostRecentMove = [self statusTextForMostRecentMove:nodeWithMostRecentMove];
+
+  return [NSString stringWithFormat:@"%@\n%@", statusTextMostRecentMove, statusTextForGameEndedReason];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for updateStatusLabel and
+/// statusTextForMostRecentAndNextMove.
+// -----------------------------------------------------------------------------
+- (NSString*) statusTextForMostRecentMove:(GoNode*)nodeWithMostRecentMove
+{
+  NSString* statusText;
+
+  GoMove* mostRecentMove = nodeWithMostRecentMove ? nodeWithMostRecentMove.goMove : nil;
   if (mostRecentMove)
   {
     NSString* colorMostRecentMove = [NSString stringWithGoColor:mostRecentMove.player.color];
     if (GoMoveTypePlay == mostRecentMove.type)
-      statusTextMostRecentMove = [NSString stringWithFormat:@"%@ played %@", colorMostRecentMove, mostRecentMove.point.vertex.string];
+      statusText = [NSString stringWithFormat:@"%@ played %@", colorMostRecentMove, mostRecentMove.point.vertex.string];
     else
-      statusTextMostRecentMove = [NSString stringWithFormat:@"%@ passed", colorMostRecentMove];
+      statusText = [NSString stringWithFormat:@"%@ passed", colorMostRecentMove];
   }
   else
   {
-    statusTextMostRecentMove = @"Game started";
+    statusText = @"Game started";
   }
 
-  NSString* statusTextNextMove;
+  return statusText;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for statusTextForMostRecentAndNextMove.
+// -----------------------------------------------------------------------------
+- (NSString*) statusTextForNextMove:(GoMove*)nextMove inGame:(GoGame*)game
+{
+  NSString* statusText;
+
   if (nextMove)
   {
     NSString* colorNextMove = [NSString stringWithGoColor:nextMove.player.color];
     if (GoMoveTypePlay == nextMove.type)
-      statusTextNextMove = [NSString stringWithFormat:@"%@ will play %@", colorNextMove, nextMove.point.vertex.string];
+      statusText = [NSString stringWithFormat:@"%@ will play %@", colorNextMove, nextMove.point.vertex.string];
     else
-      statusTextNextMove = [NSString stringWithFormat:@"%@ will pass", colorNextMove];
+      statusText = [NSString stringWithFormat:@"%@ will pass", colorNextMove];
   }
   else
   {
     NSString* colorNextMove = [NSString stringWithGoColor:game.nextMoveColor];
-    statusTextNextMove = [NSString stringWithFormat:@"%@ to move", colorNextMove];
+    statusText = [NSString stringWithFormat:@"%@ to move", colorNextMove];
   }
 
-  return [NSString stringWithFormat:@"%@\n%@", statusTextMostRecentMove, statusTextNextMove];
+  return statusText;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for updateStatusLabel.
+// -----------------------------------------------------------------------------
+- (NSString*) statusTextForGameEndedReason:(GoGame*)game
+{
+  NSString* statusText;
+
+  switch (game.reasonForGameHasEnded)
+  {
+    case GoGameHasEndedReasonTwoPasses:
+    {
+      statusText = @"Game has ended by two consecutive pass moves";
+      break;
+    }
+    case GoGameHasEndedReasonThreePasses:
+    {
+      statusText = @"Game has ended by three consecutive pass moves";
+      break;
+    }
+    case GoGameHasEndedReasonFourPasses:
+    {
+      statusText = @"Game has ended by four consecutive pass moves";
+      break;
+    }
+    case GoGameHasEndedReasonBlackWinsByResignation:
+    case GoGameHasEndedReasonWhiteWinsByResignation:
+    {
+      NSString* color = game.reasonForGameHasEnded == GoGameHasEndedReasonBlackWinsByResignation ? @"White" : @"Black";
+      statusText = [NSString stringWithFormat:@"%@ resigned", color];
+      break;
+    }
+    case GoGameHasEndedReasonBlackWinsOnTime:
+    case GoGameHasEndedReasonWhiteWinsOnTime:
+    {
+      NSString* color = game.reasonForGameHasEnded == GoGameHasEndedReasonBlackWinsOnTime ? @"Black" : @"White";
+      statusText = [NSString stringWithFormat:@"%@ wins on time", color];
+      break;
+    }
+    case GoGameHasEndedReasonBlackWinsByForfeit:
+    case GoGameHasEndedReasonWhiteWinsByForfeit:
+    {
+      NSString* color = game.reasonForGameHasEnded == GoGameHasEndedReasonBlackWinsByForfeit ? @"Black" : @"White";
+      statusText = [NSString stringWithFormat:@"%@ wins by forfeit", color];
+      break;
+    }
+    default:
+      statusText = nil;
+      break;
+  }
+
+  return statusText;
 }
 
 // -----------------------------------------------------------------------------

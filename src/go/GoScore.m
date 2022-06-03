@@ -27,6 +27,7 @@
 #import "GoNodeModel.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
+#import "GoUtilities.h"
 #import "../main/ApplicationDelegate.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
@@ -440,7 +441,7 @@
   }
 
   GoGame* game = [GoGame sharedGame];
-  if (game.boardPosition.isLastPosition
+  if (! [GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode]
       && GoGameStateGameHasEnded == game.state)
   {
     SGFCGameResult gameResult = [SgfUtilities gameResultForGoGameHasEndedReason:game.reasonForGameHasEnded];
