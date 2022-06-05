@@ -175,7 +175,7 @@ const int gtpLogSizeMinimum = 5;
 const int gtpLogSizeMaximum = 1000;
 
 // Bug reports constants
-const int bugReportFormatVersion = 9;
+const int bugReportFormatVersion = 10;
 NSString* bugReportDiagnosticsInformationFileName = @"littlego-bugreport.zip";
 NSString* bugReportDiagnosticsInformationFileMimeType = @"application/zip";
 NSString* bugReportInfoFileName = @"bugreport-info.plist";
@@ -385,7 +385,7 @@ NSString* tryNotToPlaceIllegalStonesKey = @"TryNotToPlaceIllegalStones";
 
 // Constants for NSCoding
 // General constants
-const int nscodingVersion = 9;  // if you change this, also change bugReportFormatVersion
+const int nscodingVersion = 10;  // if you change this, also change bugReportFormatVersion
 NSString* nscodingVersionKey = @"NSCodingVersion";
 // Top-level object keys
 NSString* nsCodingGoGameKey = @"GoGame";
