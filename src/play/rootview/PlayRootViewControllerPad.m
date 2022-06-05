@@ -61,6 +61,7 @@
 @property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
 @property(nonatomic, assign) UILayoutConstraintAxis boardViewSmallerDimension;
 @property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
+@property(nonatomic, assign) CGFloat boardPositionCollectionViewBorderWidth;
 //@}
 
 /// @name Properties used for landscape
@@ -93,6 +94,7 @@
   self.autoLayoutConstraints = nil;
   self.boardViewSmallerDimension = UILayoutConstraintAxisHorizontal;
   self.boardViewAutoLayoutConstraints = nil;
+  self.boardPositionCollectionViewBorderWidth = 1.0f;
   return self;
 }
 
@@ -451,10 +453,10 @@
     self.boardPositionButtonBoxContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 
     [self.view addSubview:self.woodenBackgroundView];
-    [self.view addSubview:self.boardPositionCollectionViewController.view];
 
     [self.woodenBackgroundView addSubview:self.boardContainerView];
     [self.woodenBackgroundView addSubview:self.boardPositionButtonBoxAndAnnotationContainerView];
+    [self.woodenBackgroundView addSubview:self.boardPositionCollectionViewController.view];
 
     [self.boardContainerView addSubview:self.boardViewController.view];
 
@@ -513,6 +515,7 @@
 
     [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView];
     [UiUtilities applyTransparentStyleToView:self.annotationViewController.view];
+    self.boardPositionCollectionViewController.view.layer.borderWidth = self.boardPositionCollectionViewBorderWidth;
 
     [self.boardPositionButtonBoxController reloadData];
   }
@@ -547,45 +550,31 @@
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
 
+  // Wooden background view is laid out within the safe area of the main view.
+  // Especially important are the top/bottom of the safe area - this prevents
+  // the wooden background from extending behind the navigation bar at the top
+  // or the tab bar at the bottom
   self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-
-  CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewMaximumCellSize].height;
-  viewsDictionary[@"woodenBackgroundView"] = self.woodenBackgroundView;
-  viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
-  [visualFormats addObject:@"H:|-0-[woodenBackgroundView]-0-|"];
-  [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
-  [visualFormats addObject:@"V:[woodenBackgroundView]-0-[boardPositionCollectionView]"];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight]];
-  NSArray* visualFormatsConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
-                                                                    withViews:viewsDictionary
-                                                                       inView:self.view];
-  self.autoLayoutConstraints = [NSMutableArray arrayWithArray:visualFormatsConstraints];
-
-  // Align views with the top/bottom of the safe area - this prevents them from
-  // extending behind the navigation bar at the top or the tab bar at the bottom
-  NSLayoutConstraint* topConstraint = [AutoLayoutUtility alignFirstView:self.woodenBackgroundView
-                                                         withSecondView:self.view
-                                            onSafeAreaLayoutGuideAnchor:NSLayoutAttributeTop];
-  [self.autoLayoutConstraints addObject:topConstraint];
-  NSLayoutConstraint* bottomConstraint = [AutoLayoutUtility alignFirstView:self.boardPositionCollectionViewController.view
-                                                            withSecondView:self.view
-                                               onSafeAreaLayoutGuideAnchor:NSLayoutAttributeBottom];
-  [self.autoLayoutConstraints addObject:bottomConstraint];
+  NSArray* constraints = [AutoLayoutUtility fillSafeAreaOfSuperview:self.view withSubview:self.woodenBackgroundView];
+  self.autoLayoutConstraints = [NSMutableArray arrayWithArray:constraints];
 
   // Here we define the layout of the container views within the wooden
   // background view. The height of
   // boardPositionButtonBoxAndAnnotationContainerView is defined further down,
   // boardContainerView gets the remaining height.
-  [viewsDictionary removeAllObjects];
-  [visualFormats removeAllObjects];
+  CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewMaximumCellSize].height;
+  boardPositionCollectionViewHeight += 2 * self.boardPositionCollectionViewBorderWidth;
   self.boardContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionButtonBoxAndAnnotationContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   viewsDictionary[@"boardContainerView"] = self.boardContainerView;
   viewsDictionary[@"boardPositionButtonBoxAndAnnotationContainerView"] = self.boardPositionButtonBoxAndAnnotationContainerView;
+  viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
   [visualFormats addObject:@"H:|-0-[boardContainerView]-0-|"];
-  [visualFormats addObject:@"H:|-0-[boardPositionButtonBoxAndAnnotationContainerView]-0-|"];
-  [visualFormats addObject:@"V:|-0-[boardContainerView]-0-[boardPositionButtonBoxAndAnnotationContainerView]-0-|"];
+  [visualFormats addObject:@"H:|-[boardPositionButtonBoxAndAnnotationContainerView]-|"];
+  [visualFormats addObject:@"H:|-[boardPositionCollectionView]-|"];
+  [visualFormats addObject:@"V:|-[boardContainerView]-[boardPositionButtonBoxAndAnnotationContainerView]-[boardPositionCollectionView]-|"];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight]];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.woodenBackgroundView];
 
   // Here we define the height of
@@ -604,9 +593,9 @@
   self.annotationViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   viewsDictionary[@"boardPositionButtonBoxContainerView"] = self.boardPositionButtonBoxContainerView;
   viewsDictionary[@"annotationView"] = self.annotationViewController.view;
-  [visualFormats addObject:@"H:|-[boardPositionButtonBoxContainerView]-[annotationView]-|"];
-  [visualFormats addObject:@"V:|-[boardPositionButtonBoxContainerView]-|"];
-  [visualFormats addObject:@"V:|-[annotationView]-|"];
+  [visualFormats addObject:@"H:|-0-[boardPositionButtonBoxContainerView]-[annotationView]-0-|"];
+  [visualFormats addObject:@"V:|-0-[boardPositionButtonBoxContainerView]-0-|"];
+  [visualFormats addObject:@"V:|-0-[annotationView]-0-|"];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[annotationView(==%d)]", annotationViewHeight]];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.boardPositionButtonBoxContainerView.superview];
 
