@@ -142,3 +142,97 @@ https://developer.apple.com/library/ios/navigation/.
 [31] https://developer.apple.com/library/ios/#documentation/Miscellaneous/Reference/UTIRef/Articles/System-DeclaredUniformTypeIdentifiers.html
 [32] iOS Developer Library > Guides > Auto Layout Guide
 [33] iOS Developer Library > Guides > Collection View Programming Guide for iOS
+
+
+Reacting to interface orientation changes
+-----------------------------------------
+In a UIViewController a valid event source is to override
+viewWillLayoutSubviews. This occurs only if the controller's view is currently
+visible. A reliable source of what interface orientation is in force when
+viewWillLayoutSubviews occurs is the statusbar orientation. This can be queried
+at any time using [UIApplication sharedApplication].statusBarOrientation.
+
+That being said, UIApplicationWillChangeStatusBarOrientationNotification and
+UIApplicationDidChangeStatusBarOrientationNotification are also reliable event
+sources. The benefit of these notifications is that anyone can observe them, not
+only UIViewController subclasses.
+
+I vaguely remember that viewWillTransitionToSize is also an interesting override
+point in UIViewController, but currently I don't have any details.
+
+DeviceOrientationDidChangeNotification definitely is not a good trigger. Besides
+the usual four orientations, there are two additional ones that are difficult
+to interpret: UIDeviceOrientationFaceUp and UIDeviceOrientationFaceDown.
+
+
+Popovers
+--------
+Popovers are a feature commonly associated with the iPad. Although iOS allows
+view controllers to be presented using the presentation style
+UIModalPresentationPopover also on iPhone, the result is distinctly not the
+same as on iPadOS. Specifically, the popover is not a free-floating view with
+an arror pointing towards a source view (e.g. a button), instead it is a view
+sliding up from the bottom of the screen, almost covering the entire screen
+(on smaller iPhones actually the entire screen is covered).
+
+While the hoped-for visual effect on the iPhone remains absent, some unexpected
+layouting issues occurred that raised the idea in my head to code a custom
+popover mechanism for iPhone. Three rough areas that need coverage seem obvious:
+- Calculate where to position the popover in relation to the source view.
+- Custom drawing of an arrow pointing towards the source view.
+- Last but definitely not least, reacting to the software keyboard appearing and
+  disappearing to dynamically adjust the position and size of the popover.
+
+The last point is what makes the cost of coding such a custom popover solution
+seem prohibitive. The following keyboard topics need to be handled properly:
+- Floating vs. docked keyboard
+- Split vs. unified keyboard
+- Custom keyboards provided by third parties
+
+
+Creating a draggable view
+-------------------------
+At one point I considered making the annotation view undockable/draggable. I
+found an article [1] with some demo code with which I was able to quickly
+produce a proof of concept. Although nothing came out of it at that time, here
+is the PoC code that worked quite well for me:
+
+@property(nonatomic, retain) UIView* draggableView;
+@property(nonatomic, retain) UIPanGestureRecognizer* draggingGestureRecognizer;
+
+- (void) setupDraggableView
+{
+  self.draggableView = [...];
+  [self.view addSubview:self.draggableView];
+  self.draggableView.backgroundColor = [UIColor whiteColor];
+
+  self.draggingGestureRecognizer = [[[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePanFrom:)] autorelease];
+  self.draggingGestureRecognizer.delegate = self;
+  self.draggingGestureRecognizer.enabled = YES;
+
+  self.draggableView.userInteractionEnabled = YES;
+  [self.draggableView addGestureRecognizer:self.draggingGestureRecognizer];
+
+  self.draggableView.translatesAutoresizingMaskIntoConstraints = NO;
+  viewsDictionary[@"draggableView"] = self.draggableView;
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-[draggableView]"]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-[draggableView]"]];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[draggableView(==%f)]", 250.0f]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[draggableView(==%f)]", 100.0f]];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.draggableView.superview];
+}
+
+- (void) handlePanFrom:(UIPanGestureRecognizer*)gestureRecognizer
+{
+  CGPoint translation = [gestureRecognizer translationInView:self.draggableView.superview];
+  self.draggableView.center = CGPointMake(self.draggableView.center.x + translation.x,
+                                          self.draggableView.center.y + translation.y);
+  [gestureRecognizer setTranslation:CGPointZero inView:self.draggableView];
+}
+
+- (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
+{
+  return YES;
+}
+
+[1] ]https://www.swiftdevjournal.com/creating-a-draggable-ios-view/

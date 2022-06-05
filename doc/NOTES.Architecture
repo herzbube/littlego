@@ -159,14 +159,17 @@ UI design
 As noted in "About the Play UI area", the Play UI area has a large number of UI
 elements, and these must somehow be fitted into the small screeen estate
 available on the iPhone. Here I try to outline the thoughts that went into the
-iPhone UI design:
+iPhone UI design. Some of the notes do not apply to the iPad UI design and the
+iPhone landscape UI design.
 - The Go board view
   - The Go board view has the following purposes: 1) Accurately represent
     board positions (in a game that is actively being played, the current game
     state is just a special board position). 2) Provide user interaction so
     that the user can place a stone. 3) Display scoring information (territory
     markup, dead stones, etc.). 4) Provide user interaction so that the user
-    can mark dead stones during scoring.
+    can mark dead stones during scoring. 5) Provide user interaction so that
+    the user can setup the board before the first move is played. 6) Provide
+    user interaction so that the user can edit markup.
   - Because the Go board is square, but iOS device screens are rectangular, the
     game view cannot take full advantage of all the available screen estate.
     The game view is responsible for making the most of the current situation,
@@ -181,9 +184,9 @@ iPhone UI design:
     is a "nervous" UI, i.e. toolbar buttons are constantly being shown and
     hidden. I have not yet come up with a UI design that is more "calm".
   - At the right-most position there is a "Game Actions" button which provides
-    access to an alert message with additional actions that are not used very
+    access to a menu with additional actions that are not used very
     often. Only actions related to games as a whole are to be displayed by
-    this alert message.
+    this menu.
   - At the second-to-right-most position there is a "Game Info" button that
     provides access to a screen with detailed information about the current
     game.
@@ -208,6 +211,7 @@ iPhone UI design:
     becomes visible it trades space with one or more other buttons that become
     hidden in its stead.
 - The board position toolbar
+  - TODO xxx review this section
   - There is room for another toolbar because the Go board cannot occupy all the
     vertical space that is available
   - All UI elements that are somehow related to board positions are located in
@@ -223,6 +227,7 @@ iPhone UI design:
     board position view is tappable. I hope so, because after all the view is
     located in a toolbar, and toolbars usually contain interactive UI elements.
 - The board position view
+  - TODO xxx review this section
   - A small view is required that displays information about the board position
     that the user is currently viewing
   - The view must be visible at all times so that the user does not get lost
@@ -230,6 +235,7 @@ iPhone UI design:
     switches between a set of buttons that are used to navigate between board
     positions, and the list of board positions
 - Buttons to navigate between board positions
+  - TODO xxx review this section
   - Buttons to jump back/forward one position are used to navigate short
     distances
   - Buttons to jump to the beginning/end of the game are used to navigate far
@@ -240,6 +246,7 @@ iPhone UI design:
     distinct looking icons; all the icons that I experimented with resulted in
     an ugly-looking, jumbled mass of arrows :-(
 - The list of board positions
+  - TODO xxx review this section
   - This view exists because the toolbar buttons to go back/forward one board
     position make it hard to access board positions that are far away from
     the current board position.
@@ -273,8 +280,9 @@ application never crashes!
 
 Little Go uses a strategy that is more elaborate, but in order to do so it
 distinguishes between two types of data that need to be saved:
-- The game in progress. The game's moves are the user's most precious data, so
-  the application tries very hard to never lose this data.
+- The game in progress. The game's moves and any other data associated with the
+  game (e.g. annotations, markup) are the user's most precious data, so the
+  application tries very hard to never lose this data.
 - Application state and user preferences: This data is slightly less important.
   The user would certainly be annoyed if she lost some of this data, but it
   would not be a total disaster. Accordingly, the application tries a little bit
@@ -282,16 +290,81 @@ distinguishes between two types of data that need to be saved:
 
 So how does the strategy work in detail?
 - The game in progress is saved immediately every time a move is played or
-  discarded. Data from the previous backup operation is overwritten. This gives
-  maximum protection against crashes (assuming that there is no crash during the
-  game-saving routine itself), for the price of additional file activity (i.e.
-  flash drive write cycles) and processing power.
+  discarded, or any other data associated with the game (e.g. annotations,
+  markup) is changed. Data from the previous backup operation is overwritten.
+  This gives maximum protection against crashes (assuming that there is no crash
+  during the game-saving routine itself), for the price of additional file
+  activity (i.e. flash drive write cycles) and processing power.
 - User preferences: This data is saved only when the user switches tabs, or when
   the application is suspended for any reason.
 - Other application state (e.g. the board position that the user currently
   views): This data is saved only when the application is suspended for any
   reason.
 
-The implementation for all of this can be found in ApplicationStateManager and
-MainTabBarController.
+Storage formats
+- User preferences data is written to disk by model objects which hold the data
+  (e.g. BoardViewModel), with the help of NSUserDefaults. The concrete storage
+  format is opaque, but can be assumed to be a key/value based .plist file.
+- The game in progress and other application state is written to disk by
+  SaveApplicationStateCommand. The data is saved as a binary file, the format
+  is an NSCoding archive that represents the in-memory objects of GoGame and its
+  associated object cluster.
+- The game in progress is written to disk by SaveSgfCommand. The data is saved
+  as an .sgf text file in the SGF format. This serves as a fallback mechanism
+  in case restoring the NSCoding archive fails for any reason.
 
+Responsibilities
+- Tab switches are detected by MainTabBarController. It (indirectly) triggers
+  the writing of user preferences in the ApplicationDelegate method
+  writeUserDefaults(), which in turn instructs the individual model objects
+  to save their user preferences data.
+- SaveApplicationStateCommand is executed by ApplicationStateManager. It does
+  this on two occasions:
+  - When its applicationDidEnterBackground() method is invoked. This is
+    triggered by ApplicationDelegate when the system informs the delegate that
+    the application has entered the background and is about to be suspended.
+  - When its commitSavePoint() method is invoked. This method must be actively
+    invoked by commands and other agents when they perform operations that MAY
+    cause important changes to the game in progress and other application state.
+- ApplicationStateManager only executes SaveApplicationStateCommand when it was
+  informed about actual application state changes by invoking its
+  applicationStateDidChange() method. This method is actively invoked by
+  commands and other agents that perform the actual application state changes.
+- Very important: Commands/agents that invoke applicationStateDidChange() are
+  not necessarily the same commands/agents that also invoke commitSavePoint().
+  - There may be commands/agents that just know that they changed some state
+    (they invoke applicationStateDidChange()) but they don't consider it
+    important enough to immediately save it (they do not invoke
+    commitSavePoint()). There are relatively few cases of this, typically when
+    it is about state that is stored in the object cluster associated with
+    GoGame but that does not belong to the actual game in progress and is not
+    stored in an .sgf file. Notable examples:
+    - The board position that the user currently views. See
+      ChangeBoardPositionCommand.
+    - Scoring information. See ChangeUIAreaPlayModeCommand and the
+      GameActionManager method goScoreCalculationEnds.
+  - Conversely there may be commands/agents that know that an operation they
+    perform MAY have caused some change (they invoke commitSavePoint() to be on
+    the safe side), but they do not perform the change themselves (they do not
+    invoke applicationStateDidChange()). There is currently no example for this
+    scenario.
+- SaveSgfCommand is executed by SaveGameCommand, which is a command triggered by
+  the user and is not further discussed here, and BackupGameToSgfCommand, which
+  is the command that is interesting for the current discussion.
+  - BackupGameToSgfCommand must be actively executed by commands and other
+    agents.
+  - In general most commands/agents that invoke the ApplicationStateManager
+    method commitSavePoint() also execute BackupGameToSgfCommand.
+  - The exception are commands/agents that perform changes to the game in
+    progress for which there is no reprentation in the SGF format. Notable
+    examples:
+    - Changing game state to "ended" and resuming play after the game has ended.
+      See ResumePlayCommand.
+    - Switching the side that will play next from Black to White, or vice versa.
+      See the MoreGameActionsController method switchNextMoveColor.
+- Note that setting the GoGameDocument dirty flag only contributes to the user
+  being prompted about having unsaved changes in the game. The flag does not
+  participate in any of the backup mechanisms discussed above.
+
+The documentation of class ApplicationStateManager has additional technical
+details which may be interesting to read.

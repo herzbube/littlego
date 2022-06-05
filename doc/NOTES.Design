@@ -75,6 +75,7 @@ View controller hierarchy for UITypePhone:
             |   |   +-- BoardView
             |   +-- ButtonBoxController : UICollectionViewController
             |   |   +-- UICollectionView (board position navigation cells)
+            |   +-- AnnotationViewController
             |   +-- BoardPositionCollectionViewController : UICollectionViewController
             |   |   +-- UICollectionView (BoardPositionCollectionViewCell cells)
             +-- Landscape orientation
@@ -86,6 +87,7 @@ View controller hierarchy for UITypePhone:
                     |   +-- BoardPositionCollectionViewController : UICollectionViewController
                     |       +-- UICollectionView (BoardPositionCollectionViewCell cells)
                     +-- RightPaneViewController
+                        +-- AnnotationViewController
                         +-- ButtonBoxController : UICollectionViewController
                         |   +-- UICollectionView (board position navigation cells)
                         +-- BoardViewController
@@ -117,6 +119,7 @@ View controller hierarchy for UITypePad:
             |   |   +-- BoardView
             |   +-- ButtonBoxController : UICollectionViewController
             |   |   +-- UICollectionView (board position navigation cells)
+            |   +-- AnnotationViewController
             |   +-- BoardPositionCollectionViewController : UICollectionViewController
             |   |   +-- UICollectionView (BoardPositionCollectionViewCell cells)
             +-- Landscape orientation
@@ -128,6 +131,7 @@ View controller hierarchy for UITypePad:
                     |   +-- BoardPositionCollectionViewController : UICollectionViewController
                     |       +-- UICollectionView (BoardPositionCollectionViewCell cells)
                     +-- RightPaneViewController
+                        +-- AnnotationViewController
                         +-- ButtonBoxController : UICollectionViewController
                         |   +-- UICollectionView (board position navigation cells)
                         +-- BoardViewController
@@ -158,6 +162,7 @@ View controller hierarchy for UITypePhonePortraitOnly:
             |   +-- BoardView
             +-- ButtonBoxController : UICollectionViewController
             |   +-- UICollectionView (board position navigation cells)
+            |   +-- AnnotationViewController
             +-- BoardPositionCollectionViewController : UICollectionViewController
                 +-- UICollectionView (BoardPositionCollectionViewCell cells)
 
