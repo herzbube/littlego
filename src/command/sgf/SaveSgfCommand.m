@@ -275,8 +275,8 @@
 {
   // TODO xxx This method does not have variation support.
 
-  // Start with first child, root node cannot contain GoMove or GoNodeAnnotation
-  // objects
+  // Start with first child, root node cannot contain GoMove, GoNodeAnnotation
+  // or GoNodeMarkup objects
   GoNode* goNode = goGame.nodeModel.rootNode.firstChild;
   while (goNode)
   {

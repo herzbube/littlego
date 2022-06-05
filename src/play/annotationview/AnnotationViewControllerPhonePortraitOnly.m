@@ -948,17 +948,24 @@ enum ItemPickerContext
     //   the root node, as the root node does not contain a position
     // - Without a position it does not make sense to mark the root node as a
     //   hotspot, or assign a score estimate to it
-    // - However, it is conceivable that even the root node can have a node
-    //   title (= short description) or a comment (= long description) in it
+    // - In an .sgf file it is perfectly fine for the root node to have a node
+    //   title (= short description) or a comment (= long description).
+    //   However, when LoadGameCommand encounters a node title or comment
+    //   property in the root node, it splits them off into a separate new node.
+    //   Also SaveSgfCommand currently ignores descriptions in the root node.
+    //   At the moment we therefore disable editing of descriptions for the root
+    //   node, althought that might change later.
 
-    isPositionValuationButtonEnabled = game.boardPosition.isFirstPosition ? NO : YES;
+    bool currentBoardPositionIsFirstPosition = game.boardPosition.isFirstPosition;
+
+    isPositionValuationButtonEnabled = currentBoardPositionIsFirstPosition ? NO : YES;
     if (node.goMove)
-      isMoveValuationButtonEnabled = game.boardPosition.isFirstPosition ? NO : YES;
+      isMoveValuationButtonEnabled = currentBoardPositionIsFirstPosition ? NO : YES;
     else
       isMoveValuationButtonEnabled = NO;
-    isHotspotButtonEnabled = game.boardPosition.isFirstPosition ? NO : YES;
-    isEstimatedScoreButtonEnabled = game.boardPosition.isFirstPosition ? NO : YES;
-    isDescriptionEditButtonEnabled = YES;
+    isHotspotButtonEnabled = currentBoardPositionIsFirstPosition ? NO : YES;
+    isEstimatedScoreButtonEnabled = currentBoardPositionIsFirstPosition ? NO : YES;
+    isDescriptionEditButtonEnabled = currentBoardPositionIsFirstPosition ? NO : YES;
     isDescriptionRemoveButtonEnabled = (node.goNodeAnnotation.shortDescription || node.goNodeAnnotation.longDescription) ? YES : NO;
   }
 
