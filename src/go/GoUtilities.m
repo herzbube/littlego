@@ -725,7 +725,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Examines the direct descendants  of @a node (excluding @a node).
+/// @brief Examines the direct descendants of @a node (excluding @a node).
 /// Returns the first node found that contains a move. Returns @e nil if no move
 /// can be found.
 // -----------------------------------------------------------------------------

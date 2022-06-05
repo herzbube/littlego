@@ -188,7 +188,7 @@ enum ComputerAssistanceSectionItem
 
 // -----------------------------------------------------------------------------
 /// @brief Displays ItemPickerController to allow the user to pick a new value
-/// for the InconsistentTerritoryMarkupType property.
+/// for the ComputerAssistanceType property.
 // -----------------------------------------------------------------------------
 - (void) pickComputerAssistanceType
 {
