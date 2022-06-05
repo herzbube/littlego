@@ -231,11 +231,11 @@
     switch (indexPath.row)
     {
       case 0:
-        return BoardPositionNavigationButtonRewindToStart;
-      case 1:
         return BoardPositionNavigationButtonPrevious;
-      case 2:
+      case 1:
         return BoardPositionNavigationButtonNext;
+      case 2:
+        return BoardPositionNavigationButtonRewindToStart;
       case 3:
         return BoardPositionNavigationButtonForwardToEnd;
       default:

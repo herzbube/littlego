@@ -69,7 +69,8 @@
   CGFloat verticalMarginFactor;
   if (scrollDirection == UICollectionViewScrollDirectionHorizontal)
   {
-    rowSpacingFactor = 1.0f;
+    // 1.0 is not sufficient, buttons are too close together
+    rowSpacingFactor = 1.5f;
     columnSpacingFactor = 2.0f;
     horizontalMarginFactor = 2.0f;
     verticalMarginFactor = 1.0f;
@@ -77,7 +78,8 @@
   else
   {
     rowSpacingFactor = 2.0f;
-    columnSpacingFactor = 1.0f;
+    // 1.5 is not sufficient, buttons are too close together
+    columnSpacingFactor = 2.0f;
     horizontalMarginFactor = 1.0f;
     verticalMarginFactor = 2.0f;
   }

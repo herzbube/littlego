@@ -360,8 +360,10 @@
   CGSize buttonBoxSize = self.boardPositionButtonBoxController.buttonBoxSize;
   // The annotation view should be high enough to display most description
   // texts without scrolling. It can't be arbitrarily high because it must
-  // leave enough space for the board view.
-  int annotationViewHeight = buttonBoxSize.height * 1.0;
+  // leave enough space for the board view. It can't be arbitrarily small
+  // because it must have sufficient space to display two vertically stacked
+  // buttons.
+  int annotationViewHeight = buttonBoxSize.height * 1.1;
   [viewsDictionary removeAllObjects];
   [visualFormats removeAllObjects];
   self.boardPositionButtonBoxContainerView.translatesAutoresizingMaskIntoConstraints = NO;

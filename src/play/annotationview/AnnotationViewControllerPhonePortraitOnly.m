@@ -50,7 +50,6 @@ enum ItemPickerContext
 // -----------------------------------------------------------------------------
 @interface AnnotationViewControllerPhonePortraitOnly()
 @property(nonatomic, assign) bool presentViewControllersInPopover;
-@property(nonatomic, assign) bool displayDescriptionRemoveButton;
 @property(nonatomic, assign) bool contentNeedsUpdate;
 @property(nonatomic, assign) bool buttonStatesNeedsUpdate;
 @property(nonatomic, assign) int labelFontSize;
@@ -114,11 +113,6 @@ enum ItemPickerContext
   {
     case UITypePhonePortraitOnly:
       self.presentViewControllersInPopover = false;
-      // Not enough vertical space to display two buttons, so leaving away the
-      // remove description button because it's a convenience thing only (the
-      // same functionality can be achieved by going to the edit description
-      // screen)
-      self.displayDescriptionRemoveButton = false;
       self.labelFontSize = 10;
       // self.estimatedScoreButton uses a different title label font size than
       // the other buttons, which causes it to use less vertical size. With the
@@ -134,13 +128,11 @@ enum ItemPickerContext
       break;
     case UITypePhone:
       self.presentViewControllersInPopover = false;
-      self.displayDescriptionRemoveButton = true;
       self.labelFontSize = 11;
       self.valuationViewStackViewAlignment = UIStackViewAlignmentCenter;
       break;
     case UITypePad:
       self.presentViewControllersInPopover = true;
-      self.displayDescriptionRemoveButton = true;
       self.labelFontSize = 12;
       self.valuationViewStackViewAlignment = UIStackViewAlignmentCenter;
       break;
@@ -403,12 +395,9 @@ enum ItemPickerContext
   [self.descriptionEditButton setImage:[[UIImage editIcon] imageByScalingToHeight:self.iconHeight]
                               forState:UIControlStateNormal];
 
-  if (self.displayDescriptionRemoveButton)
-  {
-    self.descriptionRemoveButton = [self createButtonInSuperView:self.descriptionButtonContainerView selector:@selector(removeDescription:)];
-    [self.descriptionRemoveButton setImage:[[UIImage trashcanIcon] imageByScalingToHeight:self.iconHeight]
-                                  forState:UIControlStateNormal];
-  }
+  self.descriptionRemoveButton = [self createButtonInSuperView:self.descriptionButtonContainerView selector:@selector(removeDescription:)];
+  [self.descriptionRemoveButton setImage:[[UIImage trashcanIcon] imageByScalingToHeight:self.iconHeight]
+                                forState:UIControlStateNormal];
 }
 
 // -----------------------------------------------------------------------------
@@ -549,8 +538,7 @@ enum ItemPickerContext
   self.descriptionSpacerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.descriptionButtonContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.descriptionEditButton.translatesAutoresizingMaskIntoConstraints = NO;
-  if (self.displayDescriptionRemoveButton)
-    self.descriptionRemoveButton.translatesAutoresizingMaskIntoConstraints = NO;
+  self.descriptionRemoveButton.translatesAutoresizingMaskIntoConstraints = NO;
   self.descriptionButtonSpacerView.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
@@ -601,29 +589,20 @@ enum ItemPickerContext
   [viewsDictionary removeAllObjects];
   [visualFormats removeAllObjects];
   viewsDictionary[@"descriptionEditButton"] = self.descriptionEditButton;
-  if (self.displayDescriptionRemoveButton)
-    viewsDictionary[@"descriptionRemoveButton"] = self.descriptionRemoveButton;
+  viewsDictionary[@"descriptionRemoveButton"] = self.descriptionRemoveButton;
   viewsDictionary[@"descriptionButtonSpacerView"] = self.descriptionButtonSpacerView;
   if (orientationIsPortraitOrientation)
   {
     [visualFormats addObject:@"H:|-0-[descriptionEditButton]-0-|"];
-    if (self.displayDescriptionRemoveButton)
-      [visualFormats addObject:@"H:|-0-[descriptionRemoveButton]-0-|"];
+    [visualFormats addObject:@"H:|-0-[descriptionRemoveButton]-0-|"];
     [visualFormats addObject:@"H:|-0-[descriptionButtonSpacerView]-0-|"];
-    if (self.displayDescriptionRemoveButton)
-      [visualFormats addObject:@"V:|-0-[descriptionEditButton]-[descriptionRemoveButton]-0-[descriptionButtonSpacerView]-0-|"];
-    else
-      [visualFormats addObject:@"V:|-0-[descriptionEditButton]-0-[descriptionButtonSpacerView]-0-|"];
+    [visualFormats addObject:@"V:|-0-[descriptionEditButton]-[descriptionRemoveButton]-0-[descriptionButtonSpacerView]-0-|"];
   }
   else
   {
-    if (self.displayDescriptionRemoveButton)
-      [visualFormats addObject:@"H:|-0-[descriptionEditButton]-[descriptionRemoveButton]-0-[descriptionButtonSpacerView]-0-|"];
-    else
-      [visualFormats addObject:@"H:|-0-[descriptionEditButton]-0-[descriptionButtonSpacerView]-0-|"];
+    [visualFormats addObject:@"H:|-0-[descriptionEditButton]-[descriptionRemoveButton]-0-[descriptionButtonSpacerView]-0-|"];
     [visualFormats addObject:@"V:|-0-[descriptionEditButton]-0-|"];
-    if (self.displayDescriptionRemoveButton)
-      [visualFormats addObject:@"V:|-0-[descriptionRemoveButton]-0-|"];
+    [visualFormats addObject:@"V:|-0-[descriptionRemoveButton]-0-|"];
     [visualFormats addObject:@"V:|-0-[descriptionButtonSpacerView]-0-|"];
   }
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.descriptionEditButton.superview];
@@ -988,8 +967,7 @@ enum ItemPickerContext
   self.hotspotButton.enabled = isHotspotButtonEnabled;
   self.estimatedScoreButton.enabled = isEstimatedScoreButtonEnabled;
   self.descriptionEditButton.enabled = isDescriptionEditButtonEnabled;
-  if (self.displayDescriptionRemoveButton)
-    self.descriptionRemoveButton.enabled = isDescriptionRemoveButtonEnabled;
+  self.descriptionRemoveButton.enabled = isDescriptionRemoveButtonEnabled;
 }
 
 #pragma mark - Button handlers
