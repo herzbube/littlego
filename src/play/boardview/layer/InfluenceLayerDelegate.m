@@ -245,7 +245,7 @@
   if (! self.boardViewModel.displayPlayerInfluence)
     return drawingPoints;
   GoGame* game = [GoGame sharedGame];
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModePlay)
     return drawingPoints;
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
