@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="49.504436pt"
+   height="43.590424pt"
+   version="1.1"
+   viewBox="0 0 49.504436 43.590424"
+   id="svg1653"
+   sodipodi:docname="triangle.svg"
+   inkscape:version="1.1.2 (b8e25be8, 2022-02-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1657" />
+  <sodipodi:namedview
+     id="namedview1655"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="pt"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="6.1628571"
+     inkscape:cx="29.612888"
+     inkscape:cy="35.12981"
+     inkscape:window-width="1614"
+     inkscape:window-height="997"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1653" />
+  <path
+     d="m 24.75179,1.125011 c -0.274935,-9.537e-4 -0.545718,0.070366 -0.784081,0.2076908 -0.238707,0.1369521 -0.436649,0.3345419 -0.5743,0.572905 L 1.3341641,40.123662 c -0.1840062,0.318513 -0.2495038,0.691737 -0.1850372,1.053765 0.064151,0.362075 0.2544011,0.689992 0.5366594,0.92557 0.282267,0.235556 0.6387664,0.363811 1.0067502,0.362415 H 46.811905 c 0.368004,9.55e-4 0.724492,-0.126842 1.006751,-0.362415 0.282266,-0.235586 0.472544,-0.563495 0.536659,-0.92557 0.06444,-0.362073 -9.55e-4,-0.735298 -0.185037,-1.053765 L 26.111031,1.9056068 C 25.973363,1.6672437 25.775449,1.4696625 25.536731,1.3327018 25.298368,1.1954059 25.027605,1.12398 24.752649,1.125011 Z M 5.3929742,39.343064 24.75179,5.8085919 44.110616,39.343064 Z"
+     id="path1651"
+     style="stroke:#000000;stroke-width:2.25;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0"
+     inkscape:export-filename="/Users/patrick/dev/littlego/resource/icon/markup-types/triangle.png"
+     inkscape:export-xdpi="96"
+     inkscape:export-ydpi="96" />
+</svg>

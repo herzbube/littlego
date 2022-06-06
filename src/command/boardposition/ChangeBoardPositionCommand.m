@@ -187,6 +187,16 @@
       // board setup mode first.
       [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease] submit];
     }
+    else if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeEditMarkup)
+    {
+      // Markup editing mode is allowed only while user is viewing a board
+      // position greater than board position 0.
+      assert(boardPosition.currentBoardPosition > 0);
+      // Since we are about to change to board position 0, we have to disable
+      // markup editing mode first.
+      if (self.newBoardPosition == 0)
+        [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease] submit];
+    }
 
     boardPosition.currentBoardPosition = self.newBoardPosition;
 

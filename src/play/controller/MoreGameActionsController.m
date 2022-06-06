@@ -153,7 +153,7 @@
       {
         if (game.boardPosition.currentBoardPosition > 0)
           continue;
-        if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeScoring)
+        if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeScoring && uiAreaPlayMode != UIAreaPlayModeEditMarkup)
           continue;
         title = @"Set up board";
         alertActionBlock = ^(UIAlertAction* action) { [self setupBoard]; };
@@ -165,10 +165,20 @@
         // mode, so no need to show this option in our menu
         if (GoGameStateGameHasEnded == game.state)
           continue;
-        if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeBoardSetup)
+        if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeBoardSetup && uiAreaPlayMode != UIAreaPlayModeEditMarkup)
           continue;
         title = @"Score";
         alertActionBlock = ^(UIAlertAction* action) { [self score]; };
+        break;
+      }
+      case MoreGameActionsButtonEditMarkup:
+      {
+        if (game.boardPosition.currentBoardPosition == 0)
+          continue;
+        if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeScoring && uiAreaPlayMode != UIAreaPlayModeBoardSetup)
+          continue;
+        title = @"Edit markup";
+        alertActionBlock = ^(UIAlertAction* action) { [self editMarkup]; };
         break;
       }
       case MoreGameActionsButtonMarkAsSeki:
@@ -206,7 +216,7 @@
             return nil;
           }
         }
-        alertActionBlock = ^(UIAlertAction* action) { [self toggleMarkMode]; };
+        alertActionBlock = ^(UIAlertAction* action) { [self toggleScoringMarkMode]; };
         break;
       }
       case MoreGameActionsButtonUpdatePlayerInfluence:
@@ -438,10 +448,20 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Edit markup" button. Switches the
+/// UI area "Play" to markup editing mode.
+// -----------------------------------------------------------------------------
+- (void) editMarkup
+{
+  [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModeEditMarkup] autorelease] submit];
+  [self.delegate moreGameActionsControllerDidFinish:self];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Start marking as [...]" button.
 /// Toggles the mark mode during scoring.
 // -----------------------------------------------------------------------------
-- (void) toggleMarkMode
+- (void) toggleScoringMarkMode
 {
   ScoringModel* model = [ApplicationDelegate sharedDelegate].scoringModel;
   switch (model.scoreMarkMode)

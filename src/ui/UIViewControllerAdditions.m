@@ -207,15 +207,20 @@
 {
   [self presentNavigationControllerWithRootViewController:rootViewController
                                         usingPopoverStyle:false
-                                        popoverSourceView:nil];
+                                        popoverSourceView:nil
+                                     popoverBarButtonItem:nil];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Creates a new UINavigationController using @a rootViewController as
 /// the navigation stack's root view controller. Presents the navigation
-/// controller either in a popover pointing to @a sourceView if
-/// @a usePopoverStyle is true, or in the automatic style if @a usePopoverStyle
-/// is false.
+/// controller either in a popover if @a usePopoverStyle is true, or in the
+/// automatic style if @a usePopoverStyle is false.
+///
+/// If @a usePopoverStyle is true then either @a sourceView or @a barButtonItem
+/// must have a value that is not @e nil. The popover points to whichever of the
+/// two parameters is not @e nil. If @a usePopoverStyle is false then both
+/// @a sourceView and @a barButtonItem are ignored.
 ///
 /// Control immediately returns to the caller who invoked this method.
 ///
@@ -224,7 +229,8 @@
 // -----------------------------------------------------------------------------
 - (void) presentNavigationControllerWithRootViewController:(UIViewController*)rootViewController
                                          usingPopoverStyle:(bool)usePopoverStyle
-                                         popoverSourceView:(UIView*)sourceView;
+                                         popoverSourceView:(UIView*)sourceView
+                                      popoverBarButtonItem:(UIBarButtonItem*)barButtonItem
 {
   UINavigationController* navigationController = [[UINavigationController alloc]
                                                   initWithRootViewController:rootViewController];
@@ -235,8 +241,15 @@
     navigationController.modalPresentationStyle = UIModalPresentationPopover;
     if (navigationController.popoverPresentationController)
     {
-      navigationController.popoverPresentationController.sourceView = sourceView;
-      navigationController.popoverPresentationController.sourceRect = sourceView.bounds;
+      if (sourceView)
+      {
+        navigationController.popoverPresentationController.sourceView = sourceView;
+        navigationController.popoverPresentationController.sourceRect = sourceView.bounds;
+      }
+      else
+      {
+        navigationController.popoverPresentationController.barButtonItem = barButtonItem;
+      }
     }
   }
   else

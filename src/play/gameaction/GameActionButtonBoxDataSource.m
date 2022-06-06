@@ -17,6 +17,9 @@
 
 // Project includes
 #import "GameActionButtonBoxDataSource.h"
+#import "../model/MarkupModel.h"
+#import "../../main/ApplicationDelegate.h"
+#import "../../utility/UIImageAdditions.h"
 
 
 /// @brief Enumerates the button box sections that this
@@ -148,6 +151,30 @@ enum ButtonBoxSection
   button.enabled = enable;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief GameActionManagerUIDelegate method.
+// -----------------------------------------------------------------------------
+- (void) gameActionManager:(GameActionManager*)manager
+    updateIconOfGameAction:(enum GameAction)gameAction
+{
+  NSString* imageResourceName;
+  switch (gameAction)
+  {
+    case GameActionSelectMarkupType:
+      imageResourceName = [GameActionButtonBoxDataSource imageResourceNameForGameActionSelectMarkupType];
+      break;
+    case GameActionMoves:
+      return;   // obsolete game action
+    default:
+      imageResourceName = [UIImage iconResourceNameForGameAction:gameAction];
+      break;
+  }
+
+  NSNumber* gameActionAsNumber = [NSNumber numberWithInt:gameAction];
+  UIButton* button = self.gameActionButtons[gameActionAsNumber];
+  [button setImage:[UIImage imageNamed:imageResourceName] forState:UIControlStateNormal];
+}
+
 #pragma mark - Private helpers - UIButton creation
 
 // -----------------------------------------------------------------------------
@@ -177,101 +204,19 @@ enum ButtonBoxSection
 {
   NSString* imageResourceName;
   SEL selector;
+
   switch (gameAction)
   {
-    case GameActionPass:
-    {
-      imageResourceName = passButtonIconResource;
-      selector = @selector(pass:);
+    case GameActionSelectMarkupType:
+      imageResourceName = [GameActionButtonBoxDataSource imageResourceNameForGameActionSelectMarkupType];
+      selector = [GameActionManager handlerForGameAction:gameAction];
       break;
-    }
-    case GameActionDiscardBoardPosition:
-    {
-      imageResourceName = discardButtonIconResource;
-      selector = @selector(discardBoardPosition:);
-      break;
-    }
-    case GameActionComputerPlay:
-    {
-      imageResourceName = computerPlayButtonIconResource;
-      selector = @selector(computerPlay:);
-      break;
-    }
-    case GameActionComputerSuggestMove:
-    {
-      imageResourceName = computerSuggestMoveButtonIconResource;
-      selector = @selector(computerSuggestMove:);
-      break;
-    }
-    case GameActionPause:
-    {
-      imageResourceName = pauseButtonIconResource;
-      selector = @selector(pause:);
-      break;
-    }
-    case GameActionContinue:
-    {
-      imageResourceName = continueButtonIconResource;
-      selector = @selector(continue:);
-      break;
-    }
-    case GameActionInterrupt:
-    {
-      imageResourceName = interruptButtonIconResource;
-      selector = @selector(interrupt:);
-      break;
-    }
-    case GameActionScoringStart:
-    {
-      imageResourceName = scoringStartButtonIconResource;
-      selector = @selector(scoringStart:);
-      break;
-    }
-    case GameActionPlayStart:
-    {
-      imageResourceName = playStartButtonIconResource;
-      selector = @selector(playStart:);
-      break;
-    }
-    case GameActionSwitchSetupStoneColorToWhite:
-    {
-      imageResourceName = stoneBlackButtonIconResource;
-      selector = @selector(switchSetupStoneColorToWhite:);
-      break;
-    }
-    case GameActionSwitchSetupStoneColorToBlack:
-    {
-      imageResourceName = stoneWhiteButtonIconResource;
-      selector = @selector(switchSetupStoneColorToBlack:);
-      break;
-    }
-    case GameActionDiscardAllSetupStones:
-    {
-      imageResourceName = discardButtonIconResource;
-      selector = @selector(discardAllSetupStones:);
-      break;
-    }
     case GameActionMoves:
-    {
-      // We don't have support for this game action
-      return nil;
-    }
-    case GameActionGameInfo:
-    {
-      imageResourceName = gameInfoButtonIconResource;
-      selector = @selector(gameInfo:);
-      break;
-    }
-    case GameActionMoreGameActions:
-    {
-      imageResourceName = moreGameActionsButtonIconResource;
-      selector = @selector(moreGameActions:);
-      break;
-    }
+      return nil;   // obsolete game action
     default:
-    {
-      return nil;
-    }
+      imageResourceName = [UIImage iconResourceNameForGameAction:gameAction];
+      selector = [GameActionManager handlerForGameAction:gameAction];
+      break;
   }
 
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -309,6 +254,8 @@ enum ButtonBoxSection
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionSwitchSetupStoneColorToWhite]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionSwitchSetupStoneColorToBlack]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionDiscardAllSetupStones]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionSelectMarkupType]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionDiscardAllMarkup]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionPass]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionComputerPlay]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionComputerSuggestMove]];
@@ -378,6 +325,19 @@ enum ButtonBoxSection
     visibleGameActionsDictionary[buttonBoxSectionAsNumber] = visibleGameActions;
   }
   self.visibleGameActions = visibleGameActionsDictionary;
+}
+
+#pragma mark - Private helpers - Icon resources
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the resource name of the icon image to be used for
+/// #GameActionSelectMarkupType. The resource name is dynamic and depends on a
+/// user preference.
+// -----------------------------------------------------------------------------
++ (NSString*) imageResourceNameForGameActionSelectMarkupType
+{
+  MarkupModel* markupModel = [ApplicationDelegate sharedDelegate].markupModel;
+  return [UIImage iconResourceNameForMarkupType:markupModel.markupType];
 }
 
 @end

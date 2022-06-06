@@ -451,6 +451,15 @@
   button.enabled = enable;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief GameActionManagerUIDelegate method.
+// -----------------------------------------------------------------------------
+- (void) gameActionManager:(GameActionManager*)manager
+    updateIconOfGameAction:(enum GameAction)gameAction
+{
+  [self.navigationBarButtonModel updateIconOfGameAction:gameAction];
+}
+
 #pragma mark - Navigation bar population
 
 // -----------------------------------------------------------------------------

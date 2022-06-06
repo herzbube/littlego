@@ -27,7 +27,8 @@
 ///
 /// ChangeUIAreaPlayModeCommand displays an alert, and command execution fails,
 /// if #UIAreaPlayModeBoardSetup is requested but the current board position
-/// is not 0.
+/// is not 0, or if #UIAreaPlayModeEditMarkup is requested but the current
+/// board position is 0.
 // -----------------------------------------------------------------------------
 @interface ChangeUIAreaPlayModeCommand : CommandBase
 {

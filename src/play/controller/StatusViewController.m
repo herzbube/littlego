@@ -568,6 +568,11 @@
       {
         statusText = @"Tap to place or remove stones";
       }
+      else if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeEditMarkup)
+      {
+        // TODO xxx add instructions that fit the currently selected tool
+        statusText = @"Tap to place or remove markup";
+      }
       else
       {
         enum GoGameState gameState = game.state;

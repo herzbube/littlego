@@ -16,27 +16,28 @@
 
 
 // Forward declarations
+@class ArchiveViewModel;
+@class BoardPositionModel;
+@class BoardSetupModel;
+@class BoardViewMetrics;
+@class BoardViewModel;
+@class CrashReportingModel;
+@class GoGame;
 @class GtpClient;
+@class GtpCommandModel;
 @class GtpEngine;
+@class GtpEngineProfileModel;
+@class GtpLogModel;
+@class LoggingModel;
+@class MagnifyingViewModel;
+@class MarkupModel;
 @class NewGameModel;
 @class PlayerModel;
-@class GtpEngineProfileModel;
-@class BoardViewModel;
-@class BoardViewMetrics;
-@class BoardPositionModel;
 @class ScoringModel;
+@class SgfSettingsModel;
 @class SoundHandling;
-@class GoGame;
-@class ArchiveViewModel;
-@class GtpLogModel;
-@class GtpCommandModel;
-@class CrashReportingModel;
-@class LoggingModel;
 @class UiSettingsModel;
 @protocol MagnifyingGlassOwner;
-@class MagnifyingViewModel;
-@class BoardSetupModel;
-@class SgfSettingsModel;
 
 
 // -----------------------------------------------------------------------------
@@ -153,6 +154,9 @@
 /// @brief Model object that stores attributes related to the processing of
 /// SGF content.
 @property(nonatomic, retain) SgfSettingsModel* sgfSettingsModel;
+/// @brief Model object that stores attributes related to viewing and placing
+/// markup on the board.
+@property(nonatomic, retain) MarkupModel* markupModel;
 
 @end
 

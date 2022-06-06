@@ -252,6 +252,16 @@ NSString* backButtonIconResource = @"back.png";
 NSString* rewindToStartButtonIconResource = @"rewindtostart.png";
 NSString* hotspotIconResource = @"hotspot.png";
 NSString* markupIconResource = @"markup.png";
+NSString* arrowIconResource = @"arrow.png";
+NSString* checkMarkIconResource = @"check-mark.png";
+NSString* circleIconResource = @"circle.png";
+NSString* crossMarkIconResource = @"cross-mark.png";
+NSString* labelIconResource = @"label.png";
+NSString* letterMarkerIconResource = @"letter-marker.png";
+NSString* lineIconResource = @"line.png";
+NSString* numberMarkerIconResource = @"number-marker.png";
+NSString* squareIconResource = @"square.png";
+NSString* triangleIconResource = @"triangle.png";
 NSString* stoneBlackImageResource = @"stone-black.png";
 NSString* stoneWhiteImageResource = @"stone-white.png";
 NSString* stoneCrosshairImageResource = @"stone-crosshair.png";
@@ -382,6 +392,9 @@ NSString* doubleTapToZoomKey = @"DoubleTapToZoom";
 NSString* autoEnableBoardSetupModeKey = @"AutoEnableBoardSetupMode";
 NSString* changeHandicapAlertKey = @"ChangeHandicapAlert";
 NSString* tryNotToPlaceIllegalStonesKey = @"TryNotToPlaceIllegalStones";
+// Markup settings
+NSString* markupKey = @"Markup";
+NSString* markupTypeKey = @"MarkupType";
 
 // Constants for NSCoding
 // General constants

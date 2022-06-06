@@ -115,6 +115,11 @@ enum GameAction
   GameActionSwitchSetupStoneColorToBlack,
   /// @brief Discards all board setup stones. Handicap stones remain.
   GameActionDiscardAllSetupStones,
+  /// @brief Displays a popup that lets the user select which type of markup she
+  /// wants to place on the board.
+  GameActionSelectMarkupType,
+  /// @brief Discards all markup.
+  GameActionDiscardAllMarkup,
   /// @brief Displays the list of board positions. Used only in #UIAreaPad when
   /// the interface orientation is Portrait.
   GameActionMoves,
@@ -139,6 +144,7 @@ enum MoreGameActionsButton
   MoreGameActionsButtonSetupFirstMove,
   MoreGameActionsButtonBoardSetup,
   MoreGameActionsButtonScore,
+  MoreGameActionsButtonEditMarkup,
   MoreGameActionsButtonMarkAsSeki,
   MoreGameActionsButtonMarkAsDead,
   MoreGameActionsButtonUpdatePlayerInfluence,
@@ -205,6 +211,7 @@ enum UIAreaPlayMode
   UIAreaPlayModePlay,        ///< @brief The "Play" UI area is in play mode, i.e. the user can play moves.
   UIAreaPlayModeScoring,     ///< @brief The "Play" UI area is in scoring mode.
   UIAreaPlayModeBoardSetup,  ///< @brief The "Play" UI area is in board setup mode. Only possible if no moves have been played yet.
+  UIAreaPlayModeEditMarkup,  ///< @brief The "Play" UI area is in markup editing mode.
   UIAreaPlayModeTsumego,     ///< @brief The "Play" UI area is in tsumego (problem solving) mode
   UIAreaPlayModeDefault = UIAreaPlayModePlay,
 };
@@ -256,6 +263,35 @@ enum MarkupPrecedence
 {
   MarkupPrecedenceSymbols,  ///< @brief When both a symbol and a label should be drawn on an intersection, draw the symbol.
   MarkupPrecedenceLabels,   ///< @brief When both a symbol and a label should be drawn on an intersection, draw the label.
+};
+
+/// @brief Enumerates the types of markup that the user can place on the board.
+enum MarkupType
+{
+  MarkupTypeSymbolCircle,     ///< @brief Marks a single point with a circle symbol.
+  MarkupTypeSymbolSquare,     ///< @brief Marks a single point with a square symbol.
+  MarkupTypeSymbolTriangle,   ///< @brief Marks a single point with a triangle symbol.
+  MarkupTypeSymbolX,          ///< @brief Marks a single point with an "X" symbol.
+  MarkupTypeSymbolSelected,   ///< @brief Marks a single point with a symbol that indicates that the point is "selected".
+  MarkupTypeMarkerNumber,     ///< @brief Marks a single point with a number marker. A number marker is a label that consists of digit characters.
+  MarkupTypeMarkerLetter,     ///< @brief Marks a single point with a letter marker. A letter marker is a label that consists of a single lowercase or uppercase letter character (a-z, A-Z).
+  MarkupTypeLabel,            ///< @brief Marks a single point with a label that consists of a string of arbitrary length with arbitrary characters. The label must contain at least one character.
+  MarkupTypeConnectionLine,   ///< @brief Marks the connection between two points with a line.
+  MarkupTypeConnectionArrow,  ///< @brief Marks the connection between two points with an arrow.
+  MarkupTypeEraser,           ///< @brief Pseudo markup type used only to provide a value that can be selected by the user in the UI.
+  MarkupTypeFirst = MarkupTypeSymbolCircle,   ///< @brief Pseudo markup type, used as the starting value during a for-loop.
+  MarkupTypeLast = MarkupTypeEraser           ///< @brief Pseudo markup type, used as the end value during a for-loop.
+};
+
+/// @brief Enumerates the markup tools that can be in effect. Most markup tools
+/// allow the user to place different types of markup.
+enum MarkupTool
+{
+  MarkupToolSymbol,      ///< @brief The symbol tool allows the user to place one of the 5 symbol markup types #MarkupTypeSymbolCircle, #MarkupTypeSymbolSquare, #MarkupTypeSymbolTriangle, #MarkupTypeSymbolX or #MarkupTypeSymbolSelected.
+  MarkupToolMarker,      ///< @brief The marker tool allows the user to place one of the 2 marker markup types #MarkupTypeMarkerNumber or #MarkupTypeMarkerLetter.
+  MarkupToolLabel,       ///< @brief The label tool allows the user to place the markup type #MarkupTypeLabel.
+  MarkupToolConnection,  ///< @brief The connection tool allows the user to place one of the 2 connection markup types #MarkupTypeConnectionLine or #MarkupTypeConnectionArrow.
+  MarkupToolEraser,      ///< @brief The eraser tool allows the user to erase markup that already exists on the board.
 };
 
 /// @brief Enumerates a number of standard alert button types.
@@ -1281,6 +1317,16 @@ extern NSString* backButtonIconResource;
 extern NSString* rewindToStartButtonIconResource;
 extern NSString* hotspotIconResource;
 extern NSString* markupIconResource;
+extern NSString* arrowIconResource;
+extern NSString* checkMarkIconResource;
+extern NSString* circleIconResource;
+extern NSString* crossMarkIconResource;
+extern NSString* labelIconResource;
+extern NSString* letterMarkerIconResource;
+extern NSString* lineIconResource;
+extern NSString* numberMarkerIconResource;
+extern NSString* squareIconResource;
+extern NSString* triangleIconResource;
 extern NSString* stoneBlackImageResource;
 extern NSString* stoneWhiteImageResource;
 extern NSString* stoneCrosshairImageResource;
@@ -1415,6 +1461,9 @@ extern NSString* doubleTapToZoomKey;
 extern NSString* autoEnableBoardSetupModeKey;
 extern NSString* changeHandicapAlertKey;
 extern NSString* tryNotToPlaceIllegalStonesKey;
+// Markup settings
+extern NSString* markupKey;
+extern NSString* markupTypeKey;
 //@}
 
 // -----------------------------------------------------------------------------

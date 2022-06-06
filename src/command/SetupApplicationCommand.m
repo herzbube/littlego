@@ -118,9 +118,9 @@
       //   how app state and user preferences can get out of sync when the app
       //   crashes.
       // - The same out-of-sync problem can affect board position vs.
-      //   UIAreaPlayMode: Board setup mode is allowed only when board position
-      //   0 is viewed, so if after app restore the current board position
-      //   is != 0, we have a problem.
+      //   UIAreaPlayMode: For instance, board setup mode is allowed only when
+      //   board position 0 is viewed, so if after app restore the current board
+      //   position is != 0, we have a problem.
       // - We can either change the board position or change UIAreaPlayMode to
       //   resolve the situation.
       // - Because changing board positions is non-trivial and may take
@@ -129,6 +129,11 @@
       if (delegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
       {
         if ([GoGame sharedGame].boardPosition.currentBoardPosition != 0)
+          [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease] submit];
+      }
+      else if (delegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeEditMarkup)
+      {
+        if ([GoGame sharedGame].boardPosition.currentBoardPosition == 0)
           [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease] submit];
       }
 

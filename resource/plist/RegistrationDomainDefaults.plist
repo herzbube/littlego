@@ -439,6 +439,11 @@
 		<key>ReverseVariationOrdering</key>
 		<false/>
 	</dict>
+	<key>Markup</key>
+	<dict>
+		<key>MarkupType</key>
+		<integer>0</integer>
+	</dict>
 	<key>CrashReportActivated</key>
 	<true/>
 	<key>AutomaticallySendCrashReports</key>

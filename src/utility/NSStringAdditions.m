@@ -498,6 +498,40 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a string that describes @a markupType.
+// -----------------------------------------------------------------------------
++ (NSString*) stringWithMarkupType:(enum MarkupType)markupType
+{
+  switch (markupType)
+  {
+    case MarkupTypeSymbolCircle:
+      return @"Circle symbol";
+    case MarkupTypeSymbolSquare:
+      return @"Square symbol";
+    case MarkupTypeSymbolTriangle:
+      return @"Triangle symbol";
+    case MarkupTypeSymbolX:
+      return @"\"X\" symbol";
+    case MarkupTypeSymbolSelected:
+      return @"\"Selected\" symbol";
+    case MarkupTypeMarkerNumber:
+      return @"Number marker";
+    case MarkupTypeMarkerLetter:
+      return @"Letter marker";
+    case MarkupTypeLabel:
+      return @"Label";
+    case MarkupTypeConnectionLine:
+      return @"Line";
+    case MarkupTypeConnectionArrow:
+      return @"Arrow";
+    case MarkupTypeEraser:
+      return @"Eraser";
+    default:
+      return @"Unknown";
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns YES if @a string1 and @a string2 are both not @e nil and
 /// are equal using a literal Unicode-based comparison. Also returns YES if
 /// @a string1 and @a string2 are both @e nil. Returns NO in all other cases.

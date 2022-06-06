@@ -221,7 +221,7 @@
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
                                                       metrics:self.boardViewMetrics];
 
-  if (uiAreaPlayMode == UIAreaPlayModePlay)
+  if (uiAreaPlayMode == UIAreaPlayModePlay || uiAreaPlayMode == UIAreaPlayModeEditMarkup)
   {
     // A method that wants to draw a piece of markup on a GoPoint must first
     // check this array if the GoPoint is already in the array. If not the

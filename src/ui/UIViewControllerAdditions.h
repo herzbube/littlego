@@ -48,6 +48,7 @@
 - (void) presentNavigationControllerWithRootViewController:(UIViewController*)rootViewController;
 - (void) presentNavigationControllerWithRootViewController:(UIViewController*)rootViewController
                                          usingPopoverStyle:(bool)usePopoverStyle
-                                         popoverSourceView:(UIView*)sourceView;
+                                         popoverSourceView:(UIView*)sourceView
+                                      popoverBarButtonItem:(UIBarButtonItem*)barButtonItem;
 
 @end

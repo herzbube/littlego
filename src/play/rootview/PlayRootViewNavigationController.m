@@ -18,6 +18,7 @@
 // Project includes
 #import "PlayRootViewNavigationController.h"
 #import "../../ui/UiElementMetrics.h"
+#import "../../ui/UIViewControllerAdditions.h"
 
 
 @implementation PlayRootViewNavigationController
@@ -37,7 +38,7 @@
   if (! self)
     return nil;
   self.delegate = self;
-  [GameActionManager sharedGameActionManager].gameInfoViewControllerPresenter = self;
+  [GameActionManager sharedGameActionManager].viewControllerPresenterDelegate = self;
   return self;
 }
 
@@ -48,8 +49,8 @@
 - (void) dealloc
 {
   GameActionManager* gameActionManager = [GameActionManager sharedGameActionManager];
-  if (gameActionManager.gameInfoViewControllerPresenter == self)
-    gameActionManager.gameInfoViewControllerPresenter = nil;
+  if (gameActionManager.viewControllerPresenterDelegate == self)
+    gameActionManager.viewControllerPresenterDelegate = nil;
   [super dealloc];
 }
 
@@ -112,23 +113,49 @@
   }
 }
 
-#pragma mark - GameInfoViewControllerPresenter overrides
+#pragma mark - GameActionManagerViewControllerPresenterDelegate overrides
 
 // -----------------------------------------------------------------------------
-/// @brief GameInfoViewControllerPresenter protocol method.
+/// @brief GameActionManagerViewControllerPresenterDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) presentGameInfoViewController:(UIViewController*)gameInfoViewController
+- (void) gameActionManager:(GameActionManager*)gameActionManager
+        pushViewController:(UIViewController*)viewController
 {
-  [self pushViewController:gameInfoViewController animated:YES];
+  [self pushViewController:viewController animated:YES];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief GameInfoViewControllerPresenter protocol method.
+/// @brief GameActionManagerViewControllerPresenterDelegate protocol method.
 // -----------------------------------------------------------------------------
-- (void) dismissGameInfoViewController:(UIViewController*)gameInfoViewController
+- (void) gameActionManager:(GameActionManager*)gameActionManager
+         popViewController:(UIViewController*)viewController
 {
-  if (self.visibleViewController == gameInfoViewController)
+  if (self.visibleViewController == viewController)
     [self popViewControllerAnimated:YES];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief GameActionManagerViewControllerPresenterDelegate protocol method.
+// -----------------------------------------------------------------------------
+                       - (void) gameActionManager:(GameActionManager*)gameActionManager
+presentNavigationControllerWithRootViewController:(UIViewController*)rootViewController
+                                usingPopoverStyle:(bool)usePopoverStyle
+                                popoverSourceView:(UIView*)sourceView
+                             popoverBarButtonItem:(UIBarButtonItem*)barButtonItem
+{
+  [self presentNavigationControllerWithRootViewController:rootViewController
+                                        usingPopoverStyle:usePopoverStyle
+                                        popoverSourceView:sourceView
+                                     popoverBarButtonItem:barButtonItem];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief GameActionManagerViewControllerPresenterDelegate protocol method.
+// -----------------------------------------------------------------------------
+                       - (void) gameActionManager:(GameActionManager*)gameActionManager
+dismissNavigationControllerWithRootViewController:(UIViewController*)rootViewController
+{
+  [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end

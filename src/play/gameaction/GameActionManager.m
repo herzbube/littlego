@@ -20,11 +20,14 @@
 #import "../controller/DiscardFutureMovesAlertController.h"
 #import "../model/BoardSetupModel.h"
 #import "../model/BoardViewModel.h"
+#import "../model/MarkupModel.h"
 #import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
-#import "../../go/GoPoint.h"
+#import "../../go/GoNode.h"
+#import "../../go/GoNodeMarkup.h"
 #import "../../go/GoPlayer.h"
+#import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
 #import "../../command/gtp/InterruptComputerCommand.h"
 #import "../../command/boardposition/ChangeAndDiscardCommand.h"
@@ -41,6 +44,8 @@
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/UiSettingsModel.h"
+#import "../../utility/NSStringAdditions.h"
+#import "../../utility/UIImageAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -54,6 +59,7 @@
 @property(nonatomic, assign) bool scoringModeNeedUpdate;
 @property(nonatomic, assign) GameInfoViewController* gameInfoViewController;
 @property(nonatomic, retain) MoreGameActionsController* moreGameActionsController;
+@property(nonatomic, assign) ItemPickerController* itemPickerController;
 @property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
 @end
 
@@ -109,7 +115,7 @@ static GameActionManager* sharedGameActionManager = nil;
   if (! self)
     return nil;
   self.uiDelegate = nil;
-  self.gameInfoViewControllerPresenter = nil;
+  self.viewControllerPresenterDelegate = nil;
   self.visibleGameActions = [NSArray array];
   self.enabledStates = [NSMutableDictionary dictionary];
   for (int gameAction = GameActionFirst; gameAction <= GameActionLast; ++gameAction)
@@ -119,6 +125,7 @@ static GameActionManager* sharedGameActionManager = nil;
   self.scoringModeNeedUpdate = false;
   self.gameInfoViewController = nil;
   self.moreGameActionsController = nil;
+  self.itemPickerController = nil;
   self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
   self.commandDelegate = self.discardFutureMovesAlertController;
   [self setupNotificationResponders];
@@ -135,9 +142,10 @@ static GameActionManager* sharedGameActionManager = nil;
   self.enabledStates = nil;
   self.gameInfoViewController = nil;
   self.moreGameActionsController = nil;
+  self.itemPickerController = nil;
   self.uiDelegate = nil;
   self.commandDelegate = nil;
-  self.gameInfoViewControllerPresenter = nil;
+  self.viewControllerPresenterDelegate = nil;
   self.discardFutureMovesAlertController = nil;
   [super dealloc];
 }
@@ -184,6 +192,7 @@ static GameActionManager* sharedGameActionManager = nil;
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.boardSetupModel addObserver:self forKeyPath:@"boardSetupStoneColor" options:0 context:NULL];
   [appDelegate.boardViewModel addObserver:self forKeyPath:@"computerAssistanceType" options:0 context:NULL];
+  [appDelegate.markupModel addObserver:self forKeyPath:@"markupType" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -201,6 +210,7 @@ static GameActionManager* sharedGameActionManager = nil;
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.boardSetupModel removeObserver:self forKeyPath:@"boardSetupStoneColor"];
   [appDelegate.boardViewModel removeObserver:self forKeyPath:@"computerAssistanceType"];
+  [appDelegate.markupModel removeObserver:self forKeyPath:@"markupType"];
 }
 
 #pragma mark - Handlers for board interactions
@@ -267,6 +277,54 @@ static GameActionManager* sharedGameActionManager = nil;
 
   SetupFirstMoveColorCommand* command = [[[SetupFirstMoveColorCommand alloc] initWithFirstMoveColor:firstMoveColor] autorelease];
   [self.commandDelegate gameActionManager:self discardOrAlertWithCommand:command];
+}
+
+#pragma mark - Mapping of game actions to handler methods
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the selector of the handler method that should be invoked
+/// on the shared GameActionManager object when @a gameAction is executed.
+// -----------------------------------------------------------------------------
++ (SEL) handlerForGameAction:(enum GameAction)gameAction
+{
+  switch (gameAction)
+  {
+    case GameActionPass:
+      return @selector(pass:);
+    case GameActionDiscardBoardPosition:
+      return @selector(discardBoardPosition:);
+    case GameActionComputerPlay:
+      return @selector(computerPlay:);
+    case GameActionComputerSuggestMove:
+      return @selector(computerSuggestMove:);
+    case GameActionPause:
+      return @selector(pause:);
+    case GameActionContinue:
+      return @selector(continue:);
+    case GameActionInterrupt:
+      return @selector(interrupt:);
+    case GameActionScoringStart:
+      return @selector(scoringStart:);
+    case GameActionPlayStart:
+      return @selector(playStart:);
+    case GameActionSwitchSetupStoneColorToWhite:
+      return @selector(switchSetupStoneColorToWhite:);
+    case GameActionSwitchSetupStoneColorToBlack:
+      return @selector(switchSetupStoneColorToBlack:);
+    case GameActionDiscardAllSetupStones:
+      return @selector(discardAllSetupStones:);
+    case GameActionSelectMarkupType:
+      return @selector(selectMarkupType:);
+    case GameActionDiscardAllMarkup:
+      return @selector(discardAllMarkup:);
+    case GameActionGameInfo:
+      return @selector(gameInfo:);
+    case GameActionMoreGameActions:
+      return @selector(moreGameActions:);
+    case GameActionMoves:   // obsolete game action
+    default:
+      return nil;
+  }
 }
 
 #pragma mark - Game action handlers
@@ -400,6 +458,67 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Handles execution of game action #GameActionSelectMarkupType.
+// -----------------------------------------------------------------------------
+- (void) selectMarkupType:(id)sender
+{
+  NSMutableArray* itemList = [NSMutableArray array];
+  for (enum MarkupType markupType = MarkupTypeFirst; markupType <= MarkupTypeLast; markupType++)
+  {
+    NSString* markupTypeText = [NSString stringWithMarkupType:markupType];
+    UIImage* markupTypeIcon = [UIImage iconForMarkupType:markupType];
+    [itemList addObject:@[markupTypeText, markupTypeIcon]];
+  }
+
+  int indexOfDefaultItem = [ApplicationDelegate sharedDelegate].markupModel.markupType;
+  NSString* screenTitle = @"Select markup type";
+  NSString* footerTitle = @"Select the type of markup that you want to place on the board. The eraser lets you delete existing markup.";
+
+  self.itemPickerController = [ItemPickerController controllerWithItemList:itemList
+                                                               screenTitle:screenTitle
+                                                        indexOfDefaultItem:indexOfDefaultItem
+                                                                  delegate:self];
+  self.itemPickerController.footerTitle = footerTitle;
+  self.itemPickerController.itemPickerControllerMode = ItemPickerControllerModeNonModal;
+
+  bool presentInPopover = ([LayoutManager sharedManager].uiType == UITypePad);
+
+  if (! presentInPopover)
+  {
+    // In modal presentation style we display a "cancel" item to provide the
+    // user with a means to cancel. To contrast: In popover presentation style
+    // the means to cancel exists by simply tapping outside the popover.
+    self.itemPickerController.displayCancelItem = true;
+  }
+
+  UIView* sourceView = nil;
+  UIBarButtonItem* barButtonItem = nil;
+  if ([sender isKindOfClass:[UIBarButtonItem class]])
+  {
+    sourceView = nil;
+    barButtonItem = sender;
+  }
+  else if ([sender isKindOfClass:[UIButton class]])
+  {
+    sourceView = sender;
+    barButtonItem = nil;
+  }
+
+  [self.viewControllerPresenterDelegate gameActionManager:self
+        presentNavigationControllerWithRootViewController:self.itemPickerController
+                                        usingPopoverStyle:presentInPopover
+                                        popoverSourceView:sourceView
+                                     popoverBarButtonItem:barButtonItem];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Handles execution of game action #GameActionDiscardAllMarkup.
+// -----------------------------------------------------------------------------
+- (void) discardAllMarkup:(id)sender
+{
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Handles execution of game action #GameActionGameInfo.
 // -----------------------------------------------------------------------------
 - (void) gameInfo:(id)sender
@@ -411,7 +530,8 @@ static GameActionManager* sharedGameActionManager = nil;
   }
 
   self.gameInfoViewController = [[[GameInfoViewController alloc] init] autorelease];
-  [self.gameInfoViewControllerPresenter presentGameInfoViewController:self.gameInfoViewController];
+  [self.viewControllerPresenterDelegate gameActionManager:self
+                                       pushViewController:self.gameInfoViewController];
   // Even though we can tell the presenter to dismiss the controller, we are not
   // in sole control of dismissal, i.e. there are other events that can cause
   // GameInfoViewController to be dismissed. One known example: The user taps
@@ -467,6 +587,24 @@ static GameActionManager* sharedGameActionManager = nil;
   self.gameInfoViewController = nil;
 }
 
+#pragma mark - ItemPickerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief ItemPickerDelegate protocol method.
+// -----------------------------------------------------------------------------
+- (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection
+{
+  if (didMakeSelection)
+  {
+    MarkupModel* markupModel = [ApplicationDelegate sharedDelegate].markupModel;
+    if (markupModel.markupType != controller.indexOfSelectedItem)
+      markupModel.markupType = controller.indexOfSelectedItem;
+  }
+
+  [self.viewControllerPresenterDelegate gameActionManager:self
+        dismissNavigationControllerWithRootViewController:controller];
+}
+
 #pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
@@ -477,7 +615,10 @@ static GameActionManager* sharedGameActionManager = nil;
   // Dismiss the "Game Info" view when a new game is about to be started. This
   // typically occurs when a saved game is loaded from the archive.
   if (self.gameInfoViewController)
-    [self.gameInfoViewControllerPresenter dismissGameInfoViewController:self.gameInfoViewController];
+  {
+    [self.viewControllerPresenterDelegate gameActionManager:self
+                                          popViewController:self.gameInfoViewController];
+  }
 
   GoGame* oldGame = [notification object];
   GoBoardPosition* boardPosition = oldGame.boardPosition;
@@ -618,11 +759,16 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) statusBarOrientationWillChange:(NSNotification*)notification
 {
+  // Dismiss any popover that is still visible because it will be wrongly
+  // positioned after the interface has rotated
   if (self.moreGameActionsController)
   {
-    // Dismiss the popover that displays the alert message because the popover
-    // will be wrongly positioned after the interface has rotated.
     [self.moreGameActionsController cancelAlertMessage];
+  }
+  else if (self.itemPickerController)
+  {
+    [self.viewControllerPresenterDelegate gameActionManager:self
+          dismissNavigationControllerWithRootViewController:self.itemPickerController];
   }
 }
 
@@ -634,6 +780,8 @@ static GameActionManager* sharedGameActionManager = nil;
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
   GoGame* game = [GoGame sharedGame];
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+
   if (object == game.boardPosition)
   {
     if ([keyPath isEqualToString:@"currentBoardPosition"])
@@ -649,7 +797,7 @@ static GameActionManager* sharedGameActionManager = nil;
     }
     [self delayedUpdate];
   }
-  else if (object == [ApplicationDelegate sharedDelegate].boardSetupModel)
+  else if (object == appDelegate.boardSetupModel)
   {
     if ([keyPath isEqualToString:@"boardSetupStoneColor"])
     {
@@ -657,12 +805,19 @@ static GameActionManager* sharedGameActionManager = nil;
       [self delayedUpdate];
     }
   }
-  else if (object == [ApplicationDelegate sharedDelegate].boardViewModel)
+  else if (object == appDelegate.boardViewModel)
   {
     if ([keyPath isEqualToString:@"computerAssistanceType"])
     {
       self.visibleStatesNeedUpdate = true;
       [self delayedUpdate];
+    }
+  }
+  else if (object == appDelegate.markupModel)
+  {
+    if ([keyPath isEqualToString:@"markupType"])
+    {
+      [self.uiDelegate gameActionManager:self updateIconOfGameAction:GameActionSelectMarkupType];
     }
   }
 }
@@ -839,6 +994,15 @@ static GameActionManager* sharedGameActionManager = nil;
     if (game.blackSetupPoints.count > 0 || game.whiteSetupPoints.count > 0)
       [self addGameAction:GameActionDiscardAllSetupStones toVisibleStatesDictionary:visibleStates];
   }
+  else if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeEditMarkup)
+  {
+    [self addGameAction:GameActionPlayStart toVisibleStatesDictionary:visibleStates];
+    [self addGameAction:GameActionSelectMarkupType toVisibleStatesDictionary:visibleStates];
+
+    GoNodeMarkup* nodeMarkup = boardPosition.currentNode.goNodeMarkup;
+    if (nodeMarkup && nodeMarkup.hasMarkup)
+      [self addGameAction:GameActionDiscardAllMarkup toVisibleStatesDictionary:visibleStates];
+  }
 
   return visibleStates;
 }
@@ -867,6 +1031,8 @@ static GameActionManager* sharedGameActionManager = nil;
   [self updateSwitchSetupStoneColorToWhiteEnabledState];
   [self updateSwitchSetupStoneColorToBlackEnabledState];
   [self updateGameActionDiscardAllSetupStonesEnabledState];
+  [self updateGameActionSelectMarkupTypeEnabledState];
+  [self updateGameActionDiscardAllMarkupEnabledState];
   [self updateGameInfoEnabledState];
   [self updateMoreGameActionsEnabledState];
 }
@@ -1133,6 +1299,7 @@ static GameActionManager* sharedGameActionManager = nil;
         break;
       }
       case UIAreaPlayModeBoardSetup:
+      case UIAreaPlayModeEditMarkup:
       {
         enabled = YES;
         break;
@@ -1187,6 +1354,24 @@ static GameActionManager* sharedGameActionManager = nil;
   }
 
   [self updateEnabledState:enabled forGameAction:GameActionDiscardAllSetupStones];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of game action #GameActionSelectMarkupType.
+// -----------------------------------------------------------------------------
+- (void) updateGameActionSelectMarkupTypeEnabledState
+{
+  BOOL enabled = YES;
+  [self updateEnabledState:enabled forGameAction:GameActionSelectMarkupType];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the enabled state of game action #GameActionDiscardAllMarkup.
+// -----------------------------------------------------------------------------
+- (void) updateGameActionDiscardAllMarkupEnabledState
+{
+  BOOL enabled = YES;
+  [self updateEnabledState:enabled forGameAction:GameActionDiscardAllMarkup];
 }
 
 // -----------------------------------------------------------------------------

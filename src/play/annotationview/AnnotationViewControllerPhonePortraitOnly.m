@@ -1088,7 +1088,8 @@ enum ItemPickerContext
                                                                                                                         delegate:self];
   [self presentNavigationControllerWithRootViewController:editEstimatedScoreController
                                         usingPopoverStyle:self.presentViewControllersInPopover
-                                        popoverSourceView:sender];
+                                        popoverSourceView:sender
+                                     popoverBarButtonItem:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -1107,7 +1108,8 @@ enum ItemPickerContext
                                                                                                                       delegate:self];
   [self presentNavigationControllerWithRootViewController:editNodeDescriptionController
                                         usingPopoverStyle:self.presentViewControllersInPopover
-                                        popoverSourceView:sender];
+                                        popoverSourceView:sender
+                                     popoverBarButtonItem:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -1156,7 +1158,8 @@ enum ItemPickerContext
 
   [self presentNavigationControllerWithRootViewController:itemPickerController
                                         usingPopoverStyle:self.presentViewControllersInPopover
-                                        popoverSourceView:sourceView];
+                                        popoverSourceView:sourceView
+                                     popoverBarButtonItem:nil];
 }
 
 #pragma mark - ItemPickerDelegate overrides

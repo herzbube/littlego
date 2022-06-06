@@ -18,6 +18,7 @@
 // Project includes
 #import "GameInfoViewController.h"
 #import "../controller/MoreGameActionsController.h"
+#import "../../ui/ItemPickerController.h"
 
 // Forward declarations
 @class GameActionManager;
@@ -42,6 +43,10 @@
 - (void) gameActionManager:(GameActionManager*)manager
                     enable:(BOOL)enable
                 gameAction:(enum GameAction)gameAction;
+/// @brief The delegate must update the icon of the UI element that corresponds
+/// to @a gameAction.
+- (void) gameActionManager:(GameActionManager*)manager
+    updateIconOfGameAction:(enum GameAction)gameAction;
 @end
 
 // -----------------------------------------------------------------------------
@@ -63,18 +68,26 @@
 @end
 
 // -----------------------------------------------------------------------------
-/// @brief The GameInfoViewControllerPresenter protocol lets GameActionManager
-/// delegate the details of presenting and dismissing the
-/// GameInfoViewController, while keeping control over when these operations
-/// take place.
+/// @brief The GameActionManagerViewControllerPresenterDelegate protocol lets
+/// GameActionManager delegate the details of presenting and dismissing view
+/// controllers, while keeping control over when these operations take place.
 ///
 /// The presenter does not need to know the specific type of the
 /// GameInfoViewController, so GameActionManager uses the base class type
 /// UIViewController to pass the view controller object to the presenter.
 // -----------------------------------------------------------------------------
-@protocol GameInfoViewControllerPresenter
-- (void) presentGameInfoViewController:(UIViewController*)gameInfoViewController;
-- (void) dismissGameInfoViewController:(UIViewController*)gameInfoViewController;
+@protocol GameActionManagerViewControllerPresenterDelegate
+- (void) gameActionManager:(GameActionManager*)gameActionManager
+        pushViewController:(UIViewController*)viewController;
+- (void) gameActionManager:(GameActionManager*)gameActionManager
+         popViewController:(UIViewController*)viewController;
+                       - (void) gameActionManager:(GameActionManager*)gameActionManager
+presentNavigationControllerWithRootViewController:(UIViewController*)rootViewController
+                                usingPopoverStyle:(bool)usePopoverStyle
+                                popoverSourceView:(UIView*)sourceView
+                             popoverBarButtonItem:(UIBarButtonItem*)barButtonItem;
+                       - (void) gameActionManager:(GameActionManager*)gameActionManager
+dismissNavigationControllerWithRootViewController:(UIViewController*)rootViewController;
 @end
 
 
@@ -102,12 +115,13 @@
 /// the possible display of an alert which the user must confirm before the
 /// command is actually executed.
 // -----------------------------------------------------------------------------
-@interface GameActionManager : NSObject <MoreGameActionsControllerDelegate, GameInfoViewControllerCreator>
+@interface GameActionManager : NSObject <MoreGameActionsControllerDelegate, GameInfoViewControllerCreator, ItemPickerDelegate>
 {
 }
 
 + (GameActionManager*) sharedGameActionManager;
 + (void) releaseSharedGameActionManager;
++ (SEL) handlerForGameAction:(enum GameAction)gameAction;
 
 - (void) playAtIntersection:(GoPoint*)point;
 - (void) toggleScoringStateOfStoneGroupAtIntersection:(GoPoint*)point;
@@ -126,6 +140,8 @@
 - (void) switchSetupStoneColorToWhite:(id)sender;
 - (void) switchSetupStoneColorToBlack:(id)sender;
 - (void) discardAllSetupStones:(id)sender;
+- (void) selectMarkupType:(id)sender;
+- (void) discardAllMarkup:(id)sender;
 - (void) gameInfo:(id)sender;
 - (void) moreGameActions:(id)sender;
 
@@ -133,6 +149,6 @@
 
 @property(nonatomic, assign) id<GameActionManagerUIDelegate> uiDelegate;
 @property(nonatomic, assign) id<GameActionManagerCommandDelegate> commandDelegate;
-@property(nonatomic, assign) id<GameInfoViewControllerPresenter> gameInfoViewControllerPresenter;
+@property(nonatomic, assign) id<GameActionManagerViewControllerPresenterDelegate> viewControllerPresenterDelegate;
 
 @end

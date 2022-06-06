@@ -44,7 +44,10 @@
 + (UIImage*) iconForMoveValuation:(enum GoMoveValuation)moveValuation;
 + (UIImage*) iconForScoreSummary:(enum GoScoreSummary)scoreSummary;
 + (UIImage*) iconForBoardPositionHotspotDesignation:(enum GoBoardPositionHotspotDesignation)boardPositionHotspotDesignation;
++ (NSString*) iconResourceNameForMarkupType:(enum MarkupType)markupType;
++ (UIImage*) iconForMarkupType:(enum MarkupType)markupType;
 + (UIImage*) editIcon;
 + (UIImage*) trashcanIcon;
++ (NSString*) iconResourceNameForGameAction:(enum GameAction)gameAction;
 
 @end

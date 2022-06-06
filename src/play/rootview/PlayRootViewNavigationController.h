@@ -24,7 +24,7 @@
 /// UINavigationController that handles the special navigational needs of
 /// #UIAreaPlay for #UITypePhonePortraitOnly and #UITypePad.
 // -----------------------------------------------------------------------------
-@interface PlayRootViewNavigationController : UINavigationController <UINavigationControllerDelegate, GameInfoViewControllerPresenter>
+@interface PlayRootViewNavigationController : UINavigationController <UINavigationControllerDelegate, GameActionManagerViewControllerPresenterDelegate>
 {
 }
 

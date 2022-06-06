@@ -464,6 +464,50 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the resource name of the icon image that describes
+/// @a markupType.
+// -----------------------------------------------------------------------------
++ (NSString*) iconResourceNameForMarkupType:(enum MarkupType)markupType
+{
+  switch (markupType)
+  {
+    case MarkupTypeSymbolCircle:
+      return circleIconResource;
+    case MarkupTypeSymbolSquare:
+      return squareIconResource;
+    case MarkupTypeSymbolTriangle:
+      return triangleIconResource;
+    case MarkupTypeSymbolX:
+      return crossMarkIconResource;
+    case MarkupTypeSymbolSelected:
+      return checkMarkIconResource;
+    case MarkupTypeMarkerNumber:
+      return numberMarkerIconResource;
+    case MarkupTypeMarkerLetter:
+      return letterMarkerIconResource;
+    case MarkupTypeLabel:
+      return labelIconResource;
+    case MarkupTypeConnectionLine:
+      return lineIconResource;
+    case MarkupTypeConnectionArrow:
+      return arrowIconResource;
+    case MarkupTypeEraser:
+      return discardButtonIconResource;
+    default:
+      return nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an icon image that describes @a markupType.
+// -----------------------------------------------------------------------------
++ (UIImage*) iconForMarkupType:(enum MarkupType)markupType
+{
+  NSString* iconResourceNameForMarkupType = [self iconResourceNameForMarkupType:markupType];
+  return [UIImage imageNamed:iconResourceNameForMarkupType];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns an edit icon image.
 // -----------------------------------------------------------------------------
 + (UIImage*) editIcon
@@ -483,6 +527,51 @@
     return [UIImage systemImageNamed:@"trash"];
   else
     return [UIImage imageNamed:trashcanButtonIconResource];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the resource name of the icon image that represents the game
+/// action @a gameAction.
+// -----------------------------------------------------------------------------
++ (NSString*) iconResourceNameForGameAction:(enum GameAction)gameAction
+{
+  switch (gameAction)
+  {
+    case GameActionPass:
+      return passButtonIconResource;
+    case GameActionDiscardBoardPosition:
+      return discardButtonIconResource;
+    case GameActionComputerPlay:
+      return computerPlayButtonIconResource;
+    case GameActionComputerSuggestMove:
+      return computerSuggestMoveButtonIconResource;
+    case GameActionPause:
+      return pauseButtonIconResource;
+    case GameActionContinue:
+      return continueButtonIconResource;
+    case GameActionInterrupt:
+      return interruptButtonIconResource;
+    case GameActionScoringStart:
+      return scoringStartButtonIconResource;
+    case GameActionPlayStart:
+      return playStartButtonIconResource;
+    case GameActionSwitchSetupStoneColorToWhite:
+      return stoneBlackButtonIconResource;
+    case GameActionSwitchSetupStoneColorToBlack:
+      return stoneWhiteButtonIconResource;
+    case GameActionDiscardAllSetupStones:
+      return trashcanButtonIconResource;
+    case GameActionDiscardAllMarkup:
+      return trashcanButtonIconResource;
+    case GameActionGameInfo:
+      return gameInfoButtonIconResource;
+    case GameActionMoreGameActions:
+      return moreGameActionsButtonIconResource;
+    case GameActionSelectMarkupType:   // resource name depends on user preference
+    case GameActionMoves:              // obsolete game action
+    default:
+      return nil;
+  }
 }
 
 @end

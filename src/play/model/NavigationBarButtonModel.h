@@ -25,6 +25,7 @@
 
 - (void) updateVisibleGameActions;
 - (void) updateVisibleGameActionsWithVisibleStates:(NSDictionary*)visibleStates;
+- (void) updateIconOfGameAction:(enum GameAction)gameAction;
 
 @property(nonatomic, retain, readonly) NSDictionary* gameActionButtons;
 @property(nonatomic, retain, readonly) NSArray* buttonOrderList;
