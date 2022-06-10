@@ -36,6 +36,7 @@
 #import "../../command/boardsetup/HandleBoardSetupInteractionCommand.h"
 #import "../../command/boardsetup/SetupFirstMoveColorCommand.h"
 #import "../../command/game/PauseGameCommand.h"
+#import "../../command/markup/HandleMarkupEditingInteractionCommand.h"
 #import "../../command/move/ComputerSuggestMoveCommand.h"
 #import "../../command/scoring/ToggleScoringStateOfStoneGroupCommand.h"
 #import "../../command/ChangeUIAreaPlayModeCommand.h"
@@ -271,12 +272,28 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   if ([self shouldIgnoreUserInteraction])
   {
-    DDLogWarn(@"%@: Ignoring handleBoardSetupAtIntersection", self);
+    DDLogWarn(@"%@: Ignoring handleSetupFirstMove", self);
     return;
   }
 
   SetupFirstMoveColorCommand* command = [[[SetupFirstMoveColorCommand alloc] initWithFirstMoveColor:firstMoveColor] autorelease];
   [self.commandDelegate gameActionManager:self discardOrAlertWithCommand:command];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Handles an markup editing interaction at the intersection identified
+/// by @a point. Is invoked only while the UI area "Play" is in markup editing
+/// mode.
+// -----------------------------------------------------------------------------
+- (void) handleMarkupEditingAtIntersection:(GoPoint*)point
+{
+  if ([self shouldIgnoreUserInteraction])
+  {
+    DDLogWarn(@"%@: Ignoring handleMarkupEditingAtIntersection", self);
+    return;
+  }
+
+  [[[[HandleMarkupEditingInteractionCommand alloc] initWithPoint:point] autorelease] submit];
 }
 
 #pragma mark - Mapping of game actions to handler methods

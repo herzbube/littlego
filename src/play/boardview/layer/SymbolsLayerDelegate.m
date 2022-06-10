@@ -177,10 +177,11 @@
       break;
     }
     case BVLDEventHandicapPointChanged:
+    case BVLDEventMarkupOnPointDidChange:
     {
-      GoPoint* handicapPoint = eventInfo;
+      GoPoint* pointThatChanged = eventInfo;
       CGRect drawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
-                                                      centeredAtPoint:handicapPoint
+                                                      centeredAtPoint:pointThatChanged
                                                           withMetrics:self.boardViewMetrics];
       if (CGRectIsEmpty(drawingRect))
         break;

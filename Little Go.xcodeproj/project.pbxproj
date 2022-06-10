@@ -600,6 +600,8 @@
 		CDB5AE2A1AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */; };
 		CDB5AE2E1AC714CF0075C8DC /* MagnifyingViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE2D1AC714CF0075C8DC /* MagnifyingViewModel.m */; };
 		CDB5AE2F1AC714CF0075C8DC /* MagnifyingViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE2D1AC714CF0075C8DC /* MagnifyingViewModel.m */; };
+		CDB5C5DA284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDB5C5D9284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm */; };
+		CDB5C5DB284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDB5C5D9284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm */; };
 		CDB684FE161591760038AADE /* EditPlayingStrengthSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */; };
 		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
@@ -1401,6 +1403,8 @@
 		CDB5AE2B1AC5B82A0075C8DC /* MagnifyingGlassOwner.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MagnifyingGlassOwner.h; sourceTree = "<group>"; };
 		CDB5AE2C1AC714CF0075C8DC /* MagnifyingViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagnifyingViewModel.h; sourceTree = "<group>"; };
 		CDB5AE2D1AC714CF0075C8DC /* MagnifyingViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagnifyingViewModel.m; sourceTree = "<group>"; };
+		CDB5C5D8284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandleMarkupEditingInteractionCommand.h; sourceTree = "<group>"; };
+		CDB5C5D9284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HandleMarkupEditingInteractionCommand.mm; sourceTree = "<group>"; };
 		CDB684FC161591760038AADE /* EditPlayingStrengthSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayingStrengthSettingsController.h; sourceTree = "<group>"; };
 		CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayingStrengthSettingsController.m; sourceTree = "<group>"; };
 		CDBB0359133537C8007C1C3E /* GoBoardRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegion.h; sourceTree = "<group>"; };
@@ -2742,6 +2746,15 @@
 			path = uitest;
 			sourceTree = "<group>";
 		};
+		CDB5C5D7284E874F00DE5DD4 /* markup */ = {
+			isa = PBXGroup;
+			children = (
+				CDB5C5D8284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.h */,
+				CDB5C5D9284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm */,
+			);
+			path = markup;
+			sourceTree = "<group>";
+		};
 		CDBEBA3527B1A057000F9BF5 /* annotationview */ = {
 			isa = PBXGroup;
 			children = (
@@ -2803,6 +2816,7 @@
 				CDFA32A215A0A3C400439B4E /* diagnostics */,
 				CD05A8CD1422807300214BBE /* game */,
 				CDAA57E0184FE9BE0049A90D /* gtp */,
+				CDB5C5D7284E874F00DE5DD4 /* markup */,
 				CD05A8C91422803B00214BBE /* move */,
 				CDB3ECD72843ADD6007512F6 /* node */,
 				CD072705180B292E0083B138 /* playerinfluence */,
@@ -3799,6 +3813,7 @@
 				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
 				CDEE1A171946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
 				CD1F4F8C25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */,
+				CDB5C5DA284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm in Sources */,
 				CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CDBCF1F8282FB1FD00411CA6 /* EditNodeDescriptionController.m in Sources */,
@@ -3951,6 +3966,7 @@
 				CDAF17161967FFD500271396 /* BoardViewMetrics.m in Sources */,
 				CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDEF3F4A140D5E4F002D9C1C /* NSStringAdditions.m in Sources */,
+				CDB5C5DB284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm in Sources */,
 				CD7C69E01AA67C31009EC5AD /* MainUtility.m in Sources */,
 				CD85068727B95046000D2CCD /* GoNode.m in Sources */,
 				CDFD9F7018F1D35C0031CBCF /* BoardPositionSettingsController.m in Sources */,

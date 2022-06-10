@@ -910,7 +910,7 @@ extern NSString* uiAreaPlayModeDidChange;
 /// identifies the intersection is associated with the notification.
 extern NSString* handicapPointDidChange;
 /// @brief Is sent to indicate that the state of an intersection has changed
-/// during board setup. The intersection how has a black or white stone, or the
+/// during board setup. The intersection now has a black or white stone, or the
 /// color of a previously set setup stone has been changed, or a previously set
 /// setup stone has been removed. The GoPoint object that identifies the
 /// intersection is associated with the notification.
@@ -930,6 +930,10 @@ extern NSString* boardViewAnimationDidEnd;
 /// GoNode object that identifies the node with the changed data is associated
 /// with the notification.
 extern NSString* nodeAnnotationDataDidChange;
+/// @brief Is sent to indicate that the markup on an intersection has changed
+/// during markup editing. The GoPoint object that identifies the intersection
+/// is associated with the notification.
+extern NSString* markupOnPointDidChange;
 //@}
 
 // -----------------------------------------------------------------------------

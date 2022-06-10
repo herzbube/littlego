@@ -62,6 +62,9 @@ enum BoardViewLayerDelegateEvent
   BVLDEventAllSetupStonesDiscarded,
   BVLDEventSelectedSymbolMarkupStyleChanged,
   BVLDEventMarkupPrecedenceChanged,
+  /// @brief The event info object that accompanies this event type is a GoPoint
+  /// object that identifies the intersection that changed.
+  BVLDEventMarkupOnPointDidChange,
 };
 
 

@@ -135,6 +135,11 @@
       [gameActionManager handleBoardSetupAtIntersection:intersection.point];
       break;
     }
+    case UIAreaPlayModeEditMarkup:
+    {
+      [gameActionManager handleMarkupEditingAtIntersection:intersection.point];
+      break;
+    }
     default:
     {
       break;
@@ -211,6 +216,7 @@
       break;
     }
     case UIAreaPlayModeBoardSetup:
+    case UIAreaPlayModeEditMarkup:
     {
       self.tappingEnabled = true;
       break;

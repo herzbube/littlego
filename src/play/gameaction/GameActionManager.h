@@ -127,6 +127,7 @@ dismissNavigationControllerWithRootViewController:(UIViewController*)rootViewCon
 - (void) toggleScoringStateOfStoneGroupAtIntersection:(GoPoint*)point;
 - (void) handleBoardSetupAtIntersection:(GoPoint*)point;
 - (void) handleSetupFirstMove:(enum GoColor)firstMoveColor;
+- (void) handleMarkupEditingAtIntersection:(GoPoint*)point;
 
 - (void) pass:(id)sender;
 - (void) discardBoardPosition:(id)sender;
