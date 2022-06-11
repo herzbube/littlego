@@ -17,6 +17,7 @@
 
 // Project includes
 #import "../CommandBase.h"
+#import "../../ui/EditTextController.h"
 
 // Forward declarations
 @class GoPoint;
@@ -36,7 +37,7 @@
 /// of these conditions is not met an alert is displayed and command execution
 /// fails.
 // -----------------------------------------------------------------------------
-@interface HandleMarkupEditingInteractionCommand : CommandBase
+@interface HandleMarkupEditingInteractionCommand : CommandBase <EditTextDelegate>
 {
 }
 

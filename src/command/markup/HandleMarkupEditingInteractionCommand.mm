@@ -165,18 +165,6 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 #pragma mark - Helpers for doIt
 
 // -----------------------------------------------------------------------------
-/// @brief Presents a popup that allows the user to enter a new label text.
-/// If the user did not cancel the editing process, invokes
-/// handleMarkupEditingInteractionOnIntersection:withMarkupModel:labelText:nodeMarkup:().
-// -----------------------------------------------------------------------------
-- (void) handleEnterNewLabelTextOnPoint:(GoPoint*)point
-                        withMarkupModel:(MarkupModel*)markupModel
-                                   node:(GoNode*)node
-{
-  // TODO xxx present EditTextController
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Performs the actual markup editing interaction handling. Is called
 /// both from doIt() and after the user entered a new label text when the
 /// markup tool is #MarkupToolLabel.
@@ -208,7 +196,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
       }
       case MarkupToolLabel:
       {
-        [self handlePlaceLabelOnIntersection:intersection withNodeMarkup:nodeMarkup];
+        [self handlePlaceLabel:labelText onIntersection:intersection withNodeMarkup:nodeMarkup];
         break;
       }
       case MarkupToolConnection:
@@ -636,9 +624,93 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 ///
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
-- (void) handlePlaceLabelOnIntersection:(NSString*)intersection
-                         withNodeMarkup:(GoNodeMarkup*)nodeMarkup
+- (void) handlePlaceLabel:(NSString*)labelText
+           onIntersection:(NSString*)intersection
+           withNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
+  [nodeMarkup removeSymbolAtVertex:intersection];
+
+  // Clean up user input
+  labelText = [GoNodeMarkup removeNewlinesAndTrimLabel:labelText];
+
+  if (labelText && labelText.length)
+    [nodeMarkup setLabel:labelText atVertex:intersection];
+  else
+    [nodeMarkup removeLabelAtVertex:intersection];
+}
+
+#pragma mark - Place label - Present EditTextDelegate
+
+// -----------------------------------------------------------------------------
+/// @brief Presents a popup that allows the user to enter a new label text.
+/// If the user did not cancel the editing process, invokes
+/// handleMarkupEditingInteractionOnIntersection:withMarkupModel:labelText:nodeMarkup:().
+///
+/// This method is invoked from doIt() and not from
+/// handleMarkupEditingInteractionOnPoint:withMarkupModel:labelText:node:(),
+/// because the latter wraps the invocation of its handler methods into a pair
+/// of beginSavePoint/commitSavePoint method calls, which requires the handler
+/// method to work synchronously. This method does not work synchronously, it
+/// presents EditTextDelegate.
+// -----------------------------------------------------------------------------
+- (void) handleEnterNewLabelTextOnPoint:(GoPoint*)point
+                        withMarkupModel:(MarkupModel*)markupModel
+                                   node:(GoNode*)node
+{
+  NSString* intersection = point.vertex.string;
+  GoNodeMarkup* nodeMarkup = node.goNodeMarkup;
+
+  NSDictionary* labels = nodeMarkup.labels;
+  NSString* labelText = labels ? labels[intersection] : nil;
+
+  EditTextController* editTextController = [[EditTextController controllerWithText:labelText
+                                                                             style:EditTextControllerStyleTextField
+                                                                          delegate:self] retain];
+  editTextController.title = @"Edit label text";
+  editTextController.acceptEmptyText = true;
+  editTextController.context = @[point, markupModel, node];
+
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  [appDelegate.window.rootViewController presentNavigationControllerWithRootViewController:editTextController];
+  [editTextController release];
+
+  [self retain];  // must survive until EditTextController invokes the delegate method that indicates the end of the editing session
+}
+
+#pragma mark - Place label - EditTextDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief EditTextDelegate protocol method
+// -----------------------------------------------------------------------------
+- (bool) controller:(EditTextController*)editTextController shouldEndEditingWithText:(NSString*)text
+{
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief EditTextDelegate protocol method
+// -----------------------------------------------------------------------------
+- (void) didEndEditing:(EditTextController*)editTextController didCancel:(bool)didCancel
+{
+  [self autorelease];  // balance retain that is sent before EditTextController is shown
+
+  if (! didCancel)
+  {
+    NSArray* context = editTextController.context;
+    GoPoint* point = [context objectAtIndex:0];
+    MarkupModel* markupModel = [context objectAtIndex:1];
+    GoNode* node = [context objectAtIndex:2];
+
+    NSString* labelText = editTextController.text;
+
+    [self handleMarkupEditingInteractionOnPoint:point
+                                withMarkupModel:markupModel
+                                      labelText:labelText
+                                           node:node];
+  }
+
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  [appDelegate.window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Place connection
