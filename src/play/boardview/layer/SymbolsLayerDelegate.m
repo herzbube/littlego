@@ -167,12 +167,28 @@
       break;
     }
     case BVLDEventHandicapPointChanged:
-    case BVLDEventMarkupOnPointDidChange:
+    case BVLDEventMarkupOnPointsDidChange:
     {
-      GoPoint* pointThatChanged = eventInfo;
-      CGRect drawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
-                                                      centeredAtPoint:pointThatChanged
-                                                          withMetrics:self.boardViewMetrics];
+      CGRect drawingRect;
+
+      NSArray* pointsWithChangedMarkup = eventInfo;
+      if (pointsWithChangedMarkup.count == 1)
+      {
+        GoPoint* pointThatChanged = pointsWithChangedMarkup.firstObject;
+        drawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
+                                                 centeredAtPoint:pointThatChanged
+                                                     withMetrics:self.boardViewMetrics];
+      }
+      else
+      {
+        GoPoint* fromPoint = pointsWithChangedMarkup.firstObject;
+        GoPoint* toPoint = pointsWithChangedMarkup.lastObject;
+        drawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
+                                                       fromPoint:fromPoint
+                                                         toPoint:toPoint
+                                                     withMetrics:self.boardViewMetrics];
+      }
+
       if (CGRectIsEmpty(drawingRect))
         break;
 

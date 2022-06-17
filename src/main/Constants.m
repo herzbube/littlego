@@ -80,6 +80,7 @@ NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
 NSString* boardViewPanningGestureWillStart = @"BoardViewPanningGestureWillStart";
 NSString* boardViewPanningGestureWillEnd = @"BoardViewPanningGestureWillEnd";;
 NSString* boardViewCrossHairDidChange = @"BoardViewCrossHairDidChange";
+NSString* boardViewMarkupConnectionDidChange = @"BoardViewMarkupConnectionDidChange";
 NSString* uiAreaPlayModeWillChange = @"UIAreaPlayModeWillChange";
 NSString* uiAreaPlayModeDidChange = @"UIAreaPlayModeDidChange";
 NSString* handicapPointDidChange = @"HandicapPointDidChange";
@@ -89,7 +90,7 @@ NSString* allSetupStonesDidDiscard = @"AllSetupStonesDidDiscard";
 NSString* boardViewAnimationWillBegin = @"BoardViewAnimationWillBegin";
 NSString* boardViewAnimationDidEnd = @"BoardViewAnimationDidEnd";
 NSString* nodeAnnotationDataDidChange = @"NodeAnnotationDataDidChange";
-NSString* markupOnPointDidChange = @"MarkupOnPointDidChange";
+NSString* markupOnPointsDidChange = @"MarkupOnPointsDidChange";
 
 // Default values for properties that define how the Go board is displayed
 const float iPhoneMaximumZoomScale = 2.5;

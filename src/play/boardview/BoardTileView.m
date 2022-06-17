@@ -21,6 +21,7 @@
 #import "layer/CrossHairLinesLayerDelegate.h"
 #import "layer/GridLayerDelegate.h"
 #import "layer/InfluenceLayerDelegate.h"
+#import "layer/RectangleLayerDelegate.h"
 #import "layer/StonesLayerDelegate.h"
 #import "layer/SymbolsLayerDelegate.h"
 #import "layer/TerritoryLayerDelegate.h"
@@ -56,6 +57,7 @@
 @property(nonatomic, assign) InfluenceLayerDelegate* influenceLayerDelegate;
 @property(nonatomic, assign) SymbolsLayerDelegate* symbolsLayerDelegate;
 @property(nonatomic, assign) TerritoryLayerDelegate* territoryLayerDelegate;
+@property(nonatomic, assign) RectangleLayerDelegate* rectangleLayerDelegate;
 //@}
 @end
 
@@ -106,6 +108,7 @@
   self.influenceLayerDelegate = nil;
   self.symbolsLayerDelegate = nil;
   self.territoryLayerDelegate = nil;
+  self.rectangleLayerDelegate = nil;
   [super dealloc];
 }
 
@@ -137,7 +140,7 @@
   [center addObserver:self selector:@selector(handicapPointDidChange:) name:handicapPointDidChange object:nil];
   [center addObserver:self selector:@selector(setupPointDidChange:) name:setupPointDidChange object:nil];
   [center addObserver:self selector:@selector(allSetupStonesDidDiscard:) name:allSetupStonesDidDiscard object:nil];
-  [center addObserver:self selector:@selector(markupOnPointDidChange:) name:markupOnPointDidChange object:nil];
+  [center addObserver:self selector:@selector(markupOnPointsDidChange:) name:markupOnPointsDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [boardPositionModel addObserver:self forKeyPath:@"markNextMove" options:0 context:NULL];
@@ -220,6 +223,7 @@
   [self setupInfluenceLayerDelegate];
   [self setupSymbolsLayerDelegate];
   [self setupTerritoryLayerDelegate];
+  [self setupRectangleLayerDelegate];
 
   [self updateLayers];
 }
@@ -350,6 +354,26 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Creates the rectangle layer delegate, or resets it to nil, depending
+/// on the current application state.
+// -----------------------------------------------------------------------------
+- (void) setupRectangleLayerDelegate
+{
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeEditMarkup)
+  {
+    if (self.rectangleLayerDelegate)
+      return;
+    self.rectangleLayerDelegate = [[[RectangleLayerDelegate alloc] initWithTile:self
+                                                                        metrics:appDelegate.boardViewMetrics] autorelease];
+  }
+  else
+  {
+    self.rectangleLayerDelegate = nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Updates the layers of this BoardTileView based on the layer delegates
 /// that currently exist.
 // -----------------------------------------------------------------------------
@@ -370,6 +394,8 @@
     [newLayerDelegates addObject:self.symbolsLayerDelegate];
   if (self.territoryLayerDelegate)
     [newLayerDelegates addObject:self.territoryLayerDelegate];
+  if (self.rectangleLayerDelegate)
+    [newLayerDelegates addObject:self.rectangleLayerDelegate];
 
   // Removing/adding layers does not cause them to redraw. Only layers that
   // are newly created are redrawn.
@@ -492,6 +518,7 @@
   [self setupInfluenceLayerDelegate];
   [self setupSymbolsLayerDelegate];
   [self setupTerritoryLayerDelegate];
+  [self setupRectangleLayerDelegate];
   [self updateLayers];
 
   [self notifyLayerDelegates:BVLDEventUIAreaPlayModeChanged eventInfo:nil];
@@ -562,11 +589,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #markupOnPointDidChange notification.
+/// @brief Responds to the #markupOnPointsDidChange notification.
 // -----------------------------------------------------------------------------
-- (void) markupOnPointDidChange:(NSNotification*)notification
+- (void) markupOnPointsDidChange:(NSNotification*)notification
 {
-  [self notifyLayerDelegates:BVLDEventMarkupOnPointDidChange eventInfo:notification.object];
+  [self notifyLayerDelegates:BVLDEventMarkupOnPointsDidChange eventInfo:notification.object];
   [self delayedDrawLayers];
 }
 

@@ -47,7 +47,9 @@ enum BoardViewLayerDelegateEvent
   BVLDEventMoveNumbersPercentageChanged = BVLDEventMarkLastMoveChanged + 1,
   BVLDEventInconsistentTerritoryMarkupTypeChanged,
   /// @brief The event info object that accompanies this event type is a GoPoint
-  /// object that identifies the location of the cross-hair center.
+  /// object that identifies the location of the cross-hair center. This event
+  /// is sent continuously with updated information while a pan gesture is
+  /// ongoing.
   BVLDEventCrossHairChanged,
   BVLDEventUIAreaPlayModeChanged,
   BVLDEventScoreCalculationEnds,
@@ -62,9 +64,17 @@ enum BoardViewLayerDelegateEvent
   BVLDEventAllSetupStonesDiscarded,
   BVLDEventSelectedSymbolMarkupStyleChanged,
   BVLDEventMarkupPrecedenceChanged,
-  /// @brief The event info object that accompanies this event type is a GoPoint
-  /// object that identifies the intersection that changed.
-  BVLDEventMarkupOnPointDidChange,
+  /// @brief The event info object that accompanies this event type is an
+  /// NSArray that contains one or two GoPoint objects, which identify the
+  /// intersection(s) that changed. If the array contains two GoPoint objects
+  /// the affected markup is a connection.
+  BVLDEventMarkupOnPointsDidChange,
+  /// @brief The event info object that accompanies this event type is an
+  /// NSArray that contains two GoPoint objects that identify the intersections
+  /// to connect. The first GoPoint object is the starting intersection, the
+  /// second GoPoint object is the end intersection. This event is sent
+  /// continuously with updated information while a pan gesture is ongoing.
+  BVLDEventInteractiveMarkupBetweenPointsDidChange,
 };
 
 

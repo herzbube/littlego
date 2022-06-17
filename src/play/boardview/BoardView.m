@@ -30,6 +30,8 @@
 @interface BoardView()
 @property(nonatomic, retain) GoPoint* crossHairPoint;
 @property(nonatomic, assign) bool crossHairPointIsLegalMove;
+@property(nonatomic, retain) GoPoint* connectionStartPoint;
+@property(nonatomic, retain) GoPoint* connectionEndPoint;
 @property(nonatomic, assign) float crossHairPointDistanceFromFinger;
 @property(nonatomic, retain) BoardViewAccessibility* boardViewAccessibility;
 @end
@@ -53,6 +55,8 @@
 
   self.crossHairPoint = nil;
   self.crossHairPointIsLegalMove = true;
+  self.connectionStartPoint = nil;
+  self.connectionEndPoint = nil;
   self.boardViewAccessibility = [[[BoardViewAccessibility alloc] initWithBoardView:self] autorelease];
 
   return self;
@@ -64,6 +68,8 @@
 - (void) dealloc
 {
   self.crossHairPoint = nil;
+  self.connectionStartPoint = nil;
+  self.connectionEndPoint = nil;
   self.boardViewAccessibility = nil;
 
   [super dealloc];
@@ -106,6 +112,37 @@
       continue;
     BoardTileView* tileView = subview;
     [tileView notifyLayerDelegates:BVLDEventCrossHairChanged eventInfo:point];
+    [tileView delayedDrawLayers];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Moves the interactively drawn connection of type @a connection so
+/// that it is drawn between the points @a startPoint and @a endPoint. If either
+/// or both GoPoint parameters is @e nil the connection is removed.
+// -----------------------------------------------------------------------------
+- (void) moveMarkupConnection:(enum GoMarkupConnection)connection
+               withStartPoint:(GoPoint*)startPoint
+                   toEndPoint:(GoPoint*)endPoint
+{
+  if (self.connectionStartPoint == startPoint && self.connectionEndPoint == endPoint)
+    return;
+
+  self.connectionStartPoint = startPoint;
+  self.connectionEndPoint = endPoint;
+
+  NSArray* eventInfo;
+  if (startPoint && endPoint)
+    eventInfo = @[[NSNumber numberWithInt:connection], startPoint, endPoint];
+  else
+    eventInfo = @[];
+
+  for (id subview in [self.tileContainerView subviews])
+  {
+    if (! [subview isKindOfClass:[BoardTileView class]])
+      continue;
+    BoardTileView* tileView = subview;
+    [tileView notifyLayerDelegates:BVLDEventInteractiveMarkupBetweenPointsDidChange eventInfo:eventInfo];
     [tileView delayedDrawLayers];
   }
 }

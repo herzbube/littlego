@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2014-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,27 +16,17 @@
 
 
 // Project includes
-#import "TiledScrollView.h"
-#import "BoardViewIntersection.h"
-
-// Forward declarations
-@class GoPoint;
+#import "BoardViewLayerDelegateBase.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The BoardView class subclasses TiledScrollView to add cross-hair
-/// handling.
+/// @brief The RectangleLayerDelegate class is responsible for drawing within
+/// a rectangle defined by two intersections of the board that are located at
+/// diagonally opposite corners of the rectangle. RectangleLayerDelegate can
+/// draw only one rectangle at a time.
 // -----------------------------------------------------------------------------
-@interface BoardView : TiledScrollView
+@interface RectangleLayerDelegate : BoardViewLayerDelegateBase
 {
 }
-
-- (BoardViewIntersection) intersectionNear:(CGPoint)coordinates;
-- (void) moveCrossHairTo:(GoPoint*)point
-             isLegalMove:(bool)isLegalMove
-         isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason;
-- (void) moveMarkupConnection:(enum GoMarkupConnection)connection
-               withStartPoint:(GoPoint*)startPoint
-                   toEndPoint:(GoPoint*)endPoint;
 
 @end

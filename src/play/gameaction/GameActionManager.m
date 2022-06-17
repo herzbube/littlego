@@ -281,7 +281,7 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Handles an markup editing interaction at the intersection identified
+/// @brief Handles a markup editing interaction at the intersection identified
 /// by @a point. Is invoked only while the UI area "Play" is in markup editing
 /// mode.
 // -----------------------------------------------------------------------------
@@ -294,6 +294,22 @@ static GameActionManager* sharedGameActionManager = nil;
   }
 
   [[[[HandleMarkupEditingInteractionCommand alloc] initWithPoint:point] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Handles a markup editing interaction that places a connection of
+/// type @a connection starting at @a fromPoint and going to @a endPoint. Is
+/// invoked only while the UI area "Play" is in markup editing mode.
+// -----------------------------------------------------------------------------
+- (void) placeMarkupConnection:(enum GoMarkupConnection)connection fromPoint:(GoPoint*)fromPoint toPoint:(GoPoint*)toPoint
+{
+  if ([self shouldIgnoreUserInteraction])
+  {
+    DDLogWarn(@"%@: Ignoring placeMarkupConnection:fromPoint:toPoint:", self);
+    return;
+  }
+
+  [[[[HandleMarkupEditingInteractionCommand alloc] initWithStartPoint:fromPoint endPoint:toPoint] autorelease] submit];
 }
 
 #pragma mark - Mapping of game actions to handler methods

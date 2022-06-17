@@ -21,6 +21,7 @@
 #import "../gameaction/GameActionManager.h"
 #import "../model/BoardViewMetrics.h"
 #import "../model/BoardViewModel.h"
+#import "../model/MarkupModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoUtilities.h"
@@ -50,6 +51,13 @@
 /// this flag was added so that a bit of general-purpose defensive programming
 /// could be implemented.
 @property(nonatomic, assign) bool observingBoardPosition;
+/// @brief The GoPoint that identifies the intersection from which the panning
+/// gesture started.
+///
+/// This property is initialized when the panning gesture begins. It is updated
+/// continuously while the gesture is in progress. It is set back to @e nil when
+/// the gesture ends.
+@property(nonatomic, assign) GoPoint* gestureStartPoint;
 @end
 
 
@@ -68,10 +76,13 @@
   self = [super init];
   if (! self)
     return nil;
+
   self.boardView = nil;
+  self.gestureStartPoint = nil;
   [self setupLongPressGestureRecognizer];
   [self setupNotificationResponders];
   [self updatePanningEnabled];
+
   return self;
 }
 
@@ -83,6 +94,8 @@
   [self removeNotificationResponders];
   self.boardView = nil;
   self.longPressRecognizer = nil;
+  self.gestureStartPoint = nil;
+
   [super dealloc];
 }
 
@@ -116,6 +129,8 @@
   [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
   // KVO observing
   [self setupBoardPositionObserver:[GoGame sharedGame].boardPosition];
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  [appDelegate.markupModel addObserver:self forKeyPath:@"markupTool" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -141,6 +156,8 @@
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self removeBoardPositionObserver:[GoGame sharedGame].boardPosition];
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  [appDelegate.markupModel removeObserver:self forKeyPath:@"markupTool"];
 }
 
 // -----------------------------------------------------------------------------
@@ -203,27 +220,38 @@
   // 6. Place the stone with an offset to the fingertip position so that the
   //    user can see the stone location
 
-  CGPoint panningLocation = [gestureRecognizer locationInView:self.boardView];
-  BoardViewIntersection crossHairIntersection = [self.boardView intersectionNear:panningLocation];
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  enum UIAreaPlayMode uiAreaPlayMode = appDelegate.uiSettingsModel.uiAreaPlayMode;
+  BoardViewModel* boardViewModel = appDelegate.boardViewModel;
+  MarkupModel* markupModel = appDelegate.markupModel;
+
+  CGPoint panningLocation;
+  BoardViewIntersection panningIntersection = [self boardViewIntersectionForGestureLocation:gestureRecognizer
+                                                                            panningLocation:&panningLocation];
 
   bool isLegalMove = false;
   enum GoMoveIsIllegalReason illegalReason = GoMoveIsIllegalReasonUnknown;
-  if (! BoardViewIntersectionIsNullIntersection(crossHairIntersection))
+  if (! BoardViewIntersectionIsNullIntersection(panningIntersection))
   {
     CGRect visibleRect = self.boardView.bounds;
     // Don't use panningLocation for this check because the cross-hair center
     // is offset due to the snapping mechanism of the intersectionNear:()
     // method
-    bool isCrossHairInVisibleRect = CGRectContainsPoint(visibleRect, crossHairIntersection.coordinates);
-    if (isCrossHairInVisibleRect)
-      isLegalMove = [[GoGame sharedGame] isLegalMove:crossHairIntersection.point isIllegalReason:&illegalReason];
+    bool isPanningIntersectionInVisibleRect = CGRectContainsPoint(visibleRect, panningIntersection.coordinates);
+    if (isPanningIntersectionInVisibleRect)
+    {
+      if (uiAreaPlayMode == UIAreaPlayModePlay)
+        isLegalMove = [[GoGame sharedGame] isLegalMove:panningIntersection.point isIllegalReason:&illegalReason];
+    }
     else
-      crossHairIntersection = BoardViewIntersectionNull;
+    {
+      panningIntersection = BoardViewIntersectionNull;
+    }
   }
 
   static int gestureRecognizerStateChangedCount = 0;
 
-  BoardViewModel* boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
+
   UIGestureRecognizerState recognizerState = gestureRecognizer.state;
   switch (recognizerState)
   {
@@ -233,6 +261,13 @@
       DDLogDebug(@"UIGestureRecognizerStateBegan");
 
       [LayoutManager sharedManager].shouldAutorotate = false;
+
+      boardViewModel.boardViewPanningGestureIsInProgress = true;
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewPanningGestureWillStart object:nil];
+
+      if (uiAreaPlayMode == UIAreaPlayModeEditMarkup)
+        self.gestureStartPoint = panningIntersection.point;
+
       // No break, fall-through intentional!
     }
     case UIGestureRecognizerStateChanged:
@@ -241,27 +276,6 @@
         DDLogDebug(@"UIGestureRecognizerStateChanged, gestureRecognizerStateChangedCount = %d", gestureRecognizerStateChangedCount);
       ++gestureRecognizerStateChangedCount;
 
-      if (UIGestureRecognizerStateBegan == recognizerState)
-      {
-        boardViewModel.boardViewPanningGestureIsInProgress = true;
-        [[NSNotificationCenter defaultCenter] postNotificationName:boardViewPanningGestureWillStart object:nil];
-      }
-
-      [self.boardView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
-      NSArray* crossHairInformation;
-      if (crossHairIntersection.point)
-      {
-        crossHairInformation = [[[NSArray alloc] initWithObjects:
-                                 crossHairIntersection.point,
-                                 [NSNumber numberWithBool:isLegalMove],
-                                 [NSNumber numberWithInt:illegalReason],
-                                 nil] autorelease];
-      }
-      else
-      {
-        crossHairInformation = [NSArray array];
-      }
-      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewCrossHairDidChange object:crossHairInformation];
       break;
     }
     case UIGestureRecognizerStateEnded:
@@ -269,12 +283,10 @@
       DDLogDebug(@"UIGestureRecognizerStateEnded");
 
       [LayoutManager sharedManager].shouldAutorotate = true;
+
       boardViewModel.boardViewPanningGestureIsInProgress = false;
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewPanningGestureWillEnd object:nil];
-      [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
-      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewCrossHairDidChange object:[NSArray array]];
-      if (isLegalMove)
-        [[GameActionManager sharedGameActionManager] playAtIntersection:crossHairIntersection.point];
+
       break;
     }
     // Occurs, for instance, if an alert is displayed while a gesture is
@@ -284,10 +296,10 @@
       DDLogDebug(@"UIGestureRecognizerStateCancelled");
 
       [LayoutManager sharedManager].shouldAutorotate = true;
+
       boardViewModel.boardViewPanningGestureIsInProgress = false;
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewPanningGestureWillEnd object:nil];
-      [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
-      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewCrossHairDidChange object:[NSArray array]];
+
       break;
     }
     default:
@@ -298,10 +310,37 @@
     }
   }
 
+  if (uiAreaPlayMode == UIAreaPlayModePlay)
+  {
+    [self handlePlayStoneWithGestureRecognizerState:recognizerState
+                                            atPoint:panningIntersection.point
+                                        isLegalMove:isLegalMove
+                                    isIllegalReason:illegalReason];
+  }
+  else if (uiAreaPlayMode == UIAreaPlayModeEditMarkup)
+  {
+    enum MarkupTool markupTool = markupModel.markupTool;
+    if (markupTool == MarkupToolConnection)
+    {
+      [self handlePlaceMarkupConnectionWithGestureRecognizerState:recognizerState
+                                                       markupType:markupModel.markupType
+                                                       startPoint:self.gestureStartPoint
+                                                       toEndPoint:panningIntersection.point];
+    }
+    else if (markupTool == MarkupToolEraser)
+    {
+      // TODO xxx draw a rectangle in which to delete all markup
+    }
+    else
+    {
+      // TODO xxx move existing markup
+    }
+  }
+
   // Perform magnifying glass handling only after the Go board graphics changes
   // have been queued
   [self handleMagnifyingGlassForPanningLocation:panningLocation
-                          crossHairIntersection:crossHairIntersection];
+                            panningIntersection:panningIntersection];
 }
 
 // -----------------------------------------------------------------------------
@@ -309,7 +348,105 @@
 // -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
-  return (self.isPanningEnabled ? YES : NO);
+  if (self.isPanningEnabled)
+  {
+    // Begin the gesture only when it's near a valid intersection. This is
+    // important for some markup editing tools (e.g. connections) that need a
+    // starting intersection to which the gesture can be anchored.
+    BoardViewIntersection startingIntersection = [self boardViewIntersectionForGestureLocation:gestureRecognizer
+                                                                               panningLocation:nil];
+    return BoardViewIntersectionIsNullIntersection(startingIntersection) ? NO : YES;
+  }
+  else
+  {
+    return NO;
+  }
+}
+
+#pragma mark - Gesture handling - Placing a stone (UIAreaPlayModePlay)
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method for handlePanFrom:(), with specific handling for
+/// placing a stone.
+// -----------------------------------------------------------------------------
+- (void) handlePlayStoneWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
+                                           atPoint:(GoPoint*)point
+                                       isLegalMove:(bool)isLegalMove
+                                   isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason
+{
+  if (recognizerState == UIGestureRecognizerStateEnded || recognizerState == UIGestureRecognizerStateCancelled)
+  {
+    [self.boardView moveCrossHairTo:nil
+                        isLegalMove:true
+                    isIllegalReason:illegalReason];
+
+    NSArray* crossHairInformation = @[];
+    [[NSNotificationCenter defaultCenter] postNotificationName:boardViewCrossHairDidChange
+                                                        object:crossHairInformation];
+
+    if (recognizerState == UIGestureRecognizerStateEnded && isLegalMove)
+    {
+      [[GameActionManager sharedGameActionManager] playAtIntersection:point];
+    }
+  }
+  else
+  {
+    [self.boardView moveCrossHairTo:point
+                        isLegalMove:isLegalMove
+                    isIllegalReason:illegalReason];
+
+    NSArray* crossHairInformation = point
+      ? @[point, [NSNumber numberWithBool:isLegalMove], [NSNumber numberWithInt:illegalReason]]
+      : @[];
+    [[NSNotificationCenter defaultCenter] postNotificationName:boardViewCrossHairDidChange
+                                                        object:crossHairInformation];
+  }
+}
+
+#pragma mark - Gesture handling - Drawing a connection (UIAreaPlayModeEditMarkup)
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method for handlePanFrom:(), with specific handling for
+/// placing a connection.
+// -----------------------------------------------------------------------------
+- (void) handlePlaceMarkupConnectionWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
+                                                    markupType:(enum MarkupType)markupType
+                                                    startPoint:(GoPoint*)startPoint
+                                                    toEndPoint:(GoPoint*)endPoint
+{
+  enum GoMarkupConnection connection = (markupType == MarkupTypeConnectionArrow)
+    ? GoMarkupConnectionArrow
+    : GoMarkupConnectionLine;
+
+  if (recognizerState == UIGestureRecognizerStateEnded || recognizerState == UIGestureRecognizerStateCancelled)
+  {
+    [self.boardView moveMarkupConnection:connection
+                          withStartPoint:nil
+                              toEndPoint:nil];
+
+    NSArray* connectionInformation = @[];
+    [[NSNotificationCenter defaultCenter] postNotificationName:boardViewMarkupConnectionDidChange
+                                                        object:connectionInformation];
+
+    if (recognizerState == UIGestureRecognizerStateEnded && startPoint && endPoint && startPoint != endPoint)
+    {
+      [[GameActionManager sharedGameActionManager] placeMarkupConnection:connection
+                                                               fromPoint:startPoint
+                                                                 toPoint:endPoint];
+    }
+  }
+  else
+  {
+    [self.boardView moveMarkupConnection:connection
+                          withStartPoint:startPoint
+                              toEndPoint:endPoint];
+
+    NSArray* connectionInformation = (startPoint && endPoint)
+      ? @[[NSNumber numberWithInt:connection], startPoint, endPoint]
+      : @[];
+    [[NSNotificationCenter defaultCenter] postNotificationName:boardViewMarkupConnectionDidChange
+                                                        object:connectionInformation];
+  }
 }
 
 #pragma mark - Notification responders
@@ -384,6 +521,11 @@
     [self cancelPanningInProgress];
     [self updatePanningEnabled];
   }
+  else if ([keyPath isEqualToString:@"markupTool"])
+  {
+    [self cancelPanningInProgress];
+    [self updatePanningEnabled];
+  }
 }
 
 #pragma mark - Updaters
@@ -401,7 +543,18 @@
   }
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModePlay)
+
+  enum UIAreaPlayMode uiAreaPlayMode = appDelegate.uiSettingsModel.uiAreaPlayMode;
+  if (uiAreaPlayMode == UIAreaPlayModeEditMarkup)
+  {
+    MarkupModel* markupModel = appDelegate.markupModel;
+    if (markupModel.markupTool == MarkupToolConnection)
+      self.panningEnabled = true;
+    else
+      self.panningEnabled = false;  // TODO xxx do we need to enable panning also for regular markup?
+    return;
+  }
+  else if (uiAreaPlayMode != UIAreaPlayModePlay)
   {
     self.panningEnabled = false;
     return;
@@ -446,10 +599,10 @@
 /// @brief Performs magnifying glass handling according to the current user
 /// defaults. If the magnifying glass is enabled, the center of magnification is
 /// either at @a panningLocation or at the coordinate represented by
-/// @a crossHairIntersection
+/// @a panningIntersection
 // -----------------------------------------------------------------------------
 - (void) handleMagnifyingGlassForPanningLocation:(CGPoint)panningLocation
-                           crossHairIntersection:(BoardViewIntersection)crossHairIntersection
+                             panningIntersection:(BoardViewIntersection)panningIntersection
 {
   MagnifyingViewModel* magnifyingViewModel = [ApplicationDelegate sharedDelegate].magnifyingViewModel;
   switch (magnifyingViewModel.enableMode)
@@ -476,10 +629,10 @@
         [self disableMagnifyingGlass];
       break;
     case MagnifyingGlassUpdateModeIntersection:
-      if (BoardViewIntersectionIsNullIntersection(crossHairIntersection))
+      if (BoardViewIntersectionIsNullIntersection(panningIntersection))
         [self disableMagnifyingGlass];
       else
-        [self updateMagnifyingGlassForCrossHairIntersection:crossHairIntersection];
+        [self updateMagnifyingGlassForPanningIntersection:panningIntersection];
     default:
       [ExceptionUtility throwNotImplementedException];
       break;
@@ -508,20 +661,20 @@
 /// @brief Enables the magnifying glass if it is not currently enabled, then
 /// updates the magnifying glass so that it displays the content around the
 /// center of magnification that is at the coordinate represented by
-/// @a crossHairIntersection.
+/// @a panningIntersection.
 // -----------------------------------------------------------------------------
-- (void) updateMagnifyingGlassForCrossHairIntersection:(BoardViewIntersection)crossHairIntersection
+- (void) updateMagnifyingGlassForPanningIntersection:(BoardViewIntersection)panningIntersection
 {
   id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
   if (! magnifyingGlassOwner.magnifyingGlassEnabled)
   {
-    DDLogDebug(@"Enabling magnifying glass for crosshair intersection, owner = %@", magnifyingGlassOwner);
+    DDLogDebug(@"Enabling magnifying glass for panning intersection, owner = %@", magnifyingGlassOwner);
 
     [magnifyingGlassOwner enableMagnifyingGlass:self];
   }
   MagnifyingViewController* magnifyingViewController = magnifyingGlassOwner.magnifyingViewController;
   BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
-  CGPoint magnificationCenter = [metrics coordinatesFromPoint:crossHairIntersection.point];
+  CGPoint magnificationCenter = [metrics coordinatesFromPoint:panningIntersection.point];
   [magnifyingViewController updateMagnificationCenter:magnificationCenter inView:self.boardView];
 }
 
@@ -558,6 +711,20 @@
 {
   self.longPressRecognizer.enabled = NO;
   self.longPressRecognizer.enabled = YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the BoardViewIntersection that is nearest to the gesture
+/// recognizer's current location.
+// -----------------------------------------------------------------------------
+- (BoardViewIntersection) boardViewIntersectionForGestureLocation:(UIGestureRecognizer*)gestureRecognizer
+                                                  panningLocation:(CGPoint*)panningLocation
+{
+  CGPoint gestureLocation = [gestureRecognizer locationInView:self.boardView];
+  if (panningLocation)
+    *panningLocation = gestureLocation;
+  BoardViewIntersection intersectionNearGestureLocation = [self.boardView intersectionNear:gestureLocation];
+  return intersectionNearGestureLocation;
 }
 
 @end

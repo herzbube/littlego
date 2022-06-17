@@ -17,6 +17,7 @@
 
 // Project includes
 #import "StatusViewController.h"
+#import "../model/MarkupModel.h"
 #import "../model/ScoringModel.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
@@ -52,6 +53,7 @@
 @property(nonatomic, assign) bool activityIndicatorNeedsUpdate;
 @property(nonatomic, assign) bool statusLabelNeedsUpdate;
 @property(nonatomic, retain) NSArray* crossHairInformation;
+@property(nonatomic, retain) NSArray* connectionInformation;
 @property(nonatomic, assign) bool shouldDisplayActivityIndicator;
 @property(nonatomic, retain) NSLayoutConstraint* activityIndicatorWidthConstraint;
 @property(nonatomic, retain) NSLayoutConstraint* activityIndicatorSpacingConstraint;
@@ -103,6 +105,7 @@
   self.statusLabel = nil;
   self.activityIndicator = nil;
   self.crossHairInformation = nil;
+  self.connectionInformation = nil;
   self.activityIndicatorWidthConstraint = nil;
   self.activityIndicatorSpacingConstraint = nil;
 }
@@ -328,10 +331,13 @@
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesStarts:) name:askGtpEngineForDeadStonesStarts object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesEnds:) name:askGtpEngineForDeadStonesEnds object:nil];
   [center addObserver:self selector:@selector(boardViewCrossHairDidChange:) name:boardViewCrossHairDidChange object:nil];
+  [center addObserver:self selector:@selector(boardViewMarkupConnectionDidChange:) name:boardViewMarkupConnectionDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [self setupNotificationRespondersForGame:[GoGame sharedGame]];
-  [[ApplicationDelegate sharedDelegate].scoringModel addObserver:self forKeyPath:@"scoreMarkMode" options:0 context:NULL];
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  [appDelegate.markupModel addObserver:self forKeyPath:@"markupType" options:0 context:NULL];
+  [appDelegate.scoringModel addObserver:self forKeyPath:@"scoreMarkMode" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -363,7 +369,9 @@
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [self removeNotificationRespondersForGame:[GoGame sharedGame]];
-  [[ApplicationDelegate sharedDelegate].scoringModel removeObserver:self forKeyPath:@"scoreMarkMode"];
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  [appDelegate.markupModel removeObserver:self forKeyPath:@"markupType"];
+  [appDelegate.scoringModel removeObserver:self forKeyPath:@"scoreMarkMode"];
 }
 
 // -----------------------------------------------------------------------------
@@ -482,6 +490,24 @@
       }
     }
   }
+  else if (self.connectionInformation)
+  {
+    NSNumber* connectionAsNumber = [self.connectionInformation objectAtIndex:0];
+    enum GoMarkupConnection connection = connectionAsNumber.intValue;
+    GoPoint* fromPoint = [self.connectionInformation objectAtIndex:1];
+    GoPoint* toPoint = [self.connectionInformation objectAtIndex:2];
+
+    NSString* connectionTextSymbol;
+    if (connection == GoMarkupConnectionArrow)
+      connectionTextSymbol = @"➔";
+    else
+      connectionTextSymbol = @"-";
+
+    if (fromPoint == toPoint)
+      statusText = [NSString stringWithFormat:@"%@ %@ Drag to other intersection", fromPoint.vertex.string, connectionTextSymbol];
+    else
+      statusText = [NSString stringWithFormat:@"%@ %@ %@", fromPoint.vertex.string, connectionTextSymbol, toPoint.vertex.string];
+  }
   else
   {
     GoGame* game = [GoGame sharedGame];
@@ -517,7 +543,9 @@
     }
     else
     {
-      UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+      ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+      UiSettingsModel* uiSettingsModel = appDelegate.uiSettingsModel;
+
       if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
       {
         GoScore* score = game.score;
@@ -570,8 +598,31 @@
       }
       else if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeEditMarkup)
       {
-        // TODO xxx add instructions that fit the currently selected tool
-        statusText = @"Tap to place or remove markup";
+        MarkupModel* markupModel = appDelegate.markupModel;
+        switch (markupModel.markupTool)
+        {
+          case MarkupToolSymbol:
+            statusText = @"Tap to place or remove a symbol";
+            break;
+          case MarkupToolMarker:
+            if (markupModel.markupType == MarkupTypeMarkerLetter)
+              statusText = @"Tap to place or remove a letter marker";
+            else
+              statusText = @"Tap to place or remove a number marker";
+            break;
+          case MarkupToolLabel:
+            statusText = @"Tap to place or edit a label";
+            break;
+          case MarkupToolConnection:
+            if (markupModel.markupType == MarkupTypeConnectionArrow)
+              statusText = @"Drag to place an arrow";
+            else
+              statusText = @"Drag to place a line";
+            break;
+          case MarkupToolEraser:
+            statusText = @"Tap to remove any markup";
+            break;
+        }
       }
       else
       {
@@ -830,6 +881,20 @@
     self.crossHairInformation = [NSArray arrayWithArray:crossHairInformation];
   else
     self.crossHairInformation = nil;
+  self.statusLabelNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewMarkupConnectionDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) boardViewMarkupConnectionDidChange:(NSNotification*)notification
+{
+  NSArray* connectionInformation = notification.object;
+  if (connectionInformation.count > 0)
+    self.connectionInformation = [NSArray arrayWithArray:connectionInformation];
+  else
+    self.connectionInformation = nil;
   self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }

@@ -862,6 +862,33 @@ extern NSString* boardViewPanningGestureWillEnd;
 /// the NSArray may be deallocated, or its content changed, after the
 /// notification has been delivered.
 extern NSString* boardViewCrossHairDidChange;
+/// @brief Is sent to indicate that the board view changed a markup connection,
+/// typically to display it with a new end point. Is sent after
+/// #boardViewPanningGestureWillStart and after #boardViewPanningGestureWillEnd.
+///
+/// An NSArray object is associated with the notification that contains
+/// information about the new markup connection.
+///
+/// If the NSArray is empty this indicates that the connection is currently not
+/// visible because the gesture that drives the connection drawing currently
+/// points to a connection end point location that is outside of the board's
+/// boundaries. The NSArray is also empty if this is the final notification sent
+/// after #boardViewPanningGestureWillEnd.
+///
+/// If the NSArray is not empty, this indicates that the connection is currently
+/// visible. The NSArray in this case contains the following objects:
+/// - Object at index position 0: An NSNumber object that holds an @e int value
+///   that is actually a value from the enumeration #GoMarkupConnection. This
+///   identifes the type of the connection to be displayed.
+/// - Object at index position 1: A GoPoint object that identifies the
+///   intersection that is the starting point of the connection to be displayed.
+/// - Object at index position 2: A GoPoint object that identifies the
+///   intersection that is the end point of the connection to be displayed.
+///
+/// Receivers of the notification must process the NSArray immediately because
+/// the NSArray may be deallocated, or its content changed, after the
+/// notification has been delivered.
+extern NSString* boardViewMarkupConnectionDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -889,7 +916,7 @@ extern NSString* playersAndProfilesDidReset;
 /// been updated.
 extern NSString* territoryStatisticsChanged;
 /// @brief Is sent to indicate that the mode of the UI area "Play" is about
-/// to change. An NSArray object containing to NSNumber objects is associated
+/// to change. An NSArray object containing two NSNumber objects is associated
 /// with the notification. The first NSNumber object contains the old
 /// UIAreaPlayMode value, the second NSNumber object the new UIAreaPlayMode
 /// value. Receivers of the notification must process the NSArray immediately
@@ -897,7 +924,7 @@ extern NSString* territoryStatisticsChanged;
 /// notification has been delivered.
 extern NSString* uiAreaPlayModeWillChange;
 /// @brief Is sent to indicate that the mode of the UI area "Play" has changed.
-/// An NSArray object containing to NSNumber objects is associated with the
+/// An NSArray object containing two NSNumber objects is associated with the
 /// notification. The first NSNumber object contains the old UIAreaPlayMode
 /// value, the second NSNumber object the new UIAreaPlayMode value. Receivers
 /// of the notification must process the NSArray immediately because the NSArray
@@ -930,10 +957,11 @@ extern NSString* boardViewAnimationDidEnd;
 /// GoNode object that identifies the node with the changed data is associated
 /// with the notification.
 extern NSString* nodeAnnotationDataDidChange;
-/// @brief Is sent to indicate that the markup on an intersection has changed
-/// during markup editing. The GoPoint object that identifies the intersection
-/// is associated with the notification.
-extern NSString* markupOnPointDidChange;
+/// @brief Is sent to indicate that the markup on one or two intersections has
+/// changed during markup editing. An NSArray object with the GoPoint objects
+/// that identify the intersections is associated with the notification. If the
+/// array contains two GoPoint objects the affected markup is a connection.
+extern NSString* markupOnPointsDidChange;
 //@}
 
 // -----------------------------------------------------------------------------

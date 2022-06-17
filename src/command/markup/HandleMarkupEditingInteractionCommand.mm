@@ -20,6 +20,7 @@
 #import "../backup/BackupGameToSgfCommand.h"
 #import "../../play/model/MarkupModel.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoBoard.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeMarkup.h"
@@ -43,6 +44,8 @@
 // -----------------------------------------------------------------------------
 @interface HandleMarkupEditingInteractionCommand()
 @property(nonatomic, retain) GoPoint* point;
+@property(nonatomic, retain) GoPoint* startPoint;
+@property(nonatomic, retain) GoPoint* endPoint;
 @end
 
 
@@ -64,6 +67,26 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
+/// @brief Initializes static variables if they have not yet been initialized.
+// -----------------------------------------------------------------------------
++ (void) setupStaticVariablesIfNotYetSetup
+{
+  if (charUppercaseA != 0)
+    return;
+
+  charUppercaseA = [@"A" characterAtIndex:0];
+  charuppercaseZ = [@"Z" characterAtIndex:0];
+  charLowercaseA = [@"a" characterAtIndex:0];
+  charLowercaseZ = [@"z" characterAtIndex:0];
+  charZero = [@"0" characterAtIndex:0];
+  charNine = [@"9" characterAtIndex:0];
+  minimumNumberMarkerValue = 1;
+  maximumNumberMarkerValue = 999;
+  letterMarkerValueRanges.push_back(std::make_pair('A', 'Z'));
+  letterMarkerValueRanges.push_back(std::make_pair('a', 'z'));
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Initializes a HandleMarkupEditingInteractionCommand object.
 ///
 /// @note This is the designated initializer of
@@ -76,21 +99,30 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   if (! self)
     return nil;
 
-  self.point = point;
+  [HandleMarkupEditingInteractionCommand setupStaticVariablesIfNotYetSetup];
 
-  if (charUppercaseA == 0)
-  {
-    charUppercaseA = [@"A" characterAtIndex:0];
-    charuppercaseZ = [@"Z" characterAtIndex:0];
-    charLowercaseA = [@"a" characterAtIndex:0];
-    charLowercaseZ = [@"z" characterAtIndex:0];
-    charZero = [@"0" characterAtIndex:0];
-    charNine = [@"9" characterAtIndex:0];
-    minimumNumberMarkerValue = 1;
-    maximumNumberMarkerValue = 999;
-    letterMarkerValueRanges.push_back(std::make_pair('A', 'Z'));
-    letterMarkerValueRanges.push_back(std::make_pair('a', 'z'));
-  }
+  self.point = point;
+  self.startPoint = nil;
+  self.endPoint = nil;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a HandleMarkupEditingInteractionCommand object.
+// -----------------------------------------------------------------------------
+- (id) initWithStartPoint:(GoPoint*)startPoint endPoint:(GoPoint*)endPoint
+{
+  // Call designated initializer of superclass (CommandBase)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  [HandleMarkupEditingInteractionCommand setupStaticVariablesIfNotYetSetup];
+
+  self.point = nil;
+  self.startPoint = startPoint;
+  self.endPoint = endPoint;
 
   return self;
 }
@@ -102,6 +134,8 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 - (void) dealloc
 {
   self.point = nil;
+  self.startPoint = nil;
+  self.endPoint = nil;
 
   [super dealloc];
 }
@@ -113,6 +147,12 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  if (! self.point && ! (self.startPoint && self.endPoint))
+  {
+    DDLogError(@"%@: Unable to handle markup interaction because neither a single point nor a start/end point pair is set", self);
+    return false;
+  }
+
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
   int currentBoardPosition = boardPosition.currentBoardPosition;
@@ -145,15 +185,27 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   }
 
   MarkupModel* markupModel = [ApplicationDelegate sharedDelegate].markupModel;
-  if (markupModel.markupTool == MarkupToolLabel)
+  if (self.point)
   {
-    [self handleEnterNewLabelTextOnPoint:self.point
-                         withMarkupModel:markupModel
-                                    node:currentNode];
+    if (markupModel.markupTool == MarkupToolLabel)
+    {
+      [self handleEnterNewLabelTextOnPoint:self.point
+                           withMarkupModel:markupModel
+                                      node:currentNode];
+    }
+    else
+    {
+      [self handleMarkupEditingInteractionOnPoint:self.point
+                              optionalSecondPoint:nil
+                                  withMarkupModel:markupModel
+                                        labelText:nil
+                                             node:currentNode];
+    }
   }
   else
   {
-    [self handleMarkupEditingInteractionOnPoint:self.point
+    [self handleMarkupEditingInteractionOnPoint:self.startPoint
+                            optionalSecondPoint:self.endPoint
                                 withMarkupModel:markupModel
                                       labelText:nil
                                            node:currentNode];
@@ -170,6 +222,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 /// markup tool is #MarkupToolLabel.
 // -----------------------------------------------------------------------------
 - (void) handleMarkupEditingInteractionOnPoint:(GoPoint*)point
+                           optionalSecondPoint:(GoPoint*)secondPoint
                                withMarkupModel:(MarkupModel*)markupModel
                                      labelText:(NSString*)labelText
                                           node:(GoNode*)node
@@ -180,6 +233,9 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
 
+    // TODO xxx Only set to an array if something changed
+    NSArray* pointsWithChangedMarkup = nil;
+
     NSString* intersection = point.vertex.string;
     GoNodeMarkup* nodeMarkup = node.goNodeMarkup;
     switch (markupModel.markupTool)
@@ -187,26 +243,41 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
       case MarkupToolSymbol:
       {
         [self handlePlaceSymbol:markupModel.markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
+        pointsWithChangedMarkup = @[point];
         break;
       }
       case MarkupToolMarker:
       {
         [self handlePlaceMarker:markupModel.markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
+        pointsWithChangedMarkup = @[point];
         break;
       }
       case MarkupToolLabel:
       {
         [self handlePlaceLabel:labelText onIntersection:intersection withNodeMarkup:nodeMarkup];
+        pointsWithChangedMarkup = @[point];
         break;
       }
       case MarkupToolConnection:
       {
-        [self handlePlaceConnection:markupModel.markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
+        if (secondPoint)
+        {
+          NSString* fromIntersection = intersection;
+          NSString* toIntersection = secondPoint.vertex.string;
+          [self handlePlaceConnection:markupModel.markupType fromIntersection:fromIntersection toIntersection:toIntersection withNodeMarkup:nodeMarkup];
+          pointsWithChangedMarkup = @[point, secondPoint];
+        }
+        else
+        {
+          pointsWithChangedMarkup = [self handleRemoveConnectionIfExistsAtIntersection:intersection withNodeMarkup:nodeMarkup];
+        }
         break;
       }
       case MarkupToolEraser:
       {
-        [self handleEraseMarkupOnIntersection:intersection withNodeMarkup:nodeMarkup];
+        pointsWithChangedMarkup = [self handleEraseMarkupOnIntersection:intersection withNodeMarkup:nodeMarkup];
+        if (! pointsWithChangedMarkup)
+          pointsWithChangedMarkup = @[point];
         break;
       }
       default:
@@ -224,9 +295,15 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
     if (! nodeMarkup.hasMarkup)
       node.goNodeMarkup = nil;
 
-    [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointDidChange object:point];
-
-    [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
+    if (pointsWithChangedMarkup)
+    {
+      [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+      [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
+    }
+    else
+    {
+      applicationStateDidChange = false;
+    }
   }
   @finally
   {
@@ -647,7 +724,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 /// handleMarkupEditingInteractionOnIntersection:withMarkupModel:labelText:nodeMarkup:().
 ///
 /// This method is invoked from doIt() and not from
-/// handleMarkupEditingInteractionOnPoint:withMarkupModel:labelText:node:(),
+/// handleMarkupEditingInteractionOnPoint:optionalSecondPoint:withMarkupModel:labelText:node:(),
 /// because the latter wraps the invocation of its handler methods into a pair
 /// of beginSavePoint/commitSavePoint method calls, which requires the handler
 /// method to work synchronously. This method does not work synchronously, it
@@ -704,6 +781,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
     NSString* labelText = editTextController.text;
 
     [self handleMarkupEditingInteractionOnPoint:point
+                            optionalSecondPoint:nil
                                 withMarkupModel:markupModel
                                       labelText:labelText
                                            node:node];
@@ -713,7 +791,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   [appDelegate.window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
-#pragma mark - Place connection
+#pragma mark - Place/remove connection
 
 // -----------------------------------------------------------------------------
 /// @brief Entry point for handling connection markup placing.
@@ -721,19 +799,50 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
 - (void) handlePlaceConnection:(enum MarkupType)markupType
-                onIntersection:(NSString*)intersection
+              fromIntersection:(NSString*)fromIntersection
+                toIntersection:(NSString*)toIntersection
                 withNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
+  enum GoMarkupConnection connection = (markupType == MarkupTypeConnectionArrow)
+    ? GoMarkupConnectionArrow
+    : GoMarkupConnectionLine;
+  [nodeMarkup setConnection:connection fromVertex:fromIntersection toVertex:toIntersection];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Entry point for handling connection markup removal. Returns an array
+/// with the start/end GoPoint objects of the connection that was removed.
+/// Returns @e nil if no connection was removed.
+///
+/// See document MANUAL for details how this works.
+// -----------------------------------------------------------------------------
+- (NSArray*) handleRemoveConnectionIfExistsAtIntersection:(NSString*)intersection
+                                           withNodeMarkup:(GoNodeMarkup*)nodeMarkup
+{
+  NSDictionary* connections = nodeMarkup.connections;
+  for (NSArray* key in connections.allKeys)
+  {
+    if ([key containsObject:intersection])
+    {
+      [nodeMarkup removeConnectionFromVertex:key.firstObject toVertex:key.lastObject];
+      return [self pointsArrayWithFromIntersection:key.firstObject toIntersection:key.lastObject];
+    }
+  }
+
+  return nil;
 }
 
 #pragma mark - Erase markup
 
 // -----------------------------------------------------------------------------
-/// @brief Entry point for handling markup erasing.
+/// @brief Entry point for handling markup erasing. If a connection was removed,
+/// returns an array with the start/end GoPoint objects of the connection that
+/// was removed. Returns @e nil if the markup that was removed was not a
+/// connection, or if no markup was removed at all.
 ///
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
-- (void) handleEraseMarkupOnIntersection:(NSString*)intersection
+- (NSArray*) handleEraseMarkupOnIntersection:(NSString*)intersection
                           withNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
   if (nodeMarkup.symbols && nodeMarkup.symbols[intersection])
@@ -746,16 +855,24 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   }
   else if (nodeMarkup.connections)
   {
-    NSDictionary* connections = nodeMarkup.connections;
-    for (NSArray* key in connections.allKeys)
-    {
-      if ([key containsObject:intersection])
-      {
-        [nodeMarkup removeConnectionFromVertex:key.firstObject toVertex:key.lastObject];
-        break;
-      }
-    }
+    return [self handleRemoveConnectionIfExistsAtIntersection:intersection withNodeMarkup:nodeMarkup];
   }
+
+  return nil;
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (NSArray*) pointsArrayWithFromIntersection:(NSString*)fromIntersection
+                              toIntersection:(NSString*)toIntersection
+{
+  GoBoard* board = [GoGame sharedGame].board;
+  GoPoint* fromPoint = [board pointAtVertex:fromIntersection];
+  GoPoint* toPoint = [board pointAtVertex:toIntersection];
+  return @[fromPoint, toPoint];
 }
 
 @end

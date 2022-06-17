@@ -344,6 +344,8 @@
 		CD85B5C81401C347001715B8 /* NewGameModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAB5ECD13E483AA00C4A4AA /* NewGameModel.m */; };
 		CD85B5CB1401C354001715B8 /* PlayerStatistics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE302871360BDA3005235F2 /* PlayerStatistics.m */; };
 		CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
+		CD869F152855F6C300B679FE /* RectangleLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD869F142855F6C200B679FE /* RectangleLayerDelegate.m */; };
+		CD869F162855F6C300B679FE /* RectangleLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD869F142855F6C200B679FE /* RectangleLayerDelegate.m */; };
 		CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
 		CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
 		CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
@@ -1148,6 +1150,8 @@
 		CD85069027C00B30000D2CCD /* GoNodeAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeAdditions.h; sourceTree = "<group>"; };
 		CD85B58E1401C137001715B8 /* GoGameTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameTest.h; sourceTree = "<group>"; };
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
+		CD869F132855F6C200B679FE /* RectangleLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RectangleLayerDelegate.h; sourceTree = "<group>"; };
+		CD869F142855F6C200B679FE /* RectangleLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RectangleLayerDelegate.m; sourceTree = "<group>"; };
 		CD899E5B164875A800329154 /* CrashReportingModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingModel.h; sourceTree = "<group>"; };
 		CD899E5C164875A800329154 /* CrashReportingModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingModel.m; sourceTree = "<group>"; };
 		CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiElementMetrics.h; sourceTree = "<group>"; };
@@ -3099,6 +3103,8 @@
 				CDEE19F019433EAC00DF2389 /* GridLayerDelegate.m */,
 				CDEE1A0D1946123F00DF2389 /* InfluenceLayerDelegate.h */,
 				CDEE1A0E1946123F00DF2389 /* InfluenceLayerDelegate.m */,
+				CD869F132855F6C200B679FE /* RectangleLayerDelegate.h */,
+				CD869F142855F6C200B679FE /* RectangleLayerDelegate.m */,
 				CDEE1A0119438AE000DF2389 /* StonesLayerDelegate.h */,
 				CDEE1A0219438AE000DF2389 /* StonesLayerDelegate.m */,
 				CDEE1A05194391AE00DF2389 /* SymbolsLayerDelegate.h */,
@@ -3782,6 +3788,7 @@
 				CDB457AC147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
 				CDEE19F719433EAC00DF2389 /* BoardViewDrawingHelper.m in Sources */,
 				CD607BC7280B1AB3000C111E /* OrientationChangeNotifyingView.m in Sources */,
+				CD869F152855F6C300B679FE /* RectangleLayerDelegate.m in Sources */,
 				CDA0970B1A99F77F002FCD78 /* SplitViewController.m in Sources */,
 				CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */,
 				CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */,
@@ -4124,6 +4131,7 @@
 				CD7C578721F79C3000694520 /* ChangeUIAreaPlayModeCommand.m in Sources */,
 				CD2D3AA1174C34B20030EDE4 /* EditResignBehaviourSettingsController.m in Sources */,
 				CD2D3AA2174C34B50030EDE4 /* MaxMemoryController.m in Sources */,
+				CD869F162855F6C300B679FE /* RectangleLayerDelegate.m in Sources */,
 				CD2D3AA3174C34C40030EDE4 /* SliderInputController.m in Sources */,
 				CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */,
 				CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,

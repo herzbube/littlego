@@ -99,6 +99,10 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 + (CGRect) drawingRectForTile:(id<Tile>)tile
               centeredAtPoint:(GoPoint*)point
                   withMetrics:(BoardViewMetrics*)metrics;
++ (CGRect) drawingRectForTile:(id<Tile>)tile
+                    fromPoint:(GoPoint*)fromPoint
+                      toPoint:(GoPoint*)toPoint
+                  withMetrics:(BoardViewMetrics*)metrics;
 //@}
 
 /// @name Drawing and caching helpers

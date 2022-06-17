@@ -824,6 +824,41 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a drawing rectangle that is the intersection of the tile
+/// @a tile with the rectangle defined by the diagonally opposite corners
+/// @a fromPoint and @a endPoint. Returns @e CGRectZero if there is no
+/// intersection.
+// -----------------------------------------------------------------------------
++ (CGRect) drawingRectForTile:(id<Tile>)tile
+                    fromPoint:(GoPoint*)fromPoint
+                      toPoint:(GoPoint*)toPoint
+                  withMetrics:(BoardViewMetrics*)metrics
+{
+  if (! fromPoint || ! toPoint)
+    return CGRectZero;
+
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:tile
+                                                      metrics:metrics];
+  CGRect canvasRect = [BoardViewDrawingHelper canvasRectFromPoint:fromPoint
+                                                          toPoint:toPoint
+                                                          metrics:metrics];
+
+  CGRect drawingRect = CGRectIntersection(tileRect, canvasRect);
+
+  // Rectangles that are adjacent and share a side *do* intersect: The
+  // intersection rectangle has either zero width or zero height, depending on
+  // which side the two intersecting rectangles share. For this reason, we
+  // must check CGRectIsEmpty() in addition to CGRectIsNull().
+  if (CGRectIsNull(drawingRect) || CGRectIsEmpty(drawingRect))
+    return CGRectZero;
+
+  drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRect
+                                                   inTileWithRect:tileRect];
+
+  return drawingRect;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a layer from the cache in which a black stone is drawn
 /// sized according to the definitions in @a metrics. If the cache does not
 /// contain the requested layer this method draws the layer and populates the

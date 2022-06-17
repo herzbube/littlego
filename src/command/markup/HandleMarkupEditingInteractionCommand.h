@@ -25,8 +25,9 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The HandleMarkupEditingInteractionCommand class is responsible for
-/// handling a markup editing interaction at the intersection identified by the
-/// GoPoint object that is passed to the initializer.
+/// handling a markup editing interaction. The interaction takes place either
+/// at a single intersection, or between two intersection, all of which are
+/// identified by GoPoint objects that are passed to one of the initializers.
 ///
 /// After it has processed the markup editing interaction,
 /// HandleMarkupEditingInteractionCommand saves the application state and
@@ -42,5 +43,6 @@
 }
 
 - (id) initWithPoint:(GoPoint*)point;
+- (id) initWithStartPoint:(GoPoint*)startPoint endPoint:(GoPoint*)endPoint;
 
 @end
