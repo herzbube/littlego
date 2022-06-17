@@ -85,6 +85,11 @@
   self.inconsistentTerritoryDotSymbolColor = nil;
   self.blackSekiSymbolColor = nil;
   self.whiteSekiSymbolColor = nil;
+  self.lastMoveColorOnBlackStone = nil;
+  self.lastMoveColorOnWhiteStone = nil;
+  self.connectionFillColor = nil;
+  self.connectionStrokeColor = nil;
+
   [super dealloc];
 }
 
@@ -122,6 +127,12 @@
   self.inconsistentTerritoryDotSymbolPercentage = 0.5;
   self.blackSekiSymbolColor = [UIColor colorFromHexString:@"80c0f0"];
   self.whiteSekiSymbolColor = [UIColor colorFromHexString:@"60b0e0"];
+  // Use colors that are not black and white, to distinguish the last move
+  // marker from the square symbol
+  self.lastMoveColorOnBlackStone = [UIColor redColor];  // relatively low contrast, but good enough for the moment
+  self.lastMoveColorOnWhiteStone = [UIColor redColor];
+  self.connectionFillColor = [UIColor whiteColor];
+  self.connectionStrokeColor = [UIColor blackColor];
 }
 
 // -----------------------------------------------------------------------------

@@ -367,6 +367,10 @@
 @property(nonatomic, assign) float inconsistentTerritoryDotSymbolPercentage;
 @property(nonatomic, retain) UIColor* blackSekiSymbolColor;
 @property(nonatomic, retain) UIColor* whiteSekiSymbolColor;
+@property(nonatomic, retain) UIColor* lastMoveColorOnBlackStone;
+@property(nonatomic, retain) UIColor* lastMoveColorOnWhiteStone;
+@property(nonatomic, retain) UIColor* connectionFillColor;
+@property(nonatomic, retain) UIColor* connectionStrokeColor;
 //@}
 
 @end

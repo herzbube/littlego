@@ -46,10 +46,6 @@
 @property(nonatomic, assign) UiSettingsModel* uiSettingsModel;
 @property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
 @property(nonatomic, retain) NSShadow* whiteTextShadow;
-@property(nonatomic, retain) UIColor* lastMoveColorOnBlackStone;
-@property(nonatomic, retain) UIColor* lastMoveColorOnWhiteStone;
-@property(nonatomic, retain) UIColor* connectionFillColor;
-@property(nonatomic, retain) UIColor* connectionStrokeColor;
 @property(nonatomic, retain) NSDictionary* blackStrokeSymbolLayerTypes;
 @property(nonatomic, retain) NSDictionary* whiteStrokeSymbolLayerTypes;
 @end
@@ -81,12 +77,6 @@
   self.whiteTextShadow.shadowColor = [UIColor blackColor];
   self.whiteTextShadow.shadowBlurRadius = 5.0;
   self.whiteTextShadow.shadowOffset = CGSizeMake(1.0, 1.0);
-  // Use colors that are not black and white, to distinguish the last move
-  // marker from the square symbol
-  self.lastMoveColorOnBlackStone = [UIColor redColor];  // relatively low contrast, but good enough for the moment
-  self.lastMoveColorOnWhiteStone = [UIColor redColor];
-  self.connectionFillColor = [UIColor whiteColor];
-  self.connectionStrokeColor = [UIColor blackColor];
 
   self.blackStrokeSymbolLayerTypes = @{
     [NSNumber numberWithInt:GoMarkupSymbolCircle] : [NSNumber numberWithInt:BlackCircleSymbolLayerType],
@@ -259,14 +249,14 @@
   CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
   if (! blackLastMoveLayer)
   {
-    blackLastMoveLayer = CreateSquareSymbolLayer(context, self.lastMoveColorOnWhiteStone, self.boardViewMetrics);
+    blackLastMoveLayer = CreateSquareSymbolLayer(context, self.boardViewMetrics.lastMoveColorOnWhiteStone, self.boardViewMetrics);
     [cache setLayer:blackLastMoveLayer ofType:BlackLastMoveLayerType];
     CGLayerRelease(blackLastMoveLayer);
   }
   CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
   if (! whiteLastMoveLayer)
   {
-    whiteLastMoveLayer = CreateSquareSymbolLayer(context, self.lastMoveColorOnBlackStone, self.boardViewMetrics);
+    whiteLastMoveLayer = CreateSquareSymbolLayer(context, self.boardViewMetrics.lastMoveColorOnBlackStone, self.boardViewMetrics);
     [cache setLayer:whiteLastMoveLayer ofType:WhiteLastMoveLayerType];
     CGLayerRelease(whiteLastMoveLayer);
   }
@@ -346,9 +336,9 @@
     if (moveToBeNumbered == lastMove && self.boardViewModel.markLastMove)
     {
       if (moveToBeNumbered.player.isBlack)
-        textColor = self.lastMoveColorOnBlackStone;
+        textColor = self.boardViewMetrics.lastMoveColorOnBlackStone;
       else
-        textColor = self.lastMoveColorOnWhiteStone;
+        textColor = self.boardViewMetrics.lastMoveColorOnWhiteStone;
     }
     else if (moveToBeNumbered.player.isBlack)
     {
@@ -491,8 +481,8 @@
 
     CGLayerRef layer = CreateConnectionLayer(context,
                                              connection,
-                                             self.connectionFillColor,
-                                             self.connectionStrokeColor,
+                                             self.boardViewMetrics.connectionFillColor,
+                                             self.boardViewMetrics.connectionStrokeColor,
                                              fromPoint,
                                              toPoint,
                                              canvasRect,
