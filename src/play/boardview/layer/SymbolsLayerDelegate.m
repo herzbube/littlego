@@ -493,6 +493,8 @@
                          inCanvasRect:canvasRect
                        inTileWithRect:tileRect
                           withMetrics:self.boardViewMetrics];
+
+    CGLayerRelease(layer);
   }];
 }
 
