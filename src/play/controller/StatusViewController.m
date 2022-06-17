@@ -327,7 +327,7 @@
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesStarts:) name:askGtpEngineForDeadStonesStarts object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesEnds:) name:askGtpEngineForDeadStonesEnds object:nil];
-  [center addObserver:self selector:@selector(boardViewDidChangeCrossHair:) name:boardViewDidChangeCrossHair object:nil];
+  [center addObserver:self selector:@selector(boardViewCrossHairDidChange:) name:boardViewCrossHairDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [self setupNotificationRespondersForGame:[GoGame sharedGame]];
@@ -821,9 +821,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewDidChangeCrossHair notification.
+/// @brief Responds to the #boardViewCrossHairDidChange notification.
 // -----------------------------------------------------------------------------
-- (void) boardViewDidChangeCrossHair:(NSNotification*)notification
+- (void) boardViewCrossHairDidChange:(NSNotification*)notification
 {
   NSArray* crossHairInformation = notification.object;
   if (crossHairInformation.count > 0)

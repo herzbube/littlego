@@ -132,8 +132,8 @@
   [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(territoryStatisticsChanged:) name:territoryStatisticsChanged object:nil];
-  [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
-  [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+  [center addObserver:self selector:@selector(boardViewPanningGestureWillStart:) name:boardViewPanningGestureWillStart object:nil];
+  [center addObserver:self selector:@selector(boardViewPanningGestureWillEnd:) name:boardViewPanningGestureWillEnd object:nil];
   [center addObserver:self selector:@selector(handicapPointDidChange:) name:handicapPointDidChange object:nil];
   [center addObserver:self selector:@selector(setupPointDidChange:) name:setupPointDidChange object:nil];
   [center addObserver:self selector:@selector(allSetupStonesDidDiscard:) name:allSetupStonesDidDiscard object:nil];
@@ -517,18 +517,18 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillDisplayCrossHair notification.
+/// @brief Responds to the #boardViewPanningGestureWillStart notification.
 // -----------------------------------------------------------------------------
-- (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
+- (void) boardViewPanningGestureWillStart:(NSNotification*)notification
 {
   [self setupCrossHairLinesLayerDelegateIsRequired:true];
   [self updateLayers];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillHideCrossHair notification.
+/// @brief Responds to the #boardViewPanningGestureWillEnd notification.
 // -----------------------------------------------------------------------------
-- (void) boardViewWillHideCrossHair:(NSNotification*)notification
+- (void) boardViewPanningGestureWillEnd:(NSNotification*)notification
 {
   [self setupCrossHairLinesLayerDelegateIsRequired:false];
   [self updateLayers];

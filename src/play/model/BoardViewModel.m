@@ -43,7 +43,7 @@
   self.computerAssistanceType = ComputerAssistanceTypeNone;
   self.selectedSymbolMarkupStyle = SelectedSymbolMarkupStyleDotSymbol;
   self.markupPrecedence = MarkupPrecedenceSymbols;
-  self.boardViewDisplaysCrossHair = false;
+  self.boardViewPanningGestureIsInProgress = false;
   self.boardViewDisplaysAnimation = false;
   return self;
 }

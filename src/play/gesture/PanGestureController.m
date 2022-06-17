@@ -243,8 +243,8 @@
 
       if (UIGestureRecognizerStateBegan == recognizerState)
       {
-        boardViewModel.boardViewDisplaysCrossHair = true;
-        [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillDisplayCrossHair object:nil];
+        boardViewModel.boardViewPanningGestureIsInProgress = true;
+        [[NSNotificationCenter defaultCenter] postNotificationName:boardViewPanningGestureWillStart object:nil];
       }
 
       [self.boardView moveCrossHairTo:crossHairIntersection.point isLegalMove:isLegalMove isIllegalReason:illegalReason];
@@ -261,7 +261,7 @@
       {
         crossHairInformation = [NSArray array];
       }
-      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewDidChangeCrossHair object:crossHairInformation];
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewCrossHairDidChange object:crossHairInformation];
       break;
     }
     case UIGestureRecognizerStateEnded:
@@ -269,10 +269,10 @@
       DDLogDebug(@"UIGestureRecognizerStateEnded");
 
       [LayoutManager sharedManager].shouldAutorotate = true;
-      boardViewModel.boardViewDisplaysCrossHair = false;
-      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
+      boardViewModel.boardViewPanningGestureIsInProgress = false;
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewPanningGestureWillEnd object:nil];
       [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
-      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewDidChangeCrossHair object:[NSArray array]];
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewCrossHairDidChange object:[NSArray array]];
       if (isLegalMove)
         [[GameActionManager sharedGameActionManager] playAtIntersection:crossHairIntersection.point];
       break;
@@ -284,10 +284,10 @@
       DDLogDebug(@"UIGestureRecognizerStateCancelled");
 
       [LayoutManager sharedManager].shouldAutorotate = true;
-      boardViewModel.boardViewDisplaysCrossHair = false;
-      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewWillHideCrossHair object:nil];
+      boardViewModel.boardViewPanningGestureIsInProgress = false;
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewPanningGestureWillEnd object:nil];
       [self.boardView moveCrossHairTo:nil isLegalMove:true isIllegalReason:illegalReason];
-      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewDidChangeCrossHair object:[NSArray array]];
+      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewCrossHairDidChange object:[NSArray array]];
       break;
     }
     default:
@@ -470,12 +470,12 @@
   switch (magnifyingViewModel.updateMode)
   {
     case MagnifyingGlassUpdateModeSmooth:
-      if ([ApplicationDelegate sharedDelegate].boardViewModel.boardViewDisplaysCrossHair)
+      if ([ApplicationDelegate sharedDelegate].boardViewModel.boardViewPanningGestureIsInProgress)
         [self updateMagnifyingGlassForPanningLocation:panningLocation];
       else
         [self disableMagnifyingGlass];
       break;
-    case MagnifyingGlassUpdateModeCrossHair:
+    case MagnifyingGlassUpdateModeIntersection:
       if (BoardViewIntersectionIsNullIntersection(crossHairIntersection))
         [self disableMagnifyingGlass];
       else

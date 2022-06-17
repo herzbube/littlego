@@ -40,11 +40,12 @@
 @property(nonatomic, assign) enum ComputerAssistanceType computerAssistanceType;
 @property(nonatomic, assign) enum SelectedSymbolMarkupStyle selectedSymbolMarkupStyle;
 @property(nonatomic, assign) enum MarkupPrecedence markupPrecedence;
-/// @brief Is true if the cross-hair is currently visible on the board view.
+/// @brief Is true if a panning gesture is currently in progress on the board
+/// view.
 ///
 /// This property does not store a user preference, it stores a part of the
 /// current application state.
-@property(nonatomic, assign) bool boardViewDisplaysCrossHair;
+@property(nonatomic, assign) bool boardViewPanningGestureIsInProgress;
 /// @brief Is true if the board view currently displays an animation.
 ///
 /// This property does not store a user preference, it stores a part of the

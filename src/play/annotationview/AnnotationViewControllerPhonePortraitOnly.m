@@ -208,8 +208,8 @@ enum ItemPickerContext
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
-  [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
-  [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+  [center addObserver:self selector:@selector(boardViewPanningGestureWillStart:) name:boardViewPanningGestureWillStart object:nil];
+  [center addObserver:self selector:@selector(boardViewPanningGestureWillEnd:) name:boardViewPanningGestureWillEnd object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
   [center addObserver:self selector:@selector(nodeAnnotationDataDidChange:) name:nodeAnnotationDataDidChange object:nil];
@@ -706,18 +706,18 @@ enum ItemPickerContext
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillDisplayCrossHair notification.
+/// @brief Responds to the #boardViewPanningGestureWillStart notification.
 // -----------------------------------------------------------------------------
-- (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
+- (void) boardViewPanningGestureWillStart:(NSNotification*)notification
 {
   self.buttonStatesNeedsUpdate = true;
   [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillHideCrossHair notification.
+/// @brief Responds to the #boardViewPanningGestureWillEnd notification.
 // -----------------------------------------------------------------------------
-- (void) boardViewWillHideCrossHair:(NSNotification*)notification
+- (void) boardViewPanningGestureWillEnd:(NSNotification*)notification
 {
   self.buttonStatesNeedsUpdate = true;
   [self delayedUpdate];
@@ -929,7 +929,7 @@ enum ItemPickerContext
   if (! game ||
       ! node ||
       game.isComputerThinking ||
-      appDelegate.boardViewModel.boardViewDisplaysCrossHair ||
+      appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
       appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     isPositionValuationButtonEnabled = NO;

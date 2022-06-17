@@ -121,8 +121,8 @@ static BoardPositionNavigationManager* sharedNavigationManager = nil;
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
-  [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
-  [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+  [center addObserver:self selector:@selector(boardViewPanningGestureWillStart:) name:boardViewPanningGestureWillStart object:nil];
+  [center addObserver:self selector:@selector(boardViewPanningGestureWillEnd:) name:boardViewPanningGestureWillEnd object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
@@ -198,18 +198,18 @@ static BoardPositionNavigationManager* sharedNavigationManager = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillDisplayCrossHair notification.
+/// @brief Responds to the #boardViewPanningGestureWillStart notification.
 // -----------------------------------------------------------------------------
-- (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
+- (void) boardViewPanningGestureWillStart:(NSNotification*)notification
 {
   self.navigationStatesNeedUpdate = true;
   [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillHideCrossHair notification.
+/// @brief Responds to the #boardViewPanningGestureWillEnd notification.
 // -----------------------------------------------------------------------------
-- (void) boardViewWillHideCrossHair:(NSNotification*)notification
+- (void) boardViewPanningGestureWillEnd:(NSNotification*)notification
 {
   self.navigationStatesNeedUpdate = true;
   [self delayedUpdate];
@@ -290,7 +290,7 @@ static BoardPositionNavigationManager* sharedNavigationManager = nil;
   if (! game ||
       game.isComputerThinking ||
       game.score.scoringInProgress ||
-      appDelegate.boardViewModel.boardViewDisplaysCrossHair ||
+      appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
       appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     self.isForwardNavigationEnabled = false;

@@ -824,18 +824,18 @@ extern NSString* askGtpEngineForDeadStonesEnds;
 //@}
 
 // -----------------------------------------------------------------------------
-/// @name Cross-hair related notifications
+/// @name Panning gesture related notifications
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is sent to indicate that the board view is about to display a
-/// cross-hair in order to help the user place a stone.
-extern NSString* boardViewWillDisplayCrossHair;
-/// @brief Is sent to indicate that the board view is about to hide the
-/// cross-hair that is currently being displayed.
-extern NSString* boardViewWillHideCrossHair;
+/// @brief Is sent to indicate that the board view is about to begin a panning
+/// gesture.
+extern NSString* boardViewPanningGestureWillStart;
+/// @brief Is sent to indicate that the board view is about to end a panning
+/// gesture.
+extern NSString* boardViewPanningGestureWillEnd;
 /// @brief Is sent to indicate that the board view changed the cross-hair,
 /// typically to display it at a new intersection. Is sent after
-/// #boardViewWillDisplayCrossHair and after #boardViewWillHideCrossHair.
+/// #boardViewPanningGestureWillStart and after #boardViewPanningGestureWillEnd.
 ///
 /// An NSArray object is associated with the notification that contains
 /// information about the new cross-hair location.
@@ -843,7 +843,7 @@ extern NSString* boardViewWillHideCrossHair;
 /// If the NSArray is empty this indicates that the cross-hair is currently not
 /// visible because the gesture that drives the cross-hair is currently outside
 /// of the board's boundaries. The NSArray is also empty if this is the final
-/// notification sent after boardViewWillHideCrossHair.
+/// notification sent after #boardViewPanningGestureWillEnd.
 ///
 /// If the NSArray is not empty, this indicates that the cross-hair is currently
 /// visible. The NSArray in this case contains the following objects:
@@ -861,7 +861,7 @@ extern NSString* boardViewWillHideCrossHair;
 /// Receivers of the notification must process the NSArray immediately because
 /// the NSArray may be deallocated, or its content changed, after the
 /// notification has been delivered.
-extern NSString* boardViewDidChangeCrossHair;
+extern NSString* boardViewCrossHairDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -1011,8 +1011,8 @@ enum MagnifyingGlassVeerDirection
 /// @brief Enumerates the different update modes of the magnifying glass.
 enum MagnifyingGlassUpdateMode
 {
-  MagnifyingGlassUpdateModeSmooth,      ///< @brief The magnifying glass updates continuously with the panning gesture. Nicer but requires more CPU.
-  MagnifyingGlassUpdateModeCrossHair,   ///< @brief The magnifying glass updates only when the cross-hair intersection changes. Requires less CPU.
+  MagnifyingGlassUpdateModeSmooth,         ///< @brief The magnifying glass updates continuously with the panning gesture. Nicer but requires more CPU.
+  MagnifyingGlassUpdateModeIntersection,   ///< @brief The magnifying glass updates only when the panning intersection changes. Requires less CPU.
   MagnifyingGlassUpdateModeDefault = MagnifyingGlassUpdateModeSmooth
 };
 

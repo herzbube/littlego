@@ -167,8 +167,8 @@ static GameActionManager* sharedGameActionManager = nil;
   [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
-  [center addObserver:self selector:@selector(boardViewWillDisplayCrossHair:) name:boardViewWillDisplayCrossHair object:nil];
-  [center addObserver:self selector:@selector(boardViewWillHideCrossHair:) name:boardViewWillHideCrossHair object:nil];
+  [center addObserver:self selector:@selector(boardViewPanningGestureWillStart:) name:boardViewPanningGestureWillStart object:nil];
+  [center addObserver:self selector:@selector(boardViewPanningGestureWillEnd:) name:boardViewPanningGestureWillEnd object:nil];
   [center addObserver:self selector:@selector(setupPointDidChange:) name:setupPointDidChange object:nil];
   [center addObserver:self selector:@selector(allSetupStonesDidDiscard:) name:allSetupStonesDidDiscard object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
@@ -709,18 +709,18 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillDisplayCrossHair notification.
+/// @brief Responds to the #boardViewPanningGestureWillStart notification.
 // -----------------------------------------------------------------------------
-- (void) boardViewWillDisplayCrossHair:(NSNotification*)notification
+- (void) boardViewPanningGestureWillStart:(NSNotification*)notification
 {
   self.enabledStatesNeedUpdate = true;
   [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewWillHideCrossHair notification.
+/// @brief Responds to the #boardViewPanningGestureWillEnd notification.
 // -----------------------------------------------------------------------------
-- (void) boardViewWillHideCrossHair:(NSNotification*)notification
+- (void) boardViewPanningGestureWillEnd:(NSNotification*)notification
 {
   self.enabledStatesNeedUpdate = true;
   [self delayedUpdate];
@@ -1063,7 +1063,7 @@ static GameActionManager* sharedGameActionManager = nil;
   GoGame* game = [GoGame sharedGame];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
-      ! appDelegate.boardViewModel.boardViewDisplaysCrossHair &&
+      ! appDelegate.boardViewModel.boardViewPanningGestureIsInProgress &&
       ! appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     switch (game.type)
@@ -1103,7 +1103,7 @@ static GameActionManager* sharedGameActionManager = nil;
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.boardViewModel.boardViewDisplaysCrossHair ||
+  if (appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
       appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     // always disabled
@@ -1149,7 +1149,7 @@ static GameActionManager* sharedGameActionManager = nil;
   GoGame* game = [GoGame sharedGame];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
-      ! appDelegate.boardViewModel.boardViewDisplaysCrossHair &&
+      ! appDelegate.boardViewModel.boardViewPanningGestureIsInProgress &&
       ! appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     switch (game.type)
@@ -1186,7 +1186,7 @@ static GameActionManager* sharedGameActionManager = nil;
   GoGame* game = [GoGame sharedGame];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
-      ! appDelegate.boardViewModel.boardViewDisplaysCrossHair &&
+      ! appDelegate.boardViewModel.boardViewPanningGestureIsInProgress &&
       ! appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     switch (game.type)
@@ -1219,7 +1219,7 @@ static GameActionManager* sharedGameActionManager = nil;
   GoGame* game = [GoGame sharedGame];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
-      ! appDelegate.boardViewModel.boardViewDisplaysCrossHair &&
+      ! appDelegate.boardViewModel.boardViewPanningGestureIsInProgress &&
       ! appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     switch (game.type)
@@ -1251,7 +1251,7 @@ static GameActionManager* sharedGameActionManager = nil;
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.boardViewModel.boardViewDisplaysCrossHair ||
+  if (appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
       appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     // always disabled
@@ -1279,7 +1279,7 @@ static GameActionManager* sharedGameActionManager = nil;
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring ||
       game.isComputerThinking ||
-      appDelegate.boardViewModel.boardViewDisplaysCrossHair ||
+      appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
       appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     // always disabled
@@ -1360,7 +1360,7 @@ static GameActionManager* sharedGameActionManager = nil;
   BOOL enabled = NO;
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.boardViewModel.boardViewDisplaysCrossHair ||
+  if (appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
       appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     // always disabled
@@ -1399,7 +1399,7 @@ static GameActionManager* sharedGameActionManager = nil;
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.boardViewModel.boardViewDisplaysCrossHair ||
+  if (appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
       appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     // always disabled
@@ -1438,7 +1438,7 @@ static GameActionManager* sharedGameActionManager = nil;
   GoGame* game = [GoGame sharedGame];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   if (game.isComputerThinking ||
-      appDelegate.boardViewModel.boardViewDisplaysCrossHair ||
+      appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
       appDelegate.boardViewModel.boardViewDisplaysAnimation)
   {
     // always disabled
