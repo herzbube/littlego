@@ -961,14 +961,14 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   if (headLength > arrowLength)
     headLength = arrowLength;
 
-    CGFloat tailLength = arrowLength - headLength;
-    points[0] = CGPointMake(0, tailWidth / 2);
-    points[1] = CGPointMake(tailLength, tailWidth / 2);
-    points[2] = CGPointMake(tailLength, headWidth / 2);
-    points[3] = CGPointMake(arrowLength, 0);
-    points[4] = CGPointMake(tailLength, -headWidth / 2);
-    points[5] = CGPointMake(tailLength, -tailWidth / 2);
-    points[6] = CGPointMake(0, -tailWidth / 2);
+  CGFloat tailLength = arrowLength - headLength;
+  points[0] = CGPointMake(0, tailWidth / 2);
+  points[1] = CGPointMake(tailLength, tailWidth / 2);
+  points[2] = CGPointMake(tailLength, headWidth / 2);
+  points[3] = CGPointMake(arrowLength, 0);
+  points[4] = CGPointMake(tailLength, -headWidth / 2);
+  points[5] = CGPointMake(tailLength, -tailWidth / 2);
+  points[6] = CGPointMake(0, -tailWidth / 2);
 }
 
 // -----------------------------------------------------------------------------
@@ -979,9 +979,9 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
                                     endPoint:(CGPoint)endPoint
                                  arrowLength:(CGFloat)arrowLength
 {
-    CGFloat cosine = (endPoint.x - startPoint.x) / arrowLength;
-    CGFloat sine = (endPoint.y - startPoint.y) / arrowLength;
-    return (CGAffineTransform) { cosine, sine, -sine, cosine, startPoint.x, startPoint.y };
+  CGFloat cosine = (endPoint.x - startPoint.x) / arrowLength;
+  CGFloat sine = (endPoint.y - startPoint.y) / arrowLength;
+  return (CGAffineTransform) { cosine, sine, -sine, cosine, startPoint.x, startPoint.y };
 }
 
 // -----------------------------------------------------------------------------
