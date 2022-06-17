@@ -28,6 +28,8 @@
 /// @brief Class extension with private properties for BoardView.
 // -----------------------------------------------------------------------------
 @interface BoardView()
+@property(nonatomic, retain) GoPoint* crossHairPoint;
+@property(nonatomic, assign) bool crossHairPointIsLegalMove;
 @property(nonatomic, assign) float crossHairPointDistanceFromFinger;
 @property(nonatomic, retain) BoardViewAccessibility* boardViewAccessibility;
 @end
@@ -51,7 +53,6 @@
 
   self.crossHairPoint = nil;
   self.crossHairPointIsLegalMove = true;
-  self.crossHairPointIsIllegalReason = GoMoveIsIllegalReasonUnknown;
   self.boardViewAccessibility = [[[BoardViewAccessibility alloc] initWithBoardView:self] autorelease];
 
   return self;
@@ -68,7 +69,7 @@
   [super dealloc];
 }
 
-#pragma mark - Cross-hair handling
+#pragma mark - Gesture handling
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a BoardViewIntersection object for the intersection that is
@@ -83,6 +84,8 @@
   return [metrics intersectionNear:coordinates];
 }
 
+#pragma mark - Cross-hair handling
+
 // -----------------------------------------------------------------------------
 /// @brief Moves the cross-hair to the intersection identified by @a point,
 /// specifying whether an actual play move at the intersection would be legal.
@@ -91,14 +94,10 @@
              isLegalMove:(bool)isLegalMove
          isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason
 {
-  if (_crossHairPoint == point && _crossHairPointIsLegalMove == isLegalMove)
+  if (self.crossHairPoint == point && self.crossHairPointIsLegalMove == isLegalMove)
     return;
 
-  // Update *BEFORE* self.crossHairPoint so that KVO observers that monitor
-  // self.crossHairPoint get all changes at once. Don't use self to update the
-  // property because we don't want observers to monitor the property via KVO.
-  _crossHairPointIsLegalMove = isLegalMove;
-  _crossHairPointIsIllegalReason = illegalReason;
+  self.crossHairPointIsLegalMove = isLegalMove;
   self.crossHairPoint = point;
 
   for (id subview in [self.tileContainerView subviews])

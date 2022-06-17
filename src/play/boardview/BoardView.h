@@ -36,24 +36,4 @@
              isLegalMove:(bool)isLegalMove
          isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason;
 
-/// @name Cross-hair point properties
-//@{
-/// @brief Refers to the GoPoint object that marks the focus of the cross-hair.
-///
-/// Observers may monitor this property via KVO. If this property changes its
-/// value, observers can also get updated values from the properties
-/// @e crossHairPointIsLegalMove and @e crossHairPointIsIllegalReason.
-@property(nonatomic, retain) GoPoint* crossHairPoint;
-/// @brief Is true if the GoPoint object at the focus of the cross-hair
-/// represents a legal move.
-///
-/// This property cannot be monitored via KVO.
-@property(nonatomic, assign) bool crossHairPointIsLegalMove;
-/// @brief If crossHairPointIsLegalMove is false, this contains the reason why
-/// the move is illegal.
-///
-/// This property cannot be monitored via KVO.
-@property(nonatomic, assign) enum GoMoveIsIllegalReason crossHairPointIsIllegalReason;
-//@}
-
 @end
