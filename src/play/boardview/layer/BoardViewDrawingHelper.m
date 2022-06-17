@@ -303,6 +303,10 @@ CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, U
 /// uses @a connectionFillColor and @a connectionStrokeColor to fill and stroke
 /// the connection.
 ///
+/// If @a fromPoint is the same as @a toPoint, the connection is drawn as a
+/// stub that starts at @a fromPoint and extends horizontally to the right edge
+/// of the layer.
+///
 /// Drawing the connection with a stroke is important so that it remains
 /// distinguishable even if it is drawn over content that has the same color as
 /// the connection fill color (e.g. white connection over a white stone).
@@ -313,15 +317,29 @@ CGLayerRef CreateConnectionLayer(CGContextRef context, enum GoMarkupConnection c
   layerRect.size.width *= metrics.contentsScale;
   layerRect.size.height *= metrics.contentsScale;
 
+  // Don't multiply with metrics.contentsScale, always use only a very fine
+  // stroke line
+  CGFloat strokeLineWidth = metrics.normalLineWidth;
+
   CGPoint fromPointCoordinates = [metrics coordinatesFromPoint:fromPoint];
   fromPointCoordinates.x -= canvasRect.origin.x;
   fromPointCoordinates.y -= canvasRect.origin.y;
+
+  CGPoint toPointCoordinates;
+  if (fromPoint == toPoint)
+  {
+    toPointCoordinates.x = canvasRect.size.width - strokeLineWidth;
+    toPointCoordinates.y = fromPointCoordinates.y;
+  }
+  else
+  {
+    toPointCoordinates = [metrics coordinatesFromPoint:toPoint];
+    toPointCoordinates.x -= canvasRect.origin.x;
+    toPointCoordinates.y -= canvasRect.origin.y;
+  }
+
   fromPointCoordinates.x *= metrics.contentsScale;
   fromPointCoordinates.y *= metrics.contentsScale;
-
-  CGPoint toPointCoordinates = [metrics coordinatesFromPoint:toPoint];
-  toPointCoordinates.x -= canvasRect.origin.x;
-  toPointCoordinates.y -= canvasRect.origin.y;
   toPointCoordinates.x *= metrics.contentsScale;
   toPointCoordinates.y *= metrics.contentsScale;
 
@@ -380,7 +398,7 @@ CGLayerRef CreateConnectionLayer(CGContextRef context, enum GoMarkupConnection c
 
   CGContextSetFillColorWithColor(layerContext, connectionFillColor.CGColor);
   CGContextSetStrokeColorWithColor(layerContext, connectionStrokeColor.CGColor);
-  CGContextSetLineWidth(layerContext, 1.0f);
+  CGContextSetLineWidth(layerContext, strokeLineWidth);
   CGContextDrawPath(layerContext, kCGPathFillStroke);
 
   return layer;
@@ -940,6 +958,9 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
                          headWidth:(CGFloat)headWidth
                         headLength:(CGFloat)headLength
 {
+  if (headLength > arrowLength)
+    headLength = arrowLength;
+
     CGFloat tailLength = arrowLength - headLength;
     points[0] = CGPointMake(0, tailWidth / 2);
     points[1] = CGPointMake(tailLength, tailWidth / 2);
