@@ -26,12 +26,18 @@
 // -----------------------------------------------------------------------------
 /// @brief The HandleMarkupEditingInteractionCommand class is responsible for
 /// handling a markup editing interaction. The interaction takes place either
-/// at a single intersection, or between two intersection, all of which are
+/// at a single intersection, or between two intersections, all of which are
 /// identified by GoPoint objects that are passed to one of the initializers.
 ///
-/// After it has processed the markup editing interaction,
-/// HandleMarkupEditingInteractionCommand saves the application state and
-/// performs a backup of the current game.
+/// After it has processed the markup editing interaction, if any markup data
+/// changed HandleMarkupEditingInteractionCommand posts the notification
+/// #markupOnPointsDidChange, performs a backup of the current game and saves
+/// the application state.
+///
+/// @note Because HandleMarkupEditingInteractionCommand may show an
+/// EditTextController or an alert, code execution may return to the client who
+/// submitted the command before the markup editing interaction has actually
+/// been processed.
 ///
 /// It is expected that this command is only executed while the UI area "Play"
 /// is in markup editing mode and the current board position is not 0. If any

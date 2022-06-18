@@ -227,35 +227,38 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
                                      labelText:(NSString*)labelText
                                           node:(GoNode*)node
 {
-  bool applicationStateDidChange = true;
+  bool applicationStateDidChange = false;
 
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
 
-    // TODO xxx Only set to an array if something changed
-    NSArray* pointsWithChangedMarkup = nil;
-
     NSString* intersection = point.vertex.string;
     GoNodeMarkup* nodeMarkup = node.goNodeMarkup;
+
+    NSArray* pointsWithChangedMarkup = nil;
+
     switch (markupModel.markupTool)
     {
       case MarkupToolSymbol:
       {
-        [self handlePlaceSymbol:markupModel.markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
-        pointsWithChangedMarkup = @[point];
+        bool markupDataDidChange = [self handlePlaceSymbol:markupModel.markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
+        if (markupDataDidChange)
+          pointsWithChangedMarkup = @[point];
         break;
       }
       case MarkupToolMarker:
       {
-        [self handlePlaceMarker:markupModel.markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
-        pointsWithChangedMarkup = @[point];
+        bool markupDataDidChange = [self handlePlaceMarker:markupModel.markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
+        if (markupDataDidChange)
+          pointsWithChangedMarkup = @[point];
         break;
       }
       case MarkupToolLabel:
       {
-        [self handlePlaceLabel:labelText onIntersection:intersection withNodeMarkup:nodeMarkup];
-        pointsWithChangedMarkup = @[point];
+        bool markupDataDidChange = [self handlePlaceLabel:labelText onIntersection:intersection withNodeMarkup:nodeMarkup];
+        if (markupDataDidChange)
+          pointsWithChangedMarkup = @[point];
         break;
       }
       case MarkupToolConnection:
@@ -264,8 +267,9 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
         {
           NSString* fromIntersection = intersection;
           NSString* toIntersection = secondPoint.vertex.string;
-          [self handlePlaceConnection:markupModel.markupType fromIntersection:fromIntersection toIntersection:toIntersection withNodeMarkup:nodeMarkup];
-          pointsWithChangedMarkup = @[point, secondPoint];
+          bool markupDataDidChange = [self handlePlaceConnection:markupModel.markupType fromIntersection:fromIntersection toIntersection:toIntersection withNodeMarkup:nodeMarkup];
+          if (markupDataDidChange)
+            pointsWithChangedMarkup = @[point, secondPoint];
         }
         else
         {
@@ -276,8 +280,6 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
       case MarkupToolEraser:
       {
         pointsWithChangedMarkup = [self handleEraseMarkupOnIntersection:intersection withNodeMarkup:nodeMarkup];
-        if (! pointsWithChangedMarkup)
-          pointsWithChangedMarkup = @[point];
         break;
       }
       default:
@@ -297,12 +299,9 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 
     if (pointsWithChangedMarkup)
     {
+      applicationStateDidChange = true;
       [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
       [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
-    }
-    else
-    {
-      applicationStateDidChange = false;
     }
   }
   @finally
@@ -378,16 +377,15 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 #pragma mark - Place symbol
 
 // -----------------------------------------------------------------------------
-/// @brief Entry point for handling symbol markup placing.
+/// @brief Entry point for handling symbol markup placing. Returns true if
+/// markup data changed, returns false if markup data did not change.
 ///
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
-- (void) handlePlaceSymbol:(enum MarkupType)markupType
+- (bool) handlePlaceSymbol:(enum MarkupType)markupType
             onIntersection:(NSString*)intersection
             withNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
-  [nodeMarkup removeLabelAtVertex:intersection];
-
   // TODO xxx user preference
   bool exclusiveSymbols = true;
 
@@ -453,10 +451,18 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
     while (newSymbol != symbolForSelectedMarkupType && ! canUseNewSymbol);
   }
 
+  bool markupDataDidChange = true;
   if (canUseNewSymbol)
     [nodeMarkup setSymbol:newSymbol atVertex:intersection];
   else if (symbolExists)
-    [nodeMarkup removeSymbolAtVertex:intersection];  // may have no effect, if all symbols are already in use on other vertices
+    [nodeMarkup removeSymbolAtVertex:intersection];
+  else
+    markupDataDidChange = false;
+
+  if (markupDataDidChange)
+    [nodeMarkup removeLabelAtVertex:intersection];
+
+  return markupDataDidChange;
 }
 
 // -----------------------------------------------------------------------------
@@ -514,16 +520,16 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 #pragma mark - Place marker
 
 // -----------------------------------------------------------------------------
-/// @brief Entry point for handling marker markup placing.
+/// @brief Entry point for handling marker markup placing. Returns true if
+/// markup data changed, returns false if markup data did not change.
 ///
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
-- (void) handlePlaceMarker:(enum MarkupType)markupType
+- (bool) handlePlaceMarker:(enum MarkupType)markupType
             onIntersection:(NSString*)intersection
             withNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
-  [nodeMarkup removeSymbolAtVertex:intersection];
-
+  bool markerOfRequestedTypeExists = false;
   char nextFreeLetterMarkerValue = letterMarkerValueRanges.front().first;
   int nextFreeNumberMarkerValue = minimumNumberMarkerValue;
   bool canUseNextFreeMarkerValue = false;
@@ -531,6 +537,17 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   NSDictionary* labels = nodeMarkup.labels;
   if (labels)
   {
+    NSString* label = labels[intersection];
+    if (label)
+    {
+      char letterMarkerValue;
+      int numberMarkerValue;
+      enum MarkupType markupTypeOfLabel = [self markupTypeOfLabel:label
+                                                letterMarkerValue:&letterMarkerValue
+                                                numberMarkerValue:&numberMarkerValue];
+      markerOfRequestedTypeExists = (markupType == markupTypeOfLabel);
+    }
+    
     std::set<char> usedLetterMarkerValues;
     std::set<char> usedNumberMarkerValues;
     for (NSString* label in labels.allValues)
@@ -579,6 +596,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
     canUseNextFreeMarkerValue = true;
   }
 
+  bool markupDataDidChange = true;
   if (canUseNextFreeMarkerValue)
   {
     NSString* newMarker;
@@ -589,10 +607,19 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 
     [nodeMarkup setLabel:newMarker atVertex:intersection];
   }
+  else if (markerOfRequestedTypeExists)
+  {
+    [nodeMarkup removeLabelAtVertex:intersection];
+  }
   else
   {
-    [nodeMarkup removeLabelAtVertex:intersection];  // may have no effect, if all markers are already in use on other vertices
+    markupDataDidChange = false;
   }
+
+  if (markupDataDidChange)
+    [nodeMarkup removeSymbolAtVertex:intersection];
+
+  return markupDataDidChange;
 }
 
 // -----------------------------------------------------------------------------
@@ -697,23 +724,44 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 #pragma mark - Place label
 
 // -----------------------------------------------------------------------------
-/// @brief Entry point for handling label markup placing.
+/// @brief Entry point for handling label markup placing. Returns true if
+/// markup data changed, returns false if markup data did not change.
 ///
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
-- (void) handlePlaceLabel:(NSString*)labelText
+- (bool) handlePlaceLabel:(NSString*)labelText
            onIntersection:(NSString*)intersection
            withNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
-  [nodeMarkup removeSymbolAtVertex:intersection];
+  NSString* existingLabel = nil;
+
+  NSDictionary* labels = nodeMarkup.labels;
+  if (labels)
+    existingLabel = labels[intersection];
 
   // Clean up user input
   labelText = [GoNodeMarkup removeNewlinesAndTrimLabel:labelText];
 
-  if (labelText && labelText.length)
-    [nodeMarkup setLabel:labelText atVertex:intersection];
+  bool markupDataDidChange = true;
+  if (labelText && labelText.length > 0)
+  {
+    if (existingLabel && [labelText isEqualToString:existingLabel])
+      markupDataDidChange = false;
+    else
+      [nodeMarkup setLabel:labelText atVertex:intersection];
+  }
   else
-    [nodeMarkup removeLabelAtVertex:intersection];
+  {
+    if (existingLabel)
+      [nodeMarkup removeLabelAtVertex:intersection];
+    else
+      markupDataDidChange = false;
+  }
+
+  if (markupDataDidChange)
+    [nodeMarkup removeSymbolAtVertex:intersection];
+
+  return markupDataDidChange;
 }
 
 #pragma mark - Place label - Present EditTextDelegate
@@ -794,19 +842,42 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 #pragma mark - Place/remove connection
 
 // -----------------------------------------------------------------------------
-/// @brief Entry point for handling connection markup placing.
+/// @brief Entry point for handling connection markup placing. Returns true if
+/// markup data changed, returns false if markup data did not change.
 ///
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
-- (void) handlePlaceConnection:(enum MarkupType)markupType
+- (bool) handlePlaceConnection:(enum MarkupType)markupType
               fromIntersection:(NSString*)fromIntersection
                 toIntersection:(NSString*)toIntersection
                 withNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
-  enum GoMarkupConnection connection = (markupType == MarkupTypeConnectionArrow)
+  bool connectionExists = false;
+  enum GoMarkupConnection existingConnection = GoMarkupConnectionArrow;  // dummy initialize
+
+  NSDictionary* connections = nodeMarkup.connections;
+  if (connections)
+  {
+    NSArray* intersections = @[fromIntersection, toIntersection];
+    NSNumber* existingConnectionAsNumber = connections[intersections];
+    if (existingConnectionAsNumber)
+    {
+      connectionExists = true;
+      existingConnection = static_cast<GoMarkupConnection>(existingConnectionAsNumber.intValue);
+    }
+  }
+
+  enum GoMarkupConnection newConnection = (markupType == MarkupTypeConnectionArrow)
     ? GoMarkupConnectionArrow
     : GoMarkupConnectionLine;
-  [nodeMarkup setConnection:connection fromVertex:fromIntersection toVertex:toIntersection];
+
+  bool markupDataDidChange = true;
+  if (connectionExists && existingConnection == newConnection)
+    markupDataDidChange = false;
+  else
+    [nodeMarkup setConnection:newConnection fromVertex:fromIntersection toVertex:toIntersection];
+
+  return markupDataDidChange;
 }
 
 // -----------------------------------------------------------------------------
@@ -820,12 +891,15 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
                                            withNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
   NSDictionary* connections = nodeMarkup.connections;
-  for (NSArray* key in connections.allKeys)
+  if (connections)
   {
-    if ([key containsObject:intersection])
+    for (NSArray* key in connections.allKeys)
     {
-      [nodeMarkup removeConnectionFromVertex:key.firstObject toVertex:key.lastObject];
-      return [self pointsArrayWithFromIntersection:key.firstObject toIntersection:key.lastObject];
+      if ([key containsObject:intersection])
+      {
+        [nodeMarkup removeConnectionFromVertex:key.firstObject toVertex:key.lastObject];
+        return [self pointsArrayWithFromIntersection:key.firstObject toIntersection:key.lastObject];
+      }
     }
   }
 
@@ -837,8 +911,9 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 // -----------------------------------------------------------------------------
 /// @brief Entry point for handling markup erasing. If a connection was removed,
 /// returns an array with the start/end GoPoint objects of the connection that
-/// was removed. Returns @e nil if the markup that was removed was not a
-/// connection, or if no markup was removed at all.
+/// was removed. If a symbol or label was removed, returns an array with the
+/// GoPoint object from which the symbol or label was removed. Returns @e nil
+/// if no markup was removed.
 ///
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
@@ -848,10 +923,12 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   if (nodeMarkup.symbols && nodeMarkup.symbols[intersection])
   {
     [nodeMarkup removeSymbolAtVertex:intersection];
+    return [self pointsArrayWithIntersection:intersection];
   }
   else if (nodeMarkup.labels && nodeMarkup.labels[intersection])
   {
     [nodeMarkup removeLabelAtVertex:intersection];
+    return [self pointsArrayWithIntersection:intersection];
   }
   else if (nodeMarkup.connections)
   {
@@ -864,7 +941,19 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 #pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper.
+/// @brief Private helper. Returns an NSArray with a GoPoint object that
+/// corresponds to @a intersection.
+// -----------------------------------------------------------------------------
+- (NSArray*) pointsArrayWithIntersection:(NSString*)intersection
+{
+  GoBoard* board = [GoGame sharedGame].board;
+  GoPoint* point = [board pointAtVertex:intersection];
+  return @[point];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper. Returns an NSArray with two GoPoint objects that
+/// correspond to @a fromIntersection and @a toIntersection.
 // -----------------------------------------------------------------------------
 - (NSArray*) pointsArrayWithFromIntersection:(NSString*)fromIntersection
                               toIntersection:(NSString*)toIntersection
