@@ -103,7 +103,6 @@
     [self endObservingKeyboardWithViewToAdjustHeight:self.validationErrorLabel
                                        referenceView:self.validationErrorLabel.superview];
   }
-//  [self removeNotificationResponders];
   self.contentView = nil;
   self.textField = nil;
   self.textView = nil;
@@ -325,6 +324,15 @@
     textFromControl = self.textField.text;
   else
     textFromControl = self.textView.text;
+
+  // Make sure that we never return a nil value - this is a guarantee that is
+  // documented in the header file, and some clients rely on that. In the past
+  // both UITextField and UITextView returned an empty string even if we
+  // initialized the text property with nil. To make this future-proof we add
+  // specific handling here.
+  if (! textFromControl)
+    textFromControl = @"";
+
   if (! [self.delegate controller:self shouldEndEditingWithText:textFromControl])
     return;
   self.textHasChanged = ! [self.text isEqualToString:textFromControl];

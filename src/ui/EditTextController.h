@@ -119,9 +119,10 @@ enum EditTextControllerStyle
 /// @brief This is the delegate that will be informed when the user has
 /// finished editing the text.
 @property(nonatomic, assign) id<EditTextDelegate> delegate;
-/// @brief When editing begins, this contains the default text. When editing
-/// finishes with the user tapping "done", this contains the text entered by the
-/// user.
+/// @brief When editing begins, this contains the default text (may be @e nil if
+/// EditTextController was initialized with @e nil). When editing finishes with
+/// the user tapping "done", this contains the text entered by the user (is
+/// never @e nil, even if user entered an empty text).
 @property(nonatomic, retain) NSString* text;
 /// @brief Placeholder string that should be displayed instead of an empty
 /// text.
