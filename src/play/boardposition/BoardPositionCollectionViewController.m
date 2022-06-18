@@ -41,10 +41,10 @@
 @property(nonatomic, assign) bool numberOfItemsNeedsUpdate;
 @property(nonatomic, assign) bool userInteractionEnabledNeedsUpdate;
 @property(nonatomic, assign) bool boardPositionZeroNeedsUpdate;
-@property(nonatomic, assign) bool annotationDataNeedsUpdate;
+@property(nonatomic, assign) bool boardPositionDataNeedsUpdate;
 @property(nonatomic, assign) bool ignoreCurrentBoardPositionChange;
 @property(nonatomic, retain) NSIndexPath* indexPathForDelayedSelectItemOperation;
-@property(nonatomic, retain) NSMutableArray* boardPositionsWithChangedAnnotationData;
+@property(nonatomic, retain) NSMutableArray* boardPositionsWithChangedData;
 @end
 
 
@@ -77,10 +77,10 @@
   self.numberOfItemsNeedsUpdate = false;
   self.userInteractionEnabledNeedsUpdate = false;
   self.boardPositionZeroNeedsUpdate = false;
-  self.annotationDataNeedsUpdate = false;
+  self.boardPositionDataNeedsUpdate = false;
   self.ignoreCurrentBoardPositionChange = false;
   self.indexPathForDelayedSelectItemOperation = nil;
-  self.boardPositionsWithChangedAnnotationData = [NSMutableArray array];
+  self.boardPositionsWithChangedData = [NSMutableArray array];
   [self setupNotificationResponders];
   return self;
 }
@@ -158,6 +158,7 @@
   [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
   [center addObserver:self selector:@selector(nodeAnnotationDataDidChange:) name:nodeAnnotationDataDidChange object:nil];
+  [center addObserver:self selector:@selector(markupOnPointsDidChange:) name:markupOnPointsDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
@@ -284,7 +285,7 @@
   GoBoardPosition* boardPosition = newGame.boardPosition;
   [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
   [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:NULL];
-  [self.boardPositionsWithChangedAnnotationData removeAllObjects];
+  [self.boardPositionsWithChangedData removeAllObjects];
   self.allDataNeedsUpdate = true;
   // currentBoardPosition also needs update to cover the case where the app
   // launches and we need to display a non-zero board position right after a
@@ -382,17 +383,17 @@
 - (void) nodeAnnotationDataDidChange:(NSNotification*)notification
 {
   GoNode* node = notification.object;
+  [self nodeDataDidChange:node];
+}
 
-  GoNodeModel* nodeModel = [GoGame sharedGame].nodeModel;
-  int indexOfNode = [nodeModel indexOfNode:node];
-  // Indexes of nodes and board positions are the same
-  [self.boardPositionsWithChangedAnnotationData addObject:[NSNumber numberWithInt:indexOfNode]];
-
-  self.annotationDataNeedsUpdate = true;
-  // If the cell being updated displays the current board position, it needs to
-  // be re-selected after the update
-  self.currentBoardPositionNeedsUpdate = true;
-  [self delayedUpdate];
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #markupOnPointsDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) markupOnPointsDidChange:(NSNotification*)notification
+{
+  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+  GoNode* currentNode = boardPosition.currentNode;
+  [self nodeDataDidChange:currentNode];
 }
 
 // -----------------------------------------------------------------------------
@@ -400,6 +401,26 @@
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
+  [self delayedUpdate];
+}
+
+#pragma mark - Helpers for notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method for notification responders that want to update the
+/// cell that displays the data of @a node.
+// -----------------------------------------------------------------------------
+- (void) nodeDataDidChange:(GoNode*)node
+{
+  GoNodeModel* nodeModel = [GoGame sharedGame].nodeModel;
+  int indexOfNode = [nodeModel indexOfNode:node];
+  // Indexes of nodes and board positions are the same
+  [self.boardPositionsWithChangedData addObject:[NSNumber numberWithInt:indexOfNode]];
+
+  self.boardPositionDataNeedsUpdate = true;
+  // If the cell being updated displays the current board position, it needs to
+  // be re-selected after the update
+  self.currentBoardPositionNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -460,7 +481,7 @@
   [self updateAllData];
   [self updateNumberOfItems];
   [self updateBoardPositionZero];
-  [self updateAnnotationData];
+  [self updateBoardPositionData];
   [self updateCurrentBoardPosition];
   [self updateUserInteractionEnabled];
 }
@@ -585,21 +606,21 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates one or more cells that display changed annotation data.
+/// @brief Updates one or more cells that display changed data.
 // -----------------------------------------------------------------------------
-- (void) updateAnnotationData
+- (void) updateBoardPositionData
 {
-  if (! self.annotationDataNeedsUpdate)
+  if (! self.boardPositionDataNeedsUpdate)
     return;
-  self.annotationDataNeedsUpdate = false;
+  self.boardPositionDataNeedsUpdate = false;
 
   NSMutableArray* indexPathsToReload = [NSMutableArray array];
-  for (NSNumber* indexOfBoardPositionAsNumber in self.boardPositionsWithChangedAnnotationData)
+  for (NSNumber* indexOfBoardPositionAsNumber in self.boardPositionsWithChangedData)
   {
     int indexOfBoardPosition = [indexOfBoardPositionAsNumber intValue];
     [indexPathsToReload addObject:[NSIndexPath indexPathForRow:indexOfBoardPosition inSection:0]];
   }
-  [self.boardPositionsWithChangedAnnotationData removeAllObjects];
+  [self.boardPositionsWithChangedData removeAllObjects];
 
   [self.collectionView reloadItemsAtIndexPaths:indexPathsToReload];
 }
