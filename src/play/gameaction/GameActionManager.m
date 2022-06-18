@@ -36,6 +36,7 @@
 #import "../../command/boardsetup/HandleBoardSetupInteractionCommand.h"
 #import "../../command/boardsetup/SetupFirstMoveColorCommand.h"
 #import "../../command/game/PauseGameCommand.h"
+#import "../../command/markup/DiscardAllMarkupCommand.h"
 #import "../../command/markup/HandleMarkupEditingInteractionCommand.h"
 #import "../../command/move/ComputerSuggestMoveCommand.h"
 #import "../../command/scoring/ToggleScoringStateOfStoneGroupCommand.h"
@@ -173,6 +174,8 @@ static GameActionManager* sharedGameActionManager = nil;
   [center addObserver:self selector:@selector(allSetupStonesDidDiscard:) name:allSetupStonesDidDiscard object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
+  [center addObserver:self selector:@selector(markupOnPointsDidChange:) name:markupOnPointsDidChange object:nil];
+  [center addObserver:self selector:@selector(allMarkupDidDiscard:) name:allMarkupDidDiscard object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // Note: UIApplicationWillChangeStatusBarOrientationNotification is also sent
   // if a view controller is modally presented on iPhone while in
@@ -549,6 +552,7 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) discardAllMarkup:(id)sender
 {
+  [[[[DiscardAllMarkupCommand alloc] init] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -775,6 +779,26 @@ static GameActionManager* sharedGameActionManager = nil;
 - (void) boardViewAnimationDidEnd:(NSNotification*)notification
 {
   self.enabledStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #markupOnPointsDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) markupOnPointsDidChange:(NSNotification*)notification
+{
+  // Show/hide the "discard all markup" game action
+  self.visibleStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #allMarkupDidDiscard notification.
+// -----------------------------------------------------------------------------
+- (void) allMarkupDidDiscard:(NSNotification*)notification
+{
+  // Show/hide the "discard all markup" game action
+  self.visibleStatesNeedUpdate = true;
   [self delayedUpdate];
 }
 

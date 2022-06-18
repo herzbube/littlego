@@ -69,6 +69,7 @@ enum BoardViewLayerDelegateEvent
   /// intersection(s) that changed. If the array contains two GoPoint objects
   /// the affected markup is a connection.
   BVLDEventMarkupOnPointsDidChange,
+  BVLDEventAllMarkupDiscarded,
   /// @brief The event info object that accompanies this event type is an
   /// NSArray that contains two GoPoint objects that identify the intersections
   /// to connect. The first GoPoint object is the starting intersection, the

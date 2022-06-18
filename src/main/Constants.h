@@ -962,6 +962,10 @@ extern NSString* nodeAnnotationDataDidChange;
 /// that identify the intersections is associated with the notification. If the
 /// array contains two GoPoint objects the affected markup is a connection.
 extern NSString* markupOnPointsDidChange;
+/// @brief Is sent to indicate that all markup data has been discarded during
+/// markup editing. The GoNode object that identifies the node with the discared
+/// data is associated with the notification.
+extern NSString* allMarkupDidDiscard;
 //@}
 
 // -----------------------------------------------------------------------------

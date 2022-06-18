@@ -162,6 +162,7 @@
     // mode becoming enabled/disabled.
     case BVLDEventUIAreaPlayModeChanged:
     case BVLDEventMarkupPrecedenceChanged:
+    case BVLDEventAllMarkupDiscarded:
     {
       self.dirty = true;
       break;

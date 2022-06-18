@@ -346,6 +346,8 @@
 		CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE3013A135CA7D5005235F2 /* UIColorAdditions.m */; };
 		CD869F152855F6C300B679FE /* RectangleLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD869F142855F6C200B679FE /* RectangleLayerDelegate.m */; };
 		CD869F162855F6C300B679FE /* RectangleLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD869F142855F6C200B679FE /* RectangleLayerDelegate.m */; };
+		CD869F19285E1B8F00B679FE /* DiscardAllMarkupCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD869F17285E1B8E00B679FE /* DiscardAllMarkupCommand.m */; };
+		CD869F1A285E1B8F00B679FE /* DiscardAllMarkupCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD869F17285E1B8E00B679FE /* DiscardAllMarkupCommand.m */; };
 		CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
 		CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD899E5C164875A800329154 /* CrashReportingModel.m */; };
 		CD8E150814C4EF8300A7A90B /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
@@ -1152,6 +1154,8 @@
 		CD85B58F1401C137001715B8 /* GoGameTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameTest.m; sourceTree = "<group>"; };
 		CD869F132855F6C200B679FE /* RectangleLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RectangleLayerDelegate.h; sourceTree = "<group>"; };
 		CD869F142855F6C200B679FE /* RectangleLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RectangleLayerDelegate.m; sourceTree = "<group>"; };
+		CD869F17285E1B8E00B679FE /* DiscardAllMarkupCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardAllMarkupCommand.m; sourceTree = "<group>"; };
+		CD869F18285E1B8E00B679FE /* DiscardAllMarkupCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardAllMarkupCommand.h; sourceTree = "<group>"; };
 		CD899E5B164875A800329154 /* CrashReportingModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CrashReportingModel.h; sourceTree = "<group>"; };
 		CD899E5C164875A800329154 /* CrashReportingModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingModel.m; sourceTree = "<group>"; };
 		CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UiElementMetrics.h; sourceTree = "<group>"; };
@@ -2753,6 +2757,8 @@
 		CDB5C5D7284E874F00DE5DD4 /* markup */ = {
 			isa = PBXGroup;
 			children = (
+				CD869F18285E1B8E00B679FE /* DiscardAllMarkupCommand.h */,
+				CD869F17285E1B8E00B679FE /* DiscardAllMarkupCommand.m */,
 				CDB5C5D8284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.h */,
 				CDB5C5D9284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm */,
 			);
@@ -3900,6 +3906,7 @@
 				CD0AF19017401C56003BFC21 /* SliderInputController.m in Sources */,
 				CD6C7DBC17512152009FBEC4 /* UiSettingsModel.m in Sources */,
 				CDD7D7E5175257850068CBBA /* ResetPlayersAndProfilesCommand.m in Sources */,
+				CD869F19285E1B8F00B679FE /* DiscardAllMarkupCommand.m in Sources */,
 				CDEE1A0319438AE000DF2389 /* StonesLayerDelegate.m in Sources */,
 				CD8EAABA1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
 				CD07270E180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */,
@@ -4098,6 +4105,7 @@
 				CD1311C417180B53006CE699 /* ScoringModel.m in Sources */,
 				CD1F4F7525AE81AC0098037A /* SgfSettingsController.m in Sources */,
 				CDCBA6D4184228A7003697E2 /* TableViewVariableHeightCell.m in Sources */,
+				CD869F1A285E1B8F00B679FE /* DiscardAllMarkupCommand.m in Sources */,
 				CDFD9F7218F1D3700031CBCF /* DisplaySettingsController.m in Sources */,
 				CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */,
 				CDACF0B119041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */,

@@ -91,6 +91,7 @@ NSString* boardViewAnimationWillBegin = @"BoardViewAnimationWillBegin";
 NSString* boardViewAnimationDidEnd = @"BoardViewAnimationDidEnd";
 NSString* nodeAnnotationDataDidChange = @"NodeAnnotationDataDidChange";
 NSString* markupOnPointsDidChange = @"MarkupOnPointsDidChange";
+NSString* allMarkupDidDiscard = @"AllMarkupDidDiscard";
 
 // Default values for properties that define how the Go board is displayed
 const float iPhoneMaximumZoomScale = 2.5;

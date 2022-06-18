@@ -141,6 +141,7 @@
   [center addObserver:self selector:@selector(setupPointDidChange:) name:setupPointDidChange object:nil];
   [center addObserver:self selector:@selector(allSetupStonesDidDiscard:) name:allSetupStonesDidDiscard object:nil];
   [center addObserver:self selector:@selector(markupOnPointsDidChange:) name:markupOnPointsDidChange object:nil];
+  [center addObserver:self selector:@selector(allMarkupDidDiscard:) name:allMarkupDidDiscard object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [boardPositionModel addObserver:self forKeyPath:@"markNextMove" options:0 context:NULL];
@@ -594,6 +595,15 @@
 - (void) markupOnPointsDidChange:(NSNotification*)notification
 {
   [self notifyLayerDelegates:BVLDEventMarkupOnPointsDidChange eventInfo:notification.object];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #allMarkupDidDiscard notification.
+// -----------------------------------------------------------------------------
+- (void) allMarkupDidDiscard:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:BVLDEventAllMarkupDiscarded eventInfo:nil];
   [self delayedDrawLayers];
 }
 
