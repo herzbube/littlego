@@ -922,32 +922,70 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 
 // -----------------------------------------------------------------------------
 /// @brief Entry point for handling markup erasing on a single intersection. If
-/// a connection was removed, returns an array with the start/end GoPoint
-/// objects of the connection that was removed. If a symbol or label was
+/// a single connection was removed, returns an array with the start/end GoPoint
+/// objects of the connection that was removed. If a single symbol or label was
 /// removed, returns an array with the GoPoint object from which the symbol or
-/// label was removed. Returns @e nil if no markup was removed.
+/// label was removed. If more than one markup element was removed, returns an
+/// empty array. Returns @e nil if no markup was removed.
 ///
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
 - (NSArray*) handleEraseMarkupOnIntersection:(NSString*)intersection
                               withNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
-  if (nodeMarkup.symbols && nodeMarkup.symbols[intersection])
+  // Usually only one symbol, marker, label or connection is erased; in that
+  // case we can tell the rest of the application about this => drawing will
+  // be optimized. If many markup items are erased then the information becomes
+  // too complex to parse, so we don't provide the information and let the
+  // entire board redraw its symbol layers.
+  bool singleOrNoMarkupWasErased = true;
+  NSArray* pointsWithChangedMarkup = nil;
+
+  NSDictionary* symbols = nodeMarkup.symbols;
+  if (symbols && symbols[intersection])
   {
     [nodeMarkup removeSymbolAtVertex:intersection];
-    return [self pointsArrayWithIntersection:intersection];
-  }
-  else if (nodeMarkup.labels && nodeMarkup.labels[intersection])
-  {
-    [nodeMarkup removeLabelAtVertex:intersection];
-    return [self pointsArrayWithIntersection:intersection];
-  }
-  else if (nodeMarkup.connections)
-  {
-    return [self handleRemoveConnectionIfExistsAtIntersection:intersection withNodeMarkup:nodeMarkup];
+
+    if (pointsWithChangedMarkup)
+      singleOrNoMarkupWasErased = false;
+    else
+      pointsWithChangedMarkup = [self pointsArrayWithIntersection:intersection];
   }
 
-  return nil;
+  NSDictionary* labels = nodeMarkup.labels;
+  if (labels && labels[intersection])
+  {
+    [nodeMarkup removeLabelAtVertex:intersection];
+
+    if (pointsWithChangedMarkup)
+      singleOrNoMarkupWasErased = false;
+    else
+      pointsWithChangedMarkup = [self pointsArrayWithIntersection:intersection];
+  }
+
+  NSDictionary* connections = nodeMarkup.connections;
+  if (connections)
+  {
+    for (NSArray* key in connections.allKeys)
+    {
+      if ([key containsObject:intersection])
+      {
+        NSString* fromIntersection = key.firstObject;
+        NSString* toIntersection = key.lastObject;
+        [nodeMarkup removeConnectionFromVertex:fromIntersection toVertex:toIntersection];
+
+        if (pointsWithChangedMarkup)
+          singleOrNoMarkupWasErased = false;
+        else
+          pointsWithChangedMarkup = [self pointsArrayWithFromIntersection:fromIntersection toIntersection:toIntersection];
+      }
+    }
+  }
+
+  if (singleOrNoMarkupWasErased)
+    return pointsWithChangedMarkup;
+  else
+    return @[];
 }
 
 // -----------------------------------------------------------------------------
@@ -987,46 +1025,13 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   {
     NSString* intersection = pointInSelectionRectangle.vertex.string;
 
-    NSDictionary* symbols = nodeMarkup.symbols;
-    if (symbols && symbols[intersection])
-    {
-      [nodeMarkup removeSymbolAtVertex:intersection];
+    NSArray* pointsWithChangedMarkupSingleIntersection = [self handleEraseMarkupOnIntersection:intersection
+                                                                                withNodeMarkup:nodeMarkup];
 
-      if (pointsWithChangedMarkup)
-        singleOrNoMarkupWasErased = false;
-      else
-        pointsWithChangedMarkup = @[pointInSelectionRectangle];
-    }
-
-    NSDictionary* labels = nodeMarkup.labels;
-    if (labels && labels[intersection])
-    {
-      [nodeMarkup removeLabelAtVertex:intersection];
-
-      if (pointsWithChangedMarkup)
-        singleOrNoMarkupWasErased = false;
-      else
-        pointsWithChangedMarkup = @[pointInSelectionRectangle];
-    }
-
-    NSDictionary* connections = nodeMarkup.connections;
-    if (connections)
-    {
-      for (NSArray* key in connections.allKeys)
-      {
-        if ([key containsObject:intersection])
-        {
-          NSString* fromIntersection = key.firstObject;
-          NSString* toIntersection = key.lastObject;
-          [nodeMarkup removeConnectionFromVertex:fromIntersection toVertex:toIntersection];
-
-          if (pointsWithChangedMarkup)
-            singleOrNoMarkupWasErased = false;
-          else
-            pointsWithChangedMarkup = [self pointsArrayWithFromIntersection:fromIntersection toIntersection:toIntersection];
-        }
-      }
-    }
+    if (pointsWithChangedMarkup)
+      singleOrNoMarkupWasErased = false;
+    else
+      pointsWithChangedMarkup = pointsWithChangedMarkupSingleIntersection;
   }
 
   if (singleOrNoMarkupWasErased)
