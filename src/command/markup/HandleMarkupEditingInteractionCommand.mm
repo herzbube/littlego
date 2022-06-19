@@ -25,6 +25,7 @@
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeMarkup.h"
 #import "../../go/GoPoint.h"
+#import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -279,7 +280,16 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
       }
       case MarkupToolEraser:
       {
-        pointsWithChangedMarkup = [self handleEraseMarkupOnIntersection:intersection withNodeMarkup:nodeMarkup];
+        if (secondPoint)
+        {
+          NSString* fromIntersection = intersection;
+          NSString* toIntersection = secondPoint.vertex.string;
+          pointsWithChangedMarkup = [self handleEraseMarkupInRectangleFromIntersection:fromIntersection toIntersection:toIntersection withNodeMarkup:nodeMarkup];
+        }
+        else
+        {
+          pointsWithChangedMarkup = [self handleEraseMarkupOnIntersection:intersection withNodeMarkup:nodeMarkup];
+        }
         break;
       }
       default:
@@ -897,8 +907,10 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
     {
       if ([key containsObject:intersection])
       {
-        [nodeMarkup removeConnectionFromVertex:key.firstObject toVertex:key.lastObject];
-        return [self pointsArrayWithFromIntersection:key.firstObject toIntersection:key.lastObject];
+        NSString* fromIntersection = key.firstObject;
+        NSString* toIntersection = key.lastObject;
+        [nodeMarkup removeConnectionFromVertex:fromIntersection toVertex:toIntersection];
+        return [self pointsArrayWithFromIntersection:fromIntersection toIntersection:toIntersection];
       }
     }
   }
@@ -909,16 +921,16 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 #pragma mark - Erase markup
 
 // -----------------------------------------------------------------------------
-/// @brief Entry point for handling markup erasing. If a connection was removed,
-/// returns an array with the start/end GoPoint objects of the connection that
-/// was removed. If a symbol or label was removed, returns an array with the
-/// GoPoint object from which the symbol or label was removed. Returns @e nil
-/// if no markup was removed.
+/// @brief Entry point for handling markup erasing on a single intersection. If
+/// a connection was removed, returns an array with the start/end GoPoint
+/// objects of the connection that was removed. If a symbol or label was
+/// removed, returns an array with the GoPoint object from which the symbol or
+/// label was removed. Returns @e nil if no markup was removed.
 ///
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
 - (NSArray*) handleEraseMarkupOnIntersection:(NSString*)intersection
-                          withNodeMarkup:(GoNodeMarkup*)nodeMarkup
+                              withNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
   if (nodeMarkup.symbols && nodeMarkup.symbols[intersection])
   {
@@ -936,6 +948,91 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   }
 
   return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Entry point for handling markup erasing in a rectangle defined by
+/// the diagonally opposite corner intersections @a fromIntersection and
+/// @a toIntersection. If a single connection was removed, returns an array with
+/// the start/end GoPoint objects of the connection that was removed. If a
+/// single symbol or label was removed, returns an array with the GoPoint object
+/// from which the symbol or label was removed. If more than one markup element
+/// was removed, returns an empty array. Returns @e nil if no markup was
+/// removed.
+///
+/// See document MANUAL for details how this works.
+// -----------------------------------------------------------------------------
+- (NSArray*) handleEraseMarkupInRectangleFromIntersection:(NSString*)fromIntersection
+                                           toIntersection:(NSString*)toIntersection
+                                           withNodeMarkup:(GoNodeMarkup*)nodeMarkup
+{
+  NSArray* pointsArray = [self pointsArrayWithFromIntersection:fromIntersection toIntersection:toIntersection];
+  GoPoint* fromPoint = pointsArray.firstObject;
+  GoPoint* toPoint = pointsArray.lastObject;
+
+  GoGame* game = [GoGame sharedGame];
+  NSArray* pointsInSelectionRectangle = [GoUtilities pointsInRectangleDelimitedByCornerPoint:fromPoint
+                                                                         oppositeCornerPoint:toPoint
+                                                                                      inGame:game];
+
+  // If by chance only one symbol, marker, label or connection is erased
+  // then we can tell the rest of the application about this => drawing will
+  // be optimized. If many markup items are erased then the information becomes
+  // too complex to parse, so we don't provide the information and let the
+  // entire board redraw its symbol layers.
+  bool singleOrNoMarkupWasErased = true;
+  NSArray* pointsWithChangedMarkup = nil;
+
+  for (GoPoint* pointInSelectionRectangle in pointsInSelectionRectangle)
+  {
+    NSString* intersection = pointInSelectionRectangle.vertex.string;
+
+    NSDictionary* symbols = nodeMarkup.symbols;
+    if (symbols && symbols[intersection])
+    {
+      [nodeMarkup removeSymbolAtVertex:intersection];
+
+      if (pointsWithChangedMarkup)
+        singleOrNoMarkupWasErased = false;
+      else
+        pointsWithChangedMarkup = @[pointInSelectionRectangle];
+    }
+
+    NSDictionary* labels = nodeMarkup.labels;
+    if (labels && labels[intersection])
+    {
+      [nodeMarkup removeLabelAtVertex:intersection];
+
+      if (pointsWithChangedMarkup)
+        singleOrNoMarkupWasErased = false;
+      else
+        pointsWithChangedMarkup = @[pointInSelectionRectangle];
+    }
+
+    NSDictionary* connections = nodeMarkup.connections;
+    if (connections)
+    {
+      for (NSArray* key in connections.allKeys)
+      {
+        if ([key containsObject:intersection])
+        {
+          NSString* fromIntersection = key.firstObject;
+          NSString* toIntersection = key.lastObject;
+          [nodeMarkup removeConnectionFromVertex:fromIntersection toVertex:toIntersection];
+
+          if (pointsWithChangedMarkup)
+            singleOrNoMarkupWasErased = false;
+          else
+            pointsWithChangedMarkup = [self pointsArrayWithFromIntersection:fromIntersection toIntersection:toIntersection];
+        }
+      }
+    }
+  }
+
+  if (singleOrNoMarkupWasErased)
+    return pointsWithChangedMarkup;
+  else
+    return @[];
 }
 
 #pragma mark - Private helpers

@@ -20,6 +20,7 @@
 
 // Forward declarations
 @class BoardViewMetrics;
+@class GoPoint;
 
 
 // -----------------------------------------------------------------------------
@@ -61,6 +62,12 @@
 //@{
 - (void) drawLayer;
 - (void) notify:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
+//@}
+
+/// @name Helper methods for subclasses
+//@{
+- (NSArray*) calculateDrawingPointsOnTile;
+- (NSArray*) calculateDrawingPointsOnTileWithCallback:(bool (^)(GoPoint* point, bool* stop))callback;
 //@}
 
 /// @brief Object that provides the metrics for drawing elements on the Play

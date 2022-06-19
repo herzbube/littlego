@@ -21,6 +21,8 @@
 #import "BoardTileView.h"
 #import "../model/BoardViewMetrics.h"
 #import "../model/BoardViewModel.h"
+#import "../../go/GoGame.h"
+#import "../../go/GoUtilities.h"
 #import "../../main/ApplicationDelegate.h"
 
 
@@ -32,6 +34,8 @@
 @property(nonatomic, assign) bool crossHairPointIsLegalMove;
 @property(nonatomic, retain) GoPoint* connectionStartPoint;
 @property(nonatomic, retain) GoPoint* connectionEndPoint;
+@property(nonatomic, retain) GoPoint* selectionRectangleFromPoint;
+@property(nonatomic, retain) GoPoint* selectionRectangleToPoint;
 @property(nonatomic, assign) float crossHairPointDistanceFromFinger;
 @property(nonatomic, retain) BoardViewAccessibility* boardViewAccessibility;
 @end
@@ -57,6 +61,8 @@
   self.crossHairPointIsLegalMove = true;
   self.connectionStartPoint = nil;
   self.connectionEndPoint = nil;
+  self.selectionRectangleFromPoint = nil;
+  self.selectionRectangleToPoint = nil;
   self.boardViewAccessibility = [[[BoardViewAccessibility alloc] initWithBoardView:self] autorelease];
 
   return self;
@@ -70,6 +76,8 @@
   self.crossHairPoint = nil;
   self.connectionStartPoint = nil;
   self.connectionEndPoint = nil;
+  self.selectionRectangleFromPoint = nil;
+  self.selectionRectangleToPoint = nil;
   self.boardViewAccessibility = nil;
 
   [super dealloc];
@@ -106,14 +114,7 @@
   self.crossHairPointIsLegalMove = isLegalMove;
   self.crossHairPoint = point;
 
-  for (id subview in [self.tileContainerView subviews])
-  {
-    if (! [subview isKindOfClass:[BoardTileView class]])
-      continue;
-    BoardTileView* tileView = subview;
-    [tileView notifyLayerDelegates:BVLDEventCrossHairChanged eventInfo:point];
-    [tileView delayedDrawLayers];
-  }
+  [self notifyTiles:BVLDEventCrossHairChanged eventInfo:point];
 }
 
 // -----------------------------------------------------------------------------
@@ -137,14 +138,38 @@
   else
     eventInfo = @[];
 
-  for (id subview in [self.tileContainerView subviews])
+  [self notifyTiles:BVLDEventInteractiveMarkupBetweenPointsDidChange eventInfo:eventInfo];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the interactively drawn selection rectangle so that it is
+/// drawn with the diagonally opposite corner points @a fromPoint and
+/// @a toPoint. If either or both GoPoint parameters is @e nil the selection
+/// rectangle is removed.
+// -----------------------------------------------------------------------------
+- (void) updateSelectionRectangleFromPoint:(GoPoint*)fromPoint
+                                   toPoint:(GoPoint*)toPoint
+{
+  if (self.selectionRectangleFromPoint == fromPoint && self.selectionRectangleToPoint == toPoint)
+    return;
+
+  self.selectionRectangleFromPoint = fromPoint;
+  self.selectionRectangleToPoint = toPoint;
+
+  NSArray* eventInfo;
+  if (fromPoint && toPoint)
   {
-    if (! [subview isKindOfClass:[BoardTileView class]])
-      continue;
-    BoardTileView* tileView = subview;
-    [tileView notifyLayerDelegates:BVLDEventInteractiveMarkupBetweenPointsDidChange eventInfo:eventInfo];
-    [tileView delayedDrawLayers];
+    NSArray* pointsInSelectionRectangle = [GoUtilities pointsInRectangleDelimitedByCornerPoint:fromPoint
+                                                                           oppositeCornerPoint:toPoint
+                                                                                        inGame:[GoGame sharedGame]];
+    eventInfo = @[fromPoint, toPoint, pointsInSelectionRectangle];
   }
+  else
+  {
+    eventInfo = @[];
+  }
+
+  [self notifyTiles:BVLDEventSelectionRectangleDidChange eventInfo:eventInfo];
 }
 
 #pragma mark - UIAccessibilityElement overrides
@@ -166,6 +191,26 @@
 - (NSArray*) accessibilityElements
 {
   return self.boardViewAccessibility.accessibilityElements;
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Notifies all subviews that are BoardTileView objects that @a event
+/// has occurred. The event info object supplied to the tile view is
+/// @a eventInfo. Also triggers each subview's delayed drawing mechanism.
+// -----------------------------------------------------------------------------
+- (void) notifyTiles:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo
+{
+  for (id subview in [self.tileContainerView subviews])
+  {
+    if (! [subview isKindOfClass:[BoardTileView class]])
+      continue;
+
+    BoardTileView* tileView = subview;
+    [tileView notifyLayerDelegates:event eventInfo:eventInfo];
+    [tileView delayedDrawLayers];
+  }
 }
 
 @end

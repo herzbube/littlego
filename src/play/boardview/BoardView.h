@@ -38,5 +38,7 @@
 - (void) moveMarkupConnection:(enum GoMarkupConnection)connection
                withStartPoint:(GoPoint*)startPoint
                    toEndPoint:(GoPoint*)endPoint;
+- (void) updateSelectionRectangleFromPoint:(GoPoint*)fromPoint
+                                   toPoint:(GoPoint*)toPoint;
 
 @end

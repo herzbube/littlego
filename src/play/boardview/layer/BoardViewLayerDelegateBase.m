@@ -17,7 +17,10 @@
 
 // Project includes
 #import "BoardViewLayerDelegateBase.h"
+#import "BoardViewDrawingHelper.h"
 #import "../../model/BoardViewMetrics.h"
+#import "../../../go/GoBoard.h"
+#import "../../../go/GoGame.h"
 
 
 @implementation BoardViewLayerDelegateBase
@@ -28,6 +31,7 @@
 @synthesize layer = _layer;
 @synthesize tile = _tile;
 
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardViewLayerDelegateBase object. Creates a new
@@ -77,6 +81,8 @@
   [super dealloc];
 }
 
+#pragma mark - BoardViewLayerDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief BoardViewLayerDelegate method. See the BoardViewLayerDelegateBase
 /// class documentation for details about this implementation.
@@ -97,6 +103,64 @@
 - (void) notify:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
   // empty "do-nothing" implementation
+}
+
+#pragma mark - Helper methods for subclasses
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an array that identifies the points whose intersections
+/// are located on this tile. Array elements are GoPoint objects.
+// -----------------------------------------------------------------------------
+- (NSArray*) calculateDrawingPointsOnTile
+{
+  return [self calculateDrawingPointsOnTileWithCallback:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an array that identifies the points whose intersections
+/// are located on this tile. Array elements are GoPoint objects. If @a callback
+/// is not @e nil, invokes @a callback for each GoPoint object that is found to
+/// be on this tile.
+///
+/// The callback must return a boolean value that indicates whether the point
+/// should be used or not. Value @e true indicates that the point should be
+/// added to the NSArray that is returned, value @e false indicates that the
+/// point should not be added (although the point is on this tile).
+///
+/// The callback can set @a stop to @e true to stop the search for further
+/// points before all points have been examined.
+///
+/// @note Use GoUtilities::pointsInBothFirstArray:andSecondArray:() to find the
+/// intersection between the GoPoints returned by this method and some other
+/// collection of GoPoints.
+// -----------------------------------------------------------------------------
+- (NSArray*) calculateDrawingPointsOnTileWithCallback:(bool (^)(GoPoint* point, bool* stop))callback
+{
+  bool stop = false;
+  NSMutableArray* drawingPoints = [NSMutableArray array];
+
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
+                                                      metrics:self.boardViewMetrics];
+
+  GoGame* game = [GoGame sharedGame];
+  NSEnumerator* enumerator = [game.board pointEnumerator];
+  GoPoint* point;
+  while (! stop && (point = [enumerator nextObject]))
+  {
+    CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
+                                                                 metrics:self.boardViewMetrics];
+    if (! CGRectIntersectsRect(tileRect, stoneRect))
+      continue;
+
+    bool shouldAddPoint = true;
+    if (callback)
+      shouldAddPoint = callback(point, &stop);
+
+    if (shouldAddPoint)
+      [drawingPoints addObject:point];
+  }
+
+  return drawingPoints;
 }
 
 @end

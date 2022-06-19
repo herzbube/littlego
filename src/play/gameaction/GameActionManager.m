@@ -315,6 +315,23 @@ static GameActionManager* sharedGameActionManager = nil;
   [[[[HandleMarkupEditingInteractionCommand alloc] initWithStartPoint:fromPoint endPoint:toPoint] autorelease] submit];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Handles a markup editing interaction that erases all markup in an
+/// entire rectangular area defined by @a fromPoint and @a endPoint, which are
+/// diagonally opposed corners of the rectangle. Is invoked only while the
+/// UI area "Play" is in markup editing mode.
+// -----------------------------------------------------------------------------
+- (void) eraseMarkupInRectangleFromPoint:(GoPoint*)fromPoint toPoint:(GoPoint*)toPoint
+{
+  if ([self shouldIgnoreUserInteraction])
+  {
+    DDLogWarn(@"%@: Ignoring eraseMarkupInRectangleFromPoint:toPoint:", self);
+    return;
+  }
+
+  [[[[HandleMarkupEditingInteractionCommand alloc] initWithStartPoint:fromPoint endPoint:toPoint] autorelease] submit];
+}
+
 #pragma mark - Mapping of game actions to handler methods
 
 // -----------------------------------------------------------------------------

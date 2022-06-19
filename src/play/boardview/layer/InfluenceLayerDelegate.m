@@ -97,8 +97,8 @@
       // comparison detects whether any scores changed since the last time.
       //
       // Note: Currently this optimization pretty much never works because the
-      // influence scores almost always change between to updates. The reason is
-      // that the simulations played out by Fuego between two updates pretty
+      // influence scores almost always change between two updates. The reason
+      // is that the simulations played out by Fuego between two updates pretty
       // much always result in scores that are different. Even if no moves are
       // played between two updates, the results are different because we send
       // Fuego a "reg_genmove" command to force it to update its territory

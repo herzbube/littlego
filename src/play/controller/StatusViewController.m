@@ -54,6 +54,7 @@
 @property(nonatomic, assign) bool statusLabelNeedsUpdate;
 @property(nonatomic, retain) NSArray* crossHairInformation;
 @property(nonatomic, retain) NSArray* connectionInformation;
+@property(nonatomic, retain) NSArray* selectionRectangleInformation;
 @property(nonatomic, assign) bool shouldDisplayActivityIndicator;
 @property(nonatomic, retain) NSLayoutConstraint* activityIndicatorWidthConstraint;
 @property(nonatomic, retain) NSLayoutConstraint* activityIndicatorSpacingConstraint;
@@ -106,6 +107,7 @@
   self.activityIndicator = nil;
   self.crossHairInformation = nil;
   self.connectionInformation = nil;
+  self.selectionRectangleInformation = nil;
   self.activityIndicatorWidthConstraint = nil;
   self.activityIndicatorSpacingConstraint = nil;
 }
@@ -332,6 +334,7 @@
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesEnds:) name:askGtpEngineForDeadStonesEnds object:nil];
   [center addObserver:self selector:@selector(boardViewCrossHairDidChange:) name:boardViewCrossHairDidChange object:nil];
   [center addObserver:self selector:@selector(boardViewMarkupConnectionDidChange:) name:boardViewMarkupConnectionDidChange object:nil];
+  [center addObserver:self selector:@selector(boardViewSelectionRectangleDidChange:) name:boardViewSelectionRectangleDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [self setupNotificationRespondersForGame:[GoGame sharedGame]];
@@ -507,6 +510,16 @@
       statusText = [NSString stringWithFormat:@"%@ %@ Drag to other intersection", fromPoint.vertex.string, connectionTextSymbol];
     else
       statusText = [NSString stringWithFormat:@"%@ %@ %@", fromPoint.vertex.string, connectionTextSymbol, toPoint.vertex.string];
+  }
+  else if (self.selectionRectangleInformation)
+  {
+    GoPoint* fromPoint = [self.selectionRectangleInformation objectAtIndex:0];
+    GoPoint* toPoint = [self.selectionRectangleInformation objectAtIndex:1];
+
+    if (fromPoint == toPoint)
+      statusText = [NSString stringWithFormat:@"%@", fromPoint.vertex.string];
+    else
+      statusText = [NSString stringWithFormat:@"%@ : %@", fromPoint.vertex.string, toPoint.vertex.string];
   }
   else
   {
@@ -895,6 +908,20 @@
     self.connectionInformation = [NSArray arrayWithArray:connectionInformation];
   else
     self.connectionInformation = nil;
+  self.statusLabelNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewSelectionRectangleDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) boardViewSelectionRectangleDidChange:(NSNotification*)notification
+{
+  NSArray* selectionRectangleInformation = notification.object;
+  if (selectionRectangleInformation.count > 0)
+    self.selectionRectangleInformation = [NSArray arrayWithArray:selectionRectangleInformation];
+  else
+    self.selectionRectangleInformation = nil;
   self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }

@@ -251,7 +251,6 @@
 
   static int gestureRecognizerStateChangedCount = 0;
 
-
   UIGestureRecognizerState recognizerState = gestureRecognizer.state;
   switch (recognizerState)
   {
@@ -268,7 +267,7 @@
       if (uiAreaPlayMode == UIAreaPlayModeEditMarkup)
         self.gestureStartPoint = panningIntersection.point;
 
-      // No break, fall-through intentional!
+      break;
     }
     case UIGestureRecognizerStateChanged:
     {
@@ -329,7 +328,9 @@
     }
     else if (markupTool == MarkupToolEraser)
     {
-      // TODO xxx draw a rectangle in which to delete all markup
+      [self handleEraseMarkupInRectangleWithGestureRecognizerState:recognizerState
+                                                         fromPoint:self.gestureStartPoint
+                                                           toPoint:panningIntersection.point];
     }
     else
     {
@@ -449,6 +450,44 @@
   }
 }
 
+#pragma mark - Gesture handling - Erasing markup in a selection rectangle (UIAreaPlayModeEditMarkup)
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method for handlePanFrom:(), with specific handling for
+/// erasing all markup in an entire rectangular area.
+// -----------------------------------------------------------------------------
+- (void) handleEraseMarkupInRectangleWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
+                                                      fromPoint:(GoPoint*)startPoint
+                                                        toPoint:(GoPoint*)endPoint
+{
+  if (recognizerState == UIGestureRecognizerStateEnded || recognizerState == UIGestureRecognizerStateCancelled)
+  {
+    [self.boardView updateSelectionRectangleFromPoint:nil
+                                              toPoint:nil];
+
+    NSArray* selectionRectangleInformation = @[];
+    [[NSNotificationCenter defaultCenter] postNotificationName:boardViewSelectionRectangleDidChange
+                                                        object:selectionRectangleInformation];
+
+    if (recognizerState == UIGestureRecognizerStateEnded && startPoint && endPoint)
+    {
+      [[GameActionManager sharedGameActionManager] eraseMarkupInRectangleFromPoint:startPoint
+                                                                           toPoint:endPoint];
+    }
+  }
+  else
+  {
+    [self.boardView updateSelectionRectangleFromPoint:startPoint
+                                              toPoint:endPoint];
+
+    NSArray* selectionRectangleInformation = (startPoint && endPoint)
+      ? @[startPoint, endPoint]
+      : @[];
+    [[NSNotificationCenter defaultCenter] postNotificationName:boardViewSelectionRectangleDidChange
+                                                        object:selectionRectangleInformation];
+  }
+}
+
 #pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
@@ -548,7 +587,7 @@
   if (uiAreaPlayMode == UIAreaPlayModeEditMarkup)
   {
     MarkupModel* markupModel = appDelegate.markupModel;
-    if (markupModel.markupTool == MarkupToolConnection)
+    if (markupModel.markupTool == MarkupToolConnection || markupModel.markupTool == MarkupToolEraser)
       self.panningEnabled = true;
     else
       self.panningEnabled = false;  // TODO xxx do we need to enable panning also for regular markup?

@@ -354,8 +354,6 @@
   if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return drawingPoints;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
   enum InconsistentTerritoryMarkupType inconsistentTerritoryMarkupType = self.scoringModel.inconsistentTerritoryMarkupType;
 
   // TODO: Currently we always iterate over all points. This could be
@@ -364,15 +362,8 @@
   // list of points. On a 19x19 board this could save us quite a bit of time:
   // 381 points are iterated on 16 tiles (iPhone), i.e. over 6000 iterations.
   // on iPad where there are more tiles it is even worse.
-  GoGame* game = [GoGame sharedGame];
-  NSEnumerator* enumerator = [game.board pointEnumerator];
-  GoPoint* point;
-  while (point = [enumerator nextObject])
+  [self calculateDrawingPointsOnTileWithCallback:^bool(GoPoint* point, bool* stop)
   {
-    CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
-                                                                 metrics:self.boardViewMetrics];
-    if (! CGRectIntersectsRect(tileRect, stoneRect))
-      continue;
     enum GoColor territoryColor = point.region.territoryColor;
     enum TerritoryMarkupStyle territoryMarkupStyle;
     switch (territoryColor)
@@ -390,11 +381,11 @@
       case GoColorNone:
       {
         if (! point.region.territoryInconsistencyFound)
-          continue;  // territory is truly neutral, no markup needed
+          return false;  // territory is truly neutral, no markup needed
         switch (inconsistentTerritoryMarkupType)
         {
           case InconsistentTerritoryMarkupTypeNeutral:
-            continue;  // territory is inconsistent, but user does not want markup
+            return false;  // territory is inconsistent, but user does not want markup
           case InconsistentTerritoryMarkupTypeDotSymbol:
             territoryMarkupStyle = TerritoryMarkupStyleInconsistentDotSymbol;
             break;
@@ -403,20 +394,22 @@
             break;
           default:
             DDLogError(@"Unknown value %d for property ScoringModel.inconsistentTerritoryMarkupType", inconsistentTerritoryMarkupType);
-            continue;
+            return false;
         }
         break;
       }
       default:
       {
         DDLogError(@"Unknown value %d for property point.region.territoryColor", territoryColor);
-        continue;
+        return false;
       }
     }
 
     NSNumber* territoryMarkupStyleAsNumber = [[[NSNumber alloc] initWithInt:territoryMarkupStyle] autorelease];
     [drawingPoints setObject:territoryMarkupStyleAsNumber forKey:point.vertex.string];
-  }
+
+    return true;
+  }];
 
   return drawingPoints;
 }

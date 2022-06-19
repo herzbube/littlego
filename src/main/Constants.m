@@ -81,6 +81,7 @@ NSString* boardViewPanningGestureWillStart = @"BoardViewPanningGestureWillStart"
 NSString* boardViewPanningGestureWillEnd = @"BoardViewPanningGestureWillEnd";;
 NSString* boardViewCrossHairDidChange = @"BoardViewCrossHairDidChange";
 NSString* boardViewMarkupConnectionDidChange = @"BoardViewMarkupConnectionDidChange";
+NSString* boardViewSelectionRectangleDidChange = @"BoardViewSelectionRectangleDidChange";
 NSString* uiAreaPlayModeWillChange = @"UIAreaPlayModeWillChange";
 NSString* uiAreaPlayModeDidChange = @"UIAreaPlayModeDidChange";
 NSString* handicapPointDidChange = @"HandicapPointDidChange";

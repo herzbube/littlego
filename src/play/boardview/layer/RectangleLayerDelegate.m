@@ -17,15 +17,18 @@
 
 // Project includes
 #import "RectangleLayerDelegate.h"
+#import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
 #import "../../model/BoardViewMetrics.h"
+#import "../../../go/GoUtilities.h"
 
 
 enum DrawingArtifactType
 {
   DrawingArtifactTypeArrow,
   DrawingArtifactTypeLine,
-  DrawingArtifactTypeSelection,
+  DrawingArtifactTypeSelectionRectangle,
+  DrawingArtifactTypeNone,
 };
 
 
@@ -33,6 +36,8 @@ enum DrawingArtifactType
 /// @brief Class extension with private properties for RectangleLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface RectangleLayerDelegate()
+/// @brief List of GoPoint objects for points that are on this tile.
+@property(nonatomic, retain) NSArray* drawingPointsOnTile;
 /// @brief Store drawing rectangle between invocations of notify:eventInfo:().
 @property(nonatomic, assign) CGRect drawingRectangle;
 /// @brief Store dirty rect between invocations of notify:eventInfo:() and
@@ -46,10 +51,15 @@ enum DrawingArtifactType
 @property(nonatomic, retain) GoPoint* toPoint;
 /// @brief The artifact to draw during the next drawing cycle.
 @property(nonatomic, assign) enum DrawingArtifactType drawingArtifactType;
+/// @brief List of GoPoint objects for points that are on this tile and that
+/// are also in the selection rectangle.
+@property(nonatomic, retain) NSArray* pointsOnTileInSelectionRectangle;
 @end
 
 
 @implementation RectangleLayerDelegate
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a RectangleLayerDelegate object.
@@ -63,8 +73,13 @@ enum DrawingArtifactType
   if (! self)
     return nil;
 
+  self.drawingPointsOnTile = @[];
   self.drawingRectangle = CGRectZero;
   self.dirtyRect = CGRectZero;
+  self.fromPoint = nil;
+  self.toPoint = nil;
+  self.drawingArtifactType = DrawingArtifactTypeNone;
+  self.pointsOnTileInSelectionRectangle = @[];
 
   return self;
 }
@@ -74,9 +89,31 @@ enum DrawingArtifactType
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  // There are times when no RectangleLayerDelegate instances are around to
+  // react to events that invalidate the cached CGLayers, so the cached CGLayers
+  // will inevitably become out-of-date. To prevent this, we invalidate the
+  // CGLayers *NOW*.
+  [self invalidateLayers];
+
+  self.drawingPointsOnTile = nil;
   self.fromPoint = nil;
   self.toPoint = nil;
+  self.pointsOnTileInSelectionRectangle = nil;
+
   [super dealloc];
+}
+
+#pragma mark - State invalidation
+
+// -----------------------------------------------------------------------------
+/// @brief Invalidates the layers for drawing the selection rectangle.
+///
+/// When it is next invoked, drawLayer:inContext:() will re-create the layers.
+// -----------------------------------------------------------------------------
+- (void) invalidateLayers
+{
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  [cache invalidateLayerOfType:SelectionRectangleLayerType];
 }
 
 // -----------------------------------------------------------------------------
@@ -96,6 +133,17 @@ enum DrawingArtifactType
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Invalidates the list of points that are on this tile and in the
+/// selection rectangle.
+// -----------------------------------------------------------------------------
+- (void) invalidatePointsOnTileInSelectionRectangle
+{
+  self.pointsOnTileInSelectionRectangle = @[];
+}
+
+#pragma mark - BoardViewLayerDelegate overrides
+
+// -----------------------------------------------------------------------------
 /// @brief BoardViewLayerDelegate method.
 // -----------------------------------------------------------------------------
 - (void) notify:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo
@@ -104,10 +152,30 @@ enum DrawingArtifactType
   {
     case BVLDEventBoardGeometryChanged:
     case BVLDEventBoardSizeChanged:
+    {
+      [self invalidateLayers];
+      [self invalidateDrawingRectangle];
+      [self invalidateDirtyRect];
+      [self invalidatePointsOnTileInSelectionRectangle];
+      self.drawingPointsOnTile = [self calculateDrawingPointsOnTile];
+      self.dirty = true;
+      break;
+    }
     case BVLDEventInvalidateContent:
     {
       [self invalidateDrawingRectangle];
       [self invalidateDirtyRect];
+      [self invalidatePointsOnTileInSelectionRectangle];
+      self.drawingPointsOnTile = [self calculateDrawingPointsOnTile];
+      self.dirty = true;
+      break;
+    }
+    // The layer is removed/added dynamically as a result of markup editing mode
+    // becoming enabled/disabled. This is the only event we get after being
+    // added, so we react to it to trigger a redraw.
+    case BVLDEventUIAreaPlayModeChanged:
+    {
+      self.drawingPointsOnTile = [self calculateDrawingPointsOnTile];
       self.dirty = true;
       break;
     }
@@ -120,7 +188,7 @@ enum DrawingArtifactType
       GoPoint* newToPoint;
       if (connectionInformation.count == 0)
       {
-        newDrawingArtifactType = DrawingArtifactTypeArrow;
+        newDrawingArtifactType = DrawingArtifactTypeNone;
         newFromPoint = nil;
         newToPoint = nil;
       }
@@ -160,6 +228,58 @@ enum DrawingArtifactType
 
       break;
     }
+    case BVLDEventSelectionRectangleDidChange:
+    {
+      NSArray* rectangleInformation = eventInfo;
+
+      enum DrawingArtifactType newDrawingArtifactType;
+      GoPoint* newFromPoint;
+      GoPoint* newToPoint;
+      NSArray* newPointsInSelectionRectangle;
+      if (rectangleInformation.count == 0)
+      {
+        newDrawingArtifactType = DrawingArtifactTypeNone;
+        newFromPoint = nil;
+        newToPoint = nil;
+        newPointsInSelectionRectangle = nil;
+      }
+      else
+      {
+        newDrawingArtifactType = DrawingArtifactTypeSelectionRectangle;
+        newFromPoint = [rectangleInformation objectAtIndex:0];
+        newToPoint = [rectangleInformation objectAtIndex:1];
+        newPointsInSelectionRectangle = [rectangleInformation objectAtIndex:2];
+      }
+
+      if (newDrawingArtifactType == self.drawingArtifactType && newFromPoint == self.fromPoint && newToPoint == self.toPoint)
+        break;
+
+      self.drawingArtifactType = newDrawingArtifactType;
+      self.fromPoint = newFromPoint;
+      self.toPoint = newToPoint;
+
+      CGRect oldDrawingRectangle = self.drawingRectangle;
+      CGRect newDrawingRectangle = [BoardViewDrawingHelper drawingRectForTile:self.tile
+                                                                    fromPoint:self.fromPoint
+                                                                      toPoint:self.toPoint
+                                                                  withMetrics:self.boardViewMetrics];
+
+      // Unlike the comparison done for
+      // BVLDEventInteractiveMarkupBetweenPointsDidChange, here we can use a
+      // simple CGRectEqualToRect comparison because the selection rectangle
+      // is composed of the same uniform layer being drawn on all points in
+      // the rectangle.
+      if (! CGRectEqualToRect(oldDrawingRectangle, newDrawingRectangle))
+      {
+        self.pointsOnTileInSelectionRectangle = [GoUtilities pointsInBothFirstArray:self.drawingPointsOnTile
+                                                                     andSecondArray:newPointsInSelectionRectangle];
+        self.drawingRectangle = newDrawingRectangle;
+        self.dirtyRect = CGRectUnion(oldDrawingRectangle, newDrawingRectangle);
+        self.dirty = true;
+      }
+
+      break;
+    }
     default:
     {
       break;
@@ -183,6 +303,8 @@ enum DrawingArtifactType
   }
 }
 
+#pragma mark - CALayerDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief CALayerDelegate method.
 // -----------------------------------------------------------------------------
@@ -199,33 +321,104 @@ enum DrawingArtifactType
   if (! CGRectIntersectsRect(tileRect, canvasRect))
     return;
 
-  if (self.drawingArtifactType == DrawingArtifactTypeSelection)
+  switch (self.drawingArtifactType)
   {
-    // TODO xxx implement
+    case DrawingArtifactTypeArrow:
+    case DrawingArtifactTypeLine:
+    {
+      [self drawConnection:self.drawingArtifactType
+                 fromPoint:self.fromPoint
+                   toPoint:self.toPoint
+               withContext:context
+                inTileRect:tileRect
+            withCanvasRect:canvasRect];
+      break;
+    }
+    case DrawingArtifactTypeSelectionRectangle:
+    {
+      [self createLayersIfNecessaryWithContext:context];
+
+      [self drawSelectionRectangleWithContext:context
+                                   inTileRect:tileRect];
+      break;
+    }
+    default:
+    {
+      break;
+    }
   }
-  else
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (void) createLayersIfNecessaryWithContext:(CGContextRef)context
+{
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+
+  CGLayerRef selectionRectangleLayer = [cache layerOfType:SelectionRectangleLayerType];
+  if (! selectionRectangleLayer)
   {
-    enum GoMarkupConnection connection = (self.drawingArtifactType == DrawingArtifactTypeArrow)
-      ? GoMarkupConnectionArrow
-      : GoMarkupConnectionLine;
+    selectionRectangleLayer = CreateTerritoryLayer(context, TerritoryMarkupStyleWhite, self.boardViewMetrics);
+    [cache setLayer:selectionRectangleLayer ofType:SelectionRectangleLayerType];
+    CGLayerRelease(selectionRectangleLayer);
+  }
+}
 
-    CGLayerRef layer = CreateConnectionLayer(context,
-                                             connection,
-                                             self.boardViewMetrics.connectionFillColor,
-                                             self.boardViewMetrics.connectionStrokeColor,
-                                             self.fromPoint,
-                                             self.toPoint,
-                                             canvasRect,
-                                             self.boardViewMetrics);
+#pragma mark - Drawing - Selection rectangle
 
-    [BoardViewDrawingHelper drawLayer:layer
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
+- (void) drawSelectionRectangleWithContext:(CGContextRef)context
+                                inTileRect:(CGRect)tileRect
+{
+  BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+  CGLayerRef selectionRectangleLayer = [cache layerOfType:SelectionRectangleLayerType];
+
+  for (GoPoint* pointOnTileInSelectionRectangle in self.pointsOnTileInSelectionRectangle)
+  {
+    [BoardViewDrawingHelper drawLayer:selectionRectangleLayer
                           withContext:context
-                         inCanvasRect:canvasRect
+                      centeredAtPoint:pointOnTileInSelectionRectangle
                        inTileWithRect:tileRect
                           withMetrics:self.boardViewMetrics];
-
-    CGLayerRelease(layer);
   }
+}
+
+#pragma mark - Drawing - Connections
+
+// -----------------------------------------------------------------------------
+/// @brief Draws a connection of type @a drawingArtifactType between the points
+/// @a fromPoint and @a toPoint.
+// -----------------------------------------------------------------------------
+- (void) drawConnection:(enum DrawingArtifactType)drawingArtifactType
+              fromPoint:(GoPoint*)fromPoint
+                toPoint:(GoPoint*)toPoint
+            withContext:(CGContextRef)context
+             inTileRect:(CGRect)tileRect
+         withCanvasRect:(CGRect)canvasRect
+{
+  enum GoMarkupConnection connection = (drawingArtifactType == DrawingArtifactTypeArrow)
+    ? GoMarkupConnectionArrow
+    : GoMarkupConnectionLine;
+
+  CGLayerRef layer = CreateConnectionLayer(context,
+                                           connection,
+                                           self.boardViewMetrics.connectionFillColor,
+                                           self.boardViewMetrics.connectionStrokeColor,
+                                           fromPoint,
+                                           toPoint,
+                                           canvasRect,
+                                           self.boardViewMetrics);
+
+  [BoardViewDrawingHelper drawLayer:layer
+                        withContext:context
+                       inCanvasRect:canvasRect
+                     inTileWithRect:tileRect
+                        withMetrics:self.boardViewMetrics];
+
+  CGLayerRelease(layer);
 }
 
 @end

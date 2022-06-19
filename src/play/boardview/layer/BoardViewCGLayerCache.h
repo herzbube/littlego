@@ -45,6 +45,7 @@ enum LayerType
   WhiteXSymbolLayerType,
   BlackSelectedSymbolLayerType,
   WhiteSelectedSymbolLayerType,
+  SelectionRectangleLayerType,
   MaxLayerType  // Helper enum value used for iteration etc.
 };
 

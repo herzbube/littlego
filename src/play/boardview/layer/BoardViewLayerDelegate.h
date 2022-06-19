@@ -76,6 +76,14 @@ enum BoardViewLayerDelegateEvent
   /// second GoPoint object is the end intersection. This event is sent
   /// continuously with updated information while a pan gesture is ongoing.
   BVLDEventInteractiveMarkupBetweenPointsDidChange,
+  /// @brief The event info object that accompanies this event type is an
+  /// NSArray that contains two GoPoint objects that identify the intersections
+  /// that define the selection rectangle (the intersections are located at
+  /// diagonally opposite corners of the selection rectangle), and an unordered
+  /// NSArray with GoPoint objects that are within the selection rectangle. This
+  /// event is sent continuously with updated information while the pan gesture
+  /// is ongoing.
+  BVLDEventSelectionRectangleDidChange,
 };
 
 

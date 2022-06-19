@@ -170,10 +170,15 @@
     case BVLDEventHandicapPointChanged:
     case BVLDEventMarkupOnPointsDidChange:
     {
-      CGRect drawingRect;
+      bool redrawEverything = false;
+      CGRect drawingRect = CGRectZero;
 
       NSArray* pointsWithChangedMarkup = eventInfo;
-      if (pointsWithChangedMarkup.count == 1)
+      if (pointsWithChangedMarkup.count == 0)
+      {
+        redrawEverything = true;
+      }
+      else if (pointsWithChangedMarkup.count == 1)
       {
         GoPoint* pointThatChanged = pointsWithChangedMarkup.firstObject;
         drawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
@@ -190,10 +195,9 @@
                                                      withMetrics:self.boardViewMetrics];
       }
 
-      if (CGRectIsEmpty(drawingRect))
-        break;
+      if (redrawEverything || ! CGRectIsEmpty(drawingRect))
+        self.dirty = true;
 
-      self.dirty = true;
       break;
     }
     case BVLDEventSelectedSymbolMarkupStyleChanged:

@@ -889,6 +889,31 @@ extern NSString* boardViewCrossHairDidChange;
 /// the NSArray may be deallocated, or its content changed, after the
 /// notification has been delivered.
 extern NSString* boardViewMarkupConnectionDidChange;
+/// @brief Is sent to indicate that the board view changed a selection
+/// rectangle. Is sent after #boardViewPanningGestureWillStart and after
+/// #boardViewPanningGestureWillEnd.
+///
+/// An NSArray object is associated with the notification that contains
+/// information about the new selection rectangle.
+///
+/// If the NSArray is empty this indicates that the selection rectangle is
+/// currently not visible because the gesture that drives the selection
+/// rectangle drawing currently points to a rectangle corner location that is
+/// outside of the board's boundaries. The NSArray is also empty if this is the
+/// final notification sent after #boardViewPanningGestureWillEnd.
+///
+/// If the NSArray is not empty, this indicates that the selection rectangle is
+/// currently visible. The NSArray in this case contains the following objects:
+/// - Object at index position 0: A GoPoint object that identifies the first
+///   corner of the selection rectangle to be displayed.
+/// - Object at index position 1: A GoPoint object that identifies the second
+///   corner, located diagonally opposite to the first corner, of the selection
+///   rectangle to be displayed.
+///
+/// Receivers of the notification must process the NSArray immediately because
+/// the NSArray may be deallocated, or its content changed, after the
+/// notification has been delivered.
+extern NSString* boardViewSelectionRectangleDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -957,10 +982,14 @@ extern NSString* boardViewAnimationDidEnd;
 /// GoNode object that identifies the node with the changed data is associated
 /// with the notification.
 extern NSString* nodeAnnotationDataDidChange;
-/// @brief Is sent to indicate that the markup on one or two intersections has
-/// changed during markup editing. An NSArray object with the GoPoint objects
-/// that identify the intersections is associated with the notification. If the
-/// array contains two GoPoint objects the affected markup is a connection.
+/// @brief Is sent to indicate that the markup on one, two or many intersections
+/// has changed during markup editing. An NSArray object with the GoPoint
+/// objects that identify the intersections is associated with the notification.
+/// If the array contains one GoPoint object, the markup did change on only one
+/// intersection. If the array contains two GoPoint objects, the markup that
+/// was changed is a connection (it was added or removed). If the array is
+/// empty, the markup did change on an entire area and there are too many
+/// intersections to enumerate.
 extern NSString* markupOnPointsDidChange;
 /// @brief Is sent to indicate that all markup data has been discarded during
 /// markup editing. The GoNode object that identifies the node with the discared

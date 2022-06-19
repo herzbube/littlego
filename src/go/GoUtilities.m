@@ -376,6 +376,29 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns an (unordered) list of GoPoint objects that exist in both
+/// @a firstArray and @a secondArray.
+///
+/// Assuming that both @a firstArray and @a secondArray contain GoPoint objects
+/// that define a rectangle (e.g. returned by
+/// pointsInRectangleDelimitedByCornerPoint:oppositeCornerPoint:inGame:()),
+/// this method returns the intersection of the two rectangles.
+// -----------------------------------------------------------------------------
++ (NSArray*) pointsInBothFirstArray:(NSArray*)firstArray
+                     andSecondArray:(NSArray*)secondArray
+{
+  NSMutableArray* pointsInBothArrays = [NSMutableArray array];
+
+  for (GoPoint* point in firstArray)
+  {
+    if ([secondArray containsObject:point])
+      [pointsInBothArrays addObject:point];
+  }
+
+  return pointsInBothArrays;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the default komi value for the combination of @a handicap and
 /// @a scoringSystem.
 ///

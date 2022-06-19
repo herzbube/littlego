@@ -129,6 +129,7 @@ dismissNavigationControllerWithRootViewController:(UIViewController*)rootViewCon
 - (void) handleSetupFirstMove:(enum GoColor)firstMoveColor;
 - (void) handleMarkupEditingAtIntersection:(GoPoint*)point;
 - (void) placeMarkupConnection:(enum GoMarkupConnection)connection fromPoint:(GoPoint*)fromPoint toPoint:(GoPoint*)toPoint;
+- (void) eraseMarkupInRectangleFromPoint:(GoPoint*)fromPoint toPoint:(GoPoint*)toPoint;
 
 - (void) pass:(id)sender;
 - (void) discardBoardPosition:(id)sender;
