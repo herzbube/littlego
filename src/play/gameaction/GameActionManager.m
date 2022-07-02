@@ -46,6 +46,7 @@
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/UiSettingsModel.h"
+#import "../../utility/MarkupUtilities.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIImageAdditions.h"
 
@@ -285,18 +286,47 @@ static GameActionManager* sharedGameActionManager = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Handles a markup editing interaction at the intersection identified
-/// by @a point. Is invoked only while the UI area "Play" is in markup editing
+/// by @a point. @a markupTool and @a markupType define what kind of interaction
+/// takes place. Is invoked only while the UI area "Play" is in markup editing
 /// mode.
 // -----------------------------------------------------------------------------
 - (void) handleMarkupEditingAtIntersection:(GoPoint*)point
+                                markupTool:(enum MarkupTool)markupTool
+                                markupType:(enum MarkupType)markupType
+                            markupWasMoved:(bool)markupWasMoved
 {
   if ([self shouldIgnoreUserInteraction])
   {
-    DDLogWarn(@"%@: Ignoring handleMarkupEditingAtIntersection", self);
+    DDLogWarn(@"%@: Ignoring handleMarkupEditingAtIntersection:markupTool:markupType:markupWasMoved:", self);
     return;
   }
 
-  [[[[HandleMarkupEditingInteractionCommand alloc] initWithPoint:point] autorelease] submit];
+  [[[[HandleMarkupEditingInteractionCommand alloc] initWithPoint:point
+                                                      markupTool:markupTool
+                                                      markupType:markupType
+                                                  markupWasMoved:markupWasMoved] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Handles a markup editing interaction that places a symbol of type
+/// @a symbol at @a point. Is invoked only while the UI area "Play" is in
+/// markup editing mode.
+// -----------------------------------------------------------------------------
+- (void) placeMarkupSymbol:(enum GoMarkupSymbol)symbol
+                   atPoint:(GoPoint*)point
+            markupWasMoved:(bool)markupWasMoved
+{
+  if ([self shouldIgnoreUserInteraction])
+  {
+    DDLogWarn(@"%@: Ignoring placeMarkupSymbol:atPoint:markupWasMoved:", self);
+    return;
+  }
+
+  enum MarkupType markupType = [MarkupUtilities markupTypeForSymbol:symbol];
+  [[[[HandleMarkupEditingInteractionCommand alloc] initWithPoint:point
+                                                      markupTool:MarkupToolSymbol
+                                                      markupType:markupType
+                                                  markupWasMoved:markupWasMoved] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -304,15 +334,48 @@ static GameActionManager* sharedGameActionManager = nil;
 /// type @a connection starting at @a fromPoint and going to @a endPoint. Is
 /// invoked only while the UI area "Play" is in markup editing mode.
 // -----------------------------------------------------------------------------
-- (void) placeMarkupConnection:(enum GoMarkupConnection)connection fromPoint:(GoPoint*)fromPoint toPoint:(GoPoint*)toPoint
+- (void) placeMarkupConnection:(enum GoMarkupConnection)connection
+                     fromPoint:(GoPoint*)fromPoint
+                       toPoint:(GoPoint*)toPoint
+                markupWasMoved:(bool)markupWasMoved
 {
   if ([self shouldIgnoreUserInteraction])
   {
-    DDLogWarn(@"%@: Ignoring placeMarkupConnection:fromPoint:toPoint:", self);
+    DDLogWarn(@"%@: Ignoring placeMarkupConnection:fromPoint:toPoint:markupWasMoved:", self);
     return;
   }
 
-  [[[[HandleMarkupEditingInteractionCommand alloc] initWithStartPoint:fromPoint endPoint:toPoint] autorelease] submit];
+  enum MarkupType markupType = [MarkupUtilities markupTypeForConnection:connection];
+  [[[[HandleMarkupEditingInteractionCommand alloc] initWithStartPoint:fromPoint
+                                                             endPoint:toPoint
+                                                           markupTool:MarkupToolConnection
+                                                           markupType:markupType
+                                                       markupWasMoved:markupWasMoved] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Handles a markup editing interaction that places a label of type
+/// @a label with text @a labelText at @a point. Is invoked only while the
+/// UI area "Play" is in markup editing mode.
+// -----------------------------------------------------------------------------
+- (void) placeMarkupLabel:(enum GoMarkupLabel)label
+            withLabelText:(NSString*)labelText
+                  atPoint:(GoPoint*)point
+           markupWasMoved:(bool)markupWasMoved;
+{
+  if ([self shouldIgnoreUserInteraction])
+  {
+    DDLogWarn(@"%@: Ignoring placeMarkupLabel:withLabelText:atPoint:markupWasMoved:", self);
+    return;
+  }
+
+  enum MarkupType markupType = [MarkupUtilities markupTypeForLabel:label];
+  enum MarkupTool markupTool = [MarkupUtilities markupToolForMarkupType:markupType];
+  [[[[HandleMarkupEditingInteractionCommand alloc] initWithPoint:point
+                                                       labelText:labelText
+                                                      markupTool:markupTool
+                                                      markupType:markupType
+                                                  markupWasMoved:markupWasMoved] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
@@ -329,7 +392,11 @@ static GameActionManager* sharedGameActionManager = nil;
     return;
   }
 
-  [[[[HandleMarkupEditingInteractionCommand alloc] initWithStartPoint:fromPoint endPoint:toPoint] autorelease] submit];
+  [[[[HandleMarkupEditingInteractionCommand alloc] initWithStartPoint:fromPoint
+                                                             endPoint:toPoint
+                                                           markupTool:MarkupToolEraser
+                                                           markupType:MarkupTypeEraser
+                                                       markupWasMoved:false] autorelease] submit];
 }
 
 #pragma mark - Mapping of game actions to handler methods

@@ -30,6 +30,9 @@
 + (void) throwInvalidArgumentExceptionWithFormat:(NSString*)format
                                    argumentValue:(int)argumentValue;
 + (void) throwInvalidArgumentExceptionWithErrorMessage:(NSString*)errorMessage;
++ (void) throwInternalInconsistencyExceptionWithFormat:(NSString*)format
+                                         argumentValue:(int)argumentValue;
++ (void) throwInternalInconsistencyExceptionWithErrorMessage:(NSString*)errorMessage;
 + (void) throwAbstractMethodException;
 + (void) throwNotImplementedException;
 

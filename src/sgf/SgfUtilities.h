@@ -23,7 +23,7 @@
 /// @brief The SgfUtilities class is a container for various utility functions
 /// related to working with SGF data.
 ///
-/// @ingroup go
+/// @ingroup sgf
 ///
 /// All functions in SgfUtilities are class methods, so there is no need to
 /// create an instance of SgfUtilities.

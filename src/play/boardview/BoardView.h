@@ -32,12 +32,18 @@
 }
 
 - (BoardViewIntersection) intersectionNear:(CGPoint)coordinates;
-- (void) moveCrossHairTo:(GoPoint*)point
-             isLegalMove:(bool)isLegalMove
-         isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason;
+- (void) moveCrossHairToPoint:(GoPoint*)point;
+- (void) moveCrossHairWithStoneTo:(GoPoint*)point
+                      isLegalMove:(bool)isLegalMove
+                  isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason;
+- (void) moveCrossHairWithSymbol:(enum GoMarkupSymbol)symbol
+                         toPoint:(GoPoint*)point;
 - (void) moveMarkupConnection:(enum GoMarkupConnection)connection
                withStartPoint:(GoPoint*)startPoint
                    toEndPoint:(GoPoint*)endPoint;
+- (void) moveCrossHairWithLabel:(enum GoMarkupLabel)label
+                      labelText:(NSString*)labelText
+                        toPoint:(GoPoint*)point;
 - (void) updateSelectionRectangleFromPoint:(GoPoint*)fromPoint
                                    toPoint:(GoPoint*)toPoint;
 

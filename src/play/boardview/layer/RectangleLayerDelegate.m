@@ -179,7 +179,7 @@ enum DrawingArtifactType
       self.dirty = true;
       break;
     }
-    case BVLDEventInteractiveMarkupBetweenPointsDidChange:
+    case BVLDEventMarkupConnectionDidMove:
     {
       NSArray* connectionInformation = eventInfo;
 

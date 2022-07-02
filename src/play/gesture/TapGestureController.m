@@ -19,6 +19,7 @@
 #import "TapGestureController.h"
 #import "../gameaction/GameActionManager.h"
 #import "../boardview/BoardView.h"
+#import "../model/MarkupModel.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
@@ -137,7 +138,11 @@
     }
     case UIAreaPlayModeEditMarkup:
     {
-      [gameActionManager handleMarkupEditingAtIntersection:intersection.point];
+      MarkupModel* markupModel = appDelegate.markupModel;
+      [gameActionManager handleMarkupEditingAtIntersection:intersection.point
+                                                markupTool:markupModel.markupTool
+                                                markupType:markupModel.markupType
+                                            markupWasMoved:false];
       break;
     }
     default:

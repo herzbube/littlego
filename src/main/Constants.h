@@ -613,7 +613,7 @@ enum GoMarkupSymbol
   GoMarkupSymbolSquare,     ///< @brief A square symbol. Corresponds to the SGF property SQ.
   GoMarkupSymbolTriangle,   ///< @brief A triangle symbol. Corresponds to the SGF property TR.
   GoMarkupSymbolX,          ///< @brief An "X" symbol. Corresponds to the SGF property MA.
-  GoMarkupSymbolSelected    ///< @brief Markup the point as "selected". Corresponds to the SGF property MA.
+  GoMarkupSymbolSelected,   ///< @brief Markup the point as "selected". Corresponds to the SGF property MA.
 };
 
 /// @brief Enumerates markup connections that can be drawn between intersections
@@ -622,6 +622,15 @@ enum GoMarkupConnection
 {
   GoMarkupConnectionArrow,   ///< @brief An arrow pointing from intersection A to B. Corresponds to the SGF property AR.
   GoMarkupConnectionLine,    ///< @brief A simple line connecting intersection A and B. Corresponds to the SGF property LN.
+};
+
+/// @brief Enumerates markup labels that can be draw on intersections on the
+/// Go board.
+enum GoMarkupLabel
+{
+  GoMarkupLabelMarkerNumber,   ///< @brief A number marker label.
+  GoMarkupLabelMarkerLetter,   ///< @brief A letter marker label.
+  GoMarkupLabelLabel,          ///< @brief A label that is neither a number marker nor a letter marker.
 };
 
 extern const enum GoGameType gDefaultGameType;
@@ -833,62 +842,68 @@ extern NSString* boardViewPanningGestureWillStart;
 /// @brief Is sent to indicate that the board view is about to end a panning
 /// gesture.
 extern NSString* boardViewPanningGestureWillEnd;
-/// @brief Is sent to indicate that the board view changed the cross-hair,
-/// typically to display it at a new intersection. Is sent after
-/// #boardViewPanningGestureWillStart and after #boardViewPanningGestureWillEnd.
+/// @brief Is sent to indicate that the board view changed the location of the
+/// stone being placed, typically to display it at a new intersection. Is sent
+/// after #boardViewPanningGestureWillStart and after
+/// #boardViewPanningGestureWillEnd.
 ///
 /// An NSArray object is associated with the notification that contains
-/// information about the new cross-hair location.
+/// information about the new stone location.
 ///
-/// If the NSArray is empty this indicates that the cross-hair is currently not
-/// visible because the gesture that drives the cross-hair is currently outside
-/// of the board's boundaries. The NSArray is also empty if this is the final
-/// notification sent after #boardViewPanningGestureWillEnd.
+/// If the NSArray is empty this indicates that the stone is currently not
+/// visible because the gesture that drives the stone placement is currently
+/// outside of the board's boundaries. The NSArray is also empty if this is the
+/// final notification sent after #boardViewPanningGestureWillEnd.
 ///
-/// If the NSArray is not empty, this indicates that the cross-hair is currently
+/// If the NSArray is not empty, this indicates that the stone is currently
 /// visible. The NSArray in this case contains the following objects:
 /// - Object at index position 0: A GoPoint object that identifies the
-///   intersection at which the cross-hair is currently displayed.
+///   intersection at which the stone is currently displayed.
 /// - Object at index position 1: An NSNumber that holds a boolean value,
-///   indicating whether a move that would place a stone at the cross-hair
-///   intersection would be legal or illegal.
+///   indicating whether a move that would place the stone at the intersection
+///   where it's currently displayed would be legal or illegal.
 /// - Object at index position 2: An NSNumber that holds an int value that is
 ///   actually a value from the enumeration #GoMoveIsIllegalReasonUnknown. If
-///   placing a stone at the cross-hair intersection would be legal the NSNumber
-///   holds the value #GoMoveIsIllegalReasonUnknown, otherwise it holds the
-///   actual reason why the move would be illegal.
+///   placing a stone at the intersection where it's currently displayed would
+///   be legal the NSNumber holds the value #GoMoveIsIllegalReasonUnknown,
+///   otherwise it holds the actual reason why the move would be illegal.
 ///
 /// Receivers of the notification must process the NSArray immediately because
 /// the NSArray may be deallocated, or its content changed, after the
 /// notification has been delivered.
-extern NSString* boardViewCrossHairDidChange;
-/// @brief Is sent to indicate that the board view changed a markup connection,
-/// typically to display it with a new end point. Is sent after
+extern NSString* boardViewStoneLocationDidChange;
+/// @brief Is sent to indicate that the board view changed the location of a
+/// markup element, typically to display it at a new intersection. Is sent after
 /// #boardViewPanningGestureWillStart and after #boardViewPanningGestureWillEnd.
 ///
 /// An NSArray object is associated with the notification that contains
-/// information about the new markup connection.
+/// information about the new markup element location.
 ///
-/// If the NSArray is empty this indicates that the connection is currently not
-/// visible because the gesture that drives the connection drawing currently
-/// points to a connection end point location that is outside of the board's
-/// boundaries. The NSArray is also empty if this is the final notification sent
-/// after #boardViewPanningGestureWillEnd.
+/// If the NSArray is empty this indicates that the markup element is currently
+/// not visible because the gesture that drives the markup placement currently
+/// points to a location that is outside of the board's boundaries. The NSArray
+/// is also empty if this is the final notification sent after
+/// #boardViewPanningGestureWillEnd.
 ///
-/// If the NSArray is not empty, this indicates that the connection is currently
-/// visible. The NSArray in this case contains the following objects:
+/// If the NSArray is not empty, this indicates that the markup element is
+/// currently visible. The NSArray in this case contains the following objects:
 /// - Object at index position 0: An NSNumber object that holds an @e int value
-///   that is actually a value from the enumeration #GoMarkupConnection. This
-///   identifes the type of the connection to be displayed.
-/// - Object at index position 1: A GoPoint object that identifies the
-///   intersection that is the starting point of the connection to be displayed.
-/// - Object at index position 2: A GoPoint object that identifies the
-///   intersection that is the end point of the connection to be displayed.
+///   that is actually a value from the enumeration #GoMarkupType. This
+///   identifes the type of the markup element to be displayed.
+/// - For markup elements of type symbol, marker or label: Object at index
+///   position 1: A GoPoint object that identifies the intersection on which the
+///   symbol, marker or label is displayed.
+/// - For markup elements of type connection
+///   - Object at index position 1: A GoPoint object that identifies the
+///     intersection that is the starting point of the connection to be
+///     displayed.
+///   - Object at index position 2: A GoPoint object that identifies the
+///     intersection that is the end point of the connection to be displayed.
 ///
 /// Receivers of the notification must process the NSArray immediately because
 /// the NSArray may be deallocated, or its content changed, after the
 /// notification has been delivered.
-extern NSString* boardViewMarkupConnectionDidChange;
+extern NSString* boardViewMarkupLocationDidChange;
 /// @brief Is sent to indicate that the board view changed a selection
 /// rectangle. Is sent after #boardViewPanningGestureWillStart and after
 /// #boardViewPanningGestureWillEnd.
@@ -982,14 +997,27 @@ extern NSString* boardViewAnimationDidEnd;
 /// GoNode object that identifies the node with the changed data is associated
 /// with the notification.
 extern NSString* nodeAnnotationDataDidChange;
-/// @brief Is sent to indicate that the markup on one, two or many intersections
-/// has changed during markup editing. An NSArray object with the GoPoint
-/// objects that identify the intersections is associated with the notification.
-/// If the array contains one GoPoint object, the markup did change on only one
-/// intersection. If the array contains two GoPoint objects, the markup that
-/// was changed is a connection (it was added or removed). If the array is
-/// empty, the markup did change on an entire area and there are too many
-/// intersections to enumerate.
+/// @brief Is sent to indicate that the markup on at least one intersection has
+/// changed during markup editing.
+///
+/// An NSArray object is associated with the notification that contains
+/// information about the intersections on which markup did change.
+///
+/// If the NSArray contains a single object, this is a GoPoint object
+/// identifying the intersection on which markup was added or removed.
+///
+/// If the NSArray contains 3 objects, the markup that was added or removed
+/// was a connection. The NSArray in this case contains the following objects:
+/// - Objects at index positions 0 and 1: Two GoPoint objects that identify the
+///   start and end points of the connection.
+/// - Object at index position 2: An NSArray with all GoPoint objects in the
+///   rectangle defined by the connection's start and end points. The start/end
+///   points are on opposite corners of the rectangle. This information can be
+///   used to optimize drawing.
+///
+/// If the NSArray is empty, the markup did change on two or more intersections
+/// that potentionally do not form a connected area, so that there is no benefit
+/// in enumerating the GoPoint objects that identify the intersections.
 extern NSString* markupOnPointsDidChange;
 /// @brief Is sent to indicate that all markup data has been discarded during
 /// markup editing. The GoNode object that identifies the node with the discared

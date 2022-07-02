@@ -18,7 +18,6 @@
 // Project includes
 #import "HandleMarkupEditingInteractionCommand.h"
 #import "../backup/BackupGameToSgfCommand.h"
-#import "../../play/model/MarkupModel.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoBoardPosition.h"
@@ -31,12 +30,7 @@
 #import "../../shared/ApplicationStateManager.h"
 #import "../../ui/UiSettingsModel.h"
 #import "../../ui/UIViewControllerAdditions.h"
-#import "../../utility/ExceptionUtility.h"
-
-// C++ standard library
-#include <set>
-#include <utility>  // for std::pair
-#include <vector>
+#import "../../utility/MarkupUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -45,22 +39,13 @@
 // -----------------------------------------------------------------------------
 @interface HandleMarkupEditingInteractionCommand()
 @property(nonatomic, retain) GoPoint* point;
+@property(nonatomic, retain) NSString* labelText;
 @property(nonatomic, retain) GoPoint* startPoint;
 @property(nonatomic, retain) GoPoint* endPoint;
+@property(nonatomic, assign) enum MarkupTool markupTool;
+@property(nonatomic, assign) enum MarkupType markupType;
+@property(nonatomic, assign) bool markupWasMoved;
 @end
-
-
-// First invocation of the HandleMarkupEditingInteractionCommand initializer
-// will initialize these static variables.
-static unichar charUppercaseA = 0;
-static unichar charuppercaseZ = 0;
-static unichar charLowercaseA = 0;
-static unichar charLowercaseZ = 0;
-static unichar charZero = 0;
-static unichar charNine = 0;
-static int minimumNumberMarkerValue = 0;
-static int maximumNumberMarkerValue = 0;
-static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 
 
 @implementation HandleMarkupEditingInteractionCommand
@@ -68,62 +53,90 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes static variables if they have not yet been initialized.
-// -----------------------------------------------------------------------------
-+ (void) setupStaticVariablesIfNotYetSetup
-{
-  if (charUppercaseA != 0)
-    return;
-
-  charUppercaseA = [@"A" characterAtIndex:0];
-  charuppercaseZ = [@"Z" characterAtIndex:0];
-  charLowercaseA = [@"a" characterAtIndex:0];
-  charLowercaseZ = [@"z" characterAtIndex:0];
-  charZero = [@"0" characterAtIndex:0];
-  charNine = [@"9" characterAtIndex:0];
-  minimumNumberMarkerValue = 1;
-  maximumNumberMarkerValue = 999;
-  letterMarkerValueRanges.push_back(std::make_pair('A', 'Z'));
-  letterMarkerValueRanges.push_back(std::make_pair('a', 'z'));
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Initializes a HandleMarkupEditingInteractionCommand object.
+/// @brief Initializes a HandleMarkupEditingInteractionCommand object that
+/// handles a markup editing interaction on @a point. The type of interaction
+/// is defined by @a markupTool and @a markupType. @a markupWasMoved indicates
+/// whether the markup is new or has been moved.
 ///
 /// @note This is the designated initializer of
 /// HandleMarkupEditingInteractionCommand.
 // -----------------------------------------------------------------------------
 - (id) initWithPoint:(GoPoint*)point
+          markupTool:(enum MarkupTool)markupTool
+          markupType:(enum MarkupType)markupType
+      markupWasMoved:(bool)markupWasMoved
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];
   if (! self)
     return nil;
 
-  [HandleMarkupEditingInteractionCommand setupStaticVariablesIfNotYetSetup];
-
   self.point = point;
+  self.labelText = nil;
   self.startPoint = nil;
   self.endPoint = nil;
+  self.markupTool = markupTool;
+  self.markupType = markupType;
+  self.markupWasMoved = markupWasMoved;
 
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a HandleMarkupEditingInteractionCommand object.
+/// @brief Initializes a HandleMarkupEditingInteractionCommand object that
+/// places a marker or label with @a labelText at @a point. The type of
+/// interaction is defined by @a markupTool and @a markupType. @a markupWasMoved
+/// indicates whether the markup is new or has been moved.
+///
+/// @note This is the designated initializer of
+/// HandleMarkupEditingInteractionCommand.
 // -----------------------------------------------------------------------------
-- (id) initWithStartPoint:(GoPoint*)startPoint endPoint:(GoPoint*)endPoint
+- (id) initWithPoint:(GoPoint*)point
+           labelText:(NSString*)labelText
+          markupTool:(enum MarkupTool)markupTool
+          markupType:(enum MarkupType)markupType
+      markupWasMoved:(bool)markupWasMoved
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];
   if (! self)
     return nil;
 
-  [HandleMarkupEditingInteractionCommand setupStaticVariablesIfNotYetSetup];
+  self.point = point;
+  self.labelText = labelText;
+  self.startPoint = nil;
+  self.endPoint = nil;
+  self.markupTool = markupTool;
+  self.markupType = markupType;
+  self.markupWasMoved = markupWasMoved;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a HandleMarkupEditingInteractionCommand object that
+/// handles a markup editing interaction from @a startPoint to @a endPoint.
+/// The type of interaction is defined by @a markupTool and @a markupType.
+//  @a markupWasMoved indicates whether the markup is new or has been moved.
+// -----------------------------------------------------------------------------
+- (id) initWithStartPoint:(GoPoint*)startPoint
+                 endPoint:(GoPoint*)endPoint
+               markupTool:(enum MarkupTool)markupTool
+               markupType:(enum MarkupType)markupType
+           markupWasMoved:(bool)markupWasMoved
+{
+  // Call designated initializer of superclass (CommandBase)
+  self = [super init];
+  if (! self)
+    return nil;
 
   self.point = nil;
+  self.labelText = nil;
   self.startPoint = startPoint;
   self.endPoint = endPoint;
+  self.markupTool = markupTool;
+  self.markupType = markupType;
+  self.markupWasMoved = markupWasMoved;
 
   return self;
 }
@@ -135,6 +148,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 - (void) dealloc
 {
   self.point = nil;
+  self.labelText = nil;
   self.startPoint = nil;
   self.endPoint = nil;
 
@@ -185,21 +199,37 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
     currentNode.goNodeMarkup = nodeMarkup;
   }
 
-  MarkupModel* markupModel = [ApplicationDelegate sharedDelegate].markupModel;
   if (self.point)
   {
-    if (markupModel.markupTool == MarkupToolLabel)
+    if (self.markupTool == MarkupToolLabel)
     {
-      [self handleEnterNewLabelTextOnPoint:self.point
-                           withMarkupModel:markupModel
-                                      node:currentNode];
+      if (self.labelText)
+      {
+        [self handleMarkupEditingInteractionOnPoint:self.point
+                                optionalSecondPoint:nil
+                                     withMarkupTool:self.markupTool
+                                         markupType:self.markupType
+                                          labelText:self.labelText
+                                     markupWasMoved:self.markupWasMoved
+                                               node:currentNode];
+      }
+      else
+      {
+        [self handleEnterNewLabelTextOnPoint:self.point
+                              withMarkupTool:self.markupTool
+                                  markupType:self.markupType
+                              markupWasMoved:self.markupWasMoved
+                                        node:currentNode];
+      }
     }
     else
     {
       [self handleMarkupEditingInteractionOnPoint:self.point
                               optionalSecondPoint:nil
-                                  withMarkupModel:markupModel
+                                   withMarkupTool:self.markupTool
+                                       markupType:self.markupType
                                         labelText:nil
+                                   markupWasMoved:self.markupWasMoved
                                              node:currentNode];
     }
   }
@@ -207,8 +237,10 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   {
     [self handleMarkupEditingInteractionOnPoint:self.startPoint
                             optionalSecondPoint:self.endPoint
-                                withMarkupModel:markupModel
+                                 withMarkupTool:self.markupTool
+                                     markupType:self.markupType
                                       labelText:nil
+                                 markupWasMoved:self.markupWasMoved
                                            node:currentNode];
   }
 
@@ -224,8 +256,10 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 // -----------------------------------------------------------------------------
 - (void) handleMarkupEditingInteractionOnPoint:(GoPoint*)point
                            optionalSecondPoint:(GoPoint*)secondPoint
-                               withMarkupModel:(MarkupModel*)markupModel
+                                withMarkupTool:(enum MarkupTool)markupTool
+                                    markupType:(enum MarkupType)markupType
                                      labelText:(NSString*)labelText
+                                markupWasMoved:(bool)markupWasMoved
                                           node:(GoNode*)node
 {
   bool applicationStateDidChange = false;
@@ -239,25 +273,29 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 
     NSArray* pointsWithChangedMarkup = nil;
 
-    switch (markupModel.markupTool)
+    switch (markupTool)
     {
       case MarkupToolSymbol:
       {
-        bool markupDataDidChange = [self handlePlaceSymbol:markupModel.markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
+        bool markupDataDidChange = [self handlePlaceSymbol:markupType onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
         if (markupDataDidChange)
           pointsWithChangedMarkup = @[point];
         break;
       }
       case MarkupToolMarker:
       {
-        bool markupDataDidChange = [self handlePlaceMarker:markupModel.markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
+        bool markupDataDidChange;
+        if (labelText)
+          markupDataDidChange = [self handlePlaceLabel:labelText onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
+        else
+          markupDataDidChange = [self handlePlaceMarker:markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
         if (markupDataDidChange)
           pointsWithChangedMarkup = @[point];
         break;
       }
       case MarkupToolLabel:
       {
-        bool markupDataDidChange = [self handlePlaceLabel:labelText onIntersection:intersection withNodeMarkup:nodeMarkup];
+        bool markupDataDidChange = [self handlePlaceLabel:labelText onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
         if (markupDataDidChange)
           pointsWithChangedMarkup = @[point];
         break;
@@ -268,7 +306,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
         {
           NSString* fromIntersection = intersection;
           NSString* toIntersection = secondPoint.vertex.string;
-          bool markupDataDidChange = [self handlePlaceConnection:markupModel.markupType fromIntersection:fromIntersection toIntersection:toIntersection withNodeMarkup:nodeMarkup];
+          bool markupDataDidChange = [self handlePlaceConnection:markupType fromIntersection:fromIntersection toIntersection:toIntersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
           if (markupDataDidChange)
             pointsWithChangedMarkup = @[point, secondPoint];
         }
@@ -295,7 +333,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
       default:
       {
         applicationStateDidChange = false;
-        NSString* errorMessage = [NSString stringWithFormat:@"Failed to handle markup editing interaction, found unsupported markup tool: %d (markup type = %d)", markupModel.markupTool, markupModel.markupType];
+        NSString* errorMessage = [NSString stringWithFormat:@"Failed to handle markup editing interaction, unsupported markup tool: %d (markup type = %d)", markupTool, markupType];
         DDLogError(@"%@: %@", self, errorMessage);
         NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                          reason:errorMessage
@@ -310,7 +348,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
     if (pointsWithChangedMarkup)
     {
       applicationStateDidChange = true;
-      [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+      [self postMarkupOnPointsDidChangeNotification:pointsWithChangedMarkup];
       [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
     }
   }
@@ -320,6 +358,31 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
       [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Posts #markupOnPointsDidChange to the global notification center
+/// with an appropriate notification object.
+// -----------------------------------------------------------------------------
+- (void) postMarkupOnPointsDidChangeNotification:(NSArray*)pointsWithChangedMarkup
+{
+  NSArray* notificationObject;
+
+  if (pointsWithChangedMarkup.count == 2)
+  {
+    GoPoint* connectionFromPoint = pointsWithChangedMarkup.firstObject;
+    GoPoint* connectionToPoint = pointsWithChangedMarkup.lastObject;
+    NSArray* pointsInConnectionRectangle = [GoUtilities pointsInRectangleDelimitedByCornerPoint:connectionFromPoint
+                                                                            oppositeCornerPoint:connectionToPoint
+                                                                                         inGame:[GoGame sharedGame]];
+    notificationObject = @[connectionFromPoint, connectionToPoint, pointsInConnectionRectangle];
+  }
+  else
+  {
+    notificationObject = pointsWithChangedMarkup;
+  }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:notificationObject];
 }
 
 // -----------------------------------------------------------------------------
@@ -395,11 +458,12 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 - (bool) handlePlaceSymbol:(enum MarkupType)markupType
             onIntersection:(NSString*)intersection
             withNodeMarkup:(GoNodeMarkup*)nodeMarkup
+            markupWasMoved:(bool)markupWasMoved
 {
   // TODO xxx user preference
   bool exclusiveSymbols = true;
 
-  enum GoMarkupSymbol symbolForSelectedMarkupType = [self symbolForMarkupType:markupType];
+  enum GoMarkupSymbol symbolForSelectedMarkupType = [MarkupUtilities symbolForMarkupType:markupType];
   NSSet* symbolsThatCannotBeUsed = [NSSet set];
   bool symbolExists = false;
   enum GoMarkupSymbol existingSymbol = GoMarkupSymbolCircle;  // dummy initialize
@@ -411,7 +475,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
     if (existingSymbolAsNumber)
     {
       symbolExists = true;
-      existingSymbol = static_cast<GoMarkupSymbol>(existingSymbolAsNumber.intValue);
+      existingSymbol = existingSymbolAsNumber.intValue;
     }
 
     if (exclusiveSymbols)
@@ -423,20 +487,25 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   enum GoMarkupSymbol newSymbol;
   bool canUseNewSymbol = false;
 
-  if (symbolExists)
+  if (markupWasMoved)
+  {
+    newSymbol = symbolForSelectedMarkupType;
+    canUseNewSymbol = true;
+  }
+  else if (symbolExists)
   {
     // Cycle through the symbols, starting with the next symbol after the
     // existing one. When we reach the selected markup type without having found
     // a free symbol, we delete the existing symbol, even if there are free
     // symbols afterwards. This allows the user to cycle through the free
     // symbols and eventually get rid of the existing symbol.
-    newSymbol = [self nextSymbolAfterSymbol:existingSymbol];
+    newSymbol = [MarkupUtilities nextSymbolAfterSymbol:existingSymbol];
 
     while (newSymbol != symbolForSelectedMarkupType && ! canUseNewSymbol)
     {
       NSNumber* newSymbolAsNumber = [NSNumber numberWithInt:newSymbol];
       if ([symbolsThatCannotBeUsed containsObject:newSymbolAsNumber])
-        newSymbol = [self nextSymbolAfterSymbol:newSymbol];
+        newSymbol = [MarkupUtilities nextSymbolAfterSymbol:newSymbol];
       else
         canUseNewSymbol = true;
     }
@@ -454,7 +523,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
     {
       NSNumber* newSymbolAsNumber = [NSNumber numberWithInt:newSymbol];
       if ([symbolsThatCannotBeUsed containsObject:newSymbolAsNumber])
-        newSymbol = [self nextSymbolAfterSymbol:newSymbol];
+        newSymbol = [MarkupUtilities nextSymbolAfterSymbol:newSymbol];
       else
         canUseNewSymbol = true;
     }
@@ -475,58 +544,6 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   return markupDataDidChange;
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Returns the next symbol in enumeration #GoMarkupSymbol after
-/// @a symbol. Returns the first symbol when @a symbol is the last symbol.
-// -----------------------------------------------------------------------------
-- (enum GoMarkupSymbol) nextSymbolAfterSymbol:(enum GoMarkupSymbol)symbol
-{
-  switch (symbol)
-  {
-    case GoMarkupSymbolCircle:
-      return GoMarkupSymbolSquare;
-    case GoMarkupSymbolSquare:
-      return GoMarkupSymbolTriangle;
-    case GoMarkupSymbolTriangle:
-      return GoMarkupSymbolX;
-    case GoMarkupSymbolX:
-      return GoMarkupSymbolSelected;
-    case GoMarkupSymbolSelected:
-      return GoMarkupSymbolCircle;
-    default:
-      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"nextSymbolAfterSymbol failed: invalid symbol %d" argumentValue:symbol];
-      return GoMarkupSymbolCircle;  // dummy return to make compiler happy
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Maps a value @a markupType from the enumeration #MarkupType to a
-/// a value from the enumeration #GoMarkupSymbol and returns the mapped value.
-/// Raises an exception if mapping is not possible.
-///
-/// @exception InvalidArgumentException Is thrown if @a markupType cannot be
-/// mapped. Only markup types for symbols can be mapped.
-// -----------------------------------------------------------------------------
-- (enum GoMarkupSymbol) symbolForMarkupType:(enum MarkupType)markupType
-{
-  switch (markupType)
-  {
-    case MarkupTypeSymbolCircle:
-      return GoMarkupSymbolCircle;
-    case MarkupTypeSymbolSquare:
-      return GoMarkupSymbolSquare;
-    case MarkupTypeSymbolTriangle:
-      return GoMarkupSymbolTriangle;
-    case MarkupTypeSymbolX:
-      return GoMarkupSymbolX;
-    case MarkupTypeSymbolSelected:
-      return GoMarkupSymbolSelected;
-    default:
-      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"symbolForMarkupType failed: invalid markup type %d" argumentValue:markupType];
-      return GoMarkupSymbolCircle;  // dummy return to make compiler happy
-  }
-}
-
 #pragma mark - Place marker
 
 // -----------------------------------------------------------------------------
@@ -540,195 +557,33 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
             withNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
   bool markerOfRequestedTypeExists = false;
-  char nextFreeLetterMarkerValue = letterMarkerValueRanges.front().first;
-  int nextFreeNumberMarkerValue = minimumNumberMarkerValue;
-  bool canUseNextFreeMarkerValue = false;
-
   NSDictionary* labels = nodeMarkup.labels;
   if (labels)
   {
     NSString* label = labels[intersection];
     if (label)
     {
-      char letterMarkerValue;
-      int numberMarkerValue;
-      enum MarkupType markupTypeOfLabel = [self markupTypeOfLabel:label
-                                                letterMarkerValue:&letterMarkerValue
-                                                numberMarkerValue:&numberMarkerValue];
+      enum MarkupType markupTypeOfLabel = [MarkupUtilities markupTypeOfLabel:label];
       markerOfRequestedTypeExists = (markupType == markupTypeOfLabel);
     }
-    
-    std::set<char> usedLetterMarkerValues;
-    std::set<char> usedNumberMarkerValues;
-    for (NSString* label in labels.allValues)
-    {
-      char letterMarkerValue;
-      int numberMarkerValue;
-      enum MarkupType markupTypeOfLabel = [self markupTypeOfLabel:label
-                                                letterMarkerValue:&letterMarkerValue
-                                                numberMarkerValue:&numberMarkerValue];
-      if (markupTypeOfLabel == MarkupTypeMarkerLetter)
-        usedLetterMarkerValues.insert(letterMarkerValue);
-      else if (markupTypeOfLabel == MarkupTypeMarkerNumber)
-        usedNumberMarkerValues.insert(numberMarkerValue);
-    }
-
-    if (markupType == MarkupTypeMarkerLetter)
-    {
-      for (auto letterMarkerValueRange : letterMarkerValueRanges)
-      {
-        nextFreeLetterMarkerValue = letterMarkerValueRange.first;
-        while (nextFreeLetterMarkerValue <= letterMarkerValueRange.second && ! canUseNextFreeMarkerValue)
-        {
-          if (usedLetterMarkerValues.find(nextFreeLetterMarkerValue) != usedLetterMarkerValues.end())
-            nextFreeLetterMarkerValue++;
-          else
-            canUseNextFreeMarkerValue = true;
-        }
-
-        if (canUseNextFreeMarkerValue)
-          break;
-      }
-    }
-    else
-    {
-      while (nextFreeNumberMarkerValue <= maximumNumberMarkerValue && ! canUseNextFreeMarkerValue)
-      {
-        if (usedNumberMarkerValues.find(nextFreeNumberMarkerValue) != usedNumberMarkerValues.end())
-          nextFreeNumberMarkerValue++;
-        else
-          canUseNextFreeMarkerValue = true;
-      }
-    }
   }
-  else
-  {
-    canUseNextFreeMarkerValue = true;
-  }
+
+  NSString* nextFreeMarker = [MarkupUtilities nextFreeMarkerOfType:markupType
+                                                      onIntersection:intersection
+                                                        inNodeMarkup:nodeMarkup];
 
   bool markupDataDidChange = true;
-  if (canUseNextFreeMarkerValue)
-  {
-    NSString* newMarker;
-    if (markupType == MarkupTypeMarkerLetter)
-      newMarker = [NSString stringWithFormat:@"%c" , nextFreeLetterMarkerValue];
-    else
-      newMarker = [NSString stringWithFormat:@"%d" , nextFreeNumberMarkerValue];
-
-    [nodeMarkup setLabel:newMarker atVertex:intersection];
-  }
+  if (nextFreeMarker)
+    [nodeMarkup setLabel:nextFreeMarker atVertex:intersection];
   else if (markerOfRequestedTypeExists)
-  {
     [nodeMarkup removeLabelAtVertex:intersection];
-  }
   else
-  {
     markupDataDidChange = false;
-  }
 
   if (markupDataDidChange)
     [nodeMarkup removeSymbolAtVertex:intersection];
 
   return markupDataDidChange;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the markup type that @a label corresponds to and fills one
-/// of the out variables if appropriate.
-///
-/// If @a label contains a single letter A-Z or a-z from the latin alphabet,
-/// the return value is #MarkupTypeMarkerLetter and this method fills the out
-/// variable @a letterMarkerValue with the char value of the single letter.
-///
-/// If @a label contains only digit characters that form an integer number in
-/// the range of 1-999, the return value is #MarkupTypeMarkerNumber and this
-/// method fills the out variable @a numberMarkerValue with the int value of the
-/// integer number.
-///
-/// In all other cases the return value is #MarkupTypeLabel and the value of
-/// both out variables is undefined.
-// -----------------------------------------------------------------------------
-- (enum MarkupType) markupTypeOfLabel:(NSString*)label
-                    letterMarkerValue:(char*)letterMarkerValue
-                    numberMarkerValue:(int*)numberMarkerValue
-{
-  NSUInteger labelLength = label.length;
-  if (labelLength == 1)
-  {
-    // Code in this branch should hopefully be faster than using regex
-
-    unichar labelCharacter = [label characterAtIndex:0];
-    if (labelCharacter >= charUppercaseA && labelCharacter <= charuppercaseZ)
-    {
-      *letterMarkerValue = labelCharacter - charUppercaseA + 'A';
-      return MarkupTypeMarkerLetter;
-    }
-    else if (labelCharacter >= charLowercaseA && labelCharacter <= charLowercaseZ)
-    {
-      *letterMarkerValue = labelCharacter - charLowercaseA + 'a';
-      return MarkupTypeMarkerLetter;
-    }
-    else if (labelCharacter >= charZero && labelCharacter <= charNine)
-    {
-      *numberMarkerValue = labelCharacter - charZero;
-      if (*numberMarkerValue >= minimumNumberMarkerValue && *numberMarkerValue <= maximumNumberMarkerValue)
-        return MarkupTypeMarkerNumber;
-      else
-        return MarkupTypeLabel;
-    }
-    else
-    {
-      return MarkupTypeLabel;
-    }
-  }
-  else
-  {
-    NSRegularExpression* regexNumbers = [[NSRegularExpression alloc] initWithPattern:@"^[0-9]+$" options:0 error:nil];
-    NSRange allCharactersRange = NSMakeRange(0, labelLength);
-    if ([regexNumbers numberOfMatchesInString:label options:0 range:allCharactersRange] > 0)
-    {
-      *numberMarkerValue = [self labelAsNumberMarkerValue:label];
-      if (*numberMarkerValue != -1)
-        return MarkupTypeMarkerNumber;
-      else
-        return MarkupTypeLabel;
-    }
-    else
-    {
-      return MarkupTypeLabel;
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the number marker value that corresponds to @a label.
-/// Returns -1 if conversion of @a label fails, indicating that @a label does
-/// not represent a valid number marker value.
-///
-/// This method expects that a previous step has verified that @a label is not
-/// empty and does not contain any characters that are not digits. If this is
-/// not the case, then the NSNumberFormatter that is used by the implementation
-/// of this method will gracefully handle leading/trailing space characters and
-/// locale-specific group or decimal separators.
-// -----------------------------------------------------------------------------
-- (int) labelAsNumberMarkerValue:(NSString*)label
-{
-  NSNumberFormatter* numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
-  // Parses the text as an integer number
-  numberFormatter.numberStyle = NSNumberFormatterNoStyle;
-  // If the string contains any characters other than numerical digits or
-  // locale-appropriate group or decimal separators, parsing will fail.
-  // Leading/trailing space is ignored.
-  // Returns nil if parsing fails.
-  NSNumber* number = [numberFormatter numberFromString:label];
-  if (! number)
-    return -1;
-
-  int numberMarkerValue = [number intValue];
-  if (numberMarkerValue >= minimumNumberMarkerValue && numberMarkerValue <= maximumNumberMarkerValue)
-    return numberMarkerValue;
-  else
-    return -1;
 }
 
 #pragma mark - Place label
@@ -742,6 +597,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 - (bool) handlePlaceLabel:(NSString*)labelText
            onIntersection:(NSString*)intersection
            withNodeMarkup:(GoNodeMarkup*)nodeMarkup
+           markupWasMoved:(bool)markupWasMoved
 {
   NSString* existingLabel = nil;
 
@@ -756,7 +612,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   if (labelText && labelText.length > 0)
   {
     if (existingLabel && [labelText isEqualToString:existingLabel])
-      markupDataDidChange = false;
+      markupDataDidChange = markupWasMoved ? true : false;  // if moved, then the label was removed somewhere else => data did change
     else
       [nodeMarkup setLabel:labelText atVertex:intersection];
   }
@@ -782,14 +638,16 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 /// handleMarkupEditingInteractionOnIntersection:withMarkupModel:labelText:nodeMarkup:().
 ///
 /// This method is invoked from doIt() and not from
-/// handleMarkupEditingInteractionOnPoint:optionalSecondPoint:withMarkupModel:labelText:node:(),
+/// handleMarkupEditingInteractionOnPoint:optionalSecondPoint:withMarkupTool:markupType:labelText:node:(),
 /// because the latter wraps the invocation of its handler methods into a pair
 /// of beginSavePoint/commitSavePoint method calls, which requires the handler
 /// method to work synchronously. This method does not work synchronously, it
 /// presents EditTextDelegate.
 // -----------------------------------------------------------------------------
 - (void) handleEnterNewLabelTextOnPoint:(GoPoint*)point
-                        withMarkupModel:(MarkupModel*)markupModel
+                         withMarkupTool:(enum MarkupTool)markupTool
+                             markupType:(enum MarkupType)markupType
+                         markupWasMoved:(bool)markupWasMoved
                                    node:(GoNode*)node
 {
   NSString* intersection = point.vertex.string;
@@ -803,7 +661,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
                                                                           delegate:self] retain];
   editTextController.title = @"Edit label text";
   editTextController.acceptEmptyText = true;
-  editTextController.context = @[point, markupModel, node];
+  editTextController.context = @[point, [NSNumber numberWithInt:markupTool], [NSNumber numberWithInt:markupType], [NSNumber numberWithBool:markupWasMoved], node];
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.window.rootViewController presentNavigationControllerWithRootViewController:editTextController];
@@ -833,15 +691,19 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   {
     NSArray* context = editTextController.context;
     GoPoint* point = [context objectAtIndex:0];
-    MarkupModel* markupModel = [context objectAtIndex:1];
-    GoNode* node = [context objectAtIndex:2];
+    enum MarkupTool markupTool = [[context objectAtIndex:1] intValue];
+    enum MarkupType markupType = [[context objectAtIndex:2] intValue];
+    bool markupWasMoved = [[context objectAtIndex:3] boolValue];
+    GoNode* node = [context objectAtIndex:4];
 
     NSString* labelText = editTextController.text;
 
     [self handleMarkupEditingInteractionOnPoint:point
                             optionalSecondPoint:nil
-                                withMarkupModel:markupModel
+                                 withMarkupTool:markupTool
+                                     markupType:markupType
                                       labelText:labelText
+                                 markupWasMoved:markupWasMoved
                                            node:node];
   }
 
@@ -861,6 +723,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
               fromIntersection:(NSString*)fromIntersection
                 toIntersection:(NSString*)toIntersection
                 withNodeMarkup:(GoNodeMarkup*)nodeMarkup
+                markupWasMoved:(bool)markupWasMoved
 {
   bool connectionExists = false;
   enum GoMarkupConnection existingConnection = GoMarkupConnectionArrow;  // dummy initialize
@@ -873,7 +736,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
     if (existingConnectionAsNumber)
     {
       connectionExists = true;
-      existingConnection = static_cast<GoMarkupConnection>(existingConnectionAsNumber.intValue);
+      existingConnection = existingConnectionAsNumber.intValue;
     }
   }
 
@@ -883,7 +746,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 
   bool markupDataDidChange = true;
   if (connectionExists && existingConnection == newConnection)
-    markupDataDidChange = false;
+    markupDataDidChange = markupWasMoved ? true : false;  // if moved, then the connection was removed somewhere else => data did change
   else
     [nodeMarkup setConnection:newConnection fromVertex:fromIntersection toVertex:toIntersection];
 

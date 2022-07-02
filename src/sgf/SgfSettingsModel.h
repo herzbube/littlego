@@ -20,6 +20,8 @@
 /// @brief The SgfSettingsModel class provides user defaults data to its clients
 /// that is related to reading and writing SGF data.
 ///
+/// @ingroup sgf
+///
 /// @par Syntax checking levels
 ///
 /// The value of the @e syntaxCheckingLevel property denotes how strict the

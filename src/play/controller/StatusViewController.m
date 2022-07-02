@@ -36,6 +36,7 @@
 #import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiSettingsModel.h"
 #import "../../utility/ExceptionUtility.h"
+#import "../../utility/MarkupUtilities.h"
 #import "../../utility/NSStringAdditions.h"
 
 
@@ -52,8 +53,8 @@
 @property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
 @property(nonatomic, assign) bool activityIndicatorNeedsUpdate;
 @property(nonatomic, assign) bool statusLabelNeedsUpdate;
-@property(nonatomic, retain) NSArray* crossHairInformation;
-@property(nonatomic, retain) NSArray* connectionInformation;
+@property(nonatomic, retain) NSArray* stonePlacementInformation;
+@property(nonatomic, retain) NSArray* markupPlacementInformation;
 @property(nonatomic, retain) NSArray* selectionRectangleInformation;
 @property(nonatomic, assign) bool shouldDisplayActivityIndicator;
 @property(nonatomic, retain) NSLayoutConstraint* activityIndicatorWidthConstraint;
@@ -105,8 +106,8 @@
   self.containerView = nil;
   self.statusLabel = nil;
   self.activityIndicator = nil;
-  self.crossHairInformation = nil;
-  self.connectionInformation = nil;
+  self.stonePlacementInformation = nil;
+  self.markupPlacementInformation = nil;
   self.selectionRectangleInformation = nil;
   self.activityIndicatorWidthConstraint = nil;
   self.activityIndicatorSpacingConstraint = nil;
@@ -332,8 +333,8 @@
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesStarts:) name:askGtpEngineForDeadStonesStarts object:nil];
   [center addObserver:self selector:@selector(askGtpEngineForDeadStonesEnds:) name:askGtpEngineForDeadStonesEnds object:nil];
-  [center addObserver:self selector:@selector(boardViewCrossHairDidChange:) name:boardViewCrossHairDidChange object:nil];
-  [center addObserver:self selector:@selector(boardViewMarkupConnectionDidChange:) name:boardViewMarkupConnectionDidChange object:nil];
+  [center addObserver:self selector:@selector(boardViewStoneLocationDidChange:) name:boardViewStoneLocationDidChange object:nil];
+  [center addObserver:self selector:@selector(boardViewMarkupLocationDidChange:) name:boardViewMarkupLocationDidChange object:nil];
   [center addObserver:self selector:@selector(boardViewSelectionRectangleDidChange:) name:boardViewSelectionRectangleDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
@@ -464,18 +465,18 @@
 
   NSString* statusText = @"";
 
-  if (self.crossHairInformation)
+  if (self.stonePlacementInformation)
   {
-    GoPoint* crossHairPoint = [self.crossHairInformation objectAtIndex:0];
-    bool crossHairPointIsLegalMove = [[self.crossHairInformation objectAtIndex:1] boolValue];
-    if (crossHairPointIsLegalMove)
+    GoPoint* stoneLocation = [self.stonePlacementInformation objectAtIndex:0];
+    bool stoneLocationIsLegalMove = [[self.stonePlacementInformation objectAtIndex:1] boolValue];
+    if (stoneLocationIsLegalMove)
     {
-      statusText = crossHairPoint.vertex.string;
+      statusText = stoneLocation.vertex.string;
     }
     else
     {
-      statusText = crossHairPoint.vertex.string;
-      enum GoMoveIsIllegalReason isIllegalReason = [[self.crossHairInformation objectAtIndex:2] intValue];
+      statusText = stoneLocation.vertex.string;
+      enum GoMoveIsIllegalReason isIllegalReason = [[self.stonePlacementInformation objectAtIndex:2] intValue];
       switch (isIllegalReason)
       {
         case GoMoveIsIllegalReasonIntersectionOccupied:
@@ -493,23 +494,32 @@
       }
     }
   }
-  else if (self.connectionInformation)
+  else if (self.markupPlacementInformation)
   {
-    NSNumber* connectionAsNumber = [self.connectionInformation objectAtIndex:0];
-    enum GoMarkupConnection connection = connectionAsNumber.intValue;
-    GoPoint* fromPoint = [self.connectionInformation objectAtIndex:1];
-    GoPoint* toPoint = [self.connectionInformation objectAtIndex:2];
+    NSNumber* markupTypeAsNumber = [self.markupPlacementInformation objectAtIndex:0];
+    enum MarkupType markupType = markupTypeAsNumber.intValue;
+    if (markupType == MarkupTypeConnectionArrow || markupType == MarkupTypeConnectionLine)
+    {
+      enum GoMarkupConnection connection = [MarkupUtilities connectionForMarkupType:markupType];
+      GoPoint* fromPoint = [self.markupPlacementInformation objectAtIndex:1];
+      GoPoint* toPoint = [self.markupPlacementInformation objectAtIndex:2];
 
-    NSString* connectionTextSymbol;
-    if (connection == GoMarkupConnectionArrow)
-      connectionTextSymbol = @"➔";
-    else
-      connectionTextSymbol = @"-";
+      NSString* connectionTextSymbol;
+      if (connection == GoMarkupConnectionArrow)
+        connectionTextSymbol = @"➔";
+      else
+        connectionTextSymbol = @"-";
 
-    if (fromPoint == toPoint)
-      statusText = [NSString stringWithFormat:@"%@ %@ Drag to other intersection", fromPoint.vertex.string, connectionTextSymbol];
+      if (fromPoint == toPoint)
+        statusText = [NSString stringWithFormat:@"%@ %@ Drag to other intersection", fromPoint.vertex.string, connectionTextSymbol];
+      else
+        statusText = [NSString stringWithFormat:@"%@ %@ %@", fromPoint.vertex.string, connectionTextSymbol, toPoint.vertex.string];
+    }
     else
-      statusText = [NSString stringWithFormat:@"%@ %@ %@", fromPoint.vertex.string, connectionTextSymbol, toPoint.vertex.string];
+    {
+      GoPoint* point = [self.markupPlacementInformation objectAtIndex:1];
+      statusText = point.vertex.string;
+    }
   }
   else if (self.selectionRectangleInformation)
   {
@@ -885,29 +895,29 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewCrossHairDidChange notification.
+/// @brief Responds to the #boardViewStoneLocationDidChange notification.
 // -----------------------------------------------------------------------------
-- (void) boardViewCrossHairDidChange:(NSNotification*)notification
+- (void) boardViewStoneLocationDidChange:(NSNotification*)notification
 {
-  NSArray* crossHairInformation = notification.object;
-  if (crossHairInformation.count > 0)
-    self.crossHairInformation = [NSArray arrayWithArray:crossHairInformation];
+  NSArray* stonePlacementInformation = notification.object;
+  if (stonePlacementInformation.count > 0)
+    self.stonePlacementInformation = [NSArray arrayWithArray:stonePlacementInformation];
   else
-    self.crossHairInformation = nil;
+    self.stonePlacementInformation = nil;
   self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #boardViewMarkupConnectionDidChange notification.
+/// @brief Responds to the #boardViewMarkupLocationDidChange notification.
 // -----------------------------------------------------------------------------
-- (void) boardViewMarkupConnectionDidChange:(NSNotification*)notification
+- (void) boardViewMarkupLocationDidChange:(NSNotification*)notification
 {
-  NSArray* connectionInformation = notification.object;
-  if (connectionInformation.count > 0)
-    self.connectionInformation = [NSArray arrayWithArray:connectionInformation];
+  NSArray* markupPlacementInformation = notification.object;
+  if (markupPlacementInformation.count > 0)
+    self.markupPlacementInformation = [NSArray arrayWithArray:markupPlacementInformation];
   else
-    self.connectionInformation = nil;
+    self.markupPlacementInformation = nil;
   self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }

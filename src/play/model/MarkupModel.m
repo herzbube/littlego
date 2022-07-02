@@ -17,7 +17,7 @@
 
 // Project includes
 #import "MarkupModel.h"
-#import "../../utility/ExceptionUtility.h"
+#import "../../utility/MarkupUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -72,49 +72,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateMarkupTool
 {
-  enum MarkupTool markupTool;
-  switch (self.markupType)
-  {
-    case MarkupTypeSymbolCircle:
-    case MarkupTypeSymbolSquare:
-    case MarkupTypeSymbolTriangle:
-    case MarkupTypeSymbolX:
-    case MarkupTypeSymbolSelected:
-    {
-      markupTool = MarkupToolSymbol;
-      break;
-    }
-    case MarkupTypeMarkerNumber:
-    case MarkupTypeMarkerLetter:
-    {
-      markupTool = MarkupToolMarker;
-      break;
-    }
-    case MarkupTypeLabel:
-    {
-      markupTool = MarkupToolLabel;
-      break;
-    }
-    case MarkupTypeConnectionLine:
-    case MarkupTypeConnectionArrow:
-    {
-      markupTool = MarkupToolConnection;
-      break;
-    }
-    case MarkupTypeEraser:
-    {
-      markupTool = MarkupToolEraser;
-      break;
-    }
-    default:
-    {
-      NSString* errorMessage = [NSString stringWithFormat:@"updateMarkupTool: failed, markup type has invalid value %d", self.markupType];
-      [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
-      return;
-    }
-  }
-
-  self.markupTool = markupTool;
+  self.markupTool = [MarkupUtilities markupToolForMarkupType:self.markupType];
 }
 
 // -----------------------------------------------------------------------------

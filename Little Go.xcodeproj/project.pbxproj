@@ -109,6 +109,18 @@
 		CD1DB6141702581900C2E648 /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
 		CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */; };
 		CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
+		CD1E6EAA2860F0BC00785E23 /* MarkupUtilities.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EA82860F0BC00785E23 /* MarkupUtilities.mm */; };
+		CD1E6EAB2860F0BC00785E23 /* MarkupUtilities.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EA82860F0BC00785E23 /* MarkupUtilities.mm */; };
+		CD1E6EAF2865F9BD00785E23 /* PanGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EAE2865F9BD00785E23 /* PanGestureHandler.m */; };
+		CD1E6EB02865F9BD00785E23 /* PanGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EAE2865F9BD00785E23 /* PanGestureHandler.m */; };
+		CD1E6EB32865FE9500785E23 /* PlayStonePanGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EB12865FE9500785E23 /* PlayStonePanGestureHandler.m */; };
+		CD1E6EB42865FE9500785E23 /* PlayStonePanGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EB12865FE9500785E23 /* PlayStonePanGestureHandler.m */; };
+		CD1E6EB72867503C00785E23 /* PlaceMarkupConnectionPanGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EB62867503C00785E23 /* PlaceMarkupConnectionPanGestureHandler.m */; };
+		CD1E6EB82867503C00785E23 /* PlaceMarkupConnectionPanGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EB62867503C00785E23 /* PlaceMarkupConnectionPanGestureHandler.m */; };
+		CD1E6EBB2867543E00785E23 /* EraseMarkupInRectanglePanGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EB92867543E00785E23 /* EraseMarkupInRectanglePanGestureHandler.m */; };
+		CD1E6EBC2867543E00785E23 /* EraseMarkupInRectanglePanGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EB92867543E00785E23 /* EraseMarkupInRectanglePanGestureHandler.m */; };
+		CD1E6EBF286755A000785E23 /* MoveMarkupPanGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EBE286755A000785E23 /* MoveMarkupPanGestureHandler.m */; };
+		CD1E6EC0286755A000785E23 /* MoveMarkupPanGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EBE286755A000785E23 /* MoveMarkupPanGestureHandler.m */; };
 		CD1E9E65171806FE00E1B7D1 /* GameInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */; };
 		CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */; };
 		CD1F4F6825AE17D90098037A /* SgfSettingsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1F4F6625AE17D90098037A /* SgfSettingsModel.m */; };
@@ -604,8 +616,8 @@
 		CDB5AE2A1AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE281AC5ABA60075C8DC /* MagnifyingViewController.m */; };
 		CDB5AE2E1AC714CF0075C8DC /* MagnifyingViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE2D1AC714CF0075C8DC /* MagnifyingViewModel.m */; };
 		CDB5AE2F1AC714CF0075C8DC /* MagnifyingViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5AE2D1AC714CF0075C8DC /* MagnifyingViewModel.m */; };
-		CDB5C5DA284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDB5C5D9284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm */; };
-		CDB5C5DB284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDB5C5D9284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm */; };
+		CDB5C5DA284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5C5D9284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.m */; };
+		CDB5C5DB284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB5C5D9284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.m */; };
 		CDB684FE161591760038AADE /* EditPlayingStrengthSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */; };
 		CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB035A133537C8007C1C3E /* GoBoardRegion.m */; };
 		CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
@@ -898,6 +910,18 @@
 		CD1DB60916FE181400C2E648 /* GoGameDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameDocument.m; sourceTree = "<group>"; };
 		CD1DB60C1702436700C2E648 /* HandleDocumentInteractionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandleDocumentInteractionCommand.h; sourceTree = "<group>"; };
 		CD1DB60D1702436800C2E648 /* HandleDocumentInteractionCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandleDocumentInteractionCommand.m; sourceTree = "<group>"; };
+		CD1E6EA82860F0BC00785E23 /* MarkupUtilities.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MarkupUtilities.mm; sourceTree = "<group>"; };
+		CD1E6EA92860F0BC00785E23 /* MarkupUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkupUtilities.h; sourceTree = "<group>"; };
+		CD1E6EAD2865F9BD00785E23 /* PanGestureHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanGestureHandler.h; sourceTree = "<group>"; };
+		CD1E6EAE2865F9BD00785E23 /* PanGestureHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PanGestureHandler.m; sourceTree = "<group>"; };
+		CD1E6EB12865FE9500785E23 /* PlayStonePanGestureHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayStonePanGestureHandler.m; sourceTree = "<group>"; };
+		CD1E6EB22865FE9500785E23 /* PlayStonePanGestureHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayStonePanGestureHandler.h; sourceTree = "<group>"; };
+		CD1E6EB52867503C00785E23 /* PlaceMarkupConnectionPanGestureHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaceMarkupConnectionPanGestureHandler.h; sourceTree = "<group>"; };
+		CD1E6EB62867503C00785E23 /* PlaceMarkupConnectionPanGestureHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaceMarkupConnectionPanGestureHandler.m; sourceTree = "<group>"; };
+		CD1E6EB92867543E00785E23 /* EraseMarkupInRectanglePanGestureHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EraseMarkupInRectanglePanGestureHandler.m; sourceTree = "<group>"; };
+		CD1E6EBA2867543E00785E23 /* EraseMarkupInRectanglePanGestureHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EraseMarkupInRectanglePanGestureHandler.h; sourceTree = "<group>"; };
+		CD1E6EBD286755A000785E23 /* MoveMarkupPanGestureHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoveMarkupPanGestureHandler.h; sourceTree = "<group>"; };
+		CD1E6EBE286755A000785E23 /* MoveMarkupPanGestureHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoveMarkupPanGestureHandler.m; sourceTree = "<group>"; };
 		CD1E9E59171806FE00E1B7D1 /* GameInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameInfoViewController.h; sourceTree = "<group>"; };
 		CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameInfoViewController.m; sourceTree = "<group>"; };
 		CD1E9E5F171806FE00E1B7D1 /* SoundHandling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SoundHandling.h; sourceTree = "<group>"; };
@@ -1412,7 +1436,7 @@
 		CDB5AE2C1AC714CF0075C8DC /* MagnifyingViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MagnifyingViewModel.h; sourceTree = "<group>"; };
 		CDB5AE2D1AC714CF0075C8DC /* MagnifyingViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagnifyingViewModel.m; sourceTree = "<group>"; };
 		CDB5C5D8284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandleMarkupEditingInteractionCommand.h; sourceTree = "<group>"; };
-		CDB5C5D9284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = HandleMarkupEditingInteractionCommand.mm; sourceTree = "<group>"; };
+		CDB5C5D9284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandleMarkupEditingInteractionCommand.m; sourceTree = "<group>"; };
 		CDB684FC161591760038AADE /* EditPlayingStrengthSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditPlayingStrengthSettingsController.h; sourceTree = "<group>"; };
 		CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditPlayingStrengthSettingsController.m; sourceTree = "<group>"; };
 		CDBB0359133537C8007C1C3E /* GoBoardRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegion.h; sourceTree = "<group>"; };
@@ -2009,6 +2033,23 @@
 			path = src/play/model;
 			sourceTree = SOURCE_ROOT;
 		};
+		CD1E6EAC2865F9BD00785E23 /* handler */ = {
+			isa = PBXGroup;
+			children = (
+				CD1E6EBA2867543E00785E23 /* EraseMarkupInRectanglePanGestureHandler.h */,
+				CD1E6EB92867543E00785E23 /* EraseMarkupInRectanglePanGestureHandler.m */,
+				CD1E6EBD286755A000785E23 /* MoveMarkupPanGestureHandler.h */,
+				CD1E6EBE286755A000785E23 /* MoveMarkupPanGestureHandler.m */,
+				CD1E6EAD2865F9BD00785E23 /* PanGestureHandler.h */,
+				CD1E6EAE2865F9BD00785E23 /* PanGestureHandler.m */,
+				CD1E6EB52867503C00785E23 /* PlaceMarkupConnectionPanGestureHandler.h */,
+				CD1E6EB62867503C00785E23 /* PlaceMarkupConnectionPanGestureHandler.m */,
+				CD1E6EB22865FE9500785E23 /* PlayStonePanGestureHandler.h */,
+				CD1E6EB12865FE9500785E23 /* PlayStonePanGestureHandler.m */,
+			);
+			path = handler;
+			sourceTree = "<group>";
+		};
 		CD1E9E54171806FE00E1B7D1 /* controller */ = {
 			isa = PBXGroup;
 			children = (
@@ -2147,6 +2188,7 @@
 		CD3A0996169389A600ABDB5D /* gesture */ = {
 			isa = PBXGroup;
 			children = (
+				CD1E6EAC2865F9BD00785E23 /* handler */,
 				CD30BAA316F7A2AE00C95DCF /* DoubleTapGestureController.h */,
 				CD30BAA416F7A2AE00C95DCF /* DoubleTapGestureController.m */,
 				CD3A0997169389A600ABDB5D /* PanGestureController.h */,
@@ -2760,7 +2802,7 @@
 				CD869F18285E1B8E00B679FE /* DiscardAllMarkupCommand.h */,
 				CD869F17285E1B8E00B679FE /* DiscardAllMarkupCommand.m */,
 				CDB5C5D8284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.h */,
-				CDB5C5D9284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm */,
+				CDB5C5D9284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.m */,
 			);
 			path = markup;
 			sourceTree = "<group>";
@@ -2950,6 +2992,8 @@
 				CD9A49AA17107BC9009E7514 /* FontRange.m */,
 				CD2230B125E661E600187C57 /* LogFormatter.h */,
 				CD2230B225E661E600187C57 /* LogFormatter.m */,
+				CD1E6EA92860F0BC00785E23 /* MarkupUtilities.h */,
+				CD1E6EA82860F0BC00785E23 /* MarkupUtilities.mm */,
 				CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */,
 				CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */,
 				CDFA32A615A0A3E400439B4E /* PathUtilities.h */,
@@ -3704,12 +3748,14 @@
 				CDA096FB1A915085002FCD78 /* LayoutManager.m in Sources */,
 				CD7C6A191AB4990D009EC5AD /* BoardPositionCollectionViewCell.m in Sources */,
 				CD7C69F11AB0FCA9009EC5AD /* UIAreaInfo.m in Sources */,
+				CD1E6EB72867503C00785E23 /* PlaceMarkupConnectionPanGestureHandler.m in Sources */,
 				CD7C6A151AB49631009EC5AD /* BoardPositionCollectionViewController.m in Sources */,
 				CD10882213255A6B00E83543 /* GoPlayer.m in Sources */,
 				CD10882513255AA600E83543 /* GoPoint.m in Sources */,
 				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
 				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
 				CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */,
+				CD1E6EAF2865F9BD00785E23 /* PanGestureHandler.m in Sources */,
 				CDEE19F919433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */,
 				CD1F503F25B7A5C20098037A /* ViewLoadResultMessageController.m in Sources */,
 				CDE302891360BDA4005235F2 /* Player.m in Sources */,
@@ -3719,6 +3765,7 @@
 				CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */,
 				CD63B9E221C1F8B100E013B5 /* PipeStreamBuffer.cpp in Sources */,
 				CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */,
+				CD1E6EB32865FE9500785E23 /* PlayStonePanGestureHandler.m in Sources */,
 				CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */,
 				CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDAF17151967FFD500271396 /* BoardViewMetrics.m in Sources */,
@@ -3750,6 +3797,7 @@
 				CDAFAE25195A1DCA00EF84A9 /* TiledScrollView.m in Sources */,
 				CD05AC7B1425470B00214BBE /* DeleteGameCommand.m in Sources */,
 				CD7C578621F79C3000694520 /* ChangeUIAreaPlayModeCommand.m in Sources */,
+				CD1E6EBB2867543E00785E23 /* EraseMarkupInRectanglePanGestureHandler.m in Sources */,
 				CD05AC7C1425470B00214BBE /* NewGameCommand.m in Sources */,
 				CD05AC7D1425470B00214BBE /* RenameGameCommand.m in Sources */,
 				CD2AB19127F9F80500BF0B4D /* PageViewController.m in Sources */,
@@ -3799,6 +3847,7 @@
 				CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */,
 				CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */,
 				CD2230B325E661E600187C57 /* LogFormatter.m in Sources */,
+				CD1E6EBF286755A000785E23 /* MoveMarkupPanGestureHandler.m in Sources */,
 				CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */,
 				CDDD526314840A540027476B /* DisplaySettingsController.m in Sources */,
 				CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */,
@@ -3806,6 +3855,7 @@
 				CD1F4F6825AE17D90098037A /* SgfSettingsModel.m in Sources */,
 				CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */,
 				CDEE19FB19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
+				CD1E6EAA2860F0BC00785E23 /* MarkupUtilities.mm in Sources */,
 				CD607BCB28109A7E000C111E /* EditEstimatedScoreController.m in Sources */,
 				CDAF17191968037700271396 /* BoardViewModel.m in Sources */,
 				CD55D0331D6FAE7E00A9A5BC /* CrashReportingHandler.m in Sources */,
@@ -3826,7 +3876,7 @@
 				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
 				CDEE1A171946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
 				CD1F4F8C25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */,
-				CDB5C5DA284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm in Sources */,
+				CDB5C5DA284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.m in Sources */,
 				CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CDBCF1F8282FB1FD00411CA6 /* EditNodeDescriptionController.m in Sources */,
@@ -3944,6 +3994,7 @@
 				CDBEBA3927B1A072000F9BF5 /* AnnotationViewControllerPhonePortraitOnly.m in Sources */,
 				CD7C578321F4A3A900694520 /* UnarchiveGameCommand.m in Sources */,
 				CDA0970C1A99F77F002FCD78 /* SplitViewController.m in Sources */,
+				CD1E6EC0286755A000785E23 /* MoveMarkupPanGestureHandler.m in Sources */,
 				CD7C69EE1AA9F697009EC5AD /* ExceptionUtility.m in Sources */,
 				CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */,
 				CD85B5A41401C1F0001715B8 /* GoPoint.m in Sources */,
@@ -3980,7 +4031,7 @@
 				CDAF17161967FFD500271396 /* BoardViewMetrics.m in Sources */,
 				CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDEF3F4A140D5E4F002D9C1C /* NSStringAdditions.m in Sources */,
-				CDB5C5DB284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.mm in Sources */,
+				CDB5C5DB284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.m in Sources */,
 				CD7C69E01AA67C31009EC5AD /* MainUtility.m in Sources */,
 				CD85068727B95046000D2CCD /* GoNode.m in Sources */,
 				CDFD9F7018F1D35C0031CBCF /* BoardPositionSettingsController.m in Sources */,
@@ -4002,10 +4053,12 @@
 				CD05B136142A745500214BBE /* BackupGameToSgfCommand.m in Sources */,
 				CD05B137142A746100214BBE /* CleanBackupSgfCommand.m in Sources */,
 				CD05B138142A746800214BBE /* RestoreGameFromSgfCommand.m in Sources */,
+				CD1E6EAB2860F0BC00785E23 /* MarkupUtilities.mm in Sources */,
 				CD1F4F6925AE17D90098037A /* SgfSettingsModel.m in Sources */,
 				CDFD9F8218F1D5F40031CBCF /* GtpLogSettingsController.m in Sources */,
 				CD05B143142A74ED00214BBE /* LoadGameCommand.m in Sources */,
 				CDB5AE2A1AC5ABA60075C8DC /* MagnifyingViewController.m in Sources */,
+				CD1E6EB42865FE9500785E23 /* PlayStonePanGestureHandler.m in Sources */,
 				CD7C6A1A1AB4990D009EC5AD /* BoardPositionCollectionViewCell.m in Sources */,
 				CD05B213142BC5A400214BBE /* GtpUtilities.m in Sources */,
 				CD05B612142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
@@ -4015,6 +4068,7 @@
 				CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */,
 				CD8EFEAB14676C4400A700B1 /* GoScore.m in Sources */,
 				CDD86B4B2827E91500AA0A6B /* StaticTableView.m in Sources */,
+				CD1E6EB82867503C00785E23 /* PlaceMarkupConnectionPanGestureHandler.m in Sources */,
 				CDA097001A98CD54002FCD78 /* ButtonBoxController.m in Sources */,
 				CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CDB457AD147DB2010043EDE4 /* UserDefaultsUpdater.m in Sources */,
@@ -4076,6 +4130,7 @@
 				CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */,
 				CDB49E422221A981006DC1A4 /* BoardViewAccessibility.m in Sources */,
 				CDFD9F7118F1D36C0031CBCF /* PlayerProfileSettingsController.m in Sources */,
+				CD1E6EB02865F9BD00785E23 /* PanGestureHandler.m in Sources */,
 				CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */,
 				CD9A49AC171099FB009E7514 /* FontRange.m in Sources */,
 				CD7C57D522024C4700694520 /* BoardSetupSettingsController.m in Sources */,
@@ -4111,6 +4166,7 @@
 				CDACF0B119041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */,
 				CDFD9F7718F1D5600031CBCF /* DocumentViewController.m in Sources */,
 				CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */,
+				CD1E6EBC2867543E00785E23 /* EraseMarkupInRectanglePanGestureHandler.m in Sources */,
 				CD1F500825B34EDE0098037A /* GameInfoItem.m in Sources */,
 				CD7C57C821FF8E9500694520 /* HandleBoardSetupInteractionCommand.m in Sources */,
 				CD1F501425B6591F0098037A /* GameInfoItemController.m in Sources */,

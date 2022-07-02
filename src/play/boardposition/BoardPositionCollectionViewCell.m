@@ -29,6 +29,7 @@
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
+#import "../../utility/MarkupUtilities.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIColorAdditions.h"
 #import "../../utility/UIImageAdditions.h"
@@ -484,7 +485,7 @@ static UIFont* smallFont = nil;
   if (self.offscreenMode)
     return true;
   else
-    return [GoUtilities showMarkupIndicatorForNode:node];
+    return [MarkupUtilities shouldDisplayMarkupIndicatorForNode:node];
 }
 
 #pragma mark - UIView overrides

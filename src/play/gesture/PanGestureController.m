@@ -17,8 +17,8 @@
 
 // Project includes
 #import "PanGestureController.h"
+#import "handler/PanGestureHandler.h"
 #import "../boardview/BoardView.h"
-#import "../gameaction/GameActionManager.h"
 #import "../model/BoardViewMetrics.h"
 #import "../model/BoardViewModel.h"
 #import "../model/MarkupModel.h"
@@ -58,6 +58,16 @@
 /// continuously while the gesture is in progress. It is set back to @e nil when
 /// the gesture ends.
 @property(nonatomic, assign) GoPoint* gestureStartPoint;
+/// @brief The GoPoint that identifies the intersection near the location of the
+/// most recent gesture update.
+///
+/// This property is initialized when the panning gesture begins. It is updated
+/// continuously while the gesture is in progress. It is set back to @e nil when
+/// the gesture ends.
+@property(nonatomic, assign) GoPoint* gestureMostRecentPoint;
+/// @brief An object that is handling pan gestures for the current application
+/// state.
+@property(nonatomic, retain) PanGestureHandler* panGestureHandler;
 @end
 
 
@@ -79,6 +89,8 @@
 
   self.boardView = nil;
   self.gestureStartPoint = nil;
+  self.gestureMostRecentPoint = nil;
+  self.panGestureHandler = nil;
   [self setupLongPressGestureRecognizer];
   [self setupNotificationResponders];
   [self updatePanningEnabled];
@@ -95,6 +107,8 @@
   self.boardView = nil;
   self.longPressRecognizer = nil;
   self.gestureStartPoint = nil;
+  self.gestureMostRecentPoint = nil;
+  self.panGestureHandler = nil;
 
   [super dealloc];
 }
@@ -181,11 +195,16 @@
 {
   if (_boardView == boardView)
     return;
+
   if (_boardView && self.longPressRecognizer)
     [_boardView removeGestureRecognizer:self.longPressRecognizer];
+
   _boardView = boardView;
+
   if (_boardView && self.longPressRecognizer)
     [_boardView addGestureRecognizer:self.longPressRecognizer];
+
+  [self updatePanGestureHandler];  // because gesture handler depends on BoardView
 }
 
 #pragma mark - UIGestureRecognizerDelegate overrides
@@ -221,16 +240,12 @@
   //    user can see the stone location
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  enum UIAreaPlayMode uiAreaPlayMode = appDelegate.uiSettingsModel.uiAreaPlayMode;
   BoardViewModel* boardViewModel = appDelegate.boardViewModel;
-  MarkupModel* markupModel = appDelegate.markupModel;
 
   CGPoint panningLocation;
   BoardViewIntersection panningIntersection = [self boardViewIntersectionForGestureLocation:gestureRecognizer
                                                                             panningLocation:&panningLocation];
 
-  bool isLegalMove = false;
-  enum GoMoveIsIllegalReason illegalReason = GoMoveIsIllegalReasonUnknown;
   if (! BoardViewIntersectionIsNullIntersection(panningIntersection))
   {
     CGRect visibleRect = self.boardView.bounds;
@@ -238,12 +253,7 @@
     // is offset due to the snapping mechanism of the intersectionNear:()
     // method
     bool isPanningIntersectionInVisibleRect = CGRectContainsPoint(visibleRect, panningIntersection.coordinates);
-    if (isPanningIntersectionInVisibleRect)
-    {
-      if (uiAreaPlayMode == UIAreaPlayModePlay)
-        isLegalMove = [[GoGame sharedGame] isLegalMove:panningIntersection.point isIllegalReason:&illegalReason];
-    }
-    else
+    if (! isPanningIntersectionInVisibleRect)
     {
       panningIntersection = BoardViewIntersectionNull;
     }
@@ -264,8 +274,12 @@
       boardViewModel.boardViewPanningGestureIsInProgress = true;
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewPanningGestureWillStart object:nil];
 
-      if (uiAreaPlayMode == UIAreaPlayModeEditMarkup)
-        self.gestureStartPoint = panningIntersection.point;
+      self.gestureStartPoint = panningIntersection.point;
+      self.gestureMostRecentPoint = panningIntersection.point;
+
+      [self.panGestureHandler handleGestureWithGestureRecognizerState:recognizerState
+                                                    gestureStartPoint:self.gestureStartPoint
+                                                  gestureCurrentPoint:panningIntersection.point];
 
       break;
     }
@@ -275,24 +289,32 @@
         DDLogDebug(@"UIGestureRecognizerStateChanged, gestureRecognizerStateChangedCount = %d", gestureRecognizerStateChangedCount);
       ++gestureRecognizerStateChangedCount;
 
+      if (self.gestureMostRecentPoint != panningIntersection.point)
+      {
+        self.gestureMostRecentPoint = panningIntersection.point;
+        [self.panGestureHandler handleGestureWithGestureRecognizerState:recognizerState
+                                                      gestureStartPoint:self.gestureStartPoint
+                                                    gestureCurrentPoint:panningIntersection.point];
+      }
+
       break;
     }
     case UIGestureRecognizerStateEnded:
-    {
-      DDLogDebug(@"UIGestureRecognizerStateEnded");
-
-      [LayoutManager sharedManager].shouldAutorotate = true;
-
-      boardViewModel.boardViewPanningGestureIsInProgress = false;
-      [[NSNotificationCenter defaultCenter] postNotificationName:boardViewPanningGestureWillEnd object:nil];
-
-      break;
-    }
     // Occurs, for instance, if an alert is displayed while a gesture is
     // being handled, or if the gesture recognizer was disabled.
     case UIGestureRecognizerStateCancelled:
     {
-      DDLogDebug(@"UIGestureRecognizerStateCancelled");
+      if (recognizerState == UIGestureRecognizerStateEnded)
+        DDLogDebug(@"UIGestureRecognizerStateEnded");
+      else
+        DDLogDebug(@"UIGestureRecognizerStateCancelled");
+
+      [self.panGestureHandler handleGestureWithGestureRecognizerState:recognizerState
+                                                    gestureStartPoint:self.gestureStartPoint
+                                                  gestureCurrentPoint:panningIntersection.point];
+
+      self.gestureStartPoint = nil;
+      self.gestureMostRecentPoint = nil;
 
       [LayoutManager sharedManager].shouldAutorotate = true;
 
@@ -309,35 +331,6 @@
     }
   }
 
-  if (uiAreaPlayMode == UIAreaPlayModePlay)
-  {
-    [self handlePlayStoneWithGestureRecognizerState:recognizerState
-                                            atPoint:panningIntersection.point
-                                        isLegalMove:isLegalMove
-                                    isIllegalReason:illegalReason];
-  }
-  else if (uiAreaPlayMode == UIAreaPlayModeEditMarkup)
-  {
-    enum MarkupTool markupTool = markupModel.markupTool;
-    if (markupTool == MarkupToolConnection)
-    {
-      [self handlePlaceMarkupConnectionWithGestureRecognizerState:recognizerState
-                                                       markupType:markupModel.markupType
-                                                       startPoint:self.gestureStartPoint
-                                                       toEndPoint:panningIntersection.point];
-    }
-    else if (markupTool == MarkupToolEraser)
-    {
-      [self handleEraseMarkupInRectangleWithGestureRecognizerState:recognizerState
-                                                         fromPoint:self.gestureStartPoint
-                                                           toPoint:panningIntersection.point];
-    }
-    else
-    {
-      // TODO xxx move existing markup
-    }
-  }
-
   // Perform magnifying glass handling only after the Go board graphics changes
   // have been queued
   [self handleMagnifyingGlassForPanningLocation:panningLocation
@@ -349,143 +342,20 @@
 // -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
-  if (self.isPanningEnabled)
-  {
-    // Begin the gesture only when it's near a valid intersection. This is
-    // important for some markup editing tools (e.g. connections) that need a
-    // starting intersection to which the gesture can be anchored.
-    BoardViewIntersection startingIntersection = [self boardViewIntersectionForGestureLocation:gestureRecognizer
-                                                                               panningLocation:nil];
-    return BoardViewIntersectionIsNullIntersection(startingIntersection) ? NO : YES;
-  }
-  else
-  {
+  if (! self.isPanningEnabled)
     return NO;
-  }
-}
 
-#pragma mark - Gesture handling - Placing a stone (UIAreaPlayModePlay)
+  // Begin the gesture only when it's near a valid intersection. This is
+  // important for some markup editing tools (e.g. connections) that need a
+  // starting intersection to which the gesture can be anchored.
+  BoardViewIntersection startingIntersection = [self boardViewIntersectionForGestureLocation:gestureRecognizer
+                                                                             panningLocation:nil];
+  if (BoardViewIntersectionIsNullIntersection(startingIntersection))
+    return NO;
 
-// -----------------------------------------------------------------------------
-/// @brief Helper method for handlePanFrom:(), with specific handling for
-/// placing a stone.
-// -----------------------------------------------------------------------------
-- (void) handlePlayStoneWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
-                                           atPoint:(GoPoint*)point
-                                       isLegalMove:(bool)isLegalMove
-                                   isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason
-{
-  if (recognizerState == UIGestureRecognizerStateEnded || recognizerState == UIGestureRecognizerStateCancelled)
-  {
-    [self.boardView moveCrossHairTo:nil
-                        isLegalMove:true
-                    isIllegalReason:illegalReason];
-
-    NSArray* crossHairInformation = @[];
-    [[NSNotificationCenter defaultCenter] postNotificationName:boardViewCrossHairDidChange
-                                                        object:crossHairInformation];
-
-    if (recognizerState == UIGestureRecognizerStateEnded && isLegalMove)
-    {
-      [[GameActionManager sharedGameActionManager] playAtIntersection:point];
-    }
-  }
-  else
-  {
-    [self.boardView moveCrossHairTo:point
-                        isLegalMove:isLegalMove
-                    isIllegalReason:illegalReason];
-
-    NSArray* crossHairInformation = point
-      ? @[point, [NSNumber numberWithBool:isLegalMove], [NSNumber numberWithInt:illegalReason]]
-      : @[];
-    [[NSNotificationCenter defaultCenter] postNotificationName:boardViewCrossHairDidChange
-                                                        object:crossHairInformation];
-  }
-}
-
-#pragma mark - Gesture handling - Drawing a connection (UIAreaPlayModeEditMarkup)
-
-// -----------------------------------------------------------------------------
-/// @brief Helper method for handlePanFrom:(), with specific handling for
-/// placing a connection.
-// -----------------------------------------------------------------------------
-- (void) handlePlaceMarkupConnectionWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
-                                                    markupType:(enum MarkupType)markupType
-                                                    startPoint:(GoPoint*)startPoint
-                                                    toEndPoint:(GoPoint*)endPoint
-{
-  enum GoMarkupConnection connection = (markupType == MarkupTypeConnectionArrow)
-    ? GoMarkupConnectionArrow
-    : GoMarkupConnectionLine;
-
-  if (recognizerState == UIGestureRecognizerStateEnded || recognizerState == UIGestureRecognizerStateCancelled)
-  {
-    [self.boardView moveMarkupConnection:connection
-                          withStartPoint:nil
-                              toEndPoint:nil];
-
-    NSArray* connectionInformation = @[];
-    [[NSNotificationCenter defaultCenter] postNotificationName:boardViewMarkupConnectionDidChange
-                                                        object:connectionInformation];
-
-    if (recognizerState == UIGestureRecognizerStateEnded && startPoint && endPoint && startPoint != endPoint)
-    {
-      [[GameActionManager sharedGameActionManager] placeMarkupConnection:connection
-                                                               fromPoint:startPoint
-                                                                 toPoint:endPoint];
-    }
-  }
-  else
-  {
-    [self.boardView moveMarkupConnection:connection
-                          withStartPoint:startPoint
-                              toEndPoint:endPoint];
-
-    NSArray* connectionInformation = (startPoint && endPoint)
-      ? @[[NSNumber numberWithInt:connection], startPoint, endPoint]
-      : @[];
-    [[NSNotificationCenter defaultCenter] postNotificationName:boardViewMarkupConnectionDidChange
-                                                        object:connectionInformation];
-  }
-}
-
-#pragma mark - Gesture handling - Erasing markup in a selection rectangle (UIAreaPlayModeEditMarkup)
-
-// -----------------------------------------------------------------------------
-/// @brief Helper method for handlePanFrom:(), with specific handling for
-/// erasing all markup in an entire rectangular area.
-// -----------------------------------------------------------------------------
-- (void) handleEraseMarkupInRectangleWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
-                                                      fromPoint:(GoPoint*)startPoint
-                                                        toPoint:(GoPoint*)endPoint
-{
-  if (recognizerState == UIGestureRecognizerStateEnded || recognizerState == UIGestureRecognizerStateCancelled)
-  {
-    [self.boardView updateSelectionRectangleFromPoint:nil
-                                              toPoint:nil];
-
-    NSArray* selectionRectangleInformation = @[];
-    [[NSNotificationCenter defaultCenter] postNotificationName:boardViewSelectionRectangleDidChange
-                                                        object:selectionRectangleInformation];
-
-    if (recognizerState == UIGestureRecognizerStateEnded && startPoint && endPoint)
-    {
-      [[GameActionManager sharedGameActionManager] eraseMarkupInRectangleFromPoint:startPoint
-                                                                           toPoint:endPoint];
-    }
-  }
-  else
-  {
-    [self.boardView updateSelectionRectangleFromPoint:startPoint
-                                              toPoint:endPoint];
-
-    NSArray* selectionRectangleInformation = (startPoint && endPoint)
-      ? @[startPoint, endPoint]
-      : @[];
-    [[NSNotificationCenter defaultCenter] postNotificationName:boardViewSelectionRectangleDidChange
-                                                        object:selectionRectangleInformation];
-  }
+  BOOL gestureRecognizerShouldBegin = [self.panGestureHandler gestureRecognizerShouldBegin:gestureRecognizer
+                                                                         gestureStartPoint:startingIntersection.point];
+  return gestureRecognizerShouldBegin;
 }
 
 #pragma mark - Notification responders
@@ -532,6 +402,7 @@
 - (void) uiAreaPlayModeDidChange:(NSNotification*)notification
 {
   [self updatePanningEnabled];
+  [self updatePanGestureHandler];
 }
 
 // -----------------------------------------------------------------------------
@@ -564,6 +435,7 @@
   {
     [self cancelPanningInProgress];
     [self updatePanningEnabled];
+    [self updatePanGestureHandler];
   }
 }
 
@@ -586,11 +458,7 @@
   enum UIAreaPlayMode uiAreaPlayMode = appDelegate.uiSettingsModel.uiAreaPlayMode;
   if (uiAreaPlayMode == UIAreaPlayModeEditMarkup)
   {
-    MarkupModel* markupModel = appDelegate.markupModel;
-    if (markupModel.markupTool == MarkupToolConnection || markupModel.markupTool == MarkupToolEraser)
-      self.panningEnabled = true;
-    else
-      self.panningEnabled = false;  // TODO xxx do we need to enable panning also for regular markup?
+    self.panningEnabled = true;
     return;
   }
   else if (uiAreaPlayMode != UIAreaPlayModePlay)
@@ -630,6 +498,25 @@
     self.panningEnabled = false;
   else
     self.panningEnabled = true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the handlerwhether panning is enabled.
+// -----------------------------------------------------------------------------
+- (void) updatePanGestureHandler
+{
+  if (self.boardView)
+  {
+    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+    self.panGestureHandler = [PanGestureHandler panGestureHandlerWithUiAreaPlayMode:appDelegate.uiSettingsModel.uiAreaPlayMode
+                                                                         markupTool:appDelegate.markupModel.markupTool
+                                                                        markupModel:appDelegate.markupModel
+                                                                          boardView:self.boardView];
+  }
+  else
+  {
+    self.panGestureHandler = nil;
+  }
 }
 
 #pragma mark - Magnifying glass handling

@@ -127,8 +127,21 @@ dismissNavigationControllerWithRootViewController:(UIViewController*)rootViewCon
 - (void) toggleScoringStateOfStoneGroupAtIntersection:(GoPoint*)point;
 - (void) handleBoardSetupAtIntersection:(GoPoint*)point;
 - (void) handleSetupFirstMove:(enum GoColor)firstMoveColor;
-- (void) handleMarkupEditingAtIntersection:(GoPoint*)point;
-- (void) placeMarkupConnection:(enum GoMarkupConnection)connection fromPoint:(GoPoint*)fromPoint toPoint:(GoPoint*)toPoint;
+- (void) handleMarkupEditingAtIntersection:(GoPoint*)point
+                                markupTool:(enum MarkupTool)markupTool
+                                markupType:(enum MarkupType)markupType
+                            markupWasMoved:(bool)markupWasMoved;
+- (void) placeMarkupSymbol:(enum GoMarkupSymbol)symbol
+                   atPoint:(GoPoint*)point
+            markupWasMoved:(bool)markupWasMoved;
+- (void) placeMarkupConnection:(enum GoMarkupConnection)connection
+                     fromPoint:(GoPoint*)fromPoint
+                       toPoint:(GoPoint*)toPoint
+                markupWasMoved:(bool)markupWasMoved;
+- (void) placeMarkupLabel:(enum GoMarkupLabel)label
+            withLabelText:(NSString*)labelText
+                  atPoint:(GoPoint*)point
+           markupWasMoved:(bool)markupWasMoved;
 - (void) eraseMarkupInRectangleFromPoint:(GoPoint*)fromPoint toPoint:(GoPoint*)toPoint;
 
 - (void) pass:(id)sender;

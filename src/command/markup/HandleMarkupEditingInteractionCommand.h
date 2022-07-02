@@ -48,7 +48,19 @@
 {
 }
 
-- (id) initWithPoint:(GoPoint*)point;
-- (id) initWithStartPoint:(GoPoint*)startPoint endPoint:(GoPoint*)endPoint;
+- (id) initWithPoint:(GoPoint*)point
+          markupTool:(enum MarkupTool)markupTool
+          markupType:(enum MarkupType)markupType
+      markupWasMoved:(bool)markupWasMoved;
+- (id) initWithPoint:(GoPoint*)point
+           labelText:(NSString*)labelText
+          markupTool:(enum MarkupTool)markupTool
+          markupType:(enum MarkupType)markupType
+      markupWasMoved:(bool)markupWasMoved;
+- (id) initWithStartPoint:(GoPoint*)startPoint
+                 endPoint:(GoPoint*)endPoint
+               markupTool:(enum MarkupTool)markupTool
+               markupType:(enum MarkupType)markupType
+           markupWasMoved:(bool)markupWasMoved;
 
 @end

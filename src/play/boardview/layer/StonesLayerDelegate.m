@@ -191,7 +191,7 @@
       }
       break;
     }
-    case BVLDEventCrossHairChanged:
+    case BVLDEventPlayStoneDidChange:
     {
       GoPoint* oldCrossHairPoint = self.currentCrossHairPoint;
       GoPoint* newCrossHairPoint = eventInfo;

@@ -101,12 +101,30 @@
 #pragma mark - Cross-hair handling
 
 // -----------------------------------------------------------------------------
-/// @brief Moves the cross-hair to the intersection identified by @a point,
-/// specifying whether an actual play move at the intersection would be legal.
+/// @brief Moves the cross-hair to the intersection identified by @a point.
+/// @a isLegalMove specifies whether an actual play move at the intersection
+/// would be legal.
 // -----------------------------------------------------------------------------
-- (void) moveCrossHairTo:(GoPoint*)point
-             isLegalMove:(bool)isLegalMove
-         isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason
+- (void) moveCrossHairToPoint:(GoPoint*)point
+{
+  if (self.crossHairPoint == point)
+    return;
+
+  self.crossHairPoint = point;
+
+  [self notifyTiles:BVLDEventCrossHairChanged eventInfo:point];
+}
+
+#pragma mark - Play stone handling
+
+// -----------------------------------------------------------------------------
+/// @brief Moves the cross-hair plus stone being played to the intersection
+/// identified by @a point. @a isLegalMove specifies whether an actual play move
+/// at the intersection would be legal.
+// -----------------------------------------------------------------------------
+- (void) moveCrossHairWithStoneTo:(GoPoint*)point
+                      isLegalMove:(bool)isLegalMove
+                  isIllegalReason:(enum GoMoveIsIllegalReason)illegalReason
 {
   if (self.crossHairPoint == point && self.crossHairPointIsLegalMove == isLegalMove)
     return;
@@ -115,6 +133,31 @@
   self.crossHairPoint = point;
 
   [self notifyTiles:BVLDEventCrossHairChanged eventInfo:point];
+  [self notifyTiles:BVLDEventPlayStoneDidChange eventInfo:point];
+}
+
+#pragma mark - Markup handling
+
+// -----------------------------------------------------------------------------
+/// @brief Moves the cross-hair plus the symbol markup element @a symbol to the
+/// intersection identified by @a point.
+// -----------------------------------------------------------------------------
+- (void) moveCrossHairWithSymbol:(enum GoMarkupSymbol)symbol
+                         toPoint:(GoPoint*)point
+{
+  if (self.crossHairPoint == point)
+    return;
+
+  self.crossHairPoint = point;
+
+  NSArray* eventInfo;
+  if (point)
+    eventInfo = @[[NSNumber numberWithInt:symbol], point];
+  else
+    eventInfo = @[];
+
+  [self notifyTiles:BVLDEventCrossHairChanged eventInfo:point];
+  [self notifyTiles:BVLDEventMarkupSymbolDidMove eventInfo:eventInfo];
 }
 
 // -----------------------------------------------------------------------------
@@ -138,7 +181,30 @@
   else
     eventInfo = @[];
 
-  [self notifyTiles:BVLDEventInteractiveMarkupBetweenPointsDidChange eventInfo:eventInfo];
+  [self notifyTiles:BVLDEventMarkupConnectionDidMove eventInfo:eventInfo];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Moves the cross-hair plus the label markup element @a label with
+/// the label text @a labelText to the intersection identified by @a point.
+// -----------------------------------------------------------------------------
+- (void) moveCrossHairWithLabel:(enum GoMarkupLabel)label
+                      labelText:(NSString*)labelText
+                        toPoint:(GoPoint*)point
+{
+  if (self.crossHairPoint == point)
+    return;
+
+  self.crossHairPoint = point;
+
+  NSArray* eventInfo;
+  if (point)
+    eventInfo = @[[NSNumber numberWithInt:label], labelText, point];
+  else
+    eventInfo = @[];
+
+  [self notifyTiles:BVLDEventCrossHairChanged eventInfo:point];
+  [self notifyTiles:BVLDEventMarkupLabelDidMove eventInfo:eventInfo];
 }
 
 // -----------------------------------------------------------------------------

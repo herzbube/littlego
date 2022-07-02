@@ -49,8 +49,15 @@ enum BoardViewLayerDelegateEvent
   /// @brief The event info object that accompanies this event type is a GoPoint
   /// object that identifies the location of the cross-hair center. This event
   /// is sent continuously with updated information while a pan gesture is
-  /// ongoing.
+  /// ongoing. When the gesture ends the event is sent a final time with an
+  /// event info object that is @e nil, to indicate that the cross-hair is no
+  /// longer visible.
   BVLDEventCrossHairChanged,
+  /// @brief The event info object that accompanies this event type is a GoPoint
+  /// object that identifies the location of the stone being played. This event
+  /// is sent continuously with updated information while a pan gesture is
+  /// ongoing.
+  BVLDEventPlayStoneDidChange,
   BVLDEventUIAreaPlayModeChanged,
   BVLDEventScoreCalculationEnds,
   BVLDEventMarkNextMoveChanged,
@@ -65,17 +72,47 @@ enum BoardViewLayerDelegateEvent
   BVLDEventSelectedSymbolMarkupStyleChanged,
   BVLDEventMarkupPrecedenceChanged,
   /// @brief The event info object that accompanies this event type is an
-  /// NSArray that contains one or two GoPoint objects, which identify the
-  /// intersection(s) that changed. If the array contains two GoPoint objects
-  /// the affected markup is a connection.
+  /// NSArray that contains 1, 3 or 0 (zero) objects. If the array contains one
+  /// object it's a GoPoint object on which the markup was added or removed. If
+  /// the array contains 3 objects, the first and second objects are GoPoints
+  /// that identify the start/end points of the connection that was added or
+  /// removed, the third object is an NSArray with all GoPoint objects within
+  /// the rectangle defined by the start/end points of the connection. If the
+  /// array contains 0 (zero) objects, markup was added or removed on two or
+  /// more intersections that potentionally do not form a connected area, so
+  /// that there is no benefit in enumerating the GoPoint objects that identify
+  /// the intersections.
   BVLDEventMarkupOnPointsDidChange,
   BVLDEventAllMarkupDiscarded,
   /// @brief The event info object that accompanies this event type is an
-  /// NSArray that contains two GoPoint objects that identify the intersections
-  /// to connect. The first GoPoint object is the starting intersection, the
-  /// second GoPoint object is the end intersection. This event is sent
+  /// NSArray that contains 1) an NSNumber object that holds an @e int value
+  /// that is actually a value from the enumeration #GoMarkupSymbol, identifying
+  /// the type of the symbol markup element being moved; and 2) a GoPoint object
+  /// that identifies the new location of the symbol markup element. This event
+  /// is sent continuously with updated information while a pan gesture is
+  /// ongoing. When the gesture ends the event is sent a final time with an
+  /// event info object that is @e nil, to indicate that the temporarily drawn
+  /// symbol is no longer visible.
+  BVLDEventMarkupSymbolDidMove,
+  /// @brief The event info object that accompanies this event type is an
+  /// NSArray that contains 1) an NSNumber object that holds an @e int value
+  /// that is actually a value from the enumeration #GoMarkupConnection,
+  /// identifying  the type of the connection markup element being moved;
+  /// and 2) two GoPoint objects that identify the intersections to connect.
+  /// The first GoPoint object is the starting intersection, the second GoPoint
+  /// object is the end intersection. This event is sent continuously with
+  /// updated information while a pan gesture is ongoing. When the gesture ends
+  /// the event is sent a final time with an event info object that is @e nil,
+  /// to indicate that the temporarily drawn connection is no longer visible.
+  BVLDEventMarkupConnectionDidMove,
+  /// @brief The event info object that accompanies this event type is an
+  /// NSArray that contains 1) an NSNumber object that holds an @e int value
+  /// that is actually a value from the enumeration #GoMarkupLabel, identifying
+  /// the type of the label markup element being moved; 2) an NSString object
+  /// with the label text being moved; and 3) a GoPoint object that identifies
+  /// the new location of the label markup element. This event is sent
   /// continuously with updated information while a pan gesture is ongoing.
-  BVLDEventInteractiveMarkupBetweenPointsDidChange,
+  BVLDEventMarkupLabelDidMove,
   /// @brief The event info object that accompanies this event type is an
   /// NSArray that contains two GoPoint objects that identify the intersections
   /// that define the selection rectangle (the intersections are located at

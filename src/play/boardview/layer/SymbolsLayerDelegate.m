@@ -33,6 +33,7 @@
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoScore.h"
 #import "../../../go/GoUtilities.h"
+#import "../../../go/GoVertex.h"
 #import "../../../ui/UiSettingsModel.h"
 #import "../../../utility/UIColorAdditions.h"
 
@@ -48,10 +49,28 @@
 @property(nonatomic, retain) NSShadow* whiteTextShadow;
 @property(nonatomic, retain) NSDictionary* blackStrokeSymbolLayerTypes;
 @property(nonatomic, retain) NSDictionary* whiteStrokeSymbolLayerTypes;
+/// @brief List of GoPoint objects for points that are on this tile.
+@property(nonatomic, retain) NSArray* drawingPointsOnTile;
+@property(nonatomic, retain) GoPoint* drawingPoint;
+@property(nonatomic, retain) NSArray* pointsOnTileInConnectionRectangle;
+@property(nonatomic, assign) CGRect dirtyRect;
+@property(nonatomic, assign) CGRect temporaryMarkupDrawingRectangle;
+@property(nonatomic, assign) bool shouldDrawTemporaryMarkup;
+@property(nonatomic, assign) bool shouldDrawOriginalMarkup;
+@property(nonatomic, retain) GoPoint* drawingPointTemporaryMarkup;
+@property(nonatomic, retain) GoPoint* drawingPointOriginalMarkup;
+@property(nonatomic, assign) CGRect dirtyRectTemporaryMarkup;
+@property(nonatomic, assign) CGRect dirtyRectOriginalMarkup;
+@property(nonatomic, assign) enum MarkupTool temporaryMarkupCategory;
+@property(nonatomic, retain) NSNumber* temporarySymbolAsNumber;
+@property(nonatomic, retain) NSNumber* temporaryLabelAsNumber;
+@property(nonatomic, retain) NSString* temporaryLabelText;
 @end
 
 
 @implementation SymbolsLayerDelegate
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a SymbolsLayerDelegate object.
@@ -68,6 +87,7 @@
   self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
+
   _boardViewModel = boardViewModel;
   _boardPositionModel = boardPositionmodel;
   _uiSettingsModel = uiSettingsModel;
@@ -92,6 +112,23 @@
     [NSNumber numberWithInt:GoMarkupSymbolX] : [NSNumber numberWithInt:WhiteXSymbolLayerType],
     [NSNumber numberWithInt:GoMarkupSymbolSelected] : [NSNumber numberWithInt:WhiteSelectedSymbolLayerType],
   };
+
+  self.drawingPointsOnTile = @[];
+  self.pointsOnTileInConnectionRectangle = nil;
+  self.drawingPoint = nil;
+  self.dirtyRect = CGRectZero;
+  self.temporaryMarkupDrawingRectangle = CGRectZero;
+  self.shouldDrawTemporaryMarkup = false;
+  self.shouldDrawOriginalMarkup = false;
+  self.drawingPointTemporaryMarkup = nil;
+  self.drawingPointOriginalMarkup = nil;
+  self.dirtyRectTemporaryMarkup = CGRectZero;
+  self.dirtyRectOriginalMarkup = CGRectZero;
+  self.temporaryMarkupCategory = MarkupToolSymbol;
+  self.temporarySymbolAsNumber = nil;
+  self.temporaryLabelAsNumber = nil;
+  self.temporaryLabelText = nil;
+
   return self;
 }
 
@@ -105,12 +142,25 @@
   // inevitably become out-of-date. To prevent this, we invalidate the CGLayers
   // *NOW*.
   [self invalidateLayers];
+
   self.boardViewModel = nil;
   self.boardPositionModel = nil;
   self.paragraphStyle = nil;
   self.whiteTextShadow = nil;
+  
+  self.drawingPointsOnTile = nil;
+  self.pointsOnTileInConnectionRectangle = nil;
+  self.drawingPoint = nil;
+  self.drawingPointTemporaryMarkup = nil;
+  self.drawingPointOriginalMarkup = nil;
+  self.temporarySymbolAsNumber = nil;
+  self.temporaryLabelAsNumber = nil;
+  self.temporaryLabelText = nil;
+
   [super dealloc];
 }
+
+#pragma mark - State invalidation
 
 // -----------------------------------------------------------------------------
 /// @brief Invalidates layers with "last move" symbols.
@@ -133,6 +183,43 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Invalidates all drawing rectangles.
+// -----------------------------------------------------------------------------
+- (void) invalidateDrawingRectangles
+{
+  self.temporaryMarkupDrawingRectangle = CGRectZero;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invalidates all dirty rectangles.
+// -----------------------------------------------------------------------------
+- (void) invalidateDirtyRects
+{
+  self.dirtyRect = CGRectZero;
+  self.dirtyRectTemporaryMarkup = CGRectZero;
+  self.dirtyRectOriginalMarkup = CGRectZero;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invalidates the dirty rectangle.
+// -----------------------------------------------------------------------------
+- (void) invalidateDirtyData
+{
+  self.drawingPoint = nil;
+  self.pointsOnTileInConnectionRectangle = nil;
+
+  self.shouldDrawTemporaryMarkup = false;
+  self.shouldDrawOriginalMarkup = false;
+  self.drawingPointTemporaryMarkup = nil;
+  self.drawingPointOriginalMarkup = nil;
+  self.temporarySymbolAsNumber = nil;
+  self.temporaryLabelAsNumber = nil;
+  self.temporaryLabelText = nil;
+}
+
+#pragma mark - BoardViewLayerDelegate overrides
+
+// -----------------------------------------------------------------------------
 /// @brief BoardViewLayerDelegate method.
 // -----------------------------------------------------------------------------
 - (void) notify:(enum BoardViewLayerDelegateEvent)event eventInfo:(id)eventInfo
@@ -143,10 +230,27 @@
     case BVLDEventBoardSizeChanged:
     {
       [self invalidateLayers];
+      [self invalidateDrawingRectangles];
+      [self invalidateDirtyRects];
+      [self invalidateDirtyData];
+      self.drawingPointsOnTile = [self calculateDrawingPointsOnTile];
       self.dirty = true;
       break;
     }
     case BVLDEventInvalidateContent:
+    // We draw completely different symbols in each of the various modes. Also
+    // the layer is removed/added dynamically as a result of scoring mode
+    // becoming enabled/disabled. This is the only event we get after being
+    // added, so we react to it to trigger a redraw.
+    case BVLDEventUIAreaPlayModeChanged:
+    {
+      [self invalidateDrawingRectangles];
+      [self invalidateDirtyRects];
+      [self invalidateDirtyData];
+      self.drawingPointsOnTile = [self calculateDrawingPointsOnTile];
+      self.dirty = true;
+      break;
+    }
     case BVLDEventGoGameStarted:        // clear last move marker
     case BVLDEventBoardPositionChanged:
     // This case covers the following scenario: Board position 0 is selected
@@ -157,46 +261,121 @@
     case BVLDEventMarkLastMoveChanged:
     case BVLDEventMoveNumbersPercentageChanged:
     case BVLDEventMarkNextMoveChanged:
-    // We draw completely different symbols in each of the various modes. Also
-    // note that the layer is removed/added dynamically as a result of scoring
-    // mode becoming enabled/disabled.
-    case BVLDEventUIAreaPlayModeChanged:
     case BVLDEventMarkupPrecedenceChanged:
     case BVLDEventAllMarkupDiscarded:
     {
+      [self invalidateDrawingRectangles];
+      [self invalidateDirtyRects];
+      [self invalidateDirtyData];
       self.dirty = true;
       break;
     }
     case BVLDEventHandicapPointChanged:
     case BVLDEventMarkupOnPointsDidChange:
     {
-      bool redrawEverything = false;
-      CGRect drawingRect = CGRectZero;
+      [self invalidateDirtyRects];
+      [self invalidateDirtyData];
 
       NSArray* pointsWithChangedMarkup = eventInfo;
       if (pointsWithChangedMarkup.count == 0)
       {
-        redrawEverything = true;
+        self.drawingPoint = nil;
+        self.pointsOnTileInConnectionRectangle = nil;
+        self.dirty = true;
       }
       else if (pointsWithChangedMarkup.count == 1)
       {
         GoPoint* pointThatChanged = pointsWithChangedMarkup.firstObject;
-        drawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
-                                                 centeredAtPoint:pointThatChanged
-                                                     withMetrics:self.boardViewMetrics];
+        CGRect drawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
+                                                        centeredAtPoint:pointThatChanged
+                                                            withMetrics:self.boardViewMetrics];
+        if (! CGRectIsEmpty(drawingRect))
+        {
+          self.drawingPoint = pointThatChanged;
+          self.pointsOnTileInConnectionRectangle = nil;
+          self.dirtyRect = drawingRect;
+          self.dirty = true;
+        }
       }
       else
       {
-        GoPoint* fromPoint = pointsWithChangedMarkup.firstObject;
-        GoPoint* toPoint = pointsWithChangedMarkup.lastObject;
-        drawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
-                                                       fromPoint:fromPoint
-                                                         toPoint:toPoint
-                                                     withMetrics:self.boardViewMetrics];
+        GoPoint* connectionFromPoint = [pointsWithChangedMarkup objectAtIndex:0];
+        GoPoint* connectionToPoint = [pointsWithChangedMarkup objectAtIndex:1];
+        NSArray* pointsInConnectionRectangle = [pointsWithChangedMarkup objectAtIndex:2];
+
+        CGRect drawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
+                                                              fromPoint:connectionFromPoint
+                                                                toPoint:connectionToPoint
+                                                            withMetrics:self.boardViewMetrics];
+        if (! CGRectIsEmpty(drawingRect))
+        {
+          self.drawingPoint = nil;
+          self.pointsOnTileInConnectionRectangle = [GoUtilities pointsInBothFirstArray:self.drawingPointsOnTile
+                                                                        andSecondArray:pointsInConnectionRectangle];
+          self.dirtyRect = drawingRect;
+          self.dirty = true;
+        }
       }
 
-      if (redrawEverything || ! CGRectIsEmpty(drawingRect))
+      break;
+    }
+    case BVLDEventMarkupSymbolDidMove:
+    case BVLDEventMarkupLabelDidMove:
+    {
+      NSArray* eventInfoAsArray = eventInfo;
+      bool eventInfoIsEmpty = eventInfoAsArray.count == 0;
+
+      GoPoint* newDrawingPointTemporaryMarkup;
+      if (event == BVLDEventMarkupSymbolDidMove)
+      {
+        NSNumber* symbolAsNumber = eventInfoIsEmpty ? nil : [eventInfoAsArray objectAtIndex:0];
+        newDrawingPointTemporaryMarkup = eventInfoIsEmpty ? nil : [eventInfoAsArray objectAtIndex:1];
+
+        if (newDrawingPointTemporaryMarkup == self.drawingPointTemporaryMarkup)
+          break;
+
+        self.temporaryMarkupCategory = MarkupToolSymbol;
+        self.temporarySymbolAsNumber = symbolAsNumber;
+      }
+      else
+      {
+        NSNumber* labelAsNumber = eventInfoIsEmpty ? nil : [eventInfoAsArray objectAtIndex:0];
+        NSString* labelText = eventInfoIsEmpty ? nil : [eventInfoAsArray objectAtIndex:1];
+        newDrawingPointTemporaryMarkup = eventInfoIsEmpty ? nil : [eventInfoAsArray objectAtIndex:2];
+
+        if (newDrawingPointTemporaryMarkup == self.drawingPointTemporaryMarkup)
+          break;
+
+        self.temporaryMarkupCategory = MarkupToolLabel;
+        self.temporaryLabelAsNumber = labelAsNumber;
+        self.temporaryLabelText = labelText;
+      }
+
+      // IMPORTANT: The following logic only works if there is a drawing cycle
+      // between each notify:eventInfo: that changes something on this tile.
+      // If there is no drawing cycle then we will forget about original
+      // content to be restored.
+
+      self.drawingPointOriginalMarkup = self.drawingPointTemporaryMarkup;
+      self.drawingPointTemporaryMarkup = newDrawingPointTemporaryMarkup;
+
+      CGRect oldTemporaryMarkupDrawingRectangle = self.temporaryMarkupDrawingRectangle;
+      CGRect newTemporaryMarkupDrawingRectangle = [BoardViewDrawingHelper drawingRectForTile:self.tile
+                                                                             centeredAtPoint:newDrawingPointTemporaryMarkup
+                                                                                 withMetrics:self.boardViewMetrics];
+      if (! CGRectEqualToRect(oldTemporaryMarkupDrawingRectangle, newTemporaryMarkupDrawingRectangle))
+      {
+        bool oldTemporaryMarkupDrawingRectangleWasOnTile = ! CGRectIsEmpty(oldTemporaryMarkupDrawingRectangle);
+        self.shouldDrawOriginalMarkup = oldTemporaryMarkupDrawingRectangleWasOnTile;
+        self.dirtyRectOriginalMarkup = oldTemporaryMarkupDrawingRectangleWasOnTile ? oldTemporaryMarkupDrawingRectangle : CGRectZero;
+
+        bool newTemporaryMarkupDrawingRectangleIsOnTile = ! CGRectIsEmpty(newTemporaryMarkupDrawingRectangle);
+        self.shouldDrawTemporaryMarkup = newTemporaryMarkupDrawingRectangleIsOnTile;
+        self.dirtyRectTemporaryMarkup = newTemporaryMarkupDrawingRectangleIsOnTile ? newTemporaryMarkupDrawingRectangle : CGRectZero;
+
+        self.temporaryMarkupDrawingRectangle = newTemporaryMarkupDrawingRectangle;
         self.dirty = true;
+      }
 
       break;
     }
@@ -205,6 +384,7 @@
       BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
       [cache invalidateLayerOfType:BlackSelectedSymbolLayerType];
       [cache invalidateLayerOfType:WhiteSelectedSymbolLayerType];
+      [self invalidateDirtyData];
       self.dirty = true;
       break;
     }
@@ -214,6 +394,38 @@
     }
   }
 }
+
+// -----------------------------------------------------------------------------
+/// @brief BoardViewLayerDelegate method.
+// -----------------------------------------------------------------------------
+- (void) drawLayer
+{
+  if (self.dirty)
+  {
+    self.dirty = false;
+    if (CGRectIsEmpty(self.dirtyRect) && CGRectIsEmpty(self.dirtyRectOriginalMarkup) && CGRectIsEmpty(self.dirtyRectTemporaryMarkup))
+    {
+      [self.layer setNeedsDisplay];
+    }
+    else
+    {
+      if (! CGRectIsEmpty(self.dirtyRect))
+      {
+        [self.layer setNeedsDisplayInRect:self.dirtyRect];
+      }
+      else
+      {
+        if (! CGRectIsEmpty(self.dirtyRectOriginalMarkup))
+          [self.layer setNeedsDisplayInRect:self.dirtyRectOriginalMarkup];
+        if (! CGRectIsEmpty(self.dirtyRectTemporaryMarkup))
+          [self.layer setNeedsDisplayInRect:self.dirtyRectTemporaryMarkup];
+      }
+    }
+    [self invalidateDirtyRects];
+  }
+}
+
+#pragma mark - CALayerDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief CALayerDelegate method.
@@ -235,7 +447,7 @@
 
   if (uiAreaPlayMode == UIAreaPlayModePlay || uiAreaPlayMode == UIAreaPlayModeEditMarkup)
   {
-    // A method that wants to draw a piece of markup on a GoPoint must first
+    // A method that wants to draw something on a GoPoint must first
     // check this array if the GoPoint is already in the array. If not the
     // method is allowed to draw on the GoPoint. The method must also add the
     // GoPoint to the array, indicating to later methods that markup is already
@@ -243,17 +455,68 @@
     // invoked determines which markup has precedence.
     NSMutableArray* pointsWithMarkup = [NSMutableArray array];
 
-    if ([self shouldDisplayMoveNumbers])
-      [self drawMoveNumbersInContext:context inTileWithRect:tileRect pointsWithMarkup:pointsWithMarkup];
+    // A method that wants to draw something on a GoPoint must first check this
+    // array if the GoPoint is in the array. If not the method is not allowed
+    // draw on the GoPoint.
+    NSMutableArray* pointsToDrawOn = [NSMutableArray array];
 
-    [self drawMarkupInContext:context inTileWithRect:tileRect pointsWithMarkup:pointsWithMarkup];
+    // Optimization: Drawing original markup is the only other drawing
+    // operation that is possible at the same time as drawing temporary
+    // markup. So if we don't draw original markup, this flag will get set so
+    // that we can skip most of the other drawing routines.
+    bool shouldDrawTemporaryMarkupOnly = false;
 
-    if ([self shouldDisplayLastMoveSymbol])
-      [self drawLastMoveSymbolInContext:context inTileWithRect:tileRect pointsWithMarkup:pointsWithMarkup];
+    if (self.shouldDrawOriginalMarkup || self.shouldDrawTemporaryMarkup)
+    {
+      // A panning gesture has started, is ongoing, or has ended. We need to
+      // draw temporary markup and/or restore original markup that was overdrawn
+      // by temporary markup in the previous drawing cycle.
 
-    if ([self shouldDisplayNextMoveLabel])
-      [self drawNextMoveLabelInContext:context inTileWithRect:tileRect pointsWithMarkup:pointsWithMarkup];
+      if (self.shouldDrawTemporaryMarkup)
+      {
+        // Set flag, as documented above
+        shouldDrawTemporaryMarkupOnly = ! self.shouldDrawOriginalMarkup;
 
+        // Make sure that nobody else is drawing over the temporary markup
+        [pointsWithMarkup addObject:self.drawingPointTemporaryMarkup];
+      }
+
+      if (self.shouldDrawOriginalMarkup)
+        [pointsToDrawOn addObject:self.drawingPointOriginalMarkup];
+    }
+    else
+    {
+      // Either an element (e.g. markup symbol or label, handicap stone) has
+      // been placed on or removed from a single intersection, or a markup
+      // connection has been placed or removed. Here we add add the affected
+      // points to the pointsToDrawOn array so that not the entire layer needs
+      // to be redrawn.
+
+      if (self.drawingPoint)
+        [pointsToDrawOn addObject:self.drawingPoint];
+      else if (self.pointsOnTileInConnectionRectangle)
+        [pointsToDrawOn addObjectsFromArray:self.pointsOnTileInConnectionRectangle];
+    }
+
+    if (pointsToDrawOn.count == 0)
+      pointsToDrawOn = nil;
+
+    if ([self shouldDisplayMoveNumbers] && ! shouldDrawTemporaryMarkupOnly)
+      [self drawMoveNumbersInContext:context inTileWithRect:tileRect pointsToDrawOn:pointsToDrawOn pointsWithMarkup:pointsWithMarkup];
+
+    // Unfortunately, even if we only draw temporary markup we still have to
+    // draw connections because we don't know how they intersect with the
+    // temporary markup.
+    [self drawMarkupInContext:context inTileWithRect:tileRect pointsToDrawOn:pointsToDrawOn pointsWithMarkup:pointsWithMarkup drawConnectionsOnly:shouldDrawTemporaryMarkupOnly];
+
+    if (self.shouldDrawTemporaryMarkup)
+      [self drawTemporaryMarkupInContext:context inTileWithRect:tileRect];
+
+    if ([self shouldDisplayLastMoveSymbol] && ! shouldDrawTemporaryMarkupOnly)
+      [self drawLastMoveSymbolInContext:context inTileWithRect:tileRect pointsToDrawOn:pointsToDrawOn pointsWithMarkup:pointsWithMarkup];
+
+    if ([self shouldDisplayNextMoveLabel] && ! shouldDrawTemporaryMarkupOnly)
+      [self drawNextMoveLabelInContext:context inTileWithRect:tileRect pointsToDrawOn:pointsToDrawOn pointsWithMarkup:pointsWithMarkup];
   }
   else if (uiAreaPlayMode == UIAreaPlayModeBoardSetup)
   {
@@ -318,11 +581,14 @@
     return true;
 }
 
+#pragma mark - Drawing - Move numbers
+
 // -----------------------------------------------------------------------------
 /// @brief Private helper for drawLayer:inContext:().
 // -----------------------------------------------------------------------------
 - (void) drawMoveNumbersInContext:(CGContextRef)context
                    inTileWithRect:(CGRect)tileRect
+                   pointsToDrawOn:(NSArray*)pointsToDrawOn
                  pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
 {
   UIFont* moveNumberFont = self.boardViewMetrics.moveNumberFont;
@@ -337,6 +603,13 @@
   if (! nodeWithMostRecentMove)
     return;
 
+  // Optimization: We don't want the pointsWithMarkup array to grow while we are
+  // iterating, because this would vastly increase the time for checking for
+  // membership on each iteration. The requirement is that we must not draw on
+  // points where some OTHER routine has already drawn its stuff, so checking
+  // for membership on the original non-growing array is sufficient.
+  NSMutableArray* newPointsWithMarkup = [NSMutableArray array];
+
   GoMove* moveToBeNumbered = nodeWithMostRecentMove.goMove;
   GoMove* lastMove = moveToBeNumbered;
   for (;
@@ -349,9 +622,13 @@
     GoPoint* pointToBeNumbered = moveToBeNumbered.point;
     if (GoColorNone == pointToBeNumbered.stoneState)
       continue;  // stone placed by this move was captured by a later move
+    if (self.shouldDrawTemporaryMarkup && self.drawingPointTemporaryMarkup == pointToBeNumbered)
+      continue;  // during panning temporary markup is allowed to be drawn instead of a move number
+    if (pointsToDrawOn && ! [pointsToDrawOn containsObject:pointToBeNumbered])
+      continue;
     if ([pointsWithMarkup containsObject:pointToBeNumbered])
       continue;
-    [pointsWithMarkup addObject:pointToBeNumbered];
+    [newPointsWithMarkup addObject:pointToBeNumbered];
 
     UIColor* textColor;
     if (moveToBeNumbered == lastMove && self.boardViewModel.markLastMove)
@@ -381,14 +658,64 @@
                         inTileWithRect:tileRect
                            withMetrics:self.boardViewMetrics];
   }
+
+  [pointsWithMarkup addObjectsFromArray:newPointsWithMarkup];
 }
+
+#pragma mark - Drawing - Temporary markup
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+///
+/// Unlike other drawing routines, this method takes the data to draw not from
+/// GoNodeMarkup but from member variables.
+// -----------------------------------------------------------------------------
+- (void) drawTemporaryMarkupInContext:(CGContextRef)context
+                       inTileWithRect:(CGRect)tileRect
+{
+  if (self.temporaryMarkupCategory == MarkupToolSymbol)
+  {
+    BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
+    [self drawSymbolMarkup:self.temporarySymbolAsNumber
+                  inContext:context
+             inTileWithRect:tileRect
+                    atPoint:self.drawingPointTemporaryMarkup
+                  withCache:cache];
+  }
+  else if (self.temporaryMarkupCategory == MarkupToolLabel)
+  {
+    UIFont* labelFont = self.boardViewMetrics.moveNumberFont;
+    if (labelFont)
+    {
+      // Don't limit the label width. Of course, too long labels look ugly, but
+      // that's a data problem.
+      CGSize labelMaximumSize = CGSizeMake(self.boardViewMetrics.canvasSize.width,
+                                           self.boardViewMetrics.moveNumberMaximumSize.height);
+
+      [self drawLabelMarkup:self.temporaryLabelText
+                  inContext:context
+             inTileWithRect:tileRect
+                    atPoint:self.drawingPointTemporaryMarkup
+                   withFont:labelFont
+                maximumSize:labelMaximumSize];
+    }
+  }
+  else
+  {
+    assert(0);
+  }
+}
+
+#pragma mark - Drawing - Markup
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for drawLayer:inContext:().
 // -----------------------------------------------------------------------------
 - (void) drawMarkupInContext:(CGContextRef)context
               inTileWithRect:(CGRect)tileRect
+              pointsToDrawOn:(NSArray*)pointsToDrawOn
             pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
+         drawConnectionsOnly:(bool)drawConnectionsOnly
 {
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
@@ -399,17 +726,25 @@
 
   GoBoard* board = game.board;
 
-  if (self.boardViewModel.markupPrecedence == MarkupPrecedenceSymbols)
-    [self drawSymbolsMarkup:nodeMarkup.symbols inContext:context inTileWithRect:tileRect board:board pointsWithMarkup:pointsWithMarkup];
-  else
-    [self drawLabelsMarkup:nodeMarkup.labels inContext:context inTileWithRect:tileRect board:board pointsWithMarkup:pointsWithMarkup];
-
+  // We don't pass pointsToDrawOn or pointsWithMarkup to the connection drawing
+  // routine because all parts of connections that are on this tile have to be
+  // re-drawn in full because we don't know how connection rectangles intersect
+  // with any point cells on this tile.
   [self drawConnectionsMarkup:nodeMarkup.connections inContext:context inTileWithRect:tileRect board:board];
 
+  if (drawConnectionsOnly)
+    return;
+
   if (self.boardViewModel.markupPrecedence == MarkupPrecedenceSymbols)
-    [self drawLabelsMarkup:nodeMarkup.labels inContext:context inTileWithRect:tileRect board:board pointsWithMarkup:pointsWithMarkup];
+  {
+    [self drawSymbolsMarkup:nodeMarkup.symbols inContext:context inTileWithRect:tileRect board:board pointsToDrawOn:pointsToDrawOn pointsWithMarkup:pointsWithMarkup];
+    [self drawLabelsMarkup:nodeMarkup.labels inContext:context inTileWithRect:tileRect board:board pointsToDrawOn:pointsToDrawOn pointsWithMarkup:pointsWithMarkup];
+  }
   else
-    [self drawSymbolsMarkup:nodeMarkup.symbols inContext:context inTileWithRect:tileRect board:board pointsWithMarkup:pointsWithMarkup];
+  {
+    [self drawLabelsMarkup:nodeMarkup.labels inContext:context inTileWithRect:tileRect board:board pointsToDrawOn:pointsToDrawOn pointsWithMarkup:pointsWithMarkup];
+    [self drawSymbolsMarkup:nodeMarkup.symbols inContext:context inTileWithRect:tileRect board:board pointsToDrawOn:pointsToDrawOn pointsWithMarkup:pointsWithMarkup];
+  }
 
   [self drawDimmingsMarkup:nodeMarkup.dimmings inContext:context inTileWithRect:tileRect board:board];
 }
@@ -422,6 +757,7 @@
                  inContext:(CGContextRef)context
             inTileWithRect:(CGRect)tileRect
                      board:(GoBoard*)board
+            pointsToDrawOn:(NSArray*)pointsToDrawOn
           pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
 {
   if (! symbols)
@@ -432,42 +768,60 @@
   [symbols enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* symbolAsNumber, BOOL* stop)
   {
     GoPoint* pointWithSymbol = [board pointAtVertex:vertexString];
+    if (pointsToDrawOn && ! [pointsToDrawOn containsObject:pointWithSymbol])
+      return;
     if ([pointsWithMarkup containsObject:pointWithSymbol])
       return;
     [pointsWithMarkup addObject:pointWithSymbol];
 
-    enum GoMarkupSymbol symbol = [symbolAsNumber intValue];
-
-    NSDictionary* symbolLayerTypes;
-    if (symbol == GoMarkupSymbolSelected && self.boardViewModel.selectedSymbolMarkupStyle == SelectedSymbolMarkupStyleDotSymbol)
-    {
-      // The "dot" symbol not only consist of a stroke, it is also filled
-      // with the color opposite to the stroke color. Because of that the
-      // symbol's primary color is the fill color and we have to invert the
-      // logic that is used for the other symbols.
-      if (pointWithSymbol.stoneState == GoColorWhite)
-        symbolLayerTypes = self.whiteStrokeSymbolLayerTypes;
-      else
-        symbolLayerTypes = self.blackStrokeSymbolLayerTypes;  // use white filled dot also when intersection is not occupied
-    }
-    else
-    {
-      if (pointWithSymbol.stoneState == GoColorBlack)
-        symbolLayerTypes = self.whiteStrokeSymbolLayerTypes;
-      else
-        symbolLayerTypes = self.blackStrokeSymbolLayerTypes;  // use black also when intersection is not occupied
-    }
-
-    NSNumber* layerTypeAsNumber = symbolLayerTypes[symbolAsNumber];
-    enum LayerType layerType = layerTypeAsNumber.intValue;
-    CGLayerRef layer = [cache layerOfType:layerType];
-
-    [BoardViewDrawingHelper drawLayer:layer
-                          withContext:context
-                      centeredAtPoint:pointWithSymbol
-                       inTileWithRect:tileRect
-                          withMetrics:self.boardViewMetrics];
+    [self drawSymbolMarkup:symbolAsNumber
+                 inContext:context
+            inTileWithRect:tileRect
+                   atPoint:pointWithSymbol
+                 withCache:cache];
   }];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper that draws a single symbol.
+// -----------------------------------------------------------------------------
+- (void) drawSymbolMarkup:(NSNumber*)symbolAsNumber
+                inContext:(CGContextRef)context
+           inTileWithRect:(CGRect)tileRect
+                  atPoint:(GoPoint*)pointWithSymbol
+                withCache:(BoardViewCGLayerCache*)cache
+{
+  enum GoMarkupSymbol symbol = [symbolAsNumber intValue];
+
+  NSDictionary* symbolLayerTypes;
+  if (symbol == GoMarkupSymbolSelected && self.boardViewModel.selectedSymbolMarkupStyle == SelectedSymbolMarkupStyleDotSymbol)
+  {
+    // The "dot" symbol not only consist of a stroke, it is also filled
+    // with the color opposite to the stroke color. Because of that the
+    // symbol's primary color is the fill color and we have to invert the
+    // logic that is used for the other symbols.
+    if (pointWithSymbol.stoneState == GoColorWhite)
+      symbolLayerTypes = self.whiteStrokeSymbolLayerTypes;
+    else
+      symbolLayerTypes = self.blackStrokeSymbolLayerTypes;  // use white filled dot also when intersection is not occupied
+  }
+  else
+  {
+    if (pointWithSymbol.stoneState == GoColorBlack)
+      symbolLayerTypes = self.whiteStrokeSymbolLayerTypes;
+    else
+      symbolLayerTypes = self.blackStrokeSymbolLayerTypes;  // use black also when intersection is not occupied
+  }
+
+  NSNumber* layerTypeAsNumber = symbolLayerTypes[symbolAsNumber];
+  enum LayerType layerType = layerTypeAsNumber.intValue;
+  CGLayerRef layer = [cache layerOfType:layerType];
+
+  [BoardViewDrawingHelper drawLayer:layer
+                        withContext:context
+                    centeredAtPoint:pointWithSymbol
+                     inTileWithRect:tileRect
+                        withMetrics:self.boardViewMetrics];
 }
 
 // -----------------------------------------------------------------------------
@@ -527,6 +881,7 @@
                 inContext:(CGContextRef)context
            inTileWithRect:(CGRect)tileRect
                     board:(GoBoard*)board
+           pointsToDrawOn:(NSArray*)pointsToDrawOn
          pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
 {
   if (! labels)
@@ -544,43 +899,63 @@
   [labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSString* labelText, BOOL* stop)
   {
     GoPoint* pointWithLabel = [board pointAtVertex:vertexString];
+    if (pointsToDrawOn && ! [pointsToDrawOn containsObject:pointWithLabel])
+      return;
     if ([pointsWithMarkup containsObject:pointWithLabel])
       return;
     [pointsWithMarkup addObject:pointWithLabel];
 
-    // Use white text color when intersection is not occupied, because black
-    // colored text is difficult to read on the board's wooden background.
-    UIColor* textColor;
-    if (pointWithLabel.stoneState == GoColorWhite)
-      textColor = [UIColor blackColor];
-    else
-      textColor = [UIColor whiteColor];
-
-    // For unoccupied intersections add a shadow to the white colored text to
-    // improve readability even more
-    NSDictionary* textAttributes;
-    if (pointWithLabel.stoneState == GoColorNone)
-    {
-      textAttributes = @{ NSFontAttributeName : labelFont,
-                          NSForegroundColorAttributeName : textColor,
-                          NSParagraphStyleAttributeName : self.paragraphStyle,
-                          NSShadowAttributeName: self.whiteTextShadow };
-    }
-    else
-    {
-      textAttributes = @{ NSFontAttributeName : labelFont,
-                          NSForegroundColorAttributeName : textColor,
-                          NSParagraphStyleAttributeName : self.paragraphStyle };
-    }
-
-    [BoardViewDrawingHelper drawString:labelText
-                           withContext:context
-                            attributes:textAttributes
-                        inRectWithSize:labelMaximumSize
-                       centeredAtPoint:pointWithLabel
-                        inTileWithRect:tileRect
-                           withMetrics:self.boardViewMetrics];
+    [self drawLabelMarkup:labelText
+                inContext:context
+           inTileWithRect:tileRect
+                  atPoint:pointWithLabel
+                 withFont:labelFont
+              maximumSize:labelMaximumSize];
   }];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper that draws a single label.
+// -----------------------------------------------------------------------------
+- (void) drawLabelMarkup:(NSString*)labelText
+               inContext:(CGContextRef)context
+          inTileWithRect:(CGRect)tileRect
+                 atPoint:(GoPoint*)pointWithLabel
+                withFont:(UIFont*)labelFont
+             maximumSize:(CGSize)labelMaximumSize
+{
+  // Use white text color when intersection is not occupied, because black
+  // colored text is difficult to read on the board's wooden background.
+  UIColor* textColor;
+  if (pointWithLabel.stoneState == GoColorWhite)
+    textColor = [UIColor blackColor];
+  else
+    textColor = [UIColor whiteColor];
+
+  // For unoccupied intersections add a shadow to the white colored text to
+  // improve readability even more
+  NSDictionary* textAttributes;
+  if (pointWithLabel.stoneState == GoColorNone)
+  {
+    textAttributes = @{ NSFontAttributeName : labelFont,
+                        NSForegroundColorAttributeName : textColor,
+                        NSParagraphStyleAttributeName : self.paragraphStyle,
+                        NSShadowAttributeName: self.whiteTextShadow };
+  }
+  else
+  {
+    textAttributes = @{ NSFontAttributeName : labelFont,
+                        NSForegroundColorAttributeName : textColor,
+                        NSParagraphStyleAttributeName : self.paragraphStyle };
+  }
+
+  [BoardViewDrawingHelper drawString:labelText
+                         withContext:context
+                          attributes:textAttributes
+                      inRectWithSize:labelMaximumSize
+                     centeredAtPoint:pointWithLabel
+                      inTileWithRect:tileRect
+                         withMetrics:self.boardViewMetrics];
 }
 
 // -----------------------------------------------------------------------------
@@ -598,6 +973,8 @@
   // Dimming is currently not supported by this app
 }
 
+#pragma mark - Drawing - Last move symbol
+
 // -----------------------------------------------------------------------------
 /// @brief Private helper for drawLayer:inContext:().
 // -----------------------------------------------------------------------------
@@ -611,6 +988,7 @@
 // -----------------------------------------------------------------------------
 - (void) drawLastMoveSymbolInContext:(CGContextRef)context
                       inTileWithRect:(CGRect)tileRect
+                      pointsToDrawOn:(NSArray*)pointsToDrawOn
                     pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
 {
   GoGame* game = [GoGame sharedGame];
@@ -623,6 +1001,8 @@
     return;
 
   GoPoint* pointWithLastMoveSymbol = mostRecentMove.point;
+  if (pointsToDrawOn && ! [pointsToDrawOn containsObject:pointWithLastMoveSymbol])
+    return;
   if ([pointsWithMarkup containsObject:pointWithLastMoveSymbol])
     return;
   [pointsWithMarkup addObject:pointWithLastMoveSymbol];
@@ -644,6 +1024,8 @@
                         withMetrics:self.boardViewMetrics];
 }
 
+#pragma mark - Drawing - Next move label
+
 // -----------------------------------------------------------------------------
 /// @brief Private helper for drawLayer:inContext:().
 // -----------------------------------------------------------------------------
@@ -659,6 +1041,7 @@
 // -----------------------------------------------------------------------------
 - (void) drawNextMoveLabelInContext:(CGContextRef)context
                      inTileWithRect:(CGRect)tileRect
+                     pointsToDrawOn:(NSArray*)pointsToDrawOn
                    pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
 {
   GoGame* game = [GoGame sharedGame];
@@ -671,6 +1054,8 @@
     return;
 
   GoPoint* pointWithNextMoveLabel = nextMove.point;
+  if (pointsToDrawOn && ! [pointsToDrawOn containsObject:pointWithNextMoveLabel])
+    return;
   if ([pointsWithMarkup containsObject:pointWithNextMoveLabel])
     return;
   [pointsWithMarkup addObject:pointWithNextMoveLabel];
