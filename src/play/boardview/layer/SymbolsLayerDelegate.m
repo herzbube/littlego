@@ -627,6 +627,8 @@
       continue;  // during panning temporary markup is allowed to be drawn instead of a move number
     if (pointsToDrawOn && ! [pointsToDrawOn containsObject:pointToBeNumbered])
       continue;
+    if (! [self.drawingPointsOnTile containsObject:pointToBeNumbered])
+      return;
     if ([pointsWithMarkup containsObject:pointToBeNumbered])
       continue;
     [newPointsWithMarkup addObject:pointToBeNumbered];
@@ -760,6 +762,8 @@
   {
     GoPoint* pointWithSymbol = [board pointAtVertex:vertexString];
     if (pointsToDrawOn && ! [pointsToDrawOn containsObject:pointWithSymbol])
+      return;
+    if (! [self.drawingPointsOnTile containsObject:pointWithSymbol])
       return;
     if ([pointsWithMarkup containsObject:pointWithSymbol])
       return;
@@ -896,6 +900,12 @@
 
     enum GoMarkupLabel labelType = [MarkupUtilities labelTypeOfLabel:labelText];
 
+    // Non-marker labels can extend over the boundary of the tile, therefore
+    // they have to be drawn by all tiles even if the center of the point is
+    // not on the tile itself.
+    if (labelType != GoMarkupLabelLabel && ! [self.drawingPointsOnTile containsObject:pointWithLabel])
+      return;
+
     [self drawLabelMarkup:labelText
                 inContext:context
            inTileWithRect:tileRect
@@ -1030,6 +1040,8 @@
   GoPoint* pointWithLastMoveSymbol = mostRecentMove.point;
   if (pointsToDrawOn && ! [pointsToDrawOn containsObject:pointWithLastMoveSymbol])
     return;
+  if (! [self.drawingPointsOnTile containsObject:pointWithLastMoveSymbol])
+    return;
   if ([pointsWithMarkup containsObject:pointWithLastMoveSymbol])
     return;
   [pointsWithMarkup addObject:pointWithLastMoveSymbol];
@@ -1083,6 +1095,8 @@
   GoPoint* pointWithNextMoveLabel = nextMove.point;
   if (pointsToDrawOn && ! [pointsToDrawOn containsObject:pointWithNextMoveLabel])
     return;
+  if (! [self.drawingPointsOnTile containsObject:pointWithNextMoveLabel])
+    return;
   if ([pointsWithMarkup containsObject:pointWithNextMoveLabel])
     return;
   [pointsWithMarkup addObject:pointWithNextMoveLabel];
@@ -1113,6 +1127,9 @@
   GoGame* game = [GoGame sharedGame];
   for (GoPoint* handicapPoint in game.handicapPoints)
   {
+    if (! [self.drawingPointsOnTile containsObject:handicapPoint])
+      return;
+
     [BoardViewDrawingHelper drawLayer:whiteLastMoveLayer
                           withContext:context
                       centeredAtPoint:handicapPoint
