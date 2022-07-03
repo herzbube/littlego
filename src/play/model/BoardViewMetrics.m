@@ -34,11 +34,15 @@
 @interface BoardViewMetrics()
 @property(nonatomic, retain) FontRange* moveNumberFontRange;
 @property(nonatomic, retain) FontRange* coordinateLabelFontRange;
+@property(nonatomic, retain) FontRange* markupLetterMarkerFontRange;
+@property(nonatomic, retain) FontRange* markupNumberMarkerFontRange;
 @property(nonatomic, retain) FontRange* nextMoveLabelFontRange;
 @end
 
 
 @implementation BoardViewMetrics
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a BoardViewMetrics object.
@@ -71,6 +75,9 @@
   self.lineRectangles = nil;
   self.moveNumberFont = nil;
   self.coordinateLabelFont = nil;
+  self.markupLetterMarkerFont = nil;
+  self.markupNumberMarkerFont = nil;
+  self.markupLabelFont = nil;
   self.nextMoveLabelFont = nil;
   self.lineColor = nil;
   self.starPointColor = nil;
@@ -80,6 +87,8 @@
   self.territoryColorInconsistent = nil;
   self.moveNumberFontRange = nil;
   self.coordinateLabelFontRange = nil;
+  self.markupLetterMarkerFontRange = nil;
+  self.markupNumberMarkerFontRange = nil;
   self.nextMoveLabelFontRange = nil;
   self.deadStoneSymbolColor = nil;
   self.inconsistentTerritoryDotSymbolColor = nil;
@@ -92,6 +101,8 @@
 
   [super dealloc];
 }
+
+#pragma mark - Setup during initialization
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for the initializer.
@@ -161,6 +172,18 @@
   self.coordinateLabelFontRange = [[[FontRange alloc] initWithText:widestCoordinateLabel
                                                    minimumFontSize:minimumFontSize
                                                    maximumFontSize:maximumFontSize] autorelease];
+  // Alas, the minimum font size is just a tiny bit too big to display the
+  // letter "W" on a 19x19 board on the smallest of iPhones (iPhone 5S at the
+  // time of writing). Letter "A" is slightly less wide than "W", which is the
+  // reason why the "next move label" is always displayed.
+  NSString* widestMarkupLetterMarker = @"W";
+  self.markupLetterMarkerFontRange = [[[FontRange alloc] initWithText:widestMarkupLetterMarker
+                                                      minimumFontSize:minimumFontSize
+                                                      maximumFontSize:maximumFontSize] autorelease];
+  NSString* widestMarkupNumberMarker = @"88";
+  self.markupNumberMarkerFontRange = [[[FontRange alloc] initWithText:widestMarkupNumberMarker
+                                                      minimumFontSize:minimumFontSize
+                                                      maximumFontSize:maximumFontSize] autorelease];
   NSString* widestNextMoveLabel = @"A";
   self.nextMoveLabelFontRange = [[[FontRange alloc] initWithText:widestNextMoveLabel
                                                  minimumFontSize:minimumFontSize
@@ -180,6 +203,8 @@
   self.displayCoordinates = [ApplicationDelegate sharedDelegate].boardViewModel.displayCoordinates;
 }
 
+#pragma mark - Setup/remove notification responders
+
 // -----------------------------------------------------------------------------
 /// @brief Private helper for the initializer.
 // -----------------------------------------------------------------------------
@@ -197,6 +222,8 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[ApplicationDelegate sharedDelegate].boardViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
 }
+
+#pragma mark - Public API - Updaters
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the values stored by this BoardViewMetrics object based on
@@ -298,6 +325,8 @@
   self.displayCoordinates = newDisplayCoordinates;
 }
 
+#pragma mark - Private backend invoked from all public API updaters
+
 // -----------------------------------------------------------------------------
 /// @brief Updates the values stored by this BoardViewMetrics object based on
 /// @a newCanvasSize, @a newBoardSize and @a newDisplayCoordinates.
@@ -347,6 +376,12 @@
     self.coordinateLabelInset = 0;
     self.coordinateLabelFont = nil;
     self.coordinateLabelMaximumSize = CGSizeZero;
+    self.markupLetterMarkerFont = nil;
+    self.markupLetterMarkerMaximumSize = CGSizeZero;
+    self.markupNumberMarkerFont = nil;
+    self.markupNumberMarkerMaximumSize = CGSizeZero;
+    self.markupLabelFont = nil;
+    self.markupLabelMaximumSize = CGSizeZero;
     self.nextMoveLabelFont = nil;
     self.nextMoveLabelMaximumSize = CGSizeZero;
     self.numberOfCells = 0;
@@ -561,50 +596,56 @@
     CGFloat boundingLineStartCoordinate = boundingLineStrokeCoordinate - boundingLineHalfWidth;
     self.lineStartOffset = normalLineStrokeCoordinate - boundingLineStartCoordinate;
 
-    UIFont* moveNumberFont = nil;
-    CGSize moveNumberMaximumSize = CGSizeZero;
-    bool success = [self.moveNumberFontRange queryForWidth:self.stoneInnerSquareSize.width
-                                                      font:&moveNumberFont
-                                                  textSize:&moveNumberMaximumSize];
-    if (success)
+    UIFont* calculatedFont = nil;
+    CGSize calculatedFontMaximumSize = CGSizeZero;
+
+    [self calculateWithFontRange:self.moveNumberFontRange font:&calculatedFont textSize:&calculatedFontMaximumSize];
+    self.moveNumberFont = calculatedFont;
+    self.moveNumberMaximumSize = calculatedFontMaximumSize;
+    if (self.moveNumberFont && self.coordinateLabelFont)
     {
-      self.moveNumberFont = moveNumberFont;
-      self.moveNumberMaximumSize = moveNumberMaximumSize;
-      
-      if (self.coordinateLabelFont)
-      {
-        // We tone down the coordinate label font because it looks very bad if
-        // coordinate label become much larger than move numbers.
-        CGFloat maximumCoordinateLabelFontSize = floorf(self.moveNumberFont.pointSize / coordinateLabelStripWidthFactor);
-        if (self.coordinateLabelFont.pointSize > maximumCoordinateLabelFontSize)
-          self.coordinateLabelFont = [self.coordinateLabelFont fontWithSize:maximumCoordinateLabelFontSize];
-      }
-    }
-    else
-    {
-      self.moveNumberFont = nil;
-      self.moveNumberMaximumSize = CGSizeZero;
+      // We tone down the coordinate label font because it looks very bad if
+      // coordinate label become much larger than move numbers.
+      CGFloat maximumCoordinateLabelFontSize = floorf(self.moveNumberFont.pointSize / coordinateLabelStripWidthFactor);
+      if (self.coordinateLabelFont.pointSize > maximumCoordinateLabelFontSize)
+        self.coordinateLabelFont = [self.coordinateLabelFont fontWithSize:maximumCoordinateLabelFontSize];
     }
 
-    UIFont* nextMoveLabelFont = nil;
-    CGSize nextMoveLabelFontMaximumSize = CGSizeZero;
-    success = [self.nextMoveLabelFontRange queryForWidth:self.stoneInnerSquareSize.width
-                                                    font:&nextMoveLabelFont
-                                                textSize:&nextMoveLabelFontMaximumSize];
-    if (success)
-    {
-      self.nextMoveLabelFont = nextMoveLabelFont;
-      self.nextMoveLabelMaximumSize = nextMoveLabelFontMaximumSize;
-    }
-    else
-    {
-      self.nextMoveLabelFont = nil;
-      self.nextMoveLabelMaximumSize = CGSizeZero;
-    }
+    [self calculateWithFontRange:self.markupLetterMarkerFontRange font:&calculatedFont textSize:&calculatedFontMaximumSize];
+    self.markupLetterMarkerFont = calculatedFont;
+    self.markupLetterMarkerMaximumSize = calculatedFontMaximumSize;
+
+    [self calculateWithFontRange:self.markupNumberMarkerFontRange font:&calculatedFont textSize:&calculatedFontMaximumSize];
+    self.markupNumberMarkerFont = calculatedFont;
+    self.markupNumberMarkerMaximumSize = calculatedFontMaximumSize;
+
+    // The user can enter arbitrarily long markup labels. We don't intend to cut
+    // off those labels, so we set the width of self.markupLabelMaximumSize to
+    // the entire canvas width. The font we are using is based on the number
+    // markers font range, because number markers can use up to two characters,
+    // which is in between letter markers (1 charachter) and move numbers
+    // (3 characters) - so the font should be not too small and not too large.
+    //
+    // For labels that are too long (i.e. longer than
+    // self.stoneInnerSquareSize.width) this can have two consequences:
+    // - They look ugly because they protrude from the point cell.
+    // - Neighbouring labels can overlap.
+    // Unless we start cutting off markup labels, nothing can be done about
+    // this.
+    [self calculateWithFontRange:self.markupNumberMarkerFontRange font:&calculatedFont textSize:&calculatedFontMaximumSize];
+    self.markupLabelFont = calculatedFont;
+    self.markupLabelMaximumSize = CGSizeMake(self.canvasSize.width,
+                                             calculatedFontMaximumSize.height);
+
+    [self calculateWithFontRange:self.nextMoveLabelFontRange font:&calculatedFont textSize:&calculatedFontMaximumSize];
+    self.nextMoveLabelFont = calculatedFont;
+    self.nextMoveLabelMaximumSize = calculatedFontMaximumSize;
 
     self.lineRectangles = [self calculateLineRectanglesWithBoardSize:newBoardSize];
   }  // else [if (GoBoardSizeUndefined == newBoardSize || CGSizeEqualToSize(newCanvasSize, CGSizeZero))]
 }
+
+#pragma mark - Public API - Calculators
 
 // -----------------------------------------------------------------------------
 /// @brief Returns view coordinates that correspond to the intersection
@@ -754,6 +795,8 @@
   }
 }
 
+#pragma mark - Notification responders
+
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameDidCreate notification.
 // -----------------------------------------------------------------------------
@@ -774,6 +817,8 @@
     [self updateWithDisplayCoordinates:model.displayCoordinates];
   }
 }
+
+#pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Calculates a list of rectangles that together make up all grid lines
@@ -877,6 +922,49 @@
   }
 
   return lineRectangles;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Fills the out variables @a font and @a textSize with values that are
+/// suitable for drawing the text specified when @a fontRange was created, in a
+/// manner so that the drawing result is as wide as possible, but not wider than
+/// @e self.stoneInnerSquareSize.width.
+///
+/// This is a private helper for
+/// updateWithCanvasSize:boardSize:displayCoordinates:().
+// -----------------------------------------------------------------------------
+- (void) calculateWithFontRange:(FontRange*)fontRange
+                           font:(UIFont**)font
+                       textSize:(CGSize*)textSize
+{
+  [self calculateWithFontRange:fontRange
+                  maximumWidth:self.stoneInnerSquareSize.width
+                          font:font
+                      textSize:textSize];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Fills the out variables @a font and @a textSize with values that are
+/// suitable for drawing the text specified when @a fontRange was created, in a
+/// manner so that the drawing result is as wide as possible, but not wider than
+/// @a maximumWidth.
+///
+/// This is a private helper for
+/// updateWithCanvasSize:boardSize:displayCoordinates:().
+// -----------------------------------------------------------------------------
+- (void) calculateWithFontRange:(FontRange*)fontRange
+                   maximumWidth:(CGFloat)maximumWidth
+                           font:(UIFont**)font
+                       textSize:(CGSize*)textSize
+{
+  bool success = [fontRange queryForWidth:maximumWidth
+                                     font:font
+                                 textSize:textSize];
+  if (! success)
+  {
+    *font = nil;
+    *textSize = CGSizeZero;
+  }
 }
 
 @end

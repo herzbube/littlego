@@ -312,9 +312,32 @@
 /// label using the current @e coordinateLabelFont. Is CGSizeZero if no suitable
 /// font exists.
 @property(nonatomic, assign) CGSize coordinateLabelMaximumSize;
+/// @brief The font to use for drawing markup letter marker labels. Is @e nil
+/// if no suitable font exists for the current metrics (usually because
+/// @e stoneInnerSquareSize is too small).
+@property(nonatomic, retain) UIFont* markupLetterMarkerFont;
+/// @brief The maximum size required for drawing the widest possible markup
+/// letter marker using the current @e markupLetterMarkerFont. Is CGSizeZero if
+/// no suitable font exists.
+@property(nonatomic, assign) CGSize markupLetterMarkerMaximumSize;
+/// @brief The font to use for drawing markup number marker labels. Is @e nil
+/// if no suitable font exists for the current metrics (usually because
+/// @e stoneInnerSquareSize is too small).
+@property(nonatomic, retain) UIFont* markupNumberMarkerFont;
+/// @brief The maximum size required for drawing the widest possible markup
+/// number marker using the current @e markupNumberMarkerFont. Is CGSizeZero if
+/// no suitable font exists.
+@property(nonatomic, assign) CGSize markupNumberMarkerMaximumSize;
+/// @brief The font to use for drawing markup labels. Is @e nil if no suitable
+/// font exists for the current metrics.
+@property(nonatomic, retain) UIFont* markupLabelFont;
+/// @brief The maximum size required for drawing the widest possible markup
+/// label using the current @e markupLabelFont. Is CGSizeZero if no suitable
+/// font exists.
+@property(nonatomic, assign) CGSize markupLabelMaximumSize;
 /// @brief The font to use for drawing the "next move" label. Is nil if no
 /// suitable font exists for the current metrics (usually because
-/// stoneInnerSquareSize is too small).
+/// @e stoneInnerSquareSize is too small).
 @property(nonatomic, retain) UIFont* nextMoveLabelFont;
 /// @brief The maximum size required for drawing the widest possible "next move"
 /// label using the current @e nextMoveLabelFont. Is CGSizeZero if no suitable

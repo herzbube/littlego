@@ -353,6 +353,20 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 
 // -----------------------------------------------------------------------------
 /// @brief Analyzes the string value of @a label and returns a value from the
+/// enumeration #GoMarkupLabel that describes the string value.
+// -----------------------------------------------------------------------------
++ (enum GoMarkupLabel) labelTypeOfLabel:(NSString*)label
+{
+  // No need to invoke MarkupUtilities::setupStaticVariablesIfNotYetSetup(),
+  // markupTypeOfLabel:() already does this for us.
+
+  enum MarkupType markupType = [MarkupUtilities markupTypeOfLabel:label];
+  enum GoMarkupLabel labelType = [MarkupUtilities labelForMarkupType:markupType];
+  return labelType;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Analyzes the string value of @a label and returns a value from the
 /// enumeration #MarkupType that describes the string value.
 // -----------------------------------------------------------------------------
 + (enum MarkupType) markupTypeOfLabel:(NSString*)label

@@ -35,6 +35,7 @@
 #import "../../../go/GoUtilities.h"
 #import "../../../go/GoVertex.h"
 #import "../../../ui/UiSettingsModel.h"
+#import "../../../utility/MarkupUtilities.h"
 #import "../../../utility/UIColorAdditions.h"
 
 
@@ -684,21 +685,11 @@
   }
   else if (self.temporaryMarkupCategory == MarkupToolLabel)
   {
-    UIFont* labelFont = self.boardViewMetrics.moveNumberFont;
-    if (labelFont)
-    {
-      // Don't limit the label width. Of course, too long labels look ugly, but
-      // that's a data problem.
-      CGSize labelMaximumSize = CGSizeMake(self.boardViewMetrics.canvasSize.width,
-                                           self.boardViewMetrics.moveNumberMaximumSize.height);
-
-      [self drawLabelMarkup:self.temporaryLabelText
-                  inContext:context
-             inTileWithRect:tileRect
-                    atPoint:self.drawingPointTemporaryMarkup
-                   withFont:labelFont
-                maximumSize:labelMaximumSize];
-    }
+    [self drawLabelMarkup:self.temporaryLabelText
+                inContext:context
+           inTileWithRect:tileRect
+                  atPoint:self.drawingPointTemporaryMarkup
+                labelType:self.temporaryLabelAsNumber.intValue];
   }
   else
   {
@@ -887,14 +878,12 @@
   if (! labels)
     return;
 
-  UIFont* labelFont = self.boardViewMetrics.moveNumberFont;
-  if (! labelFont)
+  if (! self.boardViewMetrics.markupLetterMarkerFont &&
+      ! self.boardViewMetrics.markupNumberMarkerFont &&
+      ! self.boardViewMetrics.markupLabelFont)
+  {
     return;
-
-  // Don't limit the label width. Of course, too long labels look ugly, but
-  // that's a data problem.
-  CGSize labelMaximumSize = CGSizeMake(self.boardViewMetrics.canvasSize.width,
-                                       self.boardViewMetrics.moveNumberMaximumSize.height);
+  }
 
   [labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSString* labelText, BOOL* stop)
   {
@@ -905,12 +894,13 @@
       return;
     [pointsWithMarkup addObject:pointWithLabel];
 
+    enum GoMarkupLabel labelType = [MarkupUtilities labelTypeOfLabel:labelText];
+
     [self drawLabelMarkup:labelText
                 inContext:context
            inTileWithRect:tileRect
                   atPoint:pointWithLabel
-                 withFont:labelFont
-              maximumSize:labelMaximumSize];
+                labelType:labelType];
   }];
 }
 
@@ -921,9 +911,16 @@
                inContext:(CGContextRef)context
           inTileWithRect:(CGRect)tileRect
                  atPoint:(GoPoint*)pointWithLabel
-                withFont:(UIFont*)labelFont
-             maximumSize:(CGSize)labelMaximumSize
+               labelType:(enum GoMarkupLabel)labelType
 {
+  UIFont* labelFont;
+  CGSize labelMaximumSize;
+  [self drawingParametersForLabel:labelType
+                             font:&labelFont
+                  textMaximumSize:&labelMaximumSize];
+  if (! labelFont)
+    return;
+
   // Use white text color when intersection is not occupied, because black
   // colored text is difficult to read on the board's wooden background.
   UIColor* textColor;
@@ -956,6 +953,36 @@
                      centeredAtPoint:pointWithLabel
                       inTileWithRect:tileRect
                          withMetrics:self.boardViewMetrics];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Determines drawing parameters for drawing a marker or label of type
+/// @a label. Fills the out variables @a font and @a textMaximumSize with the
+/// parameters found.
+// -----------------------------------------------------------------------------
+- (void) drawingParametersForLabel:(enum GoMarkupLabel)label
+                              font:(UIFont**)font
+                   textMaximumSize:(CGSize*)textMaximumSize
+{
+  switch (label)
+  {
+    case GoMarkupLabelMarkerNumber:
+      *font = self.boardViewMetrics.markupNumberMarkerFont;
+      *textMaximumSize = self.boardViewMetrics.markupNumberMarkerMaximumSize;
+      break;
+    case GoMarkupLabelMarkerLetter:
+      *font = self.boardViewMetrics.markupLetterMarkerFont;
+      *textMaximumSize = self.boardViewMetrics.markupLetterMarkerMaximumSize;
+      break;
+    case GoMarkupLabelLabel:
+      *font = self.boardViewMetrics.markupLabelFont;
+      *textMaximumSize = self.boardViewMetrics.markupLabelMaximumSize;
+      break;
+    default:
+      assert(0);
+      *font = nil;
+      *textMaximumSize = CGSizeZero;
+  }
 }
 
 // -----------------------------------------------------------------------------
