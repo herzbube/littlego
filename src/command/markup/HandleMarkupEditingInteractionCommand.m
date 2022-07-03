@@ -569,7 +569,6 @@
   }
 
   NSString* nextFreeMarker = [MarkupUtilities nextFreeMarkerOfType:markupType
-                                                      onIntersection:intersection
                                                         inNodeMarkup:nodeMarkup];
 
   bool markupDataDidChange = true;

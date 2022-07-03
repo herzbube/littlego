@@ -46,7 +46,6 @@
 + (enum GoMarkupLabel) labelForMarkupType:(enum MarkupType)markupType;
 + (enum MarkupType) markupTypeForLabel:(enum GoMarkupLabel)label;
 + (NSString*) nextFreeMarkerOfType:(enum MarkupType)markupType
-                    onIntersection:(NSString*)intersection
                       inNodeMarkup:(GoNodeMarkup*)nodeMarkup;
 + (enum MarkupType) markupTypeOfLabel:(NSString*)label;
 + (int) labelAsNumberMarkerValue:(NSString*)label;

@@ -266,12 +266,23 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx
+/// @brief Analyzes all label texts in @a nodeMarkup and returns a marker label
+/// text of the markup type @a markupType. Raises an exception if @a markupType
+/// does not refer to a marker type. Returns @e nil if all markers of the
+/// requested type are already in use.
+///
+/// @exception InvalidArgumentException Is thrown if @a markupType is neither
+/// #MarkupTypeMarkerLetter nor #MarkupTypeMarkerNumber.
 // -----------------------------------------------------------------------------
 + (NSString*) nextFreeMarkerOfType:(enum MarkupType)markupType
-                    onIntersection:(NSString*)intersection
                       inNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
+  if (markupType != MarkupTypeMarkerLetter && markupType != MarkupTypeMarkerNumber)
+  {
+    [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"nextFreeMarkerOfType:inNodeMarkup: failed: invalid markup type %d" argumentValue:markupType];
+    return nil;  // dummy return to make compiler happy
+  }
+
   [MarkupUtilities setupStaticVariablesIfNotYetSetup];
 
   char nextFreeLetterMarkerValue = letterMarkerValueRanges.front().first;
@@ -341,7 +352,8 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief TODO xxx
+/// @brief Analyzes the string value of @a label and returns a value from the
+/// enumeration #MarkupType that describes the string value.
 // -----------------------------------------------------------------------------
 + (enum MarkupType) markupTypeOfLabel:(NSString*)label
 {
