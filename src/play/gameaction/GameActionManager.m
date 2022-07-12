@@ -285,118 +285,119 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Handles a markup editing interaction at the intersection identified
-/// by @a point. @a markupTool and @a markupType define what kind of interaction
-/// takes place. Is invoked only while the UI area "Play" is in markup editing
-/// mode.
+/// @brief Handles a single tap at the intersection identified by @a point
+/// while the UI area "Play" is in markup editing mode. @a markupTool and
+/// @a markupType identify the markup tool and, more specifically, the markup
+/// type that is currently selected in the UI.
 // -----------------------------------------------------------------------------
-- (void) handleMarkupEditingAtIntersection:(GoPoint*)point
-                                markupTool:(enum MarkupTool)markupTool
-                                markupType:(enum MarkupType)markupType
-                            markupWasMoved:(bool)markupWasMoved
+- (void) handleMarkupEditingSingleTapAtIntersection:(GoPoint*)point
+                                         markupTool:(enum MarkupTool)markupTool
+                                         markupType:(enum MarkupType)markupType
 {
   if ([self shouldIgnoreUserInteraction])
   {
-    DDLogWarn(@"%@: Ignoring handleMarkupEditingAtIntersection:markupTool:markupType:markupWasMoved:", self);
+    DDLogWarn(@"%@: Ignoring handleMarkupEditingSingleTapAtIntersection:markupTool:markupType:", self);
     return;
   }
 
-  [[[[HandleMarkupEditingInteractionCommand alloc] initWithPoint:point
-                                                      markupTool:markupTool
-                                                      markupType:markupType
-                                                  markupWasMoved:markupWasMoved] autorelease] submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Handles a markup editing interaction that places a symbol of type
-/// @a symbol at @a point. Is invoked only while the UI area "Play" is in
-/// markup editing mode.
-// -----------------------------------------------------------------------------
-- (void) placeMarkupSymbol:(enum GoMarkupSymbol)symbol
-                   atPoint:(GoPoint*)point
-            markupWasMoved:(bool)markupWasMoved
-{
-  if ([self shouldIgnoreUserInteraction])
+  if (markupTool == MarkupToolEraser)
   {
-    DDLogWarn(@"%@: Ignoring placeMarkupSymbol:atPoint:markupWasMoved:", self);
-    return;
+    [[[[HandleMarkupEditingInteractionCommand alloc] initEraseMarkupAtPoint:point] autorelease] submit];
   }
-
-  enum MarkupType markupType = [MarkupUtilities markupTypeForSymbol:symbol];
-  [[[[HandleMarkupEditingInteractionCommand alloc] initWithPoint:point
-                                                      markupTool:MarkupToolSymbol
-                                                      markupType:markupType
-                                                  markupWasMoved:markupWasMoved] autorelease] submit];
+  else if (markupTool == MarkupToolConnection)
+  {
+    [[[[HandleMarkupEditingInteractionCommand alloc] initEraseConnectionAtPoint:point] autorelease] submit];
+  }
+  else
+  {
+    [[[[HandleMarkupEditingInteractionCommand alloc] initPlaceNewMarkupAtPoint:point
+                                                                    markupTool:markupTool
+                                                                    markupType:markupType] autorelease] submit];
+  }
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Handles a markup editing interaction that places a connection of
-/// type @a connection starting at @a fromPoint and going to @a endPoint. Is
+/// @brief Handles placing a markup symbol of type @a symbol at @a point after
+/// the symbol was moved with a panning gesture from a previous location. Is
 /// invoked only while the UI area "Play" is in markup editing mode.
 // -----------------------------------------------------------------------------
-- (void) placeMarkupConnection:(enum GoMarkupConnection)connection
-                     fromPoint:(GoPoint*)fromPoint
-                       toPoint:(GoPoint*)toPoint
-                markupWasMoved:(bool)markupWasMoved
+- (void) handleMarkupEditingPlaceMovedSymbol:(enum GoMarkupSymbol)symbol
+                                     atPoint:(GoPoint*)point
 {
   if ([self shouldIgnoreUserInteraction])
   {
-    DDLogWarn(@"%@: Ignoring placeMarkupConnection:fromPoint:toPoint:markupWasMoved:", self);
+    DDLogWarn(@"%@: Ignoring handleMarkupEditingPlaceMovedSymbol:atPoint:", self);
     return;
   }
 
-  enum MarkupType markupType = [MarkupUtilities markupTypeForConnection:connection];
-  [[[[HandleMarkupEditingInteractionCommand alloc] initWithStartPoint:fromPoint
-                                                             endPoint:toPoint
-                                                           markupTool:MarkupToolConnection
-                                                           markupType:markupType
-                                                       markupWasMoved:markupWasMoved] autorelease] submit];
+  [[[[HandleMarkupEditingInteractionCommand alloc] initPlaceMovedSymbol:symbol
+                                                                atPoint:point] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Handles a markup editing interaction that places a label of type
-/// @a label with text @a labelText at @a point. Is invoked only while the
-/// UI area "Play" is in markup editing mode.
+/// @brief Handles placing a markup connection of type @a connection starting
+/// at @a fromPoint and going to @a endPoint. The connection is placed after a
+/// panning gesture completes. If @a connectionWasMoved is @e false the
+/// connection is a new connection, if @a connectionWasMoved is @e true the
+/// connection already existed but either its starting or end point was moved
+/// from a previous location. Is invoked only while the UI area "Play" is in
+/// markup editing mode.
 // -----------------------------------------------------------------------------
-- (void) placeMarkupLabel:(enum GoMarkupLabel)label
-            withLabelText:(NSString*)labelText
-                  atPoint:(GoPoint*)point
-           markupWasMoved:(bool)markupWasMoved;
+- (void) handleMarkupEditingPlaceNewOrMovedConnection:(enum GoMarkupConnection)connection
+                                            fromPoint:(GoPoint*)fromPoint
+                                              toPoint:(GoPoint*)toPoint
+                                   connectionWasMoved:(bool)connectionWasMoved
 {
   if ([self shouldIgnoreUserInteraction])
   {
-    DDLogWarn(@"%@: Ignoring placeMarkupLabel:withLabelText:atPoint:markupWasMoved:", self);
+    DDLogWarn(@"%@: Ignoring handleMarkupEditingPlaceNewOrMovedConnection:fromPoint:toPoint:connectionWasMoved:", self);
     return;
   }
 
-  enum MarkupType markupType = [MarkupUtilities markupTypeForLabel:label];
-  enum MarkupTool markupTool = [MarkupUtilities markupToolForMarkupType:markupType];
-  [[[[HandleMarkupEditingInteractionCommand alloc] initWithPoint:point
-                                                       labelText:labelText
-                                                      markupTool:markupTool
-                                                      markupType:markupType
-                                                  markupWasMoved:markupWasMoved] autorelease] submit];
+  [[[[HandleMarkupEditingInteractionCommand alloc] initPlaceNewOrMovedConnection:connection
+                                                                       fromPoint:fromPoint
+                                                                         toPoint:toPoint
+                                                              connectionWasMoved:connectionWasMoved] autorelease] submit];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Handles a markup editing interaction that erases all markup in an
-/// entire rectangular area defined by @a fromPoint and @a endPoint, which are
-/// diagonally opposed corners of the rectangle. Is invoked only while the
-/// UI area "Play" is in markup editing mode.
+/// @brief Handles placing a markup label of type @a label with text
+/// @a labelText at @a point after the label was moved with a panning gesture
+/// from a previous location. Is invoked only while the UI area "Play" is in
+/// markup editing mode.
 // -----------------------------------------------------------------------------
-- (void) eraseMarkupInRectangleFromPoint:(GoPoint*)fromPoint toPoint:(GoPoint*)toPoint
+- (void) handleMarkupEditingPlaceMovedLabel:(enum GoMarkupLabel)label
+                              withLabelText:(NSString*)labelText
+                                    atPoint:(GoPoint*)point;
 {
   if ([self shouldIgnoreUserInteraction])
   {
-    DDLogWarn(@"%@: Ignoring eraseMarkupInRectangleFromPoint:toPoint:", self);
+    DDLogWarn(@"%@: Ignoring handleMarkupEditingPlaceMovedLabel:withLabelText:atPoint:", self);
     return;
   }
 
-  [[[[HandleMarkupEditingInteractionCommand alloc] initWithStartPoint:fromPoint
-                                                             endPoint:toPoint
-                                                           markupTool:MarkupToolEraser
-                                                           markupType:MarkupTypeEraser
-                                                       markupWasMoved:false] autorelease] submit];
+  [[[[HandleMarkupEditingInteractionCommand alloc] initPlaceMovedLabel:label
+                                                         withLabelText:labelText
+                                                               atPoint:point] autorelease] submit];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Handles erasing all markup in an entire rectangular area defined by
+/// @a fromPoint and @a endPoint, which are diagonally opposed corners of the
+/// rectangle. Is invoked only while the UI area "Play" is in markup editing
+/// mode.
+// -----------------------------------------------------------------------------
+- (void) handleMarkupEditingEraseMarkupInRectangleFromPoint:(GoPoint*)fromPoint
+                                                    toPoint:(GoPoint*)toPoint
+{
+  if ([self shouldIgnoreUserInteraction])
+  {
+    DDLogWarn(@"%@: Ignoring handleMarkupEditingEraseMarkupInRectangleFromPoint:toPoint:", self);
+    return;
+  }
+
+  [[[[HandleMarkupEditingInteractionCommand alloc] initEraseMarkupInRectangleFromPoint:fromPoint
+                                                                               toPoint:toPoint] autorelease] submit];
 }
 
 #pragma mark - Mapping of game actions to handler methods

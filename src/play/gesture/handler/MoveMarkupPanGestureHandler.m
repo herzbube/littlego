@@ -419,9 +419,8 @@
 
   if (recognizerState == UIGestureRecognizerStateEnded && gestureStartPoint && gestureCurrentPoint && gestureStartPoint != gestureCurrentPoint)
   {
-    [[GameActionManager sharedGameActionManager] placeMarkupSymbol:symbol
-                                                           atPoint:gestureCurrentPoint
-                                                    markupWasMoved:true];
+    [[GameActionManager sharedGameActionManager] handleMarkupEditingPlaceMovedSymbol:symbol
+                                                                             atPoint:gestureCurrentPoint];
   }
   else
   {
@@ -537,10 +536,10 @@
     {
       restoreOriginalConnection = false;
       enum GoMarkupConnection connection = [MarkupUtilities connectionForMarkupType:self.markupTypeToMove];
-      [[GameActionManager sharedGameActionManager] placeMarkupConnection:connection
-                                                               fromPoint:finalConnectionStartPoint
-                                                                 toPoint:finalConnectionEndPoint
-                                                          markupWasMoved:true];
+      [[GameActionManager sharedGameActionManager] handleMarkupEditingPlaceNewOrMovedConnection:connection
+                                                                                      fromPoint:finalConnectionStartPoint
+                                                                                        toPoint:finalConnectionEndPoint
+                                                                             connectionWasMoved:true];
     }
   }
 
@@ -616,10 +615,9 @@
   if (recognizerState == UIGestureRecognizerStateEnded && gestureStartPoint && gestureCurrentPoint && gestureStartPoint != gestureCurrentPoint)
   {
     enum GoMarkupLabel label = [MarkupUtilities labelForMarkupType:self.markupTypeToMove];
-    [[GameActionManager sharedGameActionManager] placeMarkupLabel:label
-                                                    withLabelText:self.labelTextToMove
-                                                          atPoint:gestureCurrentPoint
-                                                   markupWasMoved:true];
+    [[GameActionManager sharedGameActionManager] handleMarkupEditingPlaceMovedLabel:label
+                                                                      withLabelText:self.labelTextToMove
+                                                                            atPoint:gestureCurrentPoint];
   }
   else
   {

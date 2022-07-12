@@ -100,10 +100,10 @@
 
     if (recognizerState == UIGestureRecognizerStateEnded && gestureStartPoint && gestureCurrentPoint && gestureStartPoint != gestureCurrentPoint)
     {
-      [[GameActionManager sharedGameActionManager] placeMarkupConnection:connection
-                                                               fromPoint:gestureStartPoint
-                                                                 toPoint:gestureCurrentPoint
-                                                          markupWasMoved:false];
+      [[GameActionManager sharedGameActionManager] handleMarkupEditingPlaceNewOrMovedConnection:connection
+                                                                                      fromPoint:gestureStartPoint
+                                                                                        toPoint:gestureCurrentPoint
+                                                                             connectionWasMoved:false];
     }
   }
   else

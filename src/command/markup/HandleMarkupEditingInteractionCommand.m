@@ -31,13 +31,32 @@
 #import "../../ui/UiSettingsModel.h"
 #import "../../ui/UIViewControllerAdditions.h"
 #import "../../utility/MarkupUtilities.h"
+#import "../../utility/ExceptionUtility.h"
 
+
+enum MarkupEditingInteraction
+{
+  MEIPlaceNewSymbol,
+  MEIPlaceNewConnection,
+  MEIPlaceNewMarker,
+  MEIPlaceNewLabel,
+  MEIPlaceMovedSymbol,
+  MEIPlaceMovedConnection,
+  MEIPlaceMovedMarker,
+  MEIPlaceMovedLabel,
+  MEIEraseMarkupAtPoint,
+  MEIEraseMarkupInArea,
+  MEIEraseConnectionAtPoint,
+  MEINone,
+};
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
 /// HandleMarkupEditingInteractionCommand.
 // -----------------------------------------------------------------------------
 @interface HandleMarkupEditingInteractionCommand()
+@property(nonatomic, assign) enum MarkupEditingInteraction interaction;
+
 @property(nonatomic, retain) GoPoint* point;
 @property(nonatomic, retain) NSString* labelText;
 @property(nonatomic, retain) GoPoint* startPoint;
@@ -54,89 +73,211 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a HandleMarkupEditingInteractionCommand object that
-/// handles a markup editing interaction on @a point. The type of interaction
-/// is defined by @a markupTool and @a markupType. @a markupWasMoved indicates
-/// whether the markup is new or has been moved.
+/// cannot handle any markup editing interaction. Executing a command that
+/// was initialized with this initializer fails.
 ///
 /// @note This is the designated initializer of
 /// HandleMarkupEditingInteractionCommand.
 // -----------------------------------------------------------------------------
-- (id) initWithPoint:(GoPoint*)point
-          markupTool:(enum MarkupTool)markupTool
-          markupType:(enum MarkupType)markupType
-      markupWasMoved:(bool)markupWasMoved
+- (id) initWithNoInteraction
 {
   // Call designated initializer of superclass (CommandBase)
   self = [super init];
   if (! self)
     return nil;
 
-  self.point = point;
+  self.interaction = MEINone;
+  self.point = nil;
   self.labelText = nil;
   self.startPoint = nil;
   self.endPoint = nil;
-  self.markupTool = markupTool;
-  self.markupType = markupType;
-  self.markupWasMoved = markupWasMoved;
+  self.markupTool = MarkupToolSymbol;
+  self.markupType = MarkupTypeSymbolCircle;
+  self.markupWasMoved = false;
 
   return self;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a HandleMarkupEditingInteractionCommand object that
-/// places a marker or label with @a labelText at @a point. The type of
-/// interaction is defined by @a markupTool and @a markupType. @a markupWasMoved
-/// indicates whether the markup is new or has been moved.
+/// places new markup of type @a markupType on @a point.
 ///
-/// @note This is the designated initializer of
-/// HandleMarkupEditingInteractionCommand.
+/// The newly placed markup is determined according to certain rules, some of
+/// which are governed by user preferences. For instance, for symbols or markers
+/// the next free symbol or marker is determined according to user preferences
+/// (this could even lead to removal of a symbol or marker). For labels the
+/// label text is determined interactively.
+///
+/// Connections cannot be placed with this initializer. Instead use
+/// initPlaceNewOrMovedConnection:fromPoint:toPoint:connectionWasMoved:().
 // -----------------------------------------------------------------------------
-- (id) initWithPoint:(GoPoint*)point
-           labelText:(NSString*)labelText
-          markupTool:(enum MarkupTool)markupTool
-          markupType:(enum MarkupType)markupType
-      markupWasMoved:(bool)markupWasMoved
+- (id) initPlaceNewMarkupAtPoint:(GoPoint*)point
+                      markupTool:(enum MarkupTool)markupTool
+                      markupType:(enum MarkupType)markupType
 {
-  // Call designated initializer of superclass (CommandBase)
-  self = [super init];
+  self = [self initWithNoInteraction];
   if (! self)
     return nil;
+
+  if (markupTool == MarkupToolSymbol)
+    self.interaction = MEIPlaceNewSymbol;
+  else if (markupTool == MarkupToolMarker)
+    self.interaction = MEIPlaceNewMarker;
+  else if (markupTool == MarkupToolLabel)
+    self.interaction = MEIPlaceNewLabel;
+  else
+    [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"initPlaceNewMarkupAtPoint:markupTool:markupType: failed, invalid markup tool %d" argumentValue:markupTool];
+
+  self.point = point;
+  self.markupTool = markupTool;
+  self.markupType = markupType;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a HandleMarkupEditingInteractionCommand object that
+/// places a moved markup symbol of type @a symbol on @a point.
+///
+/// No logic is used to determin the symbol to place, @a symbol defines the
+/// exact symbol to place.
+// -----------------------------------------------------------------------------
+- (id) initPlaceMovedSymbol:(enum GoMarkupSymbol)symbol
+                    atPoint:(GoPoint*)point
+{
+  self = [self initWithNoInteraction];
+  if (! self)
+    return nil;
+
+  self.interaction = MEIPlaceMovedSymbol;
+
+  self.point = point;
+  self.markupTool = MarkupToolSymbol;
+  self.markupType = [MarkupUtilities markupTypeForSymbol:symbol];
+  self.markupWasMoved = true;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a HandleMarkupEditingInteractionCommand object that
+/// places a markup connection of type @a connection starting at @a fromPoint
+/// and going to @a toPoint. If @a connectionWasMoved is @e false the
+/// connection is a new connection, if @a connectionWasMoved is @e true the
+/// connection already existed but either its starting or end point was moved
+/// from a previous location.
+// -----------------------------------------------------------------------------
+- (id) initPlaceNewOrMovedConnection:(enum GoMarkupConnection)connection
+                           fromPoint:(GoPoint*)fromPoint
+                             toPoint:(GoPoint*)toPoint
+                  connectionWasMoved:(bool)connectionWasMoved
+{
+  self = [self initWithNoInteraction];
+  if (! self)
+    return nil;
+
+  if (connectionWasMoved)
+    self.interaction = MEIPlaceMovedConnection;
+  else
+    self.interaction = MEIPlaceNewConnection;
+
+  self.startPoint = fromPoint;
+  self.endPoint = toPoint;
+  self.markupTool = MarkupToolConnection;
+  self.markupType = [MarkupUtilities markupTypeForConnection:connection];
+  self.markupWasMoved = connectionWasMoved;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a HandleMarkupEditingInteractionCommand object that
+/// places a moved marker or label of type @a label with text @a labelText on
+/// @a point.
+///
+/// No logic or interactivity is used to determin the marker or label text to
+/// place, @a labelText defines the exact text to place.
+// -----------------------------------------------------------------------------
+- (id) initPlaceMovedLabel:(enum GoMarkupLabel)label
+             withLabelText:(NSString*)labelText
+                   atPoint:(GoPoint*)point
+{
+  self = [self initWithNoInteraction];
+  if (! self)
+    return nil;
+
+  if (label == GoMarkupLabelLabel)
+  {
+    self.interaction = MEIPlaceMovedLabel;
+    self.markupTool = MarkupToolLabel;
+  }
+  else
+  {
+    self.interaction = MEIPlaceMovedMarker;
+    self.markupTool = MarkupToolMarker;
+  }
 
   self.point = point;
   self.labelText = labelText;
-  self.startPoint = nil;
-  self.endPoint = nil;
-  self.markupTool = markupTool;
-  self.markupType = markupType;
-  self.markupWasMoved = markupWasMoved;
+  self.markupType = [MarkupUtilities markupTypeForLabel:label];
+  self.markupWasMoved = true;
 
   return self;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a HandleMarkupEditingInteractionCommand object that
-/// handles a markup editing interaction from @a startPoint to @a endPoint.
-/// The type of interaction is defined by @a markupTool and @a markupType.
-//  @a markupWasMoved indicates whether the markup is new or has been moved.
+/// erases all markup located at @a point.
 // -----------------------------------------------------------------------------
-- (id) initWithStartPoint:(GoPoint*)startPoint
-                 endPoint:(GoPoint*)endPoint
-               markupTool:(enum MarkupTool)markupTool
-               markupType:(enum MarkupType)markupType
-           markupWasMoved:(bool)markupWasMoved
+- (id) initEraseMarkupAtPoint:(GoPoint*)point
 {
-  // Call designated initializer of superclass (CommandBase)
-  self = [super init];
+  self = [self initWithNoInteraction];
   if (! self)
     return nil;
 
-  self.point = nil;
-  self.labelText = nil;
-  self.startPoint = startPoint;
-  self.endPoint = endPoint;
-  self.markupTool = markupTool;
-  self.markupType = markupType;
-  self.markupWasMoved = markupWasMoved;
+  self.interaction = MEIEraseMarkupAtPoint;
+  self.point = point;
+  self.markupTool = MarkupToolConnection;
+  self.markupType = MarkupTypeEraser;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a HandleMarkupEditingInteractionCommand object that
+/// erases all markup in an entire rectangular area defined by @a fromPoint and
+/// @a endPoint, which are diagonally opposed corners of the rectangle.
+// -----------------------------------------------------------------------------
+- (id) initEraseMarkupInRectangleFromPoint:(GoPoint*)fromPoint
+                                   toPoint:(GoPoint*)toPoint
+{
+  self = [self initWithNoInteraction];
+  if (! self)
+    return nil;
+
+  self.interaction = MEIEraseMarkupInArea;
+  self.startPoint = fromPoint;
+  self.endPoint = toPoint;
+  self.markupTool = MarkupToolEraser;
+  self.markupType = MarkupTypeEraser;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a HandleMarkupEditingInteractionCommand object that
+/// erases a connection whose start or end point is at @a point.
+// -----------------------------------------------------------------------------
+- (id) initEraseConnectionAtPoint:(GoPoint*)point
+{
+  self = [self initWithNoInteraction];
+  if (! self)
+    return nil;
+
+  self.interaction = MEIEraseConnectionAtPoint;
+  self.point = point;
+  self.markupTool = MarkupToolConnection;
+  self.markupType = MarkupTypeEraser;
 
   return self;
 }
@@ -162,6 +303,12 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  if (self.interaction == MEINone)
+  {
+    DDLogError(@"%@: Unable to handle markup interaction of type %d", self, self.interaction);
+    return false;
+  }
+
   if (! self.point && ! (self.startPoint && self.endPoint))
   {
     DDLogError(@"%@: Unable to handle markup interaction because neither a single point nor a start/end point pair is set", self);
@@ -199,49 +346,14 @@
     currentNode.goNodeMarkup = nodeMarkup;
   }
 
-  if (self.point)
+  if (self.interaction == MEIPlaceNewLabel)
   {
-    if (self.markupTool == MarkupToolLabel)
-    {
-      if (self.labelText)
-      {
-        [self handleMarkupEditingInteractionOnPoint:self.point
-                                optionalSecondPoint:nil
-                                     withMarkupTool:self.markupTool
-                                         markupType:self.markupType
-                                          labelText:self.labelText
-                                     markupWasMoved:self.markupWasMoved
-                                               node:currentNode];
-      }
-      else
-      {
-        [self handleEnterNewLabelTextOnPoint:self.point
-                              withMarkupTool:self.markupTool
-                                  markupType:self.markupType
-                              markupWasMoved:self.markupWasMoved
-                                        node:currentNode];
-      }
-    }
-    else
-    {
-      [self handleMarkupEditingInteractionOnPoint:self.point
-                              optionalSecondPoint:nil
-                                   withMarkupTool:self.markupTool
-                                       markupType:self.markupType
-                                        labelText:nil
-                                   markupWasMoved:self.markupWasMoved
-                                             node:currentNode];
-    }
+    [self handleEnterNewLabelTextOnPoint:self.point
+                                    node:currentNode];
   }
   else
   {
-    [self handleMarkupEditingInteractionOnPoint:self.startPoint
-                            optionalSecondPoint:self.endPoint
-                                 withMarkupTool:self.markupTool
-                                     markupType:self.markupType
-                                      labelText:nil
-                                 markupWasMoved:self.markupWasMoved
-                                           node:currentNode];
+    [self handleMarkupEditingInteractionWithNode:currentNode];
   }
 
   return true;
@@ -252,15 +364,9 @@
 // -----------------------------------------------------------------------------
 /// @brief Performs the actual markup editing interaction handling. Is called
 /// both from doIt() and after the user entered a new label text when the
-/// markup tool is #MarkupToolLabel.
+/// interaction is #MEIPlaceNewLabel.
 // -----------------------------------------------------------------------------
-- (void) handleMarkupEditingInteractionOnPoint:(GoPoint*)point
-                           optionalSecondPoint:(GoPoint*)secondPoint
-                                withMarkupTool:(enum MarkupTool)markupTool
-                                    markupType:(enum MarkupType)markupType
-                                     labelText:(NSString*)labelText
-                                markupWasMoved:(bool)markupWasMoved
-                                          node:(GoNode*)node
+- (void) handleMarkupEditingInteractionWithNode:(GoNode*)node
 {
   bool applicationStateDidChange = false;
 
@@ -268,77 +374,87 @@
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
 
-    NSString* intersection = point.vertex.string;
     GoNodeMarkup* nodeMarkup = node.goNodeMarkup;
 
     NSArray* pointsWithChangedMarkup = nil;
 
-    switch (markupTool)
+    switch (self.interaction)
     {
-      case MarkupToolSymbol:
+      case MEIPlaceNewSymbol:
+      case MEIPlaceMovedSymbol:
       {
-        bool markupDataDidChange = [self handlePlaceSymbol:markupType onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
+        NSString* intersection = self.point.vertex.string;
+        bool markupWasMoved = self.interaction == MEIPlaceMovedLabel;
+        bool markupDataDidChange = [self handlePlaceSymbol:self.markupType onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
         if (markupDataDidChange)
-          pointsWithChangedMarkup = @[point];
+          pointsWithChangedMarkup = @[self.point];
         break;
       }
-      case MarkupToolMarker:
+      case MEIPlaceNewConnection:
+      case MEIPlaceMovedConnection:
       {
-        bool markupDataDidChange;
-        if (labelText)
-          markupDataDidChange = [self handlePlaceLabel:labelText onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
-        else
-          markupDataDidChange = [self handlePlaceMarker:markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
+        NSString* fromIntersection = self.startPoint.vertex.string;
+        NSString* toIntersection = self.endPoint.vertex.string;
+        bool markupWasMoved = self.interaction == MEIPlaceMovedConnection;
+        bool markupDataDidChange = [self handlePlaceConnection:self.markupType fromIntersection:fromIntersection toIntersection:toIntersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
         if (markupDataDidChange)
-          pointsWithChangedMarkup = @[point];
+          pointsWithChangedMarkup = @[self.startPoint, self.endPoint];
         break;
       }
-      case MarkupToolLabel:
+      case MEIPlaceNewMarker:
       {
-        bool markupDataDidChange = [self handlePlaceLabel:labelText onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
+        NSString* intersection = self.point.vertex.string;
+        bool markupDataDidChange = [self handlePlaceMarker:self.markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
         if (markupDataDidChange)
-          pointsWithChangedMarkup = @[point];
+          pointsWithChangedMarkup = @[self.point];
         break;
       }
-      case MarkupToolConnection:
+      case MEIPlaceMovedMarker:
       {
-        if (secondPoint)
-        {
-          NSString* fromIntersection = intersection;
-          NSString* toIntersection = secondPoint.vertex.string;
-          bool markupDataDidChange = [self handlePlaceConnection:markupType fromIntersection:fromIntersection toIntersection:toIntersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
-          if (markupDataDidChange)
-            pointsWithChangedMarkup = @[point, secondPoint];
-        }
-        else
-        {
-          pointsWithChangedMarkup = [self handleRemoveConnectionIfExistsAtIntersection:intersection withNodeMarkup:nodeMarkup];
-        }
+        NSString* intersection = self.point.vertex.string;
+        bool markupDataDidChange = [self handlePlaceLabel:self.labelText onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:true];;
+        if (markupDataDidChange)
+          pointsWithChangedMarkup = @[self.point];
         break;
       }
-      case MarkupToolEraser:
+      case MEIPlaceNewLabel:
+      case MEIPlaceMovedLabel:
       {
-        if (secondPoint)
-        {
-          NSString* fromIntersection = intersection;
-          NSString* toIntersection = secondPoint.vertex.string;
-          pointsWithChangedMarkup = [self handleEraseMarkupInRectangleFromIntersection:fromIntersection toIntersection:toIntersection withNodeMarkup:nodeMarkup];
-        }
-        else
-        {
-          pointsWithChangedMarkup = [self handleEraseMarkupOnIntersection:intersection withNodeMarkup:nodeMarkup];
-        }
+        NSString* intersection = self.point.vertex.string;
+        bool markupWasMoved = self.interaction == MEIPlaceMovedLabel;
+        bool markupDataDidChange = [self handlePlaceLabel:self.labelText onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
+        if (markupDataDidChange)
+          pointsWithChangedMarkup = @[self.point];
+        break;
+      }
+      case MEIEraseMarkupAtPoint:
+      {
+        NSString* intersection = self.point.vertex.string;
+        pointsWithChangedMarkup = [self handleEraseMarkupOnIntersection:intersection withNodeMarkup:nodeMarkup];
+        break;
+      }
+      case MEIEraseMarkupInArea:
+      {
+        NSString* fromIntersection = self.startPoint.vertex.string;
+        NSString* toIntersection = self.endPoint.vertex.string;
+        pointsWithChangedMarkup = [self handleEraseMarkupInRectangleFromIntersection:fromIntersection toIntersection:toIntersection withNodeMarkup:nodeMarkup];
+        break;
+      }
+      case MEIEraseConnectionAtPoint:
+      {
+        NSString* intersection = self.point.vertex.string;
+        pointsWithChangedMarkup = [self handleRemoveConnectionIfExistsAtIntersection:intersection withNodeMarkup:nodeMarkup];
         break;
       }
       default:
       {
-        applicationStateDidChange = false;
-        NSString* errorMessage = [NSString stringWithFormat:@"Failed to handle markup editing interaction, unsupported markup tool: %d (markup type = %d)", markupTool, markupType];
+        NSString* errorMessage = [NSString stringWithFormat:@"Failed to handle markup editing interaction, unsupported interaction: %d", self.interaction];
         DDLogError(@"%@: %@", self, errorMessage);
-        NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                         reason:errorMessage
-                                                       userInfo:nil];
-        @throw exception;
+        [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+        // Dummy code to make compiler happy
+        applicationStateDidChange = false;
+        pointsWithChangedMarkup = nil;
+        break;
       }
     }
 
@@ -368,7 +484,9 @@
 {
   NSArray* notificationObject;
 
-  if (pointsWithChangedMarkup.count == 2)
+  if (pointsWithChangedMarkup.count == 2 &&
+      [pointsWithChangedMarkup.firstObject isKindOfClass:[GoPoint class]] &&
+      [pointsWithChangedMarkup.lastObject isKindOfClass:[GoPoint class]])
   {
     GoPoint* connectionFromPoint = pointsWithChangedMarkup.firstObject;
     GoPoint* connectionToPoint = pointsWithChangedMarkup.lastObject;
@@ -637,16 +755,13 @@
 /// handleMarkupEditingInteractionOnIntersection:withMarkupModel:labelText:nodeMarkup:().
 ///
 /// This method is invoked from doIt() and not from
-/// handleMarkupEditingInteractionOnPoint:optionalSecondPoint:withMarkupTool:markupType:labelText:node:(),
-/// because the latter wraps the invocation of its handler methods into a pair
-/// of beginSavePoint/commitSavePoint method calls, which requires the handler
+/// handleMarkupEditingInteractionWithNode:(), because the latter wraps the
+/// invocation of its handler methods into a pair of
+/// beginSavePoint/commitSavePoint method calls, which requires the handler
 /// method to work synchronously. This method does not work synchronously, it
 /// presents EditTextDelegate.
 // -----------------------------------------------------------------------------
 - (void) handleEnterNewLabelTextOnPoint:(GoPoint*)point
-                         withMarkupTool:(enum MarkupTool)markupTool
-                             markupType:(enum MarkupType)markupType
-                         markupWasMoved:(bool)markupWasMoved
                                    node:(GoNode*)node
 {
   NSString* intersection = point.vertex.string;
@@ -660,7 +775,7 @@
                                                                           delegate:self] retain];
   editTextController.title = @"Edit label text";
   editTextController.acceptEmptyText = true;
-  editTextController.context = @[point, [NSNumber numberWithInt:markupTool], [NSNumber numberWithInt:markupType], [NSNumber numberWithBool:markupWasMoved], node];
+  editTextController.context = node;
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.window.rootViewController presentNavigationControllerWithRootViewController:editTextController];
@@ -688,22 +803,9 @@
 
   if (! didCancel)
   {
-    NSArray* context = editTextController.context;
-    GoPoint* point = [context objectAtIndex:0];
-    enum MarkupTool markupTool = [[context objectAtIndex:1] intValue];
-    enum MarkupType markupType = [[context objectAtIndex:2] intValue];
-    bool markupWasMoved = [[context objectAtIndex:3] boolValue];
-    GoNode* node = [context objectAtIndex:4];
-
-    NSString* labelText = editTextController.text;
-
-    [self handleMarkupEditingInteractionOnPoint:point
-                            optionalSecondPoint:nil
-                                 withMarkupTool:markupTool
-                                     markupType:markupType
-                                      labelText:labelText
-                                 markupWasMoved:markupWasMoved
-                                           node:node];
+    GoNode* node = editTextController.context;
+    self.labelText = editTextController.text;
+    [self handleMarkupEditingInteractionWithNode:node];
   }
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];

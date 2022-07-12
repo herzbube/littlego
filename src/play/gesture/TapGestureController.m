@@ -139,10 +139,9 @@
     case UIAreaPlayModeEditMarkup:
     {
       MarkupModel* markupModel = appDelegate.markupModel;
-      [gameActionManager handleMarkupEditingAtIntersection:intersection.point
-                                                markupTool:markupModel.markupTool
-                                                markupType:markupModel.markupType
-                                            markupWasMoved:false];
+      [gameActionManager handleMarkupEditingSingleTapAtIntersection:intersection.point
+                                                         markupTool:markupModel.markupTool
+                                                         markupType:markupModel.markupType];
       break;
     }
     default:

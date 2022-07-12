@@ -96,8 +96,8 @@
 
     if (recognizerState == UIGestureRecognizerStateEnded && gestureStartPoint && gestureCurrentPoint)
     {
-      [[GameActionManager sharedGameActionManager] eraseMarkupInRectangleFromPoint:gestureStartPoint
-                                                                           toPoint:gestureCurrentPoint];
+      [[GameActionManager sharedGameActionManager] handleMarkupEditingEraseMarkupInRectangleFromPoint:gestureStartPoint
+                                                                                              toPoint:gestureCurrentPoint];
     }
   }
   else
