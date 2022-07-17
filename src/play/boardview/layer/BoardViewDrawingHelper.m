@@ -718,6 +718,28 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the rectangle defined by the row that goes across the entire
+/// "canvas", i.e. the area covered by the entire board view, and that also
+/// contains @a point. The origin is in the upper-left corner.
+// -----------------------------------------------------------------------------
++ (CGRect) canvasRectForRowContainingPoint:(GoPoint*)point
+                                   metrics:(BoardViewMetrics*)metrics
+{
+  CGRect canvasRectForPoint = [BoardViewDrawingHelper canvasRectForSize:metrics.pointCellSize
+                                                        centeredAtPoint:point
+                                                                metrics:metrics];
+
+  // The row rectangle has the same y-position and height as the rectangle for
+  // the single point, but starts at the left edge of the canvas and spans the
+  // entire canvas width
+  CGRect canvasRectForRow = CGRectMake(0,
+                                       canvasRectForPoint.origin.y,
+                                       metrics.canvasSize.width,
+                                       canvasRectForPoint.size.height);  // <- metrics.pointCellSize.height
+  return canvasRectForRow;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the rectangle occupied by @a layer on the "canvas", i.e. the
 /// area covered by the entire board view, after placing @a layer so that it is
 /// centered on the coordinates of the intersection @a point. The origin is in
@@ -856,6 +878,40 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
                                                    inTileWithRect:tileRect];
 
   return drawingRect;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a drawing rectangle that is the intersection of the tile
+/// @a tile with the rectangle defined by the row of points across the entire
+/// board that contains @a point. Returns @e CGRectZero if there is no
+/// intersection.
+// -----------------------------------------------------------------------------
++ (CGRect) drawingRectForTile:(id<Tile>)tile
+     inRowContainingPoint:(GoPoint*)point
+                  withMetrics:(BoardViewMetrics*)metrics
+{
+  if (! point)
+    return CGRectZero;
+
+  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:tile
+                                                      metrics:metrics];
+  CGRect rowRect = [BoardViewDrawingHelper canvasRectForRowContainingPoint:point
+                                                                   metrics:metrics];
+  CGRect drawingRectForRow = CGRectIntersection(tileRect, rowRect);
+  // Rectangles that are adjacent and share a side *do* intersect: The
+  // intersection rectangle has either zero width or zero height, depending on
+  // which side the two intersecting rectangles share. For this reason, we
+  // must check CGRectIsEmpty() in addition to CGRectIsNull().
+  if (CGRectIsNull(drawingRectForRow) || CGRectIsEmpty(drawingRectForRow))
+  {
+    drawingRectForRow = CGRectZero;
+  }
+  else
+  {
+    drawingRectForRow = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRectForRow
+                                                           inTileWithRect:tileRect];
+  }
+  return drawingRectForRow;
 }
 
 // -----------------------------------------------------------------------------

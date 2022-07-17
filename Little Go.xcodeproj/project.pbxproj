@@ -648,6 +648,8 @@
 		CDCBA6D0183D8801003697E2 /* MagnifyingGlassSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6CF183D8801003697E2 /* MagnifyingGlassSettingsController.m */; };
 		CDCBA6D3184228A0003697E2 /* TableViewVariableHeightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */; };
 		CDCBA6D4184228A7003697E2 /* TableViewVariableHeightCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */; };
+		CDD038082879708D002A2FFE /* LabelsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD038072879708C002A2FFE /* LabelsLayerDelegate.m */; };
+		CDD038092879708D002A2FFE /* LabelsLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD038072879708C002A2FFE /* LabelsLayerDelegate.m */; };
 		CDD2183E25A208E80069633B /* fuego-on-ios.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = CDD2183D25A208E80069633B /* fuego-on-ios.xcframework */; };
 		CDD48C83141034F000188B6A /* ArchiveViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C82141034F000188B6A /* ArchiveViewController.m */; };
 		CDD48C90141036D200188B6A /* ArchiveViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48C8F141036D200188B6A /* ArchiveViewModel.m */; };
@@ -1473,6 +1475,8 @@
 		CDCBA6CF183D8801003697E2 /* MagnifyingGlassSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MagnifyingGlassSettingsController.m; sourceTree = "<group>"; };
 		CDCBA6D1184228A0003697E2 /* TableViewVariableHeightCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewVariableHeightCell.h; sourceTree = "<group>"; };
 		CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewVariableHeightCell.m; sourceTree = "<group>"; };
+		CDD038062879708C002A2FFE /* LabelsLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LabelsLayerDelegate.h; sourceTree = "<group>"; };
+		CDD038072879708C002A2FFE /* LabelsLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LabelsLayerDelegate.m; sourceTree = "<group>"; };
 		CDD2183D25A208E80069633B /* fuego-on-ios.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = "fuego-on-ios.xcframework"; path = "3rdparty/install/fuego-on-ios.xcframework"; sourceTree = "<group>"; };
 		CDD48C81141034F000188B6A /* ArchiveViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArchiveViewController.h; sourceTree = "<group>"; };
 		CDD48C82141034F000188B6A /* ArchiveViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArchiveViewController.m; sourceTree = "<group>"; };
@@ -3153,6 +3157,8 @@
 				CDEE19F019433EAC00DF2389 /* GridLayerDelegate.m */,
 				CDEE1A0D1946123F00DF2389 /* InfluenceLayerDelegate.h */,
 				CDEE1A0E1946123F00DF2389 /* InfluenceLayerDelegate.m */,
+				CDD038062879708C002A2FFE /* LabelsLayerDelegate.h */,
+				CDD038072879708C002A2FFE /* LabelsLayerDelegate.m */,
 				CD869F132855F6C200B679FE /* RectangleLayerDelegate.h */,
 				CD869F142855F6C200B679FE /* RectangleLayerDelegate.m */,
 				CDEE1A0119438AE000DF2389 /* StonesLayerDelegate.h */,
@@ -3873,6 +3879,7 @@
 				CD7C6A111AB4862E009EC5AD /* AutoLayoutConstraintHelper.m in Sources */,
 				CD1F500725B34EDE0098037A /* GameInfoItem.m in Sources */,
 				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
+				CDD038082879708D002A2FFE /* LabelsLayerDelegate.m in Sources */,
 				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
 				CDEE1A171946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
 				CD1F4F8C25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */,
@@ -4186,6 +4193,7 @@
 				CD3592031735A757000E2963 /* PlayRootViewController.m in Sources */,
 				CD3592051735A757000E2963 /* PlayRootViewControllerPad.m in Sources */,
 				CD3592071735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.m in Sources */,
+				CDD038092879708D002A2FFE /* LabelsLayerDelegate.m in Sources */,
 				CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CDFD9F7918F1D56A0031CBCF /* SectionedDocumentViewController.m in Sources */,
 				CD2D3A9E174C348C0030EDE4 /* EditPlayerProfileController.m in Sources */,

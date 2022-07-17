@@ -599,7 +599,8 @@
   NSString* intersection = gestureStartPoint.vertex.string;
   [nodeMarkup removeLabelAtVertex:intersection];
 
-  NSArray* pointsWithChangedMarkup = @[gestureStartPoint];
+  enum GoMarkupLabel label = [MarkupUtilities labelForMarkupType:self.markupTypeToMove];
+  NSArray* pointsWithChangedMarkup = @[gestureStartPoint, [NSNumber numberWithInt:label]];
   [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
 }
 
@@ -612,9 +613,10 @@
                                      gestureStartPoint:(GoPoint*)gestureStartPoint
                                    gestureCurrentPoint:(GoPoint*)gestureCurrentPoint
 {
+  enum GoMarkupLabel label = [MarkupUtilities labelForMarkupType:self.markupTypeToMove];
+
   if (recognizerState == UIGestureRecognizerStateEnded && gestureStartPoint && gestureCurrentPoint && gestureStartPoint != gestureCurrentPoint)
   {
-    enum GoMarkupLabel label = [MarkupUtilities labelForMarkupType:self.markupTypeToMove];
     [[GameActionManager sharedGameActionManager] handleMarkupEditingPlaceMovedLabel:label
                                                                       withLabelText:self.labelTextToMove
                                                                             atPoint:gestureCurrentPoint];
@@ -625,7 +627,7 @@
     [nodeMarkup setLabel:self.labelTextToMove
                 atVertex:gestureStartPoint.vertex.string];
 
-    NSArray* pointsWithChangedMarkup = @[gestureStartPoint];
+    NSArray* pointsWithChangedMarkup = @[gestureStartPoint, [NSNumber numberWithInt:label]];
     [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
   }
 }

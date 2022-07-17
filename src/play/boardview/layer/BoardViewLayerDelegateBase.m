@@ -143,6 +143,10 @@
                                                       metrics:self.boardViewMetrics];
 
   GoGame* game = [GoGame sharedGame];
+  // TODO xxx Optimize this routine instead of doing a brute force iteration
+  // over all points. Ideally reverse calculations should be possible to find
+  // diagonally opposed corner points. Also if the algorithm is documented
+  // callbacks can make assumptions about the order of iteration.
   NSEnumerator* enumerator = [game.board pointEnumerator];
   GoPoint* point;
   while (! stop && (point = [enumerator nextObject]))

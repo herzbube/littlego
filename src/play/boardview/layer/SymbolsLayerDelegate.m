@@ -46,8 +46,6 @@
 @property(nonatomic, assign) BoardViewModel* boardViewModel;
 @property(nonatomic, assign) BoardPositionModel* boardPositionModel;
 @property(nonatomic, assign) UiSettingsModel* uiSettingsModel;
-@property(nonatomic, retain) NSMutableParagraphStyle* paragraphStyle;
-@property(nonatomic, retain) NSShadow* whiteTextShadow;
 @property(nonatomic, retain) NSDictionary* blackStrokeSymbolLayerTypes;
 @property(nonatomic, retain) NSDictionary* whiteStrokeSymbolLayerTypes;
 /// @brief List of GoPoint objects for points that are on this tile.
@@ -92,12 +90,6 @@
   _boardViewModel = boardViewModel;
   _boardPositionModel = boardPositionmodel;
   _uiSettingsModel = uiSettingsModel;
-  self.paragraphStyle = [[[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
-  self.paragraphStyle.alignment = NSTextAlignmentCenter;
-  self.whiteTextShadow = [[[NSShadow alloc] init] autorelease];
-  self.whiteTextShadow.shadowColor = [UIColor blackColor];
-  self.whiteTextShadow.shadowBlurRadius = 5.0;
-  self.whiteTextShadow.shadowOffset = CGSizeMake(1.0, 1.0);
 
   self.blackStrokeSymbolLayerTypes = @{
     [NSNumber numberWithInt:GoMarkupSymbolCircle] : [NSNumber numberWithInt:BlackCircleSymbolLayerType],
@@ -146,9 +138,7 @@
 
   self.boardViewModel = nil;
   self.boardPositionModel = nil;
-  self.paragraphStyle = nil;
-  self.whiteTextShadow = nil;
-  
+
   self.drawingPointsOnTile = nil;
   self.pointsOnTileInConnectionRectangle = nil;
   self.drawingPoint = nil;
@@ -202,7 +192,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invalidates the dirty rectangle.
+/// @brief Invalidates all dirty data.
 // -----------------------------------------------------------------------------
 - (void) invalidateDirtyData
 {
@@ -262,6 +252,8 @@
     case BVLDEventMarkLastMoveChanged:
     case BVLDEventMoveNumbersPercentageChanged:
     case BVLDEventMarkNextMoveChanged:
+    // Marker/symbol precedence is handled in this layer. Label/symbol
+    // precedence is handled by reordering layers.
     case BVLDEventMarkupPrecedenceChanged:
     case BVLDEventAllMarkupDiscarded:
     {
@@ -278,14 +270,24 @@
       [self invalidateDirtyData];
 
       NSArray* pointsWithChangedMarkup = eventInfo;
-      if (pointsWithChangedMarkup.count == 0)
+      NSUInteger pointsWithChangedMarkupCount = pointsWithChangedMarkup.count;
+      if (pointsWithChangedMarkupCount == 0)
       {
         self.drawingPoint = nil;
         self.pointsOnTileInConnectionRectangle = nil;
         self.dirty = true;
       }
-      else if (pointsWithChangedMarkup.count == 1)
+      else if (pointsWithChangedMarkupCount == 1 || pointsWithChangedMarkupCount == 2)
       {
+        if (pointsWithChangedMarkupCount == 2)
+        {
+          NSNumber* labelAsNumber = pointsWithChangedMarkup.lastObject;
+          enum GoMarkupLabel label = labelAsNumber.intValue;
+          // TODO xxx if no drawing is necessary for labels, do we need to invoke the invalidate... methods at the start of the case?
+          if (label == GoMarkupLabelLabel)
+            break;
+        }
+
         GoPoint* pointThatChanged = pointsWithChangedMarkup.firstObject;
         CGRect drawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
                                                         centeredAtPoint:pointThatChanged
@@ -321,6 +323,11 @@
       break;
     }
     case BVLDEventMarkupSymbolDidMove:
+    case BVLDEventMarkupMarkerDidMove:
+    // We do drawing for temporary markup even if it's a label that is being
+    // moved => the label could be moved over a symbol or marker, in which case
+    // we don't draw the symbol or marker (to indicate that it would be replaced
+    // if the panning gesture ended now).
     case BVLDEventMarkupLabelDidMove:
     {
       NSArray* eventInfoAsArray = eventInfo;
@@ -347,9 +354,16 @@
         if (newDrawingPointTemporaryMarkup == self.drawingPointTemporaryMarkup)
           break;
 
-        self.temporaryMarkupCategory = MarkupToolLabel;
-        self.temporaryLabelAsNumber = labelAsNumber;
-        self.temporaryLabelText = labelText;
+        if (event == BVLDEventMarkupMarkerDidMove)
+        {
+          self.temporaryMarkupCategory = MarkupToolMarker;
+          self.temporaryLabelAsNumber = labelAsNumber;
+          self.temporaryLabelText = labelText;
+        }
+        else
+        {
+          self.temporaryMarkupCategory = MarkupToolLabel;
+        }
       }
 
       // IMPORTANT: The following logic only works if there is a drawing cycle
@@ -652,7 +666,7 @@
     NSString* moveNumberText = [NSString stringWithFormat:@"%d", moveToBeNumbered.moveNumber];
     NSDictionary* textAttributes = @{ NSFontAttributeName : moveNumberFont,
                                       NSForegroundColorAttributeName : textColor,
-                                      NSParagraphStyleAttributeName : self.paragraphStyle };
+                                      NSParagraphStyleAttributeName : self.boardViewMetrics.paragraphStyle };
     [BoardViewDrawingHelper drawString:moveNumberText
                            withContext:context
                             attributes:textAttributes
@@ -685,13 +699,17 @@
                     atPoint:self.drawingPointTemporaryMarkup
                   withCache:cache];
   }
-  else if (self.temporaryMarkupCategory == MarkupToolLabel)
+  else if (self.temporaryMarkupCategory == MarkupToolMarker)
   {
     [self drawLabelMarkup:self.temporaryLabelText
                 inContext:context
            inTileWithRect:tileRect
                   atPoint:self.drawingPointTemporaryMarkup
                 labelType:self.temporaryLabelAsNumber.intValue];
+  }
+  else if (self.temporaryMarkupCategory == MarkupToolLabel)
+  {
+    // Do not draw - the label being moved is drawn in another layer
   }
   else
   {
@@ -883,28 +901,27 @@
     return;
 
   if (! self.boardViewMetrics.markupLetterMarkerFont &&
-      ! self.boardViewMetrics.markupNumberMarkerFont &&
-      ! self.boardViewMetrics.markupLabelFont)
+      ! self.boardViewMetrics.markupNumberMarkerFont)
   {
     return;
   }
 
   [labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSString* labelText, BOOL* stop)
   {
+    // Non-marker labels are drawn on LabelsLayerDelegate
+    // TODO xxx label type should be pre-determined
+    enum GoMarkupLabel labelType = [MarkupUtilities labelTypeOfLabel:labelText];
+    if (labelType == GoMarkupLabelLabel)
+      return;
+
     GoPoint* pointWithLabel = [board pointAtVertex:vertexString];
     if (pointsToDrawOn && ! [pointsToDrawOn containsObject:pointWithLabel])
+      return;
+    if (! [self.drawingPointsOnTile containsObject:pointWithLabel])
       return;
     if ([pointsWithMarkup containsObject:pointWithLabel])
       return;
     [pointsWithMarkup addObject:pointWithLabel];
-
-    enum GoMarkupLabel labelType = [MarkupUtilities labelTypeOfLabel:labelText];
-
-    // Non-marker labels can extend over the boundary of the tile, therefore
-    // they have to be drawn by all tiles even if the center of the point is
-    // not on the tile itself.
-    if (labelType != GoMarkupLabelLabel && ! [self.drawingPointsOnTile containsObject:pointWithLabel])
-      return;
 
     [self drawLabelMarkup:labelText
                 inContext:context
@@ -946,14 +963,14 @@
   {
     textAttributes = @{ NSFontAttributeName : labelFont,
                         NSForegroundColorAttributeName : textColor,
-                        NSParagraphStyleAttributeName : self.paragraphStyle,
-                        NSShadowAttributeName: self.whiteTextShadow };
+                        NSParagraphStyleAttributeName : self.boardViewMetrics.paragraphStyle,
+                        NSShadowAttributeName: self.boardViewMetrics.whiteTextShadow };
   }
   else
   {
     textAttributes = @{ NSFontAttributeName : labelFont,
                         NSForegroundColorAttributeName : textColor,
-                        NSParagraphStyleAttributeName : self.paragraphStyle };
+                        NSParagraphStyleAttributeName : self.boardViewMetrics.paragraphStyle };
   }
 
   [BoardViewDrawingHelper drawString:labelText
@@ -983,10 +1000,6 @@
     case GoMarkupLabelMarkerLetter:
       *font = self.boardViewMetrics.markupLetterMarkerFont;
       *textMaximumSize = self.boardViewMetrics.markupLetterMarkerMaximumSize;
-      break;
-    case GoMarkupLabelLabel:
-      *font = self.boardViewMetrics.markupLabelFont;
-      *textMaximumSize = self.boardViewMetrics.markupLabelMaximumSize;
       break;
     default:
       assert(0);
@@ -1104,8 +1117,8 @@
   NSString* nextMoveLabelText = @"A";
   NSDictionary* textAttributes = @{ NSFontAttributeName : self.boardViewMetrics.nextMoveLabelFont,
                                     NSForegroundColorAttributeName : [UIColor whiteColor],
-                                    NSParagraphStyleAttributeName : self.paragraphStyle,
-                                    NSShadowAttributeName: self.whiteTextShadow };
+                                    NSParagraphStyleAttributeName : self.boardViewMetrics.paragraphStyle,
+                                    NSShadowAttributeName: self.boardViewMetrics.whiteTextShadow };
   [BoardViewDrawingHelper drawString:nextMoveLabelText
                          withContext:context
                           attributes:textAttributes

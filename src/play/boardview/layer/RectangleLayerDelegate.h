@@ -20,10 +20,16 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The RectangleLayerDelegate class is responsible for drawing within
-/// a rectangle defined by two intersections of the board that are located at
-/// diagonally opposite corners of the rectangle. RectangleLayerDelegate can
+/// @brief The RectangleLayerDelegate class is responsible for drawing on points
+/// that form a consecutive, unbroken area on the board, i.e. a rectangle (a
+/// square is just a special form of rectangle). RectangleLayerDelegate can
 /// draw only one rectangle at a time.
+///
+/// The main use of RectangleLayerDelegate is to draw a temporary overlay at the
+/// top of the stack of layers that make up the board view. The rectangular area
+/// drawn by RectangleLayerDelegate can change in form and size. The benefit of
+/// the overlay mechanism is that other layers do not have to redraw their stuff
+/// when this happens.
 // -----------------------------------------------------------------------------
 @interface RectangleLayerDelegate : BoardViewLayerDelegateBase
 {

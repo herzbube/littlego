@@ -21,6 +21,7 @@
 #import "layer/CrossHairLinesLayerDelegate.h"
 #import "layer/GridLayerDelegate.h"
 #import "layer/InfluenceLayerDelegate.h"
+#import "layer/LabelsLayerDelegate.h"
 #import "layer/RectangleLayerDelegate.h"
 #import "layer/StonesLayerDelegate.h"
 #import "layer/SymbolsLayerDelegate.h"
@@ -56,6 +57,7 @@
 @property(nonatomic, assign) StonesLayerDelegate* stonesLayerDelegate;
 @property(nonatomic, assign) InfluenceLayerDelegate* influenceLayerDelegate;
 @property(nonatomic, assign) SymbolsLayerDelegate* symbolsLayerDelegate;
+@property(nonatomic, assign) LabelsLayerDelegate* labelsLayerDelegate;
 @property(nonatomic, assign) TerritoryLayerDelegate* territoryLayerDelegate;
 @property(nonatomic, assign) RectangleLayerDelegate* rectangleLayerDelegate;
 //@}
@@ -107,6 +109,7 @@
   self.stonesLayerDelegate = nil;
   self.influenceLayerDelegate = nil;
   self.symbolsLayerDelegate = nil;
+  self.labelsLayerDelegate = nil;
   self.territoryLayerDelegate = nil;
   self.rectangleLayerDelegate = nil;
   [super dealloc];
@@ -223,6 +226,7 @@
   [self setupCrossHairLinesLayerDelegateIsRequired:false];
   [self setupInfluenceLayerDelegate];
   [self setupSymbolsLayerDelegate];
+  [self setupLabelsLayerDelegate];
   [self setupTerritoryLayerDelegate];
   [self setupRectangleLayerDelegate];
 
@@ -334,6 +338,26 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Creates the labels layer delegate, or resets it to nil, depending
+/// on the current application state.
+// -----------------------------------------------------------------------------
+- (void) setupLabelsLayerDelegate
+{
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+  {
+    self.labelsLayerDelegate = nil;
+  }
+  else
+  {
+    if (self.labelsLayerDelegate)
+      return;
+    self.labelsLayerDelegate = [[[LabelsLayerDelegate alloc] initWithTile:self
+                                                                  metrics:appDelegate.boardViewMetrics] autorelease];
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Creates the territory layer delegate, or resets it to nil, depending
 /// on the current application state.
 // -----------------------------------------------------------------------------
@@ -393,6 +417,9 @@
     [newLayerDelegates addObject:self.influenceLayerDelegate];
   if (self.symbolsLayerDelegate)
     [newLayerDelegates addObject:self.symbolsLayerDelegate];
+  // TODO xxx precedence according to user preferences
+  if (self.labelsLayerDelegate)
+    [newLayerDelegates addObject:self.labelsLayerDelegate];
   if (self.territoryLayerDelegate)
     [newLayerDelegates addObject:self.territoryLayerDelegate];
   if (self.rectangleLayerDelegate)
@@ -518,6 +545,7 @@
 {
   [self setupInfluenceLayerDelegate];
   [self setupSymbolsLayerDelegate];
+  [self setupLabelsLayerDelegate];
   [self setupTerritoryLayerDelegate];
   [self setupRectangleLayerDelegate];
   [self updateLayers];

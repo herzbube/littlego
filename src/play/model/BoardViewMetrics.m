@@ -98,6 +98,8 @@
   self.lastMoveColorOnWhiteStone = nil;
   self.connectionFillColor = nil;
   self.connectionStrokeColor = nil;
+  self.paragraphStyle = nil;
+  self.whiteTextShadow = nil;
 
   [super dealloc];
 }
@@ -144,6 +146,13 @@
   self.lastMoveColorOnWhiteStone = [UIColor redColor];
   self.connectionFillColor = [UIColor whiteColor];
   self.connectionStrokeColor = [UIColor blackColor];
+  NSMutableParagraphStyle* paragraphStyle = [[[NSMutableParagraphStyle defaultParagraphStyle] mutableCopy] autorelease];
+  paragraphStyle.alignment = NSTextAlignmentCenter;
+  self.paragraphStyle = paragraphStyle;
+  self.whiteTextShadow = [[[NSShadow alloc] init] autorelease];
+  self.whiteTextShadow.shadowColor = [UIColor blackColor];
+  self.whiteTextShadow.shadowBlurRadius = 5.0;
+  self.whiteTextShadow.shadowOffset = CGSizeMake(1.0, 1.0);
 }
 
 // -----------------------------------------------------------------------------
@@ -634,7 +643,7 @@
     // this.
     [self calculateWithFontRange:self.markupNumberMarkerFontRange font:&calculatedFont textSize:&calculatedFontMaximumSize];
     self.markupLabelFont = calculatedFont;
-    self.markupLabelMaximumSize = CGSizeMake(self.canvasSize.width,
+    self.markupLabelMaximumSize = CGSizeMake(self.canvasSize.width * 2,
                                              calculatedFontMaximumSize.height);
 
     [self calculateWithFontRange:self.nextMoveLabelFontRange font:&calculatedFont textSize:&calculatedFontMaximumSize];

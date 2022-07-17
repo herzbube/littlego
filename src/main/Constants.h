@@ -888,7 +888,7 @@ extern NSString* boardViewStoneLocationDidChange;
 /// If the NSArray is not empty, this indicates that the markup element is
 /// currently visible. The NSArray in this case contains the following objects:
 /// - Object at index position 0: An NSNumber object that holds an @e int value
-///   that is actually a value from the enumeration #GoMarkupType. This
+///   that is actually a value from the enumeration #MarkupType. This
 ///   identifes the type of the markup element to be displayed.
 /// - For markup elements of type symbol, marker or label: Object at index
 ///   position 1: A GoPoint object that identifies the intersection on which the
@@ -1003,8 +1003,18 @@ extern NSString* nodeAnnotationDataDidChange;
 /// An NSArray object is associated with the notification that contains
 /// information about the intersections on which markup did change.
 ///
-/// If the NSArray contains a single object, this is a GoPoint object
-/// identifying the intersection on which markup was added or removed.
+/// If the NSArray contains 1 object, the markup that was added or removed
+/// was a symbol. The object in the array in this case is a GoPoint object
+/// identifying the intersection on which the symbol was added or removed.
+///
+/// If the NSArray contains 2 objects, the markup that was added or removed
+/// was a marker or label. The NSArray in this case contains the following
+/// objects:
+/// - Object at index position 0: A GoPoint object identifying the intersection
+///   on which the marker or label was added or removed.
+/// - Object at index position 1: An NSNumber object that holds an @e int value
+///   that is actually a value from the enumeration #GoMarkupLabel. This
+///   identifes the type of the markup element that was added or removed.
 ///
 /// If the NSArray contains 3 objects, the markup that was added or removed
 /// was a connection. The NSArray in this case contains the following objects:

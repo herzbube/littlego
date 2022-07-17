@@ -406,7 +406,10 @@ enum MarkupEditingInteraction
         NSString* intersection = self.point.vertex.string;
         bool markupDataDidChange = [self handlePlaceMarker:self.markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
         if (markupDataDidChange)
-          pointsWithChangedMarkup = @[self.point];
+        {
+          enum GoMarkupLabel labelType = [MarkupUtilities labelForMarkupType:self.markupType];
+          pointsWithChangedMarkup = @[self.point, [NSNumber numberWithInt:labelType]];
+        }
         break;
       }
       case MEIPlaceMovedMarker:
@@ -414,7 +417,10 @@ enum MarkupEditingInteraction
         NSString* intersection = self.point.vertex.string;
         bool markupDataDidChange = [self handlePlaceLabel:self.labelText onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:true];;
         if (markupDataDidChange)
-          pointsWithChangedMarkup = @[self.point];
+        {
+          enum GoMarkupLabel labelType = [MarkupUtilities labelTypeOfLabel:self.labelText];  // TODO xxx should no longer be necessary when GoNodeMarkup has dedicated support for markers
+          pointsWithChangedMarkup = @[self.point, [NSNumber numberWithInt:labelType]];
+        }
         break;
       }
       case MEIPlaceNewLabel:
@@ -424,7 +430,7 @@ enum MarkupEditingInteraction
         bool markupWasMoved = self.interaction == MEIPlaceMovedLabel;
         bool markupDataDidChange = [self handlePlaceLabel:self.labelText onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
         if (markupDataDidChange)
-          pointsWithChangedMarkup = @[self.point];
+          pointsWithChangedMarkup = @[self.point, [NSNumber numberWithInt:GoMarkupLabelLabel]];
         break;
       }
       case MEIEraseMarkupAtPoint:
@@ -892,10 +898,13 @@ enum MarkupEditingInteraction
 // -----------------------------------------------------------------------------
 /// @brief Entry point for handling markup erasing on a single intersection. If
 /// a single connection was removed, returns an array with the start/end GoPoint
-/// objects of the connection that was removed. If a single symbol or label was
-/// removed, returns an array with the GoPoint object from which the symbol or
-/// label was removed. If more than one markup element was removed, returns an
-/// empty array. Returns @e nil if no markup was removed.
+/// objects of the connection that was removed. If a single symbol was removed,
+/// returns an array with the GoPoint object from which the symbol was removed.
+/// If a single label was removed, returns an array with the GoPoint object
+/// from which the label was removed, plus an NSNumber object that encapsulates
+/// the #GoMarkupLabel value indicating which type of label was removed. If more
+/// than one markup element was removed, returns an empty array. Returns @e nil
+/// if no markup was removed.
 ///
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
@@ -924,12 +933,18 @@ enum MarkupEditingInteraction
   NSDictionary* labels = nodeMarkup.labels;
   if (labels && labels[intersection])
   {
+    NSString* labelText = [[labels[intersection] retain] autorelease];  // the string object may be used after it's removed
     [nodeMarkup removeLabelAtVertex:intersection];
 
     if (pointsWithChangedMarkup)
+    {
       singleOrNoMarkupWasErased = false;
+    }
     else
-      pointsWithChangedMarkup = [self pointsArrayWithIntersection:intersection];
+    {
+      enum GoMarkupLabel labelType = [MarkupUtilities labelTypeOfLabel:labelText];
+      pointsWithChangedMarkup = [self arrayWithIntersection:intersection labelType:labelType];
+    }
   }
 
   NSDictionary* connections = nodeMarkup.connections;
@@ -966,10 +981,12 @@ enum MarkupEditingInteraction
 /// the diagonally opposite corner intersections @a fromIntersection and
 /// @a toIntersection. If a single connection was removed, returns an array with
 /// the start/end GoPoint objects of the connection that was removed. If a
-/// single symbol or label was removed, returns an array with the GoPoint object
-/// from which the symbol or label was removed. If more than one markup element
-/// was removed, returns an empty array. Returns @e nil if no markup was
-/// removed.
+/// single symbol was removed, returns an array with the GoPoint object from
+/// which the symbol was removed. If a single label was removed, returns an
+/// array with the GoPoint object from which the label was removed, plus an
+/// NSNumber object that encapsulates the #GoMarkupLabel value indicating which
+/// type of label was removed. If more than one markup element was removed,
+/// returns an empty array. Returns @e nil if no markup was removed.
 ///
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
@@ -1027,6 +1044,18 @@ enum MarkupEditingInteraction
   GoBoard* board = [GoGame sharedGame].board;
   GoPoint* point = [board pointAtVertex:intersection];
   return @[point];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper. Returns an NSArray with a GoPoint object that
+/// corresponds to @a intersection and an NSNumber object encapsulating an
+/// @e int value that corresponds to @a labelType.
+// -----------------------------------------------------------------------------
+- (NSArray*) arrayWithIntersection:(NSString*)intersection labelType:(enum GoMarkupLabel)labelType
+{
+  GoBoard* board = [GoGame sharedGame].board;
+  GoPoint* point = [board pointAtVertex:intersection];
+  return @[point, [NSNumber numberWithInt:labelType]];
 }
 
 // -----------------------------------------------------------------------------

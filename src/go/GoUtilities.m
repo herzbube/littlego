@@ -375,6 +375,62 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns an (unordered) list of GoPoint objects whose intersections
+/// are located in the same row as @a point. @a point is included in the
+/// result.
+// -----------------------------------------------------------------------------
++ (NSArray*) pointsInRowWithPoint:(GoPoint*)point
+{
+  if (! point)
+  {
+    NSString* errorMessage = @"pointsInRowWithPoint: failed: GoPoint object not specified";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  NSMutableArray* pointsInRow = [NSMutableArray arrayWithObject:point];
+
+  for (GoPoint* leftNeighbour = point.left; leftNeighbour; leftNeighbour = leftNeighbour.left)
+    [pointsInRow addObject:leftNeighbour];
+
+  for (GoPoint* rightNeighbour = point.right; rightNeighbour; rightNeighbour = rightNeighbour.right)
+    [pointsInRow addObject:rightNeighbour];
+
+  return pointsInRow;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an (unordered) list of GoPoint objects whose intersections
+/// are located in the same column as @a point. @a point is included in the
+/// result.
+// -----------------------------------------------------------------------------
++ (NSArray*) pointsInColumnWithPoint:(GoPoint*)point
+{
+  if (! point)
+  {
+    NSString* errorMessage = @"pointsInColumnWithPoint: failed: GoPoint object not specified";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  NSMutableArray* pointsInColumn = [NSMutableArray arrayWithObject:point];
+
+  for (GoPoint* aboveNeighbour = point.above; aboveNeighbour; aboveNeighbour = aboveNeighbour.above)
+    [pointsInColumn addObject:aboveNeighbour];
+
+  for (GoPoint* belowNeighbour = point.below; belowNeighbour; belowNeighbour = belowNeighbour.below)
+    [pointsInColumn addObject:belowNeighbour];
+
+  return pointsInColumn;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns an (unordered) list of GoPoint objects that exist in both
 /// @a firstArray and @a secondArray.
 ///

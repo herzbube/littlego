@@ -45,6 +45,8 @@
 + (NSArray*) pointsInRectangleDelimitedByCornerPoint:(GoPoint*)pointA
                                  oppositeCornerPoint:(GoPoint*)pointB
                                               inGame:(GoGame*)game;
++ (NSArray*) pointsInRowWithPoint:(GoPoint*)point;
++ (NSArray*) pointsInColumnWithPoint:(GoPoint*)point;
 + (NSArray*) pointsInBothFirstArray:(NSArray*)firstArray
                      andSecondArray:(NSArray*)secondArray;
 + (double) defaultKomiForHandicap:(int)handicap scoringSystem:(enum GoScoringSystem)scoringSystem;

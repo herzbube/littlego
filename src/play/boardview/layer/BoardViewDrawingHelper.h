@@ -86,6 +86,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 + (CGRect) canvasRectFromPoint:(GoPoint*)fromPoint
                        toPoint:(GoPoint*)toPoint
                        metrics:(BoardViewMetrics*)metrics;
++ (CGRect) canvasRectForRowContainingPoint:(GoPoint*)point
+                                   metrics:(BoardViewMetrics*)metrics;
 + (CGRect) canvasRectForScaledLayer:(CGLayerRef)layer
                     centeredAtPoint:(GoPoint*)point
                             metrics:(BoardViewMetrics*)metrics;
@@ -102,6 +104,9 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 + (CGRect) drawingRectForTile:(id<Tile>)tile
                     fromPoint:(GoPoint*)fromPoint
                       toPoint:(GoPoint*)toPoint
+                  withMetrics:(BoardViewMetrics*)metrics;
++ (CGRect) drawingRectForTile:(id<Tile>)tile
+         inRowContainingPoint:(GoPoint*)point
                   withMetrics:(BoardViewMetrics*)metrics;
 //@}
 
