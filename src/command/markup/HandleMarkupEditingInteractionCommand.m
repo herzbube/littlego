@@ -1001,10 +1001,13 @@ enum MarkupEditingInteraction
     NSArray* pointsWithChangedMarkupSingleIntersection = [self handleEraseMarkupOnIntersection:intersection
                                                                                 withNodeMarkup:nodeMarkup];
 
-    if (pointsWithChangedMarkup)
-      singleOrNoMarkupWasErased = false;
-    else
-      pointsWithChangedMarkup = pointsWithChangedMarkupSingleIntersection;
+    if (pointsWithChangedMarkupSingleIntersection)
+    {
+      if (pointsWithChangedMarkup)
+        singleOrNoMarkupWasErased = false;
+      else
+        pointsWithChangedMarkup = pointsWithChangedMarkupSingleIntersection;
+    }
   }
 
   if (singleOrNoMarkupWasErased)
