@@ -871,10 +871,15 @@ enum MarkupEditingInteraction
     {
       if ([key containsObject:intersection])
       {
+        // Use key components before key is released by removing it from the
+        // dictionary
         NSString* fromIntersection = key.firstObject;
         NSString* toIntersection = key.lastObject;
+        NSArray* pointsWithChangedMarkup = [self pointsArrayWithFromIntersection:fromIntersection toIntersection:toIntersection];
+
         [nodeMarkup removeConnectionFromVertex:fromIntersection toVertex:toIntersection];
-        return [self pointsArrayWithFromIntersection:fromIntersection toIntersection:toIntersection];
+
+        return pointsWithChangedMarkup;
       }
     }
   }
@@ -934,14 +939,18 @@ enum MarkupEditingInteraction
     {
       if ([key containsObject:intersection])
       {
+        // Use key components before key is released by removing it from the
+        // dictionary
         NSString* fromIntersection = key.firstObject;
         NSString* toIntersection = key.lastObject;
+        NSArray* localPointsWithChangedMarkup = [self pointsArrayWithFromIntersection:fromIntersection toIntersection:toIntersection];
+
         [nodeMarkup removeConnectionFromVertex:fromIntersection toVertex:toIntersection];
 
         if (pointsWithChangedMarkup)
           singleOrNoMarkupWasErased = false;
         else
-          pointsWithChangedMarkup = [self pointsArrayWithFromIntersection:fromIntersection toIntersection:toIntersection];
+          pointsWithChangedMarkup = localPointsWithChangedMarkup;
       }
     }
   }
