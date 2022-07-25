@@ -605,8 +605,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Either places a new symbol (if the gesture completes) or restores
-/// the original symbol that was temporarily removed (if the gesture is
+/// @brief Either places a new label (if the gesture completes) or restores
+/// the original label that was temporarily removed (if the gesture is
 /// canceled).
 // -----------------------------------------------------------------------------
 - (void) placeOrRestoreLabelWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
@@ -624,7 +624,8 @@
   else
   {
     GoNodeMarkup* nodeMarkup = [self currentNodeMarkup];
-    [nodeMarkup setLabel:self.labelTextToMove
+    [nodeMarkup setLabel:label
+               labelText:self.labelTextToMove
                 atVertex:gestureStartPoint.vertex.string];
 
     NSArray* pointsWithChangedMarkup = @[gestureStartPoint, [NSNumber numberWithInt:label]];

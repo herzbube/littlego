@@ -37,11 +37,13 @@
 - (void) testRemoveConnectionFromVertexToVertex;
 - (void) testReplaceConnections;
 - (void) testRemoveAllConnections;
-- (void) testSetLabelAtVertex;
+- (void) testSetLabelLabelTextAtVertex;
 - (void) testRemoveLabelAtVertex;
 - (void) testReplaceLabels;
 - (void) testRemoveAllLabels;
 - (void) testRemoveNewlinesAndTrimLabel;
+- (void) testLabelTypeOfLabel;
+- (void) testLabelTypeOfLabelLetterMarkerValueNumberMarkerValue;
 - (void) testSetDimmingAtVertex;
 - (void) testRemoveDimmingAtVertex;
 - (void) testReplaceDimmings;

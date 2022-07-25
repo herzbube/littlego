@@ -906,11 +906,11 @@
     return;
   }
 
-  [labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSString* labelText, BOOL* stop)
+  [labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSArray* labelTypeAndText, BOOL* stop)
   {
     // Non-marker labels are drawn on LabelsLayerDelegate
-    // TODO xxx label type should be pre-determined
-    enum GoMarkupLabel labelType = [MarkupUtilities labelTypeOfLabel:labelText];
+    NSNumber* labelTypeAsNumber = labelTypeAndText.firstObject;
+    enum GoMarkupLabel labelType = labelTypeAsNumber.intValue;
     if (labelType == GoMarkupLabelLabel)
       return;
 
@@ -922,6 +922,8 @@
     if ([pointsWithMarkup containsObject:pointWithLabel])
       return;
     [pointsWithMarkup addObject:pointWithLabel];
+
+    NSString* labelText = labelTypeAndText.lastObject;
 
     [self drawLabelMarkup:labelText
                 inContext:context

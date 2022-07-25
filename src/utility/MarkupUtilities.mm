@@ -28,40 +28,8 @@
 #include <utility>  // for std::pair
 #include <vector>
 
-// First invocation of the HandleMarkupEditingInteractionCommand initializer
-// will initialize these static variables.
-static unichar charUppercaseA = 0;
-static unichar charuppercaseZ = 0;
-static unichar charLowercaseA = 0;
-static unichar charLowercaseZ = 0;
-static unichar charZero = 0;
-static unichar charNine = 0;
-static int minimumNumberMarkerValue = 0;
-static int maximumNumberMarkerValue = 0;
-static std::vector<std::pair<char, char> > letterMarkerValueRanges;
-
 
 @implementation MarkupUtilities
-
-// -----------------------------------------------------------------------------
-/// @brief Initializes static variables if they have not yet been initialized.
-// -----------------------------------------------------------------------------
-+ (void) setupStaticVariablesIfNotYetSetup
-{
-  if (charUppercaseA != 0)
-    return;
-
-  charUppercaseA = [@"A" characterAtIndex:0];
-  charuppercaseZ = [@"Z" characterAtIndex:0];
-  charLowercaseA = [@"a" characterAtIndex:0];
-  charLowercaseZ = [@"z" characterAtIndex:0];
-  charZero = [@"0" characterAtIndex:0];
-  charNine = [@"9" characterAtIndex:0];
-  minimumNumberMarkerValue = 1;
-  maximumNumberMarkerValue = 999;
-  letterMarkerValueRanges.push_back(std::make_pair('A', 'Z'));
-  letterMarkerValueRanges.push_back(std::make_pair('a', 'z'));
-}
 
 // -----------------------------------------------------------------------------
 /// @brief Maps a value @a markupType from the enumeration #MarkupType to a
@@ -267,26 +235,24 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
 
 // -----------------------------------------------------------------------------
 /// @brief Analyzes all label texts in @a nodeMarkup and returns a marker label
-/// text of the markup type @a markupType. Raises an exception if @a markupType
+/// text of the label type @a labelType. Raises an exception if @a labelType
 /// does not refer to a marker type. Returns @e nil if all markers of the
 /// requested type are already in use.
 ///
-/// @exception InvalidArgumentException Is thrown if @a markupType is neither
-/// #MarkupTypeMarkerLetter nor #MarkupTypeMarkerNumber.
+/// @exception InvalidArgumentException Is thrown if @a labelType is neither
+/// #GoMarkupLabelMarkerLetter nor #GoMarkupLabelMarkerNumber.
 // -----------------------------------------------------------------------------
-+ (NSString*) nextFreeMarkerOfType:(enum MarkupType)markupType
++ (NSString*) nextFreeMarkerOfType:(enum GoMarkupLabel)labelType
                       inNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
-  if (markupType != MarkupTypeMarkerLetter && markupType != MarkupTypeMarkerNumber)
+  if (labelType != GoMarkupLabelMarkerLetter && labelType != GoMarkupLabelMarkerNumber)
   {
-    [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"nextFreeMarkerOfType:inNodeMarkup: failed: invalid markup type %d" argumentValue:markupType];
+    [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"nextFreeMarkerOfType:inNodeMarkup: failed: invalid label type %d" argumentValue:labelType];
     return nil;  // dummy return to make compiler happy
   }
 
-  [MarkupUtilities setupStaticVariablesIfNotYetSetup];
-
-  char nextFreeLetterMarkerValue = letterMarkerValueRanges.front().first;
-  int nextFreeNumberMarkerValue = minimumNumberMarkerValue;
+  char nextFreeLetterMarkerValue = 'A';
+  int nextFreeNumberMarkerValue = gMinimumNumberMarkerValue;
   bool canUseNextFreeMarkerValue = false;
 
   NSDictionary* labels = nodeMarkup.labels;
@@ -294,21 +260,33 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   {
     std::set<char> usedLetterMarkerValues;
     std::set<char> usedNumberMarkerValues;
-    for (NSString* label in labels.allValues)
+    for (NSArray* existingLabelTypeAndText in labels.allValues)
     {
+      NSNumber* existingLabelTypeAsNumber = existingLabelTypeAndText.firstObject;
+      enum GoMarkupLabel existingLabelType = static_cast<enum GoMarkupLabel>(existingLabelTypeAsNumber.intValue);
+      if (existingLabelType != labelType)
+        continue;
+
+      NSString* labelText = existingLabelTypeAndText.lastObject;
+
       char letterMarkerValue;
       int numberMarkerValue;
-      enum MarkupType markupTypeOfLabel = [MarkupUtilities markupTypeOfLabel:label
-                                                           letterMarkerValue:&letterMarkerValue
-                                                           numberMarkerValue:&numberMarkerValue];
-      if (markupTypeOfLabel == MarkupTypeMarkerLetter)
+      [GoNodeMarkup labelTypeOfLabel:labelText
+                   letterMarkerValue:&letterMarkerValue
+                   numberMarkerValue:&numberMarkerValue];
+
+      if (existingLabelType == GoMarkupLabelMarkerLetter)
         usedLetterMarkerValues.insert(letterMarkerValue);
-      else if (markupTypeOfLabel == MarkupTypeMarkerNumber)
+      else if (existingLabelType == GoMarkupLabelMarkerNumber)
         usedNumberMarkerValues.insert(numberMarkerValue);
     }
 
-    if (markupType == MarkupTypeMarkerLetter)
+    if (labelType == GoMarkupLabelMarkerLetter)
     {
+      std::vector<std::pair<char, char> > letterMarkerValueRanges;
+      letterMarkerValueRanges.push_back(std::make_pair('A', 'Z'));
+      letterMarkerValueRanges.push_back(std::make_pair('a', 'z'));
+
       for (auto letterMarkerValueRange : letterMarkerValueRanges)
       {
         nextFreeLetterMarkerValue = letterMarkerValueRange.first;
@@ -326,7 +304,7 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
     }
     else
     {
-      while (nextFreeNumberMarkerValue <= maximumNumberMarkerValue && ! canUseNextFreeMarkerValue)
+      while (nextFreeNumberMarkerValue <= gMaximumNumberMarkerValue && ! canUseNextFreeMarkerValue)
       {
         if (usedNumberMarkerValues.find(nextFreeNumberMarkerValue) != usedNumberMarkerValues.end())
           nextFreeNumberMarkerValue++;
@@ -343,146 +321,12 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   NSString* nextFreeMarker = nil;
   if (canUseNextFreeMarkerValue)
   {
-    if (markupType == MarkupTypeMarkerLetter)
+    if (labelType == GoMarkupLabelMarkerLetter)
       nextFreeMarker = [NSString stringWithFormat:@"%c" , nextFreeLetterMarkerValue];
     else
       nextFreeMarker = [NSString stringWithFormat:@"%d" , nextFreeNumberMarkerValue];
   }
   return nextFreeMarker;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Analyzes the string value of @a label and returns a value from the
-/// enumeration #GoMarkupLabel that describes the string value.
-// -----------------------------------------------------------------------------
-+ (enum GoMarkupLabel) labelTypeOfLabel:(NSString*)label
-{
-  // No need to invoke MarkupUtilities::setupStaticVariablesIfNotYetSetup(),
-  // markupTypeOfLabel:() already does this for us.
-
-  enum MarkupType markupType = [MarkupUtilities markupTypeOfLabel:label];
-  enum GoMarkupLabel labelType = [MarkupUtilities labelForMarkupType:markupType];
-  return labelType;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Analyzes the string value of @a label and returns a value from the
-/// enumeration #MarkupType that describes the string value.
-// -----------------------------------------------------------------------------
-+ (enum MarkupType) markupTypeOfLabel:(NSString*)label
-{
-  [MarkupUtilities setupStaticVariablesIfNotYetSetup];
-
-  char letterMarkerValue;
-  int numberMarkerValue;
-  enum MarkupType markupTypeOfLabel = [MarkupUtilities markupTypeOfLabel:label
-                                                       letterMarkerValue:&letterMarkerValue
-                                                       numberMarkerValue:&numberMarkerValue];
-  return markupTypeOfLabel;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the markup type that @a label corresponds to and fills one
-/// of the out variables if appropriate.
-///
-/// If @a label contains a single letter A-Z or a-z from the latin alphabet,
-/// the return value is #MarkupTypeMarkerLetter and this method fills the out
-/// variable @a letterMarkerValue with the char value of the single letter.
-///
-/// If @a label contains only digit characters that form an integer number in
-/// the range of 1-999, the return value is #MarkupTypeMarkerNumber and this
-/// method fills the out variable @a numberMarkerValue with the int value of the
-/// integer number.
-///
-/// In all other cases the return value is #MarkupTypeLabel and the value of
-/// both out variables is undefined.
-// -----------------------------------------------------------------------------
-+ (enum MarkupType) markupTypeOfLabel:(NSString*)label
-                    letterMarkerValue:(char*)letterMarkerValue
-                    numberMarkerValue:(int*)numberMarkerValue
-{
-  // No need to invoke MarkupUtilities::setupStaticVariablesIfNotYetSetup(),
-  // this method is not part of the public API.
-
-  NSUInteger labelLength = label.length;
-  if (labelLength == 1)
-  {
-    // Code in this branch should hopefully be faster than using regex
-
-    unichar labelCharacter = [label characterAtIndex:0];
-    if (labelCharacter >= charUppercaseA && labelCharacter <= charuppercaseZ)
-    {
-      *letterMarkerValue = labelCharacter - charUppercaseA + 'A';
-      return MarkupTypeMarkerLetter;
-    }
-    else if (labelCharacter >= charLowercaseA && labelCharacter <= charLowercaseZ)
-    {
-      *letterMarkerValue = labelCharacter - charLowercaseA + 'a';
-      return MarkupTypeMarkerLetter;
-    }
-    else if (labelCharacter >= charZero && labelCharacter <= charNine)
-    {
-      *numberMarkerValue = labelCharacter - charZero;
-      if (*numberMarkerValue >= minimumNumberMarkerValue && *numberMarkerValue <= maximumNumberMarkerValue)
-        return MarkupTypeMarkerNumber;
-      else
-        return MarkupTypeLabel;
-    }
-    else
-    {
-      return MarkupTypeLabel;
-    }
-  }
-  else
-  {
-    NSRegularExpression* regexNumbers = [[NSRegularExpression alloc] initWithPattern:@"^[0-9]+$" options:0 error:nil];
-    NSRange allCharactersRange = NSMakeRange(0, labelLength);
-    if ([regexNumbers numberOfMatchesInString:label options:0 range:allCharactersRange] > 0)
-    {
-      *numberMarkerValue = [self labelAsNumberMarkerValue:label];
-      if (*numberMarkerValue != -1)
-        return MarkupTypeMarkerNumber;
-      else
-        return MarkupTypeLabel;
-    }
-    else
-    {
-      return MarkupTypeLabel;
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the number marker value that corresponds to @a label.
-/// Returns -1 if conversion of @a label fails, indicating that @a label does
-/// not represent a valid number marker value.
-///
-/// This method expects that a previous step has verified that @a label is not
-/// empty and does not contain any characters that are not digits. If this is
-/// not the case, then the NSNumberFormatter that is used by the implementation
-/// of this method will gracefully handle leading/trailing space characters and
-/// locale-specific group or decimal separators.
-// -----------------------------------------------------------------------------
-+ (int) labelAsNumberMarkerValue:(NSString*)label
-{
-  [MarkupUtilities setupStaticVariablesIfNotYetSetup];
-
-  NSNumberFormatter* numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
-  // Parses the text as an integer number
-  numberFormatter.numberStyle = NSNumberFormatterNoStyle;
-  // If the string contains any characters other than numerical digits or
-  // locale-appropriate group or decimal separators, parsing will fail.
-  // Leading/trailing space is ignored.
-  // Returns nil if parsing fails.
-  NSNumber* number = [numberFormatter numberFromString:label];
-  if (! number)
-    return -1;
-
-  int numberMarkerValue = [number intValue];
-  if (numberMarkerValue >= minimumNumberMarkerValue && numberMarkerValue <= maximumNumberMarkerValue)
-    return numberMarkerValue;
-  else
-    return -1;
 }
 
 // -----------------------------------------------------------------------------
@@ -584,11 +428,13 @@ static std::vector<std::pair<char, char> > letterMarkerValueRanges;
   NSDictionary* labels = nodeMarkup.labels;
   if (labels)
   {
-    NSString* label = labels[intersection];
-    if (label)
+    NSArray* existingLabelTypeAndText = labels[intersection];
+    if (existingLabelTypeAndText)
     {
-      *firstMarkupType = [MarkupUtilities markupTypeOfLabel:label];
-      *firstMarkupInfo = label;
+      NSNumber* existingLabelTypeAsNumber = existingLabelTypeAndText.firstObject;
+      enum GoMarkupLabel existingLabelType = static_cast<enum GoMarkupLabel>(existingLabelTypeAsNumber.intValue);
+      *firstMarkupType = [MarkupUtilities markupTypeForLabel:existingLabelType];
+      *firstMarkupInfo = existingLabelTypeAndText.lastObject;
       return true;
     }
   }

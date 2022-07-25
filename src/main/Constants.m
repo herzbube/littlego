@@ -174,6 +174,10 @@ const int maximumSyntaxCheckingLevel = 4;
 const int defaultSyntaxCheckingLevel = 2;
 const int customSyntaxCheckingLevel = 0;
 
+// Markup constants
+const int gMinimumNumberMarkerValue = 1;
+const int gMaximumNumberMarkerValue = 9;
+
 // Diagnostics view settings default values
 const int gtpLogSizeMinimum = 5;
 const int gtpLogSizeMaximum = 1000;

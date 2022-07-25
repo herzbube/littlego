@@ -189,7 +189,8 @@
   self.markupLetterMarkerFontRange = [[[FontRange alloc] initWithText:widestMarkupLetterMarker
                                                       minimumFontSize:minimumFontSize
                                                       maximumFontSize:maximumFontSize] autorelease];
-  NSString* widestMarkupNumberMarker = @"88";
+  int numberOfDigits = ((int)log10(gMaximumNumberMarkerValue)) + 1;
+  NSString* widestMarkupNumberMarker = [@"" stringByPaddingToLength:numberOfDigits withString:@"8" startingAtIndex:0];
   self.markupNumberMarkerFontRange = [[[FontRange alloc] initWithText:widestMarkupNumberMarker
                                                       minimumFontSize:minimumFontSize
                                                       maximumFontSize:maximumFontSize] autorelease];

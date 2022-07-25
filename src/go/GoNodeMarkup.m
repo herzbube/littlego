@@ -369,32 +369,34 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Sets a label with the text @a labelText at the intersection
-/// @a vertex. Invokes removeNewlinesAndTrimLabel:() on @a labelText to trim
-/// leading and trailing whitespace characters and replace any remaining
-/// newline charactes with space characters. The resulting string must not be
-/// zero length.
+/// @brief Sets a label of type @a label with the text @a labelText at the
+/// intersection @a vertex. Invokes removeNewlinesAndTrimLabel:() on
+/// @a labelText to trim leading and trailing whitespace characters and replace
+/// any remaining newline charactes with space characters. The resulting string
+/// must not be zero length.
 ///
 /// Invoking this method adds or replaces an entry in the dictionary that is the
 /// value of property @e labels. The key of the entry is @a vertex, the value
-/// is @e labelText.
+/// is an NSArray that consist of two objects: An NSNumber object that
+/// encapsulates @a label, and @e labelText.
 ///
 /// If the property value is @e nil, a new dictionary is created.
 ///
 /// @exception NSInvalidArgumentException Is raised if @a labelText or
 /// @a vertex is @e nil, or if @a labelText is a zero length string (after
-/// newline replacement and trimming has taken place).
+/// newline replacement and trimming has taken place), or if @a labelText does
+/// not match the specified type @a label.
 // -----------------------------------------------------------------------------
-- (void) setLabel:(NSString*)labelText atVertex:(NSString*)vertex
+- (void) setLabel:(enum GoMarkupLabel)label labelText:(NSString*)labelText atVertex:(NSString*)vertex
 {
   if (! labelText)
   {
-    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"setLabel:atVertex: failed: labelText argument is nil"];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"setLabel:labelText:atVertex: failed: labelText argument is nil"];
     return;
   }
   if (! vertex)
   {
-    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"setLabel:atVertex: failed: vertex argument is nil"];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"setLabel:labelText:atVertex: failed: vertex argument is nil"];
     return;
   }
 
@@ -402,14 +404,24 @@
 
   if (labelText.length == 0)
   {
-    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"setLabel:atVertex: failed: labelText argument is a zero length string"];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"setLabel:labelText:atVertex: failed: labelText argument is a zero length string"];
     return;
   }
 
+  enum GoMarkupLabel actualLabelType = [GoNodeMarkup labelTypeOfLabel:labelText];
+  if (actualLabelType != label)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"setLabel:labelText:atVertex: failed: labelText argument '%@' does not match label type %d, actual label type is %d", labelText, label, actualLabelType];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
+    return;
+  }
+
+  NSArray* dictionaryValue = @[[NSNumber numberWithInt:label], labelText];
+
   if (self.mutableLabels)
-    self.mutableLabels[vertex] = labelText;
+    self.mutableLabels[vertex] = dictionaryValue;
   else
-    self.mutableLabels = [NSMutableDictionary dictionaryWithObject:labelText forKey:vertex];
+    self.mutableLabels = [NSMutableDictionary dictionaryWithObject:dictionaryValue forKey:vertex];
 }
 
 // -----------------------------------------------------------------------------
@@ -445,7 +457,9 @@
 // -----------------------------------------------------------------------------
 /// @brief Replaces all existing labels with the labels in @a labels. Invokes
 /// removeNewlinesAndTrimLabel:() on all label texts in @a labels. The resulting
-/// strings must not be zero length.
+/// strings must not be zero length. Label types in @a labels are ignored,
+/// instead the actual label type is determined by examining the trimmed label
+/// texts.
 ///
 /// Invoking this method clears all entries from the dictionary that is the
 /// value of property @e labels, then adds all entries from @a labels to the
@@ -470,8 +484,9 @@
   {
     NSMutableDictionary* newMutableLabels = [NSMutableDictionary dictionary];
 
-    [labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSString* labelText, BOOL* stop)
+    [labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSArray* labelTypeAndText, BOOL* stop)
     {
+      NSString* labelText = labelTypeAndText.lastObject;
       labelText = [GoNodeMarkup removeNewlinesAndTrimLabel:labelText];
       if (labelText.length == 0)
       {
@@ -479,7 +494,8 @@
         return;
       }
 
-      newMutableLabels[vertexString] = labelText;
+      enum GoMarkupLabel labelType = [GoNodeMarkup labelTypeOfLabel:labelText];
+      newMutableLabels[vertexString] = @[[NSNumber numberWithInt:labelType], labelText];
     }];
 
     self.mutableLabels = newMutableLabels;
@@ -503,7 +519,7 @@
 /// and replaces all remaining newline characters with space characters.
 ///
 /// This method can be used to clean up a label text so that it can be checked
-/// for zero length before passing it to setLabel:atVertex:().
+/// for zero length before passing it to setLabel:labelText:atVertex:().
 ///
 /// @exception NSInvalidArgumentException Is raised if @a labelText is @e nil.
 // -----------------------------------------------------------------------------
@@ -522,6 +538,150 @@
   labelText = [labelText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
   return labelText;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Analyzes the string value @a labelText and returns a value from the
+/// enumeration #GoMarkupLabel that describes the string value.
+///
+/// If @a label contains a single letter A-Z or a-z from the latin alphabet,
+/// the return value is #GoMarkupLabelMarkerLetter.
+///
+/// If @a label contains only digit characters that form an integer number in
+/// the range between #gMinimumNumberMarkerValue and #gMaximumNumberMarkerValue,
+/// the return value is #GoMarkupLabelMarkerNumber
+///
+/// In all other cases the return value is #GoMarkupLabelLabel.
+// -----------------------------------------------------------------------------
++ (enum GoMarkupLabel) labelTypeOfLabel:(NSString*)labelText
+{
+  char letterMarkerValue;
+  int numberMarkerValue;
+  return [GoNodeMarkup labelTypeOfLabel:labelText
+                      letterMarkerValue:&letterMarkerValue
+                      numberMarkerValue:&numberMarkerValue];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Analyzes the string value @a labelText and returns a value from the
+/// enumeration #GoMarkupLabel that describes the string value. In addition,
+/// if the label is one of the marker types, fills the corresponding out
+/// variable with the underlying @e char or @e int value.
+
+/// If @a label contains a single letter A-Z or a-z from the latin alphabet,
+/// the return value is #GoMarkupLabelMarkerLetter and this method fills the out
+/// variable @a letterMarkerValue with the char value of the single letter.
+///
+/// If @a label contains only digit characters that form an integer number in
+/// the range between #gMinimumNumberMarkerValue and #gMaximumNumberMarkerValue,
+/// the return value is #GoMarkupLabelMarkerNumber and this method fills the
+/// out variable @a numberMarkerValue with the int value of the integer number.
+///
+/// In all other cases the return value is #GoMarkupLabelLabel and the value of
+/// both out variables is undefined.
+// -----------------------------------------------------------------------------
++ (enum GoMarkupLabel) labelTypeOfLabel:(NSString*)labelText
+                      letterMarkerValue:(char*)letterMarkerValue
+                      numberMarkerValue:(int*)numberMarkerValue;
+{
+  NSUInteger labelTextLength = labelText.length;
+
+  if (labelTextLength == 0)
+  {
+    return GoMarkupLabelLabel;
+  }
+  if (labelTextLength == 1)
+  {
+    // Code in this branch should hopefully be faster than using regex
+
+    static unichar charUppercaseA = 0;
+    static unichar charuppercaseZ = 0;
+    static unichar charLowercaseA = 0;
+    static unichar charLowercaseZ = 0;
+    static unichar charZero = 0;
+    static unichar charNine = 0;
+    if (charUppercaseA == 0)
+    {
+      charUppercaseA = [@"A" characterAtIndex:0];
+      charuppercaseZ = [@"Z" characterAtIndex:0];
+      charLowercaseA = [@"a" characterAtIndex:0];
+      charLowercaseZ = [@"z" characterAtIndex:0];
+      charZero = [@"0" characterAtIndex:0];
+      charNine = [@"9" characterAtIndex:0];
+    }
+
+    unichar labelCharacter = [labelText characterAtIndex:0];
+    if (labelCharacter >= charUppercaseA && labelCharacter <= charuppercaseZ)
+    {
+      *letterMarkerValue = labelCharacter - charUppercaseA + 'A';
+      return GoMarkupLabelMarkerLetter;
+    }
+    else if (labelCharacter >= charLowercaseA && labelCharacter <= charLowercaseZ)
+    {
+      *letterMarkerValue = labelCharacter - charLowercaseA + 'a';
+      return GoMarkupLabelMarkerLetter;
+    }
+    else if (labelCharacter >= charZero && labelCharacter <= charNine)
+    {
+      *numberMarkerValue = labelCharacter - charZero;
+      if (*numberMarkerValue >= gMinimumNumberMarkerValue && *numberMarkerValue <= gMaximumNumberMarkerValue)
+        return GoMarkupLabelMarkerNumber;
+      else
+        return GoMarkupLabelLabel;
+    }
+    else
+    {
+      return GoMarkupLabelLabel;
+    }
+  }
+  else
+  {
+    NSRegularExpression* regexNumbers = [[NSRegularExpression alloc] initWithPattern:@"^[0-9]+$" options:0 error:nil];
+    NSRange allCharactersRange = NSMakeRange(0, labelTextLength);
+    if ([regexNumbers numberOfMatchesInString:labelText options:0 range:allCharactersRange] > 0)
+    {
+      *numberMarkerValue = [self labelAsNumberMarkerValue:labelText];
+      if (*numberMarkerValue != -1)
+        return GoMarkupLabelMarkerNumber;
+      else
+        return GoMarkupLabelLabel;
+    }
+    else
+    {
+      return GoMarkupLabelLabel;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the number marker value that corresponds to @a labelText.
+/// Returns -1 if conversion of @a labelText fails, indicating that @a labelText
+/// does not represent a valid number marker value.
+///
+/// This method expects that a previous step has verified that @a labelText is
+/// not empty and does not contain any characters that are not digits. If this
+/// is not the case, then the NSNumberFormatter that is used by the
+/// implementation of this method will gracefully handle leading/trailing space
+/// characters and locale-specific group or decimal separators.
+// -----------------------------------------------------------------------------
++ (int) labelAsNumberMarkerValue:(NSString*)labelText
+{
+  NSNumberFormatter* numberFormatter = [[[NSNumberFormatter alloc] init] autorelease];
+  // Parses the text as an integer number
+  numberFormatter.numberStyle = NSNumberFormatterNoStyle;
+  // If the string contains any characters other than numerical digits or
+  // locale-appropriate group or decimal separators, parsing will fail.
+  // Leading/trailing space is ignored.
+  // Returns nil if parsing fails.
+  NSNumber* number = [numberFormatter numberFromString:labelText];
+  if (! number)
+    return -1;
+
+  int numberMarkerValue = [number intValue];
+  if (numberMarkerValue >= gMinimumNumberMarkerValue && numberMarkerValue <= gMaximumNumberMarkerValue)
+    return numberMarkerValue;
+  else
+    return -1;
 }
 
 #pragma mark - Dimming methods

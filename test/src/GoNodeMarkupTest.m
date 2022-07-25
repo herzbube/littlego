@@ -57,7 +57,7 @@
   [testee removeAllConnections];
   XCTAssertFalse(testee.hasMarkup);
 
-  [testee setLabel:@"foo" atVertex:@"A1"];
+  [testee setLabel:GoMarkupLabelLabel labelText:@"foo" atVertex:@"A1"];
   XCTAssertTrue(testee.hasMarkup);
   [testee removeAllLabels];
   XCTAssertFalse(testee.hasMarkup);
@@ -327,49 +327,52 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the setLabel:atVertex:() method.
+/// @brief Exercises the setLabel:labelText:atVertex:() method.
 // -----------------------------------------------------------------------------
-- (void) testSetLabelAtVertex
+- (void) testSetLabelLabelTextAtVertex
 {
   GoNodeMarkup* testee = [[[GoNodeMarkup alloc] init] autorelease];
   XCTAssertNil(testee.labels);
 
   NSDictionary* expectedLabels;
+  NSNumber* labelTypeAsNumber = [NSNumber numberWithInt:GoMarkupLabelLabel];
 
-  [testee setLabel:@"foo" atVertex:@"A1"];
-  expectedLabels = @{ @"A1": @"foo"};
+  [testee setLabel:GoMarkupLabelLabel labelText:@"foo" atVertex:@"A1"];
+  expectedLabels = @{ @"A1": @[labelTypeAsNumber, @"foo"]};
   XCTAssertEqualObjects(testee.labels, expectedLabels);
 
-  [testee setLabel:@"bar" atVertex:@"B1"];
-  expectedLabels = @{ @"A1": @"foo", @"B1": @"bar"};
+  [testee setLabel:GoMarkupLabelLabel labelText:@"bar" atVertex:@"B1"];
+  expectedLabels = @{ @"A1": @[labelTypeAsNumber, @"foo"], @"B1": @[labelTypeAsNumber, @"bar"]};
   XCTAssertEqualObjects(testee.labels, expectedLabels);
 
-  [testee setLabel:@"baz" atVertex:@"A1"];
-  expectedLabels = @{ @"A1": @"baz", @"B1": @"bar"};
+  [testee setLabel:GoMarkupLabelLabel labelText:@"baz" atVertex:@"A1"];
+  expectedLabels = @{ @"A1": @[labelTypeAsNumber, @"baz"], @"B1": @[labelTypeAsNumber, @"bar"]};
   XCTAssertEqualObjects(testee.labels, expectedLabels);
 
-  [testee setLabel:@"foo\nbar" atVertex:@"C1"];
-  expectedLabels = @{ @"A1": @"baz", @"B1": @"bar", @"C1": @"foo bar"};
+  [testee setLabel:GoMarkupLabelLabel labelText:@"foo\nbar" atVertex:@"C1"];
+  expectedLabels = @{ @"A1": @[labelTypeAsNumber, @"baz"], @"B1": @[labelTypeAsNumber, @"bar"], @"C1": @[labelTypeAsNumber, @"foo bar"]};
   XCTAssertEqualObjects(testee.labels, expectedLabels);
 
-  [testee setLabel:@"\t\r\n foo bar \t\r\n" atVertex:@"D1"];
-  expectedLabels = @{ @"A1": @"baz", @"B1": @"bar", @"C1": @"foo bar", @"D1": @"foo bar"};
+  [testee setLabel:GoMarkupLabelLabel labelText:@"\t\r\n foo bar \t\r\n" atVertex:@"D1"];
+  expectedLabels = @{ @"A1": @[labelTypeAsNumber, @"baz"], @"B1": @[labelTypeAsNumber, @"bar"], @"C1": @[labelTypeAsNumber, @"foo bar"], @"D1": @[labelTypeAsNumber, @"foo bar"]};
   XCTAssertEqualObjects(testee.labels, expectedLabels);
 
-  XCTAssertThrowsSpecificNamed([testee setLabel:nil atVertex:@"A1"],
-                               NSException, NSInvalidArgumentException, @"setLabel:atVertex: with nil object for label");
-  XCTAssertThrowsSpecificNamed([testee setLabel:@"foo" atVertex:nil],
-                               NSException, NSInvalidArgumentException, @"setLabel:atVertex: with nil object for vertex");
+  XCTAssertThrowsSpecificNamed([testee setLabel:GoMarkupLabelLabel labelText:nil atVertex:@"A1"],
+                               NSException, NSInvalidArgumentException, @"setLabel:labelText:atVertex: with nil object for label");
+  XCTAssertThrowsSpecificNamed([testee setLabel:GoMarkupLabelLabel labelText:@"foo" atVertex:nil],
+                               NSException, NSInvalidArgumentException, @"setLabel:labelText:atVertex: with nil object for vertex");
+  XCTAssertThrowsSpecificNamed([testee setLabel:GoMarkupLabelLabel labelText:@"A" atVertex:@"A1"],
+                               NSException, NSInvalidArgumentException, @"setLabel:labelText:atVertex: with non-matching label type");
   // This tests non-standard behaviour of GoNodeMarkup: The SGF standard does
   // not declare empty label texts as illegal. GoNodeMarkup does not support
   // empty label texts, though. Cf. documentation of the "labels" property in
   // GoNodeMarkup.
-  XCTAssertThrowsSpecificNamed([testee setLabel:@"" atVertex:@"A1"],
-                               NSException, NSInvalidArgumentException, @"setLabel:atVertex: with zero length string object for label");
+  XCTAssertThrowsSpecificNamed([testee setLabel:GoMarkupLabelLabel labelText:@"" atVertex:@"A1"],
+                               NSException, NSInvalidArgumentException, @"setLabel:labelText:atVertex: with zero length string object for label");
   // Same as above, only the zero length check kicks in after whitespace
   // trimming
-  XCTAssertThrowsSpecificNamed([testee setLabel:@" \t\r\n" atVertex:@"A1"],
-                               NSException, NSInvalidArgumentException, @"setLabel:atVertex: with string object for label that consists only of whitespace");
+  XCTAssertThrowsSpecificNamed([testee setLabel:GoMarkupLabelLabel labelText:@" \t\r\n" atVertex:@"A1"],
+                               NSException, NSInvalidArgumentException, @"setLabel:labelText:atVertex: with string object for label that consists only of whitespace");
 }
 
 // -----------------------------------------------------------------------------
@@ -381,17 +384,18 @@
   XCTAssertNil(testee.labels);
 
   NSDictionary* expectedLabels;
+  NSNumber* labelTypeAsNumber = [NSNumber numberWithInt:GoMarkupLabelLabel];
 
-  [testee setLabel:@"foo" atVertex:@"A1"];
-  [testee setLabel:@"bar" atVertex:@"B1"];
-  expectedLabels = @{ @"A1": @"foo", @"B1": @"bar"};
+  [testee setLabel:GoMarkupLabelLabel labelText:@"foo" atVertex:@"A1"];
+  [testee setLabel:GoMarkupLabelLabel labelText:@"bar" atVertex:@"B1"];
+  expectedLabels = @{ @"A1": @[labelTypeAsNumber, @"foo"], @"B1": @[labelTypeAsNumber, @"bar"]};
   XCTAssertEqualObjects(testee.labels, expectedLabels);
 
   [testee removeLabelAtVertex:@"C1"];
   XCTAssertEqualObjects(testee.labels, expectedLabels);
 
   [testee removeLabelAtVertex:@"A1"];
-  expectedLabels = @{ @"B1": @"bar"};
+  expectedLabels = @{ @"B1": @[labelTypeAsNumber, @"bar"]};
   XCTAssertEqualObjects(testee.labels, expectedLabels);
 
   [testee removeLabelAtVertex:@"B1"];
@@ -413,13 +417,14 @@
   XCTAssertNil(testee.labels);
 
   NSDictionary* newLabels;
+  NSNumber* labelTypeAsNumber = [NSNumber numberWithInt:GoMarkupLabelLabel];
 
-  newLabels = @{ @"A1": @"foo", @"B1": @"bar"};
+  newLabels = @{ @"A1": @[labelTypeAsNumber, @"foo"], @"B1": @[labelTypeAsNumber, @"bar"]};
   [testee replaceLabels:newLabels];
   XCTAssertNotIdentical(testee.labels, newLabels);
   XCTAssertEqualObjects(testee.labels, newLabels);
 
-  newLabels = @{ @"A1": @"foo", @"B1": @"bar", @"C1": @"foobar"};
+  newLabels = @{ @"A1": @[labelTypeAsNumber, @"foo"], @"B1": @[labelTypeAsNumber, @"bar"], @"C1": @[labelTypeAsNumber, @"foobar"]};
   [testee replaceLabels:newLabels];
   XCTAssertNotIdentical(testee.labels, newLabels);
   XCTAssertEqualObjects(testee.labels, newLabels);
@@ -428,10 +433,16 @@
   XCTAssertNotIdentical(testee.labels, newLabels);
   XCTAssertEqualObjects(testee.labels, newLabels);
 
-  newLabels = @{ @"A1": @"\t\r\n foo bar \t\r\n"};
+  newLabels = @{ @"A1": @[labelTypeAsNumber, @"\t\r\n foo bar \t\r\n"]};
   [testee replaceLabels:newLabels];
   XCTAssertNotIdentical(testee.labels, newLabels);
-  newLabels = @{ @"A1": @"foo bar"};
+  newLabels = @{ @"A1": @[labelTypeAsNumber, @"foo bar"]};
+  XCTAssertEqualObjects(testee.labels, newLabels);
+
+  newLabels = @{ @"A1": @[[NSNumber numberWithInt:GoMarkupLabelMarkerNumber], @"A"]};
+  [testee replaceLabels:newLabels];
+  XCTAssertNotIdentical(testee.labels, newLabels);
+  newLabels = @{ @"A1": @[[NSNumber numberWithInt:GoMarkupLabelMarkerLetter], @"A"]};
   XCTAssertEqualObjects(testee.labels, newLabels);
 
   [testee replaceLabels:nil];
@@ -444,12 +455,12 @@
   // not declare empty label texts as illegal. GoNodeMarkup does not support
   // empty label texts, though. Cf. documentation of the "labels" property in
   // GoNodeMarkup.
-  newLabels = @{ @"A1": @""};
+  newLabels = @{ @"A1": @[labelTypeAsNumber, @""]};
   XCTAssertThrowsSpecificNamed([testee replaceLabels:newLabels],
                                NSException, NSInvalidArgumentException, @"replaceLabels: with dictionary that contains entry with zero length string for label");
   // Same as above, only the zero length check kicks in after whitespace
   // trimming
-  newLabels = @{ @"A1": @" \t\r\n"};
+  newLabels = @{ @"A1": @[labelTypeAsNumber, @" \t\r\n"]};
   XCTAssertThrowsSpecificNamed([testee replaceLabels:newLabels],
                                NSException, NSInvalidArgumentException, @"replaceLabels: with dictionary that contains entry with string object for label that consists only of whitespace");
 }
@@ -463,8 +474,9 @@
   XCTAssertNil(testee.labels);
 
   NSDictionary* newLabels;
+  NSNumber* labelTypeAsNumber = [NSNumber numberWithInt:GoMarkupLabelLabel];
 
-  newLabels = @{ @"A1": @"foo", @"B1": @"bar"};
+  newLabels = @{ @"A1": @[labelTypeAsNumber, @"foo"], @"B1": @[labelTypeAsNumber, @"bar"]};
   [testee replaceLabels:newLabels];
   XCTAssertNotIdentical(testee.labels, newLabels);
   XCTAssertEqualObjects(testee.labels, newLabels);
@@ -494,6 +506,69 @@
 
   XCTAssertThrowsSpecificNamed([GoNodeMarkup removeNewlinesAndTrimLabel:nil],
                                NSException, NSInvalidArgumentException, @"removeNewlinesAndTrimLabel with nil object");
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the labelTypeOfLabel:() method.
+// -----------------------------------------------------------------------------
+- (void) testLabelTypeOfLabel
+{
+  enum GoMarkupLabel labelType;
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"foo"];
+  XCTAssertEqual(labelType, GoMarkupLabelLabel);
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"Q"];
+  XCTAssertEqual(labelType, GoMarkupLabelMarkerLetter);
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"QQ"];
+  XCTAssertEqual(labelType, GoMarkupLabelLabel);
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"ä"];
+  XCTAssertEqual(labelType, GoMarkupLabelLabel);
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"5"];
+  XCTAssertEqual(labelType, GoMarkupLabelMarkerNumber);
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"0"];
+  XCTAssertEqual(labelType, GoMarkupLabelLabel);
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"55"];
+  XCTAssertEqual(labelType, GoMarkupLabelLabel);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the labelTypeOfLabel:letterMarkerValue:numberMarkerValue:()
+/// method.
+// -----------------------------------------------------------------------------
+- (void) testLabelTypeOfLabelLetterMarkerValueNumberMarkerValue
+{
+  enum GoMarkupLabel labelType;
+  char letterMarkerValue;
+  int numberMarkerValue;
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"foo" letterMarkerValue:&letterMarkerValue numberMarkerValue:&numberMarkerValue];
+  XCTAssertEqual(labelType, GoMarkupLabelLabel);
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"Q" letterMarkerValue:&letterMarkerValue numberMarkerValue:&numberMarkerValue];
+  XCTAssertEqual(labelType, GoMarkupLabelMarkerLetter);
+  XCTAssertEqual(letterMarkerValue, 'Q');
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"QQ" letterMarkerValue:&letterMarkerValue numberMarkerValue:&numberMarkerValue];
+  XCTAssertEqual(labelType, GoMarkupLabelLabel);
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"ä" letterMarkerValue:&letterMarkerValue numberMarkerValue:&numberMarkerValue];
+  XCTAssertEqual(labelType, GoMarkupLabelLabel);
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"5" letterMarkerValue:&letterMarkerValue numberMarkerValue:&numberMarkerValue];
+  XCTAssertEqual(labelType, GoMarkupLabelMarkerNumber);
+  XCTAssertEqual(numberMarkerValue, 5);
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"0" letterMarkerValue:&letterMarkerValue numberMarkerValue:&numberMarkerValue];
+  XCTAssertEqual(labelType, GoMarkupLabelLabel);
+
+  labelType = [GoNodeMarkup labelTypeOfLabel:@"55" letterMarkerValue:&letterMarkerValue numberMarkerValue:&numberMarkerValue];
+  XCTAssertEqual(labelType, GoMarkupLabelLabel);
 }
 
 // -----------------------------------------------------------------------------

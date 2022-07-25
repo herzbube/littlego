@@ -1436,10 +1436,10 @@ static const int maxStepsForCreateNodes = 10;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Invokes setLabel:atVertex:() on @a nodeMarkup once for every value
-/// in @a propertyValues. Returns true if no error was encountered. Returns
-/// false if an error was encountered and sets @a errorMessage with a string
-/// that describes the error encountered.
+/// @brief Invokes setLabel:labelText:atVertex:() on @a nodeMarkup once for
+/// every value in @a propertyValues. Returns true if no error was encountered.
+/// Returns false if an error was encountered and sets @a errorMessage with a
+/// string that describes the error encountered.
 // -----------------------------------------------------------------------------
 - (bool) setLabelsInMarkup:(GoNodeMarkup*)nodeMarkup forPropertyValues:(NSArray*)propertyValues errorMessage:(NSString**)errorMessage
 {
@@ -1467,7 +1467,11 @@ static const int maxStepsForCreateNodes = 10;
     if (labelText.length == 0)
       continue;
 
-    [nodeMarkup setLabel:labelText atVertex:vertexString];
+    // This app categorizes labels into number/letter marker labels and regular
+    // labels. Markers are drawn differently than regular labels, and there is
+    // also special logic when placing new markers on the board.
+    enum GoMarkupLabel labelType = [GoNodeMarkup labelTypeOfLabel:labelText];
+    [nodeMarkup setLabel:labelType labelText:labelText atVertex:vertexString];
   }
 
   return true;

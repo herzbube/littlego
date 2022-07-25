@@ -376,10 +376,11 @@
     }
   }
 
-  [nodeMarkup.labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSString* labelText, BOOL* stop)
+  [nodeMarkup.labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSArray* labelTypeAndText, BOOL* stop)
   {
-    // TODO xxx label type should already be available from GoNodeMarkup
-    enum GoMarkupLabel labelType = [MarkupUtilities labelTypeOfLabel:labelText];
+    // Marker labels are drawn on SymbolsLayerDelegate
+    NSNumber* labelTypeAsNumber = labelTypeAndText.firstObject;
+    enum GoMarkupLabel labelType = labelTypeAsNumber.intValue;
     if (labelType != GoMarkupLabelLabel)
         return;
 
@@ -422,6 +423,8 @@
     // TODO xxx we could also calculate the point's row and look it up in self.drawingRowsOnTile
     if (! CGRectIntersectsRect(tileRect, canvasRect))
       return;
+
+    NSString* labelText = labelTypeAndText.lastObject;
 
     [self drawLabelMarkup:labelText
                 inContext:context

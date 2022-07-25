@@ -594,8 +594,9 @@
     SGFCProperty* property = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypeLB];
     [node setProperty:property];
 
-    [goNodeMarkup.labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSString* labelText, BOOL* stop)
+    [goNodeMarkup.labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSArray* labelTypeAndText, BOOL* stop)
     {
+      NSString* labelText = labelTypeAndText.lastObject;
       SGFCComposedPropertyValue* propertyValue = [SGFCPropertyValueFactory composedPropertyValueWithGoPoint:vertexString
                                                                                                   boardSize:boardSize
                                                                                                  simpleText:labelText];

@@ -38,11 +38,15 @@
 - (void) replaceConnections:(NSDictionary*)connections;
 - (void) removeAllConnections;
 
-- (void) setLabel:(NSString*)labelText atVertex:(NSString*)vertex;
+- (void) setLabel:(enum GoMarkupLabel)label labelText:(NSString*)labelText atVertex:(NSString*)vertex;
 - (void) removeLabelAtVertex:(NSString*)vertex;
 - (void) replaceLabels:(NSDictionary*)labels;
 - (void) removeAllLabels;
 + (NSString*) removeNewlinesAndTrimLabel:(NSString*)labelText;
++ (enum GoMarkupLabel) labelTypeOfLabel:(NSString*)labelText;
++ (enum GoMarkupLabel) labelTypeOfLabel:(NSString*)labelText
+                      letterMarkerValue:(char*)letterMarkerValue
+                      numberMarkerValue:(int*)numberMarkerValue;
 
 - (void) setDimmingAtVertex:(NSString*)vertex;
 - (void) removeDimmingAtVertex:(NSString*)vertex;
@@ -90,10 +94,13 @@
 @property(nonatomic, retain, readonly) NSDictionary* connections;
 
 /// @brief Labels to draw at specific intersections on the board. Key = vertex
-/// string indicating the intersection where to draw the label, value = NSString
-/// containing the label text to draw. Label texts have non-zero length and do
-/// not contain newlines or leading/trailing whitespace. The default property
-/// value is @e nil, indicating that no labels should be drawn for the node.
+/// string indicating the intersection where to draw the label, value = NSArray
+/// consisting of two objects: 1) An NSNumber object that encapsulates a value
+/// from the enumeration #GoMarkupLabel, indicating the type of label to draw;
+/// and 2) An NSString object containing the label text to draw. Label texts
+/// have non-zero length and do not contain newlines or leading/trailing
+/// whitespace. The default property value is @e nil, indicating that no labels
+/// should be drawn for the node.
 ///
 /// The property value @e nil is the same as an empty dictionary. The value
 /// @e nil is preferred because it is cheaper to serialize (both in terms of

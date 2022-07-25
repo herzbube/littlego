@@ -45,11 +45,8 @@
 
 + (enum GoMarkupLabel) labelForMarkupType:(enum MarkupType)markupType;
 + (enum MarkupType) markupTypeForLabel:(enum GoMarkupLabel)label;
-+ (NSString*) nextFreeMarkerOfType:(enum MarkupType)markupType
++ (NSString*) nextFreeMarkerOfType:(enum GoMarkupLabel)labelType
                       inNodeMarkup:(GoNodeMarkup*)nodeMarkup;
-+ (enum GoMarkupLabel) labelTypeOfLabel:(NSString*)label;
-+ (enum MarkupType) markupTypeOfLabel:(NSString*)label;
-+ (int) labelAsNumberMarkerValue:(NSString*)label;
 
 + (bool) shouldDisplayMarkupIndicatorForNode:(GoNode*)node;
 + (bool) markupExistsOnPoint:(GoPoint*)point forNode:(GoNode*)node;

@@ -250,50 +250,6 @@ enum TerritoryMarkupStyle
   TerritoryMarkupStyleInconsistentDotSymbol
 };
 
-/// @brief Enumerates the possible styles how to render #GoMarkupSymbolSelected.
-enum SelectedSymbolMarkupStyle
-{
-  SelectedSymbolMarkupStyleDotSymbol,  ///< @brief Use a dot symbol to render #GoMarkupSymbolSelected.
-  SelectedSymbolMarkupStyleCheckmark,  ///< @brief Use a check mark symbol to render #GoMarkupSymbolSelected.
-};
-
-/// @brief Enumerates the order of precedence cases when multiple markup types
-/// should be drawn on the same intersection.
-enum MarkupPrecedence
-{
-  MarkupPrecedenceSymbols,  ///< @brief When both a symbol and a label should be drawn on an intersection, draw the symbol.
-  MarkupPrecedenceLabels,   ///< @brief When both a symbol and a label should be drawn on an intersection, draw the label.
-};
-
-/// @brief Enumerates the types of markup that the user can place on the board.
-enum MarkupType
-{
-  MarkupTypeSymbolCircle,     ///< @brief Marks a single point with a circle symbol.
-  MarkupTypeSymbolSquare,     ///< @brief Marks a single point with a square symbol.
-  MarkupTypeSymbolTriangle,   ///< @brief Marks a single point with a triangle symbol.
-  MarkupTypeSymbolX,          ///< @brief Marks a single point with an "X" symbol.
-  MarkupTypeSymbolSelected,   ///< @brief Marks a single point with a symbol that indicates that the point is "selected".
-  MarkupTypeMarkerNumber,     ///< @brief Marks a single point with a number marker. A number marker is a label that consists of digit characters.
-  MarkupTypeMarkerLetter,     ///< @brief Marks a single point with a letter marker. A letter marker is a label that consists of a single lowercase or uppercase letter character (a-z, A-Z).
-  MarkupTypeLabel,            ///< @brief Marks a single point with a label that consists of a string of arbitrary length with arbitrary characters. The label must contain at least one character.
-  MarkupTypeConnectionLine,   ///< @brief Marks the connection between two points with a line.
-  MarkupTypeConnectionArrow,  ///< @brief Marks the connection between two points with an arrow.
-  MarkupTypeEraser,           ///< @brief Pseudo markup type used only to provide a value that can be selected by the user in the UI.
-  MarkupTypeFirst = MarkupTypeSymbolCircle,   ///< @brief Pseudo markup type, used as the starting value during a for-loop.
-  MarkupTypeLast = MarkupTypeEraser           ///< @brief Pseudo markup type, used as the end value during a for-loop.
-};
-
-/// @brief Enumerates the markup tools that can be in effect. Most markup tools
-/// allow the user to place different types of markup.
-enum MarkupTool
-{
-  MarkupToolSymbol,      ///< @brief The symbol tool allows the user to place one of the 5 symbol markup types #MarkupTypeSymbolCircle, #MarkupTypeSymbolSquare, #MarkupTypeSymbolTriangle, #MarkupTypeSymbolX or #MarkupTypeSymbolSelected.
-  MarkupToolMarker,      ///< @brief The marker tool allows the user to place one of the 2 marker markup types #MarkupTypeMarkerNumber or #MarkupTypeMarkerLetter.
-  MarkupToolLabel,       ///< @brief The label tool allows the user to place the markup type #MarkupTypeLabel.
-  MarkupToolConnection,  ///< @brief The connection tool allows the user to place one of the 2 connection markup types #MarkupTypeConnectionLine or #MarkupTypeConnectionArrow.
-  MarkupToolEraser,      ///< @brief The eraser tool allows the user to erase markup that already exists on the board.
-};
-
 /// @brief Enumerates a number of standard alert button types.
 enum AlertButtonType
 {
@@ -603,34 +559,6 @@ enum GoScoreSummary
   GoScoreSummaryNone,        ///< @brief The score summary is not available. Corresponds to the absence of the SGF property V.
   GoScoreSummaryFirst = GoScoreSummaryBlackWins,   ///< @brief Pseudo score summary, used as the starting value during a for-loop.
   GoScoreSummaryLast = GoScoreSummaryNone          ///< @brief Pseudo score summary, used as the end value during a for-loop.
-};
-
-/// @brief Enumerates markup symbols that can be draw on intersections on the
-/// Go board.
-enum GoMarkupSymbol
-{
-  GoMarkupSymbolCircle,     ///< @brief A circle symbol. Corresponds to the SGF property CR.
-  GoMarkupSymbolSquare,     ///< @brief A square symbol. Corresponds to the SGF property SQ.
-  GoMarkupSymbolTriangle,   ///< @brief A triangle symbol. Corresponds to the SGF property TR.
-  GoMarkupSymbolX,          ///< @brief An "X" symbol. Corresponds to the SGF property MA.
-  GoMarkupSymbolSelected,   ///< @brief Markup the point as "selected". Corresponds to the SGF property MA.
-};
-
-/// @brief Enumerates markup connections that can be drawn between intersections
-/// on the Go board.
-enum GoMarkupConnection
-{
-  GoMarkupConnectionArrow,   ///< @brief An arrow pointing from intersection A to B. Corresponds to the SGF property AR.
-  GoMarkupConnectionLine,    ///< @brief A simple line connecting intersection A and B. Corresponds to the SGF property LN.
-};
-
-/// @brief Enumerates markup labels that can be draw on intersections on the
-/// Go board.
-enum GoMarkupLabel
-{
-  GoMarkupLabelMarkerNumber,   ///< @brief A number marker label.
-  GoMarkupLabelMarkerLetter,   ///< @brief A letter marker label.
-  GoMarkupLabelLabel,          ///< @brief A label that is neither a number marker nor a letter marker.
 };
 
 extern const enum GoGameType gDefaultGameType;
@@ -1271,6 +1199,90 @@ enum SgfLoadSuccessType
   /// critical warnings and/or critical errors.
   SgfLoadSuccessTypeWithCriticalWarningsOrErrors,
   SgfLoadSuccessTypeDefault = SgfLoadSuccessTypeNoCriticalWarningsOrErrors
+};
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Markup constants
+// -----------------------------------------------------------------------------
+//@{
+/// @brief The lowest numeric value that a markup label can have for it to still
+/// count as a number marker.
+extern const int gMinimumNumberMarkerValue;
+/// @brief The highest numeric value that a markup label can have for it to
+/// still count as a number marker.
+extern const int gMaximumNumberMarkerValue;
+
+/// @brief Enumerates markup symbols that can be draw on intersections on the
+/// Go board.
+enum GoMarkupSymbol
+{
+  GoMarkupSymbolCircle,     ///< @brief A circle symbol. Corresponds to the SGF property CR.
+  GoMarkupSymbolSquare,     ///< @brief A square symbol. Corresponds to the SGF property SQ.
+  GoMarkupSymbolTriangle,   ///< @brief A triangle symbol. Corresponds to the SGF property TR.
+  GoMarkupSymbolX,          ///< @brief An "X" symbol. Corresponds to the SGF property MA.
+  GoMarkupSymbolSelected,   ///< @brief Markup the point as "selected". Corresponds to the SGF property MA.
+};
+
+/// @brief Enumerates markup connections that can be drawn between intersections
+/// on the Go board.
+enum GoMarkupConnection
+{
+  GoMarkupConnectionArrow,   ///< @brief An arrow pointing from intersection A to B. Corresponds to the SGF property AR.
+  GoMarkupConnectionLine,    ///< @brief A simple line connecting intersection A and B. Corresponds to the SGF property LN.
+};
+
+/// @brief Enumerates types of markup labels that can be draw on intersections
+/// on the Go board.
+enum GoMarkupLabel
+{
+  GoMarkupLabelMarkerNumber,   ///< @brief A number marker label. Number marker labels are labels whose text is an integer number in the range between #gMinimumNumberMarkerValue and #gMaximumNumberMarkerValue.
+  GoMarkupLabelMarkerLetter,   ///< @brief A letter marker label. Letter marker labels are labels whose text is a single lowercase or uppercase letter from the latin alphabet (a-z, A-Z).
+  GoMarkupLabelLabel,          ///< @brief A label that is neither a number marker nor a letter marker.
+};
+
+/// @brief Enumerates the types of markup that the user can place on the board.
+enum MarkupType
+{
+  MarkupTypeSymbolCircle,     ///< @brief Marks a single point with a circle symbol.
+  MarkupTypeSymbolSquare,     ///< @brief Marks a single point with a square symbol.
+  MarkupTypeSymbolTriangle,   ///< @brief Marks a single point with a triangle symbol.
+  MarkupTypeSymbolX,          ///< @brief Marks a single point with an "X" symbol.
+  MarkupTypeSymbolSelected,   ///< @brief Marks a single point with a symbol that indicates that the point is "selected".
+  MarkupTypeMarkerNumber,     ///< @brief Marks a single point with a number marker. A number marker is a label that consists of digit characters.
+  MarkupTypeMarkerLetter,     ///< @brief Marks a single point with a letter marker. A letter marker is a label that consists of a single lowercase or uppercase letter character (a-z, A-Z).
+  MarkupTypeLabel,            ///< @brief Marks a single point with a label that consists of a string of arbitrary length with arbitrary characters. The label must contain at least one character.
+  MarkupTypeConnectionLine,   ///< @brief Marks the connection between two points with a line.
+  MarkupTypeConnectionArrow,  ///< @brief Marks the connection between two points with an arrow.
+  MarkupTypeEraser,           ///< @brief Pseudo markup type used only to provide a value that can be selected by the user in the UI.
+  MarkupTypeFirst = MarkupTypeSymbolCircle,   ///< @brief Pseudo markup type, used as the starting value during a for-loop.
+  MarkupTypeLast = MarkupTypeEraser           ///< @brief Pseudo markup type, used as the end value during a for-loop.
+};
+
+/// @brief Enumerates the markup tools that can be in effect. Most markup tools
+/// allow the user to place different types of markup.
+enum MarkupTool
+{
+  MarkupToolSymbol,      ///< @brief The symbol tool allows the user to place one of the 5 symbol markup types #MarkupTypeSymbolCircle, #MarkupTypeSymbolSquare, #MarkupTypeSymbolTriangle, #MarkupTypeSymbolX or #MarkupTypeSymbolSelected.
+  MarkupToolMarker,      ///< @brief The marker tool allows the user to place one of the 2 marker markup types #MarkupTypeMarkerNumber or #MarkupTypeMarkerLetter.
+  MarkupToolLabel,       ///< @brief The label tool allows the user to place the markup type #MarkupTypeLabel.
+  MarkupToolConnection,  ///< @brief The connection tool allows the user to place one of the 2 connection markup types #MarkupTypeConnectionLine or #MarkupTypeConnectionArrow.
+  MarkupToolEraser,      ///< @brief The eraser tool allows the user to erase markup that already exists on the board.
+};
+
+/// @brief Enumerates the possible styles how to render #GoMarkupSymbolSelected.
+enum SelectedSymbolMarkupStyle
+{
+  SelectedSymbolMarkupStyleDotSymbol,  ///< @brief Use a dot symbol to render #GoMarkupSymbolSelected.
+  SelectedSymbolMarkupStyleCheckmark,  ///< @brief Use a check mark symbol to render #GoMarkupSymbolSelected.
+};
+
+/// @brief Enumerates the order of precedence cases when multiple markup types
+/// should be drawn on the same intersection.
+enum MarkupPrecedence
+{
+  MarkupPrecedenceSymbols,  ///< @brief When both a symbol and a label should be drawn on an intersection, draw the symbol.
+  MarkupPrecedenceLabels,   ///< @brief When both a symbol and a label should be drawn on an intersection, draw the label.
 };
 //@}
 

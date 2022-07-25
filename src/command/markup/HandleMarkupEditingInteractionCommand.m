@@ -38,7 +38,7 @@ enum MarkupEditingInteraction
 {
   MEIPlaceNewSymbol,
   MEIPlaceNewConnection,
-  MEIPlaceNewMarker,
+  MEIPlaceNextFreeMarker,
   MEIPlaceNewLabel,
   MEIPlaceMovedSymbol,
   MEIPlaceMovedConnection,
@@ -122,7 +122,7 @@ enum MarkupEditingInteraction
   if (markupTool == MarkupToolSymbol)
     self.interaction = MEIPlaceNewSymbol;
   else if (markupTool == MarkupToolMarker)
-    self.interaction = MEIPlaceNewMarker;
+    self.interaction = MEIPlaceNextFreeMarker;
   else if (markupTool == MarkupToolLabel)
     self.interaction = MEIPlaceNewLabel;
   else
@@ -384,7 +384,7 @@ enum MarkupEditingInteraction
       case MEIPlaceMovedSymbol:
       {
         NSString* intersection = self.point.vertex.string;
-        bool markupWasMoved = self.interaction == MEIPlaceMovedLabel;
+        bool markupWasMoved = self.interaction == MEIPlaceMovedSymbol;
         bool markupDataDidChange = [self handlePlaceSymbol:self.markupType onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
         if (markupDataDidChange)
           pointsWithChangedMarkup = @[self.point];
@@ -401,36 +401,36 @@ enum MarkupEditingInteraction
           pointsWithChangedMarkup = @[self.startPoint, self.endPoint];
         break;
       }
-      case MEIPlaceNewMarker:
+      case MEIPlaceNextFreeMarker:
       {
         NSString* intersection = self.point.vertex.string;
-        bool markupDataDidChange = [self handlePlaceMarker:self.markupType onIntersection:intersection withNodeMarkup:nodeMarkup];
+        enum GoMarkupLabel markerTypeToPlace = [MarkupUtilities labelForMarkupType:self.markupType];
+        bool markupDataDidChange = [self handlePlaceNextFreeMarker:markerTypeToPlace onIntersection:intersection withNodeMarkup:nodeMarkup];
         if (markupDataDidChange)
-        {
-          enum GoMarkupLabel labelType = [MarkupUtilities labelForMarkupType:self.markupType];
-          pointsWithChangedMarkup = @[self.point, [NSNumber numberWithInt:labelType]];
-        }
+          pointsWithChangedMarkup = @[self.point, [NSNumber numberWithInt:markerTypeToPlace]];
         break;
       }
       case MEIPlaceMovedMarker:
       {
+        enum GoMarkupLabel markerTypeToMove = [MarkupUtilities labelForMarkupType:self.markupType];
         NSString* intersection = self.point.vertex.string;
-        bool markupDataDidChange = [self handlePlaceLabel:self.labelText onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:true];;
+        bool markupWasMoved = true;
+        enum GoMarkupLabel labelTypeThatChanged;
+        bool markupDataDidChange = [self handlePlaceLabelOrMarker:markerTypeToMove labelText:self.labelText onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved labelTypeThatChanged:&labelTypeThatChanged];
         if (markupDataDidChange)
-        {
-          enum GoMarkupLabel labelType = [MarkupUtilities labelTypeOfLabel:self.labelText];  // TODO xxx should no longer be necessary when GoNodeMarkup has dedicated support for markers
-          pointsWithChangedMarkup = @[self.point, [NSNumber numberWithInt:labelType]];
-        }
+          pointsWithChangedMarkup = @[self.point, [NSNumber numberWithInt:labelTypeThatChanged]];
         break;
       }
-      case MEIPlaceNewLabel:
-      case MEIPlaceMovedLabel:
+      case MEIPlaceNewLabel:    // we don't know what kind of label the user entered => examine label text to find GoMarkupLabel value
+      case MEIPlaceMovedLabel:  // it's clear that a non-marker is being moved => GoMarkupLabelLabel
       {
+        enum GoMarkupLabel labelTypeToPlace = (self.interaction == MEIPlaceNewLabel) ? [GoNodeMarkup labelTypeOfLabel:self.labelText] : GoMarkupLabelLabel;
         NSString* intersection = self.point.vertex.string;
         bool markupWasMoved = self.interaction == MEIPlaceMovedLabel;
-        bool markupDataDidChange = [self handlePlaceLabel:self.labelText onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
+        enum GoMarkupLabel labelTypeThatChanged;
+        bool markupDataDidChange = [self handlePlaceLabelOrMarker:labelTypeToPlace labelText:self.labelText onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved labelTypeThatChanged:&labelTypeThatChanged];
         if (markupDataDidChange)
-          pointsWithChangedMarkup = @[self.point, [NSNumber numberWithInt:GoMarkupLabelLabel]];
+          pointsWithChangedMarkup = @[self.point, [NSNumber numberWithInt:labelTypeThatChanged]];
         break;
       }
       case MEIEraseMarkupAtPoint:
@@ -668,37 +668,38 @@ enum MarkupEditingInteraction
   return markupDataDidChange;
 }
 
-#pragma mark - Place marker
+#pragma mark - Place next free marker
 
 // -----------------------------------------------------------------------------
-/// @brief Entry point for handling marker markup placing. Returns true if
+/// @brief Entry point for handling new marker markup placing. Returns true if
 /// markup data changed, returns false if markup data did not change.
 ///
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
-- (bool) handlePlaceMarker:(enum MarkupType)markupType
-            onIntersection:(NSString*)intersection
-            withNodeMarkup:(GoNodeMarkup*)nodeMarkup
+- (bool) handlePlaceNextFreeMarker:(enum GoMarkupLabel)markerTypeToPlace
+                    onIntersection:(NSString*)intersection
+                    withNodeMarkup:(GoNodeMarkup*)nodeMarkup
 {
-  bool markerOfRequestedTypeExists = false;
+  bool markerOfRequestedTypeExistsAtIntersection = false;
   NSDictionary* labels = nodeMarkup.labels;
   if (labels)
   {
-    NSString* label = labels[intersection];
-    if (label)
+    NSArray* existingLabelTypeAndText = labels[intersection];
+    if (existingLabelTypeAndText)
     {
-      enum MarkupType markupTypeOfLabel = [MarkupUtilities markupTypeOfLabel:label];
-      markerOfRequestedTypeExists = (markupType == markupTypeOfLabel);
+      NSNumber* existingLabelTypeAsNumber = existingLabelTypeAndText.firstObject;
+      enum GoMarkupLabel existingLabelType = existingLabelTypeAsNumber.intValue;
+      markerOfRequestedTypeExistsAtIntersection = (markerTypeToPlace == existingLabelType);
     }
   }
 
-  NSString* nextFreeMarker = [MarkupUtilities nextFreeMarkerOfType:markupType
-                                                        inNodeMarkup:nodeMarkup];
+  NSString* nextFreeMarker = [MarkupUtilities nextFreeMarkerOfType:markerTypeToPlace
+                                                      inNodeMarkup:nodeMarkup];
 
   bool markupDataDidChange = true;
   if (nextFreeMarker)
-    [nodeMarkup setLabel:nextFreeMarker atVertex:intersection];
-  else if (markerOfRequestedTypeExists)
+    [nodeMarkup setLabel:markerTypeToPlace labelText:nextFreeMarker atVertex:intersection];
+  else if (markerOfRequestedTypeExistsAtIntersection)
     [nodeMarkup removeLabelAtVertex:intersection];
   else
     markupDataDidChange = false;
@@ -709,42 +710,63 @@ enum MarkupEditingInteraction
   return markupDataDidChange;
 }
 
-#pragma mark - Place label
+#pragma mark - Place marker or label
 
 // -----------------------------------------------------------------------------
 /// @brief Entry point for handling label markup placing. Returns true if
-/// markup data changed, returns false if markup data did not change.
+/// markup data changed, returns false if markup data did not change. If
+/// this returns true then the out parameter @a labelTypeThatChanged is filled,
+/// otherwise the out parameter's value is not defined.
 ///
 /// See document MANUAL for details how this works.
 // -----------------------------------------------------------------------------
-- (bool) handlePlaceLabel:(NSString*)labelText
-           onIntersection:(NSString*)intersection
-           withNodeMarkup:(GoNodeMarkup*)nodeMarkup
-           markupWasMoved:(bool)markupWasMoved
+- (bool) handlePlaceLabelOrMarker:(enum GoMarkupLabel)labelTypeToPlace
+                        labelText:(NSString*)labelText
+                   onIntersection:(NSString*)intersection
+                   withNodeMarkup:(GoNodeMarkup*)nodeMarkup
+                   markupWasMoved:(bool)markupWasMoved
+             labelTypeThatChanged:(enum GoMarkupLabel*)labelTypeThatChanged
 {
-  NSString* existingLabel = nil;
+  enum GoMarkupLabel existingLabelType = GoMarkupLabelLabel;
+  NSString* existingLabelText = nil;
 
   NSDictionary* labels = nodeMarkup.labels;
   if (labels)
-    existingLabel = labels[intersection];
-
-  // Clean up user input
-  labelText = [GoNodeMarkup removeNewlinesAndTrimLabel:labelText];
+  {
+    NSArray* existingLabelTypeAndText = labels[intersection];
+    if (existingLabelTypeAndText)
+    {
+      NSNumber* existingLabelTypeAsNumber = existingLabelTypeAndText.firstObject;
+      existingLabelType = existingLabelTypeAsNumber.intValue;
+      existingLabelText = existingLabelTypeAndText.lastObject;
+    }
+  }
 
   bool markupDataDidChange = true;
+  *labelTypeThatChanged = labelTypeToPlace;
+
+  // This check exists because when a new label is placed in a mode where the
+  // user can interactively enter the label text, the user could very well
+  // enter an empty text, or whitespace which after cleanup results in an empty
+  // text, in which cases we want to remove an existing label.
   if (labelText && labelText.length > 0)
   {
-    if (existingLabel && [labelText isEqualToString:existingLabel])
+    if (existingLabelText && [labelText isEqualToString:existingLabelText])
       markupDataDidChange = markupWasMoved ? true : false;  // if moved, then the label was removed somewhere else => data did change
     else
-      [nodeMarkup setLabel:labelText atVertex:intersection];
+      [nodeMarkup setLabel:*labelTypeThatChanged labelText:labelText atVertex:intersection];
   }
   else
   {
-    if (existingLabel)
+    if (existingLabelText)
+    {
       [nodeMarkup removeLabelAtVertex:intersection];
+      *labelTypeThatChanged = existingLabelType;
+    }
     else
+    {
       markupDataDidChange = false;
+    }
   }
 
   if (markupDataDidChange)
@@ -774,9 +796,10 @@ enum MarkupEditingInteraction
   GoNodeMarkup* nodeMarkup = node.goNodeMarkup;
 
   NSDictionary* labels = nodeMarkup.labels;
-  NSString* labelText = labels ? labels[intersection] : nil;
+  NSArray* existingLabelTypeAndText = labels ? labels[intersection] : nil;
+  NSString* existingLabelText = existingLabelTypeAndText ? existingLabelTypeAndText.lastObject : nil;
 
-  EditTextController* editTextController = [[EditTextController controllerWithText:labelText
+  EditTextController* editTextController = [[EditTextController controllerWithText:existingLabelText
                                                                              style:EditTextControllerStyleTextField
                                                                           delegate:self] retain];
   editTextController.title = @"Edit label text";
@@ -810,7 +833,7 @@ enum MarkupEditingInteraction
   if (! didCancel)
   {
     GoNode* node = editTextController.context;
-    self.labelText = editTextController.text;
+    self.labelText = [GoNodeMarkup removeNewlinesAndTrimLabel:editTextController.text];  // clean up user input
     [self handleMarkupEditingInteractionWithNode:node];
   }
 
@@ -933,18 +956,16 @@ enum MarkupEditingInteraction
   NSDictionary* labels = nodeMarkup.labels;
   if (labels && labels[intersection])
   {
-    NSString* labelText = [[labels[intersection] retain] autorelease];  // the string object may be used after it's removed
+    NSArray* existingLabelTypeAndText = labels[intersection];
+    NSNumber* existingLabelTypeAsNumber = existingLabelTypeAndText.firstObject;
+    enum GoMarkupLabel existingLabelType = existingLabelTypeAsNumber.intValue;
+
     [nodeMarkup removeLabelAtVertex:intersection];
 
     if (pointsWithChangedMarkup)
-    {
       singleOrNoMarkupWasErased = false;
-    }
     else
-    {
-      enum GoMarkupLabel labelType = [MarkupUtilities labelTypeOfLabel:labelText];
-      pointsWithChangedMarkup = [self arrayWithIntersection:intersection labelType:labelType];
-    }
+      pointsWithChangedMarkup = [self arrayWithIntersection:intersection labelType:existingLabelType];
   }
 
   NSDictionary* connections = nodeMarkup.connections;
