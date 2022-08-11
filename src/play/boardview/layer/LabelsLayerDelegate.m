@@ -352,7 +352,12 @@
   GoBoardPosition* boardPosition = game.boardPosition;
   GoNode* currentNode = boardPosition.currentNode;
   GoNodeMarkup* nodeMarkup = currentNode.goNodeMarkup;
-  if (! nodeMarkup || ! nodeMarkup.labels)
+  // If a label is being moved with a panning gesture, it is temporarily removed
+  // from GoNodeMarkup. If it's the only label in GoNodeMarkup then the
+  // GoNodeMarkup.labels property temporarily becomes nil - if that happens we
+  // don't want to abort here, so we need to also consult
+  // self.shouldDrawRowWithTemporaryMarkup.
+  if (! nodeMarkup || (! nodeMarkup.labels && ! self.shouldDrawRowWithTemporaryMarkup))
     return;
 
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
