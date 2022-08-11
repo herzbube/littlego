@@ -21,6 +21,7 @@
 #import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
+#import "../../../go/GoPoint.h"
 
 
 @implementation BoardViewLayerDelegateBase
@@ -139,29 +140,120 @@
   bool stop = false;
   NSMutableArray* drawingPoints = [NSMutableArray array];
 
+  // Abort early if boardViewMetrics does not yet have useful values (e.g.
+  // during app launch)
+  CGSize pointCellSize = self.boardViewMetrics.pointCellSize;
+  if (CGSizeEqualToSize(pointCellSize, CGSizeZero))
+    return drawingPoints;
+
   CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
                                                       metrics:self.boardViewMetrics];
+  CGFloat tileRectLeftEdge = CGRectGetMinX(tileRect);
+  CGFloat tileRectRightEdge = CGRectGetMaxX(tileRect);
+  CGFloat tileRectTopEdge = CGRectGetMinY(tileRect);
+  CGFloat tileRectBottomEdge = CGRectGetMaxY(tileRect);
 
+  // Simplified schematics how tile rects and point rects can overlap. Also
+  // this shows that there can be an unused margin around the board edges.
+  //
+  // canvas origin
+  // o--->
+  // |
+  // |
+  // v   topLeftCornerPointBoard
+  //     +---++---++---++---++---++---+
+  //     |   ||   ||   ||   ||   ||   |
+  //     +---++---++---++---++---++---+
+  //                 +--------------+
+  //                 |              |
+  //     +---++---++-+-++---++---++-|-++---+
+  //     |   ||   || | ||   ||   || | ||   |
+  //     +---++---++-+-++---++---++-+-++---+
+  //                 |              |
+  //                 |              |
+  //     +---++---++-+-++---++---++-|-+
+  //     |   ||   || +-||---||---||-+ |
+  //     +---++---++---++---++---++---+
+
+  // The canvas coordinate system has its origin in the upper-left corner, so
+  // we base our calculations and iterations also on the top-left edge board
+  // corner point.
   GoGame* game = [GoGame sharedGame];
-  // TODO xxx Optimize this routine instead of doing a brute force iteration
-  // over all points. Ideally reverse calculations should be possible to find
-  // diagonally opposed corner points. Also if the algorithm is documented
-  // callbacks can make assumptions about the order of iteration.
-  NSEnumerator* enumerator = [game.board pointEnumerator];
-  GoPoint* point;
-  while (! stop && (point = [enumerator nextObject]))
+  GoPoint* topLeftCornerPointBoard = [game.board pointAtCorner:GoBoardCornerTopLeft];
+  CGRect topLeftCornerPointRectBoard = [BoardViewDrawingHelper canvasRectForStoneAtPoint:topLeftCornerPointBoard
+                                                                                 metrics:self.boardViewMetrics];
+  CGFloat topLeftCornerPointRectBoardLeftEdge = CGRectGetMinX(topLeftCornerPointRectBoard);
+  CGFloat topLeftCornerPointRectBoardTopEdge = CGRectGetMinY(topLeftCornerPointRectBoard);
+
+  // The rectangle of the top-left corner point on the board does not have
+  // origin 0/0 if the board view has an unused margin around the board edges.
+  // The top-left tile rectangle, however, has origin 0/0.
+  int numberOfPointRectsLeftOfTileRect;
+  if (tileRectLeftEdge < topLeftCornerPointRectBoardLeftEdge)
+    numberOfPointRectsLeftOfTileRect = 0;
+  else
+    numberOfPointRectsLeftOfTileRect = floorf((tileRectLeftEdge - topLeftCornerPointRectBoardLeftEdge) / pointCellSize.width);
+  int numberOfPointRectsAboveTileRect;
+  if (tileRectTopEdge < topLeftCornerPointRectBoardTopEdge)
+    numberOfPointRectsAboveTileRect = 0;
+  else
+    numberOfPointRectsAboveTileRect = floorf((tileRectTopEdge - topLeftCornerPointRectBoardTopEdge) / pointCellSize.height);
+
+  // Accessing GoPoint properties right and below are very fast once they have
+  // their value in the cache.
+  //
+  // Note: topLeftCornerPointTile may become nil here if the user is zooming out
+  // and a layer of a tile that will soon become obsolete is recalculating its
+  // stuff.
+  GoPoint* topLeftCornerPointTile = topLeftCornerPointBoard;
+  for (int i = 0; i < numberOfPointRectsLeftOfTileRect && topLeftCornerPointTile; i++)
+    topLeftCornerPointTile = topLeftCornerPointTile.right;
+  for (int i = 0; i < numberOfPointRectsAboveTileRect && topLeftCornerPointTile; i++)
+    topLeftCornerPointTile = topLeftCornerPointTile.below;
+  if (! topLeftCornerPointTile)
+    return drawingPoints;
+
+  CGRect topLeftCornerPointRectTile = [BoardViewDrawingHelper canvasRectForStoneAtPoint:topLeftCornerPointTile
+                                                                                metrics:self.boardViewMetrics];
+  CGFloat topLeftCornerPointRectTileLeftEdge = CGRectGetMinX(topLeftCornerPointRectTile);
+  CGFloat topLeftCornerPointRectTileTopEdge = CGRectGetMinY(topLeftCornerPointRectTile);
+
+  // The number of rows and columns we calculate here usually are not accurate
+  // for tiles at the right and/or bottom edge of the board, either because the
+  // board view has an unused margin around the board edges, or because those
+  // right/bottom edge tiles cover surplus space that is even outside the board
+  // view. This inaccuracy will be handled below by additional for-loop
+  // criteria.
+  int numberOfPointRectsOnTileRectHorizontal = ceilf((tileRectRightEdge - topLeftCornerPointRectTileLeftEdge) / pointCellSize.width);
+  int numberOfPointRectsOnTileRectVertical = ceilf((tileRectBottomEdge - topLeftCornerPointRectTileTopEdge) / pointCellSize.height);
+
+  GoPoint* leftEdgePointTile = topLeftCornerPointTile;
+  for (int indexOfPointRectOnTileRectHorizontal = 0;
+       indexOfPointRectOnTileRectHorizontal < numberOfPointRectsOnTileRectVertical && leftEdgePointTile && ! stop;
+       indexOfPointRectOnTileRectHorizontal++)
   {
-    CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
-                                                                 metrics:self.boardViewMetrics];
-    if (! CGRectIntersectsRect(tileRect, stoneRect))
-      continue;
+    GoPoint* point = leftEdgePointTile;
 
-    bool shouldAddPoint = true;
-    if (callback)
-      shouldAddPoint = callback(point, &stop);
+    for (int indexOfPointRectOnTileRectHorizontal = 0;
+         indexOfPointRectOnTileRectHorizontal < numberOfPointRectsOnTileRectHorizontal && point && ! stop;
+         indexOfPointRectOnTileRectHorizontal++)
+    {
+      bool shouldAddPoint = true;
+      if (callback)
+        shouldAddPoint = callback(point, &stop);
 
-    if (shouldAddPoint)
-      [drawingPoints addObject:point];
+      if (shouldAddPoint)
+        [drawingPoints addObject:point];
+
+      // Here point can become nil for tiles at the right edge of the board
+      // view, if the board ends before the right edge of the tile is reached
+      point = point.right;
+    }
+
+    // Here leftEdgePointTile can become nil for tiles at the bottom edge of
+    // the board view, if the board ends before the bottom edge of the tile is
+    // reached
+    leftEdgePointTile = leftEdgePointTile.below;
   }
 
   return drawingPoints;
