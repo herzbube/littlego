@@ -197,6 +197,7 @@ static GameActionManager* sharedGameActionManager = nil;
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.boardSetupModel addObserver:self forKeyPath:@"boardSetupStoneColor" options:0 context:NULL];
   [appDelegate.boardViewModel addObserver:self forKeyPath:@"computerAssistanceType" options:0 context:NULL];
+  [appDelegate.boardViewModel addObserver:self forKeyPath:@"selectedSymbolMarkupStyle" options:0 context:NULL];
   [appDelegate.markupModel addObserver:self forKeyPath:@"markupType" options:0 context:NULL];
 }
 
@@ -215,6 +216,7 @@ static GameActionManager* sharedGameActionManager = nil;
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.boardSetupModel removeObserver:self forKeyPath:@"boardSetupStoneColor"];
   [appDelegate.boardViewModel removeObserver:self forKeyPath:@"computerAssistanceType"];
+  [appDelegate.boardViewModel removeObserver:self forKeyPath:@"selectedSymbolMarkupStyle"];
   [appDelegate.markupModel removeObserver:self forKeyPath:@"markupType"];
 }
 
@@ -583,11 +585,13 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) selectMarkupType:(id)sender
 {
+  enum SelectedSymbolMarkupStyle selectedSymbolMarkupStyle = [ApplicationDelegate sharedDelegate].boardViewModel.selectedSymbolMarkupStyle;
+
   NSMutableArray* itemList = [NSMutableArray array];
   for (enum MarkupType markupType = MarkupTypeFirst; markupType <= MarkupTypeLast; markupType++)
   {
     NSString* markupTypeText = [NSString stringWithMarkupType:markupType];
-    UIImage* markupTypeIcon = [UIImage iconForMarkupType:markupType];
+    UIImage* markupTypeIcon = [UIImage iconForMarkupType:markupType selectedSymbolMarkupStyle:selectedSymbolMarkupStyle];
     [itemList addObject:@[markupTypeText, markupTypeIcon]];
   }
 
@@ -953,6 +957,10 @@ static GameActionManager* sharedGameActionManager = nil;
     {
       self.visibleStatesNeedUpdate = true;
       [self delayedUpdate];
+    }
+    else if ([keyPath isEqualToString:@"selectedSymbolMarkupStyle"])
+    {
+      [self.uiDelegate gameActionManager:self updateIconOfGameAction:GameActionSelectMarkupType];
     }
   }
   else if (object == appDelegate.markupModel)

@@ -44,8 +44,8 @@
 + (UIImage*) iconForMoveValuation:(enum GoMoveValuation)moveValuation;
 + (UIImage*) iconForScoreSummary:(enum GoScoreSummary)scoreSummary;
 + (UIImage*) iconForBoardPositionHotspotDesignation:(enum GoBoardPositionHotspotDesignation)boardPositionHotspotDesignation;
-+ (NSString*) iconResourceNameForMarkupType:(enum MarkupType)markupType;
-+ (UIImage*) iconForMarkupType:(enum MarkupType)markupType;
++ (NSString*) iconResourceNameForMarkupType:(enum MarkupType)markupType selectedSymbolMarkupStyle:(enum SelectedSymbolMarkupStyle)selectedSymbolMarkupStyle;
++ (UIImage*) iconForMarkupType:(enum MarkupType)markupType selectedSymbolMarkupStyle:(enum SelectedSymbolMarkupStyle)selectedSymbolMarkupStyle;
 + (UIImage*) editIcon;
 + (UIImage*) trashcanIcon;
 + (NSString*) iconResourceNameForGameAction:(enum GameAction)gameAction;

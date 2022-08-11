@@ -515,6 +515,10 @@
 		CDA596131401741800B250D8 /* GoVertexTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA596121401741800B250D8 /* GoVertexTest.m */; };
 		CDA597521401825600B250D8 /* GoVertex.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBB039A133573CC007C1C3E /* GoVertex.m */; };
 		CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */; };
+		CDA86E7928A59D28000B49E2 /* dot-symbol.svg in Resources */ = {isa = PBXBuildFile; fileRef = CDA86E7528A59D28000B49E2 /* dot-symbol.svg */; };
+		CDA86E7A28A59D28000B49E2 /* dot-symbol.png in Resources */ = {isa = PBXBuildFile; fileRef = CDA86E7628A59D28000B49E2 /* dot-symbol.png */; };
+		CDA86E7B28A59D28000B49E2 /* dot-symbol@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDA86E7728A59D28000B49E2 /* dot-symbol@3x.png */; };
+		CDA86E7C28A59D28000B49E2 /* dot-symbol@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDA86E7828A59D28000B49E2 /* dot-symbol@2x.png */; };
 		CDA96F261D1E2A2F00CEE129 /* Crashlytics-opensource.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CDA96F251D1E2A2F00CEE129 /* Crashlytics-opensource.txt.html */; };
 		CDA96F281D1EC97800CEE129 /* Crashlytics-opensource.txt in Resources */ = {isa = PBXBuildFile; fileRef = CDA96F271D1EC97800CEE129 /* Crashlytics-opensource.txt */; };
 		CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
@@ -1328,6 +1332,10 @@
 		CDA596121401741800B250D8 /* GoVertexTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoVertexTest.m; sourceTree = "<group>"; };
 		CDA6F0A814B1C88F00F71BC0 /* GoMoveTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveTest.h; sourceTree = "<group>"; };
 		CDA6F0A914B1C89000F71BC0 /* GoMoveTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveTest.m; sourceTree = "<group>"; };
+		CDA86E7528A59D28000B49E2 /* dot-symbol.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "dot-symbol.svg"; sourceTree = "<group>"; };
+		CDA86E7628A59D28000B49E2 /* dot-symbol.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dot-symbol.png"; sourceTree = "<group>"; };
+		CDA86E7728A59D28000B49E2 /* dot-symbol@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dot-symbol@3x.png"; sourceTree = "<group>"; };
+		CDA86E7828A59D28000B49E2 /* dot-symbol@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dot-symbol@2x.png"; sourceTree = "<group>"; };
 		CDA96F251D1E2A2F00CEE129 /* Crashlytics-opensource.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Crashlytics-opensource.txt.html"; sourceTree = "<group>"; };
 		CDA96F271D1EC97800CEE129 /* Crashlytics-opensource.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Crashlytics-opensource.txt"; sourceTree = "<group>"; };
 		CDAA57EA185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetAdditiveKnowledgeTypeCommand.h; sourceTree = "<group>"; };
@@ -2665,6 +2673,17 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		CDA86E7428A59D28000B49E2 /* dot-symbol */ = {
+			isa = PBXGroup;
+			children = (
+				CDA86E7628A59D28000B49E2 /* dot-symbol.png */,
+				CDA86E7528A59D28000B49E2 /* dot-symbol.svg */,
+				CDA86E7828A59D28000B49E2 /* dot-symbol@2x.png */,
+				CDA86E7728A59D28000B49E2 /* dot-symbol@3x.png */,
+			);
+			path = "dot-symbol";
+			sourceTree = "<group>";
+		};
 		CDAA57E0184FE9BE0049A90D /* gtp */ = {
 			isa = PBXGroup;
 			children = (
@@ -2927,6 +2946,7 @@
 				CD968AFA1B026E2300984AEE /* credits */,
 				CD968AFF1B026E2300984AEE /* diagnostics */,
 				CD968B041B026E2300984AEE /* discard */,
+				CDA86E7428A59D28000B49E2 /* dot-symbol */,
 				CD2AB1FA28030D2F00BF0B4D /* doubtful */,
 				CD2AB2102803140900BF0B4D /* edit */,
 				CD968B091B026E2300984AEE /* game-info */,
@@ -3401,6 +3421,7 @@
 				CD968B821B026E2300984AEE /* computer-vs-computer@2x.png in Resources */,
 				CD2AB2162803140900BF0B4D /* edit@3x.png in Resources */,
 				CD81796025DDEDDF00F39091 /* computer-suggest-move@2.png in Resources */,
+				CDA86E7C28A59D28000B49E2 /* dot-symbol@2x.png in Resources */,
 				CDC66BC021EBB052006C73B3 /* changelog@2.png in Resources */,
 				CD2AB1C22800D63500BF0B4D /* unclear@3x.png in Resources */,
 				CDB3ED2D284D5354007512F6 /* label@2x.png in Resources */,
@@ -3533,6 +3554,7 @@
 				CDC66BC421EBB273006C73B3 /* ChangeLog in Resources */,
 				CD968BA31B026E2300984AEE /* back.png in Resources */,
 				CD968B931B026E2300984AEE /* interrupt.png in Resources */,
+				CDA86E7B28A59D28000B49E2 /* dot-symbol@3x.png in Resources */,
 				CD968B6B1B026E2300984AEE /* noun_123922_cc.svg in Resources */,
 				CD607BC3280AF115000C111E /* trashcan.png in Resources */,
 				CDE1A19614C1CF4D00317ECA /* RegistrationDomainDefaults.plist in Resources */,
@@ -3636,9 +3658,11 @@
 				CD2AB19D2800AFBF00BF0B4D /* stones-overlapping-black-icon.svg in Resources */,
 				CD968BAF1B026E2300984AEE /* rewindtostart@3x.png in Resources */,
 				CD2AB1F6280301DB00BF0B4D /* very-bad.svg in Resources */,
+				CDA86E7A28A59D28000B49E2 /* dot-symbol.png in Resources */,
 				CDB3ED1D284D5354007512F6 /* number-marker@2x.png in Resources */,
 				CDEE1D631AFCC2A500524BF9 /* wooden-background-tile.png in Resources */,
 				CD968AE21B026DD200984AEE /* stone-white.png in Resources */,
+				CDA86E7928A59D28000B49E2 /* dot-symbol.svg in Resources */,
 				CD968B8B1B026E2300984AEE /* noun_17845_cc.svg in Resources */,
 				CDB3ED22284D5354007512F6 /* label.png in Resources */,
 				CD02629C16E0F06E007B35CC /* book.dat in Resources */,

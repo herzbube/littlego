@@ -467,7 +467,7 @@
 /// @brief Returns the resource name of the icon image that describes
 /// @a markupType.
 // -----------------------------------------------------------------------------
-+ (NSString*) iconResourceNameForMarkupType:(enum MarkupType)markupType
++ (NSString*) iconResourceNameForMarkupType:(enum MarkupType)markupType selectedSymbolMarkupStyle:(enum SelectedSymbolMarkupStyle)selectedSymbolMarkupStyle
 {
   switch (markupType)
   {
@@ -480,7 +480,10 @@
     case MarkupTypeSymbolX:
       return crossMarkIconResource;
     case MarkupTypeSymbolSelected:
-      return checkMarkIconResource;
+      if (selectedSymbolMarkupStyle == SelectedSymbolMarkupStyleCheckmark)
+        return checkMarkIconResource;
+      else
+        return dotSymbolIconResource;
     case MarkupTypeMarkerNumber:
       return numberMarkerIconResource;
     case MarkupTypeMarkerLetter:
@@ -501,9 +504,9 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns an icon image that describes @a markupType.
 // -----------------------------------------------------------------------------
-+ (UIImage*) iconForMarkupType:(enum MarkupType)markupType
++ (UIImage*) iconForMarkupType:(enum MarkupType)markupType selectedSymbolMarkupStyle:(enum SelectedSymbolMarkupStyle)selectedSymbolMarkupStyle
 {
-  NSString* iconResourceNameForMarkupType = [self iconResourceNameForMarkupType:markupType];
+  NSString* iconResourceNameForMarkupType = [self iconResourceNameForMarkupType:markupType selectedSymbolMarkupStyle:selectedSymbolMarkupStyle];
   return [UIImage imageNamed:iconResourceNameForMarkupType];
 }
 

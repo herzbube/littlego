@@ -1434,6 +1434,7 @@ extern NSString* hotspotIconResource;
 extern NSString* markupIconResource;
 extern NSString* arrowIconResource;
 extern NSString* checkMarkIconResource;
+extern NSString* dotSymbolIconResource;
 extern NSString* circleIconResource;
 extern NSString* crossMarkIconResource;
 extern NSString* labelIconResource;

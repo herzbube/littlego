@@ -262,6 +262,7 @@ NSString* hotspotIconResource = @"hotspot.png";
 NSString* markupIconResource = @"markup.png";
 NSString* arrowIconResource = @"arrow.png";
 NSString* checkMarkIconResource = @"check-mark.png";
+NSString* dotSymbolIconResource = @"dot-symbol.png";
 NSString* circleIconResource = @"circle.png";
 NSString* crossMarkIconResource = @"cross-mark.png";
 NSString* labelIconResource = @"label.png";
