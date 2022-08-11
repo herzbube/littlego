@@ -527,9 +527,9 @@
     GoPoint* toPoint = [self.selectionRectangleInformation objectAtIndex:1];
 
     if (fromPoint == toPoint)
-      statusText = [NSString stringWithFormat:@"%@", fromPoint.vertex.string];
+      statusText = [NSString stringWithFormat:@"Erase markup on intersection - %@", fromPoint.vertex.string];
     else
-      statusText = [NSString stringWithFormat:@"%@ : %@", fromPoint.vertex.string, toPoint.vertex.string];
+      statusText = [NSString stringWithFormat:@"Erase markup in area - %@ : %@", fromPoint.vertex.string, toPoint.vertex.string];
   }
   else
   {
@@ -643,7 +643,7 @@
               statusText = @"Drag to place a line";
             break;
           case MarkupToolEraser:
-            statusText = @"Tap to remove any markup";
+            statusText = @"Tap on markup to remove it";
             break;
         }
       }
