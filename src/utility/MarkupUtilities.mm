@@ -345,13 +345,16 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns @e true if @a node has one or more markup elements on
 /// @a point. Returns @e false if @a node has no markup elements on @a point.
+/// If @a ignoreLabels is true this method ignores markup of type
+/// #GoMarkupLabelLabel.
 // -----------------------------------------------------------------------------
-+ (bool) markupExistsOnPoint:(GoPoint*)point forNode:(GoNode*)node
++ (bool) markupExistsOnPoint:(GoPoint*)point forNode:(GoNode*)node ignoreLabels:(bool)ignoreLabels
 {
   enum MarkupType firstMarkupType;
   id firstMarkupInfo;
   return [MarkupUtilities markupExistsOnPoint:point
                                       forNode:node
+                                 ignoreLabels:ignoreLabels
                               firstMarkupType:&firstMarkupType
                               firstMarkupInfo:&firstMarkupInfo];
 
@@ -360,6 +363,8 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns @e true if @a node has one or more markup elements on
 /// @a point. Returns @e false if @a node has no markup elements on @a point.
+/// If @a ignoreLabels is true this method ignores markup of type
+/// #GoMarkupLabelLabel.
 ///
 /// If this method returns @e true, it also fills the out variable
 /// @a firstMarkupType with the markup type of the first markup element that
@@ -370,14 +375,16 @@
 ///
 /// This method looks for markup elements in this order:
 /// - Symbols
-/// - Markers and labels
+/// - Markers and labels. If @a ignoreLabels is true then a label is ignored if
+///   one exists, i.e. the label is treated as if it did not exist.
 /// - Connections
 // -----------------------------------------------------------------------------
-+ (bool) markupExistsOnPoint:(GoPoint*)point forNode:(GoNode*)node firstMarkupType:(enum MarkupType*)firstMarkupType
++ (bool) markupExistsOnPoint:(GoPoint*)point forNode:(GoNode*)node ignoreLabels:(bool)ignoreLabels firstMarkupType:(enum MarkupType*)firstMarkupType
 {
   id firstMarkupInfo;
   return [MarkupUtilities markupExistsOnPoint:point
                                       forNode:node
+                                 ignoreLabels:ignoreLabels
                               firstMarkupType:firstMarkupType
                               firstMarkupInfo:&firstMarkupInfo];
 }
@@ -385,6 +392,8 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns @e true if @a node has one or more markup elements on
 /// @a point. Returns @e false if @a node has no markup elements on @a point.
+/// If @a ignoreLabels is true this method ignores markup of type
+/// #GoMarkupLabelLabel.
 ///
 /// If this method returns @e true, it also fills the out variables
 /// @a firstMarkupType and @a firstMarkupInfo. @a firstMarkupType is filled with
@@ -399,12 +408,17 @@
 /// - Symbols. If a symbol is found @a firstMarkupInfo is set to @e nil.
 /// - Markers and labels. If a marker or label is found @a firstMarkupInfo is
 ///   set to an NSString object that contains the label text of the marker or
-///   label.
+///   label. If @a ignoreLabels is true then a label is ignored if one exists,
+///   i.e. the label is treated as if it did not exist.
 /// - Connections. If a connection is found, @a firstMarkupInfo is set to an
 ///   NSArray object that contains two NSString objects that define the start
 ///   and end intersections of the connection.
 // -----------------------------------------------------------------------------
-+ (bool) markupExistsOnPoint:(GoPoint*)point forNode:(GoNode*)node firstMarkupType:(enum MarkupType*)firstMarkupType firstMarkupInfo:(id*)firstMarkupInfo
++ (bool) markupExistsOnPoint:(GoPoint*)point
+                     forNode:(GoNode*)node
+                ignoreLabels:(bool)ignoreLabels
+             firstMarkupType:(enum MarkupType*)firstMarkupType
+             firstMarkupInfo:(id*)firstMarkupInfo
 {
   GoNodeMarkup* nodeMarkup = node.goNodeMarkup;
   if (! nodeMarkup)
@@ -433,9 +447,12 @@
     {
       NSNumber* existingLabelTypeAsNumber = existingLabelTypeAndText.firstObject;
       enum GoMarkupLabel existingLabelType = static_cast<enum GoMarkupLabel>(existingLabelTypeAsNumber.intValue);
-      *firstMarkupType = [MarkupUtilities markupTypeForLabel:existingLabelType];
-      *firstMarkupInfo = existingLabelTypeAndText.lastObject;
-      return true;
+      if (existingLabelType != GoMarkupLabelLabel || (existingLabelType == GoMarkupLabelLabel && ! ignoreLabels))
+      {
+        *firstMarkupType = [MarkupUtilities markupTypeForLabel:existingLabelType];
+        *firstMarkupInfo = existingLabelTypeAndText.lastObject;
+        return true;
+      }
     }
   }
 

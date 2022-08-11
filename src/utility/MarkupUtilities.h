@@ -49,8 +49,8 @@
                       inNodeMarkup:(GoNodeMarkup*)nodeMarkup;
 
 + (bool) shouldDisplayMarkupIndicatorForNode:(GoNode*)node;
-+ (bool) markupExistsOnPoint:(GoPoint*)point forNode:(GoNode*)node;
-+ (bool) markupExistsOnPoint:(GoPoint*)point forNode:(GoNode*)node firstMarkupType:(enum MarkupType*)markupType;
-+ (bool) markupExistsOnPoint:(GoPoint*)point forNode:(GoNode*)node firstMarkupType:(enum MarkupType*)markupType firstMarkupInfo:(id*)markupInfo;
++ (bool) markupExistsOnPoint:(GoPoint*)point forNode:(GoNode*)node ignoreLabels:(bool)ignoreLabels;
++ (bool) markupExistsOnPoint:(GoPoint*)point forNode:(GoNode*)node ignoreLabels:(bool)ignoreLabels firstMarkupType:(enum MarkupType*)markupType;
++ (bool) markupExistsOnPoint:(GoPoint*)point forNode:(GoNode*)node ignoreLabels:(bool)ignoreLabels firstMarkupType:(enum MarkupType*)markupType firstMarkupInfo:(id*)markupInfo;
 
 @end

@@ -19,6 +19,7 @@
 #import "MoveMarkupPanGestureHandler.h"
 #import "../../boardview/BoardView.h"
 #import "../../gameaction/GameActionManager.h"
+#import "../../model/BoardViewMetrics.h"
 #import "../../model/MarkupModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoBoardPosition.h"
@@ -37,6 +38,7 @@
 // -----------------------------------------------------------------------------
 @interface MoveMarkupPanGestureHandler()
 @property(nonatomic, assign) BoardView* boardView;
+@property(nonatomic, assign) BoardViewMetrics* boardViewMetrics;
 @property(nonatomic, assign) MarkupModel* markupModel;
 /// @brief The type of markup that is being moved.
 @property(nonatomic, assign) enum MarkupType markupTypeToMove;
@@ -67,7 +69,7 @@
 ///
 /// @note This is the designated initializer of MoveMarkupPanGestureHandler.
 // -----------------------------------------------------------------------------
-- (id) initWithBoardView:(BoardView*)boardView markupModel:(MarkupModel*)markupModel
+- (id) initWithBoardView:(BoardView*)boardView markupModel:(MarkupModel*)markupModel boardViewMetrics:(BoardViewMetrics*)boardViewMetrics
 {
   // Call designated initializer of superclass (PanGestureHandler)
   self = [super init];
@@ -76,6 +78,7 @@
 
   self.boardView = boardView;
   self.markupModel = markupModel;
+  self.boardViewMetrics = boardViewMetrics;
 
   self.markupTypeToMove = MarkupTypeSymbolCircle;  // dummy value
   self.markupCategoryToMove = MarkupToolSymbol;    // dummy value
@@ -113,8 +116,10 @@
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   GoNode* currentNode = boardPosition.currentNode;
+  bool ignoreLabels = ! [self areLabelsVisible];
   bool markupExists = [MarkupUtilities markupExistsOnPoint:startPoint
-                                                   forNode:currentNode];
+                                                   forNode:currentNode
+                                              ignoreLabels:ignoreLabels];
   return markupExists ? YES : NO;
 }
 
@@ -201,10 +206,12 @@
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
   GoNode* currentNode = boardPosition.currentNode;
+  bool ignoreLabels = ! [self areLabelsVisible];
   enum MarkupType markupTypeToMove;
   id markupInfo;
   bool markupExists = [MarkupUtilities markupExistsOnPoint:gestureStartPoint
                                                    forNode:currentNode
+                                              ignoreLabels:ignoreLabels
                                            firstMarkupType:&markupTypeToMove
                                            firstMarkupInfo:&markupInfo];
   if (! markupExists)
@@ -646,6 +653,15 @@
   GoNode* currentNode = boardPosition.currentNode;
   GoNodeMarkup* nodeMarkup = currentNode.goNodeMarkup;
   return nodeMarkup;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if labels of type #GoMarkupLabelLabel are currently
+/// visible in the UI. Otherwise returns false.
+// -----------------------------------------------------------------------------
+- (bool) areLabelsVisible
+{
+  return (self.boardViewMetrics.markupLabelFont != nil);
 }
 
 @end

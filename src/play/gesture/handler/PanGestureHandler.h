@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class BoardView;
+@class BoardViewMetrics;
 @class GoPoint;
 @class MarkupModel;
 @class UiSettingsModel;
@@ -35,7 +36,8 @@
 + (PanGestureHandler*) panGestureHandlerWithUiAreaPlayMode:(enum UIAreaPlayMode)uiAreaPlayMode
                                                 markupTool:(enum MarkupTool)markupTool
                                                markupModel:(MarkupModel*)markupModel
-                                                 boardView:(BoardView*)boardView;
+                                                 boardView:(BoardView*)boardView
+                                          boardViewMetrics:(BoardViewMetrics*)boardViewMetrics;
 
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
                     gestureStartPoint:(GoPoint*)startPoint;

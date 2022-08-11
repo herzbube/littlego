@@ -32,12 +32,14 @@
 /// PanGestureHandler object that can handle pan gestures required by
 /// @a uiAreaPlayMode and @a markupTool. If no pan gesture is possible for the
 /// combination then this method returns @e nil. If a PanGestureHandler object
-/// is created it is configured with  @a markupModel and/or @a boardView.
+/// is created it is configured with  @a markupModel, @a boardView and/or
+/// @a boardViewMetrics.
 // -----------------------------------------------------------------------------
 + (PanGestureHandler*) panGestureHandlerWithUiAreaPlayMode:(enum UIAreaPlayMode)uiAreaPlayMode
                                                 markupTool:(enum MarkupTool)markupTool
                                                markupModel:(MarkupModel*)markupModel
                                                  boardView:(BoardView*)boardView
+                                          boardViewMetrics:(BoardViewMetrics*)boardViewMetrics
 {
   PanGestureHandler* panGestureHandler = nil;
 
@@ -56,7 +58,7 @@
         case MarkupToolMarker:
         case MarkupToolLabel:
         {
-          panGestureHandler = [[[MoveMarkupPanGestureHandler alloc] initWithBoardView:boardView markupModel:markupModel] autorelease];
+          panGestureHandler = [[[MoveMarkupPanGestureHandler alloc] initWithBoardView:boardView markupModel:markupModel boardViewMetrics:boardViewMetrics] autorelease];
           break;
         }
         case MarkupToolConnection:

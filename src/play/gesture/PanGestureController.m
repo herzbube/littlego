@@ -511,7 +511,8 @@
     self.panGestureHandler = [PanGestureHandler panGestureHandlerWithUiAreaPlayMode:appDelegate.uiSettingsModel.uiAreaPlayMode
                                                                          markupTool:appDelegate.markupModel.markupTool
                                                                         markupModel:appDelegate.markupModel
-                                                                          boardView:self.boardView];
+                                                                          boardView:self.boardView
+                                                                   boardViewMetrics:appDelegate.boardViewMetrics];
   }
   else
   {

@@ -20,6 +20,7 @@
 
 // Forward declarations
 @class BoardView;
+@class BoardViewMetrics;
 @class MarkupModel;
 
 
@@ -31,6 +32,6 @@
 {
 }
 
-- (id) initWithBoardView:(BoardView*)boardView markupModel:(MarkupModel*)markupModel;
+- (id) initWithBoardView:(BoardView*)boardView markupModel:(MarkupModel*)markupModel boardViewMetrics:(BoardViewMetrics*)boardViewMetrics;
 
 @end
