@@ -642,7 +642,7 @@
     if (pointsToDrawOn && ! [pointsToDrawOn containsObject:pointToBeNumbered])
       continue;
     if (! [self.drawingPointsOnTile containsObject:pointToBeNumbered])
-      return;
+      continue;
     if ([pointsWithMarkup containsObject:pointToBeNumbered])
       continue;
     [newPointsWithMarkup addObject:pointToBeNumbered];
