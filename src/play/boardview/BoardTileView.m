@@ -353,7 +353,8 @@
     if (self.labelsLayerDelegate)
       return;
     self.labelsLayerDelegate = [[[LabelsLayerDelegate alloc] initWithTile:self
-                                                                  metrics:appDelegate.boardViewMetrics] autorelease];
+                                                                  metrics:appDelegate.boardViewMetrics
+                                                           boardViewModel:appDelegate.boardViewModel] autorelease];
   }
 }
 

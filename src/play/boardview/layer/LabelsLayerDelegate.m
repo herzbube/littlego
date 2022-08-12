@@ -20,6 +20,7 @@
 #import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
 #import "../../model/BoardViewMetrics.h"
+#import "../../model/BoardViewModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
@@ -34,6 +35,7 @@
 /// @brief Class extension with private properties for LabelsLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface LabelsLayerDelegate()
+@property(nonatomic, assign) BoardViewModel* boardViewModel;
 /// @brief List of Go board rows that have intersections with this tile. Each
 /// element of the array is an NSNumber object encapsulating an int value that
 /// is a row number. Row numbers start at 1. See the GoVertex docs for details
@@ -62,13 +64,16 @@
 ///
 /// @note This is the designated initializer of LabelsLayerDelegate.
 // -----------------------------------------------------------------------------
-- (id) initWithTile:(id<Tile>)tile metrics:(BoardViewMetrics*)metrics
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(BoardViewMetrics*)metrics
+     boardViewModel:(BoardViewModel*)boardViewModel
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
 
+  self.boardViewModel = boardViewModel;
   self.drawingRowsOnTile = nil;
   self.pointWithChangedMarkup = nil;
   self.dirtyRect = CGRectZero;
@@ -90,6 +95,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.boardViewModel = nil;
   self.drawingRowsOnTile = nil;
   self.pointWithChangedMarkup = nil;
   self.drawingPointTemporaryMarkup = nil;
@@ -174,6 +180,9 @@
       break;
     }
     case BVLDEventBoardPositionChanged:
+    // Label/symbol precedence is handled in this layer. Marker/symbol
+    // precedence is handled in SymbolsLayerDelegate.
+    case BVLDEventMarkupPrecedenceChanged:
     case BVLDEventAllMarkupDiscarded:
     {
       [self invalidateDrawingRectangles];
@@ -381,6 +390,14 @@
     }
   }
 
+  NSArray* pointsWithSymbols = nil;
+  if (self.boardViewModel.markupPrecedence == MarkupPrecedenceSymbols)
+  {
+    NSDictionary* symbols = nodeMarkup.symbols;
+    if (symbols)
+      pointsWithSymbols = symbols.allKeys;
+  }
+
   [nodeMarkup.labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSArray* labelTypeAndText, BOOL* stop)
   {
     // Marker labels are drawn on SymbolsLayerDelegate
@@ -388,6 +405,9 @@
     enum GoMarkupLabel labelType = labelTypeAsNumber.intValue;
     if (labelType != GoMarkupLabelLabel)
         return;
+
+    if (pointsWithSymbols && [pointsWithSymbols containsObject:vertexString])
+      return;
 
     GoPoint* pointWithLabel = [board pointAtVertex:vertexString];
     int rowOfPointWithLabel = pointWithLabel.vertex.numeric.y;

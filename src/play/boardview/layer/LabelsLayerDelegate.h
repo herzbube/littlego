@@ -18,6 +18,9 @@
 // Project includes
 #import "BoardViewLayerDelegateBase.h"
 
+// Forward declarations
+@class BoardViewModel;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The LabelsLayerDelegate class is responsible for drawing markup
@@ -50,5 +53,9 @@
 @interface LabelsLayerDelegate : BoardViewLayerDelegateBase
 {
 }
+
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(BoardViewMetrics*)metrics
+     boardViewModel:(BoardViewModel*)boardViewModel;
 
 @end

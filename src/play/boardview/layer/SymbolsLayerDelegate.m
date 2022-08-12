@@ -253,7 +253,7 @@
     case BVLDEventMoveNumbersPercentageChanged:
     case BVLDEventMarkNextMoveChanged:
     // Marker/symbol precedence is handled in this layer. Label/symbol
-    // precedence is handled by reordering layers.
+    // precedence is handled in LabelsLayerDelegate.
     case BVLDEventMarkupPrecedenceChanged:
     case BVLDEventAllMarkupDiscarded:
     {
