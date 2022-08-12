@@ -516,13 +516,20 @@
     if (pointsToDrawOn.count == 0)
       pointsToDrawOn = nil;
 
-    if ([self shouldDisplayMoveNumbers] && ! shouldDrawTemporaryMarkupOnly)
-      [self drawMoveNumbersInContext:context inTileWithRect:tileRect pointsToDrawOn:pointsToDrawOn pointsWithMarkup:pointsWithMarkup];
-
-    // Unfortunately, even if we only draw temporary markup we still have to
-    // draw connections because we don't know how they intersect with the
+    // Drawing markup must have the highest precedence so that in markup editing
+    // mode the user can see what she can move around with a panning gesture.
+    // Theoretically we could draw markup with different precedences in
+    // different modes, but a conscious decision was made against this because
+    // it would probably be confusing for the user if in one mode a markup
+    // element would be displayed, while in another mode the same markup element
+    // would be hidden (e.g. because a move number had precedence).
+    // Note: Unfortunately, even if we only draw temporary markup we still have
+    // to draw connections because we don't know how they intersect with the
     // temporary markup.
     [self drawMarkupInContext:context inTileWithRect:tileRect pointsToDrawOn:pointsToDrawOn pointsWithMarkup:pointsWithMarkup drawConnectionsOnly:shouldDrawTemporaryMarkupOnly];
+
+    if ([self shouldDisplayMoveNumbers] && ! shouldDrawTemporaryMarkupOnly)
+      [self drawMoveNumbersInContext:context inTileWithRect:tileRect pointsToDrawOn:pointsToDrawOn pointsWithMarkup:pointsWithMarkup];
 
     if (self.shouldDrawTemporaryMarkup)
       [self drawTemporaryMarkupInContext:context inTileWithRect:tileRect];
@@ -908,12 +915,6 @@
 
   [labels enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSArray* labelTypeAndText, BOOL* stop)
   {
-    // Non-marker labels are drawn on LabelsLayerDelegate
-    NSNumber* labelTypeAsNumber = labelTypeAndText.firstObject;
-    enum GoMarkupLabel labelType = labelTypeAsNumber.intValue;
-    if (labelType == GoMarkupLabelLabel)
-      return;
-
     GoPoint* pointWithLabel = [board pointAtVertex:vertexString];
     if (pointsToDrawOn && ! [pointsToDrawOn containsObject:pointWithLabel])
       return;
@@ -922,6 +923,16 @@
     if ([pointsWithMarkup containsObject:pointWithLabel])
       return;
     [pointsWithMarkup addObject:pointWithLabel];
+
+    // Non-marker labels are drawn on LabelsLayerDelegate. We abort the drawing
+    // only after pointsWithMarkup has been populated, because even if we don't
+    // draw the non-marker label in this layer, we want to prevent this layer
+    // from drawing other lower-precedence drawing artifacts (e.g. move
+    // numbers).
+    NSNumber* labelTypeAsNumber = labelTypeAndText.firstObject;
+    enum GoMarkupLabel labelType = labelTypeAsNumber.intValue;
+    if (labelType == GoMarkupLabelLabel)
+      return;
 
     NSString* labelText = labelTypeAndText.lastObject;
 
