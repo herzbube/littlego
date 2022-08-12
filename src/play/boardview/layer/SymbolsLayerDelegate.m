@@ -228,6 +228,7 @@
       self.dirty = true;
       break;
     }
+    case BVLDEventGoGameStarted:        // clear last move marker, update GoPoint instances (even if board size remains the same)
     case BVLDEventInvalidateContent:
     // We draw completely different symbols in each of the various modes. Also
     // the layer is removed/added dynamically as a result of scoring mode
@@ -242,7 +243,6 @@
       self.dirty = true;
       break;
     }
-    case BVLDEventGoGameStarted:        // clear last move marker
     case BVLDEventBoardPositionChanged:
     // This case covers the following scenario: Board position 0 is selected
     // and the user discards all board positions. In this scenario the event

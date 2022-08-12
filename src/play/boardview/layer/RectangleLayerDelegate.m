@@ -161,6 +161,7 @@ enum DrawingArtifactType
       self.dirty = true;
       break;
     }
+    case BVLDEventGoGameStarted:        // update GoPoint instances (even if board size remains the same)
     case BVLDEventInvalidateContent:
     {
       [self invalidateDrawingRectangle];
