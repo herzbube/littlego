@@ -130,6 +130,7 @@
   BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
   BoardViewModel* boardViewModel = appDelegate.boardViewModel;
   BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
+  MarkupModel* markupModel = appDelegate.markupModel;
   ScoringModel* scoringModel = appDelegate.scoringModel;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
@@ -153,9 +154,9 @@
   [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
   [boardViewModel addObserver:self forKeyPath:@"displayPlayerInfluence" options:0 context:NULL];
   [boardViewModel addObserver:self forKeyPath:@"markLastMove" options:0 context:NULL];
-  [boardViewModel addObserver:self forKeyPath:@"selectedSymbolMarkupStyle" options:0 context:NULL];
-  [boardViewModel addObserver:self forKeyPath:@"markupPrecedence" options:0 context:NULL];
   [boardViewModel addObserver:self forKeyPath:@"moveNumbersPercentage" options:0 context:NULL];
+  [markupModel addObserver:self forKeyPath:@"selectedSymbolMarkupStyle" options:0 context:NULL];
+  [markupModel addObserver:self forKeyPath:@"markupPrecedence" options:0 context:NULL];
   [scoringModel addObserver:self forKeyPath:@"inconsistentTerritoryMarkupType" options:0 context:NULL];
   GoGame* game = [GoGame sharedGame];
   if (game)
@@ -179,6 +180,7 @@
   BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
   BoardViewModel* boardViewModel = appDelegate.boardViewModel;
   BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
+  MarkupModel* markupModel = appDelegate.markupModel;
   ScoringModel* scoringModel = appDelegate.scoringModel;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
@@ -189,9 +191,9 @@
   [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
   [boardViewModel removeObserver:self forKeyPath:@"displayPlayerInfluence"];
   [boardViewModel removeObserver:self forKeyPath:@"markLastMove"];
-  [boardViewModel removeObserver:self forKeyPath:@"selectedSymbolMarkupStyle"];
-  [boardViewModel removeObserver:self forKeyPath:@"markupPrecedence"];
   [boardViewModel removeObserver:self forKeyPath:@"moveNumbersPercentage"];
+  [markupModel removeObserver:self forKeyPath:@"selectedSymbolMarkupStyle"];
+  [markupModel removeObserver:self forKeyPath:@"markupPrecedence"];
   [scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
   GoGame* game = [GoGame sharedGame];
   if (game)
@@ -333,7 +335,8 @@
                                                                     metrics:appDelegate.boardViewMetrics
                                                              boardViewModel:appDelegate.boardViewModel
                                                          boardPositionModel:appDelegate.boardPositionModel
-                                                            uiSettingsModel:appDelegate.uiSettingsModel] autorelease];
+                                                            uiSettingsModel:appDelegate.uiSettingsModel
+                                                                markupModel:appDelegate.markupModel] autorelease];
   }
 }
 
@@ -354,7 +357,7 @@
       return;
     self.labelsLayerDelegate = [[[LabelsLayerDelegate alloc] initWithTile:self
                                                                   metrics:appDelegate.boardViewMetrics
-                                                           boardViewModel:appDelegate.boardViewModel] autorelease];
+                                                              markupModel:appDelegate.markupModel] autorelease];
   }
 }
 
@@ -656,6 +659,7 @@
   BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
   BoardViewModel* boardViewModel = appDelegate.boardViewModel;
   BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
+  MarkupModel* markupModel = appDelegate.markupModel;
   ScoringModel* scoringModel = appDelegate.scoringModel;
 
   if (object == scoringModel)
@@ -705,16 +709,6 @@
       [self notifyLayerDelegates:BVLDEventMarkLastMoveChanged eventInfo:nil];
       [self delayedDrawLayers];
     }
-    else if ([keyPath isEqualToString:@"selectedSymbolMarkupStyle"])
-    {
-      [self notifyLayerDelegates:BVLDEventSelectedSymbolMarkupStyleChanged eventInfo:nil];
-      [self delayedDrawLayers];
-    }
-    else if ([keyPath isEqualToString:@"markupPrecedence"])
-    {
-      [self notifyLayerDelegates:BVLDEventMarkupPrecedenceChanged eventInfo:nil];
-      [self delayedDrawLayers];
-    }
     else if ([keyPath isEqualToString:@"moveNumbersPercentage"])
     {
       [self notifyLayerDelegates:BVLDEventMoveNumbersPercentageChanged eventInfo:nil];
@@ -724,6 +718,19 @@
     {
       [self setupInfluenceLayerDelegate];
       [self updateLayers];
+    }
+  }
+  else if (object == markupModel)
+  {
+    if ([keyPath isEqualToString:@"selectedSymbolMarkupStyle"])
+    {
+      [self notifyLayerDelegates:BVLDEventSelectedSymbolMarkupStyleChanged eventInfo:nil];
+      [self delayedDrawLayers];
+    }
+    else if ([keyPath isEqualToString:@"markupPrecedence"])
+    {
+      [self notifyLayerDelegates:BVLDEventMarkupPrecedenceChanged eventInfo:nil];
+      [self delayedDrawLayers];
     }
   }
   else if (object == [GoGame sharedGame].boardPosition)

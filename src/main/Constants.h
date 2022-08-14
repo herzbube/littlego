@@ -1473,8 +1473,6 @@ extern NSString* playSoundKey;
 extern NSString* vibrateKey;
 extern NSString* infoTypeLastSelectedKey;
 extern NSString* computerAssistanceTypeKey;
-extern NSString* selectedSymbolMarkupStyleKey;
-extern NSString* markupPrecedenceKey;
 // New game settings
 extern NSString* newGameKey;
 extern NSString* gameTypeKey;
@@ -1580,6 +1578,11 @@ extern NSString* tryNotToPlaceIllegalStonesKey;
 // Markup settings
 extern NSString* markupKey;
 extern NSString* markupTypeKey;
+extern NSString* selectedSymbolMarkupStyleKey;
+extern NSString* markupPrecedenceKey;
+extern NSString* uniqueSymbolsKey;
+extern NSString* connectionToolAllowsDeleteKey;
+extern NSString* fillMarkerGapsKey;
 //@}
 
 // -----------------------------------------------------------------------------

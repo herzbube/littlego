@@ -40,4 +40,10 @@
 /// before the notification for @e markupTool.
 @property(nonatomic, assign, readonly) enum MarkupTool markupTool;
 
+@property(nonatomic, assign) enum SelectedSymbolMarkupStyle selectedSymbolMarkupStyle;
+@property(nonatomic, assign) enum MarkupPrecedence markupPrecedence;
+@property(nonatomic, assign) bool uniqueSymbols;
+@property(nonatomic, assign) bool connectionToolAllowsDelete;
+@property(nonatomic, assign) bool fillMarkerGaps;
+
 @end

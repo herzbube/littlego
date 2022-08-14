@@ -19,7 +19,7 @@
 #import "BoardViewLayerDelegateBase.h"
 
 // Forward declarations
-@class BoardViewModel;
+@class MarkupModel;
 
 
 // -----------------------------------------------------------------------------
@@ -56,6 +56,6 @@
 
 - (id) initWithTile:(id<Tile>)tile
             metrics:(BoardViewMetrics*)metrics
-     boardViewModel:(BoardViewModel*)boardViewModel;
+        markupModel:(MarkupModel*)markupModel;
 
 @end

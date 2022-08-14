@@ -244,10 +244,11 @@
 // -----------------------------------------------------------------------------
 + (NSString*) nextFreeMarkerOfType:(enum GoMarkupLabel)labelType
                       inNodeMarkup:(GoNodeMarkup*)nodeMarkup
+                    fillMarkerGaps:(bool)fillMarkerGaps
 {
   if (labelType != GoMarkupLabelMarkerLetter && labelType != GoMarkupLabelMarkerNumber)
   {
-    [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"nextFreeMarkerOfType:inNodeMarkup: failed: invalid label type %d" argumentValue:labelType];
+    [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"nextFreeMarkerOfType:inNodeMarkup:fillMarkerGaps: failed: invalid label type %d" argumentValue:labelType];
     return nil;  // dummy return to make compiler happy
   }
 
@@ -292,10 +293,18 @@
         nextFreeLetterMarkerValue = letterMarkerValueRange.first;
         while (nextFreeLetterMarkerValue <= letterMarkerValueRange.second && ! canUseNextFreeMarkerValue)
         {
-          if (usedLetterMarkerValues.find(nextFreeLetterMarkerValue) != usedLetterMarkerValues.end())
+          bool nextFreeLetterMarkerValueIsUsed = (usedLetterMarkerValues.erase(nextFreeLetterMarkerValue) != 0);
+          if (nextFreeLetterMarkerValueIsUsed)
+          {
             nextFreeLetterMarkerValue++;
+          }
           else
-            canUseNextFreeMarkerValue = true;
+          {
+            if (fillMarkerGaps || usedLetterMarkerValues.empty())
+              canUseNextFreeMarkerValue = true;
+            else
+              nextFreeLetterMarkerValue++;
+          }
         }
 
         if (canUseNextFreeMarkerValue)
@@ -306,10 +315,18 @@
     {
       while (nextFreeNumberMarkerValue <= gMaximumNumberMarkerValue && ! canUseNextFreeMarkerValue)
       {
-        if (usedNumberMarkerValues.find(nextFreeNumberMarkerValue) != usedNumberMarkerValues.end())
+        bool nextFreeNumberMarkerValueIsUsed = (usedNumberMarkerValues.erase(nextFreeNumberMarkerValue) != 0);
+        if (nextFreeNumberMarkerValueIsUsed)
+        {
           nextFreeNumberMarkerValue++;
+        }
         else
-          canUseNextFreeMarkerValue = true;
+        {
+          if (fillMarkerGaps || usedNumberMarkerValues.empty())
+            canUseNextFreeMarkerValue = true;
+          else
+            nextFreeNumberMarkerValue++;
+        }
       }
     }
   }

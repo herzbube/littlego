@@ -46,7 +46,8 @@
 + (enum GoMarkupLabel) labelForMarkupType:(enum MarkupType)markupType;
 + (enum MarkupType) markupTypeForLabel:(enum GoMarkupLabel)label;
 + (NSString*) nextFreeMarkerOfType:(enum GoMarkupLabel)labelType
-                      inNodeMarkup:(GoNodeMarkup*)nodeMarkup;
+                      inNodeMarkup:(GoNodeMarkup*)nodeMarkup
+                    fillMarkerGaps:(bool)fillMarkerGaps;
 
 + (bool) shouldDisplayMarkupIndicatorForNode:(GoNode*)node;
 + (bool) markupExistsOnPoint:(GoPoint*)point forNode:(GoNode*)node ignoreLabels:(bool)ignoreLabels;

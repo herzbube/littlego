@@ -50,6 +50,12 @@
   // setter may have returned early
   [self updateMarkupTool];
 
+  self.selectedSymbolMarkupStyle = SelectedSymbolMarkupStyleDotSymbol;
+  self.markupPrecedence = MarkupPrecedenceSymbols;
+  self.uniqueSymbols = false;
+  self.connectionToolAllowsDelete = true;
+  self.fillMarkerGaps = true;
+
   return self;
 }
 
@@ -83,6 +89,11 @@
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dictionary = [userDefaults dictionaryForKey:markupKey];
   self.markupType = [[dictionary valueForKey:markupTypeKey] intValue];
+  self.selectedSymbolMarkupStyle = [[dictionary valueForKey:selectedSymbolMarkupStyleKey] intValue];
+  self.markupPrecedence = [[dictionary valueForKey:markupPrecedenceKey] intValue];
+  self.uniqueSymbols = [[dictionary valueForKey:uniqueSymbolsKey] boolValue];
+  self.connectionToolAllowsDelete = [[dictionary valueForKey:connectionToolAllowsDeleteKey] boolValue];
+  self.fillMarkerGaps = [[dictionary valueForKey:fillMarkerGapsKey] boolValue];
 
   // Explicitly initialize markupTool property because the markupType property
   // setter may have returned early
@@ -97,6 +108,11 @@
 {
   NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
   [dictionary setValue:[NSNumber numberWithInt:self.markupType] forKey:markupTypeKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.selectedSymbolMarkupStyle] forKey:selectedSymbolMarkupStyleKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.markupPrecedence] forKey:markupPrecedenceKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.uniqueSymbols] forKey:uniqueSymbolsKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.connectionToolAllowsDelete] forKey:connectionToolAllowsDeleteKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.fillMarkerGaps] forKey:fillMarkerGapsKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:markupKey];
 }

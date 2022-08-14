@@ -38,8 +38,6 @@
 /// displayed the last time.
 @property(nonatomic, assign) enum InfoType infoTypeLastSelected;
 @property(nonatomic, assign) enum ComputerAssistanceType computerAssistanceType;
-@property(nonatomic, assign) enum SelectedSymbolMarkupStyle selectedSymbolMarkupStyle;
-@property(nonatomic, assign) enum MarkupPrecedence markupPrecedence;
 /// @brief Is true if a panning gesture is currently in progress on the board
 /// view.
 ///

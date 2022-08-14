@@ -20,7 +20,7 @@
 #import "BoardViewCGLayerCache.h"
 #import "../Tile.h"
 #import "../../model/BoardViewMetrics.h"
-#import "../../model/BoardViewModel.h"
+#import "../../model/MarkupModel.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
 #import "../../../shared/LayoutManager.h"
@@ -135,7 +135,7 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
 ///
 /// @see CreateDeadStoneSymbolLayer().
 // -----------------------------------------------------------------------------
-CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, UIColor* symbolFillColor, UIColor* symbolStrokeColor, BoardViewModel* boardViewModel, BoardViewMetrics* metrics)
+CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, UIColor* symbolFillColor, UIColor* symbolStrokeColor, MarkupModel* markupModel, BoardViewMetrics* metrics)
 {
   CGRect layerRect;
   layerRect.origin = CGPointZero;
@@ -250,7 +250,7 @@ CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, U
     }
     case GoMarkupSymbolSelected:
     {
-      if (boardViewModel.selectedSymbolMarkupStyle == SelectedSymbolMarkupStyleDotSymbol)
+      if (markupModel.selectedSymbolMarkupStyle == SelectedSymbolMarkupStyleDotSymbol)
       {
         CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
         CGFloat radius = floorf(drawingRect.size.width / 2.0f);

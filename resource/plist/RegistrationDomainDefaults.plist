@@ -22,10 +22,6 @@
 		<false/>
 		<key>ComputerAssistanceType</key>
 		<integer>0</integer>
-		<key>SelectedSymbolMarkupStyle</key>
-		<integer>0</integer>
-		<key>MarkupPrecedence</key>
-		<integer>0</integer>
 	</dict>
 	<key>NewGame</key>
 	<dict>
@@ -443,6 +439,16 @@
 	<dict>
 		<key>MarkupType</key>
 		<integer>0</integer>
+		<key>SelectedSymbolMarkupStyle</key>
+		<integer>0</integer>
+		<key>MarkupPrecedence</key>
+		<integer>0</integer>
+		<key>UniqueSymbols</key>
+		<false/>
+		<key>ConnectionToolAllowsDelete</key>
+		<true/>
+		<key>FillMarkerGaps</key>
+		<true/>
 	</dict>
 	<key>CrashReportActivated</key>
 	<true/>

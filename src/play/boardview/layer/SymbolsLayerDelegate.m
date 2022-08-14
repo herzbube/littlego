@@ -22,6 +22,7 @@
 #import "../../model/BoardPositionModel.h"
 #import "../../model/BoardViewMetrics.h"
 #import "../../model/BoardViewModel.h"
+#import "../../model/MarkupModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
@@ -46,6 +47,7 @@
 @property(nonatomic, assign) BoardViewModel* boardViewModel;
 @property(nonatomic, assign) BoardPositionModel* boardPositionModel;
 @property(nonatomic, assign) UiSettingsModel* uiSettingsModel;
+@property(nonatomic, assign) MarkupModel* markupModel;
 @property(nonatomic, retain) NSDictionary* blackStrokeSymbolLayerTypes;
 @property(nonatomic, retain) NSDictionary* whiteStrokeSymbolLayerTypes;
 /// @brief List of GoPoint objects for points that are on this tile.
@@ -81,6 +83,7 @@
      boardViewModel:(BoardViewModel*)boardViewModel
  boardPositionModel:(BoardPositionModel*)boardPositionmodel
     uiSettingsModel:(UiSettingsModel*)uiSettingsModel
+        markupModel:(MarkupModel*)markupModel
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
@@ -90,6 +93,7 @@
   _boardViewModel = boardViewModel;
   _boardPositionModel = boardPositionmodel;
   _uiSettingsModel = uiSettingsModel;
+  _markupModel = markupModel;
 
   self.blackStrokeSymbolLayerTypes = @{
     [NSNumber numberWithInt:GoMarkupSymbolCircle] : [NSNumber numberWithInt:BlackCircleSymbolLayerType],
@@ -138,6 +142,8 @@
 
   self.boardViewModel = nil;
   self.boardPositionModel = nil;
+  self.uiSettingsModel = nil;
+  self.markupModel = nil;
 
   self.drawingPointsOnTile = nil;
   self.pointsOnTileInConnectionRectangle = nil;
@@ -583,7 +589,7 @@
     if (! layer)
     {
       enum GoMarkupSymbol symbol = symbolAsNumber.intValue;
-      layer = CreateSymbolLayer(context, symbol, fillColor, strokeColor, self.boardViewModel, self.boardViewMetrics);
+      layer = CreateSymbolLayer(context, symbol, fillColor, strokeColor, self.markupModel, self.boardViewMetrics);
       [cache setLayer:layer ofType:layerType];
       CGLayerRelease(layer);
     }
@@ -753,7 +759,7 @@
   if (drawConnectionsOnly)
     return;
 
-  if (self.boardViewModel.markupPrecedence == MarkupPrecedenceSymbols)
+  if (self.markupModel.markupPrecedence == MarkupPrecedenceSymbols)
   {
     [self drawSymbolsMarkup:nodeMarkup.symbols inContext:context inTileWithRect:tileRect board:board pointsToDrawOn:pointsToDrawOn pointsWithMarkup:pointsWithMarkup];
     [self drawLabelsMarkup:nodeMarkup.labels inContext:context inTileWithRect:tileRect board:board pointsToDrawOn:pointsToDrawOn pointsWithMarkup:pointsWithMarkup];
@@ -814,7 +820,7 @@
   enum GoMarkupSymbol symbol = [symbolAsNumber intValue];
 
   NSDictionary* symbolLayerTypes;
-  if (symbol == GoMarkupSymbolSelected && self.boardViewModel.selectedSymbolMarkupStyle == SelectedSymbolMarkupStyleDotSymbol)
+  if (symbol == GoMarkupSymbolSelected && self.markupModel.selectedSymbolMarkupStyle == SelectedSymbolMarkupStyleDotSymbol)
   {
     // The "dot" symbol not only consist of a stroke, it is also filled
     // with the color opposite to the stroke color. Because of that the

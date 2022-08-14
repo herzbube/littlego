@@ -27,6 +27,7 @@
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../play/model/MarkupModel.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../ui/UiSettingsModel.h"
 #import "../../ui/UIViewControllerAdditions.h"
@@ -385,7 +386,8 @@ enum MarkupEditingInteraction
       {
         NSString* intersection = self.point.vertex.string;
         bool markupWasMoved = self.interaction == MEIPlaceMovedSymbol;
-        bool markupDataDidChange = [self handlePlaceSymbol:self.markupType onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved];
+        MarkupModel* markupModel = [ApplicationDelegate sharedDelegate].markupModel;
+        bool markupDataDidChange = [self handlePlaceSymbol:self.markupType onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved markupModel:markupModel];
         if (markupDataDidChange)
           pointsWithChangedMarkup = @[self.point];
         break;
@@ -405,7 +407,8 @@ enum MarkupEditingInteraction
       {
         NSString* intersection = self.point.vertex.string;
         enum GoMarkupLabel markerTypeToPlace = [MarkupUtilities labelForMarkupType:self.markupType];
-        bool markupDataDidChange = [self handlePlaceNextFreeMarker:markerTypeToPlace onIntersection:intersection withNodeMarkup:nodeMarkup];
+        MarkupModel* markupModel = [ApplicationDelegate sharedDelegate].markupModel;
+        bool markupDataDidChange = [self handlePlaceNextFreeMarker:markerTypeToPlace onIntersection:intersection withNodeMarkup:nodeMarkup markupModel:markupModel];
         if (markupDataDidChange)
           pointsWithChangedMarkup = @[self.point, [NSNumber numberWithInt:markerTypeToPlace]];
         break;
@@ -583,10 +586,8 @@ enum MarkupEditingInteraction
             onIntersection:(NSString*)intersection
             withNodeMarkup:(GoNodeMarkup*)nodeMarkup
             markupWasMoved:(bool)markupWasMoved
+               markupModel:(MarkupModel*)markupModel
 {
-  // TODO xxx user preference
-  bool exclusiveSymbols = true;
-
   enum GoMarkupSymbol symbolForSelectedMarkupType = [MarkupUtilities symbolForMarkupType:markupType];
   NSSet* symbolsThatCannotBeUsed = [NSSet set];
   bool symbolExists = false;
@@ -602,7 +603,7 @@ enum MarkupEditingInteraction
       existingSymbol = existingSymbolAsNumber.intValue;
     }
 
-    if (exclusiveSymbols)
+    if (markupModel.uniqueSymbols)
       symbolsThatCannotBeUsed = [[[NSSet alloc] initWithArray:symbols.allValues] autorelease];
     else if (symbolExists)
       symbolsThatCannotBeUsed = [[[NSSet alloc] initWithArray:@[existingSymbolAsNumber]] autorelease];
@@ -679,6 +680,7 @@ enum MarkupEditingInteraction
 - (bool) handlePlaceNextFreeMarker:(enum GoMarkupLabel)markerTypeToPlace
                     onIntersection:(NSString*)intersection
                     withNodeMarkup:(GoNodeMarkup*)nodeMarkup
+                       markupModel:(MarkupModel*)markupModel
 {
   bool markerOfRequestedTypeExistsAtIntersection = false;
   NSDictionary* labels = nodeMarkup.labels;
@@ -694,7 +696,8 @@ enum MarkupEditingInteraction
   }
 
   NSString* nextFreeMarker = [MarkupUtilities nextFreeMarkerOfType:markerTypeToPlace
-                                                      inNodeMarkup:nodeMarkup];
+                                                      inNodeMarkup:nodeMarkup
+                                                    fillMarkerGaps:markupModel.fillMarkerGaps];
 
   bool markupDataDidChange = true;
   if (nextFreeMarker)
@@ -780,7 +783,7 @@ enum MarkupEditingInteraction
 // -----------------------------------------------------------------------------
 /// @brief Presents a popup that allows the user to enter a new label text.
 /// If the user did not cancel the editing process, invokes
-/// handleMarkupEditingInteractionOnIntersection:withMarkupModel:labelText:nodeMarkup:().
+/// handleMarkupEditingInteractionWithNode:().
 ///
 /// This method is invoked from doIt() and not from
 /// handleMarkupEditingInteractionWithNode:(), because the latter wraps the

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2019 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,28 +16,17 @@
 
 
 // Project includes
-#import "BoardViewLayerDelegateBase.h"
-
-// Forward declarations
-@class BoardPositionModel;
-@class BoardViewModel;
-@class MarkupModel;
-@class UiSettingsModel;
+#import "../ui/ItemPickerController.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The SymbolsLayerDelegate class is responsible for drawing symbols
-/// (e.g. last move).
+/// @brief The MarkupSettingsController class is responsible for managing user
+/// interaction on the "Markup" user preferences view.
 // -----------------------------------------------------------------------------
-@interface SymbolsLayerDelegate : BoardViewLayerDelegateBase
+@interface MarkupSettingsController : UITableViewController <ItemPickerDelegate>
 {
 }
 
-- (id) initWithTile:(id<Tile>)tile
-            metrics:(BoardViewMetrics*)metrics
-     boardViewModel:(BoardViewModel*)boardViewModel
- boardPositionModel:(BoardPositionModel*)boardPositionmodel
-    uiSettingsModel:(UiSettingsModel*)uiSettingsModel
-        markupModel:(MarkupModel*)markupModel;
++ (MarkupSettingsController*) controller;
 
 @end

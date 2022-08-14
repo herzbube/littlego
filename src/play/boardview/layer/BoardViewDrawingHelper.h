@@ -18,7 +18,7 @@
 // Forward declarations
 @class GoPoint;
 @class BoardViewMetrics;
-@class BoardViewModel;
+@class MarkupModel;
 @protocol Tile;
 
 
@@ -43,7 +43,7 @@
 //@{
 CGLayerRef CreateStarPointLayer(CGContextRef context, BoardViewMetrics* metrics);
 CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, BoardViewMetrics* metrics);
-CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, UIColor* symbolFillColor, UIColor* symbolStrokeColor, BoardViewModel* boardViewModel, BoardViewMetrics* metrics);
+CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, UIColor* symbolFillColor, UIColor* symbolStrokeColor, MarkupModel* markupModel, BoardViewMetrics* metrics);
 CGLayerRef CreateConnectionLayer(CGContextRef context, enum GoMarkupConnection connection, UIColor* connectionFillColor, UIColor* connectionStrokeColor, GoPoint* fromPoint, GoPoint* toPoint, CGRect canvasRect, BoardViewMetrics* metrics);
 CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, BoardViewMetrics* metrics);
 CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, BoardViewMetrics* metrics);

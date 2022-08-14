@@ -41,8 +41,6 @@
   self.vibrate = false;
   self.infoTypeLastSelected = ScoreInfoType;
   self.computerAssistanceType = ComputerAssistanceTypeNone;
-  self.selectedSymbolMarkupStyle = SelectedSymbolMarkupStyleDotSymbol;
-  self.markupPrecedence = MarkupPrecedenceSymbols;
   self.boardViewPanningGestureIsInProgress = false;
   self.boardViewDisplaysAnimation = false;
   return self;
@@ -63,8 +61,6 @@
   self.vibrate = [[dictionary valueForKey:vibrateKey] boolValue];
   self.infoTypeLastSelected = [[dictionary valueForKey:infoTypeLastSelectedKey] intValue];
   self.computerAssistanceType = [[dictionary valueForKey:computerAssistanceTypeKey] intValue];
-  self.selectedSymbolMarkupStyle = [[dictionary valueForKey:selectedSymbolMarkupStyleKey] intValue];
-  self.markupPrecedence = [[dictionary valueForKey:markupPrecedenceKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -90,8 +86,6 @@
   [dictionary setValue:[NSNumber numberWithBool:self.vibrate] forKey:vibrateKey];
   [dictionary setValue:[NSNumber numberWithInt:self.infoTypeLastSelected] forKey:infoTypeLastSelectedKey];
   [dictionary setValue:[NSNumber numberWithInt:self.computerAssistanceType] forKey:computerAssistanceTypeKey];
-  [dictionary setValue:[NSNumber numberWithInt:self.selectedSymbolMarkupStyle] forKey:selectedSymbolMarkupStyleKey];
-  [dictionary setValue:[NSNumber numberWithInt:self.markupPrecedence] forKey:markupPrecedenceKey];
   // Note: NSUserDefaults takes care entirely by itself of writing only changed
   // values.
   [userDefaults setObject:dictionary forKey:boardViewKey];

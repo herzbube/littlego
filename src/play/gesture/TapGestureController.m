@@ -139,6 +139,9 @@
     case UIAreaPlayModeEditMarkup:
     {
       MarkupModel* markupModel = appDelegate.markupModel;
+      if (markupModel.markupTool == MarkupToolConnection && ! markupModel.connectionToolAllowsDelete)
+        return;
+
       [gameActionManager handleMarkupEditingSingleTapAtIntersection:intersection.point
                                                          markupTool:markupModel.markupTool
                                                          markupType:markupModel.markupType];

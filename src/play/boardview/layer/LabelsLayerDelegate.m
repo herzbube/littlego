@@ -20,7 +20,7 @@
 #import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
 #import "../../model/BoardViewMetrics.h"
-#import "../../model/BoardViewModel.h"
+#import "../../model/MarkupModel.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
@@ -35,7 +35,7 @@
 /// @brief Class extension with private properties for LabelsLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface LabelsLayerDelegate()
-@property(nonatomic, assign) BoardViewModel* boardViewModel;
+@property(nonatomic, assign) MarkupModel* markupModel;
 /// @brief List of Go board rows that have intersections with this tile. Each
 /// element of the array is an NSNumber object encapsulating an int value that
 /// is a row number. Row numbers start at 1. See the GoVertex docs for details
@@ -66,14 +66,14 @@
 // -----------------------------------------------------------------------------
 - (id) initWithTile:(id<Tile>)tile
             metrics:(BoardViewMetrics*)metrics
-     boardViewModel:(BoardViewModel*)boardViewModel
+        markupModel:(MarkupModel*)markupModel
 {
   // Call designated initializer of superclass (BoardViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
 
-  self.boardViewModel = boardViewModel;
+  self.markupModel = markupModel;
   self.drawingRowsOnTile = nil;
   self.pointWithChangedMarkup = nil;
   self.dirtyRect = CGRectZero;
@@ -95,7 +95,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.boardViewModel = nil;
+  self.markupModel = nil;
   self.drawingRowsOnTile = nil;
   self.pointWithChangedMarkup = nil;
   self.drawingPointTemporaryMarkup = nil;
@@ -391,7 +391,7 @@
   }
 
   NSArray* pointsWithSymbols = nil;
-  if (self.boardViewModel.markupPrecedence == MarkupPrecedenceSymbols)
+  if (self.markupModel.markupPrecedence == MarkupPrecedenceSymbols)
   {
     NSDictionary* symbols = nodeMarkup.symbols;
     if (symbols)

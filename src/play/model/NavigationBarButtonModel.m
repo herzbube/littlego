@@ -18,7 +18,6 @@
 // Project includes
 #import "NavigationBarButtonModel.h"
 #import "../gameaction/GameActionManager.h"
-#import "../model/BoardViewModel.h"
 #import "../model/MarkupModel.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../utility/UIImageAdditions.h"
@@ -247,8 +246,7 @@
 + (NSString*) imageResourceNameForGameActionSelectMarkupType
 {
   MarkupModel* markupModel = [ApplicationDelegate sharedDelegate].markupModel;
-  BoardViewModel* boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
-  return [UIImage iconResourceNameForMarkupType:markupModel.markupType selectedSymbolMarkupStyle:boardViewModel.selectedSymbolMarkupStyle];
+  return [UIImage iconResourceNameForMarkupType:markupModel.markupType selectedSymbolMarkupStyle:markupModel.selectedSymbolMarkupStyle];
 }
 
 @end

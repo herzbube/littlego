@@ -519,6 +519,8 @@
 		CDA86E7A28A59D28000B49E2 /* dot-symbol.png in Resources */ = {isa = PBXBuildFile; fileRef = CDA86E7628A59D28000B49E2 /* dot-symbol.png */; };
 		CDA86E7B28A59D28000B49E2 /* dot-symbol@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDA86E7728A59D28000B49E2 /* dot-symbol@3x.png */; };
 		CDA86E7C28A59D28000B49E2 /* dot-symbol@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDA86E7828A59D28000B49E2 /* dot-symbol@2x.png */; };
+		CDA86E7F28A7A4A3000B49E2 /* MarkupSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA86E7E28A7A4A3000B49E2 /* MarkupSettingsController.m */; };
+		CDA86E8028A7A4A3000B49E2 /* MarkupSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDA86E7E28A7A4A3000B49E2 /* MarkupSettingsController.m */; };
 		CDA96F261D1E2A2F00CEE129 /* Crashlytics-opensource.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CDA96F251D1E2A2F00CEE129 /* Crashlytics-opensource.txt.html */; };
 		CDA96F281D1EC97800CEE129 /* Crashlytics-opensource.txt in Resources */ = {isa = PBXBuildFile; fileRef = CDA96F271D1EC97800CEE129 /* Crashlytics-opensource.txt */; };
 		CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
@@ -1336,6 +1338,8 @@
 		CDA86E7628A59D28000B49E2 /* dot-symbol.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dot-symbol.png"; sourceTree = "<group>"; };
 		CDA86E7728A59D28000B49E2 /* dot-symbol@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dot-symbol@3x.png"; sourceTree = "<group>"; };
 		CDA86E7828A59D28000B49E2 /* dot-symbol@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dot-symbol@2x.png"; sourceTree = "<group>"; };
+		CDA86E7D28A7A4A3000B49E2 /* MarkupSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkupSettingsController.h; sourceTree = "<group>"; };
+		CDA86E7E28A7A4A3000B49E2 /* MarkupSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MarkupSettingsController.m; sourceTree = "<group>"; };
 		CDA96F251D1E2A2F00CEE129 /* Crashlytics-opensource.txt.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = "Crashlytics-opensource.txt.html"; sourceTree = "<group>"; };
 		CDA96F271D1EC97800CEE129 /* Crashlytics-opensource.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "Crashlytics-opensource.txt"; sourceTree = "<group>"; };
 		CDAA57EA185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetAdditiveKnowledgeTypeCommand.h; sourceTree = "<group>"; };
@@ -1991,6 +1995,8 @@
 				CD7C57D322024C4700694520 /* BoardSetupSettingsController.m */,
 				CD81794B25DD897B00F39091 /* ComputerAssistanceSettingsController.h */,
 				CD81794C25DD897B00F39091 /* ComputerAssistanceSettingsController.m */,
+				CDDD525E14840A530027476B /* DisplaySettingsController.h */,
+				CDDD525F14840A530027476B /* DisplaySettingsController.m */,
 				CDB4579D147AEB590043EDE4 /* EditPlayerProfileController.h */,
 				CDB4579E147AEB590043EDE4 /* EditPlayerProfileController.m */,
 				CDB684FC161591760038AADE /* EditPlayingStrengthSettingsController.h */,
@@ -1999,12 +2005,12 @@
 				CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */,
 				CDCBA6CE183D8801003697E2 /* MagnifyingGlassSettingsController.h */,
 				CDCBA6CF183D8801003697E2 /* MagnifyingGlassSettingsController.m */,
+				CDA86E7D28A7A4A3000B49E2 /* MarkupSettingsController.h */,
+				CDA86E7E28A7A4A3000B49E2 /* MarkupSettingsController.m */,
 				CDDCD0A4173BC1F000359DE7 /* MaxMemoryController.h */,
 				CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */,
 				CDDD525C14840A520027476B /* PlayerProfileSettingsController.h */,
 				CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */,
-				CDDD525E14840A530027476B /* DisplaySettingsController.h */,
-				CDDD525F14840A530027476B /* DisplaySettingsController.m */,
 				CDDD526014840A530027476B /* ScoringSettingsController.h */,
 				CDDD526114840A540027476B /* ScoringSettingsController.m */,
 				CDE4057313EB081C0091E719 /* SettingsViewController.h */,
@@ -3904,6 +3910,7 @@
 				CD1F500725B34EDE0098037A /* GameInfoItem.m in Sources */,
 				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
 				CDD038082879708D002A2FFE /* LabelsLayerDelegate.m in Sources */,
+				CDA86E7F28A7A4A3000B49E2 /* MarkupSettingsController.m in Sources */,
 				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
 				CDEE1A171946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
 				CD1F4F8C25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */,
@@ -4136,6 +4143,7 @@
 				CD3659421693533600D75466 /* GoBoardPosition.m in Sources */,
 				CDBFCBBE16C3EFB0001D78C0 /* SetupApplicationCommand.m in Sources */,
 				CD96A44B16C71BB0000C2792 /* ChangeBoardPositionCommand.m in Sources */,
+				CDA86E8028A7A4A3000B49E2 /* MarkupSettingsController.m in Sources */,
 				CD96A44C16C71BBF000C2792 /* SyncGTPEngineCommand.m in Sources */,
 				CD96A48016CD6FD5000C2792 /* GoBoardPositionTest.m in Sources */,
 				CDEE1A08194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */,

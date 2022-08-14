@@ -297,8 +297,6 @@ NSString* playSoundKey = @"PlaySound";
 NSString* vibrateKey = @"Vibrate";
 NSString* infoTypeLastSelectedKey = @"InfoTypeLastSelected";
 NSString* computerAssistanceTypeKey = @"ComputerAssistanceType";
-NSString* selectedSymbolMarkupStyleKey = @"SelectedSymbolMarkupStyle";
-NSString* markupPrecedenceKey = @"MarkupPrecedence";
 // New game settings
 NSString* newGameKey = @"NewGame";
 NSString* gameTypeKey = @"GameType";
@@ -404,6 +402,11 @@ NSString* tryNotToPlaceIllegalStonesKey = @"TryNotToPlaceIllegalStones";
 // Markup settings
 NSString* markupKey = @"Markup";
 NSString* markupTypeKey = @"MarkupType";
+NSString* selectedSymbolMarkupStyleKey = @"SelectedSymbolMarkupStyle";
+NSString* markupPrecedenceKey = @"MarkupPrecedence";
+NSString* uniqueSymbolsKey = @"UniqueSymbols";
+NSString* connectionToolAllowsDeleteKey = @"ConnectionToolAllowsDelete";
+NSString* fillMarkerGapsKey = @"FillMarkerGaps";
 
 // Constants for NSCoding
 // General constants

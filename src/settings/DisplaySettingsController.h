@@ -15,15 +15,11 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "../ui/ItemPickerController.h"
-
-
 // -----------------------------------------------------------------------------
 /// @brief The DisplaySettingsController class is responsible for managing user
 /// interaction on the "Display" user preferences view.
 // -----------------------------------------------------------------------------
-@interface DisplaySettingsController : UITableViewController <ItemPickerDelegate>
+@interface DisplaySettingsController : UITableViewController
 {
 }
 
