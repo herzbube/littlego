@@ -128,6 +128,13 @@
 
 /// @name Node data
 //@{
+/// @brief True if the node is empty and contains no data, false if the node
+/// is not empty and contains some data. A node is empty if it has no move data
+/// (property @e goMove is @e nil), no annotation data (property
+/// @e goNodeAnnotation is @e nil) and no markup data (property @e goNodeMarkup
+/// is @e nil).
+@property(nonatomic, assign, getter=isEmpty) bool empty;
+
 /// @brief The move data associated with this node. @e nil if this node has no
 /// associated move. The default value is @e nil.
 @property(nonatomic, retain, readonly) GoMove* goMove;

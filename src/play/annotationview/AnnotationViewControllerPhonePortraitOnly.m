@@ -941,31 +941,18 @@ enum ItemPickerContext
   }
   else
   {
-    // First board position = root node
-    // - Root node cannot contain moves, so it also cannot contain move
-    //   annotation properties
-    // - It also does not make sense to have position valuation properties in
-    //   the root node, as the root node does not contain a position
-    // - Without a position it does not make sense to mark the root node as a
-    //   hotspot, or assign a score estimate to it
-    // - In an .sgf file it is perfectly fine for the root node to have a node
-    //   title (= short description) or a comment (= long description).
-    //   However, when LoadGameCommand encounters a node title or comment
-    //   property in the root node, it splits them off into a separate new node.
-    //   Also SaveSgfCommand currently ignores descriptions in the root node.
-    //   At the moment we therefore disable editing of descriptions for the root
-    //   node, althought that might change later.
+    // First board position = root node => It does not make much sense to have
+    // a position valuation in the root node (because the root node does not
+    // contain a position), and without a position it also does not make sense
+    // to mark the root node as a hotspot, or assign a score estimate to it.
+    // Still, we allow the user to define these things if she so chooses for
+    // some reason that we cannot foresee.
+    isPositionValuationButtonEnabled = YES;
+    isMoveValuationButtonEnabled = node.goMove ? YES : NO;
+    isHotspotButtonEnabled = YES;
+    isEstimatedScoreButtonEnabled = YES;
 
-    bool currentBoardPositionIsFirstPosition = game.boardPosition.isFirstPosition;
-
-    isPositionValuationButtonEnabled = currentBoardPositionIsFirstPosition ? NO : YES;
-    if (node.goMove)
-      isMoveValuationButtonEnabled = currentBoardPositionIsFirstPosition ? NO : YES;
-    else
-      isMoveValuationButtonEnabled = NO;
-    isHotspotButtonEnabled = currentBoardPositionIsFirstPosition ? NO : YES;
-    isEstimatedScoreButtonEnabled = currentBoardPositionIsFirstPosition ? NO : YES;
-    isDescriptionEditButtonEnabled = currentBoardPositionIsFirstPosition ? NO : YES;
+    isDescriptionEditButtonEnabled = YES;
     isDescriptionRemoveButtonEnabled = (node.goNodeAnnotation.shortDescription || node.goNodeAnnotation.longDescription) ? YES : NO;
   }
 

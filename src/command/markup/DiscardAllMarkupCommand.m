@@ -97,15 +97,6 @@
     return;
   }
 
-  if (currentBoardPosition == 0)
-  {
-    // Alas, defensive programming. Cf. HandleBoardSetupInteractionCommand,
-    // although the scenarios handled there should not be possible for markup
-    // editing because markup editing does not involve showing an alert.
-    [self showAlertOnBoardPositionZero];
-    return;
-  }
-
   bool applicationStateDidChange = false;
 
   @try
@@ -149,28 +140,6 @@
     alertMessage = @"Discarding all markup was canceled because the board shows board position 0 and is no longer in markup editing mode. Markup can only be edited on board positions greater than zero.";
   else
     alertMessage = @"Discarding all markup was canceled because the board is no longer in markup editing mode.";
-  DDLogWarn(@"%@: %@", self, alertMessage);
-
-  void (^okActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
-  {
-    [self didDismissAlertWithButton:AlertButtonTypeOk];
-  };
-
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
-                                                                                  message:alertMessage
-                                                                                okHandler:okActionBlock];
-
-  [self retain];  // must survive until the handler method is invoked
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Shows an alert that informs the user that discarding all markup is
-/// not possible because the board is currently showing board position 0.
-// -----------------------------------------------------------------------------
-- (void) showAlertOnBoardPositionZero
-{
-  NSString* alertTitle = @"Discard all markup canceled";
-  NSString* alertMessage = @"Discarding all markup was canceled because the board shows board position 0. Markup can only be edited on board positions greater than zero.";
   DDLogWarn(@"%@: %@", self, alertMessage);
 
   void (^okActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)

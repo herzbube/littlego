@@ -131,11 +131,6 @@
         if ([GoGame sharedGame].boardPosition.currentBoardPosition != 0)
           [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease] submit];
       }
-      else if (delegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeEditMarkup)
-      {
-        if ([GoGame sharedGame].boardPosition.currentBoardPosition == 0)
-          [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease] submit];
-      }
 
       // Special scoring mode considerations:
       // - Go model objects store scoring-related information. This information

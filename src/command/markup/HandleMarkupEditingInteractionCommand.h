@@ -40,9 +40,8 @@
 /// been processed.
 ///
 /// It is expected that this command is only executed while the UI area "Play"
-/// is in markup editing mode and the current board position is not 0. If any
-/// of these conditions is not met an alert is displayed and command execution
-/// fails.
+/// is in markup editing mode. If any of these conditions is not met an alert
+/// is displayed and command execution fails.
 // -----------------------------------------------------------------------------
 @interface HandleMarkupEditingInteractionCommand : CommandBase <EditTextDelegate>
 {

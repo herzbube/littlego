@@ -736,13 +736,20 @@ static const int maxStepsForCreateNodes = 10;
 /// below). SGFCNode objects that do not contain a property recognized by the
 /// app are skipped.
 ///
-/// If the root SGFCNode contains any of the recognized properties listed below
-/// an extra GoNode object is created as a child node of the root node to hold
-/// those properties. One SGFCNode object in this case results in two GoNode
-/// objects. This is specifically important for move properties, because the app
-/// is modeled to expect moves to be in their own nodes. This is supported by
-/// the SGF specification, according to which move properties in the root node
-/// are not illegal but bad style.
+/// If the root SGFCNode contains a move property (B or W), an extra GoNode
+/// object is created as a child node of the root node to hold the values of
+/// @b ALL properties listed below. One SGFCNode object in this case results in
+/// @b TWO GoNode objects. This is important because the app is modeled to
+/// expect moves to be in their own nodes. This is supported by the SGF
+/// specification, according to which move properties in the root node are not
+/// illegal but bad style.
+///
+/// @note If an extra GoNode object is created, @b ALL properties are shifted
+/// to it, not just the move properties that caused the extra GoNode object to
+/// be created. The reason is that it is not possible to tell which of the
+/// property values have a meaning that is related to the move, and which of the
+/// values are unrelated. The assumption is that the property values form one
+/// context that should not be split.
 ///
 /// Properties recognized by the app:
 /// - Move properties B and W. Properties KO and MN are currently ignored.
@@ -987,9 +994,13 @@ static const int maxStepsForCreateNodes = 10;
 
 // -----------------------------------------------------------------------------
 /// @brief Creates a GoNode object for each tuple in @a tuples and places the
-/// values that the tuple contains in the node.
+/// values that the tuple contains in the node. A tuple that contains only
+/// @e NSNull values is skipped.
 ///
-/// @a tuples is expected to contain NSArray objects which are tuples with three
+/// Each tuple in @a tuples represents a node in the original SGF game tree.
+/// The first tuple represents the root node.
+///
+/// @a tuples is expected to contain NSArray objects which are tuples with four
 /// objects each:
 /// - The first object is either an SGFCProperty object of type
 ///   #SGFCPropertyTypeB or #SGFCPropertyTypeW, or @e NSNull. If the object is
@@ -1044,12 +1055,13 @@ static const int maxStepsForCreateNodes = 10;
 
   @try
   {
-    int numberOfNodesCreated = 0;
+    int numberOfTuplesProcessed = 0;
     float nextProgressUpdate = nodesPerStep;  // use float in case nodesPerStep has fractions
 
     for (NSArray* tuple in tuples)
     {
       GoNode* node;
+      bool shouldAddNodeToModel = false;
 
       id tupleFirstValue = [tuple firstObject];
       if (tupleFirstValue != [NSNull null])
@@ -1063,8 +1075,15 @@ static const int maxStepsForCreateNodes = 10;
       }
       else
       {
-        node = [GoNode node];
-        [nodeModel appendNode:node];
+        if (numberOfTuplesProcessed == 0)
+        {
+          node = nodeModel.rootNode;  // root node was created by creating GoGame
+        }
+        else
+        {
+          node = [GoNode node];
+          shouldAddNodeToModel = true;
+        }
       }
 
       NSNumber* tupleSecondValue = [tuple objectAtIndex:1];
@@ -1078,8 +1097,8 @@ static const int maxStepsForCreateNodes = 10;
         else
         {
           // SGFC should have cleaned up the data so that this does not occur
-          NSString* message = [NSString stringWithFormat:@"Node with index position %d contains move valuation %d without a move property", (numberOfNodesCreated + 1), moveValuation];
-          DDLogInfo(@"%@", message);
+          NSString* message = [NSString stringWithFormat:@"Tuple with index position %d contains move valuation %d without a move property", (numberOfTuplesProcessed + 1), moveValuation];
+          DDLogWarn(@"%@", message);
         }
       }
 
@@ -1091,8 +1110,15 @@ static const int maxStepsForCreateNodes = 10;
       if (tupleFourthValue != [NSNull null])
         node.goNodeMarkup = tupleFourthValue;
 
-      ++numberOfNodesCreated;
-      if (numberOfNodesCreated >= nextProgressUpdate)
+      // The node can be empty if the tuple - and therefore the original node
+      // in the SGF game tree - did not contain a move, no annotations and no
+      // markup. For instance, .sgf files created by this app contain a node
+      // with only setup properties.
+      if (shouldAddNodeToModel && ! node.isEmpty)
+        [nodeModel appendNode:node];
+
+      ++numberOfTuplesProcessed;
+      if (numberOfTuplesProcessed >= nextProgressUpdate)
       {
         nextProgressUpdate += nodesPerStep;
         [self increaseProgressAndNotifyDelegate];

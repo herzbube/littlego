@@ -117,6 +117,9 @@
   [self addRootPropertiesToRootNode:rootNode
                withValuesFromGoGame:goGame
                           boardSize:boardSize];
+  [self addSgfPropertiesToNode:rootNode
+ withAnnotationAndMarkupValues:goGame.nodeModel.rootNode
+                     boardSize:boardSize];
 
   [self addKomiAndHandicapPropertiesToGameInfoNode:gameInfoNode
                               withValuesFromGoGame:goGame
@@ -298,21 +301,34 @@
                          boardSize:boardSize];
     }
 
-    if (goNode.goNodeAnnotation)
-    {
-      [self addSgfPropertiesToNode:node
-        withGoNodeAnnotationValues:goNode.goNodeAnnotation];
-    }
-
-    if (goNode.goNodeMarkup)
-    {
-      [self addSgfPropertiesToNode:node
-            withGoNodeMarkupValues:goNode.goNodeMarkup
-                         boardSize:boardSize];
-    }
+    [self addSgfPropertiesToNode:node
+   withAnnotationAndMarkupValues:goNode
+                       boardSize:boardSize];
 
     previousNode = node;
     goNode = goNode.firstChild;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for
+/// addRemainingNodesAfterNode:withValuesFromGoGame:boardSize:treeBuilder:()
+// -----------------------------------------------------------------------------
+- (void) addSgfPropertiesToNode:(SGFCNode*)node
+  withAnnotationAndMarkupValues:(GoNode*)goNode
+                      boardSize:(SGFCBoardSize)boardSize
+{
+  if (goNode.goNodeAnnotation)
+  {
+    [self addSgfPropertiesToNode:node
+      withGoNodeAnnotationValues:goNode.goNodeAnnotation];
+  }
+
+  if (goNode.goNodeMarkup)
+  {
+    [self addSgfPropertiesToNode:node
+          withGoNodeMarkupValues:goNode.goNodeMarkup
+                       boardSize:boardSize];
   }
 }
 

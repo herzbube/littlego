@@ -173,8 +173,6 @@
       }
       case MoreGameActionsButtonEditMarkup:
       {
-        if (game.boardPosition.currentBoardPosition == 0)
-          continue;
         if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeScoring && uiAreaPlayMode != UIAreaPlayModeBoardSetup)
           continue;
         title = @"Edit markup";

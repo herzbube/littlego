@@ -501,7 +501,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the handlerwhether panning is enabled.
+/// @brief Updates the handler whether panning is enabled.
 // -----------------------------------------------------------------------------
 - (void) updatePanGestureHandler
 {

@@ -42,6 +42,21 @@
 ///   file overwritten with the temporary file.
 ///
 /// SaveSgfCommand executes synchronously.
+///
+/// The resulting SGF file is structured as follows:
+/// - Contains only one game
+/// - Contains only one variation
+/// - Root node: Contains root properties, e.g. GM and SZ. May also contain
+///   node annotation properties (e.g. C, N, GB) and/or markup properties (e.g.
+///   CR, AR, LB) if the user for some reason decided to define these things for
+///   board position 0.
+/// - Game info node: Contains game info properties, e.g. KM, HA, PB, PW.
+///   Currently the root node is also used as the game info node.
+/// - Setup node: An extra node after the root and game info nodes that contains
+///   board setup properties, e.g. AB, AW, PL.
+/// - 0-n remaining nodes with move properties (e.g. B, W), node and move
+///   annotation properties (e.g. C, N, GB, TE), and/or markup properties (e.g.
+///   CR, AR, LB).
 // -----------------------------------------------------------------------------
 @interface SaveSgfCommand : CommandBase
 {

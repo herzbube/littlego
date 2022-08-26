@@ -99,11 +99,6 @@
     [self showAlertNotOnBoardPositionZero:game.boardPosition.currentBoardPosition];
     return false;
   }
-  else if (self.newUIAreaPlayMode == UIAreaPlayModeEditMarkup && game.boardPosition.currentBoardPosition == 0)
-  {
-    [self showAlertOnBoardPositionZero];
-    return false;
-  }
 
   self.oldAndNewModes = @[[NSNumber numberWithInt:oldUIAreaPlayMode],
                           [NSNumber numberWithInt:self.newUIAreaPlayMode]];
@@ -220,29 +215,6 @@
 {
   NSString* alertTitle = @"Board setup mode canceled";
   NSString* alertMessage = [NSString stringWithFormat:@"Switching to board setup mode was canceled because the board no longer shows board position 0 (instead it shows board position %d).", currentBoardPosition];
-  DDLogWarn(@"%@: %@", self, alertMessage);
-
-  void (^okActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
-  {
-    [self autorelease];  // balance retain that is sent before an alert is shown
-  };
-
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
-                                                                                  message:alertMessage
-                                                                                okHandler:okActionBlock];
-
-  [self retain];  // must survive until the handler method is invoked
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Shows an alert that informs the user that the UI areay "Play" cannot
-/// be changed to markup editing mode because the board is currently showing
-/// board position 0.
-// -----------------------------------------------------------------------------
-- (void) showAlertOnBoardPositionZero
-{
-  NSString* alertTitle = @"Edit markup mode canceled";
-  NSString* alertMessage = @"Switching to markup editing mode was canceled because the board shows board position 0. Markup can only be edited on board positions greater than zero.";
   DDLogWarn(@"%@: %@", self, alertMessage);
 
   void (^okActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)

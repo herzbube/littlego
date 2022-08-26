@@ -287,6 +287,13 @@
   return (self.parent == nil);
 }
 
+#pragma mark - Public API - Other operations
+
+- (bool) isEmpty
+{
+  return ! self.goMove && ! self.goNodeAnnotation && ! self.goNodeMarkup;
+}
+
 - (void) modifyBoard
 {
   if (self.goMove)
@@ -300,7 +307,6 @@
 }
 
 @end
-
 
 #pragma mark - Implementation of GoNodeAdditions
 
