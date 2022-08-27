@@ -217,6 +217,42 @@ Layering
 - To counteract memory usage, layers are dynamically added and removed depending
   on application events that require certain board elements to be displayed.
 
+Layering and single-/multi-point drawing artifacts
+- A lot of the drawing of a Go board revolves around drawing artifacts centered
+  on an intersection, or point on the Go board.
+- The Go board drawing space can therefore be thought of consisting of many
+  small, adjacent boxes or cells, that are centered on the Go board's points.
+- Most artifacts are drawn entirely within the boundaries of these point cells.
+  These are single-point drawing artifacts. Examples:
+  - Stones
+  - Last move marker
+  - Move number label
+  - Markup symbols
+- A few artifacts, however, are drawn spanning multiple point cells. These are
+  multi-point drawing artifacts. Examples:
+  - Grid lines
+  - Cross-hair lines
+  - Markup connections
+  - Markup labels that are not letter or number markers
+- Single-point and multi-point drawing artifacts should not be mixed within the
+  same layer. The reason is that implementing a layer's drawing logic can be
+  made very efficient as long as the layer only has to draw single-point
+  artifacts, because single-point drawing artifacts CANNOT OVERLAP! If the same
+  layer also has to draw multi-point drawing artifacts with unknown sizes, it
+  can become difficult for the layer to know when some artifact needs to be
+  drawn which of the other artifacts that it also manages it should not draw.
+- The solution adopted whenever possible in this app is to create separate
+  layers for drawing multi-point artifacts. The latest example here is
+  LabelsLayerDelegate, which was split off from SymbolsLayerDelegate with the
+  sole responsibility for drawing markup labels that are not letter or number
+  markers. Although an increased memory footprint is the result, the tradeoffs
+  are that the implementation of SymbolsLayerDelegate can remain significantly
+  simpler, and also during a panning gesture there should be a CPU gain because
+  the drawing output of LabelsLayerDelegate can be composited on top of the
+  drawing output of SymbolsLayerDelegate, which should be a much simpler
+  operation than redrawing large parts of the symbols layer on each change
+  during a panning gesture.
+
 
 Players & Profiles
 ------------------
