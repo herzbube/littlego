@@ -15,13 +15,15 @@ B5  Board positions
 B6  Player influence
 B7  Players & Profiles
 B8  Scoring
-B9  Preferences
-B10 The archive
-B11 Smart Game Format (SGF)
-B12 GTP engine
-B13 Go rules
-B14 Sending crash reports
-B15 Reporting bugs
+B9  Annotations
+B10 Markup
+B11  Preferences
+B12 The archive
+B13 Smart Game Format (SGF)
+B14 GTP engine
+B15 Go rules
+B16 Sending crash reports
+B17 Reporting bugs
 
 Note to editors: This file is parsed and displayed in game in the "Help" area of
 the app. For this to work, the content of this file must follow certain
@@ -1495,6 +1497,409 @@ were neutral territories, in other words: not at all.
 For the purpose of calculating the score, inconsistent territory always counts
 as neutral territory. This is regardless of how inconsistencies are marked up.
 
+
+--------------------------------------------------------------------------------
+Annotations
+--------------------------------------------------------------------------------
+
+========
+Overview
+========
+You can annotate every board position in several ways so that when you pass a
+saved game to someone else she can view the game and get useful information
+about the moves that were played and the positions that resulted from those
+moves.
+
+You have the following 6 types of annotations at your disposal, each of which
+is explained below in more detail.
+
+- Short description
+- Long description
+- Position valuation
+- Move valuation
+- Hotspot designation
+- Estimated score
+
+===========================
+Short and long descriptions
+===========================
+You can write a short and/or a long description text to describe a board
+position. You can use these texts in any way you like, for instance to describe
+in detail what motivated the move that was played to create the board position,
+or why the move was particularly good or bad. Description texts might also, for
+instance, refer to markup that is visible in that board position. To learn more,
+read the "Markup" section in this manual.
+
+The text you write for the long description has no limits - it can even contain
+newlines. The short description text on the other hand may not contain any
+newlines - if you attempt to enter a newline the app will convert it to a space
+character. By definition the short description text should be succinct so that
+it can be displayed by a program even if there is not much screen space
+available.
+
+If you are familiar with the SGF standard, then it may be useful to know that
+the short description corresponds to the "node title" (property N) and the long
+description correspons to the "node comment" (property C).
+
+==================
+Position valuation
+==================
+You can assign a valuation to a board position, such as "good for black",
+"very good for white", "even", etc. The position valuation is not tied to a
+particular move but to the board as a whole.
+
+==============
+Move valuation
+==============
+You can assign a valuation to the move that was being played to create a board
+position, such as "good move", "very bad move", "doubtful move", etc.
+
+You cannot assign a move valuation if no move was played to create the board
+position. For instance, you cannot assign a move valuation when you are viewing
+board position 0, i.e. the start of the game. SGF files created by other
+programs may also contain board positions with only annotations or markup but
+no move - the app in that case displays the board position with the text
+"No move".
+
+===================
+Hotspot designation
+===================
+You can designate a board position to be a "hotspot" to indicate that something
+particularly interesting happened in that board position. For instance the
+board position was created by a game-deciding move. The "hotspot" is not related
+to any specific place on the board, but marks the whole board position instead.
+
+The hotspot designation can be emphasized to mark the board position as an
+"intense" hotspot.
+
+===============
+Estimated score
+===============
+You can assign an estimated score to a board position. This consists of the
+information which side is winning (black or white), and by how much (a numeric
+value). The score estimation may also indicate a tie.
+
+==============
+User interface
+==============
+The app displays annotations next to the list of board positions. The annotation
+view displays the annotation data for the board position that is currently
+selected.
+
+Because there is not enough screen space available to display all annotations
+at the same time, the app displays either the short/long description texts or
+the other 4 annotation types. Swipe left or right to display one or the other
+page.
+
+When you view the description texts, tap the "Edit" icon to get a popup that
+lets you change both description texts in one go. There is also a convenient
+"Trashcan" icon to clear both descriptions with one tap.
+
+When you view the other 4 annotation types, the app displays their values as
+icons to save screen space. Tap on one of the icons to change the annotation
+value, or just to see what the icon means.
+
+In the list of board positions, a board position entry also displays a bit of
+annotation data:
+
+- The board position shows an (i) symbol if the board position has any
+  annotation data.
+- The board position shows a "flame" icon if the board position is designated
+  as a hotspot. The icon is either black (regular hotspot) or red (intense hot
+  spot).
+- The board position shows the text "No move" if it only contains annotation
+  or markup data but no move. Currently there is no way to create such board
+  positions within the app itself, but you may encounter them when you load
+  SGF files created by other programs.
+
+
+--------------------------------------------------------------------------------
+Markup
+--------------------------------------------------------------------------------
+
+========
+Overview
+========
+You can place various types of graphical elements on the board to point out
+noteworthy stones or figures. These graphical elements are summarily called
+"markup". Typically you combine markup elements with a short and/or long
+description annotation text (see the "Annotations" section in this manual) that
+further explains the meaning of the markup elements. You can place a completely
+independent set of markup elements for each board position.
+
+You have the following 4 categories of markup at your disposal, each of which
+is explained below in more detail.
+
+- Symbols
+- Connections
+- Markers
+- Labels
+
+The app draws markup only when it is in play mode. The app does not draw markup
+when it is in scoring mode or in board setup mode. On small devices markers and
+labels may not be shown when a 19x19 board is displayed fully zoomed out. The
+issue is the same as with move numbers (see FAQ section entry) - to see any
+markers/labels that you are missing you have to zoom the board.
+
+To place new markup or modify/remove existing markup you have to switch to
+markup editing mode by selecting the entry "Edit markup" from the menu that pops
+up when you tap the "More game actions" button.
+
+=======
+Symbols
+=======
+You use symbols to mark up a single intersection on the board. There are 5
+different symbol types:
+
+- Circle
+- Square
+- Triangle
+- The "X" symbol ("X marks the spot")
+- The "selected" symbol. Use this to indicate that something is selected. Note
+  that there is a user preference that lets you choose the style to use for
+  rendering the "selected" symbol: Either a checkmark, or a dot symbol.
+
+===========
+Connections
+===========
+You use markup in this category to draw a connection between two intersections
+on the board: A start intersection and an end intersection. There are 2
+different connection types:
+
+- Arrow. This is a connection where the direction from start to end is rendered
+  with an arrow head.
+- Line. This is a connection where the direction from start to end is not
+  visibly rendered. Note that even though you don't see the direction of lines,
+  the start-end direction still exists in the background model data.
+
+=======
+Markers
+=======
+You use markers to mark up a single intersection on the board. Markers are, in
+effect, very short labels that consist of only a single character. There are 2
+different marker types:
+
+- Number marker. A number marker is a label that consists of a single digit
+  character in the range 1-9.
+- Letter marker. A letter marker is a label that consists of a single lowercase
+  or uppercase letter from the latin alphabet, i.e. a-z, A-Z.
+
+======
+Labels
+======
+You use labels to mark up a single intersection on the board. A label consists
+of an arbitrary length text without any newlines. Although there is no length
+limit, you should keep label texts as short as possible - drawing multi-word
+labels on the board is not what you usually want.
+
+===================
+Markup editing mode
+===================
+When you activate markup editing mode the toolbar shows the following buttons:
+
+- "Play" button. When you tap this button the app switches back to play mode.
+- "Markup type" button. When you tap this button the app displays a popup that
+  lets you choose what kind of markup you want to place on the board. The
+  special "Eraser" entry lets you delete existing markup.
+- "Trashcan" button. When you tap this button the app deletes all markup that
+  exists for the current board position. The toolbar shows this button only if
+  any markup exists.
+
+The following sections explain in detail how the editing process works for
+each markup type.
+
+===================================
+One markup element per intersection
+===================================
+A general rule that is important to remember is this: You can mark up an
+intersection with only one of symbol, marker or label.
+
+Placing a new symbol, marker or label, or moving an existing symbol, marker or
+label to an intersection that already is marked up with a symbol, marker or
+label, replaces that markup.
+
+Connections work slightly different: Because connections affect two
+intersections, the rule here is that there may be no two connections (regardless
+of type) that have the same start/end intersections.
+
+===========
+Drag & Drop
+===========
+When any markup type except "Eraser" is selected you can move a markup element
+simply by dragging it. The markup element is placed on the intersection where
+you lift your finger.
+
+When you drag a symbol, marker or label to an intersection that is already
+marked up with a symbol, marker or label, the markup at the destination is
+deleted first, then the drag & drop operation occurs normally.
+
+When you drag a connection endpoint, the endpoint is simply moved to the
+intersection where you lift your finger. If this results in a duplicate
+connection, the connection whose endpoint you drag overwrites the connection
+whose endpoint already existed on the intersection where you lift your finger.
+
+Note: You cannot drag connection endpoints while one of the 2 connection markup
+types is active, because then the drag gesture is reserved for placing new
+connections. To drag a connection endpoint you have to select one of the other
+markup types.
+
+If you start a drag operation on an intersection that has both a connection
+endpoint and a symbol, marker or label, then the drag operation first moves the
+symbol, marker or label. You can move the connection endpoint only when there
+is no symbol, marker or label on the same intersection as the connection
+endpoint.
+
+If you start a drag operation on an intersection that has multiple connection
+endpoints, then the drag operation moves the connection endpoint that it finds
+first in the background model data.
+
+===============================================
+When any of the Symbol markup types is selected
+===============================================
+When you tap on a free intersection a new symbol of the selected markup type is
+placed on the intersection. When you tap on an intersection that is already
+marked up with a marker or label, the existing marker or label is cleared first
+and the tap behaves as if the intersection had been free.
+
+When you tap on an intersection that is already marked up with a symbol, the app
+replaces the existing symbol with the next symbol in order. The effect of this
+is that when you start tapping on a free intersection, then repeatedly tap again
+on the same intersection, the app cycles through the available 5 symbols, with
+the 6th tap removing the markup. The order in which the app cycles through
+symbols is: Circle, Square, Triangle, "X" symbol, "selected" symbol.
+
+Examples when the Square markup type is selected and you tap 6 times on the
+same intersection:
+
+- If the first tap is on a free intersection, the result is this cycle: Square,
+  Triangle, "X" symbol, "selected" symbol, Circle, clear.
+- If the first tap is on an intersection that is already marked up with a
+  Triangle symbol, the result is this cycle: "X" symbol, "selected" symbol,
+  Circle, clear, Square, Triangle.
+
+Although this textual explanation may sound complicated, the cycling effect is
+really very simple and intuitive and is designed to help you quickly find the
+right symbol without having to switch to a different markup type all the time.
+
+Note: Existing connections do not affect placement of symbols.
+
+===============================================
+When any of the Marker markup types is selected
+===============================================
+When you tap on a free intersection a new marker of the selected markup type is
+placed on the intersection. The app uses the lowest next free number or letter,
+starting with 1 / uppercase A, then continuing for numbers to 9, and for letters
+from A-Z, then from a-z.
+
+The "lowest next free number or letter" algorithm fills gaps in the
+numbering / lettering. For instance, if there are already number markers for 1,
+2, and 4, then the next number marker placed will be 3, not 5. Similarly, if
+there are already letter markers A, B and D, then the next letter marker placed
+will be C, not E. A user preference lets you turn off this gap filling
+mechanism.
+
+When you tap on an intersection that is already marked up:
+
+- If the existing markup is a marker that has the same type as the marker you
+  are about to place, then the existing marker is replaced and the new marker
+  uses the lowest next free number or letter as explained above. The existing
+  marker's number or letter is not free.
+- If the existing markup is a symbol, label, or marker of the other type than
+  the one you are about to place, then the existing symbol, label, or marker of
+  the other type, is cleared first and the tap behaves as if the intersection
+  had been free.
+
+Note: Existing connections do not affect placement of markers.
+
+======================================
+When the Label markup type is selected
+======================================
+When you tap on a free intersection the app displays a popup that lets you enter
+the label text. The text you enter may not contain any newlines (newlines you
+attempt to enter are converted to a space character) but can be of any length.
+Despite there being no length limit, you should keep label texts as short as
+possible. If you cancel the text entry popup then no label is placed.
+
+If the text you enter is a single digit or letter that satisfies the criteria of
+a number or letter marker, the app converts the label to a marker.
+
+When you tap on an intersection that is already marked up:
+
+- If the existing markup is a label or marker, then the app displays a popup as
+  explained above, but the existing label or marker text is used as the default
+  text.
+- If the existing markup is a symbol, then the existing symbol is cleared first
+  and the tap behaves as if the intersection had been free.
+
+Note: Existing connections do not affect placement of labels.
+
+===================================================
+When any of the Connection markup types is selected
+===================================================
+Connections have a start intersection and an end intersection. You place a new
+connection of the selected type by dragging from a start intersection to an end
+intersection. The start and end intersecions must be different - the app draws
+a single-intersection connection as a stub (for arrows this is just the arrow
+head) while you are dragging, but if you end the drag operation while still only
+one intersection is involved the app will not place the connection.
+
+You can place multiple connections that originate from the same intersection
+as long as they end on different intersections. If you place a new connection
+and another connection already exists between the same start/end points as the
+new connection, the new connection replaces the existing one (regardless of
+whether the existing connection is of the same or of a different type as the
+new connection).
+
+Note: While any of the Connection markup types is selected you cannot move any
+kind of markup by dragging, because the drag gesture is reserved for placing
+new connections.
+
+When you tap the start or end intersection of an existing connection, the app
+deletes that connection. If you tap an intersection that is the start or end
+intersection of multiple connections, the app deletes the connection that it
+finds first in the background model data. To delete all connections that start
+or end on an intersection, repeatedly tap the intersection.
+
+Note: There is a user preference that lets you turn off deletion of connections
+by tapping. This may be useful if you find yourself accidentally deleting
+connections instead of placing new ones.
+
+================================
+When the Eraser tool is selected
+================================
+When you tap an intersection that is marked up, the app deletes the markup on
+the intersection. If there are multiple markup elements all of them are deleted.
+
+Dragging allows you to select a rectangular area in which to delete markup. When
+you complete the drag operation the app deletes all markup elements from all
+intersection in the selection rectangle.
+
+===================================
+User preference "Markup precedence"
+===================================
+Although it does not make much sense, the SGF standard allows SGF files to have
+both a symbol and a label on the same intersection. When you load such an SGF
+file, the app will draw either the symbol or the label, but not both. A user
+preference lets you choose which of the two you want to be drawn.
+
+================================
+User preference "Unique symbols"
+================================
+Normally when any of the Symbol markup types is selected you can place the same
+symbol multiple times, e.g. by tapping on multiple free intersections. When you
+enable the "unique symbols" user preference, you can no longer place the same
+symbol multiple times. Instead on every tap the app chooses a different symbol
+for you that is unique on the board. When all symbols are on the board you
+cannot place symbols anymore.
+
+Example: When no symbols are on the board, the Square markup type is selected,
+and you tap 6 times on different intersections, then symbols are placed in this
+order: Square, Triangle, "X" symbol, "selected" symbol, Circle; the 6th tap does
+nothing anymore because all symbols are already on the board.
+
+Having the "unique symbols" user preference enabled can be convenient to save a
+couple of taps if you frequently mark up multiple intersections on the same
+board position, but want to use a different symbol on each intersection.
 
 --------------------------------------------------------------------------------
 Preferences
