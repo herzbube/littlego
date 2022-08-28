@@ -162,7 +162,7 @@
       buttonName = gameInfoButtonIconResource;
       break;
     case GameActionMoreGameActions:
-      buttonName = moreGameActionsButtonIconResource;
+      buttonName = menuHamburgerButtonIconResource;
       break;
     default:
       buttonName = nil;

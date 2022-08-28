@@ -238,6 +238,10 @@
 		CD3A09A116939E2200ABDB5D /* TapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A09A016939E2200ABDB5D /* TapGestureController.m */; };
 		CD3AE6EA1343F14200B58E08 /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE6E91343F14200B58E08 /* LICENSE.html */; };
 		CD3B1EC421D7BDA100D1DCAD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CD27AEC521D5D100002028E4 /* GoogleService-Info.plist */; };
+		CD3D8B5428BBE12F0008D22F /* menu-hamburger.png in Resources */ = {isa = PBXBuildFile; fileRef = CD3D8B5028BBE12F0008D22F /* menu-hamburger.png */; };
+		CD3D8B5528BBE12F0008D22F /* noun_36901_cc.svg in Resources */ = {isa = PBXBuildFile; fileRef = CD3D8B5128BBE12F0008D22F /* noun_36901_cc.svg */; };
+		CD3D8B5628BBE12F0008D22F /* menu-hamburger@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD3D8B5228BBE12F0008D22F /* menu-hamburger@3x.png */; };
+		CD3D8B5728BBE12F0008D22F /* menu-hamburger@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD3D8B5328BBE12F0008D22F /* menu-hamburger@2x.png */; };
 		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
 		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */; };
 		CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
@@ -1055,6 +1059,10 @@
 		CD3AE865134A33A500B58E08 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		CD3AE8AD134A423000B58E08 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = html/index.html; sourceTree = "<group>"; };
 		CD3D5147147436C70098D8E0 /* makedist.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = makedist.sh; sourceTree = "<group>"; };
+		CD3D8B5028BBE12F0008D22F /* menu-hamburger.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu-hamburger.png"; sourceTree = "<group>"; };
+		CD3D8B5128BBE12F0008D22F /* noun_36901_cc.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = noun_36901_cc.svg; sourceTree = "<group>"; };
+		CD3D8B5228BBE12F0008D22F /* menu-hamburger@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu-hamburger@3x.png"; sourceTree = "<group>"; };
+		CD3D8B5328BBE12F0008D22F /* menu-hamburger@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu-hamburger@2x.png"; sourceTree = "<group>"; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
 		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationStateCommand.h; sourceTree = "<group>"; };
 		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationStateCommand.m; sourceTree = "<group>"; };
@@ -2228,6 +2236,25 @@
 			path = doxygen;
 			sourceTree = "<group>";
 		};
+		CD3D8B1628BBD6850008D22F /* menu */ = {
+			isa = PBXGroup;
+			children = (
+				CD3D8B4F28BBE12F0008D22F /* menu-hamburger */,
+			);
+			path = menu;
+			sourceTree = "<group>";
+		};
+		CD3D8B4F28BBE12F0008D22F /* menu-hamburger */ = {
+			isa = PBXGroup;
+			children = (
+				CD3D8B5028BBE12F0008D22F /* menu-hamburger.png */,
+				CD3D8B5328BBE12F0008D22F /* menu-hamburger@2x.png */,
+				CD3D8B5228BBE12F0008D22F /* menu-hamburger@3x.png */,
+				CD3D8B5128BBE12F0008D22F /* noun_36901_cc.svg */,
+			);
+			path = "menu-hamburger";
+			sourceTree = "<group>";
+		};
 		CD48AD9A15A75B77004A7096 /* text */ = {
 			isa = PBXGroup;
 			children = (
@@ -2966,6 +2993,7 @@
 				CD968B281B026E2300984AEE /* licenses */,
 				CDB3ECCC284285DD007512F6 /* markup */,
 				CDB3ECDC284D5353007512F6 /* markup-types */,
+				CD3D8B1628BBD6850008D22F /* menu */,
 				CD968B321B026E2300984AEE /* more-game-actions */,
 				CD968B371B026E2300984AEE /* navigation */,
 				CD2AB1CA2800D8FE00BF0B4D /* none */,
@@ -3435,6 +3463,7 @@
 				CD2AB20128030D2F00BF0B4D /* noun-questions-3550357.svg in Resources */,
 				CDB3ED1F284D5354007512F6 /* circle@3x.png in Resources */,
 				CDB3ED32284D5354007512F6 /* square.svg in Resources */,
+				CD3D8B5628BBE12F0008D22F /* menu-hamburger@3x.png in Resources */,
 				CDB3ED12284D5354007512F6 /* noun-circle-4148559.svg in Resources */,
 				CDE1A16314C1CED200317ECA /* BoostSoftwareLicense.html in Resources */,
 				CDE1A16414C1CED200317ECA /* COPYING.html in Resources */,
@@ -3542,11 +3571,13 @@
 				CDB3ED37284D5354007512F6 /* line.png in Resources */,
 				CD2AB1F1280301CF00BF0B4D /* good@2x.png in Resources */,
 				CD968BB71B026E2300984AEE /* pause@3x.png in Resources */,
+				CD3D8B5728BBE12F0008D22F /* menu-hamburger@2x.png in Resources */,
 				CDE1A18014C1CED200317ECA /* wood-on-wood-01.aiff in Resources */,
 				CD968B5F1B026E2300984AEE /* about.png in Resources */,
 				CD968BA71B026E2300984AEE /* forward@2x.png in Resources */,
 				CDE1A18114C1CED200317ECA /* wood-on-wood-12.aiff in Resources */,
 				CDB3ED35284D5354007512F6 /* line@3x.png in Resources */,
+				CD3D8B5428BBE12F0008D22F /* menu-hamburger.png in Resources */,
 				CDB3ECD2284285DD007512F6 /* noun-code-4410725.svg in Resources */,
 				CD968B641B026E2300984AEE /* archive@2x.png in Resources */,
 				CD968B6C1B026E2300984AEE /* noun_2873_cc.svg in Resources */,
@@ -3628,6 +3659,7 @@
 				CD968BBD1B026E2300984AEE /* noun_31893_cc.svg in Resources */,
 				CDC66BC221EBB052006C73B3 /* noun_Changelog_365219.svg in Resources */,
 				CDB3ED29284D5354007512F6 /* arrow@3x.png in Resources */,
+				CD3D8B5528BBE12F0008D22F /* noun_36901_cc.svg in Resources */,
 				CDB3ED2B284D5354007512F6 /* check-mark.png in Resources */,
 				CD968AE11B026DD200984AEE /* stone-crosshair.png in Resources */,
 				CD2AB1B52800CECC00BF0B4D /* stones-overlapping-black-and-white-icon@2x.png in Resources */,

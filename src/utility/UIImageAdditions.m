@@ -569,7 +569,7 @@
     case GameActionGameInfo:
       return gameInfoButtonIconResource;
     case GameActionMoreGameActions:
-      return moreGameActionsButtonIconResource;
+      return menuHamburgerButtonIconResource;
     case GameActionSelectMarkupType:   // resource name depends on user preference
     case GameActionMoves:              // obsolete game action
     default:
