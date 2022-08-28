@@ -1247,9 +1247,49 @@ static const int spacerBottomTag = 2;
 
   GoNode* node = [self nodeWithAnnotationData];
 
+  // Use submitAfterDelay: instead of submit because of an extremely weird
+  // and inexplicable layout issue that only occurs under the following
+  // conditions:
+  // - App must run on a real device, not on the simulator.
+  // - UIType must be UITypePhone, i.e. problem does not occur on iPad.
+  // - Interface orientation must be Portrait, not Landscape.
+  // - The presented controller must be EditNodeDescriptionController, and the
+  //   keyboard must be visible at the time when the user taps the "Done"
+  //   button.
+  //
+  // The problem does not occur:
+  // - If EditNodeDescriptionController does not display the keyboard at all
+  //   (tested with becomeFirstResponder disabled so that the keyboard is
+  //   never displayed at all).
+  // - If EditNodeDescriptionController displayed the keyboard at the start, but
+  //   then does not display it anymore at the time when the user taps the
+  //   "Done" button (tested by programmatically hiding the keyboard with
+  //   resignFirstResponder).
+  // - If KeyboardHeightAdjustment is disabled in EditNodeDescriptionController.
+  // - If another controller (EditEstimatedScoreController) is presented and
+  //   that controller at some time displays the keyboard.
+  //
+  // What *is* the problem? When BoardPositionCollectionViewController receives
+  // the notification nodeAnnotationDataDidChange it reloads the board position
+  // cell. This causes BoardPositionCollectionViewCell::setBoardPosition:() to
+  // be invoked, which in most cases causes the cell to update its internal
+  // Auto Layout constraints due to the changed data. When that happens the
+  // layout of ***ALL*** collection view cells that are currently visible
+  // becomes broken and the Xcode debug windows displays Auto Layout constraint
+  // warnings for all affected cells. The user can fix the display by scrolling
+  // the collection view, causing the cells to be re-layouted.
+  //
+  // After much debugging it has been found that the problem simply disappears
+  // if the command that triggers the update in
+  // BoardPositionCollectionViewController is slightly delayed. Presumably this
+  // is because the delay gives UiKit the time it needs to fully dismiss
+  // EditNodeDescriptionController and the keyboard.
+  //
+  // Problem seen with Xcode 13.2.1, iOS base SDK 15.2, iPhone 12 Pro Max with
+  // iOS 15.6.1.
   [[[[ChangeAnnotationDataCommand alloc] initWithNode:node
                                      shortDescription:newShortDescription
-                                      longDescription:newLongDescription] autorelease] submit];
+                                      longDescription:newLongDescription] autorelease] submitAfterDelay:0];
 }
 
 #pragma mark - Helpers
