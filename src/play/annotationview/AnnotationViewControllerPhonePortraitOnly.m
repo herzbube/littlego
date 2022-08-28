@@ -43,6 +43,9 @@ enum ItemPickerContext
   BoardPositionHotspotDesignationItemPickerContext,
 };
 
+static const int spacerTopTag = 1;
+static const int spacerBottomTag = 2;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
@@ -56,7 +59,6 @@ enum ItemPickerContext
 @property(nonatomic, assign) int iconHeight;
 @property(nonatomic, assign) int mainViewMargin;
 @property(nonatomic, assign) int buttonVerticalSpacing;
-@property(nonatomic, assign) UIStackViewAlignment valuationViewStackViewAlignment;
 @property(nonatomic, retain) PageViewController* customPageViewController;
 @property(nonatomic, retain) UIViewController* valuationViewController;
 @property(nonatomic, retain) UIStackView* valuationViewStackView;
@@ -114,27 +116,14 @@ enum ItemPickerContext
     case UITypePhonePortraitOnly:
       self.presentViewControllersInPopover = false;
       self.labelFontSize = 10;
-      // self.estimatedScoreButton uses a different title label font size than
-      // the other buttons, which causes it to use less vertical size. With the
-      // default stack view alignment (UIStackViewAlignmentFill) this causes the
-      // button and its label to be positioned in a slightly different vertical
-      // location than the other buttons/labels. By aligning the stack view
-      // subviews to the stack view's top edge everything remains nicely
-      // aligned. Using UIStackViewAlignmentCenter would have the same effect,
-      // but for UITypePhonePortraitOnly the annotation view has very little
-      // height, so aligning to the top gives a bit of extra spacing between
-      // the buttons and the page view control.
-      self.valuationViewStackViewAlignment = UIStackViewAlignmentTop;
       break;
     case UITypePhone:
       self.presentViewControllersInPopover = false;
       self.labelFontSize = 11;
-      self.valuationViewStackViewAlignment = UIStackViewAlignmentCenter;
       break;
     case UITypePad:
       self.presentViewControllersInPopover = true;
       self.labelFontSize = 12;
-      self.valuationViewStackViewAlignment = UIStackViewAlignmentCenter;
       break;
     default:
       [ExceptionUtility throwInvalidUIType:uiType];
@@ -350,22 +339,26 @@ enum ItemPickerContext
   else
   {
     self.valuationViewStackView.axis = UILayoutConstraintAxisVertical;
-    self.valuationViewStackView.distribution = UIStackViewDistributionEqualSpacing;
+    self.valuationViewStackView.distribution = UIStackViewDistributionFillEqually;
   }
 
-  self.valuationViewStackView.alignment = self.valuationViewStackViewAlignment;
+  self.valuationViewStackView.alignment = UIStackViewAlignmentCenter;
 
-  self.positionValuationLabel = [self createTitleLabelInStackView:self.valuationViewStackView withTitleText:@"Position"];
-  self.positionValuationButton = [self createButtonInSuperView:self.positionValuationLabel.superview selector:@selector(editPositionValuation:)];
+  UIView* positionValuationItem = [self createStackViewItem:self.valuationViewStackView];
+  self.positionValuationLabel = [self createTitleLabelInSuperview:positionValuationItem withTitleText:@"Position"];
+  self.positionValuationButton = [self createButtonInSuperView:positionValuationItem selector:@selector(editPositionValuation:)];
 
-  self.moveValuationLabel = [self createTitleLabelInStackView:self.valuationViewStackView withTitleText:@"Move"];
-  self.moveValuationButton = [self createButtonInSuperView:self.moveValuationLabel.superview selector:@selector(editMoveValuation:)];
+  UIView* moveValuationItem = [self createStackViewItem:self.valuationViewStackView];
+  self.moveValuationLabel = [self createTitleLabelInSuperview:moveValuationItem withTitleText:@"Move"];
+  self.moveValuationButton = [self createButtonInSuperView:moveValuationItem selector:@selector(editMoveValuation:)];
 
-  self.hotspotLabel = [self createTitleLabelInStackView:self.valuationViewStackView withTitleText:@"Hotspot"];
-  self.hotspotButton = [self createButtonInSuperView:self.hotspotLabel.superview selector:@selector(editHotspotDesignation:)];
+  UIView* hotspotItem = [self createStackViewItem:self.valuationViewStackView];
+  self.hotspotLabel = [self createTitleLabelInSuperview:hotspotItem withTitleText:@"Hotspot"];
+  self.hotspotButton = [self createButtonInSuperView:hotspotItem selector:@selector(editHotspotDesignation:)];
 
-  self.estimatedScoreLabel = [self createTitleLabelInStackView:self.valuationViewStackView withTitleText:@"Score"];
-  self.estimatedScoreButton = [self createButtonInSuperView:self.estimatedScoreLabel.superview selector:@selector(editEstimatedScore:)];
+  UIView* estimatedScoreItem = [self createStackViewItem:self.valuationViewStackView];
+  self.estimatedScoreLabel = [self createTitleLabelInSuperview:estimatedScoreItem withTitleText:@"Score"];
+  self.estimatedScoreButton = [self createButtonInSuperView:estimatedScoreItem selector:@selector(editEstimatedScore:)];
 
   UIFont* buttonTitleLabelFont = [UIFont systemFontOfSize:self.labelFontSize];
   self.estimatedScoreButton.titleLabel.font = buttonTitleLabelFont;
@@ -433,12 +426,27 @@ enum ItemPickerContext
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupValuationView.
 // -----------------------------------------------------------------------------
-- (UILabel*) createTitleLabelInStackView:(UIStackView*)stackView withTitleText:(NSString*)titleText
+- (UIView*) createStackViewItem:(UIStackView*)stackView
 {
-  UIView* positionValuationBox = [self createViewInSuperView:stackView];
-  [stackView addArrangedSubview:positionValuationBox];
+  UIView* stackViewItem = [self createViewInSuperView:stackView];
+  [stackView addArrangedSubview:stackViewItem];
 
-  UILabel* label = [self createLabelInSuperView:positionValuationBox];
+  // See implementation of setupAutoLayoutConstraintsForLabel:button: for
+  // details about the meaning of spacerTop/spacerBottom.
+  UIView* spacerTop = [self createViewInSuperView:stackViewItem];
+  spacerTop.tag = spacerTopTag;
+  UIView* spacerBottom = [self createViewInSuperView:stackViewItem];
+  spacerBottom.tag = spacerBottomTag;
+
+  return stackViewItem;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupValuationView.
+// -----------------------------------------------------------------------------
+- (UILabel*) createTitleLabelInSuperview:(UIView*)superview withTitleText:(NSString*)titleText
+{
+  UILabel* label = [self createLabelInSuperView:superview];
   label.text = titleText;
   label.textAlignment = NSTextAlignmentCenter;
 
@@ -510,18 +518,41 @@ enum ItemPickerContext
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsForLabel:(UILabel*)label button:(UIButton*)button
 {
+  // The two spacer views exist to solve a problem when the stack view's axis is
+  // UILayoutConstraintAxisVertical (i.e. interface orientation Landscape) and
+  // the distribution policy UIStackViewDistributionFillEqually is used. Without
+  // the spacer views we would have to vertically layout label/button like this:
+  //   V:|-0-[label]-%d-[button]-0-|
+  // This would cause the button to expand vertically to fill the space assigned
+  // to the superview by the stack view, which would then cause the button icon
+  // to be rendered in the wrong position. Instead we let two spacer views soak
+  // up the excess vertical space.
+  UIView* spacerTop = [label.superview viewWithTag:spacerTopTag];
+  UIView* spacerBottom = [label.superview viewWithTag:spacerBottomTag];
+
+  spacerTop.translatesAutoresizingMaskIntoConstraints = NO;
   label.translatesAutoresizingMaskIntoConstraints = NO;
   button.translatesAutoresizingMaskIntoConstraints = NO;
+  spacerBottom.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
+  viewsDictionary[@"spacerTop"] = spacerTop;
   viewsDictionary[@"label"] = label;
   viewsDictionary[@"button"] = button;
+  viewsDictionary[@"spacerBottom"] = spacerBottom;
+  [visualFormats addObject:@"H:|-0-[spacerTop]-0-|"];
   [visualFormats addObject:@"H:|-0-[label]-0-|"];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[label]-%d-[button]-0-|", self.buttonVerticalSpacing]];
+  [visualFormats addObject:@"H:|-0-[button]-0-|"];
+  [visualFormats addObject:@"H:|-0-[spacerBottom]-0-|"];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[spacerTop]-0-[label]-%d-[button]-0-[spacerBottom]-0-|", self.buttonVerticalSpacing]];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:label.superview];
 
-  [AutoLayoutUtility alignFirstView:button withSecondView:label onAttribute:NSLayoutAttributeCenterX constraintHolder:label.superview];
+  // Make sure that the two spacer views get the same height - this makes sure
+  // that label and button are properly vertically centered in all stack view
+  // items. Without this the label and button are not properly vertically
+  // centered in the top and bottom stack view items.
+  [AutoLayoutUtility alignFirstView:spacerBottom withSecondView:spacerTop onAttribute:NSLayoutAttributeHeight constraintHolder:label.superview];
 }
 
 // -----------------------------------------------------------------------------
