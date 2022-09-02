@@ -188,12 +188,16 @@ enum ItemPickerControllerMode
 /// @brief Array with items available for selection. Items appear in the GUI in
 /// the same order as objects in this array.
 ///
-/// ItemPickerController supports two kinds of array elements:
+/// ItemPickerController supports three kinds of array elements:
 /// - NSString object. ItemPickerController uses the string to represent the
 ///   item to pick.
 /// - An array containing an NSString and an UIImage object.
 ///   ItemPickerController uses both the string and the image to represent the
 ///   item to pick.
+/// - Same as before, but the array contains a third object that is an NSNumber
+///   object whose @e boolValue property value indicates whether the item image
+///   is already tinted and should not be re-tinted when the user interface
+///   style (light/dark mode) changes.
 ///
 /// If item images are present but not of a uniform width, the images are padded
 /// to the widest item image so that the item strings appear left-aligned.

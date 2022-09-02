@@ -37,6 +37,7 @@
 @property(nonatomic, retain) PlaceholderView* placeholderView;
 @property(nonatomic, retain) StaticTableView* staticTableView;
 @property(nonatomic, retain) UITableView* regularTableView;
+@property(nonatomic, retain) NSArray* itemListWithTintedAndUniformAndWidthImages;
 @end
 
 
@@ -98,6 +99,7 @@
   self.indexOfDefaultItem = -1;
   self.indexOfSelectedItem = -1;
   self.itemList = nil;
+  self.itemListWithTintedAndUniformAndWidthImages = nil;
   self.placeholderView = nil;
   self.staticTableView = nil;
   self.regularTableView = nil;
@@ -116,6 +118,7 @@
   self.placeholderText = nil;
   self.delegate = nil;
   self.itemList = nil;
+  self.itemListWithTintedAndUniformAndWidthImages = nil;
   self.placeholderView = nil;
   self.staticTableView = nil;
   self.regularTableView = nil;
@@ -190,6 +193,7 @@
 
   if (self.isViewLoaded)
   {
+    self.itemListWithTintedAndUniformAndWidthImages = [self itemListWithTintedAndUniformAndWidthImages];
     UITableView* tableView = [self itemPickerTableView];
     [tableView reloadData];
   }
@@ -236,7 +240,7 @@
   }
   else
   {
-    self.itemList = [self itemListWithUniformWidthImages];
+    self.itemListWithTintedAndUniformAndWidthImages = [self itemListWithTintedAndUniformAndWidthImages];
 
     UIView* subview;
     if (self.useScrollingTableView)
@@ -263,13 +267,14 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a new item list with item images that have a uniform width.
+/// @brief Returns a new item list with item images that are tinted to match
+/// the current UIUserInterfaceStyle (light/dark mode) and that have a uniform
+/// width.
 ///
-/// If the original item list does not contain any item images, or the item
-/// images already have uniform width, then this method returns the original
-/// item list.
+/// If the original item list does not contain any item images, then this method
+/// returns the original item list.
 // -----------------------------------------------------------------------------
-- (NSArray*) itemListWithUniformWidthImages
+- (NSArray*) itemListWithTintedAndUniformAndWidthImages
 {
   bool atLeastOneItemHasImage = false;
   bool atLeastOneImageNeedsPadding = false;
@@ -293,8 +298,11 @@
     }
   }
 
-  if (! atLeastOneImageNeedsPadding)
+  if (! atLeastOneItemHasImage)
     return self.itemList;
+
+  bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
+  UIColor* tintColor = isLightUserInterfaceStyle ? [UIColor blackColor] : [UIColor whiteColor];
 
   NSMutableArray* newItemList = [NSMutableArray array];
 
@@ -303,7 +311,18 @@
     UIImage* itemImage = [self itemImageIfAny:item];
     if (itemImage)
     {
-      UIImage* paddedItemImage = [itemImage imageByPaddingToWidth:widthOfWidestImage];
+      UIImage* paddedItemImage;
+
+      bool isItemImageAlreadyTinted = [self isItemImageAlreadyTinted:item];
+      if (isItemImageAlreadyTinted)
+      {
+        paddedItemImage = [itemImage imageByPaddingToWidth:widthOfWidestImage];
+      }
+      else
+      {
+        CGSize newSize = CGSizeMake(widthOfWidestImage, itemImage.size.height);
+        paddedItemImage = [itemImage imageByPaddingToSize:newSize tintedWith:tintColor];
+      }
 
       NSArray* itemArray = item;
       NSArray* newItem = @[itemArray.firstObject, paddedItemImage];
@@ -328,8 +347,25 @@
   if ([item isKindOfClass:[NSString class]])
     return nil;
   NSArray* itemArray = item;
-  UIImage* itemImage = itemArray.lastObject;
+  UIImage* itemImage = [itemArray objectAtIndex:1];
   return itemImage;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines @a item whether it contains an NSNumber object whose
+/// @e boolValue property value indicates whether the item image is already
+/// tinted. If no NSNumber object exists, returns false (indicating that the
+/// item image is not yet tinted). If an NSNumber object exists, returns that
+/// object's @e boolValue property value.
+// -----------------------------------------------------------------------------
+- (bool) isItemImageAlreadyTinted:(id)item
+{
+  NSArray* itemArray = item;
+  if (itemArray.count < 3)
+    return false;
+
+  NSNumber* itemNumber = [itemArray objectAtIndex:2];
+  return itemNumber.boolValue ? true : false;
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -351,7 +387,7 @@
 - (NSInteger) tableView:(UITableView*)tableView numberOfRowsInSection:(NSInteger)section
 {
   if (section == 0)
-    return self.itemList.count;
+    return self.itemListWithTintedAndUniformAndWidthImages.count;
   else
     return 1;
 }
@@ -378,7 +414,7 @@
 
     NSString* itemText = nil;
     UIImage* itemImage = nil;
-    id item = [self.itemList objectAtIndex:indexPath.row];
+    id item = [self.itemListWithTintedAndUniformAndWidthImages objectAtIndex:indexPath.row];
     if ([item isKindOfClass:[NSString class]])
     {
       itemText = item;
@@ -405,6 +441,24 @@
     UITableViewCell* cell = [TableViewCellFactory cellWithType:ActionTextCellType tableView:tableView];
     cell.textLabel.text = @"Cancel";
     return cell;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) traitCollectionDidChange:(UITraitCollection*)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 12.0, *))
+  {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+    {
+      self.itemListWithTintedAndUniformAndWidthImages = [self itemListWithTintedAndUniformAndWidthImages];
+      UITableView* tableView = [self itemPickerTableView];
+      [tableView reloadData];
+    }
   }
 }
 
@@ -498,7 +552,7 @@
 // -----------------------------------------------------------------------------
 - (bool) isSelectionValid
 {
-  if (self.indexOfSelectedItem < 0 || self.indexOfSelectedItem >= self.itemList.count)
+  if (self.indexOfSelectedItem < 0 || self.indexOfSelectedItem >= self.itemListWithTintedAndUniformAndWidthImages.count)
     return false;
   else
     return true;

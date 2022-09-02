@@ -1084,9 +1084,13 @@ static const int spacerBottomTag = 2;
   {
     NSString* hotspotDesignationText = [NSString stringWithBoardPositionHotspotDesignation:hotspotDesignation];
     UIImage* hotspotDesignationIcon = [UIImage iconForBoardPositionHotspotDesignation:hotspotDesignation];
+    bool isItemImageAlreadyTinted = false;
     if (hotspotDesignation == GoBoardPositionHotspotDesignationYesEmphasized)
+    {
       hotspotDesignationIcon = [hotspotDesignationIcon imageByTintingWithColor:[UIColor hotspotColor:hotspotDesignation]];
-    [itemList addObject:@[hotspotDesignationText, hotspotDesignationIcon]];
+      isItemImageAlreadyTinted = true;
+    }
+    [itemList addObject:@[hotspotDesignationText, hotspotDesignationIcon, [NSNumber numberWithBool:isItemImageAlreadyTinted]]];
   }
 
   GoNode* node = [self nodeWithAnnotationData];
