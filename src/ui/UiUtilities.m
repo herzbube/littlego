@@ -367,7 +367,11 @@
 // -----------------------------------------------------------------------------
 + (void) applyTransparentStyleToView:(UIView*)view
 {
-  view.backgroundColor = [UIColor colorWithWhite:1.0f alpha:0.6f];
+  view.alpha = 0.6f;
+  if (@available(iOS 13.0, *))
+    view.backgroundColor = [UIColor systemBackgroundColor];  // updates itself to match current UIUserInterfaceStyle (light/dark mode).
+  else
+    view.backgroundColor = [UIColor whiteColor];
   view.layer.borderWidth = 1;
 }
 

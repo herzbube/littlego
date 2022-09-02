@@ -157,7 +157,12 @@
 /// property will start querying the data source.
 @property(nonatomic, assign, readonly) CGSize buttonBoxSize;
 
-/// @brief The color used to tint buttons. The default is black.
-@property(nonatomic, retain) UIColor* buttonTintColor;
+/// @brief The color used to tint buttons in light user interface style (i.e.
+/// not dark mode). The default is black.
+@property(nonatomic, retain) UIColor* buttonTintColorLightUserInterfaceStyle;
+
+/// @brief The color used to tint buttons in dark user interface style (i.e.
+/// dark mode). The default is white.
+@property(nonatomic, retain) UIColor* buttonTintColorDarkUserInterfaceStyle;
 
 @end

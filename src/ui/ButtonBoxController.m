@@ -21,6 +21,7 @@
 #import "ButtonBoxCell.h"
 #import "UiElementMetrics.h"
 #import "UIColorAdditions.h"
+#import "UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -61,7 +62,8 @@
   self.reuseIdentifierSeparatorView = @"ButtonBoxSeparatorView";
   self.buttonBoxControllerDataSource = nil;
   self.buttonBoxControllerDelegate = nil;
-  self.buttonTintColor = [UIColor blackColor];
+  self.buttonTintColorLightUserInterfaceStyle = [UIColor blackColor];
+  self.buttonTintColorDarkUserInterfaceStyle = [UIColor whiteColor];
 
   CGFloat rowSpacingFactor;
   CGFloat columnSpacingFactor;
@@ -125,7 +127,8 @@
   self.reuseIdentifierSeparatorView = nil;
   self.buttonBoxControllerDataSource = nil;
   self.buttonBoxControllerDelegate = nil;
-  self.buttonTintColor = nil;
+  self.buttonTintColorLightUserInterfaceStyle = nil;
+  self.buttonTintColorDarkUserInterfaceStyle = nil;
   [super dealloc];
 }
 
@@ -151,6 +154,20 @@
 
   self.collectionView.accessibilityIdentifier =
     [self.buttonBoxControllerDataSource accessibilityIdentifierInButtonBoxController:self];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) traitCollectionDidChange:(UITraitCollection*)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 12.0, *))
+  {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+      [self reloadData];
+  }
 }
 
 #pragma mark - UICollectionViewDataSource overrides
@@ -184,7 +201,8 @@
                                                                   forIndexPath:indexPath];
   UIButton* button = [self.buttonBoxControllerDataSource buttonBoxController:self
                                                            buttonAtIndexPath:indexPath];;
-  button.tintColor = self.buttonTintColor;
+  bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
+  button.tintColor = isLightUserInterfaceStyle ? self.buttonTintColorLightUserInterfaceStyle : self.buttonTintColorDarkUserInterfaceStyle;
   [cell setupWithButton:button];
   return cell;
 }
