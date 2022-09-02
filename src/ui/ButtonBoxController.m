@@ -217,7 +217,8 @@
   UICollectionReusableView* separatorView = [self.collectionView dequeueReusableSupplementaryViewOfKind:kind
                                                                                     withReuseIdentifier:self.reuseIdentifierSeparatorView
                                                                                            forIndexPath:indexPath];
-  separatorView.backgroundColor = [UIColor blackColor];
+  bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
+  separatorView.backgroundColor = isLightUserInterfaceStyle ? self.buttonTintColorLightUserInterfaceStyle : self.buttonTintColorDarkUserInterfaceStyle;
   return separatorView;
 }
 
