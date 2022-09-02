@@ -635,8 +635,6 @@
 		CDBCF1F9282FB1FD00411CA6 /* EditNodeDescriptionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBCF1F6282FB1FC00411CA6 /* EditNodeDescriptionController.m */; };
 		CDBCF1FC282FD5C700411CA6 /* KeyboardHeightAdjustment.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBCF1FB282FD5C700411CA6 /* KeyboardHeightAdjustment.m */; };
 		CDBCF1FD282FD5C700411CA6 /* KeyboardHeightAdjustment.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBCF1FB282FD5C700411CA6 /* KeyboardHeightAdjustment.m */; };
-		CDBEBA3827B1A058000F9BF5 /* AnnotationViewControllerPhonePortraitOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBEBA3627B1A057000F9BF5 /* AnnotationViewControllerPhonePortraitOnly.m */; };
-		CDBEBA3927B1A072000F9BF5 /* AnnotationViewControllerPhonePortraitOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBEBA3627B1A057000F9BF5 /* AnnotationViewControllerPhonePortraitOnly.m */; };
 		CDBEBA3C27B1A218000F9BF5 /* AnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBEBA3A27B1A218000F9BF5 /* AnnotationViewController.m */; };
 		CDBEBA3D27B1A218000F9BF5 /* AnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBEBA3A27B1A218000F9BF5 /* AnnotationViewController.m */; };
 		CDBFCBBD16C3ED01001D78C0 /* SetupApplicationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */; };
@@ -1469,8 +1467,6 @@
 		CDBCF1F7282FB1FD00411CA6 /* EditNodeDescriptionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditNodeDescriptionController.h; sourceTree = "<group>"; };
 		CDBCF1FA282FD5C700411CA6 /* KeyboardHeightAdjustment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyboardHeightAdjustment.h; sourceTree = "<group>"; };
 		CDBCF1FB282FD5C700411CA6 /* KeyboardHeightAdjustment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyboardHeightAdjustment.m; sourceTree = "<group>"; };
-		CDBEBA3627B1A057000F9BF5 /* AnnotationViewControllerPhonePortraitOnly.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnnotationViewControllerPhonePortraitOnly.m; sourceTree = "<group>"; };
-		CDBEBA3727B1A057000F9BF5 /* AnnotationViewControllerPhonePortraitOnly.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnnotationViewControllerPhonePortraitOnly.h; sourceTree = "<group>"; };
 		CDBEBA3A27B1A218000F9BF5 /* AnnotationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnnotationViewController.m; sourceTree = "<group>"; };
 		CDBEBA3B27B1A218000F9BF5 /* AnnotationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnnotationViewController.h; sourceTree = "<group>"; };
 		CDBFCBBB16C3ED00001D78C0 /* SetupApplicationCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupApplicationCommand.h; sourceTree = "<group>"; };
@@ -2868,8 +2864,6 @@
 			children = (
 				CDBEBA3B27B1A218000F9BF5 /* AnnotationViewController.h */,
 				CDBEBA3A27B1A218000F9BF5 /* AnnotationViewController.m */,
-				CDBEBA3727B1A057000F9BF5 /* AnnotationViewControllerPhonePortraitOnly.h */,
-				CDBEBA3627B1A057000F9BF5 /* AnnotationViewControllerPhonePortraitOnly.m */,
 				CD607BCA28109A7D000C111E /* EditEstimatedScoreController.h */,
 				CD607BC928109A7D000C111E /* EditEstimatedScoreController.m */,
 				CDBCF1F7282FB1FD00411CA6 /* EditNodeDescriptionController.h */,
@@ -3894,7 +3888,6 @@
 				CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */,
 				CD81791725DC606700F39091 /* BoardAnimationController.m in Sources */,
 				CDCBA6D3184228A0003697E2 /* TableViewVariableHeightCell.m in Sources */,
-				CDBEBA3827B1A058000F9BF5 /* AnnotationViewControllerPhonePortraitOnly.m in Sources */,
 				CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */,
 				CD8F920B143E655E006351DB /* SubmitGtpCommandViewController.m in Sources */,
 				CD9AA70D146028770012C3EA /* HandicapSelectionController.m in Sources */,
@@ -4061,7 +4054,6 @@
 				CDFD9F7E18F1D5DF0031CBCF /* CrashReportingSettingsController.m in Sources */,
 				CDEECC6D1992923000BC89F2 /* ArchiveUtility.m in Sources */,
 				CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */,
-				CDBEBA3927B1A072000F9BF5 /* AnnotationViewControllerPhonePortraitOnly.m in Sources */,
 				CD7C578321F4A3A900694520 /* UnarchiveGameCommand.m in Sources */,
 				CDA0970C1A99F77F002FCD78 /* SplitViewController.m in Sources */,
 				CD1E6EC0286755A000785E23 /* MoveMarkupPanGestureHandler.m in Sources */,

@@ -15,6 +15,13 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "EditEstimatedScoreController.h"
+#import "EditNodeDescriptionController.h"
+#import "../../ui/ItemPickerController.h"
+#import "../../ui/PageViewController.h"
+
+
 // -----------------------------------------------------------------------------
 /// @brief The AnnotationViewController class manages the annotation view, i.e.
 /// the view that displays node and move annotations associated with the current
@@ -27,7 +34,7 @@
 ///
 /// @see LayoutManager
 // -----------------------------------------------------------------------------
-@interface AnnotationViewController : UIViewController
+@interface AnnotationViewController : UIViewController <PageViewControllerDelegate, ItemPickerDelegate, EditEstimatedScoreControllerDelegate, EditNodeDescriptionControllerDelegate>
 {
 }
 
