@@ -677,4 +677,78 @@
   }];
 }
 
+#pragma mark - Setter implementations
+
+// -----------------------------------------------------------------------------
+/// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setPageControlTintColor:(UIColor*)pageControlTintColor
+{
+  if (_pageControlTintColor == pageControlTintColor)
+    return;
+
+  if (_pageControlTintColor)
+  {
+    [_pageControlTintColor release];
+    _pageControlTintColor = nil;
+  }
+
+  if (_pageControlTintColor)
+  {
+    _pageControlTintColor = pageControlTintColor;
+    [_pageControlTintColor retain];
+  }
+
+  if (self.pageControl)
+    self.pageControl.tintColor = pageControlTintColor;
+}
+
+// -----------------------------------------------------------------------------
+/// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setPageControlPageIndicatorTintColor:(UIColor*)pageControlPageIndicatorTintColor
+{
+  if (_pageControlPageIndicatorTintColor == pageControlPageIndicatorTintColor)
+    return;
+
+  if (_pageControlPageIndicatorTintColor)
+  {
+    [_pageControlPageIndicatorTintColor release];
+    _pageControlPageIndicatorTintColor = nil;
+  }
+
+  if (_pageControlPageIndicatorTintColor)
+  {
+    _pageControlPageIndicatorTintColor = pageControlPageIndicatorTintColor;
+    [_pageControlPageIndicatorTintColor retain];
+  }
+
+  if (self.pageControl)
+    self.pageControl.pageIndicatorTintColor = pageControlPageIndicatorTintColor;
+}
+
+// -----------------------------------------------------------------------------
+/// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setPageControlCurrentPageIndicatorTintColor:(UIColor*)pageControlCurrentPageIndicatorTintColor
+{
+  if (_pageControlCurrentPageIndicatorTintColor == pageControlCurrentPageIndicatorTintColor)
+    return;
+
+  if (_pageControlCurrentPageIndicatorTintColor)
+  {
+    [_pageControlCurrentPageIndicatorTintColor release];
+    _pageControlCurrentPageIndicatorTintColor = nil;
+  }
+
+  if (_pageControlCurrentPageIndicatorTintColor)
+  {
+    _pageControlCurrentPageIndicatorTintColor = pageControlCurrentPageIndicatorTintColor;
+    [_pageControlCurrentPageIndicatorTintColor retain];
+  }
+
+  if (self.pageControl)
+    self.pageControl.currentPageIndicatorTintColor = pageControlCurrentPageIndicatorTintColor;
+}
+
 @end

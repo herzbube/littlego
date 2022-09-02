@@ -34,6 +34,7 @@
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIColorAdditions.h"
 #import "../../utility/UIImageAdditions.h"
+#import "../../ui/UiUtilities.h"
 
 
 enum ItemPickerContext
@@ -244,8 +245,6 @@ static const int spacerBottomTag = 2;
                                                                       initialViewController:initialViewController];
 
   self.customPageViewController.delegate = self;
-  self.customPageViewController.pageControlPageIndicatorTintColor = [UIColor blackColor];
-  self.customPageViewController.pageControlCurrentPageIndicatorTintColor = [UIColor whiteColor];
 
   UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
   bool orientationIsPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
@@ -305,9 +304,29 @@ static const int spacerBottomTag = 2;
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
 
+  GoNode* node = [self nodeWithAnnotationData];
+  [self updateColors:node];
+
   self.contentNeedsUpdate = true;
   self.buttonStatesNeedsUpdate = true;
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) traitCollectionDidChange:(UITraitCollection*)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 12.0, *))
+  {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+    {
+      GoNode* node = [self nodeWithAnnotationData];
+      [self updateColors:node];
+    }
+  }
 }
 
 #pragma mark - View hierarchy setup
@@ -472,7 +491,6 @@ static const int spacerBottomTag = 2;
 {
   UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
   [superview addSubview:button];
-  button.tintColor = [UIColor blackColor];
   [button addTarget:self
              action:selector
    forControlEvents:UIControlEventTouchUpInside];
@@ -887,10 +905,7 @@ static const int spacerBottomTag = 2;
   enum GoBoardPositionHotspotDesignation goBoardPositionHotspotDesignation = nodeAnnotation ? nodeAnnotation.goBoardPositionHotspotDesignation : GoBoardPositionHotspotDesignationNone;
   [self.hotspotButton setImage:[[UIImage iconForBoardPositionHotspotDesignation:goBoardPositionHotspotDesignation] imageByScalingToHeight:self.iconHeight]
                       forState:UIControlStateNormal];
-  if (goBoardPositionHotspotDesignation == GoBoardPositionHotspotDesignationYesEmphasized)
-    self.hotspotButton.tintColor = [UIColor hotspotColor:goBoardPositionHotspotDesignation];
-  else
-    self.hotspotButton.tintColor = [UIColor blackColor];
+  [self updateHotspotButtonTintColor:node];
 
   enum GoScoreSummary goScoreSummary = nodeAnnotation ? nodeAnnotation.estimatedScoreSummary : GoScoreSummaryNone;
   NSString* estimatedScoreButtonText = nil;
@@ -1290,6 +1305,54 @@ static const int spacerBottomTag = 2;
   [[[[ChangeAnnotationDataCommand alloc] initWithNode:node
                                      shortDescription:newShortDescription
                                       longDescription:newLongDescription] autorelease] submitAfterDelay:0];
+}
+
+#pragma mark - User interface style handling (light/dark mode)
+
+// -----------------------------------------------------------------------------
+/// @brief Updates all kinds of colors to match the current
+/// UIUserInterfaceStyle (light/dark mode).
+// -----------------------------------------------------------------------------
+- (void) updateColors:(GoNode*)node
+{
+  UIColor* buttonTintColor = [self buttonTintColor];
+  self.descriptionEditButton.tintColor = buttonTintColor;
+  self.descriptionRemoveButton.tintColor = buttonTintColor;
+  self.positionValuationButton.tintColor = buttonTintColor;
+  self.moveValuationButton.tintColor = buttonTintColor;
+  [self updateHotspotButtonTintColor:node];
+  self.estimatedScoreButton.tintColor = buttonTintColor;
+
+  bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
+
+  self.customPageViewController.pageControlPageIndicatorTintColor = isLightUserInterfaceStyle ? [UIColor grayColor] : [UIColor grayColor];
+  self.customPageViewController.pageControlCurrentPageIndicatorTintColor = isLightUserInterfaceStyle ? [UIColor blackColor] : [UIColor whiteColor];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the hotspot button's tint color to match the current
+/// UIUserInterfaceStyle (light/dark mode).
+// -----------------------------------------------------------------------------
+- (void) updateHotspotButtonTintColor:(GoNode*)node
+{
+  GoNodeAnnotation* nodeAnnotation = node ? node.goNodeAnnotation : nil;
+  enum GoBoardPositionHotspotDesignation goBoardPositionHotspotDesignation = nodeAnnotation ? nodeAnnotation.goBoardPositionHotspotDesignation : GoBoardPositionHotspotDesignationNone;
+
+  if (goBoardPositionHotspotDesignation == GoBoardPositionHotspotDesignationYesEmphasized)
+    self.hotspotButton.tintColor = [UIColor hotspotColor:goBoardPositionHotspotDesignation];
+  else
+    self.hotspotButton.tintColor = [self buttonTintColor];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the tint color for buttons that matches the current
+/// UIUserInterfaceStyle (light/dark mode).
+// -----------------------------------------------------------------------------
+- (UIColor*) buttonTintColor
+{
+  bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
+  UIColor* buttonTintColor = isLightUserInterfaceStyle ? [UIColor blackColor] : [UIColor whiteColor];
+  return buttonTintColor;
 }
 
 #pragma mark - Helpers

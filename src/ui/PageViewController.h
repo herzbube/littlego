@@ -98,25 +98,16 @@
 /// @brief The tint color to be used by the page control. Set this to @e nil to
 /// indicate that the page control should use its default tint color. The
 /// default value is @e nil.
-///
-/// Currently changes to this property are ignored after the PageViewController
-/// @e view property has been accessed for the first time.
 @property (nonatomic, retain) UIColor* pageControlTintColor;
 
 /// @brief The tint color to be used by the page control for the page indicator.
 /// Set this to @e nil to indicate that the page control should use its default
 /// tint color. The default value is @e nil.
-///
-/// Currently changes to this property are ignored after the PageViewController
-/// @e view property has been accessed for the first time.
 @property (nonatomic, retain) UIColor* pageControlPageIndicatorTintColor;
 
 /// @brief The tint color to be used by the page control for the current page
 /// indicator. Set this to @e nil to indicate that the page control should use
 /// its default tint color. The default value is @e nil.
-///
-/// Currently changes to this property are ignored after the PageViewController
-/// @e view property has been accessed for the first time.
 @property (nonatomic, retain) UIColor* pageControlCurrentPageIndicatorTintColor;
 
 /// @brief The height of the page control. Set this to -1 to indicate that the
