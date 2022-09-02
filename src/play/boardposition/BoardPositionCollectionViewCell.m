@@ -431,6 +431,9 @@ static UIFont* smallFont = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupRealContent().
+///
+/// Updates the background color of the collection view to match the
+/// current UIUserInterfaceStyle (light/dark mode).
 // -----------------------------------------------------------------------------
 - (void) updateBackgroundColor
 {

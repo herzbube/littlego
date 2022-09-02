@@ -26,6 +26,7 @@
 #import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
+#import "../../ui/UiUtilities.h"
 #import "../../utility/UIColorAdditions.h"
 #import "../../utility/UIImageAdditions.h"
 
@@ -110,14 +111,7 @@
           forCellWithReuseIdentifier:self.reuseIdentifierCell];
   self.collectionView.accessibilityIdentifier = boardPositionCollectionViewAccessibilityIdentifier;
 
-  // The collection view by default has a background color (i.e. it's not nil
-  // or [UIColor clearColor]), but that color is unsuitable for our needs.
-  // One of the alternate collection view cell background colors is white. We
-  // want to contrast this with a very light gray color so that the user sees
-  // where the last/first cell begins and ends (e.g. when there are not enough
-  // cells to fill the entire horizontal extent of the collection view, but
-  // also when the collection view bounces on scroll).
-  self.collectionView.backgroundColor = [UIColor whiteSmokeColor];
+  [self updateCollectionViewBackgroundColor];
 
   // Make sure that the updater does its job the first time that it gets the
   // chance. This is required because this controller is instantiated after
@@ -135,6 +129,20 @@
   {
     self.currentBoardPositionNeedsUpdate = true;
     [self delayedUpdate];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) traitCollectionDidChange:(UITraitCollection*)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 12.0, *))
+  {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+      [self updateCollectionViewBackgroundColor];
   }
 }
 
@@ -659,6 +667,24 @@
   {
     self.collectionView.userInteractionEnabled = YES;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the background color of the collection view to match the
+/// current UIUserInterfaceStyle (light/dark mode).
+// -----------------------------------------------------------------------------
+- (void) updateCollectionViewBackgroundColor
+{
+  // The collection view by default has a background color (i.e. it's not nil
+  // or [UIColor clearColor]), but in light mode that color is unsuitable for
+  // our needs because it is white, and one of the alternate collection view
+  // cell background colors is also white. We want to contrast this with a very
+  // light gray color so that the user sees where the last/first cell begins and
+  // ends (e.g. when there are not enough cells to fill the entire horizontal
+  // extent of the collection view, and also when the collection view bounces
+  // on scroll).
+  bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
+  self.collectionView.backgroundColor = isLightUserInterfaceStyle ? [UIColor whiteSmokeColor] : [UIColor blackColor];
 }
 
 #pragma mark - Public API
