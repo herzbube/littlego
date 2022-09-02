@@ -360,18 +360,15 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Applies a "transparent" style to @a view. The transparency makes it
-/// appear as if the view "floats" on top of its superview.
-///
-/// The style applied by this method is the same "transparent" style  that is
-/// also used by ButtonBoxController.
+/// appear as if the view "floats" on top of its superview. The background
+/// color used depends on the UIUserInterfaceStyle (light/dark mode) in
+/// @a traitCollection.
 // -----------------------------------------------------------------------------
-+ (void) applyTransparentStyleToView:(UIView*)view
++ (void) applyTransparentStyleToView:(UIView*)view traitCollection:(UITraitCollection*)traitCollection
 {
-  view.alpha = 0.6f;
-  if (@available(iOS 13.0, *))
-    view.backgroundColor = [UIColor systemBackgroundColor];  // updates itself to match current UIUserInterfaceStyle (light/dark mode).
-  else
-    view.backgroundColor = [UIColor whiteColor];
+  bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:traitCollection];
+  CGFloat grayScaleValue = isLightUserInterfaceStyle ? 1.0f : 0.0f;
+  view.backgroundColor = [UIColor colorWithWhite:grayScaleValue alpha:0.6f];
   view.layer.borderWidth = 1;
 }
 

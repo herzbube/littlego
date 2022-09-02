@@ -234,6 +234,20 @@
   [self configureViews];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) traitCollectionDidChange:(UITraitCollection*)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 12.0, *))
+  {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+      [self updateColors];
+  }
+}
+
 #pragma mark - Private helpers for loadView
 
 // -----------------------------------------------------------------------------
@@ -390,9 +404,7 @@
   // but for the entire area in which the Go board resides
   self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
 
-  [UiUtilities applyTransparentStyleToView:self.annotationViewController.view];
-  [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView];
-  [UiUtilities applyTransparentStyleToView:self.gameActionButtonBoxController.view];
+  [self updateColors];
 }
 
 #pragma mark - Dynamic Auto Layout constraint handling
@@ -464,6 +476,20 @@
                                                     forAxis:self.boardViewSmallerDimension
                                            constraintHolder:self.boardViewController.view.superview];
   }
+}
+
+#pragma mark - User interface style handling (light/dark mode)
+
+// -----------------------------------------------------------------------------
+/// @brief Updates all kinds of colors to match the current
+/// UIUserInterfaceStyle (light/dark mode).
+// -----------------------------------------------------------------------------
+- (void) updateColors
+{
+  UITraitCollection* traitCollection = self.traitCollection;
+  [UiUtilities applyTransparentStyleToView:self.annotationViewController.view traitCollection:traitCollection];
+  [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView traitCollection:traitCollection];
+  [UiUtilities applyTransparentStyleToView:self.gameActionButtonBoxController.view traitCollection:traitCollection];
 }
 
 @end

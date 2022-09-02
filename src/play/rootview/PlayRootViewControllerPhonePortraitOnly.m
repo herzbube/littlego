@@ -251,6 +251,20 @@
   [self setupAutoLayoutConstraints];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) traitCollectionDidChange:(UITraitCollection*)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 12.0, *))
+  {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+      [self updateColors];
+  }
+}
+
 #pragma mark - Private helpers for loadView
 
 // -----------------------------------------------------------------------------
@@ -305,8 +319,7 @@
 
   self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
 
-  [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView];
-  [UiUtilities applyTransparentStyleToView:self.annotationViewController.view];
+  [self updateColors];
   self.boardPositionCollectionViewController.view.layer.borderWidth = self.boardPositionCollectionViewBorderWidth;
 
   [self.boardPositionButtonBoxController reloadData];
@@ -504,6 +517,19 @@
 {
   self.navigationItem.leftBarButtonItems = nil;
   self.navigationItem.rightBarButtonItems = nil;
+}
+
+#pragma mark - User interface style handling (light/dark mode)
+
+// -----------------------------------------------------------------------------
+/// @brief Updates all kinds of colors to match the current
+/// UIUserInterfaceStyle (light/dark mode).
+// -----------------------------------------------------------------------------
+- (void) updateColors
+{
+  UITraitCollection* traitCollection = self.traitCollection;
+  [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView traitCollection:traitCollection];
+  [UiUtilities applyTransparentStyleToView:self.annotationViewController.view traitCollection:traitCollection];
 }
 
 @end
