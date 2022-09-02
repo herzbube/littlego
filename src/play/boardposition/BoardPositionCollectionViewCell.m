@@ -288,7 +288,10 @@ static UIFont* smallFont = nil;
 {
   if (-1 == self.boardPosition)
     return;
+
   GoGame* game = [GoGame sharedGame];
+  GoNode* node = [self nodeWithData];
+
   if (0 == self.boardPosition)
   {
     self.stoneImageView.image = nil;
@@ -302,11 +305,6 @@ static UIFont* smallFont = nil;
   }
   else
   {
-    int nodeIndex = self.boardPosition;
-    GoNode* node = [game.nodeModel nodeAtIndex:nodeIndex];
-
-    self.boardPositionLabel.text = [NSString stringWithFormat:@"Position %d", self.boardPosition];
-
     if ([self showsMoveData:node])
     {
       GoMove* move = node.goMove;
@@ -329,14 +327,9 @@ static UIFont* smallFont = nil;
       self.infoIconImageView.image = nil;
 
     if ([self showsHotspotIcon:node])
-    {
       self.hotspotIconImageView.image = hotspotIconImage;
-      self.hotspotIconImageView.tintColor = [UIColor hotspotColor:node.goNodeAnnotation.goBoardPositionHotspotDesignation];
-    }
     else
-    {
       self.hotspotIconImageView.image = nil;
-    }
 
     if ([self showsMarkupIcon:node])
       self.markupIconImageView.image = markupIconImage;
@@ -356,7 +349,7 @@ static UIFont* smallFont = nil;
   else
     self.stoneImageView.accessibilityIdentifier = whiteStoneImageViewBoardPositionAccessibilityIdentifier;
 
-  [self updateBackgroundColor];
+  [self updateColors:node];
 }
 
 // -----------------------------------------------------------------------------
@@ -431,21 +424,6 @@ static UIFont* smallFont = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupRealContent().
-///
-/// Updates the background color of the collection view to match the
-/// current UIUserInterfaceStyle (light/dark mode).
-// -----------------------------------------------------------------------------
-- (void) updateBackgroundColor
-{
-  bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
-  if (0 == (self.boardPosition % 2))
-    self.backgroundColor = isLightUserInterfaceStyle ? alternateCellBackgroundColor1 : alternateCellBackgroundColor1DarkMode;
-  else
-    self.backgroundColor = isLightUserInterfaceStyle ? alternateCellBackgroundColor2 : alternateCellBackgroundColor2DarkMode;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for setupRealContent().
 // -----------------------------------------------------------------------------
 - (bool) showsMoveData:(GoNode*)node
 {
@@ -504,7 +482,8 @@ static UIFont* smallFont = nil;
   {
     if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
     {
-      [self updateBackgroundColor];
+      GoNode* node = [self nodeWithData];
+      [self updateColors:node];
     }
   }
 }
@@ -724,6 +703,56 @@ static UIFont* smallFont = nil;
   }
 }
 
+#pragma mark - User interface style handling (light/dark mode)
+
+// -----------------------------------------------------------------------------
+/// @brief Updates all kinds of colors to match the current
+/// UIUserInterfaceStyle (light/dark mode).
+// -----------------------------------------------------------------------------
+- (void) updateColors:(GoNode*)node
+{
+  bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
+
+  if (0 == (self.boardPosition % 2))
+    self.backgroundColor = isLightUserInterfaceStyle ? alternateCellBackgroundColor1 : alternateCellBackgroundColor1DarkMode;
+  else
+    self.backgroundColor = isLightUserInterfaceStyle ? alternateCellBackgroundColor2 : alternateCellBackgroundColor2DarkMode;
+
+  UIColor* iconTintColor = isLightUserInterfaceStyle ? [UIColor blackColor] : [UIColor whiteColor];;
+
+  if (self.infoIconImageView.image)
+    self.infoIconImageView.tintColor = iconTintColor;
+
+  if (self.markupIconImageView.image)
+    self.markupIconImageView.tintColor = iconTintColor;
+
+  if (self.hotspotIconImageView.image)
+  {
+    GoNodeAnnotation* nodeAnnotation = node ? node.goNodeAnnotation : nil;
+    enum GoBoardPositionHotspotDesignation goBoardPositionHotspotDesignation = nodeAnnotation ? nodeAnnotation.goBoardPositionHotspotDesignation : GoBoardPositionHotspotDesignationNone;
+    if (goBoardPositionHotspotDesignation == GoBoardPositionHotspotDesignationYesEmphasized)
+      self.hotspotIconImageView.tintColor = [UIColor hotspotColor:goBoardPositionHotspotDesignation];
+    else
+      self.hotspotIconImageView.tintColor = iconTintColor;
+  }
+}
+
+#pragma mark - Helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoNode object whose data is displayed by the cell.
+// -----------------------------------------------------------------------------
+- (GoNode*) nodeWithData
+{
+  if (0 == self.boardPosition)
+    return nil;
+
+  int nodeIndex = self.boardPosition;
+  GoNodeModel* nodeModel = [GoGame sharedGame].nodeModel;
+  GoNode* node = [nodeModel nodeAtIndex:nodeIndex];
+  return node;
+}
+
 #pragma mark - One-time view size calculation
 
 // -----------------------------------------------------------------------------
@@ -772,8 +801,8 @@ static UIFont* smallFont = nil;
 
   iconImageWidthAndHeight = floor([UiElementMetrics tableViewCellContentViewHeight] * 0.3);
   CGSize iconImageSize = CGSizeMake(iconImageWidthAndHeight, iconImageWidthAndHeight);
-  infoIconImage = [[[UIImage imageNamed:uiAreaAboutIconResource] imageByResizingToSize:iconImageSize] retain];
-  markupIconImage = [[[UIImage imageNamed:markupIconResource] imageByResizingToSize:iconImageSize] retain];
+  infoIconImage = [[[UIImage imageNamed:uiAreaAboutIconResource] templateImageByResizingToSize:iconImageSize] retain];
+  markupIconImage = [[[UIImage imageNamed:markupIconResource] templateImageByResizingToSize:iconImageSize] retain];
   hotspotIconImage = [[[UIImage imageNamed:hotspotIconResource] templateImageByResizingToSize:iconImageSize] retain];
 
   currentBoardPositionCellBackgroundColor = [[UIColor darkTangerineColor] retain];
