@@ -276,7 +276,7 @@
                           boardSize:(SGFCBoardSize)boardSize
                         treeBuilder:(SGFCTreeBuilder*)treeBuilder
 {
-  // TODO xxx This method does not have variation support.
+  // TODO Variation support: This method does not have variation support.
 
   // Start with first child, root node cannot contain GoMove, GoNodeAnnotation
   // or GoNodeMarkup objects

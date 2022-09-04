@@ -115,6 +115,7 @@
 {
   self.view = nil;
   self.autoLayoutConstraints = nil;
+  self.annotationViewController = nil;
   self.woodenBackgroundView = nil;
   self.boardContainerView = nil;
   self.boardPositionButtonBoxAndAnnotationContainerView = nil;

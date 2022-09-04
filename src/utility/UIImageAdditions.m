@@ -451,10 +451,7 @@
   switch (boardPositionHotspotDesignation)
   {
     case GoBoardPositionHotspotDesignationYes:
-      return [UIImage imageNamed:hotspotIconResource];
     case GoBoardPositionHotspotDesignationYesEmphasized:
-      // TODO xxx in iOS 13 and newer there is an imageWithTintColor method
-      // https://developer.apple.com/documentation/uikit/uiimage/3327300-imagewithtintcolor?language=objc
       return [UIImage imageNamed:hotspotIconResource];
     case GoBoardPositionHotspotDesignationNone:
       return [UIImage imageNamed:noneButtonIconResource];

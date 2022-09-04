@@ -102,11 +102,9 @@ enum BoardViewLayerDelegateEvent
   /// NSArray that contains 1) an NSNumber object that holds an @e int value
   /// that is actually a value from the enumeration #GoMarkupLabel, identifying
   /// the type of the label markup element being moved; 2) an NSString object
-  /// with the label text being moved; 3) a GoPoint object that identifies
-  /// the new location of the label markup element; and 4) an unordered NSArray
-  /// with all GoPoint objects in the same row as the GoPoint object at index
-  /// position 3 (including that object). This event is sent continuously with
-  /// updated information while a pan gesture is ongoing.
+  /// with the label text being moved; and 3) a GoPoint object that identifies
+  /// the new location of the label markup element. This event is sent
+  /// continuously with updated information while a pan gesture is ongoing.
   BVLDEventMarkupMarkerDidMove,
   /// @brief The event info object that accompanies this event type has the
   /// same structure as the event info object that accompanies

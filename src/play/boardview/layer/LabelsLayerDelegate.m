@@ -36,11 +36,6 @@
 // -----------------------------------------------------------------------------
 @interface LabelsLayerDelegate()
 @property(nonatomic, assign) MarkupModel* markupModel;
-/// @brief List of Go board rows that have intersections with this tile. Each
-/// element of the array is an NSNumber object encapsulating an int value that
-/// is a row number. Row numbers start at 1. See the GoVertex docs for details
-/// on the coordinate system of the Go board.
-@property(nonatomic, retain) NSArray* drawingRowsOnTile;
 @property(nonatomic, retain) GoPoint* pointWithChangedMarkup;
 @property(nonatomic, assign) CGRect dirtyRect;
 @property(nonatomic, assign) CGRect temporaryMarkupDrawingRectangle;
@@ -74,7 +69,6 @@
     return nil;
 
   self.markupModel = markupModel;
-  self.drawingRowsOnTile = nil;
   self.pointWithChangedMarkup = nil;
   self.dirtyRect = CGRectZero;
   self.temporaryMarkupDrawingRectangle = CGRectZero;
@@ -96,7 +90,6 @@
 - (void) dealloc
 {
   self.markupModel = nil;
-  self.drawingRowsOnTile = nil;
   self.pointWithChangedMarkup = nil;
   self.drawingPointTemporaryMarkup = nil;
   self.drawingPointOriginalMarkup = nil;
@@ -154,7 +147,6 @@
       [self invalidateDrawingRectangles];
       [self invalidateDirtyRects];
       [self invalidateDirtyData];
-      [self calculateDrawingRowsOnTile];
       self.dirty = true;
       break;
     }
@@ -163,7 +155,6 @@
       [self invalidateDrawingRectangles];
       [self invalidateDirtyRects];
       [self invalidateDirtyData];
-      [self calculateDrawingRowsOnTile];
       self.dirty = true;
       break;
     }
@@ -172,11 +163,7 @@
     // added, so we react to it to trigger a redraw.
     case BVLDEventUIAreaPlayModeChanged:
     {
-      if (! self.drawingRowsOnTile)
-      {
-        [self calculateDrawingRowsOnTile];
-        self.dirty = true;
-      }
+      self.dirty = true;
       break;
     }
     case BVLDEventBoardPositionChanged:
@@ -217,7 +204,6 @@
         CGRect drawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
                                                    inRowContainingPoint:pointWithChangedMarkup
                                                             withMetrics:self.boardViewMetrics];
-        // TODO xxx we could also calculate the point's row and look it up in self.drawingRowsOnTile
         if (CGRectIsEmpty(drawingRect))
           break;
 
@@ -295,26 +281,6 @@
       break;
     }
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Helper for notify:eventInfo:().
-// -----------------------------------------------------------------------------
-- (void) calculateDrawingRowsOnTile
-{
-  // TODO xxx currently it looks as if nobody is using this, so remove if not really needed
-
-  NSMutableArray* drawingRowsOnTile = [NSMutableArray array];
-
-  NSArray* drawingPointsOnTile = [self calculateDrawingPointsOnTile];
-  for (GoPoint* drawingPointOnTile in drawingPointsOnTile)
-  {
-    NSNumber* row = [NSNumber numberWithInt:drawingPointOnTile.vertex.numeric.y];
-    if (! [drawingRowsOnTile containsObject:row])
-      [drawingRowsOnTile addObject:row];
-  }
-
-  self.drawingRowsOnTile = drawingRowsOnTile;
 }
 
 // -----------------------------------------------------------------------------
@@ -437,7 +403,6 @@
     }
     else if (self.pointWithChangedMarkup)
     {
-      // TODO xxx who resets self.pointWithChangedMarkup?
       int rowOfPointWithChangedMarkup = self.pointWithChangedMarkup.vertex.numeric.y;
       if (rowOfPointWithLabel != rowOfPointWithChangedMarkup)
         return;
@@ -445,7 +410,6 @@
 
     CGRect canvasRect = [BoardViewDrawingHelper canvasRectForRowContainingPoint:pointWithLabel
                                                                         metrics:self.boardViewMetrics];
-    // TODO xxx we could also calculate the point's row and look it up in self.drawingRowsOnTile
     if (! CGRectIntersectsRect(tileRect, canvasRect))
       return;
 

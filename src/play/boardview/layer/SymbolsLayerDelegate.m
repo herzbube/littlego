@@ -289,7 +289,6 @@
         {
           NSNumber* labelAsNumber = pointsWithChangedMarkup.lastObject;
           enum GoMarkupLabel label = labelAsNumber.intValue;
-          // TODO xxx if no drawing is necessary for labels, do we need to invoke the invalidate... methods at the start of the case?
           if (label == GoMarkupLabelLabel)
             break;
         }

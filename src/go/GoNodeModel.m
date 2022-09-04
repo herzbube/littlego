@@ -346,7 +346,7 @@
       numberOfMovesToDiscard++;
   }
 
-  // TODO xxx Variation support: Cutting the tree here not only removes the
+  // TODO Variation support: Cutting the tree here not only removes the
   // nodes, it also causes all variations that shared the same path up to here
   // with the current variation to be removed.
   //             +-- new leaf node after all nodes were discarded

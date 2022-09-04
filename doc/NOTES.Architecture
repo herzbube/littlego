@@ -159,8 +159,8 @@ UI design
 As noted in "About the Play UI area", the Play UI area has a large number of UI
 elements, and these must somehow be fitted into the small screeen estate
 available on the iPhone. Here I try to outline the thoughts that went into the
-iPhone UI design. Some of the notes do not apply to the iPad UI design and the
-iPhone landscape UI design.
+iPhone portrait UI design. Some of the notes do not apply to the iPad UI design
+and the iPhone landscape UI design.
 - The Go board view
   - The Go board view has the following purposes: 1) Accurately represent
     board positions (in a game that is actively being played, the current game
@@ -197,7 +197,9 @@ iPhone landscape UI design.
     might seem appropriate, their semantic meaning is not!
 - The status view
   - A status view is used to display information about the current game state
-    to the user.
+    to the user, or a hint about the most likely action that the user may want
+    to take next (e.g. "tap to mark dead stones" in scoring mode, or
+    "tap to place or remove a symbol" in markup editing mode).
   - The status view currently is situated in the center of the navigation bar.
     Previous versions of the app had the status view situated in a single line
     below the board view, but this was redesigned because it took away some of
@@ -210,32 +212,24 @@ iPhone landscape UI design.
     this works surprisingly well, because whenever the activity indicator
     becomes visible it trades space with one or more other buttons that become
     hidden in its stead.
-- The board position toolbar
-  - TODO xxx review this section
-  - There is room for another toolbar because the Go board cannot occupy all the
-    vertical space that is available
-  - All UI elements that are somehow related to board positions are located in
-    this toolbar - this neatly separates board position functions from game
-    playing functions
-  - Toolbar space is limited, so not all UI elements can be displayed at the
-    same time
-  - Because the board position view is the only UI element that is always
-    visible, it is made interactive so that the user can tap it to switch
-    between the other alternating UI elements. Making the board position view
-    interactive is a neat little trick that saves the screen estate for yet
-    another button. The question remains whether the user realizes that the
-    board position view is tappable. I hope so, because after all the view is
-    located in a toolbar, and toolbars usually contain interactive UI elements.
-- The board position view
-  - TODO xxx review this section
-  - A small view is required that displays information about the board position
-    that the user is currently viewing
-  - The view must be visible at all times so that the user does not get lost
-  - As mentioned above, the board position view is interactive: Tapping it
-    switches between a set of buttons that are used to navigate between board
-    positions, and the list of board positions
+- The board position collection view
+  - This is a scrollable view that lists all the board positions. Scrolling is
+    vital because the navigation buttons (see next section) to go back/forward
+    one board position make it hard to access board positions that are far away
+    from the current board position.
+  - The view is designed to take up only minimal vertical space, because
+    vertical space is desperately needed for other views.
+  - Because a board position contains quite a lot of information and not much
+    vertical space is available, as a tradeoff a cell in the collection must be
+    relatively wide. There is no way around this, although it results in only
+    about 2-3 cells being visible at the same time.
+  - The core of a board position is the move that was played to arrive at that
+    position, so the cell shows move information very prominently. If there is
+    more information associated with the board position than just a move, the
+    cell displays a few additional small icons that serve as indicators that
+    "there is more". Notably, an icon to indicate that there is annotation data
+    and an icon to indicate that there is markup data.
 - Buttons to navigate between board positions
-  - TODO xxx review this section
   - Buttons to jump back/forward one position are used to navigate short
     distances
   - Buttons to jump to the beginning/end of the game are used to navigate far
@@ -245,12 +239,12 @@ iPhone landscape UI design.
     I needed new icons with a flat look, and I was unable to find a set of 6
     distinct looking icons; all the icons that I experimented with resulted in
     an ugly-looking, jumbled mass of arrows :-(
-- The list of board positions
-  - TODO xxx review this section
-  - This view exists because the toolbar buttons to go back/forward one board
-    position make it hard to access board positions that are far away from
-    the current board position.
-  - A freely scrollable view is more sexy than one that uses paging.
+- The annotation view
+  - Vertically stacking the 4 board position navigation buttons in a 2x2 grid
+    makes enough space available besides the button grid for displaying
+    annotations information.
+  - There is not enough space to display all the information, so the annotation
+    view uses paging to distribute the information across two pages.
 
 
 Exceptions

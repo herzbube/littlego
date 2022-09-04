@@ -421,7 +421,6 @@
     [newLayerDelegates addObject:self.influenceLayerDelegate];
   if (self.symbolsLayerDelegate)
     [newLayerDelegates addObject:self.symbolsLayerDelegate];
-  // TODO xxx precedence according to user preferences
   if (self.labelsLayerDelegate)
     [newLayerDelegates addObject:self.labelsLayerDelegate];
   if (self.territoryLayerDelegate)

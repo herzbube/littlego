@@ -766,7 +766,7 @@
   GoMove* moveToSet = nil;
   GoMove* previousMove = nil;
 
-  // TODO xxx Add support for variations
+  // TODO Variation support: This method does not have variation support.
   GoNode* node = nodeModel.rootNode;
   while (node)
   {

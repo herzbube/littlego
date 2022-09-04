@@ -200,15 +200,9 @@
   enum BoardViewLayerDelegateEvent event = label == GoMarkupLabelLabel ? BVLDEventMarkupLabelDidMove : BVLDEventMarkupMarkerDidMove;
   NSArray* eventInfo;
   if (point)
-  {
-    // TODO xxx review if this is really needed - for markers it should not be needed, and for labels the layer is probably ignoring this data
-    NSArray* pointsInRow = [GoUtilities pointsInRowWithPoint:point];
-    eventInfo = @[[NSNumber numberWithInt:label], labelText, point, pointsInRow];
-  }
+    eventInfo = @[[NSNumber numberWithInt:label], labelText, point];
   else
-  {
     eventInfo = @[];
-  }
 
   [self notifyTiles:BVLDEventCrossHairChanged eventInfo:point];
   [self notifyTiles:event eventInfo:eventInfo];

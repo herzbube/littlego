@@ -781,6 +781,7 @@ static const int maxStepsForCreateNodes = 10;
     if (! tuple)
       return false;
 
+    // TODO Variation support: Count the number of moves per variation
     if (tuple.firstObject != [NSNull null])
       numberOfMovesFound++;
 
