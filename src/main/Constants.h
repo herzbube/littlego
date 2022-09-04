@@ -569,6 +569,7 @@ extern const int gDefaultHandicap;
 extern const enum GoScoringSystem gDefaultScoringSystem;
 extern const double gDefaultKomiAreaScoring;
 extern const double gDefaultKomiTerritoryScoring;
+extern const unsigned int gNoObjectReferenceNodeID;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -1666,6 +1667,7 @@ extern NSString* goNodeMarkupDimmingsKey;
 // GoNodeModel keys
 extern NSString* goNodeModelGameKey;
 extern NSString* goNodeModelRootNodeKey;
+extern NSString* goNodeModelNodeDictionaryKey;
 extern NSString* goNodeModelNodeListKey;
 extern NSString* goNodeModelNumberOfNodesKey;
 extern NSString* goNodeModelNumberOfMovesKey;

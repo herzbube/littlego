@@ -21,7 +21,8 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The GoNodeAdditions category enhances GoNode by adding tree building
-/// methods, i.e. methods that allow to modify the game tree.
+/// methods, i.e. methods that allow to modify the game tree, and methods for
+/// NSCoding support.
 ///
 /// @ingroup go
 ///
@@ -32,6 +33,8 @@
 // -----------------------------------------------------------------------------
 @interface GoNode(GoNodeAdditions)
 
+/// @name Tree building
+//@{
 - (void) setFirstChild:(GoNode*)child;
 - (void) appendChild:(GoNode*)child;
 - (void) insertChild:(GoNode*)child beforeReferenceChild:(GoNode*)referenceChild;
@@ -39,5 +42,12 @@
 - (void) replaceChild:(GoNode*)oldChild withNewChild:(GoNode*)newChild;
 - (void) setNextSibling:(GoNode*)nextSibling;
 - (void) setParent:(GoNode*)parent;
+//@}
+
+/// @name NSCoding support
+//@{
+- (void) setNodeID:(int)nodeID;
+- (void) restoreTreeLinks:(NSDictionary*)nodeDictionary;
+//@}
 
 @end

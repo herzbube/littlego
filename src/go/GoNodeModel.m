@@ -88,6 +88,10 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
+
+  NSDictionary* nodeDictionary = [decoder decodeObjectForKey:goNodeModelNodeDictionaryKey];
+  [self restoreTreeLinks:nodeDictionary];
+
   self.game = [decoder decodeObjectForKey:goNodeModelGameKey];
   self.rootNode = [decoder decodeObjectForKey:goNodeModelRootNodeKey];
   self.nodeList = [decoder decodeObjectForKey:goNodeModelNodeListKey];
@@ -102,12 +106,115 @@
 // -----------------------------------------------------------------------------
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
+  // Archive a flat data structure (dictionary) constructed on-the-fly instead
+  // of the actual in-memory tree data structure, because archiving the tree
+  // data structure would result in a stack overflow when the tree is very deep
+  // (e.g. many hundreds of nodes). See the GoNode archiving/unarchiving
+  // implementation for more details.
+  // Important: Generate the dictionary before archiving self.rootNode so that
+  // the root node uses the correct first child node ID when it archives itself.
+  NSDictionary* nodeDictionary = [self generateNodeDictionaryForEncoding];
+  [encoder encodeObject:nodeDictionary forKey:goNodeModelNodeDictionaryKey];
+
+  // From here on the GoNode objects' nodeID property value is no longer needed.
+  // Resetting it is wasted CPU cycles, though, because the memory for storing
+  // the unsigned integer value will still be used.
+
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeObject:self.game forKey:goNodeModelGameKey];
   [encoder encodeObject:self.rootNode forKey:goNodeModelRootNodeKey];
+  // Storing self.nodeList in the archive increases the archive size slightly,
+  // but not significantly. Measured: maximum-number-of-moves.sgf with over
+  // a thousand moves causes a size increase of roughly 3 KB, which at the time
+  // when it was measured was only 1.1% of the entire archive size (ca. 282 KB).
   [encoder encodeObject:self.nodeList forKey:goNodeModelNodeListKey];
   [encoder encodeInt:self.numberOfNodes forKey:goNodeModelNumberOfNodesKey];
   [encoder encodeInt:self.numberOfMoves forKey:goNodeModelNumberOfMovesKey];
+}
+
+#pragma mark - NSCoding support
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method for encoding an archive. Generates a dictionary with
+/// all GoNode objects in the node tree. Key = NSNumber holding the GoNode
+/// object's unique node ID (an unsigned int value), value = GoNode object.
+///
+/// Every time this method is invoked it iterates over the node tree and
+/// generates new node IDs to be used as dictionary keys. It also assigns the
+/// node ID to each GoNode object's @e nodeID property.
+///
+/// When the dictionary returned by this method is archived, each GoNode object
+/// is archived as well. The GoNode archives the node ID of its first child,
+/// next sibling and parent instead of the actual GoNode object, thus avoiding
+/// the stack overflow that would occur if objects were archived and the node
+/// tree were deep. The GoNode can archive the mentioned node IDs because (as
+/// mentioned above) this method assigns each GoNode object a node ID.
+// -----------------------------------------------------------------------------
+- (NSDictionary*) generateNodeDictionaryForEncoding
+{
+  NSMutableDictionary* nodeDictionaryForEncoding = [NSMutableDictionary dictionary];
+
+  // The current implementation of this method uses depth-first iteration over
+  // the node tree, starting with the root node. The implementation could use
+  // any other iteration algorithm, though, and it would not even need to start
+  // with the root node, because node IDs are simply looked up in the
+  // dictionary upon unarchiving.
+
+  NSMutableArray* stack = [NSMutableArray array];
+
+  GoNode* currentNode = self.rootNode;
+  unsigned int nodeID = gNoObjectReferenceNodeID;
+
+  while (true)
+  {
+    while (currentNode)
+    {
+      nodeID++;
+      currentNode.nodeID = nodeID;
+      NSNumber* nodeIDAsNumber = [NSNumber numberWithUnsignedInt:nodeID];
+      nodeDictionaryForEncoding[nodeIDAsNumber] = currentNode;
+
+      [stack addObject:currentNode];
+
+      currentNode = currentNode.firstChild;
+    }
+
+    if (stack.count > 0)
+    {
+      currentNode = stack.lastObject;
+      [stack removeLastObject];
+
+      currentNode = currentNode.nextSibling;
+    }
+    else
+    {
+      // We're done
+      break;
+    }
+  }
+
+  return nodeDictionaryForEncoding;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method for decoding an archive. Iterates over all entries in
+/// @a nodeDictionary and invokes GoNode::restoreTreeLinks:() on each GoNode
+/// object. Key = NSNumber holding the GoNode object's unique node ID (an
+/// unsigned int value), value = GoNode object.
+///
+/// This method performs the necessary second step after decoding an archive
+/// to restore GoNode objects to a usable state. When a GoNode object is decoded
+/// from an archive it only contains node IDs as references to its first child,
+/// next sibling and parent node. These node IDs need to be "converted" to
+/// actual object references by performing a lookup in @a nodeDictionary to
+/// find the actual GoNode object whose reference is needed.
+// -----------------------------------------------------------------------------
+- (void) restoreTreeLinks:(NSDictionary*)nodeDictionary
+{
+  [nodeDictionary enumerateKeysAndObjectsUsingBlock:^(NSNumber* nodeIDAsNumber, GoNode* node, BOOL* stop)
+  {
+    [node restoreTreeLinks:nodeDictionary];
+  }];
 }
 
 #pragma mark - Public interface

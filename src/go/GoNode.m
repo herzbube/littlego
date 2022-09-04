@@ -30,6 +30,10 @@
 //@{
 @property(nonatomic, retain, readwrite) GoMove* goMove;
 //@}
+@property(nonatomic, assign) unsigned int nodeID;
+@property(nonatomic, assign) unsigned int firstChildNodeID;
+@property(nonatomic, assign) unsigned int nextSiblingNodeID;
+@property(nonatomic, assign) unsigned int parentNodeID;
 @end
 
 
@@ -80,6 +84,11 @@
   self.goNodeAnnotation = nil;
   self.goNodeMarkup = nil;
 
+  self.nodeID = gNoObjectReferenceNodeID;
+  self.firstChildNodeID = gNoObjectReferenceNodeID;
+  self.nextSiblingNodeID = gNoObjectReferenceNodeID;
+  self.parentNodeID = gNoObjectReferenceNodeID;
+
   return self;
 }
 
@@ -127,14 +136,22 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
-  // TODO xxx Verify that this works with a large number of nodes. The links
-  // between GoMove objects could not be archived because a large number of
-  // moves caused a stack overflow >>> see GoUtilities::relinkMoves().
+  // The firstChild/nextSibling/parent node object references were not archived.
+  // Whoever is unarchiving this GoNode is responsible for invoking the
+  // restoreTreeLinks:() method to restore these object references.
+  // Note: Don't use "self" to avoid the setter methods.
+  _firstChild = nil;
+  _nextSibling = nil;
+  _parent = nil;
 
-  // Don't use "self" to avoid the setter methods
-  _firstChild = [[decoder decodeObjectForKey:goNodeFirstChildKey] retain];
-  _nextSibling = [[decoder decodeObjectForKey:goNodeNextSiblingKey] retain];
-  _parent = [decoder decodeObjectForKey:goNodeParentKey];  // do not retain to avoid retain cycle between parent and its first child
+  // When a node ID is not present in the archive, decodeIntForKey will return
+  // the default value 0 (zero), which is the same as the value for constant
+  // gNoObjectReferenceNodeID.
+  self.nodeID = gNoObjectReferenceNodeID;
+  self.firstChildNodeID = [decoder decodeIntForKey:goNodeFirstChildKey];
+  self.nextSiblingNodeID = [decoder decodeIntForKey:goNodeNextSiblingKey];
+  self.parentNodeID = [decoder decodeIntForKey:goNodeParentKey];
+
   self.goMove = [decoder decodeObjectForKey:goNodeGoMoveKey];
   self.goNodeAnnotation = [decoder decodeObjectForKey:goNodeGoNodeAnnotationKey];
   self.goNodeMarkup = [decoder decodeObjectForKey:goNodeGoNodeMarkupKey];
@@ -148,12 +165,22 @@
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+
+  // Archive the node IDs (which must have been assigned before encoding starts)
+  // instead of the actual objects in the node tree, because in a game with a
+  // deep node tree (e.g. many hundreds of nodes) the result of archiving the
+  // objects would be a stack overflow (archiving the firstChild GoNode object
+  // causes that object to access its own firstChild GoNode object, and so on).
+  //
+  // Important: Only archive IDs for object references that are present. When
+  // there are many nodes this keeps the archive substantially smaller.
   if (self.firstChild)
-    [encoder encodeObject:self.firstChild forKey:goNodeFirstChildKey];
+    [encoder encodeInt:self.firstChild.nodeID forKey:goNodeFirstChildKey];
   if (self.nextSibling)
-    [encoder encodeObject:self.nextSibling forKey:goNodeNextSiblingKey];
+    [encoder encodeInt:self.nextSibling.nodeID forKey:goNodeNextSiblingKey];
   if (self.parent)
-    [encoder encodeObject:self.parent forKey:goNodeParentKey];
+    [encoder encodeInt:self.parent.nodeID forKey:goNodeParentKey];
+
   if (self.goMove)
     [encoder encodeObject:self.goMove forKey:goNodeGoMoveKey];
   if (self.goNodeAnnotation)
@@ -324,6 +351,8 @@
 // -----------------------------------------------------------------------------
 
 @implementation GoNode(GoNodeAdditions)
+
+#pragma mark - GoNodeAdditions - Tree building
 
 // -----------------------------------------------------------------------------
 /// @brief Sets the first child node of the receiver node to @a child, replacing
@@ -817,6 +846,31 @@
   // NOT retain the parent, to avoid a retain cycle between a parent node and
   // its first child node.
   _parent = parent;
+}
+
+#pragma mark - GoNodeAdditions - NSCoding support
+
+// -----------------------------------------------------------------------------
+/// @brief Restores the object references in the properties @e firstChild,
+/// @e nextSibling and @e parent by looking up the GoNode objects in
+/// @a nodeDictionary using the node IDs stored in a number of private
+/// properties.
+///
+/// Whoever causes a GoNode to be unarchived (see initWithCoder:()) must invoke
+/// this method to restore the GoNode to a usable state.
+// -----------------------------------------------------------------------------
+- (void) restoreTreeLinks:(NSDictionary*)nodeDictionary
+{
+  if (self.firstChildNodeID > gNoObjectReferenceNodeID)
+    _firstChild = [nodeDictionary[[NSNumber numberWithUnsignedInt:self.firstChildNodeID]] retain];
+  if (self.nextSiblingNodeID > gNoObjectReferenceNodeID)
+    _nextSibling = [nodeDictionary[[NSNumber numberWithUnsignedInt:self.nextSiblingNodeID]] retain];
+  if (self.parentNodeID > gNoObjectReferenceNodeID)
+    _parent = nodeDictionary[[NSNumber numberWithUnsignedInt:self.parentNodeID]];  // do not retain to avoid retain cycle between parent and its first child
+
+  // From here on the various nodeID property values are no longer needed.
+  // Resetting them is wasted CPU cycles, though, because the memory for storing
+  // the unsigned integer values will still be used.
 }
 
 @end

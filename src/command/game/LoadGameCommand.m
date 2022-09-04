@@ -791,7 +791,7 @@ static const int maxStepsForCreateNodes = 10;
   // engine sync. However, the error message in that case is much less nice.
   if (numberOfMovesFound > maximumNumberOfMoves)
   {
-    *errorMessage = [NSString stringWithFormat:@"The SGF data contains %lu moves. This is more than the maximum number of moves (%d) that the computer player Fuego can process.", (unsigned long)tuples.count, maximumNumberOfMoves];
+    *errorMessage = [NSString stringWithFormat:@"The SGF data contains %d moves. This is more than the maximum number of moves (%d) that the computer player Fuego can process.", numberOfMovesFound, maximumNumberOfMoves];
     return false;
   }
 

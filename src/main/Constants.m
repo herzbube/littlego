@@ -38,6 +38,10 @@ const int gDefaultHandicap = 0;
 const enum GoScoringSystem gDefaultScoringSystem = GoScoringSystemAreaScoring;
 const double gDefaultKomiAreaScoring = 7.5;
 const double gDefaultKomiTerritoryScoring = 6.5;
+// It's important that this constant has value 0 (zero), because that is the
+// value that NSCoder::decodeIntForKey:() returns if an archive does not contain
+// the specified key. See GoNode implementation for details.
+const unsigned int gNoObjectReferenceNodeID = 0;
 
 // Filesystem related constants
 NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
@@ -486,6 +490,7 @@ NSString* goNodeMarkupDimmingsKey = @"Dimmings";
 // GoNodeModel keys
 NSString* goNodeModelGameKey = @"Game";
 NSString* goNodeModelRootNodeKey = @"RootNode";
+NSString* goNodeModelNodeDictionaryKey = @"NodeDictionary";
 NSString* goNodeModelNodeListKey = @"NodeList";
 NSString* goNodeModelNumberOfNodesKey = @"NumberOfNodes";
 NSString* goNodeModelNumberOfMovesKey = @"NumberOfMoves";
