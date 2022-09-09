@@ -431,4 +431,108 @@
   return stoneImageView;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the page indicator that controls paging in the annotation
+/// view.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findAnnotationViewPageControlWithUiApplication:(XCUIApplication*)app
+{
+  XCUIElement* pageIndicator = app.pageIndicators[annotationViewPageControlAccessibilityIdentifier];
+  return pageIndicator;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the specified page in the annotation view.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findAnnotationViewPage:(enum AnnotationViewPage)annotationViewPage withUiApplication:(XCUIApplication*)app
+{
+  NSString* annotationViewPageName;
+
+  switch (annotationViewPage)
+  {
+    case AnnotationViewPageValuation:
+      annotationViewPageName = annotationViewValuationPageAccessibilityIdentifier;
+      break;
+    case AnnotationViewPageDescription:
+      annotationViewPageName = annotationViewDescriptionPageAccessibilityIdentifier;
+      break;
+    default:
+      return nil;
+  }
+
+  XCUIElement* annotationViewPageElement = app.otherElements[annotationViewPageName];
+  return annotationViewPageElement;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the specified UI element on the valuation page in the
+/// annotation view.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findValuationPageUiElement:(enum ValuationPageUiElement)valuationPageUiElement withUiApplication:(XCUIApplication*)app
+{
+  NSString* uiElementName;
+
+  switch (valuationPageUiElement)
+  {
+    case ValuationPageUiElementPositionValuationButton:
+      uiElementName = annotationViewPositionValuationButtonAccessibilityIdentifier;
+      break;
+    case ValuationPageUiElementMoveValuationButton:
+      uiElementName = annotationViewMoveValuationButtonAccessibilityIdentifier;
+      break;
+    case ValuationPageUiElementHotspotDesignationButton:
+      uiElementName = annotationViewHotspotDesignationButtonAccessibilityIdentifier;
+      break;
+    case ValuationPageUiElementEstimatedScoreButton:
+      uiElementName = annotationViewEstimatedScoreButtonAccessibilityIdentifier;
+      break;
+    default:
+      return nil;
+  }
+
+  XCUIElement* annotationViewPage = [self findAnnotationViewPage:AnnotationViewPageValuation withUiApplication:app];
+  XCUIElement* uiElement = annotationViewPage.buttons[uiElementName];
+  return uiElement;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the specified UI element on the description page in the
+/// annotation view.
+// -----------------------------------------------------------------------------
+- (XCUIElement*) findDescriptionPageUiElement:(enum DescriptionPageUiElement)descriptionPageUiElement withUiApplication:(XCUIApplication*)app
+{
+  NSString* uiElementName;
+  bool uiElementIsLabel;
+
+  switch (descriptionPageUiElement)
+  {
+    case DescriptionPageUiElementShortDescriptionLabel:
+      uiElementName = annotationViewShortDescriptionLabelAccessibilityIdentifier;
+      uiElementIsLabel = true;
+      break;
+    case DescriptionPageUiElementLongDescriptionLabel:
+      uiElementName = annotationViewLongDescriptionLabelAccessibilityIdentifier;
+      uiElementIsLabel = true;
+      break;
+    case DescriptionPageUiElementEditDescriptionButton:
+      uiElementName = annotationViewEditDescriptionButtonAccessibilityIdentifier;
+      uiElementIsLabel = false;
+      break;
+    case DescriptionPageUiElementRemoveDescriptionButton:
+      uiElementName = annotationViewRemoveDescriptionButtonAccessibilityIdentifier;
+      uiElementIsLabel = false;
+      break;
+    default:
+      return nil;
+  }
+
+  XCUIElement* annotationViewPage = [self findAnnotationViewPage:AnnotationViewPageDescription withUiApplication:app];
+  XCUIElement* uiElement;
+  if (uiElementIsLabel)
+    uiElement = annotationViewPage.staticTexts[uiElementName];
+  else
+    uiElement = annotationViewPage.buttons[uiElementName];
+  return uiElement;
+}
+
 @end

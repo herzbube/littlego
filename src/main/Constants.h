@@ -227,8 +227,28 @@ enum InfoType
 /// @brief Enumerates the pages that the Annotation view can display.
 enum AnnotationViewPage
 {
-  ValuationAnnotationViewPage,
-  DescriptionAnnotationViewPage
+  AnnotationViewPageValuation,
+  AnnotationViewPageDescription
+};
+
+/// @brief Enumerates the UI elements displayed on the valuation page of the
+/// annotation view.
+enum ValuationPageUiElement
+{
+  ValuationPageUiElementPositionValuationButton,
+  ValuationPageUiElementMoveValuationButton,
+  ValuationPageUiElementHotspotDesignationButton,
+  ValuationPageUiElementEstimatedScoreButton
+};
+
+/// @brief Enumerates the UI elements displayed on the description page of the
+/// annotation view.
+enum DescriptionPageUiElement
+{
+  DescriptionPageUiElementShortDescriptionLabel,
+  DescriptionPageUiElementLongDescriptionLabel,
+  DescriptionPageUiElementEditDescriptionButton,
+  DescriptionPageUiElementRemoveDescriptionButton
 };
 
 /// @brief Enumerates the axis' displayed around the Go board. "A1" is in the
@@ -1740,6 +1760,17 @@ extern NSString* boardPositionNavigationButtonContainerAccessibilityIdentifier;
 extern NSString* currentBoardPositionViewAccessibilityIdentifier;
 extern NSString* currentBoardPositionTableViewAccessibilityIdentifier;
 extern NSString* boardPositionTableViewAccessibilityIdentifier;
+extern NSString* annotationViewPageControlAccessibilityIdentifier;
+extern NSString* annotationViewValuationPageAccessibilityIdentifier;
+extern NSString* annotationViewDescriptionPageAccessibilityIdentifier;
+extern NSString* annotationViewPositionValuationButtonAccessibilityIdentifier;
+extern NSString* annotationViewMoveValuationButtonAccessibilityIdentifier;
+extern NSString* annotationViewHotspotDesignationButtonAccessibilityIdentifier;
+extern NSString* annotationViewEstimatedScoreButtonAccessibilityIdentifier;
+extern NSString* annotationViewShortDescriptionLabelAccessibilityIdentifier;
+extern NSString* annotationViewLongDescriptionLabelAccessibilityIdentifier;
+extern NSString* annotationViewEditDescriptionButtonAccessibilityIdentifier;
+extern NSString* annotationViewRemoveDescriptionButtonAccessibilityIdentifier;
 //@}
 
 // -----------------------------------------------------------------------------

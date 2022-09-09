@@ -35,6 +35,9 @@
          onBoardWithSize:(enum GoBoardSize)boardSize
        withUiApplication:(XCUIApplication*)app;
 
+- (void) tapPageControl:(XCUIElement*)pageControl
+            onRightSide:(bool)shouldTapOnRightSide;
+
 - (bool) verifyWithUiApplication:(XCUIApplication*)app
   doesContentOfBoardPositionCell:(XCUIElement*)boardPositionCell
   matchBoardPositionLabelContent:(NSString*)boardPositionLabelContent

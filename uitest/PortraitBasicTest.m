@@ -120,6 +120,35 @@
                                 capturedStonesLabelContent:nil
                                                  moveColor:GoColorNone]);
   XCTAssertTrue(firstBoardPositionCell.selected);
+
+  // Annotation view
+  XCUIElement* annotationViewPageValuation = [self.uiElementFinder findAnnotationViewPage:AnnotationViewPageValuation withUiApplication:app];
+  XCTAssertTrue(annotationViewPageValuation.exists);
+  XCUIElement* annotationViewPageDescription = [self.uiElementFinder findAnnotationViewPage:AnnotationViewPageDescription withUiApplication:app];
+  XCTAssertFalse(annotationViewPageDescription.exists);
+
+  XCUIElement* positionValuationButton = [self.uiElementFinder findValuationPageUiElement:ValuationPageUiElementPositionValuationButton withUiApplication:app];
+  XCTAssertTrue(positionValuationButton.enabled);
+  XCUIElement* moveValuationButton = [self.uiElementFinder findValuationPageUiElement:ValuationPageUiElementMoveValuationButton withUiApplication:app];
+  XCTAssertFalse(moveValuationButton.enabled);
+  XCUIElement* hotspotDesignationButton = [self.uiElementFinder findValuationPageUiElement:ValuationPageUiElementHotspotDesignationButton withUiApplication:app];
+  XCTAssertTrue(hotspotDesignationButton.enabled);
+  XCUIElement* estimatedScoreButton = [self.uiElementFinder findValuationPageUiElement:ValuationPageUiElementEstimatedScoreButton withUiApplication:app];
+  XCTAssertTrue(estimatedScoreButton.enabled);
+
+  XCUIElement* annotationViewPageControl = [self.uiElementFinder findAnnotationViewPageControlWithUiApplication:app];
+  [self.uiTestHelper tapPageControl:annotationViewPageControl onRightSide:true];
+  XCTAssertFalse(annotationViewPageValuation.exists);
+  XCTAssertTrue(annotationViewPageDescription.exists);
+
+  XCUIElement* shortDescriptionlabel = [self.uiElementFinder findDescriptionPageUiElement:DescriptionPageUiElementShortDescriptionLabel withUiApplication:app];
+  XCTAssertTrue(shortDescriptionlabel.exists);
+  XCUIElement* longDescriptionLabel = [self.uiElementFinder findDescriptionPageUiElement:DescriptionPageUiElementLongDescriptionLabel withUiApplication:app];
+  XCTAssertFalse(longDescriptionLabel.exists);
+  XCUIElement* editDescriptionButton = [self.uiElementFinder findDescriptionPageUiElement:DescriptionPageUiElementEditDescriptionButton withUiApplication:app];
+  XCTAssertTrue(editDescriptionButton.enabled);
+  XCUIElement* removeDescriptionButton = [self.uiElementFinder findDescriptionPageUiElement:DescriptionPageUiElementRemoveDescriptionButton withUiApplication:app];
+  XCTAssertFalse(removeDescriptionButton.enabled);
 }
 
 // -----------------------------------------------------------------------------

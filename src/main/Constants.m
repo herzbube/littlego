@@ -558,6 +558,17 @@ NSString* boardPositionNavigationButtonContainerAccessibilityIdentifier = @"boar
 NSString* currentBoardPositionViewAccessibilityIdentifier = @"currentBoardPositionView";
 NSString* currentBoardPositionTableViewAccessibilityIdentifier = @"currentBoardPositionTableView";
 NSString* boardPositionTableViewAccessibilityIdentifier = @"boardPositionTableView";
+NSString* annotationViewPageControlAccessibilityIdentifier = @"annotationViewPageControl";
+NSString* annotationViewValuationPageAccessibilityIdentifier = @"annotationViewValuationPage";
+NSString* annotationViewDescriptionPageAccessibilityIdentifier = @"annotationViewDescriptionPage";
+NSString* annotationViewPositionValuationButtonAccessibilityIdentifier = @"annotationViewPositionValuationButton";
+NSString* annotationViewMoveValuationButtonAccessibilityIdentifier = @"annotationViewMoveValuationButton";
+NSString* annotationViewHotspotDesignationButtonAccessibilityIdentifier = @"annotationViewHotspotDesignationButton";
+NSString* annotationViewEstimatedScoreButtonAccessibilityIdentifier = @"annotationViewEstimatedScoreButton";
+NSString* annotationViewShortDescriptionLabelAccessibilityIdentifier = @"annotationViewShortDescriptionLabel";
+NSString* annotationViewLongDescriptionLabelAccessibilityIdentifier = @"annotationViewLongDescriptionLabel";
+NSString* annotationViewEditDescriptionButtonAccessibilityIdentifier = @"annotationViewEditDescriptionButton";
+NSString* annotationViewRemoveDescriptionButtonAccessibilityIdentifier = @"annotationViewRemoveDescriptionButton";
 
 // Other UI testing constants
 NSString* uiTestModeLaunchArgument = @"--ui-test-mode";

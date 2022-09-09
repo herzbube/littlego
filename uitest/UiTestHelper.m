@@ -104,6 +104,21 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Taps on the specified page control @a pageControl.
+/// @a shouldTapOnRightSide specifies whether the tap should occur on the left
+/// or right side of the control (i.e. activating the next page on the left or
+/// right of the current page).
+// -----------------------------------------------------------------------------
+- (void) tapPageControl:(XCUIElement*)pageControl
+            onRightSide:(bool)shouldTapOnRightSide
+{
+  CGFloat xOffset = shouldTapOnRightSide ? pageControl.frame.size.width - 1 : 0;
+  XCUICoordinate* pageControlLeftEdge = [pageControl coordinateWithNormalizedOffset:CGVectorMake(0, 0)];
+  XCUICoordinate* tapCoordinate = [pageControlLeftEdge coordinateWithOffset:CGVectorMake(xOffset, 0)];
+  [tapCoordinate tap];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Verifies with the help of @a app that @a boardPositionCell contains
 /// @a boardPositionLabelContent, @a intersectionLabelContent,
 /// @a capturedStonesLabelContent and an image that matches @a moveColor.

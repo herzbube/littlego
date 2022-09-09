@@ -132,4 +132,11 @@
 /// @e view property has been accessed for the first time.
 @property (nonatomic, assign) UIPageControlBackgroundStyle pageControlBackgroundStyle API_AVAILABLE(ios(14.0));
 
+/// @brief The accessibility identifier to use for the page control. The default
+/// value is @e nil, i.e. no accessibility identifier is used.
+///
+/// Currently changes to this property are ignored after the PageViewController
+/// @e view property has been accessed for the first time.
+@property (nonatomic, retain) NSString* pageControlAccessibilityIdentifier;
+
 @end

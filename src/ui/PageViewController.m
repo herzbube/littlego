@@ -96,6 +96,7 @@
   self.pageControlVerticalSpacing = -1;
   if (@available(iOS 14, *))
     self.pageControlBackgroundStyle = UIPageControlBackgroundStyleAutomatic;
+  self.pageControlAccessibilityIdentifier = nil;
 
   self.deallocating = false;
   self.animationIsInProgress = false;
@@ -120,6 +121,11 @@
 
   self.delegate = nil;
   self.initialViewController = nil;
+
+  self.pageControlTintColor = nil;
+  self.pageControlPageIndicatorTintColor = nil;
+  self.pageControlCurrentPageIndicatorTintColor = nil;
+  self.pageControlAccessibilityIdentifier = nil;
 
   // First, let the property setter get rid of all child view controllers and
   // their subviews
@@ -279,6 +285,9 @@
   
   if (@available(iOS 14, *))
     self.pageControl.backgroundStyle = self.pageControlBackgroundStyle;
+
+  if (self.pageControlAccessibilityIdentifier)
+    self.pageControl.accessibilityIdentifier = self.pageControlAccessibilityIdentifier;
 
   [self.pageControl addTarget:self
                        action:@selector(pageChanged:)

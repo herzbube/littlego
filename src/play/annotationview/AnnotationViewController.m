@@ -249,7 +249,7 @@ static const int spacerBottomTag = 2;
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   UiSettingsModel* uiSettingsModel = appDelegate.uiSettingsModel;
   UIViewController* initialViewController;
-  if (uiSettingsModel.visibleAnnotationViewPage == ValuationAnnotationViewPage)
+  if (uiSettingsModel.visibleAnnotationViewPage == AnnotationViewPageValuation)
     initialViewController = self.valuationViewController;
   else
     initialViewController = self.descriptionViewController;
@@ -259,6 +259,7 @@ static const int spacerBottomTag = 2;
                                                                       initialViewController:initialViewController];
 
   self.customPageViewController.delegate = self;
+  self.customPageViewController.pageControlAccessibilityIdentifier = annotationViewPageControlAccessibilityIdentifier;
 
   UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
   bool orientationIsPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
@@ -353,7 +354,10 @@ static const int spacerBottomTag = 2;
   [self.view addSubview:self.customPageViewController.view];
 
   [self setupValuationView:self.valuationViewController.view];
+  self.valuationViewController.view.accessibilityIdentifier = annotationViewValuationPageAccessibilityIdentifier;
+
   [self setupDescriptionView:self.descriptionViewController.view];
+  self.descriptionViewController.view.accessibilityIdentifier = annotationViewDescriptionPageAccessibilityIdentifier;
 }
 
 // -----------------------------------------------------------------------------
@@ -380,18 +384,22 @@ static const int spacerBottomTag = 2;
   UIView* positionValuationItem = [self createStackViewItem:self.valuationViewStackView];
   self.positionValuationLabel = [self createTitleLabelInSuperview:positionValuationItem withTitleText:@"Position"];
   self.positionValuationButton = [self createButtonInSuperView:positionValuationItem selector:@selector(editPositionValuation:)];
+  self.positionValuationButton.accessibilityIdentifier = annotationViewPositionValuationButtonAccessibilityIdentifier;
 
   UIView* moveValuationItem = [self createStackViewItem:self.valuationViewStackView];
   self.moveValuationLabel = [self createTitleLabelInSuperview:moveValuationItem withTitleText:@"Move"];
   self.moveValuationButton = [self createButtonInSuperView:moveValuationItem selector:@selector(editMoveValuation:)];
+  self.moveValuationButton.accessibilityIdentifier = annotationViewMoveValuationButtonAccessibilityIdentifier;
 
   UIView* hotspotItem = [self createStackViewItem:self.valuationViewStackView];
   self.hotspotLabel = [self createTitleLabelInSuperview:hotspotItem withTitleText:@"Hotspot"];
   self.hotspotButton = [self createButtonInSuperView:hotspotItem selector:@selector(editHotspotDesignation:)];
+  self.hotspotButton.accessibilityIdentifier = annotationViewHotspotDesignationButtonAccessibilityIdentifier;
 
   UIView* estimatedScoreItem = [self createStackViewItem:self.valuationViewStackView];
   self.estimatedScoreLabel = [self createTitleLabelInSuperview:estimatedScoreItem withTitleText:@"Score"];
   self.estimatedScoreButton = [self createButtonInSuperView:estimatedScoreItem selector:@selector(editEstimatedScore:)];
+  self.estimatedScoreButton.accessibilityIdentifier = annotationViewEstimatedScoreButtonAccessibilityIdentifier;
 
   UIFont* buttonTitleLabelFont = [UIFont systemFontOfSize:self.labelFontSize];
   self.estimatedScoreButton.titleLabel.font = buttonTitleLabelFont;
@@ -409,8 +417,10 @@ static const int spacerBottomTag = 2;
 
   self.shortDescriptionLabel = [self createLabelInSuperView:self.descriptionContentView];
   self.shortDescriptionLabel.numberOfLines = 0;
+  self.shortDescriptionLabel.accessibilityIdentifier = annotationViewShortDescriptionLabelAccessibilityIdentifier;
   self.longDescriptionLabel = [self createLabelInSuperView:self.descriptionContentView];
   self.longDescriptionLabel.numberOfLines = 0;
+  self.longDescriptionLabel.accessibilityIdentifier = annotationViewLongDescriptionLabelAccessibilityIdentifier;
 
   self.descriptionSpacerView = [self createViewInSuperView:superview];
 
@@ -420,10 +430,12 @@ static const int spacerBottomTag = 2;
 
   [self.descriptionEditButton setImage:[[UIImage editIcon] imageByScalingToHeight:self.iconHeight]
                               forState:UIControlStateNormal];
+  self.descriptionEditButton.accessibilityIdentifier = annotationViewEditDescriptionButtonAccessibilityIdentifier;
 
   self.descriptionRemoveButton = [self createButtonInSuperView:self.descriptionButtonContainerView selector:@selector(removeDescription:)];
   [self.descriptionRemoveButton setImage:[[UIImage trashcanIcon] imageByScalingToHeight:self.iconHeight]
                                 forState:UIControlStateNormal];
+  self.descriptionRemoveButton.accessibilityIdentifier = annotationViewRemoveDescriptionButtonAccessibilityIdentifier;
 }
 
 // -----------------------------------------------------------------------------
@@ -728,9 +740,9 @@ static const int spacerBottomTag = 2;
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   UiSettingsModel* uiSettingsModel = appDelegate.uiSettingsModel;
   if (nextViewController == self.valuationViewController)
-    uiSettingsModel.visibleAnnotationViewPage = ValuationAnnotationViewPage;
+    uiSettingsModel.visibleAnnotationViewPage = AnnotationViewPageValuation;
   else
-    uiSettingsModel.visibleAnnotationViewPage = DescriptionAnnotationViewPage;
+    uiSettingsModel.visibleAnnotationViewPage = AnnotationViewPageDescription;
 }
 
 #pragma mark - Notification responders

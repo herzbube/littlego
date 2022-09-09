@@ -50,4 +50,9 @@
 - (XCUIElement*) findCapturedStonesLabelInBoardPositionCell:(XCUIElement*)boardPositionCell;
 - (XCUIElement*) findStoneImageViewForColor:(enum GoColor)color inBoardPositionCell:(XCUIElement*)boardPositionCell;
 
+- (XCUIElement*) findAnnotationViewPageControlWithUiApplication:(XCUIApplication*)app;
+- (XCUIElement*) findAnnotationViewPage:(enum AnnotationViewPage)annotationViewPage withUiApplication:(XCUIApplication*)app;
+- (XCUIElement*) findValuationPageUiElement:(enum ValuationPageUiElement)valuationPageUiElement withUiApplication:(XCUIApplication*)app;
+- (XCUIElement*) findDescriptionPageUiElement:(enum DescriptionPageUiElement)descriptionPageUiElement withUiApplication:(XCUIApplication*)app;
+
 @end

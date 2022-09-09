@@ -38,7 +38,7 @@
   for (int arrayIndex = 0; arrayIndex < arraySizeDefaultTabOrder; ++arrayIndex)
     [(NSMutableArray*)_tabOrder addObject:[NSNumber numberWithInt:defaultTabOrder[arrayIndex]]];
   _uiAreaPlayMode = UIAreaPlayModeDefault;
-  self.visibleAnnotationViewPage = ValuationAnnotationViewPage;
+  self.visibleAnnotationViewPage = AnnotationViewPageValuation;
 
   return self;
 }
