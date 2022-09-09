@@ -43,7 +43,6 @@
 
 - (XCUIElement*) findStatusLabelWithUiApplication:(XCUIApplication*)app;
 
-- (XCUIElement*) findCurrentBoardPositionCellWithUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findBoardPositionCellContainerWithUiApplication:(XCUIApplication*)app;
 - (NSArray<XCUIElement*>*) findBoardPositionCellsWithUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findIntersectionLabelInBoardPositionCell:(XCUIElement*)boardPositionCell;

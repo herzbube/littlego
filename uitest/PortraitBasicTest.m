@@ -20,6 +20,7 @@
 #import "UiTestDeviceInfo.h"
 #import "UiTestHelper.h"
 #import "../src/utility/AccessibilityUtility.h"
+#import "../src/utility/UIDeviceAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -46,6 +47,11 @@
 - (void) setUp
 {
   self.continueAfterFailure = NO;
+
+  if ([UIDevice systemVersionMajor] < 14)
+  {
+    XCTFail(@"For unknown reasons tests are unable to find the status label on iOS versions below 14. Possibly other limitations exist, so to be on the safe side running tests on iOS versions that are too low is disabled entirely.");
+  }
 
   XCUIApplication* app = [[XCUIApplication alloc] init];
   app.launchArguments = @[uiTestModeLaunchArgument];
@@ -87,14 +93,6 @@
   XCTAssertTrue(gameInfoButton.enabled);
   XCUIElement* moreGameActionsButton = [self.uiElementFinder findGameActionButton:GameActionMoreGameActions withUiApplication:app];
   XCTAssertTrue(moreGameActionsButton.enabled);
-  if (self.uiTestDeviceInfo.uiType == UITypePad)
-  {
-    XCUIElement* movesButton = [self.uiElementFinder findGameActionButton:GameActionMoves withUiApplication:app];
-    XCTAssertTrue(movesButton.enabled);
-
-    // Pop up the board position stuff
-    [movesButton tap];
-  }
 
   // Board position navigation
   XCUIElement* rewindToStartButton = [self.uiElementFinder findBoardPositionNavigationButton:BoardPositionNavigationButtonRewindToStart withUiApplication:app];
@@ -111,84 +109,28 @@
   XCTAssertTrue([statusLabel.label isEqualToString:@"Game started Black to move"]);  // Newline character is converted to space
 
   // Board positions
-  if (self.uiTestDeviceInfo.uiType == UITypePhone)
-  {
-    NSArray* boardPositionCells = [self.uiElementFinder findBoardPositionCellsWithUiApplication:app];
-    XCTAssertEqual(boardPositionCells.count, 1);
-    XCUIElement* firstBoardPositionCell = boardPositionCells[0];
+  NSArray* boardPositionCells = [self.uiElementFinder findBoardPositionCellsWithUiApplication:app];
+  XCTAssertEqual(boardPositionCells.count, 1);
+  XCUIElement* firstBoardPositionCell = boardPositionCells[0];
 
-    XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
-                              doesContentOfBoardPositionCell:firstBoardPositionCell
-                              matchBoardPositionLabelContent:@"Handicap: 0, Komi: 7½"
-                                    intersectionLabelContent:@"Start of the game"
-                                  capturedStonesLabelContent:nil
-                                                   moveColor:GoColorNone]);
-    XCTAssertTrue(firstBoardPositionCell.selected);
-  }
-  else if (self.uiTestDeviceInfo.uiType == UITypePhonePortraitOnly)
-  {
-    XCUIElement* currentBoardPositionView = [self.uiElementFinder findCurrentBoardPositionCellWithUiApplication:app];
-    XCTAssertTrue(currentBoardPositionView.exists);
-
-    XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
-                              doesContentOfBoardPositionCell:currentBoardPositionView
-                              matchBoardPositionLabelContent:@"H: 0"
-                                    intersectionLabelContent:@"K: 7½"
-                                  capturedStonesLabelContent:nil
-                                                   moveColor:GoColorNone]);
-
-    [currentBoardPositionView tap];
-
-    NSArray* boardPositionCells = [self.uiElementFinder findBoardPositionCellsWithUiApplication:app];
-    XCTAssertEqual(boardPositionCells.count, 1);
-    XCUIElement* firstBoardPositionCell = boardPositionCells[0];
-
-    XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
-                              doesContentOfBoardPositionCell:firstBoardPositionCell
-                              matchBoardPositionLabelContent:@"H: 0"
-                                    intersectionLabelContent:@"K: 7½"
-                                  capturedStonesLabelContent:nil
-                                                   moveColor:GoColorNone]);
-  }
-  else if (self.uiTestDeviceInfo.uiType == UITypePad)
-  {
-    XCUIElement* currentBoardPositionView = [self.uiElementFinder findCurrentBoardPositionCellWithUiApplication:app];
-    XCTAssertTrue(currentBoardPositionView.exists);
-
-    XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
-                              doesContentOfBoardPositionCell:currentBoardPositionView
-                              matchBoardPositionLabelContent:@"Handicap: 0, Komi: 7½"
-                                    intersectionLabelContent:@"Start of the game"
-                                  capturedStonesLabelContent:nil
-                                                   moveColor:GoColorNone]);
-
-    NSArray* boardPositionCells = [self.uiElementFinder findBoardPositionCellsWithUiApplication:app];
-    XCTAssertEqual(boardPositionCells.count, 1);
-    XCUIElement* firstBoardPositionCell = boardPositionCells[0];
-
-    XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
-                              doesContentOfBoardPositionCell:firstBoardPositionCell
-                              matchBoardPositionLabelContent:@"Handicap: 0, Komi: 7½"
-                                    intersectionLabelContent:@"Start of the game"
-                                  capturedStonesLabelContent:nil
-                                                   moveColor:GoColorNone]);
-    XCTAssertTrue(firstBoardPositionCell.selected);
-  }
-  else
-  {
-    XCTAssertTrue(false);
-  }
+  XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
+                            doesContentOfBoardPositionCell:firstBoardPositionCell
+                            matchBoardPositionLabelContent:@"Handicap: 0, Komi: 7½"
+                                  intersectionLabelContent:@"Start of the game"
+                                capturedStonesLabelContent:nil
+                                                 moveColor:GoColorNone]);
+  XCTAssertTrue(firstBoardPositionCell.selected);
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Test that all UI areas can be activated.
 // -----------------------------------------------------------------------------
-- (void) testActivateAllUiAreas_NotUiTypePhone
+- (void) testActivateAllUiAreas
 {
   XCUIApplication* app = [[XCUIApplication alloc] init];
 
   NSArray* uiAreas;
-  if (self.uiTestDeviceInfo.uiType == UITypePhonePortraitOnly)
+  if (self.uiTestDeviceInfo.uiType != UITypePad)
   {
     uiAreas = @[[NSNumber numberWithInt:UIAreaSettings],
                 [NSNumber numberWithInt:UIAreaArchive],
@@ -223,7 +165,7 @@
     XCTAssertTrue(uiAreaNavigationBar.exists);
   }
 
-  if (self.uiTestDeviceInfo.uiType == UITypePhonePortraitOnly)
+  if (self.uiTestDeviceInfo.uiType != UITypePad)
   {
     uiAreas = @[[NSNumber numberWithInt:UIAreaDiagnostics],
                 [NSNumber numberWithInt:UIAreaAbout],

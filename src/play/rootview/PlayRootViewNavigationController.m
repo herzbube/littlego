@@ -58,6 +58,16 @@
 
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) loadView
+{
+  [super loadView];
+
+  self.navigationBar.accessibilityIdentifier = playRootViewNavigationBarAccessibilityIdentifier;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
 ///
 /// This override handles interface orientation changes while this controller's
 /// view hierarchy is visible, and changes that occurred while this controller's

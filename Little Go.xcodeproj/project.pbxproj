@@ -242,6 +242,7 @@
 		CD3D8B5528BBE12F0008D22F /* noun_36901_cc.svg in Resources */ = {isa = PBXBuildFile; fileRef = CD3D8B5128BBE12F0008D22F /* noun_36901_cc.svg */; };
 		CD3D8B5628BBE12F0008D22F /* menu-hamburger@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD3D8B5228BBE12F0008D22F /* menu-hamburger@3x.png */; };
 		CD3D8B5728BBE12F0008D22F /* menu-hamburger@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD3D8B5328BBE12F0008D22F /* menu-hamburger@2x.png */; };
+		CD3D8B5828CB55690008D22F /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
 		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */; };
 		CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
@@ -4292,6 +4293,7 @@
 				CDB49E32220DF90D006DC1A4 /* Constants.m in Sources */,
 				CDB49E35220EDAF6006DC1A4 /* UiTestDeviceInfo.m in Sources */,
 				CDB49E3E2220AFE5006DC1A4 /* AccessibilityUtility.m in Sources */,
+				CD3D8B5828CB55690008D22F /* UIDeviceAdditions.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

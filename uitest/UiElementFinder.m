@@ -48,65 +48,13 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the navigation bar of the root view of #UIAreaPlay. This
-/// method returns the correct result only if the UI type is #UITypePhone.
-/// Raises NSInternalInconsistencyException if the UI type is not #UITypePhone.
+/// @brief Returns the navigation bar of the root view of #UIAreaPlay.
 ///
 /// @see PlayRootViewController.
 // -----------------------------------------------------------------------------
 - (XCUIElement*) findPlayRootViewNavigationBar:(XCUIApplication*)app
 {
-  if (self.uiTestDeviceInfo.uiType != UITypePhone)
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unsupported UIType in findPlayRootViewNavigationBar" userInfo:nil];
-
-  XCUIElement* playRootViewNavigationBar = app.navigationBars[@"PlayRootView"];
-  return playRootViewNavigationBar;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the navigation bar of the root view of #UIAreaPlay that
-/// contains the specified game action. This method returns the correct result
-/// only if the UI type is #UITypePhonePortraitOnly or #UITypePad. Raises
-/// NSInternalInconsistencyException if the UI type is neither
-/// #UITypePhonePortraitOnly nor #UITypePad.
-///
-/// @see NavigationBarControllerPhonePortraitOnly.
-// -----------------------------------------------------------------------------
-- (XCUIElement*) findPlayRootViewNavigationBarContainingGameAction:(enum GameAction)gameAction
-                                                 withUiApplication:(XCUIApplication*)app
-{
-  if (self.uiTestDeviceInfo.uiType == UITypePhone)
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unsupported UIType in findPlayRootViewNavigationBarContainingGameAction" userInfo:nil];
-
-  NSString* navigationBarName;
-
-  switch (gameAction)
-  {
-    case GameActionPass:
-    case GameActionDiscardBoardPosition:
-    case GameActionComputerPlay:
-    case GameActionComputerSuggestMove:
-    case GameActionPause:
-    case GameActionContinue:
-    case GameActionInterrupt:
-    case GameActionScoringStart:
-    case GameActionPlayStart:
-    case GameActionSwitchSetupStoneColorToWhite:
-    case GameActionSwitchSetupStoneColorToBlack:
-    case GameActionDiscardAllSetupStones:
-      navigationBarName = leftNavigationBarAccessibilityIdentifier;
-      break;
-    case GameActionMoves:
-    case GameActionGameInfo:
-    case GameActionMoreGameActions:
-      navigationBarName = rightNavigationBarAccessibilityIdentifier;
-      break;
-    default:
-      navigationBarName = nil;
-      break;
-  }
-
-  XCUIElement* playRootViewNavigationBar = app.navigationBars[navigationBarName];
+  XCUIElement* playRootViewNavigationBar = app.navigationBars[playRootViewNavigationBarAccessibilityIdentifier];
   return playRootViewNavigationBar;
 }
 
@@ -165,16 +113,10 @@
       buttonName = menuHamburgerButtonIconResource;
       break;
     default:
-      buttonName = nil;
-      break;
+      return nil;
   }
 
-  XCUIElement* playRootViewNavigationBar;
-  if (self.uiTestDeviceInfo.uiType == UITypePhone)
-    playRootViewNavigationBar = [self findPlayRootViewNavigationBar:app];
-  else
-    playRootViewNavigationBar = [self findPlayRootViewNavigationBarContainingGameAction:gameAction withUiApplication:app];
-
+  XCUIElement* playRootViewNavigationBar = [self findPlayRootViewNavigationBar:app];
   XCUIElement* button = playRootViewNavigationBar.buttons[buttonName];
   return button;
 }
@@ -239,8 +181,7 @@
       buttonName = @"Cancel";
       break;
     default:
-      buttonName = nil;
-      break;
+      return nil;
   }
 
   XCUIElement* button = app.sheets[@"Game actions"].buttons[buttonName];
@@ -254,12 +195,7 @@
 - (XCUIElement*) findBoardPositionNavigationButtonContainerWithUiApplication:(XCUIApplication*)app
 {
   XCUIElement* boardPositionNavigationButtonContainer;
-
-  if (self.uiTestDeviceInfo.uiType == UITypePhone)
-    boardPositionNavigationButtonContainer = app.collectionViews[boardPositionNavigationButtonContainerAccessibilityIdentifier];
-  else
-    boardPositionNavigationButtonContainer = app.toolbars[boardPositionNavigationButtonContainerAccessibilityIdentifier];
-
+  boardPositionNavigationButtonContainer = app.collectionViews[boardPositionNavigationButtonContainerAccessibilityIdentifier];
   return boardPositionNavigationButtonContainer;
 }
 
@@ -287,8 +223,7 @@
       buttonName = @"forwardtoend";
       break;
     default:
-      buttonName = nil;
-      break;
+      return nil;
   }
 
   XCUIElement* boardPositionNavigationButtonContainer =
@@ -309,10 +244,7 @@
   switch (uiArea)
   {
     case UIAreaPlay:
-      if (self.uiTestDeviceInfo.uiType == UITypePhone)
-        uiElementName = nil;  // has no UI element
-      else
-        uiElementName = @"Play";
+      uiElementName = @"Play";
       break;
     case UIAreaSettings:
       uiElementName = @"Settings";
@@ -342,28 +274,15 @@
       uiElementName = @"Changelog";
       break;
     case UIAreaNavigation:
-      if (self.uiTestDeviceInfo.uiType == UITypePhone)
-        uiElementName = nil;  // has no UI element
-      else
-        uiElementName = @"More";
+      uiElementName = @"More";
       break;
     default:
-      uiElementName = nil;
-      break;
+      return nil;
   }
 
-  XCUIElement* uiElement;
-
-  if (self.uiTestDeviceInfo.uiType == UITypePhone)
-  {
-    uiElement = app.tables.cells.staticTexts[uiElementName];
-  }
-  else
-  {
-    uiElement = app.tabBars.buttons[uiElementName];
-    if (! uiElement.exists)
-      uiElement = app.cells.staticTexts[uiElementName];
-  }
+  XCUIElement* uiElement = app.tabBars.buttons[uiElementName];
+  if (! uiElement.exists)
+    uiElement = app.cells.staticTexts[uiElementName];
 
   return uiElement;
 }
@@ -378,6 +297,9 @@
 
   switch (uiArea)
   {
+    case UIAreaPlay:
+      navigationBarName = playRootViewNavigationBarAccessibilityIdentifier;
+      break;
     case UIAreaSettings:
       navigationBarName = @"Settings";
       break;
@@ -405,10 +327,11 @@
     case UIAreaChangelog:
       navigationBarName = @"Changelog";
       break;
-    case UIAreaPlay:  // has no navigation bar
-    default:
-      navigationBarName = nil;
+    case UIAreaNavigation:
+      navigationBarName = @"More";
       break;
+    default:
+      return nil;
   }
 
   XCUIElement* navigationBar = app.navigationBars[navigationBarName];
@@ -435,44 +358,12 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the cell that displays the current board position. This
-/// method returns the correct result only if the UI type is
-/// #UITypePhonePortraitOnly or #UITypePad. Raises
-/// NSInternalInconsistencyException if the UI type is neither
-/// #UITypePhonePortraitOnly nor #UITypePad.
-// -----------------------------------------------------------------------------
-- (XCUIElement*) findCurrentBoardPositionCellWithUiApplication:(XCUIApplication*)app
-{
-  if (self.uiTestDeviceInfo.uiType == UITypePhone)
-    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unsupported UIType in findCurrentBoardPositionViewWithUiApplication" userInfo:nil];
-
-  if (self.uiTestDeviceInfo.uiType == UITypePhonePortraitOnly)
-  {
-    XCUIElement* boardPositionNavigationButtonContainer =
-    [self findBoardPositionNavigationButtonContainerWithUiApplication:app];
-
-    XCUIElement* currentBoardPositionView = boardPositionNavigationButtonContainer.cells[currentBoardPositionViewAccessibilityIdentifier];
-    return currentBoardPositionView;
-  }
-  else
-  {
-    XCUIElement* currentBoardPositionView = app.tables[currentBoardPositionViewAccessibilityIdentifier].cells.firstMatch;
-    return currentBoardPositionView;
-  }
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Returns the container that lists board positions.
 // -----------------------------------------------------------------------------
 - (XCUIElement*) findBoardPositionCellContainerWithUiApplication:(XCUIApplication*)app
 {
   XCUIElement* boardPositionCellContainer;
-
-  if (self.uiTestDeviceInfo.uiType == UITypePad)
-    boardPositionCellContainer = app.tables[boardPositionTableViewAccessibilityIdentifier];
-  else
-    boardPositionCellContainer = app.collectionViews[boardPositionCollectionViewAccessibilityIdentifier];
-
+  boardPositionCellContainer = app.collectionViews[boardPositionCollectionViewAccessibilityIdentifier];
   return boardPositionCellContainer;
 }
 
