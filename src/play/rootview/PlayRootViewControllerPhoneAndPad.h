@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,14 +22,17 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayRootViewControllerPad class is the root view controller of
-/// the #UIAreaPlay for #UITypePad.
+/// @brief The PlayRootViewControllerPhoneAndPad class is the root view
+/// controller of the #UIAreaPlay for both #UITypePhone and #UITypePad. It is
+/// used in both Portrait and Landscape interface orientations.
 ///
 /// The PlayRootViewController class method playRootViewController() should be
-/// used to create a PlayRootViewControllerPad instance.
+/// used to create a PlayRootViewControllerPhoneAndPads instance.
 // -----------------------------------------------------------------------------
-@interface PlayRootViewControllerPad : PlayRootViewController <GameActionManagerUIDelegate, OrientationChangeNotifyingViewDelegate>
+@interface PlayRootViewControllerPhoneAndPad : PlayRootViewController <GameActionManagerUIDelegate, OrientationChangeNotifyingViewDelegate>
 {
 }
+
+- (id) initWithUiType:(enum UIType)uiType;
 
 @end

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2015-2021 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "PlayRootViewControllerPhone.h"
+#import "PlayRootViewControllerPhoneAndPad.h"
 #import "../annotationview/AnnotationViewController.h"
 #import "../boardposition/BoardPositionButtonBoxDataSource.h"
 #import "../boardposition/BoardPositionCollectionViewCell.h"
@@ -32,18 +32,22 @@
 #import "../../ui/SplitViewController.h"
 #import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
+#import "../../utility/ExceptionUtility.h"
 #import "../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
-/// PlayRootViewControllerPhone.
+/// PlayRootViewControllerPhoneAndPad.
 // -----------------------------------------------------------------------------
-@interface PlayRootViewControllerPhone()
+@interface PlayRootViewControllerPhoneAndPad()
 /// @name Properties used for both interface orientations
 //@{
 @property (nonatomic, assign) bool viewsAreInPortraitOrientation;
 @property (nonatomic, retain) NSMutableArray* autoLayoutConstraints;
+@property (nonatomic, assign) CGFloat splitViewControllerLeftPaneWidthMultiplier;
+@property (nonatomic, assign) UIRectEdge splitViewControllerSafeAreaEdges;
+@property (nonatomic, assign) CGFloat annotationViewHeightMultiplier;
 //@}
 
 /// @name Properties used for portrait
@@ -75,32 +79,88 @@
 @end
 
 
-@implementation PlayRootViewControllerPhone
+@implementation PlayRootViewControllerPhoneAndPad
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a PlayRootViewControllerPhone object.
+/// @brief Initializes a PlayRootViewControllerPhoneAndPad object.
+/// It adjusts the view layout to the specified @a uiType.
 ///
-/// @note This is the designated initializer of PlayRootViewControllerPhone.
+/// @note This is the designated initializer of
+/// PlayRootViewControllerPhoneAndPad.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithUiType:(enum UIType)uiType
 {
   // Call designated initializer of superclass (PlayRootViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+
   self.viewsAreInPortraitOrientation = true;
   self.autoLayoutConstraints = nil;
   self.boardViewSmallerDimension = UILayoutConstraintAxisHorizontal;
   self.boardViewAutoLayoutConstraints = nil;
   self.boardPositionCollectionViewBorderWidth = 1.0f;
+
+  // Multipliers were experimentally determined to result in a good-looking
+  // layout. They may freely be changed in the future if needed.
+  switch (uiType)
+  {
+    case UITypePhone:
+      // On iPhone devices there is not so much horizontal space available in
+      // landscape orientation as on iPad devices, so we can't be wasteful and
+      // specify a multiplier 1.0 to use the minimal board position cell width
+      // for the left pane.
+      self.splitViewControllerLeftPaneWidthMultiplier = 1.0;
+      // Align split view with the bottom of the safe area. This prevents it
+      // from extending behind the tab bar at the bottom. In theory no alignment
+      // would be needed with the top of the safe area because iPhone devices
+      // don't display a status bar in landscape orientation. However, this
+      // controller is the root VC of a navigation controller, and even though
+      // that navigation controller's navigation bar is hidden in landscape
+      // orientation, UINavigationController still lays out the view of its
+      // root VC (= this VC) to end below the (hidden) navigation bar. By
+      // aligning with the top of the safe area we override the
+      // UINavigationController's default layouting and force this VC's view to
+      // go up to the screen top edge.
+      self.splitViewControllerSafeAreaEdges = UIRectEdgeTop | UIRectEdgeBottom;
+      // On iPhone devices this multiplier is larger than on iPad devices
+      // because the annotation view does not get as much width, which means
+      // that the description labels need more vertical space to compensate
+      // => they should display most description texts without scrolling.
+      self.annotationViewHeightMultiplier = 1.4;
+      break;
+    case UITypePad:
+      // On iPad devices there is a lot of horizontal space available in
+      // Landscape orientation. If we use only the minimal board position cell
+      // width for the left pane, the annotation view and navigation buttons get
+      // too much width, which looks ugly. Specifying a multiplier greater than
+      // 1.0 gives the left pane some unneeded space, but the overall layout
+      // looks better.
+      self.splitViewControllerLeftPaneWidthMultiplier = 1.5;
+      // Align split view with the top and bottom of the safe area. This
+      // prevents it from extending behind the status bar at the top and the
+      // tab bar at the bottom.
+      self.splitViewControllerSafeAreaEdges = UIRectEdgeTop | UIRectEdgeBottom;
+      // On iPad devices the annotation view gets a lot of horizontal space in
+      // portrait orientation, so the multiplier does not need to be large. But
+      // it should still be greater than 1.0 to give the annotation view
+      // substantial height to make it visible and to make the overall layout
+      // look good.
+      self.annotationViewHeightMultiplier = 1.25;
+      break;
+    default:
+      [ExceptionUtility throwInvalidUIType:uiType];
+      break;
+  }
+
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this PlayRootViewControllerPhone
-/// object.
+/// @brief Deallocates memory allocated by this
+/// PlayRootViewControllerPhoneAndPad object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -160,6 +220,7 @@
     //   added to the navigation VC's navigation stack - which is absolutely not
     //   what we want!
     self.statusViewController = [[[StatusViewController alloc] init] autorelease];
+
     self.boardViewController = [[[BoardViewController alloc] init] autorelease];
     self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
     self.annotationViewController = [AnnotationViewController annotationViewController];
@@ -178,7 +239,8 @@
     self.leftPaneViewController = [[[LeftPaneViewController alloc] init] autorelease];
     self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
     self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
-    self.splitViewControllerChild.leftPaneWidth = [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero].width;
+
+    self.splitViewControllerChild.leftPaneWidth = ceilf(self.splitViewControllerLeftPaneWidthMultiplier * [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero].width);
   }
 }
 
@@ -596,7 +658,7 @@
   // leave enough space for the board view. It can't be arbitrarily small
   // because it must have sufficient space to display two vertically stacked
   // buttons.
-  int annotationViewHeight = buttonBoxSize.height * 1.4;
+  int annotationViewHeight = buttonBoxSize.height * self.annotationViewHeightMultiplier;
   [viewsDictionary removeAllObjects];
   [visualFormats removeAllObjects];
   self.boardPositionButtonBoxContainerView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -651,14 +713,9 @@
                                                                        inView:self.view];
   self.autoLayoutConstraints = [NSMutableArray arrayWithArray:visualFormatsConstraints];
 
-  // Align split view with the bottom of the safe area - this prevents it from
-  // extending behind the tab bar at the bottom.
-  // Note: We also align with the top of the safe area to keep the code similar
-  // to the code used for iPad devices. In practice this would not be necessary
-  // because we don't display a status bar in landscape orientation on iPhones.
   [AutoLayoutUtility alignFirstView:self.splitViewControllerChild.view
                      withSecondView:self.view
-                    onSafeAreaEdges:UIRectEdgeTop | UIRectEdgeBottom];
+                    onSafeAreaEdges:self.splitViewControllerSafeAreaEdges];
 }
 
 // -----------------------------------------------------------------------------

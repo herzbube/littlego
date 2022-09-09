@@ -17,8 +17,7 @@
 
 // Project includes
 #import "PlayRootViewController.h"
-#import "PlayRootViewControllerPad.h"
-#import "PlayRootViewControllerPhone.h"
+#import "PlayRootViewControllerPhoneAndPad.h"
 #import "PlayRootViewControllerPhonePortraitOnly.h"
 #import "../../shared/LayoutManager.h"
 #import "../../utility/ExceptionUtility.h"
@@ -36,20 +35,21 @@
 + (PlayRootViewController*) playRootViewController
 {
   PlayRootViewController* playRootViewController;
-  switch ([LayoutManager sharedManager].uiType)
+
+  enum UIType uiType = [LayoutManager sharedManager].uiType;
+  switch (uiType)
   {
     case UITypePhonePortraitOnly:
       playRootViewController = [[[PlayRootViewControllerPhonePortraitOnly alloc] init] autorelease];
       break;
     case UITypePhone:
-      playRootViewController = [[[PlayRootViewControllerPhone alloc] init] autorelease];
-      break;
     case UITypePad:
-      playRootViewController = [[[PlayRootViewControllerPad alloc] init] autorelease];
+      playRootViewController = [[[PlayRootViewControllerPhoneAndPad alloc] initWithUiType:uiType] autorelease];
       break;
     default:
       [ExceptionUtility throwInvalidUIType:[LayoutManager sharedManager].uiType];
   }
+
   return playRootViewController;
 }
 

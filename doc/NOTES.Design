@@ -61,7 +61,7 @@ View controller hierarchy for UITypePhone:
 
     MainTabBarController : UITabBarController
     +-- PlayRootViewNavigationController : UINavigationController
-        +-- PlayRootViewControllerPhone : PlayRootViewController
+        +-- PlayRootViewControllerPhoneAndPad : PlayRootViewController
             +-- Portrait orientation
             |   +-- StatusViewController (titleView of navigation bar of PlayRootViewNavigationController)
             |   |   +-- UILabel
@@ -105,7 +105,7 @@ View controller hierarchy for UITypePad:
 
     MainTabBarController : UITabBarController
     +-- PlayRootViewNavigationController : UINavigationController
-        +-- PlayRootViewControllerPad : PlayRootViewController
+        +-- PlayRootViewControllerPhoneAndPad : PlayRootViewController
             +-- Portrait orientation
             |   +-- StatusViewController (titleView of navigation bar of PlayRootViewNavigationController)
             |   |   +-- UILabel
