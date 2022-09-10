@@ -1103,6 +1103,7 @@
 		CD3D8B9228CCC4160008D22F /* gameinfo.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = gameinfo.sgf; sourceTree = "<group>"; };
 		CD3D8B9328CCC4160008D22F /* 5-passes.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "5-passes.sgf"; sourceTree = "<group>"; };
 		CD3D8B9528CCC4160008D22F /* play-b-b7-for-superko.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "play-b-b7-for-superko.sgf"; sourceTree = "<group>"; };
+		CD3D8B9628CCC5C40008D22F /* generate-sgf-with-moves.awk */ = {isa = PBXFileReference; lastKnownFileType = text; path = "generate-sgf-with-moves.awk"; sourceTree = "<group>"; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
 		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationStateCommand.h; sourceTree = "<group>"; };
 		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationStateCommand.m; sourceTree = "<group>"; };
@@ -3301,6 +3302,7 @@
 				CD093E63259A7D300058D170 /* build-sgfckit.sh */,
 				CDE3F58E13117E3100EC16CC /* build-software.sh */,
 				CDEC28B212F55F270069F5B7 /* build-3rdparty-software.sh */,
+				CD3D8B9628CCC5C40008D22F /* generate-sgf-with-moves.awk */,
 				CD3D5147147436C70098D8E0 /* makedist.sh */,
 				CDD961001662A8E300B54E09 /* render-readme.rb */,
 			);
