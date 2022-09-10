@@ -118,6 +118,9 @@ NOTES.Diagnostics
   information file that is attached to bug report emails. It also contains
   notes in regard to the Crashlytics crash reporting service.
 
+NOTES.SgfSupport
+  This document has notes about the project's support for the SGF file format.
+
 BUGS
   This document contains notes about all known irregularities that are
   currently in the project: Compiler warnings, Xcode analyze issues, runtime
