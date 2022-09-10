@@ -1105,6 +1105,7 @@
 		CD3D8B9528CCC4160008D22F /* play-b-b7-for-superko.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "play-b-b7-for-superko.sgf"; sourceTree = "<group>"; };
 		CD3D8B9628CCC5C40008D22F /* generate-sgf-with-moves.awk */ = {isa = PBXFileReference; lastKnownFileType = text; path = "generate-sgf-with-moves.awk"; sourceTree = "<group>"; };
 		CD3D8B9728CCE8C30008D22F /* NOTES.SgfSupport */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.SgfSupport; sourceTree = "<group>"; };
+		CD3D8B9828CCFAB60008D22F /* NOTES.DeviceSupport */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.DeviceSupport; sourceTree = "<group>"; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
 		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationStateCommand.h; sourceTree = "<group>"; };
 		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationStateCommand.m; sourceTree = "<group>"; };
@@ -3266,6 +3267,7 @@
 				CDD7D7E61753F3FD0068CBBA /* NOTES.Build.3rdparty */,
 				CDD7D7E91753F5F60068CBBA /* NOTES.Build */,
 				CDD7D7EB1753F6EA0068CBBA /* NOTES.Design */,
+				CD3D8B9828CCFAB60008D22F /* NOTES.DeviceSupport */,
 				CDD7D7EC1753F8A70068CBBA /* NOTES.Diagnostics */,
 				CDD7D7EE1753FA710068CBBA /* NOTES.Info-plist */,
 				CDECC1961B0F75FB00343512 /* NOTES.Marketing */,
