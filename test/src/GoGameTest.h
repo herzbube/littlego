@@ -53,6 +53,7 @@
 - (void) testIsLegalMove;
 - (void) testIsLegalMovePositionalSuperko;
 - (void) testIsLegalMoveSituationalSuperko;
+- (void) testIsLegalPassMoveIllegalReason;
 - (void) testRevertStateFromEndedToInProgress;
 - (void) testSwitchNextMoveColor;
 - (void) testToggleHandicapPoint;

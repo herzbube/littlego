@@ -372,14 +372,14 @@ enum GoGameComputerIsThinkingReason
   GoGameComputerIsThinkingReasonPlayerInfluence  ///< @brief The computer is calculating player influence.
 };
 
-/// @brief Enumerates the possible reasons why playing at a given intersection
-/// can be illegal.
+/// @brief Enumerates the possible reasons why playing a move can be illegal.
 enum GoMoveIsIllegalReason
 {
   GoMoveIsIllegalReasonIntersectionOccupied,
   GoMoveIsIllegalReasonSuicide,
   GoMoveIsIllegalReasonSimpleKo,
-  GoMoveIsIllegalReasonSuperko,  // don't distinguish between superko variants
+  GoMoveIsIllegalReasonSuperko,       // don't distinguish between superko variants
+  GoMoveIsIllegalReasonTooManyMoves,  // this is a technical reason, i.e. not one that is governed by game rules
   GoMoveIsIllegalReasonUnknown
 };
 

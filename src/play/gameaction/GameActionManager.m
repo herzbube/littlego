@@ -46,6 +46,7 @@
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/UiSettingsModel.h"
+#import "../../ui/UIViewControllerAdditions.h"
 #import "../../utility/MarkupUtilities.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIImageAdditions.h"
@@ -462,6 +463,25 @@ static GameActionManager* sharedGameActionManager = nil;
     DDLogWarn(@"%@: Ignoring GameActionPass", self);
     return;
   }
+
+  // When the user attempts to place a stone then the gesture handler is doing
+  // the legality check. When the user attempts to play a pass move, though,
+  // this handler method is the first responder and is therefore responsible for
+  // the legality check. DiscardAndPlayCommand, and all further commands down
+  // the line, expect that this check has been made before executing the
+  // command.
+  enum GoMoveIsIllegalReason illegalReason;
+  bool isLegalMove = [[GoGame sharedGame] isLegalPassMoveIllegalReason:&illegalReason];
+  if (! isLegalMove)
+  {
+    NSString* isIllegalReasonString = [NSString stringWithMoveIsIllegalReason:illegalReason];
+    NSString* message = [@"Playing a pass move is not possible at the moment. Reason:\n\n" stringByAppendingString:isIllegalReasonString];
+    [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Cannot play pass move"
+                                                                                    message:message
+                                                                                  okHandler:nil];
+    return;
+  }
+
   DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initPass] autorelease];
   [self.commandDelegate gameActionManager:self playOrAlertWithCommand:command];
 }

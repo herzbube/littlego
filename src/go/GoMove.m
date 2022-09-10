@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GoMove.h"
+#import "GoMoveAdditions.h"
 #import "GoBoard.h"
 #import "GoGame.h"
 #import "GoPlayer.h"
@@ -37,7 +38,6 @@
 @property(nonatomic, assign, readwrite) GoMove* previous;
 @property(nonatomic, assign, readwrite) GoMove* next;
 @property(nonatomic, retain, readwrite) NSArray* capturedStones;
-@property(nonatomic, assign, readwrite) int moveNumber;
 //@}
 @end
 
@@ -485,6 +485,22 @@
   // This is the reason why we don't archive self.zobristHash here - it doesn't
   // make sense to archive an invalid value. A side effect of not archiving
   // self.zobristHash is that the overall archive becomes smaller.
+}
+
+@end
+
+#pragma mark - Implementation of GoMoveAdditions
+
+@implementation GoMove(GoMoveAdditions)
+
+#pragma mark - GoMoveAdditions - Unit testing
+
+// -----------------------------------------------------------------------------
+/// @brief Sets the value of the @e moveNumber property to @a moveNumber.
+// -----------------------------------------------------------------------------
+- (void) setMoveNumber:(int)moveNumber
+{
+  _moveNumber = moveNumber;
 }
 
 @end

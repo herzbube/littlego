@@ -107,7 +107,8 @@
 // -----------------------------------------------------------------------------
 - (void) gtpResponseReceived:(GtpResponse*)response
 {
-  [GoGame sharedGame].reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
+  GoGame* sharedGame = [GoGame sharedGame];
+  sharedGame.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
 
   enum MoveSuggestionType moveSuggestionType = MoveSuggestionTypePlay;
   GoPoint* point = nil;
@@ -123,6 +124,14 @@
     if ([responseString isEqualToString:@"pass"])
     {
       moveSuggestionType = MoveSuggestionTypePass;
+
+      enum GoMoveIsIllegalReason illegalReason;
+      if (! [sharedGame isLegalPassMoveIllegalReason:&illegalReason])
+      {
+        NSString* illegalReasonString = [NSString stringWithMoveIsIllegalReason:illegalReason];
+        errorMessage = [NSString stringWithFormat:@"The computer suggested to pass. This is an illegal move. Reason:\n\n%@",
+                        illegalReasonString];
+      }
     }
     else if ([responseString isEqualToString:@"resign"])
     {
@@ -133,7 +142,6 @@
       moveSuggestionType = MoveSuggestionTypePlay;
       NSString* colorString = [[NSString stringWithGoColor:self.color] lowercaseString];
 
-      GoGame* sharedGame = [GoGame sharedGame];
       point = [sharedGame.board pointAtVertex:responseString];
       if (point)
       {

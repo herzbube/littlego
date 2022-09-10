@@ -284,6 +284,8 @@
       return @"Ko";
     case GoMoveIsIllegalReasonSuperko:
       return @"Superko";
+    case GoMoveIsIllegalReasonTooManyMoves:
+      return @"Too many moves";
     case GoMoveIsIllegalReasonUnknown:
     default:
       return @"Unknown reason";

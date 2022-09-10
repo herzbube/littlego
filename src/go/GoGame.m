@@ -281,6 +281,9 @@
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
 /// while this GoGame object is not in state #GoGameStateGameHasStarted or
 /// #GoGameStateGameIsPaused.
+///
+/// Raises @e NSInvalidArgumentException if playing a #GoMoveTypePass by
+/// @e nextMovePlayer is not a legal move.
 // -----------------------------------------------------------------------------
 - (void) pass
 {
@@ -289,6 +292,16 @@
     NSString* errorMessage = @"Pass is possible only while GoGame object is either in state GoGameStateGameHasStarted or GoGameStateGameIsPaused";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  enum GoMoveIsIllegalReason illegalReason;
+  if (! [self isLegalPassMoveIllegalReason:&illegalReason])
+  {
+    NSString* errorMessage = @"Passing is not a legal move";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
@@ -658,7 +671,7 @@
 /// right to move in the current board position.
 ///
 /// Raises @e NSInvalidArgumentException if @a aPoint is nil, or if @a color is
-/// neither GoColorBlack nor GoColorWhite.
+/// neither #GoColorBlack nor #GoColorWhite.
 // -----------------------------------------------------------------------------
 - (bool) isLegalMove:(GoPoint*)point byColor:(enum GoColor)color isIllegalReason:(enum GoMoveIsIllegalReason*)reason
 {
@@ -693,13 +706,29 @@
     *reason = GoMoveIsIllegalReasonIntersectionOccupied;
     return false;
   }
+
+  // IMPORTANT: The node we find here is re-used below for Ko detection. Ko
+  // detection must be based on the current board position, so we must not
+  // use self.lastMove!
+  // ALSO IMPORTANT: The current board position's node might be a non-move node,
+  // so we have to search through the variation backwards until we find a move.
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:self.boardPosition.currentNode];
+  if (nodeWithMostRecentMove)
+  {
+    if (nodeWithMostRecentMove.goMove.moveNumber == maximumNumberOfMoves)
+    {
+      *reason = GoMoveIsIllegalReasonTooManyMoves;
+      return false;
+    }
+  }
+
   // Point is an empty intersection with at least one other empty intersection
   // as neighbour
-  else if ([point liberties] > 0)
+  if ([point liberties] > 0)
   {
     // Because the point has liberties a simple ko is not possible
     bool isSuperko;
-    bool isKoMove = [self isKoMove:point moveColor:color simpleKoIsPossible:false isSuperko:&isSuperko];
+    bool isKoMove = [self isKoMove:point moveColor:color simpleKoIsPossible:false isSuperko:&isSuperko nodeWithMostRecentMove:nodeWithMostRecentMove];
     if (isKoMove)
       *reason = isSuperko ? GoMoveIsIllegalReasonSuperko : GoMoveIsIllegalReasonSimpleKo;
     return !isKoMove;
@@ -719,7 +748,7 @@
       if ([neighbourRegion liberties] > 1)
       {
         bool isSuperko;
-        bool isKoMove = [self isKoMove:point moveColor:color simpleKoIsPossible:false isSuperko:&isSuperko];
+        bool isKoMove = [self isKoMove:point moveColor:color simpleKoIsPossible:false isSuperko:&isSuperko nodeWithMostRecentMove:nodeWithMostRecentMove];
         if (isKoMove)
           *reason = isSuperko ? GoMoveIsIllegalReasonSuperko : GoMoveIsIllegalReasonSimpleKo;
         return !isKoMove;
@@ -738,7 +767,7 @@
         // A simple Ko situation is possible only if we are NOT connecting
         bool isSimpleKoStillPossible = (0 == neighbourRegionsFriendly.count);
         bool isSuperko;
-        bool isKoMove = [self isKoMove:point moveColor:color simpleKoIsPossible:isSimpleKoStillPossible isSuperko:&isSuperko];
+        bool isKoMove = [self isKoMove:point moveColor:color simpleKoIsPossible:isSimpleKoStillPossible isSuperko:&isSuperko nodeWithMostRecentMove:nodeWithMostRecentMove];
         if (isKoMove)
           *reason = isSuperko ? GoMoveIsIllegalReasonSuperko : GoMoveIsIllegalReasonSimpleKo;
         return !isKoMove;
@@ -777,10 +806,11 @@
 ///
 /// This is a private helper for isLegalMove:byColor:isIllegalReason:().
 // -----------------------------------------------------------------------------
-- (bool) isKoMove:(GoPoint*)point
-        moveColor:(enum GoColor)moveColor
-simpleKoIsPossible:(bool)simpleKoIsPossible
-        isSuperko:(bool*)isSuperko
+     - (bool) isKoMove:(GoPoint*)point
+             moveColor:(enum GoColor)moveColor
+    simpleKoIsPossible:(bool)simpleKoIsPossible
+             isSuperko:(bool*)isSuperko
+nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 {
   enum GoKoRule koRule = self.rules.koRule;
   if (GoKoRuleSimple == koRule && !simpleKoIsPossible)
@@ -791,12 +821,6 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
   // for which we are performing ko detection. For normal play without setup
   // stones, the earliest possible ko needs even more moves, but with setup
   // stones a ko is already possible in the second move.
-  //
-  // IMPORTANT: Ko detection must be based on the current board position, so
-  // we must not use self.lastMove!
-  // ALSO IMPORTANT: The current board position's node might be a non-move node,
-  // so we have to search through the variation backwards until we find a move.
-  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:self.boardPosition.currentNode];
   if (! nodeWithMostRecentMove)
     return false;
 
@@ -941,6 +965,65 @@ simpleKoIsPossible:(bool)simpleKoIsPossible
       [stonesWithSingleLiberty addObjectsFromArray:neighbourRegion.points];
   }
   return stonesWithSingleLiberty;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if playing a pass move would be legal for the
+/// @e nextMovePlayer in the current board position. This does not include
+/// checking for alternating play.
+///
+/// If this method returns false, the out parameter @a reason is filled with
+/// the reason why the move is not legal. If this method returns true, the
+/// value of @a reason is undefined.
+///
+/// Alternating play, if it is desired, must be enforced by the application
+/// logic. This method simply assumes that the @e nextMovePlayer has the right
+/// to move in the current board position.
+// -----------------------------------------------------------------------------
+- (bool) isLegalPassMoveIllegalReason:(enum GoMoveIsIllegalReason*)reason
+{
+  return [self isLegalPassMoveByColor:self.nextMoveColor illegalReason:reason];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if playing a pass move would be legal for the player
+/// who plays @a color in the current board position. This does not include
+/// checking for alternating play.
+///
+/// If this method returns false, the out parameter @a reason is filled with
+/// the reason why the move is not legal. If this method returns true, the
+/// value of @a reason is undefined.
+///
+/// Alternating play, if it is desired, must be enforced by the application
+/// logic. This method simply assumes that the player who plays @a color has the
+/// right to move in the current board position.
+///
+/// Raises @e NSInvalidArgumentException if @a color is neither #GoColorBlack
+/// nor #GoColorWhite.
+// -----------------------------------------------------------------------------
+- (bool) isLegalPassMoveByColor:(enum GoColor)color illegalReason:(enum GoMoveIsIllegalReason*)reason
+{
+  if (color != GoColorBlack && color != GoColorWhite)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Invalid color argument %d", color];
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:self.boardPosition.currentNode];
+  if (nodeWithMostRecentMove)
+  {
+    if (nodeWithMostRecentMove.goMove.moveNumber >= maximumNumberOfMoves)
+    {
+      *reason = GoMoveIsIllegalReasonTooManyMoves;
+      return false;
+    }
+  }
+
+  return true;
 }
 
 // -----------------------------------------------------------------------------

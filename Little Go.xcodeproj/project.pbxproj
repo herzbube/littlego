@@ -1060,6 +1060,7 @@
 		CD3D8B5328BBE12F0008D22F /* menu-hamburger@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "menu-hamburger@2x.png"; sourceTree = "<group>"; };
 		CD3D8B5928CB8C150008D22F /* PlayRootViewControllerPhoneAndPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayRootViewControllerPhoneAndPad.m; sourceTree = "<group>"; };
 		CD3D8B5A28CB8C150008D22F /* PlayRootViewControllerPhoneAndPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayRootViewControllerPhoneAndPad.h; sourceTree = "<group>"; };
+		CD3D8B6328CC78760008D22F /* GoMoveAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveAdditions.h; sourceTree = "<group>"; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
 		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationStateCommand.h; sourceTree = "<group>"; };
 		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationStateCommand.m; sourceTree = "<group>"; };
@@ -1907,6 +1908,7 @@
 				CDC97A8D18301CC100755EB2 /* GoGameRules.m */,
 				CD10881D13255A6100E83543 /* GoMove.h */,
 				CD10881E13255A6100E83543 /* GoMove.m */,
+				CD3D8B6328CC78760008D22F /* GoMoveAdditions.h */,
 				CD85068527B95046000D2CCD /* GoNode.h */,
 				CD85068427B95046000D2CCD /* GoNode.m */,
 				CD85069027C00B30000D2CCD /* GoNodeAdditions.h */,

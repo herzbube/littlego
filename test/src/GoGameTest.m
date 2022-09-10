@@ -25,6 +25,7 @@
 #import <go/GoGame.h>
 #import <go/GoGameDocument.h>
 #import <go/GoMove.h>
+#import <go/GoMoveAdditions.h>
 #import <go/GoNodeModel.h>
 #import <go/GoPoint.h>
 #import <go/GoUtilities.h>
@@ -878,6 +879,14 @@
   [m_game resign];
   XCTAssertThrowsSpecificNamed([m_game play:[m_game.board pointAtVertex:@"B1"]],
                               NSException, NSInternalInconsistencyException, @"play after game end");
+
+  // GoMoveAdditions lets us write the moveNumber property - actually generating
+  // the maximum number of moves would be rather slow
+  [m_game revertStateFromEndedToInProgress];
+  GoMove* lastMove = m_game.lastMove;
+  lastMove.moveNumber = maximumNumberOfMoves;
+  XCTAssertThrowsSpecificNamed([m_game play:[m_game.board pointAtVertex:@"B1"]],
+                              NSException, NSInvalidArgumentException, @"play after maximum number of moves");
 }
 
 // -----------------------------------------------------------------------------
@@ -915,6 +924,14 @@
 
   XCTAssertThrowsSpecificNamed([m_game pass],
                               NSException, NSInternalInconsistencyException, @"pass after game end");
+
+  // GoMoveAdditions lets us write the moveNumber property - actually generating
+  // the maximum number of moves would be rather slow
+  [m_game revertStateFromEndedToInProgress];
+  GoMove* lastMove = m_game.lastMove;
+  lastMove.moveNumber = maximumNumberOfMoves;
+  XCTAssertThrowsSpecificNamed([m_game pass],
+                               NSException, NSInvalidArgumentException, @"pass after maximum number of moves");
 }
 
 // -----------------------------------------------------------------------------
@@ -1194,6 +1211,13 @@
 
   XCTAssertThrowsSpecificNamed([m_game isLegalMove:nil isIllegalReason:&illegalReason],
                               NSException, NSInvalidArgumentException, @"point is nil");
+
+  // GoMoveAdditions lets us write the moveNumber property - actually generating
+  // the maximum number of moves would be rather slow
+  GoMove* lastMove = m_game.lastMove;
+  lastMove.moveNumber = maximumNumberOfMoves;
+  XCTAssertFalse([m_game isLegalPassMoveIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonTooManyMoves);
 }
 
 // -----------------------------------------------------------------------------
@@ -1244,6 +1268,23 @@
   GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
   XCTAssertFalse([m_game isLegalMove:point2 isIllegalReason:&illegalReason]);
   XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSuperko);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the isLegalPassMoveIllegalReason() method.
+// -----------------------------------------------------------------------------
+- (void) testIsLegalPassMoveIllegalReason
+{
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  GoMove* lastMove = m_game.lastMove;
+
+  // GoMoveAdditions lets us write the moveNumber property - actually generating
+  // the maximum number of moves would be rather slow
+  lastMove.moveNumber = maximumNumberOfMoves;
+
+  enum GoMoveIsIllegalReason illegalReason;
+  XCTAssertFalse([m_game isLegalPassMoveIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonTooManyMoves);
 }
 
 // -----------------------------------------------------------------------------

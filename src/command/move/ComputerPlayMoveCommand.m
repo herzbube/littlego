@@ -164,9 +164,22 @@ enum AlertType
 {
   NSString* responseString = [response.parsedResponse lowercaseString];
   if ([responseString isEqualToString:@"pass"])
-    [self.game pass];
+  {
+    enum GoMoveIsIllegalReason illegalReason;
+    if ([self.game isLegalPassMoveIllegalReason:&illegalReason])
+    {
+      [self.game pass];
+    }
+    else
+    {
+      [self handleComputerPlayedIllegalMove1:illegalReason];
+      return false;
+    }
+  }
   else if ([responseString isEqualToString:@"resign"])
+  {
     [self.game resign];
+  }
   else
   {
     GoPoint* point = [self.game.board pointAtVertex:responseString];
@@ -370,7 +383,10 @@ enum AlertType
   UIViewController* modalViewControllerParent = appDelegate.windowRootViewController;
   SendBugReportController* controller = [SendBugReportController controller];
   controller.delegate = self;
-  controller.bugReportDescription = [NSString stringWithFormat:@"Little Go claims that the computer player made an illegal move by playing on intersection %@.", self.illegalMove.vertex.string];
+  if (self.illegalMove)
+    controller.bugReportDescription = [NSString stringWithFormat:@"Little Go claims that the computer player made an illegal move by playing on intersection %@.", self.illegalMove.vertex.string];
+  else
+    controller.bugReportDescription = @"Little Go claims that the computer player made an illegal move by passing.";
   [controller sendBugReport:modalViewControllerParent];
   [self retain];  // must survive until the delegate method is invoked
 }

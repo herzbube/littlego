@@ -324,7 +324,10 @@ enum AlertType
   UIViewController* modalViewControllerParent = appDelegate.windowRootViewController;
   SendBugReportController* controller = [SendBugReportController controller];
   controller.delegate = self;
-  controller.bugReportDescription = [NSString stringWithFormat:@"Fuego rejected the move %@ played by me. The reason given was: %@.", self.point.vertex.string, self.failedGtpResponse];
+  if (self.moveType == GoMoveTypePlay)
+    controller.bugReportDescription = [NSString stringWithFormat:@"Fuego rejected the move %@ played by me. The reason given was: %@.", self.point.vertex.string, self.failedGtpResponse];
+  else
+    controller.bugReportDescription = [NSString stringWithFormat:@"Fuego rejected the pass move played by me. The reason given was: %@.", self.failedGtpResponse];
   [controller sendBugReport:modalViewControllerParent];
   [self retain];  // must survive until the delegate method is invoked
 }

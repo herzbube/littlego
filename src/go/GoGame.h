@@ -72,6 +72,8 @@
   createsIllegalStoneOrGroup:(GoPoint**)illegalStoneOrGroupPoint;
 - (bool) isLegalMove:(GoPoint*)point isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isLegalMove:(GoPoint*)point byColor:(enum GoColor)color isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
+- (bool) isLegalPassMoveIllegalReason:(enum GoMoveIsIllegalReason*)reason;
+- (bool) isLegalPassMoveByColor:(enum GoColor)color illegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (void) revertStateFromEndedToInProgress;
 - (void) switchNextMoveColor;
 - (void) toggleHandicapPoint:(GoPoint*)point;
