@@ -1,0 +1,15 @@
+(;GM[1]HA[2])
+(;GM[1]HA[2]AB[aa][bb])
+(;GM[1]AB[aa][ab])
+(;GM[1]HA[2]AB[aa][ab]AW[cc])
+(;GM[1]HA[2]AW[aa][ab])
+
+(;GM[1];B[aa];W[cc];B[dd])
+(;GM[1];W[bb];B[aa];C[empty];W[cc];B[dd])
+(;GM[1];B[aa];W[cc];B[dd];C[empty];B[ee])
+(;GM[1];B[aa];W[cc];B[dd];C[empty];AB[ee])
+(;GM[1];B[aa];W[cc];AE[cc];B[ee])
+(;GM[1];B[aa];W[cg](;B[ab];W[cc];AE[ab];W[gh])
+                   (;W[ab];B[cc];AW[cb];W[ff])
+                   (;B[ab];W[cc];AE[ab];W[dd];B[ee]))
+

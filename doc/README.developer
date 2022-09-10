@@ -70,6 +70,9 @@ Folder structure
  +-- resource            This folder contains the project's resources such as
  |                       image files for icons.
  +-- script              This folder contains command line scripts.
+ +-- sgf                 This folder contains .sgf files that are used for
+ |                       manual testing, demonstrating app features and creating
+ |                       marketing material. See the README file in the folder.
  +-- src                 This folder contains the project's source code.
  +-- test                This folder contains the project's unit test files.
 

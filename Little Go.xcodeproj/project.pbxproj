@@ -1061,6 +1061,48 @@
 		CD3D8B5928CB8C150008D22F /* PlayRootViewControllerPhoneAndPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayRootViewControllerPhoneAndPad.m; sourceTree = "<group>"; };
 		CD3D8B5A28CB8C150008D22F /* PlayRootViewControllerPhoneAndPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayRootViewControllerPhoneAndPad.h; sourceTree = "<group>"; };
 		CD3D8B6328CC78760008D22F /* GoMoveAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveAdditions.h; sourceTree = "<group>"; };
+		CD3D8B6628CCC4160008D22F /* positional-superko.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "positional-superko.sgf"; sourceTree = "<group>"; };
+		CD3D8B6728CCC4160008D22F /* situational-superko.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "situational-superko.sgf"; sourceTree = "<group>"; };
+		CD3D8B6828CCC4160008D22F /* not-an-sgf-file.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "not-an-sgf-file.sgf"; sourceTree = "<group>"; };
+		CD3D8B6928CCC4160008D22F /* illegal-move.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "illegal-move.sgf"; sourceTree = "<group>"; };
+		CD3D8B6A28CCC4160008D22F /* setup-after-first-move.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "setup-after-first-move.sgf"; sourceTree = "<group>"; };
+		CD3D8B6B28CCC4160008D22F /* not-enough-handicap-stones.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "not-enough-handicap-stones.sgf"; sourceTree = "<group>"; };
+		CD3D8B6C28CCC4160008D22F /* setup-player-after-first-move.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "setup-player-after-first-move.sgf"; sourceTree = "<group>"; };
+		CD3D8B6D28CCC4160008D22F /* suicide.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = suicide.sgf; sourceTree = "<group>"; };
+		CD3D8B6E28CCC4160008D22F /* encoding-detection-fails.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "encoding-detection-fails.sgf"; sourceTree = "<group>"; };
+		CD3D8B6F28CCC4160008D22F /* setup-manipulates-handicap.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "setup-manipulates-handicap.sgf"; sourceTree = "<group>"; };
+		CD3D8B7028CCC4160008D22F /* too-many-moves.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "too-many-moves.sgf"; sourceTree = "<group>"; };
+		CD3D8B7128CCC4160008D22F /* encoding-multiple.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "encoding-multiple.sgf"; sourceTree = "<group>"; };
+		CD3D8B7228CCC4160008D22F /* encoding-unsupported.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "encoding-unsupported.sgf"; sourceTree = "<group>"; };
+		CD3D8B7428CCC4160008D22F /* markup.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = markup.sgf; sourceTree = "<group>"; };
+		CD3D8B7528CCC4160008D22F /* Fuego vs. Fuego.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Fuego vs. Fuego.sgf"; sourceTree = "<group>"; };
+		CD3D8B7628CCC4160008D22F /* maximum-number-of-moves.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "maximum-number-of-moves.sgf"; sourceTree = "<group>"; };
+		CD3D8B7728CCC4160008D22F /* pu2-gokifu-20110910-Melkisheva_Anastasia-Shikshina_Svetlana.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "pu2-gokifu-20110910-Melkisheva_Anastasia-Shikshina_Svetlana.sgf"; sourceTree = "<group>"; };
+		CD3D8B7828CCC4160008D22F /* handicap-7-komi-0-with-pass-moves.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "handicap-7-komi-0-with-pass-moves.sgf"; sourceTree = "<group>"; };
+		CD3D8B7A28CCC4160008D22F /* 25x25_single_black_move.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = 25x25_single_black_move.sgf; sourceTree = "<group>"; };
+		CD3D8B7C28CCC4160008D22F /* Lee's Broken Ladder Game.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Lee's Broken Ladder Game.sgf"; sourceTree = "<group>"; };
+		CD3D8B7D28CCC4160008D22F /* Blood-vomiting game.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Blood-vomiting game.sgf"; sourceTree = "<group>"; };
+		CD3D8B7E28CCC4160008D22F /* Ear-reddening game.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Ear-reddening game.sgf"; sourceTree = "<group>"; };
+		CD3D8B8028CCC4160008D22F /* ff4_ex-rewritten-by-sgfc.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "ff4_ex-rewritten-by-sgfc.sgf"; sourceTree = "<group>"; };
+		CD3D8B8128CCC4160008D22F /* test-reorder.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "test-reorder.sgf"; sourceTree = "<group>"; };
+		CD3D8B8228CCC4160008D22F /* ff4_ex.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = ff4_ex.sgf; sourceTree = "<group>"; };
+		CD3D8B8328CCC4160008D22F /* test.sgf */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.sgf; sourceTree = "<group>"; };
+		CD3D8B8428CCC4160008D22F /* test-strict.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "test-strict.sgf"; sourceTree = "<group>"; };
+		CD3D8B8528CCC4160008D22F /* README.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
+		CD3D8B8728CCC4160008D22F /* illegal-board-setup-test.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "illegal-board-setup-test.sgf"; sourceTree = "<group>"; };
+		CD3D8B8828CCC4160008D22F /* 3-passes.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "3-passes.sgf"; sourceTree = "<group>"; };
+		CD3D8B8928CCC4160008D22F /* seki-9b.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "seki-9b.sgf"; sourceTree = "<group>"; };
+		CD3D8B8A28CCC4160008D22F /* annotations.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = annotations.sgf; sourceTree = "<group>"; };
+		CD3D8B8B28CCC4160008D22F /* 4-passes.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "4-passes.sgf"; sourceTree = "<group>"; };
+		CD3D8B8C28CCC4160008D22F /* non-alternating-play.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "non-alternating-play.sgf"; sourceTree = "<group>"; };
+		CD3D8B8D28CCC4160008D22F /* game_050.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = game_050.sgf; sourceTree = "<group>"; };
+		CD3D8B8E28CCC4160008D22F /* 2-passes.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "2-passes.sgf"; sourceTree = "<group>"; };
+		CD3D8B8F28CCC4160008D22F /* 9x9_1.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = 9x9_1.sgf; sourceTree = "<group>"; };
+		CD3D8B9028CCC4160008D22F /* Anonymous vs. Fuego 1.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "Anonymous vs. Fuego 1.sgf"; sourceTree = "<group>"; };
+		CD3D8B9128CCC4160008D22F /* 9x9_2.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = 9x9_2.sgf; sourceTree = "<group>"; };
+		CD3D8B9228CCC4160008D22F /* gameinfo.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = gameinfo.sgf; sourceTree = "<group>"; };
+		CD3D8B9328CCC4160008D22F /* 5-passes.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "5-passes.sgf"; sourceTree = "<group>"; };
+		CD3D8B9528CCC4160008D22F /* play-b-b7-for-superko.sgf */ = {isa = PBXFileReference; lastKnownFileType = text; path = "play-b-b7-for-superko.sgf"; sourceTree = "<group>"; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
 		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationStateCommand.h; sourceTree = "<group>"; };
 		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationStateCommand.m; sourceTree = "<group>"; };
@@ -1708,6 +1750,7 @@
 				CDEC287B12F477E70069F5B7 /* doc */,
 				CDA595BC140142C700B250D8 /* test */,
 				CDB49E232208ABA3006DC1A4 /* uitest */,
+				CD3D8B6428CCC4160008D22F /* sgf */,
 				CD3AE864134A33A500B58E08 /* doxygen */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -2246,6 +2289,111 @@
 				CD3D8B5128BBE12F0008D22F /* noun_36901_cc.svg */,
 			);
 			path = "menu-hamburger";
+			sourceTree = "<group>";
+		};
+		CD3D8B6428CCC4160008D22F /* sgf */ = {
+			isa = PBXGroup;
+			children = (
+				CD3D8B9428CCC4160008D22F /* 7x7 */,
+				CD3D8B8628CCC4160008D22F /* 9x9 */,
+				CD3D8B7328CCC4160008D22F /* 19x19 */,
+				CD3D8B7928CCC4160008D22F /* 25x25 */,
+				CD3D8B7B28CCC4160008D22F /* Famous games */,
+				CD3D8B6528CCC4160008D22F /* Illegal games */,
+				CD3D8B7F28CCC4160008D22F /* sgfc */,
+				CD3D8B8528CCC4160008D22F /* README.txt */,
+			);
+			path = sgf;
+			sourceTree = "<group>";
+		};
+		CD3D8B6528CCC4160008D22F /* Illegal games */ = {
+			isa = PBXGroup;
+			children = (
+				CD3D8B6628CCC4160008D22F /* positional-superko.sgf */,
+				CD3D8B6728CCC4160008D22F /* situational-superko.sgf */,
+				CD3D8B6828CCC4160008D22F /* not-an-sgf-file.sgf */,
+				CD3D8B6928CCC4160008D22F /* illegal-move.sgf */,
+				CD3D8B6A28CCC4160008D22F /* setup-after-first-move.sgf */,
+				CD3D8B6B28CCC4160008D22F /* not-enough-handicap-stones.sgf */,
+				CD3D8B6C28CCC4160008D22F /* setup-player-after-first-move.sgf */,
+				CD3D8B6D28CCC4160008D22F /* suicide.sgf */,
+				CD3D8B6E28CCC4160008D22F /* encoding-detection-fails.sgf */,
+				CD3D8B6F28CCC4160008D22F /* setup-manipulates-handicap.sgf */,
+				CD3D8B7028CCC4160008D22F /* too-many-moves.sgf */,
+				CD3D8B7128CCC4160008D22F /* encoding-multiple.sgf */,
+				CD3D8B7228CCC4160008D22F /* encoding-unsupported.sgf */,
+			);
+			path = "Illegal games";
+			sourceTree = "<group>";
+		};
+		CD3D8B7328CCC4160008D22F /* 19x19 */ = {
+			isa = PBXGroup;
+			children = (
+				CD3D8B7428CCC4160008D22F /* markup.sgf */,
+				CD3D8B7528CCC4160008D22F /* Fuego vs. Fuego.sgf */,
+				CD3D8B7628CCC4160008D22F /* maximum-number-of-moves.sgf */,
+				CD3D8B7728CCC4160008D22F /* pu2-gokifu-20110910-Melkisheva_Anastasia-Shikshina_Svetlana.sgf */,
+				CD3D8B7828CCC4160008D22F /* handicap-7-komi-0-with-pass-moves.sgf */,
+			);
+			path = 19x19;
+			sourceTree = "<group>";
+		};
+		CD3D8B7928CCC4160008D22F /* 25x25 */ = {
+			isa = PBXGroup;
+			children = (
+				CD3D8B7A28CCC4160008D22F /* 25x25_single_black_move.sgf */,
+			);
+			path = 25x25;
+			sourceTree = "<group>";
+		};
+		CD3D8B7B28CCC4160008D22F /* Famous games */ = {
+			isa = PBXGroup;
+			children = (
+				CD3D8B7C28CCC4160008D22F /* Lee's Broken Ladder Game.sgf */,
+				CD3D8B7D28CCC4160008D22F /* Blood-vomiting game.sgf */,
+				CD3D8B7E28CCC4160008D22F /* Ear-reddening game.sgf */,
+			);
+			path = "Famous games";
+			sourceTree = "<group>";
+		};
+		CD3D8B7F28CCC4160008D22F /* sgfc */ = {
+			isa = PBXGroup;
+			children = (
+				CD3D8B8028CCC4160008D22F /* ff4_ex-rewritten-by-sgfc.sgf */,
+				CD3D8B8128CCC4160008D22F /* test-reorder.sgf */,
+				CD3D8B8228CCC4160008D22F /* ff4_ex.sgf */,
+				CD3D8B8328CCC4160008D22F /* test.sgf */,
+				CD3D8B8428CCC4160008D22F /* test-strict.sgf */,
+			);
+			path = sgfc;
+			sourceTree = "<group>";
+		};
+		CD3D8B8628CCC4160008D22F /* 9x9 */ = {
+			isa = PBXGroup;
+			children = (
+				CD3D8B8728CCC4160008D22F /* illegal-board-setup-test.sgf */,
+				CD3D8B8828CCC4160008D22F /* 3-passes.sgf */,
+				CD3D8B8928CCC4160008D22F /* seki-9b.sgf */,
+				CD3D8B8A28CCC4160008D22F /* annotations.sgf */,
+				CD3D8B8B28CCC4160008D22F /* 4-passes.sgf */,
+				CD3D8B8C28CCC4160008D22F /* non-alternating-play.sgf */,
+				CD3D8B8D28CCC4160008D22F /* game_050.sgf */,
+				CD3D8B8E28CCC4160008D22F /* 2-passes.sgf */,
+				CD3D8B8F28CCC4160008D22F /* 9x9_1.sgf */,
+				CD3D8B9028CCC4160008D22F /* Anonymous vs. Fuego 1.sgf */,
+				CD3D8B9128CCC4160008D22F /* 9x9_2.sgf */,
+				CD3D8B9228CCC4160008D22F /* gameinfo.sgf */,
+				CD3D8B9328CCC4160008D22F /* 5-passes.sgf */,
+			);
+			path = 9x9;
+			sourceTree = "<group>";
+		};
+		CD3D8B9428CCC4160008D22F /* 7x7 */ = {
+			isa = PBXGroup;
+			children = (
+				CD3D8B9528CCC4160008D22F /* play-b-b7-for-superko.sgf */,
+			);
+			path = 7x7;
 			sourceTree = "<group>";
 		};
 		CD48AD9A15A75B77004A7096 /* text */ = {

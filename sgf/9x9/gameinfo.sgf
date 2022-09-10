@@ -1,0 +1,41 @@
+(;FF[4]CA[UTF-8]GM[1]SZ[9]AP[SGFC:1.18]
+  (;C[This game tree contains each game info property once, with very values to test the behaviour of SGF viewers]
+    US[A very long recorder name (US property)]
+    SO[A very long source name (SO property)]
+    AN[A very long annotation author name (AN property)]
+    CP[A very long copyright information text (CP property)]
+    GN[A very long game name (GN property)]
+    GC[A very long game information text (GC property)]
+    DT[2019-02-28,2020-02-29,2021-01-10,11,12,02-03]
+    RU[AGA]
+    RE[W+17.5]
+    TM[142.7]
+    OT[A very long overtime information text (OT property)]
+    ON[A very long opening information text (OT property)]
+    PB[A very long black player name (PB property)]
+    BR[25k?]
+    BT[A very long black player team name (BT property)]
+    PW[A very long white player name (PW property)]
+    WR[7d*]
+    WT[A very long white player team name (WT property)]
+    PC[A very long game location name (PC property)]
+    EV[A very long event name (EV property)]
+    RO[A very long round information (RO property)]
+    HA[2]
+    KM[0.5]
+    AB[aa][bb]
+   ;B[ec];W[ef])
+  (;C[This game tree contains an alternative game result and a non-standard black player ranking for professional ranks]
+    RE[W+R]
+    BR[4p])
+  (;C[This game tree contains an alternative game result]
+    RE[W+T])
+  (;C[This game tree contains an alternative game result]
+    RE[W+F])
+  (;C[This game tree contains an alternative game result]
+    RE[Draw])
+  (;C[This game tree contains an alternative game result]
+    RE[Void])
+  (;C[This game tree contains an alternative game result]
+    RE[?])
+)

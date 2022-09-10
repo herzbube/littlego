@@ -1,0 +1,15 @@
+(;GM[1]C[a](;B[ab]C[a11](;W[cc]C[a21])
+                	(;W[fb]C[a22](;C[a221])
+				     (;C[a222]))
+                	(;B[fb]C[a23]))
+           (;W[ab]C[a12])
+           (;B[ab]C[a13]))
+
+(;GM[1]C[b];B[aa]C[b01];W[cg]C[b02]
+	(;B[ab]C[b11];M[aa]C[e1];M[aa]C[e2]
+		(;W[cc]C[b21];M[aa]C[e3];M[aa]C[e4])
+                (;W[fb]C[b22];M[aa]C[e5];M[aa]C[e6])
+                (;B[fb]C[b23];M[aa]C[e7];M[aa]C[e8]))
+        (;W[ab]C[b12];M[aa]C[e9];M[aa]C[e10])
+        (;B[ab]C[b13];M[aa]C[e11];M[aa]C[e12]))
+

@@ -92,6 +92,12 @@ Technical notes:
 [2] https://developer.apple.com/documentation/uikit/accessibility/uiaccessibilitycontainer?language=objc
 
 
+Test .sgf files
+---------------
+.sgf files mentioned in the manual testing script can be found in the folder
+"sgf", which is located in the project's root folder.
+
+
 Script for manual testing
 -------------------------
 The device name "iPhone n+" refers to any of the superior iPhone devices which
@@ -267,8 +273,10 @@ Illegal play
   illegal moves
   - Suicide
   - Ko
-  - Any one of the two superko situations (positional is easier to create).
-    For this you need to restart the game with a superko rule.
+  - Positional superko (load play-b-b7-for-superko.sgf then try to play at B7)
+  - Situational superko (load play-b-b7-for-superko.sgf then try to play at B7)
+  - Too many moves (load maximum-number-of-moves.sgf then try to play any stone
+    or play a pass move)
 - Try to play the respective illegal move
 - The status text must indicate 1) that play is not possible, and 2) why the
   move is illegal
@@ -1098,6 +1106,8 @@ Archive, document interaction
     displayed that explains the reason (no SGF data found).
   - 25x25_single_black_move.sgf: The game cannot be loaded. An error message is
     displayed that explains the reason (board size is not supported).
+  - too-many-moves.sgf. The game cannot be loaded. An error message is
+    displayed that explains the reason (game contains too many moves).
   - not-enough-handicap-stones.sgf: The game cannot be loaded. An error message
     is displayed that explains the reason (not enough handicap stones are set
     up).
@@ -1623,7 +1633,6 @@ AB[dp][pd][dd][pp][dj][pj][jp][jd]HA[8]
 PW[GoUctPlayer]
 PB[GoUctPlayer])
 EOF
-
 
 
 Board setup mode tests

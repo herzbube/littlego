@@ -1,0 +1,21 @@
+(
+;
+FF[4]
+SZ[9]
+PB[Kurahashi Masayuki]
+BR[2p]
+PW[Sasaka Shiro]
+WR[1p]
+KM[5.5]
+DT[1988-10-08]
+PC[Japan]
+RE[B+R]
+SO[http://gobase.org/9x9/book/]
+AP[sgf2misc:3.1.9]
+;B[ee];W[gd];B[fc];W[gg];B[eg];W[gc];B[gh];W[ff];B[ef];W[ce]
+;B[cc];W[bc];B[bb];W[cd];B[dc];W[ch];B[be];W[bf];B[bd];W[ae]
+;B[ac];W[eh];B[fh];W[dg];B[ei];W[df];B[hf];W[fb];B[dh];W[ci]
+;B[eb];W[fd];B[ec];W[hg];B[gf];W[if];B[he];W[hd];B[fe];W[ge]
+;B[fg];W[ie];B[ff];W[ha];B[fa];W[ib];B[gb];W[hb];B[ih];W[ig]
+;B[hh];W[id];B[di];W[ga];B[bh];W[cg];B[de]
+)
