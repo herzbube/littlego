@@ -22,6 +22,8 @@
 @class BoardView;
 
 
+NS_ASSUME_NONNULL_BEGIN
+
 // -----------------------------------------------------------------------------
 /// @brief The PlayStonePanGestureHandler class implements handling of a pan
 /// gesture that attempts to place a stone on the board.
@@ -33,3 +35,5 @@
 - (id) initWithBoardView:(BoardView*)boardView;
 
 @end
+
+NS_ASSUME_NONNULL_END

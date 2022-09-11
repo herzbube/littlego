@@ -23,6 +23,8 @@
 #import "PlayStonePanGestureHandler.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
 @implementation PanGestureHandler
 
 #pragma mark - Initialization and deallocation
@@ -35,11 +37,11 @@
 /// is created it is configured with  @a markupModel, @a boardView and/or
 /// @a boardViewMetrics.
 // -----------------------------------------------------------------------------
-+ (PanGestureHandler*) panGestureHandlerWithUiAreaPlayMode:(enum UIAreaPlayMode)uiAreaPlayMode
-                                                markupTool:(enum MarkupTool)markupTool
-                                               markupModel:(MarkupModel*)markupModel
-                                                 boardView:(BoardView*)boardView
-                                          boardViewMetrics:(BoardViewMetrics*)boardViewMetrics
++ (nullable PanGestureHandler*) panGestureHandlerWithUiAreaPlayMode:(enum UIAreaPlayMode)uiAreaPlayMode
+                                                         markupTool:(enum MarkupTool)markupTool
+                                                        markupModel:(MarkupModel*)markupModel
+                                                          boardView:(BoardView*)boardView
+                                                   boardViewMetrics:(BoardViewMetrics*)boardViewMetrics
 {
   PanGestureHandler* panGestureHandler = nil;
 
@@ -123,7 +125,7 @@
 /// overridden by subclasses.
 // -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
-                    gestureStartPoint:(GoPoint*)startPoint
+                    gestureStartPoint:(GoPoint*)gestureStartPoint
 {
   DDLogError(@"%@: No override for gestureRecognizerShouldBegin:gestureStartPoint:()", [self shortDescription]);
   [self doesNotRecognizeSelector:_cmd];
@@ -143,7 +145,7 @@
 // -----------------------------------------------------------------------------
 - (void) handleGestureWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
                                gestureStartPoint:(GoPoint*)gestureStartPoint
-                             gestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+                             gestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   DDLogError(@"%@: No override for handleGestureWithGestureRecognizerState:gestureStartPoint:gestureCurrentPoint:()", [self shortDescription]);
   [self doesNotRecognizeSelector:_cmd];
@@ -164,3 +166,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

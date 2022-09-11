@@ -22,6 +22,8 @@
 #import "../../../go/GoGame.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
 /// PlayStonePanGestureHandler.
@@ -58,8 +60,6 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.boardView = nil;
-
   [super dealloc];
 }
 
@@ -69,7 +69,7 @@
 /// @brief PanGestureHandler method.
 // -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
-                    gestureStartPoint:(GoPoint*)startPoint
+                    gestureStartPoint:(GoPoint*)gestureStartPoint
 {
   return YES;
 }
@@ -79,7 +79,7 @@
 // -----------------------------------------------------------------------------
 - (void) handleGestureWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
                                gestureStartPoint:(GoPoint*)gestureStartPoint
-                             gestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+                             gestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   bool isLegalMove = false;
   enum GoMoveIsIllegalReason illegalReason = GoMoveIsIllegalReasonUnknown;
@@ -116,3 +116,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

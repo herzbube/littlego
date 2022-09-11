@@ -22,6 +22,8 @@
 #import "../../model/MarkupModel.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
 /// EraseMarkupInRectanglePanGestureHandler.
@@ -61,9 +63,6 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.boardView = nil;
-  self.markupModel = nil;
-
   [super dealloc];
 }
 
@@ -73,7 +72,7 @@
 /// @brief PanGestureHandler method.
 // -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
-                    gestureStartPoint:(GoPoint*)startPoint
+                    gestureStartPoint:(GoPoint*)gestureStartPoint
 {
   return YES;
 }
@@ -83,7 +82,7 @@
 // -----------------------------------------------------------------------------
 - (void) handleGestureWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
                                gestureStartPoint:(GoPoint*)gestureStartPoint
-                             gestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+                             gestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   if (recognizerState == UIGestureRecognizerStateEnded || recognizerState == UIGestureRecognizerStateCancelled)
   {
@@ -114,3 +113,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

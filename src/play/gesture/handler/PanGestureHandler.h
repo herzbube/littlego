@@ -22,6 +22,7 @@
 @class MarkupModel;
 @class UiSettingsModel;
 
+NS_ASSUME_NONNULL_BEGIN
 
 // -----------------------------------------------------------------------------
 /// @brief The PanGestureHandler class is a base class that provides the
@@ -33,18 +34,20 @@
 {
 }
 
-+ (PanGestureHandler*) panGestureHandlerWithUiAreaPlayMode:(enum UIAreaPlayMode)uiAreaPlayMode
-                                                markupTool:(enum MarkupTool)markupTool
-                                               markupModel:(MarkupModel*)markupModel
-                                                 boardView:(BoardView*)boardView
-                                          boardViewMetrics:(BoardViewMetrics*)boardViewMetrics;
++ (nullable PanGestureHandler*) panGestureHandlerWithUiAreaPlayMode:(enum UIAreaPlayMode)uiAreaPlayMode
+                                                         markupTool:(enum MarkupTool)markupTool
+                                                        markupModel:(MarkupModel*)markupModel
+                                                          boardView:(BoardView*)boardView
+                                                   boardViewMetrics:(BoardViewMetrics*)boardViewMetrics;
 
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
-                    gestureStartPoint:(GoPoint*)startPoint;
+                    gestureStartPoint:(GoPoint*)gestureStartPoint;
 - (void) handleGestureWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
                                gestureStartPoint:(GoPoint*)gestureStartPoint
-                             gestureCurrentPoint:(GoPoint*)gestureCurrentPoint;
+                             gestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint;
 
 - (NSString*) shortDescription;
 
 @end
+
+NS_ASSUME_NONNULL_END

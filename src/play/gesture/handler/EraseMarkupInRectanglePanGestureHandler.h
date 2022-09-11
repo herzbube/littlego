@@ -23,6 +23,8 @@
 @class MarkupModel;
 
 
+NS_ASSUME_NONNULL_BEGIN
+
 // -----------------------------------------------------------------------------
 /// @brief The EraseMarkupInRectanglePanGestureHandler class implements handling
 /// of a pan gesture that attempts to erase all markup elements located within
@@ -35,3 +37,5 @@
 - (id) initWithBoardView:(BoardView*)boardView markupModel:(MarkupModel*)markupModel;
 
 @end
+
+NS_ASSUME_NONNULL_END

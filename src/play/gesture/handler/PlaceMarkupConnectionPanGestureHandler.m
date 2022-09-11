@@ -23,6 +23,8 @@
 #import "../../../utility/MarkupUtilities.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
 /// PlaceMarkupConnectionPanGestureHandler.
@@ -62,9 +64,6 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.boardView = nil;
-  self.markupModel = nil;
-
   [super dealloc];
 }
 
@@ -74,7 +73,7 @@
 /// @brief PanGestureHandler method.
 // -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
-                    gestureStartPoint:(GoPoint*)startPoint
+                    gestureStartPoint:(GoPoint*)gestureStartPoint
 {
   return YES;
 }
@@ -84,7 +83,7 @@
 // -----------------------------------------------------------------------------
 - (void) handleGestureWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
                                gestureStartPoint:(GoPoint*)gestureStartPoint
-                             gestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+                             gestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   enum GoMarkupConnection connection = [MarkupUtilities connectionForMarkupType:self.markupModel.markupType];
 
@@ -121,3 +120,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

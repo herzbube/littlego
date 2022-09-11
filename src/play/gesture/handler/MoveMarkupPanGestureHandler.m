@@ -32,6 +32,8 @@
 #import "../../../utility/MarkupUtilities.h"
 
 
+NS_ASSUME_NONNULL_BEGIN
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
 /// MoveMarkupPanGestureHandler.
@@ -46,17 +48,17 @@
 @property(nonatomic, assign) enum MarkupTool markupCategoryToMove;
 /// @brief The start point of the connection that is being moved. Is set for
 /// #MarkupTypeConnectionArrow and #MarkupTypeConnectionLine.
-@property(nonatomic, retain) GoPoint* connectionToMoveStartPoint;
+@property(nonatomic, retain, nullable) GoPoint* connectionToMoveStartPoint;
 /// @brief The end point of the connection that is being moved. Is set for
 /// #MarkupTypeConnectionArrow and #MarkupTypeConnectionLine.
-@property(nonatomic, retain) GoPoint* connectionToMoveEndPoint;
+@property(nonatomic, retain, nullable) GoPoint* connectionToMoveEndPoint;
 /// @brief Is true if the start point of the connection that is being moved is
 /// moved, false if the end point is moved. Is set for
 /// #MarkupTypeConnectionArrow and #MarkupTypeConnectionLine.
 @property(nonatomic, assign) bool connectionToMoveStartPointIsMoved;
 /// @brief The label text that is being moved. Is set for
 /// #MarkupTypeMarkerNumber, #MarkupTypeMarkerLetter and #MarkupTypeLabel.
-@property(nonatomic, retain) NSString* labelTextToMove;
+@property(nonatomic, retain, nullable) NSString* labelTextToMove;
 @end
 
 
@@ -96,9 +98,6 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.boardView = nil;
-  self.markupModel = nil;
-
   self.connectionToMoveStartPoint = nil;
   self.connectionToMoveEndPoint = nil;
   self.labelTextToMove = nil;
@@ -112,12 +111,12 @@
 /// @brief PanGestureHandler method.
 // -----------------------------------------------------------------------------
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
-                    gestureStartPoint:(GoPoint*)startPoint
+                    gestureStartPoint:(GoPoint*)gestureStartPoint
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   GoNode* currentNode = boardPosition.currentNode;
   bool ignoreLabels = ! [self areLabelsVisible];
-  bool markupExists = [MarkupUtilities markupExistsOnPoint:startPoint
+  bool markupExists = [MarkupUtilities markupExistsOnPoint:gestureStartPoint
                                                    forNode:currentNode
                                               ignoreLabels:ignoreLabels];
   return markupExists ? YES : NO;
@@ -128,7 +127,7 @@
 // -----------------------------------------------------------------------------
 - (void) handleGestureWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
                                gestureStartPoint:(GoPoint*)gestureStartPoint
-                             gestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+                             gestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   switch (recognizerState)
   {
@@ -158,7 +157,7 @@
 /// @brief Handler for UIGestureRecognizerStateBegan.
 // -----------------------------------------------------------------------------
 - (void) handleGestureBeganWithGestureStartPoint:(GoPoint*)gestureStartPoint
-                             gestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+                             gestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   [self findMarkupToMoveOnGestureStartPoint:gestureStartPoint];
 
@@ -288,7 +287,7 @@
 /// @brief Handler for UIGestureRecognizerStateChanged.
 // -----------------------------------------------------------------------------
 - (void) handleGestureChangedWithGestureStartPoint:(GoPoint*)gestureStartPoint
-                               gestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+                               gestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   switch (self.markupCategoryToMove)
   {
@@ -327,7 +326,7 @@
 // -----------------------------------------------------------------------------
 - (void) handleGestureEndedWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
                                     gestureStartPoint:(GoPoint*)gestureStartPoint
-                                  gestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+                                  gestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   switch (self.markupCategoryToMove)
   {
@@ -378,7 +377,7 @@
 /// symbol. If @a gestureCurrentPoint is @e nil, the board view does not
 /// draw a symbol.
 // -----------------------------------------------------------------------------
-- (void) notifyBoardViewSymbolDidChangeWithGestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+- (void) notifyBoardViewSymbolDidChangeWithGestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   enum GoMarkupSymbol symbol = [MarkupUtilities symbolForMarkupType:self.markupTypeToMove];
 
@@ -391,7 +390,7 @@
 /// temporarily drawn symbol. If @a gestureCurrentPoint is @e nil, the status
 /// view does not display any information.
 // -----------------------------------------------------------------------------
-- (void) notifyStatusViewSymbolDidChangeWithGestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+- (void) notifyStatusViewSymbolDidChangeWithGestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   NSArray* symbolInformation = gestureCurrentPoint ? @[[NSNumber numberWithInt:self.markupTypeToMove], gestureCurrentPoint] : @[];
   [[NSNotificationCenter defaultCenter] postNotificationName:boardViewMarkupLocationDidChange
@@ -420,7 +419,7 @@
 // -----------------------------------------------------------------------------
 - (void) placeOrRestoreSymbolWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
                                       gestureStartPoint:(GoPoint*)gestureStartPoint
-                                    gestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+                                    gestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   enum GoMarkupSymbol symbol = [MarkupUtilities symbolForMarkupType:self.markupTypeToMove];
 
@@ -447,7 +446,7 @@
 /// connection. If @a gestureCurrentPoint is @e nil, the board view does not
 /// draw a connection.
 // -----------------------------------------------------------------------------
-- (void) notifyBoardViewConnectionDidChangeWithGestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+- (void) notifyBoardViewConnectionDidChangeWithGestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   enum GoMarkupConnection connection = [MarkupUtilities connectionForMarkupType:self.markupTypeToMove];
 
@@ -473,7 +472,7 @@
 /// temporarily drawn connection. If @a gestureCurrentPoint is @e nil, the
 /// status view does not display any information.
 // -----------------------------------------------------------------------------
-- (void) notifyStatusViewConnectionDidChangeWithGestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+- (void) notifyStatusViewConnectionDidChangeWithGestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   NSArray* connectionInformation;
   if (gestureCurrentPoint)
@@ -498,7 +497,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper.
 // -----------------------------------------------------------------------------
-- (void) temporaryConnectionWithGestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+- (void) temporaryConnectionWithGestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
                                          startPoint:(GoPoint**)temporaryConnectionStartPoint
                                            endPoint:(GoPoint**)temporaryConnectionEndPoint
 {
@@ -530,7 +529,7 @@
 // -----------------------------------------------------------------------------
 - (void) placeOrRestoreConnectionWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
                                           gestureStartPoint:(GoPoint*)gestureStartPoint
-                                        gestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+                                        gestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   bool restoreOriginalConnection = true;
   if (recognizerState == UIGestureRecognizerStateEnded && gestureStartPoint && gestureCurrentPoint && gestureStartPoint != gestureCurrentPoint)
@@ -574,7 +573,7 @@
 /// label. If @a gestureCurrentPoint is @e nil, the board view does not
 /// draw a label.
 // -----------------------------------------------------------------------------
-- (void) notifyBoardViewLabelDidChangeWithGestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+- (void) notifyBoardViewLabelDidChangeWithGestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   enum GoMarkupLabel label = [MarkupUtilities labelForMarkupType:self.markupTypeToMove];
 
@@ -588,7 +587,7 @@
 /// temporarily drawn label. If @a gestureCurrentPoint is @e nil, the status
 /// view does not display any information.
 // -----------------------------------------------------------------------------
-- (void) notifyStatusViewLabelDidChangeWithGestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+- (void) notifyStatusViewLabelDidChangeWithGestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   NSArray* labelInformation = gestureCurrentPoint ? @[[NSNumber numberWithInt:self.markupTypeToMove], gestureCurrentPoint] : @[];
   [[NSNotificationCenter defaultCenter] postNotificationName:boardViewMarkupLocationDidChange
@@ -618,7 +617,7 @@
 // -----------------------------------------------------------------------------
 - (void) placeOrRestoreLabelWithGestureRecognizerState:(UIGestureRecognizerState)recognizerState
                                      gestureStartPoint:(GoPoint*)gestureStartPoint
-                                   gestureCurrentPoint:(GoPoint*)gestureCurrentPoint
+                                   gestureCurrentPoint:(nullable GoPoint*)gestureCurrentPoint
 {
   enum GoMarkupLabel label = [MarkupUtilities labelForMarkupType:self.markupTypeToMove];
 
@@ -665,3 +664,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

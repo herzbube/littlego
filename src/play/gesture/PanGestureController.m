@@ -214,6 +214,9 @@
 // -----------------------------------------------------------------------------
 - (void) handlePanFrom:(UILongPressGestureRecognizer*)gestureRecognizer
 {
+  if (! self.panGestureHandler)
+    return;
+
   // TODO move the following summary somewhere else where it is not buried in
   // code and forgotten...
   // 1. Touching the screen starts stone placement

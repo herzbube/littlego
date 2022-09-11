@@ -24,6 +24,8 @@
 @class MarkupModel;
 
 
+NS_ASSUME_NONNULL_BEGIN
+
 // -----------------------------------------------------------------------------
 /// @brief The MoveMarkupPanGestureHandler class implements handling of a pan
 /// gesture that attempts to move a markup element on the board.
@@ -35,3 +37,5 @@
 - (id) initWithBoardView:(BoardView*)boardView markupModel:(MarkupModel*)markupModel boardViewMetrics:(BoardViewMetrics*)boardViewMetrics;
 
 @end
+
+NS_ASSUME_NONNULL_END
