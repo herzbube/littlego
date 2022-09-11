@@ -124,11 +124,11 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 //@{
 #define kArrowPointCount 7
 
-+ (CGPathRef) pathWithArrowFromPoint:(CGPoint)startPoint
-                             toPoint:(CGPoint)endPoint
-                           tailWidth:(CGFloat)tailWidth
-                           headWidth:(CGFloat)headWidth
-                          headLength:(CGFloat)headLength;
++ (CGPathRef) newPathWithArrowFromPoint:(CGPoint)startPoint
+                                toPoint:(CGPoint)endPoint
+                              tailWidth:(CGFloat)tailWidth
+                              headWidth:(CGFloat)headWidth
+                             headLength:(CGFloat)headLength;
 + (void) getAxisAlignedArrowPoints:(CGPoint[kArrowPointCount])points
                     forArrowLength:(CGFloat)arrowLength
                          tailWidth:(CGFloat)tailWidth

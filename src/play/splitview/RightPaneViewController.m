@@ -86,6 +86,7 @@
   self.leftColumnView = nil;
   self.middleColumnView = nil;
   self.rightColumnView = nil;
+  self.boardPositionButtonBoxContainerView = nil;
   self.boardPositionButtonBoxController = nil;
   self.boardPositionButtonBoxDataSource = nil;
   self.annotationViewController = nil;

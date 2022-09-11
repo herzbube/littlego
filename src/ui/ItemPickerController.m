@@ -193,7 +193,7 @@
 
   if (self.isViewLoaded)
   {
-    self.itemListWithTintedAndUniformAndWidthImages = [self itemListWithTintedAndUniformAndWidthImages];
+    self.itemListWithTintedAndUniformAndWidthImages = [self generateItemListWithTintedAndUniformAndWidthImages];
     UITableView* tableView = [self itemPickerTableView];
     [tableView reloadData];
   }
@@ -240,7 +240,7 @@
   }
   else
   {
-    self.itemListWithTintedAndUniformAndWidthImages = [self itemListWithTintedAndUniformAndWidthImages];
+    self.itemListWithTintedAndUniformAndWidthImages = [self generateItemListWithTintedAndUniformAndWidthImages];
 
     UIView* subview;
     if (self.useScrollingTableView)
@@ -274,7 +274,7 @@
 /// If the original item list does not contain any item images, then this method
 /// returns the original item list.
 // -----------------------------------------------------------------------------
-- (NSArray*) itemListWithTintedAndUniformAndWidthImages
+- (NSArray*) generateItemListWithTintedAndUniformAndWidthImages
 {
   bool atLeastOneItemHasImage = false;
   bool atLeastOneImageNeedsPadding = false;
@@ -455,7 +455,7 @@
   {
     if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
     {
-      self.itemListWithTintedAndUniformAndWidthImages = [self itemListWithTintedAndUniformAndWidthImages];
+      self.itemListWithTintedAndUniformAndWidthImages = [self generateItemListWithTintedAndUniformAndWidthImages];
       UITableView* tableView = [self itemPickerTableView];
       [tableView reloadData];
     }

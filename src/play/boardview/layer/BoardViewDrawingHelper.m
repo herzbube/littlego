@@ -389,17 +389,19 @@ CGLayerRef CreateConnectionLayer(CGContextRef context, enum GoMarkupConnection c
     headLength = 0;
   }
 
-  CGPathRef arrowPath = [BoardViewDrawingHelper pathWithArrowFromPoint:fromPointCoordinates
-                                                               toPoint:toPointCoordinates
-                                                             tailWidth:tailWidth
-                                                             headWidth:headWidth
-                                                            headLength:headLength];
+  CGPathRef arrowPath = [BoardViewDrawingHelper newPathWithArrowFromPoint:fromPointCoordinates
+                                                                  toPoint:toPointCoordinates
+                                                                tailWidth:tailWidth
+                                                                headWidth:headWidth
+                                                               headLength:headLength];
   CGContextAddPath(layerContext, arrowPath);
 
   CGContextSetFillColorWithColor(layerContext, connectionFillColor.CGColor);
   CGContextSetStrokeColorWithColor(layerContext, connectionStrokeColor.CGColor);
   CGContextSetLineWidth(layerContext, strokeLineWidth);
   CGContextDrawPath(layerContext, kCGPathFillStroke);
+
+  CGPathRelease(arrowPath);
 
   return layer;
 }
@@ -1012,12 +1014,16 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 /// StackOverflow answer: https://stackoverflow.com/a/13559449/1054378 (the code
 /// itself was taken from the Gist https://gist.github.com/mayoff/4146780 that
 /// is referenced by the SO answer).
+///
+/// @note Whoever invokes this function is responsible for releasing the
+/// returned CGPathRef object using the function CGPathRelease when the path is
+/// no longer needed.
 // -----------------------------------------------------------------------------
-+ (CGPathRef) pathWithArrowFromPoint:(CGPoint)startPoint
-                             toPoint:(CGPoint)endPoint
-                           tailWidth:(CGFloat)tailWidth
-                           headWidth:(CGFloat)headWidth
-                          headLength:(CGFloat)headLength
++ (CGPathRef) newPathWithArrowFromPoint:(CGPoint)startPoint
+                                toPoint:(CGPoint)endPoint
+                              tailWidth:(CGFloat)tailWidth
+                              headWidth:(CGFloat)headWidth
+                             headLength:(CGFloat)headLength
 {
   CGFloat arrowLength = [BoardViewDrawingHelper distanceFromPoint:startPoint toPoint:endPoint];
 
@@ -1041,7 +1047,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 
 // -----------------------------------------------------------------------------
 /// @brief Helper method for
-/// pathWithArrowFromPoint:toPoint:tailWidth:headWidth:headLength:().
+/// newPathWithArrowFromPoint:toPoint:tailWidth:headWidth:headLength:().
 // -----------------------------------------------------------------------------
 + (void) getAxisAlignedArrowPoints:(CGPoint[kArrowPointCount])points
                     forArrowLength:(CGFloat)arrowLength
@@ -1064,7 +1070,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 
 // -----------------------------------------------------------------------------
 /// @brief Helper method for
-/// pathWithArrowFromPoint:toPoint:tailWidth:headWidth:headLength:().
+/// newPathWithArrowFromPoint:toPoint:tailWidth:headWidth:headLength:().
 // -----------------------------------------------------------------------------
 + (CGAffineTransform) transformForStartPoint:(CGPoint)startPoint
                                     endPoint:(CGPoint)endPoint
@@ -1077,7 +1083,7 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 
 // -----------------------------------------------------------------------------
 /// @brief Helper method for
-/// pathWithArrowFromPoint:toPoint:tailWidth:headWidth:headLength:().
+/// newPathWithArrowFromPoint:toPoint:tailWidth:headWidth:headLength:().
 // -----------------------------------------------------------------------------
 + (CGFloat) distanceFromPoint:(CGPoint)fromPoint toPoint:(CGPoint)toPoint
 {

@@ -82,6 +82,8 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.shortDescription = nil;
+  self.longDescription = nil;
   [super dealloc];
 }
 

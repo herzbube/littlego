@@ -636,7 +636,7 @@
   }
   else
   {
-    NSRegularExpression* regexNumbers = [[NSRegularExpression alloc] initWithPattern:@"^[0-9]+$" options:0 error:nil];
+    NSRegularExpression* regexNumbers = [[[NSRegularExpression alloc] initWithPattern:@"^[0-9]+$" options:0 error:nil] autorelease];
     NSRange allCharactersRange = NSMakeRange(0, labelTextLength);
     if ([regexNumbers numberOfMatchesInString:labelText options:0 range:allCharactersRange] > 0)
     {

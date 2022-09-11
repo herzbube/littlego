@@ -95,6 +95,7 @@
   [self removeNotificationResponders];
   self.reuseIdentifierCell = nil;
   self.indexPathForDelayedSelectItemOperation = nil;
+  self.boardPositionsWithChangedData = nil;
   [super dealloc];
 }
 
