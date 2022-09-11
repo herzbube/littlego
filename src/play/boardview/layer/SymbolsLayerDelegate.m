@@ -630,13 +630,6 @@
   if (! nodeWithMostRecentMove)
     return;
 
-  // Optimization: We don't want the pointsWithMarkup array to grow while we are
-  // iterating, because this would vastly increase the time for checking for
-  // membership on each iteration. The requirement is that we must not draw on
-  // points where some OTHER routine has already drawn its stuff, so checking
-  // for membership on the original non-growing array is sufficient.
-  NSMutableArray* newPointsWithMarkup = [NSMutableArray array];
-
   GoMove* moveToBeNumbered = nodeWithMostRecentMove.goMove;
   GoMove* lastMove = moveToBeNumbered;
   for (;
@@ -647,7 +640,8 @@
     if (GoMoveTypePlay != moveToBeNumbered.type)
       continue;
     GoPoint* pointToBeNumbered = moveToBeNumbered.point;
-    if (GoColorNone == pointToBeNumbered.stoneState)
+    GoPlayer* playerOfMoveToBeNumbered = moveToBeNumbered.player;
+    if (pointToBeNumbered.stoneState != playerOfMoveToBeNumbered.color)
       continue;  // stone placed by this move was captured by a later move
     if (self.shouldDrawTemporaryMarkup && self.drawingPointTemporaryMarkup == pointToBeNumbered)
       continue;  // during panning temporary markup is allowed to be drawn instead of a move number
@@ -655,19 +649,26 @@
       continue;
     if (! [self.drawingPointsOnTile containsObject:pointToBeNumbered])
       continue;
+    // TODO This lookup will take longer and longer the more moves have already
+    // been numbered. A full board redraw with the maximumNumberOfMoves takes a
+    // noticeable amount of time! Try to find an optimization for this problem.
+    // An attempt to optimize by using a dictionary/key lookup (key was obtained
+    // from pointToBeNumbered.vertex.string, which is not a very fast operation)
+    // instead of an array/linear search lookup had mixed results, so currently
+    // we still use array/linear search.
     if ([pointsWithMarkup containsObject:pointToBeNumbered])
       continue;
-    [newPointsWithMarkup addObject:pointToBeNumbered];
+    [pointsWithMarkup addObject:pointToBeNumbered];
 
     UIColor* textColor;
     if (moveToBeNumbered == lastMove && self.boardViewModel.markLastMove)
     {
-      if (moveToBeNumbered.player.isBlack)
+      if (playerOfMoveToBeNumbered.isBlack)
         textColor = self.boardViewMetrics.lastMoveColorOnBlackStone;
       else
         textColor = self.boardViewMetrics.lastMoveColorOnWhiteStone;
     }
-    else if (moveToBeNumbered.player.isBlack)
+    else if (playerOfMoveToBeNumbered.isBlack)
     {
       textColor = [UIColor whiteColor];
     }
@@ -687,8 +688,6 @@
                         inTileWithRect:tileRect
                            withMetrics:self.boardViewMetrics];
   }
-
-  [pointsWithMarkup addObjectsFromArray:newPointsWithMarkup];
 }
 
 #pragma mark - Drawing - Temporary markup
