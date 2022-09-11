@@ -99,7 +99,7 @@
     dateFormatter = [[NSDateFormatter alloc] init];
     dateFormatter.locale = [NSLocale currentLocale];
     dateFormatter.dateStyle = NSDateFormatterShortStyle;
-    dateFormatter.timeStyle = kCFDateFormatterMediumStyle;
+    dateFormatter.timeStyle = NSDateFormatterMediumStyle;
   }
   return [dateFormatter stringFromDate:[VersionInfoUtilities buildDateTime]];
 }

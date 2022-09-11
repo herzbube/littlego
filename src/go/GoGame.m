@@ -824,7 +824,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   if (! nodeWithMostRecentMove)
     return false;
 
-  GoMove* lastMove = lastMove = nodeWithMostRecentMove.goMove;
+  GoMove* lastMove = nodeWithMostRecentMove.goMove;
   GoMove* previousToLastMove = lastMove.previous;
 
   long long zobristHashOfHypotheticalMove = [self zobristHashOfHypotheticalMoveAtPoint:point

@@ -277,7 +277,6 @@
 - (NSArray*) generateItemListWithTintedAndUniformAndWidthImages
 {
   bool atLeastOneItemHasImage = false;
-  bool atLeastOneImageNeedsPadding = false;
   CGFloat widthOfWidestImage = 0.0f;
 
   for (id item in self.itemList)
@@ -288,10 +287,7 @@
 
     if (itemImage.size.width != widthOfWidestImage)
     {
-      if (atLeastOneItemHasImage)
-        atLeastOneImageNeedsPadding = true;
-      else
-        atLeastOneItemHasImage = true;
+      atLeastOneItemHasImage = true;
 
       if (itemImage.size.width > widthOfWidestImage)
         widthOfWidestImage = itemImage.size.width;
