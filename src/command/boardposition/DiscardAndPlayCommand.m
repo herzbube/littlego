@@ -200,7 +200,7 @@ enum PlayCommandType
 {
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
-  int indexOfFirstNodeToDiscard = boardPosition.currentBoardPosition;
+  int indexOfFirstNodeToDiscard = boardPosition.currentBoardPosition + 1;
   DDLogInfo(@"%@: Index position of first node to discard = %d", [self shortDescription], indexOfFirstNodeToDiscard);
   GoNodeModel* nodeModel = game.nodeModel;
   [nodeModel discardNodesFromIndex:indexOfFirstNodeToDiscard];
