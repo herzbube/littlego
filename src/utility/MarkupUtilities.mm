@@ -252,7 +252,7 @@
     return nil;  // dummy return to make compiler happy
   }
 
-  char nextFreeLetterMarkerValue = 'A';
+  char nextFreeLetterMarkerValue = 'a';
   int nextFreeNumberMarkerValue = gMinimumNumberMarkerValue;
   bool canUseNextFreeMarkerValue = false;
 
