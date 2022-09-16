@@ -285,8 +285,13 @@
     if (labelType == GoMarkupLabelMarkerLetter)
     {
       std::vector<std::pair<char, char> > letterMarkerValueRanges;
-      letterMarkerValueRanges.push_back(std::make_pair('A', 'Z'));
+      // Prefer lowercase characters as these seem to be used more often. Also
+      // lowercase characters are less likely to be confused with other stuff on
+      // the board (e.g. coordinate labels which are all drawn with uppercase
+      // characters, also the "next move" marker is drawn as an uppercase "A"
+      // character).
       letterMarkerValueRanges.push_back(std::make_pair('a', 'z'));
+      letterMarkerValueRanges.push_back(std::make_pair('A', 'Z'));
 
       for (auto letterMarkerValueRange : letterMarkerValueRanges)
       {
