@@ -693,40 +693,30 @@ enum LoadResultType
 // -----------------------------------------------------------------------------
 - (void) newGameController:(NewGameController*)controller didStartNewGame:(bool)didStartNewGame rematch:(bool)rematch
 {
-  if (didStartNewGame)
-  {
-    LoadGameCommand* command = [[[LoadGameCommand alloc] initWithGameInfoNode:self.gameInfoNodeBeingLoaded goGameInfo:self.gameInfoItemBeingLoaded.goGameInfo] autorelease];
-    [command submit];
-  }
-  self.gameInfoItemBeingLoaded = nil;
-  self.gameInfoNodeBeingLoaded = nil;
-
-  // Must dismiss modal view controller before navigation stack is changed
+  // Dismiss modal view controller (= NewGameController) before navigation stack
+  // is changed
   // -> if it's done later the modal view controller is *NOT* dismissed
   [self dismissViewControllerAnimated:YES completion:nil];
 
   if (didStartNewGame)
   {
+    // Make the main archive view visible again in case the user returns to it
+    // and wants to load a different game.
+    // Note: When run in an iOS 12 simulator in a debug session, the Xcode
+    // debug output shows the following warning when the next line executes:
+    // "Unbalanced calls to begin/end appearance transitions". The meaning of
+    // this warning is not clear, but as it does not appear for iOS 13 and
+    // newer we ignore it.
+    [self.navigationController popViewControllerAnimated:NO];
+
     [MainUtility activateUIArea:UIAreaPlay];
-    // In some layouts activating the Play UI area pops this VC from the
-    // navigation stack, in other layouts we have to do the popping ourselves.
-    // If we have to do it ourselves we must do it with a delay so the
-    // transition does not overlap with 1) the dismissal of NewGameController;
-    // or 2) the activation of UIAreaPlay. It's not clear what the consequences
-    // of a transition overlap are, but in a debug session the debug output
-    // shows this warning: "Unbalanced calls to begin/end appearance
-    // transitions".
-    if (self.navigationController)
-    {
-      double delayInSeconds = 0.5;
-      dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
-      dispatch_after(popTime, dispatch_get_main_queue(), ^(void)
-      {
-        // No animation necessary, the Play UI area is already visible
-        [self.navigationController popViewControllerAnimated:NO];
-      });
-    }
+
+    LoadGameCommand* command = [[[LoadGameCommand alloc] initWithGameInfoNode:self.gameInfoNodeBeingLoaded goGameInfo:self.gameInfoItemBeingLoaded.goGameInfo] autorelease];
+    [command submit];
   }
+
+  self.gameInfoItemBeingLoaded = nil;
+  self.gameInfoNodeBeingLoaded = nil;
 }
 
 #pragma mark - Action button - Action handlers

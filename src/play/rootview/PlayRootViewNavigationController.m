@@ -140,7 +140,21 @@
 - (void) gameActionManager:(GameActionManager*)gameActionManager
          popViewController:(UIViewController*)viewController
 {
-  if (self.visibleViewController == viewController)
+  // This check is needed because this method is invoked in a secondary thread
+  // when a game is loaded from the archive and the game info screen is visible
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    SEL selector = @selector(gameActionManager:popViewController:);
+    NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:[self methodSignatureForSelector:selector]];
+    [invocation setSelector:selector];
+    [invocation setTarget:self];
+    [invocation setArgument:&gameActionManager atIndex:2];
+    [invocation setArgument:&viewController atIndex:3];
+    [invocation performSelectorOnMainThread:@selector(invoke) withObject:nil waitUntilDone:YES];
+    return;
+  }
+
+  if (self.topViewController == viewController)
     [self popViewControllerAnimated:YES];
 }
 
