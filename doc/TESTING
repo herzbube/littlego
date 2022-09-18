@@ -88,8 +88,22 @@ Technical notes:
   CoreGraphics) can be made accessible if their container overrides methods from
   the UIAccessibilityContainer category [2].
 
+Troubleshooting:
+- If you don't know how to find a UI element, or how to interact with an UI
+  element, then XCode's Record UI Test feature [3] can be handy. Write an empty
+  test method in the test class (method name must start with "test"), then tap
+  the record button below the editor window. This will generate code that
+  matches your interactions with the app, giving you hints about the APIs that
+  you can use.
+- UI test execution sometimes is unreliable. A buttons that is expected to be
+  enabled is not, the computer player that is expected to respond does not, etc.
+  Repeating the test usually fixes the problem. If a simulator is used it may
+  be necessary to restart the simulator. This is not ideal, but so far I have
+  not been able to identify the cause for these instabilities.
+
 [1] https://developer.apple.com/library/ios/#documentation/UserExperience/Conceptual/iPhoneAccessibility/Introduction/Introduction.html
 [2] https://developer.apple.com/documentation/uikit/accessibility/uiaccessibilitycontainer?language=objc
+[3] https://developer.apple.com/documentation/xcode/testing-your-apps-in-xcode
 
 
 Test .sgf files

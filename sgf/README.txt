@@ -70,6 +70,7 @@ All SGF files in this folder are referenced in the TESTING document.
 Folder "Famous games"
 ---------------------
 SGF files in this folder contain notable games of Go history.
+Reference: https://en.wikipedia.org/wiki/List_of_Go_games
 
 Blood-vomiting game.sgf
 - The blood-vomiting game is a famous game of Go of the Edo period of Japan,

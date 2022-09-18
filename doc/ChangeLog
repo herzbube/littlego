@@ -1,4 +1,109 @@
 --------------------------------------------------------------------------------
+Version 1.7.0 (September 16 2022)
+--------------------------------------------------------------------------------
+========
+Features
+========
+Smart Game Format (SGF) support:
+- The app now supports reading and writing of all SGF node annotation and move
+  annotation properties (#339). The app also displays these properties' values
+  and lets you edit them. This means that you can now add a valuation to a move
+  (e.g. good/bad move) and/or to the entire board position (e.g. good position
+  for black/white), designate a board position to be a "hotspot" (e.g. it
+  contains a game-deciding move), annotate a board position with an estimated
+  score, and finally you can add textual notes to a board position. Annotation
+  data is displayed by, and can be edited via, an all-new annotation view.
+- The app now supports reading and writing of all SGF markup properties (#349).
+  Except for the DD property (dim parts of the board), the app also displays
+  these properties' values and lets you edit them. This means that you can now
+  mark intersections on the board with 5 different symbols (circle, square,
+  triangle, "X" mark, "selected" symbol), place single-character letter markers
+  or single-digit number markers, place a free-form label text, and finally you
+  can draw arrows or plain lines on the board. The app has an all-new markup
+  editing mode for this (accessible via menu icon) that includes drag & drop
+  support to move around existing markup.
+- A notable consequence of these additions is that board positions without moves
+  are now possible when loaded from an SGF file (e.g. a board position that
+  contains only markup and/or annotations), but you cannot create such positions
+  yet from within the app. This feature will be added in the next release.
+- In the Settings screen there are now a number of user preferences that affect
+  how markup is drawn and that let you tweak some aspects of the markup editing
+  process.
+
+========================
+Improvements and changes
+========================
+- The general user interface (UI) of Little Go now looks and behaves the same
+  on all device types (#371). This unification of UI layouts became necessary
+  because the effort to support different layouts proved to be too much. Also
+  the unification provided the opportunity to get rid of many behind-the-scenes
+  hacks. The main changes are: 1) Smaller iPhone devices which only support the
+  Portrait orientation UI layout, now display board positions and the navigation
+  buttons differently than before. 2) Larger iPhone devices now display a
+  tab bar when in Landscape orientation (alas, reducing the size of the board).
+  3) iPad devices now always show board positions when in Portrait orientation,
+  and when in Landscape orientation they display board positions and navigation
+  buttons differently than before.
+- Changed the icon of the "More Game Actions" button (#377). The previous icon
+  was a "curved arrow" symbol, which seemed to confuse many users so that they
+  couldn't find important actions, such as "New game". The new icon is the
+  established "hamburger menu" icon, which should now more clearly indicate that
+  the button pops up a menu with actions to select from.
+- Button boxes and the board position list now support Dark mode by switching
+  to a dark background color (#378 and #379). Thanks to Peter Waldispühl for
+  reporting this.
+- Coordinate labels are now drawn at the board edge instead of at the screen
+  edge (#147).
+- The "Last move" marker is now drawn in red color, to distinguish it from the
+  new Square markup symbol (#396).
+- The Go board is now always properly centered within the screen space that is
+  available to it (#367).
+- Little Go has a technical limit for the number of moves that can be played in
+  a single game (in case you wonder: the limit currently is 1394 moves). The
+  app now explicitly checks for this limit when you attempt to place a stone or
+  pass (#381).
+
+========
+Bugfixes
+========
+- Board position zero (representing the start of the game) sometimes did not
+  display handicap and komi. This is now fixed (#374).
+- Speculative fix for a potential app crash when the board setup is changed
+  but somehow the board displays a position after the start of the game (#366).
+  Instead of crashing the app now displays an alert.
+- Two speculative fixes (#369 and #370) for potential app crashes in a wide
+  variety of circumstances.
+- Another set of fixes (#364) that helps with app stability and avoids a number
+  of potential app crashes.
+
+===========
+Regressions
+===========
+- A bug was introduced in version 1.6.0 that would cause Ko detection to fail
+  after the app was suspended and was forced to restart by the operating system
+  (a relatively common occurrence). This is now fixed (#372). Because Little Go
+  has struggled with Ko detection many times in the past, this regression was
+  particularly painful.
+
+=================
+Technical changes
+=================
+- The project has been upgraded to the iOS 15.2 SDK and Xcode 13.2.1.
+- The following third party software has been upgraded to new versions:
+  Cocoa Lumberjack (from 3.7.0 to 3.7.4) and Firebase Crashlytics (from 4.6.2
+  to 8.11.0).
+- SGF files that were previously locally maintained have now been added to
+  version control (commit f6aa17eac62bd5594200208d7a657e08297073a4). The manual
+  testing script in the TESTING document can now be played through by anyone.
+
+=================
+GitHub issue list
+=================
+A list of all issues closed for this release is available on GitHub:
+https://github.com/herzbube/littlego/milestone/20?closed=1
+
+
+--------------------------------------------------------------------------------
 Version 1.6.0 (Feburary 26 2021)
 --------------------------------------------------------------------------------
 ========

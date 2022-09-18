@@ -288,3 +288,42 @@ the development machine:
   rebuild of all 3rdparty software packages
 - If you haven't restarted Xcode, it might be a good idea to do so now
 - In the Xcode project, rebuild the "Little Go" target
+
+
+Xcode/iOS compatibility issue when running a build on the device
+----------------------------------------------------------------
+Given the device build was done correctly (see "Device builds" further up in
+this document) you should be able to just run the build from Xcode. One
+obstacle you may encounter, however, is that Xcode refuses to run the build
+because it somehow cannot cope with a newer iOS version that is installed on
+the device. The error message is this:
+
+  Failed to prepare device for development.
+
+  This operation can fail if the version of the OS on the device is incompatible
+  with the installed version of Xcode. You may also need to restart your mac and
+  device in order to correctly detect compatibility.
+
+If this error persists even after reconnecting the device to your mac, then the
+only fix for this problem that I know of is by manually downloading/installing
+an Xcode Developer Disk Image. The GitHub project I use as a source for such
+disk images is [1].
+
+1. Download the disk image .zip file that matches the iOS version on the device.
+2. Go to your XCode app in the Application folder & open its content.
+3. Locate the "DeviceSupport" folder of the appropriate platform.
+   Example path: /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/DeviceSupport
+4. Copy the content of the disk image .zip file into the "DeviceSupport" folder.
+5. Restart Xcode.
+
+When you now try again to run the build Xcode should display this message for
+a few moments:
+
+  Planes Objekt is busy: Fetching debug symbols for Planes Objekt
+
+After that the build should run just fine.
+
+Note: I encountered this problem for the first time with Xcode 13.2.1 and the
+device having installing iOS 15.4.
+
+[1] https://github.com/mspvirajpatel/Xcode_Developer_Disk_Images

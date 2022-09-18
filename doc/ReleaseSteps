@@ -59,9 +59,9 @@ Before the release
   - Info.plist
   - NOTICE
   - All source files that were touched since the last release. For instance,
-    to list all files that were touched since the release 0.11.1 and were not
-    updated to the current year 2013:
-    git diff --name-only 0.11.1 | grep ^src | sort | uniq | xargs grep "// Copyright" 2>/dev/null | grep -v 2013 | cut -d":" -f1
+    to list all files that were touched since the release 1.6.0 and were not
+    updated to the current year 2022:
+    git diff --name-only 1.6.0 | egrep "^(src|test|uitest)" | sort | uniq | xargs grep "// Copyright" 2>/dev/null | grep -v 2022 | cut -d":" -f1
 - Remove the build directory to make sure that subsequent test and distribution
   builds are clean.
     rm -rf DerivedData
@@ -73,13 +73,23 @@ Before the release
 - In Xcode select the "Little Go AdHoc Distribution" scheme (because this uses
   the Release configuration), then make a build for the simulator and for all
   target devices. If there are any warnings, fix them.
-- Using the same scheme, select Product > Archive to make an ad-hoc distribution
-  build, then run that build through the tests described in the TESTING
-  document.
-- Commit final changes (check with "git status" that nothing was forgotten)
-- Select the "Little Go AppStore Distribution" scheme, then Product > Archive.
-  Follow the instructions in the "Make an AppStore distribution" section below
-  to upload the resulting build to App Store Connect.
+- Run the ad-hoc distribution build through the tests described in the TESTING
+  document. If the device is physically available you can copy the build to the
+  device simply by selecting Product > Run in Xcode - in fact the same procedure
+  as when you run a Debug build on the device.
+  - In earlier years it used to be necessary to create an archive (see section
+    "Create an archive") and from that an ad-hoc distribution (see section
+    "Make an ad-hoc distribution (beta release)"), but I haven't used that
+    procedure in years, so it may be obsolete. Maybe the more modern approach
+    is the TestFlight service from Apple, but I never had to use this so far.
+- Commit final changes (check with "git status" that nothing was forgotten).
+  In practice I tend to wait with the final "tidy up" commit, which consists of
+  documentation changes only, until Apple has completed the review process
+  (see section "Make the release" below).
+- Select the "Little Go AppStore Distribution" scheme, then follow the
+  instructions in the "Create an archive" section below to create an archive,
+  then follow the instructions in the "Make an AppStore distribution" section
+  below to upload the archived build to App Store Connect.
 
 
 Create an archive
@@ -95,7 +105,7 @@ Create an archive
   "Distribute_AppStore" build configuration
 - After the build succeeds it is archived, then the "Organizer" window opens to
   display the archive that was just created
-- Give it a useful name, e.g. "Little Go AdHoc Distribution 0.8.0"
+- Give it a useful name, e.g. "Little Go 1.7.0 AppStore Distribution"
 
 
 Make an ad-hoc distribution (beta release)
@@ -136,14 +146,33 @@ Make an AppStore distribution (production release)
   need to fill in the "What's New in This Version" field (the necessary
   information can be taken from the ChangeLog), and specify whether you want
   the release the app manually or automatically after the review process has
-  completed. You may also need to provide new screenshots if new devices were
-  introduced by Apple.
+  completed. You may also need to update the copyright year, and provide new
+  screenshots if new devices were introduced by Apple, or if the app's UI layout
+  has changed.
 - When everything is ready, switch back to Xcode. In the Organizer window,
   select the archived build (instructions how to create an archive can be found
-  further up in this document), then click the "Distribute app" button
-- Select a provisioning profile to use. The provisioning profile determines
-  the code-signing identity that Xcode will use. The default should be OK.
-- Click "Upload" for one final time. The archive is now being validated and
+  further up in this document), then click the "Distribute app" button.
+- Step through the wizard that pops up.
+  - Page 1: Select "App Store Connect" as the method of distribution.
+  - Page 2: Select "Upload" as destination.
+  - Page 3: Select all distribution option checkboxes. These are:
+    - Include bitcode for iOS content
+    - Upload your app's symbols => This makes symbolicated crash logs available
+      in Xcode.
+    - Manage Version and Build Number => This replaces the version and build
+      number you manually entered on App Store Connect with the real values
+      taken from the archived build.
+  - Page 4: Select "Automatically manage signing". This takes care of the number
+    one problem I had in the past when releasing new versions of the app:
+    Renewing certificates and provisioning profiles.
+    - Historic note: In the past it was necessary to select a provisioning
+      profile to use. The provisioning profile determines the code-signing
+      identity that Xcode will use.
+  - Page 5: Review the content of the "Little Go.ipa" bundle. If as usual more
+    than one year has passed since the last release, then you can see here from
+    the updated expiration dates that the certificate and provisioning profile
+    have been automatically renewed.
+- Click "Upload" on the last wizard page. The archive is now being validated and
   uploaded. This can take several minutes.
 - If uploading fails and Xcode does not provide any sensible error message, try
   exporting the archive from Xcode to an .ipa bundle, then upload the .ipa using
@@ -170,20 +199,26 @@ Make an AppStore distribution (production release)
     while, in the meantime you can click on the "Activity" button to see what
     Application Loader is doing.
 - After the upload has finished, switch back to App Store Connect. Scroll down
-  to the section titled "Build" and select the build you just uploaded. You may
-  need to wait a moment until the build appears. If in doubt, log out and log
-  back in.
-- Click "Submit for review" at the top of the page.
-- Answer a couple of final questions, then click "Submit". The app status
-  should now be "Waiting for Review".
-- Wait for Apple to review the submission
+  to the section titled "Build" and click the "Select a build" button to select
+  the build you just uploaded. If no build exists yet to select from, the
+  "Select a build" button is not shown. You may need to wait 15 minutes or
+  more until the uploaded build has finished processing and becomes available
+  in App Store Connect - in fact you should get an email confirmation from
+  App Store Connect when processing the build has finished. If the build still
+  does not appear on the website you may need to log out and log back in.
+- When selecting a build you may need to answer a couple of questions, usually
+  about export regulations. This is also a moving target, in the past these
+  questions were asked later, when the app was submitted for review.
+- Click "Add for review" at the top of the page.
+- Confirm the submission. The app status should now be "Waiting for Review".
+- Wait for Apple to review the submission.
 
 
 Make the release
 ----------------
 - After Apple has completed the review process, the release can now be viewed
   as official and the remaining steps can be performed
-- Download Bitcode dSYMs
+- Download Bitcode dSYMs into the local archive
   - When a Bitcode enabled build is uploaded to App Store Connect, Apple
     generates several new dSYMs that are not available locally.
   - The dSYMs can be downloaded in Xcode's Organizer window: Select the archived
@@ -199,7 +234,8 @@ Make the release
     single .zip archive appDsyms.zip that contains all dSYMs. Extract the
     archive then copy the contents into the "dSYMs" folder within the .xcarchive
     folder of the archived build.
-- Backup the archive that was uploaded to the App Store. This is important
+- Backup the archive that was uploaded to the App Store. In the previous step
+  the archive was updated with downloaded Bitcode dSYMs. A backup is important
   because that archive contains the symbols that are required to symbolicate any
   crash reports. Usually you will rely on Crashlytics for this, but you never
   know. To find the .xcarchive bundle to backup, right-click on the archived

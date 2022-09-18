@@ -6,7 +6,6 @@ to advertise the app in Apple's app store.
 
 App Store page content
 ----------------------
-
 Little Go is a free and open source iOS application that lets you play the game of Go on the iPhone or iPad. You can play against another human (on the same device), or against the computer. The computer player is powered by the open source software library Fuego (http://fuego.sf.net/). The minimum requirement for running this version of Little Go is iOS 9.0.
 
 Features:
@@ -21,6 +20,8 @@ Features:
 - Discard moves (aka "undo")
 - Display move numbers and coordinate labels
 - Zoom & scroll board
+- Create and edit board and move annotations (e.g. good/bad move, good position for black/white, etc.) and add textual notes to a position
+- Mark intersections on the board with symbols, markers and labels, and draw arrows or lines on the board
 - Display player influence (aka territory statistics) for an estimate who owns an area
 - Computer vs. computer game for entertainment
 - Save & load games to/from the archive
@@ -53,8 +54,12 @@ App Store Screenshots are prepared in the simulator. The content is the same
 for all devices. iPhone screenshots are taken in portrait orientation, iPad
 screenshots are taken in landscape orientation.
 
-Before starting to take screenshots, prepare each simulator as follows:
+Screenshots with the following dimensions are required by the App Store:
+- iPhone 6.5 inch display (e.g. iPhone 13 Pro Max)
+- iPhone 5.5 inch display (e.g. iPhone 8 Plus)
+- iPad 12.9 inch display (e.g. iPad Pro 4th generation)
 
+Before starting to take screenshots, prepare each simulator as follows:
 - Remove the app from the simulator
 - Install a clean new build
 - Add the following .sgf files to the archive:
@@ -70,16 +75,20 @@ Before starting to take screenshots, prepare each simulator as follows:
 - Load "Lee's Broken Ladder Game.sgf" as a human vs. human game
 - Go to board position 97
 
-
 Screenshots
 - Screenshot 1: Start placing a stone, then take a screenshot while the
   magnifying glass is visible and the cross-hair is at intersection L14
 - Screenshot 2: Take a screenshot from the "Human vs. computer" tab in the
   "New game" screen
-- Load "Ear-reddening game.sgf", then switch to scoring mode
-- Screenshot 3: Take a screenshot from board
+- Load "Ear-reddening game.sgf", then switch to scoring mode. Mark the stone
+  on T2 (from the last move of the game) as alive should Fuego detect it as
+  dead (it's alive because white cannot capture it immediately due to ko).
+  The game result should be B+3.
+- Screenshot 3: Take a screenshot from the board
 - Screenshot 4: Take a screenshot from the "Score" tab in the "Game info" screen
-- Screenshot 5: Take a screenshot from the "Settings" screen
+- Load "Blood-vomiting game.sgf", go to board position 36 and switch the
+  annotation view to the description page
+- Screenshot 5: Take a screenshot from the board
 - Screenshot 6: Take a screenshot from the "Settings > Display" screen
 - Screenshot 7: Take a screenshot from the "Archive" screen
 - Screenshot 8: Take a screenshot from the "View archive content" screen when

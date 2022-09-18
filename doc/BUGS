@@ -21,7 +21,7 @@ than the platform in Little Go's Podfile (which in turn leads to
 IPHONEOS_DEPLOYMENT_TARGET being set). Little Go's Podfile contains a snippet
 that should prevent this "minimum supported deployment target" compiler warning,
 at the cost of generating other compiler warnings (see next section). If the
-warning still occurs thhis means that the platform version in Little Go's
+warning still occurs this means that the platform version in Little Go's
 Podfile is outdated.
 
 
@@ -60,7 +60,14 @@ these enumerators go away I may have to start using a new zip library.
 
 Xcode analyze issues
 --------------------
-No issues.
+Xcode analyze finds two issues in the nanopb source code, both in the static
+function initialize_pointer_field:
+- Dereference of null pointer
+- Null pointer passed as 1st argument to memory set function
+I didn't analyze the caller sites of the function to see for myself whether
+these are real issues, I am simply trusting that they are not because Google
+protobuf is a heavily used and tested library that does not contain such null
+pointer issues.
 
 
 Runtime messages in the Xcode debub console

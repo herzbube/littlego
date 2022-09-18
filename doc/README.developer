@@ -75,6 +75,7 @@ Folder structure
  |                       marketing material. See the README file in the folder.
  +-- src                 This folder contains the project's source code.
  +-- test                This folder contains the project's unit test files.
+ +-- uitest              This folder contains the project's UI test files.
 
 
 Document reference
@@ -126,6 +127,12 @@ BUGS
   currently in the project: Compiler warnings, Xcode analyze issues, runtime
   messages printed to the Xcode debug console, unfixed crash reports, etc..
   This document complements the issue list on the project's bug tracker.
+
+TESTING
+  This document has information about how the project's automated testing
+  facilities work. It also contains a script for manual testing of most of the
+  application's features. The intent is to execute the script before a new
+  version is released to the App Store.
 
 
 Other files
