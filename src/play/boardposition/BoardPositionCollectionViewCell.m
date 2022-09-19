@@ -290,7 +290,7 @@ static UIFont* smallFont = nil;
     return;
 
   GoGame* game = [GoGame sharedGame];
-  GoNode* node = [self nodeWithData];
+  GoNode* node = [self nodeWithDataOrNil];
 
   if (0 == self.boardPosition)
   {
@@ -482,8 +482,14 @@ static UIFont* smallFont = nil;
   {
     if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
     {
-      GoNode* node = [self nodeWithData];
-      [self updateColors:node];
+      // traitCollectionDidChange sometimes is invoked when a cell is reused
+      // before the boardPosition property value was updated. If that is the
+      // case then we don't get a GoNode object => there's no point in updating
+      // the colors, so we skip it and let setupRealContent do it later when the
+      // boardPosition property is updated.
+      GoNode* node = [self nodeWithDataOrNil];
+      if (node)
+        [self updateColors:node];
     }
   }
 }
@@ -741,14 +747,21 @@ static UIFont* smallFont = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the GoNode object whose data is displayed by the cell.
+/// Returns @e nil if the cell refers to the root node (the data in that case
+/// must be obtained from GoGame) or to a node that does not exist. The latter
+/// can occur if this method is invoked for a reused cell before the cell's
+/// @e boardPosition property has been updated.
 // -----------------------------------------------------------------------------
-- (GoNode*) nodeWithData
+- (GoNode*) nodeWithDataOrNil
 {
-  if (0 == self.boardPosition)
+  int nodeIndex = self.boardPosition;
+  if (0 == nodeIndex)
     return nil;
 
-  int nodeIndex = self.boardPosition;
   GoNodeModel* nodeModel = [GoGame sharedGame].nodeModel;
+  if (nodeIndex >= nodeModel.numberOfNodes)
+    return nil;
+
   GoNode* node = [nodeModel nodeAtIndex:nodeIndex];
   return node;
 }
