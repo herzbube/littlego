@@ -208,3 +208,130 @@ Advertising
   - https://senseis.xmp.net/?IPhone
   - https://senseis.xmp.net/?IPad
 - Write an announcement on https://www.lifein19x19.com/
+
+
+App Store statistics
+--------------------
+How to get the statistics
+- Log in to App Store Connect
+- Select "Sales and Trends"
+- On the left hand side select "Units"
+
+Time
+- In the upper-right corner is a time filter box which lets you select the
+  time period over which the reports go. For instance, to get a report for a
+  specific year, select the "Year" tab, then select the year for which you
+  want to see statistics.
+- Just above the chart is a dropdown box which lets you select the granularity
+  of the chart. For instance, if the time filter box has "Lifetime" selected
+  then you can select granularity "Years" to see the chart listing numbers
+  by year.
+
+Interesting report types and groups
+- New installations / Redownloads / Updates
+  - Select tab "Transaction Type"
+  - Add Filters > Transaction Type > Select these three transaction types:
+    - Free       => New installations
+    - Redownload => Redownloads
+    - Updates    => Updates
+  - For each transaction type that you add to the filter, the total number of
+    units of that transaction type over the selected time period is displayed
+    below the chart.
+  - The chart visualizes all three transaction types per time unit.
+- By country
+  - Select tab "Territory"
+  - Add Filters > Territory > All countries (under the heading "My groups")
+    - If the "All countries" group does not exist it can be created by
+      selecting "Manage Custom Territory Group" when the Territory filter is
+      opened.
+- By version
+  - Select tab "Version"
+  - Below the chart you see the total number of units for each version that
+    existed in the selected time period.
+  - To see the numbers for a specific version, select that version while on
+    the "Version" tab. This adds a filter.
+  - Add Filters > Version > Enter a version number => Lets you set one or
+    multiple version filters, for each of which the total number of units is
+    then displayed below the chart (unless the version did not exist in the
+    selected time period).
+- By device
+  - Select tab "Device"
+  - Below the chart you see the total number of units for each device type
+    that had any numbers in the selected time period.
+  - To see the numbers for a specific device, select that device while on
+    the "Device" tab. This adds a filter.
+  - Add Filters > Device > Select a device => Lets you set one or or multiple
+    device filters.
+
+What do the numbers mean? From the "App Store Connect Help":
+- Units
+  By default, units displays app units, in-app purchases, and app bundles. You
+  can apply filters to view the number of updates, re-downloads, and app units
+  originated from pre-orders.
+  >>> Since I offer no in-app purchases or app bundles, units for Little Go
+      must mean "app units".
+- App and Bundle Units
+  The number of first-time purchases of your app or bundle. An app unit or
+  bundle unit is counted when a customer taps the 'Buy' or 'Get' button for the
+  first-time. App updates, downloads from the same Apple ID onto other devices,
+  and re-downloads to the same device are not counted. Family Sharing downloads
+  are included for free apps, but not for paid apps.
+- Why am I seeing more updates than the total downloaded units in Sales and Trends?
+  Your total downloaded units are based on unique users. Updates are counted on
+  every device on which they are installed, even when the device shares the
+  same Apple ID. If you release frequent updates of your app, you may see
+  significantly more updates than total downloads.
+
+Probably the single-most interesting chart is the one that lists transaction
+types per year. I'm reproducing this here to provide a bit of scope. The time
+period is from the start of the project until 31 December 2021.
+
+-------------------------------------------------
+        New installations   Redownloads   Updates
+-------------------------------------------------
+Total   517k                244k          1.03M
+-------------------------------------------------
+2021    50.5k               44.3k         376k
+2020    68.5k               44.8k         6.76k
+2019    56.8k               40.6k         300k
+2018    90.2k               35.8k         2.63k
+2017    61.7k               24.1k         69.7k
+2016    77.3k               25.9k         60.9k
+2015    30.2k               11.0k         35.5k
+2014    31.7k               8.93k         92.2k
+2013    32.7k               6.57k         66.2k
+2012    16.0k               1.81k         15.7k
+2011    1.37k               36            n/a
+-------------------------------------------------
+
+The second-most interesting chart is the one that shows which countries have
+the most new installations (transaction type "Free"). Here is the top 10 list,
+the time period is from the start of the project until 31 December 2021.
+
+---------------------------------
+Country         New installations
+---------------------------------
+United States   183k
+Germany         58.8k
+France          45.6k
+Russia          38.2k
+Thailand        24.6k
+Turkey          23.3k
+Netherlands     14.9k
+Sweden          12.9k
+Spain           12.2k
+Switzerland     11.6k
+---------------------------------
+
+The third chart with interesting number is the one that shows the number of new
+installations (transaction type "Free") per device. The time period is from the
+start of the project until 31 December 2021.
+
+---------------------------------
+Device         New installations
+---------------------------------
+iPhone         340k  (66%)
+iPad           156k  (30%)
+Desktop        15.9k  (3%)  <= unclear what kind of device this is; already in 2011 this has a number >0
+iPod touch     5.94k  (1%)
+---------------------------------
