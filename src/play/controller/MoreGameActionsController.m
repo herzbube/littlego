@@ -147,10 +147,11 @@
         title = @"Set up a side to play first";
         alertActionBlock = ^(UIAlertAction* action) { [self setupFirstMove]; };
         break;
-
       }
       case MoreGameActionsButtonBoardSetup:
       {
+        if (game.state == GoGameStateGameHasEnded)
+          continue;
         if (game.boardPosition.currentBoardPosition > 0)
           continue;
         if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeScoring && uiAreaPlayMode != UIAreaPlayModeEditMarkup)
