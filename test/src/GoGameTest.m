@@ -1463,7 +1463,10 @@
   XCTAssertEqual(handicapPoints.count, handicapCount);
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
 
-  // Various attempts to illegaly toggle the point when the stone state is not
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:nil],
+                               NSException, NSInvalidArgumentException, @"point is nil");
+
+  // Various attempts to illegally toggle the point when the stone state is not
   // correct
   m_game.blackSetupPoints = @[pointA1];
   XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
@@ -1488,7 +1491,7 @@
   pointA1.stoneState = GoColorBlack;
   [m_game toggleHandicapPoint:pointA1];
 
-  // Various attempts to illegaly toggle the point when the game state is not
+  // Various attempts to illegally toggle the point when the game state is not
   // correct
   [m_game pass];
   XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
@@ -1592,7 +1595,7 @@
   XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:nil toStoneState:GoColorBlack],
                                NSException, NSInvalidArgumentException, @"point is nil");
 
-  // Various attempts to illegaly change the stone state when the point is
+  // Various attempts to illegally change the stone state when the point is
   // already a handicap point or a white setup point
   m_game.handicapPoints = @[pointA1];
   XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorWhite],
@@ -1619,7 +1622,7 @@
   pointA1.stoneState = GoColorWhite;
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorNone];
 
-  // Various attempts to illegaly change the stone state when the game state is
+  // Various attempts to illegally change the stone state when the game state is
   // not correct
   [m_game pass];
   XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack],
@@ -1725,7 +1728,7 @@
   whiteSetupPointsCount = 0;
   XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
 
-  // Various attempts to illegaly discard setup stones when the game state is
+  // Various attempts to illegally discard setup stones when the game state is
   // not correct
   [m_game pass];
   XCTAssertThrowsSpecificNamed([m_game discardAllSetupStones],

@@ -147,10 +147,14 @@
         title = @"Set up a side to play first";
         alertActionBlock = ^(UIAlertAction* action) { [self setupFirstMove]; };
         break;
-
       }
       case MoreGameActionsButtonBoardSetup:
       {
+        // GoGame prohibits board setup operations when the game has already
+        // ended. However, here we still display the option to switch to board
+        // setup mode even if the game has already ended. When a board setup
+        // interaction actually takes place the handler code must make sure that
+        // the game is somehow reverted to in-progress.
         if (game.boardPosition.currentBoardPosition > 0)
           continue;
         if (uiAreaPlayMode != UIAreaPlayModePlay && uiAreaPlayMode != UIAreaPlayModeScoring && uiAreaPlayMode != UIAreaPlayModeEditMarkup)

@@ -1,4 +1,38 @@
 --------------------------------------------------------------------------------
+Version 1.7.1 (September 23 2022)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- None
+
+========
+Bugfixes
+========
+- Fixed app crash when board position cells are reused after a new game is
+  started or loaded from the archive (#397).
+- The app no longer crashes when the user performs a board setup operation (e.g.
+  places a setup stone) and the game has ended without any move because a player
+  immediately resigned without playing a move (#398).
+
+===========
+Regressions
+===========
+- None
+
+=================
+Technical changes
+=================
+- None
+
+=================
+GitHub issue list
+=================
+A list of all issues closed for this release is available on GitHub:
+https://github.com/herzbube/littlego/milestone/22?closed=1
+
+
+--------------------------------------------------------------------------------
 Version 1.7.0 (September 16 2022)
 --------------------------------------------------------------------------------
 ========

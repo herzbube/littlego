@@ -31,6 +31,7 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UIViewControllerAdditions.h"
+#import "../utility/NSObjectAddtions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -274,7 +275,15 @@ enum CellID
     else
       indexOfSectionToReload = RulesetHandicapSection;
     NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:indexOfSectionToReload];
-    [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+    [self performBlockOnMainThread:^{
+      // When viewWillAppear is invoked the VC view is not yet visible which
+      // causes UITableView to complain (visible only in the Xcode debug view)
+      // when data is reloaded. To make UITableView happy we delay the reload
+      // operation until the next main thread run loop iteration. Note: Doing
+      // the reload in viewDidAppear is not suitable as the user will then see
+      // the data changing.
+      [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationFade];
+    } afterDelay:0.0];
     self.advancedScreenWasShown = false;
   }
 }

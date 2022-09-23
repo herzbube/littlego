@@ -1105,7 +1105,11 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 {
   if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
   {
-    NSString* errorMessage = @"Handicap can only be set while GoGame object is not in state GoGameStateGameHasEnded and has no moves";
+    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to set %lu handicap stones failed: ", (unsigned long)newValue.count];
+    if (GoGameStateGameHasEnded == self.state)
+      errorMessage = [errorMessage stringByAppendingFormat:@"Game is in state GoGameStateGameHasEnded, reason = %d", self.reasonForGameHasEnded];
+    else
+      errorMessage = [errorMessage stringByAppendingString:@"Game already has moves"];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -1114,7 +1118,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   }
   if (! newValue)
   {
-    NSString* errorMessage = @"Point list argument is nil";
+    NSString* errorMessage = @"Attempt to set handicap stones failed: Point list argument is nil";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
@@ -1320,7 +1324,11 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 {
   if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
   {
-    NSString* errorMessage = @"Setup stones can only be set while GoGame object is not in state GoGameStateGameHasEnded and has no moves";
+    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to set %lu setup stones to %d failed: ", (unsigned long)newValue.count, stoneColor];
+    if (GoGameStateGameHasEnded == self.state)
+      errorMessage = [errorMessage stringByAppendingFormat:@"Game is in state GoGameStateGameHasEnded, reason = %d", self.reasonForGameHasEnded];
+    else
+      errorMessage = [errorMessage stringByAppendingString:@"Game already has moves"];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -1329,7 +1337,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   }
   if (! newValue)
   {
-    NSString* errorMessage = @"Point list argument is nil";
+    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to set setup stones to %d failed: Point list argument is nil", stoneColor];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
@@ -1429,7 +1437,11 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 {
   if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
   {
-    NSString* errorMessage = @"First move color can only be set up while GoGame object is not in state GoGameStateGameHasEnded and has no moves";
+    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to set first move color to %d failed: ", newValue];
+    if (GoGameStateGameHasEnded == self.state)
+      errorMessage = [errorMessage stringByAppendingFormat:@"Game is in state GoGameStateGameHasEnded, reason = %d", self.reasonForGameHasEnded];
+    else
+      errorMessage = [errorMessage stringByAppendingString:@"Game already has moves"];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -1468,6 +1480,8 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 ///
 /// KVO observers of the property @e handicapPoints will be triggered.
 ///
+/// Raises @e NSInvalidArgumentException if @a point is @e nil.
+///
 /// Raises @e NSInternalInconsistencyException if this method is invoked when
 /// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is
 /// in that state but already has moves. Summing it up, this method can be
@@ -1488,9 +1502,22 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 {
   if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
   {
-    NSString* errorMessage = @"Handicap can only be set while GoGame object is not in state GoGameStateGameHasEnded and has no moves";
+    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to add or remove handicap stone at intersection %@ failed: ", point.vertex.string];
+    if (GoGameStateGameHasEnded == self.state)
+      errorMessage = [errorMessage stringByAppendingFormat:@"Game is in state GoGameStateGameHasEnded, reason = %d", self.reasonForGameHasEnded];
+    else
+      errorMessage = [errorMessage stringByAppendingString:@"Game already has moves"];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+  if (! point)
+  {
+    NSString* errorMessage = @"Attempt to add or remove handicap stone failed: Point argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
                                                    userInfo:nil];
     @throw exception;
@@ -1506,7 +1533,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 
   if (colorString)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: Point is already in the list of %@ setup stones", point.vertex, colorString];
+    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: Point is already in the list of %@ setup stones", point.vertex.string, colorString];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -1523,7 +1550,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 
       if (self.handicapPoints.count == newHandicapPoints.count)
       {
-        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: There is a black stone on the intersection, but the point is not in the list of handicap stones", point.vertex];
+        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: There is a black stone on the intersection, but the point is not in the list of handicap stones", point.vertex.string];
         DDLogError(@"%@: %@", self, errorMessage);
         NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                          reason:errorMessage
@@ -1540,7 +1567,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     {
       if ([self.handicapPoints containsObject:point])
       {
-        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: There is no stone on the intersection, but the point is in the list of handicap stones", point.vertex];
+        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: There is no stone on the intersection, but the point is in the list of handicap stones", point.vertex.string];
         DDLogError(@"%@: %@", self, errorMessage);
         NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                          reason:errorMessage
@@ -1555,7 +1582,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     }
     case GoColorWhite:
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: There is a black stone on the intersection", point.vertex];
+      NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: There is a black stone on the intersection", point.vertex.string];
       DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                        reason:errorMessage
@@ -1607,7 +1634,11 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 {
   if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
   {
-    NSString* errorMessage = @"Setup stones can only be set while GoGame object is not in state GoGameStateGameHasEnded and has no moves";
+    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: ", point.vertex.string, stoneState];
+    if (GoGameStateGameHasEnded == self.state)
+      errorMessage = [errorMessage stringByAppendingFormat:@"Game is in state GoGameStateGameHasEnded, reason = %d", self.reasonForGameHasEnded];
+    else
+      errorMessage = [errorMessage stringByAppendingString:@"Game already has moves"];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -1616,7 +1647,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   }
   if (! point)
   {
-    NSString* errorMessage = @"Point argument is nil";
+    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point to %d failed: Point argument is nil", stoneState];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
@@ -1629,7 +1660,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 
   if ([self.handicapPoints containsObject:point])
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: Point is already in the list of handicap points", point.vertex, stoneState];
+    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: Point is already in the list of handicap points", point.vertex.string, stoneState];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage
@@ -1648,7 +1679,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
                             createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint];
     if (! isLegalBoardSetup)
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Point argument is not a legal setup stone for stone state %d: %@", stoneState, point.vertex];
+      NSString* errorMessage = [NSString stringWithFormat:@"Point argument is not a legal setup stone for stone state %d: %@", stoneState, point.vertex.string];
       DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                        reason:errorMessage
@@ -1666,7 +1697,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 
       if (self.blackSetupPoints.count == newBlackSetupPoints.count)
       {
-        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: There is a black stone on the intersection, but the point is not in the list of black setup stones", point.vertex, stoneState];
+        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: There is a black stone on the intersection, but the point is not in the list of black setup stones", point.vertex.string, stoneState];
         DDLogError(@"%@: %@", self, errorMessage);
         NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                          reason:errorMessage
@@ -1684,7 +1715,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 
       if (self.whiteSetupPoints.count == newWhiteSetupPoints.count)
       {
-        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: There is a white stone on the intersection, but the point is not in the list of white setup stones", point.vertex, stoneState];
+        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: There is a white stone on the intersection, but the point is not in the list of white setup stones", point.vertex.string, stoneState];
         DDLogError(@"%@: %@", self, errorMessage);
         NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                          reason:errorMessage
@@ -1707,7 +1738,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 
       if (colorString)
       {
-        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: There is no stone on the intersection, but the point is in the list of %@ setup stones", point.vertex, stoneState, colorString];
+        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: There is no stone on the intersection, but the point is in the list of %@ setup stones", point.vertex.string, stoneState, colorString];
         DDLogError(@"%@: %@", self, errorMessage);
         NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                          reason:errorMessage
@@ -1765,7 +1796,11 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 {
   if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
   {
-    NSString* errorMessage = @"Setup stones can only be discarded while GoGame object is not in state GoGameStateGameHasEnded and has no moves";
+    NSString* errorMessage = @"Attempt to discard all setup stones failed: ";
+    if (GoGameStateGameHasEnded == self.state)
+      errorMessage = [errorMessage stringByAppendingFormat:@"Game is in state GoGameStateGameHasEnded, reason = %d", self.reasonForGameHasEnded];
+    else
+      errorMessage = [errorMessage stringByAppendingString:@"Game already has moves"];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
                                                      reason:errorMessage

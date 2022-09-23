@@ -9,7 +9,9 @@ Little Go is released under the [Apache License](http://www.apache.org/licenses/
 
 ## Changes in this release
 
-This is the Little Go feature release 1.7.0. A selection of the most important changes are:
+This is the Little Go bugfix release 1.7.1. It contains two fixes for bugs that caused the app to crash (#397 and #398).
+
+The previous release was the Little Go feature release 1.7.0. A selection of the most important changes are:
 
 - The app now supports reading and writing of all SGF node annotation and move annotation properties (#339). The app also displays these properties' values and lets you edit them. This means that you can now add a valuation to a move (e.g. good/bad move) and/or to the entire board position (e.g. good position for black/white), designate a board position to be a "hotspot" (e.g. it contains a game-deciding move), annotate a board position with an estimated score, and finally you can add textual notes to a board position. Annotation data is displayed by, and can be edited via, an all-new annotation view.
 - The app now supports reading and writing of all SGF markup properties (#349). Except for the DD property (dim parts of the board), the app also displays these properties' values and lets you edit them. This means that you can now mark intersections on the board with 5 different symbols (circle, square, triangle, "X" mark, "selected" symbol), place single-character letter markers or single-digit number markers, place a free-form label text, and finally you can draw arrows or plain lines on the board. The app has an all-new markup editing mode for this (accessible via menu icon) that includes drag & drop support to move around existing markup.
