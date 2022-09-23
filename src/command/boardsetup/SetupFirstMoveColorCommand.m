@@ -91,7 +91,7 @@
     [[ApplicationStateManager sharedManager] beginSavePoint];
     [[LongRunningActionCounter sharedCounter] increment];
 
-    if (game.boardPosition.numberOfBoardPositions > 0)
+    if (game.boardPosition.numberOfBoardPositions > 0 || game.state == GoGameStateGameHasEnded)
     {
       // Whoever invoked SetupFirstMoveColorCommand must have previously
       // made sure that it's OK to discard future moves. We can therefore safely

@@ -24,6 +24,8 @@
 /// current board position, possibly the position that precedes it, and all
 /// positions that follow afterwards. As a side effect, the current board
 /// position changes to the one preceding the ones that were just discarded.
+/// The second responsibility of ChangeAndDiscardCommand is to revert the game
+/// state to "in progress" if the game is currently ended.
 ///
 /// If the user preference DiscardMyLastMove is turned on (the default) and the
 /// current board position was created by a computer player's move, then all
@@ -34,10 +36,14 @@
 /// player moves.
 ///
 /// If there is only one board position (i.e. no moves have been made yet and
-/// no other nodes have been created yet), ChangeAndDiscardCommand does nothing.
+/// no other nodes have been created yet), ChangeAndDiscardCommand reverts the
+/// game state to "in progress" if the game is currently ended (e.g. if a player
+/// resigned immediately without playing a move). If the game is not currently
+/// ended, ChangeAndDiscardCommand does nothing.
 ///
-/// After it has made the discard, ChangeAndDiscardCommand performs a backup
-/// of the current game.
+/// After it has made the discard and/or reverted the game state to
+/// "in progress", ChangeAndDiscardCommand performs a backup of the current
+/// game.
 ///
 /// @note The first board position represents the start of the game and cannot
 /// be discarded. Therefore, if ChangeAndDiscardCommand is executed when the

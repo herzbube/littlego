@@ -40,7 +40,8 @@
 - (bool) doIt
 {
   bool shouldDiscardBoardPositions = [self shouldDiscardBoardPositions];
-  if (! shouldDiscardBoardPositions)
+  bool shouldRevertGameStateToInProgress = [self shouldRevertGameStateToInProgress];
+  if (! shouldDiscardBoardPositions && ! shouldRevertGameStateToInProgress)
     return true;
 
   @try
@@ -48,32 +49,47 @@
     [[ApplicationStateManager sharedManager] beginSavePoint];
     [[LongRunningActionCounter sharedCounter] increment];
 
+    bool success;
+
     // Before we discard, first change to a board position that will be valid
     // even after the discard.
-    bool success = [self changeBoardPosition];
-    if (! success)
+    if (shouldDiscardBoardPositions)
     {
-      DDLogError(@"%@: Aborting because changeBoardPosition failed", [self shortDescription]);
-      return false;
+      success = [self changeBoardPositionIfNecessary];
+      if (! success)
+      {
+        DDLogError(@"%@: Aborting because changeBoardPositionIfNecessary failed", [self shortDescription]);
+        return false;
+      }
     }
-    success = [self revertGameStateIfNecessary];
-    if (! success)
+
+    if (shouldRevertGameStateToInProgress)
     {
-      DDLogError(@"%@: Aborting because revertGameStateIfNecessary failed", [self shortDescription]);
-      return false;
+      success = [self revertGameStateIfNecessary];
+      if (! success)
+      {
+        DDLogError(@"%@: Aborting because revertGameStateIfNecessary failed", [self shortDescription]);
+        return false;
+      }
     }
-    success = [self discardNodes];
-    if (! success)
+
+    if (shouldDiscardBoardPositions)
     {
-      DDLogError(@"%@: Aborting because discardNodes failed", [self shortDescription]);
-      return false;
+      success = [self discardNodesIfNecessary];
+      if (! success)
+      {
+        DDLogError(@"%@: Aborting because discardNodesIfNecessary failed", [self shortDescription]);
+        return false;
+      }
     }
+
     success = [self backupGame];
     if (! success)
     {
       DDLogError(@"%@: Aborting because backupGame failed", [self shortDescription]);
       return false;
     }
+
     return success;
   }
   @finally
@@ -99,9 +115,19 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Private helper for doIt(). Returns true if the game state needs to
+/// be reverted to "in progress", false otherwise.
+// -----------------------------------------------------------------------------
+- (bool) shouldRevertGameStateToInProgress
+{
+  GoGame* game = [GoGame sharedGame];
+  return (game.state == GoGameStateGameHasEnded);
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Private helper for doIt(). Returns true on success, false on failure.
 // -----------------------------------------------------------------------------
-- (bool) changeBoardPosition
+- (bool) changeBoardPositionIfNecessary
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   if (boardPosition.currentBoardPosition == 0)
@@ -175,14 +201,20 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt(). Returns true on success, false on failure.
 // -----------------------------------------------------------------------------
-- (bool) discardNodes
+- (bool) discardNodesIfNecessary
 {
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
-  int indexOfFirstNodeToDiscard = boardPosition.currentBoardPosition + 1;
-  DDLogInfo(@"%@: Index position of first node to discard = %d", [self shortDescription], indexOfFirstNodeToDiscard);
   GoNodeModel* nodeModel = game.nodeModel;
+
+  int indexOfFirstNodeToDiscard = boardPosition.currentBoardPosition + 1;
+  int numberOfNodes = nodeModel.numberOfNodes;
+  if (indexOfFirstNodeToDiscard >= numberOfNodes)
+    return true;
+
+  DDLogInfo(@"%@: Index position of first node to discard = %d, number of nodes = %d", [self shortDescription], indexOfFirstNodeToDiscard, numberOfNodes);
   [nodeModel discardNodesFromIndex:indexOfFirstNodeToDiscard];
+
   return true;
 }
 
