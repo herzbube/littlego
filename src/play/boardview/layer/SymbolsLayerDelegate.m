@@ -1175,7 +1175,7 @@
   for (GoPoint* handicapPoint in game.handicapPoints)
   {
     if (! [self.drawingPointsOnTile containsObject:handicapPoint])
-      return;
+      continue;
 
     [BoardViewDrawingHelper drawLayer:whiteLastMoveLayer
                           withContext:context

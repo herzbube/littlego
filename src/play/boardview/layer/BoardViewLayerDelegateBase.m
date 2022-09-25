@@ -118,10 +118,10 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns an array that identifies the points whose intersections
-/// are located on this tile. Array elements are GoPoint objects. If @a callback
-/// is not @e nil, invokes @a callback for each GoPoint object that is found to
-/// be on this tile.
+/// @brief Returns an array that identifies the points whose "point cell"
+/// drawing rectangle intersects with this tile's canvas rectangle. Array
+/// elements are GoPoint objects. If @a callback is not @e nil, invokes
+/// @a callback for each GoPoint object that is found to be on this tile.
 ///
 /// The callback must return a boolean value that indicates whether the point
 /// should be used or not. Value @e true indicates that the point should be
@@ -134,6 +134,15 @@
 /// @note Use GoUtilities::pointsInBothFirstArray:andSecondArray:() to find the
 /// intersection between the GoPoints returned by this method and some other
 /// collection of GoPoints.
+///
+/// @note The "point cell" drawing rectangle is defined as having the point's
+/// coordinates at its center, with a size that is equal to the value of the
+/// BoardViewMetrics property @e pointCellSize. If only a small part of the
+/// "point cell" drawing rectangle intersects with the tile's canvas rectangle,
+/// and the tile wants to draw an artifact with a size that is less than
+/// @e pointCellSize (e.g. something that is drawn within the boundaries of the
+/// @e stoneInnerSquareSize), then it may turn out that the artifact's drawing
+/// rectangle falls completely outside of the tile's canvas rectangle.
 // -----------------------------------------------------------------------------
 - (NSArray*) calculateDrawingPointsOnTileWithCallback:(bool (^)(GoPoint* point, bool* stop))callback
 {
