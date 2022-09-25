@@ -270,6 +270,23 @@
       break;
     }
     case BVLDEventHandicapPointChanged:
+    {
+      [self invalidateDirtyRects];
+      [self invalidateDirtyData];
+
+      GoPoint* handicapPoint = eventInfo;
+      CGRect drawingRect = [BoardViewDrawingHelper drawingRectForTile:self.tile
+                                                      centeredAtPoint:handicapPoint
+                                                          withMetrics:self.boardViewMetrics];
+      if (CGRectIsEmpty(drawingRect))
+        break;
+
+      self.drawingPoint = handicapPoint;
+      self.dirtyRect = drawingRect;
+      self.dirty = true;
+
+      break;
+    }
     case BVLDEventMarkupOnPointsDidChange:
     {
       [self invalidateDirtyRects];
