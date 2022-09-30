@@ -1174,6 +1174,8 @@
   GoGame* game = [GoGame sharedGame];
   for (GoPoint* handicapPoint in game.handicapPoints)
   {
+    if (self.drawingPoint && self.drawingPoint != handicapPoint)
+      continue;
     if (! [self.drawingPointsOnTile containsObject:handicapPoint])
       continue;
 
