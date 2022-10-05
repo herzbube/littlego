@@ -68,8 +68,8 @@
 /// Tiling example in the ScrollViewSuite sample code project provided by
 /// Apple. The original code included handling for switching between different
 /// resolutions of an image, this handling is not present in this implementation
-/// because the content displayed is not an image but a Go board drawn by
-/// CoreGraphics.
+/// because the content displayed is not an image but arbitrary artifacts
+/// custom-drawn with CoreGraphics.
 ///
 /// The original demo code can be found here:
 /// https://developer.apple.com/legacy/library/samplecode/ScrollViewSuite/Introduction/Intro.html
@@ -85,14 +85,17 @@
 
 /// @brief The data source for the TiledScrollView.
 @property(nonatomic, assign) id<TiledScrollViewDataSource> dataSource;
+
 /// @brief The view that is the superview of all tile views.
 ///
 /// This property is exposed to facilitate zooming by a controller.
 @property(nonatomic, retain, readonly) UIView* tileContainerView;
+
 /// @brief The size of tile views.
 ///
 /// A client that changes this property must invoke reloadData().
 @property(nonatomic, assign) CGSize tileSize;
+
 /// @brief Is false by default. Set this to true if tile views should be drawn
 /// with a border and annotated with a label that shows the tile view's
 /// creation "ID" (i.e. when a tile view is created, it is the n'th tile view).

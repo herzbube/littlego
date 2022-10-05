@@ -3341,9 +3341,6 @@
 				CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */,
 				CD81790925DC5AA600F39091 /* StoneView.h */,
 				CD81790A25DC5AA600F39091 /* StoneView.m */,
-				CDAFAE23195A1DCA00EF84A9 /* TiledScrollView.h */,
-				CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */,
-				CDAFAE2B195DB78200EF84A9 /* Tile.h */,
 			);
 			path = boardview;
 			sourceTree = "<group>";
@@ -3425,6 +3422,9 @@
 				CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */,
 				CDCBA6D1184228A0003697E2 /* TableViewVariableHeightCell.h */,
 				CDCBA6D2184228A0003697E2 /* TableViewVariableHeightCell.m */,
+				CDAFAE2B195DB78200EF84A9 /* Tile.h */,
+				CDAFAE23195A1DCA00EF84A9 /* TiledScrollView.h */,
+				CDAFAE24195A1DCA00EF84A9 /* TiledScrollView.m */,
 				CD8E150614C4EF8200A7A90B /* UiElementMetrics.h */,
 				CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */,
 				CD6C7DBA17512152009FBEC4 /* UiSettingsModel.h */,

@@ -16,8 +16,8 @@
 
 
 // Project includes
-#import "Tile.h"
 #import "layer/BoardViewLayerDelegate.h"
+#import "../../ui/Tile.h"
 
 
 // -----------------------------------------------------------------------------

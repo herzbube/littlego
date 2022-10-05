@@ -18,16 +18,29 @@
 // Project includes
 #import "BoardViewDrawingHelper.h"
 #import "BoardViewCGLayerCache.h"
-#import "../Tile.h"
 #import "../../model/BoardViewMetrics.h"
 #import "../../model/MarkupModel.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
 #import "../../../shared/LayoutManager.h"
+#import "../../../ui/Tile.h"
 #import "../../../ui/UiUtilities.h"
 
 
 @implementation BoardViewDrawingHelper
+
+// TODO xxx document
+bool IsRectangleInvalid(CGRect rect)
+{
+  // isfinite includes the check for NaN
+  if (!isfinite(rect.origin.x) || !isfinite(rect.origin.y) || !isfinite(rect.size.width) || !isfinite(rect.size.height))
+    return true;
+
+  if (rect.size.width < 0.0f || rect.size.height < 0.0f)
+    return true;
+
+  return false;
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Creates and returns a CGLayer object that is associated with graphics

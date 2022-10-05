@@ -19,12 +19,12 @@
 #import "StonesLayerDelegate.h"
 #import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
-#import "../Tile.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoUtilities.h"
 #import "../../../go/GoVertex.h"
+#import "../../../ui/Tile.h"
 
 
 // -----------------------------------------------------------------------------

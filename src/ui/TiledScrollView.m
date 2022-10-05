@@ -18,7 +18,9 @@
 // Project includes
 #import "TiledScrollView.h"
 
+// C library
 #include <math.h>
+
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for TiledScrollView.
@@ -52,6 +54,7 @@
   self = [super initWithFrame:rect];
   if (! self)
     return nil;
+
   self.dataSource = nil;
   self.contentSize = self.frame.size;
   self.tileContainerView = [[[UIView alloc] initWithFrame:CGRectMake(0, 0, self.contentSize.width, self.contentSize.height)] autorelease];
@@ -64,7 +67,9 @@
   self.indexOfFirstVisibleColumn = pow(2, 31);  // ditto
   self.indexOfLastVisibleRow = -1;              // just any number lower than can ever occur in reality
   self.indexOfLastVisibleColumn  = -1;          // ditto
+
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
+
   return self;
 }
 
@@ -234,7 +239,6 @@
   int indexOfLastNeededRow = MIN(maximumRowIndex, floorf((CGRectGetMaxY(visibleBounds) - 1.0f) / scaledTileHeight));
   int indexOfLastNeededColumn = MIN(maximumColumnIndex, floor((CGRectGetMaxX(visibleBounds) - 1.0f) / scaledTileWidth));
 
-
   // Acquire any tiles that are missing from the data source and add them to
   // self.tileContainerView
   for (int rowIndex = indexOfFirstNeededRow; rowIndex <= indexOfLastNeededRow; ++rowIndex)
@@ -297,6 +301,7 @@
     tileView.layer.borderWidth = 0.5f;
     tileView.layer.borderColor = [[UIColor greenColor] CGColor];
   }
+
   [tileView bringSubviewToFront:label];
 }
 

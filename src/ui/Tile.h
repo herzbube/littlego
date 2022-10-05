@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2014-2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@
 /// The tile with row/column = 0/0 is in the upper-left corner.
 // -----------------------------------------------------------------------------
 @protocol Tile <NSObject>
+
 /// @brief Invalidates the content currently displayed by the tile.
 ///
 /// The tile should redraw its content in response to this method being invoked.
@@ -29,4 +30,5 @@
 
 @property(nonatomic, assign) int row;
 @property(nonatomic, assign) int column;
+
 @end

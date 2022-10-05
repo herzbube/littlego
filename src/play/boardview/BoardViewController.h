@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "TiledScrollView.h"
+#import "../../ui/TiledScrollView.h"
 
 
 // -----------------------------------------------------------------------------
