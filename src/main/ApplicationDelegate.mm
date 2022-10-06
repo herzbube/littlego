@@ -47,6 +47,7 @@
 #import "../play/model/BoardViewMetrics.h"
 #import "../play/model/BoardViewModel.h"
 #import "../play/model/MarkupModel.h"
+#import "../play/model/NodeTreeViewMetrics.h"
 #import "../play/model/ScoringModel.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
@@ -157,6 +158,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.boardSetupModel = nil;
   self.sgfSettingsModel = nil;
   self.markupModel = nil;
+  self.nodeTreeViewMetrics = nil;
   self.fileLogger = nil;
   [BoardPositionNavigationManager releaseSharedNavigationManager];
   [GameActionManager releaseSharedGameActionManager];
@@ -578,6 +580,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self.boardSetupModel readUserDefaults];
   [self.sgfSettingsModel readUserDefaults];
   [self.markupModel readUserDefaults];
+  self.nodeTreeViewMetrics = [[[NodeTreeViewMetrics alloc] init] autorelease];
   // Is dependent on some user defaults in BoardViewModel
   self.boardViewMetrics = [[[BoardViewMetrics alloc] init] autorelease];
 }
