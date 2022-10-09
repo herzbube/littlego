@@ -80,6 +80,15 @@ static BoardViewCGLayerCache* sharedCache = nil;
 
 #pragma mark - Caching methods
 
+// TODO xxx Currently layer delegates use this method to check if a layer
+// exists - if this method returns NULL they assume that the layer does not
+// exist and needs to be created. This logic is no longer viable because the
+// board view is now resizable and can result in BoardViewDrawingHelper's
+// Create...Layer functions returning NULL if the metrics refer to extremely
+// small board dimensions. Layer delegates will therefore try to create layers
+// over and over again in each drawing cycle, because they stored a NULL value
+// in the cache in the previous drawing cycle. BoardViewCGLayerCache needs a
+// new mechanism how to check whether a layer needs to be created.
 - (CGLayerRef) layerOfType:(enum LayerType)layerType
 {
   return layers[layerType];

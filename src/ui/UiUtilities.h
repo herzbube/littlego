@@ -42,6 +42,7 @@
 + (void) drawCircleWithContext:(CGContextRef)context center:(CGPoint)center radius:(CGFloat)radius fill:(bool)fill color:(UIColor*)color;
 + (UIImage*) circularTableCellViewIndicatorWithColor:(UIColor*)color;
 + (bool) isLightUserInterfaceStyle:(UITraitCollection*)traitCollection;
-+ (void) applyTransparentStyleToView:(UIView*)view traitCollection:(UITraitCollection*)traitCollection5;
++ (void) applyTransparentStyleToView:(UIView*)view traitCollection:(UITraitCollection*)traitCollection;
++ (void) applyTintColorToButton:(UIButton*)button traitCollection:(UITraitCollection*)traitCollection;
 
 @end

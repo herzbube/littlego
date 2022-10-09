@@ -1345,13 +1345,13 @@ static const int spacerBottomTag = 2;
 // -----------------------------------------------------------------------------
 - (void) updateColors:(GoNode*)node
 {
-  UIColor* buttonTintColor = [self buttonTintColor];
-  self.descriptionEditButton.tintColor = buttonTintColor;
-  self.descriptionRemoveButton.tintColor = buttonTintColor;
-  self.positionValuationButton.tintColor = buttonTintColor;
-  self.moveValuationButton.tintColor = buttonTintColor;
+  UITraitCollection* traitCollection = self.traitCollection;
+  [UiUtilities applyTintColorToButton:self.descriptionEditButton traitCollection:traitCollection];
+  [UiUtilities applyTintColorToButton:self.descriptionRemoveButton traitCollection:traitCollection];
+  [UiUtilities applyTintColorToButton:self.positionValuationButton traitCollection:traitCollection];
+  [UiUtilities applyTintColorToButton:self.moveValuationButton traitCollection:traitCollection];
   [self updateHotspotButtonTintColor:node];
-  self.estimatedScoreButton.tintColor = buttonTintColor;
+  [UiUtilities applyTintColorToButton:self.estimatedScoreButton traitCollection:traitCollection];
 
   bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
 

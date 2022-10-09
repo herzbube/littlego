@@ -23,6 +23,7 @@ const float gInfluenceColorAlphaWhite = 0.6;
 const CFTimeInterval gGoBoardLongPressDelay = 0.15;
 const int arraySizeDefaultTabOrder = 9;
 const int defaultTabOrder[arraySizeDefaultTabOrder] = {0, 1, 2, 4, 3, 5, 6, 7, 8};
+const CGFloat uiAreaPlayResizablePaneMinimumSize = 0.3f;
 
 // Logging constants
 #ifndef LITTLEGO_UITESTS
@@ -276,6 +277,8 @@ NSString* lineIconResource = @"line.png";
 NSString* numberMarkerIconResource = @"number-marker.png";
 NSString* squareIconResource = @"square.png";
 NSString* triangleIconResource = @"triangle.png";
+NSString* nodeSequenceIconResource = @"node-sequence.png";
+NSString* nodeTreeSmallIconResource = @"node-tree-small.png";
 NSString* stoneBlackImageResource = @"stone-black.png";
 NSString* stoneWhiteImageResource = @"stone-white.png";
 NSString* stoneCrosshairImageResource = @"stone-crosshair.png";

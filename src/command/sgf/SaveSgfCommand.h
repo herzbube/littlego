@@ -50,10 +50,16 @@
 ///   node annotation properties (e.g. C, N, GB) and/or markup properties (e.g.
 ///   CR, AR, LB) if the user for some reason decided to define these things for
 ///   board position 0.
-/// - Game info node: Contains game info properties, e.g. KM, HA, PB, PW.
-///   Currently the root node is also used as the game info node.
+/// - Game info node: Contains game info properties, e.g. KM, HA, PB, PW. Also
+///   contains the board setup property AB to place handicap stones. Note that
+///   LoadGameCommand requires the node that contains the HA property to also
+///   have an AB property.
+///   Currently the root node is also used as the game info node, as per the
+///   SGF standard which states that game info properties are usually stored
+///   in the root node.
 /// - Setup node: An extra node after the root and game info nodes that contains
-///   board setup properties, e.g. AB, AW, PL.
+///   board setup properties, e.g. AB, AW, PL. Note: Handicap stones are placed
+///   with AB in the game info node.
 /// - 0-n remaining nodes with move properties (e.g. B, W), node and move
 ///   annotation properties (e.g. C, N, GB, TE), and/or markup properties (e.g.
 ///   CR, AR, LB).

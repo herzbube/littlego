@@ -372,4 +372,15 @@
   view.layer.borderWidth = 1;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Applies a tint color to @a button. The color used depends on the
+/// UIUserInterfaceStyle (light/dark mode) in @a traitCollection.
+// -----------------------------------------------------------------------------
++ (void) applyTintColorToButton:(UIButton*)button traitCollection:(UITraitCollection*)traitCollection
+{
+  bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:traitCollection];
+  UIColor* buttonTintColor = isLightUserInterfaceStyle ? [UIColor blackColor] : [UIColor whiteColor];
+  button.tintColor = buttonTintColor;
+}
+
 @end

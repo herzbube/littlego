@@ -45,13 +45,9 @@ extern const int arraySizeDefaultTabOrder;
 /// @brief The default order in which view controllers should appear in the
 /// application's main tab bar controller.
 extern const int defaultTabOrder[];
-/// @brief The index of the "more" navigation controller within a parent
-/// UITabBarController.
-///
-/// This index has a constant value which was experimentally determined by
-/// examining the behaviour of UITabBarController. The value is not documented
-/// anywhere in Apple's documentation.
-extern const int indexOfMoreNavigationController;
+/// @brief The minimum size (= height) of a resizable pane in the UI area
+/// #UIAreaPlay.
+extern const CGFloat uiAreaPlayResizablePaneMinimumSize;
 
 /// @brief Enumerates all types of user interfaces supported by the application.
 /// A user interface type encompasses all layouts in all orientations that are
@@ -1465,6 +1461,8 @@ extern NSString* lineIconResource;
 extern NSString* numberMarkerIconResource;
 extern NSString* squareIconResource;
 extern NSString* triangleIconResource;
+extern NSString* nodeSequenceIconResource;
+extern NSString* nodeTreeSmallIconResource;
 extern NSString* stoneBlackImageResource;
 extern NSString* stoneWhiteImageResource;
 extern NSString* stoneCrosshairImageResource;

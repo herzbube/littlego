@@ -29,7 +29,25 @@
 
 @implementation BoardViewDrawingHelper
 
-// TODO xxx document
+// -----------------------------------------------------------------------------
+/// @brief Returns true if @a rect is not a valid rectangle for drawing with
+/// Core Graphics. Returns false if @a rect is a valid rectangle. A rectangle
+/// is not valid if one or more of its 4 components (x, y, width, height) is NaN
+/// and/or Inf, or if the rectangle's width and/or height are less than zero.
+///
+/// If CGLayerCreateWithContext is invoked with an invalid rectangle, the
+/// function returns NULL instead of a CGLayer object, so a NULL check may be
+/// used instead of invoking this function to test for rectangle validity.
+///
+/// Other Core Graphics drawing functions that operate on invalid values will
+/// also refuse to draw anything, but in addition they generate warnings that
+/// are visible in Xcode's debug console and are distracting from other, more
+/// important console output. This function is therefore useful to avoid
+/// invalid drawing operations and unnecessary warnings.
+///
+/// @note This checking function became necessary when it became possible for
+/// the user to resize the board view to extremely small dimensions.
+// -----------------------------------------------------------------------------
 bool IsRectangleInvalid(CGRect rect)
 {
   // isfinite includes the check for NaN
@@ -47,7 +65,9 @@ bool IsRectangleInvalid(CGRect rect)
 /// context @a context and contains the drawing operations to draw a star
 /// point.
 ///
-/// All sizes are taken from the current metrics values.
+/// All sizes are taken from the metrics values in @a metrics. This function may
+/// return @e NULL instead of a CGLayer object if the metrics values in
+/// @a metrics refer to a board with extremely small dimensions.
 ///
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
@@ -63,7 +83,11 @@ CGLayerRef CreateStarPointLayer(CGContextRef context, BoardViewMetrics* metrics)
   layerRect.size = metrics.pointCellSize;
   layerRect.size.width *= metrics.contentsScale;
   layerRect.size.height *= metrics.contentsScale;
+
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  if (! layer)
+    return NULL;
+
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
@@ -88,7 +112,9 @@ CGLayerRef CreateStarPointLayer(CGContextRef context, BoardViewMetrics* metrics)
 /// context @a context and contains the drawing operations to draw a stone that
 /// uses the bitmap image in the bundle resource file named @a name.
 ///
-/// All sizes are taken from the current metrics values.
+/// All sizes are taken from the metrics values in @a metrics. This function may
+/// return @e NULL instead of a CGLayer object if the metrics values in
+/// @a metrics refer to a board with extremely small dimensions.
 ///
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
@@ -104,7 +130,11 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
   layerRect.size = metrics.pointCellSize;
   layerRect.size.width *= metrics.contentsScale;
   layerRect.size.height *= metrics.contentsScale;
+
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  if (! layer)
+    return NULL;
+
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   // The values assigned here have been determined experimentally
@@ -146,6 +176,10 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
 /// @e stoneInnerSquareSize). The symbol uses the specified color
 /// @a symbolColor as the stroke color.
 ///
+/// All sizes are taken from the metrics values in @a metrics. This function may
+/// return @e NULL instead of a CGLayer object if the metrics values in
+/// @a metrics refer to a board with extremely small dimensions.
+///
 /// @see CreateDeadStoneSymbolLayer().
 // -----------------------------------------------------------------------------
 CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, UIColor* symbolFillColor, UIColor* symbolStrokeColor, MarkupModel* markupModel, BoardViewMetrics* metrics)
@@ -186,7 +220,13 @@ CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, U
     layerRect.size.height += 2.0f * metrics.contentsScale;
   }
 
+  if (IsRectangleInvalid(drawingRect))
+    return NULL;
+
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  if (! layer)
+    return NULL;
+
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   // Half-pixel translation is added at the time when the layer is actually
@@ -323,6 +363,10 @@ CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, U
 /// Drawing the connection with a stroke is important so that it remains
 /// distinguishable even if it is drawn over content that has the same color as
 /// the connection fill color (e.g. white connection over a white stone).
+///
+/// All sizes are taken from the metrics values in @a metrics. This function may
+/// return @e NULL instead of a CGLayer object if the metrics values in
+/// @a metrics refer to a board with extremely small dimensions.
 // -----------------------------------------------------------------------------
 CGLayerRef CreateConnectionLayer(CGContextRef context, enum GoMarkupConnection connection, UIColor* connectionFillColor, UIColor* connectionStrokeColor, GoPoint* fromPoint, GoPoint* toPoint, CGRect canvasRect, BoardViewMetrics* metrics)
 {
@@ -357,6 +401,9 @@ CGLayerRef CreateConnectionLayer(CGContextRef context, enum GoMarkupConnection c
   toPointCoordinates.y *= metrics.contentsScale;
 
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  if (! layer)
+    return NULL;
+
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   // Half-pixel translation is added at the time when the layer is actually
@@ -426,6 +473,10 @@ CGLayerRef CreateConnectionLayer(CGContextRef context, enum GoMarkupConnection c
 /// property @e stoneInnerSquareSize). The symbol uses the specified color
 /// @a symbolColor.
 ///
+/// All sizes are taken from the metrics values in @a metrics. This function may
+/// return @e NULL instead of a CGLayer object if the metrics values in
+/// @a metrics refer to a board with extremely small dimensions.
+///
 /// @see CreateDeadStoneSymbolLayer().
 // -----------------------------------------------------------------------------
 CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, BoardViewMetrics* metrics)
@@ -441,7 +492,13 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, B
   // Inset the drawing rect so that the stroke is not clipped
   CGRect drawingRect = CGRectInset(layerRect, strokeLineWidth, strokeLineWidth);
 
+  if (IsRectangleInvalid(drawingRect))
+    return NULL;
+
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  if (! layer)
+    return NULL;
+
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   // Half-pixel translation is added at the time when the layer is actually
@@ -459,6 +516,10 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, B
 /// @brief Creates and returns a CGLayer object that is associated with graphics
 /// context @a context and contains the drawing operations to draw a "dead
 /// stone" symbol.
+///
+/// All sizes are taken from the metrics values in @a metrics. This function may
+/// return @e NULL instead of a CGLayer object if the metrics values in
+/// @a metrics refer to a board with extremely small dimensions.
 ///
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
@@ -482,7 +543,11 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, BoardViewMetrics* me
   CGRect layerRect;
   layerRect.origin = CGPointZero;
   layerRect.size = layerSize;
+
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  if (! layer)
+    return NULL;
+
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   CGContextBeginPath(layerContext);
@@ -502,6 +567,10 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, BoardViewMetrics* me
 /// context @a context and contains the drawing operations to markup territory
 /// in the specified style @a territoryMarkupStyle.
 ///
+/// All sizes are taken from the metrics values in @a metrics. This function may
+/// return @e NULL instead of a CGLayer object if the metrics values in
+/// @a metrics refer to a board with extremely small dimensions.
+///
 /// The drawing operations in the returned layer do not use gHalfPixel, i.e.
 /// gHalfPixel must be added to the CTM just before the layer is actually drawn.
 ///
@@ -516,7 +585,11 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   layerRect.size = metrics.pointCellSize;
   layerRect.size.width *= metrics.contentsScale;
   layerRect.size.height *= metrics.contentsScale;
+
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  if (! layer)
+    return NULL;
+
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   UIColor* fillColor;
