@@ -1217,14 +1217,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   GoGame* game = [GoGame sharedGame];
   GoBoard* board = game.board;
 
-  SGFCPropertyType propertyType = setupProperty.propertyType;
-  void (^addPointToNodeSetup) (GoPoint*);
-  if (propertyType == SGFCPropertyTypeAB)
-    addPointToNodeSetup = ^(GoPoint* point) { [nodeSetup placeBlackSetupStone:point]; };
-  else if (propertyType == SGFCPropertyTypeAW)
-    addPointToNodeSetup = ^(GoPoint* point) { [nodeSetup placeWhiteSetupStone:point]; };
-  else
-    addPointToNodeSetup = ^(GoPoint* point) { [nodeSetup clearSetupStone:point]; };
+  NSMutableArray* setupPoints = [NSMutableArray array];
 
   for (id<SGFCPropertyValue> setupPropertyValue in setupProperty.propertyValues)
   {
@@ -1243,7 +1236,26 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
       return false;
     }
 
-    addPointToNodeSetup(point);
+    [setupPoints addObject:point];
+  }
+
+  SGFCPropertyType propertyType = setupProperty.propertyType;
+  if (propertyType == SGFCPropertyTypeAB)
+  {
+    [nodeSetup setupValidatedBlackStones:setupPoints];
+  }
+  else if (propertyType == SGFCPropertyTypeAW)
+  {
+    [nodeSetup setupValidatedWhiteStones:setupPoints];
+  }
+  else if (propertyType == SGFCPropertyTypeAE)
+  {
+    [nodeSetup setupValidatedNoStones:setupPoints];
+  }
+  else
+  {
+    *errorMessage = [NSString stringWithFormat:@"SgfcKit interfacing error while determining board setup: Unexpected property type %lu with setup points %@", (unsigned long)propertyType, setupPoints];
+    return false;
   }
 
   return true;

@@ -43,6 +43,27 @@
 
 /// @name Delayed initialization
 //@{
+/// @brief Sets the value of property @e blackSetupStones with the black setup
+/// stones listed in @a points, without performing any validation. Any points
+/// already in @e blackSetupStones are replaced.
+///
+/// Raises @e NSInvalidArgumentException if @a points is @e nil.
+- (void) setupValidatedBlackStones:(NSArray*)points;
+
+/// @brief Sets the value of property @e whiteSetupStones with the white setup
+/// stones listed in @a points, without performing any validation. Any points
+/// already in @e whiteSetupStones are replaced.
+///
+/// Raises @e NSInvalidArgumentException if @a points is @e nil.
+- (void) setupValidatedWhiteStones:(NSArray*)points;
+
+/// @brief Sets the value of property @e noSetupStones with the empty points
+/// listed in @a points, without performing any validation. Any points already
+/// in @e noSetupStones are replaced.
+///
+/// Raises @e NSInvalidArgumentException if @a points is @e nil.
+- (void) setupValidatedNoStones:(NSArray*)points;
+
 /// @brief Captures setup information in @a game and stores the information in
 /// the properties @e previousBlackSetupStones, @e previousWhiteSetupStones and
 /// @e previousSetupFirstMoveColor.

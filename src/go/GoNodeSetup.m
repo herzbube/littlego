@@ -153,6 +153,63 @@
 // -----------------------------------------------------------------------------
 // Method is documented in the header file.
 // -----------------------------------------------------------------------------
+- (void) setupValidatedBlackStones:(NSArray*)points
+{
+  if (! points)
+  {
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"setupValidatedBlackStones: failed: points argument is nil"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return;
+  }
+
+  if (points.count == 0)
+    self.mutableBlackSetupStones = nil;
+  else
+    self.mutableBlackSetupStones = [NSMutableArray arrayWithArray:points];
+}
+
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setupValidatedWhiteStones:(NSArray*)points
+{
+  if (! points)
+  {
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"setupValidatedWhiteStones: failed: points argument is nil"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return;
+  }
+
+  if (points.count == 0)
+    self.mutableWhiteSetupStones = nil;
+  else
+    self.mutableWhiteSetupStones = [NSMutableArray arrayWithArray:points];
+}
+
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setupValidatedNoStones:(NSArray*)points
+{
+  if (! points)
+  {
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"setupValidatedNoStones: failed: points argument is nil"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return;
+  }
+
+  if (points.count == 0)
+    self.mutableNoSetupStones = nil;
+  else
+    self.mutableNoSetupStones = [NSMutableArray arrayWithArray:points];
+}
+
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
 - (void) capturePreviousSetupInformation:(GoGame*)game
 {
   if (! game)
