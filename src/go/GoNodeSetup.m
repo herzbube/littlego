@@ -17,12 +17,20 @@
 
 // Project includes
 #import "GoNodeSetup.h"
+#import "GoBoard.h"
+#import "GoGame.h"
+#import "GoPoint.h"
+#import "../utility/ExceptionUtility.h"
 
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for GoNodeSetup.
 // -----------------------------------------------------------------------------
 @interface GoNodeSetup()
+/// @name Re-declaration of properties to make them readwrite privately
+//@{
+@property(nonatomic, assign, readwrite) enum GoColor previousSetupFirstMoveColor;
+//@}
 @property(nonatomic, retain) NSMutableArray* mutableBlackSetupStones;
 @property(nonatomic, retain) NSMutableArray* mutableWhiteSetupStones;
 @property(nonatomic, retain) NSMutableArray* mutableNoSetupStones;
@@ -143,11 +151,49 @@
 #pragma mark - Public API - Delayed initialization
 
 // -----------------------------------------------------------------------------
-/// @brief Captures setup information prior to this GoNodeSetup.
+// Method is documented in the header file.
 // -----------------------------------------------------------------------------
 - (void) capturePreviousSetupInformation:(GoGame*)game
 {
-  // TODO xxx
+  if (! game)
+  {
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"capturePreviousSetupInformation: failed: game argument is nil"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return;
+  }
+
+  self.previousSetupFirstMoveColor = game.setupFirstMoveColor;
+
+  NSMutableArray* previousBlackSetupStones = [NSMutableArray array];
+  NSMutableArray* previousWhiteSetupStones = [NSMutableArray array];
+
+  GoPoint* point = [game.board pointAtVertex:@"A1"];
+  while (point)
+  {
+    switch (point.stoneState)
+    {
+      case GoColorBlack:
+        [previousBlackSetupStones addObject:point];
+        break;
+      case GoColorWhite:
+        [previousWhiteSetupStones addObject:point];
+        break;
+      default:
+        break;
+    }
+    point = point.next;
+  }
+
+  if (previousBlackSetupStones.count == 0)
+    self.mutablePreviousBlackSetupStones = nil;
+  else
+    self.mutablePreviousBlackSetupStones = previousBlackSetupStones;
+
+  if (previousWhiteSetupStones.count == 0)
+    self.mutablePreviousWhiteSetupStones = nil;
+  else
+    self.mutablePreviousWhiteSetupStones = previousWhiteSetupStones;
 }
 
 #pragma mark - Public API - Applying and reverting setup information

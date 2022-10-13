@@ -29,6 +29,13 @@
 /// the board, a new board position with a new Zobrist hash is created.
 ///
 /// @ingroup go
+///
+/// Design note: It is expected that only small parts of the board are actually
+/// set up with stones. It is therefore most efficient, memory-wise and also for
+/// the size of the NSCoding archive, for capturePreviousSetupInformation() to
+/// only capture the points that have stones on them. Whoever needs to work with
+/// empty points can (and must) infer what these points are, at the cost of
+/// additional processing time and power.
 // -----------------------------------------------------------------------------
 @interface GoNodeSetup : NSObject <NSCoding>
 {
@@ -39,6 +46,8 @@
 /// @brief Captures setup information in @a game and stores the information in
 /// the properties @e previousBlackSetupStones, @e previousWhiteSetupStones and
 /// @e previousSetupFirstMoveColor.
+///
+/// Raises @e NSInvalidArgumentException if @a game is @e nil.
 - (void) capturePreviousSetupInformation:(GoGame*)game;
 //@}
 
@@ -167,7 +176,7 @@
 /// This effectively has the value of the @e setupFirstMoveColor property of the
 /// previous GoNodeSetup object. Is #GoColorNone if this is the first
 /// GoNodeSetup.
-@property(nonatomic, assign) enum GoColor previousSetupFirstMoveColor;
+@property(nonatomic, assign, readonly) enum GoColor previousSetupFirstMoveColor;
 //@}
 
 @end
