@@ -70,10 +70,12 @@
               withStoneState:(enum GoColor)stoneState
              isIllegalReason:(enum GoBoardSetupIsIllegalReason*)reason
   createsIllegalStoneOrGroup:(GoPoint**)illegalStoneOrGroupPoint;
+- (bool) isLegalBoardSetup:(NSString**)errorMessage;
 - (bool) isLegalMove:(GoPoint*)point isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isLegalMove:(GoPoint*)point byColor:(enum GoColor)color isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isLegalPassMoveIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isLegalPassMoveByColor:(enum GoColor)color illegalReason:(enum GoMoveIsIllegalReason*)reason;
+- (void) endGameDueToPassMovesIfGameRulesRequireIt;
 - (void) revertStateFromEndedToInProgress;
 - (void) switchNextMoveColor;
 - (void) toggleHandicapPoint:(GoPoint*)point;

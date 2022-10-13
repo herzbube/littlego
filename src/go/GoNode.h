@@ -19,6 +19,7 @@
 @class GoMove;
 @class GoNodeAnnotation;
 @class GoNodeMarkup;
+@class GoNodeSetup;
 
 
 // -----------------------------------------------------------------------------
@@ -129,15 +130,22 @@
 /// @name Node data
 //@{
 /// @brief True if the node is empty and contains no data, false if the node
-/// is not empty and contains some data. A node is empty if it has no move data
+/// is not empty and contains some data.
+///
+/// A node is empty if it has no setup data (property @e goNodeSetup is @e nil
+/// or the GoNodeSetup object's property @e isEmpty is @e true), no move data
 /// (property @e goMove is @e nil), no annotation data (property
 /// @e goNodeAnnotation is @e nil) and no markup data (property @e goNodeMarkup
-/// is @e nil).
-@property(nonatomic, assign, getter=isEmpty) bool empty;
+/// is @e nil or the GoNodeMarkup object's property @e hasMarkup is @e false).
+@property(nonatomic, assign, getter=isEmpty, readonly) bool empty;
+
+/// @brief The game setup data associated with this node. @e nil if this node
+/// has no associated game setup data. The default value is @e nil.
+@property(nonatomic, retain) GoNodeSetup* goNodeSetup;
 
 /// @brief The move data associated with this node. @e nil if this node has no
 /// associated move. The default value is @e nil.
-@property(nonatomic, retain, readonly) GoMove* goMove;
+@property(nonatomic, retain) GoMove* goMove;
 
 /// @brief The node annotation data associated with this node. @e nil if this
 /// node has no associated node annotation data. The default value is @e nil.

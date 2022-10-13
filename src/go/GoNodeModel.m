@@ -56,11 +56,13 @@
   self = [super init];
   if (! self)
     return nil;
+
   self.game = game;
   self.rootNode = [GoNode node];
   self.nodeList = [NSMutableArray arrayWithObject:self.rootNode];
   self.numberOfNodes = 1;
   self.numberOfMoves = 0;
+
   return self;
 }
 
@@ -72,6 +74,7 @@
   self.game = nil;
   self.rootNode = nil;
   self.nodeList = nil;
+
   [super dealloc];
 }
 
@@ -218,6 +221,73 @@
 }
 
 #pragma mark - Public interface
+
+// TODO xxx document
+- (void) changeToMainVariation
+{
+  [self changeToVariationContainingNode:self.rootNode];
+}
+
+// TODO xxx document
+// the variation consists of the node and all its ancestors up to the root node,
+// and all its firstChild descendants
+- (void) changeToVariationContainingNode:(GoNode*)node
+{
+  if (! node)
+  {
+    NSString* errorMessage = @"changeToVariationContainingNode: failed: node is nil object";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  NSMutableArray* newNodeList = [NSMutableArray arrayWithObject:node];
+  int newNumberOfMoves = node.goMove ? 1 : 0;
+
+  GoNode* parent = node.parent;
+  while (parent)
+  {
+    [newNodeList insertObject:parent atIndex:0];
+
+    if (parent.goMove)
+      newNumberOfMoves++;
+
+    parent = parent.parent;
+  }
+
+  if (newNodeList.firstObject != self.rootNode)
+  {
+    NSString* errorMessage = @"changeToVariationContainingNode: failed: root node is not at the variation start";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  GoNode* firstChild = node.firstChild;
+  while (firstChild)
+  {
+    [newNodeList addObject:firstChild];
+
+    if (firstChild.goMove)
+      newNumberOfMoves++;
+
+    firstChild = firstChild.firstChild;
+  }
+
+  int newNumberOfNodes = (int)newNodeList.count;
+
+  // TODO xxx do we need to check if the old and the new variations are the same?
+  self.nodeList = newNodeList;
+
+  // TODO xxx old and new variation could have the same number of nodes and/or nodes => may need another property to observe, or a notification
+  // TODO xxx KVO in GoBoardPosition may do something stupid if currentBoardPosition is newNumberOfNodes - 1 => replace KVO?
+  self.numberOfNodes = newNumberOfNodes;  // triggers KVO observers
+  self.numberOfMoves = newNumberOfMoves;  // triggers KVO observers
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the GoNode object located at index position @a index. The

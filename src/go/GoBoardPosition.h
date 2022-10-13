@@ -39,9 +39,9 @@
 /// provides a simple way how to refer to a board position: The reference is
 /// made with a numeric value:
 /// - Board position 0 refers to game tree root node, the beginning of the game
-///   when no moves have been played yet. If the game uses handicap and/or board
-///   setup, handicap and/or board setup stones have already been placed in this
-///   position.
+///   when no board setup has been made yet and no moves have been played yet.
+///   If the game uses handicap, the handicap stones have already been placed in
+///   this position.
 /// - Board positions 1, 2, etc. refer to the position after the information in
 ///   node 1, 2, etc. have been applied to the board.
 ///
@@ -72,6 +72,9 @@
 /// event that triggers this is if a new move is made via one of the
 /// move-generating methods in GoGame/ (GoGame::play:() and GoGame::pass()).
 ///
+/// TODO xxx Update the documentation in the previous paragraph to include
+/// game setup.
+///
 ///
 /// @par Notifications
 ///
@@ -93,6 +96,8 @@
 }
 
 - (id) initWithGame:(GoGame*)game;
+
+- (void) changeToLastBoardPositionWithoutUpdatingGoObjects;
 
 /// @brief The current board position as described in the GoBoardPosition class
 /// documentation.

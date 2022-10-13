@@ -98,6 +98,29 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Changes the value of property @e currentBoardPosition so that it
+/// refers to the last board position, without also changing the state of
+/// GoPoint and GoBoardRegion objects. The value of property
+/// @e numberOfBoardPositions is used to determine the last board position.
+///
+/// This method is intended to be invoked exceptionally only, as part of the
+/// configuration process after a new game was loaded from an SGF file.
+// -----------------------------------------------------------------------------
+- (void) changeToLastBoardPositionWithoutUpdatingGoObjects
+{
+  int lastBoardPosition = self.numberOfBoardPositions - 1;
+  if (self.currentBoardPosition == lastBoardPosition)
+    return;
+
+  // Don't invoke property's setter since there is no need to update the state
+  // of Go objects. The drawback is that we have to perform some additional
+  // bookkeeping and generate KVO notifications ourselves.
+  [self willChangeValueForKey:@"currentBoardPosition"];
+  _currentBoardPosition = lastBoardPosition;
+  [self didChangeValueForKey:@"currentBoardPosition"];
+}
+
+// -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
 - (void) setCurrentBoardPosition:(int)newBoardPosition

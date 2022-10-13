@@ -35,6 +35,9 @@
 
 - (id) initWithGame:(GoGame*)game;
 
+- (void) changeToMainVariation;
+- (void) changeToVariationContainingNode:(GoNode*)node;
+
 - (GoNode*) nodeAtIndex:(int)index;
 - (int) indexOfNode:(GoNode*)node;
 - (void) appendNode:(GoNode*)node;

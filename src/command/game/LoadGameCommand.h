@@ -30,7 +30,7 @@
 /// The sequence of operations performed by LoadGameCommand is this:
 /// - Start a new game by executing a NewGameCommand instance
 /// - Parse the SgfcKit objects to obtain additional information that was stored
-///   in the .sgf file (handicap, komi, moves)
+///   in the .sgf file (handicap, komi, setup, moves, annotations, markup, etc.)
 /// - Setup the game with the additional information
 /// - Invoke SyncGTPEngineCommand to synchronize the computer player with the
 ///   information that was read from the .sgf file
@@ -65,7 +65,7 @@
 {
 }
 
-- (id) initWithGameInfoNode:(SGFCNode*)sgfGameInfoNode goGameInfo:(SGFCGoGameInfo*)sgfGoGameInfo;
+- (id) initWithGameInfoNode:(SGFCNode*)sgfGameInfoNode goGameInfo:(SGFCGoGameInfo*)sgfGoGameInfo game:(SGFCGame*)sgfGame;
 
 /// @brief True if the command is executed to restore a backup game. False
 /// (the default) if the command is executed to load a game from the archive.

@@ -253,6 +253,8 @@
 		CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A715A0A3E400439B4E /* PathUtilities.m */; };
 		CD55D0331D6FAE7E00A9A5BC /* CrashReportingHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD55D0321D6FAE7E00A9A5BC /* CrashReportingHandler.m */; };
 		CD5B406625E05AD300C4D947 /* SGFCSoftwareLicense.html in Resources */ = {isa = PBXBuildFile; fileRef = CD5B406525E05AD300C4D947 /* SGFCSoftwareLicense.html */; };
+		CD5DE5AB28F43FB2002487F4 /* GoNodeSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5DE5A928F43FB2002487F4 /* GoNodeSetup.m */; };
+		CD5DE5AC28F43FB2002487F4 /* GoNodeSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5DE5A928F43FB2002487F4 /* GoNodeSetup.m */; };
 		CD5E6B361D7CCB610089D0B3 /* MoreGameActionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */; };
 		CD5E6B371D7CD0500089D0B3 /* MoreGameActionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */; };
 		CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
@@ -1144,6 +1146,8 @@
 		CD55D0321D6FAE7E00A9A5BC /* CrashReportingHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingHandler.m; sourceTree = "<group>"; };
 		CD5B406525E05AD300C4D947 /* SGFCSoftwareLicense.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = SGFCSoftwareLicense.html; sourceTree = "<group>"; };
 		CD5B406B25E0A21000C4D947 /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
+		CD5DE5A928F43FB2002487F4 /* GoNodeSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeSetup.m; sourceTree = "<group>"; };
+		CD5DE5AA28F43FB2002487F4 /* GoNodeSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeSetup.h; sourceTree = "<group>"; };
 		CD5E6B341D7CCB610089D0B3 /* MoreGameActionsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoreGameActionsController.h; sourceTree = "<group>"; };
 		CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoreGameActionsController.m; sourceTree = "<group>"; };
 		CD607BBB280AF114000C111E /* trashcan@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trashcan@2x.png"; sourceTree = "<group>"; };
@@ -2019,6 +2023,8 @@
 				CDC0C5AF2832D20300EA467C /* GoNodeMarkup.m */,
 				CD85068827BB18D6000D2CCD /* GoNodeModel.h */,
 				CD85068927BB18D6000D2CCD /* GoNodeModel.m */,
+				CD5DE5AA28F43FB2002487F4 /* GoNodeSetup.h */,
+				CD5DE5A928F43FB2002487F4 /* GoNodeSetup.m */,
 				CD10882013255A6B00E83543 /* GoPlayer.h */,
 				CD10882113255A6B00E83543 /* GoPlayer.m */,
 				CD10882313255AA600E83543 /* GoPoint.h */,
@@ -4182,6 +4188,7 @@
 				CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */,
 				CD2230B325E661E600187C57 /* LogFormatter.m in Sources */,
 				CD1E6EBF286755A000785E23 /* MoveMarkupPanGestureHandler.m in Sources */,
+				CD5DE5AB28F43FB2002487F4 /* GoNodeSetup.m in Sources */,
 				CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */,
 				CDDD526314840A540027476B /* DisplaySettingsController.m in Sources */,
 				CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */,
@@ -4328,6 +4335,7 @@
 				CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
 				CDFD9F7E18F1D5DF0031CBCF /* CrashReportingSettingsController.m in Sources */,
 				CDEECC6D1992923000BC89F2 /* ArchiveUtility.m in Sources */,
+				CD5DE5AC28F43FB2002487F4 /* GoNodeSetup.m in Sources */,
 				CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */,
 				CD7C578321F4A3A900694520 /* UnarchiveGameCommand.m in Sources */,
 				CDA0970C1A99F77F002FCD78 /* SplitViewController.m in Sources */,

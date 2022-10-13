@@ -317,42 +317,7 @@
 
   // This may change the game state. Such a change must occur after the move was
   // generated; this order is important for observer notifications.
-  [self endGameIfNecessary];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Ends the game after at least two consecutive pass moves have been
-/// made. Sets @e reasonForGameHasEnded according to the game rules.
-///
-/// This is a private helper for pass().
-// -----------------------------------------------------------------------------
-- (void) endGameIfNecessary
-{
-  int numberOfConsecutivePassMoves = 0;
-  GoMove* potentialPassMove = self.lastMove;
-  while (potentialPassMove && GoMoveTypePass == potentialPassMove.type)
-  {
-    ++numberOfConsecutivePassMoves;
-    potentialPassMove = potentialPassMove.previous;
-  }
-
-  // GoFourPassesRuleFourPassesEndTheGame has precedence over
-  // GoLifeAndDeathSettlingRuleTwoPasses
-  if (4 == numberOfConsecutivePassMoves && GoFourPassesRuleFourPassesEndTheGame == self.rules.fourPassesRule)
-  {
-    self.reasonForGameHasEnded = GoGameHasEndedReasonFourPasses;
-    self.state = GoGameStateGameHasEnded;
-  }
-  else if (3 == numberOfConsecutivePassMoves && GoLifeAndDeathSettlingRuleThreePasses == self.rules.lifeAndDeathSettlingRule)
-  {
-    self.reasonForGameHasEnded = GoGameHasEndedReasonThreePasses;
-    self.state = GoGameStateGameHasEnded;
-  }
-  else if (0 == (numberOfConsecutivePassMoves % 2) && GoLifeAndDeathSettlingRuleTwoPasses == self.rules.lifeAndDeathSettlingRule)
-  {
-    self.reasonForGameHasEnded = GoGameHasEndedReasonTwoPasses;
-    self.state = GoGameStateGameHasEnded;
-  }
+  [self endGameDueToPassMovesIfGameRulesRequireIt];
 }
 
 // -----------------------------------------------------------------------------
@@ -491,6 +456,7 @@
                                                    userInfo:nil];
     @throw exception;
   }
+  // TODO xxx Why this check? Why not let the caller check GoColorNone? (it would always return true)
   if (stoneState != GoColorBlack && stoneState != GoColorWhite)
   {
     NSString* errorMessage = [NSString stringWithFormat:@"Invalid stoneState argument %d", stoneState];
@@ -1208,6 +1174,71 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Ends the game (i.e. sets it to state #GoGameStateGameHasEnded) if at
+/// least two consecutive pass moves were played as the last moves, and if the
+/// game rules require the game to end because of this. Does nothing otherwise.
+/// If this method ends the game, it also sets @e reasonForGameHasEnded
+/// according to the game rules.
+///
+/// Invoking this method sets the document dirty flag if the game state changes.
+///
+/// Raises an @e NSInternalInconsistencyException if this method is invoked
+/// while this GoGame object is not in state #GoGameStateGameHasStarted or
+/// #GoGameStateGameIsPaused.
+///
+/// @note Invoking this method should not be necessary under normal
+/// circumstances. Specifically, pass() already invokes this method, so invoking
+/// it again is not necessary.
+// -----------------------------------------------------------------------------
+- (void) endGameDueToPassMovesIfGameRulesRequireIt
+{
+  if (GoGameStateGameHasStarted != self.state && GoGameStateGameIsPaused != self.state)
+  {
+    NSString* errorMessage = @"Pass is possible only while GoGame object is either in state GoGameStateGameHasStarted or GoGameStateGameIsPaused";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  int numberOfConsecutivePassMoves = 0;
+  GoMove* potentialPassMove = self.lastMove;
+  while (potentialPassMove && GoMoveTypePass == potentialPassMove.type)
+  {
+    ++numberOfConsecutivePassMoves;
+    potentialPassMove = potentialPassMove.previous;
+  }
+
+  bool didEndGame = true;
+
+  // GoFourPassesRuleFourPassesEndTheGame has precedence over
+  // GoLifeAndDeathSettlingRuleTwoPasses
+  if (4 == numberOfConsecutivePassMoves && GoFourPassesRuleFourPassesEndTheGame == self.rules.fourPassesRule)
+  {
+    self.reasonForGameHasEnded = GoGameHasEndedReasonFourPasses;
+    self.state = GoGameStateGameHasEnded;
+  }
+  else if (3 == numberOfConsecutivePassMoves && GoLifeAndDeathSettlingRuleThreePasses == self.rules.lifeAndDeathSettlingRule)
+  {
+    self.reasonForGameHasEnded = GoGameHasEndedReasonThreePasses;
+    self.state = GoGameStateGameHasEnded;
+  }
+  else if (0 == (numberOfConsecutivePassMoves % 2) && GoLifeAndDeathSettlingRuleTwoPasses == self.rules.lifeAndDeathSettlingRule)
+  {
+    self.reasonForGameHasEnded = GoGameHasEndedReasonTwoPasses;
+    self.state = GoGameStateGameHasEnded;
+  }
+  else
+  {
+    didEndGame = false;
+  }
+
+  if (didEndGame)
+    self.document.dirty = true;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Reverts the game from state #GoGameStateGameHasEnded to an
 /// "in progress" state that is appropriate for the current game type.
 ///
@@ -1398,25 +1429,9 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     // immediately while placing each stone, the check would be much more
     // expensive because we would have to check the same GoBoardRegions over
     // and over again.
-    int numberOfSuicidalIntersections = 0;
-    NSString* suicidalIntersectionsString = @"";
-    for (GoBoardRegion* region in self.board.regions)
-    {
-      if (! region.isStoneGroup)
-        continue;
-      if (region.liberties > 0)
-        continue;
-
-      for (GoPoint* suicidalPoint in region.points)
-      {
-        if (numberOfSuicidalIntersections > 0)
-          suicidalIntersectionsString = [suicidalIntersectionsString stringByAppendingString:@", "];
-        suicidalIntersectionsString = [suicidalIntersectionsString stringByAppendingString:suicidalPoint.vertex.string];
-        numberOfSuicidalIntersections++;
-      }
-    }
-
-    if (numberOfSuicidalIntersections > 0)
+    NSString* suicidalIntersectionsString;
+    bool isLegalBoardSetup = [self isLegalBoardSetup:&suicidalIntersectionsString];
+    if (! isLegalBoardSetup)
     {
       NSString* errorMessage = [NSString stringWithFormat:@"Board setup prior to first move attempts to place stones with 0 (zero) liberties on the following intersections: %@.", suicidalIntersectionsString];
       DDLogError(@"%@: %@", self, errorMessage);
@@ -1428,6 +1443,33 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   }
 
   self.zobristHashBeforeFirstMove = [self.board.zobristTable hashForBoard:self.board];
+}
+
+// TODO xxx document
+// Checks the entire board in its current state whether the setup stones that
+// are present are legal (i.e. no suicidal stone groups).
+- (bool) isLegalBoardSetup:(NSString**)suicidalIntersectionsString
+{
+  int numberOfSuicidalIntersections = 0;
+  *suicidalIntersectionsString = @"";
+
+  for (GoBoardRegion* region in self.board.regions)
+  {
+    if (! region.isStoneGroup)
+      continue;
+    if (region.liberties > 0)
+      continue;
+
+    for (GoPoint* suicidalPoint in region.points)
+    {
+      if (numberOfSuicidalIntersections > 0)
+        *suicidalIntersectionsString = [*suicidalIntersectionsString stringByAppendingString:@", "];
+      *suicidalIntersectionsString = [*suicidalIntersectionsString stringByAppendingString:suicidalPoint.vertex.string];
+      numberOfSuicidalIntersections++;
+    }
+  }
+
+  return (numberOfSuicidalIntersections == 0);
 }
 
 // -----------------------------------------------------------------------------

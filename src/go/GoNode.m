@@ -19,6 +19,7 @@
 #import "GoNode.h"
 #import "GoMove.h"
 #import "GoNodeMarkup.h"
+#import "GoNodeSetup.h"
 #import "../utility/ExceptionUtility.h"
 
 
@@ -26,10 +27,6 @@
 /// @brief Class extension with private properties for GoNode.
 // -----------------------------------------------------------------------------
 @interface GoNode()
-/// @name Re-declaration of properties to make them readwrite privately
-//@{
-@property(nonatomic, retain, readwrite) GoMove* goMove;
-//@}
 @property(nonatomic, assign) unsigned int nodeID;
 @property(nonatomic, assign) unsigned int firstChildNodeID;
 @property(nonatomic, assign) unsigned int nextSiblingNodeID;
@@ -50,6 +47,7 @@
   return [[[self alloc] init] autorelease];
 }
 
+// TODO xxx is this still needed now that goMove property is readwrite?
 // -----------------------------------------------------------------------------
 /// @brief Returns a newly constructed GoNode object that has no parent,
 /// child or sibling and is not associated with any game. The supplied GoMove
@@ -80,6 +78,7 @@
   _nextSibling = nil;
   _parent = nil;
 
+  self.goNodeSetup = nil;
   self.goMove = nil;
   self.goNodeAnnotation = nil;
   self.goNodeMarkup = nil;
@@ -115,6 +114,7 @@
     _parent = nil;
   }
 
+  self.goNodeSetup = nil;
   self.goMove = nil;
   self.goNodeAnnotation = nil;
   self.goNodeMarkup = nil;
@@ -152,6 +152,7 @@
   self.nextSiblingNodeID = [decoder decodeIntForKey:goNodeNextSiblingKey];
   self.parentNodeID = [decoder decodeIntForKey:goNodeParentKey];
 
+  // TODO xxx decode GoNodeSetup
   self.goMove = [decoder decodeObjectForKey:goNodeGoMoveKey];
   self.goNodeAnnotation = [decoder decodeObjectForKey:goNodeGoNodeAnnotationKey];
   self.goNodeMarkup = [decoder decodeObjectForKey:goNodeGoNodeMarkupKey];
@@ -181,6 +182,7 @@
   if (self.parent)
     [encoder encodeInt:self.parent.nodeID forKey:goNodeParentKey];
 
+  // TODO xxx encode GoNodeSetup
   if (self.goMove)
     [encoder encodeObject:self.goMove forKey:goNodeGoMoveKey];
   if (self.goNodeAnnotation)
@@ -318,7 +320,10 @@
 
 - (bool) isEmpty
 {
-  return ! self.goMove && ! self.goNodeAnnotation && ! self.goNodeMarkup;
+  return ((! self.goNodeSetup || self.goNodeSetup.isEmpty) &&
+          ! self.goMove &&
+          ! self.goNodeAnnotation &&
+          (! self.goNodeMarkup || ! self.goNodeMarkup.hasMarkup));
 }
 
 - (void) modifyBoard
