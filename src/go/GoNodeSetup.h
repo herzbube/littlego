@@ -99,34 +99,46 @@
 //@}
 
 
-/// @name Placing and removing stones
+/// @name Changing setup data
 //@{
-/// @brief Places a black setup stone on the board on the intersection @a point
-/// and adds @a point to @e blackSetupStones. Removes @a point from
-/// @e whiteSetupStones or @e noSetupStones if it already appears in one of
-/// these properties. Does nothing if @a point already contains a black stone.
+/// @brief Changes the data in this GoNodeSetup so that as a result a black
+/// stone is set up on intersection @a point.
 ///
-/// Raises @e NSInvalidArgumentException if this property is set with a nil
-/// value.
-- (void) placeBlackSetupStone:(GoPoint*)point;
+/// Does nothing if @a point is already listed in @e blackSetupStones.
+///
+/// Otherwise, adds @a point to @e blackSetupStones if @a point did not already
+/// have a black stone in the previous setup. In addition, @a point is removed
+/// from  @e whiteSetupStones or @e noSetupStones if it is already listed in
+/// one of these properties.
+///
+/// Raises @e NSInvalidArgumentException if @a point is @e nil.
+- (void) setupBlackStone:(GoPoint*)point;
 
-/// @brief Places a white setup stone on the board on the intersection @a point
-/// and adds @a point to @e whiteSetupStones. Removes @a point from
-/// @e blackSetupStones or @e noSetupStones if it already appears in one of
-/// these properties. Does nothing if @a point already contains a white stone.
+/// @brief Changes the data in this GoNodeSetup so that as a result a white
+/// stone is set up on intersection @a point.
 ///
-/// Raises @e NSInvalidArgumentException if this property is set with a nil
-/// value.
-- (void) placeWhiteSetupStone:(GoPoint*)point;
+/// Does nothing if @a point is already listed in @e whiteSetupStones.
+///
+/// Otherwise, adds @a point to @e whiteSetupStones if @a point did not already
+/// have a white stone in the previous setup. In addition, @a point is removed
+/// from  @e blackSetupStones or @e noSetupStones if it is already listed in
+/// one of these properties.
+///
+/// Raises @e NSInvalidArgumentException if @a point is @e nil.
+- (void) setupWhiteStone:(GoPoint*)point;
 
-/// @brief Clears a black or white stone on the board on the intersection
-/// @a point and adds @a point to @e noSetupStones. Removes @a point from
-/// @e blackSetupStones or @e whiteSetupStones if it already appears in one of
-/// these properties. Does nothing if @a point is already empty.
+/// @brief Changes the data in this GoNodeSetup so that as a result no
+/// stone is set up on intersection @a point.
 ///
-/// Raises @e NSInvalidArgumentException if this property is set with a nil
-/// value.
-- (void) clearSetupStone:(GoPoint*)point;
+/// Does nothing if @a point is already listed in @e noSetupStones.
+///
+/// Otherwise, adds @a point to @e noSetupStones if @a point was not already
+/// empty in the previous setup. In addition, @a point is removed
+/// from  @e blackSetupStones or @e whiteSetupStones if it is already listed in
+/// one of these properties.
+///
+/// Raises @e NSInvalidArgumentException if @a point is @e nil.
+- (void) setupNoStone:(GoPoint*)point;
 //@}
 
 
@@ -139,8 +151,8 @@
 /// @brief List of GoPoint objects on which black stones are to be placed
 /// as part of the game setup prior to the first move. Already existing white
 /// stones from previous board setup nodes are overwritten. The default value is
-/// an empty list. The list has no particular order. The list contains no
-/// duplicates.
+/// @e nil, which is equivalent to an empty list. The list has no particular
+/// order. The list contains no duplicates.
 ///
 /// The value of this property corresponds to the value of the SGF property AB.
 @property(nonatomic, retain, readonly) NSArray* blackSetupStones;
@@ -148,8 +160,8 @@
 /// @brief List of GoPoint objects on which white stones are to be placed
 /// as part of the game setup prior to the first move. Already existing black
 /// stones from previous board setup nodes, or from handicap, are overwritten.
-/// The default value is an empty list. The list has no particular order. The
-/// list contains no duplicates.
+/// The default value is @e nil, which is equivalent to an empty list. The list
+/// has no particular order. The list contains no duplicates.
 ///
 /// The value of this property corresponds to the value of the SGF property AW.
 @property(nonatomic, retain, readonly) NSArray* whiteSetupStones;
@@ -157,8 +169,8 @@
 /// @brief List of GoPoint objects on which no stones are to be placed as part
 /// of the game setup prior to the first move. Already existing black or white
 /// stones from previous board setup nodes, or from handicap, are removed. The
-/// default value is an empty list. The list has no particular order. The list
-/// contains no duplicates.
+/// default value is @e nil, which is equivalent to an empty list. The list has
+/// no particular order. The list contains no duplicates.
 ///
 /// The value of this property corresponds to the value of the SGF property AE.
 @property(nonatomic, retain, readonly) NSArray* noSetupStones;
@@ -166,13 +178,15 @@
 /// @brief The side that is set up to play the first move. Is #GoColorNone
 /// if no side is set up to play first. Note that this is @b not necessarily the
 /// side that actually plays the first move - notably in a game that was loaded
-/// from an .sgf file the two can be different.
+/// from an .sgf file the two can be different. The default value is
+/// #GoColorNone.
 ///
 /// The value of this property corresponds to the value of the SGF property PL.
 @property(nonatomic, assign) enum GoColor setupFirstMoveColor;
 
 /// @brief List of GoPoint objects on which black stones existed before the
-/// setup information in this GoNodeSetup was applied to the board. The list
+/// setup information in this GoNodeSetup was applied to the board. The
+/// default value is @e nil, which is equivalent to an empty list. The list
 /// has no particular order. The list contains no duplicates.
 ///
 /// GoPoint objects that do not appear in this property were either white (if
@@ -182,7 +196,8 @@
 @property(nonatomic, retain, readonly) NSArray* previousBlackSetupStones;
 
 /// @brief List of GoPoint objects on which white stones existed before the
-/// setup information in this GoNodeSetup was applied to the board. The list
+/// setup information in this GoNodeSetup was applied to the board. The
+/// default value is @e nil, which is equivalent to an empty list. The list
 /// has no particular order. The list contains no duplicates.
 ///
 /// GoPoint objects that do not appear in this property were either white (if
@@ -192,7 +207,8 @@
 @property(nonatomic, retain, readonly) NSArray* previousWhiteSetupStones;
 
 /// @brief The side that was set up to play the first move before the value of
-/// @e setupFirstMoveColor in this GoNodeSetup was applied to the game.
+/// @e setupFirstMoveColor in this GoNodeSetup was applied to the game. The
+/// default value is #GoColorNone.
 ///
 /// This effectively has the value of the @e setupFirstMoveColor property of the
 /// previous GoNodeSetup object. Is #GoColorNone if this is the first

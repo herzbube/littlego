@@ -276,28 +276,91 @@
 // -----------------------------------------------------------------------------
 // Method is documented in the header file.
 // -----------------------------------------------------------------------------
-- (void) placeBlackSetupStone:(GoPoint*)point
+- (void) setupBlackStone:(GoPoint*)point
 {
-  // TODO xxx
-  // TODO xxx Is invoked by LoadGameCommand before previous setup has been captured
+  if (! point)
+  {
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"addBlackSetupStone: failed: point argument is nil"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return;
+  }
+
+  if (_mutableBlackSetupStones && [_mutableBlackSetupStones containsObject:point])
+    return;
+  else if (_mutableWhiteSetupStones && [_mutableWhiteSetupStones containsObject:point])
+    [self removeWhiteSetupStone:point];
+  else if (_mutableNoSetupStones && [_mutableNoSetupStones containsObject:point])
+    [self removeNoSetupStone:point];
+
+  if (_mutablePreviousBlackSetupStones && [_mutablePreviousBlackSetupStones containsObject:point])
+    return;
+
+  if (_mutableBlackSetupStones)
+    [_mutableBlackSetupStones addObject:point];
+  else
+    _mutableBlackSetupStones = [NSMutableArray arrayWithObject:point];
 }
 
 // -----------------------------------------------------------------------------
 // Method is documented in the header file.
 // -----------------------------------------------------------------------------
-- (void) placeWhiteSetupStone:(GoPoint*)point
+- (void) setupWhiteStone:(GoPoint*)point
 {
-  // TODO xxx
-  // TODO xxx Is invoked by LoadGameCommand before previous setup has been captured
+  if (! point)
+  {
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"addWhiteSetupStone: failed: point argument is nil"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return;
+  }
+
+  if (_mutableBlackSetupStones && [_mutableBlackSetupStones containsObject:point])
+    [self removeBlackSetupStone:point];
+  else if (_mutableWhiteSetupStones && [_mutableWhiteSetupStones containsObject:point])
+    return;
+  else if (_mutableNoSetupStones && [_mutableNoSetupStones containsObject:point])
+    [self removeNoSetupStone:point];
+
+  if (_mutablePreviousWhiteSetupStones && [_mutablePreviousWhiteSetupStones containsObject:point])
+    return;
+
+  if (_mutableWhiteSetupStones)
+    [_mutableWhiteSetupStones addObject:point];
+  else
+    _mutableWhiteSetupStones = [NSMutableArray arrayWithObject:point];
 }
 
 // -----------------------------------------------------------------------------
 // Method is documented in the header file.
 // -----------------------------------------------------------------------------
-- (void) clearSetupStone:(GoPoint*)point
+- (void) setupNoStone:(GoPoint*)point
 {
-  // TODO xxx
-  // TODO xxx Is invoked by LoadGameCommand before previous setup has been captured
+  if (! point)
+  {
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"removeSetupStone: failed: point argument is nil"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return;
+  }
+
+  if (_mutableBlackSetupStones && [_mutableBlackSetupStones containsObject:point])
+    [self removeBlackSetupStone:point];
+  else if (_mutableWhiteSetupStones && [_mutableWhiteSetupStones containsObject:point])
+    [self removeWhiteSetupStone:point];
+  else if (_mutableNoSetupStones && [_mutableNoSetupStones containsObject:point])
+    return;
+
+  if (_mutablePreviousBlackSetupStones && ! [_mutablePreviousBlackSetupStones containsObject:point] &&
+      _mutablePreviousWhiteSetupStones && ! [_mutablePreviousWhiteSetupStones containsObject:point])
+  {
+    return;
+  }
+
+  if (_mutableNoSetupStones)
+    [_mutableNoSetupStones addObject:point];
+  else
+    _mutableNoSetupStones = [NSMutableArray arrayWithObject:point];
 }
 
 #pragma mark - Public API - Properties
@@ -354,6 +417,73 @@
   return self.mutablePreviousWhiteSetupStones;
 }
 
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Removes @a point from the list of black setup stones in property
+/// @e blackSetupStones. Deallocates the array if it is empty after the removal.
+// -----------------------------------------------------------------------------
+- (void) removeBlackSetupStone:(GoPoint*)point
+{
+  if (! _mutableBlackSetupStones)
+    return;
+
+  [_mutableBlackSetupStones removeObject:point];
+  if (_mutableBlackSetupStones.count == 0)
+    _mutableBlackSetupStones = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes @a point from the list of white setup stones in property
+/// @e whiteSetupStones. Deallocates the array if it is empty after the removal.
+// -----------------------------------------------------------------------------
+- (void) removeWhiteSetupStone:(GoPoint*)point
+{
+  if (! _mutableWhiteSetupStones)
+    return;
+
+  [_mutableWhiteSetupStones removeObject:point];
+  if (_mutableWhiteSetupStones.count == 0)
+    _mutableWhiteSetupStones = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes @a point from the list of empty points in property
+/// @e noSetupStones. Deallocates the array if it is empty after the removal.
+// -----------------------------------------------------------------------------
+- (void) removeNoSetupStone:(GoPoint*)point
+{
+  if (! _mutableNoSetupStones)
+    return;
+
+  [_mutableNoSetupStones removeObject:point];
+  if (_mutableNoSetupStones.count == 0)
+    _mutableNoSetupStones = nil;
+}
+
+// TODO xxx is this method still needed?
+// -----------------------------------------------------------------------------
+/// @brief Returns the stone state of @a point according to the overall setup
+/// information in this GoNodeSetup (both current and previous).
+// -----------------------------------------------------------------------------
+- (enum GoColor) stoneState:(GoPoint*)point
+{
+  // First check if the stone state is explicitly set in this GoNodeSetup
+  if (_mutableBlackSetupStones && [_mutableBlackSetupStones containsObject:point])
+    return GoColorBlack;
+  else if (_mutableWhiteSetupStones && [_mutableWhiteSetupStones containsObject:point])
+    return GoColorWhite;
+  else if (_mutableNoSetupStones && [_mutableNoSetupStones containsObject:point])
+    return GoColorNone;
+
+  // Only now that we know that the stone state is not explicitly set in this
+  // GoNodeSetup are we allowed to consult the previous setup information
+  else if (_mutablePreviousBlackSetupStones && [_mutablePreviousBlackSetupStones containsObject:point])
+    return GoColorBlack;
+  else if (_mutablePreviousWhiteSetupStones && [_mutablePreviousWhiteSetupStones containsObject:point])
+    return GoColorWhite;
+  else
+    return GoColorNone;
 }
 
 @end
