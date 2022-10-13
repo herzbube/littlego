@@ -302,12 +302,58 @@
 
 #pragma mark - Public API - Properties
 
+// -----------------------------------------------------------------------------
+// Private getter implementation, property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) isEmpty
 {
-  return ((! self.blackSetupStones || self.blackSetupStones.count == 0) &&
-          (! self.whiteSetupStones || self.whiteSetupStones.count == 0) &&
-          (! self.noSetupStones || self.noSetupStones.count == 0) &&
-          self.setupFirstMoveColor == GoColorNone);
+  // Previous setup information is not considered because it is not new setup
+  return ((! _mutableBlackSetupStones || _mutableBlackSetupStones.count == 0) &&
+          (! _mutableWhiteSetupStones || _mutableWhiteSetupStones.count == 0) &&
+          (! _mutableNoSetupStones || _mutableNoSetupStones.count == 0) &&
+          _setupFirstMoveColor == GoColorNone);
+}
+
+// -----------------------------------------------------------------------------
+// Private getter implementation, property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (NSArray*) blackSetupStones
+{
+  return self.mutableBlackSetupStones;
+}
+
+// -----------------------------------------------------------------------------
+// Private getter implementation, property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (NSArray*) whiteSetupStones
+{
+  return self.mutableWhiteSetupStones;
+}
+
+// -----------------------------------------------------------------------------
+// Private getter implementation, property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (NSArray*) noSetupStones
+{
+  return self.mutableNoSetupStones;
+}
+
+// -----------------------------------------------------------------------------
+// Private getter implementation, property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (NSArray*) previousBlackSetupStones
+{
+  return self.mutablePreviousBlackSetupStones;
+}
+
+// -----------------------------------------------------------------------------
+// Private getter implementation, property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (NSArray*) previousWhiteSetupStones
+{
+  return self.mutablePreviousWhiteSetupStones;
+}
+
 }
 
 @end

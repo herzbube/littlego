@@ -118,7 +118,7 @@
 #pragma mark - Symbol methods
 
 // -----------------------------------------------------------------------------
-/// Private getter implementation, property is documented in the header file.
+// Private getter implementation, property is documented in the header file.
 // -----------------------------------------------------------------------------
 - (NSDictionary*) symbols
 {
@@ -217,7 +217,7 @@
 #pragma mark - Connection methods
 
 // -----------------------------------------------------------------------------
-/// Private getter implementation, property is documented in the header file.
+// Private getter implementation, property is documented in the header file.
 // -----------------------------------------------------------------------------
 - (NSDictionary*) connections
 {
@@ -361,7 +361,7 @@
 #pragma mark - Label methods
 
 // -----------------------------------------------------------------------------
-/// Private getter implementation, property is documented in the header file.
+// Private getter implementation, property is documented in the header file.
 // -----------------------------------------------------------------------------
 - (NSDictionary*) labels
 {
@@ -687,7 +687,7 @@
 #pragma mark - Dimming methods
 
 // -----------------------------------------------------------------------------
-/// Private getter implementation, property is documented in the header file.
+// Private getter implementation, property is documented in the header file.
 // -----------------------------------------------------------------------------
 - (NSArray*) dimmings
 {
