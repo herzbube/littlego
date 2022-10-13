@@ -744,12 +744,34 @@
 {
   GoZobristTable* zobristTable = game.board.zobristTable;
 
-  game.zobristHashBeforeFirstMove = [zobristTable hashForBoard:game.board
-                                                   blackStones:game.blackSetupPoints
-                                                   whiteStones:game.whiteSetupPoints];
+  game.zobristHashAfterHandicap = [zobristTable hashForBoard:game.board];
 
-  for (GoMove* move = game.firstMove; move != nil; move = move.next)
-    move.zobristHash = [zobristTable hashForMove:move inGame:game];
+  NSMutableArray* stack = [NSMutableArray array];
+  GoNode* currentNode = game.nodeModel.rootNode;
+  while (true)
+  {
+    while (currentNode)
+    {
+      currentNode.zobristHash = [zobristTable hashForNode:currentNode inGame:game];
+
+      [stack addObject:currentNode];
+
+      currentNode = currentNode.firstChild;
+    }
+
+    if (stack.count > 0)
+    {
+      currentNode = stack.lastObject;
+      [stack removeLastObject];
+
+      currentNode = currentNode.nextSibling;
+    }
+    else
+    {
+      // We're done
+      break;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------

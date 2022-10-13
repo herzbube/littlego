@@ -396,28 +396,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the @e zobristHash property
-// -----------------------------------------------------------------------------
-- (void) testZobristHash
-{
-  enum GoMoveType moveType = GoMoveTypePlay;
-  GoPlayer* player = m_game.playerBlack;
-  GoMove* movePrevious = nil;
-  GoMove* move1 = [GoMove move:moveType by:player after:movePrevious];
-  move1.point = [m_game.board pointAtVertex:@"A1"];
-  [move1 doIt];
-  moveType = GoMoveTypePass;
-  player = m_game.playerWhite;
-  movePrevious = move1;
-  GoMove* move2 = [GoMove move:moveType by:player after:movePrevious];
-  [move2 doIt];
-
-  XCTAssertTrue(move1.zobristHash != 0);
-  XCTAssertTrue(move2.zobristHash != 0);
-  XCTAssertEqual(move1.zobristHash, move2.zobristHash);
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Exercises the @e goMoveValuation property
 // -----------------------------------------------------------------------------
 - (void) testGoMoveValuation

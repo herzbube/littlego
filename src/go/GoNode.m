@@ -17,9 +17,12 @@
 
 // Project includes
 #import "GoNode.h"
+#import "GoBoard.h"
+#import "GoGame.h"
 #import "GoMove.h"
 #import "GoNodeMarkup.h"
 #import "GoNodeSetup.h"
+#import "GoZobristTable.h"
 #import "../utility/ExceptionUtility.h"
 
 
@@ -82,6 +85,8 @@
   self.goMove = nil;
   self.goNodeAnnotation = nil;
   self.goNodeMarkup = nil;
+
+  self.zobristHash = 0;
 
   self.nodeID = gNoObjectReferenceNodeID;
   self.firstChildNodeID = gNoObjectReferenceNodeID;
@@ -157,6 +162,10 @@
   self.goNodeAnnotation = [decoder decodeObjectForKey:goNodeGoNodeAnnotationKey];
   self.goNodeMarkup = [decoder decodeObjectForKey:goNodeGoNodeMarkupKey];
 
+  // The hash was not archived. Whoever is unarchiving this GoNode is
+  // responsible for re-calculating the hash.
+  self.zobristHash = 0;
+
   return self;
 }
 
@@ -189,6 +198,13 @@
     [encoder encodeObject:self.goNodeAnnotation forKey:goNodeGoNodeAnnotationKey];
   if (self.goNodeMarkup)
     [encoder encodeObject:self.goNodeMarkup forKey:goNodeGoNodeMarkupKey];
+
+  // GoZobristTable is not archived, instead a new GoZobristTable object with
+  // random values is created each time when a game is unarchived. Zobrist
+  // hashes created by the previous GoZobristTable object are thus invalid.
+  // This is the reason why we don't archive self.zobristHash here - it doesn't
+  // make sense to archive an invalid value. A side effect of not archiving
+  // self.zobristHash is that the overall archive becomes smaller.
 }
 
 #pragma mark - Public API - Game tree navigation
@@ -330,6 +346,13 @@
 {
   if (self.goMove)
     [self.goMove doIt];
+
+  // GoZobristTable needs to have the Zobrist hash of the node's parent. The
+  // node therefore must have been added to the node tree at this point.
+  // TODO xxx Can the hash calculation be omitted if the user navigates between board positions?
+  GoGame* game = [GoGame sharedGame];
+  self.zobristHash = [game.board.zobristTable hashForNode:self
+                                                   inGame:game];
 }
 
 - (void) revertBoard

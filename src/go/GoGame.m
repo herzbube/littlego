@@ -81,7 +81,7 @@
   _blackSetupPoints = [[NSArray array] retain];
   _whiteSetupPoints = [[NSArray array] retain];
   _setupFirstMoveColor = GoColorNone;
-  _zobristHashBeforeFirstMove = 0;
+  _zobristHashAfterHandicap = 0;
 
   return self;
 }
@@ -118,9 +118,9 @@
   _blackSetupPoints = [[decoder decodeObjectForKey:goGameBlackSetupPointsKey] retain];
   _whiteSetupPoints = [[decoder decodeObjectForKey:goGameWhiteSetupPointsKey] retain];
   _setupFirstMoveColor = [decoder decodeIntForKey:goGameSetupFirstMoveColorKey];
-  // The hash was not archived. Whoever is unarchiving this GoMove is
+  // The hash was not archived. Whoever is unarchiving this GoGame is
   // responsible for re-calculating the hash.
-  _zobristHashBeforeFirstMove = 0;
+  _zobristHashAfterHandicap = 0;
 
   return self;
 }
@@ -265,10 +265,11 @@
   }
 
   GoNode* node = [GoNode nodeWithMove:move];
-  [node modifyBoard];
   // Sets the document dirty flag and, if alternating play is enabled, switches
   // the nextMovePlayer
   [self.nodeModel appendNode:node];
+  // Board must be modified only after node was added to the node tree
+  [node modifyBoard];
 }
 
 // -----------------------------------------------------------------------------
@@ -310,10 +311,11 @@
   GoMove* move = [GoMove move:GoMoveTypePass by:self.nextMovePlayer after:self.lastMove];
 
   GoNode* node = [GoNode nodeWithMove:move];
-  [node modifyBoard];
   // Sets the document dirty flag and, if alternating play is enabled, switches
   // the nextMovePlayer
   [self.nodeModel appendNode:node];
+  // Board must be modified only after node was added to the node tree
+  [node modifyBoard];
 
   // This may change the game state. Such a change must occur after the move was
   // generated; this order is important for observer notifications.
@@ -790,18 +792,17 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   if (! nodeWithMostRecentMove)
     return false;
 
-  GoMove* lastMove = nodeWithMostRecentMove.goMove;
-  GoMove* previousToLastMove = lastMove.previous;
-
   long long zobristHashOfHypotheticalMove = [self zobristHashOfHypotheticalMoveAtPoint:point
                                                                                byColor:moveColor
-                                                                             afterMove:lastMove];
+                                                                             afterNode:nodeWithMostRecentMove];
+
+  GoNode* nodeWithPreviousToMostRecentMove = [GoUtilities nodeWithMostRecentMove:nodeWithMostRecentMove.parent];
 
   long long zobristHashOfPreviousToLastBoardPosition;
-  if (previousToLastMove)
-    zobristHashOfPreviousToLastBoardPosition = previousToLastMove.zobristHash;
+  if (nodeWithPreviousToMostRecentMove)
+    zobristHashOfPreviousToLastBoardPosition = nodeWithPreviousToMostRecentMove.zobristHash;
   else
-    zobristHashOfPreviousToLastBoardPosition = self.zobristHashBeforeFirstMove;
+    zobristHashOfPreviousToLastBoardPosition = self.zobristHashAfterHandicap;
 
   // Even if we use one of the superko rules, we still want to check for simple
   // ko first so that we can distinguish between simple ko and superko.
@@ -823,19 +824,22 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     case GoKoRuleSuperkoPositional:
     case GoKoRuleSuperkoSituational:
     {
-      // The zobrist hash of the previous-to-last board position has already
-      // been examined by the Simple Ko check above, so if there are no
-      // additional board positions there's nothing else we need to do here
-      if (! previousToLastMove)
+      // The zobrist hash of the board position with the previous-to-last move
+      // has already been examined by the Simple Ko check above, so if there are
+      // no additional moves there's nothing else we need to do here
+      if (! nodeWithPreviousToMostRecentMove)
         return false;
 
-      for (GoMove* move = previousToLastMove.previous; move != nil; move = move.previous)
+      for (GoNode* node = [GoUtilities nodeWithMostRecentMove:nodeWithPreviousToMostRecentMove.parent];
+           node != nil;
+           node = [GoUtilities nodeWithMostRecentMove:node.parent])
       {
         // Situational superko only examines board positions that resulted from
         // moves made by the same color
-        if (GoKoRuleSuperkoSituational == koRule && move.player.color != moveColor)
+        if (GoKoRuleSuperkoSituational == koRule && node.goMove.player.color != moveColor)
             continue;
-        if (zobristHashOfHypotheticalMove == move.zobristHash)
+
+        if (zobristHashOfHypotheticalMove == node.zobristHash)
         {
           *isSuperko = true;
           return true;
@@ -863,13 +867,13 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
       // was actually played.
       if (GoKoRuleSuperkoSituational == koRule)
       {
-        enum GoColor colorOfZobristHashBeforeFirstMove =
+        enum GoColor colorOfZobristHashAfterHandicap =
           [GoUtilities alternatingColorForColor:self.firstMove.player.color];
-        if (colorOfZobristHashBeforeFirstMove != moveColor)
+        if (colorOfZobristHashAfterHandicap != moveColor)
           return false;
       }
 
-      if (zobristHashOfHypotheticalMove == self.zobristHashBeforeFirstMove)
+      if (zobristHashOfHypotheticalMove == self.zobristHashAfterHandicap)
       {
         *isSuperko = true;
         return true;
@@ -898,14 +902,14 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 // -----------------------------------------------------------------------------
 - (long long) zobristHashOfHypotheticalMoveAtPoint:(GoPoint*)point
                                            byColor:(enum GoColor)color
-                                         afterMove:(GoMove*)move
+                                         afterNode:(GoNode*)node
 {
   enum GoColor opponentColor = (color == GoColorBlack ? GoColorWhite : GoColorBlack);
   NSArray* stonesWithOneLiberty = [self stonesWithColor:opponentColor withSingleLibertyAt:point];
   return [self.board.zobristTable hashForStonePlayedByColor:color
                                                     atPoint:point
                                             capturingStones:stonesWithOneLiberty
-                                                  afterMove:move
+                                                  afterNode:node
                                                      inGame:self];
 }
 
@@ -915,10 +919,8 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// objects that make up those regions. The array is empty if no such stone
 /// groups exist. The array has no particular order.
 ///
-/// This is a private helper.
-///
 /// This is a private helper for
-/// zobristHashOfHypotheticalMoveAtPoint:byColor:().
+/// zobristHashOfHypotheticalMoveAtPoint:byColor:afterNode:().
 // -----------------------------------------------------------------------------
 - (NSArray*) stonesWithColor:(enum GoColor)color withSingleLibertyAt:(GoPoint*)point
 {
@@ -1136,7 +1138,8 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
       self.nextMoveColor = GoColorWhite;
   }
 
-  self.zobristHashBeforeFirstMove = [self.board.zobristTable hashForBoard:self.board];
+  self.zobristHashAfterHandicap = [self.board.zobristTable hashForBoard:self.board];
+  self.nodeModel.rootNode.zobristHash = self.zobristHashAfterHandicap;
 }
 
 // -----------------------------------------------------------------------------
@@ -1167,9 +1170,9 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   // GoZobristTable is not archived, instead a new GoZobristTable object with
   // random values is created each time when a game is unarchived. Zobrist
   // hashes created by the previous GoZobristTable object are thus invalid.
-  // This is the reason why we don't archive self.zobristHashBeforeFirstMove
+  // This is the reason why we don't archive self.zobristHashAfterHandicap
   // here - it doesn't make sense to archive an invalid value. A side effect of
-  // not archiving self.zobristHashBeforeFirstMove is that the overall archive
+  // not archiving self.zobristHashAfterHandicap is that the overall archive
   // becomes smaller.
 }
 
@@ -1442,7 +1445,8 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     }
   }
 
-  self.zobristHashBeforeFirstMove = [self.board.zobristTable hashForBoard:self.board];
+  self.zobristHashAfterHandicap = [self.board.zobristTable hashForBoard:self.board];
+  self.nodeModel.rootNode.zobristHash = self.zobristHashAfterHandicap;
 }
 
 // TODO xxx document
@@ -1505,7 +1509,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 // -----------------------------------------------------------------------------
 /// @brief Adds or removes @a point to/from the list of handicap points
 /// (@e handicapPoints). Changes the @e stoneState property of @a point
-/// accordingly and recalculates the property @e zobristHashBeforeFirstMove.
+/// accordingly and recalculates the property @e zobristHashAfterHandicap.
 ///
 /// If @e setupFirstMoveColor is #GoColorBlack or #GoColorWhite this method
 /// does not change the value of the @e nextMoveColor property, because if a
@@ -1640,7 +1644,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// @brief Changes the @e stoneState property of @a point to the specified value
 /// @a stoneState. Either adds or removes @a point to/from one of the lists of
 /// setup stones (either @e blackSetupPoints or @e whiteSetupPoints).
-/// Recalculates the property @e zobristHashBeforeFirstMove.
+/// Recalculates the property @e zobristHashAfterHandicap.
 ///
 /// Does nothing if @a point already has the desired stone state.
 ///

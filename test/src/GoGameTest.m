@@ -26,6 +26,7 @@
 #import <go/GoGameDocument.h>
 #import <go/GoMove.h>
 #import <go/GoMoveAdditions.h>
+#import <go/GoNode.h>
 #import <go/GoNodeModel.h>
 #import <go/GoPoint.h>
 #import <go/GoUtilities.h>
@@ -78,7 +79,7 @@
   XCTAssertEqual(m_game.whiteSetupPoints.count, setupPointsCount);
   XCTAssertEqual(m_game.setupFirstMoveColor, GoColorNone);
   long long hashForEmptyBoard = 0;
-  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, hashForEmptyBoard);
 }
 
 // -----------------------------------------------------------------------------
@@ -793,48 +794,63 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the @e zobristHashBeforeFirstMove property.
+/// @brief Exercises the @e zobristHashAfterHandicap property.
 // -----------------------------------------------------------------------------
-- (void) testZobristHashBeforeFirstMove
+- (void) testZobristHashAfterHandicap
 {
+  GoNode* rootNode = m_game.nodeModel.rootNode;
+
   long long hashForEmptyBoard = 0;
-  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, rootNode.zobristHash);
 
   m_game.handicapPoints = @[[m_game.board pointAtVertex:@"C3"]];
-  XCTAssertTrue(m_game.zobristHashBeforeFirstMove != hashForEmptyBoard);
+  XCTAssertTrue(m_game.zobristHashAfterHandicap != hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, rootNode.zobristHash);
   m_game.handicapPoints = @[];
-  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, rootNode.zobristHash);
 
   m_game.blackSetupPoints = @[[m_game.board pointAtVertex:@"B1"]];
-  XCTAssertTrue(m_game.zobristHashBeforeFirstMove != hashForEmptyBoard);
+  XCTAssertTrue(m_game.zobristHashAfterHandicap != hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, rootNode.zobristHash);
   m_game.blackSetupPoints = @[];
-  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, rootNode.zobristHash);
 
   m_game.whiteSetupPoints = @[[m_game.board pointAtVertex:@"A2"]];
-  XCTAssertTrue(m_game.zobristHashBeforeFirstMove != hashForEmptyBoard);
+  XCTAssertTrue(m_game.zobristHashAfterHandicap != hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, rootNode.zobristHash);
   m_game.whiteSetupPoints = @[];
-  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, rootNode.zobristHash);
 
   m_game.handicapPoints = @[[m_game.board pointAtVertex:@"C3"]];
-  long long hashAfterHandicapPoints = m_game.zobristHashBeforeFirstMove;
+  long long hashAfterHandicapPoints = m_game.zobristHashAfterHandicap;
   XCTAssertTrue(hashAfterHandicapPoints != hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, rootNode.zobristHash);
   m_game.blackSetupPoints = @[[m_game.board pointAtVertex:@"B1"]];
-  long long hashAfterBlackSetupPoints = m_game.zobristHashBeforeFirstMove;
+  long long hashAfterBlackSetupPoints = m_game.zobristHashAfterHandicap;
   XCTAssertTrue(hashAfterBlackSetupPoints != hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, rootNode.zobristHash);
   m_game.whiteSetupPoints = @[[m_game.board pointAtVertex:@"A2"]];
-  long long hashAfterWhiteSetupPoints = m_game.zobristHashBeforeFirstMove;
+  long long hashAfterWhiteSetupPoints = m_game.zobristHashAfterHandicap;
   XCTAssertTrue(hashAfterWhiteSetupPoints != hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, rootNode.zobristHash);
 
   XCTAssertTrue(hashAfterHandicapPoints != hashAfterBlackSetupPoints);
   XCTAssertTrue(hashAfterHandicapPoints != hashAfterWhiteSetupPoints);
   XCTAssertTrue(hashAfterBlackSetupPoints != hashAfterWhiteSetupPoints);
 
   m_game.whiteSetupPoints = @[];
-  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashAfterBlackSetupPoints);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, hashAfterBlackSetupPoints);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, rootNode.zobristHash);
   m_game.blackSetupPoints = @[];
-  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashAfterHandicapPoints);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, hashAfterHandicapPoints);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, rootNode.zobristHash);
   m_game.handicapPoints = @[];
-  XCTAssertEqual(m_game.zobristHashBeforeFirstMove, hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, hashForEmptyBoard);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, rootNode.zobristHash);
 }
 
 // -----------------------------------------------------------------------------

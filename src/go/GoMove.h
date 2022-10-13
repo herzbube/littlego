@@ -88,9 +88,6 @@
 /// @brief The move number of this GoMove object. The first move of the game
 /// has move number 1.
 @property(nonatomic, assign, readonly) int moveNumber;
-/// @brief Zobrist hash that identifies the board position created by this move.
-/// Zobrist hashes are used to detect ko, and especially superko.
-@property(nonatomic, assign) long long zobristHash;
 /// @brief The valuation of the move. The default value is #GoMoveValuationNone.
 ///
 /// This property corresponds to the presence or absence of the SGF move

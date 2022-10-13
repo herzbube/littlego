@@ -156,10 +156,16 @@
 @property(nonatomic, retain) GoNodeMarkup* goNodeMarkup;
 //@}
 
+/// @brief Zobrist hash that identifies the board position created by this node.
+/// Zobrist hashes are used to detect ko, and especially superko.
+@property(nonatomic, assign) long long zobristHash;
+
 /// @name Changing the board based upon the node's data
 //@{
 /// @brief Modifies the board to reflect the data that is present in this
 /// GoNode.
+///
+/// Important: Invoke this only after the node was added to the node tree.
 - (void) modifyBoard;
 
 /// @brief Reverts the board to the state it had before modifyBoard() was

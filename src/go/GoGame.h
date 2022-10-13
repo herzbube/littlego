@@ -91,7 +91,8 @@
 /// Setting this property causes a black stone to be set on each GoPoint object
 /// in the specified list, and the black stone to be removed from each GoPoint
 /// object in the previously set list. Setting this property also recalculates
-/// @e zobristHashBeforeFirstMove.
+/// @e zobristHashAfterHandicap and sets the root node's @e zobristHash to
+/// the same value as @e zobristHashAfterHandicap.
 ///
 /// If @e setupFirstMoveColor is #GoColorBlack or #GoColorWhite, setting this
 /// property does not change the value of the @e nextMoveColor property, because
@@ -196,7 +197,8 @@
 ///
 /// Setting this property causes a black stone to be placed on the GoPoint
 /// objects in the specified list and the property
-/// @e zobristHashBeforeFirstMove to be recalculated.
+/// @e zobristHashAfterHandicap to be recalculated. Also sets the root node's
+/// @e zobristHash to the same value as @e zobristHashAfterHandicap.
 ///
 /// The setter raises @e NSInternalInconsistencyException if it is invoked when
 /// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is
@@ -247,9 +249,8 @@
 /// in that state but already has moves. Summing it up, this property can be set
 /// only at the start of the game.
 @property(nonatomic, assign) enum GoColor setupFirstMoveColor;
-/// @brief The Zobrist hash for the board before the first move is played. Is
-/// recalculated every time one of the properties @e handicapPoints,
-/// @e blackSetupPoints and @e whiteSetupPoints changes.
-@property(nonatomic, assign) long long zobristHashBeforeFirstMove;
+/// @brief The Zobrist hash after handicap stones are placed. Is recalculated
+/// every time the property @e handicapPoints changes.
+@property(nonatomic, assign) long long zobristHashAfterHandicap;
 
 @end

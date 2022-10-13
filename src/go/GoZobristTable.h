@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2021 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@
 // Forward declarations
 @class GoBoard;
 @class GoGame;
-@class GoMove;
-@class GoPlayer;
+@class GoNode;
 @class GoPoint;
 
 
@@ -51,15 +50,19 @@
 - (id) initWithBoardSize:(enum GoBoardSize)boardSize;
 
 - (long long) hashForBoard:(GoBoard*)board;
-- (long long) hashForBoard:(GoBoard*)board
-               blackStones:(NSArray*)blackStones
-               whiteStones:(NSArray*)whiteStones;
-- (long long) hashForMove:(GoMove*)move
+- (long long) hashForNode:(GoNode*)node
                    inGame:(GoGame*)game;
+- (long long) hashForBlackSetupStones:(NSArray*)blackSetupStones
+                     whiteSetupStones:(NSArray*)whiteSetupStones
+                        noSetupStones:(NSArray*)noSetupStones
+             previousBlackSetupStones:(NSArray*)previousBlackSetupStones
+             previousWhiteSetupStones:(NSArray*)previousWhiteSetupStones
+                            afterNode:(GoNode*)node
+                               inGame:(GoGame*)game;
 - (long long) hashForStonePlayedByColor:(enum GoColor)color
                                 atPoint:(GoPoint*)point
                         capturingStones:(NSArray*)capturedStones
-                              afterMove:(GoMove*)move
+                              afterNode:(GoNode*)node
                                  inGame:(GoGame*)game;
 
 @end

@@ -18,13 +18,10 @@
 // Project includes
 #import "GoMove.h"
 #import "GoMoveAdditions.h"
-#import "GoBoard.h"
-#import "GoGame.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
 #import "GoBoardRegion.h"
 #import "GoUtilities.h"
-#import "GoZobristTable.h"
 
 
 // -----------------------------------------------------------------------------
@@ -118,7 +115,6 @@
   self.next = nil;
   self.capturedStones = [NSMutableArray arrayWithCapacity:0];
   self.moveNumber = 1;
-  self.zobristHash = 0;
   self.goMoveValuation = GoMoveValuationNone;
 
   return self;
@@ -145,9 +141,6 @@
   self.next = nil;
   self.capturedStones = [decoder decodeObjectForKey:goMoveCapturedStonesKey];
   self.moveNumber = [decoder decodeIntForKey:goMoveMoveNumberKey];
-  // The hash was not archived. Whoever is unarchiving this GoMove is
-  // responsible for re-calculating the hash.
-  self.zobristHash = 0;
   self.goMoveValuation = [decoder decodeIntForKey:goMoveGoMoveValuationKey];
 
   return self;
@@ -321,15 +314,9 @@
 // -----------------------------------------------------------------------------
 - (void) doIt
 {
-  GoGame* game = [GoGame sharedGame];
-
   // Nothing to do for pass moves
   if (GoMoveTypePass == self.type)
-  {
-    self.zobristHash = [game.board.zobristTable hashForMove:self
-                                                     inGame:game];
     return;
-  }
 
   if (! self.point)
   {
@@ -396,9 +383,6 @@
       }
     }
   }
-
-  self.zobristHash = [self.point.board.zobristTable hashForMove:self
-                                                         inGame:game];
 }
 
 // -----------------------------------------------------------------------------
@@ -479,12 +463,6 @@
   [encoder encodeObject:self.capturedStones forKey:goMoveCapturedStonesKey];
   [encoder encodeInt:self.moveNumber forKey:goMoveMoveNumberKey];
   [encoder encodeInt:self.goMoveValuation forKey:goMoveGoMoveValuationKey];
-  // GoZobristTable is not archived, instead a new GoZobristTable object with
-  // random values is created each time when a game is unarchived. Zobrist
-  // hashes created by the previous GoZobristTable object are thus invalid.
-  // This is the reason why we don't archive self.zobristHash here - it doesn't
-  // make sense to archive an invalid value. A side effect of not archiving
-  // self.zobristHash is that the overall archive becomes smaller.
 }
 
 @end

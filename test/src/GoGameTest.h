@@ -43,7 +43,7 @@
 - (void) testBlackSetupPoints;
 - (void) testWhiteSetupPoints;
 - (void) testSetupFirstMoveColor;
-- (void) testZobristHashBeforeFirstMove;
+- (void) testZobristHashAfterHandicap;
 - (void) testPlay;
 - (void) testPass;
 - (void) testResign;

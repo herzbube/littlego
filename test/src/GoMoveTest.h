@@ -33,7 +33,6 @@
 - (void) testDoIt;
 - (void) testUndo;
 - (void) testMoveNumber;
-- (void) testZobristHash;
 - (void) testGoMoveValuation;
 - (void) testDealloc;
 - (void) testIssue369;

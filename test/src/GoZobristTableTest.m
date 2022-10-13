@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@
 #import <go/GoBoard.h>
 #import <go/GoGame.h>
 #import <go/GoMove.h>
+#import <go/GoNode.h>
+#import <go/GoNodeModel.h>
 #import <go/GoPlayer.h>
 #import <go/GoPoint.h>
 #import <go/GoZobristTable.h>
@@ -61,87 +63,77 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the hashForBoard:blackStones:whiteStones:() method.
+/// @brief Exercises the hashForNode:inGame:() method.
 // -----------------------------------------------------------------------------
-- (void) testHashForBoardBlackStonesWhiteStones
+- (void) testHashForNode
 {
   GoBoard* board = m_game.board;
+  GoNodeModel* nodeModel = m_game.nodeModel;
   GoZobristTable* zobristTable = board.zobristTable;
   long long hashForEmptyBoard = 0;
 
-  long long hash = [zobristTable hashForBoard:board blackStones:@[] whiteStones:@[]];
-  XCTAssertEqual(hash, hashForEmptyBoard);
+  m_game.handicapPoints = @[[board pointAtVertex:@"A1"]];
+  long long hashForHandicap = [zobristTable hashForNode:nodeModel.rootNode inGame:m_game];
+  XCTAssertTrue(hashForHandicap != hashForEmptyBoard);
+  XCTAssertTrue(hashForHandicap == m_game.zobristHashAfterHandicap);
 
-  GoPoint* pointWithBlackStone = [board pointAtVertex:@"B2"];
-  [m_game play:pointWithBlackStone];
-  long long hashAfterBlackStoneIsPlayed = m_game.lastMove.zobristHash;
-  GoPoint* pointWithWhiteStone = [board pointAtVertex:@"C5"];
-  [m_game play:pointWithWhiteStone];
-  long long hashAfterWhiteStoneIsPlayed = m_game.lastMove.zobristHash;
-
-  // Current board position represented by the GoBoard object is ignored, only
-  // the supplied black and white stones matter
-  hash = [zobristTable hashForBoard:board blackStones:@[] whiteStones:@[]];
-  XCTAssertEqual(hash, hashForEmptyBoard);
-
-  // Hash calculation has the same result, regardless of whether it's performed
-  // by the function under test or by playing a move
-  hash = [zobristTable hashForBoard:board blackStones:@[pointWithBlackStone] whiteStones:@[]];
-  XCTAssertTrue(hash != hashForEmptyBoard);
-  XCTAssertEqual(hash, hashAfterBlackStoneIsPlayed);
-  hash = [zobristTable hashForBoard:board blackStones:@[pointWithBlackStone] whiteStones:@[pointWithWhiteStone]];
-  XCTAssertTrue(hash != hashForEmptyBoard);
-  XCTAssertEqual(hash, hashAfterWhiteStoneIsPlayed);
-
-  hash = [zobristTable hashForBoard:board blackStones:@[] whiteStones:@[pointWithWhiteStone]];
-  XCTAssertTrue(hash != hashForEmptyBoard);
-  XCTAssertTrue(hash != hashAfterBlackStoneIsPlayed);
-  XCTAssertTrue(hash != hashAfterWhiteStoneIsPlayed);
-
-  // Test that we cannot pass a nil object
-  XCTAssertThrowsSpecificNamed([zobristTable hashForBoard:nil blackStones:@[] whiteStones:@[]],
-                               NSException, NSInvalidArgumentException, @"board is nil");
-  XCTAssertThrowsSpecificNamed([zobristTable hashForBoard:board blackStones:nil whiteStones:@[]],
-                               NSException, NSInvalidArgumentException, @"black stones list is nil");
-  XCTAssertThrowsSpecificNamed([zobristTable hashForBoard:board blackStones:@[] whiteStones:nil],
-                               NSException, NSInvalidArgumentException, @"white stones list is nil");
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exercises the hashForMove() method.
-// -----------------------------------------------------------------------------
-- (void) testHashForMove
-{
-  GoBoard* board = m_game.board;
-  GoZobristTable* zobristTable = board.zobristTable;
-  long long hashForEmptyBoard = 0;
+  GoNode* rootNode = nodeModel.rootNode;
+  long long hashForRootNode = [zobristTable hashForNode:rootNode inGame:m_game];
+  XCTAssertTrue(hashForRootNode == hashForHandicap);
+  XCTAssertTrue(hashForRootNode == rootNode.zobristHash);
 
   [m_game play:[board pointAtVertex:@"B2"]];
-  long long hashForFirstMove = [zobristTable hashForMove:m_game.lastMove inGame:m_game];
+  GoNode* nodeWithMove1 = nodeModel.leafNode;
+  long long hashForFirstMove = [zobristTable hashForNode:nodeWithMove1 inGame:m_game];
   XCTAssertTrue(hashForFirstMove != hashForEmptyBoard);
+  XCTAssertTrue(hashForFirstMove != hashForHandicap);
+  XCTAssertTrue(hashForFirstMove == nodeWithMove1.zobristHash);
 
   [m_game play:[board pointAtVertex:@"Q14"]];
-  long long hashForSecondMove = [zobristTable hashForMove:m_game.lastMove inGame:m_game];
+  GoNode* nodeWithMove2 = nodeModel.leafNode;
+  long long hashForSecondMove = [zobristTable hashForNode:nodeWithMove2 inGame:m_game];
   XCTAssertTrue(hashForSecondMove != hashForEmptyBoard);
-  XCTAssertTrue(hashForFirstMove != hashForSecondMove);
+  XCTAssertTrue(hashForSecondMove != hashForHandicap);
+  XCTAssertTrue(hashForSecondMove != hashForFirstMove);
+  XCTAssertTrue(hashForSecondMove == nodeWithMove2.zobristHash);
+
+  [m_game pass];
+  GoNode* nodeWithMove3 = nodeModel.leafNode;
+  long long hashForThirdMove = [zobristTable hashForNode:nodeWithMove3 inGame:m_game];
+  XCTAssertTrue(hashForThirdMove == hashForSecondMove);
+  XCTAssertTrue(hashForThirdMove == nodeWithMove3.zobristHash);
 
   // Test that hash for first move did not change
-  long long hash = [zobristTable hashForMove:m_game.firstMove inGame:m_game];
+  long long hash = [zobristTable hashForNode:nodeWithMove1 inGame:m_game];
   XCTAssertEqual(hashForFirstMove, hash);
 
+  // TODO xxx Add tests for game setup
+
   // Test that we cannot pass a nil object
-  XCTAssertThrowsSpecificNamed([zobristTable hashForMove:nil inGame:m_game],
-                              NSException, NSInvalidArgumentException, @"move is nil");
-  XCTAssertThrowsSpecificNamed([zobristTable hashForMove:m_game.lastMove inGame:nil],
+  XCTAssertThrowsSpecificNamed([zobristTable hashForNode:nil inGame:m_game],
+                              NSException, NSInvalidArgumentException, @"node is nil");
+  XCTAssertThrowsSpecificNamed([zobristTable hashForNode:nodeWithMove1 inGame:nil],
                                NSException, NSInvalidArgumentException, @"game is nil");
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Exercises the
-/// hashForStonePlayedByColor:atPoint:capturingStones:afterMove:() method.
+/// hashForBlackSetupStones:whiteSetupStones:noSetupStones:previousBlackSetupStones:previousWhiteSetupStones:afterNode:inGame:()
+/// method.
+// -----------------------------------------------------------------------------
+- (void) testHashForSetup
+{
+  // TODO xxx Add tests
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the
+/// hashForStonePlayedByColor:atPoint:capturingStones:afterNode:inGame:()
+/// method.
 // -----------------------------------------------------------------------------
 - (void) testHashForStone
 {
+  GoNodeModel* nodeModel = m_game.nodeModel;
   GoBoard* board = m_game.board;
   GoZobristTable* zobristTable = board.zobristTable;
 
@@ -149,40 +141,40 @@
   [m_game play:point];
   [m_game play:point.above];
   [m_game pass];
-  GoMove* passMove = m_game.lastMove;
-  XCTAssertEqual(passMove.type, GoMoveTypePass);
+  GoNode* nodeWithPassMove = nodeModel.leafNode;
+  XCTAssertEqual(nodeWithPassMove.goMove.type, GoMoveTypePass);
   [m_game play:point.right];
-  GoMove* lastMove = m_game.lastMove;
-  XCTAssertEqual(lastMove.type, GoMoveTypePlay);
-  XCTAssertNotNil(lastMove.capturedStones);
-  XCTAssertTrue(lastMove.capturedStones.count > 0);
+  GoNode* nodeWithLastMove = nodeModel.leafNode;
+  XCTAssertEqual(nodeWithLastMove.goMove.type, GoMoveTypePlay);
+  XCTAssertNotNil(nodeWithLastMove.goMove.capturedStones);
+  XCTAssertTrue(nodeWithLastMove.goMove.capturedStones.count > 0);
 
-  long long hashForStone = [zobristTable hashForStonePlayedByColor:lastMove.player.color
-                                                           atPoint:lastMove.point
-                                                   capturingStones:lastMove.capturedStones
-                                                         afterMove:passMove
+  long long hashForStone = [zobristTable hashForStonePlayedByColor:nodeWithLastMove.goMove.player.color
+                                                           atPoint:nodeWithLastMove.goMove.point
+                                                   capturingStones:nodeWithLastMove.goMove.capturedStones
+                                                         afterNode:nodeWithPassMove
                                                             inGame:m_game];
-  long long hashForMove = [zobristTable hashForMove:lastMove
+  long long hashForMove = [zobristTable hashForNode:nodeWithLastMove
                                              inGame:m_game];
   XCTAssertEqual(hashForStone, hashForMove);
-  XCTAssertEqual(hashForStone, lastMove.zobristHash);
+  XCTAssertEqual(hashForStone, nodeWithLastMove.zobristHash);
 
   XCTAssertThrowsSpecificNamed([zobristTable hashForStonePlayedByColor:GoColorNone
-                                                               atPoint:lastMove.point
-                                                       capturingStones:lastMove.capturedStones
-                                                             afterMove:passMove
+                                                               atPoint:nodeWithLastMove.goMove.point
+                                                       capturingStones:nodeWithLastMove.goMove.capturedStones
+                                                             afterNode:nodeWithPassMove
                                                                 inGame:m_game],
                                NSException, NSInvalidArgumentException, @"invalid GoColor argument");
-  XCTAssertThrowsSpecificNamed([zobristTable hashForStonePlayedByColor:lastMove.player.color
+  XCTAssertThrowsSpecificNamed([zobristTable hashForStonePlayedByColor:nodeWithLastMove.goMove.player.color
                                                                atPoint:nil
-                                                       capturingStones:lastMove.capturedStones
-                                                             afterMove:passMove
+                                                       capturingStones:nodeWithLastMove.goMove.capturedStones
+                                                             afterNode:nodeWithPassMove
                                                                 inGame:m_game],
                                NSException, NSInvalidArgumentException, @"point is nil");
-  XCTAssertThrowsSpecificNamed([zobristTable hashForStonePlayedByColor:lastMove.player.color
-                                                               atPoint:lastMove.point
-                                                       capturingStones:lastMove.capturedStones
-                                                             afterMove:passMove
+  XCTAssertThrowsSpecificNamed([zobristTable hashForStonePlayedByColor:nodeWithLastMove.goMove.player.color
+                                                               atPoint:nodeWithLastMove.goMove.point
+                                                       capturingStones:nodeWithLastMove.goMove.capturedStones
+                                                             afterNode:nodeWithPassMove
                                                                 inGame:nil],
                                NSException, NSInvalidArgumentException, @"game is nil");
 }
@@ -204,7 +196,7 @@
   [m_game play:point.below];
 
   long long hashForBoard = [zobristTable hashForBoard:board];
-  long long hashForLastMove = [zobristTable hashForMove:m_game.lastMove
+  long long hashForLastMove = [zobristTable hashForNode:m_game.nodeModel.leafNode
                                                  inGame:m_game];
   XCTAssertEqual(hashForBoard, hashForLastMove);
 }
@@ -219,12 +211,12 @@
   long long hashForEmptyBoard = 0;
 
   [m_game play:[board pointAtVertex:@"B2"]];
-  long long hashForFirstMove = [zobristTable hashForMove:m_game.lastMove
+  long long hashForFirstMove = [zobristTable hashForNode:m_game.nodeModel.leafNode
                                                   inGame:m_game];
   XCTAssertTrue(hashForFirstMove != hashForEmptyBoard);
 
   [m_game pass];
-  long long hashForSecondMove = [zobristTable hashForMove:m_game.lastMove
+  long long hashForSecondMove = [zobristTable hashForNode:m_game.nodeModel.leafNode
                                                    inGame:m_game];
   XCTAssertTrue(hashForSecondMove != hashForEmptyBoard);
   XCTAssertEqual(hashForFirstMove, hashForSecondMove);
@@ -272,18 +264,25 @@
   GoZobristTable* zobristTable = [[[GoZobristTable alloc] initWithBoardSize:zobristTableBoardSize] autorelease];
 
   [m_game play:[board pointAtVertex:@"B2"]];
+  GoNode* nodeWithLastMove = m_game.nodeModel.leafNode;
   GoMove* lastMove = m_game.lastMove;
 
   XCTAssertThrowsSpecificNamed([zobristTable hashForBoard:board],
                                NSException, NSGenericException, @"hashForBoard:() accepts wrong board size");
-  XCTAssertThrowsSpecificNamed([zobristTable hashForBoard:board blackStones:@[] whiteStones:@[]],
-                               NSException, NSGenericException, @"hashForBoard:blackStones:whiteStones:() accepts wrong board size");
-  XCTAssertThrowsSpecificNamed([zobristTable hashForMove:lastMove inGame:m_game],
+  XCTAssertThrowsSpecificNamed([zobristTable hashForNode:nodeWithLastMove inGame:m_game],
                                NSException, NSGenericException, @"hashForMove:inGame:() accepts wrong board size");
+  XCTAssertThrowsSpecificNamed([zobristTable hashForBlackSetupStones:nil
+                                                    whiteSetupStones:nil
+                                                       noSetupStones:nil
+                                            previousBlackSetupStones:nil
+                                            previousWhiteSetupStones:nil
+                                                           afterNode:nil
+                                                              inGame:m_game],
+                               NSException, NSGenericException, @"hashForBlackSetupStones:whiteSetupStones:noSetupStones:previousBlackSetupStones:previousWhiteSetupStones:afterNode:inGame:() accepts wrong board size");
   XCTAssertThrowsSpecificNamed([zobristTable hashForStonePlayedByColor:lastMove.player.color
                                                                atPoint:lastMove.point
                                                        capturingStones:lastMove.capturedStones
-                                                             afterMove:nil
+                                                             afterNode:nil
                                                                 inGame:m_game],
                                NSException, NSGenericException, @"hashForStonePlayedByColor:atPoint:capturingStones:afterMove:inGame:() accepts wrong board size");
 }

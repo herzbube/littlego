@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2011-2012 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2011-2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,8 +29,8 @@
 
 - (void) testInitialState;
 - (void) testHashForBoard;
-- (void) testHashForBoardBlackStonesWhiteStones;
-- (void) testHashForMove;
+- (void) testHashForNode;
+- (void) testHashForSetup;
 - (void) testHashForStone;
 - (void) testHashForLastMoveEqualsHashForBoard;
 - (void) testHashAfterPass;
