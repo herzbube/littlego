@@ -372,6 +372,13 @@ static const int maxStepsForCreateNodes = 9;
   //   as the HA property value requires. If there are less setup stones we
   //   refuse to process the .sgf file. Extraneous setup stones are not
   //   treated as handicap stones.
+  // - If we find handicap stones in the game info node, as per above, then we
+  //   treat the existence of any of the setup properties AB, AW and/or AE in a
+  //   node before the game info node as an error. The reason is that, at the
+  //   moment, the app stores handicap stones in GoGame, which can be seen as
+  //   the same as storing them in the game's root node. This means that the
+  //   app has no place to store setup stones that in the SGF appear before
+  //   handicap stones (as there can't be nodes before the game's root node).
 
   GoGame* game = [GoGame sharedGame];
   GoBoard* board = game.board;
@@ -416,6 +423,30 @@ static const int maxStepsForCreateNodes = 9;
         *errorMessage = [NSString stringWithFormat:@"The handicap (%ld) is greater than the number of black setup stones (%lu).", expectedNumberOfHandicapStones, (unsigned long)actualNumberOfHandicapStones];
         return false;
       }
+    }
+  }
+
+  if (handicapPoints.count > 0)
+  {
+    SGFCNode* node = self.sgfGameInfoNode.parent;
+    while (node)
+    {
+      NSArray* setupProperties = [node propertiesWithCategory:SGFCPropertyCategorySetup];
+      for (SGFCProperty* setupProperty in setupProperties)
+      {
+        SGFCPropertyType propertyType = setupProperty.propertyType;
+        if (propertyType == SGFCPropertyTypeAB || propertyType == SGFCPropertyTypeAW || propertyType == SGFCPropertyTypeAE)
+        {
+          NSUInteger numberOfPropertyValues = setupProperty.propertyValues.count;
+          if (numberOfPropertyValues > 0)
+          {
+            *errorMessage = [NSString stringWithFormat:@"Found property %@, which places or removes %lu setup stones, in a node before handicap stones were set up.", setupProperty.propertyName, (unsigned long)numberOfPropertyValues];
+            return false;
+          }
+        }
+      }
+
+      node = node.parent;
     }
   }
 
@@ -840,20 +871,6 @@ static const int maxStepsForCreateNodes = 9;
   bool sgfCurrentNodeIsRootNode = true;
   SGFCNode* sgfCurrentNode = self.sgfRootNode;
 
-  // TODO xxx How to handle the following cases? Document in README.
-  // - Root node => Setup node => Game info node with handicap
-  //   - In SGF handicap stones are simply set up with AB
-  //   - In the app we treat handicap stones specially, which makes the case
-  //     above difficult.
-  //   - In the app we promote handicap stones from wherever they are found to
-  //     the root node
-  //   - What does SGFC do with this scenario? Probably nothing...
-  // - Root node => Move node => Game info node with handicap
-  //   - This is basically the same as setup after move, which is forbidden
-  //     => we should treat this as an error
-  // - Root node => Game info node with handicap => ...
-  //   - We don't care what comes after the game info node, except that setup
-  //     must always occur before the first move
   while (true)
   {
     while (sgfCurrentNode)
@@ -1018,12 +1035,6 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
         if (! success)
           return false;
       }
-    }
-    else if (property.propertyType == SGFCPropertyTypeAB || property.propertyType == SGFCPropertyTypeAW)
-    {
-      // SGFC makes sure that the node never contains both SGFCPropertyTypeB and
-      // SGFCPropertyTypeW at the same time
-      move = [self createMoveWithProperty:property withPreviousMove:mostRecentMove errorMessage:errorMessage];
     }
     else if (property.propertyType == SGFCPropertyTypeB || property.propertyType == SGFCPropertyTypeW)
     {
