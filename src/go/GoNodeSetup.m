@@ -80,20 +80,14 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
-  // TODO xxx
-//  self.type = [decoder decodeIntForKey:goMoveTypeKey];
-//  self.player = [decoder decodeObjectForKey:goMovePlayerKey];
-//  _point = [decoder decodeObjectForKey:goMovePointKey];  // don't use self, otherwise we trigger the setter!
-//  // The previous/next moves were not archived. Whoever is unarchiving this
-//  // GoMove is responsible for setting the previous/next move.
-//  self.previous = nil;
-//  self.next = nil;
-//  self.capturedStones = [decoder decodeObjectForKey:goMoveCapturedStonesKey];
-//  self.moveNumber = [decoder decodeIntForKey:goMoveMoveNumberKey];
-//  // The hash was not archived. Whoever is unarchiving this GoMove is
-//  // responsible for re-calculating the hash.
-//  self.zobristHash = 0;
-//  self.goMoveValuation = [decoder decodeIntForKey:goMoveGoMoveValuationKey];
+  self.mutableBlackSetupStones = [decoder decodeObjectForKey:goNodeSetupBlackSetupStonesKey];
+  self.mutableWhiteSetupStones = [decoder decodeObjectForKey:goNodeSetupWhiteSetupStonesKey];
+  self.mutableNoSetupStones = [decoder decodeObjectForKey:goNodeSetupNoSetupStonesKey];
+  self.setupFirstMoveColor = [decoder decodeIntForKey:goNodeSetupSetupFirstMoveColorKey];
+  self.mutablePreviousBlackSetupStones = [decoder decodeObjectForKey:goNodeSetupPreviousBlackSetupStonesKey];
+  self.mutablePreviousWhiteSetupStones = [decoder decodeObjectForKey:goNodeSetupPreviousWhiteSetupStonesKey];
+  self.previousSetupFirstMoveColor = [decoder decodeIntForKey:goNodeSetupPreviousSetupFirstMoveColorKey];
+  self.previousSetupInformationWasCaptured = [decoder decodeBoolForKey:goNodeSetupPreviousSetupInformationWasCapturedKey];
 
   return self;
 }
@@ -117,24 +111,16 @@
 // -----------------------------------------------------------------------------
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
-  // TODO xxx
-//  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
-//  [encoder encodeInt:self.type forKey:goMoveTypeKey];
-//  [encoder encodeObject:self.player forKey:goMovePlayerKey];
-//  [encoder encodeObject:self.point forKey:goMovePointKey];
-//  // The GoMove objects for the next/previous move are not archived because
-//  // in a game with many moves (e.g. a thousand moves) the result would be a
-//  // stack overflow (archiving the next GoMove object causes that object to
-//  // access its own next GoMove object, and so on).
-//  [encoder encodeObject:self.capturedStones forKey:goMoveCapturedStonesKey];
-//  [encoder encodeInt:self.moveNumber forKey:goMoveMoveNumberKey];
-//  [encoder encodeInt:self.goMoveValuation forKey:goMoveGoMoveValuationKey];
-//  // GoZobristTable is not archived, instead a new GoZobristTable object with
-//  // random values is created each time when a game is unarchived. Zobrist
-//  // hashes created by the previous GoZobristTable object are thus invalid.
-//  // This is the reason why we don't archive self.zobristHash here - it doesn't
-//  // make sense to archive an invalid value. A side effect of not archiving
-//  // self.zobristHash is that the overall archive becomes smaller.
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+
+  [encoder encodeObject:self.mutableBlackSetupStones forKey:goNodeSetupBlackSetupStonesKey];
+  [encoder encodeObject:self.mutableWhiteSetupStones forKey:goNodeSetupWhiteSetupStonesKey];
+  [encoder encodeObject:self.mutableNoSetupStones forKey:goNodeSetupNoSetupStonesKey];
+  [encoder encodeInt:self.setupFirstMoveColor forKey:goNodeSetupSetupFirstMoveColorKey];
+  [encoder encodeObject:self.mutablePreviousBlackSetupStones forKey:goNodeSetupPreviousBlackSetupStonesKey];
+  [encoder encodeObject:self.mutablePreviousWhiteSetupStones forKey:goNodeSetupPreviousWhiteSetupStonesKey];
+  [encoder encodeInt:self.previousSetupFirstMoveColor forKey:goNodeSetupPreviousSetupFirstMoveColorKey];
+  [encoder encodeBool:self.previousSetupInformationWasCaptured forKey:goNodeSetupPreviousSetupInformationWasCapturedKey];
 }
 
 #pragma mark - NSObject overrides

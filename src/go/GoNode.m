@@ -157,7 +157,7 @@
   self.nextSiblingNodeID = [decoder decodeIntForKey:goNodeNextSiblingKey];
   self.parentNodeID = [decoder decodeIntForKey:goNodeParentKey];
 
-  // TODO xxx decode GoNodeSetup
+  self.goNodeSetup = [decoder decodeObjectForKey:goNodeGoNodeSetupKey];
   self.goMove = [decoder decodeObjectForKey:goNodeGoMoveKey];
   self.goNodeAnnotation = [decoder decodeObjectForKey:goNodeGoNodeAnnotationKey];
   self.goNodeMarkup = [decoder decodeObjectForKey:goNodeGoNodeMarkupKey];
@@ -191,7 +191,8 @@
   if (self.parent)
     [encoder encodeInt:self.parent.nodeID forKey:goNodeParentKey];
 
-  // TODO xxx encode GoNodeSetup
+  if (self.goNodeSetup)
+    [encoder encodeObject:self.goMove forKey:goNodeGoNodeSetupKey];
   if (self.goMove)
     [encoder encodeObject:self.goMove forKey:goNodeGoMoveKey];
   if (self.goNodeAnnotation)

@@ -475,9 +475,19 @@ NSString* goBoardRegionCachedAdjacentRegionsKey = @"CachedAdjacentRegions";
 NSString* goNodeFirstChildKey = @"FirstChild";
 NSString* goNodeNextSiblingKey = @"NextSibling";
 NSString* goNodeParentKey = @"Parent";
+NSString* goNodeGoNodeSetupKey = @"GoNodeSetup";
 NSString* goNodeGoMoveKey = @"GoMove";
 NSString* goNodeGoNodeAnnotationKey = @"GoNodeAnnotation";
 NSString* goNodeGoNodeMarkupKey = @"GoNodeMarkup";
+// GoNodeSetup keys
+NSString* goNodeSetupBlackSetupStonesKey = @"BlackSetupStones";
+NSString* goNodeSetupWhiteSetupStonesKey = @"WhiteSetupStones";
+NSString* goNodeSetupNoSetupStonesKey = @"NoSetupStones";
+NSString* goNodeSetupSetupFirstMoveColorKey = @"SetupFirstMoveColor";
+NSString* goNodeSetupPreviousBlackSetupStonesKey = @"PreviousBlackSetupStones";
+NSString* goNodeSetupPreviousWhiteSetupStonesKey = @"PreviousWhiteSetupStones";
+NSString* goNodeSetupPreviousSetupFirstMoveColorKey = @"PreviousSetupFirstMoveColor";
+NSString* goNodeSetupPreviousSetupInformationWasCapturedKey = @"PreviousSetupInformationWasCaptured";
 // GoNodeAnnotation keys
 NSString* goNodeAnnotationShortDescriptionKey = @"ShortDescription";
 NSString* goNodeAnnotationLongDescriptionKey = @"LongDescription";
