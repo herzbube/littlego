@@ -1451,7 +1451,9 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 
 // TODO xxx document
 // Checks the entire board in its current state whether the setup stones that
-// are present are legal (i.e. no suicidal stone groups).
+// are present are legal (i.e. no suicidal stone groups). Since Ko is not yet
+// possible before moves have been played, the only illegal position possible
+// is a stone or group of stones having no liberties.
 - (bool) isLegalBoardSetup:(NSString**)suicidalIntersectionsString
 {
   int numberOfSuicidalIntersections = 0;

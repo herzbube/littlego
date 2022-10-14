@@ -63,13 +63,6 @@
 ///
 /// Raises @e NSInvalidArgumentException if @a points is @e nil.
 - (void) setupValidatedNoStones:(NSArray*)points;
-
-/// @brief Captures setup information in @a game and stores the information in
-/// the properties @e previousBlackSetupStones, @e previousWhiteSetupStones and
-/// @e previousSetupFirstMoveColor.
-///
-/// Raises @e NSInvalidArgumentException if @a game is @e nil.
-- (void) capturePreviousSetupInformation:(GoGame*)game;
 //@}
 
 
@@ -84,9 +77,12 @@
 ///
 /// @note applySetup() must never be invoked twice in a row. It can be invoked
 /// in alternation with revertSetup() any number of times.
+///
+/// Raises @e NSInternalInconsistencyException if one or more GoPoint objects
+/// already have the desired @e stoneState property value.
 - (void) applySetup;
 
-/// @brief Reverts the board and the game to the state it had before
+/// @brief Reverts the board and the game to the state they had before
 /// applySetup() was invoked.
 ///
 /// Invoking this method is a comparatively expensive operation, because this
@@ -94,7 +90,14 @@
 /// before the setup stones in this GoNodeSetup were placed or removed.
 ///
 /// @note revertSetup() must never be invoked twice in a row. It can be invoked
-/// in alternation with applySetup() any number of times.
+/// in alternation with applySetup() any number of times, however applySetup()
+/// must have been invoked at least once before.
+///
+/// Raises @e NSInternalInconsistencyException if this method is invoked but
+/// applySetup() has never been invoked before.
+///
+/// Raises @e NSInternalInconsistencyException if one or more GoPoint objects
+/// already have the desired @e stoneState property value.
 - (void) revertSetup;
 //@}
 

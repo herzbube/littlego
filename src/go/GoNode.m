@@ -209,6 +209,9 @@
 
 #pragma mark - Public API - Game tree navigation
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (GoNode*) lastChild
 {
   GoNode* child = self.firstChild;
@@ -224,6 +227,9 @@
   return nil;
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (NSArray*) children
 {
   NSMutableArray* children = [NSMutableArray arrayWithCapacity:0];
@@ -239,16 +245,25 @@
   return children;
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) hasChildren
 {
   return (self.firstChild != nil);
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) hasNextSibling
 {
   return (self.nextSibling != nil);
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (GoNode*) previousSibling
 {
   GoNode* parent = self.parent;
@@ -271,16 +286,25 @@
   return nil;
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) hasPreviousSibling
 {
   return (self.previousSibling != nil);
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) hasParent
 {
   return (self.parent != nil);
 }
 
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) isDescendantOfNode:(GoNode*)node
 {
   if (! node)
@@ -304,6 +328,9 @@
   return false;
 }
 
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) isAncestorOfNode:(GoNode*)node
 {
   if (! node)
@@ -327,6 +354,9 @@
   return false;
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) isRoot
 {
   return (self.parent == nil);
@@ -334,6 +364,9 @@
 
 #pragma mark - Public API - Other operations
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) isEmpty
 {
   return ((! self.goNodeSetup || self.goNodeSetup.isEmpty) &&
@@ -342,10 +375,15 @@
           (! self.goNodeMarkup || ! self.goNodeMarkup.hasMarkup));
 }
 
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
 - (void) modifyBoard
 {
   if (self.goMove)
     [self.goMove doIt];
+  else if (self.goNodeSetup)
+    [self.goNodeSetup applySetup];
 
   // GoZobristTable needs to have the Zobrist hash of the node's parent. The
   // node therefore must have been added to the node tree at this point.
@@ -355,10 +393,15 @@
                                                    inGame:game];
 }
 
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
 - (void) revertBoard
 {
   if (self.goMove)
     [self.goMove undo];
+  else if (self.goNodeSetup)
+    [self.goNodeSetup revertSetup];
 }
 
 @end
