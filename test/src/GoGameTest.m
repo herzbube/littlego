@@ -391,16 +391,13 @@
   XCTAssertNotNil(move1);
   XCTAssertEqual(m_game.firstMove, move1);
   XCTAssertNil(move1.previous);
-  XCTAssertNil(move1.next);
 
   [m_game play:[m_game.board pointAtVertex:@"B1"]];
   GoMove* move2 = m_game.lastMove;
   XCTAssertNotNil(move2);
   XCTAssertTrue(m_game.firstMove != move2);
   XCTAssertNil(move1.previous);
-  XCTAssertEqual(move2, move1.next);
   XCTAssertEqual(move1, move2.previous);
-  XCTAssertNil(move2.next);
 
   [m_game.nodeModel discardLeafNode];
   XCTAssertEqual(move1, m_game.firstMove);

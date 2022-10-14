@@ -652,7 +652,7 @@
         enum GoGameState gameState = game.state;
         if (GoGameStateGameHasStarted == gameState ||
             GoGameStateGameIsPaused == gameState ||
-            (GoGameStateGameHasEnded == gameState && [GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode]))
+            (GoGameStateGameHasEnded == gameState && [GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode inCurrentGameVariation:game]))
         {
           statusText = [self statusTextForMostRecentAndNextMove:game];
         }
@@ -672,7 +672,8 @@
 - (NSString*) statusTextForMostRecentAndNextMove:(GoGame*)game
 {
   GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.boardPosition.currentNode];
-  GoMove* nextMove = nodeWithMostRecentMove ? nodeWithMostRecentMove.goMove.next : nil;
+  GoNode* nodeWithNextMove = [GoUtilities nodeWithNextMove:game.boardPosition.currentNode inCurrentGameVariation:game];
+  GoMove* nextMove = nodeWithNextMove ? nodeWithNextMove.goMove : nil;
 
   NSString* statusTextMostRecentMove = [self statusTextForMostRecentMove:nodeWithMostRecentMove];
   NSString* statusTextNextMove = [self statusTextForNextMove:nextMove inGame:game];

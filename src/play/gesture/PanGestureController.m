@@ -484,7 +484,7 @@
 
   if (GoGameStateGameHasEnded == game.state)
   {
-    if (! [GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode])
+    if (! [GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode inCurrentGameVariation:game])
     {
       self.panningEnabled = false;
       return;

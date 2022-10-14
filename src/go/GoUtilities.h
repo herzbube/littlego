@@ -59,8 +59,8 @@
 + (void) recalculateZobristHashes:(GoGame*)game;
 + (void) relinkMoves:(GoGame*)game;
 + (GoNode*) nodeWithMostRecentMove:(GoNode*)node;
-+ (GoNode*) nodeWithNextMove:(GoNode*)node;
-+ (bool) nodeWithNextMoveExists:(GoNode*)node;
++ (GoNode*) nodeWithNextMove:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
++ (bool) nodeWithNextMoveExists:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
 + (int) numberOfMovesBeforeNode:(GoNode*)node;
 + (int) numberOfMovesAfterNode:(GoNode*)node;
 + (bool) showInfoIndicatorForNode:(GoNode*)node;

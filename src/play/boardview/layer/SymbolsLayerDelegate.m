@@ -1131,7 +1131,7 @@
                    pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
 {
   GoGame* game = [GoGame sharedGame];
-  GoNode* nodeWithNextMove = [GoUtilities nodeWithNextMove:game.boardPosition.currentNode];
+  GoNode* nodeWithNextMove = [GoUtilities nodeWithNextMove:game.boardPosition.currentNode inCurrentGameVariation:game];
   if (! nodeWithNextMove)
     return;
 

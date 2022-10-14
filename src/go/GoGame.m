@@ -169,7 +169,7 @@
 - (GoMove*) firstMove
 {
   // The root node cannot contain a move, therefore it is ok to use GoUtilities
-  GoNode* nodeWithNextMove = [GoUtilities nodeWithNextMove:self.nodeModel.rootNode];
+  GoNode* nodeWithNextMove = [GoUtilities nodeWithNextMove:self.nodeModel.rootNode inCurrentGameVariation:self];
   if (nodeWithNextMove)
     return nodeWithNextMove.goMove;
   else

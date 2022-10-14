@@ -468,14 +468,21 @@ enum BoardPositionSectionItem
     }
     case BoardInfoType:
     {
-      GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
+      GoGame* game = [GoGame sharedGame];
+      GoBoardPosition* boardPosition = game.boardPosition;
       GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:boardPosition.currentNode];
       if (! nodeWithMostRecentMove)
+      {
         return @"You are viewing the board position at the beginning of the game, i.e. before the first move was played.";
-      else if (! nodeWithMostRecentMove.goMove.next)
-        return @"You are viewing the board position after the most recent move of the game has been played.";
+      }
       else
-        return @"You are viewing a board position in the middle of the game.";
+      {
+        GoNode* nodeWithNextMove = [GoUtilities nodeWithNextMove:boardPosition.currentNode inCurrentGameVariation:game];
+        if (! nodeWithNextMove)
+          return @"You are viewing the board position after the most recent move of the game has been played.";
+        else
+          return @"You are viewing a board position in the middle of the game.";
+      }
     }
     default:
     {

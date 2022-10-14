@@ -635,7 +635,7 @@
   // will have to discard those nodes, or change board position to the last
   // node of the game.
   GoMove* mostRecentMove = nodeWithMostRecentMove.goMove;
-  bool mostRecentMoveIsLastMove = (mostRecentMove.next == nil);
+  bool mostRecentMoveIsLastMove = (mostRecentMove == game.lastMove);
   if (! mostRecentMoveIsLastMove)
     return false;
 
@@ -700,7 +700,7 @@
   //    be changed which, again, is inappropriate because game.nextMoveColor is
   //    tied to the CURRENT board position, not the board position with the LAST
   //    move.
-  if ([GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode])
+  if ([GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode inCurrentGameVariation:game])
     return false;
 
   return true;
@@ -778,34 +778,48 @@
 /// @brief Relinks all moves of the specified game. The source is the
 /// GoNodeModel contained by @a game.
 ///
-/// The previous/next moves of a GoMove is not archived when a game is archived
+/// The previous move of a GoMove is not archived when a game is archived
 /// to avoid a stack overflow when the game contains a large number of moves.
 // -----------------------------------------------------------------------------
 + (void) relinkMoves:(GoGame*)game
 {
-  GoNodeModel* nodeModel = game.nodeModel;
+  NSMutableArray* stack = [NSMutableArray array];
 
-  GoMove* moveToSet = nil;
+  GoNode* currentNode = game.nodeModel.rootNode;
   GoMove* previousMove = nil;
 
-  // TODO Variation support: This method does not have variation support.
-  GoNode* node = nodeModel.rootNode;
-  while (node)
+  while (true)
   {
-    GoMove* move = node.goMove;
-    if (move)
+    while (currentNode)
     {
-      if (moveToSet)
-        [moveToSet setUnarchivedPreviousMove:previousMove nextMove:move];
+      GoMove* move = currentNode.goMove;
+      if (move)
+      {
+        [move setUnarchivedPreviousMove:previousMove];
+        previousMove = move;
+      }
 
-      previousMove = moveToSet;
-      moveToSet = move;
+      [stack addObject:@[currentNode, previousMove]];
+
+      currentNode = currentNode.firstChild;
     }
-    node = node.firstChild;
-  }
 
-  if (moveToSet)
-    [moveToSet setUnarchivedPreviousMove:previousMove nextMove:nil];
+    if (stack.count > 0)
+    {
+      NSArray* tuple = stack.lastObject;
+      [stack removeLastObject];
+
+      currentNode = tuple.firstObject;
+      previousMove = tuple.lastObject;
+
+      currentNode = currentNode.nextSibling;
+    }
+    else
+    {
+      // We're done
+      break;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -825,31 +839,36 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Examines the direct descendants of @a node (excluding @a node).
-/// Returns the first node found that contains a move. Returns @e nil if no move
-/// can be found.
+/// @brief Examines the successors of @a node (excluding @a node) in the current
+/// game variation available from @a game. Returns the first node found that
+/// contains a move. Returns @e nil if no move can be found.
 // -----------------------------------------------------------------------------
-+ (GoNode*) nodeWithNextMove:(GoNode*)node
++ (GoNode*) nodeWithNextMove:(GoNode*)node inCurrentGameVariation:(GoGame*)game
 {
-  if (node)
-    node = node.firstChild;
-  while (node)
+  GoNodeModel* nodeModel = game.nodeModel;
+
+  int startIndexOfNode = [nodeModel indexOfNode:node] + 1;
+  int numberOfNodes = nodeModel.numberOfNodes;
+
+  for (int indexOfNode = startIndexOfNode; indexOfNode < numberOfNodes; indexOfNode++)
   {
+    node = [nodeModel nodeAtIndex:indexOfNode];
     if (node.goMove)
       return node;
-    node = node.firstChild;
   }
+
   return nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Examines the direct descendants of @a node (excluding @a node).
-/// Returns true if at least one descendant node contains a move. Returns false
-/// if no descendant node contains a node.
+/// @brief Examines the successors of @a node (excluding @a node) in the current
+/// game variation available from @a game. Returns @e true if at least one
+/// successor node contains a move. Returns @e false if no successor node
+/// contains a move.
 // -----------------------------------------------------------------------------
-+ (bool) nodeWithNextMoveExists:(GoNode*)node
++ (bool) nodeWithNextMoveExists:(GoNode*)node inCurrentGameVariation:(GoGame*)game
 {
-  return [GoUtilities nodeWithNextMove:node] != nil;
+  return [GoUtilities nodeWithNextMove:node inCurrentGameVariation:game] != nil;
 }
 
 // -----------------------------------------------------------------------------

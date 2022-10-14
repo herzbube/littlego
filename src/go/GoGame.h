@@ -154,14 +154,14 @@
 @property(nonatomic, assign) bool alternatingPlay;
 /// @brief The model object that stores the nodes of the game tree.
 @property(nonatomic, retain) GoNodeModel* nodeModel;
-/// @brief The GoMove object that represents the first move of the game. nil if
-/// no moves have been made yet.
+/// @brief The GoMove object that represents the first move of the currently
+/// active game variation. Is @e nil if no moves have been made yet.
 ///
 /// This is a convenience property that serves as a shortcut so that clients do
 /// not have to obtain the desired GoMove object from @e nodeModel.
 @property(nonatomic, assign, readonly) GoMove* firstMove;
-/// @brief The GoMove object that represents the last move of the game. nil if
-/// no moves have been made yet.
+/// @brief The GoMove object that represents the last move of the currently
+/// active game variation. Is @e nil if no moves have been made yet.
 ///
 /// This is a convenience property that serves as a shortcut so that clients do
 /// not have to obtain the desired GoMove object from @e nodeModel.
