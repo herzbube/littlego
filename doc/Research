@@ -395,12 +395,67 @@ Two computer players:
 Recommend a move
 - The "reg_genmove" GTP command generates a move, but does not play it
 
+Handicap
+- The GTP standard has three GTP commands that can be used to setup handicap
+  stones. Fuego implements these commands, but no other non-standard command
+  related to handicap.
+  - fixed_handicap
+  - place_free_handicap
+  - set_free_handicap
+- According to the GTP standard, all commands can be used only as long as the
+  board is empty.
+  - Fuego faithfully implements the GTP standard, which means it does not allow
+    the commands once setup stones have been placed or at least one move has
+    been played that places a stone.
+  - Fuego allows the commands after a pass move has been played.
+- fixed_handicap <n>
+  - This command places handicap stones on the board in fixed locations defined
+    by the GTP standard [1]. The locations depend on the board size.
+  - The command parameter is numeric and determines how many stones should be
+    placed. Allowed values are 2-9.
+  - The response to the command lists the vertices on which the GTP engine
+    placed the handicap stones.
+- place_free_handicap <n>
+  - This command places handicap stones on the board in locations preferred by
+    the GTP engine [2]. The GTP engine may place less stones than the requested
+    number if the requested number is very high.
+  - The command parameter is numeric and determines how many stones should be
+    placed. The minimum number is 2. The maximum number is one less than the
+    number of vertices on the board.
+  - The response to the command lists the vertices on which the GTP engine
+    placed the handicap stones.
+  - Fuego uses the same locations that the GTP standard defines for the
+    "fixed_handicap" command. If more stones are requested, Fuego lets the black
+    player play stones using the "gen_move" command until either the requested
+    number of stones is reached, or a pass move is played.
+- set_free_handicap <vertices>
+  - This command places handicap stones on the board in locations specified by
+    the command.
+  - The command parameter is a list of vertices that indicate how many stones
+    and where they should be placed. The minimum number of vertices is 2. The
+    maximum number of vertices is one less than the number of vertices on the
+    board.
+- Regardless of which command is used: Fuego places the stones on the board,
+  creates corresponding SGF properties, and stores the number of handicap stones
+  in GoRules. Once placed on the board, Fuego does not keep a memory of why a
+  handicap stone was placed, i.e. the stone is treated as just another black
+  stone that takes part in the board position evaluation as usual. Also, code
+  analysis indicates that Fuego does not use the number of handicap stones in
+  GoRules any way to evaluate the board position.
+- [1] https://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html#sec:fixed-handicap-placement
+- [2] https://www.lysator.liu.se/~gunnar/gtp/gtp2-spec-draft2/gtp2-spec.html#sec:free-handicap-placement
+
 Setup a position
 - The "gogui-setup" GTP command can be used to setup a position on the board
   without making play moves. For instance, an .sgf file saved after
   "gogui-setup" will not contain moves, just the board setup). This command
   exists because GTP v2 does not define such a command. The format is
   "gogui-setup <color> <vertex> [...]". The colors do not need to alternate.
+  The color must be "B" or "W", i.e. it is not possible to clear an
+  intersection. Fuego allows the command only if no moves have been played yet.
+  Multiple "gogui-setup" commands can be submitted, each of which modifies the
+  board according to the command arguments. The command can be used to replace
+  handicap stones with setup stones.
 - The "gogui-setup_player" command is used to define the color that should play
   first after a setup has been made. This command is submitted immediately
   after gogui-setup. The format is "gogui-setup_player <color>".

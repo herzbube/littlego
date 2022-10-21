@@ -44,12 +44,29 @@
 
 @implementation GoNodeSetup
 
+#pragma mark - Initialization and deallocation
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a newly constructed GoNodeSetup object that has captured the
+/// current game state as its "previous setup" and is therefore ready to receive
+/// setup changes.
+// -----------------------------------------------------------------------------
++ (GoNodeSetup*) nodeSetupWithPreviousSetupCapturedFrom:(GoGame*)game
+{
+  GoNodeSetup* nodeSetup = [[[self alloc] init] autorelease];
+
+  [nodeSetup capturePreviousSetupInformation:game];
+  nodeSetup.previousSetupInformationWasCaptured = true;
+
+  return nodeSetup;
+}
+
 // -----------------------------------------------------------------------------
 /// @brief Initializes a GoNodeSetup object.
 ///
 /// @note This is the designated initializer of GoNodeSetup.
 // -----------------------------------------------------------------------------
-- (id) initWithGame:(GoGame*)game
+- (id) init
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];

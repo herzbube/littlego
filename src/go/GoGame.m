@@ -25,6 +25,7 @@
 #import "GoMove.h"
 #import "GoNode.h"
 #import "GoNodeModel.h"
+#import "GoNodeSetup.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
 #import "GoScore.h"
@@ -78,8 +79,6 @@
   _rules = [[GoGameRules alloc] init];
   _document = [[GoGameDocument alloc] init];
   _score = [[GoScore alloc] initWithGame:self];
-  _blackSetupPoints = [[NSArray array] retain];
-  _whiteSetupPoints = [[NSArray array] retain];
   _setupFirstMoveColor = GoColorNone;
   _zobristHashAfterHandicap = 0;
 
@@ -97,6 +96,7 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
+
   // Don't use "self" because most properties have non-trivial setter methods
   // (e.g. notifications are triggered, but also other stuff)
   _type = [decoder decodeIntForKey:goGameTypeKey];
@@ -115,8 +115,6 @@
   _rules = [[decoder decodeObjectForKey:goGameRulesKey] retain];
   _document = [[decoder decodeObjectForKey:goGameDocumentKey] retain];
   _score = [[decoder decodeObjectForKey:goGameScoreKey] retain];
-  _blackSetupPoints = [[decoder decodeObjectForKey:goGameBlackSetupPointsKey] retain];
-  _whiteSetupPoints = [[decoder decodeObjectForKey:goGameWhiteSetupPointsKey] retain];
   _setupFirstMoveColor = [decoder decodeIntForKey:goGameSetupFirstMoveColorKey];
   // The hash was not archived. Whoever is unarchiving this GoGame is
   // responsible for re-calculating the hash.
@@ -148,18 +146,7 @@
   self.rules = nil;
   self.document = nil;
   self.score = nil;
-  // Don't use self.blackSetupPoints - same reason as for _handicapPoints above
-  if (_blackSetupPoints)
-  {
-    [_blackSetupPoints release];
-    _blackSetupPoints = nil;
-  }
-  // Don't use self.whiteSetupPoints - same reason as for _handicapPoints above
-  if (_whiteSetupPoints)
-  {
-    [_whiteSetupPoints release];
-    _whiteSetupPoints = nil;
-  }
+
   [super dealloc];
 }
 
@@ -1148,6 +1135,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 - (void) encodeWithCoder:(NSCoder*)encoder
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+
   [encoder encodeInt:self.type forKey:goGameTypeKey];
   [encoder encodeObject:self.board forKey:goGameBoardKey];
   [encoder encodeObject:self.handicapPoints forKey:goGameHandicapPointsKey];
@@ -1164,8 +1152,6 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   [encoder encodeObject:self.rules forKey:goGameRulesKey];
   [encoder encodeObject:self.document forKey:goGameDocumentKey];
   [encoder encodeObject:self.score forKey:goGameScoreKey];
-  [encoder encodeObject:self.blackSetupPoints forKey:goGameBlackSetupPointsKey];
-  [encoder encodeObject:self.whiteSetupPoints forKey:goGameWhiteSetupPointsKey];
   [encoder encodeInt:self.setupFirstMoveColor forKey:goGameSetupFirstMoveColorKey];
   // GoZobristTable is not archived, instead a new GoZobristTable object with
   // random values is created each time when a game is unarchived. Zobrist
@@ -1334,121 +1320,6 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   }
 }
 
-// -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
-- (void) setBlackSetupPoints:(NSArray*)newValue
-{
-  [self setSetupPoints:newValue forStoneColor:GoColorBlack];
-}
-
-// -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
-- (void) setWhiteSetupPoints:(NSArray*)newValue
-{
-  [self setSetupPoints:newValue forStoneColor:GoColorWhite];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for setBlackSetupPoints:() and
-/// setWhiteSetupPoints().
-// -----------------------------------------------------------------------------
-- (void) setSetupPoints:(NSArray*)newValue forStoneColor:(enum GoColor)stoneColor
-{
-  if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
-  {
-    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to set %lu setup stones to %d failed: ", (unsigned long)newValue.count, stoneColor];
-    if (GoGameStateGameHasEnded == self.state)
-      errorMessage = [errorMessage stringByAppendingFormat:@"Game is in state GoGameStateGameHasEnded, reason = %d", self.reasonForGameHasEnded];
-    else
-      errorMessage = [errorMessage stringByAppendingString:@"Game already has moves"];
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
-  if (! newValue)
-  {
-    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to set setup stones to %d failed: Point list argument is nil", stoneColor];
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
-
-  NSArray* oldValue;
-  if (stoneColor == GoColorBlack)
-    oldValue = _blackSetupPoints;
-  else
-    oldValue = _whiteSetupPoints;
-
-  if ([oldValue isEqualToArray:newValue])
-    return;
-
-  // Reset previously set setup points
-  if (oldValue)
-  {
-    [oldValue autorelease];
-    for (GoPoint* point in oldValue)
-    {
-      point.stoneState = GoColorNone;
-      [GoUtilities movePointToNewRegion:point];
-    }
-  }
-
-  if (stoneColor == GoColorBlack)
-    _blackSetupPoints = [newValue copy];
-  else
-    _whiteSetupPoints = [newValue copy];
-
-  if (newValue)
-  {
-    for (GoPoint* point in newValue)
-    {
-      if (point.stoneState != GoColorNone)
-      {
-        NSString* errorMessage = [NSString stringWithFormat:@"Board setup prior to first move attempts to place a stone on the already occupied intersection %@.", point.vertex.string];
-        if ([_handicapPoints containsObject:point])
-          errorMessage = [errorMessage stringByAppendingString:@" The intersection is occupied by a handicap stone."];
-        else
-          errorMessage = [errorMessage stringByAppendingString:@" The reason why the intersection is already occupied could not be determined."];
-
-        DDLogError(@"%@: %@", self, errorMessage);
-        NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                         reason:errorMessage
-                                                       userInfo:nil];
-        @throw exception;
-      }
-
-      point.stoneState = stoneColor;
-      [GoUtilities movePointToNewRegion:point];
-    }
-
-    // For performance reasons we perform the liberties check only after all
-    // stones have been placed. If we wanted to perform the liberties check
-    // immediately while placing each stone, the check would be much more
-    // expensive because we would have to check the same GoBoardRegions over
-    // and over again.
-    NSString* suicidalIntersectionsString;
-    bool isLegalBoardSetup = [self isLegalBoardSetup:&suicidalIntersectionsString];
-    if (! isLegalBoardSetup)
-    {
-      NSString* errorMessage = [NSString stringWithFormat:@"Board setup prior to first move attempts to place stones with 0 (zero) liberties on the following intersections: %@.", suicidalIntersectionsString];
-      DDLogError(@"%@: %@", self, errorMessage);
-      NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                       reason:errorMessage
-                                                     userInfo:nil];
-      @throw exception;
-    }
-  }
-
-  self.zobristHashAfterHandicap = [self.board.zobristTable hashForBoard:self.board];
-  self.nodeModel.rootNode.zobristHash = self.zobristHashAfterHandicap;
-}
-
 // TODO xxx document
 // Checks the entire board in its current state whether the setup stones that
 // are present are legal (i.e. no suicidal stone groups). Since Ko is not yet
@@ -1509,174 +1380,44 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Adds or removes @a point to/from the list of handicap points
-/// (@e handicapPoints). Changes the @e stoneState property of @a point
-/// accordingly and recalculates the property @e zobristHashAfterHandicap.
-///
-/// If @e setupFirstMoveColor is #GoColorBlack or #GoColorWhite this method
-/// does not change the value of the @e nextMoveColor property, because if a
-/// side is explicitly set to play first this has precedence over the normal
-/// game rules. If however @e setupFirstMoveColor is #GoColorNone, this method
-/// may change the value of the @e nextMoveColor property:
-/// - Sets @e nextMoveColor to #GoColorWhite if @e handicapPoints changes from
-///   empty to non-empty.
-/// - Sets @e nextMoveColor to #GoColorBlack if @e handicapPoints changes from
-///   non-empty to empty.
-///
-/// Posts #handicapPointDidChange to the global notification centre after the
-/// operation is complete.
-///
-/// KVO observers of the property @e handicapPoints will be triggered.
-///
-/// Raises @e NSInvalidArgumentException if @a point is @e nil.
-///
-/// Raises @e NSInternalInconsistencyException if this method is invoked when
-/// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is
-/// in that state but already has moves. Summing it up, this method can be
-/// invoked only at the start of the game.
-///
-/// Also raises @e NSInternalInconsistencyException if something about @a point
-/// is wrong:
-/// - @a point is listed in @e blackSetupStones or @e whiteSetupStones.
-/// - The current stone state of @a point indicates that there is a black
-///   handicap stone on the intersection, but @a point is not listed in
-///   @e handicapPoints.
-/// - The current stone state of @a point indicates that the intersection is
-///   empty, but @a point is listed in @e handicapPoints.
-/// - The current stone state of @a point indicates that there is a white
-///   stone on the intersection.
+/// @brief Changes the side that is set up to play the first move to
+/// @e newValue. See the documentation of property @e setupFirstMoveColor for
+/// details, also on which exceptions can be thrown.
 // -----------------------------------------------------------------------------
-- (void) toggleHandicapPoint:(GoPoint*)point
+- (void) changeSetupFirstMoveColor:(enum GoColor)newValue
 {
-  if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
+  GoNode* currentNode = self.boardPosition.currentNode;
+  GoNodeSetup* nodeSetup = currentNode.goNodeSetup;
+  if (! nodeSetup)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to add or remove handicap stone at intersection %@ failed: ", point.vertex.string];
-    if (GoGameStateGameHasEnded == self.state)
-      errorMessage = [errorMessage stringByAppendingFormat:@"Game is in state GoGameStateGameHasEnded, reason = %d", self.reasonForGameHasEnded];
-    else
-      errorMessage = [errorMessage stringByAppendingString:@"Game already has moves"];
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
-  if (! point)
-  {
-    NSString* errorMessage = @"Attempt to add or remove handicap stone failed: Point argument is nil";
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
+    [GoNodeSetup nodeSetupWithPreviousSetupCapturedFrom:self];
+    currentNode.goNodeSetup = nodeSetup;
   }
 
-  NSString* colorString;
-  if ([self.blackSetupPoints containsObject:point])
-    colorString = @"black";
-  else if ([self.whiteSetupPoints containsObject:point])
-    colorString = @"white";
-  else
-    colorString = nil;
+  nodeSetup.setupFirstMoveColor = newValue;
 
-  if (colorString)
-  {
-    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: Point is already in the list of %@ setup stones", point.vertex.string, colorString];
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
+  if (nodeSetup.isEmpty)
+    currentNode.goNodeSetup = nil;
 
-  switch (point.stoneState)
-  {
-    case GoColorBlack:
-    {
-      NSMutableArray* newHandicapPoints = [NSMutableArray arrayWithArray:self.handicapPoints];
-      [newHandicapPoints removeObject:point];
-
-      if (self.handicapPoints.count == newHandicapPoints.count)
-      {
-        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: There is a black stone on the intersection, but the point is not in the list of handicap stones", point.vertex.string];
-        DDLogError(@"%@: %@", self, errorMessage);
-        NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                         reason:errorMessage
-                                                       userInfo:nil];
-        @throw exception;
-      }
-
-      self.handicapPoints = newHandicapPoints;
-      assert(point.stoneState == GoColorNone);
-
-      break;
-    }
-    case GoColorNone:
-    {
-      if ([self.handicapPoints containsObject:point])
-      {
-        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: There is no stone on the intersection, but the point is in the list of handicap stones", point.vertex.string];
-        DDLogError(@"%@: %@", self, errorMessage);
-        NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                         reason:errorMessage
-                                                       userInfo:nil];
-        @throw exception;
-      }
-
-      self.handicapPoints = [self.handicapPoints arrayByAddingObject:point];
-      assert(point.stoneState == GoColorBlack);
-
-      break;
-    }
-    case GoColorWhite:
-    {
-      NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of handicap point %@ failed: There is a black stone on the intersection", point.vertex.string];
-      DDLogError(@"%@: %@", self, errorMessage);
-      NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                       reason:errorMessage
-                                                     userInfo:nil];
-      @throw exception;
-    }
-  }
-
-  [[NSNotificationCenter defaultCenter] postNotificationName:handicapPointDidChange object:point];
+  // The property setter performs all sorts of validation
+  self.setupFirstMoveColor = newValue;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Changes the @e stoneState property of @a point to the specified value
-/// @a stoneState. Either adds or removes @a point to/from one of the lists of
-/// setup stones (either @e blackSetupPoints or @e whiteSetupPoints).
-/// Recalculates the property @e zobristHashAfterHandicap.
-///
-/// Does nothing if @a point already has the desired stone state.
+/// @a stoneState. Does nothing if @a point already has the desired stone state.
 ///
 /// Posts #setupPointDidChange to the global notification centre after the
 /// operation is complete.
 ///
-/// KVO observers of the properties @e blackSetupPoints and @e whiteSetupPoints
-/// will be triggered. The order depends on the old and the new stone state of
-/// @a point. If either the old or the new stone state is #GoColorNone, this
-/// method does not change one of the two properties and KVO observers will not
-/// be notified for that property.
+/// Raises @e NSInvalidArgumentException if @a point is nil, or if changing the
+/// @e stoneState property of @a point to the specified value @a stoneState is
+/// not a legal board setup operation.
 ///
 /// Raises @e NSInternalInconsistencyException if this method is invoked when
 /// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is
 /// in that state but already has moves. Summing it up, this method can be
 /// invoked only at the start of the game.
-///
-/// Also raises @e NSInternalInconsistencyException if something about @a point
-/// is wrong:
-/// - @a point is listed in @e handicapPoints.
-/// - The current stone state of @a point indicates that there is a black or
-///   white setup stone on the intersection, but @a point is not listed in
-///   @e blackSetupStones or @e whiteSetupStones.
-/// - The current stone state of @a point indicates that the intersection is
-///   empty, but @a point is listed in either @e blackSetupStones or
-///   @e whiteSetupStones.
-///
-/// Raises @e NSInvalidArgumentException if @a point is nil, or if changing the
-/// @e stoneState property of @a point to the specified value @a stoneState is
-/// not a legal board setup operation.
 // -----------------------------------------------------------------------------
 - (void) changeSetupPoint:(GoPoint*)point toStoneState:(enum GoColor)stoneState
 {
@@ -1693,6 +1434,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
                                                    userInfo:nil];
     @throw exception;
   }
+
   if (! point)
   {
     NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point to %d failed: Point argument is nil", stoneState];
@@ -1706,16 +1448,6 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   if (point.stoneState == stoneState)
     return;
 
-  if ([self.handicapPoints containsObject:point])
-  {
-    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: Point is already in the list of handicap points", point.vertex.string, stoneState];
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
-
   if (stoneState != GoColorNone)
   {
     enum GoBoardSetupIsIllegalReason reason;
@@ -1727,7 +1459,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
                             createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint];
     if (! isLegalBoardSetup)
     {
-      NSString* errorMessage = [NSString stringWithFormat:@"Point argument is not a legal setup stone for stone state %d: %@", stoneState, point.vertex.string];
+      NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: Point argument is not a legal setup stone", point.vertex.string, stoneState];
       DDLogError(@"%@: %@", self, errorMessage);
       NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                        reason:errorMessage
@@ -1736,111 +1468,52 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     }
   }
 
-  switch (point.stoneState)
+  GoNode* currentNode = self.boardPosition.currentNode;
+  GoNodeSetup* nodeSetup = currentNode.goNodeSetup;
+  if (! nodeSetup)
   {
-    case GoColorBlack:
-    {
-      NSMutableArray* newBlackSetupPoints = [NSMutableArray arrayWithArray:self.blackSetupPoints];
-      [newBlackSetupPoints removeObject:point];
-
-      if (self.blackSetupPoints.count == newBlackSetupPoints.count)
-      {
-        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: There is a black stone on the intersection, but the point is not in the list of black setup stones", point.vertex.string, stoneState];
-        DDLogError(@"%@: %@", self, errorMessage);
-        NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                         reason:errorMessage
-                                                       userInfo:nil];
-        @throw exception;
-      }
-
-      self.blackSetupPoints = newBlackSetupPoints;
-      break;
-    }
-    case GoColorWhite:
-    {
-      NSMutableArray* newWhiteSetupPoints = [NSMutableArray arrayWithArray:self.whiteSetupPoints];
-      [newWhiteSetupPoints removeObject:point];
-
-      if (self.whiteSetupPoints.count == newWhiteSetupPoints.count)
-      {
-        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: There is a white stone on the intersection, but the point is not in the list of white setup stones", point.vertex.string, stoneState];
-        DDLogError(@"%@: %@", self, errorMessage);
-        NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                         reason:errorMessage
-                                                       userInfo:nil];
-        @throw exception;
-      }
-
-      self.whiteSetupPoints = newWhiteSetupPoints;
-      break;
-    }
-    default:
-    {
-      NSString* colorString;
-      if ([self.blackSetupPoints containsObject:point])
-        colorString = @"black";
-      else if ([self.whiteSetupPoints containsObject:point])
-        colorString = @"white";
-      else
-        colorString = nil;
-
-      if (colorString)
-      {
-        NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: There is no stone on the intersection, but the point is in the list of %@ setup stones", point.vertex.string, stoneState, colorString];
-        DDLogError(@"%@: %@", self, errorMessage);
-        NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                         reason:errorMessage
-                                                       userInfo:nil];
-        @throw exception;
-      }
-      break;
-    }
+    [GoNodeSetup nodeSetupWithPreviousSetupCapturedFrom:self];
+    currentNode.goNodeSetup = nodeSetup;
   }
 
-  assert(point.stoneState == GoColorNone);
+  if (stoneState == GoColorBlack)
+    [nodeSetup setupBlackStone:point];
+  else if (stoneState == GoColorBlack)
+    [nodeSetup setupWhiteStone:point];
+  else
+    [nodeSetup setupNoStone:point];
 
-  switch (stoneState)
-  {
-    case GoColorBlack:
-    {
-      self.blackSetupPoints = [self.blackSetupPoints arrayByAddingObject:point];
-      break;
-    }
-    case GoColorWhite:
-    {
-      self.whiteSetupPoints = [self.whiteSetupPoints arrayByAddingObject:point];
-      break;
-    }
-    default:
-    {
-      break;
-    }
-  }
+  if (nodeSetup.isEmpty)
+    currentNode.goNodeSetup = nil;
 
-  assert(point.stoneState == stoneState);
+  point.stoneState = stoneState;
+  [GoUtilities movePointToNewRegion:point];
+
+  currentNode.zobristHash = [self.board.zobristTable hashForNode:currentNode inGame:self];
 
   [[NSNotificationCenter defaultCenter] postNotificationName:setupPointDidChange object:point];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Discards all setup stones on intersections that are currently listed
-/// in @e blackSetupPoints and @e whiteSetupPoints.
+/// @brief Discards all setup that exists for the current board position,
+/// reverting the board to the state of the previous board position. The discard
+/// includes any change to the property @e setupFirstMoveColor. Does nothing if
+/// no setup exists for the current board position.
+///
+/// If the current board position is the first board position, this will cause
+/// any handicap stones that existed and were removed by the board setup to be
+/// restored.
 ///
 /// Posts #allSetupStonesWillDiscard to the global notification centre before
 /// any changes are made. Posts #allSetupStonesDidDiscard to the global
 /// notification centre after the discard is complete.
-///
-/// KVO observers of the two properties will be triggered first for
-/// @e blackSetupPoints, then for @e whiteSetupPoints. If one of the properties
-/// is already empty, this method does not change the property value and KVO
-/// observers will not be notified.
 ///
 /// Raises @e NSInternalInconsistencyException if it is invoked when this GoGame
 /// object is not in state #GoGameStateGameHasStarted, or if it is in that state
 /// but already has moves. Summing it up, this property can be set only at the
 /// start of the game.
 // -----------------------------------------------------------------------------
-- (void) discardAllSetupStones
+- (void) discardAllSetup
 {
   if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
   {
@@ -1858,11 +1531,15 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 
   [[NSNotificationCenter defaultCenter] postNotificationName:allSetupStonesWillDiscard object:self];
 
-  if (self.blackSetupPoints.count > 0)
-    self.blackSetupPoints = @[];
+  GoNode* currentNode = self.boardPosition.currentNode;
+  GoNodeSetup* nodeSetup = currentNode.goNodeSetup;
+  if (! nodeSetup)
+    return;
 
-  if (self.whiteSetupPoints.count > 0)
-    self.whiteSetupPoints = @[];
+  [nodeSetup revertSetup];
+  currentNode.goNodeSetup = nil;
+
+  currentNode.zobristHash = [self.board.zobristTable hashForNode:currentNode inGame:self];
 
   [[NSNotificationCenter defaultCenter] postNotificationName:allSetupStonesDidDiscard object:self];
 }

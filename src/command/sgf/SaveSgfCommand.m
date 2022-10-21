@@ -24,6 +24,7 @@
 #import "../../go/GoNodeAnnotation.h"
 #import "../../go/GoNodeMarkup.h"
 #import "../../go/GoNodeModel.h"
+#import "../../go/GoNodeSetup.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
@@ -117,9 +118,6 @@
   [self addRootPropertiesToRootNode:rootNode
                withValuesFromGoGame:goGame
                           boardSize:boardSize];
-  [self addSgfPropertiesToNode:rootNode
- withAnnotationAndMarkupValues:goGame.nodeModel.rootNode
-                     boardSize:boardSize];
 
   [self addKomiAndHandicapPropertiesToGameInfoNode:gameInfoNode
                               withValuesFromGoGame:goGame
@@ -127,16 +125,10 @@
   [self addPlayerNamesToGameInfoNode:gameInfoNode
                 withValuesFromGoGame:goGame];
 
-  SGFCNode* setupNode = [self addSetupNodeAfterGameInfoNode:gameInfoNode
-                                       withValuesFromGoGame:goGame
-                                                  boardSize:boardSize
-                                                treeBuilder:treeBuilder];
-
-  SGFCNode* previousNode = (setupNode != nil) ? setupNode : gameInfoNode;
-  [self addRemainingNodesAfterNode:previousNode
-              withValuesFromGoGame:goGame
-                         boardSize:boardSize
-                       treeBuilder:treeBuilder];
+  [self addRemainingPropertiesStartingAtGameInfoNode:gameInfoNode
+                                withValuesFromGoGame:goGame
+                                           boardSize:boardSize
+                                         treeBuilder:treeBuilder];
 
   return true;
 }
@@ -220,115 +212,151 @@
   [gameInfoNode setProperty:pwProperty];
 }
 
-#pragma mark - Create SGF document - Node for board setup and player setup
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for createSgfDocument:errorMessage:()
-// -----------------------------------------------------------------------------
-- (SGFCNode*) addSetupNodeAfterGameInfoNode:(SGFCNode*)gameInfoNode
-                       withValuesFromGoGame:(GoGame*)goGame
-                                  boardSize:(SGFCBoardSize)boardSize
-                                treeBuilder:(SGFCTreeBuilder*)treeBuilder
-{
-  NSArray* blackSetupPoints = goGame.blackSetupPoints;
-  NSArray* whiteSetupPoints = goGame.whiteSetupPoints;
-  enum GoColor setupFirstMoveColor = goGame.setupFirstMoveColor;
-  if (blackSetupPoints.count == 0 && whiteSetupPoints.count == 0 && setupFirstMoveColor == GoColorNone)
-    return nil;
-
-  SGFCNode* setupNode = [SGFCNode node];
-  [treeBuilder setFirstChild:setupNode ofNode:gameInfoNode];
-
-  if (blackSetupPoints.count > 0)
-  {
-    [self addSgfPropertyWithType:SGFCPropertyTypeAB
-                          toNode:setupNode
-          withValuesFromGoPoints:blackSetupPoints
-                       boardSize:boardSize];
-  }
-
-  if (whiteSetupPoints.count > 0)
-  {
-    [self addSgfPropertyWithType:SGFCPropertyTypeAW
-                          toNode:setupNode
-          withValuesFromGoPoints:whiteSetupPoints
-                       boardSize:boardSize];
-  }
-
-  if (setupFirstMoveColor != GoColorNone)
-  {
-    SGFCColor color = (setupFirstMoveColor == GoColorBlack) ? SGFCColorBlack : SGFCColorWhite;
-    SGFCColorPropertyValue* plPropertyValue = [SGFCPropertyValueFactory propertyValueWithColor:color];
-    SGFCProperty* plProperty = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypePL value:plPropertyValue];
-    [setupNode setProperty:plProperty];
-  }
-
-  return setupNode;
-}
-
 #pragma mark - Create SGF document - All other nodes
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for createSgfDocument:errorMessage:()
 // -----------------------------------------------------------------------------
-- (void) addRemainingNodesAfterNode:(SGFCNode*)previousNode
-               withValuesFromGoGame:(GoGame*)goGame
-                          boardSize:(SGFCBoardSize)boardSize
-                        treeBuilder:(SGFCTreeBuilder*)treeBuilder
+- (void) addRemainingPropertiesStartingAtGameInfoNode:(SGFCNode*)gameInfoNode
+                                 withValuesFromGoGame:(GoGame*)goGame
+                                            boardSize:(SGFCBoardSize)boardSize
+                                          treeBuilder:(SGFCTreeBuilder*)treeBuilder
 {
   // TODO Variation support: This method does not have variation support.
 
-  // Start with first child, root node cannot contain GoMove, GoNodeAnnotation
-  // or GoNodeMarkup objects
-  GoNode* goNode = goGame.nodeModel.rootNode.firstChild;
+  bool dataSourceIsRootNode = true;
+  SGFCNode* previousNode = gameInfoNode;
+  GoNode* goNode = goGame.nodeModel.rootNode;
+
   while (goNode)
   {
-    SGFCNode* node = [SGFCNode node];
+    SGFCNode* node;
+    if (dataSourceIsRootNode)
+    {
+      // The app ensures that the root node does not contain a move. The root
+      // node can contain only setup information, annotation data and/or markup
+      // data.
+      node = gameInfoNode;
+      dataSourceIsRootNode = false;
+    }
+    else
+    {
+      node = [SGFCNode node];
 
-    // We add the node to the document even if we don't add any properties to
-    // it. If we were skipping the ndoe there would be a gap between the
-    // in-memory model and the saved data, which could cause trouble or at least
-    // irritation later on (e.g. user saves a game, then loads it again => where
-    // the heck did the empty node go?).
-    // Note: SGFC has an option to skip empty nodes (-n), but by default it
-    // retains them.
-    [treeBuilder setFirstChild:node ofNode:previousNode];
+      // We add the node to the document even if we don't add any properties to
+      // it. If we were skipping the node there would be a gap between the
+      // in-memory model and the saved data, which could cause trouble or at least
+      // irritation later on (e.g. user saves a game, then loads it again => where
+      // the heck did the empty node go?).
+      // Note: SGFC has an option to skip empty nodes (-n), but by default it
+      // retains them.
+      [treeBuilder setFirstChild:node ofNode:previousNode];
+    }
 
-    if (goNode.goMove)
+    if (goNode.goNodeSetup)
     {
       [self addSgfPropertiesToNode:node
-                    withGoMoveMove:goNode.goMove
+                   withGoNodeSetup:goNode.goNodeSetup
+                         boardSize:boardSize
+                nodeIsGameInfoNode:node == gameInfoNode];
+
+    }
+    else if (goNode.goMove)
+    {
+      [self addSgfPropertiesToNode:node
+                        withGoMove:goNode.goMove
                          boardSize:boardSize];
     }
 
-    [self addSgfPropertiesToNode:node
-   withAnnotationAndMarkupValues:goNode
-                       boardSize:boardSize];
+    if (goNode.goNodeAnnotation)
+    {
+      [self addSgfPropertiesToNode:node
+        withGoNodeAnnotationValues:goNode.goNodeAnnotation];
+    }
+
+    if (goNode.goNodeMarkup)
+    {
+      [self addSgfPropertiesToNode:node
+            withGoNodeMarkupValues:goNode.goNodeMarkup
+                         boardSize:boardSize];
+    }
 
     previousNode = node;
     goNode = goNode.firstChild;
   }
 }
 
+#pragma mark - Create SGF document - Setup data
+
 // -----------------------------------------------------------------------------
 /// @brief Private helper for
 /// addRemainingNodesAfterNode:withValuesFromGoGame:boardSize:treeBuilder:()
 // -----------------------------------------------------------------------------
 - (void) addSgfPropertiesToNode:(SGFCNode*)node
-  withAnnotationAndMarkupValues:(GoNode*)goNode
+                withGoNodeSetup:(GoNodeSetup*)goNodeSetup
                       boardSize:(SGFCBoardSize)boardSize
+             nodeIsGameInfoNode:(bool)nodeIsGameInfoNode
 {
-  if (goNode.goNodeAnnotation)
+  if (goNodeSetup.isEmpty)
+    return;
+
+  NSArray* blackSetupStones = goNodeSetup.blackSetupStones;
+  NSArray* whiteSetupStones = goNodeSetup.whiteSetupStones;
+  NSArray* noSetupStones = goNodeSetup.noSetupStones;
+
+  if (blackSetupStones && blackSetupStones.count > 0)
   {
-    [self addSgfPropertiesToNode:node
-      withGoNodeAnnotationValues:goNode.goNodeAnnotation];
+    // The order in which GoPoints are added to the array is important: If
+    // handicap stones exist they must appear first. Reason: LoadGameCommand
+    // expects the first <n> points of the AB property to be handicap stones
+    // (<n> is the numeric value of the HA property).
+    NSMutableArray* mergedHandicapStonesAndBlackSetupStones = [NSMutableArray array];
+
+    // A GoNodeSetup that is associated with the root node has the handicap
+    // stones captured in the previous board state => no need to get the data
+    // from GoGame.
+    if (nodeIsGameInfoNode && goNodeSetup.previousBlackSetupStones.count > 0)
+    {
+      [mergedHandicapStonesAndBlackSetupStones addObjectsFromArray:goNodeSetup.previousBlackSetupStones];
+      if (noSetupStones && noSetupStones.count > 0)
+        [mergedHandicapStonesAndBlackSetupStones removeObjectsInArray:noSetupStones];
+    }
+
+    [mergedHandicapStonesAndBlackSetupStones addObjectsFromArray:blackSetupStones];
+
+    // If we write to the game info node and the game has handicap stones,
+    // then the game info node already contains an AB property, which was added
+    // in an earlier routine that deals with komi + handicap. Here we overwrite
+    // the already existing AB property with new values.
+    [self addSgfPropertyWithType:SGFCPropertyTypeAB
+                          toNode:node
+          withValuesFromGoPoints:mergedHandicapStonesAndBlackSetupStones
+                       boardSize:boardSize];
   }
 
-  if (goNode.goNodeMarkup)
+  if (whiteSetupStones && whiteSetupStones.count > 0)
   {
-    [self addSgfPropertiesToNode:node
-          withGoNodeMarkupValues:goNode.goNodeMarkup
+    [self addSgfPropertyWithType:SGFCPropertyTypeAW
+                          toNode:node
+          withValuesFromGoPoints:whiteSetupStones
                        boardSize:boardSize];
+  }
+
+  if (noSetupStones && noSetupStones.count > 0)
+  {
+    [self addSgfPropertyWithType:SGFCPropertyTypeAE
+                          toNode:node
+          withValuesFromGoPoints:noSetupStones
+                       boardSize:boardSize];
+  }
+
+  enum GoColor setupFirstMoveColor = goNodeSetup.setupFirstMoveColor;
+  if (setupFirstMoveColor != GoColorNone)
+  {
+    SGFCColor color = (setupFirstMoveColor == GoColorBlack) ? SGFCColorBlack : SGFCColorWhite;
+    SGFCColorPropertyValue* plPropertyValue = [SGFCPropertyValueFactory propertyValueWithColor:color];
+    SGFCProperty* plProperty = [SGFCPropertyFactory propertyWithType:SGFCPropertyTypePL value:plPropertyValue];
+    [node setProperty:plProperty];
   }
 }
 
@@ -339,7 +367,7 @@
 /// addRemainingNodesAfterNode:withValuesFromGoGame:boardSize:treeBuilder:()
 // -----------------------------------------------------------------------------
 - (void) addSgfPropertiesToNode:(SGFCNode*)node
-                 withGoMoveMove:(GoMove*)goMove
+                     withGoMove:(GoMove*)goMove
                       boardSize:(SGFCBoardSize)boardSize
 {
   SGFCColor playerColor;
@@ -659,7 +687,7 @@
 
   SGFCProperty* property = [SGFCPropertyFactory propertyWithType:propertyType
                                                           values:propertyValues];
-  [node setProperty:property];
+  [node setProperty:property];  // overwrite!
 }
 
 #pragma mark - Validate SGF document

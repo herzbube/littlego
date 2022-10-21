@@ -916,6 +916,7 @@ extern NSString* uiAreaPlayModeWillChange;
 /// may be deallocated, or its content changed, after the notification has been
 /// delivered.
 extern NSString* uiAreaPlayModeDidChange;
+// TODO xxx remove if no longer needed
 /// @brief Is sent to indicate that the state of an intersection has changed
 /// during board setup. The intersection now has a handicap stone, or a
 /// previously set handicap stone has been removed. The GoPoint object that
@@ -1631,8 +1632,6 @@ extern NSString* goGameBoardPositionKey;
 extern NSString* goGameRulesKey;
 extern NSString* goGameDocumentKey;
 extern NSString* goGameScoreKey;
-extern NSString* goGameBlackSetupPointsKey;
-extern NSString* goGameWhiteSetupPointsKey;
 extern NSString* goGameSetupFirstMoveColorKey;
 // GoPlayer keys
 extern NSString* goPlayerPlayerUUIDKey;

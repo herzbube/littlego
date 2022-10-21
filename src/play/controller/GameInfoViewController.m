@@ -745,24 +745,26 @@ enum BoardPositionSectionItem
           cell.detailTextLabel.text = [NSString stringWithFourPassesRule:game.rules.fourPassesRule];
           break;
         }
+        // TODO xxx Do these items still make sense?
         case BlackSetupStonesItem:
         case WhiteSetupStonesItem:
         {
-          NSUInteger numberOfSetupStones;
+//          NSUInteger numberOfSetupStones;
           if (indexPath.row == BlackSetupStonesItem)
           {
             cell.textLabel.text = @"Black setup stones";
-            numberOfSetupStones = game.blackSetupPoints.count;
+//            numberOfSetupStones = game.blackSetupPoints.count;
           }
           else
           {
             cell.textLabel.text = @"White setup stones";
-            numberOfSetupStones = game.whiteSetupPoints.count;
+//            numberOfSetupStones = game.whiteSetupPoints.count;
           }
-          if (0 == numberOfSetupStones)
-            cell.detailTextLabel.text = @"None";
-          else
-            cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)numberOfSetupStones];
+//          if (0 == numberOfSetupStones)
+//            cell.detailTextLabel.text = @"None";
+//          else
+//            cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)numberOfSetupStones];
+          cell.detailTextLabel.text = @"n/a";
           break;
         }
         case SideToPlayFirstItem:

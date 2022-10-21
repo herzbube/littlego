@@ -20,11 +20,11 @@
 
 
 /// @brief Enumerates the different ways how SyncGTPEngineCommand can
-/// synchronize moves.
-enum SyncMoveType
+/// synchronize board positions.
+enum SyncBoardPositionType
 {
-  SyncMovesUpToCurrentBoardPosition,
-  SyncMovesOfEntireGame
+  SyncBoardPositionsUpToCurrentBoardPosition,
+  SyncBoardPositionsOfEntireGame
 };
 
 
@@ -32,14 +32,16 @@ enum SyncMoveType
 /// @brief The SyncGTPEngineCommand class is responsible for synchronizing the
 /// state of the GTP engine with the state of the current GoGame.
 ///
-/// By default SyncGTPEngineCommand synchronizes the GTP engine with the moves
-/// up to the current board position. Handicap is always synchronized, even if
-/// board position 0 is synchronized.
+/// By default SyncGTPEngineCommand synchronizes the GTP engine with the setup
+/// and/or moves from the current game variation up to the current board
+/// position. Handicap is always synchronized, even if board position 0 is
+/// synchronized.
 ///
 /// Optionally SyncGTPEngineCommand may be configured so that it synchronizes
-/// the GTP engine with all moves of the entire game.
+/// the GTP engine with the setup and/or moves from all board positions of the
+/// current game variation.
 ///
-/// Board positions for nodes that do not contain a move are ignored.
+/// Board positions for nodes that contain neither setup nor a move are ignored.
 ///
 /// If execution of SyncGTPEngineCommand fails, the GTP engine is left in an
 /// unknown state.
@@ -48,7 +50,7 @@ enum SyncMoveType
 {
 }
 
-@property(nonatomic, assign) enum SyncMoveType syncMoveType;
+@property(nonatomic, assign) enum SyncBoardPositionType syncBoardPositionType;
 @property(nonatomic, retain, readonly) NSString* errorDescription;
 
 @end

@@ -26,6 +26,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeMarkup.h"
+#import "../../go/GoNodeSetup.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
@@ -1161,7 +1162,9 @@ static GameActionManager* sharedGameActionManager = nil;
     else
       [self addGameAction:GameActionSwitchSetupStoneColorToBlack toVisibleStatesDictionary:visibleStates];
 
-    if (game.blackSetupPoints.count > 0 || game.whiteSetupPoints.count > 0)
+    // TODO xxx The game action is no longer "discard all setup stones" but "discard all setup". This includes setupFirstMoveColor.
+    GoNodeSetup* nodeSetup = game.boardPosition.currentNode.goNodeSetup;
+    if (nodeSetup && ! nodeSetup.isEmpty)
       [self addGameAction:GameActionDiscardAllSetupStones toVisibleStatesDictionary:visibleStates];
   }
   else if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeEditMarkup)

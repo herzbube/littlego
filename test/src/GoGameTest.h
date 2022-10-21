@@ -40,8 +40,6 @@
 - (void) testLastMove;
 - (void) testState;
 - (void) testReasonForGameHasEnded;
-- (void) testBlackSetupPoints;
-- (void) testWhiteSetupPoints;
 - (void) testSetupFirstMoveColor;
 - (void) testZobristHashAfterHandicap;
 - (void) testPlay;
@@ -56,7 +54,6 @@
 - (void) testIsLegalPassMoveIllegalReason;
 - (void) testRevertStateFromEndedToInProgress;
 - (void) testSwitchNextMoveColor;
-- (void) testToggleHandicapPoint;
 - (void) testChangeSetupPoint;
 - (void) testDiscardAllSetupStones;
 - (void) testDiscardCausesRegionToFragment;

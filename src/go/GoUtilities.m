@@ -711,18 +711,21 @@
 /// vertices, one for each GoPoint object in @a points. Vertices appear in the
 /// returned string in no particular order. Returns an empty string if @a points
 /// has no elements.
+///
+/// This method is useful to generate the arguments for certain GTP commands
+/// (e.g. "set_free_handicap").
 // -----------------------------------------------------------------------------
 + (NSString*) verticesStringForPoints:(NSArray*)points
 {
   NSString* verticesString = @"";
   bool firstVertice = true;
-  for (GoPoint* handicapPoint in points)
+  for (GoPoint* point in points)
   {
     if (firstVertice)
       firstVertice = false;
     else
       verticesString = [verticesString stringByAppendingString:@" "];
-    verticesString = [verticesString stringByAppendingString:handicapPoint.vertex.string];
+    verticesString = [verticesString stringByAppendingString:point.vertex.string];
   }
   return verticesString;
 }
@@ -901,6 +904,7 @@
 {
   int numberOfMovesAfterNode = 0;
 
+  // TODO xxx Variation support
   if (node)
     node = node.firstChild;
   while (node)
@@ -911,6 +915,65 @@
   }
 
   return numberOfMovesAfterNode;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines nodes starting at the beginning of the current game
+/// variation available from @a game (i.e. the root node). Returns the node that
+/// is closest to @a node that also contains setup information, i.e. a
+/// GoNodeSetup object. Returns @a node itself if it contains setup information.
+/// Returns @e nil if no setup information can be found.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithMostRecentSetup:(GoNode*)node inCurrentGameVariation:(GoGame*)game
+{
+  GoNode* mostRecentNodeWithSetup = nil;
+
+  GoNodeModel* nodeModel = game.nodeModel;
+  int numberOfNodes = nodeModel.numberOfNodes;
+
+  // For efficiency reasons we perform a forward search, starting at the root
+  // node, which is also why the search is restricted to the current game
+  // variation. Technically we could search backwards, starting at the supplied
+  // node and examining its ancestors, but in the vast majority of cases we have
+  // only a few setup nodes at the beginning of the variation, and many move
+  // nodes after the setup. So in games with many moves searching backwards
+  // would require hundreds of iterations, while searching forwards should
+  // always finish within 10 iterations or so.
+  for (int indexOfNode = 0; indexOfNode < numberOfNodes; ++indexOfNode)
+  {
+    GoNode* candidateNode = [nodeModel nodeAtIndex:indexOfNode];
+
+    // Break early - no setup is possible after the first move is played. Also
+    // setup and move in the same node are not possible.
+    if (candidateNode.goMove)
+      break;
+
+    if (candidateNode.goNodeSetup)
+      mostRecentNodeWithSetup = candidateNode;
+
+    if (candidateNode == node)
+      break;
+  }
+
+  return mostRecentNodeWithSetup;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines @a node and its ancestors. Returns the first node found that
+/// changes the board state. Returns @a node itself if it changes the board
+/// state. Returns @e nil if no node can be found that changes the board state.
+/// A node is considered to change the board state if it contains either setup
+/// information (i.e. a GoNodeSetup object) or a move.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithMostRecentBoardStateChange:(GoNode*)node
+{
+  while (node)
+  {
+    if (node.goMove || node.goNodeSetup)
+      return node;
+    node = node.parent;
+  }
+  return nil;
 }
 
 // -----------------------------------------------------------------------------

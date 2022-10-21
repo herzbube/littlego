@@ -45,8 +45,11 @@
 {
 }
 
+/// @name Initialization
+//@{
 + (GoNode*) node;
 + (GoNode*) nodeWithMove:(GoMove*)goMove;
+//@}
 
 /// @name Node tree navigation
 //@{

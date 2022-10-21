@@ -102,6 +102,7 @@
     return false;
   }
 
+  // TODO xxx This may no longer be necessary, since we no longer change the handicap - we only remove the handicap stone as part of the setup
   if ([game.handicapPoints containsObject:self.point] && appDelegate.boardSetupModel.changeHandicapAlert)
     [self showAlertToConfirmHandicapChange];
   else
@@ -118,52 +119,41 @@
 {
   GoGame* game = [GoGame sharedGame];
 
-  bool toggleHandicapPoint;
-  enum GoColor newStoneState;
-  if ([game.handicapPoints containsObject:self.point])
-  {
-    toggleHandicapPoint = true;
-    newStoneState = GoColorNone;
-  }
-  else
-  {
-    toggleHandicapPoint = false;
-    newStoneState = [self determineNewStoneStateForSetupPoint];
+  enum GoColor newStoneState = [self determineNewStoneStateForSetupPoint];
 
-    if (newStoneState != GoColorNone)
+  if (newStoneState != GoColorNone)
+  {
+    enum GoBoardSetupIsIllegalReason isIllegalReason;
+    GoPoint* illegalStoneOrGroupPoint;
+    bool isLegalSetupStone = [game isLegalBoardSetupAt:self.point
+                                        withStoneState:newStoneState
+                                       isIllegalReason:&isIllegalReason
+                            createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint];
+    if (!isLegalSetupStone)
     {
-      enum GoBoardSetupIsIllegalReason isIllegalReason;
-      GoPoint* illegalStoneOrGroupPoint;
-      bool isLegalSetupStone = [game isLegalBoardSetupAt:self.point
-                                          withStoneState:newStoneState
-                                         isIllegalReason:&isIllegalReason
-                              createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint];
-      if (!isLegalSetupStone)
+      if ([ApplicationDelegate sharedDelegate].boardSetupModel.tryNotToPlaceIllegalStones)
       {
-        if ([ApplicationDelegate sharedDelegate].boardSetupModel.tryNotToPlaceIllegalStones)
+        newStoneState = [self determineAlternativeNewStoneStateForSetupPoint:newStoneState];
+        if (newStoneState != GoColorNone)
         {
-          newStoneState = [self determineAlternativeNewStoneStateForSetupPoint:newStoneState];
-          if (newStoneState != GoColorNone)
-          {
-            isLegalSetupStone = [game isLegalBoardSetupAt:self.point
-                                           withStoneState:newStoneState
-                                          isIllegalReason:&isIllegalReason
-                               createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint];
-          }
-          else
-          {
-            isLegalSetupStone = true;
-          }
+          isLegalSetupStone = [game isLegalBoardSetupAt:self.point
+                                         withStoneState:newStoneState
+                                        isIllegalReason:&isIllegalReason
+                             createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint];
         }
+        else
+        {
+          isLegalSetupStone = true;
+        }
+      }
 
-        if (! isLegalSetupStone)
-        {
-          [self showAlertIllegalSetupStone:self.point
-                                stoneColor:newStoneState
-                        isIllegalForReason:isIllegalReason
-                createsIllegalStoneOrGroup:illegalStoneOrGroupPoint];
-          return;
-        }
+      if (! isLegalSetupStone)
+      {
+        [self showAlertIllegalSetupStone:self.point
+                              stoneColor:newStoneState
+                      isIllegalForReason:isIllegalReason
+              createsIllegalStoneOrGroup:illegalStoneOrGroupPoint];
+        return;
       }
     }
   }
@@ -185,10 +175,7 @@
       [[[[ChangeAndDiscardCommand alloc] init] autorelease] submit];
     }
 
-    if (toggleHandicapPoint)
-      [game toggleHandicapPoint:self.point];
-    else
-      [game changeSetupPoint:self.point toStoneState:newStoneState];
+    [game changeSetupPoint:self.point toStoneState:newStoneState];
 
     SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];
     bool syncSuccess = [syncCommand submit];

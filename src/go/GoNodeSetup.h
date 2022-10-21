@@ -41,6 +41,13 @@
 {
 }
 
+/// @name Initialization
+//@{
++ (GoNodeSetup*) nodeSetupWithPreviousSetupCapturedFrom:(GoGame*)game;
+- (id) init;
+//@}
+
+
 /// @name Delayed initialization
 //@{
 /// @brief Sets the value of property @e blackSetupStones with the black setup
@@ -115,6 +122,9 @@
 /// one of these properties.
 ///
 /// Raises @e NSInvalidArgumentException if @a point is @e nil.
+///
+/// @note This method does @b not change the value of the @e stoneState property
+/// of @a point.
 - (void) setupBlackStone:(GoPoint*)point;
 
 /// @brief Changes the data in this GoNodeSetup so that as a result a white
@@ -128,6 +138,9 @@
 /// one of these properties.
 ///
 /// Raises @e NSInvalidArgumentException if @a point is @e nil.
+///
+/// @note This method does @b not change the value of the @e stoneState property
+/// of @a point.
 - (void) setupWhiteStone:(GoPoint*)point;
 
 /// @brief Changes the data in this GoNodeSetup so that as a result no
@@ -141,6 +154,9 @@
 /// one of these properties.
 ///
 /// Raises @e NSInvalidArgumentException if @a point is @e nil.
+///
+/// @note This method does @b not change the value of the @e stoneState property
+/// of @a point.
 - (void) setupNoStone:(GoPoint*)point;
 //@}
 
