@@ -787,6 +787,7 @@
 + (void) relinkMoves:(GoGame*)game
 {
   NSMutableArray* stack = [NSMutableArray array];
+  NSNull* nullValue = [NSNull null];
 
   GoNode* currentNode = game.nodeModel.rootNode;
   GoMove* previousMove = nil;
@@ -802,7 +803,7 @@
         previousMove = move;
       }
 
-      [stack addObject:@[currentNode, previousMove]];
+      [stack addObject:@[currentNode, previousMove ? previousMove : nullValue]];
 
       currentNode = currentNode.firstChild;
     }
@@ -814,6 +815,8 @@
 
       currentNode = tuple.firstObject;
       previousMove = tuple.lastObject;
+      if ((id)previousMove == nullValue)
+        previousMove = nil;
 
       currentNode = currentNode.nextSibling;
     }

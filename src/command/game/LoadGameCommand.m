@@ -867,6 +867,7 @@ static const int maxStepsForCreateNodes = 9;
   GoMove* mostRecentMove = nil;
 
   NSMutableArray* stack = [NSMutableArray array];
+  NSNull* nullValue = [NSNull null];
 
   bool sgfCurrentNodeIsRootNode = true;
   SGFCNode* sgfCurrentNode = self.sgfRootNode;
@@ -958,7 +959,7 @@ static const int maxStepsForCreateNodes = 9;
       // - The node that will be the parent of the next sibling
       // - The number of moves found so far in this branch of the tree
       // TODO xxx remove mostRecentMove once move sequencing has been removed
-      [stack addObject:@[sgfCurrentNode, goParentNode, [NSNumber numberWithInt:numberOfMovesFound], mostRecentMove]];
+      [stack addObject:@[sgfCurrentNode, goParentNode ? goParentNode : nullValue, [NSNumber numberWithInt:numberOfMovesFound], mostRecentMove ? mostRecentMove : nullValue]];
 
       goParentNode = goMostRecentContentNode;
 
@@ -972,9 +973,13 @@ static const int maxStepsForCreateNodes = 9;
 
       sgfCurrentNode = [tuple objectAtIndex:0];
       goParentNode = [tuple objectAtIndex:1];
+      if ((id)goParentNode == nullValue)
+        goParentNode = nil;
       NSNumber* numberOfMovesFoundAsNumber = [tuple objectAtIndex:2];
       numberOfMovesFound = numberOfMovesFoundAsNumber.intValue;
       mostRecentMove = [tuple objectAtIndex:3];
+      if ((id)mostRecentMove == nullValue)
+        mostRecentMove = nil;
 
       sgfCurrentNode = sgfCurrentNode.nextSibling;
     }
