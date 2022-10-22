@@ -315,12 +315,13 @@
     // A GoNodeSetup that is associated with the root node has the handicap
     // stones captured in the previous board state => no need to get the data
     // from GoGame.
+    // Also note: No need to subtract whiteSetupStones or noSetupStones, because
+    // the app does not allow whiteSetupStones or noSetupStones to "overwrite"
+    // handicap stones. Reason: Adding blackSetupStones after the subtraction
+    // would cause the added blackSetupStones to be treated as handicap stones
+    // when the SGF file is loaded.
     if (nodeIsGameInfoNode && goNodeSetup.previousBlackSetupStones.count > 0)
-    {
       [mergedHandicapStonesAndBlackSetupStones addObjectsFromArray:goNodeSetup.previousBlackSetupStones];
-      if (noSetupStones && noSetupStones.count > 0)
-        [mergedHandicapStonesAndBlackSetupStones removeObjectsInArray:noSetupStones];
-    }
 
     [mergedHandicapStonesAndBlackSetupStones addObjectsFromArray:blackSetupStones];
 

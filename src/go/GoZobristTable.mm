@@ -134,11 +134,16 @@
   return res;
 }
 
+// TODO xxx remove if no longer needed
 // -----------------------------------------------------------------------------
 /// @brief Generates the Zobrist hash for the current board position represented
 /// by @a board.
 ///
 /// Raises @e NSInvalidArgumentException if @a board is @e nil.
+///
+/// Raises @e NSGenericException if the board size with which this
+/// GoZobristTable was initialized does not match the board size of the GoBoard
+/// object associated with @a game.
 // -----------------------------------------------------------------------------
 - (long long) hashForBoard:(GoBoard*)board
 {
@@ -165,6 +170,41 @@
       hash ^= _zobristTable[index];
     }
     point = point.next;
+  }
+
+  return hash;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Generates the Zobrist hash for a board that is empty except for the
+/// black handicap stones obtained from @a game.
+///
+/// Raises @e NSInvalidArgumentException if @a game is @e nil.
+///
+/// Raises @e NSGenericException if the board size with which this
+/// GoZobristTable was initialized does not match the board size of the GoBoard
+/// object associated with @a game.
+// -----------------------------------------------------------------------------
+- (long long) hashForHandicapStonesInGame:(GoGame*)game
+{
+  if (! game)
+  {
+    NSString* errorMessage = @"Game argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  [self throwIfTableSizeDoesNotMatchSizeOfBoard:game.board];
+
+  long long hash = 0;
+
+  for (GoPoint* handicapPoint in game.handicapPoints)
+  {
+    int index = [self indexForStoneAt:handicapPoint playedByColor:GoColorBlack];
+    hash ^= _zobristTable[index];
   }
 
   return hash;

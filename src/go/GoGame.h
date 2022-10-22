@@ -78,6 +78,7 @@
 - (void) endGameDueToPassMovesIfGameRulesRequireIt;
 - (void) revertStateFromEndedToInProgress;
 - (void) switchNextMoveColor;
+- (void) toggleHandicapPoint:(GoPoint*)point;
 - (void) changeSetupFirstMoveColor:(enum GoColor)newValue;
 - (void) changeSetupPoint:(GoPoint*)point toStoneState:(enum GoColor)stoneState;
 - (void) discardAllSetup;

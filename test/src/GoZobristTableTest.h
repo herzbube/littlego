@@ -29,6 +29,7 @@
 
 - (void) testInitialState;
 - (void) testHashForBoard;
+- (void) testHashForHandicapStones;
 - (void) testHashForNode;
 - (void) testHashForSetup;
 - (void) testHashForStone;

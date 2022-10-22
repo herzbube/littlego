@@ -1156,6 +1156,101 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Exercises the toggleHandicapPoint() method.
+// -----------------------------------------------------------------------------
+- (void) testToggleHandicapPoint
+{
+  // TODO xxx Update test method
+/*
+  NSUInteger handicapCount = 0;
+  XCTAssertEqual(m_game.handicapPoints.count, handicapCount);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  XCTAssertEqual(m_game.setupFirstMoveColor, GoColorNone);
+
+  GoPoint* pointA1 = [m_game.board pointAtVertex:@"A1"];
+
+  // Place handicap stone
+  [m_game toggleHandicapPoint:pointA1];
+  NSArray* handicapPoints = m_game.handicapPoints;
+  handicapCount = 1;
+  XCTAssertEqual(handicapPoints.count, handicapCount);
+  XCTAssertEqual(handicapPoints.firstObject, pointA1);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+
+  // Remove handicap stone
+  [m_game toggleHandicapPoint:pointA1];
+  handicapPoints = m_game.handicapPoints;
+  handicapCount = 0;
+  XCTAssertEqual(handicapPoints.count, handicapCount);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
+  // Place handicap stone, but don't change nextMoveColor
+  m_game.setupFirstMoveColor = GoColorBlack;
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  [m_game toggleHandicapPoint:pointA1];
+  handicapPoints = m_game.handicapPoints;
+  handicapCount = 1;
+  XCTAssertEqual(handicapPoints.count, handicapCount);
+  XCTAssertEqual(handicapPoints.firstObject, pointA1);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
+  // Remove handicap stone, but don't revert nextMoveColor
+  m_game.setupFirstMoveColor = GoColorWhite;
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  [m_game toggleHandicapPoint:pointA1];
+  handicapPoints = m_game.handicapPoints;
+  handicapCount = 0;
+  XCTAssertEqual(handicapPoints.count, handicapCount);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:nil],
+                               NSException, NSInvalidArgumentException, @"point is nil");
+
+  // Various attempts to illegally toggle the point when the stone state is not
+  // correct
+  m_game.blackSetupPoints = @[pointA1];
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"point already in blackSetupPoints");
+  m_game.blackSetupPoints = @[];
+  m_game.whiteSetupPoints = @[pointA1];
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"point already in whiteSetupPoints");
+  m_game.whiteSetupPoints = @[];
+  pointA1.stoneState = GoColorBlack;
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"point has black stone on it but is not in handicapPoints");
+  pointA1.stoneState = GoColorWhite;
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"point has white stone on it");
+  pointA1.stoneState = GoColorNone;
+  [m_game toggleHandicapPoint:pointA1];
+  XCTAssertEqual(pointA1.stoneState, GoColorBlack);
+  pointA1.stoneState = GoColorNone;
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"point has no black stone on it, but is in handicapPoints");
+  pointA1.stoneState = GoColorBlack;
+  [m_game toggleHandicapPoint:pointA1];
+
+  // Various attempts to illegally toggle the point when the game state is not
+  // correct
+  [m_game pass];
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"game aleady has moves");
+  [m_game.nodeModel discardLeafNode];
+  [m_game toggleHandicapPoint:pointA1];
+  [m_game resign];
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"game aleady has ended");
+  [m_game revertStateFromEndedToInProgress];
+
+  // Toggle is allowed for computer vs. computer games in paused state
+  m_game.type = GoGameTypeComputerVsComputer;
+  [m_game pause];
+  [m_game toggleHandicapPoint:pointA1];
+*/
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Exercises the changeSetupPoint() method.
 // -----------------------------------------------------------------------------
 - (void) testChangeSetupPoint

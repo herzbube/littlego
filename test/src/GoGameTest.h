@@ -54,6 +54,7 @@
 - (void) testIsLegalPassMoveIllegalReason;
 - (void) testRevertStateFromEndedToInProgress;
 - (void) testSwitchNextMoveColor;
+- (void) testToggleHandicapPoint;
 - (void) testChangeSetupPoint;
 - (void) testDiscardAllSetupStones;
 - (void) testDiscardCausesRegionToFragment;

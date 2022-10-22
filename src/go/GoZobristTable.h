@@ -50,6 +50,7 @@
 - (id) initWithBoardSize:(enum GoBoardSize)boardSize;
 
 - (long long) hashForBoard:(GoBoard*)board;
+- (long long) hashForHandicapStonesInGame:(GoGame*)game;
 - (long long) hashForNode:(GoNode*)node
                    inGame:(GoGame*)game;
 - (long long) hashForBlackSetupStones:(NSArray*)blackSetupStones

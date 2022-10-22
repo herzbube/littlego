@@ -747,7 +747,7 @@
 {
   GoZobristTable* zobristTable = game.board.zobristTable;
 
-  game.zobristHashAfterHandicap = [zobristTable hashForBoard:game.board];
+  game.zobristHashAfterHandicap = [zobristTable hashForHandicapStonesInGame:game];
 
   NSMutableArray* stack = [NSMutableArray array];
   GoNode* currentNode = game.nodeModel.rootNode;

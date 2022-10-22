@@ -160,6 +160,25 @@
 - (void) setupNoStone:(GoPoint*)point;
 //@}
 
+/// @name Changing previous setup data
+//@{
+/// @brief Updates the property @e previousBlackSetupStones after one or more
+/// handicap stones were added or removed. Obtains the current handicap stones
+/// from @a game.
+///
+/// Raises @e NSInvalidArgumentException if @a game is @e nil.
+///
+/// Raises @e NSInternalInconsistencyException if a conflict between the updated
+/// handicap stones and the setup data in this GoNodeSetup is detected. Whoever
+/// invokes this method must have previously made sure to update the setup data
+/// in this GoNodeSetup so that no such conflict is possible. Possible conflicts
+/// are
+/// - If a new handicap stone appears although the property @e blackSetupStones
+///   already contains the point
+/// - If a previously existing handicap stone disappears although the property
+///   @e noSetupStones still contains the point.
+- (void) updatePreviousSetupInformationAfterHandicapStonesDidChange:(GoGame*)game;
+//@}
 
 /// @name Properties
 //@{

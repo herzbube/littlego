@@ -352,6 +352,52 @@
   }
 }
 
+#pragma mark - Public API - Changing previous setup data
+
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) updatePreviousSetupInformationAfterHandicapStonesDidChange:(GoGame*)game
+{
+  if (! game)
+  {
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"updatePreviousSetupInformationAfterHandicapStonesDidChange: failed: game argument is nil"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return;
+  }
+
+  NSArray* handicapStones = game.handicapPoints;
+
+  for (GoPoint* blackSetupStone in self.mutableBlackSetupStones)
+  {
+    if ([handicapStones containsObject:blackSetupStone])
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"updatePreviousSetupInformationAfterHandicapStonesDidChange: failed: A new handicap stone appeared on intersection %@, but a black setup stone already exists on the intersection", blackSetupStone.vertex.string];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    }
+  }
+
+  // whiteSetupStones is not relevant and does not need to be checked.
+  // Regardless of whether new handicap stones appear or previously existing
+  // handicap stones disappear: Overwriting one of the changing intersections
+  // with a white setup stone still works.
+
+  for (GoPoint* noSetupStone in self.mutableNoSetupStones)
+  {
+    if (! [handicapStones containsObject:noSetupStone])
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"updatePreviousSetupInformationAfterHandicapStonesDidChange: failed: A previously existing handicap stone disappeared from intersection %@, but the intersection is still being cleared", noSetupStone.vertex.string];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    }
+  }
+
+  if (handicapStones.count > 0)
+    self.mutablePreviousBlackSetupStones = [NSMutableArray arrayWithArray:handicapStones];
+  else
+    self.mutablePreviousBlackSetupStones = nil;
+}
+
 #pragma mark - Public API - Properties
 
 // -----------------------------------------------------------------------------
