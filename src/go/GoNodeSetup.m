@@ -229,9 +229,9 @@
     self.previousSetupInformationWasCaptured = true;
   }
 
-  [self setupPoints:_mutableBlackSetupStones withStoneState:GoColorBlack];
-  [self setupPoints:_mutableWhiteSetupStones withStoneState:GoColorWhite];
-  [self setupPoints:_mutableNoSetupStones withStoneState:GoColorNone];
+  [self setupPoints:self.mutableBlackSetupStones withStoneState:GoColorBlack];
+  [self setupPoints:self.mutableWhiteSetupStones withStoneState:GoColorWhite];
+  [self setupPoints:self.mutableNoSetupStones withStoneState:GoColorNone];
 
   game.setupFirstMoveColor = self.setupFirstMoveColor;
 }
@@ -249,9 +249,9 @@
 
   GoGame* game = [GoGame sharedGame];
 
-  [self revertPoints:_mutableBlackSetupStones];
-  [self revertPoints:_mutableWhiteSetupStones];
-  [self revertPoints:_mutableNoSetupStones];
+  [self revertPoints:self.mutableBlackSetupStones];
+  [self revertPoints:self.mutableWhiteSetupStones];
+  [self revertPoints:self.mutableNoSetupStones];
 
   game.setupFirstMoveColor = self.previousSetupFirstMoveColor;
 }
@@ -271,7 +271,9 @@
     return;
   }
 
-  if (_mutableBlackSetupStones && [_mutableBlackSetupStones containsObject:point])
+  NSMutableArray* mutableBlackSetupStones = self.mutableBlackSetupStones;
+
+  if (mutableBlackSetupStones && [mutableBlackSetupStones containsObject:point])
     return;
   else if (_mutableWhiteSetupStones && [_mutableWhiteSetupStones containsObject:point])
     [self removeWhiteSetupStone:point];
@@ -281,10 +283,10 @@
   if (_mutablePreviousBlackSetupStones && [_mutablePreviousBlackSetupStones containsObject:point])
     return;
 
-  if (_mutableBlackSetupStones)
-    [_mutableBlackSetupStones addObject:point];
+  if (mutableBlackSetupStones)
+    [mutableBlackSetupStones addObject:point];
   else
-    _mutableBlackSetupStones = [NSMutableArray arrayWithObject:point];
+    self.mutableBlackSetupStones = [NSMutableArray arrayWithObject:point];
 }
 
 // -----------------------------------------------------------------------------
@@ -300,9 +302,11 @@
     return;
   }
 
+  NSMutableArray* mutableWhiteSetupStones = self.mutableWhiteSetupStones;
+
   if (_mutableBlackSetupStones && [_mutableBlackSetupStones containsObject:point])
     [self removeBlackSetupStone:point];
-  else if (_mutableWhiteSetupStones && [_mutableWhiteSetupStones containsObject:point])
+  else if (mutableWhiteSetupStones && [mutableWhiteSetupStones containsObject:point])
     return;
   else if (_mutableNoSetupStones && [_mutableNoSetupStones containsObject:point])
     [self removeNoSetupStone:point];
@@ -310,10 +314,10 @@
   if (_mutablePreviousWhiteSetupStones && [_mutablePreviousWhiteSetupStones containsObject:point])
     return;
 
-  if (_mutableWhiteSetupStones)
-    [_mutableWhiteSetupStones addObject:point];
+  if (mutableWhiteSetupStones)
+    [mutableWhiteSetupStones addObject:point];
   else
-    _mutableWhiteSetupStones = [NSMutableArray arrayWithObject:point];
+    self.mutableWhiteSetupStones = [NSMutableArray arrayWithObject:point];
 }
 
 // -----------------------------------------------------------------------------
@@ -329,23 +333,23 @@
     return;
   }
 
+  NSMutableArray* mutableNoSetupStones = self.mutableNoSetupStones;
+
   if (_mutableBlackSetupStones && [_mutableBlackSetupStones containsObject:point])
     [self removeBlackSetupStone:point];
   else if (_mutableWhiteSetupStones && [_mutableWhiteSetupStones containsObject:point])
     [self removeWhiteSetupStone:point];
-  else if (_mutableNoSetupStones && [_mutableNoSetupStones containsObject:point])
+  else if (mutableNoSetupStones && [mutableNoSetupStones containsObject:point])
     return;
 
-  if (_mutablePreviousBlackSetupStones && ! [_mutablePreviousBlackSetupStones containsObject:point] &&
-      _mutablePreviousWhiteSetupStones && ! [_mutablePreviousWhiteSetupStones containsObject:point])
+  if ((_mutablePreviousBlackSetupStones && [_mutablePreviousBlackSetupStones containsObject:point]) ||
+      (_mutablePreviousWhiteSetupStones && [_mutablePreviousWhiteSetupStones containsObject:point]))
   {
-    return;
+    if (mutableNoSetupStones)
+      [mutableNoSetupStones addObject:point];
+    else
+      self.mutableNoSetupStones = [NSMutableArray arrayWithObject:point];
   }
-
-  if (_mutableNoSetupStones)
-    [_mutableNoSetupStones addObject:point];
-  else
-    _mutableNoSetupStones = [NSMutableArray arrayWithObject:point];
 }
 
 #pragma mark - Public API - Properties
@@ -410,12 +414,13 @@
 // -----------------------------------------------------------------------------
 - (void) removeBlackSetupStone:(GoPoint*)point
 {
-  if (! _mutableBlackSetupStones)
+  NSMutableArray* mutableBlackSetupStones = self.mutableBlackSetupStones;
+  if (! mutableBlackSetupStones)
     return;
 
-  [_mutableBlackSetupStones removeObject:point];
-  if (_mutableBlackSetupStones.count == 0)
-    _mutableBlackSetupStones = nil;
+  [mutableBlackSetupStones removeObject:point];
+  if (mutableBlackSetupStones.count == 0)
+    self.mutableBlackSetupStones = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -424,12 +429,13 @@
 // -----------------------------------------------------------------------------
 - (void) removeWhiteSetupStone:(GoPoint*)point
 {
-  if (! _mutableWhiteSetupStones)
+  NSMutableArray* mutableWhiteSetupStones = self.mutableWhiteSetupStones;
+  if (! mutableWhiteSetupStones)
     return;
 
-  [_mutableWhiteSetupStones removeObject:point];
-  if (_mutableWhiteSetupStones.count == 0)
-    _mutableWhiteSetupStones = nil;
+  [mutableWhiteSetupStones removeObject:point];
+  if (mutableWhiteSetupStones.count == 0)
+    self.mutableWhiteSetupStones = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -438,12 +444,13 @@
 // -----------------------------------------------------------------------------
 - (void) removeNoSetupStone:(GoPoint*)point
 {
-  if (! _mutableNoSetupStones)
+  NSMutableArray* mutableNoSetupStones = self.mutableNoSetupStones;
+  if (! mutableNoSetupStones)
     return;
 
-  [_mutableNoSetupStones removeObject:point];
-  if (_mutableNoSetupStones.count == 0)
-    _mutableNoSetupStones = nil;
+  [mutableNoSetupStones removeObject:point];
+  if (mutableNoSetupStones.count == 0)
+    self.mutableNoSetupStones = nil;
 }
 
 // TODO xxx is this method still needed?

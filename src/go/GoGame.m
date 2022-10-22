@@ -1472,13 +1472,13 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   GoNodeSetup* nodeSetup = currentNode.goNodeSetup;
   if (! nodeSetup)
   {
-    [GoNodeSetup nodeSetupWithPreviousSetupCapturedFrom:self];
+    nodeSetup = [GoNodeSetup nodeSetupWithPreviousSetupCapturedFrom:self];
     currentNode.goNodeSetup = nodeSetup;
   }
 
   if (stoneState == GoColorBlack)
     [nodeSetup setupBlackStone:point];
-  else if (stoneState == GoColorBlack)
+  else if (stoneState == GoColorWhite)
     [nodeSetup setupWhiteStone:point];
   else
     [nodeSetup setupNoStone:point];
