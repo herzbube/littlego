@@ -233,7 +233,8 @@
   [self setupPoints:self.mutableWhiteSetupStones withStoneState:GoColorWhite];
   [self setupPoints:self.mutableNoSetupStones withStoneState:GoColorNone];
 
-  game.setupFirstMoveColor = self.setupFirstMoveColor;
+  if (self.setupFirstMoveColor != GoColorNone)
+    game.setupFirstMoveColor = self.setupFirstMoveColor;
 }
 
 // -----------------------------------------------------------------------------

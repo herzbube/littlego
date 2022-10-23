@@ -902,11 +902,11 @@ static const int maxStepsForCreateNodes = 9;
         {
           sgfCurrentNodeIsRootNode = false;
 
-          // If the SGF root node didn't contain any setup nor a move, then we
-          // can keep the SGF node's content in our own root node. Otherwise
-          // we have to push the content into a new node because the app wants
-          // to display setup and/or moves as a separate board position.
-          if (! goNewNode.goNodeSetup && ! goNewNode.goMove)
+          // If the SGF root node didn't contain a move, then we can keep the
+          // SGF node's content in our own root node. Otherwise we have to push
+          // the content into a new node because the app wants to display moves
+          // as a separate board position.
+          if (! goNewNode.goMove)
           {
             GoNode* rootNode = nodeModel.rootNode;
 
@@ -1232,6 +1232,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 {
   GoGame* game = [GoGame sharedGame];
   GoBoard* board = game.board;
+  SGFCPropertyType propertyType = setupProperty.propertyType;
 
   NSMutableArray* setupPoints = [NSMutableArray array];
 
@@ -1243,7 +1244,13 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
       continue;
     }
 
-    GoPoint* point = [self goPointForSgfGoPoint:setupPropertyValue.toSingleValue.toStoneValue.toGoStoneValue.goStone.location
+    SGFCGoPoint* sgfGoPoint;
+    if (propertyType == SGFCPropertyTypeAE)
+      sgfGoPoint = setupPropertyValue.toSingleValue.toPointValue.toGoPointValue.goPoint;
+    else
+      sgfGoPoint = setupPropertyValue.toSingleValue.toStoneValue.toGoStoneValue.goStone.location;
+
+    GoPoint* point = [self goPointForSgfGoPoint:sgfGoPoint
                                         onBoard:board
                                    errorMessage:errorMessage];
     if (! point)
@@ -1255,7 +1262,6 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
     [setupPoints addObject:point];
   }
 
-  SGFCPropertyType propertyType = setupProperty.propertyType;
   if (propertyType == SGFCPropertyTypeAB)
   {
     [nodeSetup setupValidatedBlackStones:setupPoints];

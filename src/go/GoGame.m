@@ -1218,7 +1218,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     self.reasonForGameHasEnded = GoGameHasEndedReasonThreePasses;
     self.state = GoGameStateGameHasEnded;
   }
-  else if (0 == (numberOfConsecutivePassMoves % 2) && GoLifeAndDeathSettlingRuleTwoPasses == self.rules.lifeAndDeathSettlingRule)
+  else if (numberOfConsecutivePassMoves >= 2 && 0 == (numberOfConsecutivePassMoves % 2) && GoLifeAndDeathSettlingRuleTwoPasses == self.rules.lifeAndDeathSettlingRule)
   {
     self.reasonForGameHasEnded = GoGameHasEndedReasonTwoPasses;
     self.state = GoGameStateGameHasEnded;

@@ -192,7 +192,7 @@
     [encoder encodeInt:self.parent.nodeID forKey:goNodeParentKey];
 
   if (self.goNodeSetup)
-    [encoder encodeObject:self.goMove forKey:goNodeGoNodeSetupKey];
+    [encoder encodeObject:self.goNodeSetup forKey:goNodeGoNodeSetupKey];
   if (self.goMove)
     [encoder encodeObject:self.goMove forKey:goNodeGoMoveKey];
   if (self.goNodeAnnotation)
