@@ -79,7 +79,7 @@
   _rules = [[GoGameRules alloc] init];
   _document = [[GoGameDocument alloc] init];
   _score = [[GoScore alloc] initWithGame:self];
-  _setupFirstMoveColor = GoColorNone;
+  self.setupFirstMoveColor = GoColorNone;
   _zobristHashAfterHandicap = 0;
 
   return self;
@@ -115,7 +115,7 @@
   _rules = [[decoder decodeObjectForKey:goGameRulesKey] retain];
   _document = [[decoder decodeObjectForKey:goGameDocumentKey] retain];
   _score = [[decoder decodeObjectForKey:goGameScoreKey] retain];
-  _setupFirstMoveColor = [decoder decodeIntForKey:goGameSetupFirstMoveColorKey];
+  self.setupFirstMoveColor = [decoder decodeIntForKey:goGameSetupFirstMoveColorKey];
   // The hash was not archived. Whoever is unarchiving this GoGame is
   // responsible for re-calculating the hash.
   _zobristHashAfterHandicap = 0;
@@ -1355,36 +1355,6 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 }
 
 // -----------------------------------------------------------------------------
-// Property is documented in the header file.
-// -----------------------------------------------------------------------------
-- (void) setSetupFirstMoveColor:(enum GoColor)newValue
-{
-  if (GoGameStateGameHasEnded == self.state || nil != self.firstMove)
-  {
-    NSString* errorMessage = [NSString stringWithFormat:@"Attempt to set first move color to %d failed: ", newValue];
-    if (GoGameStateGameHasEnded == self.state)
-      errorMessage = [errorMessage stringByAppendingFormat:@"Game is in state GoGameStateGameHasEnded, reason = %d", self.reasonForGameHasEnded];
-    else
-      errorMessage = [errorMessage stringByAppendingString:@"Game already has moves"];
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
-
-  _setupFirstMoveColor = newValue;
-
-  if (_setupFirstMoveColor != GoColorNone)
-    self.nextMoveColor = _setupFirstMoveColor;
-  // If no color is set up explicitly, the game rules apply
-  else if (self.handicapPoints.count > 0)
-    self.nextMoveColor = GoColorWhite;
-  else
-    self.nextMoveColor = GoColorBlack;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Adds or removes @a point to/from the list of handicap points
 /// (@e handicapPoints). Changes the @e stoneState property of @a point
 /// accordingly and recalculates the property @e zobristHashAfterHandicap.
@@ -1503,6 +1473,13 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// @brief Changes the side that is set up to play the first move to
 /// @e newValue. See the documentation of property @e setupFirstMoveColor for
 /// details, also on which exceptions can be thrown.
+///
+/// If @a newValue is either #GoColorBlack or #GoColorWhite, this changes the
+/// property @e nextMoveColor to the same value. If @a newValue is #GoColorNone
+/// this changes the value of the property @e nextMoveColor according to the
+/// game rules, like this:
+/// - Sets @e nextMoveColor to #GoColorWhite if @e handicapPoints is non-empty.
+/// - Sets @e nextMoveColor to #GoColorBlack if @e handicapPoints is empty.
 // -----------------------------------------------------------------------------
 - (void) changeSetupFirstMoveColor:(enum GoColor)newValue
 {
@@ -1521,6 +1498,14 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 
   // The property setter performs all sorts of validation
   self.setupFirstMoveColor = newValue;
+
+  if (_setupFirstMoveColor != GoColorNone)
+    self.nextMoveColor = _setupFirstMoveColor;
+  // If no color is set up explicitly, the game rules apply
+  else if (self.handicapPoints.count > 0)
+    self.nextMoveColor = GoColorWhite;
+  else
+    self.nextMoveColor = GoColorBlack;
 }
 
 // -----------------------------------------------------------------------------

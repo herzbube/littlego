@@ -190,20 +190,13 @@
 /// GoGame.
 @property(nonatomic, retain) GoScore* score;
 /// @brief The side that is set up to play the first move. Is #GoColorNone
-/// if no side is set up to play first. Note that this is @b not necessarily the
-/// side that actually plays the first move - notably in a game that was loaded
-/// from an .sgf file the two can be different.
+/// if no side is set up to play first. Note that this property is tied to the
+/// CURRENT board position, which if the user is viewing an old board position
+/// is not the same as the LAST board position.
 ///
-/// Setting this property to either #GoColorBlack or #GoColorWhite changes the
-/// property @e nextMoveColor to the same value. Setting this property to
-/// #GoColorNone changes the value of the @e nextMoveColor property like this:
-/// - Sets @e nextMoveColor to #GoColorWhite if @e handicapPoints is non-empty.
-/// - Sets @e nextMoveColor to #GoColorBlack if @e handicapPoints is empty.
-///
-/// The setter raises @e NSInternalInconsistencyException if it is invoked when
-/// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is
-/// in that state but already has moves. Summing it up, this property can be set
-/// only at the start of the game.
+/// Note that the side that is set up to play the first move is @b not
+/// necessarily the side that actually does play the first move - notably in a
+/// game that was loaded from an .sgf file the two can be different.
 @property(nonatomic, assign) enum GoColor setupFirstMoveColor;
 /// @brief The Zobrist hash after handicap stones are placed. Is recalculated
 /// every time the property @e handicapPoints changes.
