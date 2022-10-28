@@ -459,302 +459,6 @@ static const int maxStepsForCreateNodes = 9;
   return true;
 }
 
-// TODO xxx remove when no longer needed
-
-//#pragma mark - Steps 3 + 4: Board setup + player setup
-//
-//// -----------------------------------------------------------------------------
-///// @brief Sets up the setup stones prior to the first move of the game.
-//// -----------------------------------------------------------------------------
-//- (bool) setupSetup:(NSString**)errorMessage
-//{
-//  // Implementation in Fuego of the "list_setup" GTP command
-//  // - Setup stones are all points that have a stone on them after AB, AW and AE
-//  //   properties in all nodes of the main variation have been evaluated, minus
-//  //   AB setup stones in the node that contains the HA property (to account for
-//  //   how the "list_handicap" GTP command evaluates the handicap).
-//  // - Setup properties that operate on the same point
-//  //   - Within the same node: Process properties in the order AB, AW, AE
-//  //   - Across nodes: The last setup property wins
-//  //
-//  // SGFC behaviour
-//  // - Setup properties are not restricted to the root node or a game info
-//  //   node. They can appear in the root node, in a game info node, before or
-//  //   after a game info node, before or after nodes that contain move nodes
-//  // - Setup and move properties cannot appear in the same node; SGFC issues
-//  //   error 30 and splits the properties into two nodes: the setup properties
-//  //   are moved to the first node, the move property to the second node
-//  //   (regardless of how they appear in the original SGF content); the order
-//  //   of the setup properties (if there are several of them) is preserved.
-//  // - A move property that places a stone on a point that is already occupied
-//  //   (regardless of whether the stone was placed by another move or by a setup
-//  //   property) is warned about with warning 58, but the move property is
-//  //   retained
-//  // - A setup property that places a stone on a point that is already occupied
-//  //   with a stone of the same color, or empties an already empty point, is
-//  //   warned about with warning 39 and the property value is deleted (because
-//  //   it takes no effect)
-//  // - Setup properties in different nodes can operate on the same point as
-//  //   long as they change something about the point; they overwrite previous
-//  //   values, e.g. it's not necessary to remove a stone with AE before placing
-//  //   a stone with a different color
-//  // - If the same point appears more than once in the same node in one or more
-//  //   setup properties, SGFC issues warning 38 and deletes the duplicate
-//  //   values; if the same values appears multiple times in the same property
-//  //   SGFC deletes the first value; if the same value appears multiple times
-//  //   in different properties SGFC retains the value that appears first and
-//  //   deletes all values that appear later.
-//  // - If the same setup property appears multiple times in the same node
-//  //   SGFC issues warning 28 and merges the values of the two properties
-//  //   (assuming they don't overlap).
-//  // - Black and white moves cannot appear in the same node; SGFC issues
-//  //   error 37 and splits the properties into two nodes. the order of the
-//  //   properties is preserved.
-//  // - Several black or white moves in the same node are an error (a property
-//  //   can appear only once per node); SGFC issues error 28 and deletes all
-//  //   duplicate properties, only the property that appears first is retained.
-//  //
-//  // Our handling
-//  // - We are happy with all of these things that SGFC does for us, in fact we
-//  //   RELY on these things!
-//  // - We basically follow the same algorithm as Fuego does, with only two
-//  //   differences:
-//  //   - We refuse to process the .sgf file if setup properties appear after
-//  //     the first move.
-//  //   - SGF allows an AE or AW property in a node beyond the one with the HA
-//  //     property to clear a handicap stone or change its color. Fuego ignored
-//  //     this, we actively check this and refuse to process such an .sgf file.
-//
-//  // Step 1: Collect the points that are touched by SGF setup properties.
-//  // Cumulative setups in different nodes are taken into account.
-//  NSMutableDictionary* setupPointsDictionary = [NSMutableDictionary dictionary];
-//  bool firstMoveFound = false;
-//  for (SGFCNode* sgfNode in self.sgfMainVariationNodes)
-//  {
-//    if (firstMoveFound)
-//    {
-//      NSArray* setupProperties = [sgfNode propertiesWithCategory:SGFCPropertyCategorySetup];
-//      for (SGFCProperty* setupProperty in setupProperties)
-//      {
-//        switch (setupProperty.propertyType)
-//        {
-//          case SGFCPropertyTypeAB:
-//          case SGFCPropertyTypeAW:
-//          case SGFCPropertyTypeAE:
-//          {
-//            *errorMessage = @"Game contains stone setup instructions after the first move.\n\nThis is not supported, all board setup must be made prior to the first move.";
-//            return false;
-//          }
-//          default:
-//          {
-//            // We are not interested in other setup properties
-//            continue;
-//          }
-//        }
-//      }
-//    }
-//    else
-//    {
-//      NSArray* moveProperties = [sgfNode propertiesWithCategory:SGFCPropertyCategoryMove];
-//      if (moveProperties.count > 0)
-//      {
-//        firstMoveFound = true;
-//        continue;
-//      }
-//
-//      // We don't need to follow a particular order in how we process setup
-//      // properties. The pre-processing done by SGFC guarantees us that in the
-//      // same node the same point can only appear once.
-//      NSArray* setupProperties = [sgfNode propertiesWithCategory:SGFCPropertyCategorySetup];
-//      for (SGFCProperty* setupProperty in setupProperties)
-//      {
-//        enum GoColor goColor;
-//        SGFCPropertyType propertyType = setupProperty.propertyType;
-//        if (propertyType == SGFCPropertyTypeAB)
-//          goColor = GoColorBlack;
-//        else if (propertyType == SGFCPropertyTypeAW)
-//          goColor = GoColorWhite;
-//        else if (propertyType == SGFCPropertyTypeAE)
-//          goColor = GoColorNone;
-//        else
-//          continue;  // We are not interested in other setup properties
-//
-//        NSArray* setupPropertyValues = setupProperty.propertyValues;
-//        for (id<SGFCPropertyValue> setupPropertyValue in setupPropertyValues)
-//        {
-//          SGFCGoPoint* goPoint;
-//          if (propertyType == SGFCPropertyTypeAE)
-//            goPoint = setupPropertyValue.toSingleValue.toPointValue.toGoPointValue.goPoint;
-//          else
-//            goPoint = setupPropertyValue.toSingleValue.toStoneValue.toGoStoneValue.goStone.location;
-//
-//          NSString* vertexString = [self vertexForSgfGoPoint:goPoint errorMessage:errorMessage];
-//          if (! vertexString)
-//          {
-//            *errorMessage = [@"SgfcKit interfacing error while determining setup stones: " stringByAppendingString:*errorMessage];
-//            return false;
-//          }
-//
-//          // Overwriting previous values works because keys are compared for
-//          // equality, not for object identity
-//          setupPointsDictionary[vertexString] = [NSNumber numberWithInt:goColor];
-//        }
-//      }
-//    }
-//  }
-//
-//  // Step 2: Filter out empty points and validate that handicap stones set up
-//  // in the game info node are not manipulated by setup properties in later
-//  // nodes.
-//  GoGame* game = [GoGame sharedGame];
-//  GoBoard* board = game.board;
-//  NSMutableArray* blackSetupPoints = [NSMutableArray arrayWithCapacity:0];
-//  NSMutableArray* whiteSetupPoints = [NSMutableArray arrayWithCapacity:0];
-//  NSMutableArray* handicapPoints = [game.handicapPoints mutableCopy];
-//  __block bool success = true;
-//  [setupPointsDictionary enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* goColorAsNumber, BOOL* stop)
-//  {
-//    enum GoColor goColor = [goColorAsNumber intValue];
-//    if (goColor == GoColorNone)
-//      return;
-//
-//    GoPoint* point = [board pointAtVertex:vertexString];
-//    if (! point)
-//    {
-//      NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move.\n\nThe intersection %@ is invalid.";
-//      *errorMessage = [NSString stringWithFormat:errorMessageFormat, vertexString];
-//      *stop = YES;
-//      success = false;
-//      return;
-//    }
-//
-//    if (goColor == GoColorBlack)
-//    {
-//      if ([handicapPoints containsObject:point])
-//      {
-//        [handicapPoints removeObject:point];
-//        return;
-//      }
-//
-//      [blackSetupPoints addObject:point];
-//    }
-//    else
-//    {
-//      [whiteSetupPoints addObject:point];
-//    }
-//  }];
-//
-//  if (! success)
-//    return false;
-//
-//  // If at this point there are still handicap stones in the array this means
-//  // that all setup properties combined have manipulated the leftover points
-//  // so that they no longer contain a black handicap stone, but instead contain
-//  // either a white stone (AW), or are empty (AE). Because Little Go will
-//  // continue to use the handicap stones this opens up the possiblity that
-//  // certain moves in the SGF will be considered illegal by Little Go (e.g.
-//  // a move might attempt to place a stone on a point that is now empty). To
-//  // avoid this situation we refuse to continue.
-//  if (handicapPoints.count > 0)
-//  {
-//    NSMutableArray* handicapVertexStrings = [NSMutableArray array];
-//    for (GoPoint* handicapPoint in handicapPoints)
-//      [handicapVertexStrings addObject:handicapPoint.vertex.string];
-//
-//    *errorMessage = [NSString stringWithFormat:@"One or more black handicap stones are removed or redefined to white stones after they are set up.\n\nAffected handicap stone(s): %@",
-//                     [handicapVertexStrings componentsJoinedByString:@", "]];
-//    return false;
-//  }
-//
-//  // Step 3: Apply to GoGame
-//  @try
-//  {
-//    // GoGame takes care to place black and white stones on the points
-//    game.blackSetupPoints = blackSetupPoints;
-//    game.whiteSetupPoints = whiteSetupPoints;
-//  }
-//  @catch (NSException* exception)
-//  {
-//    // This can happen if the setup results in a position where a stone has
-//    // 0 (zero) liberties
-//    NSString* errorMessageFormat = @"Game contains an invalid board setup prior to the first move.\n\n%@";
-//    *errorMessage = [NSString stringWithFormat:errorMessageFormat, exception.reason];
-//    return false;
-//  }
-//
-//  return true;
-//}
-//
-//// -----------------------------------------------------------------------------
-///// @brief Sets up the player to play first for the new game.
-/////
-///// If no player is set up to play first explicitly, the game logic determines
-///// the player who plays first (e.g. in a normal game with no handicap, black
-///// plays first).
-//// -----------------------------------------------------------------------------
-//- (bool) setupSetupPlayer:(NSString**)errorMessage
-//{
-//  // Implementation in Fuego of the "list_setup_player" GTP command
-//  // - Examine nodes of the main variation up to the first node that contains
-//  //   a move property
-//  // - If a node contains the PL property its value is extracted and used
-//  // - If the PL property appears again in a later node its value overwrites
-//  //   the previous value
-//  //
-//  // SGFC behaviour
-//  // - The PL property is not restricted to the root node or a game info
-//  //   node. It can appear in the root node, in a game info node, before or
-//  //   after a game info node, before or after nodes that contain move nodes
-//  // - Setup and move properties cannot appear in the same node; SGFC issues
-//  //   error 30 and deletes the PL property (unlike with AB, AW and AE where it
-//  //   retains those properties and splits them off into a newly created node).
-//  // - If the PL property contains an illegal value the property is deleted and
-//  //   error 14 is issued
-//  // - If the PL property contains a lowercase color value it is converted to
-//  //   the proper uppercase value and error 15 is issued
-//  //
-//  // Our handling
-//  // - Same as Fuego, the only difference being that we refuse to process the
-//  //   .sgf file if the PL property appears after the first move.
-//
-//  enum GoColor setupFirstMoveColor = GoColorNone;
-//
-//  bool firstMoveFound = false;
-//  for (SGFCNode* sgfNode in self.sgfMainVariationNodes)
-//  {
-//    if (firstMoveFound)
-//    {
-//      SGFCProperty* setupPlayerProperty = [sgfNode propertyWithType:SGFCPropertyTypePL];
-//      if (setupPlayerProperty)
-//      {
-//        *errorMessage = @"The SGF data contains player setup instructions after the first move.";
-//        return false;
-//      }
-//    }
-//    else
-//    {
-//      NSArray* moveProperties = [sgfNode propertiesWithCategory:SGFCPropertyCategoryMove];
-//      if (moveProperties.count > 0)
-//      {
-//        firstMoveFound = true;
-//        continue;
-//      }
-//
-//      SGFCProperty* setupPlayerProperty = [sgfNode propertyWithType:SGFCPropertyTypePL];
-//      if (! setupPlayerProperty)
-//        continue;
-//
-//      SGFCColor sgfSetupPlayerColorValue = setupPlayerProperty.propertyValue.toSingleValue.toColorValue.colorValue;
-//      setupFirstMoveColor = (sgfSetupPlayerColorValue == SGFCColorBlack) ? GoColorBlack : GoColorWhite;
-//    }
-//  }
-//
-//  GoGame* game = [GoGame sharedGame];
-//  game.setupFirstMoveColor = setupFirstMoveColor;
-//
-//  return true;
-//}
-
 #pragma mark - Step 4: Setup komi
 
 // -----------------------------------------------------------------------------
@@ -800,19 +504,63 @@ static const int maxStepsForCreateNodes = 9;
 #pragma mark - Step 5: Setup nodes + content (annotations, markup, setup, moves)
 
 // -----------------------------------------------------------------------------
-// TODO xxx update documentation
 /// @brief Sets up the nodes for the new game.
 ///
-/// Iterates over the main variation and creates a GoNode object for every
-/// SGFCNode object that contains a property recognized by the app (list see
-/// below). SGFCNode objects that do not contain a property recognized by the
-/// app are skipped.
+/// The setup consists of three phases:
+/// - Phase 1: Process SGFCNode objects and transfer the data found into GoNode
+///   objects. In other words: Translate SGFCKit data structures into data
+///   structures understood by the rest of this app. This phase already contains
+///   some validation, such as are there any setup properties found after the
+///   first move. For details see createNodes:().
+/// - Phase 2: Validate setup information and moves to make sure that no board
+///   positions are created that the app considers to be illegal. A by-product
+///   of this phase is that, after the phase ends, the board state is set up
+///   for the last node of the main game variation.  For details see
+///   validateSetupAndMoveNodes:errorMessage:().
+/// - Phase 3: Fix the state of the remaining Go model objects so that
+///   everything is set up for the app to display the last board position of the
+///   main game variation. For details see fixStateOfGoModelObjects:().
+// -----------------------------------------------------------------------------
+- (bool) setupNodes:(NSString**)errorMessage
+{
+  @try
+  {
+    int numberOfNodesInGameTree;
+    bool success = [self createNodes:&numberOfNodesInGameTree errorMessage:errorMessage];
+    if (! success)
+      return false;
+
+    success = [self validateSetupAndMoveNodes:numberOfNodesInGameTree errorMessage:errorMessage];
+    if (! success)
+      return false;
+
+    return [self fixStateOfGoModelObjects:errorMessage];
+  }
+  @catch (NSException* exception)
+  {
+    NSString* errorMessageFormat = @"An unexpected error occurred loading the game. To improve this app, please consider submitting a bug report with the game file attached.\n\nException name: %@.\n\nException reason: %@.";
+    *errorMessage = [NSString stringWithFormat:errorMessageFormat, [exception name], [exception reason]];
+    return false;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates a new tree of GoNode objects whose structure and content
+/// mostly corresponds to the tree of SGFCNode objects that starts with
+/// @e self.sgfRootNode.
+///
+/// Iterates depth-first over the tree of nodes found in @e self.sgfRootNode.
+/// Creates a GoNode object for every SGFCNode object encountered that contains
+/// at least one SGF property recognized by the app. SGFCNode objects that do
+/// not contain a property recognized by the app are skipped. The newly created
+/// GoNode objects form a new tree with the same structure as the tree of
+/// SGFCNode objects.
 ///
 /// If the root SGFCNode contains a move property (B or W), an extra GoNode
-/// object is created as a child node of the root node to hold the values of
+/// object is created as a child node of the root GoNode to hold the values of
 /// @b ALL properties listed below. One SGFCNode object in this case results in
-/// @b TWO GoNode objects. This is important because the app is modeled to
-/// expect moves to be in their own nodes. This is supported by the SGF
+/// @b TWO GoNode objects. This is important because the app is modeled to not
+/// expect moves in board position 0. This is supported by the SGF
 /// specification, according to which move properties in the root node are not
 /// illegal but bad style.
 ///
@@ -823,46 +571,15 @@ static const int maxStepsForCreateNodes = 9;
 /// values are unrelated. The assumption is that the property values form one
 /// context that should not be split.
 ///
-/// Properties recognized by the app:
-/// - All setup properties: AB, AW, AE, PL.
-/// - Move properties B and W. Properties KO and MN are currently ignored.
-/// - All node annotation properties C, N, GB, GW, DM, UC, V, HO.
-/// - All move annotation properties TE, DO, BM, IT.
-/// - All markup properties CR, SQ, TR, MA, SL, AR, LN, LB, DD
+/// This is a helper function for setupNodes:().
 // -----------------------------------------------------------------------------
-- (bool) setupNodes:(NSString**)errorMessage
-{
-  // Implementation in Fuego of the "list_moves" GTP command
-  // - Examine all nodes of the main variation
-  // - If the node contains a move property, list it
-  // - Pass moves are listed as "pass", a resignation is listed as "resign"
-  //
-  // SGFC behaviour
-  // - A move that plays a stone on an occupied intersection is warned about
-  //   with warning 58, but SGFC does nothing about it
-  //
-  // Our handling
-  // - Same as Fuego, the only difference being that we don't have a "resign"
-  //   move
-
-  bool success = [self createNodes:errorMessage];
-  if (! success)
-    return false;
-
-  success = [self validateSetupAndMoveNodes:errorMessage];
-  if (! success)
-    return false;
-
-  return [self fixStateOfGoModelObjects:errorMessage];
-}
-
-// TODO xxx document
-- (bool) createNodes:(NSString**)errorMessage
+- (bool) createNodes:(int*)numberOfNodesInGameTree errorMessage:(NSString**)errorMessage
 {
   GoGame* game = [GoGame sharedGame];
   GoNodeModel* nodeModel = game.nodeModel;
 
-  GoNode* goParentNode = nodeModel.rootNode;
+  __block GoNode* goParentNode = nodeModel.rootNode;
+  *numberOfNodesInGameTree = 1;  // start with 1 for the root node
   int numberOfMovesFound = 0;
   GoMove* mostRecentMove = nil;
 
@@ -871,6 +588,16 @@ static const int maxStepsForCreateNodes = 9;
 
   bool sgfCurrentNodeIsRootNode = true;
   SGFCNode* sgfCurrentNode = self.sgfRootNode;
+
+  // Reusable local function. goParentNode needs to be marked with __block for
+  // it to be accessible within the block.
+  void (^addNewNodeToTree) (GoNode*, GoNode**) = ^(GoNode* goNewNode, GoNode** goMostRecentContentNode)
+  {
+    [goParentNode appendChild:goNewNode];
+    (*numberOfNodesInGameTree)++;
+
+    *goMostRecentContentNode = goNewNode;
+  };
 
   while (true)
   {
@@ -920,18 +647,12 @@ static const int maxStepsForCreateNodes = 9;
           }
           else
           {
-            // TODO xxx duplicate code
-            [goParentNode appendChild:goNewNode];
-
-            goMostRecentContentNode = goNewNode;
+            addNewNodeToTree(goNewNode, &goMostRecentContentNode);
           }
         }
         else
         {
-          // TODO xxx duplicate code
-          [goParentNode appendChild:goNewNode];
-
-          goMostRecentContentNode = goNewNode;
+          addNewNodeToTree(goNewNode, &goMostRecentContentNode);
         }
 
         if (goMostRecentContentNode.goMove)
@@ -958,7 +679,7 @@ static const int maxStepsForCreateNodes = 9;
       // to build our own model:
       // - The node that will be the parent of the next sibling
       // - The number of moves found so far in this branch of the tree
-      // TODO xxx remove mostRecentMove once move sequencing has been removed
+      // - The most recent move found in this branch of the tree
       [stack addObject:@[sgfCurrentNode, goParentNode ? goParentNode : nullValue, [NSNumber numberWithInt:numberOfMovesFound], mostRecentMove ? mostRecentMove : nullValue]];
 
       goParentNode = goMostRecentContentNode;
@@ -993,113 +714,109 @@ static const int maxStepsForCreateNodes = 9;
   return true;
 }
 
-// TODO xxx document
-  - (bool) populateGoNode:(GoNode*)node
+// -----------------------------------------------------------------------------
+/// @brief Populates @a goNode with data found in @a sgfNode that comes from
+/// SGF properties that are recognized by the app.
+///
+/// SGF properties recognized by the app:
+/// - All setup properties: AB, AW, AE, PL.
+/// - Move properties B and W. Properties KO and MN are currently ignored.
+/// - All node annotation properties: C, N, GB, GW, DM, UC, V, HO.
+/// - All move annotation properties: TE, DO, BM, IT.
+/// - All markup properties: CR, SQ, TR, MA, SL, AR, LN, LB, DD
+///
+/// This is a helper function for createNodes:errorMessage:().
+// -----------------------------------------------------------------------------
+  - (bool) populateGoNode:(GoNode*)goNode
 withPropertiesFromSgfNode:(SGFCNode*)sgfNode
            mostRecentMove:(GoMove*)mostRecentMove
              errorMessage:(NSString**)errorMessage
 {
-  bool atLeastOneSetupPropertyWasFound = false;
-  GoNodeSetup* nodeSetup = [[[GoNodeSetup alloc] init] autorelease];
-  GoMove* move = nil;
-  enum GoMoveValuation moveValuation = GoMoveValuationNone;
-  GoNodeAnnotation* nodeAnnotation = [[[GoNodeAnnotation alloc] init] autorelease];
-  bool atLeastOneAnnotationPropertyWasFound = false;
-  GoNodeMarkup* nodeMarkup = [[[GoNodeMarkup alloc] init] autorelease];
+  bool sgfNodeIsGameInfoNode = sgfNode == self.sgfGameInfoNode;
 
-  for (SGFCProperty* property in [sgfNode properties])
+  bool atLeastOneSetupPropertyWasFound = false;
+  GoNodeSetup* goNodeSetup = [[[GoNodeSetup alloc] init] autorelease];
+  GoMove* goMove = nil;
+  enum GoMoveValuation goMoveValuation = GoMoveValuationNone;
+  GoNodeAnnotation* goNodeAnnotation = [[[GoNodeAnnotation alloc] init] autorelease];
+  bool atLeastOneAnnotationPropertyWasFound = false;
+  GoNodeMarkup* goNodeMarkup = [[[GoNodeMarkup alloc] init] autorelease];
+
+  for (SGFCProperty* sgfProperty in sgfNode.properties)
   {
-    if (property.propertyCategory == SGFCPropertyCategorySetup)
+    SGFCPropertyType propertyType = sgfProperty.propertyType;
+
+    if (sgfProperty.propertyCategory == SGFCPropertyCategorySetup)
     {
       atLeastOneSetupPropertyWasFound = true;
 
-      if (mostRecentMove)
-      {
-        *errorMessage = @"Game contains setup instructions after the first move.\n\nThis is not supported, all game setup must be made prior to the first move.";
+      bool success = [self populateGoNodeSetup:goNodeSetup
+                             withSetupProperty:sgfProperty
+                           foundInGameInfoNode:sgfNodeIsGameInfoNode
+                                mostRecentMove:mostRecentMove
+                                  errorMessage:errorMessage];
+      if (! success)
         return false;
-      }
-
-      if (property.propertyType == SGFCPropertyTypePL)
-      {
-        enum GoColor color = property.propertyValue.toSingleValue.toColorValue.colorValue == SGFCColorBlack ? GoColorBlack : GoColorWhite;
-        nodeSetup.setupFirstMoveColor = color;
-      }
-      else
-      {
-        // We don't need to follow a particular order in how we process setup
-        // properties. The pre-processing done by SGFC guarantees us that in the
-        // same node the same point can appear only once.
-        NSUInteger numberOfPointsToIgnore = 0;
-        bool nodeIsGameInfoNode = sgfNode == self.sgfGameInfoNode;
-        if (nodeIsGameInfoNode && property.propertyType == SGFCPropertyTypeAB)
-        {
-          GoGame* game = [GoGame sharedGame];
-          numberOfPointsToIgnore = game.handicapPoints.count;
-        }
-        bool success = [self populateGoNodeSetup:nodeSetup withValuesFromProperty:property numberOfPointsToIgnore:numberOfPointsToIgnore errorMessage:errorMessage];
-        if (! success)
-          return false;
-      }
     }
-    else if (property.propertyType == SGFCPropertyTypeB || property.propertyType == SGFCPropertyTypeW)
+    else if (propertyType == SGFCPropertyTypeB || propertyType == SGFCPropertyTypeW)
     {
       // SGFC makes sure that the node never contains both SGFCPropertyTypeB and
       // SGFCPropertyTypeW at the same time
-      move = [self createMoveWithProperty:property withPreviousMove:mostRecentMove errorMessage:errorMessage];
+      goMove = [self createMoveWithProperty:sgfProperty withPreviousMove:mostRecentMove errorMessage:errorMessage];
     }
-    else if (property.propertyType == SGFCPropertyTypeN)
+    else if (propertyType == SGFCPropertyTypeN)
     {
-      nodeAnnotation.shortDescription = property.propertyValue.toSingleValue.toSimpleTextValue.simpleTextValue;
+      goNodeAnnotation.shortDescription = sgfProperty.propertyValue.toSingleValue.toSimpleTextValue.simpleTextValue;
       atLeastOneAnnotationPropertyWasFound = true;
     }
-    else if (property.propertyType == SGFCPropertyTypeC)
+    else if (propertyType == SGFCPropertyTypeC)
     {
-      nodeAnnotation.longDescription = property.propertyValue.toSingleValue.toTextValue.textValue;
+      goNodeAnnotation.longDescription = sgfProperty.propertyValue.toSingleValue.toTextValue.textValue;
       atLeastOneAnnotationPropertyWasFound = true;
     }
-    else if (property.propertyType == SGFCPropertyTypeGB)
+    else if (propertyType == SGFCPropertyTypeGB)
     {
-      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationGoodForBlack;
+      if (sgfProperty.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        goNodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationGoodForBlack;
       else
-        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryGoodForBlack;
+        goNodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryGoodForBlack;
       atLeastOneAnnotationPropertyWasFound = true;
     }
-    else if (property.propertyType == SGFCPropertyTypeGW)
+    else if (propertyType == SGFCPropertyTypeGW)
     {
-      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationGoodForWhite;
+      if (sgfProperty.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        goNodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationGoodForWhite;
       else
-        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryGoodForWhite;
+        goNodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryGoodForWhite;
       atLeastOneAnnotationPropertyWasFound = true;
     }
-    else if (property.propertyType == SGFCPropertyTypeDM)
+    else if (propertyType == SGFCPropertyTypeDM)
     {
-      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationEven;
+      if (sgfProperty.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        goNodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationEven;
       else
-        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryEven;
+        goNodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryEven;
       atLeastOneAnnotationPropertyWasFound = true;
     }
-    else if (property.propertyType == SGFCPropertyTypeUC)
+    else if (propertyType == SGFCPropertyTypeUC)
     {
-      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationUnclear;
+      if (sgfProperty.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        goNodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationUnclear;
       else
-        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryUnclear;
+        goNodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryUnclear;
       atLeastOneAnnotationPropertyWasFound = true;
     }
-    else if (property.propertyType == SGFCPropertyTypeHO)
+    else if (propertyType == SGFCPropertyTypeHO)
     {
-      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        nodeAnnotation.goBoardPositionHotspotDesignation = GoBoardPositionHotspotDesignationYes;
+      if (sgfProperty.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        goNodeAnnotation.goBoardPositionHotspotDesignation = GoBoardPositionHotspotDesignationYes;
       else
-        nodeAnnotation.goBoardPositionHotspotDesignation = GoBoardPositionHotspotDesignationYesEmphasized;
+        goNodeAnnotation.goBoardPositionHotspotDesignation = GoBoardPositionHotspotDesignationYesEmphasized;
       atLeastOneAnnotationPropertyWasFound = true;
     }
-    else if (property.propertyType == SGFCPropertyTypeV)
+    else if (propertyType == SGFCPropertyTypeV)
     {
-      SGFCReal estimatedScoreValue = property.propertyValue.toSingleValue.toRealValue.realValue;
+      SGFCReal estimatedScoreValue = sgfProperty.propertyValue.toSingleValue.toRealValue.realValue;
       enum GoScoreSummary estimatedScoreSummary;
       if (estimatedScoreValue > 0.0)
       {
@@ -1114,129 +831,265 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
       {
         estimatedScoreSummary = GoScoreSummaryTie;
       }
-      [nodeAnnotation setEstimatedScoreSummary:estimatedScoreSummary value:estimatedScoreValue];
+      [goNodeAnnotation setEstimatedScoreSummary:estimatedScoreSummary value:estimatedScoreValue];
       atLeastOneAnnotationPropertyWasFound = true;
     }
-    else if (property.propertyType == SGFCPropertyTypeTE)
+    else if (propertyType == SGFCPropertyTypeTE)
     {
-      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        moveValuation = GoMoveValuationGood;
+      if (sgfProperty.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        goMoveValuation = GoMoveValuationGood;
       else
-        moveValuation = GoMoveValuationVeryGood;
+        goMoveValuation = GoMoveValuationVeryGood;
     }
-    else if (property.propertyType == SGFCPropertyTypeBM)
+    else if (propertyType == SGFCPropertyTypeBM)
     {
-      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-        moveValuation = GoMoveValuationBad;
+      if (sgfProperty.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
+        goMoveValuation = GoMoveValuationBad;
       else
-        moveValuation = GoMoveValuationVeryBad;
+        goMoveValuation = GoMoveValuationVeryBad;
     }
-    else if (property.propertyType == SGFCPropertyTypeIT)
+    else if (propertyType == SGFCPropertyTypeIT)
     {
-      moveValuation = GoMoveValuationInteresting;
+      goMoveValuation = GoMoveValuationInteresting;
     }
-    else if (property.propertyType == SGFCPropertyTypeDO)
+    else if (propertyType == SGFCPropertyTypeDO)
     {
-      moveValuation = GoMoveValuationDoubtful;
+      goMoveValuation = GoMoveValuationDoubtful;
     }
-    else if (property.propertyType == SGFCPropertyTypeCR)
+    else if (propertyType == SGFCPropertyTypeCR)
     {
-      bool success = [self setSymbols:GoMarkupSymbolCircle inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      bool success = [self setSymbols:GoMarkupSymbolCircle inMarkup:goNodeMarkup forPropertyValues:sgfProperty.propertyValues errorMessage:errorMessage];
       if (! success)
         return nil;
     }
-    else if (property.propertyType == SGFCPropertyTypeSQ)
+    else if (propertyType == SGFCPropertyTypeSQ)
     {
-      bool success = [self setSymbols:GoMarkupSymbolSquare inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      bool success = [self setSymbols:GoMarkupSymbolSquare inMarkup:goNodeMarkup forPropertyValues:sgfProperty.propertyValues errorMessage:errorMessage];
       if (! success)
         return nil;
     }
-    else if (property.propertyType == SGFCPropertyTypeTR)
+    else if (propertyType == SGFCPropertyTypeTR)
     {
-      bool success = [self setSymbols:GoMarkupSymbolTriangle inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      bool success = [self setSymbols:GoMarkupSymbolTriangle inMarkup:goNodeMarkup forPropertyValues:sgfProperty.propertyValues errorMessage:errorMessage];
       if (! success)
         return nil;
     }
-    else if (property.propertyType == SGFCPropertyTypeMA)
+    else if (propertyType == SGFCPropertyTypeMA)
     {
-      bool success = [self setSymbols:GoMarkupSymbolX inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      bool success = [self setSymbols:GoMarkupSymbolX inMarkup:goNodeMarkup forPropertyValues:sgfProperty.propertyValues errorMessage:errorMessage];
       if (! success)
         return nil;
     }
-    else if (property.propertyType == SGFCPropertyTypeSL)
+    else if (propertyType == SGFCPropertyTypeSL)
     {
-      bool success = [self setSymbols:GoMarkupSymbolSelected inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      bool success = [self setSymbols:GoMarkupSymbolSelected inMarkup:goNodeMarkup forPropertyValues:sgfProperty.propertyValues errorMessage:errorMessage];
       if (! success)
         return nil;
     }
-    else if (property.propertyType == SGFCPropertyTypeAR)
+    else if (propertyType == SGFCPropertyTypeAR)
     {
-      bool success = [self setConnections:GoMarkupConnectionArrow inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      bool success = [self setConnections:GoMarkupConnectionArrow inMarkup:goNodeMarkup forPropertyValues:sgfProperty.propertyValues errorMessage:errorMessage];
       if (! success)
         return nil;
     }
-    else if (property.propertyType == SGFCPropertyTypeLN)
+    else if (propertyType == SGFCPropertyTypeLN)
     {
-      bool success = [self setConnections:GoMarkupConnectionLine inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      bool success = [self setConnections:GoMarkupConnectionLine inMarkup:goNodeMarkup forPropertyValues:sgfProperty.propertyValues errorMessage:errorMessage];
       if (! success)
         return nil;
     }
-    else if (property.propertyType == SGFCPropertyTypeLB)
+    else if (propertyType == SGFCPropertyTypeLB)
     {
-      bool success = [self setLabelsInMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      bool success = [self setLabelsInMarkup:goNodeMarkup forPropertyValues:sgfProperty.propertyValues errorMessage:errorMessage];
       if (! success)
         return nil;
     }
-    else if (property.propertyType == SGFCPropertyTypeDD)
+    else if (propertyType == SGFCPropertyTypeDD)
     {
-      bool success = [self setDimmingsInMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
+      bool success = [self setDimmingsInMarkup:goNodeMarkup forPropertyValues:sgfProperty.propertyValues errorMessage:errorMessage];
       if (! success)
         return nil;
     }
   }
 
-  if (moveValuation != GoMoveValuationNone)
+  if (goMoveValuation != GoMoveValuationNone)
   {
-    if (node.goMove)
+    if (goNode.goMove)
     {
-      node.goMove.goMoveValuation = moveValuation;
+      goNode.goMove.goMoveValuation = goMoveValuation;
     }
     else
     {
       // SGFC should have cleaned up the data so that this does not occur
-      NSString* message = [NSString stringWithFormat:@"SGF Node contains move valuation %d without a move property", moveValuation];
+      NSString* message = [NSString stringWithFormat:@"SGF Node contains move valuation %d without a move property", goMoveValuation];
       DDLogWarn(@"%@", message);
     }
   }
 
-  if (! nodeSetup.isEmpty)
-    node.goNodeSetup = nodeSetup;
+  if (! goNodeSetup.isEmpty)
+    goNode.goNodeSetup = goNodeSetup;
 
-  if (move)
-    node.goMove = move;
+  if (goMove)
+    goNode.goMove = goMove;
 
   if (atLeastOneAnnotationPropertyWasFound)
-    node.goNodeAnnotation = nodeAnnotation;
+    goNode.goNodeAnnotation = goNodeAnnotation;
 
-  if (nodeMarkup.hasMarkup)
-    node.goNodeMarkup = nodeMarkup;
+  if (goNodeMarkup.hasMarkup)
+    goNode.goNodeMarkup = goNodeMarkup;
 
   return true;
 }
 
-// TODO xxx document
-- (bool) populateGoNodeSetup:(GoNodeSetup*)nodeSetup
-      withValuesFromProperty:(SGFCProperty*)setupProperty
+// -----------------------------------------------------------------------------
+/// @brief Populates @a goNodeSetup with data found in @a sgfSetupProperty.
+/// @a sgfSetupPropertyWasFoundInGameInfoNode indicates whether or not
+/// @a sgfSetupProperty was found in the game info node. @a mostRecentMove
+/// refers to move that was most recently found in the branch of the game tree
+/// that the iteration is currently in.
+///
+/// This is a helper function for
+/// populateGoNode:withPropertiesFromSgfNode:mostRecentMove:errorMessage:().
+// -----------------------------------------------------------------------------
+- (bool) populateGoNodeSetup:(GoNodeSetup*)goNodeSetup
+           withSetupProperty:(SGFCProperty*)sgfSetupProperty
+         foundInGameInfoNode:(bool)sgfSetupPropertyWasFoundInGameInfoNode
+              mostRecentMove:(GoMove*)mostRecentMove
+                errorMessage:(NSString**)errorMessage
+{
+  // Implementation in Fuego of the "list_setup" GTP command
+  // - Setup stones are all points that have a stone on them after AB, AW and AE
+  //   properties in all nodes of the main variation have been evaluated, minus
+  //   AB setup stones in the node that contains the HA property (to account for
+  //   how the "list_handicap" GTP command evaluates the handicap).
+  // - Setup properties that operate on the same point
+  //   - Within the same node: Process properties in the order AB, AW, AE
+  //   - Across nodes: The last setup property wins
+  // Implementation in Fuego of the "list_setup_player" GTP command
+  // - Examine nodes of the main variation up to the first node that contains
+  //   a move property
+  // - If a node contains the PL property its value is extracted and used
+  // - If the PL property appears again in a later node its value overwrites
+  //   the previous value
+  //
+  // SGFC behaviour for AB, AW and AE
+  // - Setup properties are not restricted to the root node or a game info
+  //   node. They can appear in the root node, in a game info node, before or
+  //   after a game info node, before or after nodes that contain move nodes
+  // - Setup and move properties cannot appear in the same node; SGFC issues
+  //   error 30 and splits the properties into two nodes: the setup properties
+  //   are moved to the first node, the move property to the second node
+  //   (regardless of how they appear in the original SGF content); the order
+  //   of the setup properties (if there are several of them) is preserved.
+  // - A move property that places a stone on a point that is already occupied
+  //   (regardless of whether the stone was placed by another move or by a setup
+  //   property) is warned about with warning 58, but the move property is
+  //   retained
+  // - A setup property that places a stone on a point that is already occupied
+  //   with a stone of the same color, or empties an already empty point, is
+  //   warned about with warning 39 and the property value is deleted (because
+  //   it takes no effect)
+  // - Setup properties in different nodes can operate on the same point as
+  //   long as they change something about the point; they overwrite previous
+  //   values, e.g. it's not necessary to remove a stone with AE before placing
+  //   a stone with a different color
+  // - If the same point appears more than once in the same node in one or more
+  //   setup properties, SGFC issues warning 38 and deletes the duplicate
+  //   values; if the same values appears multiple times in the same property
+  //   SGFC deletes the first value; if the same value appears multiple times
+  //   in different properties SGFC retains the value that appears first and
+  //   deletes all values that appear later.
+  // - If the same setup property appears multiple times in the same node
+  //   SGFC issues warning 28 and merges the values of the two properties
+  //   (assuming they don't overlap).
+  // - Black and white moves cannot appear in the same node; SGFC issues
+  //   error 37 and splits the properties into two nodes. the order of the
+  //   properties is preserved.
+  // - Several black or white moves in the same node are an error (a property
+  //   can appear only once per node); SGFC issues error 28 and deletes all
+  //   duplicate properties, only the property that appears first is retained.
+  // SGFC behaviour for PL
+  // - The PL property is not restricted to the root node or a game info
+  //   node. It can appear in the root node, in a game info node, before or
+  //   after a game info node, before or after nodes that contain move nodes
+  // - Setup and move properties cannot appear in the same node; SGFC issues
+  //   error 30 and deletes the PL property (unlike with AB, AW and AE where it
+  //   retains those properties and splits them off into a newly created node).
+  // - If the PL property contains an illegal value the property is deleted and
+  //   error 14 is issued
+  // - If the PL property contains a lowercase color value it is converted to
+  //   the proper uppercase value and error 15 is issued
+  //
+  // Our handling
+  // - We are happy with all of these things that SGFC does for us, in fact we
+  //   RELY on these things!
+  // - We allow everything that is allowed by SGF, with the following
+  //   exceptions:
+  //   - We refuse to process the .sgf file if any setup property appears after
+  //     the first move.
+  //   - We refuse to process the .sgf file if the game info node contains
+  //     handicap > 0 and any of the stone setup properties AB, AW or AE appear
+  //     in nodes before the game info node. This check is not made in this
+  //     method, it is made when handicap is set up.
+
+  if (mostRecentMove)
+  {
+    *errorMessage = @"Game contains setup instructions after the first move.\n\nThis is not supported, all game setup must be made prior to the first move.";
+    return false;
+  }
+
+  if (sgfSetupProperty.propertyType == SGFCPropertyTypePL)
+  {
+    enum GoColor color = sgfSetupProperty.propertyValue.toSingleValue.toColorValue.colorValue == SGFCColorBlack ? GoColorBlack : GoColorWhite;
+    goNodeSetup.setupFirstMoveColor = color;
+  }
+  else
+  {
+    // We don't need to follow a particular order in how we process setup
+    // properties. The pre-processing done by SGFC guarantees us that in the
+    // same node the same point can appear only once.
+    NSUInteger numberOfPointsToIgnore = 0;
+    if (sgfSetupPropertyWasFoundInGameInfoNode && sgfSetupProperty.propertyType == SGFCPropertyTypeAB)
+    {
+      GoGame* game = [GoGame sharedGame];
+      numberOfPointsToIgnore = game.handicapPoints.count;
+    }
+    bool success = [self populateGoNodeSetup:goNodeSetup
+                      withValuesFromProperty:sgfSetupProperty
+                      numberOfPointsToIgnore:numberOfPointsToIgnore
+                                errorMessage:errorMessage];
+    if (! success)
+      return false;
+  }
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Populates @a goNodeSetup with data found in @a sgfSetupProperty,
+/// which is expected to be either the SGF property AB, AW or AE.
+/// @a numberOfPointsToIgnore indicates how many point property values from
+/// @a sgfSetupProperties should be ignored and @b not be used to populate
+/// @a goNodeSetup.
+///
+/// The parameter @a numberOfPointsToIgnore is used to ignore handicap points
+/// that are set up with the SGF property AB.
+///
+/// This is a helper function for
+/// populateGoNodeSetup:withSetupProperty:foundInGameInfoNode:mostRecentMove:errorMessage:().
+// -----------------------------------------------------------------------------
+- (bool) populateGoNodeSetup:(GoNodeSetup*)goNodeSetup
+      withValuesFromProperty:(SGFCProperty*)sgfSetupProperty
       numberOfPointsToIgnore:(NSUInteger)numberOfPointsToIgnore
                 errorMessage:(NSString**)errorMessage
 {
   GoGame* game = [GoGame sharedGame];
   GoBoard* board = game.board;
-  SGFCPropertyType propertyType = setupProperty.propertyType;
+  SGFCPropertyType propertyType = sgfSetupProperty.propertyType;
 
   NSMutableArray* setupPoints = [NSMutableArray array];
 
-  for (id<SGFCPropertyValue> setupPropertyValue in setupProperty.propertyValues)
+  for (id<SGFCPropertyValue> setupPropertyValue in sgfSetupProperty.propertyValues)
   {
     if (numberOfPointsToIgnore > 0)
     {
@@ -1264,15 +1117,15 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 
   if (propertyType == SGFCPropertyTypeAB)
   {
-    [nodeSetup setupValidatedBlackStones:setupPoints];
+    [goNodeSetup setupValidatedBlackStones:setupPoints];
   }
   else if (propertyType == SGFCPropertyTypeAW)
   {
-    [nodeSetup setupValidatedWhiteStones:setupPoints];
+    [goNodeSetup setupValidatedWhiteStones:setupPoints];
   }
   else if (propertyType == SGFCPropertyTypeAE)
   {
-    [nodeSetup setupValidatedNoStones:setupPoints];
+    [goNodeSetup setupValidatedNoStones:setupPoints];
   }
   else
   {
@@ -1283,17 +1136,41 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   return true;
 }
 
-// TODO xxx document
-// the move is created without validating it, and also without creating a
-// Zobrist hash
-// previousMove can be nil if it's the first move in the variation
-- (GoMove*) createMoveWithProperty:(SGFCProperty*)moveProperty
+// -----------------------------------------------------------------------------
+/// @brief Creates and returns a new GoMove object with data found in
+/// @a sgfMoveProperty, which is expected to be either the SGF property B or W.
+/// @a previousMove is the move that precedes the newly created GoMove object in
+/// the branch of the game tree that the iteration is currently in.
+/// @a previousMove is @e nil if the newly created GoMove is the first move in
+/// the branch of the game tree that the iteration is currently in.
+///
+/// The GoMove object is created without validating it, and also without
+/// creating a Zobrist hash for it.
+///
+/// This is a helper function for
+/// populateGoNode:withPropertiesFromSgfNode:mostRecentMove:errorMessage:().
+// -----------------------------------------------------------------------------
+- (GoMove*) createMoveWithProperty:(SGFCProperty*)sgfMoveProperty
                   withPreviousMove:(GoMove*)previousMove
                       errorMessage:(NSString**)errorMessage
 {
+  // Implementation in Fuego of the "list_moves" GTP command
+  // - Examine all nodes of the main variation
+  // - If the node contains a move property, list it
+  // - Pass moves are listed as "pass", a resignation is listed as "resign"
+  //
+  // SGFC behaviour
+  // - A move that plays a stone on an occupied intersection is warned about
+  //   with warning 58, but SGFC does nothing about it
+  //
+  // Our handling
+  // - In this phase we simply accept the move as it is. In a later phase the
+  //   move is checked for its validity, i.e. whether it violates any of the
+  //   app's game rules.
+
   GoGame* game = [GoGame sharedGame];
 
-  SGFCGoMove* goMove = moveProperty.propertyValue.toSingleValue.toMoveValue.toGoMoveValue.goMove;
+  SGFCGoMove* goMove = sgfMoveProperty.propertyValue.toSingleValue.toMoveValue.toGoMoveValue.goMove;
   if (! goMove)
   {
     *errorMessage = @"SgfcKit interfacing error while determining moves: Missing SGFCGoMove object.";
@@ -1305,7 +1182,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   // game, even though the app itself is not capable of producing such
   // games.
   GoPlayer* player;
-  SGFCPropertyType propertyType = moveProperty.propertyType;
+  SGFCPropertyType propertyType = sgfMoveProperty.propertyType;
   if (propertyType == SGFCPropertyTypeB)
     player = game.playerBlack;
   else
@@ -1325,7 +1202,6 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
       return nil;
     }
 
-    // TODO xxx move sequencing with previous/next no longer works - previousMove can have many successors now!
     move = [GoMove move:GoMoveTypePlay by:player after:previousMove];
     move.point = point;
   }
@@ -1334,373 +1210,66 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates a tuple of values (an NSArray object) that together represent
-/// one node. Returns @e nil if interpreting the data fails.
+/// @brief Validates setup information and moves in all GoNode objects that were
+/// previously generated by createNodes:errorMessage:(), to make sure that no
+/// board positions are created that the app considers to be illegal.
 ///
-/// The first tuple value is either an SGFCProperty of type #SGFCPropertyTypeB
-/// or #SGFCPropertyTypeW, if such a property exists in @a sgfNode, or an
-/// @e NSNull object if no such property exists in @a sgfNode.
+/// Iterates depth-first over the tree of nodes found in the root node of the
+/// current game's GoNodeModel. Branches of the game tree are iterated in
+/// reverse order, i.e. the depth-first iteration does not start with the first
+/// child of each node, but with the last child. This is an optimization that
+/// is made so that when control returns to the caller, the board state is
+/// already set up for the last node of the main game variation, which is what
+/// the user wants to see when the app has finished loading a game. Without
+/// this reverse-ordering of game tree branches the caller would have to perform
+/// another iteration over the main game variation to set up the board, which
+/// is the most expensive operation of LoadGameCommand.
 ///
-/// The second tuple value is an NSNumber of type "int" which encapsulates a
-/// GoMoveValuation value. If a move valuation property exists in @a sgfNode
-/// that property's value is used, otherwise #GoMoveValuationNone is used.
+/// The following validation is performed by this method when it encounters a
+/// GoNode:
+/// - If the GoNode contains a GoNodeSetup, the setup information is applied to
+///   the game and board state, then a check is made whether to resulting board
+///   position is valid. See validateSetup:withGame:errorMessage:() for details.
+/// - If the GoNode contains a GoMove, the move is first checked to be valid.
+///   If the move is valid it is played to update the board state.
+/// - If the GoNode contains neither GoNodeSetup nor GoMove, no validation is
+///   performed and the board state does not change.
 ///
-/// The third tuple value is a GoNodeAnnotation object populated with node
-/// annotation property values found in @a sgfNode, or an @e NSNull object if
-/// no node annotation properties exist in @a sgfNode.
-///
-/// The fourth tuple value is a GoNodeMarkup object populated with markup
-/// property values found in @a sgfNode, or an @e NSNull object if no markup
-/// properties exist in @a sgfNode.
-// -----------------------------------------------------------------------------
-//- (NSArray*) createTupleWithPropertiesFromNode:(SGFCNode*)sgfNode errorMessage:(NSString**)errorMessage
-//{
-//  SGFCProperty* moveProperty = nil;
-//  enum GoMoveValuation moveValuation = GoMoveValuationNone;
-//  GoNodeAnnotation* nodeAnnotation = [[[GoNodeAnnotation alloc] init] autorelease];
-//  bool atLeastOneAnnotationPropertyWasFound = false;
-//  GoNodeMarkup* nodeMarkup = [[[GoNodeMarkup alloc] init] autorelease];
-//
-//  for (SGFCProperty* property in [sgfNode properties])
-//  {
-//    if (property.propertyType == SGFCPropertyTypeB || property.propertyType == SGFCPropertyTypeW)
-//    {
-//      // SGFC makes sure that the node never contains both SGFCPropertyTypeB and
-//      // SGFCPropertyTypeW at the same time
-//      moveProperty = property;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeN)
-//    {
-//      nodeAnnotation.shortDescription = property.propertyValue.toSingleValue.toSimpleTextValue.simpleTextValue;
-//      atLeastOneAnnotationPropertyWasFound = true;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeC)
-//    {
-//      nodeAnnotation.longDescription = property.propertyValue.toSingleValue.toTextValue.textValue;
-//      atLeastOneAnnotationPropertyWasFound = true;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeGB)
-//    {
-//      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-//        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationGoodForBlack;
-//      else
-//        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryGoodForBlack;
-//      atLeastOneAnnotationPropertyWasFound = true;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeGW)
-//    {
-//      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-//        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationGoodForWhite;
-//      else
-//        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryGoodForWhite;
-//      atLeastOneAnnotationPropertyWasFound = true;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeDM)
-//    {
-//      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-//        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationEven;
-//      else
-//        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryEven;
-//      atLeastOneAnnotationPropertyWasFound = true;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeUC)
-//    {
-//      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-//        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationUnclear;
-//      else
-//        nodeAnnotation.goBoardPositionValuation = GoBoardPositionValuationVeryUnclear;
-//      atLeastOneAnnotationPropertyWasFound = true;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeHO)
-//    {
-//      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-//        nodeAnnotation.goBoardPositionHotspotDesignation = GoBoardPositionHotspotDesignationYes;
-//      else
-//        nodeAnnotation.goBoardPositionHotspotDesignation = GoBoardPositionHotspotDesignationYesEmphasized;
-//      atLeastOneAnnotationPropertyWasFound = true;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeV)
-//    {
-//      SGFCReal estimatedScoreValue = property.propertyValue.toSingleValue.toRealValue.realValue;
-//      enum GoScoreSummary estimatedScoreSummary;
-//      if (estimatedScoreValue > 0.0)
-//      {
-//        estimatedScoreSummary = GoScoreSummaryBlackWins;
-//      }
-//      else if (estimatedScoreValue < 0.0)
-//      {
-//        estimatedScoreSummary = GoScoreSummaryWhiteWins;
-//        estimatedScoreValue = -estimatedScoreValue;
-//      }
-//      else
-//      {
-//        estimatedScoreSummary = GoScoreSummaryTie;
-//      }
-//      [nodeAnnotation setEstimatedScoreSummary:estimatedScoreSummary value:estimatedScoreValue];
-//      atLeastOneAnnotationPropertyWasFound = true;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeTE)
-//    {
-//      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-//        moveValuation = GoMoveValuationGood;
-//      else
-//        moveValuation = GoMoveValuationVeryGood;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeBM)
-//    {
-//      if (property.propertyValue.toSingleValue.toDoubleValue.doubleValue == SGFCDoubleNormal)
-//        moveValuation = GoMoveValuationBad;
-//      else
-//        moveValuation = GoMoveValuationVeryBad;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeIT)
-//    {
-//      moveValuation = GoMoveValuationInteresting;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeDO)
-//    {
-//      moveValuation = GoMoveValuationDoubtful;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeCR)
-//    {
-//      bool success = [self setSymbols:GoMarkupSymbolCircle inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
-//      if (! success)
-//        return nil;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeSQ)
-//    {
-//      bool success = [self setSymbols:GoMarkupSymbolSquare inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
-//      if (! success)
-//        return nil;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeTR)
-//    {
-//      bool success = [self setSymbols:GoMarkupSymbolTriangle inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
-//      if (! success)
-//        return nil;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeMA)
-//    {
-//      bool success = [self setSymbols:GoMarkupSymbolX inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
-//      if (! success)
-//        return nil;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeSL)
-//    {
-//      bool success = [self setSymbols:GoMarkupSymbolSelected inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
-//      if (! success)
-//        return nil;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeAR)
-//    {
-//      bool success = [self setConnections:GoMarkupConnectionArrow inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
-//      if (! success)
-//        return nil;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeLN)
-//    {
-//      bool success = [self setConnections:GoMarkupConnectionLine inMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
-//      if (! success)
-//        return nil;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeLB)
-//    {
-//      bool success = [self setLabelsInMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
-//      if (! success)
-//        return nil;
-//    }
-//    else if (property.propertyType == SGFCPropertyTypeDD)
-//    {
-//      bool success = [self setDimmingsInMarkup:nodeMarkup forPropertyValues:property.propertyValues errorMessage:errorMessage];
-//      if (! success)
-//        return nil;
-//    }
-//  }
-//
-//  NSArray* tuple = @[
-//    moveProperty ? moveProperty : [NSNull null],
-//    [NSNumber numberWithInt:moveValuation],
-//    atLeastOneAnnotationPropertyWasFound ? nodeAnnotation : [NSNull null],
-//    nodeMarkup.hasMarkup ? nodeMarkup : [NSNull null]
-//  ];
-//
-//  return tuple;
-//}
-
-// TODO xxx remove
-// -----------------------------------------------------------------------------
-/// @brief Creates a GoNode object for each tuple in @a tuples and places the
-/// values that the tuple contains in the node. A tuple that contains only
-/// @e NSNull values is skipped.
-///
-/// Each tuple in @a tuples represents a node in the original SGF game tree.
-/// The first tuple represents the root node.
-///
-/// @a tuples is expected to contain NSArray objects which are tuples with four
-/// objects each:
-/// - The first object is either an SGFCProperty object of type
-///   #SGFCPropertyTypeB or #SGFCPropertyTypeW, or @e NSNull. If the object is
-///   an SGFCProperty object, a move is being played using the information in
-///   this object and the resulting GoMove object is associated with the GoNode
-///   created for the tuple. If the object is @e NSNull, no move is being
-///   played.
-/// - The second object is an NSNumber that encapsulates a GoMoveValuation value
-///   as integer. If a move was played for the first tuple value, then the
-///   GoMove property @e goMoveValuation is set with the GoMoveValuation value.
-///   If no move was played for the first tuple value, then the GoMoveValuation
-///   value is discarded.
-/// - The third object is either a GoNodeAnnotation object or @e NSNull.
-///   If the object is a GoNodeAnnotation object then it is associated with the
-///   GoNode object created for the tuple. If the object is @e NSNull the third
-///   object in the tuple is ignored.
-/// - The fourth object is either a GoNodeMarkup object or @e NSNull.
-///   If the object is a GoNodeMarkup object then it is associated with the
-///   GoNode object created for the tuple. If the object is @e NSNull the fourth
-///   object in the tuple is ignored.
+/// Regardless of whether validation takes place or not, for each GoNode
+/// encountered a Zobrist hash is calculated.
 ///
 /// The asynchronous command delegate is updated continuously with progress
-/// information as the nodes are created, because playing moves is a relatively
-/// slow operation that takes significant time. In an ideal world we would have
-/// fine-grained progress updates with as many steps as there are nodes.
-/// However, when there are many nodes to be created this wastes a lot of
-/// precious CPU cycles for GUI updates, considerably slowing down the process
-/// of loading a game - on older devices to an intolerable level. In the real
-/// world, we therefore limit the number of progress updates to a fixed,
-/// hard-coded number.
+/// information as the nodes are validated, because applying setup information
+/// and playing moves are relatively slow operations that take significant time.
+/// In an ideal world we would have fine-grained progress updates with as many
+/// steps as there are nodes. However, when there are many nodes to be created
+/// this wastes a lot of precious CPU cycles for GUI updates, considerably
+/// slowing down the process of loading a game - on older devices to an
+/// intolerable level. In the real world, we therefore limit the number of
+/// progress updates to a fixed, hard-coded number.
+///
+/// This is a helper function for setupNodes:().
 // -----------------------------------------------------------------------------
-//- (bool) createNodesWithValues:(NSArray*)tuples errorMessage:(NSString**)errorMessage
-//{
-//  GoGame* game = [GoGame sharedGame];
-//  GoNodeModel* nodeModel = game.nodeModel;
-//
-//  float nodesPerStep;
-//  NSUInteger remainingNumberOfSteps;
-//  if (tuples.count <= maxStepsForCreateNodes)
-//  {
-//    nodesPerStep = 1;
-//    remainingNumberOfSteps = tuples.count;
-//  }
-//  else
-//  {
-//    nodesPerStep = tuples.count / maxStepsForCreateNodes;
-//    remainingNumberOfSteps = maxStepsForCreateNodes;
-//  }
-//  float remainingProgress = 1.0 - self.progress;
-//  // Adjust for increaseProgressAndNotifyDelegate()
-//  self.stepIncrease = remainingProgress / remainingNumberOfSteps;
-//
-//  @try
-//  {
-//    int numberOfTuplesProcessed = 0;
-//    float nextProgressUpdate = nodesPerStep;  // use float in case nodesPerStep has fractions
-//
-//    for (NSArray* tuple in tuples)
-//    {
-//      GoNode* node;
-//      bool shouldAddNodeToModel = false;
-//
-//      id tupleFirstValue = [tuple firstObject];
-//      if (tupleFirstValue != [NSNull null])
-//      {
-//        SGFCProperty* moveProperty = tupleFirstValue;
-//        bool result = [self playMove:moveProperty errorMessage:errorMessage];
-//        if (!result)
-//          return false;
-//
-//        node = game.nodeModel.leafNode;  // node was created by playing the move
-//      }
-//      else
-//      {
-//        if (numberOfTuplesProcessed == 0)
-//        {
-//          node = nodeModel.rootNode;  // root node was created by creating GoGame
-//        }
-//        else
-//        {
-//          node = [GoNode node];
-//          shouldAddNodeToModel = true;
-//        }
-//      }
-//
-//      NSNumber* tupleSecondValue = [tuple objectAtIndex:1];
-//      enum GoMoveValuation moveValuation = tupleSecondValue.intValue;
-//      if (moveValuation != GoMoveValuationNone)
-//      {
-//        if (node.goMove)
-//        {
-//          node.goMove.goMoveValuation = moveValuation;
-//        }
-//        else
-//        {
-//          // SGFC should have cleaned up the data so that this does not occur
-//          NSString* message = [NSString stringWithFormat:@"Tuple with index position %d contains move valuation %d without a move property", (numberOfTuplesProcessed + 1), moveValuation];
-//          DDLogWarn(@"%@", message);
-//        }
-//      }
-//
-//      id tupleThirdValue = [tuple objectAtIndex:2];
-//      if (tupleThirdValue != [NSNull null])
-//        node.goNodeAnnotation = tupleThirdValue;
-//
-//      id tupleFourthValue = [tuple objectAtIndex:3];
-//      if (tupleFourthValue != [NSNull null])
-//        node.goNodeMarkup = tupleFourthValue;
-//
-//      // The node can be empty if the tuple - and therefore the original node
-//      // in the SGF game tree - did not contain a move, any annotations or any
-//      // markup. For instance, .sgf files created by this app contain a node
-//      // with only setup properties.
-//      if (shouldAddNodeToModel && ! node.isEmpty)
-//        [nodeModel appendNode:node];
-//
-//      ++numberOfTuplesProcessed;
-//      if (numberOfTuplesProcessed >= nextProgressUpdate)
-//      {
-//        nextProgressUpdate += nodesPerStep;
-//        [self increaseProgressAndNotifyDelegate];
-//      }
-//    }
-//  }
-//  @catch (NSException* exception)
-//  {
-//    NSString* errorMessageFormat = @"An unexpected error occurred loading the game. To improve this app, please consider submitting a bug report with the game file attached.\n\nException name: %@.\n\nException reason: %@.";
-//    *errorMessage = [NSString stringWithFormat:errorMessageFormat, [exception name], [exception reason]];
-//    return false;
-//  }
-//
-//  return true;
-//}
-
-// TODO xxx document
-// Iterate depth-first, but start with the last variation, so that when
-// validation is complete the current board state is for the main variation.
-//
-// Determine whether or not to validate
-// - When a node is found that contains setup or a move => validate
-// - When a node is found without setup or a move => don't validate
-//
-// Validate
-// - Setup
-//   - Invoke a method on GoGame: isValidSetup, or something similar
-// - Move
-//   - Invoke a method on GoGame: isLegalPlay, or something similar
-//
-// Not valid => Abort
-// Valid => Continue & apply change
-//
-// Apply change
-// - Setup
-//   - Capture setup
-//   - GoNode modifyBoard
-// - Move
-//   - GoNode modifyBoard
-//
-// When stack is popped
-// - GoNode revert
-- (bool) validateSetupAndMoveNodes:(NSString**)errorMessage
+- (bool) validateSetupAndMoveNodes:(int)numberOfNodesInGameTree errorMessage:(NSString**)errorMessage
 {
   GoGame* game = [GoGame sharedGame];
   GoNodeModel* nodeModel = game.nodeModel;
+
+  float nodesPerStep;
+  NSUInteger remainingNumberOfSteps;
+  if (numberOfNodesInGameTree <= maxStepsForCreateNodes)
+  {
+    nodesPerStep = 1;
+    remainingNumberOfSteps = numberOfNodesInGameTree;
+  }
+  else
+  {
+    nodesPerStep = numberOfNodesInGameTree / maxStepsForCreateNodes;
+    remainingNumberOfSteps = maxStepsForCreateNodes;
+  }
+  float remainingProgress = 1.0 - self.progress;
+  // Adjust for increaseProgressAndNotifyDelegate()
+  self.stepIncrease = remainingProgress / remainingNumberOfSteps;
 
   bool parentNodeIsOnMainVariation = true;
   bool currentNodeIsOnMainVariation = true;
@@ -1709,6 +1278,9 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 
   GoNode* currentNode = nodeModel.rootNode;
 
+  int numberOfNodesProcessed = 0;
+  float nextProgressUpdate = nodesPerStep;  // use float in case nodesPerStep has fractions
+
   while (true)
   {
     while (currentNode)
@@ -1716,9 +1288,8 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
       if (currentNode.goNodeSetup)
       {
         // Setup validation requires the board to be already in the new state
-        // TODO xxx Verify that this captures the previous setup and calculates a new Zobrist hash
         [currentNode modifyBoard];
-        bool success = [self validateSetup:currentNode.goNodeSetup withGame:game errorMessage:errorMessage];
+        bool success = [self validateBoardSetupWithGame:game errorMessage:errorMessage];
         if (! success)
           return false;
       }
@@ -1729,8 +1300,19 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
         bool success = [self validateMove:currentNode.goMove withGame:game errorMessage:errorMessage];
         if (! success)
           return false;
-        // TODO xxx Verify that this performs the move and captures stones, and calculates a new Zobrist hash
         [currentNode modifyBoard];
+      }
+      else
+      {
+        // Calculates the correct Zobrist hash based on the parent node
+        [currentNode modifyBoard];
+      }
+
+      ++numberOfNodesProcessed;
+      if (numberOfNodesProcessed >= nextProgressUpdate)
+      {
+        nextProgressUpdate += nodesPerStep;
+        [self increaseProgressAndNotifyDelegate];
       }
 
       [stack addObject:@[currentNode, [NSNumber numberWithBool:currentNodeIsOnMainVariation], [NSNumber numberWithBool:parentNodeIsOnMainVariation]]];
@@ -1809,55 +1391,22 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   return true;
 }
 
-// TODO xxx document
-- (bool) fixStateOfGoModelObjects:(NSString**)errorMessage
+// -----------------------------------------------------------------------------
+/// @brief Checks with the help of @a game whether the board state as it is
+/// currently set up is valid. Returns @e true if the board state is valid,
+/// returns @e false if the board state is not valid.
+///
+/// This is a helper function for validateSetupAndMoveNodes:errorMessage:().
+// -----------------------------------------------------------------------------
+- (bool) validateBoardSetupWithGame:(GoGame*)game errorMessage:(NSString**)errorMessage
 {
-  // IMPORTANT: The order in which things are executed in this method matters!
-
-  GoGame* game = [GoGame sharedGame];
-
-  // GoNodeModel must be updated first - the variation configured here is the
-  // basis for many of the subsequent operations. Also, the following GoGame
-  // properties are calculated based on the variation configured in GoNodeModel:
-  // - firstMove
-  // - lastMove
-  [game.nodeModel changeToMainVariation];
-
-  // GoNodeModel's changeToMainVariation() method triggered GoBoardPosition via
-  // KVO to change its numberOfBoardPosition value, but the KVO handler in
-  // GoBoardPosition did not change the currentBoardPosition value (except in
-  // rare cases), so we have to trigger this change manually.
-  [game.boardPosition changeToLastBoardPositionWithoutUpdatingGoObjects];
-
-  // Configure nextMoveColor. No need to check GoGame's property alternatingPlay
-  // because after loading a game from SGF we always start out with alternating
-  // play. The following properties base their values on nextMoveColor:
-  // - nextMovePlayer
-  // - nextMovePlayerIsComputerPlayer
-  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.nodeModel.leafNode];
-  GoMove* mostRecentMove = nodeWithMostRecentMove ? nodeWithMostRecentMove.goMove : nil;
-  // TODO xxx Verify that game.setupFirstMoveColor has been set by GoNodeSetup. GoUtilities depends on this.
-  game.nextMoveColor = [GoUtilities playerAfter:mostRecentMove inGame:game].color;
-
-  // Possibly set the GoGame properties state and reasonForGameHasEnded. Note
-  // that this may be overridden later if the SGF file contains a SGFCGameResult
-  // that can be mapped to one of the app's recognized game endings
-  // (e.g. resignation).
-  [game endGameDueToPassMovesIfGameRulesRequireIt];
-
-  return true;
-}
-
-// TODO xxx document
-// It is not possible to invoke the GoGame method
-// isLegalBoardSetupAt:withStoneState:isIllegalReason:createsIllegalStoneOrGroup:()
-// separately for each black or white setup stone. Reason: An intermediate
-// board position, before all setup stones are placed, might well be illegal,
-// but once all setup stones are placed the board position might be legal
-// again. The solution: Check whether setup is legal only once, when all setup
-// was applied to the board.
-- (bool) validateSetup:(GoNodeSetup*)nodeSetup withGame:(GoGame*)game errorMessage:(NSString**)errorMessage
-{
+  // We have to evaluate the board state after the entire setup information in
+  // a GoNodeSetup was applied to the board. It is not possible to invoke the
+  // GoGame method
+  // isLegalBoardSetupAt:withStoneState:isIllegalReason:createsIllegalStoneOrGroup:()
+  // separately for each point in GoNodeSetup, because an intermediate board
+  // state, before all setup stones are placed ore removed, might well be
+  // illegal.
   NSString* suicidalIntersectionsString;
   bool isLegalBoardSetup = [game isLegalBoardSetup:&suicidalIntersectionsString];
 
@@ -1870,7 +1419,13 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   return true;
 }
 
-// TODO xxx document
+// -----------------------------------------------------------------------------
+/// @brief Checks with the help of @a game whether @a move is a legal move.
+/// Returns @e true if the move is legal, returns @e false if the move is not
+/// legal.
+///
+/// This is a helper function for validateSetupAndMoveNodes:errorMessage:().
+// -----------------------------------------------------------------------------
 - (bool) validateMove:(GoMove*)move withGame:(GoGame*)game errorMessage:(NSString**)errorMessage
 {
   // Here we support if the SGF file contains moves by non-alternating colors,
@@ -1910,78 +1465,49 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   return true;
 }
 
-// TODO xxx remove
 // -----------------------------------------------------------------------------
-/// @brief Plays a move using the information in @a moveProperty.
+/// @brief Adjusts the state of various model objects so that everything is set
+/// up for the app to display the last board position of the main game
+/// variation.
+///
+/// This is a helper function for setupNodes:().
 // -----------------------------------------------------------------------------
-//- (bool) playMove:(SGFCProperty*)moveProperty errorMessage:(NSString**)errorMessage
-//{
-//  GoGame* game = [GoGame sharedGame];
-//
-//  SGFCGoMove* goMove = moveProperty.propertyValue.toSingleValue.toMoveValue.toGoMoveValue.goMove;
-//  if (! goMove)
-//  {
-//    *errorMessage = @"SgfcKit interfacing error while determining moves: Missing SGFCGoMove object.";
-//    return false;
-//  }
-//
-//  enum GoColor moveColor;
-//  SGFCPropertyType propertyType = moveProperty.propertyType;
-//  if (propertyType == SGFCPropertyTypeB)
-//    moveColor = GoColorBlack;
-//  else
-//    moveColor = GoColorWhite;
-//
-//  enum GoMoveType moveType;
-//  GoPoint* point;
-//  if (goMove.isPassMove)
-//  {
-//    moveType = GoMoveTypePass;
-//    point = nil;
-//  }
-//  else
-//  {
-//    moveType = GoMoveTypePlay;
-//
-//    point = [self goPointForSgfGoPoint:goMove.stone.location onBoard:game.board errorMessage:errorMessage];
-//    if (! point)
-//    {
-//      *errorMessage = [@"SgfcKit interfacing error while determining moves: " stringByAppendingString:*errorMessage];
-//      return false;
-//    }
-//  }
-//
-//  // Here we support if the .sgf contains moves by non-alternating colors,
-//  // anywhere in the game. Thus the user can ***VIEW*** almost any .sgf
-//  // game, even though the app itself is not capable of producing such
-//  // games.
-//  game.nextMoveColor = moveColor;
-//
-//  if (GoGameStateGameHasEnded == game.state)
-//  {
-//    [game revertStateFromEndedToInProgress];
-//  }
-//
-//  if (GoMoveTypePass == moveType)
-//  {
-//    [game pass];
-//  }
-//  else
-//  {
-//    enum GoMoveIsIllegalReason illegalReason;
-//    if (! [game isLegalMove:point byColor:moveColor isIllegalReason:&illegalReason])
-//    {
-//      NSString* errorMessageFormat = @"Game contains an illegal move: Move %d, played by %@, on intersection %@. Reason: %@.";
-//      NSString* colorName = [NSString stringWithGoColor:moveColor];
-//      NSString* illegalReasonString = [NSString stringWithMoveIsIllegalReason:illegalReason];
-//      *errorMessage = [NSString stringWithFormat:errorMessageFormat, (game.nodeModel.numberOfMoves + 1), colorName, point.vertex.string, illegalReasonString];
-//      return false;
-//    }
-//    [game play:point];
-//  }
-//
-//  return true;
-//}
+- (bool) fixStateOfGoModelObjects:(NSString**)errorMessage
+{
+  // IMPORTANT: The order in which things are executed in this method matters!
+
+  GoGame* game = [GoGame sharedGame];
+
+  // GoNodeModel must be updated first - the variation configured here is the
+  // basis for many of the subsequent operations. Also, the following GoGame
+  // properties are calculated based on the variation configured in GoNodeModel:
+  // - firstMove
+  // - lastMove
+  [game.nodeModel changeToMainVariation];
+
+  // GoNodeModel's changeToMainVariation() method triggered GoBoardPosition via
+  // KVO to change its numberOfBoardPosition value, but the KVO handler in
+  // GoBoardPosition did not change the currentBoardPosition value (except in
+  // rare cases), so we have to trigger this change manually.
+  [game.boardPosition changeToLastBoardPositionWithoutUpdatingGoObjects];
+
+  // Configure nextMoveColor. No need to check GoGame's property alternatingPlay
+  // because after loading a game from SGF we always start out with alternating
+  // play. The following properties base their values on nextMoveColor:
+  // - nextMovePlayer
+  // - nextMovePlayerIsComputerPlayer
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.nodeModel.leafNode];
+  GoMove* mostRecentMove = nodeWithMostRecentMove ? nodeWithMostRecentMove.goMove : nil;
+  game.nextMoveColor = [GoUtilities playerAfter:mostRecentMove inGame:game].color;
+
+  // Possibly set the GoGame properties state and reasonForGameHasEnded. Note
+  // that this may be overridden later if the SGF file contains a SGFCGameResult
+  // that can be mapped to one of the app's recognized game endings
+  // (e.g. resignation).
+  [game endGameDueToPassMovesIfGameRulesRequireIt];
+
+  return true;
+}
 
 #pragma mark - Step 6: Setup game result
 
