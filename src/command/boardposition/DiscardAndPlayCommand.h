@@ -40,6 +40,11 @@
 ///   itself, or on behalf of the human player whose turn it currently is
 /// - initContinue() results in a paused computer vs. computer game being
 ///   continued
+///
+/// If it discards board positions, DiscardAndPlayCommand posts
+/// #numberOfBoardPositionsChanged to the default notification center. Playing
+/// a move then causes a second #numberOfBoardPositionsChanged to be posted to
+/// the default notification center, followed by #currentBoardPositionDidChange.
 // -----------------------------------------------------------------------------
 @interface DiscardAndPlayCommand : CommandBase
 {

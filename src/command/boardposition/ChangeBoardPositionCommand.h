@@ -44,6 +44,7 @@
 ///
 /// After it has changed the board position, ChangeBoardPositionCommand performs
 /// the following additional operations:
+/// - Posts #currentBoardPositionDidChange to the default notification center
 /// - Synchronizes the GTP engine with the new board position
 /// - Recalculates the score for the new board position if scoring mode is
 ///   currently enabled

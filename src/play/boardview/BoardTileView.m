@@ -134,7 +134,6 @@
   ScoringModel* scoringModel = appDelegate.scoringModel;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
@@ -146,6 +145,8 @@
   [center addObserver:self selector:@selector(allSetupStonesDidDiscard:) name:allSetupStonesDidDiscard object:nil];
   [center addObserver:self selector:@selector(markupOnPointsDidChange:) name:markupOnPointsDidChange object:nil];
   [center addObserver:self selector:@selector(allMarkupDidDiscard:) name:allMarkupDidDiscard object:nil];
+  [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
+  [center addObserver:self selector:@selector(numberOfBoardPositionsDidChange:) name:numberOfBoardPositionsDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
   [boardPositionModel addObserver:self forKeyPath:@"markNextMove" options:0 context:NULL];
@@ -158,13 +159,6 @@
   [markupModel addObserver:self forKeyPath:@"selectedSymbolMarkupStyle" options:0 context:NULL];
   [markupModel addObserver:self forKeyPath:@"markupPrecedence" options:0 context:NULL];
   [scoringModel addObserver:self forKeyPath:@"inconsistentTerritoryMarkupType" options:0 context:NULL];
-  GoGame* game = [GoGame sharedGame];
-  if (game)
-  {
-    GoBoardPosition* boardPosition = game.boardPosition;
-    [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-    [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -195,13 +189,6 @@
   [markupModel removeObserver:self forKeyPath:@"selectedSymbolMarkupStyle"];
   [markupModel removeObserver:self forKeyPath:@"markupPrecedence"];
   [scoringModel removeObserver:self forKeyPath:@"inconsistentTerritoryMarkupType"];
-  GoGame* game = [GoGame sharedGame];
-  if (game)
-  {
-    GoBoardPosition* boardPosition = game.boardPosition;
-    [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-    [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
-  }
 }
 
 #pragma mark - Manage layers and layer delegates
@@ -518,25 +505,10 @@
 #pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameWillCreate notification.
-// -----------------------------------------------------------------------------
-- (void) goGameWillCreate:(NSNotification*)notification
-{
-  GoGame* oldGame = [notification object];
-  GoBoardPosition* oldBoardPosition = oldGame.boardPosition;
-  [oldBoardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  [oldBoardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameDidCreate notification.
 // -----------------------------------------------------------------------------
 - (void) goGameDidCreate:(NSNotification*)notification
 {
-  GoGame* newGame = [notification object];
-  GoBoardPosition* newBoardPosition = newGame.boardPosition;
-  [newBoardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-  [newBoardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   [self notifyLayerDelegates:BVLDEventGoGameStarted eventInfo:nil];
   [self delayedDrawLayers];
 }
@@ -639,6 +611,28 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #currentBoardPositionDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentBoardPositionDidChange:(NSNotification*)notification
+{
+  // The board position changes many times when a game is loaded from the
+  // archive. We don't want to notify our delegates each time because this
+  // triggers expensive calculations, instead we coalesce multiple board
+  // position changes into a single notification
+  self.currentBoardPositionChangedWasDelayed = true;
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #numberOfBoardPositionsDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) numberOfBoardPositionsDidChange:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:BVLDEventNumberOfBoardPositionsChanged eventInfo:nil];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -729,23 +723,6 @@
     else if ([keyPath isEqualToString:@"markupPrecedence"])
     {
       [self notifyLayerDelegates:BVLDEventMarkupPrecedenceChanged eventInfo:nil];
-      [self delayedDrawLayers];
-    }
-  }
-  else if (object == [GoGame sharedGame].boardPosition)
-  {
-    if ([keyPath isEqualToString:@"currentBoardPosition"])
-    {
-      // The board position changes many times when a game is loaded from the
-      // archive. We don't want to notify our delegates each time because this
-      // triggers expensive calculations, instead we coalesce multiple board
-      // position changes into a single notification
-      self.currentBoardPositionChangedWasDelayed = true;
-      [self delayedDrawLayers];
-    }
-    else if ([keyPath isEqualToString:@"numberOfBoardPositions"])
-    {
-      [self notifyLayerDelegates:BVLDEventNumberOfBoardPositionsChanged eventInfo:nil];
       [self delayedDrawLayers];
     }
   }

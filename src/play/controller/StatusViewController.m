@@ -336,30 +336,16 @@
   [center addObserver:self selector:@selector(boardViewStoneLocationDidChange:) name:boardViewStoneLocationDidChange object:nil];
   [center addObserver:self selector:@selector(boardViewMarkupLocationDidChange:) name:boardViewMarkupLocationDidChange object:nil];
   [center addObserver:self selector:@selector(boardViewSelectionRectangleDidChange:) name:boardViewSelectionRectangleDidChange object:nil];
+  [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
+  [center addObserver:self selector:@selector(numberOfBoardPositionsDidChange:) name:numberOfBoardPositionsDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
-  [self setupNotificationRespondersForGame:[GoGame sharedGame]];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.markupModel addObserver:self forKeyPath:@"markupType" options:0 context:NULL];
   [appDelegate.scoringModel addObserver:self forKeyPath:@"scoreMarkMode" options:0 context:NULL];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-// -----------------------------------------------------------------------------
-- (void) setupNotificationRespondersForGame:(GoGame*)game
-{
-  if (! game)
-    return;
-  [game addObserver:self forKeyPath:@"nextMoveColor" options:0 context:NULL];
-  [game.boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-  // This one is required solely for the scenario:
-  // - Current board position = First board position
-  // - There was at least one move
-  // - User just discarded all future moves
-  // Here the status label must change from "<color> will play <move>" to
-  // "<color> to move".
-  [game.boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
+  GoGame* game = [GoGame sharedGame];
+  if (game)
+    [game addObserver:self forKeyPath:@"nextMoveColor" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -372,22 +358,12 @@
   self.notificationRespondersAreSetup = false;
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [self removeNotificationRespondersForGame:[GoGame sharedGame]];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.markupModel removeObserver:self forKeyPath:@"markupType"];
   [appDelegate.scoringModel removeObserver:self forKeyPath:@"scoreMarkMode"];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-// -----------------------------------------------------------------------------
-- (void) removeNotificationRespondersForGame:(GoGame*)game
-{
-  if (! game)
-    return;
-  [game removeObserver:self forKeyPath:@"nextMoveColor"];
-  [game.boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  [game.boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
+  GoGame* game = [GoGame sharedGame];
+  if (game)
+    [game removeObserver:self forKeyPath:@"nextMoveColor"];
 }
 
 // -----------------------------------------------------------------------------
@@ -805,7 +781,8 @@
 - (void) goGameWillCreate:(NSNotification*)notification
 {
   GoGame* oldGame = [notification object];
-  [self removeNotificationRespondersForGame:oldGame];
+  if (oldGame)
+    [oldGame removeObserver:self forKeyPath:@"nextMoveColor"];
 }
 
 // -----------------------------------------------------------------------------
@@ -814,7 +791,8 @@
 - (void) goGameDidCreate:(NSNotification*)notification
 {
   GoGame* newGame = [notification object];
-  [self setupNotificationRespondersForGame:newGame];
+  if (newGame)
+    [newGame addObserver:self forKeyPath:@"nextMoveColor" options:0 context:NULL];
 
   // In case a new game is started abruptly without cleaning up state in the
   // old game
@@ -933,6 +911,30 @@
     self.selectionRectangleInformation = [NSArray arrayWithArray:selectionRectangleInformation];
   else
     self.selectionRectangleInformation = nil;
+  self.statusLabelNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #currentBoardPositionDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentBoardPositionDidChange:(NSNotification*)notification
+{
+  self.statusLabelNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #numberOfBoardPositionsDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) numberOfBoardPositionsDidChange:(NSNotification*)notification
+{
+  // This one is required solely for the scenario:
+  // - Current board position = First board position
+  // - There was at least one move
+  // - User just discarded all future moves
+  // Here the status label must change from "<color> will play <move>" to
+  // "<color> to move".
   self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
 }

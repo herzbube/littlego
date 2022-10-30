@@ -115,11 +115,9 @@
     return;
 
   // Don't invoke property's setter since there is no need to update the state
-  // of Go objects. The drawback is that we have to perform some additional
-  // bookkeeping and generate KVO notifications ourselves.
-  [self willChangeValueForKey:@"currentBoardPosition"];
+  // of Go objects. KVO is not triggered by this, but that's OK since the class
+  // documentation specifically says not to use KVO.
   _currentBoardPosition = lastBoardPosition;
-  [self didChangeValueForKey:@"currentBoardPosition"];
 }
 
 #pragma mark - Properties

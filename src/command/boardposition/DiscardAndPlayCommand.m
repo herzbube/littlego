@@ -206,8 +206,11 @@ enum PlayCommandType
   // adjusting the number of board positions after discarding nodes, there
   // would be a small gap in which someone who works with board positions might
   // attempt to access an invalid node.
+  int oldNumberOfBoardPositions = boardPosition.numberOfBoardPositions;
   int newNumberOfBoardPositions = indexOfFirstNodeToDiscard;
   boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
 
   DDLogInfo(@"%@: Index position of first node to discard = %d", [self shortDescription], indexOfFirstNodeToDiscard);
   GoNodeModel* nodeModel = game.nodeModel;

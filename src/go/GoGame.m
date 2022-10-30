@@ -190,8 +190,12 @@
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to the @e nextMovePlayer making a #GoMoveTypePlay.
 ///
-/// Invoking this method sets the document dirty flag and, if alternating play
-/// is enabled, switches the @e nextMovePlayer.
+/// Invoking this method has the following effects:
+/// - Sets the document dirty flag
+/// - If alternating play is enabled, switches the @e nextMovePlayer.
+/// - Advances the current board position to display the board position after
+///   the move was played. Posts first #numberOfBoardPositionsDidChange then
+///   #currentBoardPositionDidChange to the default notification center.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
 /// while this GoGame object is not in state #GoGameStateGameHasStarted or
@@ -259,8 +263,15 @@
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to the @e nextMovePlayer making a #GoMoveTypePass.
 ///
-/// Invoking this method sets the document dirty flag and, if alternating play
-/// is enabled, switches the @e nextMovePlayer.
+/// Invoking this method has the following effects:
+/// - Sets the document dirty flag
+/// - If alternating play is enabled, switches the @e nextMovePlayer.
+/// - Advances the current board position to display the board position after
+///   the move was played. Posts first #numberOfBoardPositionsDidChange then
+///   #currentBoardPositionDidChange to the default notification center.
+/// - May cause the game state to change to #GoGameStateGameHasEnded if, after
+///   playing this pass move, the right number of consecutive pass moves have
+///   been made according to the game rules.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
 /// while this GoGame object is not in state #GoGameStateGameHasStarted or
@@ -303,7 +314,10 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Adds @a newNode to the game tree, then updates the GoBoardPosition
-/// properties @e numberOfBoardPositions and @e currentBoardPosition.
+/// properties @e numberOfBoardPositions and @e currentBoardPosition. Posts the
+/// corresponding notifications (first #numberOfBoardPositionsDidChange,
+/// followed by #currentBoardPositionDidChange), to the default notification
+/// center.
 ///
 /// This is a private helper for play:() and pass().
 // -----------------------------------------------------------------------------
@@ -313,14 +327,21 @@
   // the nextMovePlayer
   [self.nodeModel appendNode:newNode];
 
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+
+  int oldNumberOfBoardPositions = self.boardPosition.numberOfBoardPositions;
   int newNumberOfBoardPositions = self.nodeModel.numberOfNodes;
   self.boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
+  [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
+
   // Changing the current board position invokes GoNode modifyBoard for us.
   // Important: GoNode modifyBoard must be invoked only AFTER the node was added
   // to the node tree, otherwise the Zobrist hash (which is based on the
   // previous node) cannot be calculated.
+  int oldCurrentBoardPosition = self.boardPosition.currentBoardPosition;
   int newCurrentBoardPosition = self.nodeModel.numberOfNodes - 1;
   self.boardPosition.currentBoardPosition = newCurrentBoardPosition;
+  [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:newCurrentBoardPosition]]];
 }
 
 // -----------------------------------------------------------------------------

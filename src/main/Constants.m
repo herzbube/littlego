@@ -78,6 +78,8 @@ NSString* askGtpEngineForDeadStonesEnds = @"AskGtpEngineForDeadStonesEnds";
 // Other notifications
 NSString* longRunningActionStarts = @"LongRunningActionStarts";
 NSString* longRunningActionEnds = @"LongRunningActionEnds";
+NSString* numberOfBoardPositionsDidChange = @"NumberOfBoardPositionsDidChange";
+NSString* currentBoardPositionDidChange = @"CurrentBoardPositionDidChange";
 NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
 NSString* playersAndProfilesWillReset = @"PlayersAndProfilesWillReset";
 NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
