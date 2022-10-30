@@ -212,6 +212,13 @@
   if (indexOfFirstNodeToDiscard >= numberOfNodes)
     return true;
 
+  // Adjust number of board positions before nodes are discarded. If we were
+  // adjusting the number of board positions after discarding nodes, there
+  // would be a small gap in which someone who works with board positions might
+  // attempt to access an invalid node.
+  int newNumberOfBoardPositions = indexOfFirstNodeToDiscard;
+  boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
+
   DDLogInfo(@"%@: Index position of first node to discard = %d, number of nodes = %d", [self shortDescription], indexOfFirstNodeToDiscard, numberOfNodes);
   [nodeModel discardNodesFromIndex:indexOfFirstNodeToDiscard];
 

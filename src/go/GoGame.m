@@ -252,11 +252,7 @@
   }
 
   GoNode* node = [GoNode nodeWithMove:move];
-  // Sets the document dirty flag and, if alternating play is enabled, switches
-  // the nextMovePlayer
-  [self.nodeModel appendNode:node];
-  // Board must be modified only after node was added to the node tree
-  [node modifyBoard];
+  [self addNodeToTreeAndUpdateBoardPosition:node];
 }
 
 // -----------------------------------------------------------------------------
@@ -298,15 +294,33 @@
   GoMove* move = [GoMove move:GoMoveTypePass by:self.nextMovePlayer after:self.lastMove];
 
   GoNode* node = [GoNode nodeWithMove:move];
-  // Sets the document dirty flag and, if alternating play is enabled, switches
-  // the nextMovePlayer
-  [self.nodeModel appendNode:node];
-  // Board must be modified only after node was added to the node tree
-  [node modifyBoard];
+  [self addNodeToTreeAndUpdateBoardPosition:node];
 
   // This may change the game state. Such a change must occur after the move was
   // generated; this order is important for observer notifications.
   [self endGameDueToPassMovesIfGameRulesRequireIt];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Adds @a newNode to the game tree, then updates the GoBoardPosition
+/// properties @e numberOfBoardPositions and @e currentBoardPosition.
+///
+/// This is a private helper for play:() and pass().
+// -----------------------------------------------------------------------------
+- (void) addNodeToTreeAndUpdateBoardPosition:(GoNode*)newNode
+{
+  // Sets the document dirty flag and, if alternating play is enabled, switches
+  // the nextMovePlayer
+  [self.nodeModel appendNode:newNode];
+
+  int newNumberOfBoardPositions = self.nodeModel.numberOfNodes;
+  self.boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
+  // Changing the current board position invokes GoNode modifyBoard for us.
+  // Important: GoNode modifyBoard must be invoked only AFTER the node was added
+  // to the node tree, otherwise the Zobrist hash (which is based on the
+  // previous node) cannot be calculated.
+  int newCurrentBoardPosition = self.nodeModel.numberOfNodes - 1;
+  self.boardPosition.currentBoardPosition = newCurrentBoardPosition;
 }
 
 // -----------------------------------------------------------------------------

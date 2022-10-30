@@ -124,6 +124,6 @@
 @property(nonatomic, assign, readonly) bool isLastPosition;
 /// @brief The number of board positions in the GoGame associated with this
 /// GoBoardPosition.
-@property(nonatomic, assign, readonly) int numberOfBoardPositions;
+@property(nonatomic, assign) int numberOfBoardPositions;
 
 @end
