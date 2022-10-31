@@ -34,6 +34,7 @@
 #import "GoZobristTable.h"
 #import "../main/ApplicationDelegate.h"
 #import "../player/Player.h"
+#import "../utility/NSArrayAdditions.h"
 
 
 @implementation GoGame
@@ -156,9 +157,9 @@
 - (GoMove*) firstMove
 {
   // The root node cannot contain a move, therefore it is ok to use GoUtilities
-  GoNode* nodeWithNextMove = [GoUtilities nodeWithNextMove:self.nodeModel.rootNode inCurrentGameVariation:self];
-  if (nodeWithNextMove)
-    return nodeWithNextMove.goMove;
+  GoNode* nodeWithFirstMove = [GoUtilities nodeWithNextMove:self.nodeModel.rootNode inCurrentGameVariation:self];
+  if (nodeWithFirstMove)
+    return nodeWithFirstMove.goMove;
   else
     return nil;
 }
@@ -168,9 +169,9 @@
 // -----------------------------------------------------------------------------
 - (GoMove*) lastMove
 {
-  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:self.nodeModel.leafNode];
-  if (nodeWithMostRecentMove)
-    return nodeWithMostRecentMove.goMove;
+  GoNode* nodeWithLastMove = [GoUtilities nodeWithMostRecentMove:self.nodeModel.leafNode];
+  if (nodeWithLastMove)
+    return nodeWithLastMove.goMove;
   else
     return nil;
 }
@@ -323,8 +324,7 @@
 // -----------------------------------------------------------------------------
 - (void) addNodeToTreeAndUpdateBoardPosition:(GoNode*)newNode
 {
-  // Sets the document dirty flag and, if alternating play is enabled, switches
-  // the nextMovePlayer
+  // Sets the document dirty flag
   [self.nodeModel appendNode:newNode];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
@@ -334,10 +334,11 @@
   self.boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
   [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
 
-  // Changing the current board position invokes GoNode modifyBoard for us.
-  // Important: GoNode modifyBoard must be invoked only AFTER the node was added
-  // to the node tree, otherwise the Zobrist hash (which is based on the
-  // previous node) cannot be calculated.
+  // Changing the current board position has the following effects:
+  // - It invokes GoNode modifyBoard. Important: GoNode modifyBoard must be
+  //   invoked only AFTER the node was added to the node tree, otherwise the
+  //   Zobrist hash (which is based on the previous node) cannot be calculated.
+  // - If self.alternatingPlay is true, it switches the nextMovePlayer.
   int oldCurrentBoardPosition = self.boardPosition.currentBoardPosition;
   int newCurrentBoardPosition = self.nodeModel.numberOfNodes - 1;
   self.boardPosition.currentBoardPosition = newCurrentBoardPosition;
@@ -455,6 +456,9 @@
 /// positions, but not for Ko situations or alternating play, because these
 /// things do not exist during board setup.
 ///
+/// Always returns @e true if @a stoneState is #GoColorNone, because remvoing
+/// a stone creates liberties and is therefore always legal.
+///
 /// If this method returns false, the out parameter @a reason is filled with
 /// the reason why changing the stone state of @a point is not legal. If this
 /// method returns true, the value of @a reason is undefined.
@@ -480,30 +484,18 @@
                                                    userInfo:nil];
     @throw exception;
   }
-  // TODO xxx Why this check? Why not let the caller check GoColorNone? (it would always return true)
-  if (stoneState != GoColorBlack && stoneState != GoColorWhite)
-  {
-    NSString* errorMessage = [NSString stringWithFormat:@"Invalid stoneState argument %d", stoneState];
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
-
-  enum GoColor friendlyColor = stoneState;
-  enum GoColor opponentColor = (friendlyColor == GoColorBlack ? GoColorWhite : GoColorBlack);
 
   // Caller wants to remove a stone - this is always legal because removing a
   // stone creates liberties
   if (stoneState == GoColorNone)
-  {
-    assert([point hasStone]);
     return true;
-  }
+
+  enum GoColor friendlyColor = stoneState;
+  enum GoColor opponentColor = (friendlyColor == GoColorBlack ? GoColorWhite : GoColorBlack);
+
   // Point is an already occupied intersection and caller wants to place a
   // stone on it
-  else if ([point hasStone])
+  if ([point hasStone])
   {
     // Caller wants to place a stone of the same color
     if (point.stoneState == stoneState)
@@ -623,6 +615,41 @@
 
     return false;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns @e true if the entire board in its current state would be
+/// legal during board setup. Since Ko is not yet possible before moves have
+/// been played, the only illegal position possible is a stone or group of
+/// stones having no liberties.
+///
+/// If this method returns @e false, the out parameter
+/// @a suicidalIntersectionsString is filled with a comma-separated list of
+/// vertices that contain suicidal stones with no liberties. If this method
+/// returns @e true, the value of @a reason is undefined.
+// -----------------------------------------------------------------------------
+- (bool) isLegalBoardSetup:(NSString**)suicidalIntersectionsString
+{
+  int numberOfSuicidalIntersections = 0;
+  *suicidalIntersectionsString = @"";
+
+  for (GoBoardRegion* region in self.board.regions)
+  {
+    if (! region.isStoneGroup)
+      continue;
+    if (region.liberties > 0)
+      continue;
+
+    for (GoPoint* suicidalPoint in region.points)
+    {
+      if (numberOfSuicidalIntersections > 0)
+        *suicidalIntersectionsString = [*suicidalIntersectionsString stringByAppendingString:@", "];
+      *suicidalIntersectionsString = [*suicidalIntersectionsString stringByAppendingString:suicidalPoint.vertex.string];
+      numberOfSuicidalIntersections++;
+    }
+  }
+
+  return (numberOfSuicidalIntersections == 0);
 }
 
 // -----------------------------------------------------------------------------
@@ -818,17 +845,20 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
                                                                                byColor:moveColor
                                                                              afterNode:nodeWithMostRecentMove];
 
-  GoNode* nodeWithPreviousToMostRecentMove = [GoUtilities nodeWithMostRecentMove:nodeWithMostRecentMove.parent];
+  // The node we are looking for could be a node with a move, but it could also
+  // be a node with setup. If there is such a node we use it's Zobrist hash
+  // for comparison.
+  GoNode* nodeWithMostRecentBoardStateChangeBeforeMostRecentMove = [GoUtilities nodeWithMostRecentBoardStateChange:nodeWithMostRecentMove.parent];
 
-  long long zobristHashOfPreviousToLastBoardPosition;
-  if (nodeWithPreviousToMostRecentMove)
-    zobristHashOfPreviousToLastBoardPosition = nodeWithPreviousToMostRecentMove.zobristHash;
+  long long zobristHashToCompare;
+  if (nodeWithMostRecentBoardStateChangeBeforeMostRecentMove)
+    zobristHashToCompare = nodeWithMostRecentBoardStateChangeBeforeMostRecentMove.zobristHash;
   else
-    zobristHashOfPreviousToLastBoardPosition = self.zobristHashAfterHandicap;
+    zobristHashToCompare = self.zobristHashAfterHandicap;
 
   // Even if we use one of the superko rules, we still want to check for simple
   // ko first so that we can distinguish between simple ko and superko.
-  bool isSimpleKo = (zobristHashOfHypotheticalMove == zobristHashOfPreviousToLastBoardPosition);
+  bool isSimpleKo = (zobristHashOfHypotheticalMove == zobristHashToCompare);
   if (isSimpleKo)
   {
     *isSuperko = false;
@@ -846,27 +876,54 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     case GoKoRuleSuperkoPositional:
     case GoKoRuleSuperkoSituational:
     {
-      // The zobrist hash of the board position with the previous-to-last move
-      // has already been examined by the Simple Ko check above, so if there are
-      // no additional moves there's nothing else we need to do here
-      if (! nodeWithPreviousToMostRecentMove)
+      // If nodeWithMostRecentBoardStateChangeBeforeMostRecentMove is nil, the
+      // Simple Ko check above has already examined zobristHashAfterHandicap
+      // and there is nothing else we need to do here
+      if (! nodeWithMostRecentBoardStateChangeBeforeMostRecentMove)
         return false;
 
-      for (GoNode* node = [GoUtilities nodeWithMostRecentMove:nodeWithPreviousToMostRecentMove.parent];
-           node != nil;
-           node = [GoUtilities nodeWithMostRecentMove:node.parent])
+      // If nodeWithMostRecentBoardStateChangeBeforeMostRecentMove contains
+      // setup, there can be no moves before that. Even Superko does not need
+      // to examine setup nodes before the last. Since the Simple Ko check
+      // above has already examined the Zobrist hash of
+      // nodeWithMostRecentBoardStateChangeBeforeMostRecentMove there is nothing
+      // else we need to do here.
+      if (nodeWithMostRecentBoardStateChangeBeforeMostRecentMove.goNodeSetup)
+        return false;
+
+      // nodeWithMostRecentBoardStateChangeBeforeMostRecentMove contained a
+      // move, so there are potential more moves before that => find and examine
+      // all of them here
+      GoNode* nodeWithMostRecentBoardStateChange = [GoUtilities nodeWithMostRecentBoardStateChange:nodeWithMostRecentBoardStateChangeBeforeMostRecentMove.parent];
+      // Remember the node with the first move here and in the loop, so that
+      // we don't have to search for it unnecessarily after the loop
+      GoNode* nodeWithFirstMove = nodeWithMostRecentBoardStateChangeBeforeMostRecentMove;
+      for (;
+           nodeWithMostRecentBoardStateChange && nodeWithMostRecentBoardStateChange.goMove;
+           nodeWithMostRecentBoardStateChange = [GoUtilities nodeWithMostRecentBoardStateChange:nodeWithMostRecentBoardStateChange.parent])
       {
+        nodeWithFirstMove = nodeWithMostRecentBoardStateChange;
+
         // Situational superko only examines board positions that resulted from
         // moves made by the same color
-        if (GoKoRuleSuperkoSituational == koRule && node.goMove.player.color != moveColor)
+        if (GoKoRuleSuperkoSituational == koRule && nodeWithMostRecentBoardStateChange.goMove.player.color != moveColor)
             continue;
 
-        if (zobristHashOfHypotheticalMove == node.zobristHash)
+        if (zobristHashOfHypotheticalMove == nodeWithMostRecentBoardStateChange.zobristHash)
         {
           *isSuperko = true;
           return true;
         }
       }
+
+      // At this point nodeWithMostRecentBoardStateChange is either the node
+      // before the first move that contains setup, or it is nil if no such
+      // setup node exists.
+      long long zobristHashPriorToFirstMove;
+      if (nodeWithMostRecentBoardStateChange)
+        zobristHashPriorToFirstMove = nodeWithMostRecentBoardStateChange.zobristHash;
+      else
+        zobristHashPriorToFirstMove = self.zobristHashAfterHandicap;
 
       // Situational superko only examines board positions that resulted from
       // moves made by the same color. But which color did the board position
@@ -889,13 +946,13 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
       // was actually played.
       if (GoKoRuleSuperkoSituational == koRule)
       {
-        enum GoColor colorOfZobristHashAfterHandicap =
-          [GoUtilities alternatingColorForColor:self.firstMove.player.color];
-        if (colorOfZobristHashAfterHandicap != moveColor)
+        enum GoColor colorOfZobristHashPriorToFirstMove =
+          [GoUtilities alternatingColorForColor:nodeWithFirstMove.goMove.player.color];
+        if (colorOfZobristHashPriorToFirstMove != moveColor)
           return false;
       }
 
-      if (zobristHashOfHypotheticalMove == self.zobristHashAfterHandicap)
+      if (zobristHashOfHypotheticalMove == zobristHashPriorToFirstMove)
       {
         *isSuperko = true;
         return true;
@@ -1116,18 +1173,30 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     @throw exception;
   }
 
-  if ([_handicapPoints isEqualToArray:newValue])
+  if ([_handicapPoints isEqualToArrayIgnoringOrder:newValue])
     return;
 
   // Reset previously set handicap points
   if (_handicapPoints)
   {
-    [_handicapPoints autorelease];
     for (GoPoint* point in _handicapPoints)
     {
+      if (point.stoneState != GoColorBlack)
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Previous handicap list contains point that is not occupied with a black stone: %@", point];
+        DDLogError(@"%@: %@", self, errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+
       point.stoneState = GoColorNone;
       [GoUtilities movePointToNewRegion:point];
     }
+
+    [_handicapPoints release];
+    _handicapPoints = nil;
   }
 
   _handicapPoints = [newValue copy];
@@ -1360,35 +1429,6 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   }
 }
 
-// TODO xxx document
-// Checks the entire board in its current state whether the setup stones that
-// are present are legal (i.e. no suicidal stone groups). Since Ko is not yet
-// possible before moves have been played, the only illegal position possible
-// is a stone or group of stones having no liberties.
-- (bool) isLegalBoardSetup:(NSString**)suicidalIntersectionsString
-{
-  int numberOfSuicidalIntersections = 0;
-  *suicidalIntersectionsString = @"";
-
-  for (GoBoardRegion* region in self.board.regions)
-  {
-    if (! region.isStoneGroup)
-      continue;
-    if (region.liberties > 0)
-      continue;
-
-    for (GoPoint* suicidalPoint in region.points)
-    {
-      if (numberOfSuicidalIntersections > 0)
-        *suicidalIntersectionsString = [*suicidalIntersectionsString stringByAppendingString:@", "];
-      *suicidalIntersectionsString = [*suicidalIntersectionsString stringByAppendingString:suicidalPoint.vertex.string];
-      numberOfSuicidalIntersections++;
-    }
-  }
-
-  return (numberOfSuicidalIntersections == 0);
-}
-
 // -----------------------------------------------------------------------------
 /// @brief Adds or removes @a point to/from the list of handicap points
 /// (@e handicapPoints). Changes the @e stoneState property of @a point
@@ -1505,16 +1545,51 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Changes the side that is set up to play the first move to
-/// @e newValue. See the documentation of property @e setupFirstMoveColor for
-/// details, also on which exceptions can be thrown.
+/// @brief Adds a new empty node to the current game variation. The node can be
+/// populated with setup information, markup and annotations, but it cannot hold
+/// a move.
 ///
-/// If @a newValue is either #GoColorBlack or #GoColorWhite, this changes the
-/// property @e nextMoveColor to the same value. If @a newValue is #GoColorNone
-/// this changes the value of the property @e nextMoveColor according to the
-/// game rules, like this:
+/// TODO xxx Write a more sophisticated implementation. This currently exists
+/// for unit testing purposes only.
+// -----------------------------------------------------------------------------
+- (void) addEmptyNodeToCurrentGameVariation
+{
+  GoNode* node = [GoNode node];
+  [self addNodeToTreeAndUpdateBoardPosition:node];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Changes the side that is set up to play the first move to
+/// @e newValue. Note that this method is @b not just a setter for the property
+/// @e setupFirstMoveColor, it contains more logic.
+///
+/// The logic implemented in this method replicates the behaviour of the SGF
+/// property PL: Once that property appears, the player that it sets up remains
+/// in effect until a different player is set up with another instance of PL.
+/// @a newValue is therefore interpreted as follows:
+/// - If @a newValue is an explicit color, i.e. #GoColorBlack or #GoColorWhite,
+///   then @a newValue becomes the new value of the property
+///   @e setupFirstMoveColor, overriding whatever the property value was before.
+///   This is equivalent to the PL property being set in a node.
+/// - If @a newValue is not an explicit color, i.e. #GoColorNone, then the
+///   property @e setupFirstMoveColor is restored to the value that it had in
+///   the board position before the the current board position. This is
+///   equivalent to the PL property being removed from a node. Note that if
+///   @e setupFirstMoveColor was never set to an explicit color in any of the
+///   board positions preceding the current board position, then the property
+///   @e setupFirstMoveColor is set to #GoColorNone.
+///
+/// After the property @e setupFirstMoveColor was set with a new value (which
+/// may not be @a newValue if @a newValue was #GoColorNone), the property
+/// @e nextMoveColor is also set with a new value. If the new value of the
+/// property @e setupFirstMoveColor is either #GoColorBlack or #GoColorWhite,
+/// the property @e nextMoveColor is changed to the same value. If the new value
+/// of the property @e setupFirstMoveColor is #GoColorNone, the value of the
+/// property @e nextMoveColor is changed according to the game rules, like this:
 /// - Sets @e nextMoveColor to #GoColorWhite if @e handicapPoints is non-empty.
 /// - Sets @e nextMoveColor to #GoColorBlack if @e handicapPoints is empty.
+///
+/// See the documentation of property @e setupFirstMoveColor for details.
 // -----------------------------------------------------------------------------
 - (void) changeSetupFirstMoveColor:(enum GoColor)newValue
 {
@@ -1522,7 +1597,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   GoNodeSetup* nodeSetup = currentNode.goNodeSetup;
   if (! nodeSetup)
   {
-    nodeSetup = [GoNodeSetup nodeSetupWithPreviousSetupCapturedFrom:self];
+    nodeSetup = [GoNodeSetup nodeSetupWithPreviousSetupCapturedFromGame:self];
     currentNode.goNodeSetup = nodeSetup;
   }
 
@@ -1531,11 +1606,17 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   if (nodeSetup.isEmpty)
     currentNode.goNodeSetup = nil;
 
-  // The property setter performs all sorts of validation
-  self.setupFirstMoveColor = newValue;
+  // If an explicit color is set up => keep it.
+  // If no explicit color is set up => restore the color that was in effect in
+  // the previous node. nodeSetup still has this value, even if it is empty
+  // and is going to be deallocated.
+  if (newValue != GoColorNone)
+    self.setupFirstMoveColor = newValue;
+  else
+    self.setupFirstMoveColor = nodeSetup.previousSetupFirstMoveColor;
 
-  if (_setupFirstMoveColor != GoColorNone)
-    self.nextMoveColor = _setupFirstMoveColor;
+  if (self.setupFirstMoveColor != GoColorNone)
+    self.nextMoveColor = self.setupFirstMoveColor;
   // If no color is set up explicitly, the game rules apply
   else if (self.handicapPoints.count > 0)
     self.nextMoveColor = GoColorWhite;
@@ -1561,7 +1642,10 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 ///
 /// Also raises @e NSInternalInconsistencyException if something about @a point
 /// is wrong:
-/// - @a point is listed in @e handicapPoints.
+/// - The property @e stoneState of @a point has a value that does not match the
+///   expected value according to the most recent setup information.
+/// - If the current board position is the first board position and @a point is
+///   listed in @e handicapPoints.
 // -----------------------------------------------------------------------------
 - (void) changeSetupPoint:(GoPoint*)point toStoneState:(enum GoColor)stoneState
 {
@@ -1589,10 +1673,26 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     @throw exception;
   }
 
-  if (point.stoneState == stoneState)
-    return;
+  GoNode* currentNode = self.boardPosition.currentNode;
+  GoNode* nodeWithMostRecentSetup = [GoUtilities nodeWithMostRecentSetup:currentNode inCurrentGameVariation:self];
+  if (nodeWithMostRecentSetup)
+  {
+    GoNodeSetup* mostRecentNodeSetup = nodeWithMostRecentSetup.goNodeSetup;
+    enum GoColor expectedStoneState = [mostRecentNodeSetup stoneStateAfterSetup:point];
+    if (point.stoneState != expectedStoneState)
+    {
+      NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: Point should have stone state %d, but actually has stone state %d", point.vertex.string, stoneState, expectedStoneState, point.stoneState];
+      DDLogError(@"%@: %@", self, errorMessage);
+      NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                       reason:errorMessage
+                                                     userInfo:nil];
+      @throw exception;
+    }
+  }
 
-  if ([self.handicapPoints containsObject:point])
+  // In nodes beyond the root node it is allowed to modify handicap points,
+  // because those nodes do not touch the root node's SGF property AB.
+  if (currentNode == self.nodeModel.rootNode && [self.handicapPoints containsObject:point])
   {
     NSString* errorMessage = [NSString stringWithFormat:@"Attempt to change stone state of setup point %@ to %d failed: Point is already in the list of handicap points", point.vertex.string, stoneState];
     DDLogError(@"%@: %@", self, errorMessage);
@@ -1601,6 +1701,9 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
                                                    userInfo:nil];
     @throw exception;
   }
+
+  if (point.stoneState == stoneState)
+    return;
 
   if (stoneState != GoColorNone)
   {
@@ -1622,11 +1725,10 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     }
   }
 
-  GoNode* currentNode = self.boardPosition.currentNode;
   GoNodeSetup* nodeSetup = currentNode.goNodeSetup;
   if (! nodeSetup)
   {
-    nodeSetup = [GoNodeSetup nodeSetupWithPreviousSetupCapturedFrom:self];
+    nodeSetup = [GoNodeSetup nodeSetupWithPreviousSetupCapturedFromGame:self];
     currentNode.goNodeSetup = nodeSetup;
   }
 
@@ -1653,10 +1755,6 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// reverting the board to the state of the previous board position. The discard
 /// includes any change to the property @e setupFirstMoveColor. Does nothing if
 /// no setup exists for the current board position.
-///
-/// If the current board position is the first board position, this will cause
-/// any handicap stones that existed and were removed by the board setup to be
-/// restored.
 ///
 /// Posts #allSetupStonesWillDiscard to the global notification centre before
 /// any changes are made. Posts #allSetupStonesDidDiscard to the global

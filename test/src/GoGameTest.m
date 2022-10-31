@@ -28,11 +28,13 @@
 #import <go/GoMoveAdditions.h>
 #import <go/GoNode.h>
 #import <go/GoNodeModel.h>
+#import <go/GoNodeSetup.h>
 #import <go/GoPoint.h>
 #import <go/GoUtilities.h>
 #import <main/ApplicationDelegate.h>
 #import <command/game/NewGameCommand.h>
 #import <newgame/NewGameModel.h>
+#import <utility/NSArrayAdditions.h>
 
 
 @implementation GoGameTest
@@ -108,6 +110,8 @@
 {
   NSUInteger handicapCount = 0;
   XCTAssertEqual(m_game.handicapPoints.count, handicapCount);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, 0);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, m_game.nodeModel.rootNode.zobristHash);
 
   NSMutableArray* handicapPoints = [NSMutableArray arrayWithCapacity:0];
   [handicapPoints setArray:[GoUtilities pointsForHandicap:5 inGame:m_game]];
@@ -115,6 +119,8 @@
     XCTAssertEqual(GoColorNone, point.stoneState);
   // Setting the handicap points changes the GoPoint's stoneState
   m_game.handicapPoints = handicapPoints;
+  XCTAssertNotEqual(m_game.zobristHashAfterHandicap, 0);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, m_game.nodeModel.rootNode.zobristHash);
   // Changing handicapPoints now must not have any influence on the game's
   // handicap points, i.e. we expect that GoGame made a copy of handicapPoints
   [handicapPoints addObject:[m_game.board pointAtVertex:@"A1"]];
@@ -127,7 +133,9 @@
 
   // Must be possible to 1) set an empty array, and 2) change a previously set
   // handicap list
-  m_game.handicapPoints = [NSArray array];
+  m_game.handicapPoints = @[];
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, 0);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, m_game.nodeModel.rootNode.zobristHash);
   // GoPoint object's that were previously set must have their stoneState reset
   for (GoPoint* point in handicapPoints)
     XCTAssertEqual(GoColorNone, point.stoneState);
@@ -138,14 +146,18 @@
   XCTAssertThrowsSpecificNamed(m_game.handicapPoints = handicapPoints,
                               NSException, NSInternalInconsistencyException, @"handicap set after first move");
   // Can set handicap if there are no moves
-  [m_game.nodeModel discardLeafNode];
+  [self discardLeafNodeAndSyncBoardPosition];
   m_game.handicapPoints = handicapPoints;
+  XCTAssertNotEqual(m_game.zobristHashAfterHandicap, 0);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, m_game.nodeModel.rootNode.zobristHash);
   [m_game resign];
   XCTAssertThrowsSpecificNamed(m_game.handicapPoints = handicapPoints,
                               NSException, NSInternalInconsistencyException, @"handicap set after game has ended");
   // Can set handicap if game has not ended
   [m_game revertStateFromEndedToInProgress];
   m_game.handicapPoints = handicapPoints;
+  XCTAssertNotEqual(m_game.zobristHashAfterHandicap, 0);
+  XCTAssertEqual(m_game.zobristHashAfterHandicap, m_game.nodeModel.rootNode.zobristHash);
 
   GoPoint* point = [m_game.board pointAtVertex:@"A1"];
   point.stoneState = GoColorBlack;
@@ -154,18 +166,78 @@
   XCTAssertThrowsSpecificNamed(m_game.handicapPoints = handicapPoints,
                                NSException, NSInvalidArgumentException, @"handicap points are already occupied");
 
-  // If you want to add more tests here, allocate a new game with
-  // NewGameCommand. Reason: As recommended in the docs of handicapPoints,
-  // the damage after the NSInvalidArgumentException from the previous test is
-  // too difficult to repair, so a new game needs to be allocated.
+  // We allocate a new game now, as recommended by the docs of the
+  // handicapPoints property, because the damage after the
+  // NSInvalidArgumentException from the previous test is too difficult to
+  // repair.
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [handicapPoints setArray:[GoUtilities pointsForHandicap:5 inGame:m_game]];
+
+  m_game.handicapPoints = handicapPoints;
+  GoPoint* firstHandicapPoint = handicapPoints.firstObject;
+  firstHandicapPoint.stoneState = GoColorNone;
+  XCTAssertThrowsSpecificNamed(m_game.handicapPoints = @[],
+                              NSException, NSInternalInconsistencyException, @"previous handicap points are not occupied with black stone");
+
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  [handicapPoints setArray:[GoUtilities pointsForHandicap:5 inGame:m_game]];
+
+  // Setting the same list of handicap points must have no effect. The order in
+  // which handicap points appear in the list must not be relevant. We test this
+  // by setting up a board state that would cause an exception to be thrown if
+  // the setter were not performing the equality check correctly. The setup
+  // consists of removing the black stone from one of the handicap points - this
+  // normally causes an NSInternalInconsistencyException.
+  m_game.handicapPoints = handicapPoints;
+  firstHandicapPoint = handicapPoints.firstObject;
+  firstHandicapPoint.stoneState = GoColorNone;
+  NSArray* reversedHandicapPoints = [NSArray arrayWithArrayInReverseOrder:handicapPoints];
+  m_game.handicapPoints = reversedHandicapPoints;
+  firstHandicapPoint.stoneState = GoColorBlack;
+  m_game.handicapPoints = @[];
+
+  // Setting a handicap / no handicap changes nextMoveColor when the normal
+  // game rules are in effect (i.e. when setupFirstMoveColor is not set)
+  XCTAssertEqual(m_game.setupFirstMoveColor, GoColorNone);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  m_game.handicapPoints = handicapPoints;
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  m_game.handicapPoints = @[];
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
+  // Setting a handicap / no handicap does not change nextMoveColor if
+  // setupFirstMoveColor overrides the normal game rules
+  [m_game changeSetupFirstMoveColor:GoColorWhite];
+  XCTAssertEqual(m_game.setupFirstMoveColor, GoColorWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  m_game.handicapPoints = handicapPoints;
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  m_game.handicapPoints = @[];
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  [m_game changeSetupFirstMoveColor:GoColorNone];  // removes GoNodeSetup for the next test
+
+  // If a GoNodeSetup object exists its previous setup information must be
+  // updated when a new list of handicap stones is set. Error cases of this are
+  // tested in GoNodeSetupTest.
+  GoNode* rootNode = m_game.nodeModel.rootNode;
+  XCTAssertNil(rootNode.goNodeSetup);
+  [m_game changeSetupFirstMoveColor:GoColorBlack];
+  XCTAssertNotNil(rootNode.goNodeSetup);
+  XCTAssertNil(rootNode.goNodeSetup.previousBlackSetupStones);
+  m_game.handicapPoints = handicapPoints;
+  XCTAssertTrue([rootNode.goNodeSetup.previousBlackSetupStones isEqualToArrayIgnoringOrder:handicapPoints]);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the @e nextMoveColor property.
+/// @brief Exercises the @e nextMoveColor and @e nextMovePlayer properties. The
+/// two properties are tested in conjunction because @e nextMovePlayer is a
+/// calculated property based entirely on the value of @e nextMoveColor.
 ///
 /// Tests are almost equivalent to those in testSwitchNextMoveColor().
 // -----------------------------------------------------------------------------
-- (void) testNextMoveColor
+- (void) testNextMoveColorAndNextMovePlayer
 {
   XCTAssertEqual(m_game.alternatingPlay, true);
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
@@ -177,6 +249,8 @@
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  // Because alternating play is enabled the value of nextMoveColor changes on
+  // every move
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
   // We can force two consecutive moves by the same color
@@ -195,10 +269,10 @@
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
   [m_game pass];
   XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
+  // Because alternating play is disabled the value of nextMoveColor no longer
+  // changes on every move => we have full control over the property
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
-  // Now that alternating play is disabled, we have full control over the
-  // property
   m_game.nextMoveColor = GoColorBlack;
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
@@ -220,7 +294,7 @@
   XCTAssertFalse(m_game.nextMovePlayerIsComputerPlayer);
   [m_game pass];
   XCTAssertFalse(m_game.nextMovePlayerIsComputerPlayer);
-  [m_game.nodeModel discardLeafNode];
+  [self discardLeafNodeAndSyncBoardPosition];
   XCTAssertFalse(m_game.nextMovePlayerIsComputerPlayer);
   [m_game pass];
   [m_game pass];
@@ -242,7 +316,7 @@
   m_game.handicapPoints = [GoUtilities pointsForHandicap:2 inGame:m_game];
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
-  m_game.handicapPoints = [NSArray array];
+  m_game.handicapPoints = @[];
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
@@ -261,11 +335,11 @@
   XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
-  [m_game.nodeModel discardLeafNode];  // discard play move C1
+  [self discardLeafNodeAndSyncBoardPosition];  // discard play move C1
   XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
-  [m_game.nodeModel discardLeafNode];  // discard pass move
+  [self discardLeafNodeAndSyncBoardPosition];  // discard pass move
   XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
@@ -274,7 +348,7 @@
   [m_game switchNextMoveColor];
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
-  [m_game.nodeModel discardLeafNode];  // discard play move B1 made by white
+  [self discardLeafNodeAndSyncBoardPosition];  // discard play move B1 made by white
   XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
@@ -307,7 +381,7 @@
   m_game.handicapPoints = [GoUtilities pointsForHandicap:3 inGame:m_game];
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
-  m_game.handicapPoints = [NSArray array];
+  m_game.handicapPoints = @[];
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
 
@@ -341,11 +415,11 @@
 
   // Discards also respect the disabled alternatingPlay property: the next move
   // color stays white, even if it means going back to the start of the game
-  [m_game.nodeModel discardLeafNode];
+  [self discardLeafNodeAndSyncBoardPosition];
   XCTAssertEqual(m_game.lastMove.player, m_game.playerWhite);
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
-  [m_game.nodeModel discardLeafNode];
+  [self discardLeafNodeAndSyncBoardPosition];
   XCTAssertEqual(m_game.lastMove.player, m_game.playerBlack);
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
@@ -360,9 +434,10 @@
 - (void) testFirstMove
 {
   XCTAssertNil(m_game.firstMove);
+  [m_game addEmptyNodeToCurrentGameVariation];
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   XCTAssertNotNil(m_game.firstMove);
-  [m_game.nodeModel discardLeafNode];
+  [self discardLeafNodeAndSyncBoardPosition];
   XCTAssertNil(m_game.firstMove);
   // More detailed checks in testLastMove()
 }
@@ -372,26 +447,31 @@
 // -----------------------------------------------------------------------------
 - (void) testLastMove
 {
+  [m_game addEmptyNodeToCurrentGameVariation];
   XCTAssertNil(m_game.lastMove);
 
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  [m_game addEmptyNodeToCurrentGameVariation];
   GoMove* move1 = m_game.lastMove;
   XCTAssertNotNil(move1);
   XCTAssertEqual(m_game.firstMove, move1);
   XCTAssertNil(move1.previous);
 
   [m_game play:[m_game.board pointAtVertex:@"B1"]];
+  [m_game addEmptyNodeToCurrentGameVariation];
   GoMove* move2 = m_game.lastMove;
   XCTAssertNotNil(move2);
   XCTAssertTrue(m_game.firstMove != move2);
   XCTAssertNil(move1.previous);
   XCTAssertEqual(move1, move2.previous);
 
-  [m_game.nodeModel discardLeafNode];
+  [self discardLeafNodeAndSyncBoardPosition];
+  [self discardLeafNodeAndSyncBoardPosition];
   XCTAssertEqual(move1, m_game.firstMove);
   XCTAssertEqual(move1, m_game.lastMove);
 
-  [m_game.nodeModel discardLeafNode];
+  [self discardLeafNodeAndSyncBoardPosition];
+  [self discardLeafNodeAndSyncBoardPosition];
   XCTAssertNil(m_game.firstMove);
   XCTAssertNil(m_game.lastMove);
 }
@@ -407,7 +487,7 @@
   // instead we manipulate the state indirectly by invoking other methods
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
-  [m_game.nodeModel discardLeafNode];
+  [self discardLeafNodeAndSyncBoardPosition];
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   [m_game play:[m_game.board pointAtVertex:@"B1"]];
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
@@ -417,6 +497,9 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Exercises the @e reasonForGameHasEnded property.
+///
+/// Tests are almost identical to those in
+/// testEndGameDueToPassMovesIfGameRulesRequireIt().
 // -----------------------------------------------------------------------------
 - (void) testReasonForGameHasEnded
 {
@@ -462,6 +545,7 @@
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game pass];
   [m_game pass];
+  XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
 
   // The UI does not allow GoLifeAndDeathSettlingRuleThreePasses and
   // GoFourPassesRuleFourPassesEndTheGame to be active at the same time, so this
@@ -479,80 +563,6 @@
   [m_game pass];
   // GoGameHasEndedReasonFourPasses
   XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exercises the @e setupFirstMoveColor property.
-// -----------------------------------------------------------------------------
-- (void) testSetupFirstMoveColor
-{
-  XCTAssertEqual(GoColorNone, m_game.setupFirstMoveColor);
-  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
-
-  // Setting the same value has no effect
-  m_game.setupFirstMoveColor = GoColorNone;
-  XCTAssertEqual(GoColorNone, m_game.setupFirstMoveColor);
-  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
-
-  // Setting a different value, but no observable change to nextMoveColor
-  // because that property already had that value
-  m_game.setupFirstMoveColor = GoColorBlack;
-  XCTAssertEqual(GoColorBlack, m_game.setupFirstMoveColor);
-  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
-
-  // Setting another different value, but this time observable change to
-  // nextMoveColor
-  m_game.setupFirstMoveColor = GoColorWhite;
-  XCTAssertEqual(GoColorWhite, m_game.setupFirstMoveColor);
-  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
-
-  // Resetting to original value, also changes nextMoveColor according to
-  // normal game rules
-  m_game.setupFirstMoveColor = GoColorNone;
-  XCTAssertEqual(GoColorNone, m_game.setupFirstMoveColor);
-  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
-
-  // Test that property cannot be set if game state is correct but a move was
-  // made. In addition, test that nextMoveColor remains unchanged.
-  [m_game play:[m_game.board pointAtVertex:@"A1"]];
-  [m_game play:[m_game.board pointAtVertex:@"B1"]];
-  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);  // still black because of two moves
-  XCTAssertThrowsSpecificNamed(m_game.setupFirstMoveColor = GoColorBlack,
-                               NSException, NSInternalInconsistencyException, @"setupFirstMoveColor set after first move");
-  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
-
-  // Can set setupFirstMoveColor if there are no moves
-  [m_game.nodeModel discardLeafNode];
-  [m_game.nodeModel discardLeafNode];
-  m_game.setupFirstMoveColor = GoColorWhite;
-  XCTAssertEqual(GoColorWhite, m_game.setupFirstMoveColor);
-  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
-
-  // Test that property cannot be set if game state is wrong. In addition, test
-  // that nextMoveColor remains unchanged.
-  [m_game resign];
-  XCTAssertThrowsSpecificNamed(m_game.setupFirstMoveColor = GoColorWhite,
-                               NSException, NSInternalInconsistencyException, @"setupFirstMoveColor set after game has ended");
-  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
-
-  // Can set setupFirstMoveColor if game has not ended
-  [m_game revertStateFromEndedToInProgress];
-  m_game.setupFirstMoveColor = GoColorBlack;
-  XCTAssertEqual(GoColorBlack, m_game.setupFirstMoveColor);
-  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
-
-  // Interaction between handicapPoints setter and setupFirstMoveColor
-  NSMutableArray* handicapPoints = [NSMutableArray arrayWithCapacity:0];
-  [handicapPoints setArray:[GoUtilities pointsForHandicap:3 inGame:m_game]];
-  // handicapPoints setter does not change nextMoveColor property value if
-  // setupFirstMoveColor is not GoColorNone
-  m_game.handicapPoints = handicapPoints;
-  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
-  // Setting setupFirstMoveColor to GoColorNone resets nextMoveColor to its
-  // unforced value, which is GoColorWhite because we currently have handicap
-  m_game.setupFirstMoveColor = GoColorNone;
-  XCTAssertEqual(GoColorNone, m_game.setupFirstMoveColor);
-  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
 }
 
 // -----------------------------------------------------------------------------
@@ -580,8 +590,14 @@
 // -----------------------------------------------------------------------------
 - (void) testPlay
 {
+  GoBoardPosition* boardPosition = m_game.boardPosition;
+  GoNodeModel* nodeModel = m_game.nodeModel;
+
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   XCTAssertFalse(m_game.document.isDirty);
+  XCTAssertEqual(nodeModel.numberOfNodes, 1);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 1);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 0);
 
   GoPoint* point1 = [m_game.board pointAtVertex:@"T19"];
   [m_game play:point1];
@@ -591,6 +607,9 @@
   XCTAssertEqual(m_game.playerBlack, move1.player);
   XCTAssertEqual(point1, move1.point);
   XCTAssertTrue(m_game.document.isDirty);
+  XCTAssertEqual(nodeModel.numberOfNodes, 2);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 2);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 1);
 
   GoPoint* point2 = [m_game.board pointAtVertex:@"S19"];
   [m_game play:point2];
@@ -598,8 +617,14 @@
   XCTAssertEqual(GoMoveTypePlay, move2.type);
   XCTAssertEqual(m_game.playerWhite, move2.player);
   XCTAssertEqual(point2, move2.point);
+  XCTAssertEqual(nodeModel.numberOfNodes, 3);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
 
   [m_game pass];
+  XCTAssertEqual(nodeModel.numberOfNodes, 4);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 4);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 3);
 
   GoPoint* point3 = [m_game.board pointAtVertex:@"T18"];
   [m_game play:point3];
@@ -609,6 +634,9 @@
   XCTAssertEqual(point3, move3.point);
   NSUInteger expectedNumberOfCapturedStones = 1;
   XCTAssertEqual(expectedNumberOfCapturedStones, move3.capturedStones.count);
+  XCTAssertEqual(nodeModel.numberOfNodes, 5);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 5);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 4);
 
   XCTAssertThrowsSpecificNamed([m_game play:nil],
                               NSException, NSInvalidArgumentException, @"point is nil");
@@ -632,8 +660,14 @@
 // -----------------------------------------------------------------------------
 - (void) testPass
 {
+  GoBoardPosition* boardPosition = m_game.boardPosition;
+  GoNodeModel* nodeModel = m_game.nodeModel;
+
   XCTAssertEqual(GoGameStateGameHasStarted, m_game.state);
   XCTAssertFalse(m_game.document.isDirty);
+  XCTAssertEqual(nodeModel.numberOfNodes, 1);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 1);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 0);
 
   // Can start game with a pass
   [m_game pass];
@@ -643,14 +677,23 @@
   XCTAssertEqual(m_game.playerBlack, move1.player);
   XCTAssertNil(move1.point);
   XCTAssertTrue(m_game.document.isDirty);
+  XCTAssertEqual(nodeModel.numberOfNodes, 2);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 2);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 1);
 
   [m_game play:[m_game.board pointAtVertex:@"B13"]];
+  XCTAssertEqual(nodeModel.numberOfNodes, 3);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
 
   [m_game pass];
   GoMove* move2 = m_game.lastMove;
   XCTAssertEqual(GoMoveTypePass, move2.type);
   XCTAssertEqual(m_game.playerBlack, move2.player);
   XCTAssertNil(move2.point);
+  XCTAssertEqual(nodeModel.numberOfNodes, 4);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 4);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 3);
 
   // End the game with two passes in a row
   [m_game pass];
@@ -659,6 +702,9 @@
   XCTAssertEqual(GoMoveTypePass, move3.type);
   XCTAssertEqual(m_game.playerWhite, move3.player);
   XCTAssertNil(move3.point);
+  XCTAssertEqual(nodeModel.numberOfNodes, 5);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 5);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 4);
 
   XCTAssertThrowsSpecificNamed([m_game pass],
                               NSException, NSInternalInconsistencyException, @"pass after game end");
@@ -728,7 +774,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the isLegalBoardSetupAt() method.
+/// @brief Exercises the
+/// isLegalBoardSetupAt:withStoneState:isIllegalReason:createsIllegalStoneOrGroup:()
+/// method.
 // -----------------------------------------------------------------------------
 - (void) testIsLegalBoardSetupAt
 {
@@ -740,10 +788,6 @@
   GoPoint* pointA2 = [m_game.board pointAtVertex:@"A2"];
   GoPoint* pointB2 = [m_game.board pointAtVertex:@"B2"];
   GoPoint* pointA3 = [m_game.board pointAtVertex:@"A3"];
-
-  // Testing for GoColorNone does not make sense and is not allowed
-  XCTAssertThrowsSpecificNamed([m_game isLegalBoardSetupAt:pointA1 withStoneState:GoColorNone isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint],
-                               NSException, NSInvalidArgumentException, @"expected that GoColorNone is not allowed");
 
   // Empty intersection is allowed for both colors
   XCTAssertTrue([m_game isLegalBoardSetupAt:pointA1 withStoneState:GoColorBlack isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
@@ -823,12 +867,49 @@
   XCTAssertFalse([m_game isLegalBoardSetupAt:pointA1 withStoneState:GoColorBlack isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
   XCTAssertEqual(reason, GoBoardSetupIsIllegalReasonSuicideSetupStone);
 
+  // Testing for GoColorNone always returns true
+  XCTAssertTrue([m_game isLegalBoardSetupAt:pointB1 withStoneState:GoColorNone isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
+  // ... even if no stone actually exists on the point
+  XCTAssertTrue([m_game isLegalBoardSetupAt:pointA1 withStoneState:GoColorNone isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint]);
+
   XCTAssertThrowsSpecificNamed([m_game isLegalBoardSetupAt:nil withStoneState:GoColorNone isIllegalReason:&reason createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint],
                                NSException, NSInvalidArgumentException, @"point is nil");
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the isLegalMove() method (including simple ko scenarios).
+/// @brief Exercises the isLegalBoardSetup:() method.
+// -----------------------------------------------------------------------------
+- (void) testIsLegalBoardSetup
+{
+  NSString* suicidalIntersectionsString;
+
+  GoPoint* pointA1 = [m_game.board pointAtVertex:@"A1"];
+  GoPoint* pointB1 = [m_game.board pointAtVertex:@"B1"];
+  GoPoint* pointA2 = [m_game.board pointAtVertex:@"A2"];
+
+  // Empty board is always legal
+  XCTAssertTrue([m_game isLegalBoardSetup:&suicidalIntersectionsString]);
+
+  // Cannot use changeSetupPoint:toStoneState:() because that already checks
+  // whether the board setup is legal
+  pointA1.stoneState = GoColorBlack;
+  [GoUtilities movePointToNewRegion:pointA1];
+  pointB1.stoneState = GoColorWhite;
+  [GoUtilities movePointToNewRegion:pointB1];
+
+  // Board with some stones, but everything is still legal
+  XCTAssertTrue([m_game isLegalBoardSetup:&suicidalIntersectionsString]);
+
+  // Black stone on A1 now no longer has liberties
+  pointA2.stoneState = GoColorWhite;
+  [GoUtilities movePointToNewRegion:pointA2];
+  XCTAssertFalse([m_game isLegalBoardSetup:&suicidalIntersectionsString]);
+  XCTAssertTrue([suicidalIntersectionsString isEqualToString:@"A1"]);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the isLegalMove:isIllegalReason:() method (including simple
+/// ko scenarios).
 // -----------------------------------------------------------------------------
 - (void) testIsLegalMove
 {
@@ -841,7 +922,7 @@
   XCTAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
 
   // Play it with black
-  [m_game.nodeModel discardLeafNode];
+  [self discardLeafNodeAndSyncBoardPosition];
   [m_game play:point1];
 
   // Point occupied by black is not legal for either player
@@ -852,7 +933,7 @@
   XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonIntersectionOccupied);
 
   // Play stone with white
-  [m_game.nodeModel discardLeafNode];
+  [self discardLeafNodeAndSyncBoardPosition];
   GoPoint* point2 = [m_game.board pointAtVertex:@"S1"];
   [m_game play:point2];
 
@@ -875,7 +956,7 @@
   XCTAssertTrue([m_game isLegalMove:point1 isIllegalReason:&illegalReason]);
 
   // Counter-attack by black to create Ko situation
-  [m_game.nodeModel discardLeafNode];
+  [self discardLeafNodeAndSyncBoardPosition];
   GoPoint* point4 = [m_game.board pointAtVertex:@"R1"];
   [m_game play:point4];
   [m_game pass];
@@ -906,7 +987,6 @@
   // Black passes, white connects
   [m_game pass];
   [m_game play:point1];
-
 
   // Setup situation that resembles Ko, but is not, because it allows to
   // capture back more than 1 stone
@@ -959,8 +1039,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the isLegalMove() method (only positional superko
-/// scenarios).
+/// @brief Exercises the isLegalMove:isIllegalReason:() method (only positional
+/// superko scenarios).
 // -----------------------------------------------------------------------------
 - (void) testIsLegalMovePositionalSuperko
 {
@@ -984,8 +1064,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the isLegalMove() method (only situational superko
-/// scenarios).
+/// @brief Exercises the isLegalMove:isIllegalReason() method (only situational
+/// superko scenarios).
 // -----------------------------------------------------------------------------
 - (void) testIsLegalMoveSituationalSuperko
 {
@@ -1006,23 +1086,6 @@
   GoPoint* point2 = [m_game.board pointAtVertex:@"B1"];
   XCTAssertFalse([m_game isLegalMove:point2 isIllegalReason:&illegalReason]);
   XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSuperko);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exercises the isLegalPassMoveIllegalReason() method.
-// -----------------------------------------------------------------------------
-- (void) testIsLegalPassMoveIllegalReason
-{
-  [m_game play:[m_game.board pointAtVertex:@"A1"]];
-  GoMove* lastMove = m_game.lastMove;
-
-  // GoMoveAdditions lets us write the moveNumber property - actually generating
-  // the maximum number of moves would be rather slow
-  lastMove.moveNumber = maximumNumberOfMoves;
-
-  enum GoMoveIsIllegalReason illegalReason;
-  XCTAssertFalse([m_game isLegalPassMoveIllegalReason:&illegalReason]);
-  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonTooManyMoves);
 }
 
 // -----------------------------------------------------------------------------
@@ -1066,6 +1129,90 @@
   // created the board position in move 5. This also triggers positional superko
   // because positional superko is less strict than situational superko and does
   // not care who creates board positions.
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the isLegalPassMoveIllegalReason:() method.
+// -----------------------------------------------------------------------------
+- (void) testIsLegalPassMoveIllegalReason
+{
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  GoMove* lastMove = m_game.lastMove;
+
+  // GoMoveAdditions lets us write the moveNumber property - actually generating
+  // the maximum number of moves would be rather slow
+  lastMove.moveNumber = maximumNumberOfMoves;
+
+  enum GoMoveIsIllegalReason illegalReason;
+  XCTAssertFalse([m_game isLegalPassMoveIllegalReason:&illegalReason]);
+  XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonTooManyMoves);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the endGameDueToPassMovesIfGameRulesRequireIt() method.
+///
+/// Tests are almost identical to those in testReasonForGameHasEnded().
+// -----------------------------------------------------------------------------
+- (void) testEndGameDueToPassMovesIfGameRulesRequireIt
+{
+  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+
+  // Can resume play an arbitrary number of times; each time two passes are made
+  // the game ends GoGameHasEndedReasonTwoPasses
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  [m_game pass];
+  [m_game pass];
+  XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
+  [m_game revertStateFromEndedToInProgress];
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  [m_game pass];
+  [m_game pass];
+  XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
+
+  // If GoFourPassesRuleFourPassesEndTheGame is active it will cause the game
+  // to end with reason GoGameHasEndedReasonFourPasses when the second pair of
+  // pass moves is made
+  newGameModel.fourPassesRule = GoFourPassesRuleFourPassesEndTheGame;
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  [m_game pass];
+  [m_game pass];
+  XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
+  [m_game revertStateFromEndedToInProgress];
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  [m_game pass];
+  [m_game pass];
+  // If the game has ended with reason GoGameHasEndedReasonFourPasses, the UI
+  // forces the user to discard the last pass move if he wants to continue
+  // playing. In other words, in the UI there is no way to resume play as we
+  // do where, so this test is somewhat contrived.
+  XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
+  [m_game revertStateFromEndedToInProgress];
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  [m_game pass];
+  [m_game pass];
+  XCTAssertEqual(GoGameHasEndedReasonTwoPasses, m_game.reasonForGameHasEnded);
+
+  // The UI does not allow GoLifeAndDeathSettlingRuleThreePasses and
+  // GoFourPassesRuleFourPassesEndTheGame to be active at the same time, so this
+  // test may seem a bit contrived. On the other hand, GoGame is perfectly
+  // capable of handling these two rules, so let's test away...
+  newGameModel.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleThreePasses;
+  [[[[NewGameCommand alloc] init] autorelease] submit];
+  m_game = m_delegate.game;
+  XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
+  [m_game pass];
+  [m_game pass];
+  [m_game pass];
+  XCTAssertEqual(GoGameHasEndedReasonThreePasses, m_game.reasonForGameHasEnded);
+  [m_game revertStateFromEndedToInProgress];
+  [m_game pass];
+  // GoGameHasEndedReasonFourPasses
+  XCTAssertEqual(GoGameHasEndedReasonFourPasses, m_game.reasonForGameHasEnded);
+
+  XCTAssertThrowsSpecificNamed([m_game endGameDueToPassMovesIfGameRulesRequireIt],
+                              NSException, NSInternalInconsistencyException, @"attempt to end game after game is already ended");
 }
 
 // -----------------------------------------------------------------------------
@@ -1151,8 +1298,9 @@
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
 
   // The public API of GoGame does not provide a means to set nextMoveColor to
-  // GoColorNone, so we cannot test whether switchNextMoveColor really raises
-  // NSInternalInconsistencyException if it encounters GoColorNone
+  // GoColorNone (the setter raises an exception), so we cannot test whether
+  // switchNextMoveColor really raises NSInternalInconsistencyException if it
+  // encounters GoColorNone
 }
 
 // -----------------------------------------------------------------------------
@@ -1160,10 +1308,7 @@
 // -----------------------------------------------------------------------------
 - (void) testToggleHandicapPoint
 {
-  // TODO xxx Update test method
-/*
-  NSUInteger handicapCount = 0;
-  XCTAssertEqual(m_game.handicapPoints.count, handicapCount);
+  XCTAssertEqual(m_game.handicapPoints.count, 0);
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
   XCTAssertEqual(m_game.setupFirstMoveColor, GoColorNone);
 
@@ -1172,35 +1317,31 @@
   // Place handicap stone
   [m_game toggleHandicapPoint:pointA1];
   NSArray* handicapPoints = m_game.handicapPoints;
-  handicapCount = 1;
-  XCTAssertEqual(handicapPoints.count, handicapCount);
+  XCTAssertEqual(handicapPoints.count, 1);
   XCTAssertEqual(handicapPoints.firstObject, pointA1);
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
 
   // Remove handicap stone
   [m_game toggleHandicapPoint:pointA1];
   handicapPoints = m_game.handicapPoints;
-  handicapCount = 0;
-  XCTAssertEqual(handicapPoints.count, handicapCount);
+  XCTAssertEqual(handicapPoints.count, 0);
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
 
   // Place handicap stone, but don't change nextMoveColor
-  m_game.setupFirstMoveColor = GoColorBlack;
+  [m_game changeSetupFirstMoveColor:GoColorBlack];
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
   [m_game toggleHandicapPoint:pointA1];
   handicapPoints = m_game.handicapPoints;
-  handicapCount = 1;
-  XCTAssertEqual(handicapPoints.count, handicapCount);
+  XCTAssertEqual(handicapPoints.count, 1);
   XCTAssertEqual(handicapPoints.firstObject, pointA1);
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
 
   // Remove handicap stone, but don't revert nextMoveColor
-  m_game.setupFirstMoveColor = GoColorWhite;
+  [m_game changeSetupFirstMoveColor:GoColorWhite];
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   [m_game toggleHandicapPoint:pointA1];
   handicapPoints = m_game.handicapPoints;
-  handicapCount = 0;
-  XCTAssertEqual(handicapPoints.count, handicapCount);
+  XCTAssertEqual(handicapPoints.count, 0);
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
 
   XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:nil],
@@ -1208,21 +1349,14 @@
 
   // Various attempts to illegally toggle the point when the stone state is not
   // correct
-  m_game.blackSetupPoints = @[pointA1];
-  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
-                               NSException, NSInternalInconsistencyException, @"point already in blackSetupPoints");
-  m_game.blackSetupPoints = @[];
-  m_game.whiteSetupPoints = @[pointA1];
-  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
-                               NSException, NSInternalInconsistencyException, @"point already in whiteSetupPoints");
-  m_game.whiteSetupPoints = @[];
-  pointA1.stoneState = GoColorBlack;
-  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
-                               NSException, NSInternalInconsistencyException, @"point has black stone on it but is not in handicapPoints");
   pointA1.stoneState = GoColorWhite;
   XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
                                NSException, NSInternalInconsistencyException, @"point has white stone on it");
+  pointA1.stoneState = GoColorBlack;
+  XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
+                               NSException, NSInternalInconsistencyException, @"point has black stone on it, but is not in handicapPoints");
   pointA1.stoneState = GoColorNone;
+
   [m_game toggleHandicapPoint:pointA1];
   XCTAssertEqual(pointA1.stoneState, GoColorBlack);
   pointA1.stoneState = GoColorNone;
@@ -1236,7 +1370,7 @@
   [m_game pass];
   XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
                                NSException, NSInternalInconsistencyException, @"game aleady has moves");
-  [m_game.nodeModel discardLeafNode];
+  [self discardLeafNodeAndSyncBoardPosition];
   [m_game toggleHandicapPoint:pointA1];
   [m_game resign];
   XCTAssertThrowsSpecificNamed([m_game toggleHandicapPoint:pointA1],
@@ -1247,7 +1381,135 @@
   m_game.type = GoGameTypeComputerVsComputer;
   [m_game pause];
   [m_game toggleHandicapPoint:pointA1];
-*/
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the addEmptyNodeToCurrentGameVariation() method.
+// -----------------------------------------------------------------------------
+- (void) testAddEmptyNodeToCurrentGameVariation
+{
+  GoNodeModel* nodeModel = m_game.nodeModel;
+
+  XCTAssertEqual(nodeModel.numberOfNodes, 1);
+
+  [m_game addEmptyNodeToCurrentGameVariation];
+  XCTAssertEqual(nodeModel.numberOfNodes, 2);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the changeSetupFirstMoveColor:() method.
+// -----------------------------------------------------------------------------
+- (void) testChangeSetupFirstMoveColor
+{
+  XCTAssertEqual(GoColorNone, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+  XCTAssertNil(m_game.nodeModel.leafNode.goNodeSetup);
+
+  // Unsetting side to move first when side to move first is already not set
+  // => no effect
+  [m_game changeSetupFirstMoveColor:GoColorNone];
+  XCTAssertEqual(GoColorNone, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+  XCTAssertNil(m_game.nodeModel.leafNode.goNodeSetup);
+
+  // Setting side to move first when side to move first is not set
+  // => changes both setupFirstMoveColor and nextMoveColor, but nextMoveColor
+  //    already had the same value, so no observable change
+  // => creates a GoNodeSetup object
+  [m_game changeSetupFirstMoveColor:GoColorBlack];
+  XCTAssertEqual(GoColorBlack, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+  XCTAssertNotNil(m_game.nodeModel.leafNode.goNodeSetup);
+  XCTAssertEqual(GoColorBlack, m_game.nodeModel.leafNode.goNodeSetup.setupFirstMoveColor);
+  XCTAssertEqual(GoColorNone, m_game.nodeModel.leafNode.goNodeSetup.previousSetupFirstMoveColor);
+
+  // Setting side to move first when side to move first is already set with a
+  // different color
+  // => changes both setupFirstMoveColor and nextMoveColor; this time change
+  //    to nextMoveColor can be observed.
+  [m_game changeSetupFirstMoveColor:GoColorWhite];
+  XCTAssertEqual(GoColorWhite, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
+  XCTAssertNotNil(m_game.nodeModel.leafNode.goNodeSetup);
+  XCTAssertEqual(GoColorWhite, m_game.nodeModel.leafNode.goNodeSetup.setupFirstMoveColor);
+  XCTAssertEqual(GoColorNone, m_game.nodeModel.leafNode.goNodeSetup.previousSetupFirstMoveColor);
+
+  // Unsetting side to move first when side to move first is set
+  // => changes both setupFirstMoveColor and nextMoveColor
+  // => removes GoNodeSetup object
+  [m_game changeSetupFirstMoveColor:GoColorNone];
+  XCTAssertEqual(GoColorNone, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+  XCTAssertNil(m_game.nodeModel.leafNode.goNodeSetup);
+
+  // Set up side to move first in board position 0
+  // => preparation for tests when more than just one board position exists
+  [m_game changeSetupFirstMoveColor:GoColorWhite];
+  XCTAssertEqual(GoColorWhite, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
+  XCTAssertNotNil(m_game.nodeModel.leafNode.goNodeSetup);
+  XCTAssertEqual(GoColorWhite, m_game.nodeModel.leafNode.goNodeSetup.setupFirstMoveColor);
+  XCTAssertEqual(GoColorNone, m_game.nodeModel.leafNode.goNodeSetup.previousSetupFirstMoveColor);
+
+  // Adding a new setup node creates a node without GoNodeSetup object
+  // => both setupFirstMoveColor and nextMoveColor keep their values from the
+  //    previous board position
+  [m_game addEmptyNodeToCurrentGameVariation];
+  XCTAssertEqual(GoColorWhite, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
+  XCTAssertNil(m_game.nodeModel.leafNode.goNodeSetup);
+
+  // Setting side to move first when side to move first was set in previous
+  // board position
+  // => changes both setupFirstMoveColor and nextMoveColor
+  // => creates a GoNodeSetup object with previousSetupFirstMoveColor set to
+  //    the setupFirstMoveColor value from the previous board position
+  [m_game changeSetupFirstMoveColor:GoColorBlack];
+  XCTAssertEqual(GoColorBlack, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+  XCTAssertNotNil(m_game.nodeModel.leafNode.goNodeSetup);
+  XCTAssertEqual(GoColorBlack, m_game.nodeModel.leafNode.goNodeSetup.setupFirstMoveColor);
+  XCTAssertEqual(GoColorWhite, m_game.nodeModel.leafNode.goNodeSetup.previousSetupFirstMoveColor);
+
+  // Unsetting side to move first when side to move first is set
+  // => changes both setupFirstMoveColor and nextMoveColor; setupFirstMoveColor
+  //    value is restored from the previous board position
+  // => removes GoNodeSetup object
+  [m_game changeSetupFirstMoveColor:GoColorNone];
+  XCTAssertEqual(GoColorWhite, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
+  XCTAssertNil(m_game.nodeModel.leafNode.goNodeSetup);
+
+  // Adding a new setup node creates a node without GoNodeSetup object
+  // => both setupFirstMoveColor and nextMoveColor keep their values from the
+  //    previous board position
+  [m_game addEmptyNodeToCurrentGameVariation];
+  XCTAssertEqual(GoColorWhite, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
+  XCTAssertNil(m_game.nodeModel.leafNode.goNodeSetup);
+
+  // Setting side to move first when side to move first was set in previous
+  // board position
+  // => changes both setupFirstMoveColor and nextMoveColor
+  // => creates a GoNodeSetup object with previousSetupFirstMoveColor set to
+  //    the setupFirstMoveColor value from the previous board position (even
+  //    though there was no GoNodeSetup in that board position)
+  [m_game changeSetupFirstMoveColor:GoColorBlack];
+  XCTAssertEqual(GoColorBlack, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorBlack, m_game.nextMoveColor);
+  XCTAssertNotNil(m_game.nodeModel.leafNode.goNodeSetup);
+  XCTAssertEqual(GoColorBlack, m_game.nodeModel.leafNode.goNodeSetup.setupFirstMoveColor);
+  XCTAssertEqual(GoColorWhite, m_game.nodeModel.leafNode.goNodeSetup.previousSetupFirstMoveColor);
+
+  // Unsetting side to move first when side to move first is set
+  // => changes both setupFirstMoveColor and nextMoveColor; setupFirstMoveColor
+  //    value is restored from the previous board position (even though there
+  //    was no GoNodeSetup in that board position)
+  // => removes GoNodeSetup object
+  [m_game changeSetupFirstMoveColor:GoColorNone];
+  XCTAssertEqual(GoColorWhite, m_game.setupFirstMoveColor);
+  XCTAssertEqual(GoColorWhite, m_game.nextMoveColor);
+  XCTAssertNil(m_game.nodeModel.leafNode.goNodeSetup);
 }
 
 // -----------------------------------------------------------------------------
@@ -1255,84 +1517,135 @@
 // -----------------------------------------------------------------------------
 - (void) testChangeSetupPoint
 {
-  // TODO xxx Update test method
-/*
   GoPoint* pointA1 = [m_game.board pointAtVertex:@"A1"];
   GoPoint* pointB1 = [m_game.board pointAtVertex:@"B1"];
   GoPoint* pointA2 = [m_game.board pointAtVertex:@"A2"];
 
-  NSArray* blackSetupPoints = m_game.blackSetupPoints;
-  NSUInteger blackSetupPointsCount = 0;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  NSArray* whiteSetupPoints = m_game.whiteSetupPoints;
-  NSUInteger whiteSetupPointsCount = 0;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  GoNodeSetup* nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNil(nodeSetup);
+  XCTAssertEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  long long previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
 
   // Empty > Empty
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorNone];
-  blackSetupPoints = m_game.blackSetupPoints;
-  blackSetupPointsCount = 0;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  whiteSetupPoints = m_game.whiteSetupPoints;
-  whiteSetupPointsCount = 0;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNil(nodeSetup);
+  XCTAssertEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
 
   // Empty > Black
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
-  blackSetupPoints = m_game.blackSetupPoints;
-  blackSetupPointsCount = 1;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  whiteSetupPoints = m_game.whiteSetupPoints;
-  whiteSetupPointsCount = 0;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
-  XCTAssertEqual(blackSetupPoints.firstObject, pointA1);
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNotNil(nodeSetup);
+  XCTAssertNotNil(nodeSetup.blackSetupStones);
+  XCTAssertNil(nodeSetup.whiteSetupStones);
+  XCTAssertNil(nodeSetup.noSetupStones);
+  XCTAssertEqual(nodeSetup.blackSetupStones.count, 1);
+  XCTAssertEqual(nodeSetup.blackSetupStones.firstObject, pointA1);
+  XCTAssertNotEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
 
   // Black > Black
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
-  blackSetupPoints = m_game.blackSetupPoints;
-  blackSetupPointsCount = 1;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  whiteSetupPoints = m_game.whiteSetupPoints;
-  whiteSetupPointsCount = 0;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
-  XCTAssertEqual(blackSetupPoints.firstObject, pointA1);
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNotNil(nodeSetup);
+  XCTAssertNotNil(nodeSetup.blackSetupStones);
+  XCTAssertNil(nodeSetup.whiteSetupStones);
+  XCTAssertNil(nodeSetup.noSetupStones);
+  XCTAssertEqual(nodeSetup.blackSetupStones.count, 1);
+  XCTAssertEqual(nodeSetup.blackSetupStones.firstObject, pointA1);
+  XCTAssertNotEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  XCTAssertEqual(previousZobristHash, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
 
   // Black > White
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorWhite];
-  blackSetupPoints = m_game.blackSetupPoints;
-  blackSetupPointsCount = 0;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  whiteSetupPoints = m_game.whiteSetupPoints;
-  whiteSetupPointsCount = 1;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
-  XCTAssertEqual(whiteSetupPoints.firstObject, pointA1);
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNotNil(nodeSetup);
+  XCTAssertNil(nodeSetup.blackSetupStones);
+  XCTAssertNotNil(nodeSetup.whiteSetupStones);
+  XCTAssertNil(nodeSetup.noSetupStones);
+  XCTAssertEqual(nodeSetup.whiteSetupStones.count, 1);
+  XCTAssertEqual(nodeSetup.whiteSetupStones.firstObject, pointA1);
+  XCTAssertNotEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  XCTAssertNotEqual(previousZobristHash, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
 
   // White > White
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorWhite];
-  blackSetupPoints = m_game.blackSetupPoints;
-  blackSetupPointsCount = 0;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  whiteSetupPoints = m_game.whiteSetupPoints;
-  whiteSetupPointsCount = 1;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
-  XCTAssertEqual(whiteSetupPoints.firstObject, pointA1);
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNotNil(nodeSetup);
+  XCTAssertNil(nodeSetup.blackSetupStones);
+  XCTAssertNotNil(nodeSetup.whiteSetupStones);
+  XCTAssertNil(nodeSetup.noSetupStones);
+  XCTAssertEqual(nodeSetup.whiteSetupStones.count, 1);
+  XCTAssertEqual(nodeSetup.whiteSetupStones.firstObject, pointA1);
+  XCTAssertNotEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  XCTAssertEqual(previousZobristHash, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
 
   // White > Empty
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorNone];
-  blackSetupPoints = m_game.blackSetupPoints;
-  blackSetupPointsCount = 0;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  whiteSetupPoints = m_game.whiteSetupPoints;
-  whiteSetupPointsCount = 0;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNil(nodeSetup);
+  XCTAssertEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
 
-  // Illegal board setup
+  // Set up black and white stones in first board position so that they can be
+  // changed in the second board position
+  m_game.handicapPoints = @[pointB1];
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
   [m_game changeSetupPoint:pointA2 toStoneState:GoColorWhite];
+  [m_game addEmptyNodeToCurrentGameVariation];
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNil(nodeSetup);
+  XCTAssertNotEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
+
+  // Black > Empty
+  // White > Empty
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorNone];
+  [m_game changeSetupPoint:pointA2 toStoneState:GoColorNone];
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNotNil(nodeSetup);
+  XCTAssertNil(nodeSetup.blackSetupStones);
+  XCTAssertNil(nodeSetup.whiteSetupStones);
+  XCTAssertNotNil(nodeSetup.noSetupStones);
+  XCTAssertEqual(nodeSetup.noSetupStones.count, 2);
+  XCTAssertEqual(nodeSetup.noSetupStones.firstObject, pointA1);
+  XCTAssertEqual(nodeSetup.noSetupStones.lastObject, pointA2);
+  XCTAssertNotEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  XCTAssertNotEqual(previousZobristHash, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
+
+  // Empty > Black
+  // Empty > White
+  [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
+  [m_game changeSetupPoint:pointA2 toStoneState:GoColorWhite];
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNil(nodeSetup);
+  XCTAssertNotEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  XCTAssertNotEqual(previousZobristHash, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
+
+  // Black (handicap) > Empty
+  // This is only allowed in nodes beyond the root node. Below is a another test
+  // that verifies that changing a handicap stone in the root node fails
+  [m_game changeSetupPoint:pointB1 toStoneState:GoColorNone];
+  XCTAssertNotEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  XCTAssertNotEqual(previousZobristHash, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
+
+  [self discardLeafNodeAndSyncBoardPosition];
+  m_game.handicapPoints = @[];
+
+  // Illegal board setup
   XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointB1 toStoneState:GoColorWhite],
                                NSException, NSInvalidArgumentException, @"illegal board setup");
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorNone];
   [m_game changeSetupPoint:pointA2 toStoneState:GoColorNone];
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNil(nodeSetup);
 
   // point is nil
   XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:nil toStoneState:GoColorBlack],
@@ -1342,36 +1655,51 @@
   // already a handicap point or a white setup point
   m_game.handicapPoints = @[pointA1];
   XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorWhite],
-                               NSException, NSInternalInconsistencyException, @"point already in handicapPoints");
+                               NSException, NSInternalInconsistencyException, @"point already in handicapPoints and current node is root node");
   m_game.handicapPoints = @[];
+
   pointA1.stoneState = GoColorBlack;
   XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorWhite],
-                               NSException, NSInternalInconsistencyException, @"point has black stone on it but is not in blackSetupPoints");
+                               NSException, NSInternalInconsistencyException, @"point has black stone on it but is not in GoNodeSetup.blackSetupStones");
+
   pointA1.stoneState = GoColorWhite;
   XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack],
-                               NSException, NSInternalInconsistencyException, @"point has white stone on it but is not in whiteSetupPoints");
+                               NSException, NSInternalInconsistencyException, @"point has white stone on it but is not in GoNodeSetup.whiteSetupStones");
   pointA1.stoneState = GoColorNone;
+
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
-  XCTAssertEqual(pointA1.stoneState, GoColorBlack);
+  [m_game changeSetupPoint:pointA2 toStoneState:GoColorWhite];
+  [m_game addEmptyNodeToCurrentGameVariation];
+
   pointA1.stoneState = GoColorNone;
   XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack],
-                               NSException, NSInternalInconsistencyException, @"point has no black stone on it, but is in blackSetupPoints");
+                               NSException, NSInternalInconsistencyException, @"point has no stone on it but is not in GoNodeSetup.noSetupStones");
   pointA1.stoneState = GoColorBlack;
+
+  [m_game changeSetupPoint:pointA2 toStoneState:GoColorBlack];
+  pointA2.stoneState = GoColorNone;
+  XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA2 toStoneState:GoColorWhite],
+                               NSException, NSInternalInconsistencyException, @"point has no black stone on it, but is in GoNodeSetup.blackSetupStones");
+  pointA2.stoneState = GoColorBlack;
+
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorWhite];
-  XCTAssertEqual(pointA1.stoneState, GoColorWhite);
   pointA1.stoneState = GoColorNone;
   XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack],
-                               NSException, NSInternalInconsistencyException, @"point has no white stone on it, but is in whiteSetupPoints");
+                               NSException, NSInternalInconsistencyException, @"point has no white stone on it, but is in GoNodeSetup.whiteSetupStones");
   pointA1.stoneState = GoColorWhite;
+
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorNone];
+  pointA1.stoneState = GoColorBlack;
+  XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorWhite],
+                               NSException, NSInternalInconsistencyException, @"point has a stone on it, but is in GoNodeSetup.noSetupStones");
+  pointA1.stoneState = GoColorNone;
 
   // Various attempts to illegally change the stone state when the game state is
   // not correct
   [m_game pass];
   XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack],
                                NSException, NSInternalInconsistencyException, @"game aleady has moves");
-  [m_game.nodeModel discardLeafNode];
-  [m_game toggleHandicapPoint:pointA1];
+  [self discardLeafNodeAndSyncBoardPosition];
   [m_game resign];
   XCTAssertThrowsSpecificNamed([m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack],
                                NSException, NSInternalInconsistencyException, @"game aleady has ended");
@@ -1381,7 +1709,6 @@
   m_game.type = GoGameTypeComputerVsComputer;
   [m_game pause];
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
-*/
 }
 
 // -----------------------------------------------------------------------------
@@ -1389,108 +1716,82 @@
 // -----------------------------------------------------------------------------
 - (void) testDiscardAllSetupStones
 {
-  // TODO xxx Update test method
-/*
   GoPoint* pointA1 = [m_game.board pointAtVertex:@"A1"];
   GoPoint* pointB1 = [m_game.board pointAtVertex:@"B1"];
   GoPoint* pointA2 = [m_game.board pointAtVertex:@"A2"];
 
-  NSArray* blackSetupPoints = m_game.blackSetupPoints;
-  NSUInteger blackSetupPointsCount = 0;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  NSArray* whiteSetupPoints = m_game.whiteSetupPoints;
-  NSUInteger whiteSetupPointsCount = 0;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
-  NSArray* handicapPoints = m_game.handicapPoints;
-  NSUInteger handicapPointsCount = 0;
-  XCTAssertEqual(handicapPoints.count, handicapPointsCount);
+  GoNodeSetup* nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNil(nodeSetup);
+  XCTAssertEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  long long previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
 
   // Discard when no setup stones exist
-  [m_game discardAllSetupStones];
-  blackSetupPoints = m_game.blackSetupPoints;
-  blackSetupPointsCount = 0;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  whiteSetupPoints = m_game.whiteSetupPoints;
-  whiteSetupPointsCount = 0;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  [m_game discardAllSetup];
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNil(nodeSetup);
+  XCTAssertEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
 
   // Discard when no setup stones exist, but handicap
   [m_game toggleHandicapPoint:pointA2];
-  blackSetupPoints = m_game.blackSetupPoints;
-  blackSetupPointsCount = 0;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  whiteSetupPoints = m_game.whiteSetupPoints;
-  whiteSetupPointsCount = 0;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
-  handicapPoints = m_game.handicapPoints;
-  handicapPointsCount = 1;
-  XCTAssertEqual(handicapPoints.count, handicapPointsCount);
-  XCTAssertEqual(pointA2.stoneState, GoColorBlack);
-  [m_game discardAllSetupStones];
-  blackSetupPoints = m_game.blackSetupPoints;
-  blackSetupPointsCount = 0;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  whiteSetupPoints = m_game.whiteSetupPoints;
-  whiteSetupPointsCount = 0;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
-  handicapPoints = m_game.handicapPoints;
-  handicapPointsCount = 1;
-  XCTAssertEqual(handicapPoints.count, handicapPointsCount);
-  XCTAssertEqual(pointA2.stoneState, GoColorBlack);
+  [m_game discardAllSetup];
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNil(nodeSetup);
+  XCTAssertNotEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
+  [m_game toggleHandicapPoint:pointA2];
+  XCTAssertEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
 
-  // Discard when 1 setup stone exists
-  [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
-  blackSetupPoints = m_game.blackSetupPoints;
-  blackSetupPointsCount = 1;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  whiteSetupPoints = m_game.whiteSetupPoints;
-  whiteSetupPointsCount = 0;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
-  XCTAssertEqual(blackSetupPoints.firstObject, pointA1);
-  [m_game discardAllSetupStones];
-  blackSetupPoints = m_game.blackSetupPoints;
-  blackSetupPointsCount = 0;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  whiteSetupPoints = m_game.whiteSetupPoints;
-  whiteSetupPointsCount = 0;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
-
-  // Discard when >1 setup stones exist, different colors
+  // Discard when setup stones exists
   [m_game changeSetupPoint:pointA1 toStoneState:GoColorBlack];
   [m_game changeSetupPoint:pointB1 toStoneState:GoColorWhite];
-  blackSetupPoints = m_game.blackSetupPoints;
-  blackSetupPointsCount = 1;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  whiteSetupPoints = m_game.whiteSetupPoints;
-  whiteSetupPointsCount = 1;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
-  XCTAssertEqual(blackSetupPoints.firstObject, pointA1);
-  XCTAssertEqual(whiteSetupPoints.firstObject, pointB1);
-  [m_game discardAllSetupStones];
-  blackSetupPoints = m_game.blackSetupPoints;
-  blackSetupPointsCount = 0;
-  XCTAssertEqual(blackSetupPoints.count, blackSetupPointsCount);
-  whiteSetupPoints = m_game.whiteSetupPoints;
-  whiteSetupPointsCount = 0;
-  XCTAssertEqual(whiteSetupPoints.count, whiteSetupPointsCount);
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNotNil(nodeSetup);
+  XCTAssertNotNil(nodeSetup.blackSetupStones);
+  XCTAssertNotNil(nodeSetup.whiteSetupStones);
+  XCTAssertNil(nodeSetup.noSetupStones);
+  XCTAssertEqual(nodeSetup.blackSetupStones.count, 1);
+  XCTAssertEqual(nodeSetup.blackSetupStones.firstObject, pointA1);
+  XCTAssertEqual(nodeSetup.whiteSetupStones.count, 1);
+  XCTAssertEqual(nodeSetup.whiteSetupStones.firstObject, pointB1);
+  XCTAssertNotEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  XCTAssertNotEqual(previousZobristHash, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
+  [m_game discardAllSetup];
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNil(nodeSetup);
+  XCTAssertEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
+
+  // Discard when setupFirstMoveColor is set
+  [m_game changeSetupFirstMoveColor:GoColorBlack];
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNotNil(nodeSetup);
+  XCTAssertEqual(GoColorBlack, nodeSetup.setupFirstMoveColor);
+  XCTAssertEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
+  [m_game discardAllSetup];
+  nodeSetup = m_game.nodeModel.leafNode.goNodeSetup;
+  XCTAssertNil(nodeSetup);
+  XCTAssertEqual(0, m_game.nodeModel.leafNode.zobristHash);
+  previousZobristHash = m_game.nodeModel.leafNode.zobristHash;
 
   // Various attempts to illegally discard setup stones when the game state is
   // not correct
   [m_game pass];
-  XCTAssertThrowsSpecificNamed([m_game discardAllSetupStones],
+  XCTAssertThrowsSpecificNamed([m_game discardAllSetup],
                                NSException, NSInternalInconsistencyException, @"game aleady has moves");
-  [m_game.nodeModel discardLeafNode];
-  [m_game toggleHandicapPoint:pointA1];
+  [self discardLeafNodeAndSyncBoardPosition];
   [m_game resign];
-  XCTAssertThrowsSpecificNamed([m_game discardAllSetupStones],
+  XCTAssertThrowsSpecificNamed([m_game discardAllSetup],
                                NSException, NSInternalInconsistencyException, @"game aleady has ended");
   [m_game revertStateFromEndedToInProgress];
 
   // Discard is allowed for computer vs. computer games in paused state
   m_game.type = GoGameTypeComputerVsComputer;
   [m_game pause];
-  [m_game discardAllSetupStones];
-*/
+  [m_game discardAllSetup];
 }
 
 // -----------------------------------------------------------------------------
@@ -1672,18 +1973,18 @@
 // -----------------------------------------------------------------------------
 - (void) testSetupAndSimpleKo
 {
-  // TODO xxx Update test method
-  /*
   NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
   newGameModel.koRule = GoKoRuleSimple;
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
 
-  m_game.blackSetupPoints = @[[m_game.board pointAtVertex:@"A2"],
-                              [m_game.board pointAtVertex:@"B1"]];
-  m_game.whiteSetupPoints = @[[m_game.board pointAtVertex:@"B2"],
-                              [m_game.board pointAtVertex:@"C1"]];
-  m_game.setupFirstMoveColor = GoColorWhite;
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"A2"] toStoneState:GoColorBlack];
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"B1"] toStoneState:GoColorBlack];
+
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"B2"] toStoneState:GoColorWhite];
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"C1"] toStoneState:GoColorWhite];
+
+  [m_game changeSetupFirstMoveColor:GoColorWhite];
 
   // White captures the black stone on B1
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
@@ -1692,7 +1993,6 @@
   enum GoMoveIsIllegalReason illegalReason;
   XCTAssertFalse([m_game isLegalMove:point isIllegalReason:&illegalReason]);
   XCTAssertEqual(illegalReason, GoMoveIsIllegalReasonSimpleKo);
-*/
 }
 
 // -----------------------------------------------------------------------------
@@ -1753,21 +2053,21 @@
 // -----------------------------------------------------------------------------
 - (void) setupAndPlayUntilAlmostPositionalSuperko
 {
-  // TODO xxx Update test method
-/*
   // This re-creates the position achieved in
   // playUntilAlmostPositionalSuperko() - see the comments in that method
   // for explanations.
-  m_game.blackSetupPoints = @[[m_game.board pointAtVertex:@"B1"],
-                              [m_game.board pointAtVertex:@"C2"],
-                              [m_game.board pointAtVertex:@"D1"]];
-  m_game.whiteSetupPoints = @[[m_game.board pointAtVertex:@"A2"],
-                              [m_game.board pointAtVertex:@"B2"]];
-  m_game.setupFirstMoveColor = GoColorWhite;
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"B1"] toStoneState:GoColorBlack];
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"C2"] toStoneState:GoColorBlack];
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"D1"] toStoneState:GoColorBlack];
+
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"A2"] toStoneState:GoColorWhite];
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"B2"] toStoneState:GoColorWhite];
+
+  [m_game changeSetupFirstMoveColor:GoColorWhite];
+
   [m_game play:[m_game.board pointAtVertex:@"D2"]];
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   [m_game play:[m_game.board pointAtVertex:@"C1"]];
-*/
 }
 
 // -----------------------------------------------------------------------------
@@ -1776,23 +2076,33 @@
 // -----------------------------------------------------------------------------
 - (void) setupAndPlayUntilAlmostSituationalSuperko
 {
-  // TODO xxx Update test method
-/*
   // This re-creates the position achieved in
   // playUntilAlmostSituationalSuperko() - see the comments in that method
   // for explanations.
-  m_game.blackSetupPoints = @[[m_game.board pointAtVertex:@"B1"],
-                              [m_game.board pointAtVertex:@"C2"],
-                              [m_game.board pointAtVertex:@"D1"]];
-  m_game.whiteSetupPoints = @[[m_game.board pointAtVertex:@"A2"],
-                              [m_game.board pointAtVertex:@"B2"]];
-  m_game.setupFirstMoveColor = GoColorWhite;
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"B1"] toStoneState:GoColorBlack];
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"C2"] toStoneState:GoColorBlack];
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"D1"] toStoneState:GoColorBlack];
+
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"A2"] toStoneState:GoColorWhite];
+  [m_game changeSetupPoint:[m_game.board pointAtVertex:@"B2"] toStoneState:GoColorWhite];
+
+  [m_game changeSetupFirstMoveColor:GoColorWhite];
+
   [m_game pass];
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
   [m_game play:[m_game.board pointAtVertex:@"C1"]];
-*/
 }
 
-// TODO xxx Add test methods for new functionality in GoGame
+// -----------------------------------------------------------------------------
+/// @brief Private helper for various test methods. Discards the leaf node in
+/// the current game's GoNodeModel and adjusts the current game's
+/// GoBoardPosition accordingly.
+// -----------------------------------------------------------------------------
+- (void) discardLeafNodeAndSyncBoardPosition
+{
+  m_game.boardPosition.currentBoardPosition--;
+  m_game.boardPosition.numberOfBoardPositions--;
+  [m_game.nodeModel discardLeafNode];
+}
 
 @end

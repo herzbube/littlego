@@ -48,14 +48,13 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a newly constructed GoNodeSetup object that has captured the
-/// current game state as its "previous setup" and is therefore ready to receive
-/// setup changes.
+/// current game state from @a game as its "previous setup".
 // -----------------------------------------------------------------------------
-+ (GoNodeSetup*) nodeSetupWithPreviousSetupCapturedFrom:(GoGame*)game
++ (GoNodeSetup*) nodeSetupWithPreviousSetupCapturedFromGame:(GoGame*)game
 {
   GoNodeSetup* nodeSetup = [[[self alloc] init] autorelease];
 
-  [nodeSetup capturePreviousSetupInformation:game];
+  [nodeSetup capturePreviousSetupInformationFromGame:game];
   nodeSetup.previousSetupInformationWasCaptured = true;
 
   return nodeSetup;
@@ -225,7 +224,7 @@
 
   if (! self.previousSetupInformationWasCaptured)
   {
-    [self capturePreviousSetupInformation:game];
+    [self capturePreviousSetupInformationFromGame:game];
     self.previousSetupInformationWasCaptured = true;
   }
 
@@ -399,6 +398,41 @@
     self.mutablePreviousBlackSetupStones = nil;
 }
 
+#pragma mark - Public API - Querying for expected stone state
+
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
+- (enum GoColor) stoneStateAfterSetup:(GoPoint*)point
+{
+  // First check if the stone state is explicitly set in this GoNodeSetup
+  if (_mutableBlackSetupStones && [_mutableBlackSetupStones containsObject:point])
+    return GoColorBlack;
+  else if (_mutableWhiteSetupStones && [_mutableWhiteSetupStones containsObject:point])
+    return GoColorWhite;
+  else if (_mutableNoSetupStones && [_mutableNoSetupStones containsObject:point])
+    return GoColorNone;
+
+  // Only now that we know that the stone state is not explicitly set in this
+  // GoNodeSetup are we allowed to consult the previous setup information
+  return [self stoneStatePreviousToSetup:point];
+}
+
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+/// @brief Returns the stone state that @a point should have before the setup in
+/// this GoNodeSetup was applied to the board.
+// -----------------------------------------------------------------------------
+- (enum GoColor) stoneStatePreviousToSetup:(GoPoint*)point
+{
+  if (_mutablePreviousBlackSetupStones && [_mutablePreviousBlackSetupStones containsObject:point])
+    return GoColorBlack;
+  else if (_mutablePreviousWhiteSetupStones && [_mutablePreviousWhiteSetupStones containsObject:point])
+    return GoColorWhite;
+  else
+    return GoColorNone;
+}
+
 #pragma mark - Public API - Properties
 
 // -----------------------------------------------------------------------------
@@ -500,40 +534,6 @@
     self.mutableNoSetupStones = nil;
 }
 
-// TODO xxx is this method still needed?
-// -----------------------------------------------------------------------------
-/// @brief Returns the stone state of @a point after the setup in this
-/// GoNodeSetup was applied to the board.
-// -----------------------------------------------------------------------------
-- (enum GoColor) stoneStateAfterSetup:(GoPoint*)point
-{
-  // First check if the stone state is explicitly set in this GoNodeSetup
-  if (_mutableBlackSetupStones && [_mutableBlackSetupStones containsObject:point])
-    return GoColorBlack;
-  else if (_mutableWhiteSetupStones && [_mutableWhiteSetupStones containsObject:point])
-    return GoColorWhite;
-  else if (_mutableNoSetupStones && [_mutableNoSetupStones containsObject:point])
-    return GoColorNone;
-
-  // Only now that we know that the stone state is not explicitly set in this
-  // GoNodeSetup are we allowed to consult the previous setup information
-  return [self stoneStatePreviousToSetup:point];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the stone state of @a point before the setup in this
-/// GoNodeSetup was applied to the board.
-// -----------------------------------------------------------------------------
-- (enum GoColor) stoneStatePreviousToSetup:(GoPoint*)point
-{
-  if (_mutablePreviousBlackSetupStones && [_mutablePreviousBlackSetupStones containsObject:point])
-    return GoColorBlack;
-  else if (_mutablePreviousWhiteSetupStones && [_mutablePreviousWhiteSetupStones containsObject:point])
-    return GoColorWhite;
-  else
-    return GoColorNone;
-}
-
 // -----------------------------------------------------------------------------
 /// @brief Captures setup information in @a game and stores the information in
 /// the properties @e previousBlackSetupStones, @e previousWhiteSetupStones and
@@ -543,11 +543,11 @@
 ///
 /// Raises @e NSInvalidArgumentException if @a game is @e nil.
 // -----------------------------------------------------------------------------
-- (void) capturePreviousSetupInformation:(GoGame*)game
+- (void) capturePreviousSetupInformationFromGame:(GoGame*)game
 {
   if (! game)
   {
-    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"capturePreviousSetupInformation: failed: game argument is nil"];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"capturePreviousSetupInformationFromGame: failed: game argument is nil"];
     // Dummy return to make compiler happy (compiler does not see that an
     // exception is thrown)
     return;

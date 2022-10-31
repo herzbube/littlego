@@ -79,6 +79,7 @@
 - (void) revertStateFromEndedToInProgress;
 - (void) switchNextMoveColor;
 - (void) toggleHandicapPoint:(GoPoint*)point;
+- (void) addEmptyNodeToCurrentGameVariation;
 - (void) changeSetupFirstMoveColor:(enum GoColor)newValue;
 - (void) changeSetupPoint:(GoPoint*)point toStoneState:(enum GoColor)stoneState;
 - (void) discardAllSetup;
@@ -109,6 +110,13 @@
 /// this GoGame object is not in state #GoGameStateGameHasStarted, or if it is
 /// in that state but already has moves. Summing it up, this property can be set
 /// only at the start of the game.
+///
+/// The setter also raises @e NSInternalInconsistencyException if a GoPoint in
+/// the previously set list of handicap stones is not occupied by a black stone.
+/// If this occurs, the @e stoneState property of some GoPoint objects in the
+/// previously set list may already have been restored to #GoColorNone. The
+/// state of the board is probably difficult to repair and it is recommended to
+/// allocate a new GoGame instance.
 ///
 /// The setter raises @e NSInvalidArgumentException if the specified list
 /// contains one or more GoPoint objects that are not in the previously set list

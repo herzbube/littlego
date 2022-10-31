@@ -32,7 +32,7 @@
 - (void) testType;
 - (void) testBoard;
 - (void) testHandicapPoints;
-- (void) testNextMoveColor;
+- (void) testNextMoveColorAndNextMovePlayer;
 - (void) testNextMovePlayerIsComputerPlayer;
 - (void) testAlternatingPlayEnabled;
 - (void) testAlternatingPlayDisabled;
@@ -40,7 +40,6 @@
 - (void) testLastMove;
 - (void) testState;
 - (void) testReasonForGameHasEnded;
-- (void) testSetupFirstMoveColor;
 - (void) testZobristHashAfterHandicap;
 - (void) testPlay;
 - (void) testPass;
@@ -48,13 +47,17 @@
 - (void) testPause;
 - (void) testContinue;
 - (void) testIsLegalBoardSetupAt;
+- (void) testIsLegalBoardSetup;
 - (void) testIsLegalMove;
 - (void) testIsLegalMovePositionalSuperko;
 - (void) testIsLegalMoveSituationalSuperko;
 - (void) testIsLegalPassMoveIllegalReason;
+- (void) testEndGameDueToPassMovesIfGameRulesRequireIt;
 - (void) testRevertStateFromEndedToInProgress;
 - (void) testSwitchNextMoveColor;
 - (void) testToggleHandicapPoint;
+- (void) testAddEmptyNodeToCurrentGameVariation;
+- (void) testChangeSetupFirstMoveColor;
 - (void) testChangeSetupPoint;
 - (void) testDiscardAllSetupStones;
 - (void) testDiscardCausesRegionToFragment;

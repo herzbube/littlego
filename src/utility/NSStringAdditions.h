@@ -21,7 +21,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The NSStringAdditions category enhances NSString by adding a number
-/// of useful class methods.
+/// of useful class and instance methods.
 ///
 /// @ingroup utility
 // -----------------------------------------------------------------------------

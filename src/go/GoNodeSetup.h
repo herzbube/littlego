@@ -32,7 +32,7 @@
 ///
 /// Design note: It is expected that only small parts of the board are actually
 /// set up with stones. It is therefore most efficient, memory-wise and also for
-/// the size of the NSCoding archive, for capturePreviousSetupInformation() to
+/// the size of the NSCoding archive, for the previous setup information to
 /// only capture the points that have stones on them. Whoever needs to work with
 /// empty points can (and must) infer what these points are, at the cost of
 /// additional processing time and power.
@@ -43,7 +43,7 @@
 
 /// @name Initialization
 //@{
-+ (GoNodeSetup*) nodeSetupWithPreviousSetupCapturedFrom:(GoGame*)game;
++ (GoNodeSetup*) nodeSetupWithPreviousSetupCapturedFromGame:(GoGame*)game;
 - (id) init;
 //@}
 
@@ -178,6 +178,17 @@
 /// - If a previously existing handicap stone disappears although the property
 ///   @e noSetupStones still contains the point.
 - (void) updatePreviousSetupInformationAfterHandicapStonesDidChange:(GoGame*)game;
+//@}
+
+/// @name Querying for expected stone state
+//@{
+/// @brief Returns the stone state that @a point should have after the setup in
+/// this GoNodeSetup is applied to the board.
+- (enum GoColor) stoneStateAfterSetup:(GoPoint*)point;
+
+/// @brief Returns the stone state that @a point should have before the setup in
+/// this GoNodeSetup is applied to the board.
+- (enum GoColor) stoneStatePreviousToSetup:(GoPoint*)point;
 //@}
 
 /// @name Properties
