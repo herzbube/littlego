@@ -20,12 +20,12 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NSObjectAddtions category enhances NSObject by adding a number
-/// of useful class methods.
+/// @brief The NSObjectAdditions category enhances NSObject by adding a number
+/// of useful class and instance methods.
 ///
 /// @ingroup utility
 // -----------------------------------------------------------------------------
-@interface NSObject(NSObjectAddtions)
+@interface NSObject(NSObjectAdditions)
 
 - (void) performBlockOnMainThread:(void(^)(void))callback afterDelay:(double)delayInSeconds;
 

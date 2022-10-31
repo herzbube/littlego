@@ -691,8 +691,8 @@
 		CDD48FB01413E95500188B6A /* CommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAF1413E95500188B6A /* CommandBase.m */; };
 		CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
 		CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
-		CDD67B6C28DDEC4F00F5196A /* NSObjectAddtions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD67B6A28DDEC4F00F5196A /* NSObjectAddtions.m */; };
-		CDD67B6D28DDEC4F00F5196A /* NSObjectAddtions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD67B6A28DDEC4F00F5196A /* NSObjectAddtions.m */; };
+		CDD67B6C28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD67B6A28DDEC4F00F5196A /* NSObjectAdditions.m */; };
+		CDD67B6D28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD67B6A28DDEC4F00F5196A /* NSObjectAdditions.m */; };
 		CDD7D7E5175257850068CBBA /* ResetPlayersAndProfilesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */; };
 		CDD86B4A2827E91500AA0A6B /* StaticTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B482827E91400AA0A6B /* StaticTableView.m */; };
 		CDD86B4B2827E91500AA0A6B /* StaticTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B482827E91400AA0A6B /* StaticTableView.m */; };
@@ -1601,8 +1601,8 @@
 		CDD48FAF1413E95500188B6A /* CommandBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandBase.m; sourceTree = "<group>"; };
 		CDD48FBE1414038000188B6A /* CommandProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandProcessor.h; sourceTree = "<group>"; };
 		CDD48FBF1414038000188B6A /* CommandProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandProcessor.m; sourceTree = "<group>"; };
-		CDD67B6A28DDEC4F00F5196A /* NSObjectAddtions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSObjectAddtions.m; sourceTree = "<group>"; };
-		CDD67B6B28DDEC4F00F5196A /* NSObjectAddtions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSObjectAddtions.h; sourceTree = "<group>"; };
+		CDD67B6A28DDEC4F00F5196A /* NSObjectAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSObjectAdditions.m; sourceTree = "<group>"; };
+		CDD67B6B28DDEC4F00F5196A /* NSObjectAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSObjectAdditions.h; sourceTree = "<group>"; };
 		CDD7D7E3175257850068CBBA /* ResetPlayersAndProfilesCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResetPlayersAndProfilesCommand.h; sourceTree = "<group>"; };
 		CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResetPlayersAndProfilesCommand.m; sourceTree = "<group>"; };
 		CDD7D7E61753F3FD0068CBBA /* NOTES.Build.3rdparty */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTES.Build.3rdparty; sourceTree = "<group>"; };
@@ -3287,8 +3287,8 @@
 				CD2230B225E661E600187C57 /* LogFormatter.m */,
 				CD1E6EA92860F0BC00785E23 /* MarkupUtilities.h */,
 				CD1E6EA82860F0BC00785E23 /* MarkupUtilities.mm */,
-				CDD67B6B28DDEC4F00F5196A /* NSObjectAddtions.h */,
-				CDD67B6A28DDEC4F00F5196A /* NSObjectAddtions.m */,
+				CDD67B6B28DDEC4F00F5196A /* NSObjectAdditions.h */,
+				CDD67B6A28DDEC4F00F5196A /* NSObjectAdditions.m */,
 				CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */,
 				CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */,
 				CDFA32A615A0A3E400439B4E /* PathUtilities.h */,
@@ -4093,7 +4093,7 @@
 				CD1E6EAF2865F9BD00785E23 /* PanGestureHandler.m in Sources */,
 				CDEE19F919433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */,
 				CD1F503F25B7A5C20098037A /* ViewLoadResultMessageController.m in Sources */,
-				CDD67B6C28DDEC4F00F5196A /* NSObjectAddtions.m in Sources */,
+				CDD67B6C28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */,
 				CDE302891360BDA4005235F2 /* Player.m in Sources */,
 				CDE3028A1360BDA4005235F2 /* PlayerModel.m in Sources */,
 				CDE3028B1360BDA4005235F2 /* PlayerStatistics.m in Sources */,
@@ -4388,7 +4388,7 @@
 				CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */,
 				CDEE19FC19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,
-				CDD67B6D28DDEC4F00F5196A /* NSObjectAddtions.m in Sources */,
+				CDD67B6D28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */,
 				CDEE1A0419438AE000DF2389 /* StonesLayerDelegate.m in Sources */,
 				CD7C6A161AB49631009EC5AD /* BoardPositionCollectionViewController.m in Sources */,
 				CD05AB97142516A400214BBE /* GoUtilities.m in Sources */,

@@ -31,7 +31,7 @@
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UIViewControllerAdditions.h"
-#import "../utility/NSObjectAddtions.h"
+#import "../utility/NSObjectAdditions.h"
 
 
 // -----------------------------------------------------------------------------
