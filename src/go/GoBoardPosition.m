@@ -145,7 +145,9 @@
   }
 
   [self updateGoObjectsToNewPosition:newBoardPosition];
+
   _currentBoardPosition = newBoardPosition;
+
   if (self.game.alternatingPlay)
   {
     GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:self.currentNode];
