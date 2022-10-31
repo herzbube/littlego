@@ -694,6 +694,8 @@
 		CDD67B6C28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD67B6A28DDEC4F00F5196A /* NSObjectAdditions.m */; };
 		CDD67B6D28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD67B6A28DDEC4F00F5196A /* NSObjectAdditions.m */; };
 		CDD7D7E5175257850068CBBA /* ResetPlayersAndProfilesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */; };
+		CDD85B03290EF6840069A761 /* NSArrayAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD85B02290EF6840069A761 /* NSArrayAdditions.m */; };
+		CDD85B04290EF6840069A761 /* NSArrayAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD85B02290EF6840069A761 /* NSArrayAdditions.m */; };
 		CDD86B4A2827E91500AA0A6B /* StaticTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B482827E91400AA0A6B /* StaticTableView.m */; };
 		CDD86B4B2827E91500AA0A6B /* StaticTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B482827E91400AA0A6B /* StaticTableView.m */; };
 		CDD86B4E2827FA2800AA0A6B /* SpacerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B4D2827FA2800AA0A6B /* SpacerView.m */; };
@@ -1614,6 +1616,8 @@
 		CDD7D7EE1753FA710068CBBA /* NOTES.Info-plist */ = {isa = PBXFileReference; lastKnownFileType = text; path = "NOTES.Info-plist"; sourceTree = "<group>"; };
 		CDD7D7EF1753FD130068CBBA /* littlego.asta */ = {isa = PBXFileReference; lastKnownFileType = file; path = littlego.asta; sourceTree = "<group>"; };
 		CDD7D7F01753FD290068CBBA /* Class diagram of packages go + player.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Class diagram of packages go + player.jpg"; sourceTree = "<group>"; };
+		CDD85B01290EF6840069A761 /* NSArrayAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSArrayAdditions.h; sourceTree = "<group>"; };
+		CDD85B02290EF6840069A761 /* NSArrayAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSArrayAdditions.m; sourceTree = "<group>"; };
 		CDD86B482827E91400AA0A6B /* StaticTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticTableView.m; sourceTree = "<group>"; };
 		CDD86B492827E91500AA0A6B /* StaticTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticTableView.h; sourceTree = "<group>"; };
 		CDD86B4C2827FA2800AA0A6B /* SpacerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpacerView.h; sourceTree = "<group>"; };
@@ -3287,6 +3291,8 @@
 				CD2230B225E661E600187C57 /* LogFormatter.m */,
 				CD1E6EA92860F0BC00785E23 /* MarkupUtilities.h */,
 				CD1E6EA82860F0BC00785E23 /* MarkupUtilities.mm */,
+				CDD85B01290EF6840069A761 /* NSArrayAdditions.h */,
+				CDD85B02290EF6840069A761 /* NSArrayAdditions.m */,
 				CDD67B6B28DDEC4F00F5196A /* NSObjectAdditions.h */,
 				CDD67B6A28DDEC4F00F5196A /* NSObjectAdditions.m */,
 				CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */,
@@ -4250,6 +4256,7 @@
 				CDE6A52616AA017500932B05 /* ChangeAndDiscardCommand.m in Sources */,
 				CDAFAE29195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
 				CD05199516B1C09B002771F7 /* LeftPaneViewController.m in Sources */,
+				CDD85B03290EF6840069A761 /* NSArrayAdditions.m in Sources */,
 				CD05199916B1C29B002771F7 /* RightPaneViewController.m in Sources */,
 				CD377F0816BD154A00972F04 /* MainTabBarController.m in Sources */,
 				CDBFCBBD16C3ED01001D78C0 /* SetupApplicationCommand.m in Sources */,
@@ -4366,6 +4373,7 @@
 				CDB3ECDB2843ADD7007512F6 /* ChangeAnnotationDataCommand.m in Sources */,
 				CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */,
 				CDEE19F619433EAC00DF2389 /* BoardViewController.m in Sources */,
+				CDD85B04290EF6840069A761 /* NSArrayAdditions.m in Sources */,
 				CD2230B825E6640A00187C57 /* LogFormatter.m in Sources */,
 				CD1F4FAD25B055EB0098037A /* LoadSgfCommand.m in Sources */,
 				CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */,
