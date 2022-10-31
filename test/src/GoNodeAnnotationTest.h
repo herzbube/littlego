@@ -34,5 +34,6 @@
 - (void) testEstimatedScoreSummary;
 - (void) testEstimatedScoreValue;
 - (void) testSetEstimatedScoreSummaryValue;
+- (void) testIsValidEstimatedScoreSummaryValue;
 
 @end
