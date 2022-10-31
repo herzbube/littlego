@@ -87,7 +87,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the @e capturedStones property.
+/// @brief Exercises the @e capturedStones property with regular play stones
+/// being captured.
 // -----------------------------------------------------------------------------
 - (void) testCapturedStones
 {
@@ -149,6 +150,39 @@
 
   NSUInteger expectedNumberOfRegions = 7;
   XCTAssertEqual(expectedNumberOfRegions, m_game.board.regions.count);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e capturedStones property with handicap and setup
+/// stones being captured.
+// -----------------------------------------------------------------------------
+- (void) testCapturedStonesHandicapAndSetup
+{
+  GoPoint* handicapPoint = [m_game.board pointAtVertex:@"A1"];
+  m_game.handicapPoints = @[handicapPoint];
+
+  GoPoint* blackSetupPoint1 = [m_game.board pointAtVertex:@"A2"];
+  GoPoint* blackSetupPoint2 = [m_game.board pointAtVertex:@"B1"];
+  [m_game changeSetupPoint:blackSetupPoint1 toStoneState:GoColorBlack];
+  [m_game changeSetupPoint:blackSetupPoint2 toStoneState:GoColorBlack];
+
+  GoPoint* whiteSetupPoint1 = [m_game.board pointAtVertex:@"A3"];
+  GoPoint* whiteSetupPoint2 = [m_game.board pointAtVertex:@"B2"];
+  [m_game changeSetupPoint:whiteSetupPoint1 toStoneState:GoColorWhite];
+  [m_game changeSetupPoint:whiteSetupPoint2 toStoneState:GoColorWhite];
+
+  int expectedNumberOfCapturedStones = 3;
+  GoMove* move = [GoMove move:GoMoveTypePlay by:m_game.playerWhite after:nil];
+  move.point = [m_game.board pointAtVertex:@"C1"];
+  [move doIt];
+  XCTAssertNotNil(move.capturedStones);
+  XCTAssertEqual(expectedNumberOfCapturedStones, move.capturedStones.count);
+  XCTAssertTrue([move.capturedStones containsObject:handicapPoint]);
+  XCTAssertTrue([move.capturedStones containsObject:blackSetupPoint1]);
+  XCTAssertTrue([move.capturedStones containsObject:blackSetupPoint2]);
+  XCTAssertEqual(GoColorNone, handicapPoint.stoneState);
+  XCTAssertEqual(GoColorNone, blackSetupPoint1.stoneState);
+  XCTAssertEqual(GoColorNone, blackSetupPoint2.stoneState);
 }
 
 // -----------------------------------------------------------------------------
