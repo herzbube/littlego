@@ -28,6 +28,8 @@
 }
 
 - (void) testInitialState;
+- (void) testChangeToMainVariation;
+- (void) testChangeToVariationContainingNode;
 - (void) testNodeAtIndex;
 - (void) testIndexOfNode;
 - (void) testAppendNode;
