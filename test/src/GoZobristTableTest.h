@@ -29,13 +29,12 @@
 
 - (void) testInitialState;
 - (void) testHashForBoard;
-- (void) testHashForHandicapStones;
-- (void) testHashForNode;
+- (void) testHashForHandicapStonesInGame;
+- (void) testHashForNodeInGame;
 - (void) testHashForSetup;
 - (void) testHashForStone;
 - (void) testHashForLastMoveEqualsHashForBoard;
 - (void) testHashAfterPass;
 - (void) testHashAfterUndoAndRedo;
-- (void) testValidateBoardSize;
 
 @end

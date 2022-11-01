@@ -237,7 +237,10 @@
 /// object associated with @a game.
 ///
 /// Raises @e NSInternalInconsistencyException if @a node contains game setup
-/// and the hash calculation finds inconsistencies in the setup information.
+/// and the hash calculation fails because data required for the calculation is
+/// missing from the setup information and the setup information is therefore
+/// considered to be inconsistent. No explicit attempt to find inconsistencies
+/// is made, though, because a thorough check would make this method too slow.
 // -----------------------------------------------------------------------------
 - (long long) hashForNode:(GoNode*)node
                    inGame:(GoGame*)game
@@ -312,8 +315,11 @@
 /// GoZobristTable was initialized does not match the board size of the GoBoard
 /// object associated with @a game.
 ///
-/// Raises @e NSInternalInconsistencyException if the hash calculation finds
-/// inconsistencies in the setup information.
+/// Raises @e NSInternalInconsistencyException if the hash calculation fails
+/// because data required for the calculation is missing from the setup
+/// information and the setup information is therefore considered to be
+/// inconsistent. No explicit attempt to find inconsistencies is made, though,
+/// because a thorough check would make this method too slow.
 // -----------------------------------------------------------------------------
 - (long long) hashForBlackSetupStones:(NSArray*)blackSetupStones
                      whiteSetupStones:(NSArray*)whiteSetupStones
