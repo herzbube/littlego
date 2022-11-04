@@ -696,6 +696,7 @@
 		CDD7D7E5175257850068CBBA /* ResetPlayersAndProfilesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */; };
 		CDD85B03290EF6840069A761 /* NSArrayAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD85B02290EF6840069A761 /* NSArrayAdditions.m */; };
 		CDD85B04290EF6840069A761 /* NSArrayAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD85B02290EF6840069A761 /* NSArrayAdditions.m */; };
+		CDD85B0729116F7D0069A761 /* GoNodeSetupTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD85B0529116F7D0069A761 /* GoNodeSetupTest.m */; };
 		CDD86B4A2827E91500AA0A6B /* StaticTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B482827E91400AA0A6B /* StaticTableView.m */; };
 		CDD86B4B2827E91500AA0A6B /* StaticTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B482827E91400AA0A6B /* StaticTableView.m */; };
 		CDD86B4E2827FA2800AA0A6B /* SpacerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B4D2827FA2800AA0A6B /* SpacerView.m */; };
@@ -1618,6 +1619,8 @@
 		CDD7D7F01753FD290068CBBA /* Class diagram of packages go + player.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Class diagram of packages go + player.jpg"; sourceTree = "<group>"; };
 		CDD85B01290EF6840069A761 /* NSArrayAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSArrayAdditions.h; sourceTree = "<group>"; };
 		CDD85B02290EF6840069A761 /* NSArrayAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSArrayAdditions.m; sourceTree = "<group>"; };
+		CDD85B0529116F7D0069A761 /* GoNodeSetupTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeSetupTest.m; sourceTree = "<group>"; };
+		CDD85B0629116F7D0069A761 /* GoNodeSetupTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeSetupTest.h; sourceTree = "<group>"; };
 		CDD86B482827E91400AA0A6B /* StaticTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticTableView.m; sourceTree = "<group>"; };
 		CDD86B492827E91500AA0A6B /* StaticTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticTableView.h; sourceTree = "<group>"; };
 		CDD86B4C2827FA2800AA0A6B /* SpacerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpacerView.h; sourceTree = "<group>"; };
@@ -2906,6 +2909,8 @@
 				CD1219382840D4FD0093A57D /* GoNodeMarkupTest.m */,
 				CD15A482168D044400D4472A /* GoNodeModelTest.h */,
 				CD15A483168D044400D4472A /* GoNodeModelTest.m */,
+				CDD85B0629116F7D0069A761 /* GoNodeSetupTest.h */,
+				CDD85B0529116F7D0069A761 /* GoNodeSetupTest.m */,
 				CD99EC6414B12058007B3B67 /* GoPlayerTest.h */,
 				CD99EC6514B12059007B3B67 /* GoPlayerTest.m */,
 				CD99EC6114B10746007B3B67 /* GoPointTest.h */,
@@ -4502,6 +4507,7 @@
 				CDB5AE261AC5A86D0075C8DC /* MagnifyingView.m in Sources */,
 				CD9A49E3171250B0009E7514 /* TapGestureController.m in Sources */,
 				CD9A49E4171250B3009E7514 /* TwoFingerTapGestureController.m in Sources */,
+				CDD85B0729116F7D0069A761 /* GoNodeSetupTest.m in Sources */,
 				CD9A49E6171250D4009E7514 /* LeftPaneViewController.m in Sources */,
 				CD9A49E7171250D6009E7514 /* RightPaneViewController.m in Sources */,
 				CDFD9F8518F1D6170031CBCF /* DocumentGenerator.m in Sources */,

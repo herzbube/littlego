@@ -47,8 +47,7 @@
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Returns a newly constructed GoNodeSetup object that has captured the
-/// current game state from @a game as its "previous setup".
+// Method is documented in the header file.
 // -----------------------------------------------------------------------------
 + (GoNodeSetup*) nodeSetupWithPreviousSetupCapturedFromGame:(GoGame*)game
 {
@@ -61,9 +60,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a GoNodeSetup object.
-///
-/// @note This is the designated initializer of GoNodeSetup.
+// Method is documented in the header file.
 // -----------------------------------------------------------------------------
 - (id) init
 {

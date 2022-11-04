@@ -43,7 +43,15 @@
 
 /// @name Initialization
 //@{
+/// @brief Returns a newly constructed GoNodeSetup object that has captured the
+/// current game state from @a game as its "previous setup".
+///
+/// Raises @e NSInvalidArgumentException if @a game is @e nil.
 + (GoNodeSetup*) nodeSetupWithPreviousSetupCapturedFromGame:(GoGame*)game;
+
+/// @brief Initializes a GoNodeSetup object.
+///
+/// @note This is the designated initializer of GoNodeSetup.
 - (id) init;
 //@}
 
