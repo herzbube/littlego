@@ -99,7 +99,7 @@
     return false;
   }
 
-  LoadGameCommand* loadCommand = [[[LoadGameCommand alloc] initWithGameInfoNode:sgfGameInfoNode goGameInfo:sgfGoGameInfo] autorelease];
+  LoadGameCommand* loadCommand = [[[LoadGameCommand alloc] initWithGameInfoNode:sgfGameInfoNode goGameInfo:sgfGoGameInfo game:sgfGame] autorelease];
   loadCommand.restoreMode = true;
   success = [loadCommand submit];
   return success;

@@ -85,13 +85,9 @@
 - (void) setupNotificationResponders
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
-
-  // KVO observing
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -100,33 +96,24 @@
 - (void) removeNotificationResponders
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-  // KVO observing
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
 }
 
 #pragma mark - Notification responders
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameWillCreate notification.
-// -----------------------------------------------------------------------------
-- (void) goGameWillCreate:(NSNotification*)notification
-{
-  GoGame* oldGame = [notification object];
-  GoBoardPosition* boardPosition = oldGame.boardPosition;
-  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-}
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameDidCreate notification.
 // -----------------------------------------------------------------------------
 - (void) goGameDidCreate:(NSNotification*)notification
 {
-  GoGame* newGame = [notification object];
-  GoBoardPosition* boardPosition = newGame.boardPosition;
-  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
+  self.layoutChangedNotificationNeedsPosting = true;
+  [self delayedUpdate];
+}
 
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #currentBoardPositionDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentBoardPositionDidChange:(NSNotification*)notification
+{
   self.layoutChangedNotificationNeedsPosting = true;
   [self delayedUpdate];
 }
@@ -137,24 +124,6 @@
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
   [self delayedUpdate];
-}
-
-#pragma mark - KVO responder
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to KVO notifications.
-// -----------------------------------------------------------------------------
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
-{
-  if ([keyPath isEqualToString:@"currentBoardPosition"])
-  {
-    self.layoutChangedNotificationNeedsPosting = true;
-    [self delayedUpdate];
-  }
-  else
-  {
-    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-  }
 }
 
 #pragma mark - Updaters

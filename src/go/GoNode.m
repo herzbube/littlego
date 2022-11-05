@@ -17,8 +17,12 @@
 
 // Project includes
 #import "GoNode.h"
+#import "GoBoard.h"
+#import "GoGame.h"
 #import "GoMove.h"
 #import "GoNodeMarkup.h"
+#import "GoNodeSetup.h"
+#import "GoZobristTable.h"
 #import "../utility/ExceptionUtility.h"
 
 
@@ -26,10 +30,6 @@
 /// @brief Class extension with private properties for GoNode.
 // -----------------------------------------------------------------------------
 @interface GoNode()
-/// @name Re-declaration of properties to make them readwrite privately
-//@{
-@property(nonatomic, retain, readwrite) GoMove* goMove;
-//@}
 @property(nonatomic, assign) unsigned int nodeID;
 @property(nonatomic, assign) unsigned int firstChildNodeID;
 @property(nonatomic, assign) unsigned int nextSiblingNodeID;
@@ -50,6 +50,7 @@
   return [[[self alloc] init] autorelease];
 }
 
+// TODO xxx is this still needed now that goMove property is readwrite?
 // -----------------------------------------------------------------------------
 /// @brief Returns a newly constructed GoNode object that has no parent,
 /// child or sibling and is not associated with any game. The supplied GoMove
@@ -80,9 +81,12 @@
   _nextSibling = nil;
   _parent = nil;
 
+  self.goNodeSetup = nil;
   self.goMove = nil;
   self.goNodeAnnotation = nil;
   self.goNodeMarkup = nil;
+
+  self.zobristHash = 0;
 
   self.nodeID = gNoObjectReferenceNodeID;
   self.firstChildNodeID = gNoObjectReferenceNodeID;
@@ -115,6 +119,7 @@
     _parent = nil;
   }
 
+  self.goNodeSetup = nil;
   self.goMove = nil;
   self.goNodeAnnotation = nil;
   self.goNodeMarkup = nil;
@@ -152,9 +157,14 @@
   self.nextSiblingNodeID = [decoder decodeIntForKey:goNodeNextSiblingKey];
   self.parentNodeID = [decoder decodeIntForKey:goNodeParentKey];
 
+  self.goNodeSetup = [decoder decodeObjectForKey:goNodeGoNodeSetupKey];
   self.goMove = [decoder decodeObjectForKey:goNodeGoMoveKey];
   self.goNodeAnnotation = [decoder decodeObjectForKey:goNodeGoNodeAnnotationKey];
   self.goNodeMarkup = [decoder decodeObjectForKey:goNodeGoNodeMarkupKey];
+
+  // The hash was not archived. Whoever is unarchiving this GoNode is
+  // responsible for re-calculating the hash.
+  self.zobristHash = 0;
 
   return self;
 }
@@ -181,16 +191,28 @@
   if (self.parent)
     [encoder encodeInt:self.parent.nodeID forKey:goNodeParentKey];
 
+  if (self.goNodeSetup)
+    [encoder encodeObject:self.goNodeSetup forKey:goNodeGoNodeSetupKey];
   if (self.goMove)
     [encoder encodeObject:self.goMove forKey:goNodeGoMoveKey];
   if (self.goNodeAnnotation)
     [encoder encodeObject:self.goNodeAnnotation forKey:goNodeGoNodeAnnotationKey];
   if (self.goNodeMarkup)
     [encoder encodeObject:self.goNodeMarkup forKey:goNodeGoNodeMarkupKey];
+
+  // GoZobristTable is not archived, instead a new GoZobristTable object with
+  // random values is created each time when a game is unarchived. Zobrist
+  // hashes created by the previous GoZobristTable object are thus invalid.
+  // This is the reason why we don't archive self.zobristHash here - it doesn't
+  // make sense to archive an invalid value. A side effect of not archiving
+  // self.zobristHash is that the overall archive becomes smaller.
 }
 
 #pragma mark - Public API - Game tree navigation
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (GoNode*) lastChild
 {
   GoNode* child = self.firstChild;
@@ -206,6 +228,9 @@
   return nil;
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (NSArray*) children
 {
   NSMutableArray* children = [NSMutableArray arrayWithCapacity:0];
@@ -221,16 +246,25 @@
   return children;
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) hasChildren
 {
   return (self.firstChild != nil);
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) hasNextSibling
 {
   return (self.nextSibling != nil);
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (GoNode*) previousSibling
 {
   GoNode* parent = self.parent;
@@ -253,16 +287,25 @@
   return nil;
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) hasPreviousSibling
 {
   return (self.previousSibling != nil);
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) hasParent
 {
   return (self.parent != nil);
 }
 
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) isDescendantOfNode:(GoNode*)node
 {
   if (! node)
@@ -286,6 +329,9 @@
   return false;
 }
 
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) isAncestorOfNode:(GoNode*)node
 {
   if (! node)
@@ -309,6 +355,9 @@
   return false;
 }
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) isRoot
 {
   return (self.parent == nil);
@@ -316,21 +365,44 @@
 
 #pragma mark - Public API - Other operations
 
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) isEmpty
 {
-  return ! self.goMove && ! self.goNodeAnnotation && ! self.goNodeMarkup;
+  return ((! self.goNodeSetup || self.goNodeSetup.isEmpty) &&
+          ! self.goMove &&
+          ! self.goNodeAnnotation &&
+          (! self.goNodeMarkup || ! self.goNodeMarkup.hasMarkup));
 }
 
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
 - (void) modifyBoard
 {
   if (self.goMove)
     [self.goMove doIt];
+  else if (self.goNodeSetup)
+    [self.goNodeSetup applySetup];
+
+  // GoZobristTable needs to have the Zobrist hash of the node's parent. The
+  // node therefore must have been added to the node tree at this point.
+  // TODO xxx Can the hash calculation be omitted if the user navigates between board positions?
+  GoGame* game = [GoGame sharedGame];
+  self.zobristHash = [game.board.zobristTable hashForNode:self
+                                                   inGame:game];
 }
 
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
 - (void) revertBoard
 {
   if (self.goMove)
     [self.goMove undo];
+  else if (self.goNodeSetup)
+    [self.goNodeSetup revertSetup];
 }
 
 @end

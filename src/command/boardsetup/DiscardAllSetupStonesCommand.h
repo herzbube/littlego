@@ -19,6 +19,7 @@
 #import "../CommandBase.h"
 
 
+// TODO xxx The command should be named "DiscardAllSetupCommand". The discard includes setupFirstMoveColor.
 // -----------------------------------------------------------------------------
 /// @brief The DiscardAllSetupStonesCommand class is responsible for discarding
 /// all stones that the board is currently set up with.

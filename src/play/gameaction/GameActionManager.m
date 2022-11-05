@@ -26,6 +26,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeMarkup.h"
+#import "../../go/GoNodeSetup.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
@@ -178,6 +179,8 @@ static GameActionManager* sharedGameActionManager = nil;
   [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
   [center addObserver:self selector:@selector(markupOnPointsDidChange:) name:markupOnPointsDidChange object:nil];
   [center addObserver:self selector:@selector(allMarkupDidDiscard:) name:allMarkupDidDiscard object:nil];
+  [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
+  [center addObserver:self selector:@selector(numberOfBoardPositionsDidChange:) name:numberOfBoardPositionsDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // Note: UIApplicationWillChangeStatusBarOrientationNotification is also sent
   // if a view controller is modally presented on iPhone while in
@@ -191,10 +194,6 @@ static GameActionManager* sharedGameActionManager = nil;
     [center addObserver:self selector:@selector(statusBarOrientationWillChange:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
 
   // KVO observing
-  GoGame* game = [GoGame sharedGame];
-  GoBoardPosition* boardPosition = game.boardPosition;
-  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.boardSetupModel addObserver:self forKeyPath:@"boardSetupStoneColor" options:0 context:NULL];
   [appDelegate.boardViewModel addObserver:self forKeyPath:@"computerAssistanceType" options:0 context:NULL];
@@ -208,11 +207,6 @@ static GameActionManager* sharedGameActionManager = nil;
 - (void) removeNotificationResponders
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-
-  GoGame* game = [GoGame sharedGame];
-  GoBoardPosition* boardPosition = game.boardPosition;
-  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.boardSetupModel removeObserver:self forKeyPath:@"boardSetupStoneColor"];
@@ -765,11 +759,6 @@ static GameActionManager* sharedGameActionManager = nil;
     [self.viewControllerPresenterDelegate gameActionManager:self
                                           popViewController:self.gameInfoViewController];
   }
-
-  GoGame* oldGame = [notification object];
-  GoBoardPosition* boardPosition = oldGame.boardPosition;
-  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 }
 
 // -----------------------------------------------------------------------------
@@ -777,10 +766,6 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) goGameDidCreate:(NSNotification*)notification
 {
-  GoGame* newGame = [notification object];
-  GoBoardPosition* boardPosition = newGame.boardPosition;
-  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
   self.visibleStatesNeedUpdate = true;
   self.enabledStatesNeedUpdate = true;
   [self delayedUpdate];
@@ -912,6 +897,27 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #currentBoardPositionDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentBoardPositionDidChange:(NSNotification*)notification
+{
+  // It's annoying to have buttons appear and disappear all the time, so
+  // we try to minimize this by keeping the same buttons in the navigation
+  // bar while the user is browsing board positions.
+  self.enabledStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #numberOfBoardPositionsDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) numberOfBoardPositionsDidChange:(NSNotification*)notification
+{
+  self.visibleStatesNeedUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -945,25 +951,9 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  GoGame* game = [GoGame sharedGame];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
 
-  if (object == game.boardPosition)
-  {
-    if ([keyPath isEqualToString:@"currentBoardPosition"])
-    {
-      // It's annoying to have buttons appear and disappear all the time, so
-      // we try to minimize this by keeping the same buttons in the navigation
-      // bar while the user is browsing board positions.
-      self.enabledStatesNeedUpdate = true;
-    }
-    else if ([keyPath isEqualToString:@"numberOfBoardPositions"])
-    {
-      self.visibleStatesNeedUpdate = true;
-    }
-    [self delayedUpdate];
-  }
-  else if (object == appDelegate.boardSetupModel)
+  if (object == appDelegate.boardSetupModel)
   {
     if ([keyPath isEqualToString:@"boardSetupStoneColor"])
     {
@@ -1161,7 +1151,9 @@ static GameActionManager* sharedGameActionManager = nil;
     else
       [self addGameAction:GameActionSwitchSetupStoneColorToBlack toVisibleStatesDictionary:visibleStates];
 
-    if (game.blackSetupPoints.count > 0 || game.whiteSetupPoints.count > 0)
+    // TODO xxx The game action is no longer "discard all setup stones" but "discard all setup". This includes setupFirstMoveColor.
+    GoNodeSetup* nodeSetup = game.boardPosition.currentNode.goNodeSetup;
+    if (nodeSetup && ! nodeSetup.isEmpty)
       [self addGameAction:GameActionDiscardAllSetupStones toVisibleStatesDictionary:visibleStates];
   }
   else if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeEditMarkup)

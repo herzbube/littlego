@@ -635,7 +635,7 @@
   // will have to discard those nodes, or change board position to the last
   // node of the game.
   GoMove* mostRecentMove = nodeWithMostRecentMove.goMove;
-  bool mostRecentMoveIsLastMove = (mostRecentMove.next == nil);
+  bool mostRecentMoveIsLastMove = (mostRecentMove == game.lastMove);
   if (! mostRecentMoveIsLastMove)
     return false;
 
@@ -700,7 +700,7 @@
   //    be changed which, again, is inappropriate because game.nextMoveColor is
   //    tied to the CURRENT board position, not the board position with the LAST
   //    move.
-  if ([GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode])
+  if ([GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode inCurrentGameVariation:game])
     return false;
 
   return true;
@@ -711,18 +711,21 @@
 /// vertices, one for each GoPoint object in @a points. Vertices appear in the
 /// returned string in no particular order. Returns an empty string if @a points
 /// has no elements.
+///
+/// This method is useful to generate the arguments for certain GTP commands
+/// (e.g. "set_free_handicap").
 // -----------------------------------------------------------------------------
 + (NSString*) verticesStringForPoints:(NSArray*)points
 {
   NSString* verticesString = @"";
   bool firstVertice = true;
-  for (GoPoint* handicapPoint in points)
+  for (GoPoint* point in points)
   {
     if (firstVertice)
       firstVertice = false;
     else
       verticesString = [verticesString stringByAppendingString:@" "];
-    verticesString = [verticesString stringByAppendingString:handicapPoint.vertex.string];
+    verticesString = [verticesString stringByAppendingString:point.vertex.string];
   }
   return verticesString;
 }
@@ -744,46 +747,85 @@
 {
   GoZobristTable* zobristTable = game.board.zobristTable;
 
-  game.zobristHashBeforeFirstMove = [zobristTable hashForBoard:game.board
-                                                   blackStones:game.blackSetupPoints
-                                                   whiteStones:game.whiteSetupPoints];
+  game.zobristHashAfterHandicap = [zobristTable hashForHandicapStonesInGame:game];
 
-  for (GoMove* move = game.firstMove; move != nil; move = move.next)
-    move.zobristHash = [zobristTable hashForMove:move inGame:game];
+  NSMutableArray* stack = [NSMutableArray array];
+  GoNode* currentNode = game.nodeModel.rootNode;
+  while (true)
+  {
+    while (currentNode)
+    {
+      currentNode.zobristHash = [zobristTable hashForNode:currentNode inGame:game];
+
+      [stack addObject:currentNode];
+
+      currentNode = currentNode.firstChild;
+    }
+
+    if (stack.count > 0)
+    {
+      currentNode = stack.lastObject;
+      [stack removeLastObject];
+
+      currentNode = currentNode.nextSibling;
+    }
+    else
+    {
+      // We're done
+      break;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Relinks all moves of the specified game. The source is the
 /// GoNodeModel contained by @a game.
 ///
-/// The previous/next moves of a GoMove is not archived when a game is archived
+/// The previous move of a GoMove is not archived when a game is archived
 /// to avoid a stack overflow when the game contains a large number of moves.
 // -----------------------------------------------------------------------------
 + (void) relinkMoves:(GoGame*)game
 {
-  GoNodeModel* nodeModel = game.nodeModel;
+  NSMutableArray* stack = [NSMutableArray array];
+  NSNull* nullValue = [NSNull null];
 
-  GoMove* moveToSet = nil;
+  GoNode* currentNode = game.nodeModel.rootNode;
   GoMove* previousMove = nil;
 
-  // TODO Variation support: This method does not have variation support.
-  GoNode* node = nodeModel.rootNode;
-  while (node)
+  while (true)
   {
-    GoMove* move = node.goMove;
-    if (move)
+    while (currentNode)
     {
-      if (moveToSet)
-        [moveToSet setUnarchivedPreviousMove:previousMove nextMove:move];
+      GoMove* move = currentNode.goMove;
+      if (move)
+      {
+        [move setUnarchivedPreviousMove:previousMove];
+        previousMove = move;
+      }
 
-      previousMove = moveToSet;
-      moveToSet = move;
+      [stack addObject:@[currentNode, previousMove ? previousMove : nullValue]];
+
+      currentNode = currentNode.firstChild;
     }
-    node = node.firstChild;
-  }
 
-  if (moveToSet)
-    [moveToSet setUnarchivedPreviousMove:previousMove nextMove:nil];
+    if (stack.count > 0)
+    {
+      NSArray* tuple = stack.lastObject;
+      [stack removeLastObject];
+
+      currentNode = tuple.firstObject;
+      previousMove = tuple.lastObject;
+      if ((id)previousMove == nullValue)
+        previousMove = nil;
+
+      currentNode = currentNode.nextSibling;
+    }
+    else
+    {
+      // We're done
+      break;
+    }
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -803,31 +845,36 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Examines the direct descendants of @a node (excluding @a node).
-/// Returns the first node found that contains a move. Returns @e nil if no move
-/// can be found.
+/// @brief Examines the successors of @a node (excluding @a node) in the current
+/// game variation available from @a game. Returns the first node found that
+/// contains a move. Returns @e nil if no move can be found.
 // -----------------------------------------------------------------------------
-+ (GoNode*) nodeWithNextMove:(GoNode*)node
++ (GoNode*) nodeWithNextMove:(GoNode*)node inCurrentGameVariation:(GoGame*)game
 {
-  if (node)
-    node = node.firstChild;
-  while (node)
+  GoNodeModel* nodeModel = game.nodeModel;
+
+  int startIndexOfNode = [nodeModel indexOfNode:node] + 1;
+  int numberOfNodes = nodeModel.numberOfNodes;
+
+  for (int indexOfNode = startIndexOfNode; indexOfNode < numberOfNodes; indexOfNode++)
   {
+    node = [nodeModel nodeAtIndex:indexOfNode];
     if (node.goMove)
       return node;
-    node = node.firstChild;
   }
+
   return nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Examines the direct descendants of @a node (excluding @a node).
-/// Returns true if at least one descendant node contains a move. Returns false
-/// if no descendant node contains a node.
+/// @brief Examines the successors of @a node (excluding @a node) in the current
+/// game variation available from @a game. Returns @e true if at least one
+/// successor node contains a move. Returns @e false if no successor node
+/// contains a move.
 // -----------------------------------------------------------------------------
-+ (bool) nodeWithNextMoveExists:(GoNode*)node
++ (bool) nodeWithNextMoveExists:(GoNode*)node inCurrentGameVariation:(GoGame*)game
 {
-  return [GoUtilities nodeWithNextMove:node] != nil;
+  return [GoUtilities nodeWithNextMove:node inCurrentGameVariation:game] != nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -860,6 +907,7 @@
 {
   int numberOfMovesAfterNode = 0;
 
+  // TODO xxx Variation support
   if (node)
     node = node.firstChild;
   while (node)
@@ -870,6 +918,65 @@
   }
 
   return numberOfMovesAfterNode;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines nodes starting at the beginning of the current game
+/// variation available from @a game (i.e. the root node). Returns the node that
+/// is closest to @a node that also contains setup information, i.e. a
+/// GoNodeSetup object. Returns @a node itself if it contains setup information.
+/// Returns @e nil if no setup information can be found.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithMostRecentSetup:(GoNode*)node inCurrentGameVariation:(GoGame*)game
+{
+  GoNode* mostRecentNodeWithSetup = nil;
+
+  GoNodeModel* nodeModel = game.nodeModel;
+  int numberOfNodes = nodeModel.numberOfNodes;
+
+  // For efficiency reasons we perform a forward search, starting at the root
+  // node, which is also why the search is restricted to the current game
+  // variation. Technically we could search backwards, starting at the supplied
+  // node and examining its ancestors, but in the vast majority of cases we have
+  // only a few setup nodes at the beginning of the variation, and many move
+  // nodes after the setup. So in games with many moves searching backwards
+  // would require hundreds of iterations, while searching forwards should
+  // always finish within 10 iterations or so.
+  for (int indexOfNode = 0; indexOfNode < numberOfNodes; ++indexOfNode)
+  {
+    GoNode* candidateNode = [nodeModel nodeAtIndex:indexOfNode];
+
+    // Break early - no setup is possible after the first move is played. Also
+    // setup and move in the same node are not possible.
+    if (candidateNode.goMove)
+      break;
+
+    if (candidateNode.goNodeSetup)
+      mostRecentNodeWithSetup = candidateNode;
+
+    if (candidateNode == node)
+      break;
+  }
+
+  return mostRecentNodeWithSetup;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines @a node and its ancestors. Returns the first node found that
+/// changes the board state. Returns @a node itself if it changes the board
+/// state. Returns @e nil if no node can be found that changes the board state.
+/// A node is considered to change the board state if it contains either setup
+/// information (i.e. a GoNodeSetup object) or a move.
+// -----------------------------------------------------------------------------
++ (GoNode*) nodeWithMostRecentBoardStateChange:(GoNode*)node
+{
+  while (node)
+  {
+    if (node.goMove || node.goNodeSetup)
+      return node;
+    node = node.parent;
+  }
+  return nil;
 }
 
 // -----------------------------------------------------------------------------

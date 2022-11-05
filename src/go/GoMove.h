@@ -34,9 +34,9 @@
 /// GoPoint object which registers where the stone was placed. The GoPoint
 /// object is assigned (soon) after construction.
 ///
-/// GoMove objects are interlinked with their predecessor (previous()) and
-/// successor (next()) GoMove object. This represents the fact that a game
-/// can be seen as a series of moves.
+/// GoMove objects are interlinked with their predecessor GoMove object. This
+/// represents the fact that a game can be seen as a series of moves. The
+/// successor move cannot be linked because a game can have variations.
 ///
 ///
 /// @par Playing/undoing a move
@@ -61,10 +61,10 @@
 {
 }
 
-+ (GoMove*) move:(enum GoMoveType)type by:(GoPlayer*)player after:(GoMove*)move;
++ (GoMove*) move:(enum GoMoveType)type by:(GoPlayer*)player after:(GoMove*)previousMove;
 - (void) doIt;
 - (void) undo;
-- (void) setUnarchivedPreviousMove:(GoMove*)previousMove nextMove:(GoMove*)nextMove;
+- (void) setUnarchivedPreviousMove:(GoMove*)previousMove;
 
 /// @brief The type of this GoMove object.
 @property(nonatomic, assign, readonly) enum GoMoveType type;
@@ -76,9 +76,6 @@
 /// @brief The predecessor to this GoMove object. @e nil if this is the first
 /// move of the game.
 @property(nonatomic, assign, readonly) GoMove* previous;
-/// @brief The successor to this GoMove object. @e nil if this is the last move
-/// of the game.
-@property(nonatomic, assign, readonly) GoMove* next;
 /// @brief Keeps track of stones that were captured by this move.
 ///
 /// If not empty, the array contains an unordered list of GoPoint objects. Also,
@@ -88,9 +85,6 @@
 /// @brief The move number of this GoMove object. The first move of the game
 /// has move number 1.
 @property(nonatomic, assign, readonly) int moveNumber;
-/// @brief Zobrist hash that identifies the board position created by this move.
-/// Zobrist hashes are used to detect ko, and especially superko.
-@property(nonatomic, assign) long long zobristHash;
 /// @brief The valuation of the move. The default value is #GoMoveValuationNone.
 ///
 /// This property corresponds to the presence or absence of the SGF move

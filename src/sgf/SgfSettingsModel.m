@@ -17,6 +17,7 @@
 
 // Project includes
 #import "SgfSettingsModel.h"
+#import "../utility/NSArrayAdditions.h"
 
 
 @implementation SgfSettingsModel
@@ -114,7 +115,7 @@
     case SgfLoadSuccessTypeWithCriticalWarningsOrErrors:
       if (! self.enableRestrictiveChecking &&
           self.disableAllWarningMessages &&
-          [self isArray:self.disabledMessages equalToArrayIgnoringOrder:[self defaultDisabledMessages]])
+          [self.disabledMessages isEqualToArrayIgnoringOrder:[self defaultDisabledMessages]])
       {
         syntaxCheckingLevel = 1;
       }
@@ -122,7 +123,7 @@
     case SgfLoadSuccessTypeNoCriticalWarningsOrErrors:
       if (! self.enableRestrictiveChecking &&
           ! self.disableAllWarningMessages &&
-          [self isArray:self.disabledMessages equalToArrayIgnoringOrder:[self defaultDisabledMessages]])
+          [self.disabledMessages isEqualToArrayIgnoringOrder:[self defaultDisabledMessages]])
       {
         syntaxCheckingLevel = 2;
       }
@@ -136,7 +137,7 @@
       }
       else if (! self.enableRestrictiveChecking &&
                ! self.disableAllWarningMessages &&
-               [self isArray:self.disabledMessages equalToArrayIgnoringOrder:[self defaultDisabledMessages]])
+               [self.disabledMessages isEqualToArrayIgnoringOrder:[self defaultDisabledMessages]])
       {
         syntaxCheckingLevel = 3;
       }
@@ -207,17 +208,6 @@
            @(SGFCMessageIDEmptyNodeDeleted),
            @(SGFCMessageIDGameIsNotGo),
            @(SGFCMessageIDMoreThanOneGameTree)];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns true if the message IDs in @a array
-// -----------------------------------------------------------------------------
-- (bool) isArray:(NSArray*)array1 equalToArrayIgnoringOrder:(NSArray*)array2
-{
-  NSCountedSet* set1 = [[[NSCountedSet alloc] initWithArray:array1] autorelease];
-  NSCountedSet* set2 = [[[NSCountedSet alloc] initWithArray:array2] autorelease];
-
-  return ([set1 isEqualToSet:set2] == YES) ? true : false;
 }
 
 @end

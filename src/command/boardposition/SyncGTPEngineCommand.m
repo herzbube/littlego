@@ -22,6 +22,7 @@
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeModel.h"
+#import "../../go/GoNodeSetup.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
@@ -51,8 +52,10 @@
   self = [super init];
   if (! self)
     return nil;
-  self.syncMoveType = SyncMovesUpToCurrentBoardPosition;
+  
+  self.syncBoardPositionType = SyncBoardPositionsUpToCurrentBoardPosition;
   self.errorDescription = nil;
+
   return self;
 }
 
@@ -70,6 +73,10 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  GoNode* syncUpToThisNode = [self findNodeUpToWhichToSync];
+  GoNodeSetup* nodeSetupUpToWhichToSync = [self findeNodeSetupUpToWhichToSync:syncUpToThisNode];
+  GoMove* syncUpToThisMove = [self findeMoveUpToWhichToSync:syncUpToThisNode];
+
   // This clears all board state related parameters (handicap, komi, setup
   // stones, setup player, moves) but leaves board size, game rules and player
   // configuration (e.g. UCT parameters) untouched
@@ -79,36 +86,93 @@
     return false;
   }
 
-  if (! [self syncGTPEngineHandicap])
-  {
-    DDLogError(@"%@: Aborting because syncGTPEngineHandicap failed: %@", [self shortDescription], self.errorDescription);
-    return false;
-  }
-
   if (! [self syncGTPEngineKomi])
   {
     DDLogError(@"%@: Aborting because syncGTPEngineKomi failed: %@", [self shortDescription], self.errorDescription);
     return false;
   }
 
-  if (! [self syncGTPEngineSetupStones])
+  if (! [self syncGTPEngineHandicapAndSetupStones:nodeSetupUpToWhichToSync])
   {
-    DDLogError(@"%@: Aborting because syncGTPEngineSetupStones failed: %@", [self shortDescription], self.errorDescription);
+    DDLogError(@"%@: Aborting because syncGTPEngineHandicapAndSetupStones failed: %@", [self shortDescription], self.errorDescription);
     return false;
   }
 
-  if (! [self syncGTPEngineSetupPlayer])
+  if (! [self syncGTPEngineSetupPlayer:nodeSetupUpToWhichToSync])
   {
     DDLogError(@"%@: Aborting because syncGTPEngineSetupPlayer failed: %@", [self shortDescription], self.errorDescription);
     return false;
   }
 
-  if (! [self syncGTPEngineMoves])
+  if (! [self syncGTPEngineMoves:syncUpToThisMove])
   {
     DDLogError(@"%@: Aborting because syncGTPEngineMoves failed: %@", [self shortDescription], self.errorDescription);
     return false;
   }
   return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoNode object up to which the GTP engine should be
+/// synchronized, based on the value of the property @e syncBoardPositionType.
+/// The returned GoNode object is guaranteed to contain either a GoNodeSetup or
+/// a GoMove object. May return @e nil if  no GoNode object could be found, in
+/// which case the GTP engine should be synchronized with the start of the game.
+// -----------------------------------------------------------------------------
+- (GoNode*) findNodeUpToWhichToSync
+{
+  GoGame* game = [GoGame sharedGame];
+
+  if (SyncBoardPositionsUpToCurrentBoardPosition == self.syncBoardPositionType)
+  {
+    GoNode* currentNode = game.boardPosition.currentNode;
+    GoNode* nodeWithMostRecentBoardStateChange = [GoUtilities nodeWithMostRecentBoardStateChange:currentNode];
+    return nodeWithMostRecentBoardStateChange;
+  }
+  else
+  {
+    GoNode* nodeWithLastBoardStateChange = [GoUtilities nodeWithMostRecentBoardStateChange:game.nodeModel.leafNode];
+    return nodeWithLastBoardStateChange;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoNodeSetup object up to which the GTP engine should be
+/// synchronized with setup information, based on the value of
+/// @a syncUpToThisNode. May return @e nil if  no GoNodeSetup object could be
+/// found, in which case the GTP engine should be synchronized with setup
+/// information from the start of the game.
+// -----------------------------------------------------------------------------
+- (GoNodeSetup*) findeNodeSetupUpToWhichToSync:(GoNode*)syncUpToThisNode
+{
+  if (syncUpToThisNode)
+  {
+    if (syncUpToThisNode.goMove)
+    {
+      GoGame* game = [GoGame sharedGame];
+      GoNode* nodeWithMostRecentSetup = [GoUtilities nodeWithMostRecentSetup:syncUpToThisNode inCurrentGameVariation:game];
+      return nodeWithMostRecentSetup ? nodeWithMostRecentSetup.goNodeSetup : nil;
+    }
+    else
+    {
+      return syncUpToThisNode.goNodeSetup;
+    }
+  }
+  else
+  {
+    return nil;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoMove object up to which the GTP engine should be
+/// synchronized with move information, based on the value of
+/// @a syncUpToThisNode. May return @e nil if  no GoMove object could be found,
+/// in which case the GTP engine should not be synchronized with any moves.
+// -----------------------------------------------------------------------------
+- (GoMove*) findeMoveUpToWhichToSync:(GoNode*)syncUpToThisNode
+{
+  return syncUpToThisNode ? syncUpToThisNode.goMove : nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -122,29 +186,6 @@
   if (commandClearBoard.response.status)
     self.errorDescription = commandClearBoard.response.parsedResponse;
   return commandClearBoard.response.status;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt(). Returns true on success, false on failure.
-// -----------------------------------------------------------------------------
-- (bool) syncGTPEngineHandicap
-{
-  GoGame* game = [GoGame sharedGame];
-
-  // The previously sent GTP command "clear_board" has left Fuego without a
-  // handicap, so we need to setup handicap only if there is one.
-  NSUInteger handicap = game.handicapPoints.count;
-  if (0 == handicap)
-    return true;
-
-  NSString* verticesString = [GoUtilities verticesStringForPoints:game.handicapPoints];
-  NSString* commandString = [@"set_free_handicap " stringByAppendingString:verticesString];
-  GtpCommand* command = [GtpCommand command:commandString];
-  [command submit];
-  assert(command.response.status);
-  if (! command.response.status)
-    self.errorDescription = command.response.parsedResponse;
-  return command.response.status;
 }
 
 // -----------------------------------------------------------------------------
@@ -168,15 +209,54 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt(). Returns true on success, false on failure.
+///
+/// The "gogui-setup" command does not allow to clear stones, so we can't just
+/// submit one "gogui-setup" command for each GoNodeSetup. Also we can't submit
+/// the "set_free_handicap" command because GoNodeSetup might clear handicap
+/// stones.
+///
+/// The solution is to find the last board state just before the first move was
+/// played and submit a single "gogui-setup" command that contains only stones
+/// that result from the aggregated board state.
+///
+/// As a consequence we never configure Fuego with a handicap, i.e. we never
+/// submit the "set_free_handicap" command. Submitting "gogui-setup" instead
+/// is sufficient to create the necessary board state, though, and code analysis
+/// has shown that Fuego does not use the @e number of handicap stones for the
+/// evaluation of the board position.
 // -----------------------------------------------------------------------------
-- (bool) syncGTPEngineSetupStones
+- (bool) syncGTPEngineHandicapAndSetupStones:(GoNodeSetup*)nodeSetupUpToWhichToSync
 {
-  GoGame* game = [GoGame sharedGame];
-  if (game.blackSetupPoints.count == 0 && game.whiteSetupPoints.count == 0)
+  NSMutableArray* blackSetupPoints = [NSMutableArray array];
+  NSMutableArray* whiteSetupPoints = [NSMutableArray array];
+  if (nodeSetupUpToWhichToSync)
+  {
+    // If any handicap stones were still left on the board when GoNodeSetup
+    // captured the previous board state, they are now listed in the GoNodeSetup
+    // property previousBlackSetupStones.
+    [blackSetupPoints addObjectsFromArray:nodeSetupUpToWhichToSync.previousBlackSetupStones];
+    [whiteSetupPoints addObjectsFromArray:nodeSetupUpToWhichToSync.previousWhiteSetupStones];
+
+    // noSetupStones (SGF property AE) can affect only stones from the previous
+    // board state, so let's clear these stones before we add new stones.
+    // Because we don't know whether black or white stones are cleared, we need
+    // to repeat the clear in both arrays.
+    [blackSetupPoints removeObjectsInArray:nodeSetupUpToWhichToSync.noSetupStones];
+    [whiteSetupPoints removeObjectsInArray:nodeSetupUpToWhichToSync.noSetupStones];
+
+    [blackSetupPoints addObjectsFromArray:nodeSetupUpToWhichToSync.blackSetupStones];
+    [whiteSetupPoints addObjectsFromArray:nodeSetupUpToWhichToSync.whiteSetupStones];
+  }
+  else
+  {
+    GoGame* game = [GoGame sharedGame];
+    [blackSetupPoints addObjectsFromArray:game.handicapPoints];
+  }
+
+  if (blackSetupPoints.count == 0 || whiteSetupPoints.count == 0)
     return true;
 
   NSString* commandString = @"gogui-setup";
-
   for (NSNumber* stoneColorAsNumber in @[[NSNumber numberWithInt:GoColorBlack], [NSNumber numberWithInt:GoColorWhite]])
   {
     enum GoColor stoneColor = [stoneColorAsNumber intValue];
@@ -185,12 +265,12 @@
     NSString* colorString;
     if (stoneColor == GoColorBlack)
     {
-      setupPoints = game.blackSetupPoints;
+      setupPoints = blackSetupPoints;
       colorString = @"B";
     }
     else
     {
-      setupPoints = game.whiteSetupPoints;
+      setupPoints = whiteSetupPoints;
       colorString = @"W";
     }
 
@@ -212,14 +292,21 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt(). Returns true on success, false on failure.
 // -----------------------------------------------------------------------------
-- (bool) syncGTPEngineSetupPlayer
+- (bool) syncGTPEngineSetupPlayer:(GoNodeSetup*)nodeSetupUpToWhichToSync
 {
-  GoGame* game = [GoGame sharedGame];
-  if (game.setupFirstMoveColor == GoColorNone)
+  if (! nodeSetupUpToWhichToSync)
     return true;
 
+  enum GoColor setupFirstMoveColor = nodeSetupUpToWhichToSync.setupFirstMoveColor;
+  if (setupFirstMoveColor == GoColorNone)
+  {
+    setupFirstMoveColor = nodeSetupUpToWhichToSync.previousSetupFirstMoveColor;
+    if (setupFirstMoveColor == GoColorNone)
+      return true;
+  }
+
   NSString* colorString;
-  if (game.setupFirstMoveColor == GoColorBlack)
+  if (setupFirstMoveColor == GoColorBlack)
     colorString = @"B";
   else
     colorString = @"W";
@@ -237,22 +324,13 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt(). Returns true on success, false on failure.
 // -----------------------------------------------------------------------------
-- (bool) syncGTPEngineMoves
+- (bool) syncGTPEngineMoves:(GoMove*)syncUpToThisMove
 {
-  GoGame* game = [GoGame sharedGame];
-  GoMove* syncUpToThisMove = nil;
-  if (SyncMovesUpToCurrentBoardPosition == self.syncMoveType)
-  {
-    GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.boardPosition.currentNode];
-    if (nodeWithMostRecentMove)
-      syncUpToThisMove = nodeWithMostRecentMove.goMove;
-  }
-  else
-  {
-    syncUpToThisMove = game.lastMove;
-  }
   if (! syncUpToThisMove)
     return true;
+
+  GoGame* game = [GoGame sharedGame];
+
   NSString* commandString = @"gogui-play_sequence";
   GoNode* node = game.nodeModel.rootNode;
   while (true)
@@ -282,6 +360,7 @@
     }
     node = node.firstChild;
   }
+
   GtpCommand* commandSetup = [GtpCommand command:commandString];
   [commandSetup submit];
   assert(commandSetup.response.status);

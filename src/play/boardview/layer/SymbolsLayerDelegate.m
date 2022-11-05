@@ -1131,7 +1131,7 @@
                    pointsWithMarkup:(NSMutableArray*)pointsWithMarkup
 {
   GoGame* game = [GoGame sharedGame];
-  GoNode* nodeWithNextMove = [GoUtilities nodeWithNextMove:game.boardPosition.currentNode];
+  GoNode* nodeWithNextMove = [GoUtilities nodeWithNextMove:game.boardPosition.currentNode inCurrentGameVariation:game];
   if (! nodeWithNextMove)
     return;
 
@@ -1168,6 +1168,9 @@
 - (void) drawHandicapStoneSymbolInContext:(CGContextRef)context
                            inTileWithRect:(CGRect)tileRect
 {
+  // TODO xxx The implementation needs to be changed - handicap stones may be
+  // removed by later setup, or even replaced by other black setup stones
+
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
   CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
 

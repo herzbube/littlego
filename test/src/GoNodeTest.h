@@ -15,18 +15,34 @@
 // -----------------------------------------------------------------------------
 
 
-// Forward declarations
-@class NSObject;
+// Project includes
+#import "BaseTestCase.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NSObjectAddtions category enhances NSObject by adding a number
-/// of useful class methods.
-///
-/// @ingroup utility
+/// @brief The GoNodeTest class contains unit tests that exercise the GoNode
+/// class (including the operations defined in the GoNodeAdditions category).
 // -----------------------------------------------------------------------------
-@interface NSObject(NSObjectAddtions)
+@interface GoNodeTest : BaseTestCase
+{
+}
 
-- (void) performBlockOnMainThread:(void(^)(void))callback afterDelay:(double)delayInSeconds;
+- (void) testInitialState;
+- (void) testNode;
+- (void) testNodeWithMove;
+- (void) testSetFirstChild;
+- (void) testChildrenAndHasChildren;
+- (void) testAppendChild;
+- (void) testInsertChildBeforeReferenceChildWhenReferenceChildIsNil;
+- (void) testInsertChildBeforeReferenceChildWhenReferenceChildIsNotNil;
+- (void) testRemoveChild;
+- (void) testReplaceChild;
+- (void) testSetNextSibling;
+- (void) testSetParent;
+- (void) testIsDescendantOfNode;
+- (void) testIsAncestorOfNode;
+- (void) testEmpty;
+- (void) testModifyBoard;
+- (void) testRevertBoard;
 
 @end

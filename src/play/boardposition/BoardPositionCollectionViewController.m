@@ -155,7 +155,6 @@
 - (void) setupNotificationResponders
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingStarts:) name:computerPlayerThinkingStarts object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingStops:) name:computerPlayerThinkingStops object:nil];
@@ -168,11 +167,9 @@
   [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
   [center addObserver:self selector:@selector(nodeAnnotationDataDidChange:) name:nodeAnnotationDataDidChange object:nil];
   [center addObserver:self selector:@selector(markupOnPointsDidChange:) name:markupOnPointsDidChange object:nil];
+  [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
+  [center addObserver:self selector:@selector(numberOfBoardPositionsDidChange:) name:numberOfBoardPositionsDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
-  // KVO observing
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -181,9 +178,6 @@
 - (void) removeNotificationResponders
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
 }
 
 #pragma mark - UICollectionViewDataSource overrides
@@ -265,8 +259,8 @@
   // positions.
   int newBoardPosition = (int)indexPath.row;
 
-  // The command triggers a KVO notification that we can ignore since it was the
-  // user who made the selection
+  // The command posts currentBoardPositionDidChange, which we can ignore since
+  // it was the user who made the selection
   self.ignoreCurrentBoardPositionChange = true;
   [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
   self.ignoreCurrentBoardPositionChange = false;
@@ -275,25 +269,10 @@
 #pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameWillCreate notification.
-// -----------------------------------------------------------------------------
-- (void) goGameWillCreate:(NSNotification*)notification
-{
-  GoGame* oldGame = [notification object];
-  GoBoardPosition* boardPosition = oldGame.boardPosition;
-  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameDidCreate notification.
 // -----------------------------------------------------------------------------
 - (void) goGameDidCreate:(NSNotification*)notification
 {
-  GoGame* newGame = [notification object];
-  GoBoardPosition* boardPosition = newGame.boardPosition;
-  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:NSKeyValueObservingOptionOld context:NULL];
-  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:NULL];
   [self.boardPositionsWithChangedData removeAllObjects];
   self.allDataNeedsUpdate = true;
   // currentBoardPosition also needs update to cover the case where the app
@@ -406,6 +385,45 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #currentBoardPositionDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentBoardPositionDidChange:(NSNotification*)notification
+{
+  if (self.ignoreCurrentBoardPositionChange)
+    return;
+
+  self.currentBoardPositionNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #numberOfBoardPositionsDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) numberOfBoardPositionsDidChange:(NSNotification*)notification
+{
+  self.numberOfItemsNeedsUpdate = true;
+
+  NSArray* notificationObject = notification.object;
+  NSNumber* oldNumberOfBoardPositions = notificationObject.firstObject;
+  NSNumber* newNumberOfBoardPositions = notificationObject.lastObject;
+  if (1 == [newNumberOfBoardPositions intValue] && [oldNumberOfBoardPositions intValue] > 1)
+  {
+    // The number of board positions has decreased from >1 to =1, i.e. all
+    // moves were discarded. If the current board position was 0 before the
+    // discard, the discard does not change the current board position, which
+    // means that the notification currentBoardPositionDidChange is NOT posted.
+    // This is a problem for this controller, because updateNumberOfItems()
+    // causes the collection view to reload all data, and after the reload no
+    // cell is selected. So, to make sure that board position 0 is selected
+    // after the reload, we fake a board position change by setting the flag
+    // self.currentBoardPositionNeedsUpdate.
+    self.currentBoardPositionNeedsUpdate = true;
+  }
+
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -431,45 +449,6 @@
   // be re-selected after the update
   self.currentBoardPositionNeedsUpdate = true;
   [self delayedUpdate];
-}
-
-#pragma mark - KVO responder
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to KVO notifications.
-// -----------------------------------------------------------------------------
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
-{
-  if ([keyPath isEqualToString:@"currentBoardPosition"])
-  {
-    if (! self.ignoreCurrentBoardPositionChange)
-    {
-      self.currentBoardPositionNeedsUpdate = true;
-      [self delayedUpdate];
-    }
-  }
-  else if ([keyPath isEqualToString:@"numberOfBoardPositions"])
-  {
-    self.numberOfItemsNeedsUpdate = true;
-    if (1 == [change[NSKeyValueChangeNewKey] intValue] && [change[NSKeyValueChangeOldKey] intValue] > 1)
-    {
-      // The number of board positions has decreased from >1 to =1, i.e. all
-      // moves were discarded. If the current board position was 0 before the
-      // discard, the discard does not change the current board position, which
-      // means that KVO for "currentBoardPosition" is NOT triggered. This is a
-      // problem for this controller, because updateNumberOfItems() causes the
-      // collection view to reload all data, and after the reload no cell is
-      // selected. So, to make sure that board position 0 is selected after the
-      // reload, we fake a board position change by setting the flag
-      // self.currentBoardPositionNeedsUpdate.
-      self.currentBoardPositionNeedsUpdate = true;
-    }
-    [self delayedUpdate];
-  }
-  else
-  {
-    [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-  }
 }
 
 #pragma mark - Updaters

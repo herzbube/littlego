@@ -131,8 +131,10 @@ enum LoadResultType
 @property(nonatomic, assign) NSUInteger numberOfGameInfoItems;
 @property(nonatomic, retain) NSArray* gameInfoItems;
 @property(nonatomic, retain) NSArray* gameInfoNodes;
+@property(nonatomic, retain) NSArray* games;
 @property(nonatomic, retain) GameInfoItem* gameInfoItemBeingLoaded;
 @property(nonatomic, retain) SGFCNode* gameInfoNodeBeingLoaded;
+@property(nonatomic, retain) SGFCGame* gameBeingLoaded;
 @end
 
 
@@ -157,8 +159,10 @@ enum LoadResultType
     controller.numberOfGameInfoItems = 0;
     controller.gameInfoItems = nil;
     controller.gameInfoNodes = nil;
+    controller.games = nil;
     controller.gameInfoItemBeingLoaded = nil;
     controller.gameInfoNodeBeingLoaded = nil;
+    controller.gameBeingLoaded = nil;
   }
   return controller;
 }
@@ -176,8 +180,10 @@ enum LoadResultType
   self.sgfDocumentReadResultMultipleEncodings = nil;
   self.gameInfoItems = nil;
   self.gameInfoNodes = nil;
+  self.games = nil;
   self.gameInfoItemBeingLoaded = nil;
   self.gameInfoNodeBeingLoaded = nil;
+  self.gameBeingLoaded = nil;
   self.actionButton = nil;
   [super dealloc];
 }
@@ -531,7 +537,8 @@ enum LoadResultType
             {
               GameInfoItem* gameInfoItem = [self.gameInfoItems objectAtIndex:indexPath.section - GamesSection];
               SGFCNode* gameInfoNode = [self.gameInfoNodes objectAtIndex:indexPath.section - GamesSection];
-              [self loadGame:gameInfoItem gameInfoNode:gameInfoNode];
+              SGFCGame* game = [self.games objectAtIndex:indexPath.section - GamesSection];
+              [self loadGame:gameInfoItem gameInfoNode:gameInfoNode game:game];
             }
             else
             {
@@ -677,10 +684,11 @@ enum LoadResultType
 /// @brief Displays NewGameController to allow the user to start a new game and
 /// load the game's initial state from @a gameInfoNode.
 // -----------------------------------------------------------------------------
-- (void) loadGame:(GameInfoItem*)gameInfoItem gameInfoNode:(SGFCNode*)gameInfoNode
+- (void) loadGame:(GameInfoItem*)gameInfoItem gameInfoNode:(SGFCNode*)gameInfoNode game:(SGFCGame*)game
 {
   self.gameInfoItemBeingLoaded = gameInfoItem;
   self.gameInfoNodeBeingLoaded = gameInfoNode;
+  self.gameBeingLoaded = game;
   NewGameController* newGameController = [[NewGameController controllerWithDelegate:self loadGame:true] retain];
   [self presentNavigationControllerWithRootViewController:newGameController];
   [newGameController release];
@@ -711,12 +719,13 @@ enum LoadResultType
 
     [MainUtility activateUIArea:UIAreaPlay];
 
-    LoadGameCommand* command = [[[LoadGameCommand alloc] initWithGameInfoNode:self.gameInfoNodeBeingLoaded goGameInfo:self.gameInfoItemBeingLoaded.goGameInfo] autorelease];
+    LoadGameCommand* command = [[[LoadGameCommand alloc] initWithGameInfoNode:self.gameInfoNodeBeingLoaded goGameInfo:self.gameInfoItemBeingLoaded.goGameInfo game:self.gameBeingLoaded] autorelease];
     [command submit];
   }
 
   self.gameInfoItemBeingLoaded = nil;
   self.gameInfoNodeBeingLoaded = nil;
+  self.gameBeingLoaded = nil;
 }
 
 #pragma mark - Action button - Action handlers
@@ -1198,6 +1207,7 @@ enum LoadResultType
 
   NSMutableArray* gameInfoItems = [NSMutableArray array];
   NSMutableArray* gameInfoNodes = [NSMutableArray array];
+  NSMutableArray* games = [NSMutableArray array];
 
   for (SGFCGame* game in document.games)
   {
@@ -1234,12 +1244,14 @@ enum LoadResultType
 
       [gameInfoItems addObject:gameInfoItem];
       [gameInfoNodes addObject:gameInfoNode];
+      [games addObject:game];
     }
   }
 
   self.numberOfGameInfoItems = gameInfoItems.count;
   self.gameInfoItems = gameInfoItems;
   self.gameInfoNodes = gameInfoNodes;
+  self.games = games;
 }
 
 @end

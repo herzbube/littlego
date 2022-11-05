@@ -188,7 +188,11 @@
       [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease] submit];
     }
 
+    int oldCurrentBoardPosition = boardPosition.currentBoardPosition;
     boardPosition.currentBoardPosition = self.newBoardPosition;
+
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:self.newBoardPosition]]];
 
     SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];
     bool syncSuccess = [syncCommand submit];

@@ -212,4 +212,28 @@
   XCTAssertEqual(nodeAnnotation.estimatedScoreValue, expectedEstimatedScoreValue);
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e isValidEstimatedScoreSummary:value:() method.
+// -----------------------------------------------------------------------------
+- (void) testIsValidEstimatedScoreSummaryValue
+{
+  XCTAssertTrue([GoNodeAnnotation isValidEstimatedScoreSummary:GoScoreSummaryNone value:0]);
+  XCTAssertTrue([GoNodeAnnotation isValidEstimatedScoreSummary:GoScoreSummaryNone value:42]);
+  XCTAssertTrue([GoNodeAnnotation isValidEstimatedScoreSummary:GoScoreSummaryNone value:-42]);
+
+  XCTAssertFalse([GoNodeAnnotation isValidEstimatedScoreSummary:GoScoreSummaryBlackWins value:0]);
+  XCTAssertTrue([GoNodeAnnotation isValidEstimatedScoreSummary:GoScoreSummaryBlackWins value:42]);
+  XCTAssertFalse([GoNodeAnnotation isValidEstimatedScoreSummary:GoScoreSummaryBlackWins value:-42]);
+
+  XCTAssertFalse([GoNodeAnnotation isValidEstimatedScoreSummary:GoScoreSummaryWhiteWins value:0]);
+  XCTAssertTrue([GoNodeAnnotation isValidEstimatedScoreSummary:GoScoreSummaryWhiteWins value:42]);
+  XCTAssertFalse([GoNodeAnnotation isValidEstimatedScoreSummary:GoScoreSummaryWhiteWins value:-42]);
+
+  XCTAssertTrue([GoNodeAnnotation isValidEstimatedScoreSummary:GoScoreSummaryTie value:0]);
+  XCTAssertFalse([GoNodeAnnotation isValidEstimatedScoreSummary:GoScoreSummaryTie value:42]);
+  XCTAssertFalse([GoNodeAnnotation isValidEstimatedScoreSummary:GoScoreSummaryTie value:-42]);
+
+  XCTAssertFalse([GoNodeAnnotation isValidEstimatedScoreSummary:(enum GoScoreSummary)42 value:42]);
+}
+
 @end

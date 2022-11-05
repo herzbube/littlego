@@ -20,20 +20,26 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoNodeAnnotationTest class contains unit tests that exercise the
-/// GoNodeAnnotation class.
+/// @brief The GoNodeSetupTest class contains unit tests that exercise the
+/// GoNodeSetup class.
 // -----------------------------------------------------------------------------
-@interface GoNodeAnnotationTest : BaseTestCase
+@interface GoNodeSetupTest : BaseTestCase
 {
 }
 
-- (void) testShortDescription;
-- (void) testLongDescription;
-- (void) testGoBoardPositionValuation;
-- (void) testGoBoardPositionHotspotDesignation;
-- (void) testEstimatedScoreSummary;
-- (void) testEstimatedScoreValue;
-- (void) testSetEstimatedScoreSummaryValue;
-- (void) testIsValidEstimatedScoreSummaryValue;
+- (void) testInitialState;
+- (void) testNodeSetupWithPreviousSetupCapturedFromGame;
+- (void) testSetupValidatedBlackStones;
+- (void) testSetupValidatedWhiteStones;
+- (void) testSetupValidatedNoStones;
+- (void) testApplySetup;
+- (void) testRevertSetup;
+- (void) testSetupBlackStone;
+- (void) testSetupWhiteStone;
+- (void) testSetupNoStone;
+- (void) testUpdatePreviousSetupInformationAfterHandicapStonesDidChange;
+- (void) testStoneStateAfterSetup;
+- (void) testStoneStatePreviousToSetup;
+- (void) testEmpty;
 
 @end

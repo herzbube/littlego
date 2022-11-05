@@ -279,7 +279,7 @@
           continue;
         if (game.nextMovePlayerIsComputerPlayer)
           continue;
-        if ([GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode])
+        if ([GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode inCurrentGameVariation:game])
           continue;
         title = @"Resign";
         alertActionBlock = ^(UIAlertAction* action) { [self resign]; };
@@ -293,7 +293,7 @@
           continue;
         if (GoGameStateGameHasEnded != game.state)
           continue;
-        if ([GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode])
+        if ([GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode inCurrentGameVariation:game])
           continue;
         switch (game.reasonForGameHasEnded)
         {

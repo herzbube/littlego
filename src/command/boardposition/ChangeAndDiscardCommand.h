@@ -35,6 +35,10 @@
 /// board positions can be discarded if there are several consecutive human
 /// player moves.
 ///
+/// ChangeAndDiscardCommand first posts #currentBoardPositionDidChange (via
+/// ChangeBoardPositionCommand), then #numberOfBoardPositionsDidChange, to the
+/// default notification center.
+///
 /// If there is only one board position (i.e. no moves have been made yet and
 /// no other nodes have been created yet), ChangeAndDiscardCommand reverts the
 /// game state to "in progress" if the game is currently ended (e.g. if a player

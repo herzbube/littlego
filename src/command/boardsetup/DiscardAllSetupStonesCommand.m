@@ -126,7 +126,7 @@
       [[[[ChangeAndDiscardCommand alloc] init] autorelease] submit];
     }
 
-    [game discardAllSetupStones];
+    [game discardAllSetup];
 
     SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];
     bool syncSuccess = [syncCommand submit];

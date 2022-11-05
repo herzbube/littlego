@@ -40,17 +40,6 @@
 @interface PanGestureController()
 @property(nonatomic, retain) UILongPressGestureRecognizer* longPressRecognizer;
 @property(nonatomic, assign, getter=isPanningEnabled) bool panningEnabled;
-/// @brief Remember whether the controller has registered as observer for
-/// GoBoardPosition.
-///
-/// Before this flag was introduced, crash reports were received that indicated
-/// that the controller tried to unregister from observing GoBoardPosition
-/// although the controller hadn't registered as observer before. The scenario
-/// was thought to be impossible, but obviously the analysis must have missed
-/// something. Although the root cause for the problem was never identified,
-/// this flag was added so that a bit of general-purpose defensive programming
-/// could be implemented.
-@property(nonatomic, assign) bool observingBoardPosition;
 /// @brief The GoPoint that identifies the intersection from which the panning
 /// gesture started.
 ///
@@ -133,7 +122,6 @@
 - (void) setupNotificationResponders
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(goGameWillCreate:) name:goGameWillCreate object:nil];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(goGameStateChanged:) name:goGameStateChanged object:nil];
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
@@ -141,26 +129,10 @@
   [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
+  [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   // KVO observing
-  [self setupBoardPositionObserver:[GoGame sharedGame].boardPosition];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.markupModel addObserver:self forKeyPath:@"markupTool" options:0 context:NULL];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-// -----------------------------------------------------------------------------
-- (void) setupBoardPositionObserver:(GoBoardPosition*)boardPosition
-{
-  if (boardPosition)
-  {
-    [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-    self.observingBoardPosition = true;
-  }
-  else
-  {
-    self.observingBoardPosition = false;
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -169,21 +141,8 @@
 - (void) removeNotificationResponders
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [self removeBoardPositionObserver:[GoGame sharedGame].boardPosition];
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   [appDelegate.markupModel removeObserver:self forKeyPath:@"markupTool"];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-// -----------------------------------------------------------------------------
-- (void) removeBoardPositionObserver:(GoBoardPosition*)boardPosition
-{
-  if (! self.observingBoardPosition)
-    return;
-  self.observingBoardPosition = false;
-  if (boardPosition)
-    [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
 }
 
 #pragma mark - Property setter
@@ -364,21 +323,10 @@
 #pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #goGameWillCreate notification.
-// -----------------------------------------------------------------------------
-- (void) goGameWillCreate:(NSNotification*)notification
-{
-  GoGame* oldGame = [notification object];
-  [self removeBoardPositionObserver:oldGame.boardPosition];
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Responds to the #goGameDidCreate notification.
 // -----------------------------------------------------------------------------
 - (void) goGameDidCreate:(NSNotification*)notification
 {
-  GoGame* newGame = [notification object];
-  [self setupBoardPositionObserver:newGame.boardPosition];
   [self updatePanningEnabled];
 }
 
@@ -425,16 +373,20 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #currentBoardPositionDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentBoardPositionDidChange:(NSNotification*)notification
+{
+  [self cancelPanningInProgress];
+  [self updatePanningEnabled];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  if (object == [GoGame sharedGame].boardPosition)
-  {
-    [self cancelPanningInProgress];
-    [self updatePanningEnabled];
-  }
-  else if ([keyPath isEqualToString:@"markupTool"])
+  if ([keyPath isEqualToString:@"markupTool"])
   {
     [self cancelPanningInProgress];
     [self updatePanningEnabled];
@@ -484,7 +436,7 @@
 
   if (GoGameStateGameHasEnded == game.state)
   {
-    if (! [GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode])
+    if (! [GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode inCurrentGameVariation:game])
     {
       self.panningEnabled = false;
       return;

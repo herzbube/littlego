@@ -38,12 +38,16 @@
 /// created by user interaction (e.g. a move made by a player). GoBoardPosition
 /// provides a simple way how to refer to a board position: The reference is
 /// made with a numeric value:
-/// - Board position 0 refers to game tree root node, the beginning of the game
-///   when no moves have been played yet. If the game uses handicap and/or board
-///   setup, handicap and/or board setup stones have already been placed in this
-///   position.
+/// - Board position 0 refers to the game tree's root node, the beginning of the
+///   game when no board setup has been made yet and no moves have been played
+///   yet. If the game uses handicap, the handicap stones have already been
+///   placed in this position.
 /// - Board positions 1, 2, etc. refer to the position after the information in
 ///   node 1, 2, etc. have been applied to the board.
+///
+/// Note that this linear sequencing of board positions / nodes refers to the
+/// board positions / nodes that are in the game variation that is currently
+/// active in GoNodeModel.
 ///
 ///
 /// @par Synchronization of current board position and object states
@@ -53,46 +57,50 @@
 /// at that time.
 ///
 /// Upon initialization, GoBoardPosition is associated with a GoGame instance.
-/// The value of GoBoardPosition's @e currentBoardPosition property is in sync
-/// at all times with the current state of the GoPoint and GoBoardRegion objects
-/// attached to the GoGame instance.
-///
-///
-/// @par Effects of synchronization
-///
-/// Changing the board position via the @e currentBoardPosition property
-/// automatically updates the state of all associated GoPoint and GoBoardRegion
-/// objects. Changing the board position in this way typically, but not
-/// necessarily, occurs in response to user interaction (e.g. the user taps a
-/// toolbar button to view the next/previous board position).
-///
-/// If the state of GoPoint and GoBoardRegion objects associated with a
-/// GoBoardPosition instance changes, the value of the @e currentBoardPosition
-/// property automatically changes to reflect the new state. Currently the only
-/// event that triggers this is if a new move is made via one of the
-/// move-generating methods in GoGame/ (GoGame::play:() and GoGame::pass()).
+/// When the value of GoBoardPosition's @e currentBoardPosition property is
+/// changed, the property setter automatically updates the current state of the
+/// GoPoint and GoBoardRegion objects attached to the GoGame instance. To
+/// achieve this it invokes the GoNode methods modifyBoard() and revertBoard(),
+/// depending on whether the value of @e currentBoardPosition is increased or
+/// decreased.
 ///
 ///
 /// @par Notifications
 ///
-/// Use KVO to observe @e currentBoardPosition and @e numberOfBoardPositions for
-/// changes. In case both properties change their value in response to the same
-/// event, the notification for @e numberOfBoardPositions is sent before the
-/// notification for @e currentBoardPosition.
+/// Do @b not use KVO to observe @e currentBoardPosition and
+/// @e numberOfBoardPositions for changes. Instead react to the notifications
+/// #currentBoardPositionDidChange and #numberOfBoardPositionsDidChange being
+/// posted to the default notification center. The reason is that at the time
+/// when KVO triggers the state of other objects besides GoPoint and
+/// GoBoardRegion might not yet be up-to-date. Only the use of notifications
+/// guarantees that an observer will see the correct state of all Go model
+/// objects.
+///
+/// Clients that modify @e currentBoardPosition and/or @e numberOfBoardPositions
+/// are responsible for posting the notifications #currentBoardPositionDidChange
+/// and/or #numberOfBoardPositionsDidChange to the global notification center
+/// once they have finished updating the state of all Go model objects.
+///
+/// Clients that plan to decrease the value of @e numberOfBoardPositions are
+/// furthermore responsible to make sure that @e currentBoardPosition does not
+/// refer to an invalid board position. This means that they may have first to
+/// decrease the value of @e currentBoardPosition before they can decrease the
+/// value of @e numberOfBoardPositions.
 ///
 /// Because changing the current board position can be a lengthy operation,
 /// the client that triggers the change may wish to display a progress meter to
 /// indicate to the user that the operation is still running. The client in this
 /// case can observe the default notification center for the notification
-/// #boardPositionChangeProgress. The notification is sent (B-A) times for a
-/// board position change from A to B. Note that KVO observers of
-/// @e currentBoardPosition will still be notified just once.
+/// #boardPositionChangeProgress. The setter of @e currentBoardPosition posts
+/// this notification (B-A) times for a board position change from A to B.
 // -----------------------------------------------------------------------------
 @interface GoBoardPosition : NSObject
 {
 }
 
 - (id) initWithGame:(GoGame*)game;
+
+- (void) changeToLastBoardPositionWithoutUpdatingGoObjects;
 
 /// @brief The current board position as described in the GoBoardPosition class
 /// documentation.
@@ -119,6 +127,6 @@
 @property(nonatomic, assign, readonly) bool isLastPosition;
 /// @brief The number of board positions in the GoGame associated with this
 /// GoBoardPosition.
-@property(nonatomic, assign, readonly) int numberOfBoardPositions;
+@property(nonatomic, assign) int numberOfBoardPositions;
 
 @end

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,13 +28,12 @@
 }
 
 - (void) testInitialState;
-- (void) testStateWithHandicap;
-- (void) testStateAfterPlay;
-- (void) testPositionChange;
-- (void) testOutOfBoundsPositionNegative;
-- (void) testOutOfBoundsPositionTooHigh;
-- (void) testStateAfterDiscard;
-- (void) testBoardStateAfterPositionChange;
-- (void) testKVONotifications;
+- (void) testChangeToLastBoardPositionWithoutUpdatingGoObjects;
+- (void) testCurrentBoardPosition;
+- (void) testCurrentNode;
+- (void) testIsFirstPosition;
+- (void) testIsLastPosition;
+- (void) testNumberOfBoardPositions;
+- (void) testBoardPositionChangeProgress;
 
 @end

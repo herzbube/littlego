@@ -16,10 +16,10 @@
 
 
 // Project includes
-#import "NSObjectAddtions.h"
+#import "NSObjectAdditions.h"
 
 
-@implementation NSObject(NSObjectAddtions)
+@implementation NSObject(NSObjectAdditions)
 
 // -----------------------------------------------------------------------------
 /// @brief Schedules execution of the block @a callback on the main thread

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2021 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@
 #import "GoBoard.h"
 #import "GoGame.h"
 #import "GoMove.h"
+#import "GoNode.h"
+#import "GoNodeSetup.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
 #import "GoVertex.h"
@@ -132,11 +134,16 @@
   return res;
 }
 
+// TODO xxx remove if no longer needed
 // -----------------------------------------------------------------------------
 /// @brief Generates the Zobrist hash for the current board position represented
 /// by @a board.
 ///
-/// Raises @e NSInvalidArgumentException if @a board is nil.
+/// Raises @e NSInvalidArgumentException if @a board is @e nil.
+///
+/// Raises @e NSGenericException if the board size with which this
+/// GoZobristTable was initialized does not match the board size of the GoBoard
+/// object associated with @a game.
 // -----------------------------------------------------------------------------
 - (long long) hashForBoard:(GoBoard*)board
 {
@@ -169,25 +176,20 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Generates the Zobrist hash for the board position where @a board is
-/// empty, except for a list of specified black and white stones. @a blackStones
-/// and @a whiteStones are either empty or contain GoPoint objects.
+/// @brief Generates the Zobrist hash for a board that is empty except for the
+/// black handicap stones obtained from @a game.
 ///
-/// The current board position represented by @a board is ignored.
-///
-/// Raises @e NSInvalidArgumentException if @a board, @a blackStones or
-/// @a whiteStones is nil.
+/// Raises @e NSInvalidArgumentException if @a game is @e nil.
 ///
 /// Raises @e NSGenericException if the board size with which this
-/// GoZobristTable was initialized does not match the board size of @a board.
+/// GoZobristTable was initialized does not match the board size of the GoBoard
+/// object associated with @a game.
 // -----------------------------------------------------------------------------
-- (long long) hashForBoard:(GoBoard*)board
-               blackStones:(NSArray*)blackStones
-               whiteStones:(NSArray*)whiteStones
+- (long long) hashForHandicapStonesInGame:(GoGame*)game
 {
-  if (!board || !blackStones || !whiteStones)
+  if (! game)
   {
-    NSString* errorMessage = @"Board, black stones or white stones argument is nil";
+    NSString* errorMessage = @"Game argument is nil";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
@@ -195,48 +197,57 @@
     @throw exception;
   }
 
-  [self throwIfTableSizeDoesNotMatchSizeOfBoard:board];
+  [self throwIfTableSizeDoesNotMatchSizeOfBoard:game.board];
 
   long long hash = 0;
 
-  for (GoPoint* point in blackStones)
+  for (GoPoint* handicapPoint in game.handicapPoints)
   {
-    int indexPlayed = [self indexForStoneAt:point playedByColor:GoColorBlack];
-    hash ^= _zobristTable[indexPlayed];
-  }
-
-  for (GoPoint* point in whiteStones)
-  {
-    int indexPlayed = [self indexForStoneAt:point playedByColor:GoColorWhite];
-    hash ^= _zobristTable[indexPlayed];
+    int index = [self indexForStoneAt:handicapPoint playedByColor:GoColorBlack];
+    hash ^= _zobristTable[index];
   }
 
   return hash;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Generates the Zobrist hash for @a move.
+/// @brief Generates the Zobrist hash for @a node.
 ///
-/// The hash is calculated incrementally from the previous move:
-/// - Any stones that are captured by @a move are removed from the hash of the
-///   previous move
-/// - The stone that was added by @a move is added to the hash of the previous
-///   move
+/// The hash is calculated incrementally from the previous node:
+/// - If @a node contains game setup then...
+///   - Any stones that are placed by the setup are added to the hash of
+///     the previous node
+///   - Any stones that are removed by the setup are removed from the hash of
+///     the previous node
+/// - If @a node contains a move that places a stone then...
+///   - Any stones that are captured by @a move are removed from the hash of the
+///     previous node
+///   - The stone that was added by the move is added to the hash of the previous
+///     node
+/// - If @a node contains a move that is a pass move, the resulting hash is the
+///   same as for the previous node.
 ///
 /// If there is no previous move the calculation starts with the hash in @a game
-/// before the first move.
+/// after handicap stones were placed.
 ///
-/// If @a move is a pass move, the resulting hash is the same as for the
-/// previous move.
+/// Raises @e NSInvalidArgumentException if @a node or @a game is @e nil.
 ///
-/// Raises @e NSInvalidArgumentException if @a move or @a game is nil.
+/// Raises @e NSGenericException if the board size with which this
+/// GoZobristTable was initialized does not match the board size of the GoBoard
+/// object associated with @a game.
+///
+/// Raises @e NSInternalInconsistencyException if @a node contains game setup
+/// and the hash calculation fails because data required for the calculation is
+/// missing from the setup information and the setup information is therefore
+/// considered to be inconsistent. No explicit attempt to find inconsistencies
+/// is made, though, because a thorough check would make this method too slow.
 // -----------------------------------------------------------------------------
-- (long long) hashForMove:(GoMove*)move
+- (long long) hashForNode:(GoNode*)node
                    inGame:(GoGame*)game
 {
-  if (!move || !game)
+  if (!node || !game)
   {
-    NSString* errorMessage = @"Move or game argument is nil";
+    NSString* errorMessage = @"Node or game argument is nil";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
@@ -245,51 +256,186 @@
   }
 
   long long hash;
-  if (GoMoveTypePlay == move.type)
+  if (node.goNodeSetup)
   {
+    GoNodeSetup* nodeSetup = node.goNodeSetup;
+    GoNode* parentNode = node.parent;
+    hash = [self hashForBlackSetupStones:nodeSetup.blackSetupStones
+                        whiteSetupStones:nodeSetup.whiteSetupStones
+                           noSetupStones:nodeSetup.noSetupStones
+                previousBlackSetupStones:nodeSetup.previousBlackSetupStones
+                previousWhiteSetupStones:nodeSetup.previousWhiteSetupStones
+                               afterNode:parentNode
+                                  inGame:game];
+  }
+  else if (node.goMove && node.goMove.type == GoMoveTypePlay)
+  {
+    GoMove* move = node.goMove;
+    GoNode* parentNode = node.parent;
     hash = [self hashForStonePlayedByColor:move.player.color
                                    atPoint:move.point
                            capturingStones:move.capturedStones
-                                 afterMove:move.previous
+                                 afterNode:parentNode
                                     inGame:game];
   }
   else
   {
-    GoMove* previousMove = move.previous;
-    if (previousMove)
-      hash = previousMove.zobristHash;
+    GoNode* parentNode = node.parent;
+    if (parentNode)
+      hash = parentNode.zobristHash;
     else
-      hash = game.zobristHashBeforeFirstMove;
+      hash = game.zobristHashAfterHandicap;
   }
+
   return hash;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Generates the Zobrist hash for a hypothetical move played by @a color
-/// on the intersection @a point, after the previous move @a move. The move
-/// would capture the stones in @a capturedStones (array of GoPoint objects.
+/// @brief Generates the Zobrist hash for a hypothetical game setup, where the
+/// board initially contains the black and white stones in
+/// @a previousBlackSetupStones and @a previousWhiteSetupStones. The game setup
+/// would place the black and white stones in @a blackSetupStones and
+/// @a whiteSetupStones (possibly replacing existing stones of the other color),
+/// and remove stones from points listed in @a noSetupStones (the color of the
+/// stones being removed is derived from the initial board state).
 ///
 /// The hash is calculated incrementally from the Zobrist hash of the previous
-/// move @a move:
+/// node @a node:
+/// - Stones that are placed by the setup are added to the hash of the
+///   previous node
+/// - Stones that are removed by the setup are removed from the hash of the
+///   previous node
+///
+/// If @a node is @e nil the calculation starts with the hash in @a game after
+/// handicap stones were placed.
+///
+/// Raises @e NSInvalidArgumentException if @a game is @e nil.
+///
+/// Raises @e NSGenericException if the board size with which this
+/// GoZobristTable was initialized does not match the board size of the GoBoard
+/// object associated with @a game.
+///
+/// Raises @e NSInternalInconsistencyException if the hash calculation fails
+/// because data required for the calculation is missing from the setup
+/// information and the setup information is therefore considered to be
+/// inconsistent. No explicit attempt to find inconsistencies is made, though,
+/// because a thorough check would make this method too slow.
+// -----------------------------------------------------------------------------
+- (long long) hashForBlackSetupStones:(NSArray*)blackSetupStones
+                     whiteSetupStones:(NSArray*)whiteSetupStones
+                        noSetupStones:(NSArray*)noSetupStones
+             previousBlackSetupStones:(NSArray*)previousBlackSetupStones
+             previousWhiteSetupStones:(NSArray*)previousWhiteSetupStones
+                            afterNode:(GoNode*)node
+                               inGame:(GoGame*)game
+{
+  if (!game)
+  {
+    NSString* errorMessage = @"Game argument is nil";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  [self throwIfTableSizeDoesNotMatchSizeOfBoard:game.board];
+
+  long long hash;
+  if (node)
+    hash = node.zobristHash;
+  else
+    hash = game.zobristHashAfterHandicap;
+
+  if (blackSetupStones)
+  {
+    for (GoPoint* point in blackSetupStones)
+    {
+      if (previousWhiteSetupStones && [previousWhiteSetupStones containsObject:point])
+      {
+        // White stone is removed & replaced by black stone
+        int indexRemoved = [self indexForStoneAt:point playedByColor:GoColorWhite];
+        hash ^= _zobristTable[indexRemoved];
+      }
+
+      int indexPlayed = [self indexForStoneAt:point playedByColor:GoColorBlack];
+      hash ^= _zobristTable[indexPlayed];
+    }
+  }
+
+  if (whiteSetupStones)
+  {
+    for (GoPoint* point in whiteSetupStones)
+    {
+      if (previousBlackSetupStones && [previousBlackSetupStones containsObject:point])
+      {
+        // Black stone is removed & replaced by white stone
+        int indexRemoved = [self indexForStoneAt:point playedByColor:GoColorBlack];
+        hash ^= _zobristTable[indexRemoved];
+      }
+
+      int indexPlayed = [self indexForStoneAt:point playedByColor:GoColorWhite];
+      hash ^= _zobristTable[indexPlayed];
+    }
+  }
+
+  if (noSetupStones)
+  {
+    for (GoPoint* point in noSetupStones)
+    {
+      if (previousBlackSetupStones && [previousBlackSetupStones containsObject:point])
+      {
+        int indexRemoved = [self indexForStoneAt:point playedByColor:GoColorBlack];
+        hash ^= _zobristTable[indexRemoved];
+      }
+      else if (previousWhiteSetupStones && [previousWhiteSetupStones containsObject:point])
+      {
+        // White stone is removed & replaced by black stone
+        int indexRemoved = [self indexForStoneAt:point playedByColor:GoColorWhite];
+        hash ^= _zobristTable[indexRemoved];
+      }
+      else
+      {
+        NSString* errorMessage = [NSString stringWithFormat:@"Calculating Zobrist hash for game setup failed: Setup attempts to remove stone of undetermined color at %@", point];
+        DDLogError(@"%@: %@", self, errorMessage);
+        NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
+                                                         reason:errorMessage
+                                                       userInfo:nil];
+        @throw exception;
+      }
+    }
+  }
+
+  return hash;
+}
+
+
+// -----------------------------------------------------------------------------
+/// @brief Generates the Zobrist hash for a hypothetical move played by @a color
+/// on the intersection @a point, after the previous node @a node. The move
+/// would capture the stones in @a capturedStones (array of GoPoint objects).
+///
+/// The hash is calculated incrementally from the Zobrist hash of the previous
+/// node @a node:
 /// - Stones that are captured are removed from the hash
 /// - The stone that was added is added to the hash
 ///
-/// If @a move is nil the calculation starts with the hash in @a game before the
-/// first move.
+/// If @a node is @e nil the calculation starts with the hash in @a game after
+/// handicap stones were placed.
 ///
 /// Raises @e NSInvalidArgumentException if @a color is neither GoColorBlack
 /// nor GoColorWhite.
 ///
-/// Raises @e NSInvalidArgumentException if @a point or @a game is nil.
+/// Raises @e NSInvalidArgumentException if @a point or @a game is @e nil.
 ///
 /// Raises @e NSGenericException if the board size with which this
-/// GoZobristTable was initialized does not match the board size of GoBoard
-/// object that @a point is associated with.
+/// GoZobristTable was initialized does not match the board size of the GoBoard
+/// object associated with @a game.
 // -----------------------------------------------------------------------------
 - (long long) hashForStonePlayedByColor:(enum GoColor)color
                                 atPoint:(GoPoint*)point
                         capturingStones:(NSArray*)capturedStones
-                              afterMove:(GoMove*)move
+                              afterNode:(GoNode*)node
                                  inGame:(GoGame*)game
 {
   if (color != GoColorBlack && color != GoColorWhite)
@@ -311,12 +457,14 @@
     @throw exception;
   }
 
+  [self throwIfTableSizeDoesNotMatchSizeOfBoard:game.board];
+
   long long hash;
-  if (move)
-    hash = move.zobristHash;
+  if (node)
+    hash = node.zobristHash;
   else
-    hash = game.zobristHashBeforeFirstMove;
-  [self throwIfTableSizeDoesNotMatchSizeOfBoard:point.board];
+    hash = game.zobristHashAfterHandicap;
+
   if (capturedStones)
   {
     for (GoPoint* capturedStone in capturedStones)
@@ -325,8 +473,10 @@
       hash ^= _zobristTable[indexCaptured];
     }
   }
+
   int indexPlayed = [self indexForStoneAt:point playedByColor:color];
   hash ^= _zobristTable[indexPlayed];
+
   return hash;
 }
 

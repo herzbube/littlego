@@ -441,7 +441,7 @@
   }
 
   GoGame* game = [GoGame sharedGame];
-  if (! [GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode]
+  if (! [GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode inCurrentGameVariation:game]
       && GoGameStateGameHasEnded == game.state)
   {
     SGFCGameResult gameResult = [SgfUtilities gameResultForGoGameHasEndedReason:game.reasonForGameHasEnded];

@@ -887,6 +887,34 @@ extern NSString* longRunningActionStarts;
 /// @brief Is sent when the last of a nested series of long-running actions
 /// ends. See LongRunningActionCounter for a detailed discussion of the concept.
 extern NSString* longRunningActionEnds;
+/// @brief Is sent to indicate that the number of board positions in
+/// GoBoardPosition has changed.
+///
+/// An NSArray object containing two NSNumber objects is associated with the
+/// notification. The two NSNumber objects each wrap an integer value: The first
+/// value is the old number of board positions, the second value is the new
+/// number of board positions.
+///
+/// If board positions are discarded and the current board position is among
+/// the discarded board positions, then the current board position is changed
+/// before the discard takes place. #currentBoardPositionDidChange is therefore
+/// sent before this notification.
+///
+/// If new board positions are added and the current board position changes to
+/// one of the new board positions, then this notification is sent first and
+/// #currentBoardPositionDidChange is sent afterwards.
+extern NSString* numberOfBoardPositionsDidChange;
+/// @brief Is sent to indicate that the current board position has changed.
+/// This notification is sent only after the state of all Go model objects
+/// has been updated.
+///
+/// An NSArray object containing two NSNumber objects is associated with the
+/// notification. The two NSNumber objects each wrap an integer value: The first
+/// value is the old current board positions, the second value is the new
+/// current board positions.
+///
+/// This notification is sent after the last #boardPositionChangeProgress.
+extern NSString* currentBoardPositionDidChange;
 /// @brief Is sent (B-A) times while the current board position in
 /// GoBoardPosition changes from A to B. Observers can use this notification to
 /// power a progress meter.
@@ -916,6 +944,7 @@ extern NSString* uiAreaPlayModeWillChange;
 /// may be deallocated, or its content changed, after the notification has been
 /// delivered.
 extern NSString* uiAreaPlayModeDidChange;
+// TODO xxx remove if no longer needed
 /// @brief Is sent to indicate that the state of an intersection has changed
 /// during board setup. The intersection now has a handicap stone, or a
 /// previously set handicap stone has been removed. The GoPoint object that
@@ -1631,8 +1660,6 @@ extern NSString* goGameBoardPositionKey;
 extern NSString* goGameRulesKey;
 extern NSString* goGameDocumentKey;
 extern NSString* goGameScoreKey;
-extern NSString* goGameBlackSetupPointsKey;
-extern NSString* goGameWhiteSetupPointsKey;
 extern NSString* goGameSetupFirstMoveColorKey;
 // GoPlayer keys
 extern NSString* goPlayerPlayerUUIDKey;
@@ -1667,9 +1694,19 @@ extern NSString* goBoardRegionCachedAdjacentRegionsKey;
 extern NSString* goNodeFirstChildKey;
 extern NSString* goNodeNextSiblingKey;
 extern NSString* goNodeParentKey;
+extern NSString* goNodeGoNodeSetupKey;
 extern NSString* goNodeGoMoveKey;
 extern NSString* goNodeGoNodeAnnotationKey;
 extern NSString* goNodeGoNodeMarkupKey;
+// GoNodeSetup keys
+extern NSString* goNodeSetupBlackSetupStonesKey;
+extern NSString* goNodeSetupWhiteSetupStonesKey;
+extern NSString* goNodeSetupNoSetupStonesKey;
+extern NSString* goNodeSetupSetupFirstMoveColorKey;
+extern NSString* goNodeSetupPreviousBlackSetupStonesKey;
+extern NSString* goNodeSetupPreviousWhiteSetupStonesKey;
+extern NSString* goNodeSetupPreviousSetupFirstMoveColorKey;
+extern NSString* goNodeSetupPreviousSetupInformationWasCapturedKey;
 // GoNodeAnnotation keys
 extern NSString* goNodeAnnotationShortDescriptionKey;
 extern NSString* goNodeAnnotationLongDescriptionKey;

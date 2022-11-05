@@ -24,6 +24,7 @@
 #import <go/GoGameDocument.h>
 #import <go/GoMove.h>
 #import <go/GoNode.h>
+#import <go/GoNodeAdditions.h>
 #import <go/GoNodeModel.h>
 #import <go/GoPoint.h>
 
@@ -43,6 +44,119 @@
   XCTAssertNotNil(nodeModel.leafNode);
   XCTAssertEqual(nodeModel.numberOfNodes, 1);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the changeToMainVariation() method.
+// -----------------------------------------------------------------------------
+- (void) testChangeToMainVariation
+{
+  GoNodeModel* nodeModel = m_game.nodeModel;
+  GoNode* rootNode = nodeModel.rootNode;
+
+  XCTAssertEqual(nodeModel.numberOfNodes, 1);
+  XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+  XCTAssertEqual(rootNode, nodeModel.leafNode);
+
+  // Changing to variation works when node tree consists of only the root node
+  [nodeModel changeToMainVariation];
+  XCTAssertEqual(nodeModel.numberOfNodes, 1);
+  XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+  XCTAssertEqual(rootNode, nodeModel.leafNode);
+
+  [self setupGameTree:rootNode];
+
+  [nodeModel changeToMainVariation];
+  XCTAssertEqual(nodeModel.numberOfNodes, 4);
+  XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+
+  // Changing the linkage of nodes in the game tree does not automatically
+  // update GoNodeModel
+  [rootNode.firstChild setFirstChild:nil];
+  XCTAssertEqual(nodeModel.numberOfNodes, 4);
+  XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+
+  // changeToMainVariation updates GoNodeModel according to the current game
+  // tree linkage
+  [nodeModel changeToMainVariation];
+  XCTAssertEqual(nodeModel.numberOfNodes, 2);
+  XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the changeToVariationContainingNode:() method.
+// -----------------------------------------------------------------------------
+- (void) testChangeToVariationContainingNode
+{
+  GoNodeModel* nodeModel = m_game.nodeModel;
+  GoNode* rootNode = nodeModel.rootNode;
+
+  XCTAssertEqual(nodeModel.numberOfNodes, 1);
+  XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+  XCTAssertEqual(rootNode, nodeModel.leafNode);
+
+  // Changing to variation works when node tree consists of only the root node
+  [nodeModel changeToVariationContainingNode:rootNode];
+  XCTAssertEqual(nodeModel.numberOfNodes, 1);
+  XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+  XCTAssertEqual(rootNode, nodeModel.leafNode);
+
+  [self setupGameTree:rootNode];
+
+  [nodeModel changeToVariationContainingNode:rootNode];
+  XCTAssertEqual(nodeModel.numberOfNodes, 4);
+  XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+
+  // Changing the linkage of nodes in the game tree does not automatically
+  // update GoNodeModel
+  [rootNode.firstChild setFirstChild:nil];
+  XCTAssertEqual(nodeModel.numberOfNodes, 4);
+  XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+
+  // changeToVariationContainingNode: updates GoNodeModel according to the
+  // current game tree linkage
+  [nodeModel changeToVariationContainingNode:rootNode];
+  XCTAssertEqual(nodeModel.numberOfNodes, 2);
+  XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+
+  [nodeModel changeToVariationContainingNode:rootNode.lastChild];
+  XCTAssertEqual(nodeModel.numberOfNodes, 3);
+  XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+
+  [nodeModel changeToVariationContainingNode:rootNode.firstChild];
+  XCTAssertEqual(nodeModel.numberOfNodes, 2);
+  XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for testChangeToMainVariation() and
+/// testChangeToVariationContainingNode().
+// -----------------------------------------------------------------------------
+- (void) setupGameTree:(GoNode*)rootNode
+{
+  GoNode* mainVariationNode0 = rootNode;
+  GoNode* mainVariationNode1 = [GoNode node];
+  GoNode* mainVariationNode2 = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];
+  GoNode* mainVariationNode3 = [GoNode node];
+  [mainVariationNode0 setFirstChild:mainVariationNode1];
+  [mainVariationNode1 setFirstChild:mainVariationNode2];
+  [mainVariationNode2 setFirstChild:mainVariationNode3];
+
+  GoNode* secondaryVariationNode0 = rootNode;
+  GoNode* secondaryVariationNode1 = [GoNode node];
+  GoNode* secondaryVariationNode2 = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];;
+  [secondaryVariationNode0 appendChild:secondaryVariationNode1];
+  [secondaryVariationNode1 setFirstChild:secondaryVariationNode2];
 }
 
 // -----------------------------------------------------------------------------

@@ -24,7 +24,18 @@
 /// @brief The GoNodeModel class provides data related to the nodes of the
 /// current game tree to its clients.
 ///
-/// All indexes in GoNodeModel are zero-based.
+/// @ingroup go
+///
+/// GoNodeModel provides access to the full game tree to its clients via the
+/// property @e rootNode.
+///
+/// GoNodeModel also provides access to one specific branch of the game tree,
+/// commonly known as a game variation, or just variation. The currently
+/// configured variation is presented to clients as a sequence of nodes that
+/// can be accessed via an index-based API, similar to an array. Indexes are
+/// zero-based. The node located at index position 0 is always the game tree's
+/// root node. The node located at the highest index position is accessible via
+/// the @e leafNode property.
 ///
 /// Invoking GoNodeModel methods that add or discard moves generally sets the
 /// GoGameDocument dirty flag.
@@ -34,6 +45,9 @@
 }
 
 - (id) initWithGame:(GoGame*)game;
+
+- (void) changeToMainVariation;
+- (void) changeToVariationContainingNode:(GoNode*)node;
 
 - (GoNode*) nodeAtIndex:(int)index;
 - (int) indexOfNode:(GoNode*)node;

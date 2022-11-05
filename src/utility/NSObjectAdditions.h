@@ -15,25 +15,18 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "BaseTestCase.h"
+// Forward declarations
+@class NSObject;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoNodeAnnotationTest class contains unit tests that exercise the
-/// GoNodeAnnotation class.
+/// @brief The NSObjectAdditions category enhances NSObject by adding a number
+/// of useful class and instance methods.
+///
+/// @ingroup utility
 // -----------------------------------------------------------------------------
-@interface GoNodeAnnotationTest : BaseTestCase
-{
-}
+@interface NSObject(NSObjectAdditions)
 
-- (void) testShortDescription;
-- (void) testLongDescription;
-- (void) testGoBoardPositionValuation;
-- (void) testGoBoardPositionHotspotDesignation;
-- (void) testEstimatedScoreSummary;
-- (void) testEstimatedScoreValue;
-- (void) testSetEstimatedScoreSummaryValue;
-- (void) testIsValidEstimatedScoreSummaryValue;
+- (void) performBlockOnMainThread:(void(^)(void))callback afterDelay:(double)delayInSeconds;
 
 @end

@@ -36,13 +36,11 @@
   enum GoMoveType expectedMoveType = GoMoveTypePlay;
   GoPlayer* expectedPlayer = m_game.playerBlack;
   GoMove* expectedMovePrevious = nil;
-  GoMove* expectedMoveNext = nil;
 
   GoMove* move1 = [GoMove move:expectedMoveType by:expectedPlayer after:expectedMovePrevious];
   XCTAssertEqual(expectedMoveType, move1.type);
   XCTAssertEqual(expectedPlayer, move1.player);
   XCTAssertEqual(expectedMovePrevious, move1.previous);
-  XCTAssertEqual(expectedMoveNext, move1.next);
 
   expectedMoveType = GoMoveTypePass;
   expectedMovePrevious = move1;
@@ -50,9 +48,6 @@
   XCTAssertEqual(expectedMoveType, move2.type);
   XCTAssertEqual(expectedPlayer, move2.player);
   XCTAssertEqual(expectedMovePrevious, move2.previous);
-  XCTAssertEqual(expectedMoveNext, move2.next);
-  // Move 1 must now have it's "next" property set up
-  XCTAssertEqual(move2, move1.next);
 
   XCTAssertThrowsSpecificNamed([GoMove move:(enum GoMoveType)42 by:expectedPlayer after:nil],
                               NSException, NSInvalidArgumentException, @"evil cast");
@@ -92,7 +87,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the @e capturedStones property.
+/// @brief Exercises the @e capturedStones property with regular play stones
+/// being captured.
 // -----------------------------------------------------------------------------
 - (void) testCapturedStones
 {
@@ -154,6 +150,39 @@
 
   NSUInteger expectedNumberOfRegions = 7;
   XCTAssertEqual(expectedNumberOfRegions, m_game.board.regions.count);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e capturedStones property with handicap and setup
+/// stones being captured.
+// -----------------------------------------------------------------------------
+- (void) testCapturedStonesHandicapAndSetup
+{
+  GoPoint* handicapPoint = [m_game.board pointAtVertex:@"A1"];
+  m_game.handicapPoints = @[handicapPoint];
+
+  GoPoint* blackSetupPoint1 = [m_game.board pointAtVertex:@"A2"];
+  GoPoint* blackSetupPoint2 = [m_game.board pointAtVertex:@"B1"];
+  [m_game changeSetupPoint:blackSetupPoint1 toStoneState:GoColorBlack];
+  [m_game changeSetupPoint:blackSetupPoint2 toStoneState:GoColorBlack];
+
+  GoPoint* whiteSetupPoint1 = [m_game.board pointAtVertex:@"A3"];
+  GoPoint* whiteSetupPoint2 = [m_game.board pointAtVertex:@"B2"];
+  [m_game changeSetupPoint:whiteSetupPoint1 toStoneState:GoColorWhite];
+  [m_game changeSetupPoint:whiteSetupPoint2 toStoneState:GoColorWhite];
+
+  int expectedNumberOfCapturedStones = 3;
+  GoMove* move = [GoMove move:GoMoveTypePlay by:m_game.playerWhite after:nil];
+  move.point = [m_game.board pointAtVertex:@"C1"];
+  [move doIt];
+  XCTAssertNotNil(move.capturedStones);
+  XCTAssertEqual(expectedNumberOfCapturedStones, move.capturedStones.count);
+  XCTAssertTrue([move.capturedStones containsObject:handicapPoint]);
+  XCTAssertTrue([move.capturedStones containsObject:blackSetupPoint1]);
+  XCTAssertTrue([move.capturedStones containsObject:blackSetupPoint2]);
+  XCTAssertEqual(GoColorNone, handicapPoint.stoneState);
+  XCTAssertEqual(GoColorNone, blackSetupPoint1.stoneState);
+  XCTAssertEqual(GoColorNone, blackSetupPoint2.stoneState);
 }
 
 // -----------------------------------------------------------------------------
@@ -266,13 +295,9 @@
   XCTAssertEqual(expectedNumberOfCapturedStones, move4.capturedStones.count);
   XCTAssertTrue([move4.capturedStones containsObject:point1]);
   XCTAssertNil(move1.previous);
-  XCTAssertEqual(move2, move1.next);
   XCTAssertEqual(move1, move2.previous);
-  XCTAssertEqual(move3, move2.next);
   XCTAssertEqual(move2, move3.previous);
-  XCTAssertEqual(move4, move3.next);
   XCTAssertEqual(move3, move4.previous);
-  XCTAssertNil(move4.next);
   XCTAssertEqual(m_game.playerWhite, move1.player);
   XCTAssertEqual(m_game.playerBlack, move2.player);
   XCTAssertEqual(m_game.playerWhite, move3.player);
@@ -294,9 +319,7 @@
   XCTAssertTrue(point2.region != mainRegion);
   XCTAssertEqual(mainRegion, point3.region);
   XCTAssertEqual(expectedNumberOfCapturedStones, move4.capturedStones.count);
-  XCTAssertNil(move4.next);
   XCTAssertEqual(move3, move4.previous);
-  XCTAssertEqual(move4, move3.next);
   XCTAssertEqual(move2, move3.previous);
   XCTAssertEqual(m_game.playerBlack, move4.player);
   XCTAssertEqual(point3, move4.point);
@@ -312,9 +335,7 @@
   XCTAssertTrue(point2.region != mainRegion);
   XCTAssertEqual(mainRegion, point3.region);
   XCTAssertEqual(expectedNumberOfCapturedStones, move3.capturedStones.count);
-  XCTAssertEqual(move4, move3.next);
   XCTAssertEqual(move2, move3.previous);
-  XCTAssertEqual(move3, move2.next);
   XCTAssertEqual(move1, move2.previous);
   XCTAssertEqual(m_game.playerWhite, move3.player);
   XCTAssertNil(move3.point);
@@ -330,9 +351,7 @@
   XCTAssertEqual(mainRegion, point2.region);
   XCTAssertEqual(mainRegion, point3.region);
   XCTAssertEqual(expectedNumberOfCapturedStones, move2.capturedStones.count);
-  XCTAssertEqual(move3, move2.next);
   XCTAssertEqual(move1, move2.previous);
-  XCTAssertEqual(move2, move1.next);
   XCTAssertNil(move1.previous);
   XCTAssertEqual(m_game.playerBlack, move2.player);
   XCTAssertEqual(point2, move2.point);
@@ -348,7 +367,6 @@
   XCTAssertEqual(mainRegion, point2.region);
   XCTAssertEqual(mainRegion, point3.region);
   XCTAssertEqual(expectedNumberOfCapturedStones, move1.capturedStones.count);
-  XCTAssertEqual(move2, move1.next);
   XCTAssertNil(move1.previous);
   XCTAssertEqual(m_game.playerWhite, move1.player);
   XCTAssertEqual(point1, move1.point);
@@ -396,28 +414,6 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the @e zobristHash property
-// -----------------------------------------------------------------------------
-- (void) testZobristHash
-{
-  enum GoMoveType moveType = GoMoveTypePlay;
-  GoPlayer* player = m_game.playerBlack;
-  GoMove* movePrevious = nil;
-  GoMove* move1 = [GoMove move:moveType by:player after:movePrevious];
-  move1.point = [m_game.board pointAtVertex:@"A1"];
-  [move1 doIt];
-  moveType = GoMoveTypePass;
-  player = m_game.playerWhite;
-  movePrevious = move1;
-  GoMove* move2 = [GoMove move:moveType by:player after:movePrevious];
-  [move2 doIt];
-
-  XCTAssertTrue(move1.zobristHash != 0);
-  XCTAssertTrue(move2.zobristHash != 0);
-  XCTAssertEqual(move1.zobristHash, move2.zobristHash);
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Exercises the @e goMoveValuation property
 // -----------------------------------------------------------------------------
 - (void) testGoMoveValuation
@@ -431,205 +427,6 @@
 
   move.goMoveValuation = GoMoveValuationInteresting;
   XCTAssertEqual(move.goMoveValuation, GoMoveValuationInteresting);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exercises the dealloc property
-// -----------------------------------------------------------------------------
-- (void) testDealloc
-{
-  enum GoMoveType moveType = GoMoveTypePlay;
-  GoPlayer* player = m_game.playerBlack;
-
-  GoMove* move1;
-  GoMove* move2;
-  GoMove* move3;
-  GoMove* move4;
-  GoMove* move5;
-
-  // Use an autorelease pool to get rid of the effect of autorelease messages.
-  // Instead we retain the objects so that we can then release/deallocate them
-  // in the order that we want.
-  @autoreleasepool
-  {
-    move1 = [GoMove move:moveType by:player after:nil];
-    move2 = [GoMove move:moveType by:player after:move1];
-    move3 = [GoMove move:moveType by:player after:move2];
-    move4 = [GoMove move:moveType by:player after:move3];
-    move5 = [GoMove move:moveType by:player after:move4];
-
-    [move1 retain];
-    [move2 retain];
-    [move3 retain];
-    [move4 retain];
-    [move5 retain];
-  }
-
-  XCTAssertNil(move1.previous);
-  XCTAssertEqual(move1.next, move2);
-  XCTAssertEqual(move2.previous, move1);
-  XCTAssertEqual(move2.next, move3);
-  XCTAssertEqual(move3.previous, move2);
-  XCTAssertEqual(move3.next, move4);
-  XCTAssertEqual(move4.previous, move3);
-  XCTAssertEqual(move4.next, move5);
-  XCTAssertEqual(move5.previous, move4);
-  XCTAssertNil(move5.next);
-
-  // Deallocate at the beginning of the chain > removes reference to next
-  [move1 release];
-  XCTAssertNil(move2.previous);
-  XCTAssertEqual(move2.next, move3);
-  XCTAssertEqual(move3.previous, move2);
-  XCTAssertEqual(move3.next, move4);
-  XCTAssertEqual(move4.previous, move3);
-  XCTAssertEqual(move4.next, move5);
-  XCTAssertEqual(move5.previous, move4);
-  XCTAssertNil(move5.next);
-
-  // Deallocate at the end of the chain > removes reference to previous
-  [move5 release];
-  XCTAssertNil(move2.previous);
-  XCTAssertEqual(move2.next, move3);
-  XCTAssertEqual(move3.previous, move2);
-  XCTAssertEqual(move3.next, move4);
-  XCTAssertEqual(move4.previous, move3);
-  XCTAssertNil(move4.next);
-
-  // Deallocate in the middle of the chain > removes reference both to next and
-  // previous
-  [move3 release];
-  XCTAssertNil(move2.previous);
-  XCTAssertNil(move2.next);
-  XCTAssertNil(move4.previous);
-  XCTAssertNil(move4.next);
-
-  // Deallocate without next/previous references.
-  // Also cleans up / avoids a memory leak.
-  [move2 release];
-  [move4 release];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Regression test for GitHub issue 369 ("GoMove dealloc removes
-/// references in other GoMove objects that are != self"). Exercises the
-/// dealloc() method.
-///
-/// Note that it is not possible to test
-// -----------------------------------------------------------------------------
-- (void) testIssue369
-{
-  enum GoMoveType moveType = GoMoveTypePlay;
-  GoPlayer* player = m_game.playerBlack;
-
-  GoMove* move1;
-  GoMove* move2a;
-  GoMove* move2b;
-
-  // The usage of an explicit autorelease pool is a testing device that allows
-  // us to enforce the deallocation of move2a.
-  @autoreleasepool
-  {
-    move1 = [GoMove move:moveType by:player after:nil];
-    move2a = [GoMove move:moveType by:player after:move1];
-
-    // Imagine that at this point the user discards move2a, but for some reason
-    // the object's retain count is not immediately decreased to zero and
-    // move2a is not immediately deallocated.
-    // - This could be something in the system that is still holding a
-    //   reference to move2a.
-    // - This could also be a pending autorelease message.
-    // Whatever the reason is: Because move2a is not deallocated the
-    // next/previous references in move1 and move2a remain intact.
-    XCTAssertEqual(move1.next, move2a);
-    XCTAssertEqual(move2a.previous, move1);
-
-    // From the user's point of view move2a no longer exists, although the
-    // object still lingers and awaits deallocation. The user at this point
-    // creates a new move (move2b) which overwrites the "next" reference that
-    // move1 still has and that is still pointing at move2a.
-    move2b = [GoMove move:moveType by:player after:move1];
-    XCTAssertEqual(move1.next, move2b);
-    XCTAssertEqual(move2b.previous, move1);
-
-    // Increase the retain count of move1 and move2b so that they survive the
-    // end of the autorelease pool scope
-    [move1 retain];
-    [move2b retain];
-
-    // Since we did not explicitly increase the retain count of move2a, it is
-    // now deallocated at the end of the autorelease pool scope.
-  }
-
-  // Verify that deallocation of move2a did not change the previous reference
-  // in move1
-  XCTAssertEqual(move1.next, move2b);
-  // For good measure, verify the back reference as well
-  XCTAssertEqual(move2b.previous, move1);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Regression test for GitHub issue 370 ("Crash due to GoMove dealloc
-/// accessing already deallocated GoMove object"). Exercises the dealloc()
-/// method in conjunction with the move:by:after:() convenience constructor.
-// -----------------------------------------------------------------------------
-- (void) testIssue370
-{
-  enum GoMoveType moveType = GoMoveTypePlay;
-  GoPlayer* player = m_game.playerBlack;
-
-  GoMove* move1;
-  GoMove* move2a;
-  GoMove* move2b;
-
-  // The usage of an explicit autorelease pool is a testing device that allows
-  // us to enforce the deallocation of move1 and move2b.
-  @autoreleasepool
-  {
-    move1 = [GoMove move:moveType by:player after:nil];
-    move2a = [GoMove move:moveType by:player after:move1];
-    XCTAssertEqual(move1.next, move2a);
-    XCTAssertEqual(move2a.previous, move1);
-
-    // Imagine that at this point the user discards move2a, but for some reason
-    // the retain count is not immediately decreased to zero and move2a is not
-    // immediately deallocated.
-    // - This could be something in the system that is still holding a
-    //   reference to move2a.
-    // - This could also be a pending autorelease message.
-    //
-    // We simulate this by explicitly increasing the retain count so that
-    // move2a will not be deallocated when the autorelease pool scope ends.
-    [move2a retain];
-
-    // From the user's point of view move2a no longer exists, although the
-    // object still lingers and awaits deallocation. The user at this point
-    // creates a new move (move2b) which overwrites the "next" reference that
-    // move1 still has and that is still pointing at move2a.
-    move2b = [GoMove move:moveType by:player after:move1];
-    XCTAssertEqual(move1.next, move2b);
-    XCTAssertEqual(move2b.previous, move1);
-
-    // When move2b overwrote the "next" reference in move1 that pointed to
-    // move2a, it used the private GoMove method replaceNext:() to do so. This
-    // ensured that the corresponding "previous" reference in move2a was set
-    // to nil so that it no longer points at move1.
-    XCTAssertNil(move2a.previous);
-
-    // Imagine that the user is now creating a new game. All moves are now
-    // discarded. For some reason the retain counts of move1 and move2b
-    // decrease to zero sooner than the retain count of move2a, causing
-    // move1 and move2b to be deallocated BEFORE move2a.
-    //
-    // We simulate this by letting the autorelease pool scope end. Since we
-    // did not explicitly increase the retain count of move1 and move2b, they
-    // are now deallocated.
-  }
-
-  // move2a is still alive at this point. We deallocate it by explicitly
-  // decreasing its retain count. move2a no longer has a "previous" reference
-  // to move1, so this should not cause any problems.
-  XCTAssertNoThrow([move2a release]);
 }
 
 @end

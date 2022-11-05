@@ -18,13 +18,10 @@
 // Project includes
 #import "GoMove.h"
 #import "GoMoveAdditions.h"
-#import "GoBoard.h"
-#import "GoGame.h"
 #import "GoPlayer.h"
 #import "GoPoint.h"
 #import "GoBoardRegion.h"
 #import "GoUtilities.h"
-#import "GoZobristTable.h"
 
 
 // -----------------------------------------------------------------------------
@@ -36,7 +33,6 @@
 @property(nonatomic, assign, readwrite) enum GoMoveType type;
 @property(nonatomic, retain, readwrite) GoPlayer* player;
 @property(nonatomic, assign, readwrite) GoMove* previous;
-@property(nonatomic, assign, readwrite) GoMove* next;
 @property(nonatomic, retain, readwrite) NSArray* capturedStones;
 //@}
 @end
@@ -46,16 +42,16 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Convenience constructor. Creates a GoMove instance of type @a type,
-/// which is associated with @a player, and whose predecessor is @a move.
+/// which is associated with @a player, and whose predecessor is
+/// @a previousMove.
 ///
-/// If @a move is not nil, this method updates @a move so that the newly
-/// created GoMove instance becomes its successor. @a move may be nil, in which
-/// case the newly created GoMove instance will be the first move of the game.
+/// @a move may be nil, in which case the newly created GoMove instance will be
+/// the first move of the game.
 ///
 /// Raises an @e NSInvalidArgumentException if @a type is invalid or @a player
 /// is nil.
 // -----------------------------------------------------------------------------
-+ (GoMove*) move:(enum GoMoveType)type by:(GoPlayer*)player after:(GoMove*)move
++ (GoMove*) move:(enum GoMoveType)type by:(GoPlayer*)player after:(GoMove*)previousMove
 {
   switch (type)
   {
@@ -86,11 +82,10 @@
   GoMove* newMove = [[GoMove alloc] init:type by:player];
   if (newMove)
   {
-    if (move)
+    if (previousMove)
     {
-      newMove.previous = move;
-      [move replaceNext:newMove];
-      newMove.moveNumber = move.moveNumber + 1;
+      newMove.previous = previousMove;
+      newMove.moveNumber = previousMove.moveNumber + 1;
     }
     [newMove autorelease];
   }
@@ -115,10 +110,8 @@
   self.player = aPlayer;
   _point = nil;  // don't use self, otherwise we trigger the setter!
   self.previous = nil;
-  self.next = nil;
   self.capturedStones = [NSMutableArray arrayWithCapacity:0];
   self.moveNumber = 1;
-  self.zobristHash = 0;
   self.goMoveValuation = GoMoveValuationNone;
 
   return self;
@@ -139,15 +132,11 @@
   self.type = [decoder decodeIntForKey:goMoveTypeKey];
   self.player = [decoder decodeObjectForKey:goMovePlayerKey];
   _point = [decoder decodeObjectForKey:goMovePointKey];  // don't use self, otherwise we trigger the setter!
-  // The previous/next moves were not archived. Whoever is unarchiving this
-  // GoMove is responsible for setting the previous/next move.
+  // The previous move was not archived. Whoever is unarchiving this
+  // GoMove is responsible for setting the previous move.
   self.previous = nil;
-  self.next = nil;
   self.capturedStones = [decoder decodeObjectForKey:goMoveCapturedStonesKey];
   self.moveNumber = [decoder decodeIntForKey:goMoveMoveNumberKey];
-  // The hash was not archived. Whoever is unarchiving this GoMove is
-  // responsible for re-calculating the hash.
-  self.zobristHash = 0;
   self.goMoveValuation = [decoder decodeIntForKey:goMoveGoMoveValuationKey];
 
   return self;
@@ -160,43 +149,18 @@
 {
   self.player = nil;
   _point = nil;  // don't use self, otherwise we trigger the setter!
-  if (self.previous)
-  {
-    // Only remove reference to self if this GoMove was not already replaced
-    // by another GoMove. See GitHub issue 369.
-    // After implementing replaceNext() to guard against GitHub issue 370 it
-    // should never be possible that we get here after another GoMove replaced
-    // this GoMove, because then replaceNext() should have made sure that this
-    // GoMove's "previous" reference was cleared.
-    if (self.previous.next == self)
-      self.previous.next = nil;  // remove reference to self
-    self.previous = nil;  // not strictly necessary since we don't retain it
-  }
-  if (self.next)
-  {
-    // Only remove reference to self if this GoMove was not already replaced
-    // by another GoMove. See GitHub issue 369.
-    // In practice it should not be possible that another GoMove has replaced
-    // this GoMove, because the whole app is designed so that when a move is
-    // discarded all of its successor moves are also discarded - so the
-    // "previous" reference in the "next" move should never be overwritten by
-    // anyone. We still do the check to be on the safe side.
-    if (self.next.previous == self)
-      self.next.previous = nil;  // remove reference to self
-    self.next = nil;  // not strictly necessary since we don't retain it
-  }
+  self.previous = nil;  // not strictly necessary since we don't retain it
   self.capturedStones = nil;
   [super dealloc];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up this GoMove object with the previous and next GoMove objects
-/// @a previousMove and @a nextMove, repsectively, after unarchiving.
+/// @brief Configures this GoMove object after unarchiving with the previous
+/// GoMove object @a previousMove.
 // -----------------------------------------------------------------------------
-- (void) setUnarchivedPreviousMove:(GoMove*)previousMove nextMove:(GoMove*)nextMove
+- (void) setUnarchivedPreviousMove:(GoMove*)previousMove
 {
   self.previous = previousMove;
-  self.next = nextMove;
 }
 
 // -----------------------------------------------------------------------------
@@ -210,65 +174,6 @@
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
   return [NSString stringWithFormat:@"GoMove(%p): type = %d, move number = %d", self, _type, _moveNumber];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Replaces the value of property @e next with the new value @a next.
-/// If the old value of property @e next references a GoMove object then that
-/// GoMove object's @e previous property is set to @e nil (assuming that the
-/// @e previous property referenced @e self).
-///
-/// Raises an @e NSInternalInconsistencyException if the @e previous property
-/// of the GoMove object referenced by @e next does not reference @e self.
-///
-/// This method is a private helper for the exclusive use of the convenience
-/// constructor. It avoids the situation that dealloc accesses an already
-/// deallocated GoMove object referenced by the @e previous property. See
-/// GitHub issue 370 for details.
-// -----------------------------------------------------------------------------
-- (void) replaceNext:(GoMove*)next
-{
-  if (self.next)
-  {
-    // The internal consistency check below should never fail. The previous
-    // property is only set internally in GoMove in the following cases:
-    // - When invoking this method from the convenience constructor
-    // - To nil during initialization
-    // - During unarchiving
-    // - To nil during deallocation
-    //
-    // Only the last case can, in theory, cause the internal consistency check
-    // to fail. The following would need to happen:
-    // - A new GoMove object is being constructed by the convenience constructor
-    //   (because only that invokes the replaceNext method)
-    // - The new GoMove object is the successor of an already existing GoMove
-    //   object A
-    // - The new GoMove object replaces a GoMove object B that was the successor
-    //   of GoMove object A.
-    // - The GoMove object B is CONCURRENTLY running its dealloc method and
-    //   has passed the check
-    //     if (self.previous.next == self)
-    //   but has not yet executed
-    //     self.previous.next = nil;
-    //   at the time execution arrives at the internal consistency check.
-    //
-    // While this is possible, in theory, in practice there is no known use case
-    // that allows for CONCURRENT construction of a replacement GoMove object
-    // and deallaction of the GoMove object being replaced.
-    if (self.next.previous != self)
-    {
-      NSString* errorMessage = [NSString stringWithFormat:@"replaceNext unexpectedly found a \"previous\" reference that is != self. self = %@, self.next = %@, self.next.previous = %@", self, self.next, self.next.previous];
-      DDLogError(@"%@: %@", self, errorMessage);
-      NSException* exception = [NSException exceptionWithName:NSInternalInconsistencyException
-                                                       reason:errorMessage
-                                                     userInfo:nil];
-      @throw exception;
-    }
-
-    self.next.previous = nil;
-  }
-
-  self.next = next;
 }
 
 // -----------------------------------------------------------------------------
@@ -321,15 +226,9 @@
 // -----------------------------------------------------------------------------
 - (void) doIt
 {
-  GoGame* game = [GoGame sharedGame];
-
   // Nothing to do for pass moves
   if (GoMoveTypePass == self.type)
-  {
-    self.zobristHash = [game.board.zobristTable hashForMove:self
-                                                     inGame:game];
     return;
-  }
 
   if (! self.point)
   {
@@ -396,9 +295,6 @@
       }
     }
   }
-
-  self.zobristHash = [self.point.board.zobristTable hashForMove:self
-                                                         inGame:game];
 }
 
 // -----------------------------------------------------------------------------
@@ -479,12 +375,6 @@
   [encoder encodeObject:self.capturedStones forKey:goMoveCapturedStonesKey];
   [encoder encodeInt:self.moveNumber forKey:goMoveMoveNumberKey];
   [encoder encodeInt:self.goMoveValuation forKey:goMoveGoMoveValuationKey];
-  // GoZobristTable is not archived, instead a new GoZobristTable object with
-  // random values is created each time when a game is unarchived. Zobrist
-  // hashes created by the previous GoZobristTable object are thus invalid.
-  // This is the reason why we don't archive self.zobristHash here - it doesn't
-  // make sense to archive an invalid value. A side effect of not archiving
-  // self.zobristHash is that the overall archive becomes smaller.
 }
 
 @end

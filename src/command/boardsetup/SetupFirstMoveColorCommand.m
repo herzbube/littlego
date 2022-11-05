@@ -103,10 +103,10 @@
       [[[[ChangeAndDiscardCommand alloc] init] autorelease] submit];
     }
 
-    // The setter of setupFirstMoveColor may change the GoGame property
+    // Invoking changeSetupFirstMoveColor may change the GoGame property
     // nextMoveColor. We don't want this to happen while the game already has
     // moves. That's why we discard future moves further up.
-    game.setupFirstMoveColor = self.firstMoveColor;
+    [game changeSetupFirstMoveColor:self.firstMoveColor];
 
     SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];
     bool syncSuccess = [syncCommand submit];

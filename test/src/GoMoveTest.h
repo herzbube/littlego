@@ -30,13 +30,10 @@
 - (void) testMoveByAfter;
 - (void) testPoint;
 - (void) testCapturedStones;
+- (void) testCapturedStonesHandicapAndSetup;
 - (void) testDoIt;
 - (void) testUndo;
 - (void) testMoveNumber;
-- (void) testZobristHash;
 - (void) testGoMoveValuation;
-- (void) testDealloc;
-- (void) testIssue369;
-- (void) testIssue370;
 
 @end

@@ -34,8 +34,8 @@
 /// @name Re-declaration of properties to make them readwrite privately
 //@{
 @property(nonatomic, retain, readwrite) GoNode* rootNode;
-@property(nonatomic, assign, readwrite) int numberOfNodes;  // exists as a property to allow KVO
-@property(nonatomic, assign, readwrite) int numberOfMoves;  // exists as a property to allow KVO
+@property(nonatomic, assign, readwrite) int numberOfNodes;
+@property(nonatomic, assign, readwrite) int numberOfMoves;
 //@}
 @end
 
@@ -56,11 +56,13 @@
   self = [super init];
   if (! self)
     return nil;
+
   self.game = game;
   self.rootNode = [GoNode node];
   self.nodeList = [NSMutableArray arrayWithObject:self.rootNode];
   self.numberOfNodes = 1;
   self.numberOfMoves = 0;
+
   return self;
 }
 
@@ -72,6 +74,7 @@
   self.game = nil;
   self.rootNode = nil;
   self.nodeList = nil;
+
   [super dealloc];
 }
 
@@ -220,6 +223,79 @@
 #pragma mark - Public interface
 
 // -----------------------------------------------------------------------------
+/// @brief Configures GoNodeModel with the main variation of the game tree, i.e.
+/// the variation that consists of the root node of the game tree and all of
+/// its @e firstChild descendants.
+// -----------------------------------------------------------------------------
+- (void) changeToMainVariation
+{
+  [self changeToVariationContainingNode:self.rootNode];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures GoNodeModel with the variation of the game tree that
+/// consists of @a node, all of @a node's ancestors up to the root node of the
+/// game tree, and all of @a node's @e firstChild descendants.
+///
+/// Raises @e NSInvalidArgumentException if @a node is nil, or if @a node is not
+/// in the same game tree as the root node accessible via property @e rootNode.
+// -----------------------------------------------------------------------------
+- (void) changeToVariationContainingNode:(GoNode*)node
+{
+  if (! node)
+  {
+    NSString* errorMessage = @"changeToVariationContainingNode: failed: node is nil object";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  NSMutableArray* newNodeList = [NSMutableArray arrayWithObject:node];
+  int newNumberOfMoves = node.goMove ? 1 : 0;
+
+  GoNode* parent = node.parent;
+  while (parent)
+  {
+    [newNodeList insertObject:parent atIndex:0];
+
+    if (parent.goMove)
+      newNumberOfMoves++;
+
+    parent = parent.parent;
+  }
+
+  if (newNodeList.firstObject != self.rootNode)
+  {
+    NSString* errorMessage = @"changeToVariationContainingNode: failed: root node is not at the variation start";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  GoNode* firstChild = node.firstChild;
+  while (firstChild)
+  {
+    [newNodeList addObject:firstChild];
+
+    if (firstChild.goMove)
+      newNumberOfMoves++;
+
+    firstChild = firstChild.firstChild;
+  }
+
+  int newNumberOfNodes = (int)newNodeList.count;
+
+  self.nodeList = newNodeList;
+
+  self.numberOfNodes = newNumberOfNodes;
+  self.numberOfMoves = newNumberOfMoves;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the GoNode object located at index position @a index. The
 /// index position is a location within the sequence of nodes that make up the
 /// current variation. The root node is at index position 0.
@@ -303,9 +379,9 @@
 
   // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
   // is safe because this app was not made to handle more than pow(2, 31) nodes.
-  self.numberOfNodes = (int)_nodeList.count;  // triggers KVO observers
+  self.numberOfNodes = (int)_nodeList.count;
   if (node.goMove)
-    self.numberOfMoves = self.numberOfMoves + 1;  // triggers KVO observers
+    self.numberOfMoves = self.numberOfMoves + 1;
 }
 
 // -----------------------------------------------------------------------------
@@ -373,9 +449,9 @@
 
   // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
   // is safe because this app was not made to handle more than pow(2, 31) nodes.
-  self.numberOfNodes = (int)_nodeList.count;  // triggers KVO observers
+  self.numberOfNodes = (int)_nodeList.count;
   if (numberOfMovesToDiscard > 0)
-    self.numberOfMoves = self.numberOfMoves - numberOfMovesToDiscard;  // triggers KVO observers
+    self.numberOfMoves = self.numberOfMoves - numberOfMovesToDiscard;
 }
 
 // -----------------------------------------------------------------------------

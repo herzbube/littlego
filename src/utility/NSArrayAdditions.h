@@ -15,25 +15,17 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "BaseTestCase.h"
+// Forward declarations
+@class NSArray;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoNodeAnnotationTest class contains unit tests that exercise the
-/// GoNodeAnnotation class.
+/// @brief The NSArrayAdditions category enhances NSArray by adding a number
+/// of useful class and instance methods.
+///
+/// @ingroup utility
 // -----------------------------------------------------------------------------
-@interface GoNodeAnnotationTest : BaseTestCase
-{
-}
-
-- (void) testShortDescription;
-- (void) testLongDescription;
-- (void) testGoBoardPositionValuation;
-- (void) testGoBoardPositionHotspotDesignation;
-- (void) testEstimatedScoreSummary;
-- (void) testEstimatedScoreValue;
-- (void) testSetEstimatedScoreSummaryValue;
-- (void) testIsValidEstimatedScoreSummaryValue;
-
+@interface NSArray(NSArrayAdditions)
++ (NSArray*) arrayWithArrayInReverseOrder:(NSArray*)otherArray;
+- (BOOL) isEqualToArrayIgnoringOrder:(NSArray*)otherArray;
 @end

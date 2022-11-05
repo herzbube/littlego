@@ -27,13 +27,12 @@
 #import <go/GoPoint.h>
 #import <go/GoUtilities.h>
 
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for GoBoardPositionTest.
 // -----------------------------------------------------------------------------
 @interface GoBoardPositionTest()
 @property(nonatomic, assign) int numberOfNotificationsReceived;
-@property(nonatomic, assign) int receiveIndexOfNumberOfBoardPositionsNotification;
-@property(nonatomic, assign) int receiveIndexOfCurrentBoardPositionNotification;
 @end
 
 
@@ -52,231 +51,317 @@
   XCTAssertTrue(boardPosition.isFirstPosition);
   XCTAssertTrue(boardPosition.isLastPosition);
   XCTAssertNotNil(boardPosition.currentNode);
-  XCTAssertNil(boardPosition.currentNode.goMove);
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
   XCTAssertFalse(m_game.nextMovePlayerIsComputerPlayer);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Checks the state of the GoBoardPosition object after a game with
-/// handicap has been created.
+/// @brief Exercises the changeToLastBoardPositionWithoutUpdatingGoObjects()
+/// class method.
 // -----------------------------------------------------------------------------
-- (void) testStateWithHandicap
-{
-  m_game.handicapPoints = [GoUtilities pointsForHandicap:5 inGame:m_game];
-
-  GoBoardPosition* boardPosition = m_game.boardPosition;
-  XCTAssertNotNil(boardPosition);
-  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
-  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Checks the state of the GoBoardPosition object after a move has been
-/// played.
-// -----------------------------------------------------------------------------
-- (void) testStateAfterPlay
+- (void) testChangeToLastBoardPositionWithoutUpdatingGoObjects
 {
   GoBoardPosition* boardPosition = m_game.boardPosition;
-  XCTAssertNotNil(boardPosition);
   XCTAssertEqual(boardPosition.currentBoardPosition, 0);
-  // Playing a move automatically advances the board position
-  [m_game play:[m_game.board pointAtVertex:@"A1"]];
-  XCTAssertEqual(boardPosition.currentBoardPosition, 1);
-  XCTAssertEqual(boardPosition.numberOfBoardPositions, 2);
-  XCTAssertFalse(boardPosition.isFirstPosition);
-  XCTAssertTrue(boardPosition.isLastPosition);
-  XCTAssertNotNil(boardPosition.currentNode);
-  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
-  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
-  XCTAssertFalse(m_game.nextMovePlayerIsComputerPlayer);
-  // Position is also advanced for passing
-  [m_game pass];
-  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
-  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
-  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
-  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
-  // Resigning is not a move, so no
-  [m_game resign];
-  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
-  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
-  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
-  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 1);
+
+  // Increase number of board positions
+  int newNumberOfBoardPositions = 42;
+  int expectedNewCurrentBoardPosition = newNumberOfBoardPositions - 1;
+  boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
+  [boardPosition changeToLastBoardPositionWithoutUpdatingGoObjects];
+  XCTAssertEqual(boardPosition.currentBoardPosition, expectedNewCurrentBoardPosition);
+
+  // Decrease number of board positions
+  newNumberOfBoardPositions = 5;
+  expectedNewCurrentBoardPosition = newNumberOfBoardPositions - 1;
+  boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
+  [boardPosition changeToLastBoardPositionWithoutUpdatingGoObjects];
+  XCTAssertEqual(boardPosition.currentBoardPosition, expectedNewCurrentBoardPosition);
+
+  // No change in number of board positions
+  [boardPosition changeToLastBoardPositionWithoutUpdatingGoObjects];
+  XCTAssertEqual(boardPosition.currentBoardPosition, expectedNewCurrentBoardPosition);
+
+  // Impossible number of board positions (in practice there always is at least
+  // 1 board position, because the root node cannot be discarded)
+  newNumberOfBoardPositions = 0;
+  expectedNewCurrentBoardPosition = newNumberOfBoardPositions - 1;
+  boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
+  [boardPosition changeToLastBoardPositionWithoutUpdatingGoObjects];
+  XCTAssertEqual(boardPosition.currentBoardPosition, expectedNewCurrentBoardPosition);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises assigning a value to the @e currentBoardPosition property.
+/// @brief Exercises the @e currentBoardPosition property.
 // -----------------------------------------------------------------------------
-- (void) testPositionChange
+- (void) testCurrentBoardPosition
 {
+  GoBoardPosition* boardPosition = m_game.boardPosition;
+  XCTAssertEqual(boardPosition.currentBoardPosition, 0);
+
   // Setup
-  GoBoardPosition* boardPosition = m_game.boardPosition;
-  XCTAssertNotNil(boardPosition);
-  XCTAssertEqual(boardPosition.currentBoardPosition, 0);
-  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  GoPoint* setupStonePoint1 = [m_game.board pointAtVertex:@"A2"];
+  GoPoint* setupStonePoint2 = [m_game.board pointAtVertex:@"A1"];
+  GoPoint* setupStonePoint3 = [m_game.board pointAtVertex:@"G3"];
+  enum GoColor setupFirstMoveColor = GoColorWhite;
+  enum GoColor opponentColor = GoColorBlack;
+  [m_game changeSetupPoint:setupStonePoint1 toStoneState:setupFirstMoveColor];
+  [m_game changeSetupPoint:setupStonePoint2 toStoneState:opponentColor];
+  enum GoColor setupStoneColor1 = GoColorBlack;
+  [m_game changeSetupPoint:setupStonePoint3 toStoneState:setupStoneColor1];
+  [m_game addEmptyNodeToCurrentGameVariation];
+  [m_game changeSetupFirstMoveColor:setupFirstMoveColor];
+  enum GoColor setupStoneColor2 = GoColorWhite;
+  [m_game changeSetupPoint:setupStonePoint3 toStoneState:GoColorWhite];
+  GoPoint* moveStonePoint = [m_game.board pointAtVertex:@"B1"];  // captures B on A1
+  [m_game play:moveStonePoint];
   [m_game pass];
-  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
-  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 3);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 4);
   XCTAssertFalse(boardPosition.isFirstPosition);
   XCTAssertTrue(boardPosition.isLastPosition);
-  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
-  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
-  // Backward, just one position
+  XCTAssertEqual(m_game.setupFirstMoveColor, GoColorWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(setupStonePoint1.stoneState, setupFirstMoveColor);
+  XCTAssertEqual(setupStonePoint2.stoneState, GoColorNone);
+  XCTAssertEqual(setupStonePoint3.stoneState, setupStoneColor2);
+  XCTAssertEqual(moveStonePoint.stoneState, setupFirstMoveColor);
+  XCTAssertEqual(m_game.board.regions.count, 5);
+
+  // Backward, just one position => take back pass move
   boardPosition.currentBoardPosition--;
-  XCTAssertEqual(boardPosition.currentBoardPosition, 1);
-  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 4);
   XCTAssertFalse(boardPosition.isFirstPosition);
   XCTAssertFalse(boardPosition.isLastPosition);
+  XCTAssertEqual(m_game.setupFirstMoveColor, GoColorWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(setupStonePoint1.stoneState, setupFirstMoveColor);
+  XCTAssertEqual(setupStonePoint2.stoneState, GoColorNone);
+  XCTAssertEqual(setupStonePoint3.stoneState, setupStoneColor2);
+  XCTAssertEqual(moveStonePoint.stoneState, setupFirstMoveColor);
+  XCTAssertEqual(m_game.board.regions.count, 5);
+
+  // Backward, just one position => take back capturing move
+  boardPosition.currentBoardPosition--;
+  XCTAssertEqual(boardPosition.currentBoardPosition, 1);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 4);
+  XCTAssertFalse(boardPosition.isFirstPosition);
+  XCTAssertFalse(boardPosition.isLastPosition);
+  XCTAssertEqual(m_game.setupFirstMoveColor, GoColorWhite);
   XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
-  // Backward, to the special position zero
-  boardPosition.currentBoardPosition--;
+  XCTAssertEqual(setupStonePoint1.stoneState, setupFirstMoveColor);
+  XCTAssertEqual(setupStonePoint2.stoneState, opponentColor);
+  XCTAssertEqual(setupStonePoint3.stoneState, setupStoneColor2);
+  XCTAssertEqual(moveStonePoint.stoneState, GoColorNone);
+  XCTAssertEqual(m_game.board.regions.count, 4);
+
+  // Backward, more than one position, to the first position
+  boardPosition.currentBoardPosition = 0;
   XCTAssertEqual(boardPosition.currentBoardPosition, 0);
-  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 4);
   XCTAssertTrue(boardPosition.isFirstPosition);
   XCTAssertFalse(boardPosition.isLastPosition);
+  XCTAssertEqual(m_game.setupFirstMoveColor, GoColorNone);
   XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
   XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
+  XCTAssertEqual(setupStonePoint1.stoneState, setupFirstMoveColor);
+  XCTAssertEqual(setupStonePoint2.stoneState, opponentColor);
+  XCTAssertEqual(setupStonePoint3.stoneState, setupStoneColor1);
+  XCTAssertEqual(moveStonePoint.stoneState, GoColorNone);
+  XCTAssertEqual(m_game.board.regions.count, 4);
+
+  // Forward, just one position
+  boardPosition.currentBoardPosition++;
+  XCTAssertEqual(boardPosition.currentBoardPosition, 1);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 4);
+  XCTAssertFalse(boardPosition.isFirstPosition);
+  XCTAssertFalse(boardPosition.isLastPosition);
+  XCTAssertEqual(m_game.setupFirstMoveColor, GoColorWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(setupStonePoint1.stoneState, setupFirstMoveColor);
+  XCTAssertEqual(setupStonePoint2.stoneState, opponentColor);
+  XCTAssertEqual(setupStonePoint3.stoneState, setupStoneColor2);
+  XCTAssertEqual(moveStonePoint.stoneState, GoColorNone);
+  XCTAssertEqual(m_game.board.regions.count, 4);
+
   // Forward, more than one position, to the last position
   boardPosition.currentBoardPosition = (boardPosition.numberOfBoardPositions - 1);
-  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
-  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 3);
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 4);
   XCTAssertFalse(boardPosition.isFirstPosition);
   XCTAssertTrue(boardPosition.isLastPosition);
-  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
-  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerBlack);
-}
+  XCTAssertEqual(m_game.setupFirstMoveColor, GoColorWhite);
+  XCTAssertEqual(m_game.nextMoveColor, GoColorWhite);
+  XCTAssertEqual(m_game.nextMovePlayer, m_game.playerWhite);
+  XCTAssertEqual(setupStonePoint1.stoneState, setupFirstMoveColor);
+  XCTAssertEqual(setupStonePoint2.stoneState, GoColorNone);
+  XCTAssertEqual(setupStonePoint3.stoneState, setupStoneColor2);
+  XCTAssertEqual(moveStonePoint.stoneState, setupFirstMoveColor);
+  XCTAssertEqual(m_game.board.regions.count, 5);
 
-// -----------------------------------------------------------------------------
-/// @brief Exercises assigning a negative value to the @e currentBoardPosition
-/// property.
-// -----------------------------------------------------------------------------
-- (void) testOutOfBoundsPositionNegative
-{
-  GoBoardPosition* boardPosition = m_game.boardPosition;
-  XCTAssertNotNil(boardPosition);
+  // Same position => does not update state of Go model objects
+  m_game.nextMoveColor = GoColorBlack;
+  boardPosition.currentBoardPosition = boardPosition.currentBoardPosition;
+  XCTAssertEqual(m_game.nextMoveColor, GoColorBlack);
+
   XCTAssertThrowsSpecificNamed(boardPosition.currentBoardPosition = -1,
                               NSException, NSRangeException, @"negative board position");
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exercises assigning a value to the @e currentBoardPosition property
-/// that is higher than the maximum allowed value.
-// -----------------------------------------------------------------------------
-- (void) testOutOfBoundsPositionTooHigh
-{
-  GoBoardPosition* boardPosition = m_game.boardPosition;
-  XCTAssertNotNil(boardPosition);
   XCTAssertThrowsSpecificNamed(boardPosition.currentBoardPosition = boardPosition.numberOfBoardPositions,
                               NSException, NSRangeException, @"board position too high");
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Checks the state of the GoBoardPosition object after a node has been
-/// discarded.
+/// @brief Exercises the @e currentNode property.
 // -----------------------------------------------------------------------------
-- (void) testStateAfterDiscard
+- (void) testCurrentNode
 {
-  // Setup
   GoBoardPosition* boardPosition = m_game.boardPosition;
-  XCTAssertNotNil(boardPosition);
-  XCTAssertEqual(boardPosition.currentBoardPosition, 0);
+  GoNode* nodeBoardPosition0 = boardPosition.currentNode;
+  XCTAssertNotNil(nodeBoardPosition0);
+  XCTAssertEqual(nodeBoardPosition0, m_game.nodeModel.rootNode);
+
   [m_game play:[m_game.board pointAtVertex:@"A1"]];
-  [m_game pass];
-  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
+  GoNode* nodeBoardPosition1 = boardPosition.currentNode;
+  XCTAssertNotNil(nodeBoardPosition1);
+  XCTAssertNotEqual(nodeBoardPosition1, m_game.nodeModel.rootNode);
+  XCTAssertEqual(nodeBoardPosition1, m_game.nodeModel.leafNode);
+
+  [m_game play:[m_game.board pointAtVertex:@"B1"]];
+  GoNode* nodeBoardPosition2 = boardPosition.currentNode;
+  XCTAssertNotNil(nodeBoardPosition2);
+  XCTAssertNotEqual(nodeBoardPosition2, m_game.nodeModel.rootNode);
+  XCTAssertNotEqual(nodeBoardPosition2, nodeBoardPosition1);
+  XCTAssertEqual(nodeBoardPosition2, m_game.nodeModel.leafNode);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e isFirstPosition property.
+// -----------------------------------------------------------------------------
+- (void) testIsFirstPosition
+{
+  GoBoardPosition* boardPosition = m_game.boardPosition;
+  XCTAssertTrue(boardPosition.isFirstPosition);
+
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  XCTAssertFalse(boardPosition.isFirstPosition);
+
+  [m_game play:[m_game.board pointAtVertex:@"B1"]];
+  XCTAssertFalse(boardPosition.isFirstPosition);
+
+  boardPosition.currentBoardPosition--;
+  XCTAssertFalse(boardPosition.isFirstPosition);
+
+  boardPosition.currentBoardPosition--;
+  XCTAssertTrue(boardPosition.isFirstPosition);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e isLastPosition property.
+// -----------------------------------------------------------------------------
+- (void) testIsLastPosition
+{
+  GoBoardPosition* boardPosition = m_game.boardPosition;
+  XCTAssertTrue(boardPosition.isLastPosition);
+
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  XCTAssertTrue(boardPosition.isLastPosition);
+
+  [m_game play:[m_game.board pointAtVertex:@"B1"]];
+  XCTAssertTrue(boardPosition.isLastPosition);
+
+  boardPosition.currentBoardPosition--;
+  XCTAssertFalse(boardPosition.isLastPosition);
+
+  boardPosition.currentBoardPosition--;
+  XCTAssertFalse(boardPosition.isLastPosition);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e numberOfBoardPositions property.
+// -----------------------------------------------------------------------------
+- (void) testNumberOfBoardPositions
+{
+  GoBoardPosition* boardPosition = m_game.boardPosition;
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 1);
+
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 2);
+
+  [m_game play:[m_game.board pointAtVertex:@"B1"]];
   XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
 
-  // Discarding automatically adjusts the board position
-  GoNodeModel* nodeModel = m_game.nodeModel;
-  XCTAssertNotNil(nodeModel);
-  XCTAssertEqual(nodeModel.numberOfNodes, 3);
-  XCTAssertEqual(nodeModel.numberOfMoves, 2);
-  [nodeModel discardNodesFromIndex:2];
-  XCTAssertEqual(boardPosition.currentBoardPosition, 1);
-  XCTAssertEqual(boardPosition.numberOfBoardPositions, 2);
+  // Tests from here on are slightly pointless because the property setter has
+  // no logic => arbitrary values can be set even if they do not make sense. The
+  // reason is that it must be possible to adjust the number of board positions
+  // before nodes are discarded from the node model.
+
+  // More board positions than there are nodes
+  boardPosition.numberOfBoardPositions = 42;
+
+  // Less board positions than there are nodes
+  boardPosition.numberOfBoardPositions = 1;
+
+  // Impossible number of board positions (in practice there always is at least
+  // 1 board position, because the root node cannot be discarded)
+  boardPosition.numberOfBoardPositions = 0;
+
+  // Even a negative number can be set
+  boardPosition.numberOfBoardPositions = -1;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Checks the state of GoPoint and other Go objects after the current
-/// board position changes.
+/// @brief Verifies that the notification #boardPositionChangeProgress is sent
+/// when the property @e currentBoardPosition is changed.
 // -----------------------------------------------------------------------------
-- (void) testBoardStateAfterPositionChange
+- (void) testBoardPositionChangeProgress
 {
-  NSUInteger expectedNumberOfRegions;
-  GoPoint* point1 = [m_game.board pointAtVertex:@"A2"];
-  GoPoint* point2 = [m_game.board pointAtVertex:@"A1"];
-  GoPoint* point3 = [m_game.board pointAtVertex:@"B1"];
-  [m_game play:point1];
-  [m_game play:point2];
-  [m_game play:point3];  // captures W on A1
-  XCTAssertEqual(GoColorBlack, point1.stoneState);
-  XCTAssertEqual(GoColorNone, point2.stoneState);
-  XCTAssertEqual(GoColorBlack, point3.stoneState);
-  expectedNumberOfRegions = 4;
-  XCTAssertEqual(expectedNumberOfRegions, m_game.board.regions.count);
-
-  // Take back capturing move
   GoBoardPosition* boardPosition = m_game.boardPosition;
-  boardPosition.currentBoardPosition--;
-  XCTAssertEqual(GoColorBlack, point1.stoneState);
-  XCTAssertEqual(GoColorWhite, point2.stoneState);
-  XCTAssertEqual(GoColorNone, point3.stoneState);
-  expectedNumberOfRegions = 3;
-  XCTAssertEqual(expectedNumberOfRegions, m_game.board.regions.count);
 
-  // Go back to the beginning of the game
-  boardPosition.currentBoardPosition = 0;
-  XCTAssertEqual(GoColorNone, point1.stoneState);
-  XCTAssertEqual(GoColorNone, point2.stoneState);
-  XCTAssertEqual(GoColorNone, point3.stoneState);
-  expectedNumberOfRegions = 1;
-  XCTAssertEqual(expectedNumberOfRegions, m_game.board.regions.count);
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(boardPositionChangeProgress:) name:boardPositionChangeProgress object:nil];
 
-  // Forward again to the last board position
-  boardPosition.currentBoardPosition = (boardPosition.numberOfBoardPositions - 1);
-  XCTAssertEqual(GoColorBlack, point1.stoneState);
-  XCTAssertEqual(GoColorNone, point2.stoneState);
-  XCTAssertEqual(GoColorBlack, point3.stoneState);
-  expectedNumberOfRegions = 4;
-  XCTAssertEqual(expectedNumberOfRegions, m_game.board.regions.count);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Checks that KVO notifications are sent, and that they are sent in
-/// the order that they are documented.
-// -----------------------------------------------------------------------------
-- (void) testKVONotifications
-{
   self.numberOfNotificationsReceived = 0;
-  self.receiveIndexOfNumberOfBoardPositionsNotification = -1;
-  self.receiveIndexOfCurrentBoardPositionNotification = -1;
+  [m_game play:[m_game.board pointAtVertex:@"A1"]];
+  XCTAssertEqual(1, self.numberOfNotificationsReceived);
 
-  GoBoardPosition* boardPosition = m_game.boardPosition;
-  [boardPosition addObserver:self forKeyPath:@"numberOfBoardPositions" options:0 context:NULL];
-  [boardPosition addObserver:self forKeyPath:@"currentBoardPosition" options:0 context:NULL];
-  [m_game pass];
-  [boardPosition removeObserver:self forKeyPath:@"numberOfBoardPositions"];
-  [boardPosition removeObserver:self forKeyPath:@"currentBoardPosition"];
-  XCTAssertEqual(0, self.receiveIndexOfNumberOfBoardPositionsNotification);
-  XCTAssertEqual(1, self.receiveIndexOfCurrentBoardPositionNotification);
+  self.numberOfNotificationsReceived = 0;
+  [m_game play:[m_game.board pointAtVertex:@"B1"]];
+  XCTAssertEqual(1, self.numberOfNotificationsReceived);
+
+  self.numberOfNotificationsReceived = 0;
+  boardPosition.currentBoardPosition--;
+  XCTAssertEqual(1, self.numberOfNotificationsReceived);
+
+  self.numberOfNotificationsReceived = 0;
+  boardPosition.currentBoardPosition = 0;
+  XCTAssertEqual(1, self.numberOfNotificationsReceived);
+
+  self.numberOfNotificationsReceived = 0;
+  boardPosition.currentBoardPosition = (boardPosition.numberOfBoardPositions - 1);
+  XCTAssertEqual(2, self.numberOfNotificationsReceived);
+
+  self.numberOfNotificationsReceived = 0;
+  XCTAssertThrowsSpecificNamed(boardPosition.currentBoardPosition = -1,
+                              NSException, NSRangeException, @"negative board position");
+  XCTAssertEqual(0, self.numberOfNotificationsReceived);
+
+  [center removeObserver:self];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for testKVONotifications().
+/// @brief Responds to the #boardPositionChangeProgress notification. This is
+/// a private helper for testBoardPositionChangeProgress().
 // -----------------------------------------------------------------------------
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+- (void) boardPositionChangeProgress:(NSNotification*)notification
 {
-  if ([keyPath isEqualToString:@"numberOfBoardPositions"])
-  {
-    self.receiveIndexOfNumberOfBoardPositionsNotification = self.numberOfNotificationsReceived;
-    self.numberOfNotificationsReceived++;
-  }
-  else if ([keyPath isEqualToString:@"currentBoardPosition"])
-  {
-    self.receiveIndexOfCurrentBoardPositionNotification = self.numberOfNotificationsReceived;
-    self.numberOfNotificationsReceived++;
-  }
+  self.numberOfNotificationsReceived++;
 }
 
 @end

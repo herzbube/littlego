@@ -243,6 +243,7 @@
 		CD3D8B5E28CB96790008D22F /* PlayRootViewControllerPhonePortraitOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E21735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.m */; };
 		CD3D8B5F28CB96A70008D22F /* PlayRootViewControllerPhoneAndPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3D8B5928CB8C150008D22F /* PlayRootViewControllerPhoneAndPad.m */; };
 		CD3D8B6028CB96A80008D22F /* PlayRootViewControllerPhoneAndPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3D8B5928CB8C150008D22F /* PlayRootViewControllerPhoneAndPad.m */; };
+		CD44E43629158C8800C1DB6B /* GoNodeTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD44E43529158C8800C1DB6B /* GoNodeTest.m */; };
 		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
 		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */; };
 		CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
@@ -253,6 +254,8 @@
 		CD48ADA915A8A6B0004A7096 /* PathUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A715A0A3E400439B4E /* PathUtilities.m */; };
 		CD55D0331D6FAE7E00A9A5BC /* CrashReportingHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD55D0321D6FAE7E00A9A5BC /* CrashReportingHandler.m */; };
 		CD5B406625E05AD300C4D947 /* SGFCSoftwareLicense.html in Resources */ = {isa = PBXBuildFile; fileRef = CD5B406525E05AD300C4D947 /* SGFCSoftwareLicense.html */; };
+		CD5DE5AB28F43FB2002487F4 /* GoNodeSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5DE5A928F43FB2002487F4 /* GoNodeSetup.m */; };
+		CD5DE5AC28F43FB2002487F4 /* GoNodeSetup.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5DE5A928F43FB2002487F4 /* GoNodeSetup.m */; };
 		CD5E6B361D7CCB610089D0B3 /* MoreGameActionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */; };
 		CD5E6B371D7CD0500089D0B3 /* MoreGameActionsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */; };
 		CD5FF4CD1852AB0D00995070 /* SetAdditiveKnowledgeTypeCommand.mm in Sources */ = {isa = PBXBuildFile; fileRef = CDAA57EB185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm */; };
@@ -689,9 +692,12 @@
 		CDD48FB01413E95500188B6A /* CommandBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FAF1413E95500188B6A /* CommandBase.m */; };
 		CDD48FC01414038000188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
 		CDD4901B14141BCF00188B6A /* CommandProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD48FBF1414038000188B6A /* CommandProcessor.m */; };
-		CDD67B6C28DDEC4F00F5196A /* NSObjectAddtions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD67B6A28DDEC4F00F5196A /* NSObjectAddtions.m */; };
-		CDD67B6D28DDEC4F00F5196A /* NSObjectAddtions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD67B6A28DDEC4F00F5196A /* NSObjectAddtions.m */; };
+		CDD67B6C28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD67B6A28DDEC4F00F5196A /* NSObjectAdditions.m */; };
+		CDD67B6D28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD67B6A28DDEC4F00F5196A /* NSObjectAdditions.m */; };
 		CDD7D7E5175257850068CBBA /* ResetPlayersAndProfilesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */; };
+		CDD85B03290EF6840069A761 /* NSArrayAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD85B02290EF6840069A761 /* NSArrayAdditions.m */; };
+		CDD85B04290EF6840069A761 /* NSArrayAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD85B02290EF6840069A761 /* NSArrayAdditions.m */; };
+		CDD85B0729116F7D0069A761 /* GoNodeSetupTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD85B0529116F7D0069A761 /* GoNodeSetupTest.m */; };
 		CDD86B4A2827E91500AA0A6B /* StaticTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B482827E91400AA0A6B /* StaticTableView.m */; };
 		CDD86B4B2827E91500AA0A6B /* StaticTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B482827E91400AA0A6B /* StaticTableView.m */; };
 		CDD86B4E2827FA2800AA0A6B /* SpacerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B4D2827FA2800AA0A6B /* SpacerView.m */; };
@@ -1133,6 +1139,8 @@
 		CD3D8B9628CCC5C40008D22F /* generate-sgf-with-moves.awk */ = {isa = PBXFileReference; lastKnownFileType = text; path = "generate-sgf-with-moves.awk"; sourceTree = "<group>"; };
 		CD3D8B9728CCE8C30008D22F /* NOTES.SgfSupport */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.SgfSupport; sourceTree = "<group>"; };
 		CD3D8B9828CCFAB60008D22F /* NOTES.DeviceSupport */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.DeviceSupport; sourceTree = "<group>"; };
+		CD44E43429158C8800C1DB6B /* GoNodeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeTest.h; sourceTree = "<group>"; };
+		CD44E43529158C8800C1DB6B /* GoNodeTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeTest.m; sourceTree = "<group>"; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
 		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationStateCommand.h; sourceTree = "<group>"; };
 		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationStateCommand.m; sourceTree = "<group>"; };
@@ -1144,6 +1152,8 @@
 		CD55D0321D6FAE7E00A9A5BC /* CrashReportingHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CrashReportingHandler.m; sourceTree = "<group>"; };
 		CD5B406525E05AD300C4D947 /* SGFCSoftwareLicense.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = SGFCSoftwareLicense.html; sourceTree = "<group>"; };
 		CD5B406B25E0A21000C4D947 /* AUTHORS */ = {isa = PBXFileReference; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
+		CD5DE5A928F43FB2002487F4 /* GoNodeSetup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeSetup.m; sourceTree = "<group>"; };
+		CD5DE5AA28F43FB2002487F4 /* GoNodeSetup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeSetup.h; sourceTree = "<group>"; };
 		CD5E6B341D7CCB610089D0B3 /* MoreGameActionsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoreGameActionsController.h; sourceTree = "<group>"; };
 		CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoreGameActionsController.m; sourceTree = "<group>"; };
 		CD607BBB280AF114000C111E /* trashcan@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "trashcan@2x.png"; sourceTree = "<group>"; };
@@ -1597,8 +1607,8 @@
 		CDD48FAF1413E95500188B6A /* CommandBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandBase.m; sourceTree = "<group>"; };
 		CDD48FBE1414038000188B6A /* CommandProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommandProcessor.h; sourceTree = "<group>"; };
 		CDD48FBF1414038000188B6A /* CommandProcessor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CommandProcessor.m; sourceTree = "<group>"; };
-		CDD67B6A28DDEC4F00F5196A /* NSObjectAddtions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSObjectAddtions.m; sourceTree = "<group>"; };
-		CDD67B6B28DDEC4F00F5196A /* NSObjectAddtions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSObjectAddtions.h; sourceTree = "<group>"; };
+		CDD67B6A28DDEC4F00F5196A /* NSObjectAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSObjectAdditions.m; sourceTree = "<group>"; };
+		CDD67B6B28DDEC4F00F5196A /* NSObjectAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSObjectAdditions.h; sourceTree = "<group>"; };
 		CDD7D7E3175257850068CBBA /* ResetPlayersAndProfilesCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResetPlayersAndProfilesCommand.h; sourceTree = "<group>"; };
 		CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResetPlayersAndProfilesCommand.m; sourceTree = "<group>"; };
 		CDD7D7E61753F3FD0068CBBA /* NOTES.Build.3rdparty */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = NOTES.Build.3rdparty; sourceTree = "<group>"; };
@@ -1610,6 +1620,10 @@
 		CDD7D7EE1753FA710068CBBA /* NOTES.Info-plist */ = {isa = PBXFileReference; lastKnownFileType = text; path = "NOTES.Info-plist"; sourceTree = "<group>"; };
 		CDD7D7EF1753FD130068CBBA /* littlego.asta */ = {isa = PBXFileReference; lastKnownFileType = file; path = littlego.asta; sourceTree = "<group>"; };
 		CDD7D7F01753FD290068CBBA /* Class diagram of packages go + player.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Class diagram of packages go + player.jpg"; sourceTree = "<group>"; };
+		CDD85B01290EF6840069A761 /* NSArrayAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSArrayAdditions.h; sourceTree = "<group>"; };
+		CDD85B02290EF6840069A761 /* NSArrayAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSArrayAdditions.m; sourceTree = "<group>"; };
+		CDD85B0529116F7D0069A761 /* GoNodeSetupTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeSetupTest.m; sourceTree = "<group>"; };
+		CDD85B0629116F7D0069A761 /* GoNodeSetupTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeSetupTest.h; sourceTree = "<group>"; };
 		CDD86B482827E91400AA0A6B /* StaticTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticTableView.m; sourceTree = "<group>"; };
 		CDD86B492827E91500AA0A6B /* StaticTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticTableView.h; sourceTree = "<group>"; };
 		CDD86B4C2827FA2800AA0A6B /* SpacerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpacerView.h; sourceTree = "<group>"; };
@@ -2019,6 +2033,8 @@
 				CDC0C5AF2832D20300EA467C /* GoNodeMarkup.m */,
 				CD85068827BB18D6000D2CCD /* GoNodeModel.h */,
 				CD85068927BB18D6000D2CCD /* GoNodeModel.m */,
+				CD5DE5AA28F43FB2002487F4 /* GoNodeSetup.h */,
+				CD5DE5A928F43FB2002487F4 /* GoNodeSetup.m */,
 				CD10882013255A6B00E83543 /* GoPlayer.h */,
 				CD10882113255A6B00E83543 /* GoPlayer.m */,
 				CD10882313255AA600E83543 /* GoPoint.h */,
@@ -2896,6 +2912,10 @@
 				CD1219382840D4FD0093A57D /* GoNodeMarkupTest.m */,
 				CD15A482168D044400D4472A /* GoNodeModelTest.h */,
 				CD15A483168D044400D4472A /* GoNodeModelTest.m */,
+				CDD85B0629116F7D0069A761 /* GoNodeSetupTest.h */,
+				CDD85B0529116F7D0069A761 /* GoNodeSetupTest.m */,
+				CD44E43429158C8800C1DB6B /* GoNodeTest.h */,
+				CD44E43529158C8800C1DB6B /* GoNodeTest.m */,
 				CD99EC6414B12058007B3B67 /* GoPlayerTest.h */,
 				CD99EC6514B12059007B3B67 /* GoPlayerTest.m */,
 				CD99EC6114B10746007B3B67 /* GoPointTest.h */,
@@ -3281,8 +3301,10 @@
 				CD2230B225E661E600187C57 /* LogFormatter.m */,
 				CD1E6EA92860F0BC00785E23 /* MarkupUtilities.h */,
 				CD1E6EA82860F0BC00785E23 /* MarkupUtilities.mm */,
-				CDD67B6B28DDEC4F00F5196A /* NSObjectAddtions.h */,
-				CDD67B6A28DDEC4F00F5196A /* NSObjectAddtions.m */,
+				CDD85B01290EF6840069A761 /* NSArrayAdditions.h */,
+				CDD85B02290EF6840069A761 /* NSArrayAdditions.m */,
+				CDD67B6B28DDEC4F00F5196A /* NSObjectAdditions.h */,
+				CDD67B6A28DDEC4F00F5196A /* NSObjectAdditions.m */,
 				CDFA4AD013F71859001A2A94 /* NSStringAdditions.h */,
 				CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */,
 				CDFA32A615A0A3E400439B4E /* PathUtilities.h */,
@@ -4087,7 +4109,7 @@
 				CD1E6EAF2865F9BD00785E23 /* PanGestureHandler.m in Sources */,
 				CDEE19F919433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */,
 				CD1F503F25B7A5C20098037A /* ViewLoadResultMessageController.m in Sources */,
-				CDD67B6C28DDEC4F00F5196A /* NSObjectAddtions.m in Sources */,
+				CDD67B6C28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */,
 				CDE302891360BDA4005235F2 /* Player.m in Sources */,
 				CDE3028A1360BDA4005235F2 /* PlayerModel.m in Sources */,
 				CDE3028B1360BDA4005235F2 /* PlayerStatistics.m in Sources */,
@@ -4182,6 +4204,7 @@
 				CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */,
 				CD2230B325E661E600187C57 /* LogFormatter.m in Sources */,
 				CD1E6EBF286755A000785E23 /* MoveMarkupPanGestureHandler.m in Sources */,
+				CD5DE5AB28F43FB2002487F4 /* GoNodeSetup.m in Sources */,
 				CDDD526214840A540027476B /* PlayerProfileSettingsController.m in Sources */,
 				CDDD526314840A540027476B /* DisplaySettingsController.m in Sources */,
 				CDDD526414840A540027476B /* ScoringSettingsController.m in Sources */,
@@ -4243,6 +4266,7 @@
 				CDE6A52616AA017500932B05 /* ChangeAndDiscardCommand.m in Sources */,
 				CDAFAE29195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
 				CD05199516B1C09B002771F7 /* LeftPaneViewController.m in Sources */,
+				CDD85B03290EF6840069A761 /* NSArrayAdditions.m in Sources */,
 				CD05199916B1C29B002771F7 /* RightPaneViewController.m in Sources */,
 				CD377F0816BD154A00972F04 /* MainTabBarController.m in Sources */,
 				CDBFCBBD16C3ED01001D78C0 /* SetupApplicationCommand.m in Sources */,
@@ -4326,8 +4350,10 @@
 				CD85B5951401C1A5001715B8 /* GoGame.m in Sources */,
 				CD85B5981401C1B7001715B8 /* GoMove.m in Sources */,
 				CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
+				CD44E43629158C8800C1DB6B /* GoNodeTest.m in Sources */,
 				CDFD9F7E18F1D5DF0031CBCF /* CrashReportingSettingsController.m in Sources */,
 				CDEECC6D1992923000BC89F2 /* ArchiveUtility.m in Sources */,
+				CD5DE5AC28F43FB2002487F4 /* GoNodeSetup.m in Sources */,
 				CD85B59E1401C1D7001715B8 /* GoBoardRegion.m in Sources */,
 				CD7C578321F4A3A900694520 /* UnarchiveGameCommand.m in Sources */,
 				CDA0970C1A99F77F002FCD78 /* SplitViewController.m in Sources */,
@@ -4358,6 +4384,7 @@
 				CDB3ECDB2843ADD7007512F6 /* ChangeAnnotationDataCommand.m in Sources */,
 				CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */,
 				CDEE19F619433EAC00DF2389 /* BoardViewController.m in Sources */,
+				CDD85B04290EF6840069A761 /* NSArrayAdditions.m in Sources */,
 				CD2230B825E6640A00187C57 /* LogFormatter.m in Sources */,
 				CD1F4FAD25B055EB0098037A /* LoadSgfCommand.m in Sources */,
 				CD7C69B71A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */,
@@ -4380,7 +4407,7 @@
 				CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */,
 				CDEE19FC19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,
-				CDD67B6D28DDEC4F00F5196A /* NSObjectAddtions.m in Sources */,
+				CDD67B6D28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */,
 				CDEE1A0419438AE000DF2389 /* StonesLayerDelegate.m in Sources */,
 				CD7C6A161AB49631009EC5AD /* BoardPositionCollectionViewController.m in Sources */,
 				CD05AB97142516A400214BBE /* GoUtilities.m in Sources */,
@@ -4486,6 +4513,7 @@
 				CDB5AE261AC5A86D0075C8DC /* MagnifyingView.m in Sources */,
 				CD9A49E3171250B0009E7514 /* TapGestureController.m in Sources */,
 				CD9A49E4171250B3009E7514 /* TwoFingerTapGestureController.m in Sources */,
+				CDD85B0729116F7D0069A761 /* GoNodeSetupTest.m in Sources */,
 				CD9A49E6171250D4009E7514 /* LeftPaneViewController.m in Sources */,
 				CD9A49E7171250D6009E7514 /* RightPaneViewController.m in Sources */,
 				CDFD9F8518F1D6170031CBCF /* DocumentGenerator.m in Sources */,

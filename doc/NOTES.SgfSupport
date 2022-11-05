@@ -41,7 +41,8 @@ Handled game info properties
   - LoadGameCommand reads this property via SGFCNode, from the node that is the
     Game Info node.
   - LoadGameCommand uses the property value to determine the number of setup
-    stones that it expects in the AB and AE properties.
+    stones that it expects in the AB property that must also be located in the
+    Game Info node.
 - KM
   - LoadGameCommand reads this via SGFCNode, from the node that is the Game Info
     node.
@@ -50,37 +51,14 @@ Handled game info properties
 - AN, BR, BT, CP, DT, EV, GN, GC, ON, OT, PB, PC, PW, RE, RO, RU, SO, TM, US, WR, WT
   - These properties are currently displayed only on the Archive tab.
 
-Handled setup properties
-- AB, AW, AE, PL
-  - LoadGameCommand reads these properties via SGFCNode, from all nodes that
-    are in the main variation that is provided by the SGFCNode property
-    mainVariationNodes, invoked on the node that is the Game Info node.
-  - LoadGameCommand considers only nodes before the first node that contains a
-    move property.
-- AB, AW, AE
-  - The property values are merged and converted to two array of GoPoint
-    objects, one array for black stones and one array for white stones.
-  - The array for white stones is always stored in its entirety in the GoGame
-    property whiteSetupPoints.
-  - The array for black stones is stored in the GoGame properties
-    blackSetupPoints and/or handicapPoints.
-    - If there was a HA property, the first <n> GoPoint objects from the black
-      stones array are stored in the GoGame property handicapPoints. Any
-      remaining GoPoint objects are then stored in the GoGame property
-      blackSetupPoints.
-    - If there was no HA property, the array for black stones is stored in its
-      entirety in the GoGame property whiteSetupPoints.
-- PL: The property value is converted to enum GoColor and stored in the GoGame
-  property setupFirstMoveColor.
-
-Handled move, node/move annotation and markup properties
-- Move properties: B, W
+Handled setup, move, node/move annotation and markup properties
+- Setup properties: AB, AW, AE, PL
+  Move properties: B, W
   Node annotation properties: C, N, GB, GW, DM, UC, V, HO
   Move annotation properties: TE, DO, BM, IT
   Markup properties: CR, SQ, TR, MA, SL, AR, LN, LB, DD
-  - LoadGameCommand reads these properties via SGFCNode, from all nodes that
-    are in the main variation that is provided by the SGFCNode property
-    mainVariationNodes, invoked on the node that is the Game Info node.
+  - LoadGameCommand reads these properties via SGFCNode, from all nodes in the
+    game tree.
   - If any of these properties is found in a node, a new GoNode is created
     for that node.
     - Special handling for root node
@@ -90,6 +68,21 @@ Handled move, node/move annotation and markup properties
       - If no move property is found in the root node, all other properties
         listed above that are found in the root node are stored in the root
         node.
+    - Special handling for setup properties
+      - May only appear in nodes that are located on each variation of the game
+        tree before the first node that contains a move property. If a setup
+        property is found in a later node, LoadGameCommand refuses to load the
+        SGF file.
+      - In the Game Info node, if there is also a HA property, the first <n>
+        setup stones from the AB property are stored in the GoGame property
+        handicapPoints. Any remaining setup points are then stored in the
+        GoNodeSetup object.
+      - If there is a HA property in the Game Info node with <n> greater than
+        zero, no stone setup properties (AB, AW, AE) may appear in nodes before
+        the Game Info node. If stone setup properties appear in nodes before the
+        Game Info node, LoadGameCommand refuses to load the SGF file.
+  - AB, AW, AE, PL: The property value is converted to GoNodeSetup, which is
+    then attached to the GoNode.
   - B, W: The property value is converted to GoMove, which is then attached to
     the GoNode.
   - C, N, GB, GW, DM, UC, V, HO: The property value is converted to
@@ -137,6 +130,7 @@ Unhandled properties
 
 SGF node handling
 -----------------
+Loading an SGF file
 - In general, nodes in an SGF file are preserved.
 - There are some cases where SGFC splits nodes. Example: When it finds one or
   more setup properties (AB, AW or AE) and a move property in the same node,
@@ -145,12 +139,19 @@ SGF node handling
   and places the property in the new node. Any annotation property or markup
   property also found in the root node in this case are also placed in the
   new node.
+- The app skips empty nodes, or nodes that contain
+  - Only unhandled properties,
+  - Or only handled game info properties,
+  - Or only handled root properties,
+  - Or a combination of the three
+Saving an SGF file
 - On creating an SGF file, currently the app writes game info properties
   into the root node. This will change as soon as the app starts to support
   variations.
 - On creating an SGF file, the app writes setup properties into a new node,
   just after the game info node. If no setup exists then no such node is
   created.
+  - TODO xxx This special handling of setup will go away with variation support
   - It would be legal SGF to write setup information into the game info node.
 - On creating an SGF file, the app writes all nodes after the root node as-is,
   just after the setup node.
