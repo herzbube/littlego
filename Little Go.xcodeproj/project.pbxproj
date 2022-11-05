@@ -243,6 +243,7 @@
 		CD3D8B5E28CB96790008D22F /* PlayRootViewControllerPhonePortraitOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591E21735A757000E2963 /* PlayRootViewControllerPhonePortraitOnly.m */; };
 		CD3D8B5F28CB96A70008D22F /* PlayRootViewControllerPhoneAndPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3D8B5928CB8C150008D22F /* PlayRootViewControllerPhoneAndPad.m */; };
 		CD3D8B6028CB96A80008D22F /* PlayRootViewControllerPhoneAndPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3D8B5928CB8C150008D22F /* PlayRootViewControllerPhoneAndPad.m */; };
+		CD44E43629158C8800C1DB6B /* GoNodeTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD44E43529158C8800C1DB6B /* GoNodeTest.m */; };
 		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
 		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */; };
 		CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
@@ -1138,6 +1139,8 @@
 		CD3D8B9628CCC5C40008D22F /* generate-sgf-with-moves.awk */ = {isa = PBXFileReference; lastKnownFileType = text; path = "generate-sgf-with-moves.awk"; sourceTree = "<group>"; };
 		CD3D8B9728CCE8C30008D22F /* NOTES.SgfSupport */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.SgfSupport; sourceTree = "<group>"; };
 		CD3D8B9828CCFAB60008D22F /* NOTES.DeviceSupport */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.DeviceSupport; sourceTree = "<group>"; };
+		CD44E43429158C8800C1DB6B /* GoNodeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeTest.h; sourceTree = "<group>"; };
+		CD44E43529158C8800C1DB6B /* GoNodeTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeTest.m; sourceTree = "<group>"; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
 		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationStateCommand.h; sourceTree = "<group>"; };
 		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationStateCommand.m; sourceTree = "<group>"; };
@@ -2911,6 +2914,8 @@
 				CD15A483168D044400D4472A /* GoNodeModelTest.m */,
 				CDD85B0629116F7D0069A761 /* GoNodeSetupTest.h */,
 				CDD85B0529116F7D0069A761 /* GoNodeSetupTest.m */,
+				CD44E43429158C8800C1DB6B /* GoNodeTest.h */,
+				CD44E43529158C8800C1DB6B /* GoNodeTest.m */,
 				CD99EC6414B12058007B3B67 /* GoPlayerTest.h */,
 				CD99EC6514B12059007B3B67 /* GoPlayerTest.m */,
 				CD99EC6114B10746007B3B67 /* GoPointTest.h */,
@@ -4345,6 +4350,7 @@
 				CD85B5951401C1A5001715B8 /* GoGame.m in Sources */,
 				CD85B5981401C1B7001715B8 /* GoMove.m in Sources */,
 				CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
+				CD44E43629158C8800C1DB6B /* GoNodeTest.m in Sources */,
 				CDFD9F7E18F1D5DF0031CBCF /* CrashReportingSettingsController.m in Sources */,
 				CDEECC6D1992923000BC89F2 /* ArchiveUtility.m in Sources */,
 				CD5DE5AC28F43FB2002487F4 /* GoNodeSetup.m in Sources */,

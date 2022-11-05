@@ -166,7 +166,8 @@
 /// @name Changing the board based upon the node's data
 //@{
 /// @brief Modifies the board to reflect the data that is present in this
-/// GoNode.
+/// GoNode. Also calculates a new Zobrist hash for the board position that is
+/// in effect after the board is modified.
 ///
 /// Important: Invoke this only after the node was added to the node tree.
 - (void) modifyBoard;
