@@ -222,67 +222,89 @@
                                             boardSize:(SGFCBoardSize)boardSize
                                           treeBuilder:(SGFCTreeBuilder*)treeBuilder
 {
-  // TODO Variation support: This method does not have variation support.
+  NSMutableArray* stack = [NSMutableArray array];
 
   bool dataSourceIsRootNode = true;
-  SGFCNode* previousNode = gameInfoNode;
-  GoNode* goNode = goGame.nodeModel.rootNode;
+  SGFCNode* parentSgfNode = gameInfoNode;
+  GoNode* currentGoNode = goGame.nodeModel.rootNode;
 
-  while (goNode)
+  while (true)
   {
-    SGFCNode* node;
-    if (dataSourceIsRootNode)
+    while (currentGoNode)
     {
-      // The app ensures that the root node does not contain a move. The root
-      // node can contain only setup information, annotation data and/or markup
-      // data.
-      node = gameInfoNode;
-      dataSourceIsRootNode = false;
+      SGFCNode* sgfNode;
+      if (dataSourceIsRootNode)
+      {
+        // The app ensures that the root node does not contain a move. The root
+        // node can contain only setup information, annotation data and/or
+        // markup data.
+        sgfNode = gameInfoNode;
+        dataSourceIsRootNode = false;
+      }
+      else
+      {
+        sgfNode = [SGFCNode node];
+
+        // We add the node to the document even if we don't add any properties
+        // to it. If we were skipping the node there would be a gap between the
+        // in-memory model and the saved data, which could cause trouble or at
+        // least irritation later on (e.g. user saves a game, then loads it
+        // again => where the heck did the empty node go?).
+        // Note: SGFC has an option to skip empty nodes (-n), but by default it
+        // retains them.
+        [treeBuilder appendChild:sgfNode toNode:parentSgfNode];
+      }
+
+      if (currentGoNode.goNodeSetup)
+      {
+        [self addSgfPropertiesToNode:sgfNode
+                     withGoNodeSetup:currentGoNode.goNodeSetup
+                           boardSize:boardSize
+                  nodeIsGameInfoNode:sgfNode == gameInfoNode];
+
+      }
+      else if (currentGoNode.goMove)
+      {
+        [self addSgfPropertiesToNode:sgfNode
+                          withGoMove:currentGoNode.goMove
+                           boardSize:boardSize];
+      }
+
+      if (currentGoNode.goNodeAnnotation)
+      {
+        [self addSgfPropertiesToNode:sgfNode
+          withGoNodeAnnotationValues:currentGoNode.goNodeAnnotation];
+      }
+
+      if (currentGoNode.goNodeMarkup)
+      {
+        [self addSgfPropertiesToNode:sgfNode
+              withGoNodeMarkupValues:currentGoNode.goNodeMarkup
+                           boardSize:boardSize];
+      }
+
+      [stack addObject:@[currentGoNode, parentSgfNode]];
+
+      parentSgfNode = sgfNode;
+
+      currentGoNode = currentGoNode.firstChild;
+    }
+
+    if (stack.count > 0)
+    {
+      NSArray* tuple = stack.lastObject;
+      [stack removeLastObject];
+
+      currentGoNode = tuple.firstObject;
+      parentSgfNode = tuple.lastObject;
+
+      currentGoNode = currentGoNode.nextSibling;
     }
     else
     {
-      node = [SGFCNode node];
-
-      // We add the node to the document even if we don't add any properties to
-      // it. If we were skipping the node there would be a gap between the
-      // in-memory model and the saved data, which could cause trouble or at least
-      // irritation later on (e.g. user saves a game, then loads it again => where
-      // the heck did the empty node go?).
-      // Note: SGFC has an option to skip empty nodes (-n), but by default it
-      // retains them.
-      [treeBuilder setFirstChild:node ofNode:previousNode];
+      // We're done
+      break;
     }
-
-    if (goNode.goNodeSetup)
-    {
-      [self addSgfPropertiesToNode:node
-                   withGoNodeSetup:goNode.goNodeSetup
-                         boardSize:boardSize
-                nodeIsGameInfoNode:node == gameInfoNode];
-
-    }
-    else if (goNode.goMove)
-    {
-      [self addSgfPropertiesToNode:node
-                        withGoMove:goNode.goMove
-                         boardSize:boardSize];
-    }
-
-    if (goNode.goNodeAnnotation)
-    {
-      [self addSgfPropertiesToNode:node
-        withGoNodeAnnotationValues:goNode.goNodeAnnotation];
-    }
-
-    if (goNode.goNodeMarkup)
-    {
-      [self addSgfPropertiesToNode:node
-            withGoNodeMarkupValues:goNode.goNodeMarkup
-                         boardSize:boardSize];
-    }
-
-    previousNode = node;
-    goNode = goNode.firstChild;
   }
 }
 
