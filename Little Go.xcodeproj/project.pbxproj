@@ -704,6 +704,12 @@
 		CDD86B4F2827FA2800AA0A6B /* SpacerView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDD86B4D2827FA2800AA0A6B /* SpacerView.m */; };
 		CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
 		CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */; };
+		CDDB08BA291EB44500B38F91 /* NodeTreeViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDB08B9291EB44500B38F91 /* NodeTreeViewModel.m */; };
+		CDDB08BB291EB44500B38F91 /* NodeTreeViewModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDB08B9291EB44500B38F91 /* NodeTreeViewModel.m */; };
+		CDDB08BE2927D15700B38F91 /* NodeTreeViewCellPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDB08BC2927D15600B38F91 /* NodeTreeViewCellPosition.m */; };
+		CDDB08BF2927D15700B38F91 /* NodeTreeViewCellPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDB08BC2927D15600B38F91 /* NodeTreeViewCellPosition.m */; };
+		CDDB08C22927F15D00B38F91 /* NodeTreeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDB08C12927F15D00B38F91 /* NodeTreeViewCell.m */; };
+		CDDB08C32927F15D00B38F91 /* NodeTreeViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDB08C12927F15D00B38F91 /* NodeTreeViewCell.m */; };
 		CDDC968E25E697B300598CF7 /* PlaceholderView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDC968D25E697B300598CF7 /* PlaceholderView.m */; };
 		CDDC968F25E697B300598CF7 /* PlaceholderView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDC968D25E697B300598CF7 /* PlaceholderView.m */; };
 		CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */; };
@@ -1631,6 +1637,12 @@
 		CDD961001662A8E300B54E09 /* render-readme.rb */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.ruby; path = "render-readme.rb"; sourceTree = "<group>"; };
 		CDDAB6ED14FA728D00DEBAAF /* UIDeviceAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIDeviceAdditions.h; sourceTree = "<group>"; };
 		CDDAB6EE14FA728D00DEBAAF /* UIDeviceAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIDeviceAdditions.m; sourceTree = "<group>"; };
+		CDDB08B8291EB44500B38F91 /* NodeTreeViewModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewModel.h; sourceTree = "<group>"; };
+		CDDB08B9291EB44500B38F91 /* NodeTreeViewModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewModel.m; sourceTree = "<group>"; };
+		CDDB08BC2927D15600B38F91 /* NodeTreeViewCellPosition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewCellPosition.m; sourceTree = "<group>"; };
+		CDDB08BD2927D15700B38F91 /* NodeTreeViewCellPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewCellPosition.h; sourceTree = "<group>"; };
+		CDDB08C02927F15D00B38F91 /* NodeTreeViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewCell.h; sourceTree = "<group>"; };
+		CDDB08C12927F15D00B38F91 /* NodeTreeViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewCell.m; sourceTree = "<group>"; };
 		CDDC968C25E697B300598CF7 /* PlaceholderView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlaceholderView.h; sourceTree = "<group>"; };
 		CDDC968D25E697B300598CF7 /* PlaceholderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaceholderView.m; sourceTree = "<group>"; };
 		CDDCD0A4173BC1F000359DE7 /* MaxMemoryController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MaxMemoryController.h; sourceTree = "<group>"; };
@@ -2167,6 +2179,8 @@
 				CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */,
 				CDC8DEFD28EDF8E500619305 /* NodeTreeViewMetrics.h */,
 				CDC8DEFE28EDF8E600619305 /* NodeTreeViewMetrics.m */,
+				CDDB08B8291EB44500B38F91 /* NodeTreeViewModel.h */,
+				CDDB08B9291EB44500B38F91 /* NodeTreeViewModel.m */,
 				CD1311BF17180B45006CE699 /* ScoringModel.h */,
 				CD1311C017180B45006CE699 /* ScoringModel.m */,
 			);
@@ -3119,6 +3133,10 @@
 				CDC8DEF028EDECCA00619305 /* NodeTreeTileView.m */,
 				CDC8DEED28EDECC900619305 /* NodeTreeView.h */,
 				CDC8DEEE28EDECC900619305 /* NodeTreeView.m */,
+				CDDB08C02927F15D00B38F91 /* NodeTreeViewCell.h */,
+				CDDB08C12927F15D00B38F91 /* NodeTreeViewCell.m */,
+				CDDB08BD2927D15700B38F91 /* NodeTreeViewCellPosition.h */,
+				CDDB08BC2927D15600B38F91 /* NodeTreeViewCellPosition.m */,
 				CDC8DEE728EDE20800619305 /* NodeTreeViewController.h */,
 				CDC8DEE828EDE20800619305 /* NodeTreeViewController.m */,
 			);
@@ -4199,6 +4217,7 @@
 				CDEE19F719433EAC00DF2389 /* BoardViewDrawingHelper.m in Sources */,
 				CD607BC7280B1AB3000C111E /* OrientationChangeNotifyingView.m in Sources */,
 				CD869F152855F6C300B679FE /* RectangleLayerDelegate.m in Sources */,
+				CDDB08BE2927D15700B38F91 /* NodeTreeViewCellPosition.m in Sources */,
 				CDA0970B1A99F77F002FCD78 /* SplitViewController.m in Sources */,
 				CDB457B5147F17F30043EDE4 /* UiUtilities.m in Sources */,
 				CDDD525B1482DDA00027476B /* ItemPickerController.m in Sources */,
@@ -4303,10 +4322,12 @@
 				CD7C57C721FF8E9500694520 /* HandleBoardSetupInteractionCommand.m in Sources */,
 				CDEECC6C1992923000BC89F2 /* ArchiveUtility.m in Sources */,
 				CD3D8B5F28CB96A70008D22F /* PlayRootViewControllerPhoneAndPad.m in Sources */,
+				CDDB08BA291EB44500B38F91 /* NodeTreeViewModel.m in Sources */,
 				CDEE19F319433EAC00DF2389 /* BoardView.m in Sources */,
 				CDAFAE6E195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CD7C69BF1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */,
 				CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
+				CDDB08C22927F15D00B38F91 /* NodeTreeViewCell.m in Sources */,
 				CDC8DEF128EDECCA00619305 /* NodeNumbersTileView.m in Sources */,
 				CDDCD0A6173BC1F000359DE7 /* MaxMemoryController.m in Sources */,
 				CD7C69C31A9D2086009EC5AD /* GameActionManager.m in Sources */,
@@ -4363,6 +4384,7 @@
 				CD85B5A41401C1F0001715B8 /* GoPoint.m in Sources */,
 				CDEE1A0C1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,
 				CD2AB19227F9F80500BF0B4D /* PageViewController.m in Sources */,
+				CDDB08BF2927D15700B38F91 /* NodeTreeViewCellPosition.m in Sources */,
 				CDEE19FA19433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */,
 				CD85B5A71401C1FD001715B8 /* GoPlayer.m in Sources */,
 				CD85B5AD1401C23D001715B8 /* GtpClient.mm in Sources */,
@@ -4556,6 +4578,7 @@
 				CD81790025D8553100F39091 /* ComputerSuggestMoveCommand.m in Sources */,
 				CD1F4F8125AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m in Sources */,
 				CDFD9F7C18F1D5A30031CBCF /* DeleteGameCommand.m in Sources */,
+				CDDB08C32927F15D00B38F91 /* NodeTreeViewCell.m in Sources */,
 				CDFD9F7B18F1D5800031CBCF /* ViewGameController.m in Sources */,
 				CD607BC8280B1AB3000C111E /* OrientationChangeNotifyingView.m in Sources */,
 				CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */,
@@ -4585,6 +4608,7 @@
 				CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */,
 				CDC97A8F18301CC100755EB2 /* GoGameRules.m in Sources */,
 				CD0F6BE727B02C91002DBE6B /* GoNodeAnnotation.m in Sources */,
+				CDDB08BB291EB44500B38F91 /* NodeTreeViewModel.m in Sources */,
 				CDFD9F8318F1D5F70031CBCF /* GtpLogViewController.m in Sources */,
 				CDC97A921832E2E700755EB2 /* GoGameRulesTest.m in Sources */,
 				CDC97A951832E52E00755EB2 /* GoZobristTableTest.m in Sources */,
