@@ -17,7 +17,7 @@
 
 // Project includes
 #import "BoardViewMetrics.h"
-#import "../model/BoardViewModel.h"
+#import "BoardViewModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"

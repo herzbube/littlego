@@ -75,6 +75,12 @@ NSString* goScoreCalculationStarts = @"GoScoreCalculationStarts";
 NSString* goScoreCalculationEnds = @"GoScoreCalculationEnds";
 NSString* askGtpEngineForDeadStonesStarts = @"AskGtpEngineForDeadStonesStarts";
 NSString* askGtpEngineForDeadStonesEnds = @"AskGtpEngineForDeadStonesEnds";
+// Panning gesture related notifications
+NSString* boardViewPanningGestureWillStart = @"BoardViewPanningGestureWillStart";
+NSString* boardViewPanningGestureWillEnd = @"BoardViewPanningGestureWillEnd";;
+NSString* boardViewStoneLocationDidChange = @"BoardViewStoneLocationDidChange";
+NSString* boardViewMarkupLocationDidChange = @"BoardViewMarkupLocationDidChange";
+NSString* boardViewSelectionRectangleDidChange = @"BoardViewSelectionRectangleDidChange";
 // Node tree view notifications
 NSString* nodeTreeLayoutDidChange = @"NodeTreeLayoutDidChange";
 NSString* nodeRepresentationInTreeViewDidChange = @"NodeRepresentationInTreeViewDidChange";
@@ -88,11 +94,6 @@ NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
 NSString* playersAndProfilesWillReset = @"PlayersAndProfilesWillReset";
 NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
 NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
-NSString* boardViewPanningGestureWillStart = @"BoardViewPanningGestureWillStart";
-NSString* boardViewPanningGestureWillEnd = @"BoardViewPanningGestureWillEnd";;
-NSString* boardViewStoneLocationDidChange = @"BoardViewStoneLocationDidChange";
-NSString* boardViewMarkupLocationDidChange = @"BoardViewMarkupLocationDidChange";
-NSString* boardViewSelectionRectangleDidChange = @"BoardViewSelectionRectangleDidChange";
 NSString* uiAreaPlayModeWillChange = @"UIAreaPlayModeWillChange";
 NSString* uiAreaPlayModeDidChange = @"UIAreaPlayModeDidChange";
 NSString* handicapPointDidChange = @"HandicapPointDidChange";
