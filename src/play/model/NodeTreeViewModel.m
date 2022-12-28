@@ -27,12 +27,6 @@
 #import "../../go/GoPlayer.h"
 
 
-enum BranchingStyle
-{
-  BranchingStyleDiagonal,
-  BranchingStyleBracket,
-};
-
 @class BranchTuple;
 
 // TODO xxx document
@@ -206,7 +200,7 @@ enum BranchingStyle
   // TODO xxx Get user preferences from somewhere
   bool condenseTree = true;
   bool alignMoveNodes = true;
-  enum BranchingStyle branchingStyle = BranchingStyleBracket;
+  enum NodeTreeViewBranchingStyle branchingStyle = NodeTreeViewBranchingStyleBracket;
 
   // ----------
   // Part 1: Iterate tree to find out about branches and their ordering
@@ -565,7 +559,7 @@ enum BranchingStyle
         // away from J. The situation is different for the branch with node L
         // and M: Because the branch contains two nodes it is too long and does
         // not fit on the same y-position as the branch with node I.
-        if (branchingStyle == BranchingStyleDiagonal && currentBranch->parentBranchTupleBranchingNode->childBranches.lastObject == currentBranch)
+        if (branchingStyle == NodeTreeViewBranchingStyleDiagonal && currentBranch->parentBranchTupleBranchingNode->childBranches.lastObject == currentBranch)
           lowestXPositionOfBranch += currentBranch->parentBranchTupleBranchingNode->numberOfCellsForNode;
       }
       else
@@ -602,7 +596,7 @@ enum BranchingStyle
   //   adjacent because they were aligned to the move number
   // - Generate line-only cells that connect branches
   // ----------
-  NodeTreeViewCellLine connectingLineToBranchingLine = (branchingStyle == BranchingStyleDiagonal
+  NodeTreeViewCellLine connectingLineToBranchingLine = (branchingStyle == NodeTreeViewBranchingStyleDiagonal
                                                         ? NodeTreeViewCellLineCenterToBottomRight
                                                         : NodeTreeViewCellLineCenterToRight);
   NSMutableDictionary* cellsDictionary = [NSMutableDictionary dictionary];
@@ -631,7 +625,7 @@ enum BranchingStyle
       for (unsigned short xPositionOfCell = xPositionAfterPreviousBranchTuple; xPositionOfCell < branchTuple->xPositionOfFirstCell; xPositionOfCell++)
       {
         NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
-        if (branchingStyle == BranchingStyleDiagonal && branchTuple == firstBranchTuple && xPositionOfCell == xPositionAfterPreviousBranchTuple)
+        if (branchingStyle == NodeTreeViewBranchingStyleDiagonal && branchTuple == firstBranchTuple && xPositionOfCell == xPositionAfterPreviousBranchTuple)
           cell.lines = NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight;  // connect to branching line
         else
           cell.lines = NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight;
@@ -657,7 +651,7 @@ enum BranchingStyle
 
         // Diagonal branching style does not draw a branching line on the
         // y-position of the last child branch
-        if (branchingStyle == BranchingStyleDiagonal)
+        if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
           lastYPosition--;
 
         for (unsigned short yPosition = branch->yPosition + 1; yPosition <= lastYPosition; yPosition++)
@@ -707,7 +701,7 @@ enum BranchingStyle
         }
         else
         {
-          if (branchingStyle == BranchingStyleDiagonal)
+          if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
             lines = NodeTreeViewCellLineCenterToTopLeft;
           else
             lines = NodeTreeViewCellLineCenterToLeft;
@@ -721,7 +715,7 @@ enum BranchingStyle
 
       if (branchTuple->childBranches)
       {
-        if (branchingStyle == BranchingStyleDiagonal)
+        if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
         {
           Branch* firstChildBranch = branchTuple->childBranches.firstObject;
           if (branchTuple->branch->yPosition + 1 == firstChildBranch->yPosition)

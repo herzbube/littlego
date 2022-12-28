@@ -15,40 +15,6 @@
 // -----------------------------------------------------------------------------
 
 
-// TODO xxx document
-enum NodeTreeViewCellSymbol
-{
-  NodeTreeViewCellSymbolNone,
-  NodeTreeViewCellSymbolEmpty,
-  NodeTreeViewCellSymbolBlackSetupStones,
-  NodeTreeViewCellSymbolWhiteSetupStones,
-  NodeTreeViewCellSymbolNoSetupStones,
-  NodeTreeViewCellSymbolBlackAndWhiteSetupStones,
-  NodeTreeViewCellSymbolBlackAndNoSetupStones,
-  NodeTreeViewCellSymbolWhiteAndNoSetupStones,
-  NodeTreeViewCellSymbolBlackAndWhiteAndNoSetupStones,
-  NodeTreeViewCellSymbolBlackMove,
-  NodeTreeViewCellSymbolWhiteMove,
-  NodeTreeViewCellSymbolAnnotations,
-  NodeTreeViewCellSymbolMarkup,
-  NodeTreeViewCellSymbolAnnotationsAndMarkup,
-};
-
-// TODO xxx document
-typedef unsigned short NodeTreeViewCellLines;
-
-// TODO xxx document
-typedef NS_ENUM(NodeTreeViewCellLines, NodeTreeViewCellLine)
-{
-  NodeTreeViewCellLineNone = 0,
-  NodeTreeViewCellLineCenterToLeft = 1,
-  NodeTreeViewCellLineCenterToRight = 2,
-  NodeTreeViewCellLineCenterToBottom = 4,
-  NodeTreeViewCellLineCenterToTop = 8,
-  NodeTreeViewCellLineCenterToBottomRight = 16,
-  NodeTreeViewCellLineCenterToTopLeft = 32,
-};
-
 // -----------------------------------------------------------------------------
 /// @brief The NodeTreeViewCell class represents a cell on the abstract canvas
 /// used by NodeTreeViewModel. NodeTreeViewCell contains data that describes the

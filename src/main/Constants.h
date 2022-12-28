@@ -1123,6 +1123,54 @@ extern const int moveSuggestionAnimationRepeatCount;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Node tree view constants
+// -----------------------------------------------------------------------------
+//@{
+// TODO xxx document
+enum NodeTreeViewCellSymbol
+{
+  // This value is used for cells that contain only lines
+  NodeTreeViewCellSymbolNone,
+  // A root node without setup, annotations or markup is drawn with this symbol
+  NodeTreeViewCellSymbolEmpty,
+  NodeTreeViewCellSymbolBlackSetupStones,
+  NodeTreeViewCellSymbolWhiteSetupStones,
+  NodeTreeViewCellSymbolNoSetupStones,
+  NodeTreeViewCellSymbolBlackAndWhiteSetupStones,
+  NodeTreeViewCellSymbolBlackAndNoSetupStones,
+  NodeTreeViewCellSymbolWhiteAndNoSetupStones,
+  NodeTreeViewCellSymbolBlackAndWhiteAndNoSetupStones,
+  NodeTreeViewCellSymbolBlackMove,
+  NodeTreeViewCellSymbolWhiteMove,
+  NodeTreeViewCellSymbolAnnotations,
+  NodeTreeViewCellSymbolMarkup,
+  NodeTreeViewCellSymbolAnnotationsAndMarkup,
+};
+
+// TODO xxx document
+typedef unsigned short NodeTreeViewCellLines;
+
+// TODO xxx document
+typedef NS_ENUM(NodeTreeViewCellLines, NodeTreeViewCellLine)
+{
+  NodeTreeViewCellLineNone = 0,
+  NodeTreeViewCellLineCenterToLeft = 1,
+  NodeTreeViewCellLineCenterToRight = 2,
+  NodeTreeViewCellLineCenterToBottom = 4,
+  NodeTreeViewCellLineCenterToTop = 8,
+  NodeTreeViewCellLineCenterToBottomRight = 16,
+  NodeTreeViewCellLineCenterToTopLeft = 32,
+};
+
+// TODO xxx document
+enum NodeTreeViewBranchingStyle
+{
+  NodeTreeViewBranchingStyleDiagonal,
+  NodeTreeViewBranchingStyleBracket,
+};
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name GTP engine profile constants
 ///
 /// @brief See GtpEngineProfile for attribute documentation.
