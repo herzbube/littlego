@@ -40,7 +40,9 @@ enum ResizablePane2Content
 #import "../controller/AutoLayoutConstraintHelper.h"
 #import "../controller/StatusViewController.h"
 #import "../model/NavigationBarButtonModel.h"
+#import "../model/NodeTreeViewModel.h"
 #import "../nodetreeview/NodeTreeViewController.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/ResizableStackViewController.h"
 #import "../../ui/UiElementMetrics.h"
@@ -103,9 +105,11 @@ enum ResizablePane2Content
     resizableStackViewControllerInitialSizes = @[resizablePane1SizeAsNumber, resizablePane2SizeAsNumber];
   }
 
+  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+  NodeTreeViewModel* nodeTreeViewModel = applicationDelegate.nodeTreeViewModel;
+
   self.resizablePane2ContentAutoLayoutConstraints = [NSMutableArray array];
-  // TODO xxx Which view is initially visible should be a user preference
-  self.currentResizablePane2Content = ResizablePane2ContentBoardPositionCollectionView;
+  self.currentResizablePane2Content = nodeTreeViewModel.displayNodeTreeView ? ResizablePane2ContentNodeTreeView : ResizablePane2ContentBoardPositionCollectionView;
   self.boardViewSmallerDimension = UILayoutConstraintAxisHorizontal;
   self.boardPositionCollectionViewBorderWidth = 1.0f;
   [self setupChildControllers];
