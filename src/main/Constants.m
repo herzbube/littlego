@@ -75,6 +75,10 @@ NSString* goScoreCalculationStarts = @"GoScoreCalculationStarts";
 NSString* goScoreCalculationEnds = @"GoScoreCalculationEnds";
 NSString* askGtpEngineForDeadStonesStarts = @"AskGtpEngineForDeadStonesStarts";
 NSString* askGtpEngineForDeadStonesEnds = @"AskGtpEngineForDeadStonesEnds";
+// Node tree view notifications
+NSString* nodeTreeLayoutDidChange = @"NodeTreeLayoutDidChange";
+NSString* nodeRepresentationInTreeViewDidChange = @"NodeRepresentationInTreeViewDidChange";
+NSString* nodeTreeViewContentDidChange = @"NodeTreeViewContentDidChange";
 // Other notifications
 NSString* longRunningActionStarts = @"LongRunningActionStarts";
 NSString* longRunningActionEnds = @"LongRunningActionEnds";

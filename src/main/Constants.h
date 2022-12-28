@@ -877,6 +877,23 @@ extern NSString* boardViewSelectionRectangleDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Node tree view notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that something about the layout of the tree of
+/// nodes in GoNodeModel has changed, i.e. one or more nodes were added, deleted
+/// or moved to a new location.
+extern NSString* nodeTreeLayoutDidChange;
+/// @brief Is sent to indicate that the content of a node has changed in a way
+/// that causes its representation in the node tree view to change. The GoNode
+/// object whose content changed is associated with the notification.
+extern NSString* nodeRepresentationInTreeViewDidChange;
+/// @brief Is sent to indicate that the content of the entire node tree view
+/// has changed.
+extern NSString* nodeTreeViewContentDidChange;
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name Other notifications
 // -----------------------------------------------------------------------------
 //@{

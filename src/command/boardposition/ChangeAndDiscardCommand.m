@@ -225,6 +225,8 @@
   DDLogInfo(@"%@: Index position of first node to discard = %d, number of nodes = %d", [self shortDescription], indexOfFirstNodeToDiscard, numberOfNodes);
   [nodeModel discardNodesFromIndex:indexOfFirstNodeToDiscard];
 
+  [center postNotificationName:nodeTreeLayoutDidChange object:nil];
+
   return true;
 }
 

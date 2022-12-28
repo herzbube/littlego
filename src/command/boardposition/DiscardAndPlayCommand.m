@@ -215,6 +215,9 @@ enum PlayCommandType
   DDLogInfo(@"%@: Index position of first node to discard = %d", [self shortDescription], indexOfFirstNodeToDiscard);
   GoNodeModel* nodeModel = game.nodeModel;
   [nodeModel discardNodesFromIndex:indexOfFirstNodeToDiscard];
+
+  [center postNotificationName:nodeTreeLayoutDidChange object:nil];
+
   return true;
 }
 

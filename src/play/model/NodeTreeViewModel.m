@@ -25,6 +25,7 @@
 #import "../../go/GoNodeModel.h"
 #import "../../go/GoNodeSetup.h"
 #import "../../go/GoPlayer.h"
+#import "../../shared/LongRunningActionCounter.h"
 
 
 @class BranchTuple;
@@ -68,6 +69,7 @@
 /// @brief Class extension with private properties for NodeTreeViewModel.
 // -----------------------------------------------------------------------------
 @interface NodeTreeViewModel()
+@property(nonatomic, assign) bool canvasNeedsUpdate;
 @property(nonatomic, retain) NSMutableDictionary* cellsDictionary;
 @end
 
@@ -112,8 +114,11 @@
   //   operations are necessary to draw a node symbol.
   self.numberOfCellsOfMultipartCell = 3;
 
+  self.canvasNeedsUpdate = false;
   self.canvasSize = CGSizeZero;
   self.cellsDictionary = [NSMutableDictionary dictionary];
+
+  [self setupNotificationResponders];
 
   return self;
 }
@@ -123,9 +128,92 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self removeNotificationResponders];
+
   self.cellsDictionary = nil;
 
   [super dealloc];
+}
+
+#pragma mark - Setup/remove notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for the initializer.
+// -----------------------------------------------------------------------------
+- (void) setupNotificationResponders
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [center addObserver:self selector:@selector(nodeTreeLayoutDidChange:) name:nodeTreeLayoutDidChange object:nil];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - Notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameDidCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameDidCreate:(NSNotification*)notification
+{
+  self.canvasNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeLayoutDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeLayoutDidChange:(NSNotification*)notification
+{
+  self.canvasNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionEnds notification.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionEnds:(NSNotification*)notification
+{
+  [self delayedUpdate];
+}
+
+#pragma mark - Updaters
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper that correctly handles delayed updates.
+// -----------------------------------------------------------------------------
+- (void) delayedUpdate
+{
+  if ([LongRunningActionCounter sharedCounter].counter > 0)
+    return;
+
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(delayedUpdate) withObject:nil waitUntilDone:YES];
+    return;
+  }
+
+  [self updateCanvas];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updater method.
+// -----------------------------------------------------------------------------
+- (void) updateCanvas
+{
+  if (! self.canvasNeedsUpdate)
+    return;
+  self.canvasNeedsUpdate = false;
+
+  if (self.displayNodeTreeView)
+    [self recalc1];
 }
 
 #pragma mark - Public API
@@ -978,6 +1066,9 @@
 
   self.cellsDictionary = cellsDictionary;
   self.canvasSize = CGSizeMake(highestXPosition + 1, highestYPosition + 1);
+
+  // TODO xxx Currently each and every change causes a full redraw => optimize
+  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeViewContentDidChange object:nil];
 }
 
 // TODO xxx document
