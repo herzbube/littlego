@@ -620,8 +620,21 @@ static const int maxStepsForCreateNodes = 9;
         // Note: If the skipped node is a branching point in the tree, all of
         // its child nodes are added as child nodes to the skipped node's parent
         // in the skipped node's place.
-        goMostRecentContentNode = goParentNode;
-        goParentNode = goMostRecentContentNode.parent;
+
+        if (sgfCurrentNodeIsRootNode)
+        {
+          sgfCurrentNodeIsRootNode = false;
+
+          // goParentNode is still == nodeModel.rootNode at this point
+          goMostRecentContentNode = goParentNode;
+          goParentNode = nil;
+
+        }
+        else
+        {
+          goMostRecentContentNode = goParentNode;
+          goParentNode = goMostRecentContentNode.parent;
+        }
       }
       else
       {
