@@ -17,6 +17,7 @@
 
 // Project includes
 #import "NodeTreeViewModel.h"
+#import "NodeTreeViewModelAdditions.h"
 #import "../nodetreeview/NodeTreeViewCell.h"
 #import "../nodetreeview/NodeTreeViewCellPosition.h"
 #import "../../go/GoGame.h"
@@ -1199,6 +1200,19 @@
   {
     return self.numberOfCellsOfMultipartCell;
   }
+}
+
+@end
+
+#pragma mark - Implementation of NodeTreeViewModelAdditions
+
+@implementation NodeTreeViewModel(NodeTreeViewModelAdditions)
+
+#pragma mark - NodeTreeViewModelAdditions - Unit testing
+
+- (NSDictionary*) getCellsDictionary
+{
+  return [[_cellsDictionary retain] autorelease];
 }
 
 @end

@@ -96,6 +96,7 @@
 		CD1311D2171B5857006CE699 /* LoggingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311D1171B5854006CE699 /* LoggingModel.m */; };
 		CD1311D3171B5FFF006CE699 /* LoggingModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1311D1171B5854006CE699 /* LoggingModel.m */; };
 		CD15A484168D044400D4472A /* GoNodeModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD15A483168D044400D4472A /* GoNodeModelTest.m */; };
+		CD1A7EEF29568AF800013D80 /* NodeTreeViewModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1A7EED29568AF800013D80 /* NodeTreeViewModelTest.m */; };
 		CD1D606425BC230A00345506 /* UIViewControllerAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */; };
 		CD1D606525BC230A00345506 /* UIViewControllerAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */; };
 		CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60916FE181400C2E648 /* GoGameDocument.m */; };
@@ -952,6 +953,9 @@
 		CD1311D1171B5854006CE699 /* LoggingModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LoggingModel.m; sourceTree = "<group>"; };
 		CD15A482168D044400D4472A /* GoNodeModelTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeModelTest.h; sourceTree = "<group>"; };
 		CD15A483168D044400D4472A /* GoNodeModelTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeModelTest.m; sourceTree = "<group>"; };
+		CD1A7EED29568AF800013D80 /* NodeTreeViewModelTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewModelTest.m; sourceTree = "<group>"; };
+		CD1A7EEE29568AF800013D80 /* NodeTreeViewModelTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewModelTest.h; sourceTree = "<group>"; };
+		CD1A7EF029574A0900013D80 /* NodeTreeViewModelAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewModelAdditions.h; sourceTree = "<group>"; };
 		CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewControllerAdditions.m; sourceTree = "<group>"; };
 		CD1D606325BC230A00345506 /* UIViewControllerAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewControllerAdditions.h; sourceTree = "<group>"; };
 		CD1DB60816FE181400C2E648 /* GoGameDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameDocument.h; sourceTree = "<group>"; };
@@ -2181,6 +2185,7 @@
 				CDC8DEFE28EDF8E600619305 /* NodeTreeViewMetrics.m */,
 				CDDB08B8291EB44500B38F91 /* NodeTreeViewModel.h */,
 				CDDB08B9291EB44500B38F91 /* NodeTreeViewModel.m */,
+				CD1A7EF029574A0900013D80 /* NodeTreeViewModelAdditions.h */,
 				CD1311BF17180B45006CE699 /* ScoringModel.h */,
 				CD1311C017180B45006CE699 /* ScoringModel.m */,
 			);
@@ -2938,6 +2943,8 @@
 				CDA596121401741800B250D8 /* GoVertexTest.m */,
 				CDC97A931832E52D00755EB2 /* GoZobristTableTest.h */,
 				CDC97A941832E52D00755EB2 /* GoZobristTableTest.m */,
+				CD1A7EEE29568AF800013D80 /* NodeTreeViewModelTest.h */,
+				CD1A7EED29568AF800013D80 /* NodeTreeViewModelTest.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -4507,6 +4514,7 @@
 				CDFD9F7F18F1D5E20031CBCF /* DiagnosticsViewController.m in Sources */,
 				CD1DB60F170244CF00C2E648 /* HandleDocumentInteractionCommand.m in Sources */,
 				CD7C6A1E1AB61893009EC5AD /* ButtonBoxCell.m in Sources */,
+				CD1A7EEF29568AF800013D80 /* NodeTreeViewModelTest.m in Sources */,
 				CD81791825DC606700F39091 /* BoardAnimationController.m in Sources */,
 				CD7C69BB1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
 				CDC8DEF628EDECCA00619305 /* NodeTreeTileView.m in Sources */,

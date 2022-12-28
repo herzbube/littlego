@@ -45,6 +45,8 @@
 
 + (NodeTreeViewCell*) emptyCell;
 
+- (BOOL) isEqualToCell:(NodeTreeViewCell*)otherCell;
+
 /// @brief Value that indicates which symbol should be drawn in the cell. Is
 /// #NodeTreeViewCellSymbolNone if no symbol should be drawn in the cell.
 ///

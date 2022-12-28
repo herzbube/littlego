@@ -118,7 +118,7 @@ static unsigned short numberOfUnsignedShortBits = CHAR_BIT * sizeof(unsigned sho
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"NodeTreeViewCellPosition(%p): x = %hu, y = %hu", self, _x, _y];
+  return [NSString stringWithFormat:@"NodeTreeViewCellPosition: x = %hu, y = %hu", _x, _y];
 }
 
 #pragma mark - NSCopying overrides
