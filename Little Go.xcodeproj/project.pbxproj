@@ -102,6 +102,7 @@
 		CD1A7EE1293A5E8100013D80 /* NodeTreeViewDrawingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1A7EDE293A5E8100013D80 /* NodeTreeViewDrawingHelper.m */; };
 		CD1A7EE4293B852E00013D80 /* NodeTreeViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1A7EE3293B852D00013D80 /* NodeTreeViewCGLayerCache.m */; };
 		CD1A7EE5293B852E00013D80 /* NodeTreeViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1A7EE3293B852D00013D80 /* NodeTreeViewCGLayerCache.m */; };
+		CD1A7EE82944ECB300013D80 /* NodeTreeViewLayerDelegateBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1A7EE62944ECB300013D80 /* NodeTreeViewLayerDelegateBaseTest.m */; };
 		CD1A7EEB29512E0B00013D80 /* LinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1A7EE929512E0B00013D80 /* LinesLayerDelegate.m */; };
 		CD1A7EEC29512E0B00013D80 /* LinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1A7EE929512E0B00013D80 /* LinesLayerDelegate.m */; };
 		CD1A7EEF29568AF800013D80 /* NodeTreeViewModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1A7EED29568AF800013D80 /* NodeTreeViewModelTest.m */; };
@@ -967,6 +968,8 @@
 		CD1A7EDF293A5E8100013D80 /* NodeTreeViewDrawingHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewDrawingHelper.h; sourceTree = "<group>"; };
 		CD1A7EE2293B852D00013D80 /* NodeTreeViewCGLayerCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewCGLayerCache.h; sourceTree = "<group>"; };
 		CD1A7EE3293B852D00013D80 /* NodeTreeViewCGLayerCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewCGLayerCache.m; sourceTree = "<group>"; };
+		CD1A7EE62944ECB300013D80 /* NodeTreeViewLayerDelegateBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewLayerDelegateBaseTest.m; sourceTree = "<group>"; };
+		CD1A7EE72944ECB300013D80 /* NodeTreeViewLayerDelegateBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewLayerDelegateBaseTest.h; sourceTree = "<group>"; };
 		CD1A7EE929512E0B00013D80 /* LinesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinesLayerDelegate.m; sourceTree = "<group>"; };
 		CD1A7EEA29512E0B00013D80 /* LinesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinesLayerDelegate.h; sourceTree = "<group>"; };
 		CD1A7EED29568AF800013D80 /* NodeTreeViewModelTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewModelTest.m; sourceTree = "<group>"; };
@@ -2959,6 +2962,8 @@
 				CDA596121401741800B250D8 /* GoVertexTest.m */,
 				CDC97A931832E52D00755EB2 /* GoZobristTableTest.h */,
 				CDC97A941832E52D00755EB2 /* GoZobristTableTest.m */,
+				CD1A7EE72944ECB300013D80 /* NodeTreeViewLayerDelegateBaseTest.h */,
+				CD1A7EE62944ECB300013D80 /* NodeTreeViewLayerDelegateBaseTest.m */,
 				CD1A7EEE29568AF800013D80 /* NodeTreeViewModelTest.h */,
 				CD1A7EED29568AF800013D80 /* NodeTreeViewModelTest.m */,
 			);
@@ -4595,6 +4600,7 @@
 				CDFD9F8418F1D5FF0031CBCF /* SubmitGtpCommandViewController.m in Sources */,
 				CDBEBA3D27B1A218000F9BF5 /* AnnotationViewController.m in Sources */,
 				CD1311C417180B53006CE699 /* ScoringModel.m in Sources */,
+				CD1A7EE82944ECB300013D80 /* NodeTreeViewLayerDelegateBaseTest.m in Sources */,
 				CD1F4F7525AE81AC0098037A /* SgfSettingsController.m in Sources */,
 				CDCBA6D4184228A7003697E2 /* TableViewVariableHeightCell.m in Sources */,
 				CD869F1A285E1B8F00B679FE /* DiscardAllMarkupCommand.m in Sources */,
