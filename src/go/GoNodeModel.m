@@ -468,7 +468,7 @@
 {
   // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
   // is safe because this app was not made to handle more than pow(2, 31) nodes.
-  [self discardNodesFromIndex:((int)_nodeList.count - 1)];  // raises exception and posts notification for us
+  [self discardNodesFromIndex:((int)_nodeList.count - 1)];  // raises exception for us
 }
 
 // -----------------------------------------------------------------------------
@@ -482,7 +482,7 @@
 // -----------------------------------------------------------------------------
 - (void) discardAllNodes
 {
-  [self discardNodesFromIndex:1];  // raises exception and posts notification for us
+  [self discardNodesFromIndex:1];  // raises exception for us
 }
 
 // -----------------------------------------------------------------------------

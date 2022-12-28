@@ -83,6 +83,7 @@
 - (void) changeSetupFirstMoveColor:(enum GoColor)newValue;
 - (void) changeSetupPoint:(GoPoint*)point toStoneState:(enum GoColor)stoneState;
 - (void) discardAllSetup;
+- (void) updateBoardPositionAfterGameIsLoaded;
 
 /// @brief The type of this GoGame object.
 @property(nonatomic, assign) enum GoGameType type;

@@ -1498,11 +1498,12 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   // - lastMove
   [game.nodeModel changeToMainVariation];
 
-  // GoNodeModel's changeToMainVariation() method triggered GoBoardPosition via
-  // KVO to change its numberOfBoardPosition value, but the KVO handler in
-  // GoBoardPosition did not change the currentBoardPosition value (except in
-  // rare cases), so we have to trigger this change manually.
-  [game.boardPosition changeToLastBoardPositionWithoutUpdatingGoObjects];
+  // GoBoardPosition must now be sync'ed with the content of GoNodeModel. This
+  // updates the numberOfBoardPosition and currentBoardPosition values (the
+  // latter via changeToLastBoardPositionWithoutUpdatingGoObjects) and posts
+  // the corresponding notifications to the global notification centre.
+  // TODO xxx RestoreApplicationStateCommand also does this - can it be done better?
+  [game updateBoardPositionAfterGameIsLoaded];
 
   // Configure nextMoveColor. No need to check GoGame's property alternatingPlay
   // because after loading a game from SGF we always start out with alternating
