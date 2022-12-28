@@ -61,6 +61,9 @@
 
 - (id) init;
 
+- (void) readUserDefaults;
+- (void) writeUserDefaults;
+
 - (NodeTreeViewCell*) cellAtPosition:(NodeTreeViewCellPosition*)position;
 - (NSArray*) cellsInRow:(int)row;
 

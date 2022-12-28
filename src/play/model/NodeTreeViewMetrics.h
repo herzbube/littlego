@@ -57,6 +57,8 @@
 {
 }
 
+- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel;
+
 /// @name Updaters
 //@{
 - (void) updateWithBaseSize:(CGSize)newBaseSize;

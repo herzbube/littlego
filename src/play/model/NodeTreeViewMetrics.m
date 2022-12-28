@@ -36,12 +36,14 @@
 ///
 /// @note This is the designated initializer of NodeTreeViewMetrics.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
+
+  self.nodeTreeViewModel = nodeTreeViewModel;
 
   [self setupStaticProperties];
   [self setupFontRanges];

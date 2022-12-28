@@ -48,6 +48,7 @@
 #import "../play/model/BoardViewModel.h"
 #import "../play/model/MarkupModel.h"
 #import "../play/model/NodeTreeViewMetrics.h"
+#import "../play/model/NodeTreeViewModel.h"
 #import "../play/model/ScoringModel.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
@@ -158,7 +159,9 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.boardSetupModel = nil;
   self.sgfSettingsModel = nil;
   self.markupModel = nil;
+  // Observes NodeTreeViewModel, so must be deallocated first
   self.nodeTreeViewMetrics = nil;
+  self.nodeTreeViewModel = nil;
   self.fileLogger = nil;
   [BoardPositionNavigationManager releaseSharedNavigationManager];
   [GameActionManager releaseSharedGameActionManager];
@@ -564,6 +567,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.boardSetupModel = [[[BoardSetupModel alloc] init] autorelease];
   self.sgfSettingsModel = [[[SgfSettingsModel alloc] init] autorelease];
   self.markupModel = [[[MarkupModel alloc] init] autorelease];
+  self.nodeTreeViewModel = [[[NodeTreeViewModel alloc] init] autorelease];
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
@@ -580,9 +584,11 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self.boardSetupModel readUserDefaults];
   [self.sgfSettingsModel readUserDefaults];
   [self.markupModel readUserDefaults];
-  self.nodeTreeViewMetrics = [[[NodeTreeViewMetrics alloc] init] autorelease];
+  [self.nodeTreeViewModel readUserDefaults];
   // Is dependent on some user defaults in BoardViewModel
   self.boardViewMetrics = [[[BoardViewMetrics alloc] init] autorelease];
+  // Is dependent on some user defaults in NodeTreeViewModel
+  self.nodeTreeViewMetrics = [[[NodeTreeViewMetrics alloc] initWithModel:self.nodeTreeViewModel] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -617,6 +623,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self.boardSetupModel writeUserDefaults];
   [self.sgfSettingsModel writeUserDefaults];
   [self.markupModel writeUserDefaults];
+  [self.nodeTreeViewModel writeUserDefaults];
 }
 
 // -----------------------------------------------------------------------------

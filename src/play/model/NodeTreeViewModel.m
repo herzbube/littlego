@@ -110,6 +110,23 @@ enum BranchingStyle
 #pragma mark - Public API
 
 // -----------------------------------------------------------------------------
+/// @brief Initializes default values in this model with user defaults data.
+// -----------------------------------------------------------------------------
+- (void) readUserDefaults
+{
+  // TODO xxx implement
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Writes current values in this model to the user default system's
+/// application domain.
+// -----------------------------------------------------------------------------
+- (void) writeUserDefaults
+{
+  // TODO xxx implement
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the NodeTreeViewCell object that is located at position
 /// @a position on the canvas. Returns @e nil if @a position denotes a position
 /// that is outside the canvas' bounds.
