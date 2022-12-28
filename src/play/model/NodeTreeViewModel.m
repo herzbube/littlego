@@ -86,6 +86,30 @@
   if (! self)
     return nil;
 
+  // TODO xxx is this model the correct place for this user preference? if not, then this model must be informed
+  // from the outside whether or not it should react to changes in GoNodeModel
+  self.displayNodeTreeView = true;
+  // TODO xxx user preference?
+  self.displayNodeNumbers = true;
+  // TODO xxx user preference
+  self.condenseTree = true;
+  self.alignMoveNodes = true;
+  self.branchingStyle = NodeTreeViewBranchingStyleBracket;
+
+  // The number chosen here must fulfill the following criteria:
+  // - The number must be greater than 1, so that condensed nodes (which are
+  //   represented by a single standalone cell) are drawn smaller than
+  //   uncondensed nodes (which are represented by multiple sub-cells that
+  //   together make up a multipart cell).
+  // - The number must be uneven, so that one of the sub-cells that make up a
+  //   multipart cell is at the horizontal center of the multipart cell. This is
+  //   important so that vertical lines drawn in the center of the central cell
+  //   also appear to be in the center of the entire multipart cell.
+  // - The number should be relatively small, because a node symbol is drawn
+  //   once for each sub-cell. Many sub-cells would mean that many drawing
+  //   operations are necessary to draw a node symbol.
+  self.numberOfCellsOfMultipartCell = 3;
+
   self.canvasSize = CGSizeZero;
   self.cellsDictionary = [NSMutableDictionary dictionary];
 
@@ -198,10 +222,7 @@
 {
   GoNodeModel* nodeModel = [GoGame sharedGame].nodeModel;
 
-  // TODO xxx Get user preferences from somewhere
-  bool condenseTree = true;
-  bool alignMoveNodes = true;
-  enum NodeTreeViewBranchingStyle branchingStyle = NodeTreeViewBranchingStyleBracket;
+  enum NodeTreeViewBranchingStyle branchingStyle = self.branchingStyle;
 
   // ----------
   // Part 1: Iterate tree to find out about branches and their ordering
@@ -383,7 +404,7 @@
   // ----------
   // Part 2: Align move nodes
   // ----------
-  if (alignMoveNodes)
+  if (self.alignMoveNodes)
   {
     // Optimization: We only have to align moves that appear in at least two
     // branches.
@@ -837,35 +858,32 @@
 // TODO xxx document
 - (unsigned short) numberOfCellsForNode:(GoNode*)node condenseTree:(bool)condenseTree
 {
-  // TODO xxx Define constant
-  static const int numberOfCellsUncondensed = 2;
-
   if (! condenseTree)
-    return numberOfCellsUncondensed;
+    return self.numberOfCellsOfMultipartCell;
 
   // Root node: Because the root node starts the main variation it is considered
   // a branching node
   if (node.isRoot)
-    return numberOfCellsUncondensed;
+    return self.numberOfCellsOfMultipartCell;
 
   // Branching nodes are uncondensed
   // TODO xxx new property isBranchingNode
   if (node.firstChild != node.lastChild)
-    return numberOfCellsUncondensed;
+    return self.numberOfCellsOfMultipartCell;
 
   // Child nodes of a branching node
   GoNode* parent = node.parent;
   if (parent.firstChild != parent.lastChild)
-    return numberOfCellsUncondensed;
+    return self.numberOfCellsOfMultipartCell;
 
   // Leaf nodes
   // TODO xxx new property isLeafNode
   if (! node.hasChildren)
-    return numberOfCellsUncondensed;
+    return self.numberOfCellsOfMultipartCell;
 
   // Nodes with non-move content
   if (node.goNodeSetup || node.goNodeAnnotation || node.goNodeMarkup)
-    return numberOfCellsUncondensed;
+    return self.numberOfCellsOfMultipartCell;
 
   return 1;
 }

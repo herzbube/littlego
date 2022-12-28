@@ -67,6 +67,13 @@
 - (NodeTreeViewCell*) cellAtPosition:(NodeTreeViewCellPosition*)position;
 - (NSArray*) cellsInRow:(int)row;
 
+@property(nonatomic, assign) bool displayNodeTreeView;
+@property(nonatomic, assign) bool displayNodeNumbers;
+@property(nonatomic, assign) bool condenseTree;
+@property(nonatomic, assign) bool alignMoveNodes;
+@property(nonatomic, assign) enum NodeTreeViewBranchingStyle branchingStyle;
+@property(nonatomic, assign) int numberOfCellsOfMultipartCell;
+
 /// @brief The canvas size. Width and height are integral numbers.
 ///
 /// The canvas width corresponds to the height (aka depth) of the node tree. In
