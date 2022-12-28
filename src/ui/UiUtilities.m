@@ -383,4 +383,17 @@
   button.tintColor = buttonTintColor;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a CGRect of size @a size whose center is the same as the
+/// center of @a referenceRect.
+// -----------------------------------------------------------------------------
++ (CGRect) rectWithSize:(CGSize)size centeredInRect:(CGRect)referenceRect
+{
+  CGRect newRect = CGRectZero;
+  newRect.size = size;
+  newRect.origin.x = referenceRect.origin.x + (referenceRect.size.width - newRect.size.width) / 2.0f;
+  newRect.origin.y = referenceRect.origin.y + (referenceRect.size.height - newRect.size.height) / 2.0f;
+  return newRect;
+}
+
 @end

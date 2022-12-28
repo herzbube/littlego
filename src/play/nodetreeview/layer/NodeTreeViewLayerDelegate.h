@@ -25,14 +25,26 @@
 // -----------------------------------------------------------------------------
 enum NodeTreeViewLayerDelegateEvent
 {
-  /// @brief Occurs when the node tree view is initialized, when the zoom level
-  /// changes, and when the interface orientation changes.
+  /// @brief Is sent whenever there is a change to the size of the elements
+  /// that are used to draw the node tree. One typical use of this event is when
+  /// the node tree view's zoom level changes.
   NTVLDEventNodeTreeGeometryChanged,
   /// @brief Is sent whenever the layer needs a full redraw although the node
   /// tree geometry did not change. One typical use of this event is when the
   /// tiling mechanism reuses a tile to display content at a different position
   /// on the canvas.
   NTVLDEventInvalidateContent,
+  /// @brief Is sent whenever the abstract canvas size changed. The layer's
+  /// drawing cells may have changed, and because of that also the content
+  /// drawn by the layer. The event is sent only after NodeTreeViewModel and
+  /// NodeTreeViewMetrics have updated their data.
+  NTVLDEventAbstractCanvasSizeChanged,
+  /// @brief Is sent whenever the content of the node tree changed. The layer's
+  /// drawing cells did not change (or if they did a separate event
+  /// #NTVLDEventAbstractCanvasSizeChanged is sent), but the content drawn by
+  /// the layer may have changed (the nature of the node tree content change is
+  /// not known.
+  NTVLDEventNodeTreeContentChanged,
 };
 
 

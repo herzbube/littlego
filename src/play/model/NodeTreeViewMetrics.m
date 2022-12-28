@@ -17,13 +17,18 @@
 
 // Project includes
 #import "NodeTreeViewMetrics.h"
+#import "NodeTreeViewModel.h"
+#import "../nodetreeview/NodeTreeViewCellPosition.h"
 #import "../../shared/LayoutManager.h"
+#import "../../utility/FontRange.h"
 
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for NodeTreeViewMetrics.
 // -----------------------------------------------------------------------------
 @interface NodeTreeViewMetrics()
+@property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
+@property(nonatomic, retain) FontRange* nodeNumberLabelFontRange;
 @end
 
 
@@ -50,7 +55,9 @@
   [self setupMainProperties];
   [self setupNotificationResponders];
   // Remaining properties are initialized by this updater
-  [self updateWithCanvasSize:self.canvasSize];
+  [self updateWithAbstractCanvasSize:self.abstractCanvasSize
+                   absoluteZoomScale:self.absoluteZoomScale
+                  displayNodeNumbers:self.displayNodeNumbers];
 
   return self;
 }
@@ -61,6 +68,13 @@
 - (void) dealloc
 {
   [self removeNotificationResponders];
+
+  self.nodeNumberLabelFont = nil;
+  self.nodeNumberLabelFontRange = nil;
+  self.normalLineColor = nil;
+  self.selectedLineColor = nil;
+  self.selectedNodeColor = nil;
+  self.nodeNumberTextColor = nil;
 
   [super dealloc];
 }
@@ -73,12 +87,53 @@
 - (void) setupStaticProperties
 {
   self.contentsScale = [UIScreen mainScreen].scale;
+
   self.tileSize = CGSizeMake(128, 128);
+
   self.minimumAbsoluteZoomScale = 1.0f;
   if ([LayoutManager sharedManager].uiType != UITypePad)
     self.maximumAbsoluteZoomScale = iPhoneMaximumZoomScale;
   else
     self.maximumAbsoluteZoomScale = iPadMaximumZoomScale;
+
+  self.normalLineColor = [UIColor blackColor];
+  self.selectedLineColor = [UIColor redColor];
+  self.selectedNodeColor = [UIColor redColor];
+  self.nodeSymbolColor = [UIColor blackColor];
+
+  // TODO xxx Is the following fine-tuning worth it? When zoomed a factor is
+  // applied, so the fine-tuning is lost. Also self.numberOfCellsOfMultipartCell
+  // is applied as a factor...
+
+  // The line widths and cell sizes assigned here must be selected so that lines
+  // can be drawn in the cell's horizontal and vertical center without
+  // anti-aliasing. Note that widths and sizes we specify here are in point
+  // units, which means they are multiplied by self.contentsScale to arrive at
+  // the effective number of pixels to be drawn.
+  if (fmod(self.contentsScale, 2.0f) == 0.0f)
+  {
+    // self.contentsScale is an even number => any number multiplied by
+    // self.contentsScale will result in an even number of pixels => we
+    // can use both even and uneven numbers for line widths and cell sizes.
+    self.normalLineWidth = 1;
+    self.selectedLineWidth = 2;
+    self.nodeTreeViewCellBaseSize = 13;
+  }
+  else
+  {
+    // self.contentsScale is an uneven number => even numbers multiplied by
+    // self.contentsScale will result in an even number of pixels, uneven
+    // numbers multiplied by self.contentsScale will result in an uneven number
+    // of pixels => numbers we use for line widths and cell sizes must be either
+    // all even, or all uneven.
+    self.normalLineWidth = 1;
+    self.selectedLineWidth = 3;
+    self.nodeTreeViewCellBaseSize = 13;
+  }
+
+  self.nodeNumberTextColor = [UIColor blackColor];
+  self.paddingX = 8;  // TODO xxx get from UIElementMetrics?
+  self.paddingY = 8;
 }
 
 // -----------------------------------------------------------------------------
@@ -86,6 +141,21 @@
 // -----------------------------------------------------------------------------
 - (void) setupFontRanges
 {
+  // The minimum should not be smaller: There is no point in displaying text
+  // that is so small that nobody can read it
+  int minimumFontSize = 8;
+  // The maximum can be any size that still looks good. On the iPad we allow
+  // a larger maximum font size because we have more space available.
+  int maximumFontSize;
+  if ([LayoutManager sharedManager].uiType != UITypePad)
+    maximumFontSize = 30;
+  else
+    maximumFontSize = 40;
+
+  NSString* widestNodeNumber = @"8888";
+  self.nodeNumberLabelFontRange = [[[FontRange alloc] initWithText:widestNodeNumber
+                                                   minimumFontSize:minimumFontSize
+                                                   maximumFontSize:maximumFontSize] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -93,10 +163,12 @@
 // -----------------------------------------------------------------------------
 - (void) setupMainProperties
 {
-  self.baseSize = CGSizeZero;
+  self.abstractCanvasSize = CGSizeZero;
   self.absoluteZoomScale = 1.0f;
-  self.canvasSize = CGSizeMake(self.baseSize.width * self.absoluteZoomScale,
-                               self.baseSize.height * self.absoluteZoomScale);
+  self.canvasSize = CGSizeZero;
+
+  self.displayNodeNumbers = self.nodeTreeViewModel.displayNodeNumbers;
+  self.numberOfCellsOfMultipartCell = self.nodeTreeViewModel.numberOfCellsOfMultipartCell;
 }
 
 #pragma mark - Setup/remove notification responders
@@ -106,6 +178,9 @@
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
+  [self.nodeTreeViewModel addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
+  [self.nodeTreeViewModel addObserver:self forKeyPath:@"displayNodeNumbers" options:0 context:NULL];
+  // TODO xxx react to a change in condenseTree => If false we need to calculate a larger cell size
 }
 
 // -----------------------------------------------------------------------------
@@ -113,28 +188,29 @@
 // -----------------------------------------------------------------------------
 - (void) removeNotificationResponders
 {
+  [self.nodeTreeViewModel removeObserver:self forKeyPath:@"canvasSize"];
+  [self.nodeTreeViewModel removeObserver:self forKeyPath:@"displayNodeNumbers"];
 }
 
 #pragma mark - Public API - Updaters
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the values stored by this NodeTreeViewMetrics object based on
-/// @a newBaseSize.
+/// @a newAbstractCanvasSize.
 ///
-/// The new canvas size will be the new base size multiplied by the current
-/// absolute zoom scale.
+/// The new canvas size will be @a newAbstractCanvasSize multiplied by the
+/// current absolute zoom scale.
 // -----------------------------------------------------------------------------
-- (void) updateWithBaseSize:(CGSize)newBaseSize
+- (void) updateWithAbstractCanvasSize:(CGSize)newAbstractCanvasSize
 {
-  if (CGSizeEqualToSize(newBaseSize, self.baseSize))
+  if (CGSizeEqualToSize(newAbstractCanvasSize, self.abstractCanvasSize))
     return;
-  CGSize newCanvasSize = CGSizeMake(newBaseSize.width * self.absoluteZoomScale,
-                                    newBaseSize.height * self.absoluteZoomScale);
-  [self updateWithCanvasSize:newCanvasSize];
-  // Update properties only after everything has been re-calculated so that KVO
+  [self updateWithAbstractCanvasSize:newAbstractCanvasSize
+                   absoluteZoomScale:self.absoluteZoomScale
+                  displayNodeNumbers:self.displayNodeNumbers];
+  // Update property only after everything has been re-calculated so that KVO
   // observers get the new values
-  self.baseSize = newBaseSize;
-  self.canvasSize = newCanvasSize;
+  self.abstractCanvasSize = newAbstractCanvasSize;
 }
 
 // -----------------------------------------------------------------------------
@@ -166,13 +242,31 @@
     newAbsoluteZoomScale = self.minimumAbsoluteZoomScale;
   else if (newAbsoluteZoomScale > self.maximumAbsoluteZoomScale)
     newAbsoluteZoomScale = self.maximumAbsoluteZoomScale;
-  CGSize newCanvasSize = CGSizeMake(self.baseSize.width * newAbsoluteZoomScale,
-                                    self.baseSize.height * newAbsoluteZoomScale);
-  [self updateWithCanvasSize:newCanvasSize];
-  // Update properties only after everything has been re-calculated so that KVO
+  [self updateWithAbstractCanvasSize:self.abstractCanvasSize
+                   absoluteZoomScale:newAbsoluteZoomScale
+                  displayNodeNumbers:self.displayNodeNumbers];
+  // Update property only after everything has been re-calculated so that KVO
   // observers get the new values
   self.absoluteZoomScale = newAbsoluteZoomScale;
-  self.canvasSize = newCanvasSize;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the values stored by this NodeTreeViewMetrics object based on
+/// @a newDisplayNodeNumbers.
+///
+/// Invoking this updater does not change the canvas size, but it changes the
+/// locations of all node tree elements on the canvas.
+// -----------------------------------------------------------------------------
+- (void) updateWithDisplayNodeNumbers:(bool)newDisplayNodeNumbers
+{
+  if (self.displayNodeNumbers == newDisplayNodeNumbers)
+    return;
+  [self updateWithAbstractCanvasSize:self.abstractCanvasSize
+                   absoluteZoomScale:self.absoluteZoomScale
+                  displayNodeNumbers:newDisplayNodeNumbers];
+  // Update property only after everything has been re-calculated so that KVO
+  // observers get the new values
+  self.displayNodeNumbers = newDisplayNodeNumbers;
 }
 
 #pragma mark - Private backend invoked from all public API updaters
@@ -183,7 +277,9 @@
 ///
 /// This is the internal backend for the various public updater methods.
 // -----------------------------------------------------------------------------
-- (void) updateWithCanvasSize:(CGSize)newCanvasSize
+- (void) updateWithAbstractCanvasSize:(CGSize)newAbstractCanvasSize
+                    absoluteZoomScale:(CGFloat)newAbsoluteZoomScale
+                   displayNodeNumbers:(bool)newDisplayNodeNumbers
 {
   // ----------------------------------------------------------------------
   // All calculations in this method must use newCanvasSize.
@@ -192,9 +288,151 @@
   // to the way how this update method is invoked, at least one of these
   // properties is guaranteed to be not up-to-date.
   // ----------------------------------------------------------------------
+
+  CGFloat nodeTreeViewCellBaseSizeScaled = floor(self.nodeTreeViewCellBaseSize * newAbsoluteZoomScale);
+  // TODO xxx get user preference
+  bool condensedTree = true;
+  if (condensedTree)
+  {
+    self.nodeTreeViewCellSize = CGSizeMake(nodeTreeViewCellBaseSizeScaled,
+                                           nodeTreeViewCellBaseSizeScaled * self.numberOfCellsOfMultipartCell);
+    self.nodeTreeViewMultipartCellSize = CGSizeMake(self.nodeTreeViewCellSize.width * self.numberOfCellsOfMultipartCell,
+                                                    self.nodeTreeViewCellSize.height);
+  }
+  else
+  {
+    self.nodeTreeViewCellSize = CGSizeMake(nodeTreeViewCellBaseSizeScaled * self.numberOfCellsOfMultipartCell,
+                                           nodeTreeViewCellBaseSizeScaled * self.numberOfCellsOfMultipartCell);
+    self.nodeTreeViewMultipartCellSize = self.nodeTreeViewCellSize;
+  }
+
+  // TODO xxx Do we need to multiply line widths by newAbsoluteZoomScale, too, to avoid anti-aliasing?
+
+  if (newDisplayNodeNumbers)
+  {
+    // The node number label strip can be substantially less high than
+    // self.nodeTreeViewCellSize.height, but it must still be fairly large so
+    // that the node number label is not too small. 2/3 is an experimentally
+    // determined factor.
+    static const CGFloat coordinateLabelStripWidthFactor = 2.0f / 3.0f;
+    int nodeNumberStripHeight = floor(self.nodeTreeViewCellSize.height * coordinateLabelStripWidthFactor);
+
+    // Node number labels can take up almost the entire
+    // self.nodeTreeViewCellSize.width, we only subtract a small padding on both
+    // sides so that adjacent node numbers have a small spacing between them
+    // TODO xxx does this work with a condensed tree?
+    int nodeNumberLabelPaddingX = 1;
+    int nodeNumberLabelAvailableWidth = (self.nodeTreeViewCellSize.width
+                                         - 2 * nodeNumberLabelPaddingX);
+    UIFont* nodeNumberLabelFont = nil;
+    CGSize nodeNumberLabelMaximumSize = CGSizeZero;
+    bool didFindNodeNumberLabelFont = [self.nodeNumberLabelFontRange queryForWidth:nodeNumberLabelAvailableWidth
+                                                                              font:&nodeNumberLabelFont
+                                                                          textSize:&nodeNumberLabelMaximumSize];
+    if (didFindNodeNumberLabelFont)
+    {
+      self.nodeNumberStripHeight = nodeNumberStripHeight;
+      self.nodeNumberLabelFont = nodeNumberLabelFont;
+      self.nodeNumberLabelMaximumSize = nodeNumberLabelMaximumSize;
+    }
+    else
+    {
+      self.nodeNumberStripHeight = 0;
+      self.nodeNumberLabelFont = nil;
+      self.nodeNumberLabelMaximumSize = CGSizeZero;
+    }
+  }
+  else
+  {
+    self.nodeNumberStripHeight = 0;
+    self.nodeNumberLabelFont = nil;
+    self.nodeNumberLabelMaximumSize = CGSizeZero;
+  }
+
+  self.topLeftTreeCornerX = self.paddingX;
+  self.topLeftTreeCornerY = self.paddingY + self.nodeNumberStripHeight;
+
+  self.topLeftCellX = 0;
+  self.topLeftCellY = 0;
+  self.bottomRightCellX = newAbstractCanvasSize.width - 1;
+  self.bottomRightCellY = newAbstractCanvasSize.height - 1;
+
+  static const CGFloat nodeSymbolSizeFactor = 0.75f;
+  CGFloat condensedNodeSymbolWidthAndHeight = ceilf(self.nodeTreeViewCellSize.width * nodeSymbolSizeFactor);
+  self.condensedNodeSymbolSize = CGSizeMake(condensedNodeSymbolWidthAndHeight, condensedNodeSymbolWidthAndHeight);
+  CGFloat uncondensedNodeSymbolWidthAndHeight = ceilf(self.nodeTreeViewMultipartCellSize.width * nodeSymbolSizeFactor);
+  self.uncondensedNodeSymbolSize = CGSizeMake(uncondensedNodeSymbolWidthAndHeight, uncondensedNodeSymbolWidthAndHeight);
+
+  // Update property only after everything has been re-calculated so that KVO
+  // observers get the new values
+  self.canvasSize = CGSizeMake(self.topLeftTreeCornerX + newAbstractCanvasSize.width * self.nodeTreeViewCellSize.width + self.paddingX,
+                               self.topLeftTreeCornerY + newAbstractCanvasSize.height * self.nodeTreeViewCellSize.height + self.paddingY);
 }
 
 #pragma mark - Public API - Calculators
+
+// -----------------------------------------------------------------------------
+/// @brief Returns view coordinates that correspond to the origin of the
+/// rectangle occupied by the cell identified by @a position.
+///
+/// The origin of the coordinate system is assumed to be in the top-left corner.
+// -----------------------------------------------------------------------------
+- (CGPoint) cellRectOriginFromPosition:(NodeTreeViewCellPosition*)position
+{
+  return CGPointMake(self.topLeftTreeCornerX + (self.nodeTreeViewCellSize.width * position.x),
+                     self.topLeftTreeCornerY + (self.nodeTreeViewCellSize.height * position.y));
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a NodeTreeViewCellPosition object for the cell that occupies
+/// a rectangle with origin @a cellRectOrigin.
+///
+/// Returns nil if @a cellRectOrigin does not refer to a valid cell (e.g.
+/// because @a cellRectOrigin is outside the board's edges).
+///
+/// The origin of the coordinate system is assumed to be in the top-left corner.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCellPosition*) positionFromCellRectOrigin:(CGPoint)cellRectOrigin
+{
+  // Make sure we don't get negative x/y values (which would underflow because
+  // cell positions use an unsigned type)
+  if (cellRectOrigin.x < self.topLeftTreeCornerX || cellRectOrigin.y < self.topLeftTreeCornerY)
+    return nil;
+
+  // TODO xxx Validate that this is maps exactly an origin? Without validation this is essentially the same as positionNear:()
+  // TODO xxx Validate this is not out-of-bounds
+  unsigned short x = (cellRectOrigin.x - self.topLeftTreeCornerX) / self.nodeTreeViewCellSize.width;
+  unsigned short y = (cellRectOrigin.y - self.topLeftTreeCornerY) / self.nodeTreeViewCellSize.height;
+  return [NodeTreeViewCellPosition positionWithX:x y:y];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a NodeTreeViewCellPosition object for the cell that is
+/// closest to the view coordinates @a coordinates. Returns @e nil if there is
+/// no "closest" cell.
+///
+/// Determining "closest" works like this:
+/// - The closest cell is the one whose distance to @a coordinates is
+///   less than half the distance between the centers of two adjacent cells
+///   - During panning this creates a "snap-to" effect when the user's panning
+///     fingertip crosses half the distance between two adjacent cells.
+///   - For a tap this simply makes sure that the fingertip does not have to
+///     hit the exact center of the cell.
+/// - If @a coordinates are a sufficient distance away from the node tree edges,
+///   there is no "closest" cell
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCellPosition*) positionNear:(CGPoint)coordinates
+{
+  // Make sure we don't get negative x/y values (which would underflow because
+  // cell positions use an unsigned type)
+  if (coordinates.x < self.topLeftTreeCornerX || coordinates.y < self.topLeftTreeCornerY)
+    return nil;
+
+  // TODO xxx Validate this is not out-of-bounds
+  unsigned short x = floorf((coordinates.x - self.topLeftTreeCornerX) / self.nodeTreeViewCellSize.width);
+  unsigned short y = floorf((coordinates.y - self.topLeftTreeCornerY) / self.nodeTreeViewCellSize.height);
+  return [NodeTreeViewCellPosition positionWithX:x y:y];
+}
 
 #pragma mark - Notification responders
 
@@ -203,6 +441,14 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
+  if ([keyPath isEqualToString:@"canvasSize"])
+  {
+    [self updateWithAbstractCanvasSize:self.nodeTreeViewModel.canvasSize];
+  }
+  else if ([keyPath isEqualToString:@"displayNodeNumbers"])
+  {
+    [self updateWithDisplayNodeNumbers:self.nodeTreeViewModel.displayNodeNumbers];
+  }
 }
 
 #pragma mark - Private helpers

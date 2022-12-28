@@ -23,6 +23,7 @@
 #import "../model/NodeTreeViewMetrics.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../ui/AutoLayoutUtility.h"
+// TODO xxx remove if no longer needed
 //#import "../../utility/UIColorAdditions.h"
 
 
@@ -153,6 +154,7 @@
 // -----------------------------------------------------------------------------
 - (void) configureControllers
 {
+  // TODO xxx e.g. controller to react on tap gesture
 }
 
 #pragma mark - viewDidLayoutSubviews
@@ -166,13 +168,7 @@
 - (void) viewDidLayoutSubviews
 {
   self.viewDidLayoutSubviewsInProgress = true;
-  // First prepare the new tree geometry. This triggers a re-draw of all tiles.
-  // TODO xxx really?
-  [self updateBaseSizeInNodeTreeViewMetrics];
-  // Now prepare all scroll views with the new content size. The content size
-  // is taken from the values in NodeTreeViewMetrics.
-  [self updateContentSizeInMainScrollView];
-  [self updateContentSizeInNodeNumbersScrollView];
+  [self updateContentSizeInScrollViews];
   self.viewDidLayoutSubviewsInProgress = false;
 }
 
@@ -189,6 +185,7 @@
 
   NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
   [metrics addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
+  [metrics addObserver:self forKeyPath:@"displayNodeNumbers" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -202,6 +199,7 @@
 
   NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
   [metrics removeObserver:self forKeyPath:@"canvasSize"];
+  [metrics removeObserver:self forKeyPath:@"displayNodeNumbers"];
 }
 
 #pragma mark TiledScrollViewDataSource overrides
@@ -278,6 +276,13 @@
 // -----------------------------------------------------------------------------
 - (void) scrollViewDidEndZooming:(UIScrollView*)scrollView withView:(UIView*)view atScale:(CGFloat)scale
 {
+  // TODO xxx verify if this works => invoking updateWithRelativeZoomScale on
+  // NodeTreeViewMetrics changes the canvasSize => KVO in this controller will
+  // trigger and update the scroll views' contentSize. Consequently
+  // - When we remember the content offset in order to reapply it later, we may
+  //   get the wrong content offset
+  // - Invoking updateContentSizeInScrollViews may not be necessary at all
+
   NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
   CGFloat oldAbsoluteZoomScale = metrics.absoluteZoomScale;
   [metrics updateWithRelativeZoomScale:scale];
@@ -302,8 +307,7 @@
   scrollView.maximumZoomScale = scrollView.maximumZoomScale / scale;
 
   // Restore properties that were changed when the zoom scale was reset to 1.0
-  [self updateContentSizeInMainScrollView];
-  [self updateContentSizeInNodeNumbersScrollView];
+  [self updateContentSizeInScrollViews];
   // TODO The content offset that we remembered above may no longer be
   // accurate because NodeTreeViewMetrics may have made some adjustments to the
   // zoom scale. To fix this we either need to record the contentOffset in
@@ -355,7 +359,11 @@
 // -----------------------------------------------------------------------------
 - (bool) nodeNumbersViewShouldExist
 {
-  return true;
+  // TODO xxx remove
+  return false;
+
+  NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
+  return metrics.displayNodeNumbers;
 }
 
 // -----------------------------------------------------------------------------
@@ -432,16 +440,14 @@
 
 #pragma mark - Private helpers
 
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-///
-/// Updates the NodeTreeViewMetrics object's content size, triggering a redraw
-/// in all tiles.
-// -----------------------------------------------------------------------------
-- (void) updateBaseSizeInNodeTreeViewMetrics
+// TODO xxx document
+- (void) updateContentSizeInScrollViews
 {
-  NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
-  [metrics updateWithBaseSize:self.view.bounds.size];
+  // TODO xxx does changing the content size trigger a redraw?
+  // If yes => this is bad because then we cannot optimize redrawing
+  // If no => this is bad because no one triggers drawing
+  [self updateContentSizeInMainScrollView];
+  [self updateContentSizeInNodeNumbersScrollView];
 }
 
 // -----------------------------------------------------------------------------
@@ -469,6 +475,9 @@
 // -----------------------------------------------------------------------------
 - (void) updateContentSizeInNodeNumbersScrollView
 {
+  if (! [self nodeNumbersViewExists])
+    return;
+
   NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
   CGSize contentSize = metrics.canvasSize;
   CGSize tileSize = metrics.tileSize;
@@ -503,9 +512,35 @@
   {
     if ([keyPath isEqualToString:@"canvasSize"])
     {
-      // The node number view depends on the node number strip width,
-      // which may change significantly when the node tree geometry changes
-      // (rect property).
+      if ([NSThread currentThread] != [NSThread mainThread])
+      {
+        // Make sure that our handler executes on the main thread because
+        // changing the content size of views may trigger thread-unsafe UIKit
+        // functions. A KVO notification can come in on a secondary thread when
+        // a game is loaded from the archive, or when a game is restored during
+        // app launch.
+        [self performSelectorOnMainThread:@selector(updateContentSizeInScrollViews) withObject:nil waitUntilDone:NO];
+      }
+      else
+      {
+        if (self.viewDidLayoutSubviewsInProgress)
+        {
+          // TODO xxx review if this special handling during layouting is
+          // necessary; cf. the origin of this in BoardViewController
+          [self performSelector:@selector(updateContentSizeInScrollViews) withObject:nil afterDelay:0];
+        }
+        else
+        {
+          [self updateContentSizeInScrollViews];
+        }
+      }
+    }
+    else if ([keyPath isEqualToString:@"displayNodeNumbers"])
+    {
+      // TODO xxx review this entire branch => unlike the display coordinates
+      // view in BoardView, the presence of the node numbers view is not
+      // dependent on the content of GoGame, so it should be possible to
+      // simplify the handling here
       if ([NSThread currentThread] != [NSThread mainThread])
       {
         // Make sure that our handler executes on the main thread because it

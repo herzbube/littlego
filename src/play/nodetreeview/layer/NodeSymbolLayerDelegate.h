@@ -18,12 +18,20 @@
 // Project includes
 #import "NodeTreeViewLayerDelegateBase.h"
 
+// Forward declarations
+@class NodeTreeViewModel;
 
-// TODO xxx remove
-@interface DummyLayerDelegate : NodeTreeViewLayerDelegateBase
+
+// -----------------------------------------------------------------------------
+/// @brief The NodeSymbolLayerDelegate class is responsible for drawing the
+/// symbols that represent nodes.
+// -----------------------------------------------------------------------------
+@interface NodeSymbolLayerDelegate : NodeTreeViewLayerDelegateBase
 {
 }
 
-- (id) initWithTile:(id<Tile>)tile metrics:(NodeTreeViewMetrics*)metrics;
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(NodeTreeViewMetrics*)metrics
+  nodeTreeViewModel:(NodeTreeViewModel*)nodeTreeViewModel;
 
 @end

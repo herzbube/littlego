@@ -18,12 +18,20 @@
 // Project includes
 #import "NodeTreeViewLayerDelegateBase.h"
 
+// Forward declarations
+@class NodeTreeViewModel;
 
-// TODO xxx remove
-@interface DummyLayerDelegate : NodeTreeViewLayerDelegateBase
+
+// -----------------------------------------------------------------------------
+/// @brief The LinesLayerDelegate class is responsible for drawing the
+/// connection lines between the nodes of the node tree.
+// -----------------------------------------------------------------------------
+@interface LinesLayerDelegate : NodeTreeViewLayerDelegateBase
 {
 }
 
-- (id) initWithTile:(id<Tile>)tile metrics:(NodeTreeViewMetrics*)metrics;
+- (id) initWithTile:(id<Tile>)tile
+            metrics:(NodeTreeViewMetrics*)metrics
+  nodeTreeViewModel:(NodeTreeViewModel*)nodeTreeViewModel;
 
 @end

@@ -67,6 +67,7 @@
 
 /// @name Helper methods for subclasses
 //@{
+- (NSArray*) calculateDrawingCellsOnTile;
 //@}
 
 /// @brief Object that provides the metrics for drawing elements on the tree
