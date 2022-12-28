@@ -86,6 +86,7 @@
   if (! self)
     return nil;
 
+  self.canvasSize = CGSizeZero;
   self.cellsDictionary = [NSMutableDictionary dictionary];
 
   return self;
@@ -754,6 +755,7 @@
   }
 
   self.cellsDictionary = cellsDictionary;
+  self.canvasSize = CGSizeMake(highestXPosition + 1, highestYPosition + 1);
 }
 
 // TODO xxx document

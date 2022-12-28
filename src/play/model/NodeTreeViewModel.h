@@ -67,12 +67,13 @@
 - (NodeTreeViewCell*) cellAtPosition:(NodeTreeViewCellPosition*)position;
 - (NSArray*) cellsInRow:(int)row;
 
-/// @brief The canvas width. This corresponds to the height (aka depth) of the
-/// node tree. In a tabular model, this can also be seen as the number of
-/// columns.
-@property(nonatomic, assign) int canvasWidth;
-/// @brief The canvas height. This corresponds to the width of the node tree.
-/// In a tabular model, this can also be seen as the number of rows.
-@property(nonatomic, assign) int canvasHeight;
+/// @brief The canvas size. Width and height are integral numbers.
+///
+/// The canvas width corresponds to the height (aka depth) of the node tree. In
+/// a tabular model, this can also be seen as the number of columns.
+///
+/// The canvas height corresponds to the width of the node tree. In a tabular
+/// model, this can also be seen as the number of rows.
+@property(nonatomic, assign) CGSize canvasSize;
 
 @end
