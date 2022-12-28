@@ -56,7 +56,7 @@
   self.selected = false;
   self.lines = NodeTreeViewCellLineNone;
   self.linesSelectedGameVariation = NodeTreeViewCellLineNone;
-  self.part = 1;
+  self.part = 0;
   self.parts = 1;
 
   return self;

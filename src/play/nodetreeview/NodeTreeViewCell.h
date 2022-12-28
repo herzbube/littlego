@@ -24,11 +24,11 @@
 ///
 /// NodeTreeViewCell can be either a standalone cell, or it can form, together
 /// with other NodeTreeViewCell objects, a multipart cell that extends in
-/// x-direction across the canvas. All NodeTreeViewCell objects that form a
-/// multipart cell have the same values for their content properties (@e symbol,
-/// @e selected, @e lines, @e linesSelectedGameVariation), but the value of the
-/// property @e part indicates which section of the content should be drawn for
-/// that particular NodeTreeViewCell object. Example:
+/// x-direction across the canvas. The NodeTreeViewCell objects that form a
+/// multipart cell have the same values for those properties that refer to the
+/// symbol they depict (@e symbol, @e selected), but the value of the property
+/// @e part indicates which section of the symbol should be drawn for that
+/// particular NodeTreeViewCell object. Example:
 /// - A multipart cell consists of two cells and should render the symbol for
 ///   a black move.
 /// - There are two NodeTreeViewCell objects that make up the multipart cell.
@@ -86,8 +86,8 @@
 /// @e parts is greater than 1.
 @property(nonatomic, assign, readonly, getter=isMultipart) bool multipart;
 
-/// @brief Denotes which part of a multipart cell the cell is. Values range
-/// between 1 and the value of property @e parts.
+/// @brief Denotes which part of a multipart cell the cell is. The value of this
+/// property is zero-based, i.e. it can be treated like an array index.
 @property(nonatomic, assign) unsigned short part;
 
 /// @brief Denotes how many parts the multipart cell that the cell belongs to
