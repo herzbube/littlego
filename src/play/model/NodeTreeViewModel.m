@@ -56,6 +56,8 @@
   unsigned short xPositionOfFirstCell;
   GoNode* node;
   unsigned short numberOfCellsForNode;
+  // For a cell to be at the exact center numberOfCellsForNode must be an uneven number
+  unsigned short indexOfCenterCell;
   enum NodeTreeViewCellSymbol symbol;
   Branch* branch;
   NSMutableArray* childBranches;
@@ -439,6 +441,8 @@
       branchTuple->node = currentNode;
       branchTuple->symbol = [self symbolForNode:currentNode];
       branchTuple->numberOfCellsForNode = [self numberOfCellsForNode:currentNode condenseTree:self.condenseTree];
+      // This assumes that numberOfCellsForNode is always an uneven number
+      branchTuple->indexOfCenterCell = floorf(branchTuple->numberOfCellsForNode / 2.0);
       branchTuple->branch = branch;
       branchTuple->childBranches = nil;
 
@@ -446,28 +450,31 @@
 
       xPosition += branchTuple->numberOfCellsForNode;
 
-      GoMove* move = currentNode.goMove;
-      if (move)
+      if (self.alignMoveNodes)
       {
-        NSMutableArray* moveDataTuples;
-
-        int moveNumber = move.moveNumber;
-        if (moveNumber > moveData.count)
+        GoMove* move = currentNode.goMove;
+        if (move)
         {
-          moveDataTuples = [NSMutableArray array];
-          [moveData addObject:moveDataTuples];
-        }
-        else
-        {
-          moveDataTuples = [moveData objectAtIndex:moveNumber - 1];
-        }
+          NSMutableArray* moveDataTuples;
 
-        [moveDataTuples addObject:@[branch, branchTuple]];
+          int moveNumber = move.moveNumber;
+          if (moveNumber > moveData.count)
+          {
+            moveDataTuples = [NSMutableArray array];
+            [moveData addObject:moveDataTuples];
+          }
+          else
+          {
+            moveDataTuples = [moveData objectAtIndex:moveNumber - 1];
+          }
 
-        if (moveDataTuples.count > 1)
-        {
-          if (moveNumber > highestMoveNumberThatAppearsInAtLeastTwoBranches)
-            highestMoveNumberThatAppearsInAtLeastTwoBranches = moveNumber;
+          [moveDataTuples addObject:@[branch, branchTuple]];
+
+          if (moveDataTuples.count > 1)
+          {
+            if (moveNumber > highestMoveNumberThatAppearsInAtLeastTwoBranches)
+              highestMoveNumberThatAppearsInAtLeastTwoBranches = moveNumber;
+          }
         }
       }
 
@@ -501,6 +508,7 @@
 
   // ----------
   // Part 2: Align move nodes
+  // In case of multipart cells, nodes are aligned along the center cell
   // ----------
   if (self.alignMoveNodes)
   {
@@ -526,23 +534,27 @@
       if (moveDataTuples.count == 1)
         continue;
 
-      unsigned short highestXPositionCurrentMove = 0;
-      bool highestXPositionCurrentMoveWasChanged = false;
+      unsigned short highestXPositionOfCenterCell = 0;
+      bool isFirstBranch = true;
       bool currentMoveIsAlignedInAllBranches = true;
 
       for (NSArray* moveDataTuple in moveDataTuples)
       {
         BranchTuple* branchTuple = moveDataTuple.lastObject;
-        if (branchTuple->xPositionOfFirstCell > highestXPositionCurrentMove)
+        unsigned short xPositionOfCenterCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
+        if (isFirstBranch)
         {
-          highestXPositionCurrentMove = branchTuple->xPositionOfFirstCell;
-
-          // Don't set currentMoveIsAlignedInAllBranches to false after we
-          // set highestXPositionCurrentMove for the first branch
-          if (highestXPositionCurrentMoveWasChanged)
+          highestXPositionOfCenterCell = xPositionOfCenterCell;
+          isFirstBranch = false;
+        }
+        else
+        {
+          if (xPositionOfCenterCell != highestXPositionOfCenterCell)
+          {
             currentMoveIsAlignedInAllBranches = false;
-          else
-            highestXPositionCurrentMoveWasChanged = true;
+            if (xPositionOfCenterCell > highestXPositionOfCenterCell)
+              highestXPositionOfCenterCell = xPositionOfCenterCell;
+          }
         }
       }
 
@@ -551,15 +563,16 @@
 
       for (NSArray* moveDataTuple in moveDataTuples)
       {
-        NSMutableArray* branch = moveDataTuple.firstObject;
+        Branch* branch = moveDataTuple.firstObject;
         BranchTuple* branchTuple = moveDataTuple.lastObject;
+        unsigned short xPositionOfCenterCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
 
         // Branch is already aligned
-        if (branchTuple->xPositionOfFirstCell == highestXPositionCurrentMove)
+        if (xPositionOfCenterCell == highestXPositionOfCenterCell)
           continue;
 
-        NSUInteger indexOfFirstBranchTupleToShift = [branch indexOfObject:branchTuple];
-        unsigned short alignOffset = highestXPositionCurrentMove - branchTuple->xPositionOfFirstCell;
+        NSUInteger indexOfFirstBranchTupleToShift = [branch->branchTuples indexOfObject:branchTuple];
+        unsigned short alignOffset = highestXPositionOfCenterCell - xPositionOfCenterCell;
 
         // It is not sufficient to shift only the tuples of the current branch
         // => there may be child branches whose tuple positions also need to be
@@ -754,6 +767,7 @@
 
     for (BranchTuple* branchTuple in branch->branchTuples)
     {
+      bool diagonalConnectionToBranchingLineEstablished = false;
       // Part 1: Generate cells with lines that connect the node to either its
       // predecessor node in the same branch (only if alignMoveNodes is true),
       // or to a branching line that reaches out from the cell with the
@@ -762,9 +776,14 @@
       {
         NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
         if (branchingStyle == NodeTreeViewBranchingStyleDiagonal && branchTuple == firstBranchTuple && xPositionOfCell == xPositionAfterPreviousBranchTuple)
+        {
+          diagonalConnectionToBranchingLineEstablished = true;
           cell.lines = NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight;  // connect to branching line
+        }
         else
+        {
           cell.lines = NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight;
+        }
 
         NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfCell y:branch->yPosition];
         cellsDictionary[position] = cell;
@@ -841,9 +860,7 @@
           }
         }
 
-        // This assumes that numberOfCellsForNode is always an uneven number
-        unsigned int indexOfCenterCellForNode = floorf(branchTuple->numberOfCellsForNode / 2.0);
-        unsigned int xPositionOfVerticalLineCell = branchTuple->xPositionOfFirstCell + indexOfCenterCellForNode;
+        unsigned int xPositionOfVerticalLineCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
 
         for (unsigned short yPosition = yPositionBelowBranchingNode; yPosition <= yPositionOfLastChildBranch; yPosition++)
         {
@@ -942,9 +959,6 @@
       }
 
       // Part 3: Add lines to node cells
-      // This assumes that numberOfCellsForNode is always an uneven number
-      unsigned int indexOfCenterCellForNode = floorf(branchTuple->numberOfCellsForNode / 2.0);
-
       for (unsigned int indexOfCell = 0; indexOfCell < branchTuple->numberOfCellsForNode; indexOfCell++)
       {
         NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
@@ -957,9 +971,9 @@
         NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
 
         bool isFirstCellForNode = (indexOfCell == 0);
-        bool isCellBeforeOrIncludingCenter = (indexOfCell <= indexOfCenterCellForNode);
-        bool isCenterCellForNode = (indexOfCell == indexOfCenterCellForNode);
-        bool isCellAfterOrIncludingCenter = (indexOfCell >= indexOfCenterCellForNode);
+        bool isCellBeforeOrIncludingCenter = (indexOfCell <= branchTuple->indexOfCenterCell);
+        bool isCenterCellForNode = (indexOfCell == branchTuple->indexOfCenterCell);
+        bool isCellAfterOrIncludingCenter = (indexOfCell >= branchTuple->indexOfCenterCell);
 
         // Horizontal connecting lines to previous node in the same branch,
         // or horizontal/diagonal connecting lines to branching node in parent
@@ -976,12 +990,16 @@
             {
               if (branchTuple == firstBranchTuple)
               {
-                // If nodes are represented by multipart cells, then the
-                // diagonal connecting line is located in a standalone cell
-                // somewhere on the left, before the first sub-cell of the
-                // multipart cell
-                if (branchingStyle == NodeTreeViewBranchingStyleDiagonal && branchTuple->numberOfCellsForNode == 1)
-                  lines |= NodeTreeViewCellLineCenterToTopLeft;  // TODO xxx can fail if alignMoveNodes is true
+                // A diagonal line connecting to a branching line needs to be
+                // drawn if, and only if 1) obviously branching style is
+                // diagonal; 2) nodes are not represented by multipart cells
+                // (for multipart cells the diagonal connecting line is located
+                // in a standalone cell somewhere on the left, before the first
+                // sub-cell of the multipart cell); and 3) if a diagonal
+                // connecting line has not yet been established due to move
+                // node alignment.
+                if (branchingStyle == NodeTreeViewBranchingStyleDiagonal && branchTuple->numberOfCellsForNode == 1 && ! diagonalConnectionToBranchingLineEstablished)
+                  lines |= NodeTreeViewCellLineCenterToTopLeft;
                 else
                   lines |= NodeTreeViewCellLineCenterToLeft;
               }
@@ -997,7 +1015,8 @@
 
             if (isCenterCellForNode)
             {
-              // See block for isCellAfterOrIncludingCenter
+              // Whether or not to draw NodeTreeViewCellLineCenterToRight is
+              // determined in the block for isCellAfterOrIncludingCenter
             }
             else
             {
@@ -1019,7 +1038,8 @@
 
             if (isCenterCellForNode)
             {
-              // See block for isCellBeforeOrIncludingCenter
+              // Whether or not to draw NodeTreeViewCellLineCenterToLeft is
+              // determined in the block for isCellBeforeOrIncludingCenter
             }
             else
             {

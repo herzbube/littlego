@@ -43,7 +43,9 @@
 - (void) testCalculateCanvas_CondensedTree_ExtraWideMultipartCells_BranchingStyleDiagonal_Lines;
 - (void) testCalculateCanvas_CondensedTree_BranchingStyleBracket_Lines;
 - (void) testCalculateCanvas_UncondensedTree_AlignMoves;
-- (void) testCalculateCanvas_CondensedTree_AlignMoves;
+- (void) testCalculateCanvas_UncondensedTree_BranchingStyleBracket_AlignMoves_BranchMovedToNewYPosition;
+- (void) testCalculateCanvas_UncondensedTree_BranchingStyleDiagonal_AlignMoves_BranchMovedToNewYPosition;
+- (void) testCalculateCanvas_CondensedTree_BranchingStyleBracket_AlignMoves;
 - (void) testCalculateCanvas_LinesSelectedGameVariation;
 
 @end
