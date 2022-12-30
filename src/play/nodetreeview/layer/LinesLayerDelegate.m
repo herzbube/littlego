@@ -24,6 +24,7 @@
 #import "../../model/NodeTreeViewMetrics.h"
 #import "../../model/NodeTreeViewModel.h"
 #import "../../../ui/Tile.h"
+#import "../../../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -159,15 +160,8 @@
   UIColor* normalLineColor = self.nodeTreeViewMetrics.normalLineColor;
   UIColor* selectedLineColor = self.nodeTreeViewMetrics.selectedLineColor;
 
-  CGFloat horizontalLineLength = self.nodeTreeViewMetrics.nodeTreeViewCellSize.width / 2.0;
-  CGFloat verticalLineLength = self.nodeTreeViewMetrics.nodeTreeViewCellSize.height / 2.0;
   CGFloat normalLineWidth = self.nodeTreeViewMetrics.normalLineWidth;
   CGFloat selectedLineWidth = self.nodeTreeViewMetrics.selectedLineWidth;
-
-  CGSize horizontalNormalLineSize = CGSizeMake(horizontalLineLength, normalLineWidth);
-  CGSize horizontalSelectedLineSize = CGSizeMake(horizontalLineLength, selectedLineWidth);
-  CGSize verticalNormalLineSize = CGSizeMake(normalLineWidth, verticalLineLength);
-  CGSize verticalSelectedLineSize = CGSizeMake(selectedLineWidth, verticalLineLength);
 
   for (NodeTreeViewCellPosition* position in self.drawingCellsOnTile)
   {
@@ -185,7 +179,17 @@
     drawingRectForCell.origin.y = canvasRectForCell.origin.y - tileRect.origin.y;
     CGPoint centerOfDrawingRectForCell = CGPointMake(CGRectGetMidX(drawingRectForCell), CGRectGetMidY(drawingRectForCell));
 
-    // TODO xxx start at bounding box of symbol if the cell contains a symbol, otherwise center is ok
+    bool didSetClippingPath = false;
+    if (cell.symbol != NodeTreeViewCellSymbolNone)
+    {
+      [self setClippingPathInContext:context
+                                cell:cell
+                            position:position
+                   canvasRectForCell:canvasRectForCell
+                            tileRect:tileRect];
+      didSetClippingPath = true;
+    }
+
     if (lines & NodeTreeViewCellLineCenterToLeft)
     {
       bool isLineSelected = linesSelected & NodeTreeViewCellLineCenterToLeft;
@@ -196,7 +200,6 @@
                     inContext:context];
     }
 
-    // TODO xxx start at bounding box of symbol if the cell contains a symbol, otherwise center is ok
     if (lines & NodeTreeViewCellLineCenterToRight)
     {
       bool isLineSelected = linesSelected & NodeTreeViewCellLineCenterToRight;
@@ -207,8 +210,6 @@
                     inContext:context];
     }
 
-    // TODO xxx start at bounding box of symbol if the cell contains a symbol, otherwise center is ok
-    // TODO xxx start at right edge if number of cells per symbol is even, otherwise center is ok
     if (lines & NodeTreeViewCellLineCenterToTop)
     {
       bool isLineSelected = linesSelected & NodeTreeViewCellLineCenterToTop;
@@ -219,8 +220,6 @@
                     inContext:context];
     }
 
-    // TODO xxx start at bounding box of symbol if the cell contains a symbol, otherwise center is ok
-    // TODO xxx start at right edge if number of cells per symbol is even, otherwise center is ok
     if (lines & NodeTreeViewCellLineCenterToBottom)
     {
       bool isLineSelected = linesSelected & NodeTreeViewCellLineCenterToBottom;
@@ -231,11 +230,9 @@
                     inContext:context];
     }
 
-    // TODO xxx start at bounding box of symbol if the cell contains a symbol, otherwise center is ok
     if (lines & NodeTreeViewCellLineCenterToTopLeft)
     {
       bool isLineSelected = linesSelected & NodeTreeViewCellLineCenterToTopLeft;
-      isLineSelected = true;  // todo xxx
       [self drawLineFromPoint:drawingRectForCell.origin
                       toPoint:centerOfDrawingRectForCell
                     withColor:isLineSelected ? selectedLineColor : normalLineColor
@@ -246,7 +243,6 @@
     if (lines & NodeTreeViewCellLineCenterToBottomRight)
     {
       bool isLineSelected = linesSelected & NodeTreeViewCellLineCenterToBottomRight;
-      isLineSelected = true;  // todo xxx
       [self drawLineFromPoint:centerOfDrawingRectForCell
                       toPoint:CGPointMake(CGRectGetMaxX(drawingRectForCell), CGRectGetMaxY(drawingRectForCell))
                     withColor:isLineSelected ? selectedLineColor : normalLineColor
@@ -254,28 +250,63 @@
                     inContext:context];
     }
 
-//    CGRect lineRect = [lineRectValue CGRectValue];
-//    CGRect drawingRect = CGRectIntersection(tileRect, lineRect);
-//    // Rectangles that are adjacent and share a side *do* intersect: The
-//    // intersection rectangle has either zero width or zero height, depending on
-//    // which side the two intersecting rectangles share. For this reason, we
-//    // must check CGRectIsEmpty() in addition to CGRectIsNull().
-//    if (CGRectIsNull(drawingRect) || CGRectIsEmpty(drawingRect))
-//      continue;
-//    drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRect
-//                                                     inTileWithRect:tileRect];
-//    CGContextSetFillColorWithColor(context, self.boardViewMetrics.lineColor.CGColor);
-//    CGContextFillRect(context, drawingRect);
-
-//
-//    [NodeTreeViewDrawingHelper drawLayer:layer
-//                             withContext:context
-//                              centeredAt:position
-//                          inTileWithRect:tileRect
-//                             withMetrics:self.nodeTreeViewMetrics];
+    if (didSetClippingPath)
+    {
+      [self removeClippingPathInContext:context];
+    }
   }
 }
 
+// TODO xxx document
+// The goal is that lines are not drawn within the area where the node symbol
+// is drawn by another layer
+- (void) setClippingPathInContext:(CGContextRef)context
+                             cell:(NodeTreeViewCell*)cell
+                         position:(NodeTreeViewCellPosition*)position
+                canvasRectForCell:(CGRect)canvasRectForCell
+                         tileRect:(CGRect)tileRect
+{
+  CGRect canvasRectForFullCell;
+  CGSize drawingRectForFullSymbolSize;
+  if (cell.isMultipart)
+  {
+    canvasRectForFullCell = [NodeTreeViewDrawingHelper canvasRectForMultipartCellPart:cell.part
+                                                       partPosition:position
+                                                            metrics:self.nodeTreeViewMetrics];
+    drawingRectForFullSymbolSize = self.nodeTreeViewMetrics.uncondensedNodeSymbolSize;
+  }
+  else
+  {
+    canvasRectForFullCell = canvasRectForCell;
+    drawingRectForFullSymbolSize = self.nodeTreeViewMetrics.condensedNodeSymbolSize;
+  }
+  CGRect drawingRectForFullCell = canvasRectForFullCell;
+  // TODO xxx do we have a method in drawing helper for this?
+  drawingRectForFullCell.origin.x = canvasRectForFullCell.origin.x - tileRect.origin.x;
+  drawingRectForFullCell.origin.y = canvasRectForFullCell.origin.y - tileRect.origin.y;
+  CGRect drawingRectForFullSymbol = [UiUtilities rectWithSize:drawingRectForFullSymbolSize
+                                               centeredInRect:drawingRectForFullCell];
+
+  // The clipping path we are going to set can only be removed by restoring a
+  // previously saved graphics state
+  CGContextSaveGState(context);
+
+  // To draw OUTSIDE of a given area, first set a path that defines the entire
+  // drawing area, then set a second path that defines the area to exclude, then
+  // set the clipping path using the even-odd (EO) rule. Solution found here:
+  // https://www.kodeco.com/349664-core-graphics-tutorial-arcs-and-paths
+  CGContextAddRect(context, drawingRectForFullCell);
+  CGContextAddRect(context, drawingRectForFullSymbol);
+  CGContextEOClip(context);
+}
+
+// TODO xxx document
+- (void) removeClippingPathInContext:(CGContextRef)context
+{
+  CGContextRestoreGState(context);
+}
+
+// TODO xxx document
 - (void) drawLineFromPoint:(CGPoint)lineStartPoint
                    toPoint:(CGPoint)lineEndPoint
                  withColor:(UIColor*)lineColor

@@ -175,11 +175,7 @@ void DrawSurroundingCircle(CGContextRef layerContext, CGPoint center, CGFloat ra
 // -----------------------------------------------------------------------------
 CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymbol symbolType, bool condensed, NodeTreeViewMetrics* metrics)
 {
-  CGRect layerRect;
-  layerRect.origin = CGPointZero;
-  layerRect.size = condensed ? metrics.nodeTreeViewCellSize : metrics.nodeTreeViewMultipartCellSize;
-  layerRect.size.width *= metrics.contentsScale;
-  layerRect.size.height *= metrics.contentsScale;
+  CGRect layerRect = [NodeTreeViewDrawingHelper drawingRectForCell:condensed withMetrics:metrics];
 
   CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
   if (! layer)
@@ -187,10 +183,9 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
 
   CGContextRef layerContext = CGLayerGetContext(layer);
 
-  CGSize drawingRectSize = condensed ? metrics.condensedNodeSymbolSize : metrics.uncondensedNodeSymbolSize;
-  drawingRectSize.width *= metrics.contentsScale;
-  drawingRectSize.height *= metrics.contentsScale;
-  CGRect drawingRect = [UiUtilities rectWithSize:drawingRectSize centeredInRect:layerRect];
+  CGRect drawingRect =  [NodeTreeViewDrawingHelper drawingRectForNodeSymbolInCell:condensed
+                                                           withDrawingRectForCell:layerRect
+                                                                      withMetrics:metrics];
 
   CGFloat strokeLineWidth = metrics.normalLineWidth * metrics.contentsScale;
 
@@ -355,14 +350,9 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     inTileWithRect:(CGRect)tileRect
        withMetrics:(NodeTreeViewMetrics*)metrics
 {
-  CGRect canvasRectForCell = [NodeTreeViewDrawingHelper canvasRectForCellAtPosition:position metrics:metrics];
-
-  CGRect canvasRectForMultipartCell = CGRectZero;
-  canvasRectForMultipartCell.size.height = canvasRectForCell.size.height;
-  canvasRectForMultipartCell.size.width =  metrics.nodeTreeViewMultipartCellSize.width;
-  canvasRectForMultipartCell.origin.y = canvasRectForCell.origin.y;
-  canvasRectForMultipartCell.origin.x = canvasRectForCell.origin.x - (canvasRectForCell.size.width * part);
-
+  CGRect canvasRectForMultipartCell = [NodeTreeViewDrawingHelper canvasRectForMultipartCellPart:part
+                                                                                   partPosition:position
+                                                                                        metrics:metrics];
   CGRect drawingRectForLayerWithCorrectSize = [NodeTreeViewDrawingHelper drawingRectForScaledLayer:layer
                                                                                        withMetrics:metrics];
   CGRect canvasRectForLayer = [UiUtilities rectWithSize:drawingRectForLayerWithCorrectSize.size
@@ -392,6 +382,28 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
   canvasRect.origin.x = tile.column * canvasRect.size.width;
   canvasRect.origin.y = tile.row * canvasRect.size.height;
   return canvasRect;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the rectangle occupied by the multipart cell on the "canvas",
+/// i.e. the area covered by the entire node tree view, of which the specified
+/// sub-cell is a part of. @a part identifies the sub-cell within the multipart
+/// cell, @a position the sub-cell's position on the canvas. The origin is in
+/// the upper-left corner.
+// -----------------------------------------------------------------------------
++ (CGRect) canvasRectForMultipartCellPart:(int)part
+                             partPosition:(NodeTreeViewCellPosition*)position
+                               metrics:(NodeTreeViewMetrics*)metrics;
+{
+  CGRect canvasRectForCell = [NodeTreeViewDrawingHelper canvasRectForCellAtPosition:position metrics:metrics];
+
+  CGRect canvasRectForMultipartCell = CGRectZero;
+  canvasRectForMultipartCell.size.height = canvasRectForCell.size.height;
+  canvasRectForMultipartCell.size.width =  metrics.nodeTreeViewMultipartCellSize.width;
+  canvasRectForMultipartCell.origin.y = canvasRectForCell.origin.y;
+  canvasRectForMultipartCell.origin.x = canvasRectForCell.origin.x - (canvasRectForCell.size.width * part);
+
+  return canvasRectForMultipartCell;
 }
 
 // -----------------------------------------------------------------------------
@@ -439,6 +451,61 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
   cellRect.size = metrics.nodeTreeViewCellSize;
 
   return [UiUtilities rectWithSize:size centeredInRect:cellRect];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a rectangle for drawing that covers the entire area of a
+/// cell. If @a condensed is @e true this indicates that the cell is a
+/// standalone cell, if @a condensed is @e false this indicates that the cell
+/// is a multipart cell.
+// -----------------------------------------------------------------------------
++ (CGRect) drawingRectForCell:(bool)condensed
+                  withMetrics:(NodeTreeViewMetrics*)metrics
+{
+  CGRect drawingRectForCell;
+  drawingRectForCell.origin = CGPointZero;
+  drawingRectForCell.size = condensed ? metrics.nodeTreeViewCellSize : metrics.nodeTreeViewMultipartCellSize;
+  drawingRectForCell.size.width *= metrics.contentsScale;
+  drawingRectForCell.size.height *= metrics.contentsScale;
+
+  return drawingRectForCell;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a rectangle for drawing that covers the area of a node symbol
+/// within a cell. If @a condensed is @e true this indicates that the cell is a
+/// standalone cell, if @a condensed is @e false this indicates that the cell
+/// is a multipart cell.
+// -----------------------------------------------------------------------------
++ (CGRect) drawingRectForNodeSymbolInCell:(bool)condensed
+                              withMetrics:(NodeTreeViewMetrics*)metrics
+{
+  CGRect drawingRectForCell = [NodeTreeViewDrawingHelper drawingRectForCell:condensed
+                                                                withMetrics:metrics];
+  return [NodeTreeViewDrawingHelper drawingRectForNodeSymbolInCell:condensed
+                                            withDrawingRectForCell:drawingRectForCell
+                                                       withMetrics:metrics];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a rectangle for drawing that covers the area of a node symbol
+/// within a cell whose drawing rect is @a drawingRectForCell. If @a condensed
+/// is @e true this indicates that the cell is a standalone cell, if
+/// @a condensed is @e false this indicates that the cell is a multipart cell.
+///
+/// The value for @a drawingRectForCell should be calculated by
+/// drawingRectForCell:withMetrics:().
+// -----------------------------------------------------------------------------
++ (CGRect) drawingRectForNodeSymbolInCell:(bool)condensed
+                   withDrawingRectForCell:(CGRect)drawingRectForCell
+                              withMetrics:(NodeTreeViewMetrics*)metrics
+{
+  CGSize drawingRectSize = condensed ? metrics.condensedNodeSymbolSize : metrics.uncondensedNodeSymbolSize;
+  drawingRectSize.width *= metrics.contentsScale;
+  drawingRectSize.height *= metrics.contentsScale;
+  CGRect drawingRect = [UiUtilities rectWithSize:drawingRectSize centeredInRect:drawingRectForCell];
+
+  return drawingRect;
 }
 
 // TODO xxx this is exactly the same as the identically named method in BoardViewDrawingHelper => code duplication

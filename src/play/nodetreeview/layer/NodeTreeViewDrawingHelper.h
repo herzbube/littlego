@@ -71,6 +71,13 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
 + (CGRect) canvasRectForSize:(CGSize)size
                   centeredAt:(NodeTreeViewCellPosition*)position
                      metrics:(NodeTreeViewMetrics*)metrics;
++ (CGRect) drawingRectForCell:(bool)condensed
+                  withMetrics:(NodeTreeViewMetrics*)metrics;
++ (CGRect) drawingRectForNodeSymbolInCell:(bool)condensed
+                              withMetrics:(NodeTreeViewMetrics*)metrics;
++ (CGRect) drawingRectForNodeSymbolInCell:(bool)condensed
+                   withDrawingRectForCell:(CGRect)drawingRectForCell
+                              withMetrics:(NodeTreeViewMetrics*)metrics;
 + (CGRect) drawingRectForScaledLayer:(CGLayerRef)layer
                          withMetrics:(NodeTreeViewMetrics*)metrics;
 //@}
