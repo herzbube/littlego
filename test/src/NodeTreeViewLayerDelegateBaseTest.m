@@ -19,9 +19,10 @@
 #import "NodeTreeViewLayerDelegateBaseTest.h"
 
 // Application includes
-#import <play/model/NodeTreeViewMetrics.h>
 #import <play/model/NodeTreeViewModel.h>
-#import <play/nodetreeview/NodeTreeViewCellPosition.h>
+#import <play/nodetreeview/NodeTreeViewMetrics.h>
+#import <play/nodetreeview/canvas/NodeTreeViewCanvas.h>
+#import <play/nodetreeview/canvas/NodeTreeViewCellPosition.h>
 #import <play/nodetreeview/layer/NodeTreeViewLayerDelegateBase.h>
 #import <ui/Tile.h>
 
@@ -455,7 +456,9 @@
   nodeTreeViewModel.numberOfCellsOfMultipartCell = 1;
   nodeTreeViewModel.displayNodeNumbers = false;
 
-  NodeTreeViewMetrics* metrics = [[[NodeTreeViewMetrics alloc] initWithModel:nodeTreeViewModel] autorelease];
+  NodeTreeViewCanvas* nodeTreeViewCanvas = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
+  NodeTreeViewMetrics* metrics = [[[NodeTreeViewMetrics alloc] initWithModel:nodeTreeViewModel canvas:nodeTreeViewCanvas] autorelease];
 
   metrics.nodeTreeViewCellBaseSize = cellSize;
   metrics.tileSize = CGSizeMake(metrics.nodeTreeViewCellBaseSize * cellsPerTile,

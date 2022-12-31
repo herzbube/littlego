@@ -18,6 +18,10 @@
 // Project includes
 #import "../../ui/Tile.h"
 
+// Forward declarations
+@class NodeTreeViewCanvas;
+@class NodeTreeViewMetrics;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The NodeTreeTileView class is a custom view that is responsible for
@@ -79,6 +83,8 @@
 {
 }
 
-- (id) initWithFrame:(CGRect)rect;
+- (id) initWithFrame:(CGRect)rect
+             metrics:(NodeTreeViewMetrics*)nodeTreeViewMetrics
+              canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas;
 
 @end

@@ -17,8 +17,9 @@
 
 // Project includes
 #import "NodeTreeViewMetrics.h"
-#import "NodeTreeViewModel.h"
-#import "../nodetreeview/NodeTreeViewCellPosition.h"
+#import "canvas/NodeTreeViewCanvas.h"
+#import "canvas/NodeTreeViewCellPosition.h"
+#import "../model/NodeTreeViewModel.h"
 #import "../../shared/LayoutManager.h"
 #import "../../utility/FontRange.h"
 
@@ -28,6 +29,7 @@
 // -----------------------------------------------------------------------------
 @interface NodeTreeViewMetrics()
 @property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
+@property(nonatomic, assign) NodeTreeViewCanvas* nodeTreeViewCanvas;
 @property(nonatomic, retain) FontRange* nodeNumberLabelFontRange;
 @end
 
@@ -41,7 +43,7 @@
 ///
 /// @note This is the designated initializer of NodeTreeViewMetrics.
 // -----------------------------------------------------------------------------
-- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel
+- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas;
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -49,6 +51,7 @@
     return nil;
 
   self.nodeTreeViewModel = nodeTreeViewModel;
+  self.nodeTreeViewCanvas = nodeTreeViewCanvas;
 
   [self setupStaticProperties];
   [self setupFontRanges];
@@ -178,7 +181,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
-  [self.nodeTreeViewModel addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
+  [self.nodeTreeViewCanvas addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
   [self.nodeTreeViewModel addObserver:self forKeyPath:@"displayNodeNumbers" options:0 context:NULL];
   // TODO xxx react to a change in condenseTree => If false we need to calculate a larger cell size
 }
@@ -188,7 +191,7 @@
 // -----------------------------------------------------------------------------
 - (void) removeNotificationResponders
 {
-  [self.nodeTreeViewModel removeObserver:self forKeyPath:@"canvasSize"];
+  [self.nodeTreeViewCanvas removeObserver:self forKeyPath:@"canvasSize"];
   [self.nodeTreeViewModel removeObserver:self forKeyPath:@"displayNodeNumbers"];
 }
 
@@ -443,7 +446,7 @@
 {
   if ([keyPath isEqualToString:@"canvasSize"])
   {
-    [self updateWithAbstractCanvasSize:self.nodeTreeViewModel.canvasSize];
+    [self updateWithAbstractCanvasSize:self.nodeTreeViewCanvas.canvasSize];
   }
   else if ([keyPath isEqualToString:@"displayNodeNumbers"])
   {

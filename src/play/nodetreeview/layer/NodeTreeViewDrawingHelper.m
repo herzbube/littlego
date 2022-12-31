@@ -17,7 +17,7 @@
 
 // Project includes
 #import "NodeTreeViewDrawingHelper.h"
-#import "../../model/NodeTreeViewMetrics.h"
+#import "../NodeTreeViewMetrics.h"
 #import "../../../ui/Tile.h"
 #import "../../../ui/UiUtilities.h"
 

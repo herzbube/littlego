@@ -18,8 +18,8 @@
 // Project includes
 #import "NodeTreeViewLayerDelegateBase.h"
 #import "NodeTreeViewDrawingHelper.h"
-#import "../NodeTreeViewCellPosition.h"
-#import "../../model/NodeTreeViewMetrics.h"
+#import "../NodeTreeViewMetrics.h"
+#import "../canvas/NodeTreeViewCellPosition.h"
 
 
 @implementation NodeTreeViewLayerDelegateBase

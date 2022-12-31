@@ -17,11 +17,10 @@
 
 // Project includes
 #import "NodeTreeTileView.h"
+#import "NodeTreeViewMetrics.h"
 #import "layer/LinesLayerDelegate.h"
 #import "layer/NodeSymbolLayerDelegate.h"
-#import "../model/NodeTreeViewMetrics.h"
 #import "../../go/GoGame.h"
-#import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
 
 
@@ -29,6 +28,8 @@
 /// @brief Class extension with private properties for NodeTreeTileView.
 // -----------------------------------------------------------------------------
 @interface NodeTreeTileView()
+@property(nonatomic, assign) NodeTreeViewMetrics* nodeTreeViewMetrics;
+@property(nonatomic, assign) NodeTreeViewCanvas* nodeTreeViewCanvas;
 /// @brief Prevents double-unregistering of notification responders by
 /// willMoveToSuperview: followed by dealloc, or double-registering by two
 /// consecutive invocations of willMoveToSuperview: where the argument is not
@@ -66,16 +67,24 @@
 /// @note This is the designated initializer of NodeTreeTileView.
 // -----------------------------------------------------------------------------
 - (id) initWithFrame:(CGRect)rect
+             metrics:(NodeTreeViewMetrics*)nodeTreeViewMetrics
+              canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
 {
   // Call designated initializer of superclass (UIView)
   self = [super initWithFrame:rect];
   if (! self)
     return nil;
 
+  self.nodeTreeViewMetrics = nodeTreeViewMetrics;
+  self.nodeTreeViewCanvas = nodeTreeViewCanvas;
+
   self.row = -1;
   self.column = -1;
   self.notificationRespondersAreSetup = false;
   self.drawLayersWasDelayed = false;
+  self.layerDelegates = nil;
+  self.linesLayerDelegate = nil;
+  self.nodeSymbolLayerDelegate = nil;
 
   return self;
 }
@@ -86,6 +95,9 @@
 - (void) dealloc
 {
   [self removeNotificationResponders];
+
+  self.nodeTreeViewMetrics = nil;
+  self.nodeTreeViewCanvas = nil;
 
   for (id<NodeTreeViewLayerDelegate> layerDelegate in self.layerDelegates)
     [layerDelegate.layer removeFromSuperlayer];
@@ -108,15 +120,12 @@
     return;
   self.notificationRespondersAreSetup = true;
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  NodeTreeViewMetrics* metrics = appDelegate.nodeTreeViewMetrics;
-
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(nodeTreeViewContentDidChange:) name:nodeTreeViewContentDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 
   // KVO observing
-  [metrics addObserver:self forKeyPath:@"abstractCanvasSize" options:0 context:NULL];
+  [self.nodeTreeViewMetrics addObserver:self forKeyPath:@"abstractCanvasSize" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -128,13 +137,10 @@
     return;
   self.notificationRespondersAreSetup = false;
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  NodeTreeViewMetrics* metrics = appDelegate.nodeTreeViewMetrics;
-
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center removeObserver:self];
 
-  [metrics removeObserver:self forKeyPath:@"abstractCanvasSize"];
+  [self.nodeTreeViewMetrics removeObserver:self forKeyPath:@"abstractCanvasSize"];
 }
 
 #pragma mark - Manage layers and layer delegates
@@ -171,12 +177,9 @@
   if (self.linesLayerDelegate)
     return;
 
-  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-  NodeTreeViewMetrics* metrics = applicationDelegate.nodeTreeViewMetrics;
-  NodeTreeViewModel* nodeTreeViewModel = applicationDelegate.nodeTreeViewModel;
   self.linesLayerDelegate = [[[LinesLayerDelegate alloc] initWithTile:self
-                                                              metrics:metrics
-                                                    nodeTreeViewModel:nodeTreeViewModel] autorelease];
+                                                              metrics:self.nodeTreeViewMetrics
+                                                               canvas:self.nodeTreeViewCanvas] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -188,12 +191,9 @@
   if (self.nodeSymbolLayerDelegate)
     return;
 
-  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-  NodeTreeViewMetrics* metrics = applicationDelegate.nodeTreeViewMetrics;
-  NodeTreeViewModel* nodeTreeViewModel = applicationDelegate.nodeTreeViewModel;
   self.nodeSymbolLayerDelegate = [[[NodeSymbolLayerDelegate alloc] initWithTile:self
-                                                                        metrics:metrics
-                                                              nodeTreeViewModel:nodeTreeViewModel] autorelease];
+                                                                        metrics:self.nodeTreeViewMetrics
+                                                                         canvas:self.nodeTreeViewCanvas] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -319,10 +319,7 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  NodeTreeViewMetrics* metrics = appDelegate.nodeTreeViewMetrics;
-
-  if (object == metrics)
+  if (object == self.nodeTreeViewMetrics)
   {
     if ([keyPath isEqualToString:@"abstractCanvasSize"])
     {
@@ -374,7 +371,7 @@
 // -----------------------------------------------------------------------------
 - (CGSize) intrinsicContentSize
 {
-  return [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics.tileSize;
+  return self.nodeTreeViewMetrics.tileSize;
 }
 
 @end

@@ -32,7 +32,6 @@
 @class MagnifyingViewModel;
 @class MarkupModel;
 @class NewGameModel;
-@class NodeTreeViewMetrics;
 @class NodeTreeViewModel;
 @class PlayerModel;
 @class ScoringModel;
@@ -162,10 +161,6 @@
 /// @brief Model object that stores attributes used to manage the view hierarchy
 /// that displays the node tree view.
 @property(nonatomic, retain) NodeTreeViewModel* nodeTreeViewModel;
-/// @brief Model object that calculates locations and sizes of node tree
-/// elements as they are seen in the view hierarchy that displays the tree of
-/// nodes.
-@property(nonatomic, retain) NodeTreeViewMetrics* nodeTreeViewMetrics;
 
 @end
 

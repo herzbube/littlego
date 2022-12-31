@@ -16,16 +16,16 @@
 
 
 // Project includes
-#import "NodeTreeViewModel.h"
+#import "NodeTreeViewCanvas.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NodeTreeViewModelAdditions category enhances NodeTreeViewModel
+/// @brief The NodeTreeViewCanvasAdditions category enhances NodeTreeViewCanvas
 /// by adding methods for unit testing support.
 ///
 /// @ingroup go
 // -----------------------------------------------------------------------------
-@interface NodeTreeViewModel(NodeTreeViewModelAdditions)
+@interface NodeTreeViewCanvas(NodeTreeViewCanvasAdditions)
 
 /// @name Unit testing
 //@{

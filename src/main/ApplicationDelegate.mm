@@ -47,7 +47,6 @@
 #import "../play/model/BoardViewMetrics.h"
 #import "../play/model/BoardViewModel.h"
 #import "../play/model/MarkupModel.h"
-#import "../play/model/NodeTreeViewMetrics.h"
 #import "../play/model/NodeTreeViewModel.h"
 #import "../play/model/ScoringModel.h"
 #import "../archive/ArchiveViewModel.h"
@@ -159,8 +158,6 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.boardSetupModel = nil;
   self.sgfSettingsModel = nil;
   self.markupModel = nil;
-  // Observes NodeTreeViewModel, so must be deallocated first
-  self.nodeTreeViewMetrics = nil;
   self.nodeTreeViewModel = nil;
   self.fileLogger = nil;
   [BoardPositionNavigationManager releaseSharedNavigationManager];
@@ -587,8 +584,6 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self.nodeTreeViewModel readUserDefaults];
   // Is dependent on some user defaults in BoardViewModel
   self.boardViewMetrics = [[[BoardViewMetrics alloc] init] autorelease];
-  // Is dependent on some user defaults in NodeTreeViewModel
-  self.nodeTreeViewMetrics = [[[NodeTreeViewMetrics alloc] initWithModel:self.nodeTreeViewModel] autorelease];
 }
 
 // -----------------------------------------------------------------------------

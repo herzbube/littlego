@@ -20,16 +20,12 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NodeTreeViewModelTest class contains unit tests that
-/// exercise the NodeTreeViewModel class.
+/// @brief The NodeTreeViewCanvasTest class contains unit tests that
+/// exercise the NodeTreeViewCanvas class.
 // -----------------------------------------------------------------------------
-@interface NodeTreeViewModelTest : BaseTestCase
+@interface NodeTreeViewCanvasTest : BaseTestCase
 {
 }
-
-// Align moves
-// Condense tree
-// Branching style
 
 - (void) testCalculateCanvas_UncondensedTree_RootNodeOnly;
 - (void) testCalculateCanvas_CondensedTree_RootNodeOnly;

@@ -19,7 +19,7 @@
 #import "NodeTreeViewLayerDelegateBase.h"
 
 // Forward declarations
-@class NodeTreeViewModel;
+@class NodeTreeViewCanvas;
 
 
 // -----------------------------------------------------------------------------
@@ -32,6 +32,6 @@
 
 - (id) initWithTile:(id<Tile>)tile
             metrics:(NodeTreeViewMetrics*)metrics
-  nodeTreeViewModel:(NodeTreeViewModel*)nodeTreeViewModel;
+             canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas;
 
 @end

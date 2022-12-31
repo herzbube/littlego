@@ -16,6 +16,7 @@
 
 
 // Forward declarations
+@class NodeTreeViewCanvas;
 @class NodeTreeViewCellPosition;
 @class NodeTreeViewModel;
 
@@ -104,7 +105,7 @@
 {
 }
 
-- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel;
+- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas;
 
 /// @name Updaters
 //@{

@@ -16,7 +16,7 @@
 
 
 // Test includes
-#import "NodeTreeViewModelTest.h"
+#import "NodeTreeViewCanvasTest.h"
 
 // Application includes
 #import <main/ApplicationDelegate.h>
@@ -30,25 +30,27 @@
 #import <go/GoNodeModel.h>
 #import <go/GoNodeSetup.h>
 #import <play/model/NodeTreeViewModel.h>
-#import <play/model/NodeTreeViewModelAdditions.h>
-#import <play/nodetreeview/NodeTreeViewCell.h>
-#import <play/nodetreeview/NodeTreeViewCellPosition.h>
+#import <play/nodetreeview/canvas/NodeTreeViewCanvas.h>
+#import <play/nodetreeview/canvas/NodeTreeViewCanvasAdditions.h>
+#import <play/nodetreeview/canvas/NodeTreeViewCell.h>
+#import <play/nodetreeview/canvas/NodeTreeViewCellPosition.h>
 
 
-@implementation NodeTreeViewModelTest
+@implementation NodeTreeViewCanvasTest
 
 #pragma mark - Test methods
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// node tree is minimal and consists of only a root node, and the user
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the node tree is minimal and consists of only a root node, and the user
 /// preference "condense tree" is disabled.
 // -----------------------------------------------------------------------------
 - (void) testCalculateCanvas_UncondensedTree_RootNodeOnly
 {
   // Arrange
-  NodeTreeViewModel* testee = m_delegate.nodeTreeViewModel;
-  [self setupModel:testee condensedTree:false];
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condensedTree:false];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
@@ -59,15 +61,16 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// node tree is minimal and consists of only a root node, and the user
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the node tree is minimal and consists of only a root node, and the user
 /// preference "condense tree" is enabled.
 // -----------------------------------------------------------------------------
 - (void) testCalculateCanvas_CondensedTree_RootNodeOnly
 {
   // Arrange
-  NodeTreeViewModel* testee = m_delegate.nodeTreeViewModel;
-  [self setupModel:testee condensedTree:true];
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condensedTree:true];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
@@ -83,10 +86,10 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// user preference "condense tree" is enabled. The node tree is built so that
-/// all scenarios are covered where the algorithm must decide between generating
-/// a condensed or uncondensed node.
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the user preference "condense tree" is enabled. The node tree is built so
+/// that all scenarios are covered where the algorithm must decide between
+/// generating a condensed or uncondensed node.
 ///
 /// The following diagram illustrates how the node tree built in this test looks
 /// like. Unless marked, all nodes are uncondensed. Only move nodes are
@@ -110,8 +113,10 @@
 - (void) testCalculateCanvas_CondensedTree_UncondensedNodes
 {
   // Arrange
-  NodeTreeViewModel* testee = m_delegate.nodeTreeViewModel;
-  [self setupModel:testee condensedTree:true];
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condensedTree:true];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
   GoNode* rootNode = m_game.nodeModel.rootNode;
   GoNode* emptyNode = [self parentNode:rootNode appendChildNode:[self createEmptyNode]];
   GoNode* setupNode = [self parentNode:emptyNode appendChildNode:[self createSetupNodeForSymbol:NodeTreeViewCellSymbolBlackSetupStones]];
@@ -191,16 +196,18 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// user preference "condense tree" is disabled. The node tree is built so that
-/// the algorithm must generate each value in the enumeration
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the user preference "condense tree" is disabled. The node tree is built so
+/// that the algorithm must generate each value in the enumeration
 /// #NodeTreeViewCellSymbol at least once.
 // -----------------------------------------------------------------------------
 - (void) testCalculateCanvas_NodeSymbols
 {
   // Arrange
-  NodeTreeViewModel* testee = m_delegate.nodeTreeViewModel;
-  [self setupModel:testee condensedTree:false];
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condensedTree:false];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
   GoNode* parentNode = m_game.nodeModel.rootNode;
   parentNode = [self parentNode:parentNode appendChildNode:[self createEmptyNode]];
   parentNode = [self parentNode:parentNode appendChildNode:[self createSetupNodeForSymbol:NodeTreeViewCellSymbolBlackSetupStones]];
@@ -248,26 +255,27 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// user preference "condense tree" is disabled and there is a selected node.
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the user preference "condense tree" is disabled and there is a selected
+/// node.
 // -----------------------------------------------------------------------------
 - (void) testCalculateCanvas_UncondensedTree_Selected
 {
-  // TODO xxx Node selection not yet implemented in NodeTreeViewModel
+  // TODO xxx Node selection not yet implemented in NodeTreeViewCanvas
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// user preference "condense tree" is enabled and there is a selected node.
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the user preference "condense tree" is enabled and there is a selected node.
 // -----------------------------------------------------------------------------
 - (void) testCalculateCanvas_CondensedTree_Selected
 {
-  // TODO xxx Node selection not yet implemented in NodeTreeViewModel
+  // TODO xxx Node selection not yet implemented in NodeTreeViewCanvas
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// user preference "condense tree" is disabled and the user preference
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the user preference "condense tree" is disabled and the user preference
 /// "branching style" is set to diagonal. The node tree is built so that all
 /// scenarios are covered where the algorithm must decide between the different
 /// diagonal line options.
@@ -306,8 +314,10 @@
 - (void) testCalculateCanvas_UncondensedTree_BranchingStyleDiagonal_Lines
 {
   // Arrange
-  NodeTreeViewModel* testee = m_delegate.nodeTreeViewModel;
-  [self setupModel:testee condensedTree:false branchingStyle:NodeTreeViewBranchingStyleDiagonal];
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condensedTree:false branchingStyle:NodeTreeViewBranchingStyleDiagonal];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createBlackMoveNode]];
@@ -367,8 +377,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// user preference "condense tree" is disabled and the user preference
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the user preference "condense tree" is disabled and the user preference
 /// "branching style" is set bracket. The node tree is built so that all
 /// scenarios are covered where the algorithm must decide between the different
 /// bracket line options.
@@ -390,8 +400,10 @@
 - (void) testCalculateCanvas_UncondensedTree_BranchingStyleBracket_Lines
 {
   // Arrange
-  NodeTreeViewModel* testee = m_delegate.nodeTreeViewModel;
-  [self setupModel:testee condensedTree:false branchingStyle:NodeTreeViewBranchingStyleBracket];
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condensedTree:false branchingStyle:NodeTreeViewBranchingStyleBracket];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createBlackMoveNode]];
@@ -461,8 +473,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// user preference "condense tree" is enabled and the user preference
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the user preference "condense tree" is enabled and the user preference
 /// "branching style" is set to diagonal. The node tree is built so that all
 /// scenarios are covered where the algorithm must decide between the different
 /// diagonal line options.
@@ -476,8 +488,10 @@
 - (void) testCalculateCanvas_CondensedTree_BranchingStyleDiagonal_Lines
 {
   // Arrange
-  NodeTreeViewModel* testee = m_delegate.nodeTreeViewModel;
-  [self setupModel:testee condensedTree:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condensedTree:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createBlackMoveNode]];
@@ -575,9 +589,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// user preference "condense tree" is enabled, multipart cells are extra-wide,
-/// and the user preference "branching style" is set to diagonal.
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the user preference "condense tree" is enabled, multipart cells are
+/// extra-wide, and the user preference "branching style" is set to diagonal.
 ///
 /// This covers a special case for diagonal lines that occurs only when
 /// multipart cells consist of 5 or more sub-cells. In the following diagram,
@@ -600,9 +614,11 @@
 - (void) testCalculateCanvas_CondensedTree_ExtraWideMultipartCells_BranchingStyleDiagonal_Lines
 {
   // Arrange
-  NodeTreeViewModel* testee = m_delegate.nodeTreeViewModel;
-  [self setupModel:testee condensedTree:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
-  testee.numberOfCellsOfMultipartCell = 5;
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condensedTree:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
+  nodeTreeViewModel.numberOfCellsOfMultipartCell = 5;
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
   GoNode* nodeA = m_game.nodeModel.rootNode;
   [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
   [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
@@ -639,8 +655,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// user preference "condense tree" is enabled and the user preference
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the user preference "condense tree" is enabled and the user preference
 /// "branching style" is set to bracket. The node tree is built so that all
 /// scenarios are covered where the algorithm must decide between the different
 /// bracket line options.
@@ -651,8 +667,10 @@
 - (void) testCalculateCanvas_CondensedTree_BranchingStyleBracket_Lines
 {
   // Arrange
-  NodeTreeViewModel* testee = m_delegate.nodeTreeViewModel;
-  [self setupModel:testee condensedTree:true branchingStyle:NodeTreeViewBranchingStyleBracket];
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condensedTree:true branchingStyle:NodeTreeViewBranchingStyleBracket];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createBlackMoveNode]];
@@ -754,8 +772,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// user preference "condense tree" is disabled and the user preference
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the user preference "condense tree" is disabled and the user preference
 /// "align moves" is enabled. The node tree is built so that all scenarios are
 /// covered where the algorithm must align move nodes.
 ///
@@ -802,8 +820,10 @@
 - (void) testCalculateCanvas_UncondensedTree_AlignMoves
 {
   // Arrange
-  NodeTreeViewModel* testee = m_delegate.nodeTreeViewModel;
-  [self setupModel:testee condensedTree:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleBracket];
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condensedTree:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleBracket];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNodeWithMoveNumber:1]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createAnnotationNode]];
@@ -883,11 +903,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// user preference "condense tree" is disabled, the user preference "branching
-/// style" is set to bracket, and the user preference "align moves" is enabled.
-/// A scenario is tested where aligning moves causes a branch to no longer fit
-/// and be moved to a new y-position.
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the user preference "condense tree" is disabled, the user preference
+/// "branching style" is set to bracket, and the user preference "align moves"
+/// is enabled. A scenario is tested where aligning moves causes a branch to no
+/// longer fit and be moved to a new y-position.
 ///
 /// The following diagrams illustrate the scenario. Legend: R=Root node,
 /// M<n>=Move node, A=Annotation node.
@@ -909,8 +929,10 @@
 - (void) testCalculateCanvas_UncondensedTree_BranchingStyleBracket_AlignMoves_BranchMovedToNewYPosition
 {
   // Arrange
-  NodeTreeViewModel* testee = m_delegate.nodeTreeViewModel;
-  [self setupModel:testee condensedTree:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleBracket];
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condensedTree:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleBracket];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNodeWithMoveNumber:1]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createAnnotationNode]];
@@ -957,11 +979,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// user preference "condense tree" is disabled, the user preference "branching
-/// style" is set to diagonal, and the user preference "align moves" is enabled.
-/// Two scenarios are tested where aligning moves causes a branch to no longer
-/// fit and be moved to a new y-position.
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the user preference "condense tree" is disabled, the user preference
+/// "branching style" is set to diagonal, and the user preference "align moves"
+/// is enabled. Two scenarios are tested where aligning moves causes a branch
+/// to no longer fit and be moved to a new y-position.
 ///
 /// The following diagrams illustrate the scenarios. Note that the branch
 /// going off of A2 would fit on the same line as the one going off of A3
@@ -986,8 +1008,10 @@
 - (void) testCalculateCanvas_UncondensedTree_BranchingStyleDiagonal_AlignMoves_BranchMovedToNewYPosition
 {
   // Arrange
-  NodeTreeViewModel* testee = m_delegate.nodeTreeViewModel;
-  [self setupModel:testee condensedTree:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condensedTree:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNodeWithMoveNumber:1]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createAnnotationNode]];
@@ -1046,11 +1070,11 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when the
-/// user preference "condense tree" is enabled, the user preference "branching
-/// style" is set to bracket, and the user preference "align moves" is enabled.
-/// The node tree is built so that all scenarios are covered where the algorithm
-/// must align move nodes.
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// the user preference "condense tree" is enabled, the user preference
+/// "branching style" is set to bracket, and the user preference "align moves"
+/// is enabled. The node tree is built so that all scenarios are covered where
+/// the algorithm must align move nodes.
 ///
 /// The following diagrams illustrate the scenarios. Legend: R=Root node,
 /// M<n>=Move node, A=Annotation node.
@@ -1127,8 +1151,10 @@
 - (void) testCalculateCanvas_CondensedTree_BranchingStyleBracket_AlignMoves
 {
   // Arrange
-  NodeTreeViewModel* testee = m_delegate.nodeTreeViewModel;
-  [self setupModel:testee condensedTree:true alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleBracket];
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condensedTree:true alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleBracket];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNodeWithMoveNumber:1]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createBlackMoveNodeWithMoveNumber:2]];
@@ -1247,12 +1273,12 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewModel's canvas calculation algorithm, when a
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when a
 /// game variation that is not the main branch is selected.
 // -----------------------------------------------------------------------------
 - (void) testCalculateCanvas_LinesSelectedGameVariation
 {
-  // TODO xxx Branch selection not yet implemented in NodeTreeViewModel
+  // TODO xxx Branch selection not yet implemented in NodeTreeViewCanvas
 }
 
 #pragma mark - Helper methods - Configure NodeTreeViewModel

@@ -830,7 +830,8 @@ enum ResizablePane2Content
 
     self.resizableStackViewController.resizingEnabled = true;
 
-    self.nodeTreeViewController = [[[NodeTreeViewController alloc] init] autorelease];
+    ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+    self.nodeTreeViewController = [[[NodeTreeViewController alloc] initWithModel:applicationDelegate.nodeTreeViewModel] autorelease];
     UIView* nodeTreeView = self.nodeTreeViewController.view;
     // TODO xxx Remove this when the node tree view properly draws its content
     nodeTreeView.backgroundColor = [UIColor lightGrayColor];

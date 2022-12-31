@@ -72,7 +72,7 @@
 
 /// @brief Object that provides the metrics for drawing elements on the tree
 /// node view.
-@property(nonatomic, retain) NodeTreeViewMetrics* nodeTreeViewMetrics;
+@property(nonatomic, assign) NodeTreeViewMetrics* nodeTreeViewMetrics;
 
 /// @brief Concrete subclasses may set this flag to true if they wish for the
 /// layer to be redrawn during the next drawing cycle.

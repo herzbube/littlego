@@ -17,10 +17,9 @@
 
 // Project includes
 #import "NodeNumbersTileView.h"
+#import "NodeTreeViewMetrics.h"
 #import "layer/DummyLayerDelegate.h"
-#import "../model/NodeTreeViewMetrics.h"
 #import "../../go/GoGame.h"
-#import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
 
 
@@ -28,6 +27,7 @@
 /// @brief Class extension with private properties for NodeNumbersTileView.
 // -----------------------------------------------------------------------------
 @interface NodeNumbersTileView()
+@property(nonatomic, assign) NodeTreeViewMetrics* nodeTreeViewMetrics;
 /// @brief Prevents double-unregistering of notification responders by
 /// willMoveToSuperview: followed by dealloc, or double-registering by two
 /// consecutive invocations of willMoveToSuperview: where the argument is not
@@ -63,11 +63,14 @@
 /// @note This is the designated initializer of NodeNumbersTileView.
 // -----------------------------------------------------------------------------
 - (id) initWithFrame:(CGRect)rect
+             metrics:(NodeTreeViewMetrics*)nodeTreeViewMetrics
 {
   // Call designated initializer of superclass (UIView)
   self = [super initWithFrame:rect];
   if (! self)
     return nil;
+
+  self.nodeTreeViewMetrics = nodeTreeViewMetrics;
 
   self.row = -1;
   self.column = -1;
@@ -85,6 +88,8 @@
 {
   [self removeNotificationResponders];
 
+  self.nodeTreeViewMetrics = nil;
+
   [self.dummyLayerDelegate.layer removeFromSuperlayer];
 
   [super dealloc];
@@ -97,9 +102,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupLayer
 {
-  NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
   self.dummyLayerDelegate = [[[DummyLayerDelegate alloc] initWithTile:self
-                                                              metrics:metrics] autorelease];
+                                                              metrics:self.nodeTreeViewMetrics] autorelease];
   [self.layer addSublayer:self.dummyLayerDelegate.layer];
 }
 
@@ -242,7 +246,7 @@
 // -----------------------------------------------------------------------------
 - (CGSize) intrinsicContentSize
 {
-  return [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics.tileSize;
+  return self.nodeTreeViewMetrics.tileSize;
 }
 
 @end

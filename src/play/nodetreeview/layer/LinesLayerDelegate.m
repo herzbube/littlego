@@ -19,10 +19,10 @@
 #import "LinesLayerDelegate.h"
 //#import "NodeTreeViewCGLayerCache.h"
 #import "NodeTreeViewDrawingHelper.h"
-#import "../NodeTreeViewCell.h"
-#import "../NodeTreeViewCellPosition.h"
-#import "../../model/NodeTreeViewMetrics.h"
-#import "../../model/NodeTreeViewModel.h"
+#import "../NodeTreeViewMetrics.h"
+#import "../canvas/NodeTreeViewCanvas.h"
+#import "../canvas/NodeTreeViewCell.h"
+#import "../canvas/NodeTreeViewCellPosition.h"
 #import "../../../ui/Tile.h"
 #import "../../../ui/UiUtilities.h"
 
@@ -31,7 +31,7 @@
 /// @brief Class extension with private properties for LinesLayerDelegate.
 // -----------------------------------------------------------------------------
 @interface LinesLayerDelegate()
-@property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
+@property(nonatomic, assign) NodeTreeViewCanvas* nodeTreeViewCanvas;
 @property(nonatomic, retain) NSArray* drawingCellsOnTile;
 @end
 
@@ -45,14 +45,14 @@
 // -----------------------------------------------------------------------------
 - (id) initWithTile:(id<Tile>)tile
             metrics:(NodeTreeViewMetrics*)metrics
-  nodeTreeViewModel:(NodeTreeViewModel*)nodeTreeViewModel
+             canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
 {
   // Call designated initializer of superclass (NodeTreeViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
 
-  self.nodeTreeViewModel = nodeTreeViewModel;
+  self.nodeTreeViewCanvas = nodeTreeViewCanvas;
   self.drawingCellsOnTile = @[];
 
   return self;
@@ -70,6 +70,7 @@
   // TODO xxx is this needed?
 //  [self invalidateLayers];
 
+  self.nodeTreeViewCanvas = nil;
   self.drawingCellsOnTile = nil;
 
   [super dealloc];
@@ -165,7 +166,7 @@
 
   for (NodeTreeViewCellPosition* position in self.drawingCellsOnTile)
   {
-    NodeTreeViewCell* cell = [self.nodeTreeViewModel cellAtPosition:position];
+    NodeTreeViewCell* cell = [self.nodeTreeViewCanvas cellAtPosition:position];
     if (! cell || cell.lines == NodeTreeViewCellLineNone)
       continue;
 

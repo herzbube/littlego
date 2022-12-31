@@ -105,7 +105,7 @@
 		CD1A7EE82944ECB300013D80 /* NodeTreeViewLayerDelegateBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1A7EE62944ECB300013D80 /* NodeTreeViewLayerDelegateBaseTest.m */; };
 		CD1A7EEB29512E0B00013D80 /* LinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1A7EE929512E0B00013D80 /* LinesLayerDelegate.m */; };
 		CD1A7EEC29512E0B00013D80 /* LinesLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1A7EE929512E0B00013D80 /* LinesLayerDelegate.m */; };
-		CD1A7EEF29568AF800013D80 /* NodeTreeViewModelTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1A7EED29568AF800013D80 /* NodeTreeViewModelTest.m */; };
+		CD1A7EEF29568AF800013D80 /* NodeTreeViewCanvasTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1A7EED29568AF800013D80 /* NodeTreeViewCanvasTest.m */; };
 		CD1D606425BC230A00345506 /* UIViewControllerAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */; };
 		CD1D606525BC230A00345506 /* UIViewControllerAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */; };
 		CD1DB60A16FE181400C2E648 /* GoGameDocument.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DB60916FE181400C2E648 /* GoGameDocument.m */; };
@@ -254,6 +254,8 @@
 		CD3D8B5F28CB96A70008D22F /* PlayRootViewControllerPhoneAndPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3D8B5928CB8C150008D22F /* PlayRootViewControllerPhoneAndPad.m */; };
 		CD3D8B6028CB96A80008D22F /* PlayRootViewControllerPhoneAndPad.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3D8B5928CB8C150008D22F /* PlayRootViewControllerPhoneAndPad.m */; };
 		CD44E43629158C8800C1DB6B /* GoNodeTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD44E43529158C8800C1DB6B /* GoNodeTest.m */; };
+		CD46627E2960376400B58CC9 /* NodeTreeViewCanvas.m in Sources */ = {isa = PBXBuildFile; fileRef = CD46627C2960376400B58CC9 /* NodeTreeViewCanvas.m */; };
+		CD46627F2960376400B58CC9 /* NodeTreeViewCanvas.m in Sources */ = {isa = PBXBuildFile; fileRef = CD46627C2960376400B58CC9 /* NodeTreeViewCanvas.m */; };
 		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
 		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */; };
 		CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
@@ -972,9 +974,9 @@
 		CD1A7EE72944ECB300013D80 /* NodeTreeViewLayerDelegateBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewLayerDelegateBaseTest.h; sourceTree = "<group>"; };
 		CD1A7EE929512E0B00013D80 /* LinesLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LinesLayerDelegate.m; sourceTree = "<group>"; };
 		CD1A7EEA29512E0B00013D80 /* LinesLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LinesLayerDelegate.h; sourceTree = "<group>"; };
-		CD1A7EED29568AF800013D80 /* NodeTreeViewModelTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewModelTest.m; sourceTree = "<group>"; };
-		CD1A7EEE29568AF800013D80 /* NodeTreeViewModelTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewModelTest.h; sourceTree = "<group>"; };
-		CD1A7EF029574A0900013D80 /* NodeTreeViewModelAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewModelAdditions.h; sourceTree = "<group>"; };
+		CD1A7EED29568AF800013D80 /* NodeTreeViewCanvasTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewCanvasTest.m; sourceTree = "<group>"; };
+		CD1A7EEE29568AF800013D80 /* NodeTreeViewCanvasTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewCanvasTest.h; sourceTree = "<group>"; };
+		CD1A7EF029574A0900013D80 /* NodeTreeViewCanvasAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewCanvasAdditions.h; sourceTree = "<group>"; };
 		CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UIViewControllerAdditions.m; sourceTree = "<group>"; };
 		CD1D606325BC230A00345506 /* UIViewControllerAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UIViewControllerAdditions.h; sourceTree = "<group>"; };
 		CD1DB60816FE181400C2E648 /* GoGameDocument.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoGameDocument.h; sourceTree = "<group>"; };
@@ -1170,6 +1172,8 @@
 		CD3D8B9828CCFAB60008D22F /* NOTES.DeviceSupport */ = {isa = PBXFileReference; lastKnownFileType = text; path = NOTES.DeviceSupport; sourceTree = "<group>"; };
 		CD44E43429158C8800C1DB6B /* GoNodeTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoNodeTest.h; sourceTree = "<group>"; };
 		CD44E43529158C8800C1DB6B /* GoNodeTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeTest.m; sourceTree = "<group>"; };
+		CD46627C2960376400B58CC9 /* NodeTreeViewCanvas.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewCanvas.m; sourceTree = "<group>"; };
+		CD46627D2960376400B58CC9 /* NodeTreeViewCanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewCanvas.h; sourceTree = "<group>"; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
 		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationStateCommand.h; sourceTree = "<group>"; };
 		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationStateCommand.m; sourceTree = "<group>"; };
@@ -2200,11 +2204,8 @@
 				CDB3ED3D284E001A007512F6 /* MarkupModel.m */,
 				CD7C6A071AB462CB009EC5AD /* NavigationBarButtonModel.h */,
 				CD7C6A081AB462CB009EC5AD /* NavigationBarButtonModel.m */,
-				CDC8DEFD28EDF8E500619305 /* NodeTreeViewMetrics.h */,
-				CDC8DEFE28EDF8E600619305 /* NodeTreeViewMetrics.m */,
 				CDDB08B8291EB44500B38F91 /* NodeTreeViewModel.h */,
 				CDDB08B9291EB44500B38F91 /* NodeTreeViewModel.m */,
-				CD1A7EF029574A0900013D80 /* NodeTreeViewModelAdditions.h */,
 				CD1311BF17180B45006CE699 /* ScoringModel.h */,
 				CD1311C017180B45006CE699 /* ScoringModel.m */,
 			);
@@ -2509,6 +2510,20 @@
 				CD3D8B9528CCC4160008D22F /* play-b-b7-for-superko.sgf */,
 			);
 			path = 7x7;
+			sourceTree = "<group>";
+		};
+		CD46627B2960376400B58CC9 /* canvas */ = {
+			isa = PBXGroup;
+			children = (
+				CD46627C2960376400B58CC9 /* NodeTreeViewCanvas.m */,
+				CD46627D2960376400B58CC9 /* NodeTreeViewCanvas.h */,
+				CD1A7EF029574A0900013D80 /* NodeTreeViewCanvasAdditions.h */,
+				CDDB08C02927F15D00B38F91 /* NodeTreeViewCell.h */,
+				CDDB08C12927F15D00B38F91 /* NodeTreeViewCell.m */,
+				CDDB08BD2927D15700B38F91 /* NodeTreeViewCellPosition.h */,
+				CDDB08BC2927D15600B38F91 /* NodeTreeViewCellPosition.m */,
+			);
+			path = canvas;
 			sourceTree = "<group>";
 		};
 		CD48AD9A15A75B77004A7096 /* text */ = {
@@ -2962,10 +2977,10 @@
 				CDA596121401741800B250D8 /* GoVertexTest.m */,
 				CDC97A931832E52D00755EB2 /* GoZobristTableTest.h */,
 				CDC97A941832E52D00755EB2 /* GoZobristTableTest.m */,
+				CD1A7EEE29568AF800013D80 /* NodeTreeViewCanvasTest.h */,
+				CD1A7EED29568AF800013D80 /* NodeTreeViewCanvasTest.m */,
 				CD1A7EE72944ECB300013D80 /* NodeTreeViewLayerDelegateBaseTest.h */,
 				CD1A7EE62944ECB300013D80 /* NodeTreeViewLayerDelegateBaseTest.m */,
-				CD1A7EEE29568AF800013D80 /* NodeTreeViewModelTest.h */,
-				CD1A7EED29568AF800013D80 /* NodeTreeViewModelTest.m */,
 			);
 			path = src;
 			sourceTree = "<group>";
@@ -3154,6 +3169,7 @@
 		CDC8DEE628EDE20800619305 /* nodetreeview */ = {
 			isa = PBXGroup;
 			children = (
+				CD46627B2960376400B58CC9 /* canvas */,
 				CDC8DEF728EDF2A400619305 /* layer */,
 				CDC8DEEF28EDECC900619305 /* NodeNumbersTileView.h */,
 				CDC8DEEC28EDECC900619305 /* NodeNumbersTileView.m */,
@@ -3161,12 +3177,10 @@
 				CDC8DEF028EDECCA00619305 /* NodeTreeTileView.m */,
 				CDC8DEED28EDECC900619305 /* NodeTreeView.h */,
 				CDC8DEEE28EDECC900619305 /* NodeTreeView.m */,
-				CDDB08C02927F15D00B38F91 /* NodeTreeViewCell.h */,
-				CDDB08C12927F15D00B38F91 /* NodeTreeViewCell.m */,
-				CDDB08BD2927D15700B38F91 /* NodeTreeViewCellPosition.h */,
-				CDDB08BC2927D15600B38F91 /* NodeTreeViewCellPosition.m */,
 				CDC8DEE728EDE20800619305 /* NodeTreeViewController.h */,
 				CDC8DEE828EDE20800619305 /* NodeTreeViewController.m */,
+				CDC8DEFD28EDF8E500619305 /* NodeTreeViewMetrics.h */,
+				CDC8DEFE28EDF8E600619305 /* NodeTreeViewMetrics.m */,
 			);
 			path = nodetreeview;
 			sourceTree = "<group>";
@@ -4173,6 +4187,7 @@
 				CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */,
 				CD1E6EB32865FE9500785E23 /* PlayStonePanGestureHandler.m in Sources */,
 				CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */,
+				CD46627E2960376400B58CC9 /* NodeTreeViewCanvas.m in Sources */,
 				CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDAF17151967FFD500271396 /* BoardViewMetrics.m in Sources */,
 				CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */,
@@ -4498,6 +4513,7 @@
 				CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */,
 				CD8EFEAB14676C4400A700B1 /* GoScore.m in Sources */,
 				CDD86B4B2827E91500AA0A6B /* StaticTableView.m in Sources */,
+				CD46627F2960376400B58CC9 /* NodeTreeViewCanvas.m in Sources */,
 				CD1E6EB82867503C00785E23 /* PlaceMarkupConnectionPanGestureHandler.m in Sources */,
 				CDA097001A98CD54002FCD78 /* ButtonBoxController.m in Sources */,
 				CDB4579C147AEAB40043EDE4 /* GtpEngineProfileModel.m in Sources */,
@@ -4550,7 +4566,7 @@
 				CDFD9F7F18F1D5E20031CBCF /* DiagnosticsViewController.m in Sources */,
 				CD1DB60F170244CF00C2E648 /* HandleDocumentInteractionCommand.m in Sources */,
 				CD7C6A1E1AB61893009EC5AD /* ButtonBoxCell.m in Sources */,
-				CD1A7EEF29568AF800013D80 /* NodeTreeViewModelTest.m in Sources */,
+				CD1A7EEF29568AF800013D80 /* NodeTreeViewCanvasTest.m in Sources */,
 				CD81791825DC606700F39091 /* BoardAnimationController.m in Sources */,
 				CD7C69BB1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
 				CDC8DEF628EDECCA00619305 /* NodeTreeTileView.m in Sources */,

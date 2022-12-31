@@ -18,6 +18,9 @@
 // Project includes
 #import "../../ui/TiledScrollView.h"
 
+// Forward declarations
+@class NodeTreeViewModel;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The NodeTreeViewController class manages the scroll views that
@@ -42,5 +45,7 @@
 @interface NodeTreeViewController : UIViewController <TiledScrollViewDataSource, UIScrollViewDelegate>
 {
 }
+
+- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel;
 
 @end
