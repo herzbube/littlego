@@ -35,8 +35,11 @@
 /// @brief Collects information about all moves that exist in the tree of nodes.
 struct MoveData
 {
-  // TODO xxx improve name
-  NSMutableArray* moveData;
+  // Index position = Move number - 1 (e.g. first move is at index position 0).
+  // Element at index position = List of NodeTreeViewBranchTuple objects, each
+  // of which represents a node in a different branch that refers to a move
+  // with the same move number.
+  NSMutableArray* branchTuplesForMoveNumbers;
   int highestMoveNumberThatAppearsInAtLeastTwoBranches;
 };
 
@@ -311,8 +314,8 @@ struct GenerateCellsResult
 {
   struct CollectBranchDataResult collectBranchDataResult;
   collectBranchDataResult.moveData.highestMoveNumberThatAppearsInAtLeastTwoBranches = -1;
-  collectBranchDataResult.moveData.moveData = [NSMutableArray array];
-  collectBranchDataResult.branchingNodeToChildBranchesMap = [NSMutableDictionary dictionary];
+  collectBranchDataResult.moveData.branchTuplesForMoveNumbers = [NSMutableArray array];
+  collectBranchDataResult.branchingNodeMap = [NSMutableDictionary dictionary];
   collectBranchDataResult.branches = [NSMutableArray array];
 
   NSMutableArray* stack = [NSMutableArray array];
@@ -504,23 +507,22 @@ branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranch
                  branchTuple:(NodeTreeViewBranchTuple*)branchTuple
                     moveData:(struct MoveData*)moveData
 {
-  NSMutableArray* moveDataTuples;
+  NSMutableArray* branchTuplesForMoveNumber;
 
   int moveNumber = move.moveNumber;
-  if (moveNumber > moveData->moveData.count)
+  if (moveNumber > moveData->branchTuplesForMoveNumbers.count)
   {
-    moveDataTuples = [NSMutableArray array];
-    [moveData->moveData addObject:moveDataTuples];
+    branchTuplesForMoveNumber = [NSMutableArray array];
+    [moveData->branchTuplesForMoveNumbers addObject:branchTuplesForMoveNumber];
   }
   else
   {
-    moveDataTuples = [moveData->moveData objectAtIndex:moveNumber - 1];
+    branchTuplesForMoveNumber = [moveData->branchTuplesForMoveNumbers objectAtIndex:moveNumber - 1];
   }
 
-  // TODO xxx branch does not need to be added => branchTuple already has a reference
-  [moveDataTuples addObject:@[branch, branchTuple]];
+  [branchTuplesForMoveNumber addObject:branchTuple];
 
-  if (moveDataTuples.count > 1)
+  if (branchTuplesForMoveNumber.count > 1)
   {
     if (moveNumber > moveData->highestMoveNumberThatAppearsInAtLeastTwoBranches)
       moveData->highestMoveNumberThatAppearsInAtLeastTwoBranches = moveNumber;
@@ -543,7 +545,7 @@ branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranch
        indexOfMove < collectBranchDataResult.moveData.highestMoveNumberThatAppearsInAtLeastTwoBranches;
        indexOfMove++)
   {
-    NSMutableArray* moveDataTuples = [collectBranchDataResult.moveData.moveData objectAtIndex:indexOfMove];
+    NSMutableArray* branchTuplesForMoveNumber = [collectBranchDataResult.moveData.branchTuplesForMoveNumbers objectAtIndex:indexOfMove];
 
     // If the move appears in only a single branch there can be no
     // mis-alignment => we can go to the next move
@@ -558,38 +560,39 @@ branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranch
     //               +----M4---M5   +----M7
     //               +----M4
     //    c=1   c=2  c=1  c=3  c=2  c=1  c=2  [...]
-    if (moveDataTuples.count == 1)
+    if (branchTuplesForMoveNumber.count == 1)
       continue;
 
     unsigned short highestXPositionOfCenterCell = 0;
-    bool currentMoveIsAlignedInAllBranches = [self isCurrentMoveAlignedInAllBranches:moveDataTuples
+    bool currentMoveIsAlignedInAllBranches = [self isCurrentMoveAlignedInAllBranches:branchTuplesForMoveNumber
                                                         highestXPositionOfCenterCell:&highestXPositionOfCenterCell];
     if (currentMoveIsAlignedInAllBranches)
       continue;
 
-    [self alignCurrentMoveInAllBranches:moveDataTuples
+    [self alignCurrentMoveInAllBranches:branchTuplesForMoveNumber
             targetXPositionOfCenterCell:highestXPositionOfCenterCell
         branchingNodeToChildBranchesMap:collectBranchDataResult.branchingNodeToChildBranchesMap];
   }
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns true if the data in @a moveDataTuples indicates that all
-/// move nodes are aligned. Returns false if the data in @a moveDataTuples
-/// indicates that at least one move node is not aligned. The value of the out
-/// parameter @a highestXPositionOfCenterCell in this case is filled with the
-/// x-position on which the alignment needs to take place.
+/// @brief Returns true if the data in @a branchTuplesForMoveNumber indicates
+/// that all move nodes are aligned. Returns false if the data in
+/// @a branchTuplesForMoveNumber indicates that at least one move node is not
+/// aligned. The value of the out parameter @a highestXPositionOfCenterCell in
+/// this case is filled with the x-position on which the alignment needs to take
+/// place.
 // -----------------------------------------------------------------------------
-- (bool) isCurrentMoveAlignedInAllBranches:(NSMutableArray*)moveDataTuples
+- (bool) isCurrentMoveAlignedInAllBranches:(NSMutableArray*)branchTuplesForMoveNumber
               highestXPositionOfCenterCell:(unsigned short*)highestXPositionOfCenterCell
 {
   bool isFirstBranch = true;
   bool currentMoveIsAlignedInAllBranches = true;
 
-  for (NSArray* moveDataTuple in moveDataTuples)
+  for (NodeTreeViewBranchTuple* branchTupleForMoveNumber in branchTuplesForMoveNumber)
   {
-    NodeTreeViewBranchTuple* branchTuple = moveDataTuple.lastObject;
-    unsigned short xPositionOfCenterCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
+    unsigned short xPositionOfCenterCell = (branchTupleForMoveNumber->xPositionOfFirstCell +
+                                            branchTupleForMoveNumber->indexOfCenterCell);
     if (isFirstBranch)
     {
       *highestXPositionOfCenterCell = xPositionOfCenterCell;
@@ -610,27 +613,25 @@ branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranch
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Aligns the move nodes in @a moveDataTuples so that for all move nodes
-/// the x-position of the center cell that represents the move node on the
-/// canvas is equal to @a targetXPositionOfCenterCell. Also shifts the
+/// @brief Aligns the move nodes in @a branchTuplesForMoveNumber so that for all
+/// move nodes the x-position of the center cell that represents the move node
+/// on the canvas is equal to @a targetXPositionOfCenterCell. Also shifts the
 /// descendant nodes of each move node that is aligned.
 // -----------------------------------------------------------------------------
-- (void) alignCurrentMoveInAllBranches:(NSMutableArray*)moveDataTuples
+- (void) alignCurrentMoveInAllBranches:(NSMutableArray*)branchTuplesForMoveNumber
            targetXPositionOfCenterCell:(unsigned short)targetXPositionOfCenterCell
        branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranchesMap
 {
-  for (NSArray* moveDataTuple in moveDataTuples)
+  for (NodeTreeViewBranchTuple* branchTupleForMoveNumber in branchTuplesForMoveNumber)
   {
-    NodeTreeViewBranch* branch = moveDataTuple.firstObject;
-    NodeTreeViewBranchTuple* branchTuple = moveDataTuple.lastObject;
-    unsigned short xPositionOfCenterCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
+    unsigned short xPositionOfCenterCell = (branchTupleForMoveNumber->xPositionOfFirstCell
+                                            + branchTupleForMoveNumber->indexOfCenterCell);
 
     // Branch is already aligned
     if (xPositionOfCenterCell == targetXPositionOfCenterCell)
       continue;
 
-    [self shiftMoveNodeAndDescendantNodes:branchTuple
-                                   branch:branch
+    [self shiftMoveNodeAndDescendantNodes:branchTupleForMoveNumber
              currentXPositionOfCenterCell:xPositionOfCenterCell
               targetXPositionOfCenterCell:targetXPositionOfCenterCell
           branchingNodeToChildBranchesMap:branchingNodeToChildBranchesMap];
@@ -645,12 +646,11 @@ branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranch
 /// move node.
 // -----------------------------------------------------------------------------
 - (void) shiftMoveNodeAndDescendantNodes:(NodeTreeViewBranchTuple*)branchTuple
-                                  branch:(NodeTreeViewBranch*)branch
             currentXPositionOfCenterCell:(unsigned short)currentXPositionOfCenterCell
              targetXPositionOfCenterCell:(unsigned short)targetXPositionOfCenterCell
          branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranchesMap
 {
-  NSUInteger indexOfFirstBranchTupleToShift = [branch->branchTuples indexOfObject:branchTuple];
+  NSUInteger indexOfFirstBranchTupleToShift = [branchTuple->branch->branchTuples indexOfObject:branchTuple];
   unsigned short alignOffset = targetXPositionOfCenterCell - currentXPositionOfCenterCell;
 
   // It is not sufficient to shift only the tuples of the current branch
@@ -663,7 +663,7 @@ branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranch
   //     +----A----M2
 
   NSMutableArray* branchesToShift = [NSMutableArray array];
-  [branchesToShift addObject:branch];
+  [branchesToShift addObject:branchTuple->branch];
   bool shiftingInitialBranch = true;
 
   // Reusable local function
