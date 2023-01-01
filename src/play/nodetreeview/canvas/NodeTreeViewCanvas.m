@@ -47,11 +47,16 @@ struct MoveData
 /// branches.
 struct CollectBranchDataResult
 {
-  // Key = NSValue enapsulating a GoNode object. The GoNode is a branching node,
-  //       i.e. a node that has multiple child nodes.
-  // Value = List with child branches. The parent branch, i.e. the branch in
-  //         which the branching node is located, is not in the list.
-  NSMutableDictionary* branchingNodeToChildBranchesMap;
+  /// @brief Maps GoNode objects to NodeTreeViewBranchTuple objects.
+  ///
+  /// The dictionary key is an NSValue object that enapsulates a GoNode object
+  /// (because GoNode does not support being used directly as a dictionary key).
+  /// The GoNode is a branching node, i.e. a node that has multiple child nodes,
+  /// each of which is the start of a new branch.
+  ///
+  /// The dictionary value is the NodeTreeViewBranchTuple object that represents
+  /// the GoNode.
+  NSMutableDictionary* branchingNodeMap;
   // Stores branches in depth-first order. Elements are arrays consisting of
   // tuples.
   NSMutableArray* branches;
@@ -338,7 +343,7 @@ struct GenerateCellsResult
       {
         branch = [self createBranchWithParentBranch:parentBranch
                                   firstNodeOfBranch:currentNode
-                    branchingNodeToChildBranchesMap:collectBranchDataResult.branchingNodeToChildBranchesMap];
+                                   branchingNodeMap:collectBranchDataResult.branchingNodeMap];
 
         [collectBranchDataResult.branches addObject:branch];
         indexOfBranch = collectBranchDataResult.branches.count - 1;
@@ -355,6 +360,14 @@ struct GenerateCellsResult
       branchTuple->childBranches = nil;
 
       [branch->branchTuples addObject:branchTuple];
+
+      // TODO xxx new property isBranchingNode
+      GoNode* firstChild = currentNode.firstChild;
+      if (firstChild && firstChild.nextSibling)
+      {
+        NSValue* key = [NSValue valueWithNonretainedObject:currentNode];
+        collectBranchDataResult.branchingNodeMap[key] = branchTuple;
+      }
 
       xPosition += branchTuple->numberOfCellsForNode;
 
@@ -401,7 +414,7 @@ struct GenerateCellsResult
 // -----------------------------------------------------------------------------
 - (NodeTreeViewBranch*) createBranchWithParentBranch:(NodeTreeViewBranch*)parentBranch
                                    firstNodeOfBranch:(GoNode*)firstNodeOfBranch
-                     branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranchesMap
+                                    branchingNodeMap:(NSMutableDictionary*)branchingNodeMap
 {
   NodeTreeViewBranch* branch = [[[NodeTreeViewBranch alloc] init] autorelease];
 
@@ -422,7 +435,7 @@ struct GenerateCellsResult
   [self linkNewChildBranch:branch
            toBranchingNode:firstNodeOfBranch.parent
             inParentBranch:parentBranch
-branchingNodeToChildBranchesMap:branchingNodeToChildBranchesMap];
+          branchingNodeMap:branchingNodeMap];
 
   [self linkNewChildBranch:branch
             toParentBranch:parentBranch];
@@ -435,39 +448,18 @@ branchingNodeToChildBranchesMap:branchingNodeToChildBranchesMap];
 /// node @a branchingNode from which the new child branch originates. The
 /// branching node is located in parent branch @a parentBranch.
 // -----------------------------------------------------------------------------
-    - (void) linkNewChildBranch:(NodeTreeViewBranch*)newChildBranch
-                toBranchingNode:(GoNode*)branchingNode
-                 inParentBranch:(NodeTreeViewBranch*)parentBranch
-branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranchesMap
+- (void) linkNewChildBranch:(NodeTreeViewBranch*)newChildBranch
+            toBranchingNode:(GoNode*)branchingNode
+             inParentBranch:(NodeTreeViewBranch*)parentBranch
+           branchingNodeMap:(NSMutableDictionary*)branchingNodeMap
 {
-  NodeTreeViewBranchTuple* branchingNodeTuple = nil;
-
-  // TODO xxx Try to find a faster way how to determine the branching node tuple
-  for (NodeTreeViewBranchTuple* parentBranchTuple in parentBranch->branchTuples)
-  {
-    if (parentBranchTuple->node == branchingNode)
-    {
-      branchingNodeTuple = parentBranchTuple;
-      break;
-    }
-  }
-
-  if (! branchingNodeTuple)
-    return;
+  NSValue* key = [NSValue valueWithNonretainedObject:branchingNode];
+  NodeTreeViewBranchTuple* branchingNodeTuple = [branchingNodeMap objectForKey:key];
 
   newChildBranch->parentBranchTupleBranchingNode = branchingNodeTuple;
 
   if (! branchingNodeTuple->childBranches)
-  {
     branchingNodeTuple->childBranches = [NSMutableArray array];
-
-    // Also store the child branch list in a dictionary so that it
-    // can be easily looked up later on without having to search
-    // through a branch's branch tuples
-    // TODO xxx could also store the branch tuple of the branching node -> would this help later on?
-    NSValue* key = [NSValue valueWithNonretainedObject:branchingNode];
-    branchingNodeToChildBranchesMap[key] = branchingNodeTuple->childBranches;
-  }
 
   [branchingNodeTuple->childBranches addObject:newChildBranch];
 }
@@ -570,8 +562,7 @@ branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranch
       continue;
 
     [self alignCurrentMoveInAllBranches:branchTuplesForMoveNumber
-            targetXPositionOfCenterCell:highestXPositionOfCenterCell
-        branchingNodeToChildBranchesMap:collectBranchDataResult.branchingNodeToChildBranchesMap];
+            targetXPositionOfCenterCell:highestXPositionOfCenterCell];
   }
 }
 
@@ -620,7 +611,6 @@ branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranch
 // -----------------------------------------------------------------------------
 - (void) alignCurrentMoveInAllBranches:(NSMutableArray*)branchTuplesForMoveNumber
            targetXPositionOfCenterCell:(unsigned short)targetXPositionOfCenterCell
-       branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranchesMap
 {
   for (NodeTreeViewBranchTuple* branchTupleForMoveNumber in branchTuplesForMoveNumber)
   {
@@ -633,8 +623,7 @@ branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranch
 
     [self shiftMoveNodeAndDescendantNodes:branchTupleForMoveNumber
              currentXPositionOfCenterCell:xPositionOfCenterCell
-              targetXPositionOfCenterCell:targetXPositionOfCenterCell
-          branchingNodeToChildBranchesMap:branchingNodeToChildBranchesMap];
+              targetXPositionOfCenterCell:targetXPositionOfCenterCell];
   }
 }
 
@@ -648,7 +637,6 @@ branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranch
 - (void) shiftMoveNodeAndDescendantNodes:(NodeTreeViewBranchTuple*)branchTuple
             currentXPositionOfCenterCell:(unsigned short)currentXPositionOfCenterCell
              targetXPositionOfCenterCell:(unsigned short)targetXPositionOfCenterCell
-         branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranchesMap
 {
   NSUInteger indexOfFirstBranchTupleToShift = [branchTuple->branch->branchTuples indexOfObject:branchTuple];
   unsigned short alignOffset = targetXPositionOfCenterCell - currentXPositionOfCenterCell;
@@ -671,10 +659,8 @@ branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranch
   {
     branchTupleToShift->xPositionOfFirstCell += alignOffset;
 
-    NSValue* key = [NSValue valueWithNonretainedObject:branchTupleToShift->node];
-    NSMutableArray* childBranches = [branchingNodeToChildBranchesMap objectForKey:key];
-    if (childBranches)
-      [branchesToShift addObjectsFromArray:childBranches];
+    if (branchTupleToShift->childBranches)
+      [branchesToShift addObjectsFromArray:branchTupleToShift->childBranches];
   };
 
   // We start the shifting process by going through the remaining tuples
