@@ -20,18 +20,30 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NodeTreeViewBranch class xxx
+/// @brief The NodeTreeViewBranch class represents a branch to be drawn in the
+/// node tree view.
 // -----------------------------------------------------------------------------
 @interface NodeTreeViewBranch : NSObject
 {
 @public
+  /// @brief The last child branch of this NodeTreeViewBranch. Is @e nil if
+  /// this NodeTreeViewBranch has no child branches.
   NodeTreeViewBranch* lastChildBranch;
+  /// @brief The previous sibling branch of this NodeTreeViewBranch. Is @e nil
+  /// if this NodeTreeViewBranch has no previous sibling branches, i.e. if this
+  /// NodeTreeViewBranch is the first child branch of @e parentBranch.
   NodeTreeViewBranch* previousSiblingBranch;
+  /// @brief The parent branch of this NodeTreeViewBranch. Is @e nil if
+  /// this NodeTreeViewBranch has no parent branch, i.e. if this
+  /// NodeTreeViewBranch is the main branch.
   NodeTreeViewBranch* parentBranch;
-  // The BranchTuple in the parent branch that contains the branching node from
-  // which the branch is descending
+  /// @brief The NodeTreeViewBranchTuple in @e parentBranch that contains the
+  /// branching node from which this NodeTreeViewBranch is originating.
   NodeTreeViewBranchTuple* parentBranchTupleBranchingNode;
+  /// @brief List of NodeTreeViewBranchTuple objects that make up the content
+  /// of this NodeTreeViewBranch. Contains always at least one object.
   NSMutableArray* branchTuples;
+  /// @brief The y-position on the canvas of the branch.
   unsigned short yPosition;
 }
 

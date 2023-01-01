@@ -21,19 +21,36 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NodeTreeViewBranchTuple class xxx
-/// TODO xxx rename
+/// @brief The NodeTreeViewBranchTuple class is a class that collects
+/// information about a node and its representation on the canvas.
 // -----------------------------------------------------------------------------
 @interface NodeTreeViewBranchTuple : NSObject
 {
 @public
-  unsigned short xPositionOfFirstCell;
+  /// @brief The node that the NodeTreeViewBranchTuple represents.
   GoNode* node;
+  /// @brief The x-position on the canvas of the first cell that has content
+  /// representing @e node.
+  unsigned short xPositionOfFirstCell;
+  /// @brief The number of cells that are needed to represent  @a node on the
+  /// canvas.
   unsigned short numberOfCellsForNode;
-  // For a cell to be at the exact center numberOfCellsForNode must be an uneven number
+  /// @brief Index position of the cell that is at the horizontal center of all
+  /// cells that together represent @e node on the canvas.
+  ///
+  /// It is expected that @e numberOfCellsForNode is an uneven number so that
+  /// the center cell is at the @b exact geometric center. This is important
+  /// later on when vertical branching lines are drawn at the geometric center
+  /// of the center cell.
   unsigned short indexOfCenterCell;
+  /// @brief The NodeTreeViewCellSymbol enumeration value that represents
+  /// @e node on the canvas.
   enum NodeTreeViewCellSymbol symbol;
+  /// @brief The branch that @e node belongs to.
   NodeTreeViewBranch* branch;
+  /// @brief List of child branches (NodeTreeViewBranch objects) that originate
+  /// from @e node. The list is empty if no child branches originate from
+  /// @e node.
   NSMutableArray* childBranches;
 }
 
