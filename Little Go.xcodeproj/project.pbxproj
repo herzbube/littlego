@@ -256,6 +256,10 @@
 		CD44E43629158C8800C1DB6B /* GoNodeTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CD44E43529158C8800C1DB6B /* GoNodeTest.m */; };
 		CD46627E2960376400B58CC9 /* NodeTreeViewCanvas.m in Sources */ = {isa = PBXBuildFile; fileRef = CD46627C2960376400B58CC9 /* NodeTreeViewCanvas.m */; };
 		CD46627F2960376400B58CC9 /* NodeTreeViewCanvas.m in Sources */ = {isa = PBXBuildFile; fileRef = CD46627C2960376400B58CC9 /* NodeTreeViewCanvas.m */; };
+		CD4662822960A0E800B58CC9 /* NodeTreeViewBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4662802960A0E700B58CC9 /* NodeTreeViewBranch.m */; };
+		CD4662832960A0E800B58CC9 /* NodeTreeViewBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4662802960A0E700B58CC9 /* NodeTreeViewBranch.m */; };
+		CD4662862960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4662852960A1A700B58CC9 /* NodeTreeViewBranchTuple.m */; };
+		CD4662872960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4662852960A1A700B58CC9 /* NodeTreeViewBranchTuple.m */; };
 		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
 		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */; };
 		CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
@@ -1174,6 +1178,10 @@
 		CD44E43529158C8800C1DB6B /* GoNodeTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoNodeTest.m; sourceTree = "<group>"; };
 		CD46627C2960376400B58CC9 /* NodeTreeViewCanvas.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewCanvas.m; sourceTree = "<group>"; };
 		CD46627D2960376400B58CC9 /* NodeTreeViewCanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewCanvas.h; sourceTree = "<group>"; };
+		CD4662802960A0E700B58CC9 /* NodeTreeViewBranch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewBranch.m; sourceTree = "<group>"; };
+		CD4662812960A0E700B58CC9 /* NodeTreeViewBranch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewBranch.h; sourceTree = "<group>"; };
+		CD4662842960A1A700B58CC9 /* NodeTreeViewBranchTuple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewBranchTuple.h; sourceTree = "<group>"; };
+		CD4662852960A1A700B58CC9 /* NodeTreeViewBranchTuple.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewBranchTuple.m; sourceTree = "<group>"; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
 		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationStateCommand.h; sourceTree = "<group>"; };
 		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationStateCommand.m; sourceTree = "<group>"; };
@@ -2515,6 +2523,10 @@
 		CD46627B2960376400B58CC9 /* canvas */ = {
 			isa = PBXGroup;
 			children = (
+				CD4662812960A0E700B58CC9 /* NodeTreeViewBranch.h */,
+				CD4662802960A0E700B58CC9 /* NodeTreeViewBranch.m */,
+				CD4662842960A1A700B58CC9 /* NodeTreeViewBranchTuple.h */,
+				CD4662852960A1A700B58CC9 /* NodeTreeViewBranchTuple.m */,
 				CD46627C2960376400B58CC9 /* NodeTreeViewCanvas.m */,
 				CD46627D2960376400B58CC9 /* NodeTreeViewCanvas.h */,
 				CD1A7EF029574A0900013D80 /* NodeTreeViewCanvasAdditions.h */,
@@ -4156,6 +4168,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDEE1A0B1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,
+				CD4662862960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */,
 				CD8178FF25D8553100F39091 /* ComputerSuggestMoveCommand.m in Sources */,
 				CD1087891323D83F00E83543 /* GtpClient.mm in Sources */,
 				CD1087A51324344C00E83543 /* GtpEngine.mm in Sources */,
@@ -4299,6 +4312,7 @@
 				CDDAB6EF14FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,
 				CDFA32A515A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
 				CD7C6A111AB4862E009EC5AD /* AutoLayoutConstraintHelper.m in Sources */,
+				CD4662822960A0E800B58CC9 /* NodeTreeViewBranch.m in Sources */,
 				CD1F500725B34EDE0098037A /* GameInfoItem.m in Sources */,
 				CDFA32A815A0A3E500439B4E /* PathUtilities.m in Sources */,
 				CDD038082879708D002A2FFE /* LabelsLayerDelegate.m in Sources */,
@@ -4568,6 +4582,7 @@
 				CD7C6A1E1AB61893009EC5AD /* ButtonBoxCell.m in Sources */,
 				CD1A7EEF29568AF800013D80 /* NodeTreeViewCanvasTest.m in Sources */,
 				CD81791825DC606700F39091 /* BoardAnimationController.m in Sources */,
+				CD4662872960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */,
 				CD7C69BB1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
 				CDC8DEF628EDECCA00619305 /* NodeTreeTileView.m in Sources */,
 				CD1DB610170257C000C2E648 /* NewGameController.m in Sources */,
@@ -4633,6 +4648,7 @@
 				CD7C6A121AB4862E009EC5AD /* AutoLayoutConstraintHelper.m in Sources */,
 				CD1311D3171B5FFF006CE699 /* LoggingModel.m in Sources */,
 				CDF341C7172742D700AEFB20 /* LongRunningActionCounter.m in Sources */,
+				CD4662832960A0E800B58CC9 /* NodeTreeViewBranch.m in Sources */,
 				CDF341CB1727507900AEFB20 /* ApplicationStateManager.m in Sources */,
 				CDF341D2172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
 				CDF341D4172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,

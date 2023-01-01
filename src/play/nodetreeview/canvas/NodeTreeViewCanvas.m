@@ -18,6 +18,8 @@
 // Project includes
 #import "NodeTreeViewCanvas.h"
 #import "NodeTreeViewCanvasAdditions.h"
+#import "NodeTreeViewBranch.h"
+#import "NodeTreeViewBranchTuple.h"
 #import "NodeTreeViewCell.h"
 #import "NodeTreeViewCellPosition.h"
 #import "../../model/NodeTreeViewModel.h"
@@ -30,43 +32,36 @@
 #import "../../../shared/LongRunningActionCounter.h"
 
 
-@class BranchTuple;
-
-// TODO xxx document
-@interface Branch : NSObject
+/// @brief Collects information about all moves that exist in the tree of nodes.
+struct MoveData
 {
-@public
-  Branch* lastChildBranch;
-  Branch* previousSiblingBranch;
-  Branch* parentBranch;
-  // The BranchTuple in the parent branch that contains the branching node from
-  // which the branch is descending
-  BranchTuple* parentBranchTupleBranchingNode;
-  NSMutableArray* branchTuples;
-  unsigned short yPosition;
-}
-@end
+  // TODO xxx improve name
+  NSMutableArray* moveData;
+  int highestMoveNumberThatAppearsInAtLeastTwoBranches;
+};
 
-@implementation Branch
-@end
-
-// TODO xxx document
-@interface BranchTuple : NSObject
+/// @brief Collects information about branches and nodes that make up those
+/// branches.
+struct CollectBranchDataResult
 {
-@public
-  unsigned short xPositionOfFirstCell;
-  GoNode* node;
-  unsigned short numberOfCellsForNode;
-  // For a cell to be at the exact center numberOfCellsForNode must be an uneven number
-  unsigned short indexOfCenterCell;
-  enum NodeTreeViewCellSymbol symbol;
-  Branch* branch;
-  NSMutableArray* childBranches;
-}
-@end
+  // Key = NSValue enapsulating a GoNode object. The GoNode is a branching node,
+  //       i.e. a node that has multiple child nodes.
+  // Value = List with child branches. The parent branch, i.e. the branch in
+  //         which the branching node is located, is not in the list.
+  NSMutableDictionary* branchingNodeToChildBranchesMap;
+  // Stores branches in depth-first order. Elements are arrays consisting of
+  // tuples.
+  NSMutableArray* branches;
+  struct MoveData moveData;
+};
 
-@implementation BranchTuple
-@end
+/// @brief Collects the multiple pieces of information that form the result of
+/// generating cells at the end of the canvas calculation process.
+struct GenerateCellsResult
+{
+  NSMutableDictionary* cellsDictionary;
+  unsigned short highestXPosition;
+};
 
 
 // -----------------------------------------------------------------------------
@@ -196,7 +191,7 @@
     return;
   self.canvasNeedsUpdate = false;
 
-  [self recalc1];
+  [self recalculateCanvas];
 }
 
 #pragma mark - Public API
@@ -223,58 +218,50 @@
   return nil;
 }
 
-#pragma mark - Private API
+#pragma mark - Private API - Canvas calculation - Main method
 
-// TODO xxx document
-//typedef struct
-//{
-//  unsigned short xPositionOfFirstCell;
-//  GoNode* node;
-//  unsigned short numberOfCellsForNode;
-//  enum NodeTreeViewCellSymbol symbol;
-//} BranchTuple;
-//
-//- (NSValue*) valueWithBranchTuple:(BranchTuple)branchTuple
-//{
-//  return [NSValue valueWithBytes:&branchTuple objCType:@encode(BranchTuple)];
-//}
-//
-//- (BranchTuple) branchTupleValue:(NSValue*)value
-//{
-//  BranchTuple branchTupleValue;
-//
-//  if (@available(iOS 11.0, *))
-//    [value getValue:&branchTupleValue size:sizeof(BranchTuple)];
-//  else
-//    [value getValue:&branchTupleValue];
-//
-//  return branchTupleValue;
-//}
-
-// General order of algorithm:
-// 1. Iterate tree. Results:
-//    - Branches
-//    - Depth-first ordering of branches
-//    - Ordered list of NodeTreeViewCell objects in each branch, with the
-//      following values
-//      - NodeTreeViewCellSymbol value
-//      - part/parts values => User preference "Condense tree"
-//    - NodeTreeViewCellPosition with preliminary x-coordinate. This can still
-//      change if user preference "Align move nodes" is enabled.
-//    - Preliminary length of a branch, based on the number of NodeTreeViewCell
-//      objects
-// 2. Iterate branches. Results:
-//    - NodeTreeViewCellPosition with final x-coordinate => User preference
-//      "Align move nodes"
-//    - Updated length of a branch, based on the x-coordinate of the first and
-//      last NodeTreeViewCellPosition
-//    - NodeTreeViewCellPosition with y-coordinate, based on final
-//      x-coordinates and branch lengths
-// 3. Iterate branches / NodeTreeViewCell objects. Result:
-//    - NodeTreeViewCellLines value for property lines
-//    - NodeTreeViewCellLines value for property linesSelectedGameVariation
-// 4. Select cell
-- (void) recalc1
+// -----------------------------------------------------------------------------
+/// @brief Performs a full re-calculation of the node tree view canvas.
+///
+/// The algorithm that performs the calculation can be broken down into several
+/// distinct steps that are executed in a specific order. Overview:
+/// 1. Iterate depth-first over the tree of nodes provided by GoNodeModel.
+///    During the iteration the following pieces of data are collected:
+///    - A collection of existing branches, with the following additional data
+///      per branch:
+///      - The branch's relationships: Parent branch, previous sibling branch,
+///        last child branches. Unlike the usual firstChild/nextSibling
+///        relationships, the branch relationships are reversed because
+///        determining the y-position of branches requires iteration over the
+///        branches in reverse order.
+///      - The node in the parent branch from which the branch originates.
+///    - An ordered list of nodes in each branch, with the following additional
+///      data:
+///      - NodeTreeViewCellSymbol value
+///      - The number of cells that represent the node on the canvas. This is
+///        influenced by the user preference "Condense tree".
+///      - Preliminary x-position of the first cell that represents the node on
+///        the canvas. This can still change if the user preference
+///        "Align move nodes" is enabled.
+///      - List of child branches that branch off of the node (if any).
+/// 2. Perform the alignment of move nodes. When this step finds a move node
+///    that needs to be aligned, it adjusts the x-position of the first cell
+///    that represents the move node and all of the move node's descendants.
+///    The result of this step are the final x-positions. Therefore the length
+///    of each branch is now also known.
+/// 3. Iterate over the branches collected in the first step and determine the
+///    y-position of each branch. This requires the knowledge about branch
+///    lengths that was obtained in step 2.
+/// 4. Iterate over all branches and nodes and generate cells to represent the
+///    nodes on the canvas. This step also generates cells that contain only
+///    lines, which are used to connect nodes to their predecessor and successor
+///    nodes. Line-only cells contain either horizontal lines to connect a node
+///    to its predecessor node in the same branch, diagonal and/or horizontal
+///    lines to connect a node to its predecessor branching node in the parent
+///    branch, or an assortment of vertical, diagonal and/or horizontal lines to
+///    connect a branching node to its successor nodes in child branches.
+// -----------------------------------------------------------------------------
+- (void) recalculateCanvas
 {
   GoNodeModel* nodeModel = [GoGame sharedGame].nodeModel;
 
@@ -283,126 +270,78 @@
   enum NodeTreeViewBranchingStyle branchingStyle = self.nodeTreeViewModel.branchingStyle;
   int numberOfCellsOfMultipartCell = self.nodeTreeViewModel.numberOfCellsOfMultipartCell;
 
-  // ----------
-  // Part 1: Iterate tree to find out about branches and their ordering
-  // ----------
+  // Step 1: Collect data about branches
+  struct CollectBranchDataResult collectBranchDataResult = [self collectBranchDataFromNodeTreeInModel:nodeModel
+                                                                                         condenseTree:condenseTree
+                                                                         numberOfCellsOfMultipartCell:numberOfCellsOfMultipartCell
+                                                                                       alignMoveNodes:alignMoveNodes];
+
+  // Step 2: Align moves nodes
+  if (alignMoveNodes)
+  {
+    [self alignMoveNodes:collectBranchDataResult];
+  }
+
+  // Step 3: Determine y-coordinates of branches
+  unsigned short highestYPosition = [self determineYCoordinatesOfBranches:collectBranchDataResult
+                                                           branchingStyle:branchingStyle];
+
+  // Step 4: Generate cells
+  struct GenerateCellsResult generateCellsResult = [self generateCells:collectBranchDataResult
+                                                      highestYPosition:highestYPosition
+                                                        branchingStyle:branchingStyle];
+
+  self.cellsDictionary = generateCellsResult.cellsDictionary;
+  self.canvasSize = CGSizeMake(generateCellsResult.highestXPosition + 1, highestYPosition + 1);
+
+  // TODO xxx Currently each and every change causes a full redraw => optimize
+  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeViewContentDidChange object:nil];
+}
+
+#pragma mark - Private API - Canvas calculation - Part 1: Collect branch data
+
+// -----------------------------------------------------------------------------
+/// @brief Iterates depth-first over the tree of nodes provided by GoNodeModel
+/// to collect information about branches.
+// -----------------------------------------------------------------------------
+- (struct CollectBranchDataResult) collectBranchDataFromNodeTreeInModel:(GoNodeModel*)nodeModel
+                                                           condenseTree:(bool)condenseTree
+                                           numberOfCellsOfMultipartCell:(int)numberOfCellsOfMultipartCell
+                                                         alignMoveNodes:(bool)alignMoveNodes
+{
+  struct CollectBranchDataResult collectBranchDataResult;
+  collectBranchDataResult.moveData.highestMoveNumberThatAppearsInAtLeastTwoBranches = -1;
+  collectBranchDataResult.moveData.moveData = [NSMutableArray array];
+  collectBranchDataResult.branchingNodeToChildBranchesMap = [NSMutableDictionary dictionary];
+  collectBranchDataResult.branches = [NSMutableArray array];
+
   NSMutableArray* stack = [NSMutableArray array];
 
   GoNode* currentNode = nodeModel.rootNode;
 
-  // TODO xxx The branches array may no longer be needed
-  // Stores branches in depth-first order. Elements are arrays consisting of
-  // tuples.
-  NSMutableArray* branches = [NSMutableArray array];
-  // TODO xxx remove if no longer needed
-  // Maps child branches to their parent branches, including the place in the
-  // parent branch where the branching point is.
-  // Key = Index of child branch in branches array
-  // Value = Tuple consisting of
-  //         1) Index of parent branch in branches array
-  //         2) Index of element in the parent branch that represents the parent
-  //            cell in the parent branch. If the parent cell in the parent
-  //            branch is a multipart cell this refers to the first part of the
-  //            multipart cell.
-//  NSMutableDictionary* childToParentBranchMap = [NSMutableDictionary dictionary];
-  // Key = NSValue enapsulating a GoNode object. The GoNode is a branching node,
-  //       i.e. a node that has multiple child nodes.
-  // Value = List with child branches. The parent branch, i.e. the branch in
-  //         which the branching node is located, is not in the list.
-  NSMutableDictionary* branchingNodeToChildBranchesMap = [NSMutableDictionary dictionary];
-  Branch* parentBranch = nil;  // if a new branch is created, this must be used as the new branch's parent branch
+  // If a new branch is created, this must be used as the new branch's parent
+  // branch
+  NodeTreeViewBranch* parentBranch = nil;
   unsigned short xPosition = 0;
-  NSMutableArray* moveData = [NSMutableArray array];
-  int highestMoveNumberThatAppearsInAtLeastTwoBranches = -1;
 
   while (true)
   {
-    // TODO xxx this description is outdated
-    // Elements are tuples consisting of a GoNode object and its associated
-    // NodeTreeViewCell object. If the user preference "Condense tree" is
-    // enabled then GoNode objects with certain properties will result in
-    // multiple tuples with the same GoNode object but different
-    // NodeTreeViewCell objects.
-    Branch* branch = nil;
+    NodeTreeViewBranch* branch = nil;
     NSUInteger indexOfBranch = -1;
+
     while (currentNode)
     {
-      // TODO xxx node visit start
-
-      // Create the array that holds the branch information only on demand, i.e.
-      // when there actually *is* a node in the branch. This requires a
-      // nil-check here within the while-loop for every node. A nil-check is
-      // still more efficient than creating an array for every node when the
-      // outer while loop pops the stack and checks for a next sibling for
-      // every node.
       if (! branch)
       {
-        branch = [[[Branch alloc] init] autorelease];
-        branch->branchTuples = [NSMutableArray array];
-        branch->lastChildBranch = nil;
-        branch->previousSiblingBranch = nil;
-        branch->parentBranch = parentBranch;
-        branch->yPosition = 0;
+        branch = [self createBranchWithParentBranch:parentBranch
+                                  firstNodeOfBranch:currentNode
+                    branchingNodeToChildBranchesMap:collectBranchDataResult.branchingNodeToChildBranchesMap];
 
-        // Perform linkage of the new branch with other branches. Obviously this
-        // needs to happen only if there ***is*** a parent branch => there is no
-        // parent branch only if the current branch is the main branch.
-        if (parentBranch)
-        {
-          GoNode* branchingNode = currentNode.parent;
-
-          // TODO xxx Try to find a faster way how to determine the branching node tuple
-          for (BranchTuple* parentBranchTuple in parentBranch->branchTuples)
-          {
-            if (parentBranchTuple->node == branchingNode)
-            {
-              // Remember the result of the search so that future operations
-              // don't have to repeat the search
-              branch->parentBranchTupleBranchingNode = parentBranchTuple;
-
-              if (! parentBranchTuple->childBranches)
-              {
-                parentBranchTuple->childBranches = [NSMutableArray array];
-
-                // Also store the child branch list in a dictionary so that it
-                // can be easily looked up later on without having to search
-                // through a branch's branch tuples
-                // TODO xxx could also store the branch tuple of the branching node -> would this help later on?
-                NSValue* key = [NSValue valueWithNonretainedObject:branchingNode];
-                branchingNodeToChildBranchesMap[key] = parentBranchTuple->childBranches;
-              }
-              [parentBranchTuple->childBranches addObject:branch];
-
-              break;
-            }
-          }
-
-          if (parentBranch->lastChildBranch)
-          {
-            for (Branch* childBranch = parentBranch->lastChildBranch; childBranch; childBranch = childBranch->previousSiblingBranch)
-            {
-              if (! childBranch->previousSiblingBranch)
-              {
-                childBranch->previousSiblingBranch = branch;
-                break;
-              }
-            }
-          }
-          else
-          {
-            parentBranch->lastChildBranch = branch;
-          }
-        }
-        else
-        {
-          branch->parentBranchTupleBranchingNode = nil;
-        }
-
-        [branches addObject:branch];
-        indexOfBranch = branches.count - 1;
+        [collectBranchDataResult.branches addObject:branch];
+        indexOfBranch = collectBranchDataResult.branches.count - 1;
       }
 
-      BranchTuple* branchTuple = [[[BranchTuple alloc] init] autorelease];
+      NodeTreeViewBranchTuple* branchTuple = [[[NodeTreeViewBranchTuple alloc] init] autorelease];
       branchTuple->xPositionOfFirstCell = xPosition;
       branchTuple->node = currentNode;
       branchTuple->symbol = [self symbolForNode:currentNode];
@@ -420,31 +359,8 @@
       {
         GoMove* move = currentNode.goMove;
         if (move)
-        {
-          NSMutableArray* moveDataTuples;
-
-          int moveNumber = move.moveNumber;
-          if (moveNumber > moveData.count)
-          {
-            moveDataTuples = [NSMutableArray array];
-            [moveData addObject:moveDataTuples];
-          }
-          else
-          {
-            moveDataTuples = [moveData objectAtIndex:moveNumber - 1];
-          }
-
-          [moveDataTuples addObject:@[branch, branchTuple]];
-
-          if (moveDataTuples.count > 1)
-          {
-            if (moveNumber > highestMoveNumberThatAppearsInAtLeastTwoBranches)
-              highestMoveNumberThatAppearsInAtLeastTwoBranches = moveNumber;
-          }
-        }
+          [self collectDataFromMove:move branch:branch branchTuple:branchTuple moveData:&(collectBranchDataResult.moveData)];
       }
-
-      // TODO xxx node visit end
 
       [stack addObject:branchTuple];
 
@@ -453,7 +369,7 @@
 
     if (stack.count > 0)
     {
-      BranchTuple* branchTuple = stack.lastObject;
+      NodeTreeViewBranchTuple* branchTuple = stack.lastObject;
       [stack removeLastObject];
 
       currentNode = branchTuple->node;
@@ -472,218 +388,365 @@
     }
   }
 
-  // ----------
-  // Part 2: Align move nodes
-  // In case of multipart cells, nodes are aligned along the center cell
-  // ----------
-  if (alignMoveNodes)
+  return collectBranchDataResult;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates a new NodeTreeViewBranch object when the first node of a
+/// branch (@a firstNodeOfBranch) is encountered. Performs all the necessary
+/// linkage of the new branch with its sibling and parent branches.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewBranch*) createBranchWithParentBranch:(NodeTreeViewBranch*)parentBranch
+                                   firstNodeOfBranch:(GoNode*)firstNodeOfBranch
+                     branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranchesMap
+{
+  NodeTreeViewBranch* branch = [[[NodeTreeViewBranch alloc] init] autorelease];
+
+  branch->branchTuples = [NSMutableArray array];
+  branch->lastChildBranch = nil;
+  branch->previousSiblingBranch = nil;
+  branch->parentBranch = parentBranch;
+  branch->yPosition = 0;
+
+  // If there is no parent branch this means that the new branch is the main
+  // branch => no linkage with other branches is necessary
+  if (! parentBranch)
   {
-    // Optimization: We only have to align moves that appear in at least two
-    // branches.
-    for (int indexOfMove = 0; indexOfMove < highestMoveNumberThatAppearsInAtLeastTwoBranches; indexOfMove++)
+    branch->parentBranchTupleBranchingNode = nil;
+    return branch;
+  }
+
+  [self linkNewChildBranch:branch
+           toBranchingNode:firstNodeOfBranch.parent
+            inParentBranch:parentBranch
+branchingNodeToChildBranchesMap:branchingNodeToChildBranchesMap];
+
+  [self linkNewChildBranch:branch
+            toParentBranch:parentBranch];
+
+  return branch;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Links a newly created child branch @a newChildBranch to the branching
+/// node @a branchingNode from which the new child branch originates. The
+/// branching node is located in parent branch @a parentBranch.
+// -----------------------------------------------------------------------------
+    - (void) linkNewChildBranch:(NodeTreeViewBranch*)newChildBranch
+                toBranchingNode:(GoNode*)branchingNode
+                 inParentBranch:(NodeTreeViewBranch*)parentBranch
+branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranchesMap
+{
+  NodeTreeViewBranchTuple* branchingNodeTuple = nil;
+
+  // TODO xxx Try to find a faster way how to determine the branching node tuple
+  for (NodeTreeViewBranchTuple* parentBranchTuple in parentBranch->branchTuples)
+  {
+    if (parentBranchTuple->node == branchingNode)
     {
-      NSMutableArray* moveDataTuples = [moveData objectAtIndex:indexOfMove];
+      branchingNodeTuple = parentBranchTuple;
+      break;
+    }
+  }
 
-      // If the move appears in only a single branch there can be no
-      // mis-alignment => we can go to the next move
-      // Note: We can't break off the alignment process entirely from this
-      // condition. It's entirely possible that for a time there is only a
-      // single branch that has moves, and that later on child branches can
-      // split off again from that branch so that the count increases again to
-      // 2 or more. In the following example we see that although the count is
-      // 1 for M1, M3 and M6, the alignment process needs to continue each time.
-      // o---M1---M2
-      //     +----M2---M3---M4---M5---M6---M7
-      //               +----M4---M5   +----M7
-      //               +----M4
-      //    c=1   c=2  c=1  c=3  c=2  c=1  c=2  [...]
-      if (moveDataTuples.count == 1)
-        continue;
+  if (! branchingNodeTuple)
+    return;
 
-      unsigned short highestXPositionOfCenterCell = 0;
-      bool isFirstBranch = true;
-      bool currentMoveIsAlignedInAllBranches = true;
+  newChildBranch->parentBranchTupleBranchingNode = branchingNodeTuple;
 
-      for (NSArray* moveDataTuple in moveDataTuples)
+  if (! branchingNodeTuple->childBranches)
+  {
+    branchingNodeTuple->childBranches = [NSMutableArray array];
+
+    // Also store the child branch list in a dictionary so that it
+    // can be easily looked up later on without having to search
+    // through a branch's branch tuples
+    // TODO xxx could also store the branch tuple of the branching node -> would this help later on?
+    NSValue* key = [NSValue valueWithNonretainedObject:branchingNode];
+    branchingNodeToChildBranchesMap[key] = branchingNodeTuple->childBranches;
+  }
+
+  [branchingNodeTuple->childBranches addObject:newChildBranch];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Links a newly created child branch @a newChildBranch to the parent
+/// branch @a parentBranch and/or the next sibling branch found among the
+/// collection of child branches of @a parentBranch.
+// -----------------------------------------------------------------------------
+- (void) linkNewChildBranch:(NodeTreeViewBranch*)newChildBranch
+             toParentBranch:(NodeTreeViewBranch*)parentBranch
+{
+  if (! parentBranch->lastChildBranch)
+  {
+    parentBranch->lastChildBranch = newChildBranch;
+    return;
+  }
+
+  for (NodeTreeViewBranch* existingChildBranch = parentBranch->lastChildBranch;
+       existingChildBranch;
+       existingChildBranch = existingChildBranch->previousSiblingBranch)
+  {
+    if (! existingChildBranch->previousSiblingBranch)
+    {
+      existingChildBranch->previousSiblingBranch = newChildBranch;
+      break;
+    }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Collects data about @a move, which appears in @a branch in the node
+/// represented by @a branchTuple, and stores the data in @a moveData.
+// -----------------------------------------------------------------------------
+- (void) collectDataFromMove:(GoMove*)move
+                      branch:(NodeTreeViewBranch*)branch
+                 branchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                    moveData:(struct MoveData*)moveData
+{
+  NSMutableArray* moveDataTuples;
+
+  int moveNumber = move.moveNumber;
+  if (moveNumber > moveData->moveData.count)
+  {
+    moveDataTuples = [NSMutableArray array];
+    [moveData->moveData addObject:moveDataTuples];
+  }
+  else
+  {
+    moveDataTuples = [moveData->moveData objectAtIndex:moveNumber - 1];
+  }
+
+  // TODO xxx branch does not need to be added => branchTuple already has a reference
+  [moveDataTuples addObject:@[branch, branchTuple]];
+
+  if (moveDataTuples.count > 1)
+  {
+    if (moveNumber > moveData->highestMoveNumberThatAppearsInAtLeastTwoBranches)
+      moveData->highestMoveNumberThatAppearsInAtLeastTwoBranches = moveNumber;
+  }
+}
+
+#pragma mark - Private API - Canvas calculation - Part 2: Align move nodes
+
+// -----------------------------------------------------------------------------
+/// @brief Iterates over all moves that are present in
+/// @a collectBranchDataResult and aligns the x-position of the first cell that
+/// represents the node of each move. In case of multipart cells, the alignment
+/// is made along the center cell.
+// -----------------------------------------------------------------------------
+- (void) alignMoveNodes:(struct CollectBranchDataResult)collectBranchDataResult
+{
+  // Optimization: We only have to align moves that appear in at least two
+  // branches.
+  for (int indexOfMove = 0;
+       indexOfMove < collectBranchDataResult.moveData.highestMoveNumberThatAppearsInAtLeastTwoBranches;
+       indexOfMove++)
+  {
+    NSMutableArray* moveDataTuples = [collectBranchDataResult.moveData.moveData objectAtIndex:indexOfMove];
+
+    // If the move appears in only a single branch there can be no
+    // mis-alignment => we can go to the next move
+    // Note: We can't break off the alignment process entirely from this
+    // condition. It's entirely possible that for a time there is only a
+    // single branch that has moves, and that later on child branches can
+    // split off again from that branch so that the count increases again to
+    // 2 or more. In the following example we see that although the count is
+    // 1 for M1, M3 and M6, the alignment process needs to continue each time.
+    // o---M1---M2
+    //     +----M2---M3---M4---M5---M6---M7
+    //               +----M4---M5   +----M7
+    //               +----M4
+    //    c=1   c=2  c=1  c=3  c=2  c=1  c=2  [...]
+    if (moveDataTuples.count == 1)
+      continue;
+
+    unsigned short highestXPositionOfCenterCell = 0;
+    bool currentMoveIsAlignedInAllBranches = [self isCurrentMoveAlignedInAllBranches:moveDataTuples
+                                                        highestXPositionOfCenterCell:&highestXPositionOfCenterCell];
+    if (currentMoveIsAlignedInAllBranches)
+      continue;
+
+    [self alignCurrentMoveInAllBranches:moveDataTuples
+            targetXPositionOfCenterCell:highestXPositionOfCenterCell
+        branchingNodeToChildBranchesMap:collectBranchDataResult.branchingNodeToChildBranchesMap];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if the data in @a moveDataTuples indicates that all
+/// move nodes are aligned. Returns false if the data in @a moveDataTuples
+/// indicates that at least one move node is not aligned. The value of the out
+/// parameter @a highestXPositionOfCenterCell in this case is filled with the
+/// x-position on which the alignment needs to take place.
+// -----------------------------------------------------------------------------
+- (bool) isCurrentMoveAlignedInAllBranches:(NSMutableArray*)moveDataTuples
+              highestXPositionOfCenterCell:(unsigned short*)highestXPositionOfCenterCell
+{
+  bool isFirstBranch = true;
+  bool currentMoveIsAlignedInAllBranches = true;
+
+  for (NSArray* moveDataTuple in moveDataTuples)
+  {
+    NodeTreeViewBranchTuple* branchTuple = moveDataTuple.lastObject;
+    unsigned short xPositionOfCenterCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
+    if (isFirstBranch)
+    {
+      *highestXPositionOfCenterCell = xPositionOfCenterCell;
+      isFirstBranch = false;
+    }
+    else
+    {
+      if (xPositionOfCenterCell != *highestXPositionOfCenterCell)
       {
-        BranchTuple* branchTuple = moveDataTuple.lastObject;
-        unsigned short xPositionOfCenterCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
-        if (isFirstBranch)
-        {
-          highestXPositionOfCenterCell = xPositionOfCenterCell;
-          isFirstBranch = false;
-        }
-        else
-        {
-          if (xPositionOfCenterCell != highestXPositionOfCenterCell)
-          {
-            currentMoveIsAlignedInAllBranches = false;
-            if (xPositionOfCenterCell > highestXPositionOfCenterCell)
-              highestXPositionOfCenterCell = xPositionOfCenterCell;
-          }
-        }
-      }
-
-      if (currentMoveIsAlignedInAllBranches)
-        continue;
-
-      for (NSArray* moveDataTuple in moveDataTuples)
-      {
-        Branch* branch = moveDataTuple.firstObject;
-        BranchTuple* branchTuple = moveDataTuple.lastObject;
-        unsigned short xPositionOfCenterCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
-
-        // Branch is already aligned
-        if (xPositionOfCenterCell == highestXPositionOfCenterCell)
-          continue;
-
-        NSUInteger indexOfFirstBranchTupleToShift = [branch->branchTuples indexOfObject:branchTuple];
-        unsigned short alignOffset = highestXPositionOfCenterCell - xPositionOfCenterCell;
-
-        // It is not sufficient to shift only the tuples of the current branch
-        // => there may be child branches whose tuple positions also need to be
-        // shifted. In the following example, when M2 of the main branch is
-        // aligned, the cells of the child branches that contain M3 and M4 also
-        // need to be shifted.
-        // o---M1---M2---A----A
-        //     |    +----M3   +----A----M4
-        //     +----A----M2
-
-        NSMutableArray* branchesToShift = [NSMutableArray array];
-        [branchesToShift addObject:branch];
-        bool shiftingInitialBranch = true;
-
-        // Reusable local function
-        void (^shiftBranchTuple) (BranchTuple*) = ^(BranchTuple* branchTupleToShift)
-        {
-          branchTupleToShift->xPositionOfFirstCell += alignOffset;
-
-          NSValue* key = [NSValue valueWithNonretainedObject:branchTupleToShift->node];
-          NSMutableArray* childBranches = [branchingNodeToChildBranchesMap objectForKey:key];
-          if (childBranches)
-            [branchesToShift addObjectsFromArray:childBranches];
-        };
-
-        // We start the shifting process by going through the remaining tuples
-        // of the initial branch. When we find a tuple that represents a
-        // branching point we add the child branches that branch off of that
-        // point to the list. Subsequent iterations of the while-loop will go
-        // through the child branches that were added and repeat the process of
-        // shifting and looking for child branches. Eventually the branch
-        // hierarchy will be exhausted and no further child branches will be
-        // added to the list, at which point the while-loop will stop.
-        while (branchesToShift.count > 0)
-        {
-          Branch* branchToShift = branchesToShift.firstObject;
-          [branchesToShift removeObjectAtIndex:0];
-          NSMutableArray* branchTuplesToShift = branchToShift->branchTuples;
-
-          if (shiftingInitialBranch)
-          {
-            shiftingInitialBranch = false;
-
-            // Enumeration by index is slower than fast enumeration, but we
-            // can't avoid using it because we have to start at a non-zero index
-            // and fast enumeration does not allow to specify a non-zero start
-            // index
-            NSUInteger numberOfBranchTuples = branchTuplesToShift.count;
-            for (NSUInteger indexOfBranchTupleToShift = indexOfFirstBranchTupleToShift; indexOfBranchTupleToShift < numberOfBranchTuples; indexOfBranchTupleToShift++)
-            {
-              BranchTuple* branchTupleToShift = [branchTuplesToShift objectAtIndex:indexOfBranchTupleToShift];
-              shiftBranchTuple(branchTupleToShift);
-            }
-          }
-          else
-          {
-            for (BranchTuple* branchTupleToShift in branchTuplesToShift)
-              shiftBranchTuple(branchTupleToShift);
-          }
-        }
+        currentMoveIsAlignedInAllBranches = false;
+        if (xPositionOfCenterCell > *highestXPositionOfCenterCell)
+          *highestXPositionOfCenterCell = xPositionOfCenterCell;
       }
     }
   }
 
-  // ----------
-  // Part 3: Determine y-coordinates
-  // ----------
-//  unsigned short numberOfCellsForBranchingNode = condenseTree ? 1 : 1;  // TODO xxx correct numbers, similar to numberOfCellsForNode
+  return currentMoveIsAlignedInAllBranches;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Aligns the move nodes in @a moveDataTuples so that for all move nodes
+/// the x-position of the center cell that represents the move node on the
+/// canvas is equal to @a targetXPositionOfCenterCell. Also shifts the
+/// descendant nodes of each move node that is aligned.
+// -----------------------------------------------------------------------------
+- (void) alignCurrentMoveInAllBranches:(NSMutableArray*)moveDataTuples
+           targetXPositionOfCenterCell:(unsigned short)targetXPositionOfCenterCell
+       branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranchesMap
+{
+  for (NSArray* moveDataTuple in moveDataTuples)
+  {
+    NodeTreeViewBranch* branch = moveDataTuple.firstObject;
+    NodeTreeViewBranchTuple* branchTuple = moveDataTuple.lastObject;
+    unsigned short xPositionOfCenterCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
+
+    // Branch is already aligned
+    if (xPositionOfCenterCell == targetXPositionOfCenterCell)
+      continue;
+
+    [self shiftMoveNodeAndDescendantNodes:branchTuple
+                                   branch:branch
+             currentXPositionOfCenterCell:xPositionOfCenterCell
+              targetXPositionOfCenterCell:targetXPositionOfCenterCell
+          branchingNodeToChildBranchesMap:branchingNodeToChildBranchesMap];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Shifts the x-position of the first cell of the move node in
+/// @a branchTuple so that the center cell has an x-position equal to
+/// @a targetXPositionOfCenterCell. The center cell's current x-position is
+/// @a currentXPositionOfCenterCell. Also shifts the descendant nodes of the
+/// move node.
+// -----------------------------------------------------------------------------
+- (void) shiftMoveNodeAndDescendantNodes:(NodeTreeViewBranchTuple*)branchTuple
+                                  branch:(NodeTreeViewBranch*)branch
+            currentXPositionOfCenterCell:(unsigned short)currentXPositionOfCenterCell
+             targetXPositionOfCenterCell:(unsigned short)targetXPositionOfCenterCell
+         branchingNodeToChildBranchesMap:(NSMutableDictionary*)branchingNodeToChildBranchesMap
+{
+  NSUInteger indexOfFirstBranchTupleToShift = [branch->branchTuples indexOfObject:branchTuple];
+  unsigned short alignOffset = targetXPositionOfCenterCell - currentXPositionOfCenterCell;
+
+  // It is not sufficient to shift only the tuples of the current branch
+  // => there may be child branches whose tuple positions also need to be
+  // shifted. In the following example, when M2 of the main branch is
+  // aligned, the cells of the child branches that contain M3 and M4 also
+  // need to be shifted.
+  // o---M1---M2---A----A
+  //     |    +----M3   +----A----M4
+  //     +----A----M2
+
+  NSMutableArray* branchesToShift = [NSMutableArray array];
+  [branchesToShift addObject:branch];
+  bool shiftingInitialBranch = true;
+
+  // Reusable local function
+  void (^shiftBranchTuple) (NodeTreeViewBranchTuple*) = ^(NodeTreeViewBranchTuple* branchTupleToShift)
+  {
+    branchTupleToShift->xPositionOfFirstCell += alignOffset;
+
+    NSValue* key = [NSValue valueWithNonretainedObject:branchTupleToShift->node];
+    NSMutableArray* childBranches = [branchingNodeToChildBranchesMap objectForKey:key];
+    if (childBranches)
+      [branchesToShift addObjectsFromArray:childBranches];
+  };
+
+  // We start the shifting process by going through the remaining tuples
+  // of the initial branch. When we find a tuple that represents a
+  // branching point we add the child branches that branch off of that
+  // point to the list. Subsequent iterations of the while-loop will go
+  // through the child branches that were added and repeat the process of
+  // shifting and looking for child branches. Eventually the branch
+  // hierarchy will be exhausted and no further child branches will be
+  // added to the list, at which point the while-loop will stop.
+  while (branchesToShift.count > 0)
+  {
+    NodeTreeViewBranch* branchToShift = branchesToShift.firstObject;
+    [branchesToShift removeObjectAtIndex:0];
+    NSMutableArray* branchTuplesToShift = branchToShift->branchTuples;
+
+    if (shiftingInitialBranch)
+    {
+      shiftingInitialBranch = false;
+
+      // Enumeration by index is slower than fast enumeration, but we
+      // can't avoid using it because we have to start at a non-zero index
+      // and fast enumeration does not allow to specify a non-zero start
+      // index
+      NSUInteger numberOfBranchTuples = branchTuplesToShift.count;
+      for (NSUInteger indexOfBranchTupleToShift = indexOfFirstBranchTupleToShift; indexOfBranchTupleToShift < numberOfBranchTuples; indexOfBranchTupleToShift++)
+      {
+        NodeTreeViewBranchTuple* branchTupleToShift = [branchTuplesToShift objectAtIndex:indexOfBranchTupleToShift];
+        shiftBranchTuple(branchTupleToShift);
+      }
+    }
+    else
+    {
+      for (NodeTreeViewBranchTuple* branchTupleToShift in branchTuplesToShift)
+        shiftBranchTuple(branchTupleToShift);
+    }
+  }
+}
+
+#pragma mark - Private API - Canvas calculation - Part 3: Determine y-coordinates
+
+// -----------------------------------------------------------------------------
+/// @brief Iterates over the branches that are present in
+/// @a collectBranchDataResult and determines the y-position of each branch.
+/// Returns the highest y-position found.
+// -----------------------------------------------------------------------------
+- (unsigned short) determineYCoordinatesOfBranches:(struct CollectBranchDataResult)collectBranchDataResult
+                                    branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+{
   // In the worst case each branch is on its own y-position => create the array
   // to cater for this worst case
-  NSUInteger numberOfBranches = branches.count;
+  NSUInteger numberOfBranches = collectBranchDataResult.branches.count;
   unsigned short lowestOccupiedXPositionOfRow[numberOfBranches];
   for (NSUInteger indexOfBranch = 0; indexOfBranch < numberOfBranches; indexOfBranch++)
     lowestOccupiedXPositionOfRow[indexOfBranch] = -1;
+
   unsigned short highestYPosition = 0;
 
-  // TODO xxx should be empty
-  [stack removeAllObjects];
+  NSMutableArray* stack = [NSMutableArray array];
 
-  Branch* currentBranch = branches.firstObject;
+  NodeTreeViewBranch* currentBranch = collectBranchDataResult.branches.firstObject;
 
   while (true)
   {
     while (currentBranch)
     {
-      // Start visit branch
-      // The y-position of a child branch is at least one below the y-position
-      // of the parent branch
-      unsigned short yPosition;
-      if (currentBranch->parentBranch)
-        yPosition = currentBranch->parentBranch->yPosition + 1;
-      else
-        yPosition = 0;
-
-      BranchTuple* lastBranchTuple = currentBranch->branchTuples.lastObject;
-      unsigned short highestXPositionOfBranch = (lastBranchTuple->xPositionOfFirstCell +
-                                                 lastBranchTuple->numberOfCellsForNode -
-                                                 1);
-      while (highestXPositionOfBranch >= lowestOccupiedXPositionOfRow[yPosition])
-        yPosition++;
-
-      currentBranch->yPosition = yPosition;
+      [self determineYCoordinateOfBranch:currentBranch
+            lowestOccupiedXPositionOfRow:lowestOccupiedXPositionOfRow
+                          branchingStyle:branchingStyle];
 
       if (currentBranch->yPosition > highestYPosition)
         highestYPosition = currentBranch->yPosition;
-
-      unsigned short lowestXPositionOfBranch;
-      if (currentBranch->parentBranch)
-      {
-        lowestXPositionOfBranch = currentBranch->parentBranchTupleBranchingNode->xPositionOfFirstCell;
-
-        // Diagonal branching style allows for a small optimization of the
-        // available space on the LAST child branch:
-        // A---B---C---D---E---F---G
-        //     |   |\--H   |    \--I
-        //      \--J\--K    \--L---M
-        // The branch with node J fits on the same y-position as the branch with
-        // node K because 1) the diagonal branching line leading from C to K
-        // does not occupy the space of J, and there is also no vertical
-        // branching line to another child node of C that would take the space
-        // away from J. The situation is different for the branch with node L
-        // and M: Because the branch contains two nodes it is too long and does
-        // not fit on the same y-position as the branch with node I.
-        if (branchingStyle == NodeTreeViewBranchingStyleDiagonal && currentBranch->parentBranchTupleBranchingNode->childBranches.lastObject == currentBranch)
-        {
-          // The desired space gain would be
-          //   lowestXPositionOfBranch += currentBranch->parentBranchTupleBranchingNode->numberOfCellsForNode;
-          // However since a diagonal line crosses only a single sub-cell, and
-          // there are no sub-cells in y-direction, diagonal branching can only
-          // ever gain space that is worth 1 sub-cell. As a result, when the
-          // tree is condensed (which means that a multipart cell's number of
-          // sub-cells is >1) the space gain from diagonal branching is never
-          // sufficient to fit a branch on an y-position where it would not have
-          // fit with bracket branching.
-          // TODO xxx Consider making multipart cells also extend in y-direction
-          lowestXPositionOfBranch += 1;
-        }
-      }
-      else
-      {
-        lowestXPositionOfBranch = 0;
-      }
-
-      lowestOccupiedXPositionOfRow[yPosition] = lowestXPositionOfBranch;
-      // End visit branch
 
       [stack addObject:currentBranch];
 
@@ -704,379 +767,708 @@
     }
   }
 
-  // ----------
-  // Part 4: Determine lines
-  // - Add lines to cells that so far contained only symbols
-  // - Generate line-only cells to connect move nodes that are no longer
-  //   adjacent because they were aligned to the move number
-  // - Generate line-only cells that connect branches
-  // ----------
-  unsigned short highestXPosition = 0;
-  NSMutableDictionary* cellsDictionary = [NSMutableDictionary dictionary];
+  return highestYPosition;
+}
 
-  for (Branch* branch in branches)
+// -----------------------------------------------------------------------------
+/// @brief Determines the y-position of @a branch.
+// -----------------------------------------------------------------------------
+- (void) determineYCoordinateOfBranch:(NodeTreeViewBranch*)branch
+         lowestOccupiedXPositionOfRow:(unsigned short*)lowestOccupiedXPositionOfRow
+                       branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+{
+  // The y-position of a child branch is at least one below the y-position
+  // of the parent branch
+  unsigned short yPosition;
+  if (branch->parentBranch)
+    yPosition = branch->parentBranch->yPosition + 1;
+  else
+    yPosition = 0;
+
+  NodeTreeViewBranchTuple* lastBranchTuple = branch->branchTuples.lastObject;
+  unsigned short highestXPositionOfBranch = (lastBranchTuple->xPositionOfFirstCell +
+                                             lastBranchTuple->numberOfCellsForNode -
+                                             1);
+  while (highestXPositionOfBranch >= lowestOccupiedXPositionOfRow[yPosition])
+    yPosition++;
+
+  branch->yPosition = yPosition;
+
+  unsigned short lowestXPositionOfBranch;
+  if (branch->parentBranch)
   {
-    unsigned short xPositionAfterPreviousBranchTuple;
+    lowestXPositionOfBranch = branch->parentBranchTupleBranchingNode->xPositionOfFirstCell;
+
+    // Diagonal branching style allows for a small optimization of the
+    // available space on the LAST child branch:
+    // A---B---C---D---E---F---G
+    //     |   |\--H   |    \--I
+    //      \--J\--K    \--L---M
+    // The branch with node J fits on the same y-position as the branch with
+    // node K because 1) the diagonal branching line leading from C to K
+    // does not occupy the space of J, and there is also no vertical
+    // branching line to another child node of C that would take the space
+    // away from J. The situation is different for the branch with node L
+    // and M: Because the branch contains two nodes it is too long and does
+    // not fit on the same y-position as the branch with node I.
+    if (branchingStyle == NodeTreeViewBranchingStyleDiagonal &&
+        branch->parentBranchTupleBranchingNode->childBranches.lastObject == branch)
+    {
+      // The desired space gain would be
+      //   lowestXPositionOfBranch += currentBranch->parentBranchTupleBranchingNode->numberOfCellsForNode;
+      // However since a diagonal line crosses only a single sub-cell, and
+      // there are no sub-cells in y-direction, diagonal branching can only
+      // ever gain space that is worth 1 sub-cell. As a result, when the
+      // tree is condensed (which means that a multipart cell's number of
+      // sub-cells is >1) the space gain from diagonal branching is never
+      // sufficient to fit a branch on an y-position where it would not have
+      // fit with bracket branching.
+      // TODO xxx Consider making multipart cells also extend in y-direction
+      lowestXPositionOfBranch += 1;
+    }
+  }
+  else
+  {
+    lowestXPositionOfBranch = 0;
+  }
+
+  lowestOccupiedXPositionOfRow[yPosition] = lowestXPositionOfBranch;
+}
+
+#pragma mark - Private API - Canvas calculation - Part 4: Generate cells
+
+// -----------------------------------------------------------------------------
+/// @brief Iterates over all branches and nodes that are present in
+/// @a collectBranchDataResult and generates cells to represent the nodes on
+/// the canvas.
+///
+/// This step not only generates cells for the nodes, it also generates cells
+/// that contain only lines, which are used to connect nodes to their
+/// predecessor and successor nodes. Line-only cells contain either horizontal
+/// lines to connect a node to its predecessor node in the same branch,
+/// diagonal and/or horizontal lines to connect a node to its predecessor
+/// branching node in the parent branch, or an assortment of vertical, diagonal
+/// and/or horizontal lines to connect a branching node to its successor nodes
+/// in child branches.
+// -----------------------------------------------------------------------------
+- (struct GenerateCellsResult) generateCells:(struct CollectBranchDataResult)collectBranchDataResult
+                            highestYPosition:(unsigned short)highestYPosition
+                              branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+{
+  struct GenerateCellsResult generateCellsResult;
+  generateCellsResult.highestXPosition = 0;
+  generateCellsResult.cellsDictionary = [NSMutableDictionary dictionary];
+
+  for (NodeTreeViewBranch* branch in collectBranchDataResult.branches)
+  {
+    unsigned short xPositionAfterLastCellInBranchingTuple;
     if (branch->parentBranch)
     {
-      unsigned short xPositionAfterLastCellInBranchingTuple = (branch->parentBranchTupleBranchingNode->xPositionOfFirstCell +
-                                                               branch->parentBranchTupleBranchingNode->numberOfCellsForNode);
-      xPositionAfterPreviousBranchTuple = xPositionAfterLastCellInBranchingTuple;
+      xPositionAfterLastCellInBranchingTuple = (branch->parentBranchTupleBranchingNode->xPositionOfFirstCell +
+                                                branch->parentBranchTupleBranchingNode->numberOfCellsForNode);
     }
     else
     {
-      xPositionAfterPreviousBranchTuple = 0;
+      xPositionAfterLastCellInBranchingTuple = 0;
     }
 
-    BranchTuple* firstBranchTuple = branch->branchTuples.firstObject;
-    BranchTuple* lastBranchTuple = branch->branchTuples.lastObject;
+    [self generateCellsForBranch:branch
+xPositionAfterLastCellInBranchingTuple:xPositionAfterLastCellInBranchingTuple
+                  branchingStyle:branchingStyle
+             generateCellsResult:&generateCellsResult];
+  }
 
-    for (BranchTuple* branchTuple in branch->branchTuples)
+  return generateCellsResult;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Generates the cells for the entire branch @a branch.
+// -----------------------------------------------------------------------------
+- (void) generateCellsForBranch:(NodeTreeViewBranch*)branch
+xPositionAfterLastCellInBranchingTuple:(unsigned short)xPositionAfterLastCellInBranchingTuple
+                 branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+            generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+{
+  unsigned short xPositionAfterPreviousBranchTuple = xPositionAfterLastCellInBranchingTuple;
+
+  NodeTreeViewBranchTuple* firstBranchTupleOfBranch = branch->branchTuples.firstObject;
+  NodeTreeViewBranchTuple* lastBranchTupleOfBranch = branch->branchTuples.lastObject;
+
+  for (NodeTreeViewBranchTuple* branchTuple in branch->branchTuples)
+  {
+    // Adjust xPositionAfterPreviousBranchTuple so that the next branch tuple
+    // can connect
+    xPositionAfterPreviousBranchTuple = [self generateCellsForBranchTuple:branchTuple
+                                        xPositionAfterPreviousBranchTuple:xPositionAfterPreviousBranchTuple
+                                                        yPositionOfBranch:branch->yPosition
+                                                 firstBranchTupleOfBranch:firstBranchTupleOfBranch
+                                                  lastBranchTupleOfBranch:lastBranchTupleOfBranch
+                                                           branchingStyle:branchingStyle
+                                                      generateCellsResult:generateCellsResult];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Generates the cells for the node represented by @a branchTuple. This
+/// includes line-only cells on the left and below the node, connecting the node
+/// to its predecessor and successor nodes.
+///
+/// Line-only cells contain either horizontal lines to connect a node to its predecessor node in the same branch,
+/// diagonal and/or horizontal lines to connect a node to its predecessor
+/// branching node in the parent branch, or an assortment of vertical, diagonal
+/// and/or horizontal lines to connect a branching node to its successor nodes
+/// in child branches.
+// -----------------------------------------------------------------------------
+- (unsigned short) generateCellsForBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
+             xPositionAfterPreviousBranchTuple:(unsigned short)xPositionAfterPreviousBranchTuple
+                             yPositionOfBranch:(unsigned short)yPositionOfBranch
+                      firstBranchTupleOfBranch:(NodeTreeViewBranchTuple*)firstBranchTupleOfBranch
+                       lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
+                                branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+                           generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+{
+  bool diagonalConnectionToBranchingLineEstablished = [self generateCellsLeftOfBranchTuple:branchTuple
+                                                         xPositionAfterPreviousBranchTuple:xPositionAfterPreviousBranchTuple
+                                                                         yPositionOfBranch:yPositionOfBranch
+                                                                  firstBranchTupleOfBranch:firstBranchTupleOfBranch
+                                                                            branchingStyle:branchingStyle
+                                                                       generateCellsResult:generateCellsResult];
+
+  if (branchTuple->childBranches)
+  {
+    [self generateCellsBelowBranchTuple:branchTuple
+                      yPositionOfBranch:yPositionOfBranch
+                         branchingStyle:branchingStyle
+                    generateCellsResult:generateCellsResult];
+  }
+
+  [self generateCellsForBranchTuple:branchTuple
+                  yPositionOfBranch:yPositionOfBranch
+           firstBranchTupleOfBranch:firstBranchTupleOfBranch
+            lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
+diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEstablished
+                     branchingStyle:branchingStyle
+                generateCellsResult:generateCellsResult];
+
+  unsigned short xPositionAfterBranchTuple = (branchTuple->xPositionOfFirstCell +
+                                              branchTuple->numberOfCellsForNode);
+  return xPositionAfterBranchTuple;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Generates line-only cells on the left of the node represented by
+/// @a branchTuple.
+///
+/// In the simple case, the cells connect the node to its predecessor node in
+/// the same branch.
+///
+/// In the more complex case, the cells reach out to the vertical branching line
+/// to connect the node to its predecessor branching node in the parent branch.
+// -----------------------------------------------------------------------------
+- (bool) generateCellsLeftOfBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
+      xPositionAfterPreviousBranchTuple:(unsigned short)xPositionAfterPreviousBranchTuple
+                      yPositionOfBranch:(unsigned short)yPositionOfBranch
+               firstBranchTupleOfBranch:(NodeTreeViewBranchTuple*)firstBranchTupleOfBranch
+                         branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+                    generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+{
+  bool diagonalConnectionToBranchingLineEstablished = false;
+
+  // Part 1: Generate cells with lines that connect the node to either its
+  // predecessor node in the same branch (only if alignMoveNodes is true),
+  // or to a branching line that reaches out from the cell with the
+  // branching node (only if condenseTree is true)
+  for (unsigned short xPositionOfCell = xPositionAfterPreviousBranchTuple; xPositionOfCell < branchTuple->xPositionOfFirstCell; xPositionOfCell++)
+  {
+    NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
+    if (branchingStyle == NodeTreeViewBranchingStyleDiagonal && branchTuple == firstBranchTupleOfBranch && xPositionOfCell == xPositionAfterPreviousBranchTuple)
     {
-      bool diagonalConnectionToBranchingLineEstablished = false;
-      // Part 1: Generate cells with lines that connect the node to either its
-      // predecessor node in the same branch (only if alignMoveNodes is true),
-      // or to a branching line that reaches out from the cell with the
-      // branching node (only if condenseTree is true)
-      for (unsigned short xPositionOfCell = xPositionAfterPreviousBranchTuple; xPositionOfCell < branchTuple->xPositionOfFirstCell; xPositionOfCell++)
-      {
-        NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
-        if (branchingStyle == NodeTreeViewBranchingStyleDiagonal && branchTuple == firstBranchTuple && xPositionOfCell == xPositionAfterPreviousBranchTuple)
-        {
-          diagonalConnectionToBranchingLineEstablished = true;
-          cell.lines = NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight;  // connect to branching line
-        }
-        else
-        {
-          cell.lines = NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight;
-        }
+      diagonalConnectionToBranchingLineEstablished = true;
+      cell.lines = NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight;  // connect to branching line
+    }
+    else
+    {
+      cell.lines = NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight;
+    }
 
-        NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfCell y:branch->yPosition];
-        cellsDictionary[position] = cell;
-      }
+    NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfCell y:yPositionOfBranch];
+    generateCellsResult->cellsDictionary[position] = cell;
+  }
 
-      // Part 2: If it's a branching node then generate cells below the
-      // branching node that contain the branching lines needed to connect the
-      // branching node to its child nodes. The following schematic depicts what
-      // kind of lines need to be generated for each branching style when
-      // condenseTree is enabled, i.e. when multipart cells are involved.
-      // "N" marks the center cells of multipart cells that represent a node.
-      // "o" marks branching line junctions.
-      //
-      // NodeTreeViewBranchingStyleDiagonal     NodeTreeViewBranchingStyleBracket
-      //
-      //     0    1    2    3    4    5           0    1    2    3    4    5
-      //   +---++---++---+                      +---++---++---+
-      //   |   ||   ||   |                      |   ||   ||   |
-      // 0 |   || N ||   |                      |   || N ||   |
-      //   |   || |\||   |                      |   || | ||   |
-      //   +---++-|-++---+                      +---++-|-++---+
-      //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
-      //   |   || | ||\  ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-      // 1 |   || o || o---------N ||   |       |   || o--------------N ||   |
-      //   |   || |\||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-      //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
-      //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
-      //   |   || | ||\  ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-      // 2 |   || | || o---------N ||   |       |   || o--------------N ||   |
-      //   |   || | ||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-      //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
-      //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
-      //   |   || | ||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-      // 3 |   || o ||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-      //   |   ||  \||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-      //   +---++---++---++---++---++---+       +---++-|-++---++---++---++---+
-      //   +---++---++---++---++---++---+       +---++-|-++---++---++---++---+
-      //   |   ||   ||\  ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-      // 4 |   ||   || o---------N ||   |       |   || o--------------N ||   |
-      //   |   ||   ||   ||   ||   ||   |       |   ||   ||   ||   ||   ||   |
-      //   +---++---++---++---++---++---+       +---++---++---++---++---++---+
-      //
-      // Cells to be generated on each y-position:
-      // - y=0: 1/0, 2/0                             1/0, 2/0
-      // - y=1  1/1, 2/1                             1/1, 2/1
-      // - y=2  1/2                                  1/2
-      // - y=3  2/3                                  1/4, 2/4
+  return diagonalConnectionToBranchingLineEstablished;
+}
 
-      if (branchTuple->childBranches)
-      {
-        Branch* lastChildBranch = branchTuple->childBranches.lastObject;
+// -----------------------------------------------------------------------------
+/// @brief Generates line-only cells below the branching node represented by
+/// @a branchTuple.
+///
+/// The generated cells form a vertical branching line that reaches out from the
+/// branching node towards its child nodes. Appropriate horizontal and/or
+/// diagonal stub lines branching away from the vertical line are added.
+// -----------------------------------------------------------------------------
+- (void) generateCellsBelowBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                     yPositionOfBranch:(unsigned short)yPositionOfBranch
+                        branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+                   generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+{
+  // Part 2: If it's a branching node then generate cells below the
+  // branching node that contain the branching lines needed to connect the
+  // branching node to its child nodes. The following schematic depicts what
+  // kind of lines need to be generated for each branching style when
+  // condenseTree is enabled, i.e. when multipart cells are involved.
+  // "N" marks the center cells of multipart cells that represent a node.
+  // "o" marks branching line junctions.
+  //
+  // NodeTreeViewBranchingStyleDiagonal     NodeTreeViewBranchingStyleBracket
+  //
+  //     0    1    2    3    4    5           0    1    2    3    4    5
+  //   +---++---++---+                      +---++---++---+
+  //   |   ||   ||   |                      |   ||   ||   |
+  // 0 |   || N ||   |                      |   || N ||   |
+  //   |   || |\||   |                      |   || | ||   |
+  //   +---++-|-++---+                      +---++-|-++---+
+  //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
+  //   |   || | ||\  ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+  // 1 |   || o || o---------N ||   |       |   || o--------------N ||   |
+  //   |   || |\||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+  //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
+  //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
+  //   |   || | ||\  ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+  // 2 |   || | || o---------N ||   |       |   || o--------------N ||   |
+  //   |   || | ||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+  //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
+  //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
+  //   |   || | ||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+  // 3 |   || o ||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+  //   |   ||  \||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+  //   +---++---++---++---++---++---+       +---++-|-++---++---++---++---+
+  //   +---++---++---++---++---++---+       +---++-|-++---++---++---++---+
+  //   |   ||   ||\  ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+  // 4 |   ||   || o---------N ||   |       |   || o--------------N ||   |
+  //   |   ||   ||   ||   ||   ||   |       |   ||   ||   ||   ||   ||   |
+  //   +---++---++---++---++---++---+       +---++---++---++---++---++---+
+  //
+  // Cells to be generated on each y-position:
+  // - y=0: 1/0, 2/0                             1/0, 2/0
+  // - y=1  1/1, 2/1                             1/1, 2/1
+  // - y=2  1/2                                  1/2
+  // - y=3  2/3                                  1/4, 2/4
 
-        unsigned short yPositionBelowBranchingNode = branch->yPosition + 1;
-        unsigned short yPositionOfLastChildBranch = lastChildBranch->yPosition;
+  NodeTreeViewBranch* lastChildBranch = branchTuple->childBranches.lastObject;
 
-        NSUInteger indexOfNextChildBranchToHorizontallyConnect = 0;
-        Branch* nextChildBranchToHorizontallyConnect = [branchTuple->childBranches objectAtIndex:indexOfNextChildBranchToHorizontallyConnect];
-        NSUInteger indexOfNextChildBranchToDiagonallyConnect = -1;
-        Branch* nextChildBranchToDiagonallyConnect = nil;
-        if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
-        {
-          Branch* firstChildBranch = branchTuple->childBranches.firstObject;
-          if (firstChildBranch->yPosition > yPositionBelowBranchingNode)
-          {
-            indexOfNextChildBranchToDiagonallyConnect = 0;
-            nextChildBranchToDiagonallyConnect = firstChildBranch;
-          }
-          // If there is a second child branch it is guaranteed to have an
-          // y-position that is greater than yPositionBelowBranchingNode
-          else if (branchTuple->childBranches.count > 1)
-          {
-            indexOfNextChildBranchToDiagonallyConnect = 1;
-            nextChildBranchToDiagonallyConnect = [branchTuple->childBranches objectAtIndex:1];
-          }
-        }
+  unsigned short yPositionBelowBranchingNode = yPositionOfBranch + 1;
+  unsigned short yPositionOfLastChildBranch = lastChildBranch->yPosition;
 
-        unsigned int xPositionOfVerticalLineCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
-
-        for (unsigned short yPosition = yPositionBelowBranchingNode; yPosition <= yPositionOfLastChildBranch; yPosition++)
-        {
-          NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
-
-          if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
-          {
-            if (yPosition < yPositionOfLastChildBranch)
-            {
-              lines |= NodeTreeViewCellLineCenterToTop;
-
-              if (nextChildBranchToDiagonallyConnect && yPosition + 1 == nextChildBranchToDiagonallyConnect->yPosition)
-                lines |= NodeTreeViewCellLineCenterToBottomRight;
-
-              if (yPosition + 1 < yPositionOfLastChildBranch)
-                lines |= NodeTreeViewCellLineCenterToBottom;
-            }
-          }
-          else
-          {
-            lines |= NodeTreeViewCellLineCenterToTop;
-
-            if (yPosition == nextChildBranchToHorizontallyConnect->yPosition)
-              lines |= NodeTreeViewCellLineCenterToRight;
-
-            if (yPosition < yPositionOfLastChildBranch)
-              lines |= NodeTreeViewCellLineCenterToBottom;
-          }
-
-          // For diagonal branching style, no cell needs to be generated on the
-          // last y-position
-          if (lines != NodeTreeViewCellLineNone)
-          {
-            NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
-            cell.lines = lines;
-
-            NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfVerticalLineCell y:yPosition];
-            cellsDictionary[position] = cell;
-          }
-
-          // If the branching node occupies more than one cell then we need to
-          // create additional cells if there is a branch on the y-position
-          // that needs a horizontal connection
-          if (branchTuple->numberOfCellsForNode > 1 && yPosition == nextChildBranchToHorizontallyConnect->yPosition)
-          {
-            // TODO xxx this can be assigned outside of any loops
-            NodeTreeViewCellLines linesOfFirstCell;
-            if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
-              linesOfFirstCell = NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight;
-            else
-              linesOfFirstCell = NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight;
-
-            unsigned short xPositionOfLastCell = branchTuple->xPositionOfFirstCell + branchTuple->numberOfCellsForNode - 1;
-            for (unsigned short xPosition = xPositionOfVerticalLineCell + 1; xPosition <= xPositionOfLastCell; xPosition++)
-            {
-              NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
-              if (xPosition == xPositionOfVerticalLineCell + 1)
-                cell.lines = linesOfFirstCell;
-              else
-                cell.lines = NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight;
-
-              NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPosition];
-              cellsDictionary[position] = cell;
-            }
-          }
-
-          if (yPosition == nextChildBranchToHorizontallyConnect->yPosition)
-          {
-            if (nextChildBranchToHorizontallyConnect == lastChildBranch)
-            {
-              // TODO xxx this does nothing, this happens on the last iteration => code analysis may not see this
-              indexOfNextChildBranchToHorizontallyConnect = -1;
-              nextChildBranchToHorizontallyConnect = nil;
-            }
-            else
-            {
-              indexOfNextChildBranchToHorizontallyConnect++;
-              nextChildBranchToHorizontallyConnect = [branchTuple->childBranches objectAtIndex:indexOfNextChildBranchToHorizontallyConnect];
-            }
-          }
-
-          if (nextChildBranchToDiagonallyConnect && yPosition + 1 == nextChildBranchToDiagonallyConnect->yPosition)
-          {
-            if (nextChildBranchToDiagonallyConnect == lastChildBranch)
-            {
-              indexOfNextChildBranchToDiagonallyConnect = -1;
-              nextChildBranchToDiagonallyConnect = nil;
-            }
-            else
-            {
-              indexOfNextChildBranchToDiagonallyConnect++;
-              nextChildBranchToDiagonallyConnect = [branchTuple->childBranches objectAtIndex:indexOfNextChildBranchToDiagonallyConnect];
-            }
-          }
-        }
-      }
-
-      // Part 3: Add lines to node cells
-      for (unsigned int indexOfCell = 0; indexOfCell < branchTuple->numberOfCellsForNode; indexOfCell++)
-      {
-        NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
-        cell.part = indexOfCell;
-        cell.parts = branchTuple->numberOfCellsForNode;
-
-        cell.symbol = branchTuple->symbol;
-
-        // ----------------
-        NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
-
-        bool isFirstCellForNode = (indexOfCell == 0);
-        bool isCellBeforeOrIncludingCenter = (indexOfCell <= branchTuple->indexOfCenterCell);
-        bool isCenterCellForNode = (indexOfCell == branchTuple->indexOfCenterCell);
-        bool isCellAfterOrIncludingCenter = (indexOfCell >= branchTuple->indexOfCenterCell);
-
-        // Horizontal connecting lines to previous node in the same branch,
-        // or horizontal/diagonal connecting lines to branching node in parent
-        // branch
-        if (isCellBeforeOrIncludingCenter)
-        {
-          if (branchTuple == firstBranchTuple && branch->yPosition == 0)
-          {
-            // Root node does not have connecting lines on the left
-          }
-          else
-          {
-            if (isFirstCellForNode)
-            {
-              if (branchTuple == firstBranchTuple)
-              {
-                // A diagonal line connecting to a branching line needs to be
-                // drawn if, and only if 1) obviously branching style is
-                // diagonal; 2) nodes are not represented by multipart cells
-                // (for multipart cells the diagonal connecting line is located
-                // in a standalone cell somewhere on the left, before the first
-                // sub-cell of the multipart cell); and 3) if a diagonal
-                // connecting line has not yet been established due to move
-                // node alignment.
-                if (branchingStyle == NodeTreeViewBranchingStyleDiagonal && branchTuple->numberOfCellsForNode == 1 && ! diagonalConnectionToBranchingLineEstablished)
-                  lines |= NodeTreeViewCellLineCenterToTopLeft;
-                else
-                  lines |= NodeTreeViewCellLineCenterToLeft;
-              }
-              else
-              {
-                lines |= NodeTreeViewCellLineCenterToLeft;
-              }
-            }
-            else
-            {
-              lines |= NodeTreeViewCellLineCenterToLeft;
-            }
-
-            if (isCenterCellForNode)
-            {
-              // Whether or not to draw NodeTreeViewCellLineCenterToRight is
-              // determined in the block for isCellAfterOrIncludingCenter
-            }
-            else
-            {
-              lines |= NodeTreeViewCellLineCenterToRight;
-            }
-          }
-        }
-
-        // Horizontal connecting lines to next node in the same branch
-        if (isCellAfterOrIncludingCenter)
-        {
-          if (branchTuple == lastBranchTuple)
-          {
-            // No next node in the same branch => no connecting lines
-          }
-          else
-          {
-            lines |= NodeTreeViewCellLineCenterToRight;
-
-            if (isCenterCellForNode)
-            {
-              // Whether or not to draw NodeTreeViewCellLineCenterToLeft is
-              // determined in the block for isCellBeforeOrIncludingCenter
-            }
-            else
-            {
-              lines |= NodeTreeViewCellLineCenterToLeft;
-            }
-          }
-        }
-
-        // Vertical and/or diagonal connecting lines to child branches
-        if (isCenterCellForNode && branchTuple->childBranches)
-        {
-          if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
-          {
-            Branch* firstChildBranch = branchTuple->childBranches.firstObject;
-            if (branchTuple->branch->yPosition + 1 == firstChildBranch->yPosition)
-              lines |= NodeTreeViewCellLineCenterToBottomRight;
-            else
-              lines |= NodeTreeViewCellLineCenterToBottom;
-
-            if (branchTuple->childBranches.count > 1)
-              lines |= NodeTreeViewCellLineCenterToBottom;
-          }
-          else
-          {
-            lines |= NodeTreeViewCellLineCenterToBottom;
-          }
-        }
-
-        cell.lines = lines;
-        // ----------------
-
-        unsigned short xPosition = branchTuple->xPositionOfFirstCell + indexOfCell;
-        NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:branch->yPosition];
-        cellsDictionary[position] = cell;
-
-        if (xPosition > highestXPosition)
-          highestXPosition = xPosition;
-      }
-
-      // Part 4: Adjust xPositionAfterPreviousBranchTuple so that the next
-      // branch tuple can connect
-      xPositionAfterPreviousBranchTuple = branchTuple->xPositionOfFirstCell + branchTuple->numberOfCellsForNode;
+  NSUInteger indexOfNextChildBranchToHorizontallyConnect = 0;
+  NodeTreeViewBranch* nextChildBranchToHorizontallyConnect = [branchTuple->childBranches objectAtIndex:indexOfNextChildBranchToHorizontallyConnect];
+  NSUInteger indexOfNextChildBranchToDiagonallyConnect = -1;
+  NodeTreeViewBranch* nextChildBranchToDiagonallyConnect = nil;
+  if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
+  {
+    NodeTreeViewBranch* firstChildBranch = branchTuple->childBranches.firstObject;
+    if (firstChildBranch->yPosition > yPositionBelowBranchingNode)
+    {
+      indexOfNextChildBranchToDiagonallyConnect = 0;
+      nextChildBranchToDiagonallyConnect = firstChildBranch;
+    }
+    // If there is a second child branch it is guaranteed to have an
+    // y-position that is greater than yPositionBelowBranchingNode
+    else if (branchTuple->childBranches.count > 1)
+    {
+      indexOfNextChildBranchToDiagonallyConnect = 1;
+      nextChildBranchToDiagonallyConnect = [branchTuple->childBranches objectAtIndex:1];
     }
   }
 
-  self.cellsDictionary = cellsDictionary;
-  self.canvasSize = CGSizeMake(highestXPosition + 1, highestYPosition + 1);
+  unsigned int xPositionOfVerticalLineCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
 
-  // TODO xxx Currently each and every change causes a full redraw => optimize
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeViewContentDidChange object:nil];
+  for (unsigned short yPosition = yPositionBelowBranchingNode; yPosition <= yPositionOfLastChildBranch; yPosition++)
+  {
+    [self generateCellsBelowBranchTuple:branchTuple
+                            atYPosition:yPosition
+             yPositionOfLastChildBranch:yPositionOfLastChildBranch
+            xPositionOfVerticalLineCell:xPositionOfVerticalLineCell
+   nextChildBranchToHorizontallyConnect:nextChildBranchToHorizontallyConnect
+     nextChildBranchToDiagonallyConnect:nextChildBranchToDiagonallyConnect
+                         branchingStyle:branchingStyle
+                    generateCellsResult:generateCellsResult];
+
+    if (yPosition == nextChildBranchToHorizontallyConnect->yPosition)
+    {
+      if (nextChildBranchToHorizontallyConnect == lastChildBranch)
+      {
+        // TODO xxx this does nothing, this happens on the last iteration => code analysis may not see this
+        indexOfNextChildBranchToHorizontallyConnect = -1;
+        nextChildBranchToHorizontallyConnect = nil;
+      }
+      else
+      {
+        indexOfNextChildBranchToHorizontallyConnect++;
+        nextChildBranchToHorizontallyConnect = [branchTuple->childBranches objectAtIndex:indexOfNextChildBranchToHorizontallyConnect];
+      }
+    }
+
+    if (nextChildBranchToDiagonallyConnect && yPosition + 1 == nextChildBranchToDiagonallyConnect->yPosition)
+    {
+      if (nextChildBranchToDiagonallyConnect == lastChildBranch)
+      {
+        indexOfNextChildBranchToDiagonallyConnect = -1;
+        nextChildBranchToDiagonallyConnect = nil;
+      }
+      else
+      {
+        indexOfNextChildBranchToDiagonallyConnect++;
+        nextChildBranchToDiagonallyConnect = [branchTuple->childBranches objectAtIndex:indexOfNextChildBranchToDiagonallyConnect];
+      }
+    }
+  }
 }
 
-// TODO xxx document
-- (unsigned short) lengthOfBranch:(NSArray*)branch
+// -----------------------------------------------------------------------------
+/// @brief Generates line-only cells below the branching node represented by
+/// @a branchTuple at the specific y-position @a yPosition.
+// -----------------------------------------------------------------------------
+- (void) generateCellsBelowBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                           atYPosition:(unsigned short)yPosition
+            yPositionOfLastChildBranch:(unsigned short)yPositionOfLastChildBranch
+           xPositionOfVerticalLineCell:(unsigned short)xPositionOfVerticalLineCell
+  nextChildBranchToHorizontallyConnect:(NodeTreeViewBranch*)nextChildBranchToHorizontallyConnect
+    nextChildBranchToDiagonallyConnect:(NodeTreeViewBranch*)nextChildBranchToDiagonallyConnect
+                        branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+                   generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
 {
-  BranchTuple* firstBranchTuple = branch.firstObject;
-  BranchTuple* lastBranchTuple = branch.lastObject;
-  return (lastBranchTuple->xPositionOfFirstCell +
-          lastBranchTuple->numberOfCellsForNode -
-          firstBranchTuple->xPositionOfFirstCell);
+  [self generateVerticalLineCellWithXPosition:xPositionOfVerticalLineCell
+                                    yPosition:yPosition
+                   yPositionOfLastChildBranch:yPositionOfLastChildBranch
+         nextChildBranchToHorizontallyConnect:nextChildBranchToHorizontallyConnect
+           nextChildBranchToDiagonallyConnect:nextChildBranchToDiagonallyConnect
+                               branchingStyle:branchingStyle
+                          generateCellsResult:generateCellsResult];
+
+  // If the branching node occupies more than one cell then we need to
+  // create additional cells if there is a branch on the y-position
+  // that needs a horizontal connection
+  if (branchTuple->numberOfCellsForNode > 1 && yPosition == nextChildBranchToHorizontallyConnect->yPosition)
+  {
+    [self generateCellsRightOfVerticalLineCell:branchTuple
+                                   atYPosition:yPosition
+                   xPositionOfVerticalLineCell:xPositionOfVerticalLineCell
+                                branchingStyle:branchingStyle
+                           generateCellsResult:generateCellsResult];
+  }
 }
 
-- (unsigned short) highestXPositionOfBranch:(NSArray*)branch
+// -----------------------------------------------------------------------------
+/// @brief Generates a single vertical branching line cell below the branching
+/// node represented by @a branchTuple. The cell is located at the specific
+/// y-position @a yPosition.
+// -----------------------------------------------------------------------------
+- (void) generateVerticalLineCellWithXPosition:(unsigned short)xPosition
+                                     yPosition:(unsigned short)yPosition
+                    yPositionOfLastChildBranch:(unsigned short)yPositionOfLastChildBranch
+          nextChildBranchToHorizontallyConnect:(NodeTreeViewBranch*)nextChildBranchToHorizontallyConnect
+            nextChildBranchToDiagonallyConnect:(NodeTreeViewBranch*)nextChildBranchToDiagonallyConnect
+                                branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+                           generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
 {
-  BranchTuple* lastBranchTuple = branch.lastObject;
-  return (lastBranchTuple->xPositionOfFirstCell +
-          lastBranchTuple->numberOfCellsForNode -
-          1);
+  NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
+
+  if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
+  {
+    if (yPosition < yPositionOfLastChildBranch)
+    {
+      lines |= NodeTreeViewCellLineCenterToTop;
+
+      if (nextChildBranchToDiagonallyConnect && yPosition + 1 == nextChildBranchToDiagonallyConnect->yPosition)
+        lines |= NodeTreeViewCellLineCenterToBottomRight;
+
+      if (yPosition + 1 < yPositionOfLastChildBranch)
+        lines |= NodeTreeViewCellLineCenterToBottom;
+    }
+  }
+  else
+  {
+    lines |= NodeTreeViewCellLineCenterToTop;
+
+    if (yPosition == nextChildBranchToHorizontallyConnect->yPosition)
+      lines |= NodeTreeViewCellLineCenterToRight;
+
+    if (yPosition < yPositionOfLastChildBranch)
+      lines |= NodeTreeViewCellLineCenterToBottom;
+  }
+
+  // For diagonal branching style, no cell needs to be generated on the
+  // last y-position
+  if (lines != NodeTreeViewCellLineNone)
+  {
+    NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
+    cell.lines = lines;
+
+    NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPosition];
+    generateCellsResult->cellsDictionary[position] = cell;
+  }
 }
 
-// TODO xxx document
+// -----------------------------------------------------------------------------
+/// @brief Generates cells to the right of a single vertical branching line cell
+/// below the branching node represented by @a branchTuple. The cells are
+/// located at the specific y-position @a yPosition. The cells form a stub line
+/// branching away from the vertical line.
+// -----------------------------------------------------------------------------
+- (void) generateCellsRightOfVerticalLineCell:(NodeTreeViewBranchTuple*)branchTuple
+                                  atYPosition:(unsigned short)yPosition
+                  xPositionOfVerticalLineCell:(unsigned short)xPositionOfVerticalLineCell
+                               branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+                          generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+{
+  // TODO xxx this can be assigned outside of any loops
+  NodeTreeViewCellLines linesOfFirstCell;
+  if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
+    linesOfFirstCell = NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight;
+  else
+    linesOfFirstCell = NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight;
+
+  unsigned short xPositionOfLastCell = branchTuple->xPositionOfFirstCell + branchTuple->numberOfCellsForNode - 1;
+  for (unsigned short xPosition = xPositionOfVerticalLineCell + 1; xPosition <= xPositionOfLastCell; xPosition++)
+  {
+    NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
+    if (xPosition == xPositionOfVerticalLineCell + 1)
+      cell.lines = linesOfFirstCell;
+    else
+      cell.lines = NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight;
+
+    NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPosition];
+    generateCellsResult->cellsDictionary[position] = cell;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Generates cells for the node represented by @a branchTuple.
+// -----------------------------------------------------------------------------
+- (void) generateCellsForBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                   yPositionOfBranch:(unsigned short)yPositionOfBranch
+            firstBranchTupleOfBranch:(NodeTreeViewBranchTuple*)firstBranchTupleOfBranch
+             lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
+diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranchingLineEstablished
+                      branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+                 generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+{
+  for (unsigned int indexOfCell = 0; indexOfCell < branchTuple->numberOfCellsForNode; indexOfCell++)
+  {
+    NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
+    cell.part = indexOfCell;
+    cell.parts = branchTuple->numberOfCellsForNode;
+
+    cell.symbol = branchTuple->symbol;
+    cell.lines = [self linesForCell:indexOfCell
+                        branchTuple:branchTuple
+                  yPositionOfBranch:yPositionOfBranch
+           firstBranchTupleOfBranch:firstBranchTupleOfBranch
+            lastBranchTupleOfBranch:lastBranchTupleOfBranch
+diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEstablished
+                     branchingStyle:branchingStyle];
+
+
+    unsigned short xPosition = branchTuple->xPositionOfFirstCell + indexOfCell;
+    NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPositionOfBranch];
+    generateCellsResult->cellsDictionary[position] = cell;
+
+    if (xPosition > generateCellsResult->highestXPosition)
+      generateCellsResult->highestXPosition = xPosition;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the lines for the cell identified by @a indexOfCell which
+/// wholly or partially (in the case of multipart cells) depicts the node
+/// represented by @a branchTuple on the canvas.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCellLines) linesForCell:(unsigned int)indexOfCell
+                           branchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                      yPositionOfBranch:(unsigned short)yPositionOfBranch
+              firstBranchTupleOfBranch:(NodeTreeViewBranchTuple*)firstBranchTupleOfBranch
+               lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
+diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranchingLineEstablished
+                        branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+{
+  bool isCellBeforeOrIncludingCenter = (indexOfCell <= branchTuple->indexOfCenterCell);
+  bool isCenterCellForNode = (indexOfCell == branchTuple->indexOfCenterCell);
+  bool isCellAfterOrIncludingCenter = (indexOfCell >= branchTuple->indexOfCenterCell);
+
+  NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
+
+  // Horizontal connecting lines to previous node in the same branch,
+  // or horizontal/diagonal connecting lines to branching node in parent
+  // branch
+  if (isCellBeforeOrIncludingCenter)
+  {
+    lines |= [self linesForCellBeforeOrIncludingCenter:indexOfCell
+                                   isCenterCellForNode:isCenterCellForNode
+                                           branchTuple:branchTuple
+                                     yPositionOfBranch:yPositionOfBranch
+                              firstBranchTupleOfBranch:firstBranchTupleOfBranch
+                               lastBranchTupleOfBranch:lastBranchTupleOfBranch
+          diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEstablished
+                                        branchingStyle:branchingStyle];
+  }
+
+  // Horizontal connecting lines to next node in the same branch
+  if (isCellAfterOrIncludingCenter)
+  {
+    lines |= [self linesForCellAfterOrIncludingCenter:indexOfCell
+                                  isCenterCellForNode:isCenterCellForNode
+                                          branchTuple:branchTuple
+                              lastBranchTupleOfBranch:lastBranchTupleOfBranch];
+  }
+
+  // Vertical and/or diagonal connecting lines to child branches
+  if (isCenterCellForNode && branchTuple->childBranches)
+  {
+    lines |= [self linesForCenterCellConnectingChildBranches:branchTuple
+                                              branchingStyle:branchingStyle];
+  }
+
+  return lines;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the lines for the cell identified by @a indexOfCell which
+/// wholly or partially (in the case of multipart cells) depicts the node
+/// represented by @a branchTuple on the canvas. The cell is left of the center
+/// of the whole node, or the center cell itself.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCellLines) linesForCellBeforeOrIncludingCenter:(unsigned int)indexOfCell
+                                          isCenterCellForNode:(bool)isCenterCellForNode
+                                                  branchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                                            yPositionOfBranch:(unsigned short)yPositionOfBranch
+                                     firstBranchTupleOfBranch:(NodeTreeViewBranchTuple*)firstBranchTupleOfBranch
+                                      lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
+                 diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranchingLineEstablished
+                                               branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+{
+  NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
+
+  bool isFirstCellForNode = (indexOfCell == 0);
+
+  if (branchTuple == firstBranchTupleOfBranch && yPositionOfBranch == 0)
+  {
+    // Root node does not have connecting lines on the left
+  }
+  else
+  {
+    if (isFirstCellForNode)
+    {
+      if (branchTuple == firstBranchTupleOfBranch)
+      {
+        // A diagonal line connecting to a branching line needs to be
+        // drawn if, and only if 1) obviously branching style is
+        // diagonal; 2) nodes are not represented by multipart cells
+        // (for multipart cells the diagonal connecting line is located
+        // in a standalone cell somewhere on the left, before the first
+        // sub-cell of the multipart cell); and 3) if a diagonal
+        // connecting line has not yet been established due to move
+        // node alignment.
+        if (branchingStyle == NodeTreeViewBranchingStyleDiagonal && branchTuple->numberOfCellsForNode == 1 && ! diagonalConnectionToBranchingLineEstablished)
+          lines |= NodeTreeViewCellLineCenterToTopLeft;
+        else
+          lines |= NodeTreeViewCellLineCenterToLeft;
+      }
+      else
+      {
+        lines |= NodeTreeViewCellLineCenterToLeft;
+      }
+    }
+    else
+    {
+      lines |= NodeTreeViewCellLineCenterToLeft;
+    }
+
+    if (isCenterCellForNode)
+    {
+      // Whether or not to draw NodeTreeViewCellLineCenterToRight is
+      // determined in the block for isCellAfterOrIncludingCenter
+    }
+    else
+    {
+      lines |= NodeTreeViewCellLineCenterToRight;
+    }
+  }
+
+  return lines;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the lines for the cell identified by @a indexOfCell which
+/// wholly or partially (in the case of multipart cells) depicts the node
+/// represented by @a branchTuple on the canvas. The cell is right of the center
+/// of the whole node, or the center cell itself.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCellLines) linesForCellAfterOrIncludingCenter:(unsigned int)indexOfCell
+                                         isCenterCellForNode:(bool)isCenterCellForNode
+                                                 branchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                                     lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
+{
+  NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
+
+  if (branchTuple == lastBranchTupleOfBranch)
+  {
+    // No next node in the same branch => no connecting lines
+  }
+  else
+  {
+    lines |= NodeTreeViewCellLineCenterToRight;
+
+    if (isCenterCellForNode)
+    {
+      // Whether or not to draw NodeTreeViewCellLineCenterToLeft is
+      // determined in the block for isCellBeforeOrIncludingCenter
+    }
+    else
+    {
+      lines |= NodeTreeViewCellLineCenterToLeft;
+    }
+  }
+
+  return lines;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Calculates the lines for the center cell which wholly or partially
+/// (in the case of multipart cells) depicts the node represented by
+/// @a branchTuple on the canvas. The lines form the start of the vertical
+/// branching line that connect the node (which is a branching node) to its
+/// child nodes.
+// --------------------------x---------------------------------------------------
+- (NodeTreeViewCellLines) linesForCenterCellConnectingChildBranches:(NodeTreeViewBranchTuple*)branchTuple
+                                                     branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+{
+  NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
+
+  if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
+  {
+    NodeTreeViewBranch* firstChildBranch = branchTuple->childBranches.firstObject;
+    if (branchTuple->branch->yPosition + 1 == firstChildBranch->yPosition)
+      lines |= NodeTreeViewCellLineCenterToBottomRight;
+    else
+      lines |= NodeTreeViewCellLineCenterToBottom;
+
+    if (branchTuple->childBranches.count > 1)
+      lines |= NodeTreeViewCellLineCenterToBottom;
+  }
+  else
+  {
+    lines |= NodeTreeViewCellLineCenterToBottom;
+  }
+
+  return lines;
+}
+
+#pragma mark - Private API - Canvas calculation - Helper methods
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the NodeTreeViewCellSymbol enumeration value that represents
+/// the node @a node on the canvas.
+// --------------------------x---------------------------------------------------
 - (enum NodeTreeViewCellSymbol) symbolForNode:(GoNode*)node
 {
   GoNodeSetup* nodeSetup = node.goNodeSetup;
@@ -1134,10 +1526,22 @@
   return NodeTreeViewCellSymbolEmpty;
 }
 
-// TODO xxx document
-// Only move nodes are condensed, and only those move nodes that do not form
-// the start or end of a sequence of moves. Move nodes within a sequence of
-// moves can be uncondensed if they contain something noteworthy.
+// -----------------------------------------------------------------------------
+/// @brief Returns the number of cells that are needed to represent the node
+/// @a node on the canvas.
+///
+/// If @a condenseTree is @e false then this method returns 1, i.e. all nodes
+/// are represented by a single cell.
+///
+/// If @a condenseTree is @e true then this method returns either 1 (indicating
+/// that the node should be condensed and represented by a single standalone
+/// cell), or @a numberOfCellsOfMultipartCell (indicating that the node should
+/// be uncondensed and represented by several sub-cells that together form a
+/// multipart cell). Which value is returned depends on the content of @a node
+/// and/or its position in the tree of nodes. As a summary, only move nodes are
+/// condensed, and only those move nodes that do not form the start or end of a
+/// sequence of moves.
+// --------------------------x---------------------------------------------------
 - (unsigned short) numberOfCellsForNode:(GoNode*)node
                            condenseTree:(bool)condenseTree
            numberOfCellsOfMultipartCell:(int)numberOfCellsOfMultipartCell
@@ -1198,6 +1602,9 @@
 
 #pragma mark - NodeTreeViewCanvasAdditions - Unit testing
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the dictionary with the results of the canvas re-calculation.
+// -----------------------------------------------------------------------------
 - (NSDictionary*) getCellsDictionary
 {
   return [[_cellsDictionary retain] autorelease];
