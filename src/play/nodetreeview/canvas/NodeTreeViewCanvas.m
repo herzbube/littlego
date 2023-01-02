@@ -215,15 +215,10 @@ struct GenerateCellsResult
   if (cell)
     return cell;
 
-  // TODO xxx check canvas bounds and return nil if out of bounds
-  return [NodeTreeViewCell emptyCell];
-}
-
-// TODO xxx document
-- (NSArray*) cellsInRow:(int)row
-{
-  // TODO xxx implement
-  return nil;
+  if (position.x < self.canvasSize.width && position.y < self.canvasSize.height)
+    return [NodeTreeViewCell emptyCell];
+  else
+    return nil;
 }
 
 #pragma mark - Private API - Canvas calculation - Main method
@@ -807,7 +802,6 @@ struct GenerateCellsResult
       // sub-cells is >1) the space gain from diagonal branching is never
       // sufficient to fit a branch on an y-position where it would not have
       // fit with bracket branching.
-      // TODO xxx Consider making multipart cells also extend in y-direction
       lowestXPositionOfBranch += 1;
     }
   }
@@ -1079,9 +1073,8 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
 
     if (yPosition == nextChildBranchToHorizontallyConnect->yPosition)
     {
-      if (nextChildBranchToHorizontallyConnect == lastChildBranch)
+      if (yPosition == yPositionOfLastChildBranch)
       {
-        // TODO xxx this does nothing, this happens on the last iteration => code analysis may not see this
         indexOfNextChildBranchToHorizontallyConnect = -1;
         nextChildBranchToHorizontallyConnect = nil;
       }
@@ -1205,7 +1198,6 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
                                branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
                           generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
 {
-  // TODO xxx this can be assigned outside of any loops
   NodeTreeViewCellLines linesOfFirstCell;
   if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
     linesOfFirstCell = NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight;

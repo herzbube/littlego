@@ -89,7 +89,6 @@
 - (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel;
 
 - (NodeTreeViewCell*) cellAtPosition:(NodeTreeViewCellPosition*)position;
-- (NSArray*) cellsInRow:(int)row;
 
 /// @brief The canvas size. Width and height are integral numbers.
 ///
