@@ -75,21 +75,20 @@
             maximumFontSize:(int)maximumFontSize
 {
   NSMutableArray* precalculatedFonts = [NSMutableArray arrayWithCapacity:0];
-  CGSize constraintSize = CGSizeMake(MAXFLOAT, MAXFLOAT);
   for (int fontSize = maximumFontSize; fontSize >= minimumFontSize; --fontSize)
   {
     UIFont* font = [UIFont systemFontOfSize:fontSize];
     NSDictionary* textAttributes = @{ NSFontAttributeName : font };
-    NSStringDrawingContext* context = [[[NSStringDrawingContext alloc] init] autorelease];
-    CGRect boundingRect = [text boundingRectWithSize:constraintSize
-                                             options:NSStringDrawingUsesLineFragmentOrigin
-                                          attributes:textAttributes
-                                             context:context];
-    boundingRect.size.width = ceilf(boundingRect.size.width);
-    boundingRect.size.height = ceilf(boundingRect.size.height);
+    // If more control over how the drawing takes place is needed, another
+    // useful NSString method is
+    // boundingRectWithSize:options:attributes:context(). See the history of
+    // this file how to use it.
+    CGSize boundingBoxSize = [text sizeWithAttributes:textAttributes];
+    boundingBoxSize.width = ceilf(boundingBoxSize.width);
+    boundingBoxSize.height = ceilf(boundingBoxSize.height);
     NSArray* array = [NSArray arrayWithObjects:font,
-                                               [NSNumber numberWithFloat:boundingRect.size.width],
-                                               [NSNumber numberWithFloat:boundingRect.size.height],
+                                               [NSNumber numberWithFloat:boundingBoxSize.width],
+                                               [NSNumber numberWithFloat:boundingBoxSize.height],
                                                nil];
     [precalculatedFonts addObject:array];
   }
