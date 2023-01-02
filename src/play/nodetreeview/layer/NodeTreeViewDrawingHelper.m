@@ -141,6 +141,65 @@ void DrawImageWithName(CGContextRef layerContext, CGRect drawingRect, NSString* 
   UIGraphicsPopContext();
 }
 
+// TODO xxx Make this reusable for BoardViewDrawingHelper
+void DrawSystemImageWithName(CGContextRef layerContext, CGRect drawingRect, NSString* imageName)
+{
+  if (@available(iOS 13, *))
+  {
+    UIImage* image = [UIImage systemImageNamed:imageName];
+    // Let UIImage do all the drawing for us. This includes 1) compensating for
+    // coordinate system differences (if we use CGContextDrawImage() the image
+    // is drawn upside down); and 2) for scaling.
+    UIGraphicsPushContext(layerContext);
+    [image drawInRect:drawingRect];
+    UIGraphicsPopContext();
+  }
+  else
+  {
+    // TODO xxx throw
+  }
+}
+
+// TODO xxx Make this reusable for BoardViewDrawingHelper
+void DrawString(CGContextRef layerContext, CGRect drawingRect, NSString* string, CGFloat fontSize)
+{
+  UIFont* font;
+  if (@available(iOS 13, *))
+    font = [UIFont monospacedSystemFontOfSize:fontSize weight:UIFontWeightRegular];
+  else
+    font = [UIFont fontWithName:@"Menlo" size:fontSize];
+
+  UIColor* textColor = [UIColor whiteColor];
+  NSShadow* whiteTextShadow = [[[NSShadow alloc] init] autorelease];
+  whiteTextShadow.shadowColor = [UIColor blackColor];
+  whiteTextShadow.shadowBlurRadius = 5.0;
+  whiteTextShadow.shadowOffset = CGSizeMake(1.0, 1.0);
+  NSDictionary* textAttributes = @{ NSFontAttributeName : font,
+                                    NSForegroundColorAttributeName : textColor,
+                                    NSShadowAttributeName: whiteTextShadow };
+
+  CGRect boundingBox = CGRectZero;
+  boundingBox.origin = drawingRect.origin;
+  boundingBox.size = [string sizeWithAttributes:textAttributes];
+
+  // Create a save point that we can restore to before we leave this method
+  CGContextSaveGState(layerContext);
+
+  // Adjust the CTM to draw the text both horizontally and vertically centered.
+  // Text attributes can only be used for horizontal centering (with a
+  // paragraph style that uses NSTextAlignmentCenter).
+  CGContextTranslateCTM(layerContext,
+                        CGRectGetMidX(drawingRect) - CGRectGetMidX(boundingBox),
+                        CGRectGetMidY(drawingRect) - CGRectGetMidY(boundingBox));
+
+  UIGraphicsPushContext(layerContext);
+  [string drawInRect:boundingBox withAttributes:textAttributes];
+  UIGraphicsPopContext();
+
+  // Restore the drawing context to undo CTM adjustments
+  CGContextRestoreGState(layerContext);
+}
+
 void SetClippingPath(CGContextRef layerContext, CGPoint center, CGFloat radius, CGFloat strokeLineWidth)
 {
   const CGFloat startRadius = [UiUtilities radians:0];
@@ -275,24 +334,33 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     }
     case NodeTreeViewCellSymbolAnnotations:
     {
-      DrawImageWithName(layerContext, drawingRect, uiAreaAboutIconResource);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      // Same size as markup would be logical, but then the "i" looks too small
+      // within the available space
+      DrawString(layerContext, drawingRect, @"i", 35);
       break;
     }
     case NodeTreeViewCellSymbolMarkup:
     {
-      DrawImageWithName(layerContext, drawingRect, markupIconResource);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      DrawString(layerContext, drawingRect, @"</>", 25);
       break;
     }
     case NodeTreeViewCellSymbolAnnotationsAndMarkup:
     {
-      CGRect drawingRectSymbolAnnotation = drawingRect;
-      drawingRectSymbolAnnotation.size.width = drawingRectCenter.x - drawingRect.origin.x;
-      drawingRectSymbolAnnotation.size.height = drawingRectCenter.y - drawingRect.origin.y;
-      DrawImageWithName(layerContext, drawingRectSymbolAnnotation, uiAreaAboutIconResource);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
 
-      CGRect drawingRectSymbolMarkup = drawingRectSymbolAnnotation;
-      drawingRectSymbolMarkup.origin = drawingRectCenter;
-      DrawImageWithName(layerContext, drawingRectSymbolMarkup, markupIconResource);
+      CGRect drawingRectSymbolAnnotation = drawingRect;
+      drawingRectSymbolAnnotation.size.height /= 2.0;
+      DrawString(layerContext, drawingRectSymbolAnnotation, @"i", 20);
+
+      CGRect drawingRectSymbolMarkup = drawingRect;
+      drawingRectSymbolMarkup.size.height /= 2.0;
+      drawingRectSymbolMarkup.origin.y += drawingRectSymbolMarkup.size.height;
+      // Without this adjustment the text + its shadow are too close to the
+      // circle bounding line
+      drawingRectSymbolMarkup.origin.y -= 6;
+      DrawString(layerContext, drawingRectSymbolMarkup, @"</>", 20);
       break;
     }
     case NodeTreeViewCellSymbolEmpty:
