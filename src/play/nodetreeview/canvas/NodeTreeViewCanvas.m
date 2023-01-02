@@ -361,9 +361,7 @@ struct GenerateCellsResult
 
       [branch->branchTuples addObject:branchTuple];
 
-      // TODO xxx new property isBranchingNode
-      GoNode* firstChild = currentNode.firstChild;
-      if (firstChild && firstChild.nextSibling)
+      if (currentNode.isBranchingNode)
       {
         NSValue* key = [NSValue valueWithNonretainedObject:currentNode];
         collectBranchDataResult.branchingNodeMap[key] = branchTuple;
@@ -1541,19 +1539,16 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
     return numberOfCellsOfMultipartCell;
 
   // Branching nodes are uncondensed
-  // TODO xxx new property isBranchingNode
-  GoNode* firstChild = node.firstChild;
-  if (firstChild != node.lastChild)
+  if (node.isBranchingNode)
     return numberOfCellsOfMultipartCell;
 
   // Child nodes of a branching node
   GoNode* parent = node.parent;
-  if (parent.firstChild != parent.lastChild)
+  if (parent.isBranchingNode)
     return numberOfCellsOfMultipartCell;
 
   // Leaf nodes
-  // TODO xxx new property isLeafNode
-  if (! firstChild)
+  if (node.isLeaf)
     return numberOfCellsOfMultipartCell;
 
   // Nodes with a move => we don't care if they also contain annotations or
@@ -1568,7 +1563,7 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
     //    nodes. If either parent or first child don't contain a move then they
     //    will be uncondensed. The move node in this case must also be
     //    uncondensed to indicate the begin or end of a sequence of moves.
-    if (parent.goMove && firstChild.goMove)
+    if (parent.goMove && node.firstChild.goMove)
       return 1;
     else
       return numberOfCellsOfMultipartCell;

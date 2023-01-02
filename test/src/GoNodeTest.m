@@ -110,6 +110,7 @@
   XCTAssertNotNil(testee.children);
   XCTAssertEqual(0, testee.children.count);
   XCTAssertFalse(testee.hasChildren);
+  XCTAssertFalse(testee.isBranchingNode);
   XCTAssertNil(testee.nextSibling);
   XCTAssertFalse(testee.hasNextSibling);
   XCTAssertNil(testee.previousSibling);
@@ -117,6 +118,7 @@
   XCTAssertNil(testee.parent);
   XCTAssertFalse(testee.hasParent);
   XCTAssertTrue(testee.isRoot);
+  XCTAssertTrue(testee.isLeaf);
   XCTAssertTrue(testee.isEmpty);
   XCTAssertNil(testee.goNodeSetup);
   XCTAssertNil(testee.goMove);
@@ -130,6 +132,7 @@
 // -----------------------------------------------------------------------------
 - (void) testNode
 {
+  // TODO xxx implement
 }
 
 // -----------------------------------------------------------------------------
@@ -137,6 +140,7 @@
 // -----------------------------------------------------------------------------
 - (void) testNodeWithMove
 {
+  // TODO xxx implement
 }
 
 // -----------------------------------------------------------------------------
@@ -235,9 +239,10 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the @e children and @e hasChildren properties.
+/// @brief Exercises the @e children, @e hasChildren and @e isBranchingNode
+/// properties.
 // -----------------------------------------------------------------------------
-- (void) testChildrenAndHasChildren
+- (void) testChildrenAndHasChildrenAndIsBranchingNode
 {
   [self setupNodeTree];
   GoNode* testee = self.nodeA2a;
@@ -246,21 +251,25 @@
   XCTAssertNotIdentical(testee.children, newChildren);
   XCTAssertEqualObjects(testee.children, newChildren);
   XCTAssertFalse(testee.hasChildren);
+  XCTAssertFalse(testee.isBranchingNode);
   [testee setFirstChild:self.freeNode1];
   newChildren = @[self.freeNode1];
   XCTAssertNotIdentical(testee.children, newChildren);
   XCTAssertEqualObjects(testee.children, newChildren);
   XCTAssertTrue(testee.hasChildren);
+  XCTAssertFalse(testee.isBranchingNode);
   [testee appendChild:self.freeNode2];
   newChildren = @[self.freeNode1, self.freeNode2];
   XCTAssertNotIdentical(testee.children, newChildren);
   XCTAssertEqualObjects(testee.children, newChildren);
   XCTAssertTrue(testee.hasChildren);
+  XCTAssertTrue(testee.isBranchingNode);
   [testee setFirstChild:nil];
   newChildren = @[];
   XCTAssertNotIdentical(testee.children, newChildren);
   XCTAssertEqualObjects(testee.children, newChildren);
   XCTAssertFalse(testee.hasChildren);
+  XCTAssertFalse(testee.isBranchingNode);
 }
 
 // -----------------------------------------------------------------------------

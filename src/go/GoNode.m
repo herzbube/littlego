@@ -257,6 +257,15 @@
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
 // -----------------------------------------------------------------------------
+- (bool) isBranchingNode
+{
+  GoNode* firstChild = self.firstChild;
+  return (firstChild && firstChild.nextSibling);
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
 - (bool) hasNextSibling
 {
   return (self.nextSibling != nil);
@@ -361,6 +370,14 @@
 - (bool) isRoot
 {
   return (self.parent == nil);
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (bool) isLeaf
+{
+  return (self.firstChild == nil);
 }
 
 #pragma mark - Public API - Other operations
