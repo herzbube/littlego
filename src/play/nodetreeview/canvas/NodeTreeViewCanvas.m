@@ -32,17 +32,6 @@
 #import "../../../shared/LongRunningActionCounter.h"
 
 
-/// @brief Collects information about all moves that exist in the tree of nodes.
-struct MoveData
-{
-  // Index position = Move number - 1 (e.g. first move is at index position 0).
-  // Element at index position = List of NodeTreeViewBranchTuple objects, each
-  // of which represents a node in a different branch that refers to a move
-  // with the same move number.
-  NSMutableArray* branchTuplesForMoveNumbers;
-  int highestMoveNumberThatAppearsInAtLeastTwoBranches;
-};
-
 /// @brief Collects information about branches and nodes that make up those
 /// branches.
 struct CollectBranchDataResult
@@ -57,10 +46,15 @@ struct CollectBranchDataResult
   /// The dictionary value is the NodeTreeViewBranchTuple object that represents
   /// the GoNode.
   NSMutableDictionary* branchingNodeMap;
-  // Stores branches in depth-first order. Elements are arrays consisting of
-  // tuples.
+  /// @brief Stores branches in depth-first order. Elements are
+  /// NodeTreeViewBranch objects.
   NSMutableArray* branches;
-  struct MoveData moveData;
+  /// @brief Index position = Move number - 1 (e.g. first move is at index
+  /// position 0). Element at index position = List of NodeTreeViewBranchTuple
+  /// objects, each of which represents a node in a different branch that
+  /// refers to a move with the same move number.
+  NSMutableArray* branchTuplesForMoveNumbers;
+  int highestMoveNumberThatAppearsInAtLeastTwoBranches;
 };
 
 /// @brief Collects the multiple pieces of information that form the result of
@@ -313,8 +307,8 @@ struct GenerateCellsResult
                                                          alignMoveNodes:(bool)alignMoveNodes
 {
   struct CollectBranchDataResult collectBranchDataResult;
-  collectBranchDataResult.moveData.highestMoveNumberThatAppearsInAtLeastTwoBranches = -1;
-  collectBranchDataResult.moveData.branchTuplesForMoveNumbers = [NSMutableArray array];
+  collectBranchDataResult.highestMoveNumberThatAppearsInAtLeastTwoBranches = -1;
+  collectBranchDataResult.branchTuplesForMoveNumbers = [NSMutableArray array];
   collectBranchDataResult.branchingNodeMap = [NSMutableDictionary dictionary];
   collectBranchDataResult.branches = [NSMutableArray array];
 
@@ -368,7 +362,7 @@ struct GenerateCellsResult
       {
         GoMove* move = currentNode.goMove;
         if (move)
-          [self collectDataFromMove:move branch:branch branchTuple:branchTuple moveData:&(collectBranchDataResult.moveData)];
+          [self collectDataFromMove:move branch:branch branchTuple:branchTuple collectBranchDataResult:&collectBranchDataResult];
       }
 
       [stack addObject:branchTuple];
@@ -490,27 +484,27 @@ struct GenerateCellsResult
 - (void) collectDataFromMove:(GoMove*)move
                       branch:(NodeTreeViewBranch*)branch
                  branchTuple:(NodeTreeViewBranchTuple*)branchTuple
-                    moveData:(struct MoveData*)moveData
+     collectBranchDataResult:(struct CollectBranchDataResult*)collectBranchDataResult
 {
   NSMutableArray* branchTuplesForMoveNumber;
 
   int moveNumber = move.moveNumber;
-  if (moveNumber > moveData->branchTuplesForMoveNumbers.count)
+  if (moveNumber > collectBranchDataResult->branchTuplesForMoveNumbers.count)
   {
     branchTuplesForMoveNumber = [NSMutableArray array];
-    [moveData->branchTuplesForMoveNumbers addObject:branchTuplesForMoveNumber];
+    [collectBranchDataResult->branchTuplesForMoveNumbers addObject:branchTuplesForMoveNumber];
   }
   else
   {
-    branchTuplesForMoveNumber = [moveData->branchTuplesForMoveNumbers objectAtIndex:moveNumber - 1];
+    branchTuplesForMoveNumber = [collectBranchDataResult->branchTuplesForMoveNumbers objectAtIndex:moveNumber - 1];
   }
 
   [branchTuplesForMoveNumber addObject:branchTuple];
 
   if (branchTuplesForMoveNumber.count > 1)
   {
-    if (moveNumber > moveData->highestMoveNumberThatAppearsInAtLeastTwoBranches)
-      moveData->highestMoveNumberThatAppearsInAtLeastTwoBranches = moveNumber;
+    if (moveNumber > collectBranchDataResult->highestMoveNumberThatAppearsInAtLeastTwoBranches)
+      collectBranchDataResult->highestMoveNumberThatAppearsInAtLeastTwoBranches = moveNumber;
   }
 }
 
@@ -527,10 +521,10 @@ struct GenerateCellsResult
   // Optimization: We only have to align moves that appear in at least two
   // branches.
   for (int indexOfMove = 0;
-       indexOfMove < collectBranchDataResult.moveData.highestMoveNumberThatAppearsInAtLeastTwoBranches;
+       indexOfMove < collectBranchDataResult.highestMoveNumberThatAppearsInAtLeastTwoBranches;
        indexOfMove++)
   {
-    NSMutableArray* branchTuplesForMoveNumber = [collectBranchDataResult.moveData.branchTuplesForMoveNumbers objectAtIndex:indexOfMove];
+    NSMutableArray* branchTuplesForMoveNumber = [collectBranchDataResult.branchTuplesForMoveNumbers objectAtIndex:indexOfMove];
 
     // If the move appears in only a single branch there can be no
     // mis-alignment => we can go to the next move
