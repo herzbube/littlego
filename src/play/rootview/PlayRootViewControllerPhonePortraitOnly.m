@@ -823,7 +823,7 @@ enum ResizablePane2Content
     [self setupAutoLayoutConstraintsForContentInResizablePane2:boardPositionCollectionView
                                          resizablePane2Content:ResizablePane2ContentBoardPositionCollectionView];
 
-    [self.switchContentInResizablePane2Button setImage:[UIImage imageNamed:nodeSequenceIconResource]
+    [self.switchContentInResizablePane2Button setImage:[UIImage imageNamed:nodeTreeSmallIconResource]
                                               forState:UIControlStateNormal];
   }
   else
@@ -849,7 +849,7 @@ enum ResizablePane2Content
     [self setupAutoLayoutConstraintsForContentInResizablePane2:nodeTreeView
                                          resizablePane2Content:ResizablePane2ContentNodeTreeView];
 
-    [self.switchContentInResizablePane2Button setImage:[UIImage imageNamed:nodeTreeSmallIconResource]
+    [self.switchContentInResizablePane2Button setImage:[UIImage imageNamed:nodeSequenceIconResource]
                                               forState:UIControlStateNormal];
   }
 }
