@@ -54,10 +54,8 @@
 /// @par Calculations
 ///
 /// The following schematic illustrates the composition of the canvas for a
-/// (theoretical) 3x2 tree that is uncondensed, i.e. where all cells are of
-/// equal size.
-///
-/// TODO xxx Schematic should depict condensed tree
+/// (theoretical) 3x2 tree with uncondensed move nodes, i.e. where all cells
+/// are of equal size.
 ///
 /// @verbatim
 ///                                                     paddingX
@@ -156,17 +154,17 @@
 // -----------------------------------------------------------------------------
 //@{
 /// @brief The size of a single cell. Width and height are different when the
-/// tree is displayed condensed. Width and height are the same when the tree is
-/// displayed uncondensed.
+/// move nodes are displayed condensed. Width and height are the same when move
+/// nodes are displayed uncondensed.
 @property(nonatomic, assign) CGSize nodeTreeViewCellSize;
 /// @brief The size of a multipart cell. Width and height are always the same,
-/// regardless of whether the tree is displayed condensed or uncondensed.
+/// regardless of whether move nodes are displayed condensed or uncondensed.
 ///
-/// When the tree is displayed uncondensed this size is the same as
-/// @e nodeTreeViewCellSize because in an uncondensed tree there are no
-/// multipart cells.
+/// When move nodes are displayed uncondensed this size is the same as
+/// @e nodeTreeViewCellSize because in that scenario there are no multipart
+/// cells.
 ///
-/// When the tree is displayed condensed the width is the width of
+/// When move nodes are displayed condensed the width is the width of
 /// @e nodeTreeViewCellSize multiplied by @e numberOfCellsOfMultipartCell. The
 /// height is the same as the height of @e nodeTreeViewCellSize.
 @property(nonatomic, assign) CGSize nodeTreeViewMultipartCellSize;

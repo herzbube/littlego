@@ -52,13 +52,13 @@
 ///
 /// NodeTreeViewCanvas takes a number of user preferences from NodeTreeViewModel
 /// into account during data transformation. Among these the most notable is the
-/// "condense tree" user preference:
-/// - If this is @e false, i.e. the tree is not condensed, all nodes from the
+/// "condense move nodes" user preference:
+/// - If this is @e false, i.e. move nodes are not condensed, all nodes from the
 ///   tree of nodes are mapped 1:1 onto cells. In other words: For every node
 ///   there is exactly one cell, and vice versa.
-/// - If this is @e true, i.e. the tree is condensed, only those nodes from the
-///   tree of nodes that are condensed are mapped 1:1 onto cells. Nodes that are
-///   uncondensed, however, are spread across multiple horizontally adjacent
+/// - If this is @e true, i.e. move nodes are condensed, only those nodes from
+///   the tree of nodes that are condensed are mapped 1:1 onto cells. Nodes that
+///   are uncondensed, however, are spread across multiple horizontally adjacent
 ///   cells. For uncondensed nodes therefore the mapping is 1:n. Adjacent cells
 ///   that together represent an uncondensed node are called "sub-cells" of a
 ///   bigger "multipart" cell. Cells that represent a condensed node, or cells

@@ -236,7 +236,7 @@ struct GenerateCellsResult
 ///      data:
 ///      - NodeTreeViewCellSymbol value
 ///      - The number of cells that represent the node on the canvas. This is
-///        influenced by the user preference "Condense tree".
+///        influenced by the user preference "Condense move nodes".
 ///      - Preliminary x-position of the first cell that represents the node on
 ///        the canvas. This can still change if the user preference
 ///        "Align move nodes" is enabled.
@@ -262,14 +262,14 @@ struct GenerateCellsResult
 {
   GoNodeModel* nodeModel = [GoGame sharedGame].nodeModel;
 
-  bool condenseTree = self.nodeTreeViewModel.condenseTree;
+  bool condenseMoveNodes = self.nodeTreeViewModel.condenseMoveNodes;
   bool alignMoveNodes = self.nodeTreeViewModel.alignMoveNodes;
   enum NodeTreeViewBranchingStyle branchingStyle = self.nodeTreeViewModel.branchingStyle;
   int numberOfCellsOfMultipartCell = self.nodeTreeViewModel.numberOfCellsOfMultipartCell;
 
   // Step 1: Collect data about branches
   struct CollectBranchDataResult collectBranchDataResult = [self collectBranchDataFromNodeTreeInModel:nodeModel
-                                                                                         condenseTree:condenseTree
+                                                                                    condenseMoveNodes:condenseMoveNodes
                                                                          numberOfCellsOfMultipartCell:numberOfCellsOfMultipartCell
                                                                                        alignMoveNodes:alignMoveNodes];
 
@@ -302,7 +302,7 @@ struct GenerateCellsResult
 /// to collect information about branches.
 // -----------------------------------------------------------------------------
 - (struct CollectBranchDataResult) collectBranchDataFromNodeTreeInModel:(GoNodeModel*)nodeModel
-                                                           condenseTree:(bool)condenseTree
+                                                      condenseMoveNodes:(bool)condenseMoveNodes
                                            numberOfCellsOfMultipartCell:(int)numberOfCellsOfMultipartCell
                                                          alignMoveNodes:(bool)alignMoveNodes
 {
@@ -342,7 +342,7 @@ struct GenerateCellsResult
       branchTuple->xPositionOfFirstCell = xPosition;
       branchTuple->node = currentNode;
       branchTuple->symbol = [self symbolForNode:currentNode];
-      branchTuple->numberOfCellsForNode = [self numberOfCellsForNode:currentNode condenseTree:condenseTree numberOfCellsOfMultipartCell:numberOfCellsOfMultipartCell];
+      branchTuple->numberOfCellsForNode = [self numberOfCellsForNode:currentNode condenseMoveNodes:condenseMoveNodes numberOfCellsOfMultipartCell:numberOfCellsOfMultipartCell];
       // This assumes that numberOfCellsForNode is always an uneven number
       branchTuple->indexOfCenterCell = floorf(branchTuple->numberOfCellsForNode / 2.0);
       branchTuple->branch = branch;
@@ -791,8 +791,8 @@ struct GenerateCellsResult
       //   lowestXPositionOfBranch += currentBranch->parentBranchTupleBranchingNode->numberOfCellsForNode;
       // However since a diagonal line crosses only a single sub-cell, and
       // there are no sub-cells in y-direction, diagonal branching can only
-      // ever gain space that is worth 1 sub-cell. As a result, when the
-      // tree is condensed (which means that a multipart cell's number of
+      // ever gain space that is worth 1 sub-cell. As a result, when move nodes
+      // are condensed (which means that a multipart cell's number of
       // sub-cells is >1) the space gain from diagonal branching is never
       // sufficient to fit a branch on an y-position where it would not have
       // fit with right-angle branching.
@@ -949,7 +949,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
   // Part 1: Generate cells with lines that connect the node to either its
   // predecessor node in the same branch (only if alignMoveNodes is true),
   // or to a branching line that reaches out from the cell with the
-  // branching node (only if condenseTree is true)
+  // branching node (only if condenseMoveNodes is true)
   for (unsigned short xPositionOfCell = xPositionAfterPreviousBranchTuple; xPositionOfCell < branchTuple->xPositionOfFirstCell; xPositionOfCell++)
   {
     NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
@@ -987,7 +987,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
   // branching node that contain the branching lines needed to connect the
   // branching node to its child nodes. The following schematic depicts what
   // kind of lines need to be generated for each branching style when
-  // condenseTree is enabled, i.e. when multipart cells are involved.
+  // condenseMoveNodes is enabled, i.e. when multipart cells are involved.
   // "N" marks the center cells of multipart cells that represent a node.
   // "o" marks branching line junctions.
   //
@@ -1500,23 +1500,23 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 /// @brief Returns the number of cells that are needed to represent the node
 /// @a node on the canvas.
 ///
-/// If @a condenseTree is @e false then this method returns 1, i.e. all nodes
-/// are represented by a single cell.
+/// If @a condenseMoveNodes is @e false then this method returns 1, i.e. all
+/// nodes are represented by a single cell.
 ///
-/// If @a condenseTree is @e true then this method returns either 1 (indicating
-/// that the node should be condensed and represented by a single standalone
-/// cell), or @a numberOfCellsOfMultipartCell (indicating that the node should
-/// be uncondensed and represented by several sub-cells that together form a
-/// multipart cell). Which value is returned depends on the content of @a node
-/// and/or its position in the tree of nodes. As a summary, only move nodes are
-/// condensed, and only those move nodes that do not form the start or end of a
-/// sequence of moves.
+/// If @a condenseMoveNodes is @e true then this method returns either 1
+/// (indicating that the node should be condensed and represented by a single
+/// standalone cell), or @a numberOfCellsOfMultipartCell (indicating that the
+/// node should be uncondensed and represented by several sub-cells that
+/// together form a multipart cell). Which value is returned depends on the
+/// content of @a node and/or its position in the tree of nodes. As a summary,
+/// only move nodes are condensed, and only those move nodes that do not form
+/// the start or end of a sequence of moves.
 // --------------------------x---------------------------------------------------
 - (unsigned short) numberOfCellsForNode:(GoNode*)node
-                           condenseTree:(bool)condenseTree
+                      condenseMoveNodes:(bool)condenseMoveNodes
            numberOfCellsOfMultipartCell:(int)numberOfCellsOfMultipartCell
 {
-  if (! condenseTree)
+  if (! condenseMoveNodes)
     return 1;
 
   // Root node: Because the root node starts the main variation it is considered

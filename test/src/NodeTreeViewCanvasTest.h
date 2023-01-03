@@ -27,21 +27,21 @@
 {
 }
 
-- (void) testCalculateCanvas_UncondensedTree_RootNodeOnly;
-- (void) testCalculateCanvas_CondensedTree_RootNodeOnly;
-- (void) testCalculateCanvas_CondensedTree_UncondensedNodes;
+- (void) testCalculateCanvas_UncondenseMoveNodes_RootNodeOnly;
+- (void) testCalculateCanvas_CondenseMoveNodes_RootNodeOnly;
+- (void) testCalculateCanvas_CondenseMoveNodes_UncondensedNodes;
 - (void) testCalculateCanvas_NodeSymbols;
-- (void) testCalculateCanvas_UncondensedTree_Selected;
-- (void) testCalculateCanvas_CondensedTree_Selected;
-- (void) testCalculateCanvas_UncondensedTree_BranchingStyleDiagonal_Lines;
-- (void) testCalculateCanvas_UncondensedTree_BranchingStyleRightAngle_Lines;
-- (void) testCalculateCanvas_CondensedTree_BranchingStyleDiagonal_Lines;
-- (void) testCalculateCanvas_CondensedTree_ExtraWideMultipartCells_BranchingStyleDiagonal_Lines;
-- (void) testCalculateCanvas_CondensedTree_BranchingStyleRightAngle_Lines;
-- (void) testCalculateCanvas_UncondensedTree_AlignMoves;
-- (void) testCalculateCanvas_UncondensedTree_BranchingStyleRightAngle_AlignMoves_BranchMovedToNewYPosition;
-- (void) testCalculateCanvas_UncondensedTree_BranchingStyleDiagonal_AlignMoves_BranchMovedToNewYPosition;
-- (void) testCalculateCanvas_CondensedTree_BranchingStyleRightAngle_AlignMoves;
+- (void) testCalculateCanvas_UncondenseMoveNodes_Selected;
+- (void) testCalculateCanvas_CondenseMoveNodes_Selected;
+- (void) testCalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_Lines;
+- (void) testCalculateCanvas_UncondenseMoveNodes_BranchingStyleRightAngle_Lines;
+- (void) testCalculateCanvas_CondenseMoveNodes_BranchingStyleDiagonal_Lines;
+- (void) testCalculateCanvas_CondenseMoveNodes_ExtraWideMultipartCells_BranchingStyleDiagonal_Lines;
+- (void) testCalculateCanvas_CondenseMoveNodes_BranchingStyleRightAngle_Lines;
+- (void) testCalculateCanvas_UncondenseMoveNodes_AlignMoves;
+- (void) testCalculateCanvas_UncondenseMoveNodes_BranchingStyleRightAngle_AlignMoves_BranchMovedToNewYPosition;
+- (void) testCalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_AlignMoves_BranchMovedToNewYPosition;
+- (void) testCalculateCanvas_CondenseMoveNodes_BranchingStyleRightAngle_AlignMoves;
 - (void) testCalculateCanvas_LinesSelectedGameVariation;
 
 @end

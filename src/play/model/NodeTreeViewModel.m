@@ -44,7 +44,7 @@
 
   self.displayNodeTreeView = true;
   self.displayNodeNumbers = true;
-  self.condenseTree = true;
+  self.condenseMoveNodes = true;
   self.alignMoveNodes = true;
   self.branchingStyle = NodeTreeViewBranchingStyleRightAngle;
 

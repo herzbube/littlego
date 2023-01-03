@@ -30,7 +30,7 @@
 
 @property(nonatomic, assign) bool displayNodeTreeView;
 @property(nonatomic, assign) bool displayNodeNumbers;
-@property(nonatomic, assign) bool condenseTree;
+@property(nonatomic, assign) bool condenseMoveNodes;
 @property(nonatomic, assign) bool alignMoveNodes;
 @property(nonatomic, assign) enum NodeTreeViewBranchingStyle branchingStyle;
 @property(nonatomic, assign) int numberOfCellsOfMultipartCell;

@@ -183,7 +183,7 @@
 {
   [self.nodeTreeViewCanvas addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
   [self.nodeTreeViewModel addObserver:self forKeyPath:@"displayNodeNumbers" options:0 context:NULL];
-  // TODO xxx react to a change in condenseTree => If false we need to calculate a larger cell size
+  // TODO xxx react to a change in condenseMoveNodes => If false we need to calculate a larger cell size
 }
 
 // -----------------------------------------------------------------------------
@@ -293,9 +293,7 @@
   // ----------------------------------------------------------------------
 
   CGFloat nodeTreeViewCellBaseSizeScaled = floor(self.nodeTreeViewCellBaseSize * newAbsoluteZoomScale);
-  // TODO xxx get user preference
-  bool condensedTree = true;
-  if (condensedTree)
+  if (self.nodeTreeViewModel.condenseMoveNodes)
   {
     self.nodeTreeViewCellSize = CGSizeMake(nodeTreeViewCellBaseSizeScaled,
                                            nodeTreeViewCellBaseSizeScaled * self.numberOfCellsOfMultipartCell);
@@ -323,7 +321,7 @@
     // Node number labels can take up almost the entire
     // self.nodeTreeViewCellSize.width, we only subtract a small padding on both
     // sides so that adjacent node numbers have a small spacing between them
-    // TODO xxx does this work with a condensed tree?
+    // TODO xxx does this work with condensed move nodes?
     int nodeNumberLabelPaddingX = 1;
     int nodeNumberLabelAvailableWidth = (self.nodeTreeViewCellSize.width
                                          - 2 * nodeNumberLabelPaddingX);
