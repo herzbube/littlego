@@ -93,6 +93,116 @@ void DrawSymbolX(CGContextRef layerContext, CGPoint center, CGFloat symbolSize, 
   CGContextStrokePath(layerContext);
 }
 
+void DrawRectangleFilledWithStoneColor(CGContextRef layerContext, CGRect drawingRect, enum GoColor stoneColor, CGFloat strokeLineWidth)
+{
+  CGContextAddRect(layerContext, drawingRect);
+
+  if (stoneColor == GoColorBlack)
+  {
+    CGContextSetFillColorWithColor(layerContext, [UIColor blackColor].CGColor);
+    CGContextFillPath(layerContext);
+  }
+  else if (stoneColor == GoColorWhite)
+  {
+    CGContextSetFillColorWithColor(layerContext, [UIColor whiteColor].CGColor);
+    CGContextSetStrokeColorWithColor(layerContext, [UIColor blackColor].CGColor);
+    CGContextSetLineWidth(layerContext, strokeLineWidth);
+    CGContextDrawPath(layerContext, kCGPathFillStroke);
+  }
+  else
+  {
+    CGContextSetStrokeColorWithColor(layerContext, [UIColor blackColor].CGColor);
+    CGContextSetLineWidth(layerContext, strokeLineWidth);
+    CGContextStrokePath(layerContext);
+  }
+}
+
+void DrawNodeTreeViewCellSymbolSetupRectangleStyle(CGContextRef layerContext,
+                                                   CGRect drawingRect,
+                                                   CGFloat strokeLineWidth,
+                                                   enum GoColor topLeftStoneColor,
+                                                   enum GoColor topRightStoneColor,
+                                                   enum GoColor bottomLeftStoneColor,
+                                                   enum GoColor bottomRightStoneColor)
+{
+  // Black quarters are not stroked => Without any countermeasures, a set of
+  // four black quarters would therefore be indistinguishable from a black
+  // stone symbol. By adding a small gap between the 4 black quarters we create
+  // a visual distinction to the black stone symbol - this looks as if the black
+  // quarters were stroked with clear color.
+  CGFloat gap;
+  if (topLeftStoneColor == GoColorBlack && topRightStoneColor == GoColorBlack && bottomLeftStoneColor == GoColorBlack && bottomRightStoneColor == GoColorBlack)
+    gap = 1.0f;
+  else
+    gap = 0.0f;
+
+  CGFloat drawingRectHalfX = drawingRect.size.width / 2;
+  CGFloat drawingRectHalfY = drawingRect.size.height / 2;
+
+  CGSize drawingSize = CGSizeMake(drawingRectHalfX - gap, drawingRectHalfY - gap);
+  CGFloat offsetSecondHalfX = drawingRectHalfX + 2 * gap;
+  CGFloat offsetSecondHalfY = drawingRectHalfY + 2 * gap;
+
+  CGRect topLeftRect = CGRectMake(drawingRect.origin.x, drawingRect.origin.y, drawingSize.width, drawingSize.height);
+  DrawRectangleFilledWithStoneColor(layerContext, topLeftRect, topLeftStoneColor, strokeLineWidth);
+
+  CGRect topRightRect = CGRectMake(drawingRect.origin.x + offsetSecondHalfX, drawingRect.origin.y, drawingSize.width, drawingSize.height);
+  DrawRectangleFilledWithStoneColor(layerContext, topRightRect, topRightStoneColor, strokeLineWidth);
+
+  CGRect bottomLeftRect = CGRectMake(drawingRect.origin.x, drawingRect.origin.y + offsetSecondHalfY, drawingSize.width, drawingSize.height);
+  DrawRectangleFilledWithStoneColor(layerContext, bottomLeftRect, bottomLeftStoneColor, strokeLineWidth);
+
+  CGRect bottomRightRect = CGRectMake(drawingRect.origin.x + offsetSecondHalfX, drawingRect.origin.y + offsetSecondHalfY, drawingSize.width, drawingSize.height);
+  DrawRectangleFilledWithStoneColor(layerContext, bottomRightRect, bottomRightStoneColor, strokeLineWidth);
+}
+
+void DrawNodeTreeViewCellSymbolSetupCircleStyle(CGContextRef layerContext,
+                                                CGRect drawingRect,
+                                                CGFloat strokeLineWidth,
+                                                CGFloat radius,
+                                                enum GoColor topLeftStoneColor,
+                                                enum GoColor topRightStoneColor,
+                                                enum GoColor bottomLeftStoneColor,
+                                                enum GoColor bottomRightStoneColor)
+{
+  CGFloat drawingRectQuarterX = drawingRect.size.width / 4;
+  CGFloat drawingRectQuarterY = drawingRect.size.height / 4;
+
+  // There should be a minimal gap between stone icons so that their edges
+  // do not touch.
+  const CGFloat gapBetweenStoneIcons = 4;
+  radius -= gapBetweenStoneIcons / 2.0;
+
+  // Stone icon center points should be slightly inset so they are not clipped
+  // by the surrounding circle. The radius needs to be adjusted as well,
+  // otherwise the stone circles will overlap.
+  const CGFloat insetCenter = 4;
+  radius -= insetCenter;
+
+  CGFloat symbolXSize = radius * 0.5;
+  UIColor* symbolXStrokeColor = [UIColor blackColor];
+
+  CGPoint topLeftCenter = CGPointMake(drawingRect.origin.x + drawingRectQuarterX + insetCenter, drawingRect.origin.y + drawingRectQuarterY + insetCenter);
+  DrawStoneCircle(layerContext, topLeftCenter, radius, topLeftStoneColor, strokeLineWidth);
+  if (topLeftStoneColor == GoColorNone)
+    DrawSymbolX(layerContext, topLeftCenter, symbolXSize, symbolXStrokeColor, strokeLineWidth);
+
+  CGPoint topRightCenter = CGPointMake(drawingRect.origin.x + 3 * drawingRectQuarterX - insetCenter, drawingRect.origin.y + drawingRectQuarterY + insetCenter);
+  DrawStoneCircle(layerContext, topRightCenter, radius, topRightStoneColor, strokeLineWidth);
+  if (topRightStoneColor == GoColorNone)
+    DrawSymbolX(layerContext, topRightCenter, symbolXSize, symbolXStrokeColor, strokeLineWidth);
+
+  CGPoint bottomLeftCenter = CGPointMake(drawingRect.origin.x + drawingRectQuarterX + insetCenter, drawingRect.origin.y + 3 * drawingRectQuarterY - insetCenter);
+  DrawStoneCircle(layerContext, bottomLeftCenter, radius, bottomLeftStoneColor, strokeLineWidth);
+  if (bottomLeftStoneColor == GoColorNone)
+    DrawSymbolX(layerContext, bottomLeftCenter, symbolXSize, symbolXStrokeColor, strokeLineWidth);
+
+  CGPoint bottomRightCenter = CGPointMake(drawingRect.origin.x + 3 * drawingRectQuarterX - insetCenter, drawingRect.origin.y + 3 * drawingRectQuarterY - insetCenter);
+  DrawStoneCircle(layerContext, bottomRightCenter, radius, bottomRightStoneColor, strokeLineWidth);
+  if (bottomRightStoneColor == GoColorNone)
+    DrawSymbolX(layerContext, bottomRightCenter, symbolXSize, symbolXStrokeColor, strokeLineWidth);
+}
+
 void DrawNodeTreeViewCellSymbolSetup(CGContextRef layerContext,
                                      CGRect drawingRect,
                                      CGFloat strokeLineWidth,
@@ -103,30 +213,35 @@ void DrawNodeTreeViewCellSymbolSetup(CGContextRef layerContext,
 {
   CGFloat drawingRectQuarterX = drawingRect.size.width / 4;
   CGFloat drawingRectQuarterY = drawingRect.size.height / 4;
-  // Reduce radius so that there is a minimal gap between the stone icons
-  CGFloat radius = floorf(MIN(drawingRectQuarterX, drawingRectQuarterY) - 2);
-  CGFloat symbolXSize = radius * 0.5;
-  UIColor* symbolXStrokeColor = [UIColor blackColor];
+  CGFloat radius = floorf(MIN(drawingRectQuarterX, drawingRectQuarterY));
 
-  CGPoint topLeftCenter = CGPointMake(drawingRect.origin.x + drawingRectQuarterX, drawingRect.origin.y + drawingRectQuarterY);
-  DrawStoneCircle(layerContext, topLeftCenter, radius, topLeftStoneColor, strokeLineWidth);
-  if (topLeftStoneColor == GoColorNone)
-    DrawSymbolX(layerContext, topLeftCenter, symbolXSize, symbolXStrokeColor, strokeLineWidth);
+  // If the radius becomes too small, the "X" symbol becomes an unrecognizable
+  // pixel mess. The limit used here was experimentally determined, with the
+  // assumption that the actual radius will be reduced even more by the
+  // circle-style drawing routine.
+  const CGFloat minimumRadiusForCircleStyle = 12.0;
 
-  CGPoint topRightCenter = CGPointMake(drawingRect.origin.x + 3 * drawingRectQuarterX, drawingRect.origin.y + drawingRectQuarterY);
-  DrawStoneCircle(layerContext, topRightCenter, radius, topRightStoneColor, strokeLineWidth);
-  if (topRightStoneColor == GoColorNone)
-    DrawSymbolX(layerContext, topRightCenter, symbolXSize, symbolXStrokeColor, strokeLineWidth);
-
-  CGPoint bottomLeftCenter = CGPointMake(drawingRect.origin.x + drawingRectQuarterX, drawingRect.origin.y + 3 * drawingRectQuarterY);
-  DrawStoneCircle(layerContext, bottomLeftCenter, radius, bottomLeftStoneColor, strokeLineWidth);
-  if (bottomLeftStoneColor == GoColorNone)
-    DrawSymbolX(layerContext, bottomLeftCenter, symbolXSize, symbolXStrokeColor, strokeLineWidth);
-
-  CGPoint bottomRightCenter = CGPointMake(drawingRect.origin.x + 3 * drawingRectQuarterX, drawingRect.origin.y + 3 * drawingRectQuarterY);
-  DrawStoneCircle(layerContext, bottomRightCenter, radius, bottomRightStoneColor, strokeLineWidth);
-  if (bottomRightStoneColor == GoColorNone)
-    DrawSymbolX(layerContext, bottomRightCenter, symbolXSize, symbolXStrokeColor, strokeLineWidth);
+  if (false && radius >= minimumRadiusForCircleStyle)
+  {
+    DrawNodeTreeViewCellSymbolSetupCircleStyle(layerContext,
+                                               drawingRect,
+                                               strokeLineWidth,
+                                               radius,
+                                               topLeftStoneColor,
+                                               topRightStoneColor,
+                                               bottomLeftStoneColor,
+                                               bottomRightStoneColor);
+  }
+  else
+  {
+    DrawNodeTreeViewCellSymbolSetupRectangleStyle(layerContext,
+                                                  drawingRect,
+                                                  strokeLineWidth,
+                                                  topLeftStoneColor,
+                                                  topRightStoneColor,
+                                                  bottomLeftStoneColor,
+                                                  bottomRightStoneColor);
+  }
 }
 
 // TODO xxx Make this reusable for BoardViewDrawingHelper
@@ -248,8 +363,6 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
 
   CGFloat strokeLineWidth = metrics.normalLineWidth * metrics.contentsScale;
 
-  // TODO xxx remove if no longer needed
-  bool useClipping = false;
   CGPoint drawingRectCenter = CGPointMake(CGRectGetMidX(drawingRect), CGRectGetMidY(drawingRect));
   CGFloat radius = floorf(MIN(drawingRect.size.width, drawingRect.size.height) / 2);
 
@@ -257,72 +370,51 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
   {
     case NodeTreeViewCellSymbolBlackSetupStones:
     {
-      if (useClipping)
-      {
-        SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
-        DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
-      }
+      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorBlack, GoColorBlack, GoColorBlack);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
       break;
     }
     case NodeTreeViewCellSymbolWhiteSetupStones:
     {
-      if (useClipping)
-      {
-        SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
-        DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
-      }
+      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorWhite, GoColorWhite, GoColorWhite, GoColorWhite);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
       break;
     }
     case NodeTreeViewCellSymbolNoSetupStones:
     {
-      if (useClipping)
-      {
-        SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
-        DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
-      }
+      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorNone, GoColorNone, GoColorNone, GoColorNone);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
       break;
     }
     case NodeTreeViewCellSymbolBlackAndWhiteSetupStones:
     {
-      if (useClipping)
-      {
-        SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
-        DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
-      }
+      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorWhite, GoColorWhite, GoColorBlack);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
       break;
     }
     case NodeTreeViewCellSymbolBlackAndNoSetupStones:
     {
-      if (useClipping)
-      {
-        SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
-        DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
-      }
+      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorNone, GoColorNone, GoColorBlack);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
       break;
     }
     case NodeTreeViewCellSymbolWhiteAndNoSetupStones:
     {
-      if (useClipping)
-      {
-        SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
-        DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
-      }
+      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorWhite, GoColorNone, GoColorNone, GoColorWhite);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
       break;
     }
     case NodeTreeViewCellSymbolBlackAndWhiteAndNoSetupStones:
     {
-      if (useClipping)
-      {
-        SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
-        DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
-      }
+      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorNone, GoColorNone, GoColorWhite);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
       break;
     }
     case NodeTreeViewCellSymbolBlackMove:
@@ -365,7 +457,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     }
     case NodeTreeViewCellSymbolEmpty:
     {
-      DrawStoneCircle(layerContext, drawingRectCenter, radius, GoColorNone, strokeLineWidth);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
       break;
     }
     default:
