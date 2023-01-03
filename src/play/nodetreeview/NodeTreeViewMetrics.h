@@ -108,6 +108,7 @@
 /// @name Updaters
 //@{
 - (void) updateWithAbstractCanvasSize:(CGSize)newAbstractCanvasSize;
+- (void) updateWithCondenseMoveNodes:(bool)newCondenseMoveNodes;
 - (void) updateWithRelativeZoomScale:(CGFloat)newRelativeZoomScale;
 //@}
 
@@ -123,7 +124,8 @@
 // -----------------------------------------------------------------------------
 //@{
 /// @brief The canvas size. This is a calculated property that depends on the
-/// @e abstractCanvasSize and @e absoluteZoomScale properties.
+/// @e abstractCanvasSize, @e condenseMoveNodes and @e absoluteZoomScale
+/// properties.
 ///
 /// Clients that use KVO on this property will be triggered after
 /// NodeTreeViewMetrics has updated its values to match the new size.
@@ -146,6 +148,7 @@
 // -----------------------------------------------------------------------------
 //@{
 @property(nonatomic, assign) CGSize abstractCanvasSize;
+@property(nonatomic, assign) bool condenseMoveNodes;
 @property(nonatomic, assign) CGFloat absoluteZoomScale;
 //@}
 

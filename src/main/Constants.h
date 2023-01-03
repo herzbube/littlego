@@ -1697,6 +1697,12 @@ extern NSString* markupPrecedenceKey;
 extern NSString* uniqueSymbolsKey;
 extern NSString* connectionToolAllowsDeleteKey;
 extern NSString* fillMarkerGapsKey;
+// Node tree view settings
+extern NSString* nodeTreeViewKey;
+extern NSString* displayNodeTreeViewKey;
+extern NSString* condenseMoveNodesKey;
+extern NSString* alignMoveNodesKey;
+extern NSString* branchingStyleKey;
 //@}
 
 // -----------------------------------------------------------------------------

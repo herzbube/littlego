@@ -760,10 +760,19 @@ enum ResizablePane2Content
 // -----------------------------------------------------------------------------
 - (void) switchContentInResizablePane2:(id)sender
 {
+  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+  NodeTreeViewModel* nodeTreeViewModel = applicationDelegate.nodeTreeViewModel;
+
   if (self.currentResizablePane2Content == ResizablePane2ContentBoardPositionCollectionView)
+  {
     self.currentResizablePane2Content = ResizablePane2ContentNodeTreeView;
+    nodeTreeViewModel.displayNodeTreeView = true;
+  }
   else
+  {
     self.currentResizablePane2Content = ResizablePane2ContentBoardPositionCollectionView;
+    nodeTreeViewModel.displayNodeTreeView = false;
+  }
 
   [self setupContentInResizablePane2:self.currentResizablePane2Content
                       isInitialSetup:false];

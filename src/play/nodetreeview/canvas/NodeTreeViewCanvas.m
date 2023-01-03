@@ -127,6 +127,10 @@ struct GenerateCellsResult
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(nodeTreeLayoutDidChange:) name:nodeTreeLayoutDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+
+  [self.nodeTreeViewModel addObserver:self forKeyPath:@"condenseMoveNodes" options:0 context:NULL];
+  [self.nodeTreeViewModel addObserver:self forKeyPath:@"alignMoveNodes" options:0 context:NULL];
+  [self.nodeTreeViewModel addObserver:self forKeyPath:@"branchingStyle" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -135,6 +139,10 @@ struct GenerateCellsResult
 - (void) removeNotificationResponders
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+  [self.nodeTreeViewModel removeObserver:self forKeyPath:@"condenseMoveNodes"];
+  [self.nodeTreeViewModel removeObserver:self forKeyPath:@"alignMoveNodes"];
+  [self.nodeTreeViewModel removeObserver:self forKeyPath:@"branchingStyle"];
 }
 
 #pragma mark - Notification responders
@@ -163,6 +171,28 @@ struct GenerateCellsResult
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to KVO notifications.
+// -----------------------------------------------------------------------------
+- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
+{
+  if ([keyPath isEqualToString:@"condenseMoveNodes"])
+  {
+    self.canvasNeedsUpdate = true;
+    [self delayedUpdate];
+  }
+  else if ([keyPath isEqualToString:@"alignMoveNodes"])
+  {
+    self.canvasNeedsUpdate = true;
+    [self delayedUpdate];
+  }
+  else if ([keyPath isEqualToString:@"branchingStyle"])
+  {
+    self.canvasNeedsUpdate = true;
+    [self delayedUpdate];
+  }
 }
 
 #pragma mark - Updaters

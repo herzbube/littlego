@@ -422,6 +422,12 @@ NSString* markupPrecedenceKey = @"MarkupPrecedence";
 NSString* uniqueSymbolsKey = @"UniqueSymbols";
 NSString* connectionToolAllowsDeleteKey = @"ConnectionToolAllowsDelete";
 NSString* fillMarkerGapsKey = @"FillMarkerGaps";
+// Node tree view settings
+NSString* nodeTreeViewKey = @"NodeTreeView";
+NSString* displayNodeTreeViewKey = @"DisplayNodeTreeView";
+NSString* condenseMoveNodesKey = @"CondenseMoveNodes";
+NSString* alignMoveNodesKey = @"AlignMoveNodes";
+NSString* branchingStyleKey = @"BranchingStyle";
 
 // Constants for NSCoding
 // General constants

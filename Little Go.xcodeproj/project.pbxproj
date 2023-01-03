@@ -260,6 +260,8 @@
 		CD4662832960A0E800B58CC9 /* NodeTreeViewBranch.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4662802960A0E700B58CC9 /* NodeTreeViewBranch.m */; };
 		CD4662862960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4662852960A1A700B58CC9 /* NodeTreeViewBranchTuple.m */; };
 		CD4662872960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4662852960A1A700B58CC9 /* NodeTreeViewBranchTuple.m */; };
+		CD46628A296474D300B58CC9 /* NodeTreeViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD466289296474D300B58CC9 /* NodeTreeViewSettingsController.m */; };
+		CD46628B296474D300B58CC9 /* NodeTreeViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD466289296474D300B58CC9 /* NodeTreeViewSettingsController.m */; };
 		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
 		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */; };
 		CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
@@ -1182,6 +1184,8 @@
 		CD4662812960A0E700B58CC9 /* NodeTreeViewBranch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewBranch.h; sourceTree = "<group>"; };
 		CD4662842960A1A700B58CC9 /* NodeTreeViewBranchTuple.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewBranchTuple.h; sourceTree = "<group>"; };
 		CD4662852960A1A700B58CC9 /* NodeTreeViewBranchTuple.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewBranchTuple.m; sourceTree = "<group>"; };
+		CD466288296474D300B58CC9 /* NodeTreeViewSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewSettingsController.h; sourceTree = "<group>"; };
+		CD466289296474D300B58CC9 /* NodeTreeViewSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewSettingsController.m; sourceTree = "<group>"; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
 		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationStateCommand.h; sourceTree = "<group>"; };
 		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationStateCommand.m; sourceTree = "<group>"; };
@@ -2177,6 +2181,8 @@
 				CDA86E7E28A7A4A3000B49E2 /* MarkupSettingsController.m */,
 				CDDCD0A4173BC1F000359DE7 /* MaxMemoryController.h */,
 				CDDCD0A5173BC1F000359DE7 /* MaxMemoryController.m */,
+				CD466288296474D300B58CC9 /* NodeTreeViewSettingsController.h */,
+				CD466289296474D300B58CC9 /* NodeTreeViewSettingsController.m */,
 				CDDD525C14840A520027476B /* PlayerProfileSettingsController.h */,
 				CDDD525D14840A530027476B /* PlayerProfileSettingsController.m */,
 				CDDD526014840A530027476B /* ScoringSettingsController.h */,
@@ -4245,6 +4251,7 @@
 				CDB49E412221A981006DC1A4 /* BoardViewAccessibility.m in Sources */,
 				CD05B11D142A606400214BBE /* CleanBackupSgfCommand.m in Sources */,
 				CD05B121142A60A700214BBE /* RestoreGameFromSgfCommand.m in Sources */,
+				CD46628A296474D300B58CC9 /* NodeTreeViewSettingsController.m in Sources */,
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
 				CD97FA141AED1BD600148C16 /* ResumePlayCommand.m in Sources */,
@@ -4503,6 +4510,7 @@
 				CDD67B6D28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */,
 				CDEE1A0419438AE000DF2389 /* StonesLayerDelegate.m in Sources */,
 				CD7C6A161AB49631009EC5AD /* BoardPositionCollectionViewController.m in Sources */,
+				CD46628B296474D300B58CC9 /* NodeTreeViewSettingsController.m in Sources */,
 				CD05AB97142516A400214BBE /* GoUtilities.m in Sources */,
 				CD81790C25DC5AA700F39091 /* StoneView.m in Sources */,
 				CD9B63F025AB7804003E032B /* SaveSgfCommand.m in Sources */,

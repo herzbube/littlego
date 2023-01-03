@@ -80,7 +80,12 @@
 // -----------------------------------------------------------------------------
 - (void) readUserDefaults
 {
-  // TODO xxx implement
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  NSDictionary* dictionary = [userDefaults dictionaryForKey:nodeTreeViewKey];
+  self.displayNodeTreeView = [[dictionary valueForKey:displayNodeTreeViewKey] boolValue];
+  self.condenseMoveNodes = [[dictionary valueForKey:condenseMoveNodesKey] boolValue];
+  self.alignMoveNodes = [[dictionary valueForKey:alignMoveNodesKey] boolValue];
+  self.branchingStyle = [[dictionary valueForKey:branchingStyleKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -89,7 +94,13 @@
 // -----------------------------------------------------------------------------
 - (void) writeUserDefaults
 {
-  // TODO xxx implement
+  NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:[NSNumber numberWithBool:self.displayNodeTreeView] forKey:displayNodeTreeViewKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.condenseMoveNodes] forKey:condenseMoveNodesKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.alignMoveNodes] forKey:alignMoveNodesKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.branchingStyle] forKey:branchingStyleKey];
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  [userDefaults setObject:dictionary forKey:nodeTreeViewKey];
 }
 
 @end

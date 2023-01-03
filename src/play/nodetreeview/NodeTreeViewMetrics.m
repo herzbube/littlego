@@ -59,6 +59,7 @@
   [self setupNotificationResponders];
   // Remaining properties are initialized by this updater
   [self updateWithAbstractCanvasSize:self.abstractCanvasSize
+                   condenseMoveNodes:self.condenseMoveNodes
                    absoluteZoomScale:self.absoluteZoomScale
                   displayNodeNumbers:self.displayNodeNumbers];
 
@@ -166,7 +167,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupMainProperties
 {
-  self.abstractCanvasSize = CGSizeZero;
+  self.abstractCanvasSize = self.nodeTreeViewCanvas.canvasSize;
+  self.condenseMoveNodes = self.nodeTreeViewModel.condenseMoveNodes;
   self.absoluteZoomScale = 1.0f;
   self.canvasSize = CGSizeZero;
 
@@ -183,7 +185,7 @@
 {
   [self.nodeTreeViewCanvas addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
   [self.nodeTreeViewModel addObserver:self forKeyPath:@"displayNodeNumbers" options:0 context:NULL];
-  // TODO xxx react to a change in condenseMoveNodes => If false we need to calculate a larger cell size
+  [self.nodeTreeViewModel addObserver:self forKeyPath:@"condenseMoveNodes" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -193,6 +195,7 @@
 {
   [self.nodeTreeViewCanvas removeObserver:self forKeyPath:@"canvasSize"];
   [self.nodeTreeViewModel removeObserver:self forKeyPath:@"displayNodeNumbers"];
+  [self.nodeTreeViewModel removeObserver:self forKeyPath:@"condenseMoveNodes"];
 }
 
 #pragma mark - Public API - Updaters
@@ -202,13 +205,14 @@
 /// @a newAbstractCanvasSize.
 ///
 /// The new canvas size will be @a newAbstractCanvasSize multiplied by the
-/// current absolute zoom scale.
+/// current @e nodeTreeViewCellSize and the current absolute zoom scale.
 // -----------------------------------------------------------------------------
 - (void) updateWithAbstractCanvasSize:(CGSize)newAbstractCanvasSize
 {
   if (CGSizeEqualToSize(newAbstractCanvasSize, self.abstractCanvasSize))
     return;
   [self updateWithAbstractCanvasSize:newAbstractCanvasSize
+                   condenseMoveNodes:self.condenseMoveNodes
                    absoluteZoomScale:self.absoluteZoomScale
                   displayNodeNumbers:self.displayNodeNumbers];
   // Update property only after everything has been re-calculated so that KVO
@@ -218,7 +222,32 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the values stored by this NodeTreeViewMetrics object based on
+/// @a newCondenseMoveNodes.
+///
+/// The new canvas size will be the current @e abstractCanvasSize multiplied by
+/// the new @e nodeTreeViewCellSize (which is based on @a newCondenseMoveNodes)
+/// and the current absolute zoom scale.
+// -----------------------------------------------------------------------------
+- (void) updateWithCondenseMoveNodes:(bool)newCondenseMoveNodes
+{
+  if (newCondenseMoveNodes == self.condenseMoveNodes)
+    return;
+  [self updateWithAbstractCanvasSize:self.abstractCanvasSize
+                   condenseMoveNodes:newCondenseMoveNodes
+                   absoluteZoomScale:self.absoluteZoomScale
+                  displayNodeNumbers:self.displayNodeNumbers];
+  // Update property only after everything has been re-calculated so that KVO
+  // observers get the new values
+  self.condenseMoveNodes = newCondenseMoveNodes;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the values stored by this NodeTreeViewMetrics object based on
 /// @a newRelativeZoomScale.
+///
+/// The new canvas size will be the current @e abstractCanvasSize multiplied by
+/// the current @e nodeTreeViewCellSize and the new absolute zoom scale (which
+/// is based on @a newRelativeZoomScale).
 ///
 /// NodeTreeViewMetrics uses an absolute zoom scale for its calculations. This
 /// zoom scale is also available as the public property @e absoluteZoomScale.
@@ -246,6 +275,7 @@
   else if (newAbsoluteZoomScale > self.maximumAbsoluteZoomScale)
     newAbsoluteZoomScale = self.maximumAbsoluteZoomScale;
   [self updateWithAbstractCanvasSize:self.abstractCanvasSize
+                   condenseMoveNodes:self.condenseMoveNodes
                    absoluteZoomScale:newAbsoluteZoomScale
                   displayNodeNumbers:self.displayNodeNumbers];
   // Update property only after everything has been re-calculated so that KVO
@@ -265,6 +295,7 @@
   if (self.displayNodeNumbers == newDisplayNodeNumbers)
     return;
   [self updateWithAbstractCanvasSize:self.abstractCanvasSize
+                   condenseMoveNodes:self.condenseMoveNodes
                    absoluteZoomScale:self.absoluteZoomScale
                   displayNodeNumbers:newDisplayNodeNumbers];
   // Update property only after everything has been re-calculated so that KVO
@@ -276,11 +307,12 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the values stored by this NodeTreeViewMetrics object based on
-/// @a newCanvasSize.
+/// the supplied argument values.
 ///
 /// This is the internal backend for the various public updater methods.
 // -----------------------------------------------------------------------------
 - (void) updateWithAbstractCanvasSize:(CGSize)newAbstractCanvasSize
+                    condenseMoveNodes:(bool)newCondenseMoveNodes
                     absoluteZoomScale:(CGFloat)newAbsoluteZoomScale
                    displayNodeNumbers:(bool)newDisplayNodeNumbers
 {
@@ -293,7 +325,7 @@
   // ----------------------------------------------------------------------
 
   CGFloat nodeTreeViewCellBaseSizeScaled = floor(self.nodeTreeViewCellBaseSize * newAbsoluteZoomScale);
-  if (self.nodeTreeViewModel.condenseMoveNodes)
+  if (newCondenseMoveNodes)
   {
     self.nodeTreeViewCellSize = CGSizeMake(nodeTreeViewCellBaseSizeScaled,
                                            nodeTreeViewCellBaseSizeScaled * self.numberOfCellsOfMultipartCell);
@@ -449,6 +481,10 @@
   else if ([keyPath isEqualToString:@"displayNodeNumbers"])
   {
     [self updateWithDisplayNodeNumbers:self.nodeTreeViewModel.displayNodeNumbers];
+  }
+  else if ([keyPath isEqualToString:@"condenseMoveNodes"])
+  {
+    [self updateWithCondenseMoveNodes:self.nodeTreeViewModel.condenseMoveNodes];
   }
 }
 
