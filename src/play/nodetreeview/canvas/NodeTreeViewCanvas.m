@@ -245,7 +245,7 @@ struct GenerateCellsResult
     return nil;
 }
 
-#pragma mark - Private API - Canvas calculation - Main method
+#pragma mark - Public API - Canvas calculation - Main method
 
 // -----------------------------------------------------------------------------
 /// @brief Performs a full re-calculation of the node tree view canvas.

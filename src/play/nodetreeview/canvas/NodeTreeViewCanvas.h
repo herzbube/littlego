@@ -88,6 +88,7 @@
 
 - (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel;
 
+- (void) recalculateCanvas;
 - (NodeTreeViewCell*) cellAtPosition:(NodeTreeViewCellPosition*)position;
 
 /// @brief The canvas size. Width and height are integral numbers.

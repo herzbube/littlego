@@ -139,6 +139,7 @@
 - (void) createCanvasAndMetrics
 {
   self.nodeTreeViewCanvas = [[[NodeTreeViewCanvas alloc] initWithModel:self.nodeTreeViewModel] autorelease];
+  [self.nodeTreeViewCanvas recalculateCanvas];
   self.nodeTreeViewMetrics = [[[NodeTreeViewMetrics alloc] initWithModel:self.nodeTreeViewModel canvas:self.nodeTreeViewCanvas] autorelease];
 }
 
