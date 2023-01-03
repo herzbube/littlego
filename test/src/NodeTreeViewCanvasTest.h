@@ -34,14 +34,14 @@
 - (void) testCalculateCanvas_UncondensedTree_Selected;
 - (void) testCalculateCanvas_CondensedTree_Selected;
 - (void) testCalculateCanvas_UncondensedTree_BranchingStyleDiagonal_Lines;
-- (void) testCalculateCanvas_UncondensedTree_BranchingStyleBracket_Lines;
+- (void) testCalculateCanvas_UncondensedTree_BranchingStyleRightAngle_Lines;
 - (void) testCalculateCanvas_CondensedTree_BranchingStyleDiagonal_Lines;
 - (void) testCalculateCanvas_CondensedTree_ExtraWideMultipartCells_BranchingStyleDiagonal_Lines;
-- (void) testCalculateCanvas_CondensedTree_BranchingStyleBracket_Lines;
+- (void) testCalculateCanvas_CondensedTree_BranchingStyleRightAngle_Lines;
 - (void) testCalculateCanvas_UncondensedTree_AlignMoves;
-- (void) testCalculateCanvas_UncondensedTree_BranchingStyleBracket_AlignMoves_BranchMovedToNewYPosition;
+- (void) testCalculateCanvas_UncondensedTree_BranchingStyleRightAngle_AlignMoves_BranchMovedToNewYPosition;
 - (void) testCalculateCanvas_UncondensedTree_BranchingStyleDiagonal_AlignMoves_BranchMovedToNewYPosition;
-- (void) testCalculateCanvas_CondensedTree_BranchingStyleBracket_AlignMoves;
+- (void) testCalculateCanvas_CondensedTree_BranchingStyleRightAngle_AlignMoves;
 - (void) testCalculateCanvas_LinesSelectedGameVariation;
 
 @end

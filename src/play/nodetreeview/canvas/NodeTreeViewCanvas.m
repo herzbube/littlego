@@ -795,7 +795,7 @@ struct GenerateCellsResult
       // tree is condensed (which means that a multipart cell's number of
       // sub-cells is >1) the space gain from diagonal branching is never
       // sufficient to fit a branch on an y-position where it would not have
-      // fit with bracket branching.
+      // fit with right-angle branching.
       lowestXPositionOfBranch += 1;
     }
   }
@@ -991,7 +991,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
   // "N" marks the center cells of multipart cells that represent a node.
   // "o" marks branching line junctions.
   //
-  // NodeTreeViewBranchingStyleDiagonal     NodeTreeViewBranchingStyleBracket
+  // NodeTreeViewBranchingStyleDiagonal     NodeTreeViewBranchingStyleRightAngle
   //
   //     0    1    2    3    4    5           0    1    2    3    4    5
   //   +---++---++---+                      +---++---++---+

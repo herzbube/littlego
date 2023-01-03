@@ -1183,7 +1183,7 @@ typedef NS_ENUM(NodeTreeViewCellLines, NodeTreeViewCellLine)
 enum NodeTreeViewBranchingStyle
 {
   NodeTreeViewBranchingStyleDiagonal,
-  NodeTreeViewBranchingStyleBracket,
+  NodeTreeViewBranchingStyleRightAngle,
 };
 //@}
 

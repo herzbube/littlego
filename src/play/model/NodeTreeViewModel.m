@@ -46,7 +46,7 @@
   self.displayNodeNumbers = true;
   self.condenseTree = true;
   self.alignMoveNodes = true;
-  self.branchingStyle = NodeTreeViewBranchingStyleBracket;
+  self.branchingStyle = NodeTreeViewBranchingStyleRightAngle;
 
   // The number chosen here must fulfill the following criteria:
   // - The number must be greater than 1, so that condensed nodes (which are

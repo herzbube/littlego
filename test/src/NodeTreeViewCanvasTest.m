@@ -379,9 +379,9 @@
 // -----------------------------------------------------------------------------
 /// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
 /// the user preference "condense tree" is disabled and the user preference
-/// "branching style" is set bracket. The node tree is built so that all
+/// "branching style" is set to right-angle. The node tree is built so that all
 /// scenarios are covered where the algorithm must decide between the different
-/// bracket line options.
+/// right-angle line options.
 ///
 /// The following diagram illustrates how the node tree built in this test looks
 /// like.
@@ -397,11 +397,11 @@
 /// differences are the perpendicular instead of diagonal lines, and that the
 /// branch with node J does not fit on the same line as the branch with node K.
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_UncondensedTree_BranchingStyleBracket_Lines
+- (void) testCalculateCanvas_UncondensedTree_BranchingStyleRightAngle_Lines
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condensedTree:false branchingStyle:NodeTreeViewBranchingStyleBracket];
+  [self setupModel:nodeTreeViewModel condensedTree:false branchingStyle:NodeTreeViewBranchingStyleRightAngle];
   NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   GoNode* nodeA = m_game.nodeModel.rootNode;
@@ -657,18 +657,18 @@
 // -----------------------------------------------------------------------------
 /// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
 /// the user preference "condense tree" is enabled and the user preference
-/// "branching style" is set to bracket. The node tree is built so that all
+/// "branching style" is set to right-angle. The node tree is built so that all
 /// scenarios are covered where the algorithm must decide between the different
-/// bracket line options.
+/// right-angle line options.
 ///
-/// See testCalculateCanvas_UncondensedTree_BranchingStyleBracket_Lines()
+/// See testCalculateCanvas_UncondensedTree_BranchingStyleRightAngle_Lines()
 /// for details on the possible options.
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_CondensedTree_BranchingStyleBracket_Lines
+- (void) testCalculateCanvas_CondensedTree_BranchingStyleRightAngle_Lines
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condensedTree:true branchingStyle:NodeTreeViewBranchingStyleBracket];
+  [self setupModel:nodeTreeViewModel condensedTree:true branchingStyle:NodeTreeViewBranchingStyleRightAngle];
   NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   GoNode* nodeA = m_game.nodeModel.rootNode;
@@ -821,7 +821,7 @@
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condensedTree:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleBracket];
+  [self setupModel:nodeTreeViewModel condensedTree:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleRightAngle];
   NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   GoNode* nodeA = m_game.nodeModel.rootNode;
@@ -905,9 +905,9 @@
 // -----------------------------------------------------------------------------
 /// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
 /// the user preference "condense tree" is disabled, the user preference
-/// "branching style" is set to bracket, and the user preference "align moves"
-/// is enabled. A scenario is tested where aligning moves causes a branch to no
-/// longer fit and be moved to a new y-position.
+/// "branching style" is set to right-angle, and the user preference
+/// "align moves" is enabled. A scenario is tested where aligning moves causes
+/// a branch to no longer fit and be moved to a new y-position.
 ///
 /// The following diagrams illustrate the scenario. Legend: R=Root node,
 /// M<n>=Move node, A=Annotation node.
@@ -926,11 +926,11 @@
 /// x = 0       1       2       3       4       5
 /// @endverbatim
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_UncondensedTree_BranchingStyleBracket_AlignMoves_BranchMovedToNewYPosition
+- (void) testCalculateCanvas_UncondensedTree_BranchingStyleRightAngle_AlignMoves_BranchMovedToNewYPosition
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condensedTree:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleBracket];
+  [self setupModel:nodeTreeViewModel condensedTree:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleRightAngle];
   NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   GoNode* nodeA = m_game.nodeModel.rootNode;
@@ -1072,9 +1072,9 @@
 // -----------------------------------------------------------------------------
 /// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
 /// the user preference "condense tree" is enabled, the user preference
-/// "branching style" is set to bracket, and the user preference "align moves"
-/// is enabled. The node tree is built so that all scenarios are covered where
-/// the algorithm must align move nodes.
+/// "branching style" is set to right-angle, and the user preference
+/// "align moves" is enabled. The node tree is built so that all scenarios are
+/// covered where the algorithm must align move nodes.
 ///
 /// The following diagrams illustrate the scenarios. Legend: R=Root node,
 /// M<n>=Move node, A=Annotation node.
@@ -1148,11 +1148,11 @@
 /// are not branching nodes or a child of a branching node) it is NOT possible
 /// for an uncondensed move node to be aligned with a condensed move node.
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_CondensedTree_BranchingStyleBracket_AlignMoves
+- (void) testCalculateCanvas_CondensedTree_BranchingStyleRightAngle_AlignMoves
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condensedTree:true alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleBracket];
+  [self setupModel:nodeTreeViewModel condensedTree:true alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleRightAngle];
   NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   GoNode* nodeA = m_game.nodeModel.rootNode;
@@ -1285,11 +1285,11 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Helper method that configures @a model with @a condensedTree.
-/// Move nodes are not aligned and the branching style is set to bracket.
+/// Move nodes are not aligned and the branching style is set to right-angle.
 // -----------------------------------------------------------------------------
 - (void) setupModel:(NodeTreeViewModel*)model condensedTree:(bool)condensedTree
 {
-  [self setupModel:model condensedTree:condensedTree alignMoveNodes:false branchingStyle:NodeTreeViewBranchingStyleBracket];
+  [self setupModel:model condensedTree:condensedTree alignMoveNodes:false branchingStyle:NodeTreeViewBranchingStyleRightAngle];
 }
 
 // -----------------------------------------------------------------------------
