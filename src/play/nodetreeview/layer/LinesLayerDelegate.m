@@ -156,6 +156,7 @@
 //    return;
   }
 
+  bool condenseMoveNodes = self.nodeTreeViewMetrics.condenseMoveNodes;
   CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
                                                          metrics:self.nodeTreeViewMetrics];
 
@@ -188,6 +189,7 @@
                                 cell:cell
                             position:position
                    canvasRectForCell:canvasRectForCell
+                   condenseMoveNodes:condenseMoveNodes
                             tileRect:tileRect];
       didSetClippingPath = true;
     }
@@ -266,6 +268,7 @@
                              cell:(NodeTreeViewCell*)cell
                          position:(NodeTreeViewCellPosition*)position
                 canvasRectForCell:(CGRect)canvasRectForCell
+                condenseMoveNodes:condenseMoveNodes
                          tileRect:(CGRect)tileRect
 {
   CGRect canvasRectForFullCell;
@@ -280,8 +283,12 @@
   else
   {
     canvasRectForFullCell = canvasRectForCell;
-    symbolSize = self.nodeTreeViewMetrics.condensedNodeSymbolSize;
+    if (condenseMoveNodes)
+      symbolSize = self.nodeTreeViewMetrics.condensedNodeSymbolSize;
+    else
+      symbolSize = self.nodeTreeViewMetrics.uncondensedNodeSymbolSize;
   }
+
   CGRect drawingRectForFullCell = canvasRectForFullCell;
   // TODO xxx do we have a method in drawing helper for this?
   drawingRectForFullCell.origin.x = canvasRectForFullCell.origin.x - tileRect.origin.x;

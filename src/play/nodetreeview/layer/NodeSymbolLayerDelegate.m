@@ -19,6 +19,7 @@
 #import "NodeSymbolLayerDelegate.h"
 #import "NodeTreeViewCGLayerCache.h"
 #import "NodeTreeViewDrawingHelper.h"
+#import "../NodeTreeViewMetrics.h"
 #import "../canvas/NodeTreeViewCanvas.h"
 #import "../canvas/NodeTreeViewCell.h"
 #import "../canvas/NodeTreeViewCellPosition.h"
@@ -169,6 +170,7 @@
   }
   [self createLayersIfNecessaryWithContext:context];
 
+  bool condenseMoveNodes = self.nodeTreeViewMetrics.condenseMoveNodes;
   NodeTreeViewCGLayerCache* cache = [NodeTreeViewCGLayerCache sharedCache];
   CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
                                                          metrics:self.nodeTreeViewMetrics];
@@ -179,7 +181,9 @@
     if (! cell || cell.symbol == NodeTreeViewCellSymbolNone)
       continue;
 
-    enum NodeTreeViewLayerType layerType = [self layerTypeForSymbol:cell.symbol cellIsMultipartCell:cell.isMultipart];
+    enum NodeTreeViewLayerType layerType = [self layerTypeForSymbol:cell.symbol
+                                                cellIsMultipartCell:cell.isMultipart
+                                                  condenseMoveNodes:condenseMoveNodes];
     CGLayerRef layer = [cache layerOfType:layerType];
 
     if (cell.isMultipart)
@@ -263,7 +267,9 @@
   }
 }
 
-- (enum NodeTreeViewLayerType) layerTypeForSymbol:(enum NodeTreeViewCellSymbol)symbolType cellIsMultipartCell:(bool)cellIsMultipartCell
+- (enum NodeTreeViewLayerType) layerTypeForSymbol:(enum NodeTreeViewCellSymbol)symbolType
+                              cellIsMultipartCell:(bool)cellIsMultipartCell
+                                condenseMoveNodes:(bool)condenseMoveNodes
 {
   switch (symbolType)
   {
@@ -284,9 +290,15 @@
     case NodeTreeViewCellSymbolBlackAndWhiteAndNoSetupStones:
       return NodeTreeViewLayerTypeBlackAndWhiteAndNoSetupStones;
     case NodeTreeViewCellSymbolBlackMove:
-      return cellIsMultipartCell ? NodeTreeViewLayerTypeBlackMoveUncondensed : NodeTreeViewLayerTypeBlackMoveCondensed;
+      if (condenseMoveNodes)
+        return cellIsMultipartCell ? NodeTreeViewLayerTypeBlackMoveUncondensed : NodeTreeViewLayerTypeBlackMoveCondensed;
+      else
+        return NodeTreeViewLayerTypeBlackMoveUncondensed;
     case NodeTreeViewCellSymbolWhiteMove:
-      return cellIsMultipartCell ? NodeTreeViewLayerTypeWhiteMoveUncondensed : NodeTreeViewLayerTypeWhiteMoveCondensed;
+      if (condenseMoveNodes)
+        return cellIsMultipartCell ? NodeTreeViewLayerTypeWhiteMoveUncondensed : NodeTreeViewLayerTypeWhiteMoveCondensed;
+      else
+        return NodeTreeViewLayerTypeWhiteMoveUncondensed;
     case NodeTreeViewCellSymbolAnnotations:
       return NodeTreeViewLayerTypeAnnotations;
     case NodeTreeViewCellSymbolMarkup:

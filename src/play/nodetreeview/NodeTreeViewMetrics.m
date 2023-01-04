@@ -324,19 +324,23 @@
   // properties is guaranteed to be not up-to-date.
   // ----------------------------------------------------------------------
 
-  CGFloat nodeTreeViewCellBaseSizeScaled = floor(self.nodeTreeViewCellBaseSize * newAbsoluteZoomScale);
+  CGFloat nodeTreeViewCellCondensedWidth = floor(self.nodeTreeViewCellBaseSize * newAbsoluteZoomScale);
+  CGFloat nodeTreeViewCellUncondensedWidth = nodeTreeViewCellCondensedWidth * self.numberOfCellsOfMultipartCell;
+
+  CGSize nodeTreeViewCellCondensedSize = CGSizeMake(nodeTreeViewCellCondensedWidth,
+                                                    nodeTreeViewCellUncondensedWidth);
+  CGSize nodeTreeViewCellUncondensedSize = CGSizeMake(nodeTreeViewCellUncondensedWidth,
+                                                      nodeTreeViewCellUncondensedWidth);
+
   if (newCondenseMoveNodes)
   {
-    self.nodeTreeViewCellSize = CGSizeMake(nodeTreeViewCellBaseSizeScaled,
-                                           nodeTreeViewCellBaseSizeScaled * self.numberOfCellsOfMultipartCell);
-    self.nodeTreeViewMultipartCellSize = CGSizeMake(self.nodeTreeViewCellSize.width * self.numberOfCellsOfMultipartCell,
-                                                    self.nodeTreeViewCellSize.height);
+    self.nodeTreeViewCellSize = nodeTreeViewCellCondensedSize;
+    self.nodeTreeViewMultipartCellSize = nodeTreeViewCellUncondensedSize;
   }
   else
   {
-    self.nodeTreeViewCellSize = CGSizeMake(nodeTreeViewCellBaseSizeScaled * self.numberOfCellsOfMultipartCell,
-                                           nodeTreeViewCellBaseSizeScaled * self.numberOfCellsOfMultipartCell);
-    self.nodeTreeViewMultipartCellSize = self.nodeTreeViewCellSize;
+    self.nodeTreeViewCellSize = nodeTreeViewCellUncondensedSize;
+    self.nodeTreeViewMultipartCellSize = nodeTreeViewCellUncondensedSize;
   }
 
   // TODO xxx Do we need to multiply line widths by newAbsoluteZoomScale, too, to avoid anti-aliasing?
@@ -391,9 +395,9 @@
   self.bottomRightCellY = newAbstractCanvasSize.height - 1;
 
   static const CGFloat nodeSymbolSizeFactor = 0.75f;
-  CGFloat condensedNodeSymbolWidthAndHeight = ceilf(self.nodeTreeViewCellSize.width * nodeSymbolSizeFactor);
+  CGFloat condensedNodeSymbolWidthAndHeight = ceilf(nodeTreeViewCellCondensedSize.width * nodeSymbolSizeFactor);
   self.condensedNodeSymbolSize = CGSizeMake(condensedNodeSymbolWidthAndHeight, condensedNodeSymbolWidthAndHeight);
-  CGFloat uncondensedNodeSymbolWidthAndHeight = ceilf(self.nodeTreeViewMultipartCellSize.width * nodeSymbolSizeFactor);
+  CGFloat uncondensedNodeSymbolWidthAndHeight = ceilf(nodeTreeViewCellUncondensedSize.width * nodeSymbolSizeFactor);
   self.uncondensedNodeSymbolSize = CGSizeMake(uncondensedNodeSymbolWidthAndHeight, uncondensedNodeSymbolWidthAndHeight);
 
   // Update property only after everything has been re-calculated so that KVO
