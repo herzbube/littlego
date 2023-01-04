@@ -981,9 +981,20 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
   // or to a branching line that reaches out from the cell with the
   // branching node (only if condenseMoveNodes is true)
   for (unsigned short xPositionOfCell = xPositionAfterPreviousBranchTuple; xPositionOfCell < branchTuple->xPositionOfFirstCell; xPositionOfCell++)
+  unsigned short xPositionOfFirstCell = xPositionAfterPreviousBranchTuple;
+  for (unsigned short xPositionOfCell = xPositionOfFirstCell; xPositionOfCell < branchTuple->xPositionOfFirstCell; xPositionOfCell++)
   {
     NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
-    if (branchingStyle == NodeTreeViewBranchingStyleDiagonal && branchTuple == firstBranchTupleOfBranch && xPositionOfCell == xPositionAfterPreviousBranchTuple)
+
+    // A diagonal line connecting to a branching line needs to be drawn in the
+    // first cell on the left of firstBranchTupleOfBranch, if, and only if
+    // 1) obviously branching style is diagonal; 2) nodes are not represented
+    // by multipart cells => for multipart cells the diagonal connecting line
+    // is located in a standalone cell below the branching node
+    if (xPositionOfCell == xPositionOfFirstCell &&
+        branchTuple == firstBranchTupleOfBranch &&
+        branchingStyle == NodeTreeViewBranchingStyleDiagonal &&
+        branchTuple->numberOfCellsForNode == 1)
     {
       diagonalConnectionToBranchingLineEstablished = true;
       cell.lines = NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight;  // connect to branching line
@@ -1364,8 +1375,7 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
         // drawn if, and only if 1) obviously branching style is
         // diagonal; 2) nodes are not represented by multipart cells
         // (for multipart cells the diagonal connecting line is located
-        // in a standalone cell somewhere on the left, before the first
-        // sub-cell of the multipart cell); and 3) if a diagonal
+        // in a standalone cell below the branching node); and 3) if a diagonal
         // connecting line has not yet been established due to move
         // node alignment.
         if (branchingStyle == NodeTreeViewBranchingStyleDiagonal && branchTuple->numberOfCellsForNode == 1 && ! diagonalConnectionToBranchingLineEstablished)
