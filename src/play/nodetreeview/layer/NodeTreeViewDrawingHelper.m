@@ -163,37 +163,6 @@ void DrawNodeTreeViewCellSymbolSetup(CGContextRef layerContext,
 }
 
 // TODO xxx Make this reusable for BoardViewDrawingHelper
-void DrawImageWithName(CGContextRef layerContext, CGRect drawingRect, NSString* imageName)
-{
-  UIImage* image = [UIImage imageNamed:imageName];
-  // Let UIImage do all the drawing for us. This includes 1) compensating for
-  // coordinate system differences (if we use CGContextDrawImage() the image
-  // is drawn upside down); and 2) for scaling.
-  UIGraphicsPushContext(layerContext);
-  [image drawInRect:drawingRect];
-  UIGraphicsPopContext();
-}
-
-// TODO xxx Make this reusable for BoardViewDrawingHelper
-void DrawSystemImageWithName(CGContextRef layerContext, CGRect drawingRect, NSString* imageName)
-{
-  if (@available(iOS 13, *))
-  {
-    UIImage* image = [UIImage systemImageNamed:imageName];
-    // Let UIImage do all the drawing for us. This includes 1) compensating for
-    // coordinate system differences (if we use CGContextDrawImage() the image
-    // is drawn upside down); and 2) for scaling.
-    UIGraphicsPushContext(layerContext);
-    [image drawInRect:drawingRect];
-    UIGraphicsPopContext();
-  }
-  else
-  {
-    // TODO xxx throw
-  }
-}
-
-// TODO xxx Make this reusable for BoardViewDrawingHelper
 void DrawString(CGContextRef layerContext, CGRect drawingRect, NSString* string, CGFloat fontSize)
 {
   UIFont* font;
@@ -211,41 +180,10 @@ void DrawString(CGContextRef layerContext, CGRect drawingRect, NSString* string,
                                     NSForegroundColorAttributeName : textColor,
                                     NSShadowAttributeName: whiteTextShadow };
 
-  CGRect boundingBox = CGRectZero;
-  boundingBox.origin = drawingRect.origin;
-  boundingBox.size = [string sizeWithAttributes:textAttributes];
-
-  // Create a save point that we can restore to before we leave this method
-  CGContextSaveGState(layerContext);
-
-  // Adjust the CTM to draw the text both horizontally and vertically centered.
-  // Text attributes can only be used for horizontal centering (with a
-  // paragraph style that uses NSTextAlignmentCenter).
-  CGContextTranslateCTM(layerContext,
-                        CGRectGetMidX(drawingRect) - CGRectGetMidX(boundingBox),
-                        CGRectGetMidY(drawingRect) - CGRectGetMidY(boundingBox));
-
-  UIGraphicsPushContext(layerContext);
-  [string drawInRect:boundingBox withAttributes:textAttributes];
-  UIGraphicsPopContext();
-
-  // Restore the drawing context to undo CTM adjustments
-  CGContextRestoreGState(layerContext);
-}
-
-void SetClippingPath(CGContextRef layerContext, CGPoint center, CGFloat radius, CGFloat strokeLineWidth)
-{
-  const CGFloat startRadius = [UiUtilities radians:0];
-  const CGFloat endRadius = [UiUtilities radians:360];
-  const int clockwise = 0;
-  CGContextAddArc(layerContext,
-                  center.x,
-                  center.y,
-                  radius + strokeLineWidth / 2,
-                  startRadius,
-                  endRadius,
-                  clockwise);
-  CGContextClip(layerContext);
+  [CGDrawingHelper drawStringWithContext:layerContext
+                          centeredInRect:drawingRect
+                                  string:string
+                          textAttributes:textAttributes];
 }
 
 void DrawSurroundingCircle(CGContextRef layerContext, CGPoint center, CGFloat radius, CGFloat strokeLineWidth)
@@ -283,56 +221,64 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
 
   CGPoint drawingRectCenter = CGPointMake(CGRectGetMidX(drawingRect), CGRectGetMidY(drawingRect));
   CGFloat radius = floorf(MIN(drawingRect.size.width, drawingRect.size.height) / 2);
+  CGFloat clippingPathRadius = radius + strokeLineWidth / 2.0;
 
   switch (symbolType)
   {
     case NodeTreeViewCellSymbolBlackSetupStones:
     {
-      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorBlack, GoColorBlack, GoColorBlack);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolWhiteSetupStones:
     {
-      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorWhite, GoColorWhite, GoColorWhite, GoColorWhite);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolNoSetupStones:
     {
-      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorNone, GoColorNone, GoColorNone, GoColorNone);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolBlackAndWhiteSetupStones:
     {
-      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorWhite, GoColorWhite, GoColorBlack);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolBlackAndNoSetupStones:
     {
-      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorNone, GoColorNone, GoColorBlack);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolWhiteAndNoSetupStones:
     {
-      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorWhite, GoColorNone, GoColorNone, GoColorWhite);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolBlackAndWhiteAndNoSetupStones:
     {
-      SetClippingPath(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorNone, GoColorNone, GoColorWhite);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolBlackMove:

@@ -81,4 +81,49 @@
                                 fillColor:(UIColor**)fillColor
                               strokeColor:(UIColor**)strokeColor;
 
++ (void) drawImageWithContext:(CGContextRef)context
+                       inRect:(CGRect)rectangle
+                    imageName:(NSString*)imageName;
+
++ (void) drawSystemImageWithContext:(CGContextRef)context
+                             inRect:(CGRect)rectangle
+                          imageName:(NSString*)imageName API_AVAILABLE(ios(13.0));
+
++ (void) drawImageWithContext:(CGContextRef)context
+                       inRect:(CGRect)rectangle
+                        image:(UIImage*)image;
+
++ (void) drawStringWithContext:(CGContextRef)context
+                centeredInRect:(CGRect)rectangle
+                        string:(NSString*)string
+                textAttributes:(NSDictionary*)textAttributes;
+
++ (void) setCircularClippingPathWithContext:(CGContextRef)context
+                                     center:(CGPoint)center
+                                     radius:(CGFloat)radius;
+
++ (void) setCircularClippingPathWithContext:(CGContextRef)context
+                                     center:(CGPoint)center
+                                innerRadius:(CGFloat)innerRadius
+                                outerRadius:(CGFloat)outerRadius;
+
++ (void) setCircularClippingPathWithContext:(CGContextRef)context
+                                     center:(CGPoint)center
+                                     radius:(CGFloat)innerRadius
+                             outerRectangle:(CGRect)outerRectangle;
+
++ (void) setRectangularClippingPathWithContext:(CGContextRef)context
+                                     rectangle:(CGRect)rectangle;
+
++ (void) setRectangularClippingPathWithContext:(CGContextRef)context
+                                innerRectangle:(CGRect)innerRectangle
+                                outerRectangle:(CGRect)outerRectangle;
+
++ (void) setRectangularClippingPathWithContext:(CGContextRef)context
+                                innerRectangle:(CGRect)innerRectangle
+                                        center:(CGPoint)center
+                                        radius:(CGFloat)radius;
+
++ (void) removeClippingPathWithContext:(CGContextRef)context;
+
 @end

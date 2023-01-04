@@ -406,4 +406,267 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws a bitmap image within the rectangle with origin and size
+/// specified by @a rectangle. The bitmap image is resized so that it fits
+/// within the rectangle. The image is a custom image located in a bundle
+/// resource file or an asset catalog. The image name is @a imageName.
+// -----------------------------------------------------------------------------
++ (void) drawImageWithContext:(CGContextRef)context
+                       inRect:(CGRect)rectangle
+                    imageName:(NSString*)imageName
+{
+  UIImage* image = [UIImage imageNamed:imageName];
+  [CGDrawingHelper drawImageWithContext:context inRect:rectangle image:image];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Draws a bitmap image within the rectangle with origin and size
+/// specified by @a rectangle. The bitmap image is resized so that it fits
+/// within the rectangle. The image is a system-defined symbol image. The image
+/// name is @a imageName.
+// -----------------------------------------------------------------------------
++ (void) drawSystemImageWithContext:(CGContextRef)context
+                             inRect:(CGRect)rectangle
+                          imageName:(NSString*)imageName
+{
+  UIImage* image = [UIImage systemImageNamed:imageName];
+  [CGDrawingHelper drawImageWithContext:context inRect:rectangle image:image];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Draws the bitmap image @a image within the rectangle with origin and
+/// size specified by @a rectangle. The bitmap image is resized so that it fits
+/// within the rectangle.
+// -----------------------------------------------------------------------------
++ (void) drawImageWithContext:(CGContextRef)context
+                       inRect:(CGRect)rectangle
+                        image:(UIImage*)image
+{
+  // Let UIImage do all the drawing for us. This includes 1) compensating for
+  // coordinate system differences (if we use CGContextDrawImage() the image
+  // is drawn upside down); and 2) for scaling.
+  UIGraphicsPushContext(context);
+  [image drawInRect:rectangle];
+  UIGraphicsPopContext();
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Draws the string @a string using the attributes @a textAttributes.
+/// The string is drawn both horizontally and vertically centered within the
+/// rectangle with origin and size specified by @a rectangle. The string is not
+/// clipped to the bounds defined by @a rectangle.
+// -----------------------------------------------------------------------------
++ (void) drawStringWithContext:(CGContextRef)context
+                centeredInRect:(CGRect)rectangle
+                        string:(NSString*)string
+                textAttributes:(NSDictionary*)textAttributes
+{
+  CGRect boundingBox = CGRectZero;
+  boundingBox.size = [string sizeWithAttributes:textAttributes];
+
+  CGRect drawingRect = CGRectZero;
+  // Use the bounding box size for drawing so that the string is not clipped
+  drawingRect.size = boundingBox.size;
+  // Set the drawing origin so that the text is centered both horizontally and
+  // vertically. Horizontal centering could also be achieved via text attributes
+  // (with a paragraph style that uses NSTextAlignmentCenter), but vertical
+  // centering cannot.
+  drawingRect.origin.x = CGRectGetMidX(rectangle) - CGRectGetMidX(boundingBox);
+  drawingRect.origin.y = CGRectGetMidY(rectangle) - CGRectGetMidY(boundingBox);
+
+  // NSString's drawInRect:withAttributes: is a UIKit drawing function. To make
+  // it work we need to push the specified drawing context to the top of the
+  // UIKit context stack (which is currently empty).
+  UIGraphicsPushContext(context);
+  [string drawInRect:drawingRect withAttributes:textAttributes];
+  UIGraphicsPopContext();
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the drawing context @a context with a circular clipping
+/// path with center point @a center and radius @a radius. Drawing takes place
+/// only within the circular area defined by the clipping path. Invocation of
+/// this method must be balanced by also invoking removeClippingPath:().
+// -----------------------------------------------------------------------------
++ (void) setCircularClippingPathWithContext:(CGContextRef)context
+                                     center:(CGPoint)center
+                                     radius:(CGFloat)radius
+{
+  CGContextSaveGState(context);
+
+  [CGDrawingHelper drawCircleWithContext:context
+                                  center:center
+                                  radius:radius
+                               fillColor:nil
+                             strokeColor:nil
+                         strokeLineWidth:0.0f];
+  CGContextClip(context);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the drawing context @a context with two concentric
+/// circles with the radii @a innerRadius and @a outerRadius, both of which
+/// share the center point @a center. Drawing that takes place within the outer
+/// circle's area is clipped so that nothing is drawn within the inner circle's
+/// area. Invocation of this method must be balanced by also invoking
+/// removeClippingPath:().
+// -----------------------------------------------------------------------------
++ (void) setCircularClippingPathWithContext:(CGContextRef)context
+                                     center:(CGPoint)center
+                                innerRadius:(CGFloat)innerRadius
+                                outerRadius:(CGFloat)outerRadius
+{
+  CGContextSaveGState(context);
+
+  // To draw OUTSIDE of a given area, first set a path that defines the entire
+  // drawing area, then set a second path that defines the area to exclude, then
+  // set the clipping path using the even-odd (EO) rule. Solution found here:
+  // https://www.kodeco.com/349664-core-graphics-tutorial-arcs-and-paths
+  [CGDrawingHelper drawCircleWithContext:context
+                                  center:center
+                                  radius:outerRadius
+                               fillColor:nil
+                             strokeColor:nil
+                         strokeLineWidth:0.0f];
+  [CGDrawingHelper drawCircleWithContext:context
+                                  center:center
+                                  radius:innerRadius
+                               fillColor:nil
+                             strokeColor:nil
+                         strokeLineWidth:0.0f];
+  CGContextEOClip(context);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the drawing context @a context with an inner circular area
+/// with center point @a center and radius @a radius, and an outer rectangular
+/// area with origin and size specified by @a outerRectangle. The inner circular
+/// area is fully surrounded by the outer rectangular area. Drawing that takes
+/// place within the outer rectangular area is clipped so that nothing is drawn
+/// within the inner circular area. Invocation of this method must be balanced
+/// by also invoking removeClippingPath:().
+// -----------------------------------------------------------------------------
++ (void) setCircularClippingPathWithContext:(CGContextRef)context
+                                     center:(CGPoint)center
+                                     radius:(CGFloat)radius
+                             outerRectangle:(CGRect)outerRectangle
+{
+  CGContextSaveGState(context);
+
+  // To draw OUTSIDE of a given area, first set a path that defines the entire
+  // drawing area, then set a second path that defines the area to exclude, then
+  // set the clipping path using the even-odd (EO) rule. Solution found here:
+  // https://www.kodeco.com/349664-core-graphics-tutorial-arcs-and-paths
+  [CGDrawingHelper drawRectangleWithContext:context
+                                  rectangle:outerRectangle
+                                  fillColor:nil
+                                strokeColor:nil
+                            strokeLineWidth:0.0f];
+  [CGDrawingHelper drawCircleWithContext:context
+                                  center:center
+                                  radius:radius
+                               fillColor:nil
+                             strokeColor:nil
+                         strokeLineWidth:0.0f];
+  CGContextEOClip(context);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the drawing context @a context with a rectangular clipping
+/// path with origin and size specified by @a rectangle. Drawing takes place
+/// only within the rectangular area defined by the clipping path. Invocation
+/// of this method must be balanced by also invoking removeClippingPath:().
+// -----------------------------------------------------------------------------
++ (void) setRectangularClippingPathWithContext:(CGContextRef)context
+                                     rectangle:(CGRect)rectangle
+{
+  CGContextSaveGState(context);
+
+  [CGDrawingHelper drawRectangleWithContext:context
+                                  rectangle:rectangle
+                                  fillColor:nil
+                                strokeColor:nil
+                            strokeLineWidth:0.0f];
+  CGContextClip(context);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the drawing context @a context with an inner and an outer
+/// rectangular area whose origins and sizes are specified by @a innerRectangle
+/// and @a outerRectangle, respectively. The inner rectangular area is fully
+/// surrounded by the outer rectangular area. Drawing that takes place within
+/// the outer rectangular area is clipped so that nothing is drawn within the
+/// area of the inner rectangular area. Invocation of this method must be
+/// balanced by also invoking removeClippingPath:().
+// -----------------------------------------------------------------------------
++ (void) setRectangularClippingPathWithContext:(CGContextRef)context
+                                innerRectangle:(CGRect)innerRectangle
+                                outerRectangle:(CGRect)outerRectangle
+{
+  CGContextSaveGState(context);
+
+  // To draw OUTSIDE of a given area, first set a path that defines the entire
+  // drawing area, then set a second path that defines the area to exclude, then
+  // set the clipping path using the even-odd (EO) rule. Solution found here:
+  // https://www.kodeco.com/349664-core-graphics-tutorial-arcs-and-paths
+  [CGDrawingHelper drawRectangleWithContext:context
+                                  rectangle:outerRectangle
+                                  fillColor:nil
+                                strokeColor:nil
+                            strokeLineWidth:0.0f];
+  [CGDrawingHelper drawRectangleWithContext:context
+                                  rectangle:innerRectangle
+                                  fillColor:nil
+                                strokeColor:nil
+                            strokeLineWidth:0.0f];
+  CGContextEOClip(context);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the drawing context @a context with an inner rectangular
+/// area with origin and size specified by @a innerRectangle, and an outer
+/// circular area with center point @a center and radius @a radius. The inner
+/// rectangular area is fully surrounded by the outer circular area. Drawing
+/// that takes place within the outer circular area is clipped so that nothing
+/// is drawn within the inner rectangular area. Invocation of this method must
+/// be balanced by also invoking removeClippingPath:().
+// -----------------------------------------------------------------------------
++ (void) setRectangularClippingPathWithContext:(CGContextRef)context
+                                innerRectangle:(CGRect)innerRectangle
+                                        center:(CGPoint)center
+                                        radius:(CGFloat)radius
+{
+  CGContextSaveGState(context);
+
+  // To draw OUTSIDE of a given area, first set a path that defines the entire
+  // drawing area, then set a second path that defines the area to exclude, then
+  // set the clipping path using the even-odd (EO) rule. Solution found here:
+  // https://www.kodeco.com/349664-core-graphics-tutorial-arcs-and-paths
+  [CGDrawingHelper drawCircleWithContext:context
+                                  center:center
+                                  radius:radius
+                               fillColor:nil
+                             strokeColor:nil
+                         strokeLineWidth:0.0f];
+  [CGDrawingHelper drawRectangleWithContext:context
+                                  rectangle:innerRectangle
+                                  fillColor:nil
+                                strokeColor:nil
+                            strokeLineWidth:0.0f];
+  CGContextEOClip(context);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes a previously configured clipping path from the drawing
+/// context @a context. Invocation of this method balances a previous invocation
+/// of any of the set...ClippingPathWithContext:() methods.
+// -----------------------------------------------------------------------------
++ (void) removeClippingPathWithContext:(CGContextRef)context
+{
+  // Clipping can only be removed by restoring a previously saved graphics
+  // state
+  CGContextRestoreGState(context);
+}
+
 @end

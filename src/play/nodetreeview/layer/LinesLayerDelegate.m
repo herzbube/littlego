@@ -24,6 +24,7 @@
 #import "../canvas/NodeTreeViewCell.h"
 #import "../canvas/NodeTreeViewCellPosition.h"
 #import "../../../ui/Tile.h"
+#import "../../../ui/CGDrawingHelper.h"
 #import "../../../ui/UiUtilities.h"
 
 
@@ -288,23 +289,15 @@
   CGRect drawingRectForFullSymbol = [UiUtilities rectWithSize:drawingRectForFullSymbolSize
                                                centeredInRect:drawingRectForFullCell];
 
-  // The clipping path we are going to set can only be removed by restoring a
-  // previously saved graphics state
-  CGContextSaveGState(context);
-
-  // To draw OUTSIDE of a given area, first set a path that defines the entire
-  // drawing area, then set a second path that defines the area to exclude, then
-  // set the clipping path using the even-odd (EO) rule. Solution found here:
-  // https://www.kodeco.com/349664-core-graphics-tutorial-arcs-and-paths
-  CGContextAddRect(context, drawingRectForFullCell);
-  CGContextAddRect(context, drawingRectForFullSymbol);
-  CGContextEOClip(context);
+  [CGDrawingHelper setRectangularClippingPathWithContext:context
+                                          innerRectangle:drawingRectForFullSymbol
+                                          outerRectangle:drawingRectForFullCell];
 }
 
 // TODO xxx document
 - (void) removeClippingPathInContext:(CGContextRef)context
 {
-  CGContextRestoreGState(context);
+  [CGDrawingHelper removeClippingPathWithContext:context];
 }
 
 // TODO xxx document

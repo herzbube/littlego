@@ -69,13 +69,6 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
          attributes:(NSDictionary*)attributes
      inRectWithSize:(CGSize)size
     centeredAtPoint:(GoPoint*)point
-        withMetrics:(BoardViewMetrics*)metrics;
-
-+ (void) drawString:(NSString*)string
-        withContext:(CGContextRef)context
-         attributes:(NSDictionary*)attributes
-     inRectWithSize:(CGSize)size
-    centeredAtPoint:(GoPoint*)point
      inTileWithRect:(CGRect)tileRect
         withMetrics:(BoardViewMetrics*)metrics;
 
