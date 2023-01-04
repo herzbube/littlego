@@ -276,8 +276,8 @@
   if (cell.isMultipart)
   {
     canvasRectForFullCell = [NodeTreeViewDrawingHelper canvasRectForMultipartCellPart:cell.part
-                                                       partPosition:position
-                                                            metrics:self.nodeTreeViewMetrics];
+                                                                         partPosition:position
+                                                                              metrics:self.nodeTreeViewMetrics];
     symbolSize = self.nodeTreeViewMetrics.uncondensedNodeSymbolSize;
   }
   else

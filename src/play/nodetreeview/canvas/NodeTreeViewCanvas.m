@@ -976,11 +976,6 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
 {
   bool diagonalConnectionToBranchingLineEstablished = false;
 
-  // Part 1: Generate cells with lines that connect the node to either its
-  // predecessor node in the same branch (only if alignMoveNodes is true),
-  // or to a branching line that reaches out from the cell with the
-  // branching node (only if condenseMoveNodes is true)
-  for (unsigned short xPositionOfCell = xPositionAfterPreviousBranchTuple; xPositionOfCell < branchTuple->xPositionOfFirstCell; xPositionOfCell++)
   unsigned short xPositionOfFirstCell = xPositionAfterPreviousBranchTuple;
   for (unsigned short xPositionOfCell = xPositionOfFirstCell; xPositionOfCell < branchTuple->xPositionOfFirstCell; xPositionOfCell++)
   {
@@ -1018,55 +1013,54 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
 /// The generated cells form a vertical branching line that reaches out from the
 /// branching node towards its child nodes. Appropriate horizontal and/or
 /// diagonal stub lines branching away from the vertical line are added.
+///
+/// The following schematic depicts what kind of lines need to be generated for
+/// each branching style when condenseMoveNodes is enabled, i.e. when multipart
+/// cells are involved. "N" marks the center cells of multipart cells that
+/// represent a node. "o" marks branching line junctions.
+///
+/// @verbatim
+/// NodeTreeViewBranchingStyleDiagonal     NodeTreeViewBranchingStyleRightAngle
+///
+///     0    1    2    3    4    5           0    1    2    3    4    5
+///   +---++---++---+                      +---++---++---+
+///   |   ||   ||   |                      |   ||   ||   |
+/// 0 |   || N ||   |                      |   || N ||   |
+///   |   || |\||   |                      |   || | ||   |
+///   +---++-|-++---+                      +---++-|-++---+
+///   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
+///   |   || | ||\  ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+/// 1 |   || o || o---------N ||   |       |   || o--------------N ||   |
+///   |   || |\||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+///   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
+///   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
+///   |   || | ||\  ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+/// 2 |   || | || o---------N ||   |       |   || o--------------N ||   |
+///   |   || | ||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+///   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
+///   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
+///   |   || | ||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+/// 3 |   || o ||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+///   |   ||  \||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+///   +---++---++---++---++---++---+       +---++-|-++---++---++---++---+
+///   +---++---++---++---++---++---+       +---++-|-++---++---++---++---+
+///   |   ||   ||\  ||   ||   ||   |       |   || | ||   ||   ||   ||   |
+/// 4 |   ||   || o---------N ||   |       |   || o--------------N ||   |
+///   |   ||   ||   ||   ||   ||   |       |   ||   ||   ||   ||   ||   |
+///   +---++---++---++---++---++---+       +---++---++---++---++---++---+
+///
+/// Cells to be generated on each y-position:
+/// - y=0: 1/0, 2/0                             1/0, 2/0
+/// - y=1  1/1, 2/1                             1/1, 2/1
+/// - y=2  1/2                                  1/2
+/// - y=3  2/3                                  1/4, 2/4
+/// @endverbatim
 // -----------------------------------------------------------------------------
 - (void) generateCellsBelowBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
                      yPositionOfBranch:(unsigned short)yPositionOfBranch
                         branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
                    generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
 {
-  // Part 2: If it's a branching node then generate cells below the
-  // branching node that contain the branching lines needed to connect the
-  // branching node to its child nodes. The following schematic depicts what
-  // kind of lines need to be generated for each branching style when
-  // condenseMoveNodes is enabled, i.e. when multipart cells are involved.
-  // "N" marks the center cells of multipart cells that represent a node.
-  // "o" marks branching line junctions.
-  //
-  // NodeTreeViewBranchingStyleDiagonal     NodeTreeViewBranchingStyleRightAngle
-  //
-  //     0    1    2    3    4    5           0    1    2    3    4    5
-  //   +---++---++---+                      +---++---++---+
-  //   |   ||   ||   |                      |   ||   ||   |
-  // 0 |   || N ||   |                      |   || N ||   |
-  //   |   || |\||   |                      |   || | ||   |
-  //   +---++-|-++---+                      +---++-|-++---+
-  //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
-  //   |   || | ||\  ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-  // 1 |   || o || o---------N ||   |       |   || o--------------N ||   |
-  //   |   || |\||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-  //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
-  //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
-  //   |   || | ||\  ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-  // 2 |   || | || o---------N ||   |       |   || o--------------N ||   |
-  //   |   || | ||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-  //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
-  //   +---++-|-++---++---++---++---+       +---++-|-++---++---++---++---+
-  //   |   || | ||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-  // 3 |   || o ||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-  //   |   ||  \||   ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-  //   +---++---++---++---++---++---+       +---++-|-++---++---++---++---+
-  //   +---++---++---++---++---++---+       +---++-|-++---++---++---++---+
-  //   |   ||   ||\  ||   ||   ||   |       |   || | ||   ||   ||   ||   |
-  // 4 |   ||   || o---------N ||   |       |   || o--------------N ||   |
-  //   |   ||   ||   ||   ||   ||   |       |   ||   ||   ||   ||   ||   |
-  //   +---++---++---++---++---++---+       +---++---++---++---++---++---+
-  //
-  // Cells to be generated on each y-position:
-  // - y=0: 1/0, 2/0                             1/0, 2/0
-  // - y=1  1/1, 2/1                             1/1, 2/1
-  // - y=2  1/2                                  1/2
-  // - y=3  2/3                                  1/4, 2/4
-
   NodeTreeViewBranch* lastChildBranch = branchTuple->childBranches.lastObject;
 
   unsigned short yPositionBelowBranchingNode = yPositionOfBranch + 1;
@@ -1089,7 +1083,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
     else if (branchTuple->childBranches.count > 1)
     {
       indexOfNextChildBranchToDiagonallyConnect = 1;
-      nextChildBranchToDiagonallyConnect = [branchTuple->childBranches objectAtIndex:1];
+      nextChildBranchToDiagonallyConnect = [branchTuple->childBranches objectAtIndex:indexOfNextChildBranchToDiagonallyConnect];
     }
   }
 
@@ -1239,11 +1233,12 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
   else
     linesOfFirstCell = NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight;
 
+  unsigned short xPositionOfFirstCell = xPositionOfVerticalLineCell + 1;
   unsigned short xPositionOfLastCell = branchTuple->xPositionOfFirstCell + branchTuple->numberOfCellsForNode - 1;
-  for (unsigned short xPosition = xPositionOfVerticalLineCell + 1; xPosition <= xPositionOfLastCell; xPosition++)
+  for (unsigned short xPosition = xPositionOfFirstCell; xPosition <= xPositionOfLastCell; xPosition++)
   {
     NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
-    if (xPosition == xPositionOfVerticalLineCell + 1)
+    if (xPosition == xPositionOfFirstCell)
       cell.lines = linesOfFirstCell;
     else
       cell.lines = NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight;

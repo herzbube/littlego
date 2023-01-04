@@ -148,7 +148,7 @@ enum ResizablePane2Content
   self.boardContainerView = nil;
   self.boardPositionButtonBoxAndAnnotationContainerView = nil;
   self.boardPositionButtonBoxContainerView = nil;
-  self.switchContentInResizablePane2Button = false;
+  self.switchContentInResizablePane2Button = nil;
   self.resizablePane2ContentAutoLayoutConstraints = nil;
   self.boardViewAutoLayoutConstraints = nil;
 }
@@ -484,7 +484,6 @@ enum ResizablePane2Content
                                                action:@selector(switchContentInResizablePane2:)
                                      forControlEvents:UIControlEventTouchUpInside];
 }
-
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.

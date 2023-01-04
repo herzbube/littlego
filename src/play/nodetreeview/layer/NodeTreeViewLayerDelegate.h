@@ -36,7 +36,7 @@ enum NodeTreeViewLayerDelegateEvent
   NTVLDEventInvalidateContent,
   /// @brief Is sent whenever the abstract canvas size changed. The layer's
   /// drawing cells may have changed, and because of that also the content
-  /// drawn by the layer. The event is sent only after NodeTreeViewModel and
+  /// drawn by the layer. The event is sent only after NodeTreeViewCanvas and
   /// NodeTreeViewMetrics have updated their data.
   NTVLDEventAbstractCanvasSizeChanged,
   /// @brief Is sent whenever the content of the node tree changed. The layer's

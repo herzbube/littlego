@@ -139,7 +139,7 @@ void DrawNodeTreeViewCellSymbolSetup(CGContextRef layerContext,
   // circle-style drawing routine.
   const CGFloat minimumRadiusForCircleStyle = 12.0;
 
-  if (false && radius >= minimumRadiusForCircleStyle)
+  if (radius >= minimumRadiusForCircleStyle)
   {
     DrawNodeTreeViewCellSymbolSetupCircleStyle(layerContext,
                                                drawingRect,

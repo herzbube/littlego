@@ -317,9 +317,8 @@
                    displayNodeNumbers:(bool)newDisplayNodeNumbers
 {
   // ----------------------------------------------------------------------
-  // All calculations in this method must use newCanvasSize.
-  // The corresponding property self.newCanvasSize
-  // must not be used because, due
+  // All calculations in this method must use the new... parameters.
+  // The corresponding properties must not be used because, due
   // to the way how this update method is invoked, at least one of these
   // properties is guaranteed to be not up-to-date.
   // ----------------------------------------------------------------------
