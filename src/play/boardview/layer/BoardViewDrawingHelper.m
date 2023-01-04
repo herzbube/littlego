@@ -24,6 +24,7 @@
 #import "../../../go/GoVertex.h"
 #import "../../../shared/LayoutManager.h"
 #import "../../../ui/Tile.h"
+#import "../../../ui/CGDrawingHelper.h"
 #import "../../../ui/UiUtilities.h"
 
 
@@ -91,18 +92,14 @@ CGLayerRef CreateStarPointLayer(CGContextRef context, BoardViewMetrics* metrics)
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
-  const CGFloat startRadius = [UiUtilities radians:0];
-  const CGFloat endRadius = [UiUtilities radians:360];
-  const int clockwise = 0;
-  CGContextAddArc(layerContext,
-                  layerCenter.x,
-                  layerCenter.y,
-                  metrics.starPointRadius * metrics.contentsScale,
-                  startRadius,
-                  endRadius,
-                  clockwise);
-	CGContextSetFillColorWithColor(layerContext, metrics.starPointColor.CGColor);
-  CGContextFillPath(layerContext);
+  CGFloat radius = metrics.starPointRadius * metrics.contentsScale;
+
+  [CGDrawingHelper drawCircleWithContext:layerContext
+                                  center:layerCenter
+                                  radius:radius
+                               fillColor:metrics.starPointColor
+                             strokeColor:nil
+                         strokeLineWidth:0.0f];
 
   return layer;
 }
@@ -231,7 +228,6 @@ CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, U
 
   // Half-pixel translation is added at the time when the layer is actually
   // drawn
-  CGContextBeginPath(layerContext);
 
   switch (symbol)
   {
@@ -239,66 +235,39 @@ CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, U
     {
       CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
       CGFloat radius = floorf(drawingRect.size.width / 2.0f);
-      const CGFloat startRadius = [UiUtilities radians:0];
-      const CGFloat endRadius = [UiUtilities radians:360];
-      const int clockwise = 0;
-      CGContextAddArc(layerContext,
-                      layerCenter.x,
-                      layerCenter.y,
-                      radius,
-                      startRadius,
-                      endRadius,
-                      clockwise);
 
-      CGContextSetStrokeColorWithColor(layerContext, symbolStrokeColor.CGColor);
-      CGContextSetLineWidth(layerContext, strokeLineWidth);
-      CGContextStrokePath(layerContext);
+      [CGDrawingHelper drawCircleWithContext:layerContext
+                                      center:layerCenter
+                                      radius:radius
+                                   fillColor:nil
+                                 strokeColor:symbolStrokeColor
+                             strokeLineWidth:strokeLineWidth];
       break;
     }
     case GoMarkupSymbolSquare:
     {
-      CGContextAddRect(layerContext, drawingRect);
-
-      CGContextSetStrokeColorWithColor(layerContext, symbolStrokeColor.CGColor);
-      CGContextSetLineWidth(layerContext, strokeLineWidth);
-      CGContextStrokePath(layerContext);
+      [CGDrawingHelper drawRectangleWithContext:layerContext
+                                      rectangle:drawingRect
+                                      fillColor:nil
+                                    strokeColor:symbolStrokeColor
+                                strokeLineWidth:strokeLineWidth];
       break;
     }
     case GoMarkupSymbolTriangle:
     {
-      // Draw path from A => B => C
-      //     C
-      //     /\
-      //    /  \
-      // A /____\ B
-      CGContextBeginPath(layerContext);
-      CGContextMoveToPoint(layerContext, drawingRect.origin.x, drawingRect.origin.y + drawingRect.size.height);
-      CGContextAddLineToPoint(layerContext, drawingRect.origin.x + drawingRect.size.width, drawingRect.origin.y + drawingRect.size.height);
-      CGContextAddLineToPoint(layerContext, drawingRect.origin.x + floorf(drawingRect.size.width / 2.0f), drawingRect.origin.y);
-      CGContextAddLineToPoint(layerContext, drawingRect.origin.x, drawingRect.origin.y + drawingRect.size.height);
-
-      CGContextSetStrokeColorWithColor(layerContext, symbolStrokeColor.CGColor);
-      CGContextSetLineWidth(layerContext, strokeLineWidth);
-      CGContextStrokePath(layerContext);
+      [CGDrawingHelper drawTriangleWithContext:layerContext
+                               insideRectangle:drawingRect
+                                     fillColor:nil
+                                   strokeColor:symbolStrokeColor
+                               strokeLineWidth:strokeLineWidth];
       break;
     }
     case GoMarkupSymbolX:
     {
-      // Draw path from A => B, then from C => D
-      //  C    B
-      //   \  /
-      //    \/
-      //    /\
-      // A /  \ D
-      CGContextBeginPath(layerContext);
-      CGContextMoveToPoint(layerContext, drawingRect.origin.x, drawingRect.origin.y + drawingRect.size.height);
-      CGContextAddLineToPoint(layerContext, drawingRect.origin.x + drawingRect.size.width, drawingRect.origin.y);
-      CGContextMoveToPoint(layerContext, drawingRect.origin.x, drawingRect.origin.y);
-      CGContextAddLineToPoint(layerContext, drawingRect.origin.x + drawingRect.size.width, drawingRect.origin.y + drawingRect.size.height);
-
-      CGContextSetStrokeColorWithColor(layerContext, symbolStrokeColor.CGColor);
-      CGContextSetLineWidth(layerContext, strokeLineWidth);
-      CGContextStrokePath(layerContext);
+      [CGDrawingHelper drawSymbolXWithContext:layerContext
+                              insideRectangle:drawingRect
+                                  strokeColor:symbolStrokeColor
+                              strokeLineWidth:strokeLineWidth];
       break;
     }
     case GoMarkupSymbolSelected:
@@ -307,39 +276,20 @@ CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, U
       {
         CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
         CGFloat radius = floorf(drawingRect.size.width / 2.0f);
-        const CGFloat startRadius = [UiUtilities radians:0];
-        const CGFloat endRadius = [UiUtilities radians:360];
-        const int clockwise = 0;
-        CGContextAddArc(layerContext,
-                        layerCenter.x,
-                        layerCenter.y,
-                        radius,
-                        startRadius,
-                        endRadius,
-                        clockwise);
 
-        CGContextSetFillColorWithColor(layerContext, symbolFillColor.CGColor);
-        CGContextSetStrokeColorWithColor(layerContext, symbolStrokeColor.CGColor);
-        CGContextSetLineWidth(layerContext, 1.0f);
-        CGContextDrawPath(layerContext, kCGPathFillStroke);
+        [CGDrawingHelper drawCircleWithContext:layerContext
+                                        center:layerCenter
+                                        radius:radius
+                                     fillColor:symbolFillColor
+                                   strokeColor:symbolStrokeColor
+                               strokeLineWidth:1.0f];
       }
       else
       {
-        // Draw path from A => B => C
-        //         C
-        //        /
-        //  A    /
-        //   \  /
-        //    \/
-        //     B
-        CGContextBeginPath(layerContext);
-        CGContextMoveToPoint(layerContext, drawingRect.origin.x, drawingRect.origin.y + floorf(2.0f * drawingRect.size.height / 3.0f));
-        CGContextAddLineToPoint(layerContext, drawingRect.origin.x + floorf(drawingRect.size.width / 3.0f), drawingRect.origin.y + drawingRect.size.height);
-        CGContextAddLineToPoint(layerContext, drawingRect.origin.x + drawingRect.size.width, drawingRect.origin.y);
-
-        CGContextSetStrokeColorWithColor(layerContext, symbolStrokeColor.CGColor);
-        CGContextSetLineWidth(layerContext, strokeLineWidth);
-        CGContextStrokePath(layerContext);
+        [CGDrawingHelper drawCheckmarkWithContext:layerContext
+                                  insideRectangle:drawingRect
+                                      strokeColor:symbolStrokeColor
+                                  strokeLineWidth:strokeLineWidth];
       }
       break;
     }
@@ -456,10 +406,10 @@ CGLayerRef CreateConnectionLayer(CGContextRef context, enum GoMarkupConnection c
                                                                headLength:headLength];
   CGContextAddPath(layerContext, arrowPath);
 
-  CGContextSetFillColorWithColor(layerContext, connectionFillColor.CGColor);
-  CGContextSetStrokeColorWithColor(layerContext, connectionStrokeColor.CGColor);
-  CGContextSetLineWidth(layerContext, strokeLineWidth);
-  CGContextDrawPath(layerContext, kCGPathFillStroke);
+  [CGDrawingHelper fillOrStrokePathWithContext:layerContext
+                                     fillColor:connectionFillColor
+                                   strokeColor:connectionStrokeColor
+                               strokeLineWidth:strokeLineWidth];
 
   CGPathRelease(arrowPath);
 
@@ -503,11 +453,11 @@ CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, B
 
   // Half-pixel translation is added at the time when the layer is actually
   // drawn
-  CGContextBeginPath(layerContext);
-  CGContextAddRect(layerContext, drawingRect);
-  CGContextSetStrokeColorWithColor(layerContext, symbolColor.CGColor);
-  CGContextSetLineWidth(layerContext, strokeLineWidth);
-  CGContextStrokePath(layerContext);
+  [CGDrawingHelper drawRectangleWithContext:layerContext
+                                  rectangle:drawingRect
+                                  fillColor:nil
+                                strokeColor:symbolColor
+                            strokeLineWidth:strokeLineWidth];
 
   return layer;
 }
@@ -550,14 +500,10 @@ CGLayerRef CreateDeadStoneSymbolLayer(CGContextRef context, BoardViewMetrics* me
 
   CGContextRef layerContext = CGLayerGetContext(layer);
 
-  CGContextBeginPath(layerContext);
-  CGContextMoveToPoint(layerContext, layerRect.origin.x, layerRect.origin.y);
-  CGContextAddLineToPoint(layerContext, layerRect.origin.x + layerRect.size.width, layerRect.origin.y + layerRect.size.height);
-  CGContextMoveToPoint(layerContext, layerRect.origin.x, layerRect.origin.y + layerRect.size.height);
-  CGContextAddLineToPoint(layerContext, layerRect.origin.x + layerRect.size.width, layerRect.origin.y);
-  CGContextSetStrokeColorWithColor(layerContext, metrics.deadStoneSymbolColor.CGColor);
-  CGContextSetLineWidth(layerContext, metrics.normalLineWidth * metrics.contentsScale);
-  CGContextStrokePath(layerContext);
+  [CGDrawingHelper drawSymbolXWithContext:layerContext
+                          insideRectangle:layerRect
+                              strokeColor:metrics.deadStoneSymbolColor
+                          strokeLineWidth:metrics.normalLineWidth * metrics.contentsScale];
 
   return layer;
 }
@@ -611,27 +557,27 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
       CGLayerRelease(layer);
       return NULL;
   }
-  CGContextSetFillColorWithColor(layerContext, fillColor.CGColor);
+
   if (TerritoryMarkupStyleInconsistentDotSymbol == territoryMarkupStyle)
   {
     CGPoint layerCenter = CGPointMake(CGRectGetMidX(layerRect), CGRectGetMidY(layerRect));
-    const CGFloat startRadius = [UiUtilities radians:0];
-    const CGFloat endRadius = [UiUtilities radians:360];
-    const int clockwise = 0;
-    CGContextAddArc(layerContext,
-                    layerCenter.x,
-                    layerCenter.y,
-                    metrics.stoneRadius * metrics.inconsistentTerritoryDotSymbolPercentage * metrics.contentsScale,
-                    startRadius,
-                    endRadius,
-                    clockwise);
+    CGFloat radius = metrics.stoneRadius * metrics.inconsistentTerritoryDotSymbolPercentage * metrics.contentsScale;
+
+    [CGDrawingHelper drawCircleWithContext:layerContext
+                                    center:layerCenter
+                                    radius:radius
+                                 fillColor:fillColor
+                               strokeColor:nil
+                           strokeLineWidth:0.0f];
   }
   else
   {
-    CGContextAddRect(layerContext, layerRect);
-    CGContextSetBlendMode(layerContext, kCGBlendModeNormal);
+    [CGDrawingHelper drawRectangleWithContext:layerContext
+                                    rectangle:layerRect
+                                    fillColor:fillColor
+                                  strokeColor:nil
+                              strokeLineWidth:0.0f];
   }
-  CGContextFillPath(layerContext);
 
   return layer;
 }

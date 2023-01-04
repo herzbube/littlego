@@ -262,6 +262,8 @@
 		CD4662872960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4662852960A1A700B58CC9 /* NodeTreeViewBranchTuple.m */; };
 		CD46628A296474D300B58CC9 /* NodeTreeViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD466289296474D300B58CC9 /* NodeTreeViewSettingsController.m */; };
 		CD46628B296474D300B58CC9 /* NodeTreeViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD466289296474D300B58CC9 /* NodeTreeViewSettingsController.m */; };
+		CD46628E29658A7C00B58CC9 /* CGDrawingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD46628C29658A7C00B58CC9 /* CGDrawingHelper.m */; };
+		CD46628F29658A7C00B58CC9 /* CGDrawingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD46628C29658A7C00B58CC9 /* CGDrawingHelper.m */; };
 		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
 		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */; };
 		CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
@@ -1186,6 +1188,8 @@
 		CD4662852960A1A700B58CC9 /* NodeTreeViewBranchTuple.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewBranchTuple.m; sourceTree = "<group>"; };
 		CD466288296474D300B58CC9 /* NodeTreeViewSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewSettingsController.h; sourceTree = "<group>"; };
 		CD466289296474D300B58CC9 /* NodeTreeViewSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewSettingsController.m; sourceTree = "<group>"; };
+		CD46628C29658A7C00B58CC9 /* CGDrawingHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CGDrawingHelper.m; sourceTree = "<group>"; };
+		CD46628D29658A7C00B58CC9 /* CGDrawingHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGDrawingHelper.h; sourceTree = "<group>"; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
 		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationStateCommand.h; sourceTree = "<group>"; };
 		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationStateCommand.m; sourceTree = "<group>"; };
@@ -3573,6 +3577,8 @@
 				CD7C6A1C1AB61893009EC5AD /* ButtonBoxCell.m */,
 				CDA096FD1A98CD54002FCD78 /* ButtonBoxController.h */,
 				CDA096FE1A98CD54002FCD78 /* ButtonBoxController.m */,
+				CD46628D29658A7C00B58CC9 /* CGDrawingHelper.h */,
+				CD46628C29658A7C00B58CC9 /* CGDrawingHelper.m */,
 				CDFABCAB14194DA00065C93B /* EditTextController.h */,
 				CDFABCAC14194DA00065C93B /* EditTextController.m */,
 				CDDD52591482DD9F0027476B /* ItemPickerController.h */,
@@ -4243,6 +4249,7 @@
 				CD1A7EE4293B852E00013D80 /* NodeTreeViewCGLayerCache.m in Sources */,
 				CD05AC7C1425470B00214BBE /* NewGameCommand.m in Sources */,
 				CD05AC7D1425470B00214BBE /* RenameGameCommand.m in Sources */,
+				CD46628E29658A7C00B58CC9 /* CGDrawingHelper.m in Sources */,
 				CD2AB19127F9F80500BF0B4D /* PageViewController.m in Sources */,
 				CDF0C24528E9DEE4003278B4 /* ResizableStackViewController.m in Sources */,
 				CDC0C5B02832D20300EA467C /* GoNodeMarkup.m in Sources */,
@@ -4670,6 +4677,7 @@
 				CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */,
 				CD3592031735A757000E2963 /* PlayRootViewController.m in Sources */,
 				CDD038092879708D002A2FFE /* LabelsLayerDelegate.m in Sources */,
+				CD46628F29658A7C00B58CC9 /* CGDrawingHelper.m in Sources */,
 				CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CDFD9F7918F1D56A0031CBCF /* SectionedDocumentViewController.m in Sources */,
 				CD2D3A9E174C348C0030EDE4 /* EditPlayerProfileController.m in Sources */,
