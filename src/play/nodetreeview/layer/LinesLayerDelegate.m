@@ -269,29 +269,31 @@
                          tileRect:(CGRect)tileRect
 {
   CGRect canvasRectForFullCell;
-  CGSize drawingRectForFullSymbolSize;
+  CGSize symbolSize;
   if (cell.isMultipart)
   {
     canvasRectForFullCell = [NodeTreeViewDrawingHelper canvasRectForMultipartCellPart:cell.part
                                                        partPosition:position
                                                             metrics:self.nodeTreeViewMetrics];
-    drawingRectForFullSymbolSize = self.nodeTreeViewMetrics.uncondensedNodeSymbolSize;
+    symbolSize = self.nodeTreeViewMetrics.uncondensedNodeSymbolSize;
   }
   else
   {
     canvasRectForFullCell = canvasRectForCell;
-    drawingRectForFullSymbolSize = self.nodeTreeViewMetrics.condensedNodeSymbolSize;
+    symbolSize = self.nodeTreeViewMetrics.condensedNodeSymbolSize;
   }
   CGRect drawingRectForFullCell = canvasRectForFullCell;
   // TODO xxx do we have a method in drawing helper for this?
   drawingRectForFullCell.origin.x = canvasRectForFullCell.origin.x - tileRect.origin.x;
   drawingRectForFullCell.origin.y = canvasRectForFullCell.origin.y - tileRect.origin.y;
-  CGRect drawingRectForFullSymbol = [UiUtilities rectWithSize:drawingRectForFullSymbolSize
-                                               centeredInRect:drawingRectForFullCell];
+  CGPoint centerOfDrawingRectForFullCell = CGPointMake(CGRectGetMidX(drawingRectForFullCell),
+                                                       CGRectGetMidY(drawingRectForFullCell));
+  CGFloat clippingRadius = MIN(symbolSize.width, symbolSize.height) / 2.0;
 
-  [CGDrawingHelper setRectangularClippingPathWithContext:context
-                                          innerRectangle:drawingRectForFullSymbol
-                                          outerRectangle:drawingRectForFullCell];
+  [CGDrawingHelper setCircularClippingPathWithContext:context
+                                               center:centerOfDrawingRectForFullCell
+                                               radius:clippingRadius
+                                       outerRectangle:drawingRectForFullCell];
 }
 
 // TODO xxx document
