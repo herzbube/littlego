@@ -580,8 +580,8 @@ static const int maxStepsForCreateNodes = 9;
 
   __block GoNode* goParentNode = nodeModel.rootNode;
   *numberOfNodesInGameTree = 1;  // start with 1 for the root node
-  int numberOfMovesFound = 0;
-  GoMove* mostRecentMove = nil;
+  int numberOfMovesFoundBeforeCurrentNode = 0;
+  GoMove* previousMove = nil;
 
   NSMutableArray* stack = [NSMutableArray array];
   NSNull* nullValue = [NSNull null];
@@ -606,7 +606,7 @@ static const int maxStepsForCreateNodes = 9;
       GoNode* goNewNode = [GoNode node];
       bool success = [self populateGoNode:goNewNode
                 withPropertiesFromSgfNode:sgfCurrentNode
-                           mostRecentMove:mostRecentMove
+                             previousMove:previousMove
                              errorMessage:errorMessage];
       if (! success)
         return false;
@@ -667,24 +667,6 @@ static const int maxStepsForCreateNodes = 9;
         {
           addNewNodeToTree(goNewNode, &goMostRecentContentNode);
         }
-
-        if (goMostRecentContentNode.goMove)
-        {
-          numberOfMovesFound++;
-          mostRecentMove = goMostRecentContentNode.goMove;
-
-          // If we don't perform this check here the game fails to load during the
-          // GTP engine sync. However, the error message in that case is much less
-          // nice. Also if the maximum is not exceeded on the main variation, the
-          // sync failure does not occur immediately, it will occur only when the
-          // user switches to the affected variation. We want to avoid such
-          // surprises, so we refuse to load the game right at the start.
-          if (numberOfMovesFound > maximumNumberOfMoves)
-          {
-            *errorMessage = [NSString stringWithFormat:@"The SGF data contains a variation with %d or more moves. This is more than the maximum number of moves (%d) that the computer player Fuego can process.", numberOfMovesFound, maximumNumberOfMoves];
-            return false;
-          }
-        }
       }
 
       // The stack not only remembers sgfCurrentNode (which is important for
@@ -692,10 +674,28 @@ static const int maxStepsForCreateNodes = 9;
       // to build our own model:
       // - The node that will be the parent of the next sibling
       // - The number of moves found so far in this branch of the tree
-      // - The most recent move found in this branch of the tree
-      [stack addObject:@[sgfCurrentNode, goParentNode ? goParentNode : nullValue, [NSNumber numberWithInt:numberOfMovesFound], mostRecentMove ? mostRecentMove : nullValue]];
+      // - The move that will be the parent move (or previous move) of the next
+      //   move found in the next sibling branch
+      [stack addObject:@[sgfCurrentNode, goParentNode ? goParentNode : nullValue, [NSNumber numberWithInt:numberOfMovesFoundBeforeCurrentNode], previousMove ? previousMove : nullValue]];
 
       goParentNode = goMostRecentContentNode;
+      if (goMostRecentContentNode.goMove)
+      {
+        previousMove = goMostRecentContentNode.goMove;
+        numberOfMovesFoundBeforeCurrentNode++;
+        
+        // If we don't perform this check here the game fails to load during the
+        // GTP engine sync. However, the error message in that case is much less
+        // nice. Also if the maximum is not exceeded on the main variation, the
+        // sync failure does not occur immediately, it will occur only when the
+        // user switches to the affected variation. We want to avoid such
+        // surprises, so we refuse to load the game right at the start.
+        if (numberOfMovesFoundBeforeCurrentNode > maximumNumberOfMoves)
+        {
+          *errorMessage = [NSString stringWithFormat:@"The SGF data contains a variation with %d or more moves. This is more than the maximum number of moves (%d) that the computer player Fuego can process.", numberOfMovesFoundBeforeCurrentNode, maximumNumberOfMoves];
+          return false;
+        }
+      }
 
       sgfCurrentNode = sgfCurrentNode.firstChild;
     }
@@ -709,11 +709,11 @@ static const int maxStepsForCreateNodes = 9;
       goParentNode = [tuple objectAtIndex:1];
       if ((id)goParentNode == nullValue)
         goParentNode = nil;
-      NSNumber* numberOfMovesFoundAsNumber = [tuple objectAtIndex:2];
-      numberOfMovesFound = numberOfMovesFoundAsNumber.intValue;
-      mostRecentMove = [tuple objectAtIndex:3];
-      if ((id)mostRecentMove == nullValue)
-        mostRecentMove = nil;
+      NSNumber* numberOfMovesFoundBeforeCurrentNodeAsNumber = [tuple objectAtIndex:2];
+      numberOfMovesFoundBeforeCurrentNode = numberOfMovesFoundBeforeCurrentNodeAsNumber.intValue;
+      previousMove = [tuple objectAtIndex:3];
+      if ((id)previousMove == nullValue)
+        previousMove = nil;
 
       sgfCurrentNode = sgfCurrentNode.nextSibling;
     }
@@ -742,7 +742,7 @@ static const int maxStepsForCreateNodes = 9;
 // -----------------------------------------------------------------------------
   - (bool) populateGoNode:(GoNode*)goNode
 withPropertiesFromSgfNode:(SGFCNode*)sgfNode
-           mostRecentMove:(GoMove*)mostRecentMove
+             previousMove:(GoMove*)previousMove
              errorMessage:(NSString**)errorMessage
 {
   bool sgfNodeIsGameInfoNode = sgfNode == self.sgfGameInfoNode;
@@ -766,7 +766,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
       bool success = [self populateGoNodeSetup:goNodeSetup
                              withSetupProperty:sgfProperty
                            foundInGameInfoNode:sgfNodeIsGameInfoNode
-                                mostRecentMove:mostRecentMove
+                                mostRecentMove:previousMove
                                   errorMessage:errorMessage];
       if (! success)
         return false;
@@ -775,7 +775,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
     {
       // SGFC makes sure that the node never contains both SGFCPropertyTypeB and
       // SGFCPropertyTypeW at the same time
-      goMove = [self createMoveWithProperty:sgfProperty withPreviousMove:mostRecentMove errorMessage:errorMessage];
+      goMove = [self createMoveWithProperty:sgfProperty withPreviousMove:previousMove errorMessage:errorMessage];
     }
     else if (propertyType == SGFCPropertyTypeN)
     {
