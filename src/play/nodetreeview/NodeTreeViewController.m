@@ -22,6 +22,8 @@
 #import "NodeTreeView.h"
 #import "NodeTreeViewMetrics.h"
 #import "canvas/NodeTreeViewCanvas.h"
+#import "../gesture/DoubleTapGestureController.h"
+#import "../gesture/TwoFingerTapGestureController.h"
 #import "../../ui/AutoLayoutUtility.h"
 // TODO xxx remove if no longer needed
 //#import "../../utility/UIColorAdditions.h"
@@ -41,6 +43,8 @@
 @property(nonatomic, retain) NodeTreeView* nodeTreeView;
 @property(nonatomic, retain) TiledScrollView* nodeNumbersView;
 @property(nonatomic, retain) NSArray* nodeNumbersViewConstraints;
+@property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
+@property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
 @end
 
 
@@ -83,6 +87,8 @@
   self.nodeNumbersViewConstraints = nil;
   self.nodeTreeView = nil;
   self.nodeNumbersView = nil;
+  self.doubleTapGestureController = nil;
+  self.twoFingerTapGestureController = nil;
 
   NodeTreeViewMetrics* localReferenceMetrics = [_nodeTreeViewMetrics retain];
   NodeTreeViewCanvas* localReferenceCanvas = [_nodeTreeViewCanvas retain];
@@ -111,6 +117,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
+  self.doubleTapGestureController = [[[DoubleTapGestureController alloc] init] autorelease];
+  self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] init] autorelease];
 }
 
 #pragma mark - loadView and helpers
@@ -175,9 +183,6 @@
 {
   self.nodeTreeView.backgroundColor = [UIColor clearColor];
   self.nodeTreeView.delegate = self;
-  // After an interface orientation change the board may already be zoomed
-  // (e.g. iPhone 6+), so we have to take the current absolute zoom scale into
-  // account
   self.nodeTreeView.minimumZoomScale = self.nodeTreeViewMetrics.minimumAbsoluteZoomScale / self.nodeTreeViewMetrics.absoluteZoomScale;
   self.nodeTreeView.maximumZoomScale = self.nodeTreeViewMetrics.maximumAbsoluteZoomScale / self.nodeTreeViewMetrics.absoluteZoomScale;
   self.nodeTreeView.dataSource = self;
@@ -189,7 +194,8 @@
 // -----------------------------------------------------------------------------
 - (void) configureControllers
 {
-  // TODO xxx e.g. controller to react on tap gesture
+  self.doubleTapGestureController.scrollView = self.nodeTreeView;
+  self.twoFingerTapGestureController.scrollView = self.nodeTreeView;
 }
 
 #pragma mark - viewDidLayoutSubviews
@@ -309,13 +315,6 @@
 // -----------------------------------------------------------------------------
 - (void) scrollViewDidEndZooming:(UIScrollView*)scrollView withView:(UIView*)view atScale:(CGFloat)scale
 {
-  // TODO xxx verify if this works => invoking updateWithRelativeZoomScale on
-  // NodeTreeViewMetrics changes the canvasSize => KVO in this controller will
-  // trigger and update the scroll views' contentSize. Consequently
-  // - When we remember the content offset in order to reapply it later, we may
-  //   get the wrong content offset
-  // - Invoking updateContentSizeInScrollViews may not be necessary at all
-
   CGFloat oldAbsoluteZoomScale = self.nodeTreeViewMetrics.absoluteZoomScale;
   [self.nodeTreeViewMetrics updateWithRelativeZoomScale:scale];
 
