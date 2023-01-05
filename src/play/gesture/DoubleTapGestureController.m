@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2021 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,6 @@
 
 // Project includes
 #import "DoubleTapGestureController.h"
-#import "../model/BoardSetupModel.h"
-#import "../../main/ApplicationDelegate.h"
-#import "../../ui/UiSettingsModel.h"
 
 
 // -----------------------------------------------------------------------------
@@ -28,8 +25,6 @@
 // -----------------------------------------------------------------------------
 @interface DoubleTapGestureController()
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
-/// @brief True if a tapping gesture is currently allowed, false if not.
-@property(nonatomic, assign, getter=isTappingEnabled) bool tappingEnabled;
 @end
 
 
@@ -48,9 +43,8 @@
     return nil;
 
   self.scrollView = nil;
+  self.tappingEnabled = true;
   [self setupTapGestureRecognizer];
-  [self setupNotificationResponders];
-  [self updateTappingEnabled];
 
   return self;
 }
@@ -61,10 +55,6 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  [appDelegate.boardSetupModel removeObserver:self forKeyPath:@"doubleTapToZoom"];
-
   self.scrollView = nil;
   self.tapRecognizer = nil;
 
@@ -80,19 +70,6 @@
   self.tapRecognizer.numberOfTapsRequired = 2;
   self.tapRecognizer.numberOfTouchesRequired = 1;
   self.tapRecognizer.delegate = self;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
-// -----------------------------------------------------------------------------
-- (void) setupNotificationResponders
-{
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
-
-  // KVO observing
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  [appDelegate.boardSetupModel addObserver:self forKeyPath:@"doubleTapToZoom" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -147,39 +124,6 @@
 - (BOOL) gestureRecognizerShouldBegin:(UIGestureRecognizer*)gestureRecognizer
 {
   return self.isTappingEnabled;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to the #uiAreaPlayModeDidChange notification.
-// -----------------------------------------------------------------------------
-- (void) uiAreaPlayModeDidChange:(NSNotification*)notification
-{
-  [self updateTappingEnabled];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to KVO notifications.
-// -----------------------------------------------------------------------------
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
-{
-  if (object == [ApplicationDelegate sharedDelegate].boardSetupModel)
-  {
-    if ([keyPath isEqualToString:@"doubleTapToZoom"])
-      [self updateTappingEnabled];
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Updates whether tapping is enabled.
-// -----------------------------------------------------------------------------
-- (void) updateTappingEnabled
-{
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
-    self.tappingEnabled = appDelegate.boardSetupModel.doubleTapToZoom;
-  else
-    self.tappingEnabled = true;
 }
 
 @end

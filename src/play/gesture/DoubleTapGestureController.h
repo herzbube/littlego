@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2019 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The DoubleTapGestureController class is responsible for managing the
-/// double-tap gesture in #UIAreaPlay. Double-tapping is used to zoom in on the
-/// Go board.
+/// @brief The DoubleTapGestureController class is a generic controller class
+/// that is responsible for managing a double-tap gesture in a UIScrollView.
+/// Double-tapping is used to zoom in the scroll view.
 ///
 /// Every double-tap performs a 50% zoom-in at the location where the tap
 /// occurred. Repeated double-taps zoom in up to the maximum zoom scale. Once
@@ -30,5 +30,7 @@
 }
 
 @property(nonatomic, assign) UIScrollView* scrollView;
+/// @brief True if a tapping gesture is currently allowed, false if not.
+@property(nonatomic, assign, getter=isTappingEnabled) bool tappingEnabled;
 
 @end

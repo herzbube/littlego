@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2015 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The TwoFingerTapGestureController class is responsible for managing
-/// the two-finger-tap gesture in #UIAreaPlay. Two-finger-tapping is used to
-/// zoom out on the Go board.
+/// @brief The TwoFingerTapGestureController class is a generic controller class
+/// that is responsible for managing a two-finger-tap gesture in a UIScrollView.
+/// Two-finger-tapping is used to zoom out the scroll view.
 ///
 /// Every two-finger-tap performs a 50% zoom-out. Repeated two-finger-taps zoom
 /// out up to the minimum zoom scale. Once the minimum zoom scale has been
