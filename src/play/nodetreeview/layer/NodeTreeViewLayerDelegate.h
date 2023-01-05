@@ -68,6 +68,14 @@ enum NodeTreeViewLayerDelegateEvent
   /// style can have an effect on how branches are positioned (diagonal
   /// branching allows some optimizations).
   NTVLDEventNodeTreeBranchingStyleChanged,
+  /// @brief Is sent whenever the selected node changed. The selected node is
+  /// the node that corresponds to the current board position. The event info
+  /// object that accompanies this event type is an NSArray that contains 1-n
+  /// horizontally consecutive NodeTreeViewCellPosition objects that indicate
+  /// which cells on the canvas display the node that has been selected. If the
+  /// NSArray is empty, no node has been selected, i.e. there no longer is a
+  /// selected node.
+  NTVLDEventNodeTreeSelectedNodeChanged,
 };
 
 

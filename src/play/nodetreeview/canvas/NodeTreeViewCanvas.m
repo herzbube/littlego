@@ -23,6 +23,7 @@
 #import "NodeTreeViewCell.h"
 #import "NodeTreeViewCellPosition.h"
 #import "../../model/NodeTreeViewModel.h"
+#import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoMove.h"
 #import "../../../go/GoNode.h"
@@ -74,6 +75,8 @@ struct GenerateCellsResult
 @property(nonatomic, assign) bool canvasNeedsUpdate;
 @property(nonatomic, retain) NSString* notificationToPostAfterCanvasUpdate;
 @property(nonatomic, retain) NSMutableDictionary* cellsDictionary;
+@property(nonatomic, assign) bool selectedNodePositionsNeedsUpdate;
+@property(nonatomic, retain) NSArray* cachedSelectedNodePositions;
 @end
 
 
@@ -99,6 +102,8 @@ struct GenerateCellsResult
   self.notificationToPostAfterCanvasUpdate = nil;
   self.canvasSize = CGSizeZero;
   self.cellsDictionary = [NSMutableDictionary dictionary];
+  self.selectedNodePositionsNeedsUpdate = false;
+  self.cachedSelectedNodePositions = nil;
 
   [self setupNotificationResponders];
 
@@ -115,6 +120,7 @@ struct GenerateCellsResult
   self.notificationToPostAfterCanvasUpdate = nil;
   self.nodeTreeViewModel = nil;
   self.cellsDictionary = nil;
+  self.cachedSelectedNodePositions = nil;
 
   [super dealloc];
 }
@@ -129,6 +135,7 @@ struct GenerateCellsResult
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(nodeTreeLayoutDidChange:) name:nodeTreeLayoutDidChange object:nil];
+  [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 
   [self.nodeTreeViewModel addObserver:self forKeyPath:@"condenseMoveNodes" options:0 context:NULL];
@@ -167,6 +174,15 @@ struct GenerateCellsResult
 {
   self.canvasNeedsUpdate = true;
   self.notificationToPostAfterCanvasUpdate = nodeTreeViewContentDidChange;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #currentBoardPositionDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentBoardPositionDidChange:(NSNotification*)notification
+{
+  self.selectedNodePositionsNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -220,6 +236,7 @@ struct GenerateCellsResult
   }
 
   [self updateCanvas];
+  [self updateSelectedNodePositions];
 }
 
 // -----------------------------------------------------------------------------
@@ -232,6 +249,7 @@ struct GenerateCellsResult
   self.canvasNeedsUpdate = false;
 
   [self recalculateCanvasPrivate];
+  [self invalidateCachedSelectedNodePositions];
 
   if (self.notificationToPostAfterCanvasUpdate)
   {
@@ -242,6 +260,24 @@ struct GenerateCellsResult
   {
     DDLogError(@"No notification found to post after node tree view canvas update");
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updater method.
+// -----------------------------------------------------------------------------
+- (void) updateSelectedNodePositions
+{
+  if (! self.selectedNodePositionsNeedsUpdate)
+    return;
+  self.selectedNodePositionsNeedsUpdate = false;
+
+  // TODO xxx Instead of the brute-force approach to recalculate the entire
+  // canvas, find a way how to identify which existing cells represent a node
+  [self recalculateCanvasPrivate];
+  [self invalidateCachedSelectedNodePositions];
+
+  NSArray* selectedNodePositions = [self selectedNodePositions];
+  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeViewSelectedNodeDidChange object:selectedNodePositions];
 }
 
 #pragma mark - Public API
@@ -261,6 +297,32 @@ struct GenerateCellsResult
     return [NodeTreeViewCell emptyCell];
   else
     return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a list of horizontally consecutive NodeTreeViewCellPosition
+/// objects that indicate which cells on the canvas display the node that is
+/// currently selected. The list is empty if currently no node is selected.
+// -----------------------------------------------------------------------------
+- (NSArray*) selectedNodePositions
+{
+  if (self.cachedSelectedNodePositions)
+    return self.cachedSelectedNodePositions;
+
+  NSMutableArray* selectedNodePositions = [NSMutableArray array];
+
+  [self.cellsDictionary enumerateKeysAndObjectsUsingBlock:^(NodeTreeViewCellPosition* position, NodeTreeViewCell* cell, BOOL* stop)
+  {
+    if (cell.isSelected)
+    {
+      [selectedNodePositions addObject:position];
+      if (selectedNodePositions.count == cell.parts)
+        *stop = true;
+    }
+  }];
+
+  self.cachedSelectedNodePositions = selectedNodePositions;
+  return selectedNodePositions;
 }
 
 // -----------------------------------------------------------------------------
@@ -329,7 +391,9 @@ struct GenerateCellsResult
 // -----------------------------------------------------------------------------
 - (void) recalculateCanvasPrivate
 {
-  GoNodeModel* nodeModel = [GoGame sharedGame].nodeModel;
+  GoGame* game = [GoGame sharedGame];
+  GoNodeModel* nodeModel = game.nodeModel;
+  GoBoardPosition* boardPosition = game.boardPosition;
 
   bool condenseMoveNodes = self.nodeTreeViewModel.condenseMoveNodes;
   bool alignMoveNodes = self.nodeTreeViewModel.alignMoveNodes;
@@ -338,6 +402,7 @@ struct GenerateCellsResult
 
   // Step 1: Collect data about branches
   struct CollectBranchDataResult collectBranchDataResult = [self collectBranchDataFromNodeTreeInModel:nodeModel
+                                                                             currentBoardPositionNode:boardPosition.currentNode
                                                                                     condenseMoveNodes:condenseMoveNodes
                                                                          numberOfCellsOfMultipartCell:numberOfCellsOfMultipartCell
                                                                                        alignMoveNodes:alignMoveNodes];
@@ -368,6 +433,7 @@ struct GenerateCellsResult
 /// to collect information about branches.
 // -----------------------------------------------------------------------------
 - (struct CollectBranchDataResult) collectBranchDataFromNodeTreeInModel:(GoNodeModel*)nodeModel
+                                               currentBoardPositionNode:(GoNode*)currentBoardPositionNode
                                                       condenseMoveNodes:(bool)condenseMoveNodes
                                            numberOfCellsOfMultipartCell:(int)numberOfCellsOfMultipartCell
                                                          alignMoveNodes:(bool)alignMoveNodes
@@ -416,6 +482,7 @@ struct GenerateCellsResult
       branchTuple->indexOfCenterCell = floorf(branchTuple->numberOfCellsForNode / 2.0);
       branchTuple->branch = branch;
       branchTuple->childBranches = nil;
+      branchTuple->nodeIsCurrentBoardPositionNode = (currentNode == currentBoardPositionNode);
 
       if (currentNode == nodeFromCurrentGameVariation)
       {
@@ -1368,6 +1435,7 @@ firstBranchTupleOfBranch:firstBranchTupleOfBranch
  lastBranchTupleOfBranch:lastBranchTupleOfBranch
 diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEstablished
           branchingStyle:branchingStyle];
+    cell.selected = branchTuple->nodeIsCurrentBoardPositionNode;
 
     unsigned short xPosition = branchTuple->xPositionOfFirstCell + indexOfCell;
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPositionOfBranch];
@@ -1739,6 +1807,16 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
   }
 
   return nil;
+}
+
+#pragma mark - Private API - Other methods
+
+// -----------------------------------------------------------------------------
+/// @brief Invalidates the cached value returned by selectedNodePositions().
+// -----------------------------------------------------------------------------
+- (void) invalidateCachedSelectedNodePositions
+{
+  self.cachedSelectedNodePositions = nil;
 }
 
 @end

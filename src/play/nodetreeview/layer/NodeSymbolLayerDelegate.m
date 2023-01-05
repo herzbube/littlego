@@ -80,8 +80,7 @@
 - (void) invalidateLayers
 {
   NodeTreeViewCGLayerCache* cache = [NodeTreeViewCGLayerCache sharedCache];
-  // TODO xxx As long as the only layers are for node symbols this is correct
-  [cache invalidateAllLayers];
+  [cache invalidateAllNodeSymbolLayers];
 }
 
 // -----------------------------------------------------------------------------
@@ -217,8 +216,9 @@
 {
   NodeTreeViewCGLayerCache* cache = [NodeTreeViewCGLayerCache sharedCache];
 
-  // TODO xxx As long as the only layers are for node symbols this is correct
-  for (enum NodeTreeViewLayerType layerType = NodeTreeViewLayerTypeFirst; layerType <= NodeTreeViewLayerTypeLast; layerType++)
+  for (enum NodeTreeViewLayerType layerType = NodeTreeViewLayerTypeNodeSymbolFirst;
+       layerType <= NodeTreeViewLayerTypeNodeSymbolLast;
+       layerType++)
   {
     CGLayerRef layer = [cache layerOfType:layerType];
     if (! layer)

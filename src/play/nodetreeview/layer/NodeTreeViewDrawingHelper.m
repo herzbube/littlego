@@ -186,9 +186,9 @@ void DrawString(CGContextRef layerContext, CGRect drawingRect, NSString* string,
                           textAttributes:textAttributes];
 }
 
-void DrawSurroundingCircle(CGContextRef layerContext, CGPoint center, CGFloat radius, CGFloat strokeLineWidth)
+void DrawSurroundingCircle(CGContextRef layerContext, CGPoint center, CGFloat radius, UIColor* strokeColor, CGFloat strokeLineWidth)
 {
-  [CGDrawingHelper drawCircleWithContext:layerContext center:center radius:radius fillColor:nil strokeColor:[UIColor blackColor] strokeLineWidth:strokeLineWidth];
+  [CGDrawingHelper drawCircleWithContext:layerContext center:center radius:radius fillColor:nil strokeColor:strokeColor strokeLineWidth:strokeLineWidth];
 }
 
 // -----------------------------------------------------------------------------
@@ -229,7 +229,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     {
       [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorBlack, GoColorBlack, GoColorBlack);
-      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
       [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
@@ -237,7 +237,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     {
       [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorWhite, GoColorWhite, GoColorWhite, GoColorWhite);
-      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
       [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
@@ -245,7 +245,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     {
       [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorNone, GoColorNone, GoColorNone, GoColorNone);
-      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
       [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
@@ -253,7 +253,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     {
       [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorWhite, GoColorWhite, GoColorBlack);
-      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
       [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
@@ -261,7 +261,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     {
       [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorNone, GoColorNone, GoColorBlack);
-      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
       [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
@@ -269,7 +269,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     {
       [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorWhite, GoColorNone, GoColorNone, GoColorWhite);
-      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
       [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
@@ -277,7 +277,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     {
       [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorNone, GoColorNone, GoColorWhite);
-      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
       [CGDrawingHelper removeClippingPathWithContext:layerContext];
       break;
     }
@@ -290,7 +290,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     }
     case NodeTreeViewCellSymbolAnnotations:
     {
-      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
       // Same size as markup would be logical, but then the "i" looks too small
       // within the available space
       DrawString(layerContext, drawingRect, @"i", 35);
@@ -298,13 +298,13 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     }
     case NodeTreeViewCellSymbolMarkup:
     {
-      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
       DrawString(layerContext, drawingRect, @"</>", 25);
       break;
     }
     case NodeTreeViewCellSymbolAnnotationsAndMarkup:
     {
-      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
 
       CGRect drawingRectSymbolAnnotation = drawingRect;
       drawingRectSymbolAnnotation.size.height /= 2.0;
@@ -321,7 +321,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     }
     case NodeTreeViewCellSymbolEmpty:
     {
-      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, strokeLineWidth);
+      DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
       break;
     }
     default:
@@ -330,6 +330,41 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
       return NULL;
     }
   }
+
+  return layer;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates and returns a CGLayer object that is associated with graphics
+/// context @a context and contains the drawing operations to draw a node
+/// selection marker. If @a condensed is true the marker is drawn in reduced
+/// size, if @a condensed is false the marker is drawn in normal size.
+///
+/// All sizes are taken from the metrics values in @a metrics.
+///
+/// @note Whoever invokes this function is responsible for releasing the
+/// returned CGLayer object using the function CGLayerRelease when the layer is
+/// no longer needed.
+// -----------------------------------------------------------------------------
+CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTreeViewMetrics* metrics)
+{
+  CGRect layerRect = [NodeTreeViewDrawingHelper drawingRectForCell:condensed withMetrics:metrics];
+
+  CGLayerRef layer = CGLayerCreateWithContext(context, layerRect.size, NULL);
+  if (! layer)
+    return NULL;
+
+  CGContextRef layerContext = CGLayerGetContext(layer);
+
+  CGRect drawingRect =  [NodeTreeViewDrawingHelper drawingRectForNodeSymbolInCell:condensed
+                                                           withDrawingRectForCell:layerRect
+                                                                      withMetrics:metrics];
+
+  CGPoint drawingRectCenter = CGPointMake(CGRectGetMidX(drawingRect), CGRectGetMidY(drawingRect));
+  CGFloat radius = floorf(MIN(drawingRect.size.width, drawingRect.size.height) / 2);
+  CGFloat strokeLineWidth = metrics.selectedLineWidth * metrics.contentsScale;
+
+  DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.selectedNodeColor, strokeLineWidth);
 
   return layer;
 }

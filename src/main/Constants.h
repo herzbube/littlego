@@ -900,6 +900,12 @@ extern NSString* nodeTreeViewAlignMoveNodesDidChange;
 /// @brief Is sent to indicate that the branching style user preference
 /// has changed.
 extern NSString* nodeTreeViewBranchingStyleDidChange;
+/// @brief Is sent to indicate that the selected node in the node tree view has
+/// changed. An NSArray object is associated with the notification that contains
+/// NodeTreeViewCellPosition objects that indicate which cells on the canvas
+/// display the node that is currently selected. The list is empty if currently
+/// no node is selected.
+extern NSString* nodeTreeViewSelectedNodeDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -936,8 +942,8 @@ extern NSString* numberOfBoardPositionsDidChange;
 ///
 /// An NSArray object containing two NSNumber objects is associated with the
 /// notification. The two NSNumber objects each wrap an integer value: The first
-/// value is the old current board positions, the second value is the new
-/// current board positions.
+/// value is the old current board position, the second value is the new
+/// current board position.
 ///
 /// This notification is sent after the last #boardPositionChangeProgress.
 extern NSString* currentBoardPositionDidChange;

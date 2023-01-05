@@ -88,6 +88,7 @@ NSString* nodeTreeViewContentDidChange = @"NodeTreeViewContentDidChange";
 NSString* nodeTreeViewCondenseMoveNodesDidChange = @"NodeTreeViewCondenseMoveNodesDidChange";
 NSString* nodeTreeViewAlignMoveNodesDidChange = @"NodeTreeViewAlignMoveNodesDidChange";
 NSString* nodeTreeViewBranchingStyleDidChange = @"NodeTreeViewBranchingStyleDidChange";
+NSString* nodeTreeViewSelectedNodeDidChange = @"NodeTreeViewSelectedNodeDidChange";
 // Other notifications
 NSString* longRunningActionStarts = @"LongRunningActionStarts";
 NSString* longRunningActionEnds = @"LongRunningActionEnds";

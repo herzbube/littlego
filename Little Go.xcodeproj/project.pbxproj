@@ -264,6 +264,8 @@
 		CD46628B296474D300B58CC9 /* NodeTreeViewSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD466289296474D300B58CC9 /* NodeTreeViewSettingsController.m */; };
 		CD46628E29658A7C00B58CC9 /* CGDrawingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD46628C29658A7C00B58CC9 /* CGDrawingHelper.m */; };
 		CD46628F29658A7C00B58CC9 /* CGDrawingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD46628C29658A7C00B58CC9 /* CGDrawingHelper.m */; };
+		CD4662922967301000B58CC9 /* SelectedNodeLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4662902967300F00B58CC9 /* SelectedNodeLayerDelegate.m */; };
+		CD4662932967301000B58CC9 /* SelectedNodeLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CD4662902967300F00B58CC9 /* SelectedNodeLayerDelegate.m */; };
 		CD48AD9C15A75B77004A7096 /* bug-report-message-template.txt in Resources */ = {isa = PBXBuildFile; fileRef = CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */; };
 		CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */; };
 		CD48ADA215A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD48ADA015A88EEF004A7096 /* RestoreBugReportUserDefaultsCommand.m */; };
@@ -1190,6 +1192,8 @@
 		CD466289296474D300B58CC9 /* NodeTreeViewSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewSettingsController.m; sourceTree = "<group>"; };
 		CD46628C29658A7C00B58CC9 /* CGDrawingHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CGDrawingHelper.m; sourceTree = "<group>"; };
 		CD46628D29658A7C00B58CC9 /* CGDrawingHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CGDrawingHelper.h; sourceTree = "<group>"; };
+		CD4662902967300F00B58CC9 /* SelectedNodeLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SelectedNodeLayerDelegate.m; sourceTree = "<group>"; };
+		CD4662912967300F00B58CC9 /* SelectedNodeLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SelectedNodeLayerDelegate.h; sourceTree = "<group>"; };
 		CD48AD9B15A75B77004A7096 /* bug-report-message-template.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "bug-report-message-template.txt"; sourceTree = "<group>"; };
 		CD48AD9D15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RestoreBugReportApplicationStateCommand.h; sourceTree = "<group>"; };
 		CD48AD9E15A88EEE004A7096 /* RestoreBugReportApplicationStateCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RestoreBugReportApplicationStateCommand.m; sourceTree = "<group>"; };
@@ -3223,6 +3227,8 @@
 				CDC8DEF828EDF2A400619305 /* NodeTreeViewLayerDelegate.h */,
 				CDC8DEFA28EDF2A400619305 /* NodeTreeViewLayerDelegateBase.h */,
 				CDC8DEF928EDF2A400619305 /* NodeTreeViewLayerDelegateBase.m */,
+				CD4662912967300F00B58CC9 /* SelectedNodeLayerDelegate.h */,
+				CD4662902967300F00B58CC9 /* SelectedNodeLayerDelegate.m */,
 			);
 			path = layer;
 			sourceTree = "<group>";
@@ -4408,6 +4414,7 @@
 				CDEE19F319433EAC00DF2389 /* BoardView.m in Sources */,
 				CDAFAE6E195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CD7C69BF1A9BC7D2009EC5AD /* GameActionButtonBoxDataSource.m in Sources */,
+				CD4662922967301000B58CC9 /* SelectedNodeLayerDelegate.m in Sources */,
 				CDAA57EC185261EF0049A90D /* SetAdditiveKnowledgeTypeCommand.mm in Sources */,
 				CDDB08C22927F15D00B38F91 /* NodeTreeViewCell.m in Sources */,
 				CDC8DEF128EDECCA00619305 /* NodeNumbersTileView.m in Sources */,
@@ -4644,6 +4651,7 @@
 				CD7C69F61AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */,
 				CDFD9F8118F1D5ED0031CBCF /* GtpLogItemViewController.m in Sources */,
 				CDFD9F8418F1D5FF0031CBCF /* SubmitGtpCommandViewController.m in Sources */,
+				CD4662932967301000B58CC9 /* SelectedNodeLayerDelegate.m in Sources */,
 				CDBEBA3D27B1A218000F9BF5 /* AnnotationViewController.m in Sources */,
 				CD1311C417180B53006CE699 /* ScoringModel.m in Sources */,
 				CD1A7EE82944ECB300013D80 /* NodeTreeViewLayerDelegateBaseTest.m in Sources */,

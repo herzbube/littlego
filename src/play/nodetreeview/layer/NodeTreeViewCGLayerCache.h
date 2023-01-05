@@ -38,6 +38,13 @@ enum NodeTreeViewLayerType
   NodeTreeViewLayerTypeAnnotations,
   NodeTreeViewLayerTypeMarkup,
   NodeTreeViewLayerTypeAnnotationsAndMarkup,
+
+  NodeTreeViewLayerTypeNodeSymbolFirst = NodeTreeViewLayerTypeEmpty,                // Helper enum value used for iteration
+  NodeTreeViewLayerTypeNodeSymbolLast = NodeTreeViewLayerTypeAnnotationsAndMarkup,  // Helper enum value used for iteration
+
+  NodeTreeViewLayerTypeNodeSelectionCondensed,
+  NodeTreeViewLayerTypeNodeSelectionUncondensed,
+  
   NodeTreeViewLayerTypeMax,  // Helper enum value used for iteration etc.
   NodeTreeViewLayerTypeFirst = 0,                           // Helper enum value used for iteration
   NodeTreeViewLayerTypeLast = NodeTreeViewLayerTypeMax - 1  // Helper enum value used for iteration
@@ -58,6 +65,7 @@ enum NodeTreeViewLayerType
 - (CGLayerRef) layerOfType:(enum NodeTreeViewLayerType)nodeTreeViewLayerType;
 - (void) setLayer:(CGLayerRef)layer ofType:(enum NodeTreeViewLayerType)nodeTreeViewLayerType;
 - (void) invalidateLayerOfType:(enum NodeTreeViewLayerType)nodeTreeViewLayerType;
+- (void) invalidateAllNodeSymbolLayers;
 - (void) invalidateAllLayers;
 
 @end

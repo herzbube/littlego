@@ -49,6 +49,9 @@
   /// @brief @e true if @e node is part of the game variation that GoNodeModel
   /// is currently configured with.
   bool nodeIsInCurrentGameVariation;
+  /// @brief @e true if @e node is the node whose content is shown by the
+  /// current board position.
+  bool nodeIsCurrentBoardPositionNode;
   /// @brief The branch that @e node belongs to.
   NodeTreeViewBranch* branch;
   /// @brief List of child branches (NodeTreeViewBranch objects) that originate

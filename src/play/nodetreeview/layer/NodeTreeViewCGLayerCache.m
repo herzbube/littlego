@@ -106,6 +106,20 @@ static NodeTreeViewCGLayerCache* sharedCache = nil;
   }
 }
 
+- (void) invalidateAllNodeSymbolLayers
+{
+  for (int layerIndex = NodeTreeViewLayerTypeNodeSymbolFirst;
+       layerIndex <= NodeTreeViewLayerTypeNodeSymbolLast;
+       ++layerIndex)
+  {
+    if (layers[layerIndex])
+    {
+      CGLayerRelease(layers[layerIndex]);
+      layers[layerIndex] = NULL;
+    }
+  }
+}
+
 - (void) invalidateAllLayers
 {
   for (int layerIndex = 0; layerIndex < arraySizeLayers; ++layerIndex)

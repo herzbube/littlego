@@ -41,6 +41,7 @@
 /// conventions.
 //@{
 CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymbol symbolType, bool condensed, NodeTreeViewMetrics* metrics);
+CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTreeViewMetrics* metrics);
 //@}
 
 /// @name Drawing helpers

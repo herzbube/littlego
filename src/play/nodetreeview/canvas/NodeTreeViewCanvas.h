@@ -90,6 +90,7 @@
 
 - (void) recalculateCanvas;
 - (NodeTreeViewCell*) cellAtPosition:(NodeTreeViewCellPosition*)position;
+- (NSArray*) selectedNodePositions;
 
 /// @brief The canvas size. Width and height are integral numbers.
 ///

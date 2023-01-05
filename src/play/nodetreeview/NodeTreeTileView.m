@@ -20,6 +20,7 @@
 #import "NodeTreeViewMetrics.h"
 #import "layer/LinesLayerDelegate.h"
 #import "layer/NodeSymbolLayerDelegate.h"
+#import "layer/SelectedNodeLayerDelegate.h"
 #import "../../go/GoGame.h"
 #import "../../shared/LongRunningActionCounter.h"
 
@@ -45,6 +46,7 @@
 @property(nonatomic, retain) NSArray* layerDelegates;
 @property(nonatomic, assign) LinesLayerDelegate* linesLayerDelegate;
 @property(nonatomic, assign) NodeSymbolLayerDelegate* nodeSymbolLayerDelegate;
+@property(nonatomic, assign) SelectedNodeLayerDelegate* selectedNodeLayerDelegate;
 //@}
 @end
 
@@ -85,6 +87,7 @@
   self.layerDelegates = nil;
   self.linesLayerDelegate = nil;
   self.nodeSymbolLayerDelegate = nil;
+  self.selectedNodeLayerDelegate = nil;
 
   return self;
 }
@@ -105,6 +108,7 @@
   self.layerDelegates = nil;
   self.linesLayerDelegate = nil;
   self.nodeSymbolLayerDelegate = nil;
+  self.selectedNodeLayerDelegate = nil;
 
   [super dealloc];
 }
@@ -125,6 +129,7 @@
   [center addObserver:self selector:@selector(nodeTreeViewCondenseMoveNodesDidChange:) name:nodeTreeViewCondenseMoveNodesDidChange object:nil];
   [center addObserver:self selector:@selector(nodeTreeViewAlignMoveNodesDidChange:) name:nodeTreeViewAlignMoveNodesDidChange object:nil];
   [center addObserver:self selector:@selector(nodeTreeViewBranchingStyleDidChange:) name:nodeTreeViewBranchingStyleDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeTreeViewSelectedNodeDidChange:) name:nodeTreeViewSelectedNodeDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 
   // KVO observing
@@ -169,6 +174,7 @@
 {
   [self setupLinesLayerDelegate];
   [self setupNodeSymbolLayerDelegate];
+  [self setupSelectedNodeLayerDelegate];
 
   [self updateLayers];
 }
@@ -202,6 +208,20 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Creates the node symbol layer delegate, or resets it to nil,
+/// depending on the current application state.
+// -----------------------------------------------------------------------------
+- (void) setupSelectedNodeLayerDelegate
+{
+  if (self.selectedNodeLayerDelegate)
+    return;
+
+  self.selectedNodeLayerDelegate = [[[SelectedNodeLayerDelegate alloc] initWithTile:self
+                                                                            metrics:self.nodeTreeViewMetrics
+                                                                             canvas:self.nodeTreeViewCanvas] autorelease];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Updates the layers of this NodeTreeTileView based on the layer
 /// delegates that currently exist.
 // -----------------------------------------------------------------------------
@@ -214,6 +234,7 @@
   // determines the order in which layers are stacked.
   [newLayerDelegates addObject:self.linesLayerDelegate];
   [newLayerDelegates addObject:self.nodeSymbolLayerDelegate];
+  [newLayerDelegates addObject:self.selectedNodeLayerDelegate];
 
   // Removing/adding layers does not cause them to redraw. Only layers that
   // are newly created are redrawn.
@@ -336,6 +357,15 @@
 - (void) nodeTreeViewBranchingStyleDidChange:(NSNotification*)notification
 {
   [self notifyLayerDelegates:NTVLDEventNodeTreeBranchingStyleChanged eventInfo:nil];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeViewSelectedNodeDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeViewSelectedNodeDidChange:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:NTVLDEventNodeTreeSelectedNodeChanged eventInfo:notification.object];
   [self delayedDrawLayers];
 }
 
