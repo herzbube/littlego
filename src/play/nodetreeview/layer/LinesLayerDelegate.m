@@ -113,6 +113,9 @@
       break;
     }
     case NTVLDEventNodeTreeContentChanged:
+    case NTVLDEventNodeTreeCondenseMoveNodesChanged:
+    case NTVLDEventNodeTreeAlignMoveNodesChanged:
+    case NTVLDEventNodeTreeBranchingStyleChanged:
     {
       self.dirty = true;
       break;

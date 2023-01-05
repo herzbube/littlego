@@ -45,6 +45,29 @@ enum NodeTreeViewLayerDelegateEvent
   /// the layer may have changed (the nature of the node tree content change is
   /// not known.
   NTVLDEventNodeTreeContentChanged,
+  /// @brief Is sent whenever the condense move nodes user preference has
+  /// changed. The layer should treat this event as a change to cell content
+  /// (both lines and node symbols). It is likely that additional events are
+  /// separately sent, notably #NTVLDEventAbstractCanvasSizeChanged (the
+  /// abstract canvas dimensions are likely to change because branches now use
+  /// either more or less space due to the change in size of symbols for those
+  /// move nodes that are condensable) and #NTVLDEventNodeTreeGeometryChanged
+  /// (because the layer's drawing cell sizes have changed).
+  NTVLDEventNodeTreeCondenseMoveNodesChanged,
+  /// @brief Is sent whenever the align move nodes user preference has
+  /// changed. The layer should treat this event as a change to cell content
+  /// (both lines and node symbols). It is likely that a separate event
+  /// #NTVLDEventAbstractCanvasSizeChanged is sent, because the canvas
+  /// dimensions did also change because branches now use either more or less
+  /// space due to alignment lines that were added/removed.
+  NTVLDEventNodeTreeAlignMoveNodesChanged,
+  /// @brief Is sent whenever the branching style user preference has
+  /// changed. The layer should treat this event as a change to cell content
+  /// (both lines and node symbols). A separate event
+  /// #NTVLDEventAbstractCanvasSizeChanged may be sent, because the branching
+  /// style can have an effect on how branches are positioned (diagonal
+  /// branching allows some optimizations).
+  NTVLDEventNodeTreeBranchingStyleChanged,
 };
 
 

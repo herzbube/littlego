@@ -85,6 +85,9 @@ NSString* boardViewSelectionRectangleDidChange = @"BoardViewSelectionRectangleDi
 NSString* nodeTreeLayoutDidChange = @"NodeTreeLayoutDidChange";
 NSString* nodeRepresentationInTreeViewDidChange = @"NodeRepresentationInTreeViewDidChange";
 NSString* nodeTreeViewContentDidChange = @"NodeTreeViewContentDidChange";
+NSString* nodeTreeViewCondenseMoveNodesDidChange = @"NodeTreeViewCondenseMoveNodesDidChange";
+NSString* nodeTreeViewAlignMoveNodesDidChange = @"NodeTreeViewAlignMoveNodesDidChange";
+NSString* nodeTreeViewBranchingStyleDidChange = @"NodeTreeViewBranchingStyleDidChange";
 // Other notifications
 NSString* longRunningActionStarts = @"LongRunningActionStarts";
 NSString* longRunningActionEnds = @"LongRunningActionEnds";

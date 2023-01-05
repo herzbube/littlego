@@ -122,10 +122,14 @@
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(nodeTreeViewContentDidChange:) name:nodeTreeViewContentDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeTreeViewCondenseMoveNodesDidChange:) name:nodeTreeViewCondenseMoveNodesDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeTreeViewAlignMoveNodesDidChange:) name:nodeTreeViewAlignMoveNodesDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeTreeViewBranchingStyleDidChange:) name:nodeTreeViewBranchingStyleDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 
   // KVO observing
   [self.nodeTreeViewMetrics addObserver:self forKeyPath:@"abstractCanvasSize" options:0 context:NULL];
+  [self.nodeTreeViewMetrics addObserver:self forKeyPath:@"nodeTreeViewCellSize" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -141,6 +145,7 @@
   [center removeObserver:self];
 
   [self.nodeTreeViewMetrics removeObserver:self forKeyPath:@"abstractCanvasSize"];
+  [self.nodeTreeViewMetrics removeObserver:self forKeyPath:@"nodeTreeViewCellSize"];
 }
 
 #pragma mark - Manage layers and layer delegates
@@ -304,6 +309,37 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeViewCondenseMoveNodesDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeViewCondenseMoveNodesDidChange:(NSNotification*)notification
+{
+  // If the condense move nodes user preference changes the cell size also
+  // changes => see KVO responder. To avoid a dependency on event ordering it
+  // is best to handle the two things separately.
+
+  [self notifyLayerDelegates:NTVLDEventNodeTreeCondenseMoveNodesChanged eventInfo:nil];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeViewAlignMoveNodesDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeViewAlignMoveNodesDidChange:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:NTVLDEventNodeTreeAlignMoveNodesChanged eventInfo:nil];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeViewBranchingStyleDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeViewBranchingStyleDidChange:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:NTVLDEventNodeTreeBranchingStyleChanged eventInfo:nil];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -324,6 +360,14 @@
     if ([keyPath isEqualToString:@"abstractCanvasSize"])
     {
       [self notifyLayerDelegates:NTVLDEventAbstractCanvasSizeChanged eventInfo:nil];
+      [self delayedDrawLayers];
+    }
+    else if ([keyPath isEqualToString:@"nodeTreeViewCellSize"])
+    {
+      // There are several reasons why the cell size could have changed.
+      // Typical examples: The zoom scale did change, or the condense move nodes
+      // user preference did change.
+      [self notifyLayerDelegates:NTVLDEventNodeTreeGeometryChanged eventInfo:nil];
       [self delayedDrawLayers];
     }
   }

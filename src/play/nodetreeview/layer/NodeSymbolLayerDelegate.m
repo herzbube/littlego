@@ -114,6 +114,7 @@
     case NTVLDEventNodeTreeGeometryChanged:
     case NTVLDEventInvalidateContent:
     {
+      [self invalidateLayers];
       self.drawingCellsOnTile = [self calculateDrawingCellsOnTile];
       self.dirty = true;
       break;
@@ -129,6 +130,9 @@
       break;
     }
     case NTVLDEventNodeTreeContentChanged:
+    case NTVLDEventNodeTreeCondenseMoveNodesChanged:
+    case NTVLDEventNodeTreeAlignMoveNodesChanged:
+    case NTVLDEventNodeTreeBranchingStyleChanged:
     {
       self.dirty = true;
       break;

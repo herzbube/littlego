@@ -72,6 +72,7 @@ struct GenerateCellsResult
 @interface NodeTreeViewCanvas()
 @property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
 @property(nonatomic, assign) bool canvasNeedsUpdate;
+@property(nonatomic, retain) NSString* notificationToPostAfterCanvasUpdate;
 @property(nonatomic, retain) NSMutableDictionary* cellsDictionary;
 @end
 
@@ -95,6 +96,7 @@ struct GenerateCellsResult
   self.nodeTreeViewModel = nodeTreeViewModel;
 
   self.canvasNeedsUpdate = false;
+  self.notificationToPostAfterCanvasUpdate = nil;
   self.canvasSize = CGSizeZero;
   self.cellsDictionary = [NSMutableDictionary dictionary];
 
@@ -110,6 +112,7 @@ struct GenerateCellsResult
 {
   [self removeNotificationResponders];
 
+  self.notificationToPostAfterCanvasUpdate = nil;
   self.nodeTreeViewModel = nil;
   self.cellsDictionary = nil;
 
@@ -153,6 +156,7 @@ struct GenerateCellsResult
 - (void) goGameDidCreate:(NSNotification*)notification
 {
   self.canvasNeedsUpdate = true;
+  self.notificationToPostAfterCanvasUpdate = nodeTreeViewContentDidChange;
   [self delayedUpdate];
 }
 
@@ -162,6 +166,7 @@ struct GenerateCellsResult
 - (void) nodeTreeLayoutDidChange:(NSNotification*)notification
 {
   self.canvasNeedsUpdate = true;
+  self.notificationToPostAfterCanvasUpdate = nodeTreeViewContentDidChange;
   [self delayedUpdate];
 }
 
@@ -181,16 +186,19 @@ struct GenerateCellsResult
   if ([keyPath isEqualToString:@"condenseMoveNodes"])
   {
     self.canvasNeedsUpdate = true;
+    self.notificationToPostAfterCanvasUpdate = nodeTreeViewCondenseMoveNodesDidChange;
     [self delayedUpdate];
   }
   else if ([keyPath isEqualToString:@"alignMoveNodes"])
   {
     self.canvasNeedsUpdate = true;
+    self.notificationToPostAfterCanvasUpdate = nodeTreeViewAlignMoveNodesDidChange;
     [self delayedUpdate];
   }
   else if ([keyPath isEqualToString:@"branchingStyle"])
   {
     self.canvasNeedsUpdate = true;
+    self.notificationToPostAfterCanvasUpdate = nodeTreeViewBranchingStyleDidChange;
     [self delayedUpdate];
   }
 }
@@ -223,7 +231,17 @@ struct GenerateCellsResult
     return;
   self.canvasNeedsUpdate = false;
 
-  [self recalculateCanvas];
+  [self recalculateCanvasPrivate];
+
+  if (self.notificationToPostAfterCanvasUpdate)
+  {
+    [[NSNotificationCenter defaultCenter] postNotificationName:self.notificationToPostAfterCanvasUpdate object:nil];
+    self.notificationToPostAfterCanvasUpdate = nil;
+  }
+  else
+  {
+    DDLogError(@"No notification found to post after node tree view canvas update");
+  }
 }
 
 #pragma mark - Public API
@@ -245,10 +263,31 @@ struct GenerateCellsResult
     return nil;
 }
 
-#pragma mark - Public API - Canvas calculation - Main method
+// -----------------------------------------------------------------------------
+/// @brief Triggers a full re-calculation of the node tree view canvas at the
+/// next opportunity. Posts #nodeTreeViewContentDidChange to the default
+/// notification centre when the re-calculation has finished.
+///
+/// If no long-running action is currently in progress, the re-calculation is
+/// performed synchronously, otherwise the re-calculation will be performed
+/// after the long-running action has finished.
+///
+/// If the re-calculation is performed synchronously, it is guaranteed that it
+/// will be performed on the main thread. Also the notification will be posted
+/// on the main thread.
+// -----------------------------------------------------------------------------
+- (void) recalculateCanvas
+{
+  self.canvasNeedsUpdate = true;
+  self.notificationToPostAfterCanvasUpdate = nodeTreeViewContentDidChange;
+  [self delayedUpdate];
+}
+
+#pragma mark - Private API - Canvas calculation - Main method
 
 // -----------------------------------------------------------------------------
-/// @brief Performs a full re-calculation of the node tree view canvas.
+/// @brief Private back-end method to perform a full re-calculation of the
+/// node tree view canvas. Does not post a notification when finished.
 ///
 /// The algorithm that performs the calculation can be broken down into several
 /// distinct steps that are executed in a specific order. Overview:
@@ -288,7 +327,7 @@ struct GenerateCellsResult
 ///    branch, or an assortment of vertical, diagonal and/or horizontal lines to
 ///    connect a branching node to its successor nodes in child branches.
 // -----------------------------------------------------------------------------
-- (void) recalculateCanvas
+- (void) recalculateCanvasPrivate
 {
   GoNodeModel* nodeModel = [GoGame sharedGame].nodeModel;
 
@@ -320,9 +359,6 @@ struct GenerateCellsResult
 
   self.cellsDictionary = generateCellsResult.cellsDictionary;
   self.canvasSize = CGSizeMake(generateCellsResult.highestXPosition + 1, highestYPosition + 1);
-
-  // TODO xxx Currently each and every change causes a full redraw => optimize
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeViewContentDidChange object:nil];
 }
 
 #pragma mark - Private API - Canvas calculation - Part 1: Collect branch data

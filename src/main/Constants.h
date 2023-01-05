@@ -891,6 +891,15 @@ extern NSString* nodeRepresentationInTreeViewDidChange;
 /// @brief Is sent to indicate that the content of the entire node tree view
 /// has changed.
 extern NSString* nodeTreeViewContentDidChange;
+/// @brief Is sent to indicate that the condense move nodes user preference
+/// has changed.
+extern NSString* nodeTreeViewCondenseMoveNodesDidChange;
+/// @brief Is sent to indicate that the align move nodes user preference
+/// has changed.
+extern NSString* nodeTreeViewAlignMoveNodesDidChange;
+/// @brief Is sent to indicate that the branching style user preference
+/// has changed.
+extern NSString* nodeTreeViewBranchingStyleDidChange;
 //@}
 
 // -----------------------------------------------------------------------------

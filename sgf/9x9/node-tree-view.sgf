@@ -47,7 +47,7 @@
   ;C[White move 2, condensed]
    W[bg]
   ;C[Black move 3, branching point, uncondensed]
-   W[cg]
+   B[cg]
   (;C[White move 4, first child node of branching point, uncondensed]
     W[dg]
    ;C[Black move 5, condensed]
