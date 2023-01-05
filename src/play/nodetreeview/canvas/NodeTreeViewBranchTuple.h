@@ -46,12 +46,18 @@
   /// @brief The NodeTreeViewCellSymbol enumeration value that represents
   /// @e node on the canvas.
   enum NodeTreeViewCellSymbol symbol;
+  /// @brief @e true if @e node is part of the game variation that GoNodeModel
+  /// is currently configured with.
+  bool nodeIsInCurrentGameVariation;
   /// @brief The branch that @e node belongs to.
   NodeTreeViewBranch* branch;
   /// @brief List of child branches (NodeTreeViewBranch objects) that originate
   /// from @e node. The list is empty if no child branches originate from
   /// @e node.
   NSMutableArray* childBranches;
+  /// @brief The next NodeTreeViewBranchTuple object in @e branch after this
+  /// NodeTreeViewBranchTuple.
+  NodeTreeViewBranchTuple* nextBranchTupleInBranch;
 }
 
 @end

@@ -386,11 +386,14 @@ struct GenerateCellsResult
   // branch
   NodeTreeViewBranch* parentBranch = nil;
   unsigned short xPosition = 0;
+  int indexOfNodeFromCurrentGameVariation = 0;
+  GoNode* nodeFromCurrentGameVariation = [nodeModel nodeAtIndex:indexOfNodeFromCurrentGameVariation];
 
   while (true)
   {
     NodeTreeViewBranch* branch = nil;
     NSUInteger indexOfBranch = -1;
+    NodeTreeViewBranchTuple* previousBranchTupleInBranch = nil;
 
     while (currentNode)
     {
@@ -414,7 +417,26 @@ struct GenerateCellsResult
       branchTuple->branch = branch;
       branchTuple->childBranches = nil;
 
+      if (currentNode == nodeFromCurrentGameVariation)
+      {
+        branchTuple->nodeIsInCurrentGameVariation = true;
+
+        indexOfNodeFromCurrentGameVariation++;
+        if (indexOfNodeFromCurrentGameVariation < nodeModel.numberOfNodes)
+          nodeFromCurrentGameVariation = [nodeModel nodeAtIndex:indexOfNodeFromCurrentGameVariation];
+        else
+          nodeFromCurrentGameVariation = nil;
+      }
+      else
+      {
+        branchTuple->nodeIsInCurrentGameVariation = false;
+      }
+
       [branch->branchTuples addObject:branchTuple];
+
+      if (previousBranchTupleInBranch)
+        previousBranchTupleInBranch->nextBranchTupleInBranch = branchTuple;
+      previousBranchTupleInBranch = branchTuple;
 
       if (currentNode.isBranchingNode)
       {
@@ -922,10 +944,10 @@ xPositionAfterLastCellInBranchingTuple:xPositionAfterLastCellInBranchingTuple
 // -----------------------------------------------------------------------------
 /// @brief Generates the cells for the entire branch @a branch.
 // -----------------------------------------------------------------------------
-- (void) generateCellsForBranch:(NodeTreeViewBranch*)branch
+       - (void) generateCellsForBranch:(NodeTreeViewBranch*)branch
 xPositionAfterLastCellInBranchingTuple:(unsigned short)xPositionAfterLastCellInBranchingTuple
-                 branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
-            generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+                        branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+                   generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
 {
   unsigned short xPositionAfterPreviousBranchTuple = xPositionAfterLastCellInBranchingTuple;
 
@@ -951,11 +973,11 @@ xPositionAfterLastCellInBranchingTuple:(unsigned short)xPositionAfterLastCellInB
 /// includes line-only cells on the left and below the node, connecting the node
 /// to its predecessor and successor nodes.
 ///
-/// Line-only cells contain either horizontal lines to connect a node to its predecessor node in the same branch,
-/// diagonal and/or horizontal lines to connect a node to its predecessor
-/// branching node in the parent branch, or an assortment of vertical, diagonal
-/// and/or horizontal lines to connect a branching node to its successor nodes
-/// in child branches.
+/// Line-only cells contain either horizontal lines to connect a node to its
+/// predecessor node in the same branch, diagonal and/or horizontal lines to
+/// connect a node to its predecessor branching node in the parent branch, or
+/// an assortment of vertical, diagonal and/or horizontal lines to connect a
+/// branching node to its successor nodes in child branches.
 // -----------------------------------------------------------------------------
 - (unsigned short) generateCellsForBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
              xPositionAfterPreviousBranchTuple:(unsigned short)xPositionAfterPreviousBranchTuple
@@ -1034,6 +1056,9 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
     {
       cell.lines = NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight;
     }
+
+    if (branchTuple->nodeIsInCurrentGameVariation)
+      cell.linesSelectedGameVariation = cell.lines;
 
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfCell y:yPositionOfBranch];
     generateCellsResult->cellsDictionary[position] = cell;
@@ -1123,16 +1148,19 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
     }
   }
 
+  NodeTreeViewBranch* childBranchInCurrentGameVariation = [self childBranchInCurrentGameVariation:branchTuple];
+
   unsigned int xPositionOfVerticalLineCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
 
   for (unsigned short yPosition = yPositionBelowBranchingNode; yPosition <= yPositionOfLastChildBranch; yPosition++)
   {
     [self generateCellsBelowBranchTuple:branchTuple
                             atYPosition:yPosition
-             yPositionOfLastChildBranch:yPositionOfLastChildBranch
+                        lastChildBranch:lastChildBranch
             xPositionOfVerticalLineCell:xPositionOfVerticalLineCell
    nextChildBranchToHorizontallyConnect:nextChildBranchToHorizontallyConnect
      nextChildBranchToDiagonallyConnect:nextChildBranchToDiagonallyConnect
+      childBranchInCurrentGameVariation:childBranchInCurrentGameVariation
                          branchingStyle:branchingStyle
                     generateCellsResult:generateCellsResult];
 
@@ -1172,18 +1200,20 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
 // -----------------------------------------------------------------------------
 - (void) generateCellsBelowBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
                            atYPosition:(unsigned short)yPosition
-            yPositionOfLastChildBranch:(unsigned short)yPositionOfLastChildBranch
+                       lastChildBranch:(NodeTreeViewBranch*)lastChildBranch
            xPositionOfVerticalLineCell:(unsigned short)xPositionOfVerticalLineCell
   nextChildBranchToHorizontallyConnect:(NodeTreeViewBranch*)nextChildBranchToHorizontallyConnect
     nextChildBranchToDiagonallyConnect:(NodeTreeViewBranch*)nextChildBranchToDiagonallyConnect
+     childBranchInCurrentGameVariation:(NodeTreeViewBranch*)childBranchInCurrentGameVariation
                         branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
                    generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
 {
   [self generateVerticalLineCellWithXPosition:xPositionOfVerticalLineCell
                                     yPosition:yPosition
-                   yPositionOfLastChildBranch:yPositionOfLastChildBranch
+                              lastChildBranch:lastChildBranch
          nextChildBranchToHorizontallyConnect:nextChildBranchToHorizontallyConnect
            nextChildBranchToDiagonallyConnect:nextChildBranchToDiagonallyConnect
+            childBranchInCurrentGameVariation:childBranchInCurrentGameVariation
                                branchingStyle:branchingStyle
                           generateCellsResult:generateCellsResult];
 
@@ -1195,6 +1225,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
     [self generateCellsRightOfVerticalLineCell:branchTuple
                                    atYPosition:yPosition
                    xPositionOfVerticalLineCell:xPositionOfVerticalLineCell
+         successorNodeIsInCurrentGameVariation:(nextChildBranchToHorizontallyConnect == childBranchInCurrentGameVariation)
                                 branchingStyle:branchingStyle
                            generateCellsResult:generateCellsResult];
   }
@@ -1207,36 +1238,58 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
 // -----------------------------------------------------------------------------
 - (void) generateVerticalLineCellWithXPosition:(unsigned short)xPosition
                                      yPosition:(unsigned short)yPosition
-                    yPositionOfLastChildBranch:(unsigned short)yPositionOfLastChildBranch
+                               lastChildBranch:(NodeTreeViewBranch*)lastChildBranch
           nextChildBranchToHorizontallyConnect:(NodeTreeViewBranch*)nextChildBranchToHorizontallyConnect
             nextChildBranchToDiagonallyConnect:(NodeTreeViewBranch*)nextChildBranchToDiagonallyConnect
+             childBranchInCurrentGameVariation:(NodeTreeViewBranch*)childBranchInCurrentGameVariation
                                 branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
                            generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
 {
   NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
+  NodeTreeViewCellLines linesSelectedGameVariation = NodeTreeViewCellLineNone;
 
   if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
   {
-    if (yPosition < yPositionOfLastChildBranch)
+    if (yPosition < lastChildBranch->yPosition)
     {
       lines |= NodeTreeViewCellLineCenterToTop;
+      if (childBranchInCurrentGameVariation && yPosition < childBranchInCurrentGameVariation->yPosition)
+        linesSelectedGameVariation |= NodeTreeViewCellLineCenterToTop;
 
       if (nextChildBranchToDiagonallyConnect && yPosition + 1 == nextChildBranchToDiagonallyConnect->yPosition)
+      {
         lines |= NodeTreeViewCellLineCenterToBottomRight;
+        if (childBranchInCurrentGameVariation && nextChildBranchToDiagonallyConnect == childBranchInCurrentGameVariation)
+          linesSelectedGameVariation |= NodeTreeViewCellLineCenterToBottomRight;
+      }
 
-      if (yPosition + 1 < yPositionOfLastChildBranch)
+      if (yPosition + 1 < lastChildBranch->yPosition)
+      {
         lines |= NodeTreeViewCellLineCenterToBottom;
+        if (childBranchInCurrentGameVariation && yPosition + 1 < childBranchInCurrentGameVariation->yPosition)
+          linesSelectedGameVariation |= NodeTreeViewCellLineCenterToBottom;
+      }
     }
   }
   else
   {
     lines |= NodeTreeViewCellLineCenterToTop;
+    if (childBranchInCurrentGameVariation && yPosition <= childBranchInCurrentGameVariation->yPosition)
+      linesSelectedGameVariation |= NodeTreeViewCellLineCenterToTop;
 
     if (yPosition == nextChildBranchToHorizontallyConnect->yPosition)
+    {
       lines |= NodeTreeViewCellLineCenterToRight;
+      if (childBranchInCurrentGameVariation && nextChildBranchToHorizontallyConnect == childBranchInCurrentGameVariation)
+        linesSelectedGameVariation |= NodeTreeViewCellLineCenterToRight;
+    }
 
-    if (yPosition < yPositionOfLastChildBranch)
+    if (yPosition < lastChildBranch->yPosition)
+    {
       lines |= NodeTreeViewCellLineCenterToBottom;
+      if (childBranchInCurrentGameVariation && yPosition < childBranchInCurrentGameVariation->yPosition)
+        linesSelectedGameVariation |= NodeTreeViewCellLineCenterToBottom;
+    }
   }
 
   // For diagonal branching style, no cell needs to be generated on the
@@ -1245,6 +1298,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
   {
     NodeTreeViewCell* cell = [NodeTreeViewCell emptyCell];
     cell.lines = lines;
+    cell.linesSelectedGameVariation = linesSelectedGameVariation;
 
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPosition];
     generateCellsResult->cellsDictionary[position] = cell;
@@ -1260,6 +1314,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
 - (void) generateCellsRightOfVerticalLineCell:(NodeTreeViewBranchTuple*)branchTuple
                                   atYPosition:(unsigned short)yPosition
                   xPositionOfVerticalLineCell:(unsigned short)xPositionOfVerticalLineCell
+        successorNodeIsInCurrentGameVariation:(bool)successorNodeIsInCurrentGameVariation
                                branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
                           generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
 {
@@ -1278,6 +1333,9 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
       cell.lines = linesOfFirstCell;
     else
       cell.lines = NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight;
+
+    if (successorNodeIsInCurrentGameVariation)
+      cell.linesSelectedGameVariation = cell.lines;
 
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPosition];
     generateCellsResult->cellsDictionary[position] = cell;
@@ -1302,14 +1360,14 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
     cell.parts = branchTuple->numberOfCellsForNode;
 
     cell.symbol = branchTuple->symbol;
-    cell.lines = [self linesForCell:indexOfCell
-                        branchTuple:branchTuple
-                  yPositionOfBranch:yPositionOfBranch
-           firstBranchTupleOfBranch:firstBranchTupleOfBranch
-            lastBranchTupleOfBranch:lastBranchTupleOfBranch
+    [self addLinesToCell:cell
+             indexOfCell:indexOfCell
+             branchTuple:branchTuple
+       yPositionOfBranch:yPositionOfBranch
+firstBranchTupleOfBranch:firstBranchTupleOfBranch
+ lastBranchTupleOfBranch:lastBranchTupleOfBranch
 diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEstablished
-                     branchingStyle:branchingStyle];
-
+          branchingStyle:branchingStyle];
 
     unsigned short xPosition = branchTuple->xPositionOfFirstCell + indexOfCell;
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPositionOfBranch];
@@ -1321,56 +1379,56 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Calculates the lines for the cell identified by @a indexOfCell which
-/// wholly or partially (in the case of multipart cells) depicts the node
-/// represented by @a branchTuple on the canvas.
+/// @brief Calculates the lines for the cell @a cell which wholly or partially
+/// (in the case of multipart cells) depicts the node represented by
+/// @a branchTuple on the canvas.
 // -----------------------------------------------------------------------------
-- (NodeTreeViewCellLines) linesForCell:(unsigned int)indexOfCell
-                           branchTuple:(NodeTreeViewBranchTuple*)branchTuple
-                      yPositionOfBranch:(unsigned short)yPositionOfBranch
-              firstBranchTupleOfBranch:(NodeTreeViewBranchTuple*)firstBranchTupleOfBranch
-               lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
+                     - (void) addLinesToCell:(NodeTreeViewCell*)cell
+                                 indexOfCell:(unsigned int)indexOfCell
+                                 branchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                           yPositionOfBranch:(unsigned short)yPositionOfBranch
+                    firstBranchTupleOfBranch:(NodeTreeViewBranchTuple*)firstBranchTupleOfBranch
+                     lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
 diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranchingLineEstablished
-                        branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+                              branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
 {
   bool isCellBeforeOrIncludingCenter = (indexOfCell <= branchTuple->indexOfCenterCell);
   bool isCenterCellForNode = (indexOfCell == branchTuple->indexOfCenterCell);
   bool isCellAfterOrIncludingCenter = (indexOfCell >= branchTuple->indexOfCenterCell);
-
-  NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
 
   // Horizontal connecting lines to previous node in the same branch,
   // or horizontal/diagonal connecting lines to branching node in parent
   // branch
   if (isCellBeforeOrIncludingCenter)
   {
-    lines |= [self linesForCellBeforeOrIncludingCenter:indexOfCell
-                                   isCenterCellForNode:isCenterCellForNode
-                                           branchTuple:branchTuple
-                                     yPositionOfBranch:yPositionOfBranch
-                              firstBranchTupleOfBranch:firstBranchTupleOfBranch
-                               lastBranchTupleOfBranch:lastBranchTupleOfBranch
-          diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEstablished
-                                        branchingStyle:branchingStyle];
+    [self addLinesToCellBeforeOrIncludingCenter:cell
+                                    indexOfCell:indexOfCell
+                            isCenterCellForNode:isCenterCellForNode
+                                    branchTuple:branchTuple
+                              yPositionOfBranch:yPositionOfBranch
+                       firstBranchTupleOfBranch:firstBranchTupleOfBranch
+                        lastBranchTupleOfBranch:lastBranchTupleOfBranch
+   diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEstablished
+                                 branchingStyle:branchingStyle];
   }
 
   // Horizontal connecting lines to next node in the same branch
   if (isCellAfterOrIncludingCenter)
   {
-    lines |= [self linesForCellAfterOrIncludingCenter:indexOfCell
-                                  isCenterCellForNode:isCenterCellForNode
-                                          branchTuple:branchTuple
-                              lastBranchTupleOfBranch:lastBranchTupleOfBranch];
+    [self addLinesToCellAfterOrIncludingCenter:cell
+                                   indexOfCell:indexOfCell
+                           isCenterCellForNode:isCenterCellForNode
+                                   branchTuple:branchTuple
+                       lastBranchTupleOfBranch:lastBranchTupleOfBranch];
   }
 
   // Vertical and/or diagonal connecting lines to child branches
   if (isCenterCellForNode && branchTuple->childBranches)
   {
-    lines |= [self linesForCenterCellConnectingChildBranches:branchTuple
-                                              branchingStyle:branchingStyle];
+    [self addLinesToCenterCellConnectingChildBranches:cell
+                                          branchTuple:branchTuple
+                                       branchingStyle:branchingStyle];
   }
-
-  return lines;
 }
 
 // -----------------------------------------------------------------------------
@@ -1379,14 +1437,15 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 /// represented by @a branchTuple on the canvas. The cell is left of the center
 /// of the whole node, or the center cell itself.
 // -----------------------------------------------------------------------------
-- (NodeTreeViewCellLines) linesForCellBeforeOrIncludingCenter:(unsigned int)indexOfCell
-                                          isCenterCellForNode:(bool)isCenterCellForNode
-                                                  branchTuple:(NodeTreeViewBranchTuple*)branchTuple
-                                            yPositionOfBranch:(unsigned short)yPositionOfBranch
-                                     firstBranchTupleOfBranch:(NodeTreeViewBranchTuple*)firstBranchTupleOfBranch
-                                      lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
-                 diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranchingLineEstablished
-                                               branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+- (void) addLinesToCellBeforeOrIncludingCenter:(NodeTreeViewCell*)cell
+                                   indexOfCell:(unsigned int)indexOfCell
+                           isCenterCellForNode:(bool)isCenterCellForNode
+                                   branchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                             yPositionOfBranch:(unsigned short)yPositionOfBranch
+                      firstBranchTupleOfBranch:(NodeTreeViewBranchTuple*)firstBranchTupleOfBranch
+                       lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
+  diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranchingLineEstablished
+                                branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
 {
   NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
 
@@ -1435,7 +1494,10 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
     }
   }
 
-  return lines;
+  cell.lines |= lines;
+
+  if (branchTuple->nodeIsInCurrentGameVariation)
+    cell.linesSelectedGameVariation |= lines;
 }
 
 // -----------------------------------------------------------------------------
@@ -1444,10 +1506,11 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 /// represented by @a branchTuple on the canvas. The cell is right of the center
 /// of the whole node, or the center cell itself.
 // -----------------------------------------------------------------------------
-- (NodeTreeViewCellLines) linesForCellAfterOrIncludingCenter:(unsigned int)indexOfCell
-                                         isCenterCellForNode:(bool)isCenterCellForNode
-                                                 branchTuple:(NodeTreeViewBranchTuple*)branchTuple
-                                     lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
+- (void) addLinesToCellAfterOrIncludingCenter:(NodeTreeViewCell*)cell
+                                  indexOfCell:(unsigned int)indexOfCell
+                          isCenterCellForNode:(bool)isCenterCellForNode
+                                  branchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                      lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
 {
   NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
 
@@ -1470,7 +1533,14 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
     }
   }
 
-  return lines;
+  cell.lines |= lines;
+
+  if (branchTuple->nodeIsInCurrentGameVariation &&
+      branchTuple->nextBranchTupleInBranch &&
+      branchTuple->nextBranchTupleInBranch->nodeIsInCurrentGameVariation)
+  {
+    cell.linesSelectedGameVariation |= lines;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -1480,28 +1550,47 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 /// branching line that connect the node (which is a branching node) to its
 /// child nodes.
 // --------------------------x---------------------------------------------------
-- (NodeTreeViewCellLines) linesForCenterCellConnectingChildBranches:(NodeTreeViewBranchTuple*)branchTuple
-                                                     branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+- (void) addLinesToCenterCellConnectingChildBranches:(NodeTreeViewCell*)cell
+                                         branchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                                      branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
 {
   NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
+  NodeTreeViewCellLines linesSelectedGameVariation = NodeTreeViewCellLineNone;
+
+  NodeTreeViewBranch* childBranchInCurrentGameVariation = [self childBranchInCurrentGameVariation:branchTuple];
 
   if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
   {
     NodeTreeViewBranch* firstChildBranch = branchTuple->childBranches.firstObject;
     if (branchTuple->branch->yPosition + 1 == firstChildBranch->yPosition)
+    {
       lines |= NodeTreeViewCellLineCenterToBottomRight;
-    else
-      lines |= NodeTreeViewCellLineCenterToBottom;
+      if (childBranchInCurrentGameVariation && childBranchInCurrentGameVariation == firstChildBranch)
+        linesSelectedGameVariation |= NodeTreeViewCellLineCenterToBottomRight;
 
-    if (branchTuple->childBranches.count > 1)
+      if (branchTuple->childBranches.count > 1)
+      {
+        lines |= NodeTreeViewCellLineCenterToBottom;
+        if (childBranchInCurrentGameVariation && childBranchInCurrentGameVariation != firstChildBranch)
+          linesSelectedGameVariation |= NodeTreeViewCellLineCenterToBottom;
+      }
+    }
+    else
+    {
       lines |= NodeTreeViewCellLineCenterToBottom;
+      if (childBranchInCurrentGameVariation)
+        linesSelectedGameVariation |= NodeTreeViewCellLineCenterToBottom;
+    }
   }
   else
   {
     lines |= NodeTreeViewCellLineCenterToBottom;
+    if (childBranchInCurrentGameVariation)
+      linesSelectedGameVariation |= NodeTreeViewCellLineCenterToBottom;
   }
 
-  return lines;
+  cell.lines |= lines;
+  cell.linesSelectedGameVariation |= linesSelectedGameVariation;
 }
 
 #pragma mark - Private API - Canvas calculation - Helper methods
@@ -1630,6 +1719,26 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
   {
     return numberOfCellsOfMultipartCell;
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the child branch of @a branchTuple whose first
+/// NodeTreeViewBranchTuple contains a node that is part of the current game
+/// variation in GoNodeModel. Returns @e nil if no such child branch exists.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewBranch*) childBranchInCurrentGameVariation:(NodeTreeViewBranchTuple*)branchTuple
+{
+  if (! branchTuple->nodeIsInCurrentGameVariation)
+    return nil;
+
+  for (NodeTreeViewBranch* childBranch in branchTuple->childBranches)
+  {
+    NodeTreeViewBranchTuple* firstChildBranchTuple = childBranch->branchTuples.firstObject;
+    if (firstChildBranchTuple->nodeIsInCurrentGameVariation)
+      return childBranch;
+  }
+
+  return nil;
 }
 
 @end

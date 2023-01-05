@@ -1274,12 +1274,187 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when a
-/// game variation that is not the main branch is selected.
+/// @brief Excercises the part of NodeTreeViewCanvas's canvas calculation
+/// algorithm that calculates the @e linesSelectedGameVariation property value
+/// of NodeTreeViewCell objects.
+///
+/// This is a best-effort attempt to verify all scenarios in a single test.
+/// The node tree is built, and the user preferences are selected, to create
+/// a "worst case" scenario where all, or at least most, of the algorithm's
+/// decisions how to set the @e linesSelectedGameVariation property are covered.
+///
+/// The following diagram illustrates how the node tree built in this test looks
+/// like.
+/// @verbatim
+///             +-- move node, uncondensed
+///             v
+/// A---B---C---D       +-- move node, uncondensed, aligned+3 to node N
+///     |   |\--E       |   +-- move node, uncondensed
+///     |    \--F       v   v
+///     |\------G-------H---I
+///      \--J   |\--K
+///              \--L---M
+///             ^    \--N---O---P <-- selected game variation
+///             |       ^   ^   ^
+///             |       |   |   +-- move node, uncondensed
+///             |       |   +-- move node, condensed, aligned+1 (after shifting+3) to node I
+///             |       +-- move node, uncondensed
+///             +-- move node, uncondensed, aligned+3 to node D
+/// @endverbatim
+///
+/// User preferences:
+/// - "condense move nodes" is enabled so that the algorithm has to set lines
+///   in sub-cells of multipart cells
+/// - "align move nodes" is enabled so that the algorithm has to set lines
+///   in standalone cells created on the left of a multipart cell, required to
+///   connect to a branching line
+/// - diagonal branching style is used because it requires the algorithm to
+///   make more complex decisions
+///
+/// Covered scenarios:
+/// - Horizontal lines directly on the right of a node: A
+/// - No horizontal lines directly on the right of a node: B (and others)
+/// - Horizontal lines directly on the left of a node: B, G, L, N, O, P
+/// - No horizontal lines directly on the left of a node: C (and others)
+/// - Horizontal lines extending on the left of a node, to connect to a
+///   branching line: Left of G
+/// - Horizontal lines extending on the left of a node, to connect to a
+///   previous node in the same branch: Left of O
+/// - Vertical line directly below a node: B
+/// - Full vertical line below a node: Below B
+/// - Diagonal line branching off from a vertical line below a node: Below B
+/// - Diagonal line branching off from a vertical line below a node, and the
+///   diagonal line is the last section of the branching line: Below G
+/// - Diagonal line directly below a node: L
 // -----------------------------------------------------------------------------
 - (void) testCalculateCanvas_LinesSelectedGameVariation
 {
-  // TODO xxx Branch selection not yet implemented in NodeTreeViewCanvas
+  // Arrange
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:true alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
+  GoNode* nodeA = m_game.nodeModel.rootNode;
+  GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createAnnotationNode]];
+  GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createAnnotationNode]];
+  [self parentNode:nodeC appendChildNode:[self createBlackMoveNodeWithMoveNumber:1]];
+  [self parentNode:nodeC appendChildNode:[self createAnnotationNode]];
+  [self parentNode:nodeC appendChildNode:[self createAnnotationNode]];
+  GoNode* nodeG = [self parentNode:nodeB appendChildNode:[self createBlackMoveNodeWithMoveNumber:1]];
+  GoNode* nodeH = [self parentNode:nodeG appendChildNode:[self createBlackMoveNodeWithMoveNumber:2]];
+  [self parentNode:nodeH appendChildNode:[self createBlackMoveNodeWithMoveNumber:3]];
+  [self parentNode:nodeB appendChildNode:[self createAnnotationNode]];
+  [self parentNode:nodeG appendChildNode:[self createAnnotationNode]];
+  GoNode* nodeL = [self parentNode:nodeG appendChildNode:[self createAnnotationNode]];
+  [self parentNode:nodeL appendChildNode:[self createAnnotationNode]];
+  GoNode* nodeN = [self parentNode:nodeL appendChildNode:[self createBlackMoveNodeWithMoveNumber:2]];
+  GoNode* nodeO = [self parentNode:nodeN appendChildNode:[self createBlackMoveNodeWithMoveNumber:3]];
+  GoNode* nodeP = [self parentNode:nodeO appendChildNode:[self createBlackMoveNodeWithMoveNumber:4]];
+  [m_game.nodeModel changeToVariationContainingNode:nodeP];
+
+  // Act
+  [testee recalculateCanvas];
+
+  // Assert
+  NSDictionary* expectedCellsDictionary =
+  @{
+    // nodeA (= rootNode)
+    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
+    [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToRight part:1],
+    [self positionWithX:2 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    // nodeB
+    [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom linesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToBottom part:1],
+    [self positionWithX:5 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    // nodeC
+    [self positionWithX:6 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:7 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom | NodeTreeViewCellLineCenterToBottomRight part:1],
+    [self positionWithX:8 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    // nodeD
+    [self positionWithX:9 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:10 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft part:1],
+    [self positionWithX:11 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove part:2],
+    // nodeB > nodeG + nodeJ
+    [self positionWithX:4 y:1]: [self cellWithLinesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToBottom],
+    // nodeC > nodeF
+    [self positionWithX:7 y:1]: [self cellWithLines:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToBottomRight],
+    // nodeC > nodeE
+    [self positionWithX:8 y:1]: [self cellWithLines:NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeE
+    [self positionWithX:9 y:1]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:10 y:1]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft part:1],
+    [self positionWithX:11 y:1]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations part:2],
+    // nodeB > nodeG + nodeJ
+    [self positionWithX:4 y:2]: [self cellWithLines:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToBottom | NodeTreeViewCellLineCenterToBottomRight linesSelectedGameVariation:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToBottomRight],
+    // nodeC > nodeF
+    [self positionWithX:8 y:2]: [self cellWithLines:NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeF
+    [self positionWithX:9 y:2]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:10 y:2]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft part:1],
+    [self positionWithX:11 y:2]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations part:2],
+    // nodeB > nodeJ
+    [self positionWithX:4 y:3]: [self cellWithLines:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToBottomRight],
+    // nodeB > nodeG
+    [self positionWithX:5 y:3]: [self cellWithLinesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:6 y:3]: [self cellWithLinesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:7 y:3]: [self cellWithLinesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:8 y:3]: [self cellWithLinesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeG
+    [self positionWithX:9 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:10 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom | NodeTreeViewCellLineCenterToBottomRight linesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToBottom part:1],
+    [self positionWithX:11 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    // nodeG > nodeH
+    [self positionWithX:12 y:3]: [self cellWithLines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:13 y:3]: [self cellWithLines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:14 y:3]: [self cellWithLines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeH
+    [self positionWithX:15 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:16 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:1],
+    [self positionWithX:17 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    // nodeI
+    [self positionWithX:18 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:19 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft part:1],
+    [self positionWithX:20 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove part:2],
+    // nodeB > nodeJ
+    [self positionWithX:5 y:4]: [self cellWithLines:NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeJ
+    [self positionWithX:6 y:4]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:7 y:4]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft part:1],
+    [self positionWithX:8 y:4]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations part:2],
+    // nodeG > nodeL
+    [self positionWithX:10 y:4]: [self cellWithLinesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToBottomRight],
+    // nodeG > nodeK
+    [self positionWithX:11 y:4]: [self cellWithLines:NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeK
+    [self positionWithX:12 y:4]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:13 y:4]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft part:1],
+    [self positionWithX:14 y:4]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations part:2],
+    // nodeG > nodeL
+    [self positionWithX:11 y:5]: [self cellWithLinesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeL
+    [self positionWithX:12 y:5]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:13 y:5]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottomRight linesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToBottomRight part:1],
+    [self positionWithX:14 y:5]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    // nodeM
+    [self positionWithX:15 y:5]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:16 y:5]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft part:1],
+    [self positionWithX:17 y:5]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations part:2],
+    // nodeL > nodeN
+    [self positionWithX:14 y:6]: [self cellWithLinesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToTopLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeN
+    [self positionWithX:15 y:6]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:16 y:6]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:1],
+    [self positionWithX:17 y:6]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    // nodeN > nodeO
+    [self positionWithX:18 y:6]: [self cellWithLinesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeO
+    [self positionWithX:19 y:6]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeP
+    [self positionWithX:20 y:6]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:21 y:6]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft part:1],
+    [self positionWithX:22 y:6]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove part:2],
+  };
+  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
 }
 
 #pragma mark - Helper methods - Configure NodeTreeViewModel
@@ -1356,6 +1531,32 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Helper method that creates a NodeTreeViewCell object that is a
+/// standalone cell. The cell contains no symbol and the specified lines and
+/// selected lines (both line types have the same value). The cell is
+/// unselected.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCell*) cellWithLinesAndLinesSelectedGameVariation:(NodeTreeViewCellLines)linesAndLinesSelectedGameVariation
+{
+  return [self cellWithSymbol:NodeTreeViewCellSymbolNone
+                        lines:linesAndLinesSelectedGameVariation
+   linesSelectedGameVariation:linesAndLinesSelectedGameVariation];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeTreeViewCell object that is a
+/// standalone cell. The cell contains no symbol and the specified lines and
+/// selected lines. The cell is unselected.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCell*) cellWithLines:(NodeTreeViewCellLines)lines
+         linesSelectedGameVariation:(NodeTreeViewCellLines)linesSelectedGameVariation
+{
+  return [self cellWithSymbol:NodeTreeViewCellSymbolNone
+                        lines:lines
+   linesSelectedGameVariation:linesSelectedGameVariation];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeTreeViewCell object that is a
 /// standalone cell. The cell contains the specified symbol and lines. The cell
 /// is unselected and contains no selected lines.
 // -----------------------------------------------------------------------------
@@ -1366,6 +1567,39 @@
                      selected:false
                         lines:lines
    linesSelectedGameVariation:NodeTreeViewCellLineNone
+                         part:0
+                        parts:1];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeTreeViewCell object that is a
+/// standalone cell. The cell contains the specified symbol, lines and selected
+/// lines (both line types have the same value). The cell is unselected.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCell*) cellWithSymbol:(enum NodeTreeViewCellSymbol)symbol
+  linesAndLinesSelectedGameVariation:(NodeTreeViewCellLines)linesAndLinesSelectedGameVariation
+{
+  return [self cellWithSymbol:symbol
+                     selected:false
+                        lines:linesAndLinesSelectedGameVariation
+   linesSelectedGameVariation:linesAndLinesSelectedGameVariation
+                         part:0
+                        parts:1];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeTreeViewCell object that is a
+/// standalone cell. The cell contains the specified symbol, lines and selected
+/// lines. The cell is unselected.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCell*) cellWithSymbol:(enum NodeTreeViewCellSymbol)symbol
+                               lines:(NodeTreeViewCellLines)lines
+          linesSelectedGameVariation:(NodeTreeViewCellLines)linesSelectedGameVariation
+{
+  return [self cellWithSymbol:symbol
+                     selected:false
+                        lines:lines
+   linesSelectedGameVariation:linesSelectedGameVariation
                          part:0
                         parts:1];
 }
@@ -1415,6 +1649,45 @@
                      selected:false
                         lines:lines
    linesSelectedGameVariation:NodeTreeViewCellLineNone
+                         part:part
+                        parts:m_delegate.nodeTreeViewModel.numberOfCellsOfMultipartCell];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeTreeViewCell object that is the
+/// sub-cell @a part of a multipart cell. The cell contains the specified
+/// symbol, lines and selected lines (both line types have the same value). The
+/// cell is unselected. The number of cells of a multipart cell is taken from
+/// the current NodeTreeViewModel.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCell*) cellWithSymbol:(enum NodeTreeViewCellSymbol)symbol
+  linesAndLinesSelectedGameVariation:(NodeTreeViewCellLines)linesAndLinesSelectedGameVariation
+                                part:(int)part
+{
+  return [self cellWithSymbol:symbol
+                     selected:false
+                        lines:linesAndLinesSelectedGameVariation
+   linesSelectedGameVariation:linesAndLinesSelectedGameVariation
+                         part:part
+                        parts:m_delegate.nodeTreeViewModel.numberOfCellsOfMultipartCell];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeTreeViewCell object that is the
+/// sub-cell @a part of a multipart cell. The cell contains the specified
+/// symbol, lines and selected lines. The cell is unselected. The
+/// number of cells of a multipart cell is taken from the current
+/// NodeTreeViewModel.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCell*) cellWithSymbol:(enum NodeTreeViewCellSymbol)symbol
+                               lines:(NodeTreeViewCellLines)lines
+          linesSelectedGameVariation:(NodeTreeViewCellLines)linesSelectedGameVariation
+                                part:(int)part
+{
+  return [self cellWithSymbol:symbol
+                     selected:false
+                        lines:lines
+   linesSelectedGameVariation:linesSelectedGameVariation
                          part:part
                         parts:m_delegate.nodeTreeViewModel.numberOfCellsOfMultipartCell];
 }

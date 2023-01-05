@@ -271,7 +271,7 @@
                              cell:(NodeTreeViewCell*)cell
                          position:(NodeTreeViewCellPosition*)position
                 canvasRectForCell:(CGRect)canvasRectForCell
-                condenseMoveNodes:condenseMoveNodes
+                condenseMoveNodes:(bool)condenseMoveNodes
                          tileRect:(CGRect)tileRect
 {
   CGRect canvasRectForFullCell;
