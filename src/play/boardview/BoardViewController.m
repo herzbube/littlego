@@ -21,9 +21,9 @@
 #import "BoardTileView.h"
 #import "BoardView.h"
 #import "CoordinateLabelsTileView.h"
+#import "../gesture/BoardViewTapGestureController.h"
 #import "../gesture/DoubleTapGestureController.h"
 #import "../gesture/PanGestureController.h"
-#import "../gesture/TapGestureController.h"
 #import "../gesture/TwoFingerTapGestureController.h"
 #import "../model/BoardSetupModel.h"
 #import "../model/BoardViewMetrics.h"
@@ -46,7 +46,7 @@
 @property(nonatomic, retain) TiledScrollView* coordinateLabelsNumberView;
 @property(nonatomic, retain) NSArray* coordinateLabelsViewConstraints;
 @property(nonatomic, retain) PanGestureController* panGestureController;
-@property(nonatomic, retain) TapGestureController* tapGestureController;
+@property(nonatomic, retain) BoardViewTapGestureController* boardViewTapGestureController;
 @property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
 @property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
 @property(nonatomic, retain) BoardAnimationController* boardAnimationController;
@@ -89,7 +89,7 @@
   self.coordinateLabelsLetterView = nil;
   self.coordinateLabelsNumberView = nil;
   self.panGestureController = nil;
-  self.tapGestureController = nil;
+  self.boardViewTapGestureController = nil;
   self.doubleTapGestureController = nil;
   self.twoFingerTapGestureController = nil;
   self.boardAnimationController = nil;
@@ -102,7 +102,7 @@
 - (void) setupChildControllers
 {
   self.panGestureController = [[[PanGestureController alloc] init] autorelease];
-  self.tapGestureController = [[[TapGestureController alloc] init] autorelease];
+  self.boardViewTapGestureController = [[[BoardViewTapGestureController alloc] init] autorelease];
   self.doubleTapGestureController = [[[DoubleTapGestureController alloc] init] autorelease];
   self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] init] autorelease];
   self.boardAnimationController = [[[BoardAnimationController alloc] init ] autorelease];
@@ -177,7 +177,7 @@
 - (void) configureControllers
 {
   self.panGestureController.boardView = self.boardView;
-  self.tapGestureController.boardView = self.boardView;
+  self.boardViewTapGestureController.boardView = self.boardView;
   self.doubleTapGestureController.scrollView = self.boardView;
   self.twoFingerTapGestureController.scrollView = self.boardView;
   self.boardAnimationController.boardView = self.boardView;

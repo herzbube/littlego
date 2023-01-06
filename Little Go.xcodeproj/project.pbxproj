@@ -241,7 +241,7 @@
 		CD3659421693533600D75466 /* GoBoardPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = CD36594016931F8500D75466 /* GoBoardPosition.m */; };
 		CD377F0816BD154A00972F04 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD377F0716BD154A00972F04 /* MainTabBarController.m */; };
 		CD3A0999169389A600ABDB5D /* PanGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A0998169389A600ABDB5D /* PanGestureController.m */; };
-		CD3A09A116939E2200ABDB5D /* TapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A09A016939E2200ABDB5D /* TapGestureController.m */; };
+		CD3A09A116939E2200ABDB5D /* BoardViewTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A09A016939E2200ABDB5D /* BoardViewTapGestureController.m */; };
 		CD3AE6EA1343F14200B58E08 /* LICENSE.html in Resources */ = {isa = PBXBuildFile; fileRef = CD3AE6E91343F14200B58E08 /* LICENSE.html */; };
 		CD3B1EC421D7BDA100D1DCAD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = CD27AEC521D5D100002028E4 /* GoogleService-Info.plist */; };
 		CD3D8B5428BBE12F0008D22F /* menu-hamburger.png in Resources */ = {isa = PBXBuildFile; fileRef = CD3D8B5028BBE12F0008D22F /* menu-hamburger.png */; };
@@ -516,7 +516,7 @@
 		CD9A49AC171099FB009E7514 /* FontRange.m in Sources */ = {isa = PBXBuildFile; fileRef = CD9A49AA17107BC9009E7514 /* FontRange.m */; };
 		CD9A49E1171250AA009E7514 /* DoubleTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA416F7A2AE00C95DCF /* DoubleTapGestureController.m */; };
 		CD9A49E2171250AE009E7514 /* PanGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A0998169389A600ABDB5D /* PanGestureController.m */; };
-		CD9A49E3171250B0009E7514 /* TapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A09A016939E2200ABDB5D /* TapGestureController.m */; };
+		CD9A49E3171250B0009E7514 /* BoardViewTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3A09A016939E2200ABDB5D /* BoardViewTapGestureController.m */; };
 		CD9A49E4171250B3009E7514 /* TwoFingerTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */; };
 		CD9A49E6171250D4009E7514 /* LeftPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199416B1C09B002771F7 /* LeftPaneViewController.m */; };
 		CD9A49E7171250D6009E7514 /* RightPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199816B1C29B002771F7 /* RightPaneViewController.m */; };
@@ -1122,8 +1122,8 @@
 		CD377F0716BD154A00972F04 /* MainTabBarController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTabBarController.m; sourceTree = "<group>"; };
 		CD3A0997169389A600ABDB5D /* PanGestureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanGestureController.h; sourceTree = "<group>"; };
 		CD3A0998169389A600ABDB5D /* PanGestureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PanGestureController.m; sourceTree = "<group>"; };
-		CD3A099F16939E2200ABDB5D /* TapGestureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TapGestureController.h; sourceTree = "<group>"; };
-		CD3A09A016939E2200ABDB5D /* TapGestureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TapGestureController.m; sourceTree = "<group>"; };
+		CD3A099F16939E2200ABDB5D /* BoardViewTapGestureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewTapGestureController.h; sourceTree = "<group>"; };
+		CD3A09A016939E2200ABDB5D /* BoardViewTapGestureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewTapGestureController.m; sourceTree = "<group>"; };
 		CD3AE6E91343F14200B58E08 /* LICENSE.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = LICENSE.html; sourceTree = "<group>"; };
 		CD3AE865134A33A500B58E08 /* Doxyfile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Doxyfile; sourceTree = "<group>"; };
 		CD3AE8AD134A423000B58E08 /* index.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = index.html; path = html/index.html; sourceTree = "<group>"; };
@@ -2389,12 +2389,12 @@
 			isa = PBXGroup;
 			children = (
 				CD1E6EAC2865F9BD00785E23 /* handler */,
+				CD3A099F16939E2200ABDB5D /* BoardViewTapGestureController.h */,
+				CD3A09A016939E2200ABDB5D /* BoardViewTapGestureController.m */,
 				CD30BAA316F7A2AE00C95DCF /* DoubleTapGestureController.h */,
 				CD30BAA416F7A2AE00C95DCF /* DoubleTapGestureController.m */,
 				CD3A0997169389A600ABDB5D /* PanGestureController.h */,
 				CD3A0998169389A600ABDB5D /* PanGestureController.m */,
-				CD3A099F16939E2200ABDB5D /* TapGestureController.h */,
-				CD3A09A016939E2200ABDB5D /* TapGestureController.m */,
 				CD30BAA616F7B28A00C95DCF /* TwoFingerTapGestureController.h */,
 				CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */,
 			);
@@ -4358,7 +4358,7 @@
 				CDEE1A0F1946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */,
 				CD3A0999169389A600ABDB5D /* PanGestureController.m in Sources */,
 				CD1F4FB825B0C1120098037A /* SgfUtilities.m in Sources */,
-				CD3A09A116939E2200ABDB5D /* TapGestureController.m in Sources */,
+				CD3A09A116939E2200ABDB5D /* BoardViewTapGestureController.m in Sources */,
 				CD7C69F51AB2CB4A009EC5AD /* PlayRootViewNavigationController.m in Sources */,
 				CD252D8016A248DC00A088D5 /* SyncGTPEngineCommand.m in Sources */,
 				CD81794D25DD897B00F39091 /* ComputerAssistanceSettingsController.m in Sources */,
@@ -4631,7 +4631,7 @@
 				CD9A49E2171250AE009E7514 /* PanGestureController.m in Sources */,
 				CDC8DF0428EF0FFA00619305 /* DummyLayerDelegate.m in Sources */,
 				CDB5AE261AC5A86D0075C8DC /* MagnifyingView.m in Sources */,
-				CD9A49E3171250B0009E7514 /* TapGestureController.m in Sources */,
+				CD9A49E3171250B0009E7514 /* BoardViewTapGestureController.m in Sources */,
 				CD9A49E4171250B3009E7514 /* TwoFingerTapGestureController.m in Sources */,
 				CDD85B0729116F7D0069A761 /* GoNodeSetupTest.m in Sources */,
 				CD9A49E6171250D4009E7514 /* LeftPaneViewController.m in Sources */,
