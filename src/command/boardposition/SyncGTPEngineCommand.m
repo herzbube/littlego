@@ -116,7 +116,7 @@
 /// @brief Returns the GoNode object up to which the GTP engine should be
 /// synchronized, based on the value of the property @e syncBoardPositionType.
 /// The returned GoNode object is guaranteed to contain either a GoNodeSetup or
-/// a GoMove object. May return @e nil if  no GoNode object could be found, in
+/// a GoMove object. May return @e nil if no GoNode object could be found, in
 /// which case the GTP engine should be synchronized with the start of the game.
 // -----------------------------------------------------------------------------
 - (GoNode*) findNodeUpToWhichToSync
@@ -139,12 +139,17 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns the GoNodeSetup object up to which the GTP engine should be
 /// synchronized with setup information, based on the value of
-/// @a syncUpToThisNode. May return @e nil if  no GoNodeSetup object could be
+/// @a syncUpToThisNode. May return @e nil if no GoNodeSetup object could be
 /// found, in which case the GTP engine should be synchronized with setup
 /// information from the start of the game.
 // -----------------------------------------------------------------------------
 - (GoNodeSetup*) findeNodeSetupUpToWhichToSync:(GoNode*)syncUpToThisNode
 {
+  // We know that syncUpToThisNode is the result of findNodeUpToWhichToSync.
+  // From the implementation of that method we know that if syncUpToThisNode
+  // is not nil, it contains a board state change - meaning either a GoMove or
+  // a GoNodeSetup
+
   if (syncUpToThisNode)
   {
     if (syncUpToThisNode.goMove)
@@ -167,11 +172,16 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns the GoMove object up to which the GTP engine should be
 /// synchronized with move information, based on the value of
-/// @a syncUpToThisNode. May return @e nil if  no GoMove object could be found,
+/// @a syncUpToThisNode. May return @e nil if no GoMove object could be found,
 /// in which case the GTP engine should not be synchronized with any moves.
 // -----------------------------------------------------------------------------
 - (GoMove*) findeMoveUpToWhichToSync:(GoNode*)syncUpToThisNode
 {
+  // We know that syncUpToThisNode is the result of findNodeUpToWhichToSync.
+  // From the implementation of that method we know that if syncUpToThisNode
+  // is not nil, it contains a board state change - meaning either a GoMove or
+  // a GoNodeSetup.
+
   return syncUpToThisNode ? syncUpToThisNode.goMove : nil;
 }
 
@@ -329,12 +339,14 @@
   if (! syncUpToThisMove)
     return true;
 
-  GoGame* game = [GoGame sharedGame];
+  GoNodeModel* nodeModel = [GoGame sharedGame].nodeModel;
 
   NSString* commandString = @"gogui-play_sequence";
-  GoNode* node = game.nodeModel.rootNode;
-  while (true)
+  int numberOfNodes = nodeModel.numberOfNodes;
+  for (int indexOfNode = 0; indexOfNode < numberOfNodes; ++indexOfNode)
   {
+    GoNode* node = [nodeModel nodeAtIndex:indexOfNode];
+
     GoMove* move = node.goMove;
     if (move)
     {
@@ -355,10 +367,10 @@
           assert(0);
           return false;
       }
+
       if (move == syncUpToThisMove)
         break;
     }
-    node = node.firstChild;
   }
 
   GtpCommand* commandSetup = [GtpCommand command:commandString];
