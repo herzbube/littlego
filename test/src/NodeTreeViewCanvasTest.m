@@ -56,7 +56,7 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
 
   // Assert
-  NSDictionary* expectedCellsDictionary = @{ [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty] };
+  NSDictionary* expectedCellsDictionary = @{ [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty] };
   XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
 }
 
@@ -78,9 +78,9 @@
   // Assert
   NSDictionary* expectedCellsDictionary =
   @{
-    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty part:1],
-    [self positionWithX:2 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty part:2],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:2],
   };
   XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
 }
@@ -139,9 +139,9 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // rootNode
-    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight part:1],
-    [self positionWithX:2 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
     // emptyNode
     [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
     [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:1],
@@ -231,7 +231,7 @@
   // Assert
   NSDictionary* expectedCellsDictionary =
   @{
-    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
     [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
     [self positionWithX:2 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackSetupStones lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
     [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolWhiteSetupStones lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
@@ -342,7 +342,7 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
     // nodeB
     [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
     // nodeC
@@ -428,7 +428,7 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
     // nodeB
     [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
     // nodeC
@@ -516,9 +516,9 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight part:1],
-    [self positionWithX:2 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
     // nodeB
     [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
     [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom part:1],
@@ -631,11 +631,11 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty part:1],
-    [self positionWithX:2 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottomRight part:2],
-    [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:3],
-    [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:4],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottomRight part:2],
+    [self positionWithX:3 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:3],
+    [self positionWithX:4 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:4],
     // nodeB
     [self positionWithX:5 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
     [self positionWithX:6 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:1],
@@ -695,9 +695,9 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight part:1],
-    [self positionWithX:2 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
     // nodeB
     [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
     [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom part:1],
@@ -850,7 +850,7 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
     // nodeB
     [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
     // nodeC
@@ -950,7 +950,7 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
     // nodeB
     [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
     // nodeC
@@ -1031,7 +1031,7 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
     // nodeB
     [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
     // nodeC
@@ -1181,9 +1181,9 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom part:1],
-    [self positionWithX:2 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
     // nodeB
     [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
     [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:1],
@@ -1359,9 +1359,9 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToRight part:1],
-    [self positionWithX:2 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToRight part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
     // nodeB
     [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
     [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom linesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToBottom part:1],
@@ -1520,6 +1520,17 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Helper method that creates a NodeTreeViewCell object that is a
+/// standalone cell. The cell contains the specified symbol and no lines. The
+/// cell is selected and contains no selected lines.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCell*) selectedCellWithSymbol:(enum NodeTreeViewCellSymbol)symbol
+{
+  return [self selectedCellWithSymbol:symbol
+                                lines:NodeTreeViewCellLineNone];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeTreeViewCell object that is a
 /// standalone cell. The cell contains no symbol and the specified lines. The
 /// cell is unselected and contains no selected lines.
 // -----------------------------------------------------------------------------
@@ -1565,6 +1576,22 @@
 {
   return [self cellWithSymbol:symbol
                      selected:false
+                        lines:lines
+   linesSelectedGameVariation:NodeTreeViewCellLineNone
+                         part:0
+                        parts:1];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeTreeViewCell object that is a
+/// standalone cell. The cell contains the specified symbol and lines. The cell
+/// is selected and contains no selected lines.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCell*) selectedCellWithSymbol:(enum NodeTreeViewCellSymbol)symbol
+                                       lines:(NodeTreeViewCellLines)lines
+{
+  return [self cellWithSymbol:symbol
+                     selected:true
                         lines:lines
    linesSelectedGameVariation:NodeTreeViewCellLineNone
                          part:0
@@ -1621,6 +1648,21 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Helper method that creates a NodeTreeViewCell object that is the
+/// sub-cell @a part of a multipart cell. The cell contains the specified symbol
+/// and no lines. The cell is selected and contains no selected lines. The
+/// number of cells of a multipart cell is taken from the current
+/// NodeTreeViewModel.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCell*) selectedCellWithSymbol:(enum NodeTreeViewCellSymbol)symbol
+                                        part:(int)part
+{
+  return [self selectedCellWithSymbol:symbol
+                                lines:NodeTreeViewCellLineNone
+                                 part:part];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeTreeViewCell object that is the
 /// sub-cell @a part of a multipart cell. The cell contains no symbol and the
 /// specified lines. The cell is unselected and contains no selected lines. The
 /// number of cells of a multipart cell is taken from the current
@@ -1655,6 +1697,25 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Helper method that creates a NodeTreeViewCell object that is the
+/// sub-cell @a part of a multipart cell. The cell contains the specified symbol
+/// and lines. The cell is selected and contains no selected lines. The
+/// number of cells of a multipart cell is taken from the current
+/// NodeTreeViewModel.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCell*) selectedCellWithSymbol:(enum NodeTreeViewCellSymbol)symbol
+                                       lines:(NodeTreeViewCellLines)lines
+                                        part:(int)part
+{
+  return [self cellWithSymbol:symbol
+                     selected:true
+                        lines:lines
+   linesSelectedGameVariation:NodeTreeViewCellLineNone
+                         part:part
+                        parts:m_delegate.nodeTreeViewModel.numberOfCellsOfMultipartCell];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeTreeViewCell object that is the
 /// sub-cell @a part of a multipart cell. The cell contains the specified
 /// symbol, lines and selected lines (both line types have the same value). The
 /// cell is unselected. The number of cells of a multipart cell is taken from
@@ -1666,6 +1727,25 @@
 {
   return [self cellWithSymbol:symbol
                      selected:false
+                        lines:linesAndLinesSelectedGameVariation
+   linesSelectedGameVariation:linesAndLinesSelectedGameVariation
+                         part:part
+                        parts:m_delegate.nodeTreeViewModel.numberOfCellsOfMultipartCell];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeTreeViewCell object that is the
+/// sub-cell @a part of a multipart cell. The cell contains the specified
+/// symbol, lines and selected lines (both line types have the same value). The
+/// cell is selected. The number of cells of a multipart cell is taken from
+/// the current NodeTreeViewModel.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewCell*) selectedCellWithSymbol:(enum NodeTreeViewCellSymbol)symbol
+          linesAndLinesSelectedGameVariation:(NodeTreeViewCellLines)linesAndLinesSelectedGameVariation
+                                        part:(int)part
+{
+  return [self cellWithSymbol:symbol
+                     selected:true
                         lines:linesAndLinesSelectedGameVariation
    linesSelectedGameVariation:linesAndLinesSelectedGameVariation
                          part:part
