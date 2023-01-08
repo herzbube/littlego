@@ -16,6 +16,7 @@
 
 
 // Forward declarations
+@class GoNode;
 @class NodeTreeViewCanvas;
 @class NodeTreeViewCellPosition;
 @class NodeTreeViewModel;
@@ -117,6 +118,7 @@
 - (CGPoint) cellRectOriginFromPosition:(NodeTreeViewCellPosition*)position;
 - (NodeTreeViewCellPosition*) positionFromCellRectOrigin:(CGPoint)cellRectOrigin;
 - (NodeTreeViewCellPosition*) positionNear:(CGPoint)coordinates;
+- (GoNode*) nodeNear:(CGPoint)coordinates;
 //@}
 
 // -----------------------------------------------------------------------------

@@ -21,6 +21,7 @@
 #import "NodeTreeTileView.h"
 #import "NodeTreeView.h"
 #import "NodeTreeViewMetrics.h"
+#import "NodeTreeViewTapGestureController.h"
 #import "canvas/NodeTreeViewCanvas.h"
 #import "../gesture/DoubleTapGestureController.h"
 #import "../gesture/TwoFingerTapGestureController.h"
@@ -45,6 +46,7 @@
 @property(nonatomic, retain) NSArray* nodeNumbersViewConstraints;
 @property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
 @property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
+@property(nonatomic, retain) NodeTreeViewTapGestureController* nodeTreeViewTapGestureController;
 @end
 
 
@@ -89,6 +91,7 @@
   self.nodeNumbersView = nil;
   self.doubleTapGestureController = nil;
   self.twoFingerTapGestureController = nil;
+  self.nodeTreeViewTapGestureController = nil;
 
   NodeTreeViewMetrics* localReferenceMetrics = [_nodeTreeViewMetrics retain];
   NodeTreeViewCanvas* localReferenceCanvas = [_nodeTreeViewCanvas retain];
@@ -119,6 +122,7 @@
 {
   self.doubleTapGestureController = [[[DoubleTapGestureController alloc] init] autorelease];
   self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] init] autorelease];
+  self.nodeTreeViewTapGestureController = [[[NodeTreeViewTapGestureController alloc] init] autorelease];
 }
 
 #pragma mark - loadView and helpers
@@ -156,7 +160,7 @@
 // -----------------------------------------------------------------------------
 - (void) createSubviews
 {
-  self.nodeTreeView = [[[NodeTreeView alloc] initWithFrame:CGRectZero] autorelease];
+  self.nodeTreeView = [[[NodeTreeView alloc] initWithFrame:CGRectZero nodeTreeViewMetrics:self.nodeTreeViewMetrics] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -196,6 +200,7 @@
 {
   self.doubleTapGestureController.scrollView = self.nodeTreeView;
   self.twoFingerTapGestureController.scrollView = self.nodeTreeView;
+  self.nodeTreeViewTapGestureController.nodeTreeView = self.nodeTreeView;
 }
 
 #pragma mark - viewDidLayoutSubviews

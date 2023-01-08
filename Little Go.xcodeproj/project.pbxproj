@@ -794,6 +794,12 @@
 		CDEF3F4A140D5E4F002D9C1C /* NSStringAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA4AD113F71859001A2A94 /* NSStringAdditions.m */; };
 		CDF0C24528E9DEE4003278B4 /* ResizableStackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF0C24328E9DEE4003278B4 /* ResizableStackViewController.m */; };
 		CDF0C24628E9DEE4003278B4 /* ResizableStackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF0C24328E9DEE4003278B4 /* ResizableStackViewController.m */; };
+		CDF2462129679D2300350B42 /* NodeTreeViewTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF2461F29679D2300350B42 /* NodeTreeViewTapGestureController.m */; };
+		CDF2462229679D2300350B42 /* NodeTreeViewTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF2461F29679D2300350B42 /* NodeTreeViewTapGestureController.m */; };
+		CDF24625296852B700350B42 /* ChangeNodeSelectionAsyncCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF24624296852B700350B42 /* ChangeNodeSelectionAsyncCommand.m */; };
+		CDF24626296852B700350B42 /* ChangeNodeSelectionAsyncCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF24624296852B700350B42 /* ChangeNodeSelectionAsyncCommand.m */; };
+		CDF246292968638900350B42 /* ChangeGameVariationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF246282968638900350B42 /* ChangeGameVariationCommand.m */; };
+		CDF2462A2968638900350B42 /* ChangeGameVariationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF246282968638900350B42 /* ChangeGameVariationCommand.m */; };
 		CDF2462D296AE2BF00350B42 /* NodeTreeViewCanvasData.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF2462C296AE2BF00350B42 /* NodeTreeViewCanvasData.m */; };
 		CDF2462E296AE2BF00350B42 /* NodeTreeViewCanvasData.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF2462C296AE2BF00350B42 /* NodeTreeViewCanvasData.m */; };
 		CDF341C617270D0800AEFB20 /* LongRunningActionCounter.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF341C517270D0800AEFB20 /* LongRunningActionCounter.m */; };
@@ -1779,6 +1785,12 @@
 		CDEF3DD7140C55AB002D9C1C /* TableViewCellFactory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewCellFactory.m; sourceTree = "<group>"; };
 		CDF0C24328E9DEE4003278B4 /* ResizableStackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ResizableStackViewController.m; sourceTree = "<group>"; };
 		CDF0C24428E9DEE4003278B4 /* ResizableStackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ResizableStackViewController.h; sourceTree = "<group>"; };
+		CDF2461F29679D2300350B42 /* NodeTreeViewTapGestureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewTapGestureController.m; sourceTree = "<group>"; };
+		CDF2462029679D2300350B42 /* NodeTreeViewTapGestureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewTapGestureController.h; sourceTree = "<group>"; };
+		CDF24623296852B700350B42 /* ChangeNodeSelectionAsyncCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeNodeSelectionAsyncCommand.h; sourceTree = "<group>"; };
+		CDF24624296852B700350B42 /* ChangeNodeSelectionAsyncCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangeNodeSelectionAsyncCommand.m; sourceTree = "<group>"; };
+		CDF246272968638900350B42 /* ChangeGameVariationCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChangeGameVariationCommand.h; sourceTree = "<group>"; };
+		CDF246282968638900350B42 /* ChangeGameVariationCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangeGameVariationCommand.m; sourceTree = "<group>"; };
 		CDF2462B296AE2BF00350B42 /* NodeTreeViewCanvasData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewCanvasData.h; sourceTree = "<group>"; };
 		CDF2462C296AE2BF00350B42 /* NodeTreeViewCanvasData.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewCanvasData.m; sourceTree = "<group>"; };
 		CDF341C417270D0800AEFB20 /* LongRunningActionCounter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LongRunningActionCounter.h; sourceTree = "<group>"; };
@@ -3083,6 +3095,10 @@
 			children = (
 				CDB3ECD82843ADD6007512F6 /* ChangeAnnotationDataCommand.h */,
 				CDB3ECD92843ADD6007512F6 /* ChangeAnnotationDataCommand.m */,
+				CDF246272968638900350B42 /* ChangeGameVariationCommand.h */,
+				CDF246282968638900350B42 /* ChangeGameVariationCommand.m */,
+				CDF24623296852B700350B42 /* ChangeNodeSelectionAsyncCommand.h */,
+				CDF24624296852B700350B42 /* ChangeNodeSelectionAsyncCommand.m */,
 			);
 			path = node;
 			sourceTree = "<group>";
@@ -3213,6 +3229,8 @@
 				CDC8DEE828EDE20800619305 /* NodeTreeViewController.m */,
 				CDC8DEFD28EDF8E500619305 /* NodeTreeViewMetrics.h */,
 				CDC8DEFE28EDF8E600619305 /* NodeTreeViewMetrics.m */,
+				CDF2462029679D2300350B42 /* NodeTreeViewTapGestureController.h */,
+				CDF2461F29679D2300350B42 /* NodeTreeViewTapGestureController.m */,
 			);
 			path = nodetreeview;
 			sourceTree = "<group>";
@@ -4210,6 +4228,7 @@
 				CD10882513255AA600E83543 /* GoPoint.m in Sources */,
 				CDBB035B133537C8007C1C3E /* GoBoardRegion.m in Sources */,
 				CDBB039B133573CC007C1C3E /* GoVertex.m in Sources */,
+				CDF246292968638900350B42 /* ChangeGameVariationCommand.m in Sources */,
 				CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */,
 				CD1E6EAF2865F9BD00785E23 /* PanGestureHandler.m in Sources */,
 				CDEE19F919433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */,
@@ -4257,6 +4276,7 @@
 				CDAFAE25195A1DCA00EF84A9 /* TiledScrollView.m in Sources */,
 				CD05AC7B1425470B00214BBE /* DeleteGameCommand.m in Sources */,
 				CD7C578621F79C3000694520 /* ChangeUIAreaPlayModeCommand.m in Sources */,
+				CDF2462129679D2300350B42 /* NodeTreeViewTapGestureController.m in Sources */,
 				CD1E6EBB2867543E00785E23 /* EraseMarkupInRectanglePanGestureHandler.m in Sources */,
 				CD1A7EE4293B852E00013D80 /* NodeTreeViewCGLayerCache.m in Sources */,
 				CD05AC7C1425470B00214BBE /* NewGameCommand.m in Sources */,
@@ -4273,6 +4293,7 @@
 				CD46628A296474D300B58CC9 /* NodeTreeViewSettingsController.m in Sources */,
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
+				CDF24625296852B700350B42 /* ChangeNodeSelectionAsyncCommand.m in Sources */,
 				CD97FA141AED1BD600148C16 /* ResumePlayCommand.m in Sources */,
 				CDBCF1FC282FD5C700411CA6 /* KeyboardHeightAdjustment.m in Sources */,
 				CDCBA6D0183D8801003697E2 /* MagnifyingGlassSettingsController.m in Sources */,
@@ -4467,6 +4488,7 @@
 				CD85B5901401C137001715B8 /* GoGameTest.m in Sources */,
 				CD7C6A0A1AB462CB009EC5AD /* NavigationBarButtonModel.m in Sources */,
 				CD85B5951401C1A5001715B8 /* GoGame.m in Sources */,
+				CDF2462229679D2300350B42 /* NodeTreeViewTapGestureController.m in Sources */,
 				CD85B5981401C1B7001715B8 /* GoMove.m in Sources */,
 				CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */,
 				CD44E43629158C8800C1DB6B /* GoNodeTest.m in Sources */,
@@ -4516,6 +4538,7 @@
 				CDAF17161967FFD500271396 /* BoardViewMetrics.m in Sources */,
 				CDEF3BC2140A28B7002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDEF3F4A140D5E4F002D9C1C /* NSStringAdditions.m in Sources */,
+				CDF2462A2968638900350B42 /* ChangeGameVariationCommand.m in Sources */,
 				CDB5C5DB284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.m in Sources */,
 				CD7C69E01AA67C31009EC5AD /* MainUtility.m in Sources */,
 				CD85068727B95046000D2CCD /* GoNode.m in Sources */,
@@ -4712,6 +4735,7 @@
 				CDBCF1F9282FB1FD00411CA6 /* EditNodeDescriptionController.m in Sources */,
 				CDEE1A101946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */,
 				CD8EAABB1787232900D92BA3 /* VersionInfoUtilities.m in Sources */,
+				CDF24626296852B700350B42 /* ChangeNodeSelectionAsyncCommand.m in Sources */,
 				CD07270F180B292E0083B138 /* GenerateTerritoryStatisticsCommand.m in Sources */,
 				CD072711180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */,
 				CD072715180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,

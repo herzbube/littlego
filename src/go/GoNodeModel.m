@@ -220,7 +220,7 @@
   }];
 }
 
-#pragma mark - Public interface
+#pragma mark - Public interface - Variations
 
 // -----------------------------------------------------------------------------
 /// @brief Configures GoNodeModel with the main variation of the game tree, i.e.
@@ -237,8 +237,9 @@
 /// consists of @a node, all of @a node's ancestors up to the root node of the
 /// game tree, and all of @a node's @e firstChild descendants.
 ///
-/// Raises @e NSInvalidArgumentException if @a node is nil, or if @a node is not
-/// in the same game tree as the root node accessible via property @e rootNode.
+/// Raises @e NSInvalidArgumentException if @a node is @e nil, or if @a node is
+/// not in the same game tree as the root node accessible via property
+/// @e rootNode.
 // -----------------------------------------------------------------------------
 - (void) changeToVariationContainingNode:(GoNode*)node
 {
@@ -296,6 +297,46 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the GoNode object that is the nearest ancestor of @a node
+/// and that is also part of the current variation of the game tree. Returns
+/// @a node itself if it is part of the current variation. Returns the root
+/// node of the game tree if no nearer ancestor exists.
+///
+/// Raises @e NSInvalidArgumentException if @a node is @e nil, or if @a node is
+/// not in the same game tree as the root node accessible via property
+/// @e rootNode.
+// -----------------------------------------------------------------------------
+- (GoNode*) ancestorOfNodeInCurrentVariation:(GoNode*)node
+{
+  if (! node)
+  {
+    NSString* errorMessage = @"ancestorOfNodeInCurrentVariation: failed: node is nil object";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  while (node)
+  {
+    NSUInteger index = [_nodeList indexOfObject:node];
+    if (index != NSNotFound)
+      return node;
+    node = node.parent;
+  }
+
+  NSString* errorMessage = @"ancestorOfNodeInCurrentVariation: failed: node is not in the game tree that contains the current variation";
+  DDLogError(@"%@: %@", self, errorMessage);
+  NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                   reason:errorMessage
+                                                 userInfo:nil];
+  @throw exception;
+}
+
+#pragma mark - Public interface - Current variation
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the GoNode object located at index position @a index. The
 /// index position is a location within the sequence of nodes that make up the
 /// current variation. The root node is at index position 0.
@@ -311,10 +352,10 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns the index position at which the GoNode object @a node is
 /// located. The index position is a location within the sequence of nodes that
-/// make up the current variation. The root node is at index position 0.
+/// make up the current variation. The root node is at index position 0. Returns
+/// -1 if @a node is not in the current variation.
 ///
-/// Raises @e NSInvalidArgumentException if @a node is nil, or if @a node is
-/// not in the current variation.
+/// Raises @e NSInvalidArgumentException if @a node is @e nil.
 // -----------------------------------------------------------------------------
 - (int) indexOfNode:(GoNode*)node
 {
@@ -330,14 +371,7 @@
 
   NSUInteger index = [_nodeList indexOfObject:node];
   if (index == NSNotFound)
-  {
-    NSString* errorMessage = @"indexOfNode: failed: node not found";
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
+    return -1;
 
   // Cast is required because NSUInteger and int differ in size in 64-bit.
   // Cast is safe because this app was not made to handle more than
@@ -348,7 +382,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Adds the GoNode object @a node to the end of the current variation.
 ///
-/// Raises @e NSInvalidArgumentException if @a node is nil, or if @a node is
+/// Raises @e NSInvalidArgumentException if @a node is @e nil, or if @a node is
 /// already in the current variation.
 ///
 /// Invoking this method sets the GoGameDocument dirty flag.

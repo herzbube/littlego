@@ -114,6 +114,16 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a ChangeBoardPositionCommand object that will change the
+/// current board position to @a boardPosition and that will always execute
+/// synchronously.
+// -----------------------------------------------------------------------------
+- (id) initSynchronousExecutionWithBoardPosition:(int)boardPosition
+{
+  return [self initWithBoardPosition:boardPosition isAsynchronous:false];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a ChangeBoardPositionCommand object that will change the
 /// current board position to the first board position.
 // -----------------------------------------------------------------------------
 - (id) initWithFirstBoardPosition

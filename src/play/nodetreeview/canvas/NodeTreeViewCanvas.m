@@ -102,6 +102,7 @@
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(nodeTreeLayoutDidChange:) name:nodeTreeLayoutDidChange object:nil];
+  [center addObserver:self selector:@selector(currentGameVariationDidChange:) name:currentGameVariationDidChange object:nil];
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 
@@ -139,6 +140,18 @@
 // -----------------------------------------------------------------------------
 - (void) nodeTreeLayoutDidChange:(NSNotification*)notification
 {
+  self.canvasNeedsUpdate = true;
+  self.notificationToPostAfterCanvasUpdate = nodeTreeViewContentDidChange;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #currentGameVariationDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentGameVariationDidChange:(NSNotification*)notification
+{
+  // TODO xxx Find a way to update the selected lines properties only instead
+  // of brute-force recalculating the entire canvas
   self.canvasNeedsUpdate = true;
   self.notificationToPostAfterCanvasUpdate = nodeTreeViewContentDidChange;
   [self delayedUpdate];
@@ -263,9 +276,9 @@
 // -----------------------------------------------------------------------------
 - (NodeTreeViewCell*) cellAtPosition:(NodeTreeViewCellPosition*)position;
 {
-  NodeTreeViewCell* cell = [self.canvasData.cellsDictionary objectForKey:position];
-  if (cell)
-    return cell;
+  NSArray* tuple = [self.canvasData.cellsDictionary objectForKey:position];
+  if (tuple)
+    return tuple.firstObject;
 
   if (position.x < self.canvasSize.width && position.y < self.canvasSize.height)
     return [NodeTreeViewCell emptyCell];
@@ -273,6 +286,27 @@
     return nil;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoNode object that is represented by the cell that is
+/// located at position @a position. Returns @e nil if @a position denotes a
+/// position that is outside the canvas' bounds, or if the cell located at
+/// position @a position does not represent a GoNode.
+// -----------------------------------------------------------------------------
+- (GoNode*) nodeAtPosition:(NodeTreeViewCellPosition*)position
+{
+  NSArray* tuple = [self.canvasData.cellsDictionary objectForKey:position];
+  if (! tuple)
+    return nil;
+
+  NodeTreeViewBranchTuple* branchTuple = tuple.lastObject;
+  if (position.x < branchTuple->xPositionOfFirstCell ||
+      position.x > branchTuple->xPositionOfFirstCell + branchTuple->numberOfCellsForNode - 1)
+  {
+    return nil;
+  }
+
+  return branchTuple->node;
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a list of horizontally consecutive NodeTreeViewCellPosition
@@ -1130,7 +1164,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
       cell.linesSelectedGameVariation = cell.lines;
 
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfCell y:yPositionOfBranch];
-    cellsDictionary[position] = cell;
+    cellsDictionary[position] = @[cell, branchTuple];
   }
 
   return diagonalConnectionToBranchingLineEstablished;
@@ -1277,14 +1311,15 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
                         branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
                        cellsDictionary:(NSMutableDictionary*)cellsDictionary
 {
-  [self generateVerticalLineCellWithXPosition:xPositionOfVerticalLineCell
-                                    yPosition:yPosition
-                              lastChildBranch:lastChildBranch
-         nextChildBranchToHorizontallyConnect:nextChildBranchToHorizontallyConnect
-           nextChildBranchToDiagonallyConnect:nextChildBranchToDiagonallyConnect
-            childBranchInCurrentGameVariation:childBranchInCurrentGameVariation
-                               branchingStyle:branchingStyle
-                              cellsDictionary:cellsDictionary];
+  [self generateVerticalLineCellBelowBranchTuple:branchTuple
+                                       xPosition:xPositionOfVerticalLineCell
+                                       yPosition:yPosition
+                                 lastChildBranch:lastChildBranch
+            nextChildBranchToHorizontallyConnect:nextChildBranchToHorizontallyConnect
+              nextChildBranchToDiagonallyConnect:nextChildBranchToDiagonallyConnect
+               childBranchInCurrentGameVariation:childBranchInCurrentGameVariation
+                                  branchingStyle:branchingStyle
+                                 cellsDictionary:cellsDictionary];
 
   // If the branching node occupies more than one cell then we need to
   // create additional cells if there is a branch on the y-position
@@ -1305,14 +1340,15 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
 /// node represented by @a branchTuple. The cell is located at the specific
 /// y-position @a yPosition.
 // -----------------------------------------------------------------------------
-- (void) generateVerticalLineCellWithXPosition:(unsigned short)xPosition
-                                     yPosition:(unsigned short)yPosition
-                               lastChildBranch:(NodeTreeViewBranch*)lastChildBranch
-          nextChildBranchToHorizontallyConnect:(NodeTreeViewBranch*)nextChildBranchToHorizontallyConnect
-            nextChildBranchToDiagonallyConnect:(NodeTreeViewBranch*)nextChildBranchToDiagonallyConnect
-             childBranchInCurrentGameVariation:(NodeTreeViewBranch*)childBranchInCurrentGameVariation
-                                branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
-                               cellsDictionary:(NSMutableDictionary*)cellsDictionary
+- (void) generateVerticalLineCellBelowBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                                        xPosition:(unsigned short)xPosition
+                                        yPosition:(unsigned short)yPosition
+                                  lastChildBranch:(NodeTreeViewBranch*)lastChildBranch
+             nextChildBranchToHorizontallyConnect:(NodeTreeViewBranch*)nextChildBranchToHorizontallyConnect
+               nextChildBranchToDiagonallyConnect:(NodeTreeViewBranch*)nextChildBranchToDiagonallyConnect
+                childBranchInCurrentGameVariation:(NodeTreeViewBranch*)childBranchInCurrentGameVariation
+                                   branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+                                  cellsDictionary:(NSMutableDictionary*)cellsDictionary
 {
   NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
   NodeTreeViewCellLines linesSelectedGameVariation = NodeTreeViewCellLineNone;
@@ -1370,7 +1406,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
     cell.linesSelectedGameVariation = linesSelectedGameVariation;
 
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPosition];
-    cellsDictionary[position] = cell;
+    cellsDictionary[position] = @[cell, branchTuple];
   }
 }
 
@@ -1407,7 +1443,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
       cell.linesSelectedGameVariation = cell.lines;
 
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPosition];
-    cellsDictionary[position] = cell;
+    cellsDictionary[position] = @[cell, branchTuple];
   }
 }
 
@@ -1442,7 +1478,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
 
     unsigned short xPosition = branchTuple->xPositionOfFirstCell + indexOfCell;
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPositionOfBranch];
-    cellsDictionary[position] = cell;
+    cellsDictionary[position] = @[cell, branchTuple];
 
     if (xPosition > *highestXPosition)
       *highestXPosition = xPosition;
@@ -1827,9 +1863,12 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
   NSArray* positions = [self positionsForNode:node];
   for (NodeTreeViewCellPosition* position in positions)
   {
-    NodeTreeViewCell* cell = [cellsDictionary objectForKey:position];
-    if (cell)
+    NSArray* tuple = [cellsDictionary objectForKey:position];
+    if (tuple)
+    {
+      NodeTreeViewCell* cell = tuple.firstObject;
       cell.selected = newSelectedState;
+    }
   }
   return positions;
 }

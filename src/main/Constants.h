@@ -927,14 +927,19 @@ extern NSString* longRunningActionEnds;
 /// value is the old number of board positions, the second value is the new
 /// number of board positions.
 ///
-/// If board positions are discarded and the current board position is among
-/// the discarded board positions, then the current board position is changed
-/// before the discard takes place. #currentBoardPositionDidChange is therefore
-/// sent before this notification.
+/// If board positions are discarded from the current game variation, and the
+/// current board position is among the discarded board positions, then the
+/// current board position is changed before the discard takes place.
+/// #currentBoardPositionDidChange is therefore sent before this notification.
 ///
-/// If new board positions are added and the current board position changes to
-/// one of the new board positions, then this notification is sent first and
-/// #currentBoardPositionDidChange is sent afterwards.
+/// If new board positions are added to the current game variation, and the
+/// current board position changes to one of the new board positions, then this
+/// notification is sent first and #currentBoardPositionDidChange is sent
+/// afterwards.
+///
+/// If the number of board positions changes because the current game variation
+/// in GoNodeModel changes, then this notification is sent first and
+/// #currentGameVariationDidChange is sent afterwards.
 extern NSString* numberOfBoardPositionsDidChange;
 /// @brief Is sent to indicate that the current board position has changed.
 /// This notification is sent only after the state of all Go model objects
@@ -951,6 +956,34 @@ extern NSString* currentBoardPositionDidChange;
 /// GoBoardPosition changes from A to B. Observers can use this notification to
 /// power a progress meter.
 extern NSString* boardPositionChangeProgress;
+/// @brief Is sent to indicate that the current game variation in GoNodeModel
+/// is about to change.
+///
+/// This notification is followed by #currentGameVariationDidChange. In between
+/// #numberOfBoardPositionsDidChange may also be sent.
+extern NSString* currentGameVariationWillChange;
+/// @brief Is sent to indicate that the current game variation in GoNodeModel
+/// has changed.
+///
+/// This notification is preceded by #currentGameVariationWillChange.
+///
+/// Because GoBoardPosition reflects the board positions that are present in
+/// the current game variation in GoNodeModel, the following actions must be
+/// taken before this notification is sent:
+/// - Before the game variation is changed, the current board position must be
+///   made to match a node that is present in both the old and the new game
+///   variation. This notification may therefore be preceded by
+///   #currentBoardPositionDidChange. The current board position change can
+///   take place even before #currentGameVariationWillChange is sent, because
+///   the operation is not strictly related to the game variation change.
+/// - After the game variation is changed, GoBoardPosition must be updated with
+///   the number of board positions in the new game variation. The notification
+///   #numberOfBoardPositionsDidChange must be sent @b after
+///   #currentGameVariationWillChange is sent, because the game variation change
+///   and the number of board positions change can be seen as belonging to the
+///   same "transaction" that is bounded by the willChange/didChange
+///   notifications.
+extern NSString* currentGameVariationDidChange;
 /// @brief Is sent to indicate that players and profiles are about to be reset
 /// to their factory defaults. Is sent before #goGameWillCreate.
 extern NSString* playersAndProfilesWillReset;

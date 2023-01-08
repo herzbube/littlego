@@ -464,10 +464,29 @@
   if (coordinates.x < self.topLeftTreeCornerX || coordinates.y < self.topLeftTreeCornerY)
     return nil;
 
-  // TODO xxx Validate this is not out-of-bounds
   unsigned short x = floorf((coordinates.x - self.topLeftTreeCornerX) / self.nodeTreeViewCellSize.width);
+  if (x < self.topLeftCellX || x > self.bottomRightCellX)
+    return nil;
+
   unsigned short y = floorf((coordinates.y - self.topLeftTreeCornerY) / self.nodeTreeViewCellSize.height);
+  if (y < self.topLeftCellY || y > self.bottomRightCellY)
+    return nil;
+
   return [NodeTreeViewCellPosition positionWithX:x y:y];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoNode object that is represented by the cell closest to
+/// the view coordinates @a coordinates. Returns @e nil if there is no "closest"
+/// cell, or if the closest cell does not represent a GoNode.
+// -----------------------------------------------------------------------------
+- (GoNode*) nodeNear:(CGPoint)coordinates
+{
+  NodeTreeViewCellPosition* position = [self positionNear:coordinates];
+  if (! position)
+    return nil;
+
+  return [self.nodeTreeViewCanvas nodeAtPosition:position];
 }
 
 #pragma mark - Notification responders

@@ -18,12 +18,14 @@
 // Project includes
 #import "NodeTreeView.h"
 #import "NodeTreeTileView.h"
+#import "NodeTreeViewMetrics.h"
 
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for NodeTreeView.
 // -----------------------------------------------------------------------------
 @interface NodeTreeView()
+@property(nonatomic, assign) NodeTreeViewMetrics* nodeTreeViewMetrics;
 @end
 
 
@@ -32,16 +34,19 @@
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a NodeTreeView object with frame rectangle @a rect.
+/// @brief Initializes a NodeTreeView object with frame rectangle @a rect and
+/// metrics object @a nodeTreeViewMetrics.
 ///
 /// @note This is the designated initializer of NodeTreeView.
 // -----------------------------------------------------------------------------
-- (id) initWithFrame:(CGRect)rect
+- (id) initWithFrame:(CGRect)rect nodeTreeViewMetrics:(NodeTreeViewMetrics*)nodeTreeViewMetrics
 {
   // Call designated initializer of superclass (TiledScrollView)
   self = [super initWithFrame:rect tileViewClass:[NodeTreeTileView class]];
   if (! self)
     return nil;
+
+  self.nodeTreeViewMetrics = nodeTreeViewMetrics;
 
   return self;
 }
@@ -51,7 +56,23 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.nodeTreeViewMetrics = nil;
+
   [super dealloc];
+}
+
+#pragma mark - Public API
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoNode object that is represented by the cell closest to
+/// the view coordinates @a coordinates. Returns @e nil if there is no "closest"
+/// cell, or if the closest cell does not represent a GoNode.
+///
+/// @see NodeTreeViewMetrics::nodeNear:() for details.
+// -----------------------------------------------------------------------------
+- (GoNode*) nodeNear:(CGPoint)coordinates;
+{
+  return [self.nodeTreeViewMetrics nodeNear:coordinates];
 }
 
 @end

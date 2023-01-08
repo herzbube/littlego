@@ -21,7 +21,9 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The ChangeBoardPositionCommand class is responsible for changing the
-/// current board position to a new value.
+/// current board position to a new value within the current game variation.
+/// Use ChangeNodeSelectionCommand to change the current board position @b and
+/// also the current game variation.
 ///
 /// ChangeBoardPositionCommand is executed synchronously if the new board
 /// position is not more than a given maximum number of positions away from
@@ -33,8 +35,12 @@
 /// return an object that is an instance of a private subclass of
 /// ChangeBoardPositionCommand.
 ///
-/// initWithBoardPosition:() must be invoked with a valid board position,
-/// otherwise command execution will fail.
+/// @note initSynchronousExecutionWithBoardPosition:() can be used to enforce
+/// synchronous execution.
+///
+/// initWithBoardPosition:() and initSynchronousExecutionWithBoardPosition:()
+/// must be invoked with a valid board position, otherwise command execution
+/// will fail.
 ///
 /// initWithOffset:() is more permissive and can be invoked with an offset that
 /// would result in an invalid board position (i.e. a position before the first,
@@ -48,9 +54,10 @@
 /// - Synchronizes the GTP engine with the new board position
 /// - Recalculates the score for the new board position if scoring mode is
 ///   currently enabled
-/// - Performs a backup so that the board position can be restored when the
-///   application launches the next time. The backup can optionally be disabled
-///   by whoever executes ChangeBoardPositionCommand.
+/// - Marks the application state as having changed, so that the board position
+///   can be restored when the application launches the next time. Whoever
+///   executes ChangeBoardPositionCommand is responsible for actually saving the
+///   application state to disk.
 // -----------------------------------------------------------------------------
 @interface ChangeBoardPositionCommand : CommandBase
 {
@@ -59,6 +66,7 @@
 + (int) synchronousExecutionThreshold;
 
 - (id) initWithBoardPosition:(int)boardPosition;
+- (id) initSynchronousExecutionWithBoardPosition:(int)boardPosition;
 - (id) initWithFirstBoardPosition;
 - (id) initWithLastBoardPosition;
 - (id) initWithOffset:(int)offset;

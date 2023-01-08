@@ -441,6 +441,9 @@
 {
   GoNodeModel* nodeModel = [GoGame sharedGame].nodeModel;
   int indexOfNode = [nodeModel indexOfNode:node];
+  if (indexOfNode == -1)
+    return;
+
   // Indexes of nodes and board positions are the same
   [self.boardPositionsWithChangedData addObject:[NSNumber numberWithInt:indexOfNode]];
 

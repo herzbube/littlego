@@ -854,6 +854,16 @@
   GoNodeModel* nodeModel = game.nodeModel;
 
   int startIndexOfNode = [nodeModel indexOfNode:node] + 1;
+  if (-1 == startIndexOfNode)
+  {
+    NSString* errorMessage = @"indexOfNode: failed: node not found";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
   int numberOfNodes = nodeModel.numberOfNodes;
 
   for (int indexOfNode = startIndexOfNode; indexOfNode < numberOfNodes; indexOfNode++)

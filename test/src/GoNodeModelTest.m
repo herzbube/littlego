@@ -136,14 +136,70 @@
   XCTAssertEqual(nodeModel.numberOfNodes, 2);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
   XCTAssertEqual(rootNode, [nodeModel nodeAtIndex:0]);
+
+  XCTAssertThrowsSpecificNamed([nodeModel changeToVariationContainingNode:nil],
+                               NSException, NSInvalidArgumentException, @"changeToVariationContainingNode with nil object");
+  GoNode* nodeNotInGameTree = [GoNode node];
+  XCTAssertThrowsSpecificNamed([nodeModel changeToVariationContainingNode:nodeNotInGameTree],
+                               NSException, NSInvalidArgumentException, @"changeToVariationContainingNode with node that is not in the game tree");
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for testChangeToMainVariation() and
-/// testChangeToVariationContainingNode().
+/// @brief Exercises the ancestorOfNodeInCurrentVariation:() method.
+// -----------------------------------------------------------------------------
+- (void) testAncestorOfNodeInCurrentVariation
+{
+  GoNodeModel* nodeModel = m_game.nodeModel;
+  GoNode* rootNode = nodeModel.rootNode;
+
+  [self setupGameTree:rootNode];
+  [nodeModel changeToVariationContainingNode:rootNode];
+  GoNode* leafNode = nodeModel.leafNode;
+
+  GoNode* ancestor;
+
+  // Test if node is already in the current variation
+  ancestor = [nodeModel ancestorOfNodeInCurrentVariation:rootNode];
+  XCTAssertEqual(rootNode, ancestor);
+  ancestor = [nodeModel ancestorOfNodeInCurrentVariation:leafNode];
+  XCTAssertEqual(leafNode, ancestor);
+
+  // Test if node is not in current variation, and the variation is branching
+  // off from the root node
+  // => result must always be the root node
+  ancestor = [nodeModel ancestorOfNodeInCurrentVariation:rootNode.lastChild];
+  XCTAssertEqual(rootNode, ancestor);
+  ancestor = [nodeModel ancestorOfNodeInCurrentVariation:rootNode.lastChild.firstChild];
+  XCTAssertEqual(rootNode, ancestor);
+  ancestor = [nodeModel ancestorOfNodeInCurrentVariation:rootNode.lastChild.lastChild];
+  XCTAssertEqual(rootNode, ancestor);
+
+  // Test if node is not in current variation, and the variation is branching
+  // off from a node in the current variation that is not the root node
+  // => result must be the branching node
+  ancestor = [nodeModel ancestorOfNodeInCurrentVariation:rootNode.firstChild.lastChild];
+  XCTAssertEqual(rootNode.firstChild, ancestor);
+
+  XCTAssertThrowsSpecificNamed([nodeModel ancestorOfNodeInCurrentVariation:nil],
+                               NSException, NSInvalidArgumentException, @"ancestorOfNodeInCurrentVariation with nil object");
+  GoNode* nodeNotInGameTree = [GoNode node];
+  XCTAssertThrowsSpecificNamed([nodeModel ancestorOfNodeInCurrentVariation:nodeNotInGameTree],
+                               NSException, NSInvalidArgumentException, @"ancestorOfNodeInCurrentVariation with node that is not in the game tree");
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for testChangeToMainVariation(),
+/// testChangeToVariationContainingNode() and
+/// testAncestorOfNodeInCurrentVariation().
 // -----------------------------------------------------------------------------
 - (void) setupGameTree:(GoNode*)rootNode
 {
+  // Schema of tree being built:
+  // o--o--o--o
+  // |  +--o
+  // +--o--o
+  //    +--o
+
   GoNode* mainVariationNode0 = rootNode;
   GoNode* mainVariationNode1 = [GoNode node];
   GoNode* mainVariationNode2 = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];
@@ -157,6 +213,11 @@
   GoNode* secondaryVariationNode2 = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];;
   [secondaryVariationNode0 appendChild:secondaryVariationNode1];
   [secondaryVariationNode1 setFirstChild:secondaryVariationNode2];
+
+  GoNode* variation3Node2 = [GoNode node];
+  [mainVariationNode1 appendChild:variation3Node2];
+  GoNode* variation4Node2 = [GoNode node];
+  [secondaryVariationNode1 appendChild:variation4Node2];
 }
 
 // -----------------------------------------------------------------------------
@@ -205,11 +266,11 @@
   XCTAssertEqual(2, [nodeModel indexOfNode:node2]);
   XCTAssertEqual(3, [nodeModel indexOfNode:node3]);
 
+  GoNode* nodeNotInVariation = [GoNode node];
+  XCTAssertEqual(-1, [nodeModel indexOfNode:nodeNotInVariation]);
+
   XCTAssertThrowsSpecificNamed([nodeModel indexOfNode:nil],
                                NSException, NSInvalidArgumentException, @"indexOfNode with nil object");
-  GoNode* nodeNotInVariation = [GoNode node];
-  XCTAssertThrowsSpecificNamed([nodeModel indexOfNode:nodeNotInVariation],
-                               NSException, NSInvalidArgumentException, @"indexOfNode with node not in current variation");
 }
 
 // -----------------------------------------------------------------------------

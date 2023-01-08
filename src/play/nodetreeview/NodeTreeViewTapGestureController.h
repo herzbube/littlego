@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2012-2022 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,31 +15,19 @@
 // -----------------------------------------------------------------------------
 
 
-// Project includes
-#import "BaseTestCase.h"
+// Forward declarations
+@class NodeTreeView;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GoNodeModelTest class contains unit tests that exercise the
-/// GoNodeModel class.
+/// @brief The NodeTreeViewTapGestureController class is responsible for
+/// managing the tap gesture on the node tree view. Tapping is used to change
+/// the node selection.
 // -----------------------------------------------------------------------------
-@interface GoNodeModelTest : BaseTestCase
+@interface NodeTreeViewTapGestureController : NSObject <UIGestureRecognizerDelegate>
 {
 }
 
-- (void) testInitialState;
-- (void) testChangeToMainVariation;
-- (void) testChangeToVariationContainingNode;
-- (void) testAncestorOfNodeInCurrentVariation;
-- (void) testNodeAtIndex;
-- (void) testIndexOfNode;
-- (void) testAppendNode;
-- (void) testDiscardNodesFromIndex;
-- (void) testDiscardLeafNode;
-- (void) testDiscardAllNodes;
-- (void) testNumberOfNodes;
-- (void) testNumberOfMoves;
-- (void) testRootNode;
-- (void) testLeafNode;
+@property(nonatomic, assign) NodeTreeView* nodeTreeView;
 
 @end
