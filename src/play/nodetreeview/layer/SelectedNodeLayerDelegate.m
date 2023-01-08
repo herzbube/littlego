@@ -19,6 +19,7 @@
 #import "SelectedNodeLayerDelegate.h"
 #import "NodeTreeViewCGLayerCache.h"
 #import "NodeTreeViewDrawingHelper.h"
+#import "../NodeTreeViewMetrics.h"
 #import "../canvas/NodeTreeViewCanvas.h"
 #import "../canvas/NodeTreeViewCell.h"
 
@@ -138,6 +139,7 @@
 
   [self createLayersIfNecessaryWithContext:context];
 
+  bool condenseMoveNodes = self.nodeTreeViewMetrics.condenseMoveNodes;
   NodeTreeViewCGLayerCache* cache = [NodeTreeViewCGLayerCache sharedCache];
   CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
                                                          metrics:self.nodeTreeViewMetrics];
@@ -148,7 +150,7 @@
     if (! cell || ! cell.selected)
       continue;
 
-    if (cell.isMultipart)
+    if (! condenseMoveNodes || cell.isMultipart)
     {
       CGLayerRef layer = [cache layerOfType:NodeTreeViewLayerTypeNodeSelectionUncondensed];
       [NodeTreeViewDrawingHelper drawLayer:layer
