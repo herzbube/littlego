@@ -35,10 +35,11 @@
   if (! self)
     return nil;
 
-  self.branchingNodeMap = [NSMutableDictionary dictionary];
+  self.nodeMap = [NSMutableDictionary dictionary];
   self.branches = [NSMutableArray array];
   self.branchTuplesForMoveNumbers = [NSMutableArray array];
   self.highestMoveNumberThatAppearsInAtLeastTwoBranches = -1;
+  self.currentBoardPositionNode = nil;
   self.cellsDictionary = [NSMutableDictionary dictionary];
   self.highestXPosition = -1;
   self.highestYPosition = -1;
@@ -51,9 +52,10 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.branchingNodeMap = nil;
+  self.nodeMap = nil;
   self.branches = nil;
   self.branchTuplesForMoveNumbers = nil;
+  self.currentBoardPositionNode = nil;
   self.cellsDictionary = nil;
 
   [super dealloc];

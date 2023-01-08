@@ -15,6 +15,10 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class GoNode;
+
+
 // -----------------------------------------------------------------------------
 /// @brief The NodeTreeViewCanvasData class is a collection of data elements
 /// that are the result of the canvas calculation algorithm implemented by
@@ -28,12 +32,10 @@
 ///
 /// The dictionary key is an NSValue object that enapsulates a GoNode object
 /// (because GoNode does not support being used directly as a dictionary key).
-/// The GoNode is a branching node, i.e. a node that has multiple child nodes,
-/// each of which is the start of a new branch.
 ///
 /// The dictionary value is the NodeTreeViewBranchTuple object that represents
 /// the GoNode.
-@property(nonatomic, retain) NSMutableDictionary* branchingNodeMap;
+@property(nonatomic, retain) NSMutableDictionary* nodeMap;
 
 /// @brief Stores branches in depth-first order. Elements are
 /// NodeTreeViewBranch objects.
@@ -49,6 +51,10 @@
 /// or more branches. -1 if there are no moves that appear in two or more
 /// branches.
 @property(nonatomic, assign) int highestMoveNumberThatAppearsInAtLeastTwoBranches;
+
+/// @brief Stores a reference to the GoNode object whose content is shown by
+/// the current board position.
+@property(nonatomic, retain) GoNode* currentBoardPositionNode;
 
 /// @brief Maps NodeTreeViewCellPosition objects to NodeTreeViewCell objects.
 ///

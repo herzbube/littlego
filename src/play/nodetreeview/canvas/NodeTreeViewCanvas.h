@@ -16,6 +16,7 @@
 
 
 // Forward declarations
+@class GoNode;
 @class NodeTreeViewCell;
 @class NodeTreeViewCellPosition;
 @class NodeTreeViewModel;
@@ -90,6 +91,7 @@
 
 - (void) recalculateCanvas;
 - (NodeTreeViewCell*) cellAtPosition:(NodeTreeViewCellPosition*)position;
+- (NSArray*) positionsForNode:(GoNode*)node;
 - (NSArray*) selectedNodePositions;
 
 /// @brief The canvas size. Width and height are integral numbers.

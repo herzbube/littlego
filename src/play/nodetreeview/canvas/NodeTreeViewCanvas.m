@@ -238,13 +238,20 @@
     return;
   self.selectedNodePositionsNeedsUpdate = false;
 
-  // TODO xxx Instead of the brute-force approach to recalculate the entire
-  // canvas, find a way how to identify which existing cells represent a node
-  [self recalculateCanvasPrivate];
-  [self invalidateCachedSelectedNodePositions];
+  GoNode* previousCurrentBoardPositionNode = self.canvasData.currentBoardPositionNode;
+  [self updateSelectedStateOfCellsForNode:previousCurrentBoardPositionNode
+                               toNewState:false
+                          cellsDictionary:self.canvasData.cellsDictionary];
 
-  NSArray* selectedNodePositions = [self selectedNodePositions];
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeViewSelectedNodeDidChange object:selectedNodePositions];
+  GoNode* newCurrentBoardPositionNode =  [GoGame sharedGame].boardPosition.currentNode;
+  NSArray* positionsOfNewlySelectedCells = [self updateSelectedStateOfCellsForNode:newCurrentBoardPositionNode
+                                                                        toNewState:true
+                                                                   cellsDictionary:self.canvasData.cellsDictionary];
+
+  self.cachedSelectedNodePositions = positionsOfNewlySelectedCells;
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeViewSelectedNodeDidChange
+                                                      object:positionsOfNewlySelectedCells];
 }
 
 #pragma mark - Public API
@@ -266,6 +273,37 @@
     return nil;
 }
 
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a list of horizontally consecutive NodeTreeViewCellPosition
+/// objects that indicate which cells on the canvas display the node @a node.
+/// The list is empty if @a node is @e nil, or if no positions exist for
+/// @a node.
+// -----------------------------------------------------------------------------
+- (NSArray*) positionsForNode:(GoNode*)node
+{
+  NSMutableArray* positions = [NSMutableArray array];
+
+  if (! node)
+    return positions;
+
+  NSValue* key = [NSValue valueWithNonretainedObject:node];
+  NodeTreeViewBranchTuple* branchTuple = [self.canvasData.nodeMap objectForKey:key];
+  if (! branchTuple)
+    return positions;
+
+  unsigned short xPositionOfFirstCell = branchTuple->xPositionOfFirstCell;
+  unsigned short xPositionOfLastCell = branchTuple->xPositionOfFirstCell + branchTuple->numberOfCellsForNode - 1;
+  for (unsigned short xPosition = xPositionOfFirstCell; xPosition <= xPositionOfLastCell; xPosition++)
+  {
+    NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition
+                                                                               y:branchTuple->branch->yPosition];
+    [positions addObject:position];
+  }
+
+  return positions;
+}
+
 // -----------------------------------------------------------------------------
 /// @brief Returns a list of horizontally consecutive NodeTreeViewCellPosition
 /// objects that indicate which cells on the canvas display the node that is
@@ -276,18 +314,7 @@
   if (self.cachedSelectedNodePositions)
     return self.cachedSelectedNodePositions;
 
-  NSMutableArray* selectedNodePositions = [NSMutableArray array];
-
-  [self.canvasData.cellsDictionary enumerateKeysAndObjectsUsingBlock:^(NodeTreeViewCellPosition* position, NodeTreeViewCell* cell, BOOL* stop)
-  {
-    if (cell.isSelected)
-    {
-      [selectedNodePositions addObject:position];
-      if (selectedNodePositions.count == cell.parts)
-        *stop = true;
-    }
-  }];
-
+  NSArray* selectedNodePositions = [self positionsForNode:self.canvasData.currentBoardPositionNode];
   self.cachedSelectedNodePositions = selectedNodePositions;
   return selectedNodePositions;
 }
@@ -368,11 +395,11 @@
   int numberOfCellsOfMultipartCell = self.nodeTreeViewModel.numberOfCellsOfMultipartCell;
 
   NodeTreeViewCanvasData* canvasData = [[[NodeTreeViewCanvasData alloc] init] autorelease];
+  canvasData.currentBoardPositionNode = boardPosition.currentNode;
 
   // Step 1: Collect data about branches
   [self collectBranchDataInCanvasData:canvasData
                   fromNodeTreeInModel:nodeModel
-             currentBoardPositionNode:boardPosition.currentNode
                     condenseMoveNodes:condenseMoveNodes
          numberOfCellsOfMultipartCell:numberOfCellsOfMultipartCell
                        alignMoveNodes:alignMoveNodes];
@@ -403,15 +430,15 @@
 // -----------------------------------------------------------------------------
 - (void) collectBranchDataInCanvasData:(NodeTreeViewCanvasData*)canvasData
                    fromNodeTreeInModel:(GoNodeModel*)nodeModel
-              currentBoardPositionNode:(GoNode*)currentBoardPositionNode
                      condenseMoveNodes:(bool)condenseMoveNodes
           numberOfCellsOfMultipartCell:(int)numberOfCellsOfMultipartCell
                         alignMoveNodes:(bool)alignMoveNodes
 {
   int highestMoveNumberThatAppearsInAtLeastTwoBranches = canvasData.highestMoveNumberThatAppearsInAtLeastTwoBranches;
   NSMutableArray* branchTuplesForMoveNumbers = canvasData.branchTuplesForMoveNumbers;
-  NSMutableDictionary* branchingNodeMap = canvasData.branchingNodeMap;
+  NSMutableDictionary* nodeMap = canvasData.nodeMap;
   NSMutableArray* branches = canvasData.branches;
+  GoNode* currentBoardPositionNode = canvasData.currentBoardPositionNode;
 
   NSMutableArray* stack = [NSMutableArray array];
 
@@ -436,7 +463,7 @@
       {
         branch = [self createBranchWithParentBranch:parentBranch
                                   firstNodeOfBranch:currentNode
-                                   branchingNodeMap:branchingNodeMap];
+                                            nodeMap:nodeMap];
 
         [branches addObject:branch];
         indexOfBranch = branches.count - 1;
@@ -475,11 +502,8 @@
         previousBranchTupleInBranch->nextBranchTupleInBranch = branchTuple;
       previousBranchTupleInBranch = branchTuple;
 
-      if (currentNode.isBranchingNode)
-      {
-        NSValue* key = [NSValue valueWithNonretainedObject:currentNode];
-        branchingNodeMap[key] = branchTuple;
-      }
+      NSValue* key = [NSValue valueWithNonretainedObject:currentNode];
+      nodeMap[key] = branchTuple;
 
       xPosition += branchTuple->numberOfCellsForNode;
 
@@ -518,7 +542,7 @@
 
   canvasData.highestMoveNumberThatAppearsInAtLeastTwoBranches = highestMoveNumberThatAppearsInAtLeastTwoBranches;
   canvasData.branchTuplesForMoveNumbers = branchTuplesForMoveNumbers;
-  canvasData.branchingNodeMap = branchingNodeMap;
+  canvasData.nodeMap = nodeMap;
   canvasData.branches = branches;
 }
 
@@ -529,7 +553,7 @@
 // -----------------------------------------------------------------------------
 - (NodeTreeViewBranch*) createBranchWithParentBranch:(NodeTreeViewBranch*)parentBranch
                                    firstNodeOfBranch:(GoNode*)firstNodeOfBranch
-                                    branchingNodeMap:(NSMutableDictionary*)branchingNodeMap
+                                             nodeMap:(NSMutableDictionary*)nodeMap
 {
   // The branchTuples member variable is initialized by the
   // NodeTreeViewBranch initializer
@@ -550,7 +574,7 @@
   [self linkNewChildBranch:branch
            toBranchingNode:firstNodeOfBranch.parent
             inParentBranch:parentBranch
-          branchingNodeMap:branchingNodeMap];
+                   nodeMap:nodeMap];
 
   [self linkNewChildBranch:branch
             toParentBranch:parentBranch];
@@ -566,10 +590,10 @@
 - (void) linkNewChildBranch:(NodeTreeViewBranch*)newChildBranch
             toBranchingNode:(GoNode*)branchingNode
              inParentBranch:(NodeTreeViewBranch*)parentBranch
-           branchingNodeMap:(NSMutableDictionary*)branchingNodeMap
+                    nodeMap:(NSMutableDictionary*)nodeMap
 {
   NSValue* key = [NSValue valueWithNonretainedObject:branchingNode];
-  NodeTreeViewBranchTuple* branchingNodeTuple = [branchingNodeMap objectForKey:key];
+  NodeTreeViewBranchTuple* branchingNodeTuple = [nodeMap objectForKey:key];
 
   newChildBranch->parentBranchTupleBranchingNode = branchingNodeTuple;
 
@@ -1789,6 +1813,26 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 }
 
 #pragma mark - Private API - Other methods
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the @e selected property value of those NodeTreeViewCell
+/// objects that display the node @a node on the canvas. Returns a list of
+/// NodeTreeViewCellPosition objects that refer to the canvas positions of the
+/// updated cells.
+// -----------------------------------------------------------------------------
+- (NSArray*) updateSelectedStateOfCellsForNode:(GoNode*)node
+                                    toNewState:(bool)newSelectedState
+                               cellsDictionary:(NSDictionary*)cellsDictionary
+{
+  NSArray* positions = [self positionsForNode:node];
+  for (NodeTreeViewCellPosition* position in positions)
+  {
+    NodeTreeViewCell* cell = [cellsDictionary objectForKey:position];
+    if (cell)
+      cell.selected = newSelectedState;
+  }
+  return positions;
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Invalidates the cached value returned by selectedNodePositions().
