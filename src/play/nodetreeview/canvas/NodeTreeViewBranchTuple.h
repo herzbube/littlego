@@ -23,6 +23,11 @@
 // -----------------------------------------------------------------------------
 /// @brief The NodeTreeViewBranchTuple class is a class that collects
 /// information about a node and its representation on the canvas.
+///
+/// All member variables of NodeTreeViewBranchTuple are publicly accessible,
+/// i.e. without intermediate property getter/setter methods, so that the
+/// expensive canvas calculation algorithm can operate as fast and efficient as
+/// possible.
 // -----------------------------------------------------------------------------
 @interface NodeTreeViewBranchTuple : NSObject
 {

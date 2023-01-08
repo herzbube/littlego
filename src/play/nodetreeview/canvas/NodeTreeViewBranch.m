@@ -19,4 +19,40 @@
 #import "NodeTreeViewBranch.h"
 
 @implementation NodeTreeViewBranch
+
+#pragma mark - Initialization and deallocation
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a NodeTreeViewBranch object.
+///
+/// @note This is the designated initializer of NodeTreeViewBranch.
+// -----------------------------------------------------------------------------
+- (id) init
+{
+  // Call designated initializer of superclass (NSObject)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  // Only initialize the one member variable that needs to be retained, so that
+  // we can keep memory management inside this class. Whoever is creating the
+  // NodeTreeViewBranch object is responsible for initializing the other
+  // member variables.
+  self->branchTuples = [NSMutableArray array];
+  [self->branchTuples retain];
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this NodeTreeViewBranch object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  [self->branchTuples release];
+  self->branchTuples = nil;
+
+  [super dealloc];
+}
+
 @end

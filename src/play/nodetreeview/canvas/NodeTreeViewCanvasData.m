@@ -16,16 +16,17 @@
 
 
 // Project includes
-#import "NodeTreeViewBranchTuple.h"
+#import "NodeTreeViewCanvasData.h"
 
-@implementation NodeTreeViewBranchTuple
+
+@implementation NodeTreeViewCanvasData
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a NodeTreeViewBranchTuple object.
+/// @brief Initializes a NodeTreeViewCanvasData object.
 ///
-/// @note This is the designated initializer of NodeTreeViewBranchTuple.
+/// @note This is the designated initializer of NodeTreeViewCanvasData.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -34,26 +35,26 @@
   if (! self)
     return nil;
 
-  // Only initialize the one member variable that needs to be retained, so that
-  // we can keep memory management inside this class. Whoever is creating the
-  // NodeTreeViewBranchTuple object is responsible for initializing the other
-  // member variables.
-  self->childBranches = [NSMutableArray array];
-  [self->childBranches retain];
+  self.branchingNodeMap = [NSMutableDictionary dictionary];
+  self.branches = [NSMutableArray array];
+  self.branchTuplesForMoveNumbers = [NSMutableArray array];
+  self.highestMoveNumberThatAppearsInAtLeastTwoBranches = -1;
+  self.cellsDictionary = [NSMutableDictionary dictionary];
+  self.highestXPosition = -1;
+  self.highestYPosition = -1;
 
   return self;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this NodeTreeViewBranchTuple object.
+/// @brief Deallocates memory allocated by this NodeTreeViewCanvasData object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  if (self->childBranches)
-  {
-    [self->childBranches release];
-    self->childBranches = nil;
-  }
+  self.branchingNodeMap = nil;
+  self.branches = nil;
+  self.branchTuplesForMoveNumbers = nil;
+  self.cellsDictionary = nil;
 
   [super dealloc];
 }

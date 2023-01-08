@@ -22,6 +22,11 @@
 // -----------------------------------------------------------------------------
 /// @brief The NodeTreeViewBranch class represents a branch to be drawn in the
 /// node tree view.
+///
+/// All member variables of NodeTreeViewBranch are publicly accessible,
+/// i.e. without intermediate property getter/setter methods, so that the
+/// expensive canvas calculation algorithm can operate as fast and efficient as
+/// possible.
 // -----------------------------------------------------------------------------
 @interface NodeTreeViewBranch : NSObject
 {

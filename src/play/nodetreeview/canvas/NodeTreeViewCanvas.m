@@ -17,9 +17,10 @@
 
 // Project includes
 #import "NodeTreeViewCanvas.h"
-#import "NodeTreeViewCanvasAdditions.h"
 #import "NodeTreeViewBranch.h"
 #import "NodeTreeViewBranchTuple.h"
+#import "NodeTreeViewCanvasAdditions.h"
+#import "NodeTreeViewCanvasData.h"
 #import "NodeTreeViewCell.h"
 #import "NodeTreeViewCellPosition.h"
 #import "../../model/NodeTreeViewModel.h"
@@ -33,40 +34,6 @@
 #import "../../../shared/LongRunningActionCounter.h"
 
 
-/// @brief Collects information about branches and nodes that make up those
-/// branches.
-struct CollectBranchDataResult
-{
-  /// @brief Maps GoNode objects to NodeTreeViewBranchTuple objects.
-  ///
-  /// The dictionary key is an NSValue object that enapsulates a GoNode object
-  /// (because GoNode does not support being used directly as a dictionary key).
-  /// The GoNode is a branching node, i.e. a node that has multiple child nodes,
-  /// each of which is the start of a new branch.
-  ///
-  /// The dictionary value is the NodeTreeViewBranchTuple object that represents
-  /// the GoNode.
-  NSMutableDictionary* branchingNodeMap;
-  /// @brief Stores branches in depth-first order. Elements are
-  /// NodeTreeViewBranch objects.
-  NSMutableArray* branches;
-  /// @brief Index position = Move number - 1 (e.g. first move is at index
-  /// position 0). Element at index position = List of NodeTreeViewBranchTuple
-  /// objects, each of which represents a node in a different branch that
-  /// refers to a move with the same move number.
-  NSMutableArray* branchTuplesForMoveNumbers;
-  int highestMoveNumberThatAppearsInAtLeastTwoBranches;
-};
-
-/// @brief Collects the multiple pieces of information that form the result of
-/// generating cells at the end of the canvas calculation process.
-struct GenerateCellsResult
-{
-  NSMutableDictionary* cellsDictionary;
-  unsigned short highestXPosition;
-};
-
-
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for NodeTreeViewCanvas.
 // -----------------------------------------------------------------------------
@@ -74,7 +41,7 @@ struct GenerateCellsResult
 @property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
 @property(nonatomic, assign) bool canvasNeedsUpdate;
 @property(nonatomic, retain) NSString* notificationToPostAfterCanvasUpdate;
-@property(nonatomic, retain) NSMutableDictionary* cellsDictionary;
+@property(nonatomic, retain) NodeTreeViewCanvasData* canvasData;
 @property(nonatomic, assign) bool selectedNodePositionsNeedsUpdate;
 @property(nonatomic, retain) NSArray* cachedSelectedNodePositions;
 @end
@@ -89,7 +56,7 @@ struct GenerateCellsResult
 ///
 /// @note This is the designated initializer of NodeTreeViewCanvas.
 // -----------------------------------------------------------------------------
-- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel;
+- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -101,7 +68,7 @@ struct GenerateCellsResult
   self.canvasNeedsUpdate = false;
   self.notificationToPostAfterCanvasUpdate = nil;
   self.canvasSize = CGSizeZero;
-  self.cellsDictionary = [NSMutableDictionary dictionary];
+  self.canvasData = [[[NodeTreeViewCanvasData alloc] init] autorelease];
   self.selectedNodePositionsNeedsUpdate = false;
   self.cachedSelectedNodePositions = nil;
 
@@ -119,7 +86,7 @@ struct GenerateCellsResult
 
   self.notificationToPostAfterCanvasUpdate = nil;
   self.nodeTreeViewModel = nil;
-  self.cellsDictionary = nil;
+  self.canvasData = nil;
   self.cachedSelectedNodePositions = nil;
 
   [super dealloc];
@@ -289,7 +256,7 @@ struct GenerateCellsResult
 // -----------------------------------------------------------------------------
 - (NodeTreeViewCell*) cellAtPosition:(NodeTreeViewCellPosition*)position;
 {
-  NodeTreeViewCell* cell = [self.cellsDictionary objectForKey:position];
+  NodeTreeViewCell* cell = [self.canvasData.cellsDictionary objectForKey:position];
   if (cell)
     return cell;
 
@@ -311,7 +278,7 @@ struct GenerateCellsResult
 
   NSMutableArray* selectedNodePositions = [NSMutableArray array];
 
-  [self.cellsDictionary enumerateKeysAndObjectsUsingBlock:^(NodeTreeViewCellPosition* position, NodeTreeViewCell* cell, BOOL* stop)
+  [self.canvasData.cellsDictionary enumerateKeysAndObjectsUsingBlock:^(NodeTreeViewCellPosition* position, NodeTreeViewCell* cell, BOOL* stop)
   {
     if (cell.isSelected)
     {
@@ -400,30 +367,32 @@ struct GenerateCellsResult
   enum NodeTreeViewBranchingStyle branchingStyle = self.nodeTreeViewModel.branchingStyle;
   int numberOfCellsOfMultipartCell = self.nodeTreeViewModel.numberOfCellsOfMultipartCell;
 
+  NodeTreeViewCanvasData* canvasData = [[[NodeTreeViewCanvasData alloc] init] autorelease];
+
   // Step 1: Collect data about branches
-  struct CollectBranchDataResult collectBranchDataResult = [self collectBranchDataFromNodeTreeInModel:nodeModel
-                                                                             currentBoardPositionNode:boardPosition.currentNode
-                                                                                    condenseMoveNodes:condenseMoveNodes
-                                                                         numberOfCellsOfMultipartCell:numberOfCellsOfMultipartCell
-                                                                                       alignMoveNodes:alignMoveNodes];
+  [self collectBranchDataInCanvasData:canvasData
+                  fromNodeTreeInModel:nodeModel
+             currentBoardPositionNode:boardPosition.currentNode
+                    condenseMoveNodes:condenseMoveNodes
+         numberOfCellsOfMultipartCell:numberOfCellsOfMultipartCell
+                       alignMoveNodes:alignMoveNodes];
 
   // Step 2: Align moves nodes
   if (alignMoveNodes)
   {
-    [self alignMoveNodes:collectBranchDataResult];
+    [self alignMoveNodes:canvasData];
   }
 
   // Step 3: Determine y-coordinates of branches
-  unsigned short highestYPosition = [self determineYCoordinatesOfBranches:collectBranchDataResult
-                                                           branchingStyle:branchingStyle];
+  [self determineYCoordinatesOfBranches:canvasData
+                         branchingStyle:branchingStyle];
 
   // Step 4: Generate cells
-  struct GenerateCellsResult generateCellsResult = [self generateCells:collectBranchDataResult
-                                                      highestYPosition:highestYPosition
-                                                        branchingStyle:branchingStyle];
+  [self generateCells:canvasData
+       branchingStyle:branchingStyle];
 
-  self.cellsDictionary = generateCellsResult.cellsDictionary;
-  self.canvasSize = CGSizeMake(generateCellsResult.highestXPosition + 1, highestYPosition + 1);
+  self.canvasData = canvasData;
+  self.canvasSize = CGSizeMake(canvasData.highestXPosition + 1, canvasData.highestYPosition + 1);
 }
 
 #pragma mark - Private API - Canvas calculation - Part 1: Collect branch data
@@ -432,17 +401,17 @@ struct GenerateCellsResult
 /// @brief Iterates depth-first over the tree of nodes provided by GoNodeModel
 /// to collect information about branches.
 // -----------------------------------------------------------------------------
-- (struct CollectBranchDataResult) collectBranchDataFromNodeTreeInModel:(GoNodeModel*)nodeModel
-                                               currentBoardPositionNode:(GoNode*)currentBoardPositionNode
-                                                      condenseMoveNodes:(bool)condenseMoveNodes
-                                           numberOfCellsOfMultipartCell:(int)numberOfCellsOfMultipartCell
-                                                         alignMoveNodes:(bool)alignMoveNodes
+- (void) collectBranchDataInCanvasData:(NodeTreeViewCanvasData*)canvasData
+                   fromNodeTreeInModel:(GoNodeModel*)nodeModel
+              currentBoardPositionNode:(GoNode*)currentBoardPositionNode
+                     condenseMoveNodes:(bool)condenseMoveNodes
+          numberOfCellsOfMultipartCell:(int)numberOfCellsOfMultipartCell
+                        alignMoveNodes:(bool)alignMoveNodes
 {
-  struct CollectBranchDataResult collectBranchDataResult;
-  collectBranchDataResult.highestMoveNumberThatAppearsInAtLeastTwoBranches = -1;
-  collectBranchDataResult.branchTuplesForMoveNumbers = [NSMutableArray array];
-  collectBranchDataResult.branchingNodeMap = [NSMutableDictionary dictionary];
-  collectBranchDataResult.branches = [NSMutableArray array];
+  int highestMoveNumberThatAppearsInAtLeastTwoBranches = canvasData.highestMoveNumberThatAppearsInAtLeastTwoBranches;
+  NSMutableArray* branchTuplesForMoveNumbers = canvasData.branchTuplesForMoveNumbers;
+  NSMutableDictionary* branchingNodeMap = canvasData.branchingNodeMap;
+  NSMutableArray* branches = canvasData.branches;
 
   NSMutableArray* stack = [NSMutableArray array];
 
@@ -467,12 +436,14 @@ struct GenerateCellsResult
       {
         branch = [self createBranchWithParentBranch:parentBranch
                                   firstNodeOfBranch:currentNode
-                                   branchingNodeMap:collectBranchDataResult.branchingNodeMap];
+                                   branchingNodeMap:branchingNodeMap];
 
-        [collectBranchDataResult.branches addObject:branch];
-        indexOfBranch = collectBranchDataResult.branches.count - 1;
+        [branches addObject:branch];
+        indexOfBranch = branches.count - 1;
       }
 
+      // The childBranches member variable is initialized by the
+      // NodeTreeViewBranchTuple initializer
       NodeTreeViewBranchTuple* branchTuple = [[[NodeTreeViewBranchTuple alloc] init] autorelease];
       branchTuple->xPositionOfFirstCell = xPosition;
       branchTuple->node = currentNode;
@@ -481,7 +452,6 @@ struct GenerateCellsResult
       // This assumes that numberOfCellsForNode is always an uneven number
       branchTuple->indexOfCenterCell = floorf(branchTuple->numberOfCellsForNode / 2.0);
       branchTuple->branch = branch;
-      branchTuple->childBranches = nil;
       branchTuple->nodeIsCurrentBoardPositionNode = (currentNode == currentBoardPositionNode);
 
       if (currentNode == nodeFromCurrentGameVariation)
@@ -508,7 +478,7 @@ struct GenerateCellsResult
       if (currentNode.isBranchingNode)
       {
         NSValue* key = [NSValue valueWithNonretainedObject:currentNode];
-        collectBranchDataResult.branchingNodeMap[key] = branchTuple;
+        branchingNodeMap[key] = branchTuple;
       }
 
       xPosition += branchTuple->numberOfCellsForNode;
@@ -517,7 +487,7 @@ struct GenerateCellsResult
       {
         GoMove* move = currentNode.goMove;
         if (move)
-          [self collectDataFromMove:move branch:branch branchTuple:branchTuple collectBranchDataResult:&collectBranchDataResult];
+          [self collectDataFromMove:move branch:branch branchTuple:branchTuple branchTuplesForMoveNumbers:branchTuplesForMoveNumbers highestMoveNumberThatAppearsInAtLeastTwoBranches:&highestMoveNumberThatAppearsInAtLeastTwoBranches];
       }
 
       [stack addObject:branchTuple];
@@ -546,7 +516,10 @@ struct GenerateCellsResult
     }
   }
 
-  return collectBranchDataResult;
+  canvasData.highestMoveNumberThatAppearsInAtLeastTwoBranches = highestMoveNumberThatAppearsInAtLeastTwoBranches;
+  canvasData.branchTuplesForMoveNumbers = branchTuplesForMoveNumbers;
+  canvasData.branchingNodeMap = branchingNodeMap;
+  canvasData.branches = branches;
 }
 
 // -----------------------------------------------------------------------------
@@ -558,9 +531,9 @@ struct GenerateCellsResult
                                    firstNodeOfBranch:(GoNode*)firstNodeOfBranch
                                     branchingNodeMap:(NSMutableDictionary*)branchingNodeMap
 {
+  // The branchTuples member variable is initialized by the
+  // NodeTreeViewBranch initializer
   NodeTreeViewBranch* branch = [[[NodeTreeViewBranch alloc] init] autorelease];
-
-  branch->branchTuples = [NSMutableArray array];
   branch->lastChildBranch = nil;
   branch->previousSiblingBranch = nil;
   branch->parentBranch = parentBranch;
@@ -600,9 +573,6 @@ struct GenerateCellsResult
 
   newChildBranch->parentBranchTupleBranchingNode = branchingNodeTuple;
 
-  if (! branchingNodeTuple->childBranches)
-    branchingNodeTuple->childBranches = [NSMutableArray array];
-
   [branchingNodeTuple->childBranches addObject:newChildBranch];
 }
 
@@ -636,50 +606,53 @@ struct GenerateCellsResult
 /// @brief Collects data about @a move, which appears in @a branch in the node
 /// represented by @a branchTuple, and stores the data in @a moveData.
 // -----------------------------------------------------------------------------
-- (void) collectDataFromMove:(GoMove*)move
-                      branch:(NodeTreeViewBranch*)branch
-                 branchTuple:(NodeTreeViewBranchTuple*)branchTuple
-     collectBranchDataResult:(struct CollectBranchDataResult*)collectBranchDataResult
+                    - (void) collectDataFromMove:(GoMove*)move
+                                          branch:(NodeTreeViewBranch*)branch
+                                     branchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                      branchTuplesForMoveNumbers:(NSMutableArray*)branchTuplesForMoveNumbers
+highestMoveNumberThatAppearsInAtLeastTwoBranches:(int*)highestMoveNumberThatAppearsInAtLeastTwoBranches
 {
   NSMutableArray* branchTuplesForMoveNumber;
 
   int moveNumber = move.moveNumber;
-  if (moveNumber > collectBranchDataResult->branchTuplesForMoveNumbers.count)
+  if (moveNumber > branchTuplesForMoveNumbers.count)
   {
     branchTuplesForMoveNumber = [NSMutableArray array];
-    [collectBranchDataResult->branchTuplesForMoveNumbers addObject:branchTuplesForMoveNumber];
+    [branchTuplesForMoveNumbers addObject:branchTuplesForMoveNumber];
   }
   else
   {
-    branchTuplesForMoveNumber = [collectBranchDataResult->branchTuplesForMoveNumbers objectAtIndex:moveNumber - 1];
+    branchTuplesForMoveNumber = [branchTuplesForMoveNumbers objectAtIndex:moveNumber - 1];
   }
 
   [branchTuplesForMoveNumber addObject:branchTuple];
 
   if (branchTuplesForMoveNumber.count > 1)
   {
-    if (moveNumber > collectBranchDataResult->highestMoveNumberThatAppearsInAtLeastTwoBranches)
-      collectBranchDataResult->highestMoveNumberThatAppearsInAtLeastTwoBranches = moveNumber;
+    if (moveNumber > *highestMoveNumberThatAppearsInAtLeastTwoBranches)
+      *highestMoveNumberThatAppearsInAtLeastTwoBranches = moveNumber;
   }
 }
 
 #pragma mark - Private API - Canvas calculation - Part 2: Align move nodes
 
 // -----------------------------------------------------------------------------
-/// @brief Iterates over all moves that are present in
-/// @a collectBranchDataResult and aligns the x-position of the first cell that
-/// represents the node of each move. In case of multipart cells, the alignment
-/// is made along the center cell.
+/// @brief Iterates over all moves that are present in @a canvasData and aligns
+/// the x-position of the first cell that represents the node of each move. In
+/// case of multipart cells, the alignment is made along the center cell.
 // -----------------------------------------------------------------------------
-- (void) alignMoveNodes:(struct CollectBranchDataResult)collectBranchDataResult
+- (void) alignMoveNodes:(NodeTreeViewCanvasData*)canvasData
 {
+  int highestMoveNumberThatAppearsInAtLeastTwoBranches = canvasData.highestMoveNumberThatAppearsInAtLeastTwoBranches;
+  NSMutableArray* branchTuplesForMoveNumbers = canvasData.branchTuplesForMoveNumbers;
+
   // Optimization: We only have to align moves that appear in at least two
   // branches.
   for (int indexOfMove = 0;
-       indexOfMove < collectBranchDataResult.highestMoveNumberThatAppearsInAtLeastTwoBranches;
+       indexOfMove < highestMoveNumberThatAppearsInAtLeastTwoBranches;
        indexOfMove++)
   {
-    NSMutableArray* branchTuplesForMoveNumber = [collectBranchDataResult.branchTuplesForMoveNumbers objectAtIndex:indexOfMove];
+    NSMutableArray* branchTuplesForMoveNumber = [branchTuplesForMoveNumbers objectAtIndex:indexOfMove];
 
     // If the move appears in only a single branch there can be no
     // mis-alignment => we can go to the next move
@@ -801,7 +774,7 @@ struct GenerateCellsResult
   {
     branchTupleToShift->xPositionOfFirstCell += alignOffset;
 
-    if (branchTupleToShift->childBranches)
+    if (branchTupleToShift->childBranches.count > 0)
       [branchesToShift addObjectsFromArray:branchTupleToShift->childBranches];
   };
 
@@ -845,16 +818,19 @@ struct GenerateCellsResult
 #pragma mark - Private API - Canvas calculation - Part 3: Determine y-coordinates
 
 // -----------------------------------------------------------------------------
-/// @brief Iterates over the branches that are present in
-/// @a collectBranchDataResult and determines the y-position of each branch.
-/// Returns the highest y-position found.
+/// @brief Iterates over the branches that are present in @a canvasData and
+/// determines the y-position of each branch. Stores the highest y-position
+/// found in the @e height element of the @a canvasSize property in
+/// @a canvasData.
 // -----------------------------------------------------------------------------
-- (unsigned short) determineYCoordinatesOfBranches:(struct CollectBranchDataResult)collectBranchDataResult
-                                    branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+- (void) determineYCoordinatesOfBranches:(NodeTreeViewCanvasData*)canvasData
+                          branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
 {
+  NSMutableArray* branches = canvasData.branches;
+
   // In the worst case each branch is on its own y-position => create the array
   // to cater for this worst case
-  NSUInteger numberOfBranches = collectBranchDataResult.branches.count;
+  NSUInteger numberOfBranches = branches.count;
   unsigned short lowestOccupiedXPositionOfRow[numberOfBranches];
   for (NSUInteger indexOfBranch = 0; indexOfBranch < numberOfBranches; indexOfBranch++)
     lowestOccupiedXPositionOfRow[indexOfBranch] = -1;
@@ -863,7 +839,7 @@ struct GenerateCellsResult
 
   NSMutableArray* stack = [NSMutableArray array];
 
-  NodeTreeViewBranch* currentBranch = collectBranchDataResult.branches.firstObject;
+  NodeTreeViewBranch* currentBranch = branches.firstObject;
 
   while (true)
   {
@@ -895,7 +871,7 @@ struct GenerateCellsResult
     }
   }
 
-  return highestYPosition;
+  canvasData.highestYPosition = highestYPosition;
 }
 
 // -----------------------------------------------------------------------------
@@ -966,8 +942,7 @@ struct GenerateCellsResult
 
 // -----------------------------------------------------------------------------
 /// @brief Iterates over all branches and nodes that are present in
-/// @a collectBranchDataResult and generates cells to represent the nodes on
-/// the canvas.
+/// @a canvasData and generates cells to represent the nodes on the canvas.
 ///
 /// This step not only generates cells for the nodes, it also generates cells
 /// that contain only lines, which are used to connect nodes to their
@@ -978,15 +953,14 @@ struct GenerateCellsResult
 /// and/or horizontal lines to connect a branching node to its successor nodes
 /// in child branches.
 // -----------------------------------------------------------------------------
-- (struct GenerateCellsResult) generateCells:(struct CollectBranchDataResult)collectBranchDataResult
-                            highestYPosition:(unsigned short)highestYPosition
-                              branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
+- (void) generateCells:(NodeTreeViewCanvasData*)canvasData
+        branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
 {
-  struct GenerateCellsResult generateCellsResult;
-  generateCellsResult.highestXPosition = 0;
-  generateCellsResult.cellsDictionary = [NSMutableDictionary dictionary];
+  unsigned short highestXPosition = 0;
+  NSMutableDictionary* cellsDictionary = canvasData.cellsDictionary;
 
-  for (NodeTreeViewBranch* branch in collectBranchDataResult.branches)
+  NSMutableArray* branches = canvasData.branches;
+  for (NodeTreeViewBranch* branch in branches)
   {
     unsigned short xPositionAfterLastCellInBranchingTuple;
     if (branch->parentBranch)
@@ -1002,10 +976,11 @@ struct GenerateCellsResult
     [self generateCellsForBranch:branch
 xPositionAfterLastCellInBranchingTuple:xPositionAfterLastCellInBranchingTuple
                   branchingStyle:branchingStyle
-             generateCellsResult:&generateCellsResult];
+                 cellsDictionary:cellsDictionary
+                highestXPosition:&highestXPosition];
   }
 
-  return generateCellsResult;
+  canvasData.highestXPosition = highestXPosition;
 }
 
 // -----------------------------------------------------------------------------
@@ -1014,7 +989,8 @@ xPositionAfterLastCellInBranchingTuple:xPositionAfterLastCellInBranchingTuple
        - (void) generateCellsForBranch:(NodeTreeViewBranch*)branch
 xPositionAfterLastCellInBranchingTuple:(unsigned short)xPositionAfterLastCellInBranchingTuple
                         branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
-                   generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+                       cellsDictionary:(NSMutableDictionary*)cellsDictionary
+                      highestXPosition:(unsigned short*)highestXPosition
 {
   unsigned short xPositionAfterPreviousBranchTuple = xPositionAfterLastCellInBranchingTuple;
 
@@ -1030,8 +1006,8 @@ xPositionAfterLastCellInBranchingTuple:(unsigned short)xPositionAfterLastCellInB
                                                         yPositionOfBranch:branch->yPosition
                                                  firstBranchTupleOfBranch:firstBranchTupleOfBranch
                                                   lastBranchTupleOfBranch:lastBranchTupleOfBranch
-                                                           branchingStyle:branchingStyle
-                                                      generateCellsResult:generateCellsResult];
+                                                           branchingStyle:branchingStyle                 cellsDictionary:cellsDictionary
+                                                         highestXPosition:highestXPosition];
   }
 }
 
@@ -1052,21 +1028,22 @@ xPositionAfterLastCellInBranchingTuple:(unsigned short)xPositionAfterLastCellInB
                       firstBranchTupleOfBranch:(NodeTreeViewBranchTuple*)firstBranchTupleOfBranch
                        lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
                                 branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
-                           generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+                               cellsDictionary:(NSMutableDictionary*)cellsDictionary
+                              highestXPosition:(unsigned short*)highestXPosition
 {
   bool diagonalConnectionToBranchingLineEstablished = [self generateCellsLeftOfBranchTuple:branchTuple
                                                          xPositionAfterPreviousBranchTuple:xPositionAfterPreviousBranchTuple
                                                                          yPositionOfBranch:yPositionOfBranch
                                                                   firstBranchTupleOfBranch:firstBranchTupleOfBranch
                                                                             branchingStyle:branchingStyle
-                                                                       generateCellsResult:generateCellsResult];
+                                                                           cellsDictionary:cellsDictionary];
 
-  if (branchTuple->childBranches)
+  if (branchTuple->childBranches.count > 0)
   {
     [self generateCellsBelowBranchTuple:branchTuple
                       yPositionOfBranch:yPositionOfBranch
                          branchingStyle:branchingStyle
-                    generateCellsResult:generateCellsResult];
+                        cellsDictionary:cellsDictionary];
   }
 
   [self generateCellsForBranchTuple:branchTuple
@@ -1075,7 +1052,8 @@ xPositionAfterLastCellInBranchingTuple:(unsigned short)xPositionAfterLastCellInB
             lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
 diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEstablished
                      branchingStyle:branchingStyle
-                generateCellsResult:generateCellsResult];
+                    cellsDictionary:cellsDictionary
+                   highestXPosition:highestXPosition];
 
   unsigned short xPositionAfterBranchTuple = (branchTuple->xPositionOfFirstCell +
                                               branchTuple->numberOfCellsForNode);
@@ -1097,7 +1075,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
                       yPositionOfBranch:(unsigned short)yPositionOfBranch
                firstBranchTupleOfBranch:(NodeTreeViewBranchTuple*)firstBranchTupleOfBranch
                          branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
-                    generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+                        cellsDictionary:(NSMutableDictionary*)cellsDictionary
 {
   bool diagonalConnectionToBranchingLineEstablished = false;
 
@@ -1128,7 +1106,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
       cell.linesSelectedGameVariation = cell.lines;
 
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfCell y:yPositionOfBranch];
-    generateCellsResult->cellsDictionary[position] = cell;
+    cellsDictionary[position] = cell;
   }
 
   return diagonalConnectionToBranchingLineEstablished;
@@ -1187,7 +1165,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
 - (void) generateCellsBelowBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
                      yPositionOfBranch:(unsigned short)yPositionOfBranch
                         branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
-                   generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+                       cellsDictionary:(NSMutableDictionary*)cellsDictionary
 {
   NodeTreeViewBranch* lastChildBranch = branchTuple->childBranches.lastObject;
 
@@ -1229,7 +1207,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
      nextChildBranchToDiagonallyConnect:nextChildBranchToDiagonallyConnect
       childBranchInCurrentGameVariation:childBranchInCurrentGameVariation
                          branchingStyle:branchingStyle
-                    generateCellsResult:generateCellsResult];
+                        cellsDictionary:cellsDictionary];
 
     if (yPosition == nextChildBranchToHorizontallyConnect->yPosition)
     {
@@ -1273,7 +1251,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
     nextChildBranchToDiagonallyConnect:(NodeTreeViewBranch*)nextChildBranchToDiagonallyConnect
      childBranchInCurrentGameVariation:(NodeTreeViewBranch*)childBranchInCurrentGameVariation
                         branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
-                   generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+                       cellsDictionary:(NSMutableDictionary*)cellsDictionary
 {
   [self generateVerticalLineCellWithXPosition:xPositionOfVerticalLineCell
                                     yPosition:yPosition
@@ -1282,7 +1260,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
            nextChildBranchToDiagonallyConnect:nextChildBranchToDiagonallyConnect
             childBranchInCurrentGameVariation:childBranchInCurrentGameVariation
                                branchingStyle:branchingStyle
-                          generateCellsResult:generateCellsResult];
+                              cellsDictionary:cellsDictionary];
 
   // If the branching node occupies more than one cell then we need to
   // create additional cells if there is a branch on the y-position
@@ -1294,7 +1272,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
                    xPositionOfVerticalLineCell:xPositionOfVerticalLineCell
          successorNodeIsInCurrentGameVariation:(nextChildBranchToHorizontallyConnect == childBranchInCurrentGameVariation)
                                 branchingStyle:branchingStyle
-                           generateCellsResult:generateCellsResult];
+                               cellsDictionary:cellsDictionary];
   }
 }
 
@@ -1310,7 +1288,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
             nextChildBranchToDiagonallyConnect:(NodeTreeViewBranch*)nextChildBranchToDiagonallyConnect
              childBranchInCurrentGameVariation:(NodeTreeViewBranch*)childBranchInCurrentGameVariation
                                 branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
-                           generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+                               cellsDictionary:(NSMutableDictionary*)cellsDictionary
 {
   NodeTreeViewCellLines lines = NodeTreeViewCellLineNone;
   NodeTreeViewCellLines linesSelectedGameVariation = NodeTreeViewCellLineNone;
@@ -1368,7 +1346,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
     cell.linesSelectedGameVariation = linesSelectedGameVariation;
 
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPosition];
-    generateCellsResult->cellsDictionary[position] = cell;
+    cellsDictionary[position] = cell;
   }
 }
 
@@ -1383,7 +1361,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
                   xPositionOfVerticalLineCell:(unsigned short)xPositionOfVerticalLineCell
         successorNodeIsInCurrentGameVariation:(bool)successorNodeIsInCurrentGameVariation
                                branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
-                          generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+                              cellsDictionary:(NSMutableDictionary*)cellsDictionary
 {
   NodeTreeViewCellLines linesOfFirstCell;
   if (branchingStyle == NodeTreeViewBranchingStyleDiagonal)
@@ -1405,7 +1383,7 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
       cell.linesSelectedGameVariation = cell.lines;
 
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPosition];
-    generateCellsResult->cellsDictionary[position] = cell;
+    cellsDictionary[position] = cell;
   }
 }
 
@@ -1418,7 +1396,8 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
              lastBranchTupleOfBranch:(NodeTreeViewBranchTuple*)lastBranchTupleOfBranch
 diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranchingLineEstablished
                       branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
-                 generateCellsResult:(struct GenerateCellsResult*)generateCellsResult
+                     cellsDictionary:(NSMutableDictionary*)cellsDictionary
+                    highestXPosition:(unsigned short*)highestXPosition
 {
   for (unsigned int indexOfCell = 0; indexOfCell < branchTuple->numberOfCellsForNode; indexOfCell++)
   {
@@ -1439,10 +1418,10 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
 
     unsigned short xPosition = branchTuple->xPositionOfFirstCell + indexOfCell;
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPositionOfBranch];
-    generateCellsResult->cellsDictionary[position] = cell;
+    cellsDictionary[position] = cell;
 
-    if (xPosition > generateCellsResult->highestXPosition)
-      generateCellsResult->highestXPosition = xPosition;
+    if (xPosition > *highestXPosition)
+      *highestXPosition = xPosition;
   }
 }
 
@@ -1491,7 +1470,7 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
   }
 
   // Vertical and/or diagonal connecting lines to child branches
-  if (isCenterCellForNode && branchTuple->childBranches)
+  if (isCenterCellForNode && branchTuple->childBranches.count > 0)
   {
     [self addLinesToCenterCellConnectingChildBranches:cell
                                           branchTuple:branchTuple
@@ -1832,7 +1811,7 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 // -----------------------------------------------------------------------------
 - (NSDictionary*) getCellsDictionary
 {
-  return [[_cellsDictionary retain] autorelease];
+  return self.canvasData.cellsDictionary;
 }
 
 @end
