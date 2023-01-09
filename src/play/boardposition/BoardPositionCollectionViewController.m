@@ -169,6 +169,7 @@
   [center addObserver:self selector:@selector(markupOnPointsDidChange:) name:markupOnPointsDidChange object:nil];
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   [center addObserver:self selector:@selector(numberOfBoardPositionsDidChange:) name:numberOfBoardPositionsDidChange object:nil];
+  [center addObserver:self selector:@selector(currentGameVariationDidChange:) name:currentGameVariationDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 }
 
@@ -420,6 +421,15 @@
     self.currentBoardPositionNeedsUpdate = true;
   }
 
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #currentGameVariationDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentGameVariationDidChange:(NSNotification*)notification
+{
+  self.allDataNeedsUpdate = true;
   [self delayedUpdate];
 }
 
