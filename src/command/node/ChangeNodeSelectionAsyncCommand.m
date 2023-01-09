@@ -145,13 +145,13 @@
 {
   [self.asynchronousCommandDelegate asynchronousCommand:self
                                             didProgress:0.0
-                                        nextStepMessage:@"Changing board position to branching node..."];
+                                        nextStepMessage:@"Changing board position..."];
 
   GoNode* ancestorOfNodeInCurrentVariation = [nodeModel ancestorOfNodeInCurrentVariation:self.node];
   int indexOfAncestorOfNodeInCurrentVariation = [nodeModel indexOfNode:ancestorOfNodeInCurrentVariation];
 
   int newBoardPosition = indexOfAncestorOfNodeInCurrentVariation;
-  bool success = [[[[ChangeBoardPositionCommand alloc] initSynchronousExecutionWithBoardPosition:newBoardPosition] autorelease] submit];
+  bool success = [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
   if (! success)
     DDLogError(@"%@: Aborting because changing board position to branching node failed", [self shortDescription]);
 
@@ -165,7 +165,7 @@
 - (bool) changeGameVariation
 {
   [self.asynchronousCommandDelegate asynchronousCommand:self
-                                            didProgress:0.0
+                                            didProgress:0.3
                                         nextStepMessage:@"Changing game variation..."];
 
   bool success = [[[[ChangeGameVariationCommand alloc] initWithNode:self.node] autorelease] submit];
@@ -182,12 +182,12 @@
 - (bool) changeBoardPositionToNodeToSelect:(GoNodeModel*)nodeModel
 {
   [self.asynchronousCommandDelegate asynchronousCommand:self
-                                            didProgress:0.0
-                                        nextStepMessage:@"Changing board position to node to select..."];
+                                            didProgress:0.6
+                                        nextStepMessage:@"Changing board position..."];
 
   int indexOfNode = [nodeModel indexOfNode:self.node];
   int newBoardPosition = indexOfNode;
-  bool success = [[[[ChangeBoardPositionCommand alloc] initSynchronousExecutionWithBoardPosition:newBoardPosition] autorelease] submit];
+  bool success = [[[[ChangeBoardPositionCommand alloc] initWithBoardPosition:newBoardPosition] autorelease] submit];
   if (! success)
     DDLogError(@"%@: Aborting because changing board position to node to select failed", [self shortDescription]);
 
