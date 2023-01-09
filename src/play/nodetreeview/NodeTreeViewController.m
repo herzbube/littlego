@@ -23,9 +23,13 @@
 #import "NodeTreeViewMetrics.h"
 #import "NodeTreeViewTapGestureController.h"
 #import "canvas/NodeTreeViewCanvas.h"
+#import "layer/NodeTreeViewDrawingHelper.h"
 #import "../gesture/DoubleTapGestureController.h"
 #import "../gesture/TwoFingerTapGestureController.h"
+#import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../ui/UiUtilities.h"
+#import "../../utility/NSObjectAdditions.h"
 // TODO xxx remove if no longer needed
 //#import "../../utility/UIColorAdditions.h"
 
@@ -44,6 +48,7 @@
 @property(nonatomic, retain) NodeTreeView* nodeTreeView;
 @property(nonatomic, retain) TiledScrollView* nodeNumbersView;
 @property(nonatomic, retain) NSArray* nodeNumbersViewConstraints;
+@property(nonatomic, assign) bool visibleRectNeedsUpdate;
 @property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
 @property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
 @property(nonatomic, retain) NodeTreeViewTapGestureController* nodeTreeViewTapGestureController;
@@ -74,6 +79,7 @@
   self.nodeTreeView = nil;
   self.nodeNumbersView = nil;
   self.nodeNumbersViewConstraints = nil;
+  self.visibleRectNeedsUpdate = false;
   [self setupChildControllers];
 
   return self;
@@ -143,6 +149,14 @@
   [self setupNotificationResponders];
 
   [self createOrDeallocNodeNumbersView];
+
+  // Set the initial scroll position. Execution must be slightly delayed
+  // (0.0 is not sufficient) if the node tree view is created later after the
+  // app has already launched.
+  [self performBlockOnMainThread:^{
+    self.visibleRectNeedsUpdate = true;
+    [self delayedUpdate];
+  } afterDelay:0.1];
 }
 
 // -----------------------------------------------------------------------------
@@ -229,6 +243,10 @@
     return;
   self.notificationRespondersAreSetup = true;
 
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+
   [self.nodeTreeViewMetrics addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
   [self.nodeTreeViewMetrics addObserver:self forKeyPath:@"displayNodeNumbers" options:0 context:NULL];
 }
@@ -241,6 +259,8 @@
   if (! self.notificationRespondersAreSetup)
     return;
   self.notificationRespondersAreSetup = false;
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 
   [self.nodeTreeViewMetrics removeObserver:self forKeyPath:@"canvasSize"];
   [self.nodeTreeViewMetrics removeObserver:self forKeyPath:@"displayNodeNumbers"];
@@ -532,7 +552,24 @@
   self.nodeNumbersView.contentOffset = nodeNumbersViewContentOffset;
 }
 
-#pragma mark - KVO notification
+#pragma mark - Notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #currentBoardPositionDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentBoardPositionDidChange:(NSNotification*)notification
+{
+  self.visibleRectNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionEnds notification.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionEnds:(NSNotification*)notification
+{
+  [self delayedUpdate];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
@@ -604,6 +641,66 @@
       }
     }
   }
+}
+
+#pragma mark - Updaters
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper that correctly handles delayed updates. See class
+/// documentation for details.
+// -----------------------------------------------------------------------------
+- (void) delayedUpdate
+{
+  if ([LongRunningActionCounter sharedCounter].counter > 0)
+    return;
+
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(delayedUpdate) withObject:nil waitUntilDone:YES];
+    return;
+  }
+
+  [self updateVisibleRect];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updater method.
+///
+/// Programmatically scrolls the node tree view so that the canvas position that
+/// displays the currently selected node becomes visible and centered within
+/// the node tree view. Perfect centering may not possible because the desired
+/// canvas position may be too close to the canvas edge(s) - if that happens
+/// the node tree view is scrolled as best as possible.
+// -----------------------------------------------------------------------------
+- (void) updateVisibleRect
+{
+  if (! self.visibleRectNeedsUpdate)
+    return;
+  self.visibleRectNeedsUpdate = false;
+
+  CGRect canvasRectOfAllSelectedNodePositions = CGRectZero;
+
+  NSArray* selectedNodePositions = [self.nodeTreeViewCanvas selectedNodePositions];
+  bool firstPosition = true;
+  for (NodeTreeViewCellPosition* position in selectedNodePositions)
+  {
+    CGRect canvasRectOfPosition = [NodeTreeViewDrawingHelper canvasRectForCellAtPosition:position metrics:self.nodeTreeViewMetrics];
+    if (firstPosition)
+    {
+      firstPosition = false;
+      canvasRectOfAllSelectedNodePositions = canvasRectOfPosition;
+    }
+    else
+    {
+      canvasRectOfAllSelectedNodePositions = CGRectUnion(canvasRectOfAllSelectedNodePositions,
+                                                         canvasRectOfPosition);
+    }
+  }
+
+  CGRect scrollToRect = [UiUtilities rectWithSize:self.nodeTreeView.bounds.size
+                                   centeredInRect:canvasRectOfAllSelectedNodePositions];
+
+  [self.nodeTreeView scrollRectToVisible:scrollToRect animated:YES];
 }
 
 @end
