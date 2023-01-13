@@ -162,30 +162,6 @@ void DrawNodeTreeViewCellSymbolSetup(CGContextRef layerContext,
   }
 }
 
-// TODO xxx Make this reusable for BoardViewDrawingHelper
-void DrawString(CGContextRef layerContext, CGRect drawingRect, NSString* string, CGFloat fontSize)
-{
-  UIFont* font;
-  if (@available(iOS 13, *))
-    font = [UIFont monospacedSystemFontOfSize:fontSize weight:UIFontWeightRegular];
-  else
-    font = [UIFont fontWithName:@"Menlo" size:fontSize];
-
-  UIColor* textColor = [UIColor whiteColor];
-  NSShadow* whiteTextShadow = [[[NSShadow alloc] init] autorelease];
-  whiteTextShadow.shadowColor = [UIColor blackColor];
-  whiteTextShadow.shadowBlurRadius = 5.0;
-  whiteTextShadow.shadowOffset = CGSizeMake(1.0, 1.0);
-  NSDictionary* textAttributes = @{ NSFontAttributeName : font,
-                                    NSForegroundColorAttributeName : textColor,
-                                    NSShadowAttributeName: whiteTextShadow };
-
-  [CGDrawingHelper drawStringWithContext:layerContext
-                          centeredInRect:drawingRect
-                                  string:string
-                          textAttributes:textAttributes];
-}
-
 void DrawSurroundingCircle(CGContextRef layerContext, CGPoint center, CGFloat radius, UIColor* strokeColor, CGFloat strokeLineWidth)
 {
   [CGDrawingHelper drawCircleWithContext:layerContext center:center radius:radius fillColor:nil strokeColor:strokeColor strokeLineWidth:strokeLineWidth];
@@ -291,15 +267,21 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     case NodeTreeViewCellSymbolAnnotations:
     {
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
-      // Same size as markup would be logical, but then the "i" looks too small
-      // within the available space
-      DrawString(layerContext, drawingRect, @"i", 35);
+      [NodeTreeViewDrawingHelper drawNodeSymbolString:@"i"
+                                          withContext:layerContext
+                                          drawingRect:drawingRect
+                                                 font:metrics.annotationNodeSymbolFont
+                                              metrics:metrics];
       break;
     }
     case NodeTreeViewCellSymbolMarkup:
     {
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
-      DrawString(layerContext, drawingRect, @"</>", 25);
+      [NodeTreeViewDrawingHelper drawNodeSymbolString:@"</>"
+                                          withContext:layerContext
+                                          drawingRect:drawingRect
+                                                 font:metrics.markupNodeSymbolFont
+                                              metrics:metrics];
       break;
     }
     case NodeTreeViewCellSymbolAnnotationsAndMarkup:
@@ -308,15 +290,23 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
 
       CGRect drawingRectSymbolAnnotation = drawingRect;
       drawingRectSymbolAnnotation.size.height /= 2.0;
-      DrawString(layerContext, drawingRectSymbolAnnotation, @"i", 20);
+      [NodeTreeViewDrawingHelper drawNodeSymbolString:@"i"
+                                          withContext:layerContext
+                                          drawingRect:drawingRectSymbolAnnotation
+                                                 font:metrics.annotationsAndMarkupNodeSymbolFont
+                                              metrics:metrics];
 
       CGRect drawingRectSymbolMarkup = drawingRect;
       drawingRectSymbolMarkup.size.height /= 2.0;
       drawingRectSymbolMarkup.origin.y += drawingRectSymbolMarkup.size.height;
       // Without this adjustment the text + its shadow are too close to the
-      // circle bounding line
+      // surrounding circle's bounding line
       drawingRectSymbolMarkup.origin.y -= 6;
-      DrawString(layerContext, drawingRectSymbolMarkup, @"</>", 20);
+      [NodeTreeViewDrawingHelper drawNodeSymbolString:@"</>"
+                                          withContext:layerContext
+                                          drawingRect:drawingRectSymbolMarkup
+                                                 font:metrics.annotationsAndMarkupNodeSymbolFont
+                                              metrics:metrics];
       break;
     }
     case NodeTreeViewCellSymbolEmpty:
@@ -368,6 +358,30 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 
   return layer;
 }
+
+#pragma mark - Private API - Helpers for layer creation functions
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method for CreateNodeSymbolLayer(), to draw @a string as part
+/// of a textual node symbol.
+// -----------------------------------------------------------------------------
++ (void) drawNodeSymbolString:(NSString*)string
+                  withContext:(CGContextRef)context
+                  drawingRect:(CGRect)drawingRect
+                         font:(UIFont*)font
+                      metrics:(NodeTreeViewMetrics*)metrics
+{
+  NSDictionary* textAttributes = @{ NSFontAttributeName : font,
+                                    NSForegroundColorAttributeName : metrics.nodeSymbolTextColor,
+                                    NSShadowAttributeName: metrics.whiteTextShadow };
+
+  [CGDrawingHelper drawStringWithContext:context
+                          centeredInRect:drawingRect
+                                  string:string
+                          textAttributes:textAttributes];
+}
+
+#pragma mark - Public API - Drawing helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Draws the layer @a layer using the specified drawing context so that

@@ -189,6 +189,9 @@
 @property(nonatomic, assign) unsigned short bottomRightCellY;
 @property(nonatomic, assign) CGSize condensedNodeSymbolSize;
 @property(nonatomic, assign) CGSize uncondensedNodeSymbolSize;
+@property(nonatomic, retain) UIFont* annotationNodeSymbolFont;
+@property(nonatomic, retain) UIFont* markupNodeSymbolFont;
+@property(nonatomic, retain) UIFont* annotationsAndMarkupNodeSymbolFont;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -211,7 +214,9 @@
 @property(nonatomic, assign) int nodeTreeViewCellBaseSize;
 @property(nonatomic, retain) UIColor* selectedNodeColor;
 @property(nonatomic, retain) UIColor* nodeSymbolColor;
+@property(nonatomic, retain) UIColor* nodeSymbolTextColor;
 @property(nonatomic, retain) UIColor* nodeNumberTextColor;
+@property(nonatomic, retain) NSShadow* whiteTextShadow;
 @property(nonatomic, assign) int paddingX;
 @property(nonatomic, assign) int paddingY;
 //@}

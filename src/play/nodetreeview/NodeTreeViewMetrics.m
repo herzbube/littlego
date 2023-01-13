@@ -31,6 +31,9 @@
 @property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
 @property(nonatomic, assign) NodeTreeViewCanvas* nodeTreeViewCanvas;
 @property(nonatomic, retain) FontRange* nodeNumberLabelFontRange;
+@property(nonatomic, retain) FontRange* annotationNodeSymbolFontRange;
+@property(nonatomic, retain) FontRange* markupNodeSymbolFontRange;
+@property(nonatomic, retain) FontRange* annotationsAndMarkupNodeSymbolFontRange;
 @end
 
 
@@ -75,10 +78,19 @@
 
   self.nodeNumberLabelFont = nil;
   self.nodeNumberLabelFontRange = nil;
+  self.annotationNodeSymbolFont = nil;
+  self.annotationNodeSymbolFontRange = nil;
+  self.markupNodeSymbolFont = nil;
+  self.markupNodeSymbolFontRange = nil;
+  self.annotationsAndMarkupNodeSymbolFont = nil;
+  self.annotationsAndMarkupNodeSymbolFontRange = nil;
   self.normalLineColor = nil;
   self.selectedLineColor = nil;
   self.selectedNodeColor = nil;
+  self.nodeSymbolColor = nil;
+  self.nodeSymbolTextColor = nil;
   self.nodeNumberTextColor = nil;
+  self.whiteTextShadow = nil;
 
   [super dealloc];
 }
@@ -104,6 +116,12 @@
   self.selectedLineColor = [UIColor redColor];
   self.selectedNodeColor = [UIColor redColor];
   self.nodeSymbolColor = [UIColor blackColor];
+  self.nodeSymbolTextColor = [UIColor whiteColor];
+  self.nodeNumberTextColor = [UIColor blackColor];
+  self.whiteTextShadow = [[[NSShadow alloc] init] autorelease];
+  self.whiteTextShadow.shadowColor = [UIColor blackColor];
+  self.whiteTextShadow.shadowBlurRadius = 5.0;
+  self.whiteTextShadow.shadowOffset = CGSizeMake(1.0, 1.0);
 
   // TODO xxx Is the following fine-tuning worth it? When zoomed a factor is
   // applied, so the fine-tuning is lost. Also self.numberOfCellsOfMultipartCell
@@ -135,7 +153,6 @@
     self.nodeTreeViewCellBaseSize = 13;
   }
 
-  self.nodeNumberTextColor = [UIColor blackColor];
   self.paddingX = 8;  // TODO xxx get from UIElementMetrics?
   self.paddingY = 8;
 }
@@ -148,18 +165,28 @@
   // The minimum should not be smaller: There is no point in displaying text
   // that is so small that nobody can read it
   int minimumFontSize = 8;
-  // The maximum can be any size that still looks good. On the iPad we allow
-  // a larger maximum font size because we have more space available.
-  int maximumFontSize;
-  if ([LayoutManager sharedManager].uiType != UITypePad)
-    maximumFontSize = 30;
-  else
-    maximumFontSize = 40;
+  // The maximum can be any size that still supports the largest texts drawn
+  // in the tree view node. The largest texts currently known are textual node
+  // symbols drawn in uncondensed cells, when the zoom scale is at its maximum.
+  int maximumFontSize = 100;
 
   NSString* widestNodeNumber = @"8888";
   self.nodeNumberLabelFontRange = [[[FontRange alloc] initWithText:widestNodeNumber
                                                    minimumFontSize:minimumFontSize
                                                    maximumFontSize:maximumFontSize] autorelease];
+
+  NSString* widestAnnotationsNodeSymbolText = @"i";
+  self.annotationNodeSymbolFontRange = [[[FontRange alloc] initWithMonospacedFontAndText:widestAnnotationsNodeSymbolText
+                                                                         minimumFontSize:minimumFontSize
+                                                                         maximumFontSize:maximumFontSize] autorelease];
+  NSString* widestMarkupNodeSymbolText = @"</>";
+  self.markupNodeSymbolFontRange = [[[FontRange alloc] initWithMonospacedFontAndText:widestMarkupNodeSymbolText
+                                                                     minimumFontSize:minimumFontSize
+                                                                     maximumFontSize:maximumFontSize] autorelease];
+  NSString* widestAnnotationsAndMarkupNodeSymbolText = @"</>";
+  self.annotationsAndMarkupNodeSymbolFontRange = [[[FontRange alloc] initWithMonospacedFontAndText:widestAnnotationsAndMarkupNodeSymbolText
+                                                                                   minimumFontSize:minimumFontSize
+                                                                                   maximumFontSize:maximumFontSize] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -393,11 +420,54 @@
   self.bottomRightCellX = newAbstractCanvasSize.width - 1;
   self.bottomRightCellY = newAbstractCanvasSize.height - 1;
 
+  // There must be some spacing between node symbols so they don't touch each
+  // other. This means that node symbols don't get the full width of a cell.
+  // How much they get is determined by the following factor. The factor must
+  // be chosen so that connection lines (which are drawn in the spacing between
+  // the node symbols) are still noticeable even when they connect node symbols
+  // in condensed cells. The factor used here was experimentally determined to
+  // look good.
   static const CGFloat nodeSymbolSizeFactor = 0.75f;
   CGFloat condensedNodeSymbolWidthAndHeight = ceilf(nodeTreeViewCellCondensedSize.width * nodeSymbolSizeFactor);
   self.condensedNodeSymbolSize = CGSizeMake(condensedNodeSymbolWidthAndHeight, condensedNodeSymbolWidthAndHeight);
   CGFloat uncondensedNodeSymbolWidthAndHeight = ceilf(nodeTreeViewCellUncondensedSize.width * nodeSymbolSizeFactor);
   self.uncondensedNodeSymbolSize = CGSizeMake(uncondensedNodeSymbolWidthAndHeight, uncondensedNodeSymbolWidthAndHeight);
+
+  // Some symbols consist of text that needs to be drawn with a font of a
+  // certain size. Here we determine these fonts and their sizes. Textual
+  // symbols are always drawn in uncondensed cells. Textual symbols are always
+  // surrounded with a bounding circle line. Here we say that by default a
+  // textual symbol gets the full symbol size.
+  CGFloat textualNodeSymbolBaseWidth = uncondensedNodeSymbolWidthAndHeight;
+  // The textual symbol for a node with annotations consists of a lowercase "i"
+  // character. This character takes up more space vertically than it does
+  // horizontally. For this reason the node symbol must not get the full node
+  // symbol width, otherwise the "i" character's upper/lower parts will be too
+  // close to the upper/lower parts of the bounding circle line. The factor
+  // used here was determined experimentally to still look good.
+  static const CGFloat annotationsNodeSymbolFactor = 0.8;
+  CGFloat annotationsNodeSymbolWidth = textualNodeSymbolBaseWidth * annotationsNodeSymbolFactor;
+  self.annotationNodeSymbolFont = [self.annotationNodeSymbolFontRange queryForWidth:annotationsNodeSymbolWidth];
+  // For some unknown reason, if the textual symbol for a node with markup
+  // is rendered with the font that is found for the regular node symbol width,
+  // the text appears too small. Because of this the markup node symbol gets
+  // more width than it should. The factor used here was determined
+  // experimentally to still look good.
+  static const CGFloat markupNodeSymbolFactor = 1.3;
+  CGFloat markupNodeSymbolWidth = textualNodeSymbolBaseWidth * markupNodeSymbolFactor;
+  self.markupNodeSymbolFont = [self.markupNodeSymbolFontRange queryForWidth:markupNodeSymbolWidth];
+  // The textual symbol for a node with both annotations and markup contains
+  // two lines of text, vertically stacked. Because of this, and because the
+  // node symbol is surrounded with a bounding circle line, both lines don't get
+  // the same full width as a single line would (which would be drawn in the
+  // vertical center of the circle). For the same unknown reason as for
+  // markupNodeSymbolFactor (see above), the factor used here can be larger
+  // than zero, but the factor must still be smaller than markupNodeSymbolFactor
+  // because, as explained, two lines get less width than a single line. The
+  // factor used here was determined experimentally to still look good.
+  static const CGFloat annotationsAndMarkupNodeSymbolFactor = 1.2;
+  CGFloat annotationsAndMarkupNodeSymbolWidth = textualNodeSymbolBaseWidth * annotationsAndMarkupNodeSymbolFactor;
+  self.annotationsAndMarkupNodeSymbolFont = [self.annotationsAndMarkupNodeSymbolFontRange queryForWidth:annotationsAndMarkupNodeSymbolWidth];
 
   // Update property only after everything has been re-calculated so that KVO
   // observers get the new values

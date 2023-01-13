@@ -45,6 +45,7 @@
 /// @note This is the designated initializer of FontRange.
 // -----------------------------------------------------------------------------
 - (id) initWithText:(NSString*)text
+     monospacedFont:(bool)monospacedFont
     minimumFontSize:(int)minimumFontSize
     maximumFontSize:(int)maximumFontSize
 {
@@ -52,10 +53,40 @@
   self = [super init];
   if (! self)
     return nil;
+
   [self setupFontsWithText:text
+            monospacedFont:monospacedFont
            minimumFontSize:minimumFontSize
            maximumFontSize:maximumFontSize];
+
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a FontRange object with the default system font.
+// -----------------------------------------------------------------------------
+- (id) initWithText:(NSString*)text
+    minimumFontSize:(int)minimumFontSize
+    maximumFontSize:(int)maximumFontSize
+{
+  return [self initWithText:text
+             monospacedFont:false
+            minimumFontSize:minimumFontSize
+            maximumFontSize:maximumFontSize];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a FontRange object with the default monospaced system
+/// font.
+// -----------------------------------------------------------------------------
+- (id) initWithMonospacedFontAndText:(NSString*)text
+                     minimumFontSize:(int)minimumFontSize
+                     maximumFontSize:(int)maximumFontSize
+{
+  return [self initWithText:text
+             monospacedFont:true
+            minimumFontSize:minimumFontSize
+            maximumFontSize:maximumFontSize];
 }
 
 // -----------------------------------------------------------------------------
@@ -71,13 +102,25 @@
 /// @brief Private helper for the initializer.
 // -----------------------------------------------------------------------------
 - (void) setupFontsWithText:(NSString*)text
+             monospacedFont:(bool)monospacedFont
             minimumFontSize:(int)minimumFontSize
             maximumFontSize:(int)maximumFontSize
 {
   NSMutableArray* precalculatedFonts = [NSMutableArray arrayWithCapacity:0];
   for (int fontSize = maximumFontSize; fontSize >= minimumFontSize; --fontSize)
   {
-    UIFont* font = [UIFont systemFontOfSize:fontSize];
+    UIFont* font;
+    if (monospacedFont)
+    {
+      if (@available(iOS 13, *))
+        font = [UIFont monospacedSystemFontOfSize:fontSize weight:UIFontWeightRegular];
+      else
+        font = [UIFont fontWithName:@"Menlo" size:fontSize];
+    }
+    else
+    {
+      font = [UIFont systemFontOfSize:fontSize];
+    }
     NSDictionary* textAttributes = @{ NSFontAttributeName : font };
     // If more control over how the drawing takes place is needed, another
     // useful NSString method is
@@ -93,6 +136,20 @@
     [precalculatedFonts addObject:array];
   }
   self.precalculatedFonts = precalculatedFonts;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a font that is suitable for drawing the text specified when
+/// this FontRange instance was created, in a manner so that the drawing result
+/// is as wide as possible, but not wider than @a width. Returns @e nil if no
+/// suitable font was found.
+// -----------------------------------------------------------------------------
+- (UIFont*) queryForWidth:(CGFloat)width
+{
+  CGSize textSize;
+  UIFont* font;
+  bool didFindFont = [self queryForWidth:width font:&font textSize:&textSize];
+  return didFindFont ? font : nil;
 }
 
 // -----------------------------------------------------------------------------
