@@ -47,6 +47,7 @@
   self.condenseMoveNodes = true;
   self.alignMoveNodes = true;
   self.branchingStyle = NodeTreeViewBranchingStyleRightAngle;
+  self.nodeSelectionStyle = NodeTreeViewNodeSelectionStyleLightCircular;
 
   // The number chosen here must fulfill the following criteria:
   // - The number must be greater than 1, so that condensed nodes (which are
@@ -86,6 +87,7 @@
   self.condenseMoveNodes = [[dictionary valueForKey:condenseMoveNodesKey] boolValue];
   self.alignMoveNodes = [[dictionary valueForKey:alignMoveNodesKey] boolValue];
   self.branchingStyle = [[dictionary valueForKey:branchingStyleKey] intValue];
+  self.nodeSelectionStyle = [[dictionary valueForKey:nodeSelectionStyleKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -99,6 +101,7 @@
   [dictionary setValue:[NSNumber numberWithBool:self.condenseMoveNodes] forKey:condenseMoveNodesKey];
   [dictionary setValue:[NSNumber numberWithBool:self.alignMoveNodes] forKey:alignMoveNodesKey];
   [dictionary setValue:[NSNumber numberWithInt:self.branchingStyle] forKey:branchingStyleKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.nodeSelectionStyle] forKey:nodeSelectionStyleKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:nodeTreeViewKey];
 }

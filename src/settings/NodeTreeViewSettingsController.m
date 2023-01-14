@@ -33,6 +33,7 @@ enum NodeTreeViewTableViewSection
   BranchingStyleSection,
   AlignMoveNodesSection,
   CondenseMoveNodesSection,
+  NodeSelectionStyleSection,
   MaxSection
 };
 
@@ -61,6 +62,15 @@ enum CondenseMoveNodesSectionItem
 {
   CondenseMoveNodesItem,
   MaxCondenseMoveNodesSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the NodeSelectionStyleSection.
+// -----------------------------------------------------------------------------
+enum NodeSelectionStyleSectionItem
+{
+  NodeSelectionStyleItem,
+  MaxNodeSelectionStyleSectionItem
 };
 
 
@@ -136,6 +146,8 @@ enum CondenseMoveNodesSectionItem
       return MaxAlignMoveNodesSectionItem;
     case CondenseMoveNodesSection:
       return MaxCondenseMoveNodesSectionItem;
+    case NodeSelectionStyleSection:
+      return MaxNodeSelectionStyleSectionItem;
     default:
       assert(0);
       break;
@@ -156,6 +168,8 @@ enum CondenseMoveNodesSectionItem
       return @"If turned on, moves with the same number that appear in different game variations are aligned, i.e. drawn at the same position. If turned off, all nodes are drawn in their natural position. Aligning moves has no effect if there are no other nodes in between the moves. The default is to not align moves.";
     case CondenseMoveNodesSection:
       return @"If turned on, moves within a sequence of moves are condensed, i.e. they are drawn smaller than moves at the beginning or end of the sequence. If turned off, all nodes are drawn with the same size. Condensing move nodes de-emphasizes repetitive content, at the cost of making the tree look less uniform. The default is to not condense moves.";
+    case NodeSelectionStyleSection:
+      return @"The style with which to mark the selected node. You can choose between light and heavy markers, drawn either as a circle or rectangle around the node symbol. A heavy marker clearly stands out from the rest of the node tree, but is not as elegant. The default is to draw a light circle.";
     default:
       break;
   }
@@ -197,6 +211,15 @@ enum CondenseMoveNodesSectionItem
       [accessoryView addTarget:self action:@selector(toggleCondenseMoveNodes:) forControlEvents:UIControlEventValueChanged];
       break;
     }
+    case NodeSelectionStyleSection:
+    {
+      cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
+      TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+      variableHeightCell.descriptionLabel.text = @"Node selection style";
+      variableHeightCell.valueLabel.text = [self nodeSelectionStyleAsString:self.nodeTreeViewModel.nodeSelectionStyle];
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      break;
+    }
     default:
     {
       assert(0);
@@ -222,6 +245,11 @@ enum CondenseMoveNodesSectionItem
     case BranchingStyleSection:
     {
       [self pickBranchingStyle];
+      break;
+    }
+    case NodeSelectionStyleSection:
+    {
+      [self pickNodeSelectionStyle];
       break;
     }
     default:
@@ -250,6 +278,26 @@ enum CondenseMoveNodesSectionItem
 
   [self presentNavigationControllerWithRootViewController:itemPickerController];
 }
+
+// -----------------------------------------------------------------------------
+/// @brief Displays ItemPickerController to allow the user to pick a new value
+/// for the "node selection style" user preference.
+// -----------------------------------------------------------------------------
+- (void) pickNodeSelectionStyle
+{
+  NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
+  [itemList addObject:[self nodeSelectionStyleAsString:NodeTreeViewNodeSelectionStyleLightCircular]];
+  [itemList addObject:[self nodeSelectionStyleAsString:NodeTreeViewNodeSelectionStyleHeavyCircular]];
+  [itemList addObject:[self nodeSelectionStyleAsString:NodeTreeViewNodeSelectionStyleHeavyRectangular]];
+  ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
+                                                                                screenTitle:@"Select node selection style"
+                                                                         indexOfDefaultItem:self.nodeTreeViewModel.nodeSelectionStyle
+                                                                                   delegate:self];
+  itemPickerController.context = [NSNumber numberWithInt:NodeSelectionStyleSection];
+
+  [self presentNavigationControllerWithRootViewController:itemPickerController];
+}
+
 // -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Align Move Nodes" switch. Writes the
 /// new value to the appropriate model.
@@ -290,6 +338,16 @@ enum CondenseMoveNodesSectionItem
                               withRowAnimation:UITableViewRowAnimationNone];
       }
     }
+    else if (context.intValue == NodeSelectionStyleSection)
+    {
+      if (self.nodeTreeViewModel.nodeSelectionStyle != controller.indexOfSelectedItem)
+      {
+        self.nodeTreeViewModel.nodeSelectionStyle = controller.indexOfSelectedItem;
+        NSIndexPath* indexPath = [NSIndexPath indexPathForRow:NodeSelectionStyleItem inSection:NodeSelectionStyleSection];
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                              withRowAnimation:UITableViewRowAnimationNone];
+      }
+    }
   }
   [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -308,6 +366,27 @@ enum CondenseMoveNodesSectionItem
       return @"Diagonal";
     case NodeTreeViewBranchingStyleRightAngle:
       return @"Right angle";
+    default:
+      assert(0);
+      break;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a short string for @a nodeSelectionStyle that is suitable for
+/// display in a cell in the table view managed by this controller.
+// -----------------------------------------------------------------------------
+- (NSString*) nodeSelectionStyleAsString:(enum NodeTreeViewNodeSelectionStyle)nodeSelectionStyle
+{
+  switch (nodeSelectionStyle)
+  {
+    case NodeTreeViewNodeSelectionStyleLightCircular:
+      return @"Light & circular";
+    case NodeTreeViewNodeSelectionStyleHeavyCircular:
+      return @"Heavy & circular";
+    case NodeTreeViewNodeSelectionStyleHeavyRectangular:
+      return @"Heavy & rectangular";
     default:
       assert(0);
       break;

@@ -20,6 +20,7 @@
 
 // Forward declarations
 @class NodeTreeViewCanvas;
+@class NodeTreeViewModel;
 
 
 // -----------------------------------------------------------------------------
@@ -32,6 +33,7 @@
 
 - (id) initWithTile:(id<Tile>)tile
             metrics:(NodeTreeViewMetrics*)metrics
-             canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas;
+             canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
+              model:(NodeTreeViewModel*)nodeTreeViewModel;
 
 @end

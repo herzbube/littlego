@@ -88,6 +88,7 @@ NSString* nodeTreeViewContentDidChange = @"NodeTreeViewContentDidChange";
 NSString* nodeTreeViewCondenseMoveNodesDidChange = @"NodeTreeViewCondenseMoveNodesDidChange";
 NSString* nodeTreeViewAlignMoveNodesDidChange = @"NodeTreeViewAlignMoveNodesDidChange";
 NSString* nodeTreeViewBranchingStyleDidChange = @"NodeTreeViewBranchingStyleDidChange";
+NSString* nodeTreeViewNodeSelectionStyleDidChange = @"NodeTreeViewNodeSelectionStyleDidChange";
 NSString* nodeTreeViewSelectedNodeDidChange = @"NodeTreeViewSelectedNodeDidChange";
 // Other notifications
 NSString* longRunningActionStarts = @"LongRunningActionStarts";
@@ -434,6 +435,7 @@ NSString* displayNodeTreeViewKey = @"DisplayNodeTreeView";
 NSString* condenseMoveNodesKey = @"CondenseMoveNodes";
 NSString* alignMoveNodesKey = @"AlignMoveNodes";
 NSString* branchingStyleKey = @"BranchingStyle";
+NSString* nodeSelectionStyleKey = @"NodeSelectionStyle";
 
 // Constants for NSCoding
 // General constants

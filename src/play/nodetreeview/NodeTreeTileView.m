@@ -31,6 +31,7 @@
 @interface NodeTreeTileView()
 @property(nonatomic, assign) NodeTreeViewMetrics* nodeTreeViewMetrics;
 @property(nonatomic, assign) NodeTreeViewCanvas* nodeTreeViewCanvas;
+@property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
 /// @brief Prevents double-unregistering of notification responders by
 /// willMoveToSuperview: followed by dealloc, or double-registering by two
 /// consecutive invocations of willMoveToSuperview: where the argument is not
@@ -71,6 +72,7 @@
 - (id) initWithFrame:(CGRect)rect
              metrics:(NodeTreeViewMetrics*)nodeTreeViewMetrics
               canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
+               model:(NodeTreeViewModel*)nodeTreeViewModel
 {
   // Call designated initializer of superclass (UIView)
   self = [super initWithFrame:rect];
@@ -79,6 +81,7 @@
 
   self.nodeTreeViewMetrics = nodeTreeViewMetrics;
   self.nodeTreeViewCanvas = nodeTreeViewCanvas;
+  self.nodeTreeViewModel = nodeTreeViewModel;
 
   self.row = -1;
   self.column = -1;
@@ -129,6 +132,7 @@
   [center addObserver:self selector:@selector(nodeTreeViewCondenseMoveNodesDidChange:) name:nodeTreeViewCondenseMoveNodesDidChange object:nil];
   [center addObserver:self selector:@selector(nodeTreeViewAlignMoveNodesDidChange:) name:nodeTreeViewAlignMoveNodesDidChange object:nil];
   [center addObserver:self selector:@selector(nodeTreeViewBranchingStyleDidChange:) name:nodeTreeViewBranchingStyleDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeTreeViewNodeSelectionStyleDidChange:) name:nodeTreeViewNodeSelectionStyleDidChange object:nil];
   [center addObserver:self selector:@selector(nodeTreeViewSelectedNodeDidChange:) name:nodeTreeViewSelectedNodeDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 
@@ -218,7 +222,8 @@
 
   self.selectedNodeLayerDelegate = [[[SelectedNodeLayerDelegate alloc] initWithTile:self
                                                                             metrics:self.nodeTreeViewMetrics
-                                                                             canvas:self.nodeTreeViewCanvas] autorelease];
+                                                                             canvas:self.nodeTreeViewCanvas
+                                                                              model:self.nodeTreeViewModel] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -357,6 +362,16 @@
 - (void) nodeTreeViewBranchingStyleDidChange:(NSNotification*)notification
 {
   [self notifyLayerDelegates:NTVLDEventNodeTreeBranchingStyleChanged eventInfo:nil];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeViewNodeSelectionStyleDidChange
+/// notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeViewNodeSelectionStyleDidChange:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:NTVLDEventNodeTreeNodeSelectionStyleChanged eventInfo:nil];
   [self delayedDrawLayers];
 }
 

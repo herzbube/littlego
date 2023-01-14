@@ -460,6 +460,8 @@
 		<false/>
 		<key>BranchingStyle</key>
 		<integer>0</integer>
+		<key>NodeSelectionStyle</key>
+		<integer>0</integer>
 	</dict>
 	<key>CrashReportActivated</key>
 	<true/>

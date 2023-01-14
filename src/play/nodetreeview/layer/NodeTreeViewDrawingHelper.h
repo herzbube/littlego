@@ -18,6 +18,7 @@
 // Forward declarations
 @class NodeTreeViewCellPosition;
 @class NodeTreeViewMetrics;
+@class NodeTreeViewModel;
 @protocol Tile;
 
 
@@ -41,7 +42,7 @@
 /// conventions.
 //@{
 CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymbol symbolType, bool condensed, NodeTreeViewMetrics* metrics);
-CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTreeViewMetrics* metrics);
+CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTreeViewModel* model, NodeTreeViewMetrics* metrics);
 //@}
 
 /// @name Drawing helpers
@@ -62,6 +63,14 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 + (void) setNodeSymbolClippingPathInContext:(CGContextRef)context
              allowDrawingInCircleWithCenter:(CGPoint)center
                                      radius:(CGFloat)radius;
+
++ (void) setNodeSymbolClippingPathInContext:(CGContextRef)context
+                 allowDrawingInFullCellRect:(CGRect)fullCellRect
+            disallowDrawingInNodeSymbolRect:(CGRect)nodeSymbolRect;
+
++ (void) setNodeSymbolClippingPathInContext:(CGContextRef)context
+         allowDrawingInCircleOfFullCellRect:(CGRect)fullCellRect
+            disallowDrawingInNodeSymbolRect:(CGRect)nodeSymbolRect;
 
 + (void) removeNodeSymbolClippingPathWithContext:(CGContextRef)context;
 

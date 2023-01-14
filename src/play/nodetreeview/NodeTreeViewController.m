@@ -279,7 +279,7 @@
     // The scroll view will set the tile view frame, so we don't have to worry
     // about it
     if (tiledScrollView == self.nodeTreeView)
-      tileView = [[[NodeTreeTileView alloc] initWithFrame:CGRectZero metrics:self.nodeTreeViewMetrics canvas:self.nodeTreeViewCanvas] autorelease];
+      tileView = [[[NodeTreeTileView alloc] initWithFrame:CGRectZero metrics:self.nodeTreeViewMetrics canvas:self.nodeTreeViewCanvas model:self.nodeTreeViewModel] autorelease];
     else if (tiledScrollView == self.nodeNumbersView)
       tileView = [[[NodeNumbersTileView alloc] initWithFrame:CGRectZero] autorelease];
   }

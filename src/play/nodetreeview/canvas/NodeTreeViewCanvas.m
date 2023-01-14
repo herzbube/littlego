@@ -44,6 +44,7 @@
 @property(nonatomic, retain) NodeTreeViewCanvasData* canvasData;
 @property(nonatomic, assign) bool selectedNodePositionsNeedsUpdate;
 @property(nonatomic, retain) NSArray* cachedSelectedNodePositions;
+@property(nonatomic, assign) bool nodeSelectionStyleNeedsUpdate;
 @end
 
 
@@ -71,6 +72,7 @@
   self.canvasData = [[[NodeTreeViewCanvasData alloc] init] autorelease];
   self.selectedNodePositionsNeedsUpdate = false;
   self.cachedSelectedNodePositions = nil;
+  self.nodeSelectionStyleNeedsUpdate = false;
 
   [self setupNotificationResponders];
 
@@ -109,6 +111,7 @@
   [self.nodeTreeViewModel addObserver:self forKeyPath:@"condenseMoveNodes" options:0 context:NULL];
   [self.nodeTreeViewModel addObserver:self forKeyPath:@"alignMoveNodes" options:0 context:NULL];
   [self.nodeTreeViewModel addObserver:self forKeyPath:@"branchingStyle" options:0 context:NULL];
+  [self.nodeTreeViewModel addObserver:self forKeyPath:@"nodeSelectionStyle" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -121,6 +124,7 @@
   [self.nodeTreeViewModel removeObserver:self forKeyPath:@"condenseMoveNodes"];
   [self.nodeTreeViewModel removeObserver:self forKeyPath:@"alignMoveNodes"];
   [self.nodeTreeViewModel removeObserver:self forKeyPath:@"branchingStyle"];
+  [self.nodeTreeViewModel removeObserver:self forKeyPath:@"nodeSelectionStyle"];
 }
 
 #pragma mark - Notification responders
@@ -197,6 +201,11 @@
     self.notificationToPostAfterCanvasUpdate = nodeTreeViewBranchingStyleDidChange;
     [self delayedUpdate];
   }
+  else if ([keyPath isEqualToString:@"nodeSelectionStyle"])
+  {
+    self.nodeSelectionStyleNeedsUpdate = true;
+    [self delayedUpdate];
+  }
 }
 
 #pragma mark - Updaters
@@ -217,6 +226,7 @@
 
   [self updateCanvas];
   [self updateSelectedNodePositions];
+  [self updateNodeSelectionStyle];
 }
 
 // -----------------------------------------------------------------------------
@@ -265,6 +275,20 @@
 
   [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeViewSelectedNodeDidChange
                                                       object:positionsOfNewlySelectedCells];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updater method.
+// -----------------------------------------------------------------------------
+- (void) updateNodeSelectionStyle
+{
+  if (! self.nodeSelectionStyleNeedsUpdate)
+    return;
+  self.nodeSelectionStyleNeedsUpdate = false;
+
+  // Node selection style is purely visual, there's no need to recalculate
+  // anything.
+  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeViewNodeSelectionStyleDidChange object:nil];
 }
 
 #pragma mark - Public API

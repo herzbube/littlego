@@ -30,6 +30,7 @@
 // -----------------------------------------------------------------------------
 @interface SelectedNodeLayerDelegate()
 @property(nonatomic, assign) NodeTreeViewCanvas* nodeTreeViewCanvas;
+@property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
 @property(nonatomic, retain) NSArray* selectedNodePositionsOnTile;
 @end
 
@@ -44,6 +45,7 @@
 - (id) initWithTile:(id<Tile>)tile
             metrics:(NodeTreeViewMetrics*)metrics
              canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
+              model:(NodeTreeViewModel*)nodeTreeViewModel
 {
   // Call designated initializer of superclass (NodeTreeViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
@@ -51,6 +53,7 @@
     return nil;
 
   self.nodeTreeViewCanvas = nodeTreeViewCanvas;
+  self.nodeTreeViewModel = nodeTreeViewModel;
   self.selectedNodePositionsOnTile = @[];
 
   return self;
@@ -122,6 +125,13 @@
       }
       break;
     }
+    case NTVLDEventNodeTreeNodeSelectionStyleChanged:
+    {
+      [self invalidateLayers];
+      if (self.selectedNodePositionsOnTile.count > 0)
+        self.dirty = true;
+      break;
+    }
     default:
     {
       break;
@@ -182,7 +192,7 @@
   CGLayerRef nodeSelectionCondensedLayer = [cache layerOfType:NodeTreeViewLayerTypeNodeSelectionCondensed];
   if (! nodeSelectionCondensedLayer)
   {
-    nodeSelectionCondensedLayer = CreateNodeSelectionLayer(context, true, self.nodeTreeViewMetrics);
+    nodeSelectionCondensedLayer = CreateNodeSelectionLayer(context, true, self.nodeTreeViewModel, self.nodeTreeViewMetrics);
     [cache setLayer:nodeSelectionCondensedLayer ofType:NodeTreeViewLayerTypeNodeSelectionCondensed];
     CGLayerRelease(nodeSelectionCondensedLayer);
   }
@@ -190,7 +200,7 @@
   CGLayerRef nodeSelectionUncondensedLayer = [cache layerOfType:NodeTreeViewLayerTypeNodeSelectionUncondensed];
   if (! nodeSelectionUncondensedLayer)
   {
-    nodeSelectionUncondensedLayer = CreateNodeSelectionLayer(context, false, self.nodeTreeViewMetrics);
+    nodeSelectionUncondensedLayer = CreateNodeSelectionLayer(context, false, self.nodeTreeViewModel, self.nodeTreeViewMetrics);
     [cache setLayer:nodeSelectionUncondensedLayer ofType:NodeTreeViewLayerTypeNodeSelectionUncondensed];
     CGLayerRelease(nodeSelectionUncondensedLayer);
   }

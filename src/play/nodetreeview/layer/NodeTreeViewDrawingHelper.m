@@ -18,6 +18,7 @@
 // Project includes
 #import "NodeTreeViewDrawingHelper.h"
 #import "../NodeTreeViewMetrics.h"
+#import "../../model/NodeTreeViewModel.h"
 #import "../../../ui/Tile.h"
 #import "../../../ui/CGDrawingHelper.h"
 #import "../../../ui/UiUtilities.h"
@@ -335,13 +336,15 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
 /// selection marker. If @a condensed is true the marker is drawn in reduced
 /// size, if @a condensed is false the marker is drawn in normal size.
 ///
+/// @a model is used to determine the style of the node selection marker.
+///
 /// All sizes are taken from the metrics values in @a metrics.
 ///
 /// @note Whoever invokes this function is responsible for releasing the
 /// returned CGLayer object using the function CGLayerRelease when the layer is
 /// no longer needed.
 // -----------------------------------------------------------------------------
-CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTreeViewMetrics* metrics)
+CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTreeViewModel* model, NodeTreeViewMetrics* metrics)
 {
   CGRect layerRect = [NodeTreeViewDrawingHelper drawingRectForCell:condensed withMetrics:metrics];
 
@@ -355,16 +358,64 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
                                                            withDrawingRectForCell:layerRect
                                                                       withMetrics:metrics];
 
-  CGFloat strokeLineWidth = metrics.selectedLineWidth * metrics.contentsScale;
-  
-  CGPoint drawingRectCenter;
-  CGFloat radius;
-  [NodeTreeViewDrawingHelper circularDrawingParametersInRect:drawingRect
-                                             strokeLineWidth:strokeLineWidth
-                                                      center:&drawingRectCenter
-                                               drawingRadius:&radius];
+  if (model.nodeSelectionStyle == NodeTreeViewNodeSelectionStyleLightCircular)
+  {
+    CGFloat strokeLineWidth = metrics.selectedLineWidth * metrics.contentsScale;
 
-  DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.selectedNodeColor, strokeLineWidth);
+    CGPoint drawingRectCenter;
+    CGFloat radius;
+    [NodeTreeViewDrawingHelper circularDrawingParametersInRect:drawingRect
+                                               strokeLineWidth:strokeLineWidth
+                                                        center:&drawingRectCenter
+                                                 drawingRadius:&radius];
+
+    DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.selectedNodeColor, strokeLineWidth);
+  }
+  else
+  {
+    if (model.nodeSelectionStyle == NodeTreeViewNodeSelectionStyleHeavyCircular)
+    {
+      [NodeTreeViewDrawingHelper setNodeSymbolClippingPathInContext:layerContext
+                                 allowDrawingInCircleOfFullCellRect:layerRect
+                                    disallowDrawingInNodeSymbolRect:drawingRect];
+
+      CGPoint drawingRectCenter;
+      CGFloat radius;
+      [NodeTreeViewDrawingHelper circularDrawingParametersInRect:layerRect
+                                                 strokeLineWidth:0.0f
+                                                          center:&drawingRectCenter
+                                                   drawingRadius:&radius];
+
+      [CGDrawingHelper drawCircleWithContext:layerContext
+                                      center:drawingRectCenter
+                                      radius:radius
+                                   fillColor:metrics.selectedNodeColor
+                                 strokeColor:nil
+                             strokeLineWidth:0.0f];
+    }
+    else
+    {
+      [NodeTreeViewDrawingHelper setNodeSymbolClippingPathInContext:layerContext
+                                         allowDrawingInFullCellRect:layerRect
+                                    disallowDrawingInNodeSymbolRect:drawingRect];
+
+      CGFloat widthAndHeightToFill = MIN(layerRect.size.width, layerRect.size.height);
+      CGSize sizeToFill = CGSizeMake(widthAndHeightToFill, widthAndHeightToFill);
+      CGRect rectToFill = [UiUtilities rectWithSize:sizeToFill centeredInRect:layerRect];
+
+      CGFloat cornerWidthAndHeight = floorf(widthAndHeightToFill / 4.0);
+      CGSize cornerRadius = CGSizeMake(cornerWidthAndHeight, cornerWidthAndHeight);
+
+      [CGDrawingHelper drawRoundedRectangleWithContext:layerContext
+                                             rectangle:rectToFill
+                                          cornerRadius:cornerRadius
+                                             fillColor:metrics.selectedNodeColor
+                                           strokeColor:nil
+                                       strokeLineWidth:0.0f];
+    }
+
+    [NodeTreeViewDrawingHelper removeNodeSymbolClippingPathWithContext:layerContext];
+  }
 
   return layer;
 }
@@ -416,6 +467,105 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
   [CGDrawingHelper setCircularClippingPathWithContext:context
                                                center:center
                                                radius:radius];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the drawing context @a context with a clipping path that
+/// allows drawing everywhere within the rectangle of a full cell
+/// @a fullCellRect except within the circular area occupied by the node symbol
+/// inside @a nodeSymbolRect. The radius of the circular area occupied by the
+/// node symbol is defined by the smaller dimension of @a nodeSymbolRect.
+///
+/// Invocation of this method must be balanced by also invoking
+/// removeNodeSymbolClippingPathWithContext:().
+///
+/// This method was tested to work for drawing into unscaled layers (e.g.
+/// CGLayerRef). It may not work for drawing into scaled layers (e.g. CALayer).
+// -----------------------------------------------------------------------------
++ (void) setNodeSymbolClippingPathInContext:(CGContextRef)context
+                 allowDrawingInFullCellRect:(CGRect)fullCellRect
+            disallowDrawingInNodeSymbolRect:(CGRect)nodeSymbolRect
+{
+  CGPoint clippingCenter;
+  CGFloat clippingRadius;
+  [NodeTreeViewDrawingHelper circularClippingParametersInRect:nodeSymbolRect
+                                                clippingCenter:&clippingCenter
+                                               clippingRadius:&clippingRadius];
+
+  // Although the clipping radius calculated above is geometrically correct,
+  // we have to increase it by half a pixel to keep all of the stroking pixels
+  // from the node symbol drawing intact. Without this adjustment, the drawing
+  // that will take place within fullCellRect will overdraw some of those
+  // stroking pixels. The reason why this adjustment is necessary is not
+  // entirely clear, but it must be somehow related to the inversion of the
+  // clipping taking place here.
+  // Note: This adjustment has been tested when it is used with a CGContext
+  // that is drawing into a CGLayer (A) that is not scaled, and when that
+  // CGLayer (A) is later drawn on top of another CGLayer (B) that also is not
+  // scaled - specifically when the node selection layer is drawn on top of a
+  // node symbol layer. This adjustment might not work if the clipping path
+  // is set on a CGContext that is scaled, such as the one used for drawing by
+  // CALayer.
+  clippingRadius += 0.5;
+
+  [CGDrawingHelper setCircularClippingPathWithContext:context
+                                               center:clippingCenter
+                                               radius:clippingRadius
+                                       outerRectangle:fullCellRect];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the drawing context @a context with a clipping path that
+/// allows drawing everywhere within the circular area defined by the smaller
+/// dimension of @a fullCellRect, except within the circular area occupied by
+/// the node symbol inside @a nodeSymbolRect. The radius of the circular area
+/// occupied by the node symbol is defined by the smaller dimension of
+/// @a nodeSymbolRect.
+///
+/// Invocation of this method must be balanced by also invoking
+/// removeNodeSymbolClippingPathWithContext:().
+///
+/// This method was tested to work for drawing into unscaled layers (e.g.
+/// CGLayerRef). It may not work for drawing into scaled layers (e.g. CALayer).
+// -----------------------------------------------------------------------------
++ (void) setNodeSymbolClippingPathInContext:(CGContextRef)context
+         allowDrawingInCircleOfFullCellRect:(CGRect)fullCellRect
+            disallowDrawingInNodeSymbolRect:(CGRect)nodeSymbolRect
+{
+  CGPoint innerClippingCenter;
+  CGFloat innerClippingRadius;
+  [NodeTreeViewDrawingHelper circularClippingParametersInRect:nodeSymbolRect
+                                               clippingCenter:&innerClippingCenter
+                                               clippingRadius:&innerClippingRadius];
+
+  // We ignore the outer clipping center because we assume that the two
+  // rectangles have the same center
+  CGPoint outerClippingCenter;
+  CGFloat outerClippingRadius;
+  [NodeTreeViewDrawingHelper circularClippingParametersInRect:fullCellRect
+                                               clippingCenter:&outerClippingCenter
+                                               clippingRadius:&outerClippingRadius];
+
+  // Although the clipping radius calculated above is geometrically correct,
+  // we have to increase it by half a pixel to keep all of the stroking pixels
+  // from the node symbol drawing intact. Without this adjustment, the drawing
+  // that will take place within fullCellRect will overdraw some of those
+  // stroking pixels. The reason why this adjustment is necessary is not
+  // entirely clear, but it must be somehow related to the inversion of the
+  // clipping taking place here.
+  // Note: This adjustment has been tested when it is used with a CGContext
+  // that is drawing into a CGLayer (A) that is not scaled, and when that
+  // CGLayer (A) is later drawn on top of another CGLayer (B) that also is not
+  // scaled - specifically when the node selection layer is drawn on top of a
+  // node symbol layer. This adjustment might not work if the clipping path
+  // is set on a CGContext that is scaled, such as the one used for drawing by
+  // CALayer.
+  innerClippingRadius += 0.5;
+
+  [CGDrawingHelper setCircularClippingPathWithContext:context
+                                               center:innerClippingCenter
+                                          innerRadius:innerClippingRadius
+                                          outerRadius:outerClippingRadius];
 }
 
 // -----------------------------------------------------------------------------

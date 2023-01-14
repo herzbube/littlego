@@ -900,6 +900,9 @@ extern NSString* nodeTreeViewAlignMoveNodesDidChange;
 /// @brief Is sent to indicate that the branching style user preference
 /// has changed.
 extern NSString* nodeTreeViewBranchingStyleDidChange;
+/// @brief Is sent to indicate that the node selection style user preference
+/// has changed.
+extern NSString* nodeTreeViewNodeSelectionStyleDidChange;
 /// @brief Is sent to indicate that the selected node in the node tree view has
 /// changed. An NSArray object is associated with the notification that contains
 /// NodeTreeViewCellPosition objects that indicate which cells on the canvas
@@ -1232,6 +1235,15 @@ enum NodeTreeViewBranchingStyle
 {
   NodeTreeViewBranchingStyleDiagonal,
   NodeTreeViewBranchingStyleRightAngle,
+};
+
+/// @brief Enumerates all possible styles how the node selection marker can be
+/// drawn in the node tree view.
+enum NodeTreeViewNodeSelectionStyle
+{
+  NodeTreeViewNodeSelectionStyleLightCircular,     ///< @brief The node selection marker is drawn in a light style as a circle around the node symbol.
+  NodeTreeViewNodeSelectionStyleHeavyCircular,     ///< @brief The node selection marker is drawn in a heavy style as a circle around the node symbol.
+  NodeTreeViewNodeSelectionStyleHeavyRectangular,  ///< @brief The node selection marker is drawn in a heavy style as a rectangle around the node symbol.
 };
 //@}
 
@@ -1751,6 +1763,7 @@ extern NSString* displayNodeTreeViewKey;
 extern NSString* condenseMoveNodesKey;
 extern NSString* alignMoveNodesKey;
 extern NSString* branchingStyleKey;
+extern NSString* nodeSelectionStyleKey;
 //@}
 
 // -----------------------------------------------------------------------------
