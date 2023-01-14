@@ -208,58 +208,58 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
   {
     case NodeTreeViewCellSymbolBlackSetupStones:
     {
-      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
+      [NodeTreeViewDrawingHelper setNodeSymbolClippingPathInContext:layerContext allowDrawingInCircleWithCenter:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorBlack, GoColorBlack, GoColorBlack);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
-      [CGDrawingHelper removeClippingPathWithContext:layerContext];
+      [NodeTreeViewDrawingHelper removeNodeSymbolClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolWhiteSetupStones:
     {
-      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
+      [NodeTreeViewDrawingHelper setNodeSymbolClippingPathInContext:layerContext allowDrawingInCircleWithCenter:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorWhite, GoColorWhite, GoColorWhite, GoColorWhite);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
-      [CGDrawingHelper removeClippingPathWithContext:layerContext];
+      [NodeTreeViewDrawingHelper removeNodeSymbolClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolNoSetupStones:
     {
-      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
+      [NodeTreeViewDrawingHelper setNodeSymbolClippingPathInContext:layerContext allowDrawingInCircleWithCenter:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorNone, GoColorNone, GoColorNone, GoColorNone);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
-      [CGDrawingHelper removeClippingPathWithContext:layerContext];
+      [NodeTreeViewDrawingHelper removeNodeSymbolClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolBlackAndWhiteSetupStones:
     {
-      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
+      [NodeTreeViewDrawingHelper setNodeSymbolClippingPathInContext:layerContext allowDrawingInCircleWithCenter:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorWhite, GoColorWhite, GoColorBlack);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
-      [CGDrawingHelper removeClippingPathWithContext:layerContext];
+      [NodeTreeViewDrawingHelper removeNodeSymbolClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolBlackAndNoSetupStones:
     {
-      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
+      [NodeTreeViewDrawingHelper setNodeSymbolClippingPathInContext:layerContext allowDrawingInCircleWithCenter:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorNone, GoColorNone, GoColorBlack);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
-      [CGDrawingHelper removeClippingPathWithContext:layerContext];
+      [NodeTreeViewDrawingHelper removeNodeSymbolClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolWhiteAndNoSetupStones:
     {
-      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
+      [NodeTreeViewDrawingHelper setNodeSymbolClippingPathInContext:layerContext allowDrawingInCircleWithCenter:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorWhite, GoColorNone, GoColorNone, GoColorWhite);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
-      [CGDrawingHelper removeClippingPathWithContext:layerContext];
+      [NodeTreeViewDrawingHelper removeNodeSymbolClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolBlackAndWhiteAndNoSetupStones:
     {
-      [CGDrawingHelper setCircularClippingPathWithContext:layerContext center:drawingRectCenter radius:clippingPathRadius];
+      [NodeTreeViewDrawingHelper setNodeSymbolClippingPathInContext:layerContext allowDrawingInCircleWithCenter:drawingRectCenter radius:clippingPathRadius];
       DrawNodeTreeViewCellSymbolSetup(layerContext, drawingRect, strokeLineWidth, GoColorBlack, GoColorNone, GoColorNone, GoColorWhite);
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
-      [CGDrawingHelper removeClippingPathWithContext:layerContext];
+      [NodeTreeViewDrawingHelper removeNodeSymbolClippingPathWithContext:layerContext];
       break;
     }
     case NodeTreeViewCellSymbolBlackMove:
@@ -389,6 +389,47 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
                           centeredInRect:drawingRect
                                   string:string
                           textAttributes:textAttributes];
+}
+
+#pragma mark - Public API - Helpers for setting a clipping path
+
+// -----------------------------------------------------------------------------
+/// @brief Configures the drawing context @a context with a clipping path that
+/// allows drawing only within the circular area occupied by node symbols. The
+/// circular area is defined by @a center and @a radius.
+///
+/// Invocation of this method must be balanced by also invoking
+/// removeNodeSymbolClippingPathWithContext:().
+///
+/// This method does not use any constant values. It can therefore be used for
+/// drawing into both scaled layers (e.g. CALayer) and unscaled layers
+/// (e.g. CGLayerRef)
+///
+/// This is a simple front-end method for a corresponding backend method in
+/// CGDrawingHelper. The reason why this method exists is purely to give it a
+/// name to make explicit when node symbol clipping is performed.
+// -----------------------------------------------------------------------------
++ (void) setNodeSymbolClippingPathInContext:(CGContextRef)context
+             allowDrawingInCircleWithCenter:(CGPoint)center
+                                     radius:(CGFloat)radius
+{
+  [CGDrawingHelper setCircularClippingPathWithContext:context
+                                               center:center
+                                               radius:radius];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes a previously configured node symbol clipping path from the
+/// drawing context @a context. Invocation of this method balances a previous
+/// invocation of any of the setNodeSymbolClippingPathInContext:() methods.
+///
+/// This is a simple front-end method for a corresponding backend method in
+/// CGDrawingHelper. The reason why this method exists is purely to give it a
+/// name to make explicit when node symbol clipping is performed.
+// -----------------------------------------------------------------------------
++ (void) removeNodeSymbolClippingPathWithContext:(CGContextRef)context
+{
+  [CGDrawingHelper removeClippingPathWithContext:context];
 }
 
 #pragma mark - Public API - Drawing helpers
