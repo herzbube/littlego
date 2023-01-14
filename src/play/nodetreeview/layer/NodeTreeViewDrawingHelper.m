@@ -26,16 +26,12 @@
 
 @implementation NodeTreeViewDrawingHelper
 
-// TODO xxx remove
-void CreateDummySymbol(CGContextRef layerContext, CGRect drawingRect)
-{
-  CGContextAddRect(layerContext, drawingRect);
+#pragma mark - Private API - Layer creation functions
 
-  CGContextSetStrokeColorWithColor(layerContext, [UIColor redColor].CGColor);
-  CGContextSetLineWidth(layerContext, 1);
-  CGContextStrokePath(layerContext);
-}
-
+// -----------------------------------------------------------------------------
+/// @brief Calculates 4 quarter rectangles from @a drawingRect and fills/strokes
+/// each of the quarter rectangles according to the specified 4 GoColor values.
+// -----------------------------------------------------------------------------
 void DrawNodeTreeViewCellSymbolSetupRectangleStyle(CGContextRef layerContext,
                                                    CGRect drawingRect,
                                                    CGFloat strokeLineWidth,
@@ -75,6 +71,25 @@ void DrawNodeTreeViewCellSymbolSetupRectangleStyle(CGContextRef layerContext,
   [CGDrawingHelper drawStoneRectangleWithContext:layerContext rectangle:bottomRightRect stoneColor:bottomRightStoneColor strokeLineWidth:strokeLineWidth];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Calculates 4 quarter rectangles from @a drawingRect and draws a
+/// filled/stroked circle within each of the quarter rectangles according to
+/// the specified 4 GoColor values.
+///
+/// An attempt is made that the 4 circles do not touch each other near the
+/// center of @a drawingRect. To that end, the specified @a radius is reduced
+/// somewhat.
+///
+/// Also the 4 circles are inset in an attempt so that they do not touch the
+/// circle line that passes through each of the @a drawingRect corners, with the
+/// circle center being located at the center point of @a drawingRect.
+///
+/// For small values of @a radius the outcome of the insetting/radius reduction
+/// will result in a mess of pixels. As an alternative, the function
+/// DrawNodeTreeViewCellSymbolSetupRectangleStyle() can be invoked to convey the
+/// same meaning with a different geometric style (the quarter rectangles
+/// themselves are filled/stroked instead of drawing circles).
+// -----------------------------------------------------------------------------
 void DrawNodeTreeViewCellSymbolSetupCircleStyle(CGContextRef layerContext,
                                                 CGRect drawingRect,
                                                 CGFloat strokeLineWidth,
@@ -122,6 +137,13 @@ void DrawNodeTreeViewCellSymbolSetupCircleStyle(CGContextRef layerContext,
     [CGDrawingHelper drawSymbolXWithContext:layerContext center:bottomRightCenter symbolSize:symbolXSize strokeColor:symbolXStrokeColor strokeLineWidth:strokeLineWidth];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Calculates 4 quarter rectangles from @a drawingRect and draws either
+/// a filled/stroked circle within each of the quarter rectangles, or
+/// fills/strokes the quarter rectangles themselves, according to the specified
+/// 4 GoColor values. Which drawing method is used depends on the size of
+/// @a drawingRect.
+// -----------------------------------------------------------------------------
 void DrawNodeTreeViewCellSymbolSetup(CGContextRef layerContext,
                                      CGRect drawingRect,
                                      CGFloat strokeLineWidth,
@@ -168,6 +190,8 @@ void DrawSurroundingCircle(CGContextRef layerContext, CGPoint center, CGFloat ra
   [CGDrawingHelper drawCircleWithContext:layerContext center:center radius:radius fillColor:nil strokeColor:strokeColor strokeLineWidth:strokeLineWidth];
 }
 
+#pragma mark - Public API - Layer creation functions
+
 // -----------------------------------------------------------------------------
 /// @brief Creates and returns a CGLayer object that is associated with graphics
 /// context @a context and contains the drawing operations to draw a node symbol
@@ -190,9 +214,9 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
 
   CGContextRef layerContext = CGLayerGetContext(layer);
 
-  CGRect drawingRect =  [NodeTreeViewDrawingHelper drawingRectForNodeSymbolInCell:condensed
-                                                           withDrawingRectForCell:layerRect
-                                                                      withMetrics:metrics];
+  CGRect drawingRect = [NodeTreeViewDrawingHelper drawingRectForNodeSymbolInCell:condensed
+                                                          withDrawingRectForCell:layerRect
+                                                                     withMetrics:metrics];
 
   CGFloat strokeLineWidth = metrics.normalLineWidth * metrics.contentsScale;
 

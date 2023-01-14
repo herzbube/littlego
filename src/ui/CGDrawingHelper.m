@@ -527,7 +527,8 @@
 /// @brief Configures the drawing context @a context with a circular clipping
 /// path with center point @a center and radius @a radius. Drawing takes place
 /// only within the circular area defined by the clipping path. Invocation of
-/// this method must be balanced by also invoking removeClippingPath:().
+/// this method must be balanced by also invoking
+/// removeClippingPathWithContext:().
 // -----------------------------------------------------------------------------
 + (void) setCircularClippingPathWithContext:(CGContextRef)context
                                      center:(CGPoint)center
@@ -550,7 +551,7 @@
 /// share the center point @a center. Drawing that takes place within the outer
 /// circle's area is clipped so that nothing is drawn within the inner circle's
 /// area. Invocation of this method must be balanced by also invoking
-/// removeClippingPath:().
+/// removeClippingPathWithContext:().
 // -----------------------------------------------------------------------------
 + (void) setCircularClippingPathWithContext:(CGContextRef)context
                                      center:(CGPoint)center
@@ -585,7 +586,7 @@
 /// area is fully surrounded by the outer rectangular area. Drawing that takes
 /// place within the outer rectangular area is clipped so that nothing is drawn
 /// within the inner circular area. Invocation of this method must be balanced
-/// by also invoking removeClippingPath:().
+/// by also invoking removeClippingPathWithContext:().
 // -----------------------------------------------------------------------------
 + (void) setCircularClippingPathWithContext:(CGContextRef)context
                                      center:(CGPoint)center
@@ -616,7 +617,8 @@
 /// @brief Configures the drawing context @a context with a rectangular clipping
 /// path with origin and size specified by @a rectangle. Drawing takes place
 /// only within the rectangular area defined by the clipping path. Invocation
-/// of this method must be balanced by also invoking removeClippingPath:().
+/// of this method must be balanced by also invoking
+/// removeClippingPathWithContext:().
 // -----------------------------------------------------------------------------
 + (void) setRectangularClippingPathWithContext:(CGContextRef)context
                                      rectangle:(CGRect)rectangle
@@ -638,7 +640,7 @@
 /// surrounded by the outer rectangular area. Drawing that takes place within
 /// the outer rectangular area is clipped so that nothing is drawn within the
 /// area of the inner rectangular area. Invocation of this method must be
-/// balanced by also invoking removeClippingPath:().
+/// balanced by also invoking removeClippingPathWithContext:().
 // -----------------------------------------------------------------------------
 + (void) setRectangularClippingPathWithContext:(CGContextRef)context
                                 innerRectangle:(CGRect)innerRectangle
@@ -670,7 +672,7 @@
 /// rectangular area is fully surrounded by the outer circular area. Drawing
 /// that takes place within the outer circular area is clipped so that nothing
 /// is drawn within the inner rectangular area. Invocation of this method must
-/// be balanced by also invoking removeClippingPath:().
+/// be balanced by also invoking removeClippingPathWithContext:().
 // -----------------------------------------------------------------------------
 + (void) setRectangularClippingPathWithContext:(CGContextRef)context
                                 innerRectangle:(CGRect)innerRectangle
