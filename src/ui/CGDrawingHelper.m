@@ -158,6 +158,45 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Draws a rectangle with rounded corners with origin and size specified
+/// by @a rectangle. @a cornerRadius specifies the width and height of the
+/// rounded corner sections. The rectangle is either filled, or stroked, or
+/// both, or none.
+///
+/// If @a fillColor is not @e nil the rectangle is filled with @a fillColor.
+///
+/// If @a strokeColor is not @e nil the rectangle is stroked with
+/// @a strokeColor, using the stroke line width @a strokeLineWidth.
+///
+/// If both @a fillColor and @a strokeColor are not @e nil then the rectangle
+/// is both filled and stroked.
+///
+/// If both @a fillColor and @a strokeColor are @e nil then this function
+/// only creates a path without adding any visuals. It is up to the caller to
+/// do something with the path (e.g. clipping).
+// -----------------------------------------------------------------------------
++ (void) drawRoundedRectangleWithContext:(CGContextRef)context
+                               rectangle:(CGRect)rectangle
+                            cornerRadius:(CGSize)cornerRadius
+                               fillColor:(UIColor*)fillColor
+                             strokeColor:(UIColor*)strokeColor
+                         strokeLineWidth:(CGFloat)strokeLineWidth
+{
+  CGPathRef roundedRectanglePath = CGPathCreateWithRoundedRect(rectangle,
+                                                               cornerRadius.width,
+                                                               cornerRadius.height,
+                                                               NULL);
+  CGContextAddPath(context, roundedRectanglePath);
+
+  [CGDrawingHelper fillOrStrokePathWithContext:context
+                                     fillColor:fillColor
+                                   strokeColor:strokeColor
+                               strokeLineWidth:strokeLineWidth];
+
+  CGPathRelease(roundedRectanglePath);
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Draws a triangle that fits within a rectangle with origin and size
 /// specified by @a rectangle. The triangle is either filled, or stroked,
 /// or both, or none.

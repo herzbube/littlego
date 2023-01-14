@@ -50,6 +50,13 @@
                             stoneColor:(enum GoColor)stoneColor
                        strokeLineWidth:(CGFloat)strokeLineWidth;
 
++ (void) drawRoundedRectangleWithContext:(CGContextRef)context
+                               rectangle:(CGRect)rectangle
+                            cornerRadius:(CGSize)cornerRadius
+                               fillColor:(UIColor*)fillColor
+                             strokeColor:(UIColor*)strokeColor
+                         strokeLineWidth:(CGFloat)strokeLineWidth;
+
 + (void) drawTriangleWithContext:(CGContextRef)context
                  insideRectangle:(CGRect)rectangle
                        fillColor:(UIColor*)fillColor
