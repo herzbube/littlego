@@ -195,9 +195,14 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
 
   CGFloat strokeLineWidth = metrics.normalLineWidth * metrics.contentsScale;
 
-  CGPoint drawingRectCenter = CGPointMake(CGRectGetMidX(drawingRect), CGRectGetMidY(drawingRect));
-  CGFloat radius = floorf(MIN(drawingRect.size.width, drawingRect.size.height) / 2);
-  CGFloat clippingPathRadius = radius + strokeLineWidth / 2.0;
+  CGPoint drawingRectCenter;
+  CGFloat clippingPathRadius;
+  CGFloat radius;
+  [NodeTreeViewDrawingHelper circularDrawingParametersInRect:drawingRect
+                                             strokeLineWidth:strokeLineWidth
+                                                      center:&drawingRectCenter
+                                              clippingRadius:&clippingPathRadius
+                                               drawingRadius:&radius];
 
   switch (symbolType)
   {
@@ -350,9 +355,14 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
                                                            withDrawingRectForCell:layerRect
                                                                       withMetrics:metrics];
 
-  CGPoint drawingRectCenter = CGPointMake(CGRectGetMidX(drawingRect), CGRectGetMidY(drawingRect));
-  CGFloat radius = floorf(MIN(drawingRect.size.width, drawingRect.size.height) / 2);
   CGFloat strokeLineWidth = metrics.selectedLineWidth * metrics.contentsScale;
+  
+  CGPoint drawingRectCenter;
+  CGFloat radius;
+  [NodeTreeViewDrawingHelper circularDrawingParametersInRect:drawingRect
+                                             strokeLineWidth:strokeLineWidth
+                                                      center:&drawingRectCenter
+                                               drawingRadius:&radius];
 
   DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.selectedNodeColor, strokeLineWidth);
 
@@ -614,5 +624,117 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
   drawingRect.origin.y -= tileRect.origin.y;
   return drawingRect;
 }
+
+#pragma mark - Public API - Helpers for calculating parameters for drawing in a circular area
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method to calculate the parameters for drawing within a
+/// circular area defined by the bounding rectangle @a rect. The radius of the
+/// circular area is defined by the smaller dimension of the bounding rectangle.
+/// The calculated values are filled into the out parameters @a center,
+/// @a clippingRadius and @a drawingRadius.
+///
+/// @a center is the exact (i.e. not floor'ed) center of the circular area. It
+/// is equal to the center of the bounding rectangle @a rect.
+///
+/// @a clippingRadius is equal to exactly (i.e. not floor'ed) one half of the
+/// smaller dimension of the bounding rectangle @a rect. Together with @a center
+/// this exactly defines the circular area within which drawing should take
+/// place. To enforce this @a clippingRadius can be used to set a circular
+/// clipping path.
+///
+/// @a drawingRadius is set to the radius that can be used to draw a stroked
+/// circle line, where the stroke line width is set to @a strokeLineWidth. The
+/// resulting circle line remains completely within the bounds defined by
+/// @a clippingRadius. @a drawingRadius is floor'ed to the nearest integer
+/// value.
+///
+/// This method does not use any constant values. It can therefore be used for
+/// calculating parameters for drawing into both scaled layers (e.g. CALayer)
+/// and unscaled layers (e.g. CGLayerRef)
+// -----------------------------------------------------------------------------
++ (void) circularDrawingParametersInRect:(CGRect)rect
+                         strokeLineWidth:(CGFloat)strokeLineWidth
+                                  center:(CGPoint*)center
+                          clippingRadius:(CGFloat*)clippingRadius
+                           drawingRadius:(CGFloat*)drawingRadius
+{
+  *center = CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
+
+  // Clipping path is not stroked, so we can use the exact radius without
+  // floor'ing
+  *clippingRadius = MIN(rect.size.width, rect.size.height) / 2.0f;
+
+  // Adjust radius to stay within the rectangle. Also note that we floorf()
+  // only at the end, after all the results and potential rounding errors
+  // have been accumulated
+  *drawingRadius = floorf(*clippingRadius - strokeLineWidth / 2.0f);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method to calculate the parameters for drawing a stroked
+/// circle line that remains within a circular area defined by the bounding
+/// rectangle @a rect. The radius of the circular area is defined by the smaller
+/// dimension of the bounding rectangle. The calculated values are filled into
+/// the out parameters @a center and @a drawingRadius.
+///
+/// @a center is the exact (i.e. not floor'ed) center of the circular area. It
+/// is equal to the center of the bounding rectangle @a rect.
+///
+/// @a drawingRadius is set to the radius that can be used to draw a stroked
+/// circle line, where the stroke line width is set to @a strokeLineWidth. The
+/// resulting circle line is completely within the circular area defined by
+/// the smaller dimension of the bounding rectangle @a rect. @a drawingRadius
+/// is floor'ed to the nearest integer value.
+///
+/// This method does not use any constant values. It can therefore be used for
+/// calculating parameters for drawing into both scaled layers (e.g. CALayer)
+/// and unscaled layers (e.g. CGLayerRef)
+// -----------------------------------------------------------------------------
++ (void) circularDrawingParametersInRect:(CGRect)rect
+                         strokeLineWidth:(CGFloat)strokeLineWidth
+                                  center:(CGPoint*)center
+                           drawingRadius:(CGFloat*)drawingRadius
+{
+  CGFloat clippingRadius;
+  [NodeTreeViewDrawingHelper circularDrawingParametersInRect:rect
+                                             strokeLineWidth:strokeLineWidth
+                                                      center:center
+                                              clippingRadius:&clippingRadius
+                                               drawingRadius:drawingRadius];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method to calculate the parameters for setting a clipping path
+/// to prevent drawing outside of a circular area defined by the bounding
+/// rectangle @a rect. The radius of the circular area is defined by the smaller
+/// dimension of the bounding rectangle. The calculated values are filled into
+/// the out parameters @a center and @a clippingRadius.
+///
+/// @a center is the exact (i.e. not floor'ed) center of the circular area. It
+/// is equal to the center of the bounding rectangle @a rect.
+///
+/// @a clippingRadius is equal to exactly (i.e. not floor'ed) one half of the
+/// smaller dimension of the bounding rectangle @a rect. Together with @a center
+/// this exactly defines the circular area within which drawing should take
+/// place. To enforce this @a clippingRadius can be used to set a circular
+/// clipping path.
+///
+/// This method does not use any constant values. It can therefore be used for
+/// calculating parameters for drawing into both scaled layers (e.g. CALayer)
+/// and unscaled layers (e.g. CGLayerRef)
+// -----------------------------------------------------------------------------
++ (void) circularClippingParametersInRect:(CGRect)rect
+                           clippingCenter:(CGPoint*)clippingCenter
+                           clippingRadius:(CGFloat*)clippingRadius
+{
+  CGFloat drawingRadius;
+  [NodeTreeViewDrawingHelper circularDrawingParametersInRect:rect
+                                             strokeLineWidth:0.0f
+                                                      center:clippingCenter
+                                              clippingRadius:clippingRadius
+                                               drawingRadius:&drawingRadius];
+}
+
 
 @end

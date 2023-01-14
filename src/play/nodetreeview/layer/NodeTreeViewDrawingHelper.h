@@ -81,6 +81,18 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
                               withMetrics:(NodeTreeViewMetrics*)metrics;
 + (CGRect) drawingRectForScaledLayer:(CGLayerRef)layer
                          withMetrics:(NodeTreeViewMetrics*)metrics;
++ (void) circularDrawingParametersInRect:(CGRect)rect
+                         strokeLineWidth:(CGFloat)strokeLineWidth
+                                  center:(CGPoint*)center
+                          clippingRadius:(CGFloat*)clippingRadius
+                           drawingRadius:(CGFloat*)drawingRadius;
++ (void) circularDrawingParametersInRect:(CGRect)rect
+                         strokeLineWidth:(CGFloat)strokeLineWidth
+                                  center:(CGPoint*)center
+                           drawingRadius:(CGFloat*)drawingRadius;
++ (void) circularClippingParametersInRect:(CGRect)rect
+                           clippingCenter:(CGPoint*)clippingCenter
+                           clippingRadius:(CGFloat*)clippingRadius;
 //@}
 
 @end
