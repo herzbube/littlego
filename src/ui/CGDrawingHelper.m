@@ -415,8 +415,9 @@
 /// fill/and or stroke colors that can be used to draw a Go stone with color
 /// @a stoneColor.
 ///
-/// If @a stoneColor is #GoColorBlack then @a fillColor is set to black and
-/// @a strokeColor is set to @e nil.
+/// If @a stoneColor is #GoColorBlack then both @a fillColor and @a strokeColor
+/// are set to black. Note that the black stone must also be stroked to make it
+/// the same size as the white stone.
 ///
 /// If @a stoneColor is #GoColorWhite then @a fillColor is set to white and
 /// @a strokeColor is set to black.
@@ -431,7 +432,7 @@
   if (stoneColor == GoColorBlack)
   {
     *fillColor = [UIColor blackColor];
-    *strokeColor = nil;
+    *strokeColor = [UIColor blackColor];
   }
   else if (stoneColor == GoColorWhite)
   {

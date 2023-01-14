@@ -307,7 +307,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
       drawingRectSymbolMarkup.origin.y += drawingRectSymbolMarkup.size.height;
       // Without this adjustment the text + its shadow are too close to the
       // surrounding circle's bounding line
-      drawingRectSymbolMarkup.origin.y -= 6;
+      drawingRectSymbolMarkup.origin.y -= 3 * metrics.contentsScale;
       [NodeTreeViewDrawingHelper drawNodeSymbolString:@"</>"
                                           withContext:layerContext
                                           drawingRect:drawingRectSymbolMarkup
