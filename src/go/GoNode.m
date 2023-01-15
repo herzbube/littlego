@@ -882,7 +882,37 @@
 {
   if (_firstChild)
   {
-    [_firstChild release];
+    // Using autorelease here instead of release is important so that all the
+    // tree manipulation methods from GoNodeAdditions can work in the way they
+    // are currently implemented. For instance, some of these methods
+    // temporarily remove a node from its current location, only to re-insert
+    // it later in a different location. The node must survive this temporary
+    // removal without being deallocated immediately when the last strong
+    // reference to it goes away. Also, other methods are just built in a way
+    // that would cause a node to be deallocated even though it is still needed
+    // later on.
+    //
+    // The reason why the tree manipulation methods are implemented this way is
+    // that their code was lifted from libsgfc++ and converted to Objective-C
+    // without any special thought applied to memory management. In libsgfc++
+    // the reference counting worked because of std::shared_ptr, but in
+    // Objective-C this concept does not exist.
+    //
+    // One way to fix this would be to adapt the tree manipulation methods. This
+    // would be quite some effort, but might be worthwile.
+    //
+    // A second way to fix memory management that would require less effort
+    // would be to declare the firstChild and nextSibling properties as
+    // "atomic". This would cause the compiler to synthesize the getter methods
+    // with the retain/autorelease idiom. However, as the getters are used
+    // extremely frequently, this would incur quite some overhead to their
+    // currently lean implementation.
+    //
+    // The third way to fix memory management is the one chosen here: By
+    // autoreleasing a previously retained node it is given a chance to live
+    // beyond whatever operation is currently being executed that causes the
+    // node to be removed as first child.
+    [_firstChild autorelease];
     _firstChild = nil;
   }
 
@@ -908,7 +938,9 @@
 {
   if (_nextSibling)
   {
-    [_nextSibling release];
+    // See the implementation of setFirstChildInternal:() for the detailed
+    // reason why we use autorelease here instead of release.
+    [_nextSibling autorelease];
     _nextSibling = nil;
   }
 

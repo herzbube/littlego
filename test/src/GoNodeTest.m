@@ -35,6 +35,10 @@
 /// @brief Class extension with private properties for GoNodeTest.
 // -----------------------------------------------------------------------------
 @interface GoNodeTest()
+// Properties are declared with assign, not retain, so nodes will be deallocated
+// automatically and no tear-down/cleanup is necessary. Furthermore, properties
+// are declared nonatomic so that getters do not use retain/autorelease. This
+// is important so that proper memory management can also be tested.
 @property(nonatomic, assign) GoNode* rootNode;
 @property(nonatomic, assign) GoNode* nodeA;
 @property(nonatomic, assign) GoNode* nodeB;
@@ -71,30 +75,43 @@
 // -----------------------------------------------------------------------------
 - (void) setupNodeTree
 {
-  // Properties are declared with assign, not retain, so nodes will be
-  // deallocated automatically and no tear-down/cleanup is necessary
+  // The root node is created outside the @autoreleasepool block so that it
+  // survives and can be accessed by the invoking test method. All other nodes
+  // are created within the @autoreleasepool block, so when the block ends they
+  // are kept alive only via GoNode property references of properties declared
+  // with "retain". The consequence: When an invoking test method is
+  // manipulating the node tree it is also testing that the tree manipulation
+  // methods implemented in GoNode are using memory management properly.
   self.rootNode = [GoNode node];
-  self.nodeA = [GoNode node];
-  self.nodeB = [GoNode node];
-  self.nodeC = [GoNode node];
-  self.nodeA1 = [GoNode node];
-  self.nodeA2 = [GoNode node];
-  self.nodeA3 = [GoNode node];
-  self.nodeA2a = [GoNode node];
-  self.nodeA2b = [GoNode node];
-  self.nodeA2c = [GoNode node];
+
+  // Nodes that are not added to the tree are not kept alive by the root node,
+  // so to survive they also need to be created outside the @autoreleasepool
+  // block.
   self.freeNode1 = [GoNode node];
   self.freeNode2 = [GoNode node];
 
-  [self.rootNode appendChild:self.nodeA];
-  [self.rootNode appendChild:self.nodeB];
-  [self.rootNode appendChild:self.nodeC];
-  [self.nodeA appendChild:self.nodeA1];
-  [self.nodeA appendChild:self.nodeA2];
-  [self.nodeA appendChild:self.nodeA3];
-  [self.nodeA2 appendChild:self.nodeA2a];
-  [self.nodeA2 appendChild:self.nodeA2b];
-  [self.nodeA2 appendChild:self.nodeA2c];
+  @autoreleasepool
+  {
+    self.nodeA = [GoNode node];
+    self.nodeB = [GoNode node];
+    self.nodeC = [GoNode node];
+    self.nodeA1 = [GoNode node];
+    self.nodeA2 = [GoNode node];
+    self.nodeA3 = [GoNode node];
+    self.nodeA2a = [GoNode node];
+    self.nodeA2b = [GoNode node];
+    self.nodeA2c = [GoNode node];
+
+    [self.rootNode appendChild:self.nodeA];
+    [self.rootNode appendChild:self.nodeB];
+    [self.rootNode appendChild:self.nodeC];
+    [self.nodeA appendChild:self.nodeA1];
+    [self.nodeA appendChild:self.nodeA2];
+    [self.nodeA appendChild:self.nodeA3];
+    [self.nodeA2 appendChild:self.nodeA2a];
+    [self.nodeA2 appendChild:self.nodeA2b];
+    [self.nodeA2 appendChild:self.nodeA2c];
+  }
 }
 
 // -----------------------------------------------------------------------------
