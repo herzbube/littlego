@@ -53,11 +53,11 @@
   NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [testee recalculateCanvas];
 
   // Assert
   NSDictionary* expectedCellsDictionary = @{ [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty] };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -73,7 +73,7 @@
   NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [testee recalculateCanvas];
 
   // Assert
   NSDictionary* expectedCellsDictionary =
@@ -82,7 +82,7 @@
     [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:1],
     [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:2],
   };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -133,7 +133,7 @@
   [self parentNode:move5bNode appendChildNode:[self createBlackMoveNode]];
 
   // Act
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [testee recalculateCanvas];
 
   // Assert
   NSDictionary* expectedCellsDictionary =
@@ -192,7 +192,7 @@
     [self positionWithX:27 y:1]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft part:1],
     [self positionWithX:28 y:1]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove part:2],
   };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -226,7 +226,7 @@
   parentNode = [self parentNode:parentNode appendChildNode:[self createBlackMoveNodeWithAnnotationsAndMarkup]];
 
   // Act
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [testee recalculateCanvas];
 
   // Assert
   NSDictionary* expectedCellsDictionary =
@@ -251,7 +251,7 @@
     // ... or a move
     [self positionWithX:15 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft],
   };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -336,7 +336,7 @@
   [self parentNode:nodeF appendChildNode:[self createBlackMoveNode]];
 
   // Act
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [testee recalculateCanvas];
 
   // Assert
   NSDictionary* expectedCellsDictionary =
@@ -374,7 +374,7 @@
     // nodeM
     [self positionWithX:6 y:2]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft],
   };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -422,7 +422,7 @@
   [self parentNode:nodeF appendChildNode:[self createBlackMoveNode]];
 
   // Act
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [testee recalculateCanvas];
 
   // Assert
   NSDictionary* expectedCellsDictionary =
@@ -470,7 +470,7 @@
     // nodeJ
     [self positionWithX:2 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft],
   };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -486,6 +486,7 @@
 /// gain sufficient space when multipart cells are involved. See comment in
 /// implementation.
 // -----------------------------------------------------------------------------
+
 - (void) testCalculateCanvas_CondenseMoveNodes_BranchingStyleDiagonal_Lines
 {
   // Arrange
@@ -510,7 +511,7 @@
   [self parentNode:nodeF appendChildNode:[self createBlackMoveNode]];
 
   // Act
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [testee recalculateCanvas];
 
   // Assert
   NSDictionary* expectedCellsDictionary =
@@ -586,7 +587,7 @@
     [self positionWithX:7 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft part:1],
     [self positionWithX:8 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove part:2],
   };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -625,7 +626,7 @@
   [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
 
   // Act
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [testee recalculateCanvas];
 
   // Assert
   NSDictionary* expectedCellsDictionary =
@@ -652,7 +653,7 @@
     [self positionWithX:8 y:1]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove part:3],
     [self positionWithX:9 y:1]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove part:4],
   };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -689,7 +690,7 @@
   [self parentNode:nodeF appendChildNode:[self createBlackMoveNode]];
 
   // Act
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [testee recalculateCanvas];
 
   // Assert
   NSDictionary* expectedCellsDictionary =
@@ -769,7 +770,7 @@
     [self positionWithX:7 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft part:1],
     [self positionWithX:8 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove part:2],
   };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -844,7 +845,7 @@
   [self parentNode:nodeL appendChildNode:[self createBlackMoveNodeWithMoveNumber:5]];
 
   // Act
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [testee recalculateCanvas];
 
   // Assert
   NSDictionary* expectedCellsDictionary =
@@ -900,7 +901,7 @@
     // nodeQ
     [self positionWithX:10 y:2]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft],
   };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -944,7 +945,7 @@
   [self parentNode:nodeD appendChildNode:[self createBlackMoveNodeWithMoveNumber:2]];
 
   // Act
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [testee recalculateCanvas];
 
   // Assert
   NSDictionary* expectedCellsDictionary =
@@ -976,7 +977,7 @@
     // nodeG
     [self positionWithX:5 y:2]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft],
   };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -1025,7 +1026,7 @@
   [self parentNode:nodeE appendChildNode:[self createBlackMoveNodeWithMoveNumber:2]];
 
   // Act
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [testee recalculateCanvas];
 
   // Assert
   NSDictionary* expectedCellsDictionary =
@@ -1067,7 +1068,7 @@
     // nodeH
     [self positionWithX:6 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft],
   };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -1175,7 +1176,7 @@
   [self parentNode:nodeK appendChildNode:[self createAnnotationNode]];
 
   // Act
-  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [testee recalculateCanvas];
 
   // Assert
   NSDictionary* expectedCellsDictionary =
@@ -1270,7 +1271,7 @@
     [self positionWithX:7 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft part:1],
     [self positionWithX:8 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations part:2],
   };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -1454,7 +1455,7 @@
     [self positionWithX:21 y:6]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft part:1],
     [self positionWithX:22 y:6]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove part:2],
   };
-  XCTAssertEqualObjects([testee getCellsDictionary], expectedCellsDictionary);
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 #pragma mark - Helper methods - Configure NodeTreeViewModel
@@ -2004,6 +2005,26 @@
   node.goNodeAnnotation = [self createNodeAnnotation];
   node.goNodeMarkup = [self createNodeMarkup];
   return node;
+}
+
+#pragma mark - Helper methods - Assert
+
+// -----------------------------------------------------------------------------
+/// @brief Assert helper method that verifies that the positions and cells in
+/// @a actualCellsDictionary match the expected ones in
+/// @a expectedCellsDictionary.
+// -----------------------------------------------------------------------------
+- (void) assertCells:(NSDictionary*)actualCellsDictionary areEqualToExpectedCells:(NSDictionary*)expectedCellsDictionary
+{
+  XCTAssertEqual(actualCellsDictionary.allKeys.count, expectedCellsDictionary.allKeys.count);
+
+  [expectedCellsDictionary enumerateKeysAndObjectsUsingBlock:^(NodeTreeViewCellPosition* expectedPosition, NodeTreeViewCell* expectedCell, BOOL* stop)
+  {
+    NSArray* tuple = actualCellsDictionary[expectedPosition];
+    NodeTreeViewCell* actualCell = tuple.firstObject;
+
+    XCTAssertEqualObjects(actualCell, expectedCell);
+  }];
 }
 
 @end
