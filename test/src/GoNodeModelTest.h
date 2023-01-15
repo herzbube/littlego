@@ -37,6 +37,12 @@
 - (void) testDiscardNodesFromIndex;
 - (void) testDiscardLeafNode;
 - (void) testDiscardAllNodes;
+- (void) testDiscardNodesFromIndex_FirstDiscardedNodeHasNextSibling;
+- (void) testDiscardLeafNode_FirstDiscardedNodeHasNextSibling;
+- (void) testDiscardAllNodes_FirstDiscardedNodeHasNextSibling;
+- (void) testDiscardNodesFromIndex_FirstDiscardedNodeHasPreviousSibling;
+- (void) testDiscardLeafNode_FirstDiscardedNodeHasPreviousSibling;
+- (void) testDiscardAllNodes_FirstDiscardedNodeHasPreviousSibling;
 - (void) testNumberOfNodes;
 - (void) testNumberOfMoves;
 - (void) testRootNode;

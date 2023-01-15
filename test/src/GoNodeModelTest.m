@@ -29,8 +29,24 @@
 #import <go/GoPoint.h>
 
 
-@implementation GoNodeModelTest
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for GoNodeModelTest.
+// -----------------------------------------------------------------------------
+@interface GoNodeModelTest()
+@property(nonatomic, assign) GoNode* nodeA;
+@property(nonatomic, assign) GoNode* nodeB;
+@property(nonatomic, assign) GoNode* nodeC;
+@property(nonatomic, assign) GoNode* nodeD;
+@property(nonatomic, assign) GoNode* nodeE;
+@property(nonatomic, assign) GoNode* nodeF;
+@property(nonatomic, assign) GoNode* nodeG;
+@property(nonatomic, assign) GoNode* nodeH;
+@property(nonatomic, assign) GoNode* nodeI;
+@property(nonatomic, assign) GoNode* nodeJ;
+@end
 
+
+@implementation GoNodeModelTest
 
 // -----------------------------------------------------------------------------
 /// @brief Checks the initial state of the GoNodeModel object after a new
@@ -466,6 +482,260 @@
 
   XCTAssertThrowsSpecificNamed([nodeModel discardAllNodes],
                                NSException, NSRangeException, @"discardAllNodes with only root node left");
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that sets up a tree of nodes on which test methods with
+/// suffix "FirstDiscardedNodeHasNextSibling" or suffix
+/// "FirstDiscardedNodeHasPreviousSibling" can operate.
+///
+/// This is a schematic of the node tree being set up. The labels illustrate
+/// what happens if node B, which has a next sibling (node E), is being
+/// discarded. Some tests are discarding node C and node A, respectively, to
+/// prove that the correct same thing is happening when other discard methods
+/// in GoNodeModel are used. Last but not least, there are also tests that
+/// verify that the correct thing happens when a node has a previous sibling
+/// but no next sibling - nodes D, H and I, respectively are discarded for
+/// testing these cases.
+/// @verbatim
+///      +-- branching node
+///      |    +-- first node to discard
+///      |    |    +-- current leaf node
+///      v    v    v
+/// o----A----B----C        <-- current variation (1 move)
+/// |    |    |
+/// |    |    +----D----E   <-- other variation, not involved in node B discard (3 moves)
+/// |    |    +-- next sibling of first node to discard => replaces node to discard
+/// |    |    v
+/// |    +----F----G----H   <-- variation becomes the new current variation (2 moves)
+/// |    |              ^
+/// |    |              +-- new leaf node
+/// |    +----I             <-- variation does not become the new current variation (1 move)
+/// +----J                  <-- other variation, not involved in node B discard (0 moves)
+/// @verbatim
+// -----------------------------------------------------------------------------
+- (void) setupNodeTree_FirstDiscardedNodeHasNextOrPreviousSibling
+{
+  self.nodeA = [GoNode node];
+  self.nodeB = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];;
+  self.nodeC = [GoNode node];
+  self.nodeD = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:self.nodeB.goMove]];;
+  self.nodeE = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];;
+  self.nodeF = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];;
+  self.nodeG = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:self.nodeE.goMove]];;
+  self.nodeH = [GoNode node];
+  self.nodeI = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];;
+  self.nodeJ = [GoNode node];
+
+  GoNodeModel* nodeModel = m_game.nodeModel;
+  [nodeModel.rootNode setFirstChild:self.nodeA];
+  [self.nodeA setFirstChild:self.nodeB];
+  [self.nodeB setFirstChild:self.nodeC];
+  [self.nodeB appendChild:self.nodeD];
+  [self.nodeA appendChild:self.nodeF];
+  [self.nodeD setFirstChild:self.nodeE];
+  [self.nodeF setFirstChild:self.nodeG];
+  [self.nodeG setFirstChild:self.nodeH];
+  [self.nodeA appendChild:self.nodeI];
+  [nodeModel.rootNode appendChild:self.nodeJ];
+
+  [nodeModel changeToVariationContainingNode:nodeModel.rootNode];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the discardNodesFromIndex:() method when the first node to
+/// discard has a next sibling.
+/// -----------------------------------------------------------------------------
+- (void) testDiscardNodesFromIndex_FirstDiscardedNodeHasNextSibling
+{
+  // Arrange
+  [self setupNodeTree_FirstDiscardedNodeHasNextOrPreviousSibling];
+  GoNodeModel* nodeModel = m_game.nodeModel;
+  XCTAssertEqualObjects(nodeModel.leafNode, self.nodeC);
+  XCTAssertEqual(nodeModel.numberOfNodes, 4);
+  XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertEqualObjects(self.nodeA.lastChild, self.nodeI);
+  XCTAssertEqualObjects(self.nodeF.nextSibling, self.nodeI);
+
+  // Act
+  int indexOfNodeToDiscard = [nodeModel indexOfNode:self.nodeB];
+  [nodeModel discardNodesFromIndex:indexOfNodeToDiscard];
+
+  // Assert
+  XCTAssertEqualObjects(nodeModel.leafNode, self.nodeH);
+  XCTAssertEqual(nodeModel.numberOfNodes, 5);
+  XCTAssertEqual(nodeModel.numberOfMoves, 2);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeF], 2);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeG], 3);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeH], 4);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeI], -1);
+  XCTAssertEqualObjects(self.nodeA.firstChild, self.nodeF);
+  XCTAssertEqualObjects(self.nodeA.lastChild, self.nodeI);
+  XCTAssertEqualObjects(self.nodeF.nextSibling, self.nodeI);
+  XCTAssertNil(self.nodeB.parent);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the testDiscardLeafNode:() method when the leaf node to
+/// discard has a next sibling.
+/// -----------------------------------------------------------------------------
+- (void) testDiscardLeafNode_FirstDiscardedNodeHasNextSibling
+{
+  // Arrange
+  [self setupNodeTree_FirstDiscardedNodeHasNextOrPreviousSibling];
+  GoNodeModel* nodeModel = m_game.nodeModel;
+  XCTAssertEqualObjects(nodeModel.leafNode, self.nodeC);
+  XCTAssertEqual(nodeModel.numberOfNodes, 4);
+  XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertEqualObjects(nodeModel.rootNode.lastChild, self.nodeJ);
+  XCTAssertEqualObjects(self.nodeA.nextSibling, self.nodeJ);
+
+  // Act
+  [nodeModel discardLeafNode];
+
+  // Assert
+  XCTAssertEqualObjects(nodeModel.leafNode, self.nodeE);
+  XCTAssertEqual(nodeModel.numberOfNodes, 5);
+  XCTAssertEqual(nodeModel.numberOfMoves, 3);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeD], 3);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeE], 4);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeC], -1);
+  XCTAssertEqualObjects(self.nodeB.firstChild, self.nodeD);
+  XCTAssertEqualObjects(self.nodeB.lastChild, self.nodeD);
+  XCTAssertNil(self.nodeC.parent);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the testDiscardAllNodes:() method when the direct child
+/// of the root node, which is to be discarded, has a next sibling.
+/// -----------------------------------------------------------------------------
+- (void) testDiscardAllNodes_FirstDiscardedNodeHasNextSibling
+{
+  // Arrange
+  [self setupNodeTree_FirstDiscardedNodeHasNextOrPreviousSibling];
+  GoNodeModel* nodeModel = m_game.nodeModel;
+  XCTAssertEqualObjects(nodeModel.leafNode, self.nodeC);
+  XCTAssertEqual(nodeModel.numberOfNodes, 4);
+  XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertEqualObjects(self.nodeB.lastChild, self.nodeD);
+  XCTAssertEqualObjects(self.nodeC.nextSibling, self.nodeD);
+
+  // Act
+  [nodeModel discardAllNodes];
+
+  // Assert
+  XCTAssertEqualObjects(nodeModel.leafNode, self.nodeJ);
+  XCTAssertEqual(nodeModel.numberOfNodes, 2);
+  XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeJ], 1);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeA], -1);
+  XCTAssertEqualObjects(nodeModel.rootNode.firstChild, self.nodeJ);
+  XCTAssertEqualObjects(nodeModel.rootNode.lastChild, self.nodeJ);
+  XCTAssertNil(self.nodeA.parent);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the discardNodesFromIndex:() method when the first node to
+/// discard has a previous sibling.
+/// -----------------------------------------------------------------------------
+- (void) testDiscardNodesFromIndex_FirstDiscardedNodeHasPreviousSibling
+{
+  // Arrange
+  [self setupNodeTree_FirstDiscardedNodeHasNextOrPreviousSibling];
+  GoNodeModel* nodeModel = m_game.nodeModel;
+  [nodeModel changeToVariationContainingNode:self.nodeE];
+  XCTAssertEqualObjects(nodeModel.leafNode, self.nodeE);
+  XCTAssertEqual(nodeModel.numberOfNodes, 5);
+  XCTAssertEqual(nodeModel.numberOfMoves, 3);
+  XCTAssertEqualObjects(self.nodeB.firstChild, self.nodeC);
+  XCTAssertEqualObjects(self.nodeB.lastChild, self.nodeD);
+  XCTAssertEqualObjects(self.nodeC.nextSibling, self.nodeD);
+
+  // Act
+  int indexOfNodeToDiscard = [nodeModel indexOfNode:self.nodeD];
+  [nodeModel discardNodesFromIndex:indexOfNodeToDiscard];
+
+  // Assert
+  XCTAssertEqual(nodeModel.leafNode, self.nodeC);
+  XCTAssertEqual(nodeModel.numberOfNodes, 4);
+  XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeC], 3);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeD], -1);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeE], -1);
+  XCTAssertEqualObjects(self.nodeB.firstChild, self.nodeC);
+  XCTAssertEqualObjects(self.nodeB.lastChild, self.nodeC);
+  XCTAssertNil(self.nodeC.nextSibling);
+  XCTAssertNil(self.nodeD.parent);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the testDiscardLeafNode:() method when the leaf node to
+/// discard has a previous sibling.
+/// -----------------------------------------------------------------------------
+- (void) testDiscardLeafNode_FirstDiscardedNodeHasPreviousSibling
+{
+  // Arrange
+  [self setupNodeTree_FirstDiscardedNodeHasNextOrPreviousSibling];
+  GoNodeModel* nodeModel = m_game.nodeModel;
+  [nodeModel changeToVariationContainingNode:self.nodeI];
+  XCTAssertEqualObjects(nodeModel.leafNode, self.nodeI);
+  XCTAssertEqual(nodeModel.numberOfNodes, 3);
+  XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertEqualObjects(self.nodeA.firstChild, self.nodeB);
+  XCTAssertEqualObjects(self.nodeA.lastChild, self.nodeI);
+  XCTAssertEqualObjects(self.nodeB.nextSibling, self.nodeF);
+  XCTAssertEqualObjects(self.nodeF.nextSibling, self.nodeI);
+
+  // Act
+  [nodeModel discardLeafNode];
+
+  // Assert
+  XCTAssertEqual(nodeModel.leafNode, self.nodeH);
+  XCTAssertEqual(nodeModel.numberOfNodes, 5);
+  XCTAssertEqual(nodeModel.numberOfMoves, 2);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeF], 2);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeG], 3);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeH], 4);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeI], -1);
+  XCTAssertEqualObjects(self.nodeA.firstChild, self.nodeB);
+  XCTAssertEqualObjects(self.nodeA.lastChild, self.nodeF);
+  XCTAssertEqualObjects(self.nodeB.nextSibling, self.nodeF);
+  XCTAssertNil(self.nodeF.nextSibling);
+  XCTAssertNil(self.nodeI.parent);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the testDiscardAllNodes:() method when the direct child
+/// of the root node, which is to be discarded, has a previous sibling.
+/// -----------------------------------------------------------------------------
+- (void) testDiscardAllNodes_FirstDiscardedNodeHasPreviousSibling
+{
+  // Arrange
+  [self setupNodeTree_FirstDiscardedNodeHasNextOrPreviousSibling];
+  GoNodeModel* nodeModel = m_game.nodeModel;
+  [nodeModel changeToVariationContainingNode:self.nodeJ];
+  XCTAssertEqualObjects(nodeModel.leafNode, self.nodeJ);
+  XCTAssertEqual(nodeModel.numberOfNodes, 2);
+  XCTAssertEqual(nodeModel.numberOfMoves, 0);
+  XCTAssertEqualObjects(nodeModel.rootNode.firstChild, self.nodeA);
+  XCTAssertEqualObjects(nodeModel.rootNode.lastChild, self.nodeJ);
+  XCTAssertEqualObjects(self.nodeA.nextSibling, self.nodeJ);
+
+  // Act
+  [nodeModel discardAllNodes];
+
+  // Assert
+  XCTAssertEqual(nodeModel.leafNode, self.nodeC);
+  XCTAssertEqual(nodeModel.numberOfNodes, 4);
+  XCTAssertEqual(nodeModel.numberOfMoves, 1);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeA], 1);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeB], 2);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeC], 3);
+  XCTAssertEqual([nodeModel indexOfNode:self.nodeJ], -1);
+  XCTAssertEqualObjects(nodeModel.rootNode.firstChild, self.nodeA);
+  XCTAssertEqualObjects(nodeModel.rootNode.lastChild, self.nodeA);
+  XCTAssertNil(self.nodeA.nextSibling);
+  XCTAssertNil(self.nodeJ.parent);
 }
 
 // -----------------------------------------------------------------------------

@@ -249,6 +249,31 @@
   XCTAssertEqual(self.nodeA2b.parent, nil);
   XCTAssertEqual(self.nodeA2c.parent, testee);
 
+  // Replacing firstChild with the nextSibling of the current firstChild retains
+  // only the nextSibling
+  [self setupNodeTree];
+  testee = self.nodeA2;
+  testee.firstChild = self.nodeA2b;
+  XCTAssertNil(self.nodeA2a.parent);
+  XCTAssertNil(self.nodeA2a.nextSibling);
+  XCTAssertEqualObjects(self.nodeA2b.parent, testee);
+  XCTAssertNil(self.nodeA2b.nextSibling);
+  XCTAssertNil(self.nodeA2c.parent);
+  XCTAssertNil(self.nodeA2c.nextSibling);
+  XCTAssertEqualObjects(testee.firstChild, self.nodeA2b);
+
+  // Replacing firstChild with the lastChild retains only the lastChild
+  [self setupNodeTree];
+  testee = self.nodeA2;
+  testee.firstChild = self.nodeA2c;
+  XCTAssertNil(self.nodeA2a.parent);
+  XCTAssertNil(self.nodeA2a.nextSibling);
+  XCTAssertNil(self.nodeA2b.parent);
+  XCTAssertNil(self.nodeA2b.nextSibling);
+  XCTAssertEqualObjects(self.nodeA2c.parent, testee);
+  XCTAssertNil(self.nodeA2c.nextSibling);
+  XCTAssertEqualObjects(testee.lastChild, self.nodeA2c);
+
   XCTAssertThrowsSpecificNamed([testee setFirstChild:testee],
                                NSException, NSInvalidArgumentException, @"setFirstChild: node cannot be its own first child");
   XCTAssertThrowsSpecificNamed([testee setFirstChild:self.rootNode],
