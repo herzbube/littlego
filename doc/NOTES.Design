@@ -284,3 +284,117 @@ user interface now lumps Players and Profiles together so that there is now
 an effective 1:1 relatiionship between the two. Only the "human vs. human games"
 profile can still be seen standalone, but the user interface sells this as a
 "background" computer player.
+
+
+Drawing the node tree
+---------------------
+Unlike the Go board, the node tree is not resized to the size of the screen,
+because with many moves each node in the tree would quickly become too small
+to distinguish, even to the point where the entire tree structure may no longer
+be recognizable. Instead, drawing artifacts in the node tree are assigned a
+fixed size, and as a consequence the node tree drawing canvas grows or shrinks
+whenever nodes are added to or removed from the tree. In short, this is the
+ideal use case for a scroll view (UIScrollView).
+
+To strike a balance between CPU and memory usage, the same tiling/layering
+approach that is used for drawing the Go board is also used for drawing the
+node tree. For details see the section "Drawing the Go board" further up in this
+document.
+
+
+Node tree view model
+--------------------
+When drawing the Go board, the drawing routines can directly use the data from
+the Go model classes, because Go board intersections are uniformly spaced and
+sized, so each intersection can be mapped to screen coordinates with only
+minimal calculations, and the intersection contents can then be directly drawn
+at that location.
+
+This is not possible for the node tree because a node's position in the tree
+is not easily calculable in any kind of x/y coordinate system. The basic problem
+to be solved here is: On which y-coordinate can the branch in which a node
+"lives" be drawn? Additional difficulty comes from user preferences, which
+influence where a node should be drawn (align move nodes), how much space a node
+occupies (condense move nodes), or how much space a branch occupies (branching
+style).
+
+Because of all of this, the node tree data available from GoNodeModel is not
+directly suitable for consumption by the node tree drawing routines. Instead
+an intermediate "view model" is added to create a design similar to the MVVM
+design pattern. These are the main participants in the design:
+- GoNodeModel and GoNode (with its tree-based API) are the basic model classes.
+- NodeTreeView is the main view, delegating the actual drawing to its tile
+  subviews NodeTreeTileView and the layers they are composed of.
+- NodeTreeViewCanvas is the main view model whose data is consumed by
+  NodeTreeView et al. NodeTreeViewCanvas updates its data whenever changes in
+  the underlying model classes (GoNodeModel/GoNode) occur.
+- NodeTreeViewMetrics is a supplementary view model, which provides locations
+  and sizes (i.e. "metrics") of node tree elements that can be used to draw
+  those elements.
+
+Other contributors are:
+- NodeTreeViewController, which is the main UIViewController for NodeTreeView.
+- NodeTreeViewModel, which holds user preferences and other data that influence
+  how NodeTreeViewCanvas and (to some extent) NodeTreeViewMetrics calculate
+  their data.
+
+
+Tabular node tree data model
+----------------------------
+Assuming that the node tree view draws all nodes with a uniform width and
+height, it is easy to see that the node tree can be described with a tabular
+model: Each node exists in a given column on a given row, in other words in a
+cell identified by the column/row number. Given that cells have a uniform width
+and height, a cell's column/row number identification can then be easily
+translated into screen coordinates.
+
+Conversely, given some screen coordinates it is easy to calculate the column/row
+number of the cell that occupies the screen coordinate, and the cell's content
+can then be looked up in the tabular data model. Cell contents can be either
+a node, or lines connecting nodes, or a node and some lines, or even nothing.
+
+The user preference "condense moves" changes all that, because the basic
+assumption that all nodes are drawn with uniform width and height is no longer
+valid: When the user preference is enabled, the affected move nodes need to be
+drawn with less width than all other nodes.
+
+One reacton to the change could be to assume a non-tabular data model with the
+following properties:
+- Each row has cells of differing widths.
+- The start/end of cells on different rows do not need to be aligned most of
+  the time.
+- BUT: The start of cells on different rows needs to be aligned at branching
+  nodes in the tree. Also they need to be aligned if the user preference
+  "align move nodes" is enabled.
+
+With such a non-tabular data model, how is a node tree view tile supposed to
+determine the content it should display? The only possible answer is that the
+data model needs to keep an account of individual cell widths, down to the point
+level, and that tiles need to query the data model based on their start/end
+points. Moreover, since branching points require lines to be drawn that span
+multiple rows, the data model needs to specify positioning of these lines on
+the point level.
+
+Conclusion: Although feasible, such a non-tabular data model is undesirable
+because it contains almost no abstraction from the drawing canvas - it would
+even need to be aware of the positioning of row-spanning lines.
+
+With only a small change to the original data model's design, it is possible to
+retain the model's tabular nture and again achieve the desired level of
+abstraction from the drawing canvas. The new model has these properties:
+- The model is tabular.
+- All table cells have the same width.
+- The model is aware that nodes can be condensed, or uncondensed.
+- A condensed node occupies exactly one cell.
+- An uncondensed node occupies <n> cells. What is important here is not the
+  exact number, but that all uncondensed nodes occupy the same number of cells.
+
+With this data model, to determine the content of a node tree view tile the
+following needs to be known:
+- The width of a cell in drawing points
+- The tile width in drawing points
+- The tile x-position in drawing points
+
+The node tree view tile now knows which cells on each row it needs to draw, and
+can now query the data model based on the x/y position of cells (or column/row
+number if you like).

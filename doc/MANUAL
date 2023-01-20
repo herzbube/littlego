@@ -1913,6 +1913,20 @@ are explained in the "Scoring" help section.
 
 
 --------------------------------------------------------------------------------
+The node tree
+--------------------------------------------------------------------------------
+
+TODO xxx Write this chapter. Below are some preliminary notes.
+
+Condense moves: The main function of this is to reduce the visibility of
+regular move sequences and emphasize nodes with outstanding content,
+specifically branching points where game variations occur, but also nodes that
+contain annotations. As a side-effect, so to speak, it reduces the size of the
+node tree so that less scrolling is needed to go from the top of the tree to its
+base, or vice versa.
+
+
+--------------------------------------------------------------------------------
 The archive
 --------------------------------------------------------------------------------
 
