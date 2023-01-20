@@ -103,7 +103,7 @@
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [center addObserver:self selector:@selector(nodeTreeLayoutDidChange:) name:nodeTreeLayoutDidChange object:nil];
+  [center addObserver:self selector:@selector(goNodeTreeLayoutDidChange:) name:goNodeTreeLayoutDidChange object:nil];
   [center addObserver:self selector:@selector(currentGameVariationDidChange:) name:currentGameVariationDidChange object:nil];
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
@@ -140,9 +140,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #nodeTreeLayoutDidChange notification.
+/// @brief Responds to the #goNodeTreeLayoutDidChange notification.
 // -----------------------------------------------------------------------------
-- (void) nodeTreeLayoutDidChange:(NSNotification*)notification
+- (void) goNodeTreeLayoutDidChange:(NSNotification*)notification
 {
   self.canvasNeedsUpdate = true;
   self.notificationToPostAfterCanvasUpdate = nodeTreeViewContentDidChange;

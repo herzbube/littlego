@@ -107,7 +107,7 @@
 
   @try
   {
-    [center postNotificationName:currentGameVariationWillChange object:self.node];
+    [center postNotificationName:currentGameVariationWillChange object:nil];
 
     [nodeModel changeToVariationContainingNode:self.node];
 
@@ -134,7 +134,7 @@
       [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
     }
 
-    [center postNotificationName:currentGameVariationDidChange object:self.node];
+    [center postNotificationName:currentGameVariationDidChange object:nil];
   }
   @finally
   {

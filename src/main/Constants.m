@@ -81,9 +81,16 @@ NSString* boardViewPanningGestureWillEnd = @"BoardViewPanningGestureWillEnd";;
 NSString* boardViewStoneLocationDidChange = @"BoardViewStoneLocationDidChange";
 NSString* boardViewMarkupLocationDidChange = @"BoardViewMarkupLocationDidChange";
 NSString* boardViewSelectionRectangleDidChange = @"BoardViewSelectionRectangleDidChange";
+// Go node notifications
+NSString* goNodeTreeLayoutDidChange = @"GoNodeTreeLayoutDidChange";
+NSString* goNodeRepresentationInTreeViewDidChange = @"GoNodeRepresentationInTreeViewDidChange";
+// Game variation notifications
+NSString* numberOfBoardPositionsDidChange = @"NumberOfBoardPositionsDidChange";
+NSString* currentBoardPositionDidChange = @"CurrentBoardPositionDidChange";
+NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
+NSString* currentGameVariationWillChange = @"CurrentGameVariationWillChange";
+NSString* currentGameVariationDidChange = @"CurrentGameVariationDidChange";
 // Node tree view notifications
-NSString* nodeTreeLayoutDidChange = @"NodeTreeLayoutDidChange";
-NSString* nodeRepresentationInTreeViewDidChange = @"NodeRepresentationInTreeViewDidChange";
 NSString* nodeTreeViewContentDidChange = @"NodeTreeViewContentDidChange";
 NSString* nodeTreeViewCondenseMoveNodesDidChange = @"NodeTreeViewCondenseMoveNodesDidChange";
 NSString* nodeTreeViewAlignMoveNodesDidChange = @"NodeTreeViewAlignMoveNodesDidChange";
@@ -93,11 +100,6 @@ NSString* nodeTreeViewSelectedNodeDidChange = @"NodeTreeViewSelectedNodeDidChang
 // Other notifications
 NSString* longRunningActionStarts = @"LongRunningActionStarts";
 NSString* longRunningActionEnds = @"LongRunningActionEnds";
-NSString* numberOfBoardPositionsDidChange = @"NumberOfBoardPositionsDidChange";
-NSString* currentBoardPositionDidChange = @"CurrentBoardPositionDidChange";
-NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
-NSString* currentGameVariationWillChange = @"CurrentGameVariationWillChange";
-NSString* currentGameVariationDidChange = @"CurrentGameVariationDidChange";
 NSString* playersAndProfilesWillReset = @"PlayersAndProfilesWillReset";
 NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
 NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";

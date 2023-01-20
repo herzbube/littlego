@@ -202,6 +202,12 @@ enum PlayCommandType
   GoBoardPosition* boardPosition = game.boardPosition;
   int indexOfFirstNodeToDiscard = boardPosition.currentBoardPosition + 1;
 
+  // TODO xxx Variation support. This does not work if the first node to discard
+  // has a previous or next sibling. When this is the case the move that is
+  // played after the discard will be added to the leaf node of the game
+  // variation that is being added to the current game variation. Also the
+  // old/new number of board positions might be the same.
+
   // Adjust number of board positions before nodes are discarded. If we were
   // adjusting the number of board positions after discarding nodes, there
   // would be a small gap in which someone who works with board positions might
@@ -216,7 +222,7 @@ enum PlayCommandType
   GoNodeModel* nodeModel = game.nodeModel;
   [nodeModel discardNodesFromIndex:indexOfFirstNodeToDiscard];
 
-  [center postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
 
   return true;
 }

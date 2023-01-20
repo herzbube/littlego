@@ -877,51 +877,28 @@ extern NSString* boardViewSelectionRectangleDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
-/// @name Node tree view notifications
+/// @name Go node notifications
+///
+/// These notifications are sent when the Go node data model model changes.
 // -----------------------------------------------------------------------------
 //@{
 /// @brief Is sent to indicate that something about the layout of the tree of
 /// nodes in GoNodeModel has changed, i.e. one or more nodes were added, deleted
 /// or moved to a new location.
-extern NSString* nodeTreeLayoutDidChange;
+extern NSString* goNodeTreeLayoutDidChange;
 /// @brief Is sent to indicate that the content of a node has changed in a way
 /// that causes its representation in the node tree view to change. The GoNode
 /// object whose content changed is associated with the notification.
-extern NSString* nodeRepresentationInTreeViewDidChange;
-/// @brief Is sent to indicate that the content of the entire node tree view
-/// has changed.
-extern NSString* nodeTreeViewContentDidChange;
-/// @brief Is sent to indicate that the condense move nodes user preference
-/// has changed.
-extern NSString* nodeTreeViewCondenseMoveNodesDidChange;
-/// @brief Is sent to indicate that the align move nodes user preference
-/// has changed.
-extern NSString* nodeTreeViewAlignMoveNodesDidChange;
-/// @brief Is sent to indicate that the branching style user preference
-/// has changed.
-extern NSString* nodeTreeViewBranchingStyleDidChange;
-/// @brief Is sent to indicate that the node selection style user preference
-/// has changed.
-extern NSString* nodeTreeViewNodeSelectionStyleDidChange;
-/// @brief Is sent to indicate that the selected node in the node tree view has
-/// changed. An NSArray object is associated with the notification that contains
-/// NodeTreeViewCellPosition objects that indicate which cells on the canvas
-/// display the node that is currently selected. The list is empty if currently
-/// no node is selected.
-extern NSString* nodeTreeViewSelectedNodeDidChange;
+extern NSString* goNodeRepresentationInTreeViewDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
-/// @name Other notifications
+/// @name Game variation notifications
+///
+/// These notifications are sent when something about the current game variation
+/// changes.
 // -----------------------------------------------------------------------------
 //@{
-/// @brief Is sent when the first of a nested series of long-running actions
-/// starts. See LongRunningActionCounter for a detailed discussion of the
-/// concept.
-extern NSString* longRunningActionStarts;
-/// @brief Is sent when the last of a nested series of long-running actions
-/// ends. See LongRunningActionCounter for a detailed discussion of the concept.
-extern NSString* longRunningActionEnds;
 /// @brief Is sent to indicate that the number of board positions in
 /// GoBoardPosition has changed.
 ///
@@ -985,8 +962,51 @@ extern NSString* currentGameVariationWillChange;
 ///   #currentGameVariationWillChange is sent, because the game variation change
 ///   and the number of board positions change can be seen as belonging to the
 ///   same "transaction" that is bounded by the willChange/didChange
-///   notifications.
+///   notifications. #numberOfBoardPositionsDidChange may not be sent if the
+///   new game variation has the same number of board positions as the old one.
 extern NSString* currentGameVariationDidChange;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Node tree view notifications
+///
+/// These notifications are sent solely within the node tree view context.
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that the content of the entire node tree view
+/// has changed.
+extern NSString* nodeTreeViewContentDidChange;
+/// @brief Is sent to indicate that the condense move nodes user preference
+/// has changed.
+extern NSString* nodeTreeViewCondenseMoveNodesDidChange;
+/// @brief Is sent to indicate that the align move nodes user preference
+/// has changed.
+extern NSString* nodeTreeViewAlignMoveNodesDidChange;
+/// @brief Is sent to indicate that the branching style user preference
+/// has changed.
+extern NSString* nodeTreeViewBranchingStyleDidChange;
+/// @brief Is sent to indicate that the node selection style user preference
+/// has changed.
+extern NSString* nodeTreeViewNodeSelectionStyleDidChange;
+/// @brief Is sent to indicate that the selected node in the node tree view has
+/// changed. An NSArray object is associated with the notification that contains
+/// NodeTreeViewCellPosition objects that indicate which cells on the canvas
+/// display the node that is currently selected. The list is empty if currently
+/// no node is selected.
+extern NSString* nodeTreeViewSelectedNodeDidChange;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Other notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent when the first of a nested series of long-running actions
+/// starts. See LongRunningActionCounter for a detailed discussion of the
+/// concept.
+extern NSString* longRunningActionStarts;
+/// @brief Is sent when the last of a nested series of long-running actions
+/// ends. See LongRunningActionCounter for a detailed discussion of the concept.
+extern NSString* longRunningActionEnds;
 /// @brief Is sent to indicate that players and profiles are about to be reset
 /// to their factory defaults. Is sent before #goGameWillCreate.
 extern NSString* playersAndProfilesWillReset;

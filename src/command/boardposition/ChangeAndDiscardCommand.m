@@ -126,6 +126,10 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt(). Returns true on success, false on failure.
+///
+/// This method changes the current board position in preparation of the
+/// discard. When this method returns, all board positions after the current
+/// one can be discarded. Read the class documentation for details.
 // -----------------------------------------------------------------------------
 - (bool) changeBoardPositionIfNecessary
 {
@@ -200,6 +204,11 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt(). Returns true on success, false on failure.
+///
+/// This method discards all board positions after the current one. This method
+/// expects that the current board position was changed before this method was
+/// invoked, so that the discard operation does what is documented in the
+/// class documentation.
 // -----------------------------------------------------------------------------
 - (bool) discardNodesIfNecessary
 {
@@ -212,20 +221,36 @@
   if (indexOfFirstNodeToDiscard >= numberOfNodes)
     return true;
 
-  // Adjust number of board positions before nodes are discarded. If we were
-  // adjusting the number of board positions after discarding nodes, there
-  // would be a small gap in which someone who works with board positions might
-  // attempt to access an invalid node.
-  int oldNumberOfBoardPositions = boardPosition.numberOfBoardPositions;
-  int newNumberOfBoardPositions = indexOfFirstNodeToDiscard;
-  boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
+  GoNode* firstNodeToDiscard = [nodeModel nodeAtIndex:indexOfFirstNodeToDiscard];
+  bool newNodesWillBeMergedIntoCurrentGameVariation = (firstNodeToDiscard.hasNextSibling ||
+                                                       firstNodeToDiscard.hasPreviousSibling);
 
-  DDLogInfo(@"%@: Index position of first node to discard = %d, number of nodes = %d", [self shortDescription], indexOfFirstNodeToDiscard, numberOfNodes);
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+
+  if (newNodesWillBeMergedIntoCurrentGameVariation)
+    [center postNotificationName:currentGameVariationWillChange object:nil];
+
+  int numberOfNodesToDiscard = numberOfNodes - indexOfFirstNodeToDiscard;
+  DDLogInfo(@"%@: Index position of first node to discard = %d, number of nodes to discard = %d", [self shortDescription], indexOfFirstNodeToDiscard, numberOfNodesToDiscard);
   [nodeModel discardNodesFromIndex:indexOfFirstNodeToDiscard];
 
-  [center postNotificationName:nodeTreeLayoutDidChange object:nil];
+  // Adjust number of board positions and send numberOfBoardPositionsDidChange
+  // after currentGameVariationWillChange, but before
+  // currentGameVariationDidChange => the game variation change and the number
+  // of board positions change can be seen as belonging to the same
+  // "transaction" that is bounded by the willChange/didChange notifications.
+  int oldNumberOfBoardPositions = boardPosition.numberOfBoardPositions;
+  int newNumberOfBoardPositions = nodeModel.numberOfNodes;
+  if (oldNumberOfBoardPositions != newNumberOfBoardPositions)
+  {
+    boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
+    [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
+  }
+
+  if (newNodesWillBeMergedIntoCurrentGameVariation)
+    [center postNotificationName:currentGameVariationDidChange object:nil];
+
+  [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
 
   return true;
 }

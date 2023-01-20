@@ -344,7 +344,7 @@
   self.boardPosition.currentBoardPosition = newCurrentBoardPosition;
   [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:newCurrentBoardPosition]]];
 
-  [center postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
 }
 
 // TODO xxx Remove this hack when it is no longer needed
@@ -369,7 +369,7 @@
 
   // TODO xxx Is this needed? Currently it seems yes, this is the trigger for
   // NodeTreeViewModel to recalculate.
-  [center postNotificationName:nodeTreeLayoutDidChange object:nil];
+  [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
 }
 
 // -----------------------------------------------------------------------------
