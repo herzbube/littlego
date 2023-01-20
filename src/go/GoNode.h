@@ -66,16 +66,20 @@
 /// last child node. The collection is empty if the node has no children.
 @property(nonatomic, retain, readonly) NSArray* children;
 
-/// @brief Returns YES if the node has one or more children. Returns
-/// false if the node has no children.
+/// @brief Returns @e true if the node has one or more children. Returns
+/// @e false if the node has no children, i.e. if it is a leaf node.
 @property(nonatomic, readonly) bool hasChildren;
+
+/// @brief Returns @e true if the node is a branching node, i.e. if it has more
+/// than one child. Returns @e false if the node is not a branching node.
+@property(nonatomic, readonly) bool isBranchingNode;
 
 /// @brief Returns the node's next sibling node. Returns @e nil if
 /// the node has no next sibling node, i.e. if the node is the last child
 /// of its parent.
 @property(nonatomic, retain, readonly) GoNode* nextSibling;
 
-/// @brief Returns YES if the node has a next sibling node. Returns false
+/// @brief Returns @e true if the node has a next sibling node. Returns @e false
 /// if the node has no next sibling node, i.e. if the node is the last child
 /// of its parent.
 @property(nonatomic, readonly) bool hasNextSibling;
@@ -89,8 +93,8 @@
 /// a substantial processing cost.
 @property(nonatomic, retain, readonly) GoNode* previousSibling;
 
-/// @brief Returns YES if the node has a previous sibling node. Returns
-/// false if the node has no previous sibling node, i.e. if the node is the
+/// @brief Returns @e true if the node has a previous sibling node. Returns
+/// @e false if the node has no previous sibling node, i.e. if the node is the
 /// first child of its parent.
 ///
 /// Use this property with care. Unlike the properties @e hasFirstChild,
@@ -106,34 +110,39 @@
 /// parent node and its first child node.
 @property(nonatomic, assign, readonly) GoNode* parent;
 
-/// @brief Returns true if the node has a parent node. Returns false if the
-/// node has no parent node, i.e. if the node is the root node of a node
+/// @brief Returns @e true if the node has a parent node. Returns @e false if
+/// the node has no parent node, i.e. if the node is the root node of a node
 /// tree.
 @property(nonatomic, readonly) bool hasParent;
 
-/// @brief Returns true if the node is a descendant of @a node, i.e. if the
-/// node is anywhere below @a node in the node tree. Returns false if the
+/// @brief Returns @e true if the node is a descendant of @a node, i.e. if the
+/// node is anywhere below @a node in the node tree. Returns @e false if the
 /// node is not a descendant of @a node.
 ///
 /// @exception NSInvalidArgumentException Is raised if @a node is @e nil.
 - (bool) isDescendantOfNode:(GoNode*)node;
 
-/// @brief Returns true if the node is an ancestor of @a node, i.e. if the
-/// node is a direct or indirect parent of @a node. Returns false if the
+/// @brief Returns @e true if the node is an ancestor of @a node, i.e. if the
+/// node is a direct or indirect parent of @a node. Returns @e false if the
 /// node is not an ancestor of @a node.
 ///
 /// @exception NSInvalidArgumentException Is raised if @a node is @e nil.
 - (bool) isAncestorOfNode:(GoNode*)node;
 
-/// @brief Returns true if the node is the root node of a node tree. Returns
-/// false if the node is not the root node of a node tree.
+/// @brief Returns @e true if the node is the root node of a node tree, i.e. if
+/// the node has no parent. Returns @e false if the node is not the root node
+/// of a node tree.
 @property(nonatomic, readonly) bool isRoot;
+
+/// @brief Returns @e true if the node is a leaf node, i.e. if the node has no
+/// children. Returns @e false if the node is not a leaf node.
+@property(nonatomic, readonly) bool isLeaf;
 //@}
 
 /// @name Node data
 //@{
-/// @brief True if the node is empty and contains no data, false if the node
-/// is not empty and contains some data.
+/// @brief @e true if the node is empty and contains no data, @e false if the
+/// node is not empty and contains some data.
 ///
 /// A node is empty if it has no setup data (property @e goNodeSetup is @e nil
 /// or the GoNodeSetup object's property @e isEmpty is @e true), no move data

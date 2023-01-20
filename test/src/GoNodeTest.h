@@ -31,7 +31,7 @@
 - (void) testNode;
 - (void) testNodeWithMove;
 - (void) testSetFirstChild;
-- (void) testChildrenAndHasChildren;
+- (void) testChildrenAndHasChildrenAndIsBranchingNode;
 - (void) testAppendChild;
 - (void) testInsertChildBeforeReferenceChildWhenReferenceChildIsNil;
 - (void) testInsertChildBeforeReferenceChildWhenReferenceChildIsNotNil;

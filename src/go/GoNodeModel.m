@@ -220,7 +220,7 @@
   }];
 }
 
-#pragma mark - Public interface
+#pragma mark - Public interface - Variations
 
 // -----------------------------------------------------------------------------
 /// @brief Configures GoNodeModel with the main variation of the game tree, i.e.
@@ -237,8 +237,9 @@
 /// consists of @a node, all of @a node's ancestors up to the root node of the
 /// game tree, and all of @a node's @e firstChild descendants.
 ///
-/// Raises @e NSInvalidArgumentException if @a node is nil, or if @a node is not
-/// in the same game tree as the root node accessible via property @e rootNode.
+/// Raises @e NSInvalidArgumentException if @a node is @e nil, or if @a node is
+/// not in the same game tree as the root node accessible via property
+/// @e rootNode.
 // -----------------------------------------------------------------------------
 - (void) changeToVariationContainingNode:(GoNode*)node
 {
@@ -296,6 +297,46 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the GoNode object that is the nearest ancestor of @a node
+/// and that is also part of the current variation of the game tree. Returns
+/// @a node itself if it is part of the current variation. Returns the root
+/// node of the game tree if no nearer ancestor exists.
+///
+/// Raises @e NSInvalidArgumentException if @a node is @e nil, or if @a node is
+/// not in the same game tree as the root node accessible via property
+/// @e rootNode.
+// -----------------------------------------------------------------------------
+- (GoNode*) ancestorOfNodeInCurrentVariation:(GoNode*)node
+{
+  if (! node)
+  {
+    NSString* errorMessage = @"ancestorOfNodeInCurrentVariation: failed: node is nil object";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  while (node)
+  {
+    NSUInteger index = [_nodeList indexOfObject:node];
+    if (index != NSNotFound)
+      return node;
+    node = node.parent;
+  }
+
+  NSString* errorMessage = @"ancestorOfNodeInCurrentVariation: failed: node is not in the game tree that contains the current variation";
+  DDLogError(@"%@: %@", self, errorMessage);
+  NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                   reason:errorMessage
+                                                 userInfo:nil];
+  @throw exception;
+}
+
+#pragma mark - Public interface - Current variation
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the GoNode object located at index position @a index. The
 /// index position is a location within the sequence of nodes that make up the
 /// current variation. The root node is at index position 0.
@@ -311,10 +352,10 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns the index position at which the GoNode object @a node is
 /// located. The index position is a location within the sequence of nodes that
-/// make up the current variation. The root node is at index position 0.
+/// make up the current variation. The root node is at index position 0. Returns
+/// -1 if @a node is not in the current variation.
 ///
-/// Raises @e NSInvalidArgumentException if @a node is nil, or if @a node is
-/// not in the current variation.
+/// Raises @e NSInvalidArgumentException if @a node is @e nil.
 // -----------------------------------------------------------------------------
 - (int) indexOfNode:(GoNode*)node
 {
@@ -330,14 +371,7 @@
 
   NSUInteger index = [_nodeList indexOfObject:node];
   if (index == NSNotFound)
-  {
-    NSString* errorMessage = @"indexOfNode: failed: node not found";
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
+    return -1;
 
   // Cast is required because NSUInteger and int differ in size in 64-bit.
   // Cast is safe because this app was not made to handle more than
@@ -348,7 +382,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Adds the GoNode object @a node to the end of the current variation.
 ///
-/// Raises @e NSInvalidArgumentException if @a node is nil, or if @a node is
+/// Raises @e NSInvalidArgumentException if @a node is @e nil, or if @a node is
 /// already in the current variation.
 ///
 /// Invoking this method sets the GoGameDocument dirty flag.
@@ -386,7 +420,11 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Discards all GoNode objects in the current variation starting with
-/// the object at position @a index.
+/// the GoNode object at position @a index. If the GoNode object at position
+/// @a index has a next or previous sibling, that next or previous sibling and
+/// its @e firstChild descendants become part of the current variation in place
+/// of the GoNode object at position @a index. If both a next and a previous
+/// sibling exist, the next sibling is preferred.
 ///
 /// Raises @e NSRangeException if @a index is < 1 (the root node cannot be
 /// discarded) or exceeds the number of GoNode objects in the current variation.
@@ -422,19 +460,32 @@
       numberOfMovesToDiscard++;
   }
 
-  // TODO Variation support: Cutting the tree here not only removes the
-  // nodes, it also causes all variations that shared the same path up to here
-  // with the current variation to be removed.
-  //             +-- new leaf node after all nodes were discarded
-  //             |   +-- first node to discard
-  //             |   |           +-- current leaf node
-  //             v   v           v
-  // +---+---+---+---+---+---+---+   <-- current variation
-  //              \       \
-  //               \|      --+---+   <-- variation is removed
-  //                -+---+---+       <-- variation is kept because new leaf node is the branching point
-  GoNode* newLeafNode = [_nodeList objectAtIndex:index - 1];
-  newLeafNode.firstChild = nil;
+  // Variation support: Cutting the tree at node B not only removes the nodes,
+  // it also causes all variations that shared the same path up to node B
+  // with the current variation to be removed. Node H and its children will
+  // replace node B and its children in the current variation.
+  // An alternative scenario would be delete node K, i.e. the last variation
+  // below A. In that case node H and its children will replace node K in the
+  // current variation.
+  //      +-- branching node
+  //      |    +-- first node to discard
+  //      |    |              +-- current leaf node
+  //      v    v              v
+  // o----A----B----C----D----E   <-- current variation
+  //      |         |
+  //      |         +----F----G   <-- variation is deleted
+  //      +----H----I----J        <-- variation becomes the new current variation
+  //      |    ^         ^
+  //      |    |         +-- new leaf node after all nodes were discarded
+  //      |    +-- next sibling of first node to discard => replaces node to discard
+  //      +----K                  <-- variation does not become the new current variation
+  GoNode* firstNodeToDiscard = [_nodeList objectAtIndex:index];
+  GoNode* parentNode = firstNodeToDiscard.parent;
+  GoNode* nextSiblingOfFirstNodeToDiscard = firstNodeToDiscard.nextSibling;
+  GoNode* previousSiblingOfFirstNodeToDiscard = nil;
+  if (! nextSiblingOfFirstNodeToDiscard)
+    previousSiblingOfFirstNodeToDiscard = firstNodeToDiscard.previousSibling;
+  [parentNode removeChild:firstNodeToDiscard];
   // No GoMove unlinking necessary here, this is done in GoMove::dealloc()
 
   // Discard nodes only after they were unlinked from the game tree. Reason: The
@@ -445,19 +496,33 @@
   NSRange rangeToDiscard = NSMakeRange(index, numberOfNodesToDiscard);
   [_nodeList removeObjectsInRange:rangeToDiscard];
 
+  GoNode* nodeToAdd = nextSiblingOfFirstNodeToDiscard ? nextSiblingOfFirstNodeToDiscard : previousSiblingOfFirstNodeToDiscard;
+  while (nodeToAdd)
+  {
+    [_nodeList addObject:nodeToAdd];
+
+    if (nodeToAdd.goMove)
+      numberOfMovesToDiscard--;  // can become negative
+
+    nodeToAdd = nodeToAdd.firstChild;
+  }
+
   self.game.document.dirty = true;
 
   // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
   // is safe because this app was not made to handle more than pow(2, 31) nodes.
   self.numberOfNodes = (int)_nodeList.count;
-  if (numberOfMovesToDiscard > 0)
+  if (numberOfMovesToDiscard != 0)
     self.numberOfMoves = self.numberOfMoves - numberOfMovesToDiscard;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Discards the leaf GoNode object of the current variation, i.e. the
 /// GoNode object at the tip of the game tree branch that is represented by the
-/// current variation.
+/// current variation. If the leaf GoNode object has a next or previous sibling,
+/// that next or previous sibling and its @e firstChild descendants become part
+/// of the current variation in place of the discarded leaf GoNode object. If
+/// both a next and a previous sibling exist, the next sibling is preferred.
 ///
 /// Raises @e NSRangeException if there are no GoNode objects in the current
 /// variation beyond the root node (the root node cannot be discarded)
@@ -468,12 +533,17 @@
 {
   // Cast is required because NSUInteger and int differ in size in 64-bit. Cast
   // is safe because this app was not made to handle more than pow(2, 31) nodes.
-  [self discardNodesFromIndex:((int)_nodeList.count - 1)];  // raises exception and posts notification for us
+  [self discardNodesFromIndex:((int)_nodeList.count - 1)];  // raises exception for us
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Discards all GoNode objects of the current variation beyond the root
-/// node.
+/// @brief Discards all GoNode objects of the current variation starting with
+/// the GoNode object that is the direct child of the root node. If the root
+/// node's direct child GoNode object has a next or previous sibling, that next
+/// or previous sibling and its @e firstChild descendants become part of the
+/// current variation in place of the discarded root node's direct child GoNode
+/// object. If both a next and a previous sibling exist, the next sibling is
+/// preferred.
 ///
 /// Raises @e NSRangeException if there are no GoNode objects in the current
 /// variation beyond the root node (the root node cannot be discarded)
@@ -482,7 +552,7 @@
 // -----------------------------------------------------------------------------
 - (void) discardAllNodes
 {
-  [self discardNodesFromIndex:1];  // raises exception and posts notification for us
+  [self discardNodesFromIndex:1];  // raises exception for us
 }
 
 // -----------------------------------------------------------------------------

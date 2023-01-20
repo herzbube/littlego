@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2019 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2022 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,18 +16,18 @@
 
 
 // Forward declarations
-@class BoardView;
+@class NodeTreeView;
 
 
 // -----------------------------------------------------------------------------
-/// @brief The TapGestureController class is responsible for managing the tap
-/// gesture on the Go board. Tapping is used to place stones during game setup
-/// prior to the first move, and to mark dead stones during scoring.
+/// @brief The NodeTreeViewTapGestureController class is responsible for
+/// managing the tap gesture on the node tree view. Tapping is used to change
+/// the node selection.
 // -----------------------------------------------------------------------------
-@interface TapGestureController : NSObject <UIGestureRecognizerDelegate>
+@interface NodeTreeViewTapGestureController : NSObject <UIGestureRecognizerDelegate>
 {
 }
 
-@property(nonatomic, assign) BoardView* boardView;
+@property(nonatomic, assign) NodeTreeView* nodeTreeView;
 
 @end

@@ -18,12 +18,21 @@
 // Project includes
 #import "../../ui/TiledScrollView.h"
 
+// Forward declarations
+@class GoNode;
+@class NodeTreeViewMetrics;
+
 
 // -----------------------------------------------------------------------------
-/// @brief The NodeTreeView class subclasses TiledScrollView to add xxx
+/// @brief The NodeTreeView class subclasses TiledScrollView to add detection
+/// of canvas cell positions based on view coordinates.
 // -----------------------------------------------------------------------------
 @interface NodeTreeView : TiledScrollView
 {
 }
+
+- (id) initWithFrame:(CGRect)rect nodeTreeViewMetrics:(NodeTreeViewMetrics*)nodeTreeViewMetrics;
+
+- (GoNode*) nodeNear:(CGPoint)coordinates;
 
 @end

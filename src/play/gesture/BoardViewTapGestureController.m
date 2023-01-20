@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "TapGestureController.h"
+#import "BoardViewTapGestureController.h"
 #import "../gameaction/GameActionManager.h"
 #import "../boardview/BoardView.h"
 #import "../model/MarkupModel.h"
@@ -28,9 +28,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for TapGestureController.
+/// @brief Class extension with private properties for
+/// BoardViewTapGestureController.
 // -----------------------------------------------------------------------------
-@interface TapGestureController()
+@interface BoardViewTapGestureController()
 /// @brief The gesture recognizer used to detect the tap gesture.
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizer;
 /// @brief True if a tapping gesture is currently allowed, false if not (e.g.
@@ -39,12 +40,12 @@
 @end
 
 
-@implementation TapGestureController
+@implementation BoardViewTapGestureController
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a TapGestureController object.
+/// @brief Initializes a BoardViewTapGestureController object.
 ///
-/// @note This is the designated initializer of TapGestureController.
+/// @note This is the designated initializer of BoardViewTapGestureController.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -60,7 +61,8 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this TapGestureController object.
+/// @brief Deallocates memory allocated by this BoardViewTapGestureController
+/// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {

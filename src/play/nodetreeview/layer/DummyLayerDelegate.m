@@ -36,7 +36,7 @@
 // -----------------------------------------------------------------------------
 - (id) initWithTile:(id<Tile>)tile metrics:(NodeTreeViewMetrics*)metrics
 {
-  // Call designated initializer of superclass (BoardViewLayerDelegateBase)
+  // Call designated initializer of superclass (NodeTreeViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
   if (! self)
     return nil;
@@ -53,7 +53,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief BoardViewLayerDelegate method.
+/// @brief NodeTreeViewLayerDelegate method.
 // -----------------------------------------------------------------------------
 - (void) notify:(enum NodeTreeViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
@@ -61,6 +61,8 @@
   {
     case NTVLDEventNodeTreeGeometryChanged:
     case NTVLDEventInvalidateContent:
+    case NTVLDEventAbstractCanvasSizeChanged:
+    case NTVLDEventNodeTreeContentChanged:
     {
       self.dirty = true;
       break;

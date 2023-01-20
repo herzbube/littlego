@@ -20,9 +20,17 @@
 #import "NodeNumbersTileView.h"
 #import "NodeTreeTileView.h"
 #import "NodeTreeView.h"
-#import "../model/NodeTreeViewMetrics.h"
-#import "../../main/ApplicationDelegate.h"
+#import "NodeTreeViewMetrics.h"
+#import "NodeTreeViewTapGestureController.h"
+#import "canvas/NodeTreeViewCanvas.h"
+#import "layer/NodeTreeViewDrawingHelper.h"
+#import "../gesture/DoubleTapGestureController.h"
+#import "../gesture/TwoFingerTapGestureController.h"
+#import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../ui/UiUtilities.h"
+#import "../../utility/NSObjectAdditions.h"
+// TODO xxx remove if no longer needed
 //#import "../../utility/UIColorAdditions.h"
 
 
@@ -30,6 +38,9 @@
 /// @brief Class extension with private properties for NodeTreeViewController.
 // -----------------------------------------------------------------------------
 @interface NodeTreeViewController()
+@property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
+@property(nonatomic, retain) NodeTreeViewCanvas* nodeTreeViewCanvas;
+@property(nonatomic, retain) NodeTreeViewMetrics* nodeTreeViewMetrics;
 /// @brief Prevents unregistering by dealloc if registering hasn't happened
 /// yet. Registering may not happen if the controller's view is never loaded.
 @property(nonatomic, assign) bool notificationRespondersAreSetup;
@@ -37,6 +48,10 @@
 @property(nonatomic, retain) NodeTreeView* nodeTreeView;
 @property(nonatomic, retain) TiledScrollView* nodeNumbersView;
 @property(nonatomic, retain) NSArray* nodeNumbersViewConstraints;
+@property(nonatomic, assign) bool visibleRectNeedsUpdate;
+@property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
+@property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
+@property(nonatomic, retain) NodeTreeViewTapGestureController* nodeTreeViewTapGestureController;
 @end
 
 
@@ -49,18 +64,22 @@
 ///
 /// @note This is the designated initializer of NodeTreeViewController.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel
 {
   // Call designated initializer of superclass (UIViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
 
+  self.nodeTreeViewModel = nodeTreeViewModel;
+  self.nodeTreeViewCanvas = nil;
+  self.nodeTreeViewMetrics = nil;
   self.notificationRespondersAreSetup = false;
   self.viewDidLayoutSubviewsInProgress = false;
   self.nodeTreeView = nil;
   self.nodeNumbersView = nil;
   self.nodeNumbersViewConstraints = nil;
+  self.visibleRectNeedsUpdate = false;
   [self setupChildControllers];
 
   return self;
@@ -72,11 +91,34 @@
 - (void) dealloc
 {
   [self removeNotificationResponders];
+
   self.nodeNumbersViewConstraints = nil;
   self.nodeTreeView = nil;
   self.nodeNumbersView = nil;
+  self.doubleTapGestureController = nil;
+  self.twoFingerTapGestureController = nil;
+  self.nodeTreeViewTapGestureController = nil;
 
+  NodeTreeViewMetrics* localReferenceMetrics = [_nodeTreeViewMetrics retain];
+  NodeTreeViewCanvas* localReferenceCanvas = [_nodeTreeViewCanvas retain];
+
+  self.nodeTreeViewMetrics = nil;
+  self.nodeTreeViewCanvas = nil;
+  self.nodeTreeViewModel = nil;
+
+  // For unknown reasons NodeTreeView and its tiles are deallocated only when
+  // super's dealloc is invoked. This means that at this point the
+  // NodeTreeViewMetrics and NodeTreeViewCanvas objects must still live so that
+  // tiles can remove their observer registrations. Explicitly setting
+  // self.view to nil, or invoking [self.nodeTreeView removeFromSuperview],
+  // did not help with deallocating NodeTreeView earlier.
   [super dealloc];
+
+  // As per comment above: Deallocate the following two objects only after
+  // views which depend on them have been deallocated. Deallocate the objects
+  // in observer dependency order.
+  [localReferenceMetrics release];
+  [localReferenceCanvas release];
 }
 
 // -----------------------------------------------------------------------------
@@ -84,6 +126,9 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
+  self.doubleTapGestureController = [[[DoubleTapGestureController alloc] init] autorelease];
+  self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] init] autorelease];
+  self.nodeTreeViewTapGestureController = [[[NodeTreeViewTapGestureController alloc] init] autorelease];
 }
 
 #pragma mark - loadView and helpers
@@ -95,6 +140,7 @@
 {
   [super loadView];
 
+  [self createCanvasAndMetrics];
   [self createSubviews];
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
@@ -103,6 +149,24 @@
   [self setupNotificationResponders];
 
   [self createOrDeallocNodeNumbersView];
+
+  // Set the initial scroll position. Execution must be slightly delayed
+  // (0.0 is not sufficient) if the node tree view is created later after the
+  // app has already launched.
+  [self performBlockOnMainThread:^{
+    self.visibleRectNeedsUpdate = true;
+    [self delayedUpdate];
+  } afterDelay:0.1];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for loadView.
+// -----------------------------------------------------------------------------
+- (void) createCanvasAndMetrics
+{
+  self.nodeTreeViewCanvas = [[[NodeTreeViewCanvas alloc] initWithModel:self.nodeTreeViewModel] autorelease];
+  [self.nodeTreeViewCanvas recalculateCanvas];
+  self.nodeTreeViewMetrics = [[[NodeTreeViewMetrics alloc] initWithModel:self.nodeTreeViewModel canvas:self.nodeTreeViewCanvas] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -110,7 +174,7 @@
 // -----------------------------------------------------------------------------
 - (void) createSubviews
 {
-  self.nodeTreeView = [[[NodeTreeView alloc] initWithFrame:CGRectZero] autorelease];
+  self.nodeTreeView = [[[NodeTreeView alloc] initWithFrame:CGRectZero nodeTreeViewMetrics:self.nodeTreeViewMetrics] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -135,17 +199,12 @@
 // -----------------------------------------------------------------------------
 - (void) configureViews
 {
-  NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
-
   self.nodeTreeView.backgroundColor = [UIColor clearColor];
   self.nodeTreeView.delegate = self;
-  // After an interface orientation change the board may already be zoomed
-  // (e.g. iPhone 6+), so we have to take the current absolute zoom scale into
-  // account
-  self.nodeTreeView.minimumZoomScale = metrics.minimumAbsoluteZoomScale / metrics.absoluteZoomScale;
-  self.nodeTreeView.maximumZoomScale = metrics.maximumAbsoluteZoomScale / metrics.absoluteZoomScale;
+  self.nodeTreeView.minimumZoomScale = self.nodeTreeViewMetrics.minimumAbsoluteZoomScale / self.nodeTreeViewMetrics.absoluteZoomScale;
+  self.nodeTreeView.maximumZoomScale = self.nodeTreeViewMetrics.maximumAbsoluteZoomScale / self.nodeTreeViewMetrics.absoluteZoomScale;
   self.nodeTreeView.dataSource = self;
-  self.nodeTreeView.tileSize = metrics.tileSize;
+  self.nodeTreeView.tileSize = self.nodeTreeViewMetrics.tileSize;
 }
 
 // -----------------------------------------------------------------------------
@@ -153,6 +212,9 @@
 // -----------------------------------------------------------------------------
 - (void) configureControllers
 {
+  self.doubleTapGestureController.scrollView = self.nodeTreeView;
+  self.twoFingerTapGestureController.scrollView = self.nodeTreeView;
+  self.nodeTreeViewTapGestureController.nodeTreeView = self.nodeTreeView;
 }
 
 #pragma mark - viewDidLayoutSubviews
@@ -166,13 +228,7 @@
 - (void) viewDidLayoutSubviews
 {
   self.viewDidLayoutSubviewsInProgress = true;
-  // First prepare the new tree geometry. This triggers a re-draw of all tiles.
-  // TODO xxx really?
-  [self updateBaseSizeInNodeTreeViewMetrics];
-  // Now prepare all scroll views with the new content size. The content size
-  // is taken from the values in NodeTreeViewMetrics.
-  [self updateContentSizeInMainScrollView];
-  [self updateContentSizeInNodeNumbersScrollView];
+  [self updateContentSizeInScrollViews];
   self.viewDidLayoutSubviewsInProgress = false;
 }
 
@@ -187,8 +243,12 @@
     return;
   self.notificationRespondersAreSetup = true;
 
-  NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
-  [metrics addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+
+  [self.nodeTreeViewMetrics addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
+  [self.nodeTreeViewMetrics addObserver:self forKeyPath:@"displayNodeNumbers" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -200,8 +260,10 @@
     return;
   self.notificationRespondersAreSetup = false;
 
-  NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
-  [metrics removeObserver:self forKeyPath:@"canvasSize"];
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+  [self.nodeTreeViewMetrics removeObserver:self forKeyPath:@"canvasSize"];
+  [self.nodeTreeViewMetrics removeObserver:self forKeyPath:@"displayNodeNumbers"];
 }
 
 #pragma mark TiledScrollViewDataSource overrides
@@ -217,7 +279,7 @@
     // The scroll view will set the tile view frame, so we don't have to worry
     // about it
     if (tiledScrollView == self.nodeTreeView)
-      tileView = [[[NodeTreeTileView alloc] initWithFrame:CGRectZero] autorelease];
+      tileView = [[[NodeTreeTileView alloc] initWithFrame:CGRectZero metrics:self.nodeTreeViewMetrics canvas:self.nodeTreeViewCanvas model:self.nodeTreeViewModel] autorelease];
     else if (tiledScrollView == self.nodeNumbersView)
       tileView = [[[NodeNumbersTileView alloc] initWithFrame:CGRectZero] autorelease];
   }
@@ -278,14 +340,13 @@
 // -----------------------------------------------------------------------------
 - (void) scrollViewDidEndZooming:(UIScrollView*)scrollView withView:(UIView*)view atScale:(CGFloat)scale
 {
-  NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
-  CGFloat oldAbsoluteZoomScale = metrics.absoluteZoomScale;
-  [metrics updateWithRelativeZoomScale:scale];
+  CGFloat oldAbsoluteZoomScale = self.nodeTreeViewMetrics.absoluteZoomScale;
+  [self.nodeTreeViewMetrics updateWithRelativeZoomScale:scale];
 
   // updateWithRelativeZoomScale:() may have adjusted the absolute zoom scale
   // in a way that makes the original value of the scale parameter obsolete.
   // We therefore calculate a new, correct value.
-  CGFloat newAbsoluteZoomScale = metrics.absoluteZoomScale;
+  CGFloat newAbsoluteZoomScale = self.nodeTreeViewMetrics.absoluteZoomScale;
   scale = newAbsoluteZoomScale / oldAbsoluteZoomScale;
 
   // Remember content offset so that we can re-apply it after we reset the zoom
@@ -302,8 +363,7 @@
   scrollView.maximumZoomScale = scrollView.maximumZoomScale / scale;
 
   // Restore properties that were changed when the zoom scale was reset to 1.0
-  [self updateContentSizeInMainScrollView];
-  [self updateContentSizeInNodeNumbersScrollView];
+  [self updateContentSizeInScrollViews];
   // TODO The content offset that we remembered above may no longer be
   // accurate because NodeTreeViewMetrics may have made some adjustments to the
   // zoom scale. To fix this we either need to record the contentOffset in
@@ -355,7 +415,10 @@
 // -----------------------------------------------------------------------------
 - (bool) nodeNumbersViewShouldExist
 {
-  return true;
+  // TODO xxx remove
+  return false;
+
+  return self.nodeTreeViewMetrics.displayNodeNumbers;
 }
 
 // -----------------------------------------------------------------------------
@@ -395,12 +458,11 @@
 // -----------------------------------------------------------------------------
 - (NSArray*) createNodeNumbersViewConstraints
 {
-  NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
   return [NSArray arrayWithObjects:
           [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1 constant:0],
           [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1 constant:0],
           [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1 constant:0],
-          [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:metrics.tileSize.height],
+          [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:self.nodeTreeViewMetrics.tileSize.height],
           nil];
 }
 
@@ -409,10 +471,9 @@
 // -----------------------------------------------------------------------------
 - (void) configureNodeNumbersView:(TiledScrollView*)nodeNumbersView
 {
-  NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
   nodeNumbersView.backgroundColor = [UIColor clearColor];
   nodeNumbersView.dataSource = self;
-  nodeNumbersView.tileSize = metrics.tileSize;
+  nodeNumbersView.tileSize = self.nodeTreeViewMetrics.tileSize;
   nodeNumbersView.userInteractionEnabled = NO;
 }
 
@@ -432,16 +493,14 @@
 
 #pragma mark - Private helpers
 
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-///
-/// Updates the NodeTreeViewMetrics object's content size, triggering a redraw
-/// in all tiles.
-// -----------------------------------------------------------------------------
-- (void) updateBaseSizeInNodeTreeViewMetrics
+// TODO xxx document
+- (void) updateContentSizeInScrollViews
 {
-  NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
-  [metrics updateWithBaseSize:self.view.bounds.size];
+  // TODO xxx does changing the content size trigger a redraw?
+  // If yes => this is bad because then we cannot optimize redrawing
+  // If no => this is bad because no one triggers drawing
+  [self updateContentSizeInMainScrollView];
+  [self updateContentSizeInNodeNumbersScrollView];
 }
 
 // -----------------------------------------------------------------------------
@@ -452,8 +511,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateContentSizeInMainScrollView
 {
-  NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
-  CGSize contentSize = metrics.canvasSize;
+  CGSize contentSize = self.nodeTreeViewMetrics.canvasSize;
   CGRect tileContainerViewFrame = CGRectZero;
   tileContainerViewFrame.size = contentSize;
 
@@ -469,9 +527,11 @@
 // -----------------------------------------------------------------------------
 - (void) updateContentSizeInNodeNumbersScrollView
 {
-  NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
-  CGSize contentSize = metrics.canvasSize;
-  CGSize tileSize = metrics.tileSize;
+  if (! [self nodeNumbersViewExists])
+    return;
+
+  CGSize contentSize = self.nodeTreeViewMetrics.canvasSize;
+  CGSize tileSize = self.nodeTreeViewMetrics.tileSize;
   CGRect tileContainerViewFrame = CGRectZero;
 
   self.nodeNumbersView.contentSize = CGSizeMake(contentSize.width, tileSize.height);
@@ -492,20 +552,63 @@
   self.nodeNumbersView.contentOffset = nodeNumbersViewContentOffset;
 }
 
-#pragma mark - KVO notification
+#pragma mark - Notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #currentBoardPositionDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentBoardPositionDidChange:(NSNotification*)notification
+{
+  self.visibleRectNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #longRunningActionEnds notification.
+// -----------------------------------------------------------------------------
+- (void) longRunningActionEnds:(NSNotification*)notification
+{
+  [self delayedUpdate];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  if (object == [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics)
+  if (object == self.nodeTreeViewMetrics)
   {
     if ([keyPath isEqualToString:@"canvasSize"])
     {
-      // The node number view depends on the node number strip width,
-      // which may change significantly when the node tree geometry changes
-      // (rect property).
+      if ([NSThread currentThread] != [NSThread mainThread])
+      {
+        // Make sure that our handler executes on the main thread because
+        // changing the content size of views may trigger thread-unsafe UIKit
+        // functions. A KVO notification can come in on a secondary thread when
+        // a game is loaded from the archive, or when a game is restored during
+        // app launch.
+        [self performSelectorOnMainThread:@selector(updateContentSizeInScrollViews) withObject:nil waitUntilDone:NO];
+      }
+      else
+      {
+        if (self.viewDidLayoutSubviewsInProgress)
+        {
+          // TODO xxx review if this special handling during layouting is
+          // necessary; cf. the origin of this in BoardViewController
+          [self performSelector:@selector(updateContentSizeInScrollViews) withObject:nil afterDelay:0];
+        }
+        else
+        {
+          [self updateContentSizeInScrollViews];
+        }
+      }
+    }
+    else if ([keyPath isEqualToString:@"displayNodeNumbers"])
+    {
+      // TODO xxx review this entire branch => unlike the display coordinates
+      // view in BoardView, the presence of the node numbers view is not
+      // dependent on the content of GoGame, so it should be possible to
+      // simplify the handling here
       if ([NSThread currentThread] != [NSThread mainThread])
       {
         // Make sure that our handler executes on the main thread because it
@@ -538,6 +641,66 @@
       }
     }
   }
+}
+
+#pragma mark - Updaters
+
+// -----------------------------------------------------------------------------
+/// @brief Internal helper that correctly handles delayed updates. See class
+/// documentation for details.
+// -----------------------------------------------------------------------------
+- (void) delayedUpdate
+{
+  if ([LongRunningActionCounter sharedCounter].counter > 0)
+    return;
+
+  if ([NSThread currentThread] != [NSThread mainThread])
+  {
+    [self performSelectorOnMainThread:@selector(delayedUpdate) withObject:nil waitUntilDone:YES];
+    return;
+  }
+
+  [self updateVisibleRect];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updater method.
+///
+/// Programmatically scrolls the node tree view so that the canvas position that
+/// displays the currently selected node becomes visible and centered within
+/// the node tree view. Perfect centering may not possible because the desired
+/// canvas position may be too close to the canvas edge(s) - if that happens
+/// the node tree view is scrolled as best as possible.
+// -----------------------------------------------------------------------------
+- (void) updateVisibleRect
+{
+  if (! self.visibleRectNeedsUpdate)
+    return;
+  self.visibleRectNeedsUpdate = false;
+
+  CGRect canvasRectOfAllSelectedNodePositions = CGRectZero;
+
+  NSArray* selectedNodePositions = [self.nodeTreeViewCanvas selectedNodePositions];
+  bool firstPosition = true;
+  for (NodeTreeViewCellPosition* position in selectedNodePositions)
+  {
+    CGRect canvasRectOfPosition = [NodeTreeViewDrawingHelper canvasRectForCellAtPosition:position metrics:self.nodeTreeViewMetrics];
+    if (firstPosition)
+    {
+      firstPosition = false;
+      canvasRectOfAllSelectedNodePositions = canvasRectOfPosition;
+    }
+    else
+    {
+      canvasRectOfAllSelectedNodePositions = CGRectUnion(canvasRectOfAllSelectedNodePositions,
+                                                         canvasRectOfPosition);
+    }
+  }
+
+  CGRect scrollToRect = [UiUtilities rectWithSize:self.nodeTreeView.bounds.size
+                                   centeredInRect:canvasRectOfAllSelectedNodePositions];
+
+  [self.nodeTreeView scrollRectToVisible:scrollToRect animated:YES];
 }
 
 @end

@@ -35,6 +35,10 @@
 /// @brief Class extension with private properties for GoNodeTest.
 // -----------------------------------------------------------------------------
 @interface GoNodeTest()
+// Properties are declared with assign, not retain, so nodes will be deallocated
+// automatically and no tear-down/cleanup is necessary. Furthermore, properties
+// are declared nonatomic so that getters do not use retain/autorelease. This
+// is important so that proper memory management can also be tested.
 @property(nonatomic, assign) GoNode* rootNode;
 @property(nonatomic, assign) GoNode* nodeA;
 @property(nonatomic, assign) GoNode* nodeB;
@@ -71,30 +75,43 @@
 // -----------------------------------------------------------------------------
 - (void) setupNodeTree
 {
-  // Properties are declared with assign, not retain, so nodes will be
-  // deallocated automatically and no tear-down/cleanup is necessary
+  // The root node is created outside the @autoreleasepool block so that it
+  // survives and can be accessed by the invoking test method. All other nodes
+  // are created within the @autoreleasepool block, so when the block ends they
+  // are kept alive only via GoNode property references of properties declared
+  // with "retain". The consequence: When an invoking test method is
+  // manipulating the node tree it is also testing that the tree manipulation
+  // methods implemented in GoNode are using memory management properly.
   self.rootNode = [GoNode node];
-  self.nodeA = [GoNode node];
-  self.nodeB = [GoNode node];
-  self.nodeC = [GoNode node];
-  self.nodeA1 = [GoNode node];
-  self.nodeA2 = [GoNode node];
-  self.nodeA3 = [GoNode node];
-  self.nodeA2a = [GoNode node];
-  self.nodeA2b = [GoNode node];
-  self.nodeA2c = [GoNode node];
+
+  // Nodes that are not added to the tree are not kept alive by the root node,
+  // so to survive they also need to be created outside the @autoreleasepool
+  // block.
   self.freeNode1 = [GoNode node];
   self.freeNode2 = [GoNode node];
 
-  [self.rootNode appendChild:self.nodeA];
-  [self.rootNode appendChild:self.nodeB];
-  [self.rootNode appendChild:self.nodeC];
-  [self.nodeA appendChild:self.nodeA1];
-  [self.nodeA appendChild:self.nodeA2];
-  [self.nodeA appendChild:self.nodeA3];
-  [self.nodeA2 appendChild:self.nodeA2a];
-  [self.nodeA2 appendChild:self.nodeA2b];
-  [self.nodeA2 appendChild:self.nodeA2c];
+  @autoreleasepool
+  {
+    self.nodeA = [GoNode node];
+    self.nodeB = [GoNode node];
+    self.nodeC = [GoNode node];
+    self.nodeA1 = [GoNode node];
+    self.nodeA2 = [GoNode node];
+    self.nodeA3 = [GoNode node];
+    self.nodeA2a = [GoNode node];
+    self.nodeA2b = [GoNode node];
+    self.nodeA2c = [GoNode node];
+
+    [self.rootNode appendChild:self.nodeA];
+    [self.rootNode appendChild:self.nodeB];
+    [self.rootNode appendChild:self.nodeC];
+    [self.nodeA appendChild:self.nodeA1];
+    [self.nodeA appendChild:self.nodeA2];
+    [self.nodeA appendChild:self.nodeA3];
+    [self.nodeA2 appendChild:self.nodeA2a];
+    [self.nodeA2 appendChild:self.nodeA2b];
+    [self.nodeA2 appendChild:self.nodeA2c];
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -110,6 +127,7 @@
   XCTAssertNotNil(testee.children);
   XCTAssertEqual(0, testee.children.count);
   XCTAssertFalse(testee.hasChildren);
+  XCTAssertFalse(testee.isBranchingNode);
   XCTAssertNil(testee.nextSibling);
   XCTAssertFalse(testee.hasNextSibling);
   XCTAssertNil(testee.previousSibling);
@@ -117,6 +135,7 @@
   XCTAssertNil(testee.parent);
   XCTAssertFalse(testee.hasParent);
   XCTAssertTrue(testee.isRoot);
+  XCTAssertTrue(testee.isLeaf);
   XCTAssertTrue(testee.isEmpty);
   XCTAssertNil(testee.goNodeSetup);
   XCTAssertNil(testee.goMove);
@@ -130,6 +149,7 @@
 // -----------------------------------------------------------------------------
 - (void) testNode
 {
+  // TODO xxx implement
 }
 
 // -----------------------------------------------------------------------------
@@ -137,6 +157,7 @@
 // -----------------------------------------------------------------------------
 - (void) testNodeWithMove
 {
+  // TODO xxx implement
 }
 
 // -----------------------------------------------------------------------------
@@ -228,6 +249,31 @@
   XCTAssertEqual(self.nodeA2b.parent, nil);
   XCTAssertEqual(self.nodeA2c.parent, testee);
 
+  // Replacing firstChild with the nextSibling of the current firstChild retains
+  // only the nextSibling
+  [self setupNodeTree];
+  testee = self.nodeA2;
+  testee.firstChild = self.nodeA2b;
+  XCTAssertNil(self.nodeA2a.parent);
+  XCTAssertNil(self.nodeA2a.nextSibling);
+  XCTAssertEqualObjects(self.nodeA2b.parent, testee);
+  XCTAssertNil(self.nodeA2b.nextSibling);
+  XCTAssertNil(self.nodeA2c.parent);
+  XCTAssertNil(self.nodeA2c.nextSibling);
+  XCTAssertEqualObjects(testee.firstChild, self.nodeA2b);
+
+  // Replacing firstChild with the lastChild retains only the lastChild
+  [self setupNodeTree];
+  testee = self.nodeA2;
+  testee.firstChild = self.nodeA2c;
+  XCTAssertNil(self.nodeA2a.parent);
+  XCTAssertNil(self.nodeA2a.nextSibling);
+  XCTAssertNil(self.nodeA2b.parent);
+  XCTAssertNil(self.nodeA2b.nextSibling);
+  XCTAssertEqualObjects(self.nodeA2c.parent, testee);
+  XCTAssertNil(self.nodeA2c.nextSibling);
+  XCTAssertEqualObjects(testee.lastChild, self.nodeA2c);
+
   XCTAssertThrowsSpecificNamed([testee setFirstChild:testee],
                                NSException, NSInvalidArgumentException, @"setFirstChild: node cannot be its own first child");
   XCTAssertThrowsSpecificNamed([testee setFirstChild:self.rootNode],
@@ -235,9 +281,10 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the @e children and @e hasChildren properties.
+/// @brief Exercises the @e children, @e hasChildren and @e isBranchingNode
+/// properties.
 // -----------------------------------------------------------------------------
-- (void) testChildrenAndHasChildren
+- (void) testChildrenAndHasChildrenAndIsBranchingNode
 {
   [self setupNodeTree];
   GoNode* testee = self.nodeA2a;
@@ -246,21 +293,25 @@
   XCTAssertNotIdentical(testee.children, newChildren);
   XCTAssertEqualObjects(testee.children, newChildren);
   XCTAssertFalse(testee.hasChildren);
+  XCTAssertFalse(testee.isBranchingNode);
   [testee setFirstChild:self.freeNode1];
   newChildren = @[self.freeNode1];
   XCTAssertNotIdentical(testee.children, newChildren);
   XCTAssertEqualObjects(testee.children, newChildren);
   XCTAssertTrue(testee.hasChildren);
+  XCTAssertFalse(testee.isBranchingNode);
   [testee appendChild:self.freeNode2];
   newChildren = @[self.freeNode1, self.freeNode2];
   XCTAssertNotIdentical(testee.children, newChildren);
   XCTAssertEqualObjects(testee.children, newChildren);
   XCTAssertTrue(testee.hasChildren);
+  XCTAssertTrue(testee.isBranchingNode);
   [testee setFirstChild:nil];
   newChildren = @[];
   XCTAssertNotIdentical(testee.children, newChildren);
   XCTAssertEqualObjects(testee.children, newChildren);
   XCTAssertFalse(testee.hasChildren);
+  XCTAssertFalse(testee.isBranchingNode);
 }
 
 // -----------------------------------------------------------------------------

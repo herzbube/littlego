@@ -17,10 +17,11 @@
 
 // Project includes
 #import "NodeTreeTileView.h"
-#import "layer/DummyLayerDelegate.h"
-#import "../model/NodeTreeViewMetrics.h"
+#import "NodeTreeViewMetrics.h"
+#import "layer/LinesLayerDelegate.h"
+#import "layer/NodeSymbolLayerDelegate.h"
+#import "layer/SelectedNodeLayerDelegate.h"
 #import "../../go/GoGame.h"
-#import "../../main/ApplicationDelegate.h"
 #import "../../shared/LongRunningActionCounter.h"
 
 
@@ -28,6 +29,9 @@
 /// @brief Class extension with private properties for NodeTreeTileView.
 // -----------------------------------------------------------------------------
 @interface NodeTreeTileView()
+@property(nonatomic, assign) NodeTreeViewMetrics* nodeTreeViewMetrics;
+@property(nonatomic, assign) NodeTreeViewCanvas* nodeTreeViewCanvas;
+@property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
 /// @brief Prevents double-unregistering of notification responders by
 /// willMoveToSuperview: followed by dealloc, or double-registering by two
 /// consecutive invocations of willMoveToSuperview: where the argument is not
@@ -41,7 +45,9 @@
 @property(nonatomic, assign) bool notificationRespondersAreSetup;
 @property(nonatomic, assign) bool drawLayersWasDelayed;
 @property(nonatomic, retain) NSArray* layerDelegates;
-@property(nonatomic, assign) DummyLayerDelegate* dummyLayerDelegate;
+@property(nonatomic, assign) LinesLayerDelegate* linesLayerDelegate;
+@property(nonatomic, assign) NodeSymbolLayerDelegate* nodeSymbolLayerDelegate;
+@property(nonatomic, assign) SelectedNodeLayerDelegate* selectedNodeLayerDelegate;
 //@}
 @end
 
@@ -64,16 +70,27 @@
 /// @note This is the designated initializer of NodeTreeTileView.
 // -----------------------------------------------------------------------------
 - (id) initWithFrame:(CGRect)rect
+             metrics:(NodeTreeViewMetrics*)nodeTreeViewMetrics
+              canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
+               model:(NodeTreeViewModel*)nodeTreeViewModel
 {
   // Call designated initializer of superclass (UIView)
   self = [super initWithFrame:rect];
   if (! self)
     return nil;
 
+  self.nodeTreeViewMetrics = nodeTreeViewMetrics;
+  self.nodeTreeViewCanvas = nodeTreeViewCanvas;
+  self.nodeTreeViewModel = nodeTreeViewModel;
+
   self.row = -1;
   self.column = -1;
   self.notificationRespondersAreSetup = false;
   self.drawLayersWasDelayed = false;
+  self.layerDelegates = nil;
+  self.linesLayerDelegate = nil;
+  self.nodeSymbolLayerDelegate = nil;
+  self.selectedNodeLayerDelegate = nil;
 
   return self;
 }
@@ -85,11 +102,16 @@
 {
   [self removeNotificationResponders];
 
+  self.nodeTreeViewMetrics = nil;
+  self.nodeTreeViewCanvas = nil;
+
   for (id<NodeTreeViewLayerDelegate> layerDelegate in self.layerDelegates)
     [layerDelegate.layer removeFromSuperlayer];
 
   self.layerDelegates = nil;
-  self.dummyLayerDelegate = nil;
+  self.linesLayerDelegate = nil;
+  self.nodeSymbolLayerDelegate = nil;
+  self.selectedNodeLayerDelegate = nil;
 
   [super dealloc];
 }
@@ -106,9 +128,17 @@
   self.notificationRespondersAreSetup = true;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(nodeTreeViewContentDidChange:) name:nodeTreeViewContentDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeTreeViewCondenseMoveNodesDidChange:) name:nodeTreeViewCondenseMoveNodesDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeTreeViewAlignMoveNodesDidChange:) name:nodeTreeViewAlignMoveNodesDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeTreeViewBranchingStyleDidChange:) name:nodeTreeViewBranchingStyleDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeTreeViewNodeSelectionStyleDidChange:) name:nodeTreeViewNodeSelectionStyleDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeTreeViewSelectedNodeDidChange:) name:nodeTreeViewSelectedNodeDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 
   // KVO observing
+  [self.nodeTreeViewMetrics addObserver:self forKeyPath:@"abstractCanvasSize" options:0 context:NULL];
+  [self.nodeTreeViewMetrics addObserver:self forKeyPath:@"nodeTreeViewCellSize" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -122,6 +152,9 @@
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center removeObserver:self];
+
+  [self.nodeTreeViewMetrics removeObserver:self forKeyPath:@"abstractCanvasSize"];
+  [self.nodeTreeViewMetrics removeObserver:self forKeyPath:@"nodeTreeViewCellSize"];
 }
 
 #pragma mark - Manage layers and layer delegates
@@ -143,23 +176,54 @@
 // -----------------------------------------------------------------------------
 - (void) setupLayerDelegates
 {
-  [self setupDummyLayerDelegate];
+  [self setupLinesLayerDelegate];
+  [self setupNodeSymbolLayerDelegate];
+  [self setupSelectedNodeLayerDelegate];
 
   [self updateLayers];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates the dummy layer delegate, or resets it to nil, depending
-/// on the current application state.
+/// @brief Creates the node symbol layer delegate, or resets it to nil,
+/// depending on the current application state.
 // -----------------------------------------------------------------------------
-- (void) setupDummyLayerDelegate
+- (void) setupLinesLayerDelegate
 {
-  if (self.dummyLayerDelegate)
+  if (self.linesLayerDelegate)
     return;
 
-  NodeTreeViewMetrics* metrics = [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics;
-  self.dummyLayerDelegate = [[[DummyLayerDelegate alloc] initWithTile:self
-                                                              metrics:metrics] autorelease];
+  self.linesLayerDelegate = [[[LinesLayerDelegate alloc] initWithTile:self
+                                                              metrics:self.nodeTreeViewMetrics
+                                                               canvas:self.nodeTreeViewCanvas] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the node symbol layer delegate, or resets it to nil,
+/// depending on the current application state.
+// -----------------------------------------------------------------------------
+- (void) setupNodeSymbolLayerDelegate
+{
+  if (self.nodeSymbolLayerDelegate)
+    return;
+
+  self.nodeSymbolLayerDelegate = [[[NodeSymbolLayerDelegate alloc] initWithTile:self
+                                                                        metrics:self.nodeTreeViewMetrics
+                                                                         canvas:self.nodeTreeViewCanvas] autorelease];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the node symbol layer delegate, or resets it to nil,
+/// depending on the current application state.
+// -----------------------------------------------------------------------------
+- (void) setupSelectedNodeLayerDelegate
+{
+  if (self.selectedNodeLayerDelegate)
+    return;
+
+  self.selectedNodeLayerDelegate = [[[SelectedNodeLayerDelegate alloc] initWithTile:self
+                                                                            metrics:self.nodeTreeViewMetrics
+                                                                             canvas:self.nodeTreeViewCanvas
+                                                                              model:self.nodeTreeViewModel] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -173,7 +237,9 @@
 
   // The order in which layer delegates are added to the array is important: It
   // determines the order in which layers are stacked.
-  [newLayerDelegates addObject:self.dummyLayerDelegate];
+  [newLayerDelegates addObject:self.linesLayerDelegate];
+  [newLayerDelegates addObject:self.nodeSymbolLayerDelegate];
+  [newLayerDelegates addObject:self.selectedNodeLayerDelegate];
 
   // Removing/adding layers does not cause them to redraw. Only layers that
   // are newly created are redrawn.
@@ -214,7 +280,7 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayers
 {
-  // No game -> no board -> no drawing. This situation exists right after the
+  // No game -> no nodes -> no drawing. This situation exists right after the
   // application has launched and the initial game is created only after a
   // small delay.
   if (! [GoGame sharedGame])
@@ -259,6 +325,66 @@
 #pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeViewContentDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeViewContentDidChange:(NSNotification*)notification
+{
+  // TODO xxx arrives on main thread when application starts up => test if this also happens when game is loaded
+  [self notifyLayerDelegates:NTVLDEventNodeTreeContentChanged eventInfo:nil];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeViewCondenseMoveNodesDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeViewCondenseMoveNodesDidChange:(NSNotification*)notification
+{
+  // If the condense move nodes user preference changes the cell size also
+  // changes => see KVO responder. To avoid a dependency on event ordering it
+  // is best to handle the two things separately.
+
+  [self notifyLayerDelegates:NTVLDEventNodeTreeCondenseMoveNodesChanged eventInfo:nil];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeViewAlignMoveNodesDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeViewAlignMoveNodesDidChange:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:NTVLDEventNodeTreeAlignMoveNodesChanged eventInfo:nil];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeViewBranchingStyleDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeViewBranchingStyleDidChange:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:NTVLDEventNodeTreeBranchingStyleChanged eventInfo:nil];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeViewNodeSelectionStyleDidChange
+/// notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeViewNodeSelectionStyleDidChange:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:NTVLDEventNodeTreeNodeSelectionStyleChanged eventInfo:nil];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeViewSelectedNodeDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeViewSelectedNodeDidChange:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:NTVLDEventNodeTreeSelectedNodeChanged eventInfo:notification.object];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -274,6 +400,22 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
+  if (object == self.nodeTreeViewMetrics)
+  {
+    if ([keyPath isEqualToString:@"abstractCanvasSize"])
+    {
+      [self notifyLayerDelegates:NTVLDEventAbstractCanvasSizeChanged eventInfo:nil];
+      [self delayedDrawLayers];
+    }
+    else if ([keyPath isEqualToString:@"nodeTreeViewCellSize"])
+    {
+      // There are several reasons why the cell size could have changed.
+      // Typical examples: The zoom scale did change, or the condense move nodes
+      // user preference did change.
+      [self notifyLayerDelegates:NTVLDEventNodeTreeGeometryChanged eventInfo:nil];
+      [self delayedDrawLayers];
+    }
+  }
 }
 
 #pragma mark - UIView overrides
@@ -318,7 +460,7 @@
 // -----------------------------------------------------------------------------
 - (CGSize) intrinsicContentSize
 {
-  return [ApplicationDelegate sharedDelegate].nodeTreeViewMetrics.tileSize;
+  return self.nodeTreeViewMetrics.tileSize;
 }
 
 @end

@@ -21,13 +21,15 @@
 #import "BoardTileView.h"
 #import "BoardView.h"
 #import "CoordinateLabelsTileView.h"
+#import "../gesture/BoardViewTapGestureController.h"
 #import "../gesture/DoubleTapGestureController.h"
 #import "../gesture/PanGestureController.h"
-#import "../gesture/TapGestureController.h"
 #import "../gesture/TwoFingerTapGestureController.h"
+#import "../model/BoardSetupModel.h"
 #import "../model/BoardViewMetrics.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../ui/UiSettingsModel.h"
 #import "../../utility/UIColorAdditions.h"
 
 
@@ -44,7 +46,7 @@
 @property(nonatomic, retain) TiledScrollView* coordinateLabelsNumberView;
 @property(nonatomic, retain) NSArray* coordinateLabelsViewConstraints;
 @property(nonatomic, retain) PanGestureController* panGestureController;
-@property(nonatomic, retain) TapGestureController* tapGestureController;
+@property(nonatomic, retain) BoardViewTapGestureController* boardViewTapGestureController;
 @property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
 @property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
 @property(nonatomic, retain) BoardAnimationController* boardAnimationController;
@@ -87,7 +89,7 @@
   self.coordinateLabelsLetterView = nil;
   self.coordinateLabelsNumberView = nil;
   self.panGestureController = nil;
-  self.tapGestureController = nil;
+  self.boardViewTapGestureController = nil;
   self.doubleTapGestureController = nil;
   self.twoFingerTapGestureController = nil;
   self.boardAnimationController = nil;
@@ -100,7 +102,7 @@
 - (void) setupChildControllers
 {
   self.panGestureController = [[[PanGestureController alloc] init] autorelease];
-  self.tapGestureController = [[[TapGestureController alloc] init] autorelease];
+  self.boardViewTapGestureController = [[[BoardViewTapGestureController alloc] init] autorelease];
   self.doubleTapGestureController = [[[DoubleTapGestureController alloc] init] autorelease];
   self.twoFingerTapGestureController = [[[TwoFingerTapGestureController alloc] init] autorelease];
   self.boardAnimationController = [[[BoardAnimationController alloc] init ] autorelease];
@@ -121,6 +123,7 @@
   [self configureViews];
   [self configureControllers];
   [self setupNotificationResponders];
+  [self updateDoubleTapToZoomEnabled];
 
   [self createOrDeallocCoordinateLabelsViews];
 }
@@ -174,7 +177,7 @@
 - (void) configureControllers
 {
   self.panGestureController.boardView = self.boardView;
-  self.tapGestureController.boardView = self.boardView;
+  self.boardViewTapGestureController.boardView = self.boardView;
   self.doubleTapGestureController.scrollView = self.boardView;
   self.twoFingerTapGestureController.scrollView = self.boardView;
   self.boardAnimationController.boardView = self.boardView;
@@ -211,10 +214,15 @@
     return;
   self.notificationRespondersAreSetup = true;
 
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
+
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
   [metrics addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
+  [appDelegate.boardSetupModel addObserver:self forKeyPath:@"doubleTapToZoom" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -226,10 +234,14 @@
     return;
   self.notificationRespondersAreSetup = false;
 
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
   [metrics removeObserver:self forKeyPath:@"canvasSize"];
   [metrics removeObserver:self forKeyPath:@"boardSize"];
   [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
+  [appDelegate.boardSetupModel removeObserver:self forKeyPath:@"doubleTapToZoom"];
 }
 
 #pragma mark TiledScrollViewDataSource overrides
@@ -479,6 +491,21 @@
   self.coordinateLabelsNumberView.hidden = hidden;
 }
 
+#pragma mark - Private helpers - Manage double-tap to zoom
+
+// -----------------------------------------------------------------------------
+/// @brief Updates whether the double-tap gesture to zoom is enabled.
+// -----------------------------------------------------------------------------
+- (void) updateDoubleTapToZoomEnabled
+{
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+
+  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
+    self.doubleTapGestureController.tappingEnabled = appDelegate.boardSetupModel.doubleTapToZoom;
+  else
+    self.doubleTapGestureController.tappingEnabled = true;
+}
+
 #pragma mark - Private helpers
 
 // -----------------------------------------------------------------------------
@@ -548,14 +575,24 @@
   self.coordinateLabelsNumberView.contentOffset = coordinateLabelsNumberViewContentOffset;
 }
 
-#pragma mark - KVO notification
+#pragma mark - Notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #uiAreaPlayModeDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) uiAreaPlayModeDidChange:(NSNotification*)notification
+{
+  [self updateDoubleTapToZoomEnabled];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to KVO notifications.
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  if (object == [ApplicationDelegate sharedDelegate].boardViewMetrics)
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+
+  if (object == appDelegate.boardViewMetrics)
   {
     if ([keyPath isEqualToString:@"canvasSize"] ||
         [keyPath isEqualToString:@"boardSize"] ||
@@ -596,6 +633,11 @@
         }
       }
     }
+  }
+  else if (object == appDelegate.boardSetupModel)
+  {
+    if ([keyPath isEqualToString:@"doubleTapToZoom"])
+      [self updateDoubleTapToZoomEnabled];
   }
 }
 

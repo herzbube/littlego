@@ -580,8 +580,8 @@ static const int maxStepsForCreateNodes = 9;
 
   __block GoNode* goParentNode = nodeModel.rootNode;
   *numberOfNodesInGameTree = 1;  // start with 1 for the root node
-  int numberOfMovesFound = 0;
-  GoMove* mostRecentMove = nil;
+  int numberOfMovesFoundBeforeCurrentNode = 0;
+  GoMove* previousMove = nil;
 
   NSMutableArray* stack = [NSMutableArray array];
   NSNull* nullValue = [NSNull null];
@@ -606,7 +606,7 @@ static const int maxStepsForCreateNodes = 9;
       GoNode* goNewNode = [GoNode node];
       bool success = [self populateGoNode:goNewNode
                 withPropertiesFromSgfNode:sgfCurrentNode
-                           mostRecentMove:mostRecentMove
+                             previousMove:previousMove
                              errorMessage:errorMessage];
       if (! success)
         return false;
@@ -620,8 +620,21 @@ static const int maxStepsForCreateNodes = 9;
         // Note: If the skipped node is a branching point in the tree, all of
         // its child nodes are added as child nodes to the skipped node's parent
         // in the skipped node's place.
-        goMostRecentContentNode = goParentNode;
-        goParentNode = goMostRecentContentNode.parent;
+
+        if (sgfCurrentNodeIsRootNode)
+        {
+          sgfCurrentNodeIsRootNode = false;
+
+          // goParentNode is still == nodeModel.rootNode at this point
+          goMostRecentContentNode = goParentNode;
+          goParentNode = nil;
+
+        }
+        else
+        {
+          goMostRecentContentNode = goParentNode;
+          goParentNode = goMostRecentContentNode.parent;
+        }
       }
       else
       {
@@ -654,24 +667,6 @@ static const int maxStepsForCreateNodes = 9;
         {
           addNewNodeToTree(goNewNode, &goMostRecentContentNode);
         }
-
-        if (goMostRecentContentNode.goMove)
-        {
-          numberOfMovesFound++;
-          mostRecentMove = goMostRecentContentNode.goMove;
-
-          // If we don't perform this check here the game fails to load during the
-          // GTP engine sync. However, the error message in that case is much less
-          // nice. Also if the maximum is not exceeded on the main variation, the
-          // sync failure does not occur immediately, it will occur only when the
-          // user switches to the affected variation. We want to avoid such
-          // surprises, so we refuse to load the game right at the start.
-          if (numberOfMovesFound > maximumNumberOfMoves)
-          {
-            *errorMessage = [NSString stringWithFormat:@"The SGF data contains a variation with %d or more moves. This is more than the maximum number of moves (%d) that the computer player Fuego can process.", numberOfMovesFound, maximumNumberOfMoves];
-            return false;
-          }
-        }
       }
 
       // The stack not only remembers sgfCurrentNode (which is important for
@@ -679,10 +674,28 @@ static const int maxStepsForCreateNodes = 9;
       // to build our own model:
       // - The node that will be the parent of the next sibling
       // - The number of moves found so far in this branch of the tree
-      // - The most recent move found in this branch of the tree
-      [stack addObject:@[sgfCurrentNode, goParentNode ? goParentNode : nullValue, [NSNumber numberWithInt:numberOfMovesFound], mostRecentMove ? mostRecentMove : nullValue]];
+      // - The move that will be the parent move (or previous move) of the next
+      //   move found in the next sibling branch
+      [stack addObject:@[sgfCurrentNode, goParentNode ? goParentNode : nullValue, [NSNumber numberWithInt:numberOfMovesFoundBeforeCurrentNode], previousMove ? previousMove : nullValue]];
 
       goParentNode = goMostRecentContentNode;
+      if (goMostRecentContentNode.goMove)
+      {
+        previousMove = goMostRecentContentNode.goMove;
+        numberOfMovesFoundBeforeCurrentNode++;
+        
+        // If we don't perform this check here the game fails to load during the
+        // GTP engine sync. However, the error message in that case is much less
+        // nice. Also if the maximum is not exceeded on the main variation, the
+        // sync failure does not occur immediately, it will occur only when the
+        // user switches to the affected variation. We want to avoid such
+        // surprises, so we refuse to load the game right at the start.
+        if (numberOfMovesFoundBeforeCurrentNode > maximumNumberOfMoves)
+        {
+          *errorMessage = [NSString stringWithFormat:@"The SGF data contains a variation with %d or more moves. This is more than the maximum number of moves (%d) that the computer player Fuego can process.", numberOfMovesFoundBeforeCurrentNode, maximumNumberOfMoves];
+          return false;
+        }
+      }
 
       sgfCurrentNode = sgfCurrentNode.firstChild;
     }
@@ -696,11 +709,11 @@ static const int maxStepsForCreateNodes = 9;
       goParentNode = [tuple objectAtIndex:1];
       if ((id)goParentNode == nullValue)
         goParentNode = nil;
-      NSNumber* numberOfMovesFoundAsNumber = [tuple objectAtIndex:2];
-      numberOfMovesFound = numberOfMovesFoundAsNumber.intValue;
-      mostRecentMove = [tuple objectAtIndex:3];
-      if ((id)mostRecentMove == nullValue)
-        mostRecentMove = nil;
+      NSNumber* numberOfMovesFoundBeforeCurrentNodeAsNumber = [tuple objectAtIndex:2];
+      numberOfMovesFoundBeforeCurrentNode = numberOfMovesFoundBeforeCurrentNodeAsNumber.intValue;
+      previousMove = [tuple objectAtIndex:3];
+      if ((id)previousMove == nullValue)
+        previousMove = nil;
 
       sgfCurrentNode = sgfCurrentNode.nextSibling;
     }
@@ -729,7 +742,7 @@ static const int maxStepsForCreateNodes = 9;
 // -----------------------------------------------------------------------------
   - (bool) populateGoNode:(GoNode*)goNode
 withPropertiesFromSgfNode:(SGFCNode*)sgfNode
-           mostRecentMove:(GoMove*)mostRecentMove
+             previousMove:(GoMove*)previousMove
              errorMessage:(NSString**)errorMessage
 {
   bool sgfNodeIsGameInfoNode = sgfNode == self.sgfGameInfoNode;
@@ -753,7 +766,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
       bool success = [self populateGoNodeSetup:goNodeSetup
                              withSetupProperty:sgfProperty
                            foundInGameInfoNode:sgfNodeIsGameInfoNode
-                                mostRecentMove:mostRecentMove
+                                mostRecentMove:previousMove
                                   errorMessage:errorMessage];
       if (! success)
         return false;
@@ -762,7 +775,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
     {
       // SGFC makes sure that the node never contains both SGFCPropertyTypeB and
       // SGFCPropertyTypeW at the same time
-      goMove = [self createMoveWithProperty:sgfProperty withPreviousMove:mostRecentMove errorMessage:errorMessage];
+      goMove = [self createMoveWithProperty:sgfProperty withPreviousMove:previousMove errorMessage:errorMessage];
     }
     else if (propertyType == SGFCPropertyTypeN)
     {
@@ -1485,11 +1498,12 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   // - lastMove
   [game.nodeModel changeToMainVariation];
 
-  // GoNodeModel's changeToMainVariation() method triggered GoBoardPosition via
-  // KVO to change its numberOfBoardPosition value, but the KVO handler in
-  // GoBoardPosition did not change the currentBoardPosition value (except in
-  // rare cases), so we have to trigger this change manually.
-  [game.boardPosition changeToLastBoardPositionWithoutUpdatingGoObjects];
+  // GoBoardPosition must now be sync'ed with the content of GoNodeModel. This
+  // updates the numberOfBoardPosition and currentBoardPosition values (the
+  // latter via changeToLastBoardPositionWithoutUpdatingGoObjects) and posts
+  // the corresponding notifications to the global notification centre.
+  // TODO xxx RestoreApplicationStateCommand also does this - can it be done better?
+  [game updateBoardPositionAfterGameIsLoaded];
 
   // Configure nextMoveColor. No need to check GoGame's property alternatingPlay
   // because after loading a game from SGF we always start out with alternating

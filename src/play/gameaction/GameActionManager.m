@@ -40,6 +40,7 @@
 #import "../../command/markup/DiscardAllMarkupCommand.h"
 #import "../../command/markup/HandleMarkupEditingInteractionCommand.h"
 #import "../../command/move/ComputerSuggestMoveCommand.h"
+#import "../../command/node/ChangeNodeSelectionAsyncCommand.h"
 #import "../../command/scoring/ToggleScoringStateOfStoneGroupCommand.h"
 #import "../../command/ChangeUIAreaPlayModeCommand.h"
 #import "../../main/ApplicationDelegate.h"
@@ -395,6 +396,24 @@ static GameActionManager* sharedGameActionManager = nil;
 
   [[[[HandleMarkupEditingInteractionCommand alloc] initEraseMarkupInRectangleFromPoint:fromPoint
                                                                                toPoint:toPoint] autorelease] submit];
+}
+
+#pragma mark - Handlers for node tree interactions
+
+// -----------------------------------------------------------------------------
+/// @brief Selects the node @a node, i.e. changes the current board position
+/// to display the content of @a node. Also changes the current game variation
+/// if @a node is not in the current game variation.
+// -----------------------------------------------------------------------------
+- (void) selectNode:(GoNode*)node
+{
+  if ([self shouldIgnoreUserInteraction])
+  {
+    DDLogWarn(@"%@: Ignoring selectNode:", self);
+    return;
+  }
+
+  [[[[ChangeNodeSelectionAsyncCommand alloc] initWithNode:node] autorelease] submit];
 }
 
 #pragma mark - Mapping of game actions to handler methods

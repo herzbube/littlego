@@ -321,8 +321,8 @@ enum FillMarkerGapsSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Place each symbol onle once" switch.
-/// Writes the new value to the appropriate model.
+/// @brief Reacts to a tap gesture on the "Unique symbols" switch. Writes the
+/// new value to the appropriate model.
 // -----------------------------------------------------------------------------
 - (void) toggleUniqueSymbols:(id)sender
 {
@@ -331,8 +331,8 @@ enum FillMarkerGapsSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Display coordinates" switch. Writes
-/// the new value to the appropriate model.
+/// @brief Reacts to a tap gesture on the "Connection tool allows delete"
+/// switch. Writes the new value to the appropriate model.
 // -----------------------------------------------------------------------------
 - (void) toggleConnectionToolAllowsDelete:(id)sender
 {
@@ -341,7 +341,8 @@ enum FillMarkerGapsSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to the user changing the "display move numbers" setting.
+/// @brief Reacts to the user changing the "Fill marker gaps" switch. Writes
+/// the new value to the appropriate model.
 // -----------------------------------------------------------------------------
 - (void) toggleFillMarkerGaps:(id)sender
 {

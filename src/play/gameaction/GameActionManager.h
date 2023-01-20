@@ -23,6 +23,7 @@
 // Forward declarations
 @class GameActionManager;
 @class CommandBase;
+@class GoNode;
 @class GoPoint;
 
 
@@ -141,6 +142,7 @@ dismissNavigationControllerWithRootViewController:(UIViewController*)rootViewCon
                                     atPoint:(GoPoint*)point;
 - (void) handleMarkupEditingEraseMarkupInRectangleFromPoint:(GoPoint*)fromPoint
                                                     toPoint:(GoPoint*)toPoint;
+- (void) selectNode:(GoNode*)node;
 
 - (void) pass:(id)sender;
 - (void) discardBoardPosition:(id)sender;

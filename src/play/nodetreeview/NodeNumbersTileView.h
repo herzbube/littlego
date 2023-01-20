@@ -18,6 +18,9 @@
 // Project includes
 #import "../../ui/Tile.h"
 
+// Forward declarations
+@class NodeTreeViewMetrics;
+
 
 // -----------------------------------------------------------------------------
 /// @brief The NodeNumbersTileView class is a custom view that is responsible
@@ -53,6 +56,7 @@
 {
 }
 
-- (id) initWithFrame:(CGRect)rect;
+- (id) initWithFrame:(CGRect)rect
+             metrics:(NodeTreeViewMetrics*)nodeTreeViewMetrics;
 
 @end

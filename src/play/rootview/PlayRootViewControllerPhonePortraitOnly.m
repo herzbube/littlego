@@ -40,7 +40,9 @@ enum ResizablePane2Content
 #import "../controller/AutoLayoutConstraintHelper.h"
 #import "../controller/StatusViewController.h"
 #import "../model/NavigationBarButtonModel.h"
+#import "../model/NodeTreeViewModel.h"
 #import "../nodetreeview/NodeTreeViewController.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/ResizableStackViewController.h"
 #import "../../ui/UiElementMetrics.h"
@@ -103,9 +105,11 @@ enum ResizablePane2Content
     resizableStackViewControllerInitialSizes = @[resizablePane1SizeAsNumber, resizablePane2SizeAsNumber];
   }
 
+  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+  NodeTreeViewModel* nodeTreeViewModel = applicationDelegate.nodeTreeViewModel;
+
   self.resizablePane2ContentAutoLayoutConstraints = [NSMutableArray array];
-  // TODO xxx Which view is initially visible should be a user preference
-  self.currentResizablePane2Content = ResizablePane2ContentBoardPositionCollectionView;
+  self.currentResizablePane2Content = nodeTreeViewModel.displayNodeTreeView ? ResizablePane2ContentNodeTreeView : ResizablePane2ContentBoardPositionCollectionView;
   self.boardViewSmallerDimension = UILayoutConstraintAxisHorizontal;
   self.boardPositionCollectionViewBorderWidth = 1.0f;
   [self setupChildControllers];
@@ -144,7 +148,7 @@ enum ResizablePane2Content
   self.boardContainerView = nil;
   self.boardPositionButtonBoxAndAnnotationContainerView = nil;
   self.boardPositionButtonBoxContainerView = nil;
-  self.switchContentInResizablePane2Button = false;
+  self.switchContentInResizablePane2Button = nil;
   self.resizablePane2ContentAutoLayoutConstraints = nil;
   self.boardViewAutoLayoutConstraints = nil;
 }
@@ -481,7 +485,6 @@ enum ResizablePane2Content
                                      forControlEvents:UIControlEventTouchUpInside];
 }
 
-
 // -----------------------------------------------------------------------------
 /// @brief Private helper for loadView.
 // -----------------------------------------------------------------------------
@@ -756,10 +759,19 @@ enum ResizablePane2Content
 // -----------------------------------------------------------------------------
 - (void) switchContentInResizablePane2:(id)sender
 {
+  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+  NodeTreeViewModel* nodeTreeViewModel = applicationDelegate.nodeTreeViewModel;
+
   if (self.currentResizablePane2Content == ResizablePane2ContentBoardPositionCollectionView)
+  {
     self.currentResizablePane2Content = ResizablePane2ContentNodeTreeView;
+    nodeTreeViewModel.displayNodeTreeView = true;
+  }
   else
+  {
     self.currentResizablePane2Content = ResizablePane2ContentBoardPositionCollectionView;
+    nodeTreeViewModel.displayNodeTreeView = false;
+  }
 
   [self setupContentInResizablePane2:self.currentResizablePane2Content
                       isInitialSetup:false];
@@ -810,7 +822,7 @@ enum ResizablePane2Content
     [self setupAutoLayoutConstraintsForContentInResizablePane2:boardPositionCollectionView
                                          resizablePane2Content:ResizablePane2ContentBoardPositionCollectionView];
 
-    [self.switchContentInResizablePane2Button setImage:[UIImage imageNamed:nodeSequenceIconResource]
+    [self.switchContentInResizablePane2Button setImage:[UIImage imageNamed:nodeTreeSmallIconResource]
                                               forState:UIControlStateNormal];
   }
   else
@@ -826,7 +838,8 @@ enum ResizablePane2Content
 
     self.resizableStackViewController.resizingEnabled = true;
 
-    self.nodeTreeViewController = [[[NodeTreeViewController alloc] init] autorelease];
+    ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+    self.nodeTreeViewController = [[[NodeTreeViewController alloc] initWithModel:applicationDelegate.nodeTreeViewModel] autorelease];
     UIView* nodeTreeView = self.nodeTreeViewController.view;
     // TODO xxx Remove this when the node tree view properly draws its content
     nodeTreeView.backgroundColor = [UIColor lightGrayColor];
@@ -835,7 +848,7 @@ enum ResizablePane2Content
     [self setupAutoLayoutConstraintsForContentInResizablePane2:nodeTreeView
                                          resizablePane2Content:ResizablePane2ContentNodeTreeView];
 
-    [self.switchContentInResizablePane2Button setImage:[UIImage imageNamed:nodeTreeSmallIconResource]
+    [self.switchContentInResizablePane2Button setImage:[UIImage imageNamed:nodeSequenceIconResource]
                                               forState:UIControlStateNormal];
   }
 }

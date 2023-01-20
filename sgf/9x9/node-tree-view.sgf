@@ -1,0 +1,88 @@
+(;FF[4]CA[UTF-8]GM[1]SZ[9]
+ ;N[This game contains a node tree that exercises the drawing routines of the node tree]
+  C[The root node is empty. This is the only node that can be empty - the app filters out all other empty nodes.]
+
+ (;C[The main variation contains at least one example for each symbol with which nodes are drawn]
+  ;C[Black setup stones]
+   AB[aa][ab][ac]
+  ;C[White setup stones]
+   AW[ba][bb][bc]
+  ;C[Clear setup stones]
+   AE[ab][bb]
+  ;C[Black and white setup stones]
+   AB[ab]
+   AW[bb]
+  ;C[Black and clear setup stones]
+   AB[ad]
+   AE[ab]
+  ;C[White and clear setup stones]
+   AW[bd]
+   AE[bb]
+  ;C[Black and white and clear setup stones]
+   AB[ae]
+   AW[be]
+   AE[ac][bc]
+  ;C[Black move 1, at the start of a move sequence, uncondensed]
+   B[ag]
+  ;C[White move 2, condensed]
+   W[bg]
+  ;C[Black move 3, at the end of a move sequence, uncondensed]
+   B[cg]
+  ;C[This node contains annotations only. The next node contains markup only - because of this it cannot contain the C property.]
+  ;AR[ga:gd]
+  ;C[Annotations and markup]
+   AR[ha:hd]
+  ;C[White move 4, at the start of a move sequence, uncondensed]
+   W[dg]
+  ;C[Black move 5, condensed]
+   B[eg]
+  ;C[White move 6, condensed]
+   W[fg]
+  ;C[Black move 7, at the end of a move sequence, uncondensed]
+   B[gg])
+
+ (;C[The second variation contains examples when move nodes at branching points are uncondensed]
+  ;C[Black move 1, at the start of a move sequence, uncondensed, align with move 1 of main variation]
+   B[ag]
+  ;C[White move 2, condensed]
+   W[bg]
+  ;C[Black move 3, branching point, uncondensed]
+   B[cg]
+  (;C[White move 4, first child node of branching point, uncondensed]
+    W[dg]
+   ;C[Black move 5, condensed]
+    B[eg]
+   ;C[White move 6, condensed]
+    W[fg]
+   ;C[Black move 7, at the end of a move sequence, uncondensed]
+    B[gg]
+  )
+  (;C[White move 4, second child node of branching point, uncondensed]
+    W[dh]
+   ;C[Black move 5, condensed]
+    B[eh]
+   ;C[White move 6, condensed]
+    W[fh]
+   ;C[Black move 7, at the end of a move sequence, uncondensed]
+    B[gh]
+  )
+ )
+ (;C[The third variation and its child variations demonstrate the optimization of vertical space when diagonal branching style is selected]
+  ;C[Node A]
+  ;C[Node B]
+  (;C[Node C]
+   (;C[Node D]
+    ;C[Node E]
+     (;C[Node F]
+      (;C[Node G])
+      (;C[Node I])
+     )
+     (;C[Node L - 2 lines below node E because branch length is 2]
+      ;C[Node M])
+   )
+   (;C[Node H - 1 line below node C])
+   (;C[Node K - 2 lines below node C])
+  )
+  (;C[Node J - same line as node K because branch length is only 1. Not same line as node H because vertical branching line takes away space from node J.])
+ )
+)

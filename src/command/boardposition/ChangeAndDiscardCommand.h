@@ -35,9 +35,11 @@
 /// board positions can be discarded if there are several consecutive human
 /// player moves.
 ///
-/// ChangeAndDiscardCommand first posts #currentBoardPositionDidChange (via
-/// ChangeBoardPositionCommand), then #numberOfBoardPositionsDidChange, to the
-/// default notification center.
+/// If the first node that is discarded has a next or previous sibling, then
+/// the current game variation will be updated to include new nodes, starting
+/// with the next sibling (if one exists) or the previous sibling (if no next
+/// sibling exists), plus all the first-child descendants of the next/previous
+/// sibling. As a consequence, the number of board positions may not change.
 ///
 /// If there is only one board position (i.e. no moves have been made yet and
 /// no other nodes have been created yet), ChangeAndDiscardCommand reverts the
@@ -48,6 +50,25 @@
 /// After it has made the discard and/or reverted the game state to
 /// "in progress", ChangeAndDiscardCommand performs a backup of the current
 /// game.
+///
+/// ChangeAndDiscardCommand posts a number of notifications to the default
+/// notification center. This is the sequence
+/// - 0-n times #currentBoardPositionDidChange (via ChangeBoardPositionCommand).
+///   The notification is never posted if there is only one board position.
+///   The notification is posted multiple times if the number of board positions
+///   that need to be discarded is larger than a certain threshold.
+/// - 0-1 times #currentGameVariationWillChange. The notification is posted
+///   only if the first node that is discarded has a next or previous sibling.
+/// - 0-1 times #numberOfBoardPositionsDidChange. The notification is never
+///   posted if either 1) there is only one board position; or 2) the first node
+///   that is discarded has a next or previous sibling and the discard causes
+///   the same number of new nodes to be added to the current game variation
+///   that were also discarded.
+/// - 0-1 times #currentGameVariationDidChange. The notification is posted
+///   only to balance #currentGameVariationWillChange, i.e. it will be posted
+///   only if the first node that is discarded has a next or previous sibling.
+/// - 0-1 times #goNodeTreeLayoutDidChange. The notification is never posted if
+///   no nodes are discarded because there is only one board position.
 ///
 /// @note The first board position represents the start of the game and cannot
 /// be discarded. Therefore, if ChangeAndDiscardCommand is executed when the

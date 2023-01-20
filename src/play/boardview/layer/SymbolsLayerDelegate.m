@@ -695,8 +695,7 @@
     }
     NSString* moveNumberText = [NSString stringWithFormat:@"%d", moveToBeNumbered.moveNumber];
     NSDictionary* textAttributes = @{ NSFontAttributeName : moveNumberFont,
-                                      NSForegroundColorAttributeName : textColor,
-                                      NSParagraphStyleAttributeName : self.boardViewMetrics.paragraphStyle };
+                                      NSForegroundColorAttributeName : textColor };
     [BoardViewDrawingHelper drawString:moveNumberText
                            withContext:context
                             attributes:textAttributes
@@ -997,14 +996,12 @@
   {
     textAttributes = @{ NSFontAttributeName : labelFont,
                         NSForegroundColorAttributeName : textColor,
-                        NSParagraphStyleAttributeName : self.boardViewMetrics.paragraphStyle,
                         NSShadowAttributeName: self.boardViewMetrics.whiteTextShadow };
   }
   else
   {
     textAttributes = @{ NSFontAttributeName : labelFont,
-                        NSForegroundColorAttributeName : textColor,
-                        NSParagraphStyleAttributeName : self.boardViewMetrics.paragraphStyle };
+                        NSForegroundColorAttributeName : textColor };
   }
 
   [BoardViewDrawingHelper drawString:labelText
@@ -1151,7 +1148,6 @@
   NSString* nextMoveLabelText = @"A";
   NSDictionary* textAttributes = @{ NSFontAttributeName : self.boardViewMetrics.nextMoveLabelFont,
                                     NSForegroundColorAttributeName : [UIColor whiteColor],
-                                    NSParagraphStyleAttributeName : self.boardViewMetrics.paragraphStyle,
                                     NSShadowAttributeName: self.boardViewMetrics.whiteTextShadow };
   [BoardViewDrawingHelper drawString:nextMoveLabelText
                          withContext:context

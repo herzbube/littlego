@@ -25,14 +25,61 @@
 // -----------------------------------------------------------------------------
 enum NodeTreeViewLayerDelegateEvent
 {
-  /// @brief Occurs when the node tree view is initialized, when the zoom level
-  /// changes, and when the interface orientation changes.
+  /// @brief Is sent whenever there is a change to the size of the elements
+  /// that are used to draw the node tree. One typical use of this event is when
+  /// the node tree view's zoom level changes.
   NTVLDEventNodeTreeGeometryChanged,
   /// @brief Is sent whenever the layer needs a full redraw although the node
   /// tree geometry did not change. One typical use of this event is when the
   /// tiling mechanism reuses a tile to display content at a different position
   /// on the canvas.
   NTVLDEventInvalidateContent,
+  /// @brief Is sent whenever the abstract canvas size changed. The layer's
+  /// drawing cells may have changed, and because of that also the content
+  /// drawn by the layer. The event is sent only after NodeTreeViewCanvas and
+  /// NodeTreeViewMetrics have updated their data.
+  NTVLDEventAbstractCanvasSizeChanged,
+  /// @brief Is sent whenever the content of the node tree changed. The layer's
+  /// drawing cells did not change (or if they did a separate event
+  /// #NTVLDEventAbstractCanvasSizeChanged is sent), but the content drawn by
+  /// the layer may have changed (the nature of the node tree content change is
+  /// not known.
+  NTVLDEventNodeTreeContentChanged,
+  /// @brief Is sent whenever the condense move nodes user preference has
+  /// changed. The layer should treat this event as a change to cell content
+  /// (both lines and node symbols). It is likely that additional events are
+  /// separately sent, notably #NTVLDEventAbstractCanvasSizeChanged (the
+  /// abstract canvas dimensions are likely to change because branches now use
+  /// either more or less space due to the change in size of symbols for those
+  /// move nodes that are condensable) and #NTVLDEventNodeTreeGeometryChanged
+  /// (because the layer's drawing cell sizes have changed).
+  NTVLDEventNodeTreeCondenseMoveNodesChanged,
+  /// @brief Is sent whenever the align move nodes user preference has
+  /// changed. The layer should treat this event as a change to cell content
+  /// (both lines and node symbols). It is likely that a separate event
+  /// #NTVLDEventAbstractCanvasSizeChanged is sent, because the canvas
+  /// dimensions did also change because branches now use either more or less
+  /// space due to alignment lines that were added/removed.
+  NTVLDEventNodeTreeAlignMoveNodesChanged,
+  /// @brief Is sent whenever the branching style user preference has
+  /// changed. The layer should treat this event as a change to cell content
+  /// (both lines and node symbols). A separate event
+  /// #NTVLDEventAbstractCanvasSizeChanged may be sent, because the branching
+  /// style can have an effect on how branches are positioned (diagonal
+  /// branching allows some optimizations).
+  NTVLDEventNodeTreeBranchingStyleChanged,
+  /// @brief Is sent whenever the node selection style user preference has
+  /// changed. This affects only those layers that draw cells that display
+  /// the currently selected node.
+  NTVLDEventNodeTreeNodeSelectionStyleChanged,
+  /// @brief Is sent whenever the selected node changed. The selected node is
+  /// the node that corresponds to the current board position. The event info
+  /// object that accompanies this event type is an NSArray that contains 1-n
+  /// horizontally consecutive NodeTreeViewCellPosition objects that indicate
+  /// which cells on the canvas display the node that has been selected. If the
+  /// NSArray is empty, no node has been selected, i.e. there no longer is a
+  /// selected node.
+  NTVLDEventNodeTreeSelectedNodeChanged,
 };
 
 

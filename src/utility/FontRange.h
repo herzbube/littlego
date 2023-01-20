@@ -56,6 +56,12 @@
     minimumFontSize:(int)minimumFontSize
     maximumFontSize:(int)maximumFontSize;
 
+- (id) initWithMonospacedFontAndText:(NSString*)text
+                     minimumFontSize:(int)minimumFontSize
+                     maximumFontSize:(int)maximumFontSize;
+
+- (UIFont*) queryForWidth:(CGFloat)width;
+
 - (bool) queryForWidth:(CGFloat)width
                   font:(UIFont**)font
               textSize:(CGSize*)textSize;

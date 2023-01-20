@@ -37,7 +37,7 @@
 /// root node. The node located at the highest index position is accessible via
 /// the @e leafNode property.
 ///
-/// Invoking GoNodeModel methods that add or discard moves generally sets the
+/// Invoking GoNodeModel methods that add or discard nodes generally sets the
 /// GoGameDocument dirty flag.
 // -----------------------------------------------------------------------------
 @interface GoNodeModel : NSObject <NSCoding>
@@ -48,6 +48,7 @@
 
 - (void) changeToMainVariation;
 - (void) changeToVariationContainingNode:(GoNode*)node;
+- (GoNode*) ancestorOfNodeInCurrentVariation:(GoNode*)node;
 
 - (GoNode*) nodeAtIndex:(int)index;
 - (int) indexOfNode:(GoNode*)node;

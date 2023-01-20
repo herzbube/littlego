@@ -877,6 +877,126 @@ extern NSString* boardViewSelectionRectangleDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Go node notifications
+///
+/// These notifications are sent when the Go node data model model changes.
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that something about the layout of the tree of
+/// nodes in GoNodeModel has changed, i.e. one or more nodes were added, deleted
+/// or moved to a new location.
+extern NSString* goNodeTreeLayoutDidChange;
+/// @brief Is sent to indicate that the content of a node has changed in a way
+/// that causes its representation in the node tree view to change. The GoNode
+/// object whose content changed is associated with the notification.
+extern NSString* goNodeRepresentationInTreeViewDidChange;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Game variation notifications
+///
+/// These notifications are sent when something about the current game variation
+/// changes.
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that the number of board positions in
+/// GoBoardPosition has changed.
+///
+/// An NSArray object containing two NSNumber objects is associated with the
+/// notification. The two NSNumber objects each wrap an integer value: The first
+/// value is the old number of board positions, the second value is the new
+/// number of board positions.
+///
+/// If board positions are discarded from the current game variation, and the
+/// current board position is among the discarded board positions, then the
+/// current board position is changed before the discard takes place.
+/// #currentBoardPositionDidChange is therefore sent before this notification.
+///
+/// If new board positions are added to the current game variation, and the
+/// current board position changes to one of the new board positions, then this
+/// notification is sent first and #currentBoardPositionDidChange is sent
+/// afterwards.
+///
+/// If the number of board positions changes because the current game variation
+/// in GoNodeModel changes, then this notification is sent first and
+/// #currentGameVariationDidChange is sent afterwards.
+extern NSString* numberOfBoardPositionsDidChange;
+/// @brief Is sent to indicate that the current board position has changed.
+/// This notification is sent only after the state of all Go model objects
+/// has been updated.
+///
+/// An NSArray object containing two NSNumber objects is associated with the
+/// notification. The two NSNumber objects each wrap an integer value: The first
+/// value is the old current board position, the second value is the new
+/// current board position.
+///
+/// This notification is sent after the last #boardPositionChangeProgress.
+extern NSString* currentBoardPositionDidChange;
+/// @brief Is sent (B-A) times while the current board position in
+/// GoBoardPosition changes from A to B. Observers can use this notification to
+/// power a progress meter.
+extern NSString* boardPositionChangeProgress;
+/// @brief Is sent to indicate that the current game variation in GoNodeModel
+/// is about to change.
+///
+/// This notification is followed by #currentGameVariationDidChange. In between
+/// #numberOfBoardPositionsDidChange may also be sent.
+extern NSString* currentGameVariationWillChange;
+/// @brief Is sent to indicate that the current game variation in GoNodeModel
+/// has changed.
+///
+/// This notification is preceded by #currentGameVariationWillChange.
+///
+/// Because GoBoardPosition reflects the board positions that are present in
+/// the current game variation in GoNodeModel, the following actions must be
+/// taken before this notification is sent:
+/// - Before the game variation is changed, the current board position must be
+///   made to match a node that is present in both the old and the new game
+///   variation. This notification may therefore be preceded by
+///   #currentBoardPositionDidChange. The current board position change can
+///   take place even before #currentGameVariationWillChange is sent, because
+///   the operation is not strictly related to the game variation change.
+/// - After the game variation is changed, GoBoardPosition must be updated with
+///   the number of board positions in the new game variation. The notification
+///   #numberOfBoardPositionsDidChange must be sent @b after
+///   #currentGameVariationWillChange is sent, because the game variation change
+///   and the number of board positions change can be seen as belonging to the
+///   same "transaction" that is bounded by the willChange/didChange
+///   notifications. #numberOfBoardPositionsDidChange may not be sent if the
+///   new game variation has the same number of board positions as the old one.
+extern NSString* currentGameVariationDidChange;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Node tree view notifications
+///
+/// These notifications are sent solely within the node tree view context.
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that the content of the entire node tree view
+/// has changed.
+extern NSString* nodeTreeViewContentDidChange;
+/// @brief Is sent to indicate that the condense move nodes user preference
+/// has changed.
+extern NSString* nodeTreeViewCondenseMoveNodesDidChange;
+/// @brief Is sent to indicate that the align move nodes user preference
+/// has changed.
+extern NSString* nodeTreeViewAlignMoveNodesDidChange;
+/// @brief Is sent to indicate that the branching style user preference
+/// has changed.
+extern NSString* nodeTreeViewBranchingStyleDidChange;
+/// @brief Is sent to indicate that the node selection style user preference
+/// has changed.
+extern NSString* nodeTreeViewNodeSelectionStyleDidChange;
+/// @brief Is sent to indicate that the selected node in the node tree view has
+/// changed. An NSArray object is associated with the notification that contains
+/// NodeTreeViewCellPosition objects that indicate which cells on the canvas
+/// display the node that is currently selected. The list is empty if currently
+/// no node is selected.
+extern NSString* nodeTreeViewSelectedNodeDidChange;
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name Other notifications
 // -----------------------------------------------------------------------------
 //@{
@@ -887,38 +1007,6 @@ extern NSString* longRunningActionStarts;
 /// @brief Is sent when the last of a nested series of long-running actions
 /// ends. See LongRunningActionCounter for a detailed discussion of the concept.
 extern NSString* longRunningActionEnds;
-/// @brief Is sent to indicate that the number of board positions in
-/// GoBoardPosition has changed.
-///
-/// An NSArray object containing two NSNumber objects is associated with the
-/// notification. The two NSNumber objects each wrap an integer value: The first
-/// value is the old number of board positions, the second value is the new
-/// number of board positions.
-///
-/// If board positions are discarded and the current board position is among
-/// the discarded board positions, then the current board position is changed
-/// before the discard takes place. #currentBoardPositionDidChange is therefore
-/// sent before this notification.
-///
-/// If new board positions are added and the current board position changes to
-/// one of the new board positions, then this notification is sent first and
-/// #currentBoardPositionDidChange is sent afterwards.
-extern NSString* numberOfBoardPositionsDidChange;
-/// @brief Is sent to indicate that the current board position has changed.
-/// This notification is sent only after the state of all Go model objects
-/// has been updated.
-///
-/// An NSArray object containing two NSNumber objects is associated with the
-/// notification. The two NSNumber objects each wrap an integer value: The first
-/// value is the old current board positions, the second value is the new
-/// current board positions.
-///
-/// This notification is sent after the last #boardPositionChangeProgress.
-extern NSString* currentBoardPositionDidChange;
-/// @brief Is sent (B-A) times while the current board position in
-/// GoBoardPosition changes from A to B. Observers can use this notification to
-/// power a progress meter.
-extern NSString* boardPositionChangeProgress;
 /// @brief Is sent to indicate that players and profiles are about to be reset
 /// to their factory defaults. Is sent before #goGameWillCreate.
 extern NSString* playersAndProfilesWillReset;
@@ -1120,6 +1208,63 @@ extern NSString* moveSuggestionTypeKey;
 extern NSString* moveSuggestionPointKey;
 extern NSString* moveSuggestionErrorMessageKey;
 extern const int moveSuggestionAnimationRepeatCount;
+//@}
+
+// -----------------------------------------------------------------------------
+/// @name Node tree view constants
+// -----------------------------------------------------------------------------
+//@{
+// TODO xxx document
+enum NodeTreeViewCellSymbol
+{
+  // This value is used for cells that contain only lines
+  NodeTreeViewCellSymbolNone,
+  // A root node without setup, annotations or markup is drawn with this symbol
+  NodeTreeViewCellSymbolEmpty,
+  NodeTreeViewCellSymbolBlackSetupStones,
+  NodeTreeViewCellSymbolWhiteSetupStones,
+  NodeTreeViewCellSymbolNoSetupStones,
+  NodeTreeViewCellSymbolBlackAndWhiteSetupStones,
+  NodeTreeViewCellSymbolBlackAndNoSetupStones,
+  NodeTreeViewCellSymbolWhiteAndNoSetupStones,
+  NodeTreeViewCellSymbolBlackAndWhiteAndNoSetupStones,
+  NodeTreeViewCellSymbolBlackMove,
+  NodeTreeViewCellSymbolWhiteMove,
+  NodeTreeViewCellSymbolAnnotations,
+  NodeTreeViewCellSymbolMarkup,
+  NodeTreeViewCellSymbolAnnotationsAndMarkup,
+};
+
+// TODO xxx document
+typedef unsigned short NodeTreeViewCellLines;
+
+// TODO xxx document
+typedef NS_ENUM(NodeTreeViewCellLines, NodeTreeViewCellLine)
+{
+  NodeTreeViewCellLineNone = 0,
+  NodeTreeViewCellLineCenterToLeft = 1,
+  NodeTreeViewCellLineCenterToRight = 2,
+  NodeTreeViewCellLineCenterToBottom = 4,
+  NodeTreeViewCellLineCenterToTop = 8,
+  NodeTreeViewCellLineCenterToBottomRight = 16,
+  NodeTreeViewCellLineCenterToTopLeft = 32,
+};
+
+// TODO xxx document
+enum NodeTreeViewBranchingStyle
+{
+  NodeTreeViewBranchingStyleDiagonal,
+  NodeTreeViewBranchingStyleRightAngle,
+};
+
+/// @brief Enumerates all possible styles how the node selection marker can be
+/// drawn in the node tree view.
+enum NodeTreeViewNodeSelectionStyle
+{
+  NodeTreeViewNodeSelectionStyleLightCircular,     ///< @brief The node selection marker is drawn in a light style as a circle around the node symbol.
+  NodeTreeViewNodeSelectionStyleHeavyCircular,     ///< @brief The node selection marker is drawn in a heavy style as a circle around the node symbol.
+  NodeTreeViewNodeSelectionStyleHeavyRectangular,  ///< @brief The node selection marker is drawn in a heavy style as a rectangle around the node symbol.
+};
 //@}
 
 // -----------------------------------------------------------------------------
@@ -1632,6 +1777,13 @@ extern NSString* markupPrecedenceKey;
 extern NSString* uniqueSymbolsKey;
 extern NSString* connectionToolAllowsDeleteKey;
 extern NSString* fillMarkerGapsKey;
+// Node tree view settings
+extern NSString* nodeTreeViewKey;
+extern NSString* displayNodeTreeViewKey;
+extern NSString* condenseMoveNodesKey;
+extern NSString* alignMoveNodesKey;
+extern NSString* branchingStyleKey;
+extern NSString* nodeSelectionStyleKey;
 //@}
 
 // -----------------------------------------------------------------------------

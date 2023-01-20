@@ -343,6 +343,33 @@
   int newCurrentBoardPosition = self.nodeModel.numberOfNodes - 1;
   self.boardPosition.currentBoardPosition = newCurrentBoardPosition;
   [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:newCurrentBoardPosition]]];
+
+  [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
+}
+
+// TODO xxx Remove this hack when it is no longer needed
+- (void) updateBoardPositionAfterGameIsLoaded
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+
+  int oldNumberOfBoardPositions = self.boardPosition.numberOfBoardPositions;
+  int newNumberOfBoardPositions = self.nodeModel.numberOfNodes;
+  self.boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
+  [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
+
+  // Changing the current board position has the following effects:
+  // - It invokes GoNode modifyBoard. Important: GoNode modifyBoard must be
+  //   invoked only AFTER the node was added to the node tree, otherwise the
+  //   Zobrist hash (which is based on the previous node) cannot be calculated.
+  // - If self.alternatingPlay is true, it switches the nextMovePlayer.
+  int oldCurrentBoardPosition = self.boardPosition.currentBoardPosition;
+  int newCurrentBoardPosition = self.nodeModel.numberOfNodes - 1;
+  [self.boardPosition changeToLastBoardPositionWithoutUpdatingGoObjects];
+  [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:newCurrentBoardPosition]]];
+
+  // TODO xxx Is this needed? Currently it seems yes, this is the trigger for
+  // NodeTreeViewModel to recalculate.
+  [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
 }
 
 // -----------------------------------------------------------------------------

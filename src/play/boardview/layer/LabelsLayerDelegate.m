@@ -443,7 +443,6 @@
   UIColor* textColor = [UIColor whiteColor];
   NSDictionary* textAttributes = @{ NSFontAttributeName : self.boardViewMetrics.markupLabelFont,
                                     NSForegroundColorAttributeName : textColor,
-                                    NSParagraphStyleAttributeName : self.boardViewMetrics.paragraphStyle,
                                     NSShadowAttributeName: self.boardViewMetrics.whiteTextShadow };
 
   [BoardViewDrawingHelper drawString:labelText

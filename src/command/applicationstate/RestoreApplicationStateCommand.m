@@ -58,6 +58,10 @@
   command.shouldTriggerComputerPlayer = false;
   [command submit];
 
+  // TODO xxx LoadGameCommand also does this - can it be done better?
+  // TODO xxx Also: GoBoardPosition already has correct values (they were archived), so probably all we want to do here is post notifications
+  [unarchivedGame updateBoardPositionAfterGameIsLoaded];
+
   SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];
   success = [syncCommand submit];
   if (! success)

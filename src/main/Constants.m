@@ -75,20 +75,34 @@ NSString* goScoreCalculationStarts = @"GoScoreCalculationStarts";
 NSString* goScoreCalculationEnds = @"GoScoreCalculationEnds";
 NSString* askGtpEngineForDeadStonesStarts = @"AskGtpEngineForDeadStonesStarts";
 NSString* askGtpEngineForDeadStonesEnds = @"AskGtpEngineForDeadStonesEnds";
-// Other notifications
-NSString* longRunningActionStarts = @"LongRunningActionStarts";
-NSString* longRunningActionEnds = @"LongRunningActionEnds";
-NSString* numberOfBoardPositionsDidChange = @"NumberOfBoardPositionsDidChange";
-NSString* currentBoardPositionDidChange = @"CurrentBoardPositionDidChange";
-NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
-NSString* playersAndProfilesWillReset = @"PlayersAndProfilesWillReset";
-NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
-NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
+// Panning gesture related notifications
 NSString* boardViewPanningGestureWillStart = @"BoardViewPanningGestureWillStart";
 NSString* boardViewPanningGestureWillEnd = @"BoardViewPanningGestureWillEnd";;
 NSString* boardViewStoneLocationDidChange = @"BoardViewStoneLocationDidChange";
 NSString* boardViewMarkupLocationDidChange = @"BoardViewMarkupLocationDidChange";
 NSString* boardViewSelectionRectangleDidChange = @"BoardViewSelectionRectangleDidChange";
+// Go node notifications
+NSString* goNodeTreeLayoutDidChange = @"GoNodeTreeLayoutDidChange";
+NSString* goNodeRepresentationInTreeViewDidChange = @"GoNodeRepresentationInTreeViewDidChange";
+// Game variation notifications
+NSString* numberOfBoardPositionsDidChange = @"NumberOfBoardPositionsDidChange";
+NSString* currentBoardPositionDidChange = @"CurrentBoardPositionDidChange";
+NSString* boardPositionChangeProgress = @"BoardPositionChangeProgress";
+NSString* currentGameVariationWillChange = @"CurrentGameVariationWillChange";
+NSString* currentGameVariationDidChange = @"CurrentGameVariationDidChange";
+// Node tree view notifications
+NSString* nodeTreeViewContentDidChange = @"NodeTreeViewContentDidChange";
+NSString* nodeTreeViewCondenseMoveNodesDidChange = @"NodeTreeViewCondenseMoveNodesDidChange";
+NSString* nodeTreeViewAlignMoveNodesDidChange = @"NodeTreeViewAlignMoveNodesDidChange";
+NSString* nodeTreeViewBranchingStyleDidChange = @"NodeTreeViewBranchingStyleDidChange";
+NSString* nodeTreeViewNodeSelectionStyleDidChange = @"NodeTreeViewNodeSelectionStyleDidChange";
+NSString* nodeTreeViewSelectedNodeDidChange = @"NodeTreeViewSelectedNodeDidChange";
+// Other notifications
+NSString* longRunningActionStarts = @"LongRunningActionStarts";
+NSString* longRunningActionEnds = @"LongRunningActionEnds";
+NSString* playersAndProfilesWillReset = @"PlayersAndProfilesWillReset";
+NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
+NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
 NSString* uiAreaPlayModeWillChange = @"UIAreaPlayModeWillChange";
 NSString* uiAreaPlayModeDidChange = @"UIAreaPlayModeDidChange";
 NSString* handicapPointDidChange = @"HandicapPointDidChange";
@@ -417,6 +431,13 @@ NSString* markupPrecedenceKey = @"MarkupPrecedence";
 NSString* uniqueSymbolsKey = @"UniqueSymbols";
 NSString* connectionToolAllowsDeleteKey = @"ConnectionToolAllowsDelete";
 NSString* fillMarkerGapsKey = @"FillMarkerGaps";
+// Node tree view settings
+NSString* nodeTreeViewKey = @"NodeTreeView";
+NSString* displayNodeTreeViewKey = @"DisplayNodeTreeView";
+NSString* condenseMoveNodesKey = @"CondenseMoveNodes";
+NSString* alignMoveNodesKey = @"AlignMoveNodes";
+NSString* branchingStyleKey = @"BranchingStyle";
+NSString* nodeSelectionStyleKey = @"NodeSelectionStyle";
 
 // Constants for NSCoding
 // General constants

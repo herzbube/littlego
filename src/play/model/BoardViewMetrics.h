@@ -394,7 +394,6 @@
 @property(nonatomic, retain) UIColor* lastMoveColorOnWhiteStone;
 @property(nonatomic, retain) UIColor* connectionFillColor;
 @property(nonatomic, retain) UIColor* connectionStrokeColor;
-@property(nonatomic, retain) NSParagraphStyle* paragraphStyle;
 @property(nonatomic, retain) NSShadow* whiteTextShadow;
 //@}
 

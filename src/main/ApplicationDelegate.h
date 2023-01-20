@@ -32,7 +32,7 @@
 @class MagnifyingViewModel;
 @class MarkupModel;
 @class NewGameModel;
-@class NodeTreeViewMetrics;
+@class NodeTreeViewModel;
 @class PlayerModel;
 @class ScoringModel;
 @class SgfSettingsModel;
@@ -158,10 +158,9 @@
 /// @brief Model object that stores attributes related to viewing and placing
 /// markup on the board.
 @property(nonatomic, retain) MarkupModel* markupModel;
-/// @brief Model object that calculates locations and sizes of node tree
-/// elements as they are seen in the view hierarchy that displays the tree of
-/// nodes.
-@property(nonatomic, retain) NodeTreeViewMetrics* nodeTreeViewMetrics;
+/// @brief Model object that stores attributes used to manage the view hierarchy
+/// that displays the node tree view.
+@property(nonatomic, retain) NodeTreeViewModel* nodeTreeViewModel;
 
 @end
 

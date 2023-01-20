@@ -450,6 +450,19 @@
 		<key>FillMarkerGaps</key>
 		<true/>
 	</dict>
+	<key>NodeTreeView</key>
+	<dict>
+		<key>DisplayNodeTreeView</key>
+		<false/>
+		<key>CondenseMoveNodes</key>
+		<false/>
+		<key>AlignMoveNodes</key>
+		<false/>
+		<key>BranchingStyle</key>
+		<integer>0</integer>
+		<key>NodeSelectionStyle</key>
+		<integer>0</integer>
+	</dict>
 	<key>CrashReportActivated</key>
 	<true/>
 	<key>AutomaticallySendCrashReports</key>
