@@ -744,6 +744,8 @@
 		CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD52691485B05C0027476B /* DocumentGenerator.m */; };
 		CDE0FC5F298463B9008E55A8 /* GoMoveNodeCreationOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC5D298463B9008E55A8 /* GoMoveNodeCreationOptions.m */; };
 		CDE0FC60298463B9008E55A8 /* GoMoveNodeCreationOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC5D298463B9008E55A8 /* GoMoveNodeCreationOptions.m */; };
+		CDE0FC63298598C1008E55A8 /* GameVariationsSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC61298598C1008E55A8 /* GameVariationsSettingsController.m */; };
+		CDE0FC64298598C1008E55A8 /* GameVariationsSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC61298598C1008E55A8 /* GameVariationsSettingsController.m */; };
 		CDE0FC672985994F008E55A8 /* GameVariationsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC652985994E008E55A8 /* GameVariationsModel.m */; };
 		CDE0FC682985994F008E55A8 /* GameVariationsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC652985994E008E55A8 /* GameVariationsModel.m */; };
 		CDE1A16214C1CED200317ECA /* About.html in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A13514C1CED200317ECA /* About.html */; };
@@ -1722,6 +1724,8 @@
 		CDDD52691485B05C0027476B /* DocumentGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocumentGenerator.m; sourceTree = "<group>"; };
 		CDE0FC5D298463B9008E55A8 /* GoMoveNodeCreationOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveNodeCreationOptions.m; sourceTree = "<group>"; };
 		CDE0FC5E298463B9008E55A8 /* GoMoveNodeCreationOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveNodeCreationOptions.h; sourceTree = "<group>"; };
+		CDE0FC61298598C1008E55A8 /* GameVariationsSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameVariationsSettingsController.m; sourceTree = "<group>"; };
+		CDE0FC62298598C1008E55A8 /* GameVariationsSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameVariationsSettingsController.h; sourceTree = "<group>"; };
 		CDE0FC652985994E008E55A8 /* GameVariationsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameVariationsModel.m; sourceTree = "<group>"; };
 		CDE0FC662985994E008E55A8 /* GameVariationsModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameVariationsModel.h; sourceTree = "<group>"; };
 		CDE1A13514C1CED200317ECA /* About.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = About.html; sourceTree = "<group>"; };
@@ -2215,6 +2219,8 @@
 				CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */,
 				CDFE66AC173EC446003D8776 /* EditResignBehaviourSettingsController.h */,
 				CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */,
+				CDE0FC62298598C1008E55A8 /* GameVariationsSettingsController.h */,
+				CDE0FC61298598C1008E55A8 /* GameVariationsSettingsController.m */,
 				CDCBA6CE183D8801003697E2 /* MagnifyingGlassSettingsController.h */,
 				CDCBA6CF183D8801003697E2 /* MagnifyingGlassSettingsController.m */,
 				CDA86E7D28A7A4A3000B49E2 /* MarkupSettingsController.h */,
@@ -4363,6 +4369,7 @@
 				CD1F4F6825AE17D90098037A /* SgfSettingsModel.m in Sources */,
 				CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */,
 				CDEE19FB19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
+				CDE0FC63298598C1008E55A8 /* GameVariationsSettingsController.m in Sources */,
 				CD1E6EAA2860F0BC00785E23 /* MarkupUtilities.mm in Sources */,
 				CD607BCB28109A7E000C111E /* EditEstimatedScoreController.m in Sources */,
 				CDF2462D296AE2BF00350B42 /* NodeTreeViewCanvasData.m in Sources */,
@@ -4637,6 +4644,7 @@
 				CD931EE31684E4A6002E1262 /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
 				CD931EED16851E5C002E1262 /* SaveGameCommand.m in Sources */,
 				CDEE1A181946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
+				CDE0FC64298598C1008E55A8 /* GameVariationsSettingsController.m in Sources */,
 				CD15A484168D044400D4472A /* GoNodeModelTest.m in Sources */,
 				CD3659421693533600D75466 /* GoBoardPosition.m in Sources */,
 				CDBFCBBE16C3EFB0001D78C0 /* SetupApplicationCommand.m in Sources */,
