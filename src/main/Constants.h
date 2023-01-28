@@ -294,6 +294,8 @@ extern const DDLogLevel ddLogLevel;
 // -----------------------------------------------------------------------------
 //@{
 /// @brief Enumerates possible types of GoMove objects.
+///
+/// @ingroup go
 enum GoMoveType
 {
   GoMoveTypePlay,   ///< @brief The player played a stone in this move.
@@ -302,6 +304,8 @@ enum GoMoveType
 
 /// @brief Enumerates colors in Go. The values from this enumeration can be
 /// attributed to various things: stones, players, points, moves, etc.
+///
+/// @ingroup go
 enum GoColor
 {
   GoColorNone,   ///< @brief Used, among other things, to say that a GoPoint is empty and has no stone placed on it.
@@ -310,6 +314,8 @@ enum GoColor
 };
 
 /// @brief Enumerates the possible types of GoGame objects.
+///
+/// @ingroup go
 enum GoGameType
 {
   GoGameTypeUnknown,             ///< @brief Unknown game type.
@@ -319,6 +325,8 @@ enum GoGameType
 };
 
 /// @brief Enumerates the possible states of a GoGame.
+///
+/// @ingroup go
 enum GoGameState
 {
   GoGameStateGameHasStarted,        ///< @brief Denotes a game that has not yet ended, and is not paused.
@@ -328,6 +336,8 @@ enum GoGameState
 
 /// @brief Enumerates the possible reasons why a GoGame has reached the state
 /// #GoGameStateGameHasEnded.
+///
+/// @ingroup go
 enum GoGameHasEndedReason
 {
   GoGameHasEndedReasonNotYetEnded,   ///< @brief The game has not yet ended.
@@ -348,6 +358,8 @@ enum GoGameHasEndedReason
 /// @brief Enumerates the possible results of a game that has reached the state
 /// #GoGameStateGameHasEnded.
 ///
+/// @ingroup go
+///
 /// This enumeration is similar to the enumeration #GoScoreSummary, but due to
 /// slight semantic differences the two enumerations are kept separate.
 enum GoGameResult
@@ -360,6 +372,8 @@ enum GoGameResult
 
 /// @brief Enumerates the possible reasons why a GoGame's isComputerThinking
 /// property is true.
+///
+/// @ingroup go
 enum GoGameComputerIsThinkingReason
 {
   GoGameComputerIsThinkingReasonIsNotThinking,   ///< @brief The isComputerThinking property is currently false.
@@ -369,6 +383,8 @@ enum GoGameComputerIsThinkingReason
 };
 
 /// @brief Enumerates the possible reasons why playing a move can be illegal.
+///
+/// @ingroup go
 enum GoMoveIsIllegalReason
 {
   GoMoveIsIllegalReasonIntersectionOccupied,
@@ -381,6 +397,8 @@ enum GoMoveIsIllegalReason
 
 /// @brief Enumerates the possible reasons why setting up a stone at a given
 /// intersection can be illegal.
+///
+/// @ingroup go
 enum GoBoardSetupIsIllegalReason
 {
   /// @brief The setup stone to be placed would have no liberties.
@@ -401,6 +419,8 @@ enum GoBoardSetupIsIllegalReason
 
 /// @brief Enumerates the possible directions one can take to get from one
 /// GoPoint to another neighbouring GoPoint.
+///
+/// @ingroup go
 enum GoBoardDirection
 {
   GoBoardDirectionLeft,     ///< @brief Used for navigating to the left neighbour of a GoPoint.
@@ -412,6 +432,8 @@ enum GoBoardDirection
 };
 
 /// @brief Enumerates the supported board sizes.
+///
+/// @ingroup go
 enum GoBoardSize
 {
   GoBoardSize7 = 7,
@@ -427,6 +449,8 @@ enum GoBoardSize
 };
 
 /// @brief Enumerates the 4 corners of the Go board.
+///
+/// @ingroup go
 enum GoBoardCorner
 {
   GoBoardCornerBottomLeft,   ///< @brief A1 on all board sizes
@@ -436,6 +460,8 @@ enum GoBoardCorner
 };
 
 /// @brief Enumerates the possible ko rules.
+///
+/// @ingroup go
 enum GoKoRule
 {
   GoKoRuleSimple,              ///< @brief The traditional simple ko rule.
@@ -446,6 +472,8 @@ enum GoKoRule
 };
 
 /// @brief Enumerates the possible scoring systems.
+///
+/// @ingroup go
 enum GoScoringSystem
 {
   GoScoringSystemAreaScoring,
@@ -455,6 +483,8 @@ enum GoScoringSystem
 
 /// @brief Enumerates the rules how the game can proceed from normal game play
 /// to the life & death settling phase.
+///
+/// @ingroup go
 enum GoLifeAndDeathSettlingRule
 {
   GoLifeAndDeathSettlingRuleTwoPasses,     ///< @brief The game proceeds to the life & death settling phase after two pass moves.
@@ -465,6 +495,8 @@ enum GoLifeAndDeathSettlingRule
 
 /// @brief Enumerates the rules how play proceeds when the game is resumed to
 /// resolve disputes that arose during the life & death settling phase.
+///
+/// @ingroup go
 enum GoDisputeResolutionRule
 {
   GoDisputeResolutionRuleAlternatingPlay,      ///< @brief The game is resumed, alternating play is enforced.
@@ -474,6 +506,8 @@ enum GoDisputeResolutionRule
 };
 
 /// @brief Enumerates the rules what four consecutive pass moves mean.
+///
+/// @ingroup go
 enum GoFourPassesRule
 {
   GoFourPassesRuleFourPassesHaveNoSpecialMeaning,   ///< @brief Four consecutive pass moves have no special meaning
@@ -483,6 +517,8 @@ enum GoFourPassesRule
 };
 
 /// @brief Enumerates the states that a stone group can have during scoring.
+///
+/// @ingroup go
 enum GoStoneGroupState
 {
   GoStoneGroupStateUndefined,
@@ -492,6 +528,8 @@ enum GoStoneGroupState
 };
 
 /// @brief Enumerates the modes the user can choose to mark stone groups.
+///
+/// @ingroup go
 enum GoScoreMarkMode
 {
   GoScoreMarkModeDead,   ///< @brief Stone groups are marked as dead / alive.
@@ -502,6 +540,8 @@ enum GoScoreMarkMode
 /// game. A ruleset is a collection of rules that the user can select as a whole
 /// instead of selecting individual rules, thus simplifying the game setup
 /// process.
+///
+/// @ingroup go
 enum GoRuleset
 {
   /// @brief The rules of the American Go Association (AGA).
@@ -523,6 +563,8 @@ enum GoRuleset
 };
 
 /// @brief Enumerates possible valuations of a position on the Go board.
+///
+/// @ingroup go
 enum GoBoardPositionValuation
 {
   GoBoardPositionValuationGoodForBlack,       ///< @brief The position is good for black. Corresponds to the SGF property value GB[1].
@@ -540,6 +582,8 @@ enum GoBoardPositionValuation
 
 /// @brief Enumerates possible hotspot designations of a position on the Go
 /// board.
+///
+/// @ingroup go
 enum GoBoardPositionHotspotDesignation
 {
   GoBoardPositionHotspotDesignationYes,            ///< @brief The position is a hotspot, the move that created the position is interesting. Corresponds to the SGF property value HO[1].
@@ -550,6 +594,8 @@ enum GoBoardPositionHotspotDesignation
 };
 
 /// @brief Enumerates possible valuations of a move.
+///
+/// @ingroup go
 enum GoMoveValuation
 {
   GoMoveValuationGood,              ///< @brief The played move is good (tesuji). Corresponds to the SGF property value TE[1].
@@ -565,6 +611,8 @@ enum GoMoveValuation
 
 /// @brief Enumerates possible summary scores.
 ///
+/// @ingroup go
+///
 /// This enumeration is similar to the enumeration #GoGameResult, but due to
 /// slight semantic differences the two enumerations are kept separate.
 enum GoScoreSummary
@@ -575,6 +623,217 @@ enum GoScoreSummary
   GoScoreSummaryNone,        ///< @brief The score summary is not available. Corresponds to the absence of the SGF property V.
   GoScoreSummaryFirst = GoScoreSummaryBlackWins,   ///< @brief Pseudo score summary, used as the starting value during a for-loop.
   GoScoreSummaryLast = GoScoreSummaryNone          ///< @brief Pseudo score summary, used as the end value during a for-loop.
+};
+
+/// @brief Enumerates the possible positions, relative to the current board
+/// position in the current game variation, where a newly created node can be
+/// inserted into the game tree.
+///
+/// @ingroup go
+///
+/// The following diagram illustrates the possible insert positions of a new
+/// node, marked with (x), in relation to the current board position node B.
+/// The current game variation in GoNodeModel consists of nodes A, B and D.
+/// Note that if node B has fewer child nodes than depicted in the diagram, or
+/// if the current game variation already is the top or bottom game variation,
+/// then some of the enum values are conflated and refer to the same insert
+/// positions.
+/// @verbatim
+///      +-- GoNewNodeInsertPositionParent
+///      |
+///      |   (+----x)         <-- GoNewNodeInsertPositionNewVariationAtTop
+///      |    |    +------------- GoNewNodeInsertPositionFirstChild
+///      |    |    |
+///      v    |    v
+/// A---(x)---B---(x)---C
+///          (+----x)         <-- GoNewNodeInsertPositionNewVariationBeforeCurrentVariation
+///           +---(x)---D     <-- current game variation
+///           |    ^
+///           |    |
+///           |    +------------- GoNewNodeInsertPositionNextBoardPosition
+///          (+----x)         <-- GoNewNodeInsertPositionNewVariationAfterCurrentVariation
+///           +----E
+///          (+----x)         <-- GoNewNodeInsertPositionNewVariationAtBottom
+/// @endverbatim
+///
+/// The following diagram illustrates how the insert position enum values are
+/// interpreted when the current board position node B has no child nodes.
+/// @verbatim
+///      +-- GoNewNodeInsertPositionParent
+///      |
+///      v
+/// A---(x)---B---(x)         <-- All other insert positions
+/// @endverbatim
+enum GoNewNodeInsertPosition
+{
+  /// @brief The new node is inserted as the parent of the current board
+  /// position node.
+  ///
+  /// @exception NSInvalidArgumentException is raised if this value is specified
+  /// when the current board position node is the game tree's root node. Is
+  /// also raised if the new node contains either board setup or a move and the
+  /// current board position node or any of its descdencants contans a move.
+  GoNewNodeInsertPositionParent,
+  /// @brief The new node is inserted as the first child of the current board
+  /// position node, making the previous first child node a child node of the
+  /// new node.
+  ///
+  /// @exception NSInvalidArgumentException is raised if the new node contains
+  /// either board setup or a move and the previous first child node or any
+  /// of its descdencants contans a move.
+  GoNewNodeInsertPositionFirstChild,
+  /// @brief The new node is inserted as a child of the current board position
+  /// node so that the new node will become the next board position in the
+  /// current game variation, making the previous next board position node
+  /// a child node of the new node.
+  ///
+  /// @exception NSInvalidArgumentException is raised if the new node contains
+  /// either board setup or a move and the previous next board position node or
+  /// any of its descdencants contans a move.
+  GoNewNodeInsertPositionNextBoardPosition,
+  /// @brief The new node is inserted as a child of the current board position
+  /// node so that the new node will start a new game variation, and that new
+  /// game variation will be the first game variation branching off from the
+  /// current board position node.
+  ///
+  /// This is similar to #GoNewNodeInsertPositionFirstChild inasmuch as the new
+  /// node is inserted as the first child of the current board position node.
+  /// The difference is that the previous first child node will become the
+  /// next sibling of the new node.
+  GoNewNodeInsertPositionNewVariationAtTop,
+  /// @brief The new node is inserted as a child of the current board position
+  /// node so that the new node will start a new game variation, and that new
+  /// game variation will be the last game variation branching off from the
+  /// current board position node.
+  GoNewNodeInsertPositionNewVariationAtBottom,
+  /// @brief The new node is inserted as a child of the current board position
+  /// node so that the new node will start a new game variation, and that new
+  /// game variation will be branching off from the current board position node
+  /// just before the current game variation.
+  ///
+  /// The new game variation can be said to become the previous sibling game
+  /// variation of the current game variation.
+  GoNewNodeInsertPositionNewVariationBeforeCurrentVariation,
+  /// @brief The new node is inserted as a child of the current board position
+  /// node so that the new node will start a new game variation, and that new
+  /// game variation will be branching off from the current board position node
+  /// just after the current game variation.
+  ///
+  /// The new game variation can be said to become the next sibling game
+  /// variation of the current game variation.
+  GoNewNodeInsertPositionNewVariationAfterCurrentVariation
+};
+
+/// @brief Enumerates the possible actions that can take place after a newly
+/// created node was inserted into the game tree using one of the values from
+/// the #GoNewNodeInsertPosition enumeration.
+///
+/// @ingroup go
+enum GoNewNodePostInsertAction
+{
+  /// @brief All nodes in the current game variation beyond the current board
+  /// position node are discarded, including their descendants. The current
+  /// game variation is then changed using the GoNodeModel method
+  /// changeToVariationContainingNode:(), with the new node specified as an
+  /// argument.
+  ///
+  /// If the current board position is the last board position, then no nodes
+  /// are discarded
+  ///
+  /// If this enumeration value is specified in combination with
+  /// #GoNewNodeInsertPositionNewVariationAfterCurrentVariation, the new game
+  /// variation started by the new node will effectively replace the current
+  /// game variation.
+  ///
+  /// Specifying this enumeration value usually (but not always) will cause the
+  /// number of board positions to change (notification
+  /// #numberOfBoardPositionsDidChange). The current board position never
+  /// changes.
+  ///
+  /// @exception NSInvalidArgumentException is raised if this enumeration value
+  /// is specified in combination with
+  /// #GoNewNodeInsertPositionNextBoardPosition, because it would mean that the
+  /// new node has to be discarded, which does not make sense. Also, if the new
+  /// node were discarded, it would become an invalid argument when specified to
+  /// changeToVariationContainingNode:().
+  GoNewNodePostInsertActionDiscardAndChangeCurrentGameVariation,
+  /// @brief The current game variation is changed using the GoNodeModel method
+  /// changeToVariationContainingNode:(), with the new node specified as an
+  /// argument.
+  ///
+  /// Specifying this enumeration value usually (but not always) will cause the
+  /// number of board positions to change (notification
+  /// #numberOfBoardPositionsDidChange). The current board position never
+  /// changes.
+  GoNewNodePostInsertActionChangeCurrentGameVariation,
+  /// @brief Nothing is done after the new node was inserted into the game tree.
+  GoNewNodePostInsertActionDoNothing,
+};
+
+/// @brief Enumerates the possible ways what to do when a new move is being
+/// played and future board positions exist. If no future board positions exist
+/// the new move being played is simply added as a new board position after the
+/// current board position.
+///
+/// @ingroup go
+enum GoNewMoveInsertPolicy
+{
+  /// @brief Future board positions are retained. The new move node is inserted
+  /// as a new child of the current board position node. The insert position is
+  /// determined by a value from the #GoNewMoveInsertPosition enumeration.
+  GoNewMoveInsertPolicyRetainFutureBoardPositions,
+  /// @brief Future board positions are discarded, including descendants of the
+  /// future board position nodes. The new move node is inserted as a new child
+  /// of the current board position node in the position where the previous next
+  /// board position node was located.
+  GoNewMoveInsertPolicyReplaceFutureBoardPositions,
+};
+
+/// @brief Enumerates the possible positions, relative to the current board
+/// position in the current game variation, where the node of a new move being
+/// played can be inserted into the game tree. The insert position is only
+/// relevant if future board positions exist and the insert policy is
+/// #GoNewMoveInsertPolicyRetainFutureBoardPositions.
+///
+/// @ingroup go
+///
+/// See #GoNewNodeInsertPosition for a list and description of a more generic
+/// set of node insert positions.
+enum GoNewMoveInsertPosition
+{
+  /// @brief The new move node is inserted as a child of the current board
+  /// position node so that the new move node will start a new game variation,
+  /// and that new game variation will be the first game variation branching
+  /// off from the current board position node.
+  GoNewMoveInsertPositionNewVariationAtTop,
+  /// @brief The new move node is inserted as a child of the current board
+  /// position node so that the new move node will start a new game variation,
+  /// and that new game variation will be the last game variation branching
+  /// off from the current board position node.
+  GoNewMoveInsertPositionNewVariationAtBottom,
+  /// @brief The new move node is inserted as a child of the current board
+  /// position node so that the new move node will start a new game variation,
+  /// and that new game variation will be branching off from the current board
+  /// position node just before the current game variation.
+  ///
+  /// The new game variation can be said to become the previous sibling game
+  /// variation of the current game variation.
+  GoNewMoveInsertPositionNewVariationBeforeCurrentVariation,
+  /// @brief The new move node is inserted as a child of the current board
+  /// position node so that the new move node will start a new game variation,
+  /// and that new game variation will be branching off from the current board
+  /// position node just after the current game variation.
+  ///
+  /// The new game variation can be said to become the next sibling game
+  /// variation of the current game variation.
+  GoNewMoveInsertPositionNewVariationAfterCurrentVariation,
+  /// @brief The new move node is inserted as a child of the current board
+  /// position node so that it does not start a new game variation. Instead it
+  /// becomes the new next board position node in the current game variation.
+  ///
+  /// This enumeration value is valid only in combination with
+  /// #GoNewMoveInsertPolicyReplaceFutureBoardPositions.
+  GoNewMoveInsertPositionNextBoardPosition,
 };
 
 extern const enum GoGameType gDefaultGameType;
@@ -1784,6 +2043,10 @@ extern NSString* condenseMoveNodesKey;
 extern NSString* alignMoveNodesKey;
 extern NSString* branchingStyleKey;
 extern NSString* nodeSelectionStyleKey;
+// Game variations settings
+extern NSString* gameVariationsKey;
+extern NSString* newMoveInsertPolicyKey;
+extern NSString* newMoveInsertPositionKey;
 //@}
 
 // -----------------------------------------------------------------------------

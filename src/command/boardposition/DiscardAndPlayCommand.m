@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2012-2022 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2012-2023 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -135,51 +135,33 @@ enum PlayCommandType
   @try
   {
     [[LongRunningActionCounter sharedCounter] increment];
-    bool shouldDiscardBoardPositions = [self shouldDiscardBoardPositions];
-    if (shouldDiscardBoardPositions)
+
+    // GoGame does not allow moves to be played if the game state is
+    // GoGameStateGameHasEnded => revert to "not ended" if necessary.
+    // The game state can be GoGameStateGameHasEnded if the user is currently
+    // viewing a board position that is not the last board position. The
+    // game state may become GoGameStateGameHasEnded again after the move
+    // was played.
+    bool success = [self revertGameStateIfNecessary];
+    if (! success)
     {
-      bool success = [self revertGameStateIfNecessary];
-      if (! success)
-      {
-        DDLogError(@"%@: Aborting because revertGameStateIfNecessary failed", [self shortDescription]);
-        return false;
-      }
-      success = [self discardBoardPositions];
-      if (! success)
-      {
-        DDLogError(@"%@: Aborting because discardBoardPositions failed", [self shortDescription]);
-        return false;
-      }
+      DDLogError(@"%@: Aborting because revertGameStateIfNecessary failed", [self shortDescription]);
+      return false;
     }
-    bool success = [self playCommand];
+
+    success = [self playCommand];
     if (! success)
     {
       DDLogError(@"%@: Aborting because playCommand failed", [self shortDescription]);
       return false;
     }
+
     return true;
   }
   @finally
   {
     [[LongRunningActionCounter sharedCounter] decrement];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt(). Returns true if board positions need to be
-/// discarded, false otherwise.
-// -----------------------------------------------------------------------------
-- (bool) shouldDiscardBoardPositions
-{
-  GoGame* game = [GoGame sharedGame];
-  GoBoardPosition* boardPosition = game.boardPosition;
-  bool shouldDiscardBoardPositions;
-  if (boardPosition.isLastPosition)
-    shouldDiscardBoardPositions =  false;
-  else
-    shouldDiscardBoardPositions = true;
-  DDLogVerbose(@"%@: shouldDiscardBoardPositions = %d", [self shortDescription], shouldDiscardBoardPositions);
-  return shouldDiscardBoardPositions;
 }
 
 // -----------------------------------------------------------------------------
@@ -190,40 +172,6 @@ enum PlayCommandType
   GoGame* game = [GoGame sharedGame];
   if (GoGameStateGameHasEnded == game.state)
     [game revertStateFromEndedToInProgress];
-  return true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for doIt(). Returns true on success, false on failure.
-// -----------------------------------------------------------------------------
-- (bool) discardBoardPositions
-{
-  GoGame* game = [GoGame sharedGame];
-  GoBoardPosition* boardPosition = game.boardPosition;
-  int indexOfFirstNodeToDiscard = boardPosition.currentBoardPosition + 1;
-
-  // TODO xxx Variation support. This does not work if the first node to discard
-  // has a previous or next sibling. When this is the case the move that is
-  // played after the discard will be added to the leaf node of the game
-  // variation that is being added to the current game variation. Also the
-  // old/new number of board positions might be the same.
-
-  // Adjust number of board positions before nodes are discarded. If we were
-  // adjusting the number of board positions after discarding nodes, there
-  // would be a small gap in which someone who works with board positions might
-  // attempt to access an invalid node.
-  int oldNumberOfBoardPositions = boardPosition.numberOfBoardPositions;
-  int newNumberOfBoardPositions = indexOfFirstNodeToDiscard;
-  boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
-
-  DDLogInfo(@"%@: Index position of first node to discard = %d", [self shortDescription], indexOfFirstNodeToDiscard);
-  GoNodeModel* nodeModel = game.nodeModel;
-  [nodeModel discardNodesFromIndex:indexOfFirstNodeToDiscard];
-
-  [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
-
   return true;
 }
 

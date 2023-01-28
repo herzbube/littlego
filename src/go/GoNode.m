@@ -319,7 +319,7 @@
 {
   if (! node)
   {
-    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"isDescendantOfNode: failed: Node argument is null"];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"isDescendantOfNode: failed: Node argument is nil"];
     // Dummy return to make compiler happy (compiler does not see that an
     // exception is thrown)
     return false;
@@ -345,7 +345,7 @@
 {
   if (! node)
   {
-    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"isAncestorOfNode: failed: Node argument is null"];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"isAncestorOfNode: failed: Node argument is nil"];
     // Dummy return to make compiler happy (compiler does not see that an
     // exception is thrown)
     return false;
@@ -515,7 +515,7 @@
 - (void) appendChild:(GoNode*)child
 {
   if (! child)
-    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"appendChild: failed: Child argument is null"];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"appendChild: failed: Child argument is nil"];
 
   if (self == child)
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"appendChild: failed: Child is equal to node"];
@@ -555,7 +555,7 @@
 - (void) insertChild:(GoNode*)child beforeReferenceChild:(GoNode*)referenceChild
 {
   if (! child)
-    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"insertChild:beforeReferenceChild: failed: Child argument is null"];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"insertChild:beforeReferenceChild: failed: Child argument is nil"];
 
   if (self == child)
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"insertChild:beforeReferenceChild: failed: Child is equal to node"];
@@ -591,7 +591,7 @@
 - (void) removeChild:(GoNode*)child
 {
   if (! child)
-    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"removeChild: failed: Child argument is null"];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"removeChild: failed: Child argument is nil"];
 
   if (child.parent != self)
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"removeChild: failed: Child is not a child of node"];
@@ -618,10 +618,10 @@
 - (void) replaceChild:(GoNode*)oldChild withNewChild:(GoNode*)newChild
 {
   if (! newChild)
-    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"replaceChild:withNewChild: failed: NewChild argument is null"];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"replaceChild:withNewChild: failed: NewChild argument is nil"];
 
   if (! oldChild)
-    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"replaceChild:withNewChild: failed: OldChild argument is null"];
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"replaceChild:withNewChild: failed: OldChild argument is nil"];
 
   if (self == newChild)
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"replaceChild:withNewChild: failed: NewChild is equal to node"];

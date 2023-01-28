@@ -20,6 +20,7 @@
 #import "GoGame.h"
 #import "GoNodeAdditions.h"
 #import "GoGameDocument.h"
+#import "../utility/ExceptionUtility.h"
 
 
 // -----------------------------------------------------------------------------
@@ -223,6 +224,32 @@
 #pragma mark - Public interface - Variations
 
 // -----------------------------------------------------------------------------
+/// @brief Creates a new game tree variation by inserting @a node into the game
+/// tree so that @a parent becomes the parent node of @a node, and
+/// @a nextSibling becomes the next sibling node of @a node.
+///
+/// If @a nextSibling is @e nil then @a child is inserted as the last child of
+/// @a parent.
+///
+/// @exception InvalidArgumentException Is thrown if @a node is @e nil, if
+/// @a nextSibling is not @e nil but is not a child of @a parent, if @a node
+/// is equal to @a parent, or if @a node is already part of a game tree.
+// -----------------------------------------------------------------------------
+- (void) createVariationWithNode:(GoNode*)node
+                     nextSibling:(GoNode*)nextSibling
+                          parent:(GoNode*)parent
+{
+  if (! node)
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"createVariationWithNode:nextSibling:parent: failed: node is nil object"];
+
+  if (node.parent || node.nextSibling || node.firstChild)
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"createVariationWithNode:nextSibling:parent: failed: node is already part of a game tree"];
+
+  // GoNode performs most of the error handling for us
+  [parent insertChild:node beforeReferenceChild:nextSibling];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Configures GoNodeModel with the main variation of the game tree, i.e.
 /// the variation that consists of the root node of the game tree and all of
 /// its @e firstChild descendants.
@@ -244,14 +271,7 @@
 - (void) changeToVariationContainingNode:(GoNode*)node
 {
   if (! node)
-  {
-    NSString* errorMessage = @"changeToVariationContainingNode: failed: node is nil object";
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"changeToVariationContainingNode: failed: node is nil object"];
 
   NSMutableArray* newNodeList = [NSMutableArray arrayWithObject:node];
   int newNumberOfMoves = node.goMove ? 1 : 0;
@@ -268,14 +288,7 @@
   }
 
   if (newNodeList.firstObject != self.rootNode)
-  {
-    NSString* errorMessage = @"changeToVariationContainingNode: failed: root node is not at the variation start";
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"changeToVariationContainingNode: failed: root node is not at the variation start"];
 
   GoNode* firstChild = node.firstChild;
   while (firstChild)
@@ -309,14 +322,7 @@
 - (GoNode*) ancestorOfNodeInCurrentVariation:(GoNode*)node
 {
   if (! node)
-  {
-    NSString* errorMessage = @"ancestorOfNodeInCurrentVariation: failed: node is nil object";
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"ancestorOfNodeInCurrentVariation: failed: node is nil object"];
 
   while (node)
   {
@@ -326,12 +332,10 @@
     node = node.parent;
   }
 
-  NSString* errorMessage = @"ancestorOfNodeInCurrentVariation: failed: node is not in the game tree that contains the current variation";
-  DDLogError(@"%@: %@", self, errorMessage);
-  NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                   reason:errorMessage
-                                                 userInfo:nil];
-  @throw exception;
+  [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"ancestorOfNodeInCurrentVariation: failed: node is not in the game tree that contains the current variation"];
+  // Dummy return to make compiler happy (compiler does not see that an
+  // exception is thrown)
+  return nil;
 }
 
 #pragma mark - Public interface - Current variation
@@ -360,14 +364,7 @@
 - (int) indexOfNode:(GoNode*)node
 {
   if (! node)
-  {
-    NSString* errorMessage = @"indexOfNode: failed: node is nil object";
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"indexOfNode: failed: node is nil object"];
 
   NSUInteger index = [_nodeList indexOfObject:node];
   if (index == NSNotFound)
@@ -390,14 +387,7 @@
 - (void) appendNode:(GoNode*)node
 {
   if (! node)
-  {
-    NSString* errorMessage = @"appendNode: failed: node is nil object";
-    DDLogError(@"%@: %@", self, errorMessage);
-    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
-                                                     reason:errorMessage
-                                                   userInfo:nil];
-    @throw exception;
-  }
+    [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"appendNode: failed: node is nil object"];
 
   GoNode* leafNode = _nodeList.lastObject;
   leafNode.firstChild = node;

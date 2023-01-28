@@ -22,6 +22,7 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../play/model/GameVariationsModel.h"
 #import "../../ui/UIViewControllerAdditions.h"
 
 // System includes
@@ -92,14 +93,26 @@ enum ActionType
 /// @a actionType is used to tweak the alert message so that it contains a
 /// useful description of what the user tries to do.
 ///
-/// If the Go board currently displays the last board position of the game,
-/// @a command is executed immediately.
+/// @a command is executed immediately if the Go board currently displays the
+/// last board position of the game. If @a actionType is #ActionTypePlay, then
+/// the new move being played will be appended to the current game variation
+/// and no board positions will be discarded, so no alert is needed. If
+/// @a actionType is #ActionTypeDiscard there are no board positions to discard,
+/// so no alert is needed either.
 ///
-/// If the Go board displays a board position in the middle of the game, an
-/// alert is shown that warns the user that discarding now will discard all
-/// future board positions. If the user confirms that this is OK, @a command is
-/// executed. If the user cancels the operation, @a command is not executed.
-/// Handling of the user's response happens in didDismissAlertWithButton:().
+/// @a command is also executed immediately, even if the Go board currently
+/// displays a board position that is not the last board position, if
+/// @a actionType is #ActionTypePlay and the "new move insert policy" user
+/// preference is set to #GoNewMoveInsertPolicyRetainFutureBoardPositions. The
+/// new move being played in this case will be added to a new game variation
+/// and no board positions will be discarded, so no alert is needed.
+///
+/// In all other cases where the Go board displays a board position that is not
+/// the last board position, an alert is shown that warns the user that playing
+/// or discarding now will discard all future board positions. If the user
+/// confirms that this is OK, @a command is executed. If the user cancels the
+/// operation, @a command is not executed. Handling of the user's response
+/// happens in didDismissAlertWithButton:().
 ///
 /// The user can suppress the alert in the user preferences. In this case
 /// @a command is immediately executed.
@@ -108,8 +121,14 @@ enum ActionType
 {
   DDLogVerbose(@"%@: Displaying alert for action type %d", self, actionType);
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
-  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
-  if (boardPosition.isLastPosition || ! boardPositionModel.discardFutureMovesAlert)
+
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
+  GameVariationsModel* gameVariationsModel = appDelegate.gameVariationsModel;
+
+  if (boardPosition.isLastPosition ||
+      (ActionTypePlay == actionType && gameVariationsModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions) ||
+      ! boardPositionModel.discardFutureMovesAlert)
   {
     [command submit];
   }

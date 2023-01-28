@@ -22,12 +22,14 @@
 #import "../boardposition/SyncGTPEngineCommand.h"
 #import "../../diagnostics/LoggingModel.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoMoveNodeCreationOptions.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../play/model/GameVariationsModel.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../ui/UIViewControllerAdditions.h"
 
@@ -161,16 +163,23 @@ enum AlertType
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
 
+    GoMoveNodeCreationOptions* options;
+    GameVariationsModel* gameVariationsModel = [ApplicationDelegate sharedDelegate].gameVariationsModel;
+    if (gameVariationsModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions)
+      options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyRetainFutureBoardPositionsAndInsertPosition:gameVariationsModel.newMoveInsertPosition];
+    else
+      options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyReplaceFutureBoardPositions];
+
     switch (self.moveType)
     {
       case GoMoveTypePlay:
       {
-        [self.game play:self.point];
+        [self.game play:self.point withMoveNodeCreationOptions:options];
         break;
       }
       case GoMoveTypePass:
       {
-        [self.game pass];
+        [self.game passWithMoveNodeCreationOptions:options];
         break;
       }
       default:

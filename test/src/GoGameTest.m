@@ -26,7 +26,9 @@
 #import <go/GoGameDocument.h>
 #import <go/GoMove.h>
 #import <go/GoMoveAdditions.h>
+#import <go/GoMoveNodeCreationOptions.h>
 #import <go/GoNode.h>
+#import <go/GoNodeAdditions.h>
 #import <go/GoNodeModel.h>
 #import <go/GoNodeSetup.h>
 #import <go/GoPoint.h>
@@ -656,6 +658,24 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Exercises the play:withMoveNodeCreationOptions:() method with
+/// insert policy #GoNewMoveInsertPolicyRetainFutureBoardPositions.
+// -----------------------------------------------------------------------------
+- (void) testPlayWithMoveNodeCreationOptions_GoNewMoveInsertPolicyRetainFutureBoardPositions
+{
+  [self testPlayOrPassWithMoveNodeCreationOptions_GoNewMoveInsertPolicyRetainFutureBoardPositions_MoveType:GoMoveTypePlay];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the play:withMoveNodeCreationOptions:() method with
+/// insert policy #GoNewMoveInsertPolicyReplaceFutureBoardPositions.
+// -----------------------------------------------------------------------------
+- (void) testPlayWithMoveNodeCreationOptions_GoNewMoveInsertPolicyReplaceFutureBoardPositionss
+{
+  [self testPlayOrPassWithMoveNodeCreationOptions_GoNewMoveInsertPolicyReplaceFutureBoardPositions_MoveType:GoMoveTypePlay];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Exercises the pass() method.
 // -----------------------------------------------------------------------------
 - (void) testPass
@@ -716,6 +736,338 @@
   lastMove.moveNumber = maximumNumberOfMoves;
   XCTAssertThrowsSpecificNamed([m_game pass],
                                NSException, NSInvalidArgumentException, @"pass after maximum number of moves");
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the passWithMoveNodeCreationOptions:() method  with
+/// insert policy #GoNewMoveInsertPolicyRetainFutureBoardPositions.
+// -----------------------------------------------------------------------------
+- (void) testPassWithMoveNodeCreationOptions_GoNewMoveInsertPolicyRetainFutureBoardPositions
+{
+  [self testPlayOrPassWithMoveNodeCreationOptions_GoNewMoveInsertPolicyRetainFutureBoardPositions_MoveType:GoMoveTypePass];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the passWithMoveNodeCreationOptions:() method with
+/// insert policy #GoNewMoveInsertPolicyReplaceFutureBoardPositions.
+// -----------------------------------------------------------------------------
+- (void) testPassWithMoveNodeCreationOptions_GoNewMoveInsertPolicyReplaceFutureBoardPositions
+{
+  [self testPlayOrPassWithMoveNodeCreationOptions_GoNewMoveInsertPolicyReplaceFutureBoardPositions_MoveType:GoMoveTypePlay];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises either the play:withMoveNodeCreationOptions:() or the
+/// passWithMoveNodeCreationOptions:() method with insert policy
+/// #GoNewMoveInsertPolicyRetainFutureBoardPositions. The value of @a moveType
+/// determines which of the two methods is exercised.
+///
+/// This is a private helper.
+// -----------------------------------------------------------------------------
+- (void) testPlayOrPassWithMoveNodeCreationOptions_GoNewMoveInsertPolicyRetainFutureBoardPositions_MoveType:(enum GoMoveType)moveType
+{
+  NSArray* insertPositions = @[@((int)GoNewMoveInsertPositionNewVariationAtTop),
+                               @((int)GoNewMoveInsertPositionNewVariationAtBottom),
+                               @((int)GoNewMoveInsertPositionNewVariationBeforeCurrentVariation),
+                               @((int)GoNewMoveInsertPositionNewVariationAfterCurrentVariation)];
+  for (NSNumber* insertPositionAsNumber in insertPositions)
+  {
+    // Arrange
+    if (! self.testSetupHasBeenDone)
+      [self setUp];
+
+    enum GoNewMoveInsertPosition insertPosition = insertPositionAsNumber.intValue;
+    GoMoveNodeCreationOptions* options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyRetainFutureBoardPositionsAndInsertPosition:insertPosition];
+
+    GoGame* testee = m_game;
+    GoNodeModel* nodeModel = testee.nodeModel;
+    GoBoardPosition* boardPosition = testee.boardPosition;
+    GoNode* rootNode = nodeModel.rootNode;
+    GoPoint* point1 = [testee.board pointAtVertex:@"A1"];
+    GoPoint* point2 = [testee.board pointAtVertex:@"A2"];
+
+    [self registerForNotification:numberOfBoardPositionsDidChange];
+    [self registerForNotification:currentBoardPositionDidChange];
+    [self registerForNotification:currentGameVariationWillChange];
+    [self registerForNotification:currentGameVariationDidChange];
+
+    // Set up a node tree that allows to distinguish the possible insert
+    // positions and the effects of the current game variation change
+    //     +-- current board position
+    //     v
+    // o---A---B---C
+    //     +---D---E   <--- current game variation
+    //     +---F---G
+    GoNode* nodeA = [GoNode node];
+    GoNode* nodeB = [GoNode node];
+    GoNode* nodeC = [GoNode node];
+    GoNode* nodeD = [GoNode node];
+    GoNode* nodeE = [GoNode node];
+    GoNode* nodeF = [GoNode node];
+    GoNode* nodeG = [GoNode node];
+    rootNode.firstChild = nodeA;  // replaces all child nodes from the previous iteration
+    nodeA.firstChild = nodeB;
+    nodeB.firstChild = nodeC;
+    nodeB.nextSibling = nodeD;
+    nodeD.firstChild = nodeE;
+    nodeD.nextSibling = nodeF;
+    nodeF.firstChild = nodeG;
+    [nodeModel changeToVariationContainingNode:nodeE];
+    boardPosition.numberOfBoardPositions = nodeModel.numberOfNodes;
+    boardPosition.currentBoardPosition = [nodeModel indexOfNode:nodeA];
+
+    XCTAssertEqual(boardPosition.numberOfBoardPositions, 4);
+    XCTAssertEqual(boardPosition.currentBoardPosition, 1);
+    XCTAssertEqualObjects(boardPosition.currentNode, nodeA);
+    XCTAssertNil(testee.firstMove);
+    XCTAssertNil(testee.lastMove);
+    XCTAssertEqual(point1.stoneState, GoColorNone);
+
+    // Act 1 - create a new game variation because the current board position
+    // is not the last board position
+    if (moveType == GoMoveTypePlay)
+      [testee play:point1 withMoveNodeCreationOptions:options];
+    else
+      [testee passWithMoveNodeCreationOptions:options];
+
+    // Assert 1
+    GoMove* move1 = testee.firstMove;
+    XCTAssertEqualObjects(testee.lastMove, move1);
+    XCTAssertEqual(moveType, move1.type);
+    XCTAssertEqualObjects(testee.playerBlack, move1.player);
+    if (moveType == GoMoveTypePlay)
+    {
+      XCTAssertEqualObjects(point1, move1.point);
+      XCTAssertEqual(point1.stoneState, GoColorBlack);
+    }
+
+    XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+    XCTAssertEqual(boardPosition.currentBoardPosition, 2);
+    GoNode* nodeMove1 = boardPosition.currentNode;
+    XCTAssertEqualObjects(nodeMove1.goMove, move1);
+    XCTAssertEqualObjects(nodeMove1.parent, nodeA);
+    switch (insertPosition)
+    {
+      case GoNewMoveInsertPositionNewVariationAtTop:
+        XCTAssertNil(nodeMove1.previousSibling);
+        XCTAssertEqualObjects(nodeMove1.nextSibling, nodeB);
+        break;
+      case GoNewMoveInsertPositionNewVariationAtBottom:
+        XCTAssertEqualObjects(nodeMove1.previousSibling, nodeF);
+        XCTAssertNil(nodeMove1.nextSibling);
+        break;
+      case GoNewMoveInsertPositionNewVariationBeforeCurrentVariation:
+        XCTAssertEqualObjects(nodeMove1.previousSibling, nodeB);
+        XCTAssertEqualObjects(nodeMove1.nextSibling, nodeD);
+        break;
+      case GoNewMoveInsertPositionNewVariationAfterCurrentVariation:
+        XCTAssertEqualObjects(nodeMove1.previousSibling, nodeD);
+        XCTAssertEqualObjects(nodeMove1.nextSibling, nodeF);
+        break;
+      default:
+        break;
+    }
+
+    XCTAssertEqual([self numberOfNotificationsReceived:numberOfBoardPositionsDidChange], 1);
+    XCTAssertEqual([self numberOfNotificationsReceived:currentBoardPositionDidChange], 1);
+    XCTAssertEqual([self numberOfNotificationsReceived:currentGameVariationWillChange], 1);
+    XCTAssertEqual([self numberOfNotificationsReceived:currentGameVariationDidChange], 1);
+
+    // Act 2 - append to the current game variation because the current board
+    // position is the last board position
+    if (moveType == GoMoveTypePlay)
+      [testee play:point2 withMoveNodeCreationOptions:options];
+    else
+      [testee passWithMoveNodeCreationOptions:options];
+
+    // Assert 2
+    GoMove* move2 = testee.lastMove;
+    XCTAssertNotEqualObjects(move1, move2);
+    XCTAssertNotEqualObjects(testee.firstMove, move2);
+    XCTAssertEqual(moveType, move2.type);
+    XCTAssertEqualObjects(testee.playerWhite, move2.player);
+    if (moveType == GoMoveTypePlay)
+    {
+      XCTAssertEqualObjects(point2, move2.point);
+      XCTAssertEqual(point2.stoneState, GoColorWhite);
+    }
+
+    XCTAssertEqual(boardPosition.numberOfBoardPositions, 4);
+    XCTAssertEqual(boardPosition.currentBoardPosition, 3);
+    GoNode* nodeMove2 = boardPosition.currentNode;
+    XCTAssertEqualObjects(nodeMove2.goMove, move2);
+    XCTAssertEqualObjects(nodeMove2.parent, nodeMove1);
+    XCTAssertNil(nodeMove2.previousSibling);
+    XCTAssertNil(nodeMove2.nextSibling);
+
+    XCTAssertEqual([self numberOfNotificationsReceived:numberOfBoardPositionsDidChange], 2);
+    XCTAssertEqual([self numberOfNotificationsReceived:currentBoardPositionDidChange], 2);
+    XCTAssertEqual([self numberOfNotificationsReceived:currentGameVariationWillChange], 1);
+    XCTAssertEqual([self numberOfNotificationsReceived:currentGameVariationDidChange], 1);
+
+    // Post-assert: Cleanup for next iteration
+    [self tearDown];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises either the play:withMoveNodeCreationOptions:() or the
+/// passWithMoveNodeCreationOptions:() method with insert policy
+/// #GoNewMoveInsertPolicyReplaceFutureBoardPositions. The value of @a moveType
+/// determines which of the two methods is exercised.
+///
+/// This is a private helper.
+// -----------------------------------------------------------------------------
+- (void) testPlayOrPassWithMoveNodeCreationOptions_GoNewMoveInsertPolicyReplaceFutureBoardPositions_MoveType:(enum GoMoveType)moveType
+{
+  // Arrange
+  GoMoveNodeCreationOptions* options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyReplaceFutureBoardPositions];
+
+  GoGame* testee = m_game;
+  GoNodeModel* nodeModel = testee.nodeModel;
+  GoBoardPosition* boardPosition = testee.boardPosition;
+  GoNode* rootNode = nodeModel.rootNode;
+  GoPoint* point1 = [testee.board pointAtVertex:@"A1"];
+  GoPoint* point2 = [testee.board pointAtVertex:@"A2"];
+
+  [self registerForNotification:numberOfBoardPositionsDidChange];
+  [self registerForNotification:currentBoardPositionDidChange];
+  [self registerForNotification:currentGameVariationWillChange];
+  [self registerForNotification:currentGameVariationDidChange];
+
+  // Set up a node tree that allows to make sure that only the nodes in the
+  // current game variation are discarded.
+  //     +-- current board position
+  //     v
+  // o---A---B---C
+  //     +---D---E   <--- current game variation
+  //     +---F---G
+  GoNode* nodeA = [GoNode node];
+  GoNode* nodeB = [GoNode node];
+  GoNode* nodeC = [GoNode node];
+  GoNode* nodeD = [GoNode node];
+  GoNode* nodeE = [GoNode node];
+  GoNode* nodeF = [GoNode node];
+  GoNode* nodeG = [GoNode node];
+  rootNode.firstChild = nodeA;  // replaces all child nodes from the previous iteration
+  nodeA.firstChild = nodeB;
+  nodeB.firstChild = nodeC;
+  nodeB.nextSibling = nodeD;
+  nodeD.firstChild = nodeE;
+  nodeD.nextSibling = nodeF;
+  nodeF.firstChild = nodeG;
+  [nodeModel changeToVariationContainingNode:nodeE];
+  boardPosition.numberOfBoardPositions = nodeModel.numberOfNodes;
+  boardPosition.currentBoardPosition = [nodeModel indexOfNode:nodeA];
+
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 4);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 1);
+  XCTAssertEqualObjects(boardPosition.currentNode, nodeA);
+  XCTAssertNil(testee.firstMove);
+  XCTAssertNil(testee.lastMove);
+  XCTAssertEqual(point1.stoneState, GoColorNone);
+
+  // Act 1 - discard nodes in the current game variation because the current
+  // board position is not the last board position
+  if (moveType == GoMoveTypePlay)
+    [testee play:point1 withMoveNodeCreationOptions:options];
+  else
+    [testee passWithMoveNodeCreationOptions:options];
+
+  // Assert 1
+  GoMove* move1 = testee.firstMove;
+  XCTAssertEqualObjects(testee.lastMove, move1);
+  XCTAssertEqual(moveType, move1.type);
+  XCTAssertEqualObjects(testee.playerBlack, move1.player);
+  if (moveType == GoMoveTypePlay)
+  {
+    XCTAssertEqualObjects(point1, move1.point);
+    XCTAssertEqual(point1.stoneState, GoColorBlack);
+  }
+
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 3);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 2);
+  GoNode* nodeMove1 = boardPosition.currentNode;
+  XCTAssertEqualObjects(nodeMove1.goMove, move1);
+  XCTAssertEqualObjects(nodeMove1.parent, nodeA);
+  XCTAssertEqualObjects(nodeMove1.previousSibling, nodeB);
+  XCTAssertEqualObjects(nodeMove1.nextSibling, nodeF);
+  XCTAssertNil(nodeD.parent);
+
+  XCTAssertEqual([self numberOfNotificationsReceived:numberOfBoardPositionsDidChange], 1);
+  XCTAssertEqual([self numberOfNotificationsReceived:currentBoardPositionDidChange], 1);
+  XCTAssertEqual([self numberOfNotificationsReceived:currentGameVariationWillChange], 0);
+  XCTAssertEqual([self numberOfNotificationsReceived:currentGameVariationDidChange], 0);
+
+  // Act 2 - append to the current game variation because the current board
+  // position is the last board position
+  if (moveType == GoMoveTypePlay)
+    [testee play:point2 withMoveNodeCreationOptions:options];
+  else
+    [testee passWithMoveNodeCreationOptions:options];
+
+  // Assert 2
+  GoMove* move2 = testee.lastMove;
+  XCTAssertNotEqualObjects(move1, move2);
+  XCTAssertNotEqualObjects(testee.firstMove, move2);
+  XCTAssertEqual(moveType, move2.type);
+  XCTAssertEqualObjects(testee.playerWhite, move2.player);
+  if (moveType == GoMoveTypePlay)
+  {
+    XCTAssertEqualObjects(point2, move2.point);
+    XCTAssertEqual(point2.stoneState, GoColorWhite);
+  }
+
+  XCTAssertEqual(boardPosition.numberOfBoardPositions, 4);
+  XCTAssertEqual(boardPosition.currentBoardPosition, 3);
+  GoNode* nodeMove2 = boardPosition.currentNode;
+  XCTAssertEqualObjects(nodeMove2.goMove, move2);
+  XCTAssertEqualObjects(nodeMove2.parent, nodeMove1);
+  XCTAssertNil(nodeMove2.previousSibling);
+  XCTAssertNil(nodeMove2.nextSibling);
+
+  XCTAssertEqual([self numberOfNotificationsReceived:numberOfBoardPositionsDidChange], 2);
+  XCTAssertEqual([self numberOfNotificationsReceived:currentBoardPositionDidChange], 2);
+  XCTAssertEqual([self numberOfNotificationsReceived:currentGameVariationWillChange], 0);
+  XCTAssertEqual([self numberOfNotificationsReceived:currentGameVariationDidChange], 0);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the play:withMoveNodeCreationOptions:() and
+/// passWithMoveNodeCreationOptions:() methods with an GoMoveNodeCreationOptions
+/// argument that holds invalid values.
+// -----------------------------------------------------------------------------
+- (void) testPlayWithMoveNodeCreationOptions_PassWithMoveNodeCreationOptions_InvalidOptions
+{
+  GoGame* testee = m_game;
+  GoPoint* point = [testee.board pointAtVertex:@"A1"];
+
+  NSArray* insertPositions = @[@((int)GoNewMoveInsertPositionNewVariationAtTop),
+                               @((int)GoNewMoveInsertPositionNewVariationAtBottom),
+                               @((int)GoNewMoveInsertPositionNewVariationBeforeCurrentVariation),
+                               @((int)GoNewMoveInsertPositionNewVariationAfterCurrentVariation),
+                               @((int)GoNewMoveInsertPositionNextBoardPosition)];
+  for (NSNumber* insertPositionAsNumber in insertPositions)
+  {
+    enum GoNewMoveInsertPosition insertPosition = insertPositionAsNumber.intValue;
+    GoMoveNodeCreationOptions* options;
+    if (insertPosition == GoNewMoveInsertPositionNextBoardPosition)
+      options = [GoMoveNodeCreationOptions moveNodeCreationOptions];
+    else
+      options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyReplaceFutureBoardPositions];
+
+    // GoMoveNodeCreationOptions provides no way to create an instance with
+    // invalid values, so to fabricate an invalid combination of values we use
+    // NSKeyValueCoding to circumvent the safeguards built into the class.
+    [options setValue:[NSNumber numberWithInt:insertPosition] forKey:@"newMoveInsertPosition"];
+
+    XCTAssertThrowsSpecificNamed([testee play:point withMoveNodeCreationOptions:options],
+                                 NSException, NSInternalInconsistencyException,
+                                 @"play must fail when GoMoveNodeCreationOptions is supplied with an invalid combination of values");
+    XCTAssertThrowsSpecificNamed([testee passWithMoveNodeCreationOptions:options],
+                                 NSException, NSInternalInconsistencyException,
+                                 @"pass must fail when GoMoveNodeCreationOptions is supplied with an invalid combination of values");
+  }
 }
 
 // -----------------------------------------------------------------------------

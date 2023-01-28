@@ -22,6 +22,7 @@
 @class BoardViewMetrics;
 @class BoardViewModel;
 @class CrashReportingModel;
+@class GameVariationsModel;
 @class GoGame;
 @class GtpClient;
 @class GtpCommandModel;
@@ -161,6 +162,8 @@
 /// @brief Model object that stores attributes used to manage the view hierarchy
 /// that displays the node tree view.
 @property(nonatomic, retain) NodeTreeViewModel* nodeTreeViewModel;
+/// @brief Model object that stores attributes related to game variations.
+@property(nonatomic, retain) GameVariationsModel* gameVariationsModel;
 
 @end
 

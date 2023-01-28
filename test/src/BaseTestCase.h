@@ -22,7 +22,9 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The BaseTestCase class implements setUp() and tearDown() to provide
-/// subclasses with a useful default test environment.
+/// subclasses with a useful default test environment. BaseTestCase also
+/// provides other useful services, such as observing notifications posted on
+/// the default global notification center.
 ///
 /// The default test environment looks like this:
 /// - An application delegate object is created. The object is available through
@@ -42,6 +44,13 @@
 /// messages when test execution commences. The reason: setUp() wraps an
 /// NSAutoReleasePool around its initialization, then drains the pool after
 /// initialization is complete.
+///
+/// A test case method may invoke setUp() and tearDown() on its own as many
+/// times as is needed to start over with a clean environment. A test case
+/// method may invoke setUp() only if the property @e testSetupHasBeenDone has
+/// value @e false - this is because at the time the test method is invoked,
+/// XCTestCase has already invoked setUp(), so the test method must not invoke
+/// setUp() again.
 // -----------------------------------------------------------------------------
 @interface BaseTestCase : XCTestCase
 {
@@ -50,7 +59,14 @@
   GoGame* m_game;
 }
 
+@property(nonatomic, assign, readonly) bool testSetupHasBeenDone;
+
 - (void) setUp;
 - (void) tearDown;
+
+- (void) registerForNotification:(NSString*)notificationName;
+- (void) unregisterForNotification:(NSString*)notificationName;
+- (void) unregisterForAllNotifications;
+- (int) numberOfNotificationsReceived:(NSString*)notificationName;
 
 @end

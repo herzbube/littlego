@@ -317,7 +317,6 @@
 // -----------------------------------------------------------------------------
 /// @brief Exercises the appendChild:() method.
 ///
-///
 /// These are exactly the same tests as in
 /// testInsertChildBeforeReferenceChildWhenReferenceChildIsNil().
 // -----------------------------------------------------------------------------

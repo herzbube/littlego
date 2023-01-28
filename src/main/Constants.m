@@ -438,6 +438,10 @@ NSString* condenseMoveNodesKey = @"CondenseMoveNodes";
 NSString* alignMoveNodesKey = @"AlignMoveNodes";
 NSString* branchingStyleKey = @"BranchingStyle";
 NSString* nodeSelectionStyleKey = @"NodeSelectionStyle";
+// Game variations settings
+NSString* gameVariationsKey = @"GameVariations";
+NSString* newMoveInsertPolicyKey = @"NewMoveInsertPolicy";
+NSString* newMoveInsertPositionKey = @"NewMoveInsertPosition";
 
 // Constants for NSCoding
 // General constants

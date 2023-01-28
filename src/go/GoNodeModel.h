@@ -46,6 +46,10 @@
 
 - (id) initWithGame:(GoGame*)game;
 
+- (void) createVariationWithNode:(GoNode*)node
+                     nextSibling:(GoNode*)nextSibling
+                          parent:(GoNode*)parent;
+
 - (void) changeToMainVariation;
 - (void) changeToVariationContainingNode:(GoNode*)node;
 - (GoNode*) ancestorOfNodeInCurrentVariation:(GoNode*)node;

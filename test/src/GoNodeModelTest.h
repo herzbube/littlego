@@ -28,6 +28,7 @@
 }
 
 - (void) testInitialState;
+- (void) testCreateVariationWithNodeNextSiblingParent;
 - (void) testChangeToMainVariation;
 - (void) testChangeToVariationContainingNode;
 - (void) testAncestorOfNodeInCurrentVariation;

@@ -21,6 +21,7 @@
 @class GoGameDocument;
 @class GoGameRules;
 @class GoMove;
+@class GoMoveNodeCreationOptions;
 @class GoNodeModel;
 @class GoPlayer;
 @class GoPoint;
@@ -51,7 +52,7 @@
 /// - Two GoGame objects exist: This situation occurs only for a brief moment
 ///   while a new game is being started. One of the GoGame objects is the game
 ///   that is going to be discarded, but is still available via sharedGame().
-///   The other GoGame objects is the new game that is still in the process of
+///   The other GoGame object is the new game that is still in the process of
 ///   being configured. Access to this new GoGame object is not available yet.
 ///   The new GoGame object becomes officially available via sharedGame() when
 ///   the notification #goGameDidCreate is being sent.
@@ -62,7 +63,9 @@
 
 + (GoGame*) sharedGame;
 - (void) play:(GoPoint*)point;
+- (void) play:(GoPoint*)point withMoveNodeCreationOptions:(GoMoveNodeCreationOptions*)moveNodeCreationOptions;
 - (void) pass;
+- (void) passWithMoveNodeCreationOptions:(GoMoveNodeCreationOptions*)moveNodeCreationOptions;
 - (void) resign;
 - (void) pause;
 - (void) continue;
@@ -152,11 +155,12 @@
 /// @brief True if the player who makes the next move is a computer player.
 @property(nonatomic, assign, readonly) bool nextMovePlayerIsComputerPlayer;
 /// @brief Denotes whether alternating play is enabled or disabled. If
-/// alternating play is enabled, invoking play:() and pass() or modifying the
-/// content of the GoNodeModel object causes the @e nextMovePlayer and
-/// @e nextMoveColor properties to change. If alternating play is not enabled,
-/// the mentioned properties do not change so that the same player can make
-/// several consecutive moves.
+/// alternating play is enabled, invoking play:withMoveNodeCreationOptions:()
+/// and passWithMoveNodeCreationOptions:() or modifying the content of the
+/// GoNodeModel object causes the @e nextMovePlayer and @e nextMoveColor
+/// properties to change. If alternating play is not enabled, the mentioned
+/// properties do not change so that the same player can make several
+/// consecutive moves.
 @property(nonatomic, assign) bool alternatingPlay;
 /// @brief The model object that stores the nodes of the game tree.
 @property(nonatomic, retain) GoNodeModel* nodeModel;

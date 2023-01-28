@@ -26,12 +26,14 @@
 #import "../../diagnostics/LoggingModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoMoveNodeCreationOptions.h"
 #import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../play/model/GameVariationsModel.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../ui/UIViewControllerAdditions.h"
 
@@ -162,13 +164,20 @@ enum AlertType
 // -----------------------------------------------------------------------------
 - (bool) playMoveInsideResponse:(GtpResponse*)response
 {
+  GoMoveNodeCreationOptions* options;
+  GameVariationsModel* gameVariationsModel = [ApplicationDelegate sharedDelegate].gameVariationsModel;
+  if (gameVariationsModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions)
+    options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyRetainFutureBoardPositionsAndInsertPosition:gameVariationsModel.newMoveInsertPosition];
+  else
+    options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyReplaceFutureBoardPositions];
+
   NSString* responseString = [response.parsedResponse lowercaseString];
   if ([responseString isEqualToString:@"pass"])
   {
     enum GoMoveIsIllegalReason illegalReason;
     if ([self.game isLegalPassMoveIllegalReason:&illegalReason])
     {
-      [self.game pass];
+      [self.game passWithMoveNodeCreationOptions:options];
     }
     else
     {
@@ -188,7 +197,7 @@ enum AlertType
       enum GoMoveIsIllegalReason illegalReason;
       if ([self.game isLegalMove:point isIllegalReason:&illegalReason])
       {
-        [self.game play:point];
+        [self.game play:point withMoveNodeCreationOptions:options];
       }
       else
       {

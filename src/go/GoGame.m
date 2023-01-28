@@ -23,6 +23,7 @@
 #import "GoGameDocument.h"
 #import "GoGameRules.h"
 #import "GoMove.h"
+#import "GoMoveNodeCreationOptions.h"
 #import "GoNode.h"
 #import "GoNodeModel.h"
 #import "GoNodeSetup.h"
@@ -34,6 +35,7 @@
 #import "GoZobristTable.h"
 #import "../main/ApplicationDelegate.h"
 #import "../player/Player.h"
+#import "../utility/ExceptionUtility.h"
 #import "../utility/NSArrayAdditions.h"
 
 
@@ -191,12 +193,24 @@
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to the @e nextMovePlayer making a #GoMoveTypePlay.
 ///
-/// Invoking this method has the following effects:
+/// Creates a new node for the move being played and adds it to the current
+/// game variation.
+/// - If there are nodes in the current game variation after the one that
+///   represents the current board position: Discards these nodes and replaces
+///   them with the new node.
+/// - If there are no such nodes: Simply adds the new node created by the move
+///   being played to the end of the current game variation.
+///
+/// Invoking this method also has the following effects:
 /// - Sets the document dirty flag
 /// - If alternating play is enabled, switches the @e nextMovePlayer.
 /// - Advances the current board position to display the board position after
 ///   the move was played. Posts first #numberOfBoardPositionsDidChange then
-///   #currentBoardPositionDidChange to the default notification center.
+///   #currentBoardPositionDidChange to the default notification center. If
+///   the insert policy in @a moveNodeCreationOptions is
+///   #GoNewMoveInsertPolicyRetainFutureBoardPositions, then also posts
+///   #currentGameVariationWillChange and #currentGameVariationDidChange before
+///   and after the board position notifications.
 ///
 /// Raises an @e NSInternalInconsistencyException if this method is invoked
 /// while this GoGame object is not in state #GoGameStateGameHasStarted or
@@ -206,11 +220,62 @@
 /// player who is thinking at the time the game is paused must be able to
 /// finish its turn.
 ///
-/// Raises @e NSInvalidArgumentException if @a aPoint is nil, if playing on
-/// @a aPoint is not a legal move, or if an exception occurs while actually
-/// playing on @a aPoint.
+/// @exception NSInvalidArgumentException is raised if @a point is @e nil, if
+/// playing on @a point is not a legal move, or if an exception occurs while
+/// actually playing on @a point.
 // -----------------------------------------------------------------------------
-- (void) play:(GoPoint*)aPoint
+- (void) play:(GoPoint*)point
+{
+  GoMoveNodeCreationOptions* options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyReplaceFutureBoardPositions];
+  [self play:point withMoveNodeCreationOptions:options];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the state of this GoGame and all associated objects in
+/// response to the @e nextMovePlayer making a #GoMoveTypePlay.
+///
+/// Creates a new node for the move being played.
+/// - If there are nodes in the current game variation after the one that
+///   represents the current board position: The insert policy found in
+///   @a moveNodeCreationOptions determines whether these nodes are discarded
+///   and replaced with the new node (the new node is added to the current game
+///   variation), or if these nodes are retained and the new node is inserted
+///   into the game tree so that the new node will start a new game variation.
+///   In the latter case, the insert position found in
+///   @a @a moveNodeCreationOptions determines where the new game variation
+///   will be branching off from the current board position node.
+/// - If there are no such nodes: Simply adds the new node created by the move
+///   being played to the end of the current game variation.
+///
+/// Invoking this method also has the following effects:
+/// - Sets the document dirty flag
+/// - If alternating play is enabled, switches the @e nextMovePlayer.
+/// - Advances the current board position to display the board position after
+///   the move was played. Posts first #numberOfBoardPositionsDidChange then
+///   #currentBoardPositionDidChange to the default notification center. If
+///   the insert policy in @a moveNodeCreationOptions is
+///   #GoNewMoveInsertPolicyRetainFutureBoardPositions, then also posts
+///   #currentGameVariationWillChange and #currentGameVariationDidChange before
+///   and after the board position notifications.
+///
+/// Raises an @e NSInternalInconsistencyException if this method is invoked
+/// while this GoGame object is not in state #GoGameStateGameHasStarted or
+/// #GoGameStateGameIsPaused. Is also raised if @a moveNodeCreationOptions
+/// uses insert policy #GoNewMoveInsertPolicyRetainFutureBoardPositions but
+/// fails to specify a valid insert position, or if it uses insert policy
+/// #GoNewMoveInsertPolicyReplaceFutureBoardPositions but attempts to specify
+/// an insert position that is not
+/// #GoNewMoveInsertPolicyRetainFutureBoardPositions.
+///
+/// @note Play when in paused state is allowed only because the computer
+/// player who is thinking at the time the game is paused must be able to
+/// finish its turn.
+///
+/// @exception NSInvalidArgumentException is raised if @a point is @e nil, if
+/// playing on @a point is not a legal move, or if an exception occurs while
+/// actually playing on @a point.
+// -----------------------------------------------------------------------------
+- (void) play:(GoPoint*)point withMoveNodeCreationOptions:(GoMoveNodeCreationOptions*)moveNodeCreationOptions
 {
   if (GoGameStateGameHasStarted != self.state && GoGameStateGameIsPaused != self.state)
   {
@@ -221,7 +286,17 @@
                                                    userInfo:nil];
     @throw exception;
   }
-  if (! aPoint)
+
+  enum GoNewMoveInsertPolicy newMoveInsertPolicy = moveNodeCreationOptions.newMoveInsertPolicy;
+  enum GoNewMoveInsertPosition newMoveInsertPosition = moveNodeCreationOptions.newMoveInsertPosition;
+  if ((newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions && newMoveInsertPosition == GoNewMoveInsertPositionNextBoardPosition) ||
+      (newMoveInsertPolicy == GoNewMoveInsertPolicyReplaceFutureBoardPositions && newMoveInsertPosition != GoNewMoveInsertPositionNextBoardPosition))
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"play:withMoveNodeCreationOptions: failed: newMoveInsertPolicy = %d, newMoveInsertPosition = %d", newMoveInsertPolicy, newMoveInsertPosition];
+    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+  }
+
+  if (! point)
   {
     NSString* errorMessage = @"Point argument is nil";
     DDLogError(@"%@: %@", self, errorMessage);
@@ -230,10 +305,11 @@
                                                    userInfo:nil];
     @throw exception;
   }
+
   enum GoMoveIsIllegalReason illegalReason;
-  if (! [self isLegalMove:aPoint isIllegalReason:&illegalReason])
+  if (! [self isLegalMove:point isIllegalReason:&illegalReason])
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Point argument is not a legal move: %@", aPoint.vertex];
+    NSString* errorMessage = [NSString stringWithFormat:@"Point argument is not a legal move: %@", point.vertex];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
@@ -244,11 +320,11 @@
   GoMove* move = [GoMove move:GoMoveTypePlay by:self.nextMovePlayer after:self.lastMove];
   @try
   {
-    move.point = aPoint;
+    move.point = point;
   }
   @catch (NSException* exception)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Exception occurred while playing on intersection %@. Exception = %@", aPoint.vertex.string, exception];
+    NSString* errorMessage = [NSString stringWithFormat:@"Exception occurred while playing on intersection %@. Exception = %@", point.vertex.string, exception];
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* newException = [NSException exceptionWithName:NSInvalidArgumentException
                                                         reason:errorMessage
@@ -257,19 +333,31 @@
   }
 
   GoNode* node = [GoNode nodeWithMove:move];
-  [self addNodeToTreeAndUpdateBoardPosition:node];
+  [self addNodeToTreeAndUpdateBoardPosition:node withMoveNodeCreationOptions:moveNodeCreationOptions];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the state of this GoGame and all associated objects in
 /// response to the @e nextMovePlayer making a #GoMoveTypePass.
 ///
-/// Invoking this method has the following effects:
+/// Creates a new node for the move being played and adds it to the current
+/// game variation.
+/// - If there are nodes in the current game variation after the one that
+///   represents the current board position: Discards these nodes and replaces
+///   them with the new node.
+/// - If there are no such nodes: Simply adds the new node created by the move
+///   being played at the end of the current game variation.
+///
+/// Invoking this method also has the following effects:
 /// - Sets the document dirty flag
 /// - If alternating play is enabled, switches the @e nextMovePlayer.
 /// - Advances the current board position to display the board position after
 ///   the move was played. Posts first #numberOfBoardPositionsDidChange then
-///   #currentBoardPositionDidChange to the default notification center.
+///   #currentBoardPositionDidChange to the default notification center. If
+///   the insert policy in @a moveNodeCreationOptions is
+///   #GoNewMoveInsertPolicyRetainFutureBoardPositions, then also posts
+///   #currentGameVariationWillChange and #currentGameVariationDidChange before
+///   and after the board position notifications.
 /// - May cause the game state to change to #GoGameStateGameHasEnded if, after
 ///   playing this pass move, the right number of consecutive pass moves have
 ///   been made according to the game rules.
@@ -283,6 +371,55 @@
 // -----------------------------------------------------------------------------
 - (void) pass
 {
+  GoMoveNodeCreationOptions* options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyReplaceFutureBoardPositions];
+  [self passWithMoveNodeCreationOptions:options];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the state of this GoGame and all associated objects in
+/// response to the @e nextMovePlayer making a #GoMoveTypePass.
+///
+/// Creates a new node for the move being played.
+/// - If there are nodes in the current game variation after the one that
+///   represents the current board position: The insert policy found in
+///   @a moveNodeCreationOptions determines whether these nodes are discarded
+///   and replaced with the new node (the new node is added to the current game
+///   variation), or if these nodes are retained and the new node is inserted
+///   into the game tree so that the new node will start a new game variation.
+///   In the latter case, the insert position found in
+///   @a @a moveNodeCreationOptions determines where the new game variation
+///   will be branching off from the current board position node.
+/// - If there are no such nodes: Simply adds the new node created by the move
+///   being played to the end of the current game variation.
+///
+/// Invoking this method also has the following effects:
+/// - Sets the document dirty flag
+/// - If alternating play is enabled, switches the @e nextMovePlayer.
+/// - Advances the current board position to display the board position after
+///   the move was played. Posts first #numberOfBoardPositionsDidChange then
+///   #currentBoardPositionDidChange to the default notification center. If
+///   the insert policy in @a moveNodeCreationOptions is
+///   #GoNewMoveInsertPolicyRetainFutureBoardPositions, then also posts
+///   #currentGameVariationWillChange and #currentGameVariationDidChange before
+///   and after the board position notifications.
+/// - May cause the game state to change to #GoGameStateGameHasEnded if, after
+///   playing this pass move, the right number of consecutive pass moves have
+///   been made according to the game rules.
+///
+/// Raises an @e NSInternalInconsistencyException if this method is invoked
+/// while this GoGame object is not in state #GoGameStateGameHasStarted or
+/// #GoGameStateGameIsPaused. Is also raised if @a moveNodeCreationOptions
+/// uses insert policy #GoNewMoveInsertPolicyRetainFutureBoardPositions but
+/// fails to specify a valid insert position, or if it uses insert policy
+/// #GoNewMoveInsertPolicyReplaceFutureBoardPositions but attempts to specify
+/// an insert position that is not
+/// #GoNewMoveInsertPolicyRetainFutureBoardPositions.
+///
+/// Raises @e NSInvalidArgumentException if playing a #GoMoveTypePass by
+/// @e nextMovePlayer is not a legal move.
+// -----------------------------------------------------------------------------
+- (void) passWithMoveNodeCreationOptions:(GoMoveNodeCreationOptions*)moveNodeCreationOptions
+{
   if (GoGameStateGameHasStarted != self.state && GoGameStateGameIsPaused != self.state)
   {
     NSString* errorMessage = @"Pass is possible only while GoGame object is either in state GoGameStateGameHasStarted or GoGameStateGameIsPaused";
@@ -292,6 +429,16 @@
                                                    userInfo:nil];
     @throw exception;
   }
+
+  enum GoNewMoveInsertPolicy newMoveInsertPolicy = moveNodeCreationOptions.newMoveInsertPolicy;
+  enum GoNewMoveInsertPosition newMoveInsertPosition = moveNodeCreationOptions.newMoveInsertPosition;
+  if ((newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions && newMoveInsertPosition == GoNewMoveInsertPositionNextBoardPosition) ||
+      (newMoveInsertPolicy == GoNewMoveInsertPolicyReplaceFutureBoardPositions && newMoveInsertPosition != GoNewMoveInsertPositionNextBoardPosition))
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"passWithMoveNodeCreationOptions: failed: newMoveInsertPolicy = %d, newMoveInsertPosition = %d", newMoveInsertPolicy, newMoveInsertPosition];
+    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+  }
+
   enum GoMoveIsIllegalReason illegalReason;
   if (! [self isLegalPassMoveIllegalReason:&illegalReason])
   {
@@ -306,7 +453,7 @@
   GoMove* move = [GoMove move:GoMoveTypePass by:self.nextMovePlayer after:self.lastMove];
 
   GoNode* node = [GoNode nodeWithMove:move];
-  [self addNodeToTreeAndUpdateBoardPosition:node];
+  [self addNodeToTreeAndUpdateBoardPosition:node withMoveNodeCreationOptions:moveNodeCreationOptions];
 
   // This may change the game state. Such a change must occur after the move was
   // generated; this order is important for observer notifications.
@@ -314,25 +461,133 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Adds @a newNode to the game tree, then updates the GoBoardPosition
-/// properties @e numberOfBoardPositions and @e currentBoardPosition. Posts the
-/// corresponding notifications (first #numberOfBoardPositionsDidChange,
-/// followed by #currentBoardPositionDidChange), to the default notification
-/// center.
+/// @brief Adds @a newNode to the game tree (possibly also discarding other
+/// nodes), possibly changes the current game variation, updates properties in
+/// GoBoardPosition to match the new state in the current game variation, and
+/// posts the notifications to the default notification center that are required
+/// to inform the rest of the system about the changes that took place.
 ///
-/// This is a private helper for play:() and pass().
+/// This is a private helper for play:withMoveNodeCreationOptions:() and
+/// passWithMoveNodeCreationOptions:(). See the documentation of these methods
+/// for details about how @a newNode is being inserted, when nodes are
+/// discarded, when the current game variation changes and which notifications
+/// are posted.
 // -----------------------------------------------------------------------------
 - (void) addNodeToTreeAndUpdateBoardPosition:(GoNode*)newNode
+                 withMoveNodeCreationOptions:(GoMoveNodeCreationOptions*)moveNodeCreationOptions
 {
-  // Sets the document dirty flag
-  [self.nodeModel appendNode:newNode];
+  bool shouldChangeCurrentGameVariation;
+
+  if (self.boardPosition.isLastPosition)
+  {
+    shouldChangeCurrentGameVariation = false;
+
+    // Sets the document dirty flag
+    [self.nodeModel appendNode:newNode];
+  }
+  else
+  {
+    GoNode* currentBoardPositionNode = self.boardPosition.currentNode;
+
+    int nextBoardPosition = self.boardPosition.currentBoardPosition + 1;
+    if (nextBoardPosition >= self.nodeModel.numberOfNodes)
+    {
+      assert(0);
+      NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: nextBoardPosition = %d, numberOfNodes = %d", nextBoardPosition, self.nodeModel.numberOfNodes];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+      return;
+    }
+
+    enum GoNewMoveInsertPolicy newMoveInsertPolicy = moveNodeCreationOptions.newMoveInsertPolicy;
+    enum GoNewMoveInsertPosition newMoveInsertPosition = moveNodeCreationOptions.newMoveInsertPosition;
+
+    switch (newMoveInsertPolicy)
+    {
+      case GoNewMoveInsertPolicyRetainFutureBoardPositions:
+      {
+        shouldChangeCurrentGameVariation = true;
+
+        switch (newMoveInsertPosition)
+        {
+          case GoNewMoveInsertPositionNewVariationAtTop:
+          {
+            [self.nodeModel createVariationWithNode:newNode nextSibling:currentBoardPositionNode.firstChild parent:currentBoardPositionNode];
+            break;
+          }
+          case GoNewMoveInsertPositionNewVariationAtBottom:
+          {
+            [self.nodeModel createVariationWithNode:newNode nextSibling:nil parent:currentBoardPositionNode];
+            break;
+          }
+          case GoNewMoveInsertPositionNewVariationBeforeCurrentVariation:
+          case GoNewMoveInsertPositionNewVariationAfterCurrentVariation:
+          {
+            GoNode* nextBoardPositionNode = [self.nodeModel nodeAtIndex:nextBoardPosition];
+            GoNode* nextSibling;
+            if (newMoveInsertPosition == GoNewMoveInsertPositionNewVariationBeforeCurrentVariation)
+              nextSibling = nextBoardPositionNode;
+            else
+              nextSibling = nextBoardPositionNode.nextSibling;
+            [self.nodeModel createVariationWithNode:newNode nextSibling:nextSibling parent:currentBoardPositionNode];
+            break;
+          }
+          default:
+          {
+            assert(0);
+            NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: unexpected insert position for GoNewMoveInsertPolicyRetainFutureBoardPositions, newMoveInsertPosition = %d", newMoveInsertPosition];
+            [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+            return;
+          }
+        }
+        break;
+      }
+      case GoNewMoveInsertPolicyReplaceFutureBoardPositions:
+      {
+        shouldChangeCurrentGameVariation = false;
+
+        if (moveNodeCreationOptions.newMoveInsertPosition == GoNewMoveInsertPositionNextBoardPosition)
+        {
+          GoNode* nextBoardPositionNode = [self.nodeModel nodeAtIndex:nextBoardPosition];
+          GoNode* nextSibling = nextBoardPositionNode.nextSibling;
+          [self.nodeModel createVariationWithNode:newNode nextSibling:nextSibling parent:currentBoardPositionNode];
+
+          int indexOfFirstNodeToDiscard = nextBoardPosition;
+          [self.nodeModel discardNodesFromIndex:indexOfFirstNodeToDiscard];
+        }
+        else
+        {
+          assert(0);
+          NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: unexpected insert position for GoNewMoveInsertPolicyReplaceFutureBoardPositions, newMoveInsertPosition = %d", newMoveInsertPosition];
+          [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+          return;
+        }
+        break;
+      }
+      default:
+      {
+        assert(0);
+        NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: unknown insert policy, newMoveInsertPolicy = %d", newMoveInsertPolicy];
+        [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:errorMessage];
+        return;
+      }
+    }
+  }
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
 
+  if (shouldChangeCurrentGameVariation)
+  {
+    [center postNotificationName:currentGameVariationWillChange object:nil];
+    [self.nodeModel changeToVariationContainingNode:newNode];
+  }
+
   int oldNumberOfBoardPositions = self.boardPosition.numberOfBoardPositions;
   int newNumberOfBoardPositions = self.nodeModel.numberOfNodes;
-  self.boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
-  [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
+  if (oldNumberOfBoardPositions != newNumberOfBoardPositions)
+  {
+    self.boardPosition.numberOfBoardPositions = newNumberOfBoardPositions;
+    [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
+  }
 
   // Changing the current board position has the following effects:
   // - It invokes GoNode modifyBoard. Important: GoNode modifyBoard must be
@@ -340,9 +595,21 @@
   //   Zobrist hash (which is based on the previous node) cannot be calculated.
   // - If self.alternatingPlay is true, it switches the nextMovePlayer.
   int oldCurrentBoardPosition = self.boardPosition.currentBoardPosition;
-  int newCurrentBoardPosition = self.nodeModel.numberOfNodes - 1;
+  int newCurrentBoardPosition = oldCurrentBoardPosition + 1;
+  if (newCurrentBoardPosition != newNumberOfBoardPositions - 1)
+  {
+    assert(0);
+    NSString* errorMessage = [NSString stringWithFormat:@"addNodeToTreeAndUpdateBoardPosition:withMoveNodeCreationOptions: failed: board position mismatch, newCurrentBoardPosition  = %d, newNumberOfBoardPositions = %d", newCurrentBoardPosition, newNumberOfBoardPositions];
+    [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
+    return;
+  }
   self.boardPosition.currentBoardPosition = newCurrentBoardPosition;
   [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:newCurrentBoardPosition]]];
+
+  if (shouldChangeCurrentGameVariation)
+  {
+    [center postNotificationName:currentGameVariationDidChange object:nil];
+  }
 
   [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
 }
@@ -693,7 +960,7 @@
 /// logic. This method simply assumes that the @e nextMovePlayer has the right
 /// to move in the current board position.
 ///
-/// Raises @e NSInvalidArgumentException if @a aPoint is nil.
+/// Raises @e NSInvalidArgumentException if @a point is @e nil.
 // -----------------------------------------------------------------------------
 - (bool) isLegalMove:(GoPoint*)point isIllegalReason:(enum GoMoveIsIllegalReason*)reason
 {
@@ -714,7 +981,7 @@
 /// logic. This method simply assumes that the player who plays @a color has the
 /// right to move in the current board position.
 ///
-/// Raises @e NSInvalidArgumentException if @a aPoint is nil, or if @a color is
+/// Raises @e NSInvalidArgumentException if @a point is nil, or if @a color is
 /// neither #GoColorBlack nor #GoColorWhite.
 // -----------------------------------------------------------------------------
 - (bool) isLegalMove:(GoPoint*)point byColor:(enum GoColor)color isIllegalReason:(enum GoMoveIsIllegalReason*)reason
@@ -1581,8 +1848,9 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 // -----------------------------------------------------------------------------
 - (void) addEmptyNodeToCurrentGameVariation
 {
+  GoMoveNodeCreationOptions* options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyReplaceFutureBoardPositions];
   GoNode* node = [GoNode node];
-  [self addNodeToTreeAndUpdateBoardPosition:node];
+  [self addNodeToTreeAndUpdateBoardPosition:node withMoveNodeCreationOptions:options];
 }
 
 // -----------------------------------------------------------------------------

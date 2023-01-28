@@ -63,6 +63,58 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Exercises the createVariationWithNode:nextSibling:parent:() method.
+// -----------------------------------------------------------------------------
+- (void) testCreateVariationWithNodeNextSiblingParent
+{
+  GoNodeModel* testee = m_game.nodeModel;
+  GoNode* rootNode = testee.rootNode;
+
+  GoNode* node;
+
+  // nextSibling is nil, lastChild of parent is nil
+  node = [GoNode node];
+  XCTAssertNil(rootNode.lastChild);
+  [testee createVariationWithNode:node nextSibling:nil parent:rootNode];
+  XCTAssertEqualObjects(rootNode.lastChild, node);
+  XCTAssertEqualObjects(node.parent, rootNode);
+  XCTAssertNil(node.nextSibling);
+
+  // nextSibling is nil, lastChild of parent is not nil
+  [self setupGameTree:rootNode];
+  node = [GoNode node];
+  XCTAssertNotNil(rootNode.lastChild);
+  XCTAssertNotEqualObjects(rootNode.lastChild, node);
+  [testee createVariationWithNode:node nextSibling:nil parent:rootNode];
+  XCTAssertEqualObjects(rootNode.lastChild, node);
+  XCTAssertEqualObjects(node.parent, rootNode);
+  XCTAssertNil(node.nextSibling);
+
+  // nextSibling is not nil, insert before firstChild of parent
+  [self setupGameTree:rootNode];
+  node = [GoNode node];
+  GoNode* originalFirstChild = rootNode.firstChild;
+  XCTAssertNotNil(originalFirstChild);
+  XCTAssertNotEqualObjects(originalFirstChild, node);
+  [testee createVariationWithNode:node nextSibling:originalFirstChild parent:rootNode];
+  XCTAssertEqualObjects(rootNode.firstChild, node);
+  XCTAssertEqualObjects(node.parent, rootNode);
+  XCTAssertEqualObjects(node.nextSibling, originalFirstChild);
+
+  // nextSibling is not nil, insert after firstChild of parent
+  [self setupGameTree:rootNode];
+  node = [GoNode node];
+  GoNode* originalNextSiblingOfFirstChild = rootNode.firstChild.nextSibling;
+  XCTAssertNotNil(originalNextSiblingOfFirstChild);
+  XCTAssertNotEqualObjects(originalNextSiblingOfFirstChild, node);
+  [testee createVariationWithNode:node nextSibling:originalNextSiblingOfFirstChild parent:rootNode];
+  XCTAssertNotEqualObjects(rootNode.firstChild, node);
+  XCTAssertEqualObjects(rootNode.firstChild.nextSibling, node);
+  XCTAssertEqualObjects(node.parent, rootNode);
+  XCTAssertEqualObjects(node.nextSibling, originalNextSiblingOfFirstChild);
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Exercises the changeToMainVariation() method.
 // -----------------------------------------------------------------------------
 - (void) testChangeToMainVariation
@@ -205,8 +257,9 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for testChangeToMainVariation(),
-/// testChangeToVariationContainingNode() and
-/// testAncestorOfNodeInCurrentVariation().
+/// testChangeToVariationContainingNode(),
+/// testAncestorOfNodeInCurrentVariation() and
+/// testCreateVariationWithNodeNextSiblingParent().
 // -----------------------------------------------------------------------------
 - (void) setupGameTree:(GoNode*)rootNode
 {

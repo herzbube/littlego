@@ -42,7 +42,12 @@
 - (void) testReasonForGameHasEnded;
 - (void) testZobristHashAfterHandicap;
 - (void) testPlay;
+- (void) testPlayWithMoveNodeCreationOptions_GoNewMoveInsertPolicyRetainFutureBoardPositions;
+- (void) testPlayWithMoveNodeCreationOptions_GoNewMoveInsertPolicyReplaceFutureBoardPositions;
 - (void) testPass;
+- (void) testPassWithMoveNodeCreationOptions_GoNewMoveInsertPolicyRetainFutureBoardPositions;
+- (void) testPassWithMoveNodeCreationOptions_GoNewMoveInsertPolicyReplaceFutureBoardPositions;
+- (void) testPlayWithMoveNodeCreationOptions_PassWithMoveNodeCreationOptions_InvalidOptions;
 - (void) testResign;
 - (void) testPause;
 - (void) testContinue;

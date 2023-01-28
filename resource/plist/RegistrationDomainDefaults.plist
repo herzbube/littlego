@@ -463,6 +463,13 @@
 		<key>NodeSelectionStyle</key>
 		<integer>0</integer>
 	</dict>
+	<key>GameVariations</key>
+	<dict>
+		<key>NewMoveInsertPolicy</key>
+		<integer>0</integer>
+		<key>NewMoveInsertPosition</key>
+		<integer>3</integer>
+	</dict>
 	<key>CrashReportActivated</key>
 	<true/>
 	<key>AutomaticallySendCrashReports</key>

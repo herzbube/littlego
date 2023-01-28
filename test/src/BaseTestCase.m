@@ -24,7 +24,18 @@
 #import <command/game/NewGameCommand.h>
 
 
+// -----------------------------------------------------------------------------
+/// @brief Class extension with private properties for BaseTestCase.
+// -----------------------------------------------------------------------------
+@interface BaseTestCase()
+@property(nonatomic, assign, readwrite) bool testSetupHasBeenDone;
+@property(nonatomic, retain) NSMutableDictionary* notificationsReceivedDictionary;
+@end
+
+
 @implementation BaseTestCase
+
+#pragma mark - Setup and teardown
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the environment for a test case method.
@@ -72,6 +83,9 @@
     @throw;
   }
 
+  self.notificationsReceivedDictionary = nil;
+  self.testSetupHasBeenDone = true;
+
   [pool drain];  // draining the pool also deallocates it
 }
 
@@ -80,12 +94,102 @@
 // -----------------------------------------------------------------------------
 - (void) tearDown
 {
+  // The test case may have invoked tearDown on its own => when the test exits
+  // and XCTestCase invokes tearDown for the final time we don't have to do
+  // anything anymore
+  if (! self.testSetupHasBeenDone)
+    return;
+
   NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
   DDLogInfo(@"Tearing down test environment for test %@", self);
+
   [m_delegate release];
+  m_delegate = nil;
+  m_game = nil;
+
+  [self unregisterForAllNotifications];
+  XCTAssertNil(self.notificationsReceivedDictionary, @"self.notificationsReceivedDictionary not released in tearDown()");
+
+  self.testSetupHasBeenDone = false;
+  
   [pool drain];  // draining the pool also deallocates it
   XCTAssertNil([ApplicationDelegate sharedDelegate], @"ApplicationDelegate object not released in tearDown()");
   XCTAssertNil([GoGame sharedGame], @"GoGame object not released in tearDown()");
+}
+
+#pragma mark - Notification handling
+
+// -----------------------------------------------------------------------------
+/// @brief Registers this test case object with the default global notification
+/// center to receive notifications with name @a notificationName. From now on
+/// notifications posted with name @a notificationName will increase a counter
+/// that can be queried by invoking numberOfNotificationsReceived:().
+// -----------------------------------------------------------------------------
+- (void) registerForNotification:(NSString*)notificationName
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(notificationResponder:) name:notificationName object:nil];
+
+  if (! self.notificationsReceivedDictionary)
+    self.notificationsReceivedDictionary = [NSMutableDictionary dictionary];
+  self.notificationsReceivedDictionary[notificationName] = @0;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Unregisters this test case object from the default global
+/// notification center to no longer receive notifications with name
+/// @a notificationName. Also sets the notification counter for
+/// @a notificationName to 0 (zero).
+// -----------------------------------------------------------------------------
+- (void) unregisterForNotification:(NSString*)notificationName
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center removeObserver:self name:notificationName object:nil];
+
+  [self.notificationsReceivedDictionary removeObjectForKey:notificationName];
+  if (self.notificationsReceivedDictionary.count == 0)
+    self.notificationsReceivedDictionary = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Unregisters this test case object from the default global
+/// notification center to no longer receive any notifications. Also sets all
+/// existing notification counters to 0 (zero).
+// -----------------------------------------------------------------------------
+- (void) unregisterForAllNotifications
+{
+  if (! self.notificationsReceivedDictionary)
+    return;
+
+  NSArray* notificationNames = self.notificationsReceivedDictionary.allKeys;
+  for (NSString* notificationName in notificationNames)
+    [self unregisterForNotification:notificationName];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the number of notifications with name @a notificationName
+/// that have been received. The counter initially is 0 (zero). The counter
+/// is increased only after registerForNotification:() has been invoked for
+/// @a notificationName.
+// -----------------------------------------------------------------------------
+- (int) numberOfNotificationsReceived:(NSString*)notificationName
+{
+  if (! self.notificationsReceivedDictionary)
+    return 0;
+
+  NSNumber* number = self.notificationsReceivedDictionary[notificationName];
+  return number ? number.intValue : 0;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to @a notification being posted to the default global
+/// notification center.
+///
+/// This is a private helper method.
+// -----------------------------------------------------------------------------
+- (void) notificationResponder:(NSNotification*)notification
+{
+  self.notificationsReceivedDictionary[notification.name] = @([self numberOfNotificationsReceived:notification.name] + 1);
 }
 
 @end
