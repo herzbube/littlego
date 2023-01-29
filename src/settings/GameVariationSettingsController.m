@@ -143,9 +143,9 @@ enum NewMoveInsertPositionSectionItem
   switch (section)
   {
     case NewMoveInsertPolicySection:
-      return @"When a new move is being played and you are viewing a board position somewhere in the middle of the current game variation, the app needs to know what it should do with the current game variation. Select here 1) if you want to keep the current game variation and insert the new move as a new game variation into the node tree, or 2) if you want to discard the remaining board positions in the current game variation and replace them with the new move.\n\nThis setting has no effect if you are viewing the last board position of the current game variation - in this case the new move is simply added as a new board position.";
+      return @"When you make a move while you are viewing a board position in the middle of the current game variation, the app inserts the new move as a new game variation into the node tree and retains future nodes in the current game variation. If this option is turned off the app will instead discard future nodes in the current game variation and replace them with the new move.";
     case NewMoveInsertPositionSection:
-      return @"When the app creates a new game variation because of the setting above, select here where the app should insert the new game variation into the node tree. The app can insert the new game variation above or below all the other game variations, or it can insert the new game variation just above or below the current game variation.";
+      return @"When the app creates a new game variation because of the setting above, select here where the app should insert the new game variation into the node tree.";
     default:
       break;
   }
@@ -162,11 +162,13 @@ enum NewMoveInsertPositionSectionItem
   {
     case NewMoveInsertPolicySection:
     {
-      cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
-      TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
-      variableHeightCell.descriptionLabel.text = @"New move insert policy";
-      variableHeightCell.valueLabel.text = [self newMoveInsertPolicyAsString:self.gameVariationModel.newMoveInsertPolicy];
-      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+      UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+      cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
+      cell.textLabel.numberOfLines = 0;
+      cell.textLabel.text = @"Move creates new game variation when future nodes exist";
+      accessoryView.on = self.gameVariationModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions;
+      [accessoryView addTarget:self action:@selector(toggleNewMoveInsertPolicy:) forControlEvents:UIControlEventValueChanged];
       break;
     }
     case NewMoveInsertPositionSection:
@@ -200,11 +202,6 @@ enum NewMoveInsertPositionSectionItem
 
   switch (indexPath.section)
   {
-    case NewMoveInsertPolicySection:
-    {
-      [self pickNewMoveInsertPolicy];
-      break;
-    }
     case NewMoveInsertPositionSection:
     {
       [self pickNewMoveInsertPosition];
@@ -220,26 +217,21 @@ enum NewMoveInsertPositionSectionItem
 #pragma mark - Action handlers
 
 // -----------------------------------------------------------------------------
-/// @brief Displays ItemPickerController to allow the user to pick a new value
-/// for the "branching style" user preference.
+/// @brief Reacts to a tap gesture on the "new move insert policy" switch.
+/// Writes the new value to the appropriate model.
 // -----------------------------------------------------------------------------
-- (void) pickNewMoveInsertPolicy
+- (void) toggleNewMoveInsertPolicy:(id)sender
 {
-  NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
-  [itemList addObject:[self newMoveInsertPolicyAsString:GoNewMoveInsertPolicyRetainFutureBoardPositions]];
-  [itemList addObject:[self newMoveInsertPolicyAsString:GoNewMoveInsertPolicyReplaceFutureBoardPositions]];
-  ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
-                                                                                screenTitle:@"Select new move insert policy"
-                                                                         indexOfDefaultItem:self.gameVariationModel.newMoveInsertPolicy
-                                                                                   delegate:self];
-  itemPickerController.context = [NSNumber numberWithInt:NewMoveInsertPolicySection];
-
-  [self presentNavigationControllerWithRootViewController:itemPickerController];
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.gameVariationModel.newMoveInsertPolicy = (accessoryView.on
+                                                 ? GoNewMoveInsertPolicyRetainFutureBoardPositions
+                                                 : GoNewMoveInsertPolicyReplaceFutureBoardPositions);
+  [self.tableView reloadData];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Displays ItemPickerController to allow the user to pick a new value
-/// for the "node selection style" user preference.
+/// for the "new move insert position" user preference.
 // -----------------------------------------------------------------------------
 - (void) pickNewMoveInsertPosition
 {
@@ -267,15 +259,7 @@ enum NewMoveInsertPositionSectionItem
   if (didMakeSelection)
   {
     NSNumber* context = controller.context;
-    if (context.intValue == NewMoveInsertPolicySection)
-    {
-      if (self.gameVariationModel.newMoveInsertPolicy != controller.indexOfSelectedItem)
-      {
-        self.gameVariationModel.newMoveInsertPolicy = controller.indexOfSelectedItem;
-        [self.tableView reloadData];
-      }
-    }
-    else if (context.intValue == NewMoveInsertPositionSection)
+    if (context.intValue == NewMoveInsertPositionSection)
     {
       if (self.gameVariationModel.newMoveInsertPosition != controller.indexOfSelectedItem)
       {
@@ -290,25 +274,6 @@ enum NewMoveInsertPositionSectionItem
 }
 
 #pragma mark - Private helpers
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a short string for @a newMoveInsertPolicy that is suitable
-/// for display in a cell in the table view managed by this controller.
-// -----------------------------------------------------------------------------
-- (NSString*) newMoveInsertPolicyAsString:(enum GoNewMoveInsertPolicy)newMoveInsertPolicy
-{
-  switch (newMoveInsertPolicy)
-  {
-    case GoNewMoveInsertPolicyRetainFutureBoardPositions:
-      return @"Keep current game variation";
-    case GoNewMoveInsertPolicyReplaceFutureBoardPositions:
-      return @"Replace current game variation";
-    default:
-      assert(0);
-      break;
-  }
-  return nil;
-}
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a short string for @a newMoveInsertPosition that is suitable
