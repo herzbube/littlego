@@ -29,7 +29,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../play/model/GameVariationsModel.h"
+#import "../../play/model/GameVariationModel.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../ui/UIViewControllerAdditions.h"
 
@@ -164,9 +164,9 @@ enum AlertType
     [[ApplicationStateManager sharedManager] beginSavePoint];
 
     GoMoveNodeCreationOptions* options;
-    GameVariationsModel* gameVariationsModel = [ApplicationDelegate sharedDelegate].gameVariationsModel;
-    if (gameVariationsModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions)
-      options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyRetainFutureBoardPositionsAndInsertPosition:gameVariationsModel.newMoveInsertPosition];
+    GameVariationModel* gameVariationModel = [ApplicationDelegate sharedDelegate].gameVariationModel;
+    if (gameVariationModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions)
+      options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyRetainFutureBoardPositionsAndInsertPosition:gameVariationModel.newMoveInsertPosition];
     else
       options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyReplaceFutureBoardPositions];
 

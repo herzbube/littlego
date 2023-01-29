@@ -463,7 +463,7 @@
 		<key>NodeSelectionStyle</key>
 		<integer>0</integer>
 	</dict>
-	<key>GameVariations</key>
+	<key>GameVariation</key>
 	<dict>
 		<key>NewMoveInsertPolicy</key>
 		<integer>0</integer>

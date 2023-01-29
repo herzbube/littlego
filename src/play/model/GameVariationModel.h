@@ -16,10 +16,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GameVariationsModel class provides user defaults data and other
+/// @brief The GameVariationModel class provides user defaults data and other
 /// values to its clients that are related to game variations.
 // -----------------------------------------------------------------------------
-@interface GameVariationsModel : NSObject
+@interface GameVariationModel : NSObject
 {
 }
 

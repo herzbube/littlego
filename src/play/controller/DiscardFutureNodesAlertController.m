@@ -22,7 +22,7 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../play/model/GameVariationsModel.h"
+#import "../../play/model/GameVariationModel.h"
 #import "../../ui/UIViewControllerAdditions.h"
 
 // System includes
@@ -124,10 +124,10 @@ enum ActionType
 
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
-  GameVariationsModel* gameVariationsModel = appDelegate.gameVariationsModel;
+  GameVariationModel* gameVariationModel = appDelegate.gameVariationModel;
 
   if (boardPosition.isLastPosition ||
-      (ActionTypePlay == actionType && gameVariationsModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions) ||
+      (ActionTypePlay == actionType && gameVariationModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions) ||
       ! boardPositionModel.discardFutureNodesAlert)
   {
     [command submit];

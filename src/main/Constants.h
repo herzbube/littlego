@@ -2043,8 +2043,8 @@ extern NSString* condenseMoveNodesKey;
 extern NSString* alignMoveNodesKey;
 extern NSString* branchingStyleKey;
 extern NSString* nodeSelectionStyleKey;
-// Game variations settings
-extern NSString* gameVariationsKey;
+// Game variation settings
+extern NSString* gameVariationKey;
 extern NSString* newMoveInsertPolicyKey;
 extern NSString* newMoveInsertPositionKey;
 //@}

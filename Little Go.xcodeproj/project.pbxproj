@@ -744,10 +744,10 @@
 		CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD52691485B05C0027476B /* DocumentGenerator.m */; };
 		CDE0FC5F298463B9008E55A8 /* GoMoveNodeCreationOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC5D298463B9008E55A8 /* GoMoveNodeCreationOptions.m */; };
 		CDE0FC60298463B9008E55A8 /* GoMoveNodeCreationOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC5D298463B9008E55A8 /* GoMoveNodeCreationOptions.m */; };
-		CDE0FC63298598C1008E55A8 /* GameVariationsSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC61298598C1008E55A8 /* GameVariationsSettingsController.m */; };
-		CDE0FC64298598C1008E55A8 /* GameVariationsSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC61298598C1008E55A8 /* GameVariationsSettingsController.m */; };
-		CDE0FC672985994F008E55A8 /* GameVariationsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC652985994E008E55A8 /* GameVariationsModel.m */; };
-		CDE0FC682985994F008E55A8 /* GameVariationsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC652985994E008E55A8 /* GameVariationsModel.m */; };
+		CDE0FC63298598C1008E55A8 /* GameVariationSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC61298598C1008E55A8 /* GameVariationSettingsController.m */; };
+		CDE0FC64298598C1008E55A8 /* GameVariationSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC61298598C1008E55A8 /* GameVariationSettingsController.m */; };
+		CDE0FC672985994F008E55A8 /* GameVariationModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC652985994E008E55A8 /* GameVariationModel.m */; };
+		CDE0FC682985994F008E55A8 /* GameVariationModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE0FC652985994E008E55A8 /* GameVariationModel.m */; };
 		CDE1A16214C1CED200317ECA /* About.html in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A13514C1CED200317ECA /* About.html */; };
 		CDE1A16314C1CED200317ECA /* BoostSoftwareLicense.html in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A13614C1CED200317ECA /* BoostSoftwareLicense.html */; };
 		CDE1A16414C1CED200317ECA /* COPYING.html in Resources */ = {isa = PBXBuildFile; fileRef = CDE1A13714C1CED200317ECA /* COPYING.html */; };
@@ -1724,10 +1724,10 @@
 		CDDD52691485B05C0027476B /* DocumentGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DocumentGenerator.m; sourceTree = "<group>"; };
 		CDE0FC5D298463B9008E55A8 /* GoMoveNodeCreationOptions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoMoveNodeCreationOptions.m; sourceTree = "<group>"; };
 		CDE0FC5E298463B9008E55A8 /* GoMoveNodeCreationOptions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoMoveNodeCreationOptions.h; sourceTree = "<group>"; };
-		CDE0FC61298598C1008E55A8 /* GameVariationsSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameVariationsSettingsController.m; sourceTree = "<group>"; };
-		CDE0FC62298598C1008E55A8 /* GameVariationsSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameVariationsSettingsController.h; sourceTree = "<group>"; };
-		CDE0FC652985994E008E55A8 /* GameVariationsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameVariationsModel.m; sourceTree = "<group>"; };
-		CDE0FC662985994E008E55A8 /* GameVariationsModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameVariationsModel.h; sourceTree = "<group>"; };
+		CDE0FC61298598C1008E55A8 /* GameVariationSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameVariationSettingsController.m; sourceTree = "<group>"; };
+		CDE0FC62298598C1008E55A8 /* GameVariationSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameVariationSettingsController.h; sourceTree = "<group>"; };
+		CDE0FC652985994E008E55A8 /* GameVariationModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameVariationModel.m; sourceTree = "<group>"; };
+		CDE0FC662985994E008E55A8 /* GameVariationModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameVariationModel.h; sourceTree = "<group>"; };
 		CDE0FC692986CEA5008E55A8 /* GoGameAdditions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoGameAdditions.h; sourceTree = "<group>"; };
 		CDE1A13514C1CED200317ECA /* About.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = About.html; sourceTree = "<group>"; };
 		CDE1A13614C1CED200317ECA /* BoostSoftwareLicense.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = BoostSoftwareLicense.html; sourceTree = "<group>"; };
@@ -2221,8 +2221,8 @@
 				CDB684FD161591760038AADE /* EditPlayingStrengthSettingsController.m */,
 				CDFE66AC173EC446003D8776 /* EditResignBehaviourSettingsController.h */,
 				CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */,
-				CDE0FC62298598C1008E55A8 /* GameVariationsSettingsController.h */,
-				CDE0FC61298598C1008E55A8 /* GameVariationsSettingsController.m */,
+				CDE0FC62298598C1008E55A8 /* GameVariationSettingsController.h */,
+				CDE0FC61298598C1008E55A8 /* GameVariationSettingsController.m */,
 				CDCBA6CE183D8801003697E2 /* MagnifyingGlassSettingsController.h */,
 				CDCBA6CF183D8801003697E2 /* MagnifyingGlassSettingsController.m */,
 				CDA86E7D28A7A4A3000B49E2 /* MarkupSettingsController.h */,
@@ -2262,8 +2262,8 @@
 				CDAF17141967FFD500271396 /* BoardViewMetrics.m */,
 				CDAF17171968037700271396 /* BoardViewModel.h */,
 				CDAF17181968037700271396 /* BoardViewModel.m */,
-				CDE0FC662985994E008E55A8 /* GameVariationsModel.h */,
-				CDE0FC652985994E008E55A8 /* GameVariationsModel.m */,
+				CDE0FC662985994E008E55A8 /* GameVariationModel.h */,
+				CDE0FC652985994E008E55A8 /* GameVariationModel.m */,
 				CDB3ED3C284E0019007512F6 /* MarkupModel.h */,
 				CDB3ED3D284E001A007512F6 /* MarkupModel.m */,
 				CD7C6A071AB462CB009EC5AD /* NavigationBarButtonModel.h */,
@@ -4316,7 +4316,7 @@
 				CD05B11C142A606400214BBE /* BackupGameToSgfCommand.m in Sources */,
 				CDB49E412221A981006DC1A4 /* BoardViewAccessibility.m in Sources */,
 				CD05B11D142A606400214BBE /* CleanBackupSgfCommand.m in Sources */,
-				CDE0FC672985994F008E55A8 /* GameVariationsModel.m in Sources */,
+				CDE0FC672985994F008E55A8 /* GameVariationModel.m in Sources */,
 				CD05B121142A60A700214BBE /* RestoreGameFromSgfCommand.m in Sources */,
 				CD46628A296474D300B58CC9 /* NodeTreeViewSettingsController.m in Sources */,
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
@@ -4371,7 +4371,7 @@
 				CD1F4F6825AE17D90098037A /* SgfSettingsModel.m in Sources */,
 				CDDD526A1485B05C0027476B /* DocumentGenerator.m in Sources */,
 				CDEE19FB19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
-				CDE0FC63298598C1008E55A8 /* GameVariationsSettingsController.m in Sources */,
+				CDE0FC63298598C1008E55A8 /* GameVariationSettingsController.m in Sources */,
 				CD1E6EAA2860F0BC00785E23 /* MarkupUtilities.mm in Sources */,
 				CD607BCB28109A7E000C111E /* EditEstimatedScoreController.m in Sources */,
 				CDF2462D296AE2BF00350B42 /* NodeTreeViewCanvasData.m in Sources */,
@@ -4507,7 +4507,7 @@
 				CDAFAE26195A1DCA00EF84A9 /* TiledScrollView.m in Sources */,
 				CDC0C5B12832D20300EA467C /* GoNodeMarkup.m in Sources */,
 				CD63B9E321C1F8B100E013B5 /* PipeStreamBuffer.cpp in Sources */,
-				CDE0FC682985994F008E55A8 /* GameVariationsModel.m in Sources */,
+				CDE0FC682985994F008E55A8 /* GameVariationModel.m in Sources */,
 				CDA596131401741800B250D8 /* GoVertexTest.m in Sources */,
 				CDA597521401825600B250D8 /* GoVertex.m in Sources */,
 				CDFD9F8018F1D5E80031CBCF /* GtpCommandViewController.m in Sources */,
@@ -4646,7 +4646,7 @@
 				CD931EE31684E4A6002E1262 /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
 				CD931EED16851E5C002E1262 /* SaveGameCommand.m in Sources */,
 				CDEE1A181946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
-				CDE0FC64298598C1008E55A8 /* GameVariationsSettingsController.m in Sources */,
+				CDE0FC64298598C1008E55A8 /* GameVariationSettingsController.m in Sources */,
 				CD15A484168D044400D4472A /* GoNodeModelTest.m in Sources */,
 				CD3659421693533600D75466 /* GoBoardPosition.m in Sources */,
 				CDBFCBBE16C3EFB0001D78C0 /* SetupApplicationCommand.m in Sources */,

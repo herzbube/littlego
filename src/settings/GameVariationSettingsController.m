@@ -16,16 +16,16 @@
 
 
 // Project includes
-#import "GameVariationsSettingsController.h"
+#import "GameVariationSettingsController.h"
 #import "../main/ApplicationDelegate.h"
-#import "../play/model/GameVariationsModel.h"
+#import "../play/model/GameVariationModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
 #import "../ui/UIViewControllerAdditions.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates the sections presented in the "Game variations" user
+/// @brief Enumerates the sections presented in the "Game variation" user
 /// preferences table view.
 // -----------------------------------------------------------------------------
 enum NodeTreeViewTableViewSection
@@ -57,39 +57,39 @@ enum NewMoveInsertPositionSectionItem
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
-/// GameVariationsSettingsController.
+/// GameVariationSettingsController.
 // -----------------------------------------------------------------------------
-@interface GameVariationsSettingsController()
-@property(nonatomic, assign) GameVariationsModel* gameVariationsModel;
+@interface GameVariationSettingsController()
+@property(nonatomic, assign) GameVariationModel* gameVariationModel;
 @end
 
 
-@implementation GameVariationsSettingsController
+@implementation GameVariationSettingsController
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a GameVariationsSettingsController
+/// @brief Convenience constructor. Creates a GameVariationSettingsController
 /// instance of grouped style.
 // -----------------------------------------------------------------------------
-+ (GameVariationsSettingsController*) controller
++ (GameVariationSettingsController*) controller
 {
-  GameVariationsSettingsController* controller = [[GameVariationsSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
+  GameVariationSettingsController* controller = [[GameVariationSettingsController alloc] initWithStyle:UITableViewStyleGrouped];
   if (controller)
   {
     [controller autorelease];
-    controller.gameVariationsModel = [ApplicationDelegate sharedDelegate].gameVariationsModel;
+    controller.gameVariationModel = [ApplicationDelegate sharedDelegate].gameVariationModel;
   }
   return controller;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this GameVariationsSettingsController
+/// @brief Deallocates memory allocated by this GameVariationSettingsController
 /// object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.gameVariationsModel = nil;
+  self.gameVariationModel = nil;
   [super dealloc];
 }
 
@@ -101,7 +101,7 @@ enum NewMoveInsertPositionSectionItem
 - (void) viewDidLoad
 {
   [super viewDidLoad];
-  self.title = @"Game variations settings";
+  self.title = @"Game variation settings";
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -111,7 +111,7 @@ enum NewMoveInsertPositionSectionItem
 // -----------------------------------------------------------------------------
 - (NSInteger) numberOfSectionsInTableView:(UITableView*)tableView
 {
-  if (self.gameVariationsModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions)
+  if (self.gameVariationModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions)
     return MaxSectionNewMoveInsertPolicyRetainFutureBoardPositions;
   else
     return MaxSectionNewMoveInsertPolicyReplaceFutureBoardPositions;
@@ -165,7 +165,7 @@ enum NewMoveInsertPositionSectionItem
       cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
       TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
       variableHeightCell.descriptionLabel.text = @"New move insert policy";
-      variableHeightCell.valueLabel.text = [self newMoveInsertPolicyAsString:self.gameVariationsModel.newMoveInsertPolicy];
+      variableHeightCell.valueLabel.text = [self newMoveInsertPolicyAsString:self.gameVariationModel.newMoveInsertPolicy];
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
@@ -174,7 +174,7 @@ enum NewMoveInsertPositionSectionItem
       cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
       TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
       variableHeightCell.descriptionLabel.text = @"New game variation insert position";
-      variableHeightCell.valueLabel.text = [self newMoveInsertPositionAsString:self.gameVariationsModel.newMoveInsertPosition];
+      variableHeightCell.valueLabel.text = [self newMoveInsertPositionAsString:self.gameVariationModel.newMoveInsertPosition];
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
@@ -230,7 +230,7 @@ enum NewMoveInsertPositionSectionItem
   [itemList addObject:[self newMoveInsertPolicyAsString:GoNewMoveInsertPolicyReplaceFutureBoardPositions]];
   ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
                                                                                 screenTitle:@"Select new move insert policy"
-                                                                         indexOfDefaultItem:self.gameVariationsModel.newMoveInsertPolicy
+                                                                         indexOfDefaultItem:self.gameVariationModel.newMoveInsertPolicy
                                                                                    delegate:self];
   itemPickerController.context = [NSNumber numberWithInt:NewMoveInsertPolicySection];
 
@@ -250,7 +250,7 @@ enum NewMoveInsertPositionSectionItem
   [itemList addObject:[self newMoveInsertPositionAsString:GoNewMoveInsertPositionNewVariationAfterCurrentVariation]];
   ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
                                                                                 screenTitle:@"Select new game variation insert position"
-                                                                         indexOfDefaultItem:self.gameVariationsModel.newMoveInsertPosition
+                                                                         indexOfDefaultItem:self.gameVariationModel.newMoveInsertPosition
                                                                                    delegate:self];
   itemPickerController.context = [NSNumber numberWithInt:NewMoveInsertPositionSection];
 
@@ -269,17 +269,17 @@ enum NewMoveInsertPositionSectionItem
     NSNumber* context = controller.context;
     if (context.intValue == NewMoveInsertPolicySection)
     {
-      if (self.gameVariationsModel.newMoveInsertPolicy != controller.indexOfSelectedItem)
+      if (self.gameVariationModel.newMoveInsertPolicy != controller.indexOfSelectedItem)
       {
-        self.gameVariationsModel.newMoveInsertPolicy = controller.indexOfSelectedItem;
+        self.gameVariationModel.newMoveInsertPolicy = controller.indexOfSelectedItem;
         [self.tableView reloadData];
       }
     }
     else if (context.intValue == NewMoveInsertPositionSection)
     {
-      if (self.gameVariationsModel.newMoveInsertPosition != controller.indexOfSelectedItem)
+      if (self.gameVariationModel.newMoveInsertPosition != controller.indexOfSelectedItem)
       {
-        self.gameVariationsModel.newMoveInsertPosition = controller.indexOfSelectedItem;
+        self.gameVariationModel.newMoveInsertPosition = controller.indexOfSelectedItem;
         NSIndexPath* indexPath = [NSIndexPath indexPathForRow:NewMoveInsertPositionItem inSection:NewMoveInsertPositionSection];
         [self.tableView reloadRowsAtIndexPaths:@[indexPath]
                               withRowAnimation:UITableViewRowAnimationNone];

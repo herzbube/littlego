@@ -16,24 +16,24 @@
 
 
 // Project includes
-#import "GameVariationsModel.h"
+#import "GameVariationModel.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for GameVariationsModel.
+/// @brief Class extension with private properties for GameVariationModel.
 // -----------------------------------------------------------------------------
-@interface GameVariationsModel()
+@interface GameVariationModel()
 @end
 
 
-@implementation GameVariationsModel
+@implementation GameVariationModel
 
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a GameVariationsModel object with user defaults data.
+/// @brief Initializes a GameVariationModel object with user defaults data.
 ///
-/// @note This is the designated initializer of GameVariationsModel.
+/// @note This is the designated initializer of GameVariationModel.
 // -----------------------------------------------------------------------------
 - (id) init
 {
@@ -49,7 +49,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this GameVariationsModel object.
+/// @brief Deallocates memory allocated by this GameVariationModel object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
@@ -64,7 +64,7 @@
 - (void) readUserDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  NSDictionary* dictionary = [userDefaults dictionaryForKey:gameVariationsKey];
+  NSDictionary* dictionary = [userDefaults dictionaryForKey:gameVariationKey];
   self.newMoveInsertPolicy = [[dictionary valueForKey:newMoveInsertPolicyKey] intValue];
   self.newMoveInsertPosition = [[dictionary valueForKey:newMoveInsertPositionKey] intValue];
 }
@@ -79,7 +79,7 @@
   [dictionary setValue:[NSNumber numberWithInt:self.newMoveInsertPolicy] forKey:newMoveInsertPolicyKey];
   [dictionary setValue:[NSNumber numberWithInt:self.newMoveInsertPosition] forKey:newMoveInsertPositionKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  [userDefaults setObject:dictionary forKey:gameVariationsKey];
+  [userDefaults setObject:dictionary forKey:gameVariationKey];
 }
 
 @end

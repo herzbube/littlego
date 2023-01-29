@@ -20,13 +20,13 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The GameVariationsSettingsController class is responsible for
-/// managing user interaction on the "Game variations" user preferences view.
+/// @brief The GameVariationSettingsController class is responsible for
+/// managing user interaction on the "Game variation" user preferences view.
 // -----------------------------------------------------------------------------
-@interface GameVariationsSettingsController : UITableViewController <ItemPickerDelegate>
+@interface GameVariationSettingsController : UITableViewController <ItemPickerDelegate>
 {
 }
 
-+ (GameVariationsSettingsController*) controller;
++ (GameVariationSettingsController*) controller;
 
 @end

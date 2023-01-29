@@ -22,7 +22,7 @@
 @class BoardViewMetrics;
 @class BoardViewModel;
 @class CrashReportingModel;
-@class GameVariationsModel;
+@class GameVariationModel;
 @class GoGame;
 @class GtpClient;
 @class GtpCommandModel;
@@ -163,7 +163,7 @@
 /// that displays the node tree view.
 @property(nonatomic, retain) NodeTreeViewModel* nodeTreeViewModel;
 /// @brief Model object that stores attributes related to game variations.
-@property(nonatomic, retain) GameVariationsModel* gameVariationsModel;
+@property(nonatomic, retain) GameVariationModel* gameVariationModel;
 
 @end
 

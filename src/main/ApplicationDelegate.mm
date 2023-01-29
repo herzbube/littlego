@@ -46,7 +46,7 @@
 #import "../play/model/BoardSetupModel.h"
 #import "../play/model/BoardViewMetrics.h"
 #import "../play/model/BoardViewModel.h"
-#import "../play/model/GameVariationsModel.h"
+#import "../play/model/GameVariationModel.h"
 #import "../play/model/MarkupModel.h"
 #import "../play/model/NodeTreeViewModel.h"
 #import "../play/model/ScoringModel.h"
@@ -160,7 +160,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.sgfSettingsModel = nil;
   self.markupModel = nil;
   self.nodeTreeViewModel = nil;
-  self.gameVariationsModel = nil;
+  self.gameVariationModel = nil;
   self.fileLogger = nil;
   [BoardPositionNavigationManager releaseSharedNavigationManager];
   [GameActionManager releaseSharedGameActionManager];
@@ -567,7 +567,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.sgfSettingsModel = [[[SgfSettingsModel alloc] init] autorelease];
   self.markupModel = [[[MarkupModel alloc] init] autorelease];
   self.nodeTreeViewModel = [[[NodeTreeViewModel alloc] init] autorelease];
-  self.gameVariationsModel = [[[GameVariationsModel alloc] init] autorelease];
+  self.gameVariationModel = [[[GameVariationModel alloc] init] autorelease];
   [self.theNewGameModel readUserDefaults];
   [self.playerModel readUserDefaults];
   [self.gtpEngineProfileModel readUserDefaults];
@@ -585,7 +585,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self.sgfSettingsModel readUserDefaults];
   [self.markupModel readUserDefaults];
   [self.nodeTreeViewModel readUserDefaults];
-  [self.gameVariationsModel readUserDefaults];
+  [self.gameVariationModel readUserDefaults];
   // Is dependent on some user defaults in BoardViewModel
   self.boardViewMetrics = [[[BoardViewMetrics alloc] init] autorelease];
 }
@@ -623,7 +623,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self.sgfSettingsModel writeUserDefaults];
   [self.markupModel writeUserDefaults];
   [self.nodeTreeViewModel writeUserDefaults];
-  [self.gameVariationsModel writeUserDefaults];
+  [self.gameVariationModel writeUserDefaults];
 }
 
 // -----------------------------------------------------------------------------

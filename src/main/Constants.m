@@ -438,8 +438,8 @@ NSString* condenseMoveNodesKey = @"CondenseMoveNodes";
 NSString* alignMoveNodesKey = @"AlignMoveNodes";
 NSString* branchingStyleKey = @"BranchingStyle";
 NSString* nodeSelectionStyleKey = @"NodeSelectionStyle";
-// Game variations settings
-NSString* gameVariationsKey = @"GameVariations";
+// Game variation settings
+NSString* gameVariationKey = @"GameVariation";
 NSString* newMoveInsertPolicyKey = @"NewMoveInsertPolicy";
 NSString* newMoveInsertPositionKey = @"NewMoveInsertPosition";
 
