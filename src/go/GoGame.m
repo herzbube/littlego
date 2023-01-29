@@ -317,7 +317,11 @@
     @throw exception;
   }
 
-  GoMove* move = [GoMove move:GoMoveTypePlay by:self.nextMovePlayer after:self.lastMove];
+  // The new move is the successor of the most recent move at the current board
+  // position, so we must not use self.lastMove
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:self.boardPosition.currentNode];
+  GoMove* mostRecentMove = nodeWithMostRecentMove ? nodeWithMostRecentMove.goMove : nil;
+  GoMove* move = [GoMove move:GoMoveTypePlay by:self.nextMovePlayer after:mostRecentMove];
   @try
   {
     move.point = point;
@@ -450,7 +454,11 @@
     @throw exception;
   }
 
-  GoMove* move = [GoMove move:GoMoveTypePass by:self.nextMovePlayer after:self.lastMove];
+  // The new move is the successor of the most recent move at the current board
+  // position, so we must not use self.lastMove
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:self.boardPosition.currentNode];
+  GoMove* mostRecentMove = nodeWithMostRecentMove ? nodeWithMostRecentMove.goMove : nil;
+  GoMove* move = [GoMove move:GoMoveTypePass by:self.nextMovePlayer after:mostRecentMove];
 
   GoNode* node = [GoNode nodeWithMove:move];
   [self addNodeToTreeAndUpdateBoardPosition:node withMoveNodeCreationOptions:moveNodeCreationOptions];

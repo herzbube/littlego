@@ -45,8 +45,8 @@
 /// which is associated with @a player, and whose predecessor is
 /// @a previousMove.
 ///
-/// @a move may be nil, in which case the newly created GoMove instance will be
-/// the first move of the game.
+/// @a previousMove may be nil, in which case the newly created GoMove instance
+/// will be the first move in the current game variation.
 ///
 /// Raises an @e NSInvalidArgumentException if @a type is invalid or @a player
 /// is nil.
