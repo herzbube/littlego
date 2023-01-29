@@ -32,7 +32,7 @@
 #import "../../go/GoScore.h"
 #import "../../command/gtp/InterruptComputerCommand.h"
 #import "../../command/boardposition/ChangeAndDiscardCommand.h"
-#import "../../command/boardposition/DiscardAndPlayCommand.h"
+#import "../../command/boardposition/PlayCommand.h"
 #import "../../command/boardsetup/DiscardAllSetupStonesCommand.h"
 #import "../../command/boardsetup/HandleBoardSetupInteractionCommand.h"
 #import "../../command/boardsetup/SetupFirstMoveColorCommand.h"
@@ -229,7 +229,7 @@ static GameActionManager* sharedGameActionManager = nil;
     DDLogWarn(@"%@: Ignoring playAtIntersection", self);
     return;
   }
-  DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initWithPoint:point] autorelease];
+  PlayCommand* command = [[[PlayCommand alloc] initWithPoint:point] autorelease];
   [self.commandDelegate gameActionManager:self playOrAlertWithCommand:command];
 }
 
@@ -480,9 +480,8 @@ static GameActionManager* sharedGameActionManager = nil;
   // When the user attempts to place a stone then the gesture handler is doing
   // the legality check. When the user attempts to play a pass move, though,
   // this handler method is the first responder and is therefore responsible for
-  // the legality check. DiscardAndPlayCommand, and all further commands down
-  // the line, expect that this check has been made before executing the
-  // command.
+  // the legality check. PlayCommand, and all further commands down the line,
+  // expect that this check has been made before executing the command.
   enum GoMoveIsIllegalReason illegalReason;
   bool isLegalMove = [[GoGame sharedGame] isLegalPassMoveIllegalReason:&illegalReason];
   if (! isLegalMove)
@@ -495,7 +494,7 @@ static GameActionManager* sharedGameActionManager = nil;
     return;
   }
 
-  DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initPass] autorelease];
+  PlayCommand* command = [[[PlayCommand alloc] initPass] autorelease];
   [self.commandDelegate gameActionManager:self playOrAlertWithCommand:command];
 }
 
@@ -523,7 +522,7 @@ static GameActionManager* sharedGameActionManager = nil;
     DDLogWarn(@"%@: Ignoring GameActionComputerPlay", self);
     return;
   }
-  DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initComputerPlay] autorelease];
+  PlayCommand* command = [[[PlayCommand alloc] initComputerPlay] autorelease];
   [self.commandDelegate gameActionManager:self playOrAlertWithCommand:command];
 }
 
@@ -557,7 +556,7 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) continue:(id)sender
 {
-  DiscardAndPlayCommand* command = [[[DiscardAndPlayCommand alloc] initContinue] autorelease];
+  PlayCommand* command = [[[PlayCommand alloc] initContinue] autorelease];
   [self.commandDelegate gameActionManager:self playOrAlertWithCommand:command];
 }
 

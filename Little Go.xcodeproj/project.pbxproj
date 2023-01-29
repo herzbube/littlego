@@ -521,7 +521,7 @@
 		CD9A49E6171250D4009E7514 /* LeftPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199416B1C09B002771F7 /* LeftPaneViewController.m */; };
 		CD9A49E7171250D6009E7514 /* RightPaneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05199816B1C29B002771F7 /* RightPaneViewController.m */; };
 		CD9A49E8171250FA009E7514 /* ChangeAndDiscardCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDE6A52516AA017500932B05 /* ChangeAndDiscardCommand.m */; };
-		CD9A49E917125106009E7514 /* DiscardAndPlayCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */; };
+		CD9A49E917125106009E7514 /* PlayCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF630A9168F50BA003C8BEF /* PlayCommand.m */; };
 		CD9A49EA17125115009E7514 /* ContinueGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA711423D80500214BBE /* ContinueGameCommand.m */; };
 		CD9A49EB1712511D009E7514 /* PlayMoveCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05A8CB1422803B00214BBE /* PlayMoveCommand.m */; };
 		CD9A49F11712515C009E7514 /* InterruptComputerCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */; };
@@ -822,7 +822,7 @@
 		CDF43DAF1402EC83007F44A4 /* GoBoardTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */; };
 		CDF43DE8140300E5007F44A4 /* GoBoardRegionTest.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */; };
 		CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8E150714C4EF8200A7A90B /* UiElementMetrics.m */; };
-		CDF630AA168F50BA003C8BEF /* DiscardAndPlayCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */; };
+		CDF630AA168F50BA003C8BEF /* PlayCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF630A9168F50BA003C8BEF /* PlayCommand.m */; };
 		CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */; };
 		CDFA329F15A0920200439B4E /* Lumberjack-LICENSE.txt.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329C15A0920200439B4E /* Lumberjack-LICENSE.txt.html */; };
 		CDFA32A015A0920200439B4E /* MBProgressHUD-license.html in Resources */ = {isa = PBXBuildFile; fileRef = CDFA329D15A0920200439B4E /* MBProgressHUD-license.html */; };
@@ -1825,8 +1825,8 @@
 		CDF43DAE1402EC83007F44A4 /* GoBoardTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoBoardTest.m; sourceTree = "<group>"; };
 		CDF43DE6140300E5007F44A4 /* GoBoardRegionTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoBoardRegionTest.h; sourceTree = "<group>"; };
 		CDF43DE7140300E5007F44A4 /* GoBoardRegionTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; path = GoBoardRegionTest.m; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
-		CDF630A8168F50BA003C8BEF /* DiscardAndPlayCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardAndPlayCommand.h; sourceTree = "<group>"; };
-		CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardAndPlayCommand.m; sourceTree = "<group>"; };
+		CDF630A8168F50BA003C8BEF /* PlayCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayCommand.h; sourceTree = "<group>"; };
+		CDF630A9168F50BA003C8BEF /* PlayCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlayCommand.m; sourceTree = "<group>"; };
 		CDF8229A164D490600F53C01 /* InterruptComputerCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InterruptComputerCommand.h; sourceTree = "<group>"; };
 		CDF8229B164D490600F53C01 /* InterruptComputerCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InterruptComputerCommand.m; sourceTree = "<group>"; };
 		CDF9740316C4082200D01D24 /* AsynchronousCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AsynchronousCommand.h; sourceTree = "<group>"; };
@@ -3734,8 +3734,8 @@
 				CD252D8316A314D900A088D5 /* ChangeBoardPositionCommand.m */,
 				CDE6A52416AA017500932B05 /* ChangeAndDiscardCommand.h */,
 				CDE6A52516AA017500932B05 /* ChangeAndDiscardCommand.m */,
-				CDF630A8168F50BA003C8BEF /* DiscardAndPlayCommand.h */,
-				CDF630A9168F50BA003C8BEF /* DiscardAndPlayCommand.m */,
+				CDF630A8168F50BA003C8BEF /* PlayCommand.h */,
+				CDF630A9168F50BA003C8BEF /* PlayCommand.m */,
 				CD252D7E16A248DC00A088D5 /* SyncGTPEngineCommand.h */,
 				CD252D7F16A248DC00A088D5 /* SyncGTPEngineCommand.m */,
 			);
@@ -4410,7 +4410,7 @@
 				CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */,
 				CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */,
 				CDA493A7168F26890076E168 /* BoardPositionSettingsController.m in Sources */,
-				CDF630AA168F50BA003C8BEF /* DiscardAndPlayCommand.m in Sources */,
+				CDF630AA168F50BA003C8BEF /* PlayCommand.m in Sources */,
 				CD36594116931F8600D75466 /* GoBoardPosition.m in Sources */,
 				CD9B63EF25AB7804003E032B /* SaveSgfCommand.m in Sources */,
 				CDEE1A0F1946123F00DF2389 /* InfluenceLayerDelegate.m in Sources */,
@@ -4704,7 +4704,7 @@
 				CD85068B27BB18D6000D2CCD /* GoNodeModel.m in Sources */,
 				CD9A49E8171250FA009E7514 /* ChangeAndDiscardCommand.m in Sources */,
 				CDF0C24628E9DEE4003278B4 /* ResizableStackViewController.m in Sources */,
-				CD9A49E917125106009E7514 /* DiscardAndPlayCommand.m in Sources */,
+				CD9A49E917125106009E7514 /* PlayCommand.m in Sources */,
 				CD9A49EA17125115009E7514 /* ContinueGameCommand.m in Sources */,
 				CDC8DEF428EDECCA00619305 /* NodeTreeView.m in Sources */,
 				CDEE19F819433EAC00DF2389 /* BoardViewDrawingHelper.m in Sources */,

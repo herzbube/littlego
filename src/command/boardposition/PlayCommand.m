@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "DiscardAndPlayCommand.h"
+#import "PlayCommand.h"
 #import "../game/ContinueGameCommand.h"
 #import "../move/ComputerPlayMoveCommand.h"
 #import "../move/PlayMoveCommand.h"
@@ -27,8 +27,8 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates different types of commands that DiscardAndPlayCommand
-/// knows how to execute.
+/// @brief Enumerates different types of commands that PlayCommand knows how
+/// to execute.
 // -----------------------------------------------------------------------------
 enum PlayCommandType
 {
@@ -39,20 +39,20 @@ enum PlayCommandType
 
 
 // -----------------------------------------------------------------------------
-/// @brief Class extension with private properties for DiscardAndPlayCommand.
+/// @brief Class extension with private properties for PlayCommand.
 // -----------------------------------------------------------------------------
-@interface DiscardAndPlayCommand()
+@interface PlayCommand()
 @property(nonatomic, assign) enum PlayCommandType playCommandType;
 @property(nonatomic, assign) enum GoMoveType moveType;
 @property(nonatomic, retain) GoPoint* point;
 @end
 
 
-@implementation DiscardAndPlayCommand
+@implementation PlayCommand
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a DiscardAndPlayCommand object that will make a play
-/// move at @a point.
+/// @brief Initializes a PlayCommand object that will make a play move at
+/// @a point.
 // -----------------------------------------------------------------------------
 - (id) initWithPoint:(GoPoint*)aPoint
 {
@@ -69,8 +69,7 @@ enum PlayCommandType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a DiscardAndPlayCommand object that will make a pass
-/// move.
+/// @brief Initializes a PlayCommand object that will make a pass move.
 // -----------------------------------------------------------------------------
 - (id) initPass
 {
@@ -80,8 +79,8 @@ enum PlayCommandType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a DiscardAndPlayCommand object that will delegate the
-/// move to the computer player.
+/// @brief Initializes a PlayCommand object that will delegate the move to the
+/// computer player.
 // -----------------------------------------------------------------------------
 - (id) initComputerPlay
 {
@@ -89,7 +88,7 @@ enum PlayCommandType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a DiscardAndPlayCommand object that will continue a
+/// @brief Initializes a PlayCommand object that will continue a
 /// computer vs. computer game that is paused.
 // -----------------------------------------------------------------------------
 - (id) initContinue
@@ -98,11 +97,11 @@ enum PlayCommandType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a DiscardAndPlayCommand object that will make a move
-/// based on @a aPlayCommandType and the property values found when the command
-/// is executed.
+/// @brief Initializes a PlayCommand object that will make a move based on
+/// @a aPlayCommandType and the property values found when the command is
+/// executed.
 ///
-/// @note This is the designated initializer of DiscardAndPlayCommand.
+/// @note This is the designated initializer of PlayCommand.
 // -----------------------------------------------------------------------------
 - (id) initWithCommandType:(enum PlayCommandType)aPlayCommandType
 {
@@ -119,7 +118,7 @@ enum PlayCommandType
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Deallocates memory allocated by this DiscardAndPlayCommand object.
+/// @brief Deallocates memory allocated by this PlayCommand object.
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {

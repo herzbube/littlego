@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2012-2014 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2012-2023 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,17 +23,12 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The DiscardAndPlayCommand class is responsible for first discarding
-/// all board positions in the future of the board position currently displayed
-/// by the Go board, then playing a move.
+/// @brief The PlayCommand class is responsible for playing a move made by the
+/// user, or initiating the playing of a move made by the computer.
 ///
-/// No board positions are discarded if the Go board already displays the last
-/// board position.
-///
-/// After board positions are discarded, DiscardAndPlayCommand executes one of
-/// several possible play commands. Which one is chosen depends on the
-/// initializer that was used to construct the DiscardAndPlayCommand object.
-/// The following options exist:
+/// PlayCommand executes one of several possible play commands. Which one is
+/// chosen depends on the initializer that was used to construct the
+/// PlayCommand object. The following options exist:
 /// - initWithPoint:() results in a #GoMoveTypePlay move made by a human player
 /// - initPass:() results in a #GoMoveTypePass move made by a human player
 /// - initComputerPlay() results in a move made by the computer either for
@@ -41,12 +36,13 @@
 /// - initContinue() results in a paused computer vs. computer game being
 ///   continued
 ///
-/// If it discards board positions, DiscardAndPlayCommand posts
-/// #numberOfBoardPositionsChanged to the default notification center. Playing
-/// a move then causes a second #numberOfBoardPositionsChanged to be posted to
-/// the default notification center, followed by #currentBoardPositionDidChange.
+/// If the user is currently viewing a board position in the middle of the
+/// current game variation, the "new move insert policy" user preference decides
+/// how the new move is inserted into the node tree. Notably, if the user
+/// preference is set to #GoNewMoveInsertPolicyReplaceFutureBoardPositions,
+/// future nodes after the current board position are discarded!
 // -----------------------------------------------------------------------------
-@interface DiscardAndPlayCommand : CommandBase
+@interface PlayCommand : CommandBase
 {
 }
 
