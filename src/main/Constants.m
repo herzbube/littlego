@@ -122,7 +122,7 @@ const float moveNumbersPercentageDefault = 0.0;
 const bool displayPlayerInfluenceDefault = false;
 
 // Board position settings default values
-const bool discardFutureMovesAlertDefault = true;
+const bool discardFutureNodesAlertDefault = true;
 const bool markNextMoveDefault = true;
 const bool discardMyLastMoveDefault = true;
 
@@ -402,7 +402,7 @@ NSString* allowContactCrashDataKey = @"CrashDataContactAllowKey";
 NSString* contactEmailCrashDataKey = @"CrashDataContactEmailKey";
 // Board position settings
 NSString* boardPositionKey = @"BoardPosition";
-NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
+NSString* discardFutureNodesAlertKey = @"DiscardFutureNodesAlert";
 NSString* markNextMoveKey = @"MarkNextMove";
 NSString* discardMyLastMoveKey = @"DiscardMyLastMove";
 // Logging settings

@@ -27,9 +27,9 @@
 /// confirmation.
 ///
 /// Before it discards setup stones, DiscardAllSetupStonesCommand also discards
-/// any moves that the game currently has. Whoever invoked
+/// any nodes that the current game variation has. Whoever invoked
 /// DiscardAllSetupStonesCommand must have previously made sure that it's OK to
-/// discard future moves.
+/// discard future nodes.
 ///
 /// After it has made the discard, DiscardAllSetupStonesCommand syncs the
 /// GTP engine, saves the application state and performs a backup of the

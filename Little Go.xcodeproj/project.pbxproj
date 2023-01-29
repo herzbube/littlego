@@ -231,8 +231,8 @@
 		CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB457B3147F14490043EDE4 /* UiUtilities.m */; };
 		CD30BAA516F7A2AE00C95DCF /* DoubleTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA416F7A2AE00C95DCF /* DoubleTapGestureController.m */; };
 		CD30BAA816F7B28A00C95DCF /* TwoFingerTapGestureController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */; };
-		CD3591CA17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */; };
-		CD3591CB17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */; };
+		CD3591CA17346D25000E2963 /* DiscardFutureNodesAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591C917346D25000E2963 /* DiscardFutureNodesAlertController.m */; };
+		CD3591CB17346D25000E2963 /* DiscardFutureNodesAlertController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591C917346D25000E2963 /* DiscardFutureNodesAlertController.m */; };
 		CD3591DA1735A711000E2963 /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591D91735A711000E2963 /* BoardPositionModel.m */; };
 		CD3591DB1735A711000E2963 /* BoardPositionModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591D91735A711000E2963 /* BoardPositionModel.m */; };
 		CD3592021735A757000E2963 /* PlayRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD3591DE1735A757000E2963 /* PlayRootViewController.m */; };
@@ -1125,8 +1125,8 @@
 		CD30BAA416F7A2AE00C95DCF /* DoubleTapGestureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DoubleTapGestureController.m; sourceTree = "<group>"; };
 		CD30BAA616F7B28A00C95DCF /* TwoFingerTapGestureController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TwoFingerTapGestureController.h; sourceTree = "<group>"; };
 		CD30BAA716F7B28A00C95DCF /* TwoFingerTapGestureController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TwoFingerTapGestureController.m; sourceTree = "<group>"; };
-		CD3591C817346D25000E2963 /* DiscardFutureMovesAlertController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardFutureMovesAlertController.h; sourceTree = "<group>"; };
-		CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardFutureMovesAlertController.m; sourceTree = "<group>"; };
+		CD3591C817346D25000E2963 /* DiscardFutureNodesAlertController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardFutureNodesAlertController.h; sourceTree = "<group>"; };
+		CD3591C917346D25000E2963 /* DiscardFutureNodesAlertController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardFutureNodesAlertController.m; sourceTree = "<group>"; };
 		CD3591D81735A711000E2963 /* BoardPositionModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardPositionModel.h; sourceTree = "<group>"; };
 		CD3591D91735A711000E2963 /* BoardPositionModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardPositionModel.m; sourceTree = "<group>"; };
 		CD3591DD1735A757000E2963 /* PlayRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PlayRootViewController.h; sourceTree = "<group>"; };
@@ -2299,8 +2299,8 @@
 			children = (
 				CD7C6A0F1AB4862E009EC5AD /* AutoLayoutConstraintHelper.h */,
 				CD7C6A101AB4862E009EC5AD /* AutoLayoutConstraintHelper.m */,
-				CD3591C817346D25000E2963 /* DiscardFutureMovesAlertController.h */,
-				CD3591C917346D25000E2963 /* DiscardFutureMovesAlertController.m */,
+				CD3591C817346D25000E2963 /* DiscardFutureNodesAlertController.h */,
+				CD3591C917346D25000E2963 /* DiscardFutureNodesAlertController.m */,
 				CD1E9E59171806FE00E1B7D1 /* GameInfoViewController.h */,
 				CD1E9E5A171806FE00E1B7D1 /* GameInfoViewController.m */,
 				CD5E6B341D7CCB610089D0B3 /* MoreGameActionsController.h */,
@@ -4462,7 +4462,7 @@
 				CD5E6B361D7CCB610089D0B3 /* MoreGameActionsController.m in Sources */,
 				CDF341D3172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
 				CDDC968E25E697B300598CF7 /* PlaceholderView.m in Sources */,
-				CD3591CA17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */,
+				CD3591CA17346D25000E2963 /* DiscardFutureNodesAlertController.m in Sources */,
 				CD3591DA1735A711000E2963 /* BoardPositionModel.m in Sources */,
 				CD3592021735A757000E2963 /* PlayRootViewController.m in Sources */,
 				CD7C57C721FF8E9500694520 /* HandleBoardSetupInteractionCommand.m in Sources */,
@@ -4740,7 +4740,7 @@
 				CDF341CB1727507900AEFB20 /* ApplicationStateManager.m in Sources */,
 				CDF341D2172D609400AEFB20 /* RestoreApplicationStateCommand.m in Sources */,
 				CDF341D4172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
-				CD3591CB17346D25000E2963 /* DiscardFutureMovesAlertController.m in Sources */,
+				CD3591CB17346D25000E2963 /* DiscardFutureNodesAlertController.m in Sources */,
 				CD81790025D8553100F39091 /* ComputerSuggestMoveCommand.m in Sources */,
 				CD1F4F8125AE90F90098037A /* SgfSyntaxCheckingLevelSettingsController.m in Sources */,
 				CDFD9F7C18F1D5A30031CBCF /* DeleteGameCommand.m in Sources */,

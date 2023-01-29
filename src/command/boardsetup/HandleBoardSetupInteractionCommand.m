@@ -176,7 +176,7 @@
     if (game.boardPosition.numberOfBoardPositions > 0 || game.state == GoGameStateGameHasEnded)
     {
       // Whoever invoked HandleBoardSetupInteractionCommand must have previously
-      // made sure that it's OK to discard future moves. We can therefore safely
+      // made sure that it's OK to discard future nodes. We can therefore safely
       // submit ChangeAndDiscardCommand without user interaction. Note that
       // ChangeAndDiscardCommand reverts the game state to "in progress" if the
       // game is currently ended. The overall effect is that after executing

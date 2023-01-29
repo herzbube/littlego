@@ -931,8 +931,8 @@
 {
   // This one is required solely for the scenario:
   // - Current board position = First board position
-  // - There was at least one move
-  // - User just discarded all future moves
+  // - There was at least one node
+  // - User just discarded all future nodes
   // Here the status label must change from "<color> will play <move>" to
   // "<color> to move".
   self.statusLabelNeedsUpdate = true;

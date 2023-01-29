@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2016 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2023 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The DiscardFutureMovesAlertController class displays an alert and
+/// @brief The DiscardFutureNodesAlertController class displays an alert and
 /// executes a command, working as a delegate on behalf of GameActionManager.
 // -----------------------------------------------------------------------------
-@interface DiscardFutureMovesAlertController : NSObject <GameActionManagerCommandDelegate>
+@interface DiscardFutureNodesAlertController : NSObject <GameActionManagerCommandDelegate>
 {
 }
 

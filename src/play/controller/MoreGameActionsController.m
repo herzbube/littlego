@@ -713,7 +713,7 @@
 - (void) itemPickerController:(ItemPickerController*)controller didMakeSelection:(bool)didMakeSelection
 {
   // Dismiss ItemPickerController before we actually do something. Reason:
-  // If a "Discard future moves" alert needs to be displayed the
+  // If a "Discard future nodes" alert needs to be displayed the
   // ItemPickerController must not cover the root view controller of the app's
   // window.
   [self.modalMaster dismissViewControllerAnimated:YES completion:nil];

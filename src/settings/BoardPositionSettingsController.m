@@ -22,7 +22,7 @@
 #import "../ui/TableViewCellFactory.h"
 
 // Constants
-NSString* discardFutureMovesAlertText = @"Discard future moves alert";
+NSString* discardFutureNodesAlertText = @"Discard future nodes alert";
 
 
 // -----------------------------------------------------------------------------
@@ -33,7 +33,7 @@ enum BoardPositionTableViewSection
 {
   MarkNextMoveSection,
   DiscardMyLastMoveSection,
-  DiscardFutureMovesAlertSection,
+  DiscardFutureNodesAlertSection,
   MaxSection
 };
 
@@ -56,12 +56,12 @@ enum DiscardMyLastMoveSectionItem
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the DiscardFutureMovesAlertSection.
+/// @brief Enumerates items in the DiscardFutureNodesAlertSection.
 // -----------------------------------------------------------------------------
-enum DiscardFutureMovesAlertSectionItem
+enum DiscardFutureNodesAlertSectionItem
 {
-  DiscardFutureMovesAlertItem,
-  MaxDiscardFutureMovesAlertSectionItem
+  DiscardFutureNodesAlertItem,
+  MaxDiscardFutureNodesAlertSectionItem
 };
 
 
@@ -135,8 +135,8 @@ enum DiscardFutureMovesAlertSectionItem
       return MaxMarkNextMoveSectionItem;
     case DiscardMyLastMoveSection:
       return MaxDiscardMyLastMoveSectionItem;
-    case DiscardFutureMovesAlertSection:
-      return MaxDiscardFutureMovesAlertSectionItem;
+    case DiscardFutureNodesAlertSection:
+      return MaxDiscardFutureNodesAlertSectionItem;
     default:
       assert(0);
       break;
@@ -153,8 +153,8 @@ enum DiscardFutureMovesAlertSectionItem
   {
     case DiscardMyLastMoveSection:
       return @"When you discard the computer player's last move this also discards your own last move, so that you can then immediately play again and try out a different move. Turn this option off to only discard a single last move, regardless of who made that move. Note: This option only affects computer vs. human games.";
-    case DiscardFutureMovesAlertSection:
-      return @"If you make or discard a move while you are viewing a board position in the middle of the game, all moves that have been made after this position will be discarded. If this option is turned off you will NOT be alerted that this is going to happen.";
+    case DiscardFutureNodesAlertSection:
+      return @"When you are viewing a board position in the middle of the current game variation, some actions (e.g. discard the current node) will discard all nodes after this position. If this option is turned off you will NOT be alerted that this is going to happen.";
     default:
       break;
   }
@@ -188,15 +188,15 @@ enum DiscardFutureMovesAlertSectionItem
       [accessoryView addTarget:self action:@selector(toggleDiscardMyLastMove:) forControlEvents:UIControlEventValueChanged];
       break;
     }
-    case DiscardFutureMovesAlertSection:
+    case DiscardFutureNodesAlertSection:
     {
       cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
-      cell.textLabel.text = discardFutureMovesAlertText;
+      cell.textLabel.text = discardFutureNodesAlertText;
       cell.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
       cell.textLabel.numberOfLines = 0;
-      accessoryView.on = self.boardPositionModel.discardFutureMovesAlert;
-      [accessoryView addTarget:self action:@selector(toggleDiscardFutureMovesAlert:) forControlEvents:UIControlEventValueChanged];
+      accessoryView.on = self.boardPositionModel.discardFutureNodesAlert;
+      [accessoryView addTarget:self action:@selector(toggleDiscardFutureNodesAlert:) forControlEvents:UIControlEventValueChanged];
       break;
     }
     default:
@@ -241,13 +241,13 @@ enum DiscardFutureMovesAlertSectionItem
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Reacts to a tap gesture on the "Discard future moves alert" switch.
+/// @brief Reacts to a tap gesture on the "Discard future nodes alert" switch.
 /// Writes the new value to the appropriate model.
 // -----------------------------------------------------------------------------
-- (void) toggleDiscardFutureMovesAlert:(id)sender
+- (void) toggleDiscardFutureNodesAlert:(id)sender
 {
   UISwitch* accessoryView = (UISwitch*)sender;
-  self.boardPositionModel.discardFutureMovesAlert = accessoryView.on;
+  self.boardPositionModel.discardFutureNodesAlert = accessoryView.on;
 }
 
 @end

@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>UserDefaultsVersionRegistrationDomain</key>
-	<integer>12</integer>
+	<integer>13</integer>
 	<key>LoggingEnabled</key>
 	<false/>
 	<key>BoardView</key>
@@ -403,7 +403,7 @@
 	</dict>
 	<key>BoardPosition</key>
 	<dict>
-		<key>DiscardFutureMovesAlert</key>
+		<key>DiscardFutureNodesAlert</key>
 		<true/>
 		<key>MarkNextMove</key>
 		<true/>

@@ -66,6 +66,7 @@ NSString* selectedTabIndexKey = @"SelectedTabIndex";
 NSString* stoneDistanceFromFingertipKey = @"StoneDistanceFromFingertip";
 const float stoneDistanceFromFingertipDefault = 0.5;
 NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
+NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
 //@}
 
 
@@ -358,7 +359,7 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
   // therefore better not to postpone this work and just do what we need to do
   // right here where it belongs to the correct format version.
   NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
-  [dictionary setValue:[NSNumber numberWithBool:discardFutureMovesAlertDefault] forKey:discardFutureMovesAlertKey];
+  [dictionary setValue:[NSNumber numberWithBool:discardFutureNodesAlertDefault] forKey:discardFutureMovesAlertKey];
   [dictionary setValue:[NSNumber numberWithInt:-1] forKey:boardPositionLastViewedKey];
   [userDefaults setObject:dictionary forKey:boardPositionKey];
 
@@ -888,6 +889,26 @@ NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
   for (GtpEngineProfile* profile in profiles)
     [userDefaultsProfilesUpgrade addObject:[profile asDictionary]];
   [userDefaults setObject:userDefaultsProfilesUpgrade forKey:gtpEngineProfileListKey];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Performs the incremental upgrade to the user defaults format
+/// version 13.
+// -----------------------------------------------------------------------------
++ (void) upgradeToVersion13:(NSDictionary*)registrationDomainDefaults
+{
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+
+  // Rename key in "BoardPosition" dictionary
+  id boardPositionDictionary = [userDefaults objectForKey:boardPositionKey];
+  if (boardPositionDictionary)  // is nil if the key is not present
+  {
+    NSMutableDictionary* boardPositionDictionaryUpgrade = [NSMutableDictionary dictionaryWithDictionary:boardPositionDictionary];
+    bool discardFutureMovesAlert = [[boardPositionDictionaryUpgrade valueForKey:discardFutureMovesAlertKey] boolValue];
+    [boardPositionDictionaryUpgrade removeObjectForKey:discardFutureMovesAlertKey];
+    [boardPositionDictionaryUpgrade setValue:[NSNumber numberWithBool:discardFutureMovesAlert] forKey:discardFutureNodesAlertKey];
+    [userDefaults setObject:boardPositionDictionaryUpgrade forKey:boardPositionKey];
+  }
 }
 
 // -----------------------------------------------------------------------------

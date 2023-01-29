@@ -17,7 +17,7 @@
 
 // Project includes
 #import "GameActionManager.h"
-#import "../controller/DiscardFutureMovesAlertController.h"
+#import "../controller/DiscardFutureNodesAlertController.h"
 #import "../model/BoardSetupModel.h"
 #import "../model/BoardViewModel.h"
 #import "../model/MarkupModel.h"
@@ -66,7 +66,7 @@
 @property(nonatomic, assign) GameInfoViewController* gameInfoViewController;
 @property(nonatomic, retain) MoreGameActionsController* moreGameActionsController;
 @property(nonatomic, assign) ItemPickerController* itemPickerController;
-@property(nonatomic, retain) DiscardFutureMovesAlertController* discardFutureMovesAlertController;
+@property(nonatomic, retain) DiscardFutureNodesAlertController* discardFutureNodesAlertController;
 @end
 
 
@@ -132,8 +132,8 @@ static GameActionManager* sharedGameActionManager = nil;
   self.gameInfoViewController = nil;
   self.moreGameActionsController = nil;
   self.itemPickerController = nil;
-  self.discardFutureMovesAlertController = [[[DiscardFutureMovesAlertController alloc] init] autorelease];
-  self.commandDelegate = self.discardFutureMovesAlertController;
+  self.discardFutureNodesAlertController = [[[DiscardFutureNodesAlertController alloc] init] autorelease];
+  self.commandDelegate = self.discardFutureNodesAlertController;
   [self setupNotificationResponders];
   return self;
 }
@@ -152,7 +152,7 @@ static GameActionManager* sharedGameActionManager = nil;
   self.uiDelegate = nil;
   self.commandDelegate = nil;
   self.viewControllerPresenterDelegate = nil;
-  self.discardFutureMovesAlertController = nil;
+  self.discardFutureNodesAlertController = nil;
   [super dealloc];
 }
 

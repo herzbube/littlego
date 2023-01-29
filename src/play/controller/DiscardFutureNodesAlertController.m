@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2013-2021 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2013-2023 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "DiscardFutureMovesAlertController.h"
+#import "DiscardFutureNodesAlertController.h"
 #import "../model/BoardPositionModel.h"
 #import "../../command/CommandBase.h"
 #import "../../go/GoBoardPosition.h"
@@ -39,7 +39,7 @@ enum ActionType
 };
 
 
-@implementation DiscardFutureMovesAlertController
+@implementation DiscardFutureNodesAlertController
 
 #pragma mark - GameActionManagerCommandDelegate overrides
 
@@ -96,23 +96,23 @@ enum ActionType
 /// @a command is executed immediately if the Go board currently displays the
 /// last board position of the game. If @a actionType is #ActionTypePlay, then
 /// the new move being played will be appended to the current game variation
-/// and no board positions will be discarded, so no alert is needed. If
-/// @a actionType is #ActionTypeDiscard there are no board positions to discard,
-/// so no alert is needed either.
+/// and no nodes will be discarded, so no alert is needed. If @a actionType is
+/// #ActionTypeDiscard there are no nodes to discard, so no alert is needed
+/// either.
 ///
 /// @a command is also executed immediately, even if the Go board currently
 /// displays a board position that is not the last board position, if
 /// @a actionType is #ActionTypePlay and the "new move insert policy" user
 /// preference is set to #GoNewMoveInsertPolicyRetainFutureBoardPositions. The
 /// new move being played in this case will be added to a new game variation
-/// and no board positions will be discarded, so no alert is needed.
+/// and no nodes will be discarded, so no alert is needed.
 ///
 /// In all other cases where the Go board displays a board position that is not
 /// the last board position, an alert is shown that warns the user that playing
-/// or discarding now will discard all future board positions. If the user
-/// confirms that this is OK, @a command is executed. If the user cancels the
-/// operation, @a command is not executed. Handling of the user's response
-/// happens in didDismissAlertWithButton:().
+/// or discarding now will discard all future nodes. If the user confirms that
+/// this is OK, @a command is executed. If the user cancels the operation,
+/// @a command is not executed. Handling of the user's response happens in
+/// didDismissAlertWithButton:().
 ///
 /// The user can suppress the alert in the user preferences. In this case
 /// @a command is immediately executed.
@@ -128,7 +128,7 @@ enum ActionType
 
   if (boardPosition.isLastPosition ||
       (ActionTypePlay == actionType && gameVariationsModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions) ||
-      ! boardPositionModel.discardFutureMovesAlert)
+      ! boardPositionModel.discardFutureNodesAlert)
   {
     [command submit];
   }
@@ -152,13 +152,13 @@ enum ActionType
       if (boardPosition.isFirstPosition)
         actionDescription = @"If you proceed,";
       else
-        actionDescription = @"If you proceed not only this move, but";
+        actionDescription = @"If you proceed not only this node, but";
     }
     NSString* formatString;
     if (boardPosition.isFirstPosition)
-      formatString = @"You are viewing the board position at the beginning of the game. %@ all moves of the entire game will be discarded.\n\nDo you want to continue?";
+      formatString = @"You are viewing the board position at the beginning of the game. %@ all nodes in all game variations will be discarded.\n\nDo you want to continue?";
     else
-      formatString = @"You are viewing a board position in the middle of the game. %@ all moves that have been made after this position will be discarded.\n\nDo you want to continue?";
+      formatString = @"You are viewing a board position in the middle of the game. %@ all nodes in the current game variation after this position will be discarded.\n\nDo you want to continue?";
     NSString* messageString = [NSString stringWithFormat:formatString, actionDescription];
 
     void (^noActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)
@@ -171,7 +171,7 @@ enum ActionType
       [self didDismissAlertWithButton:AlertButtonTypeYes];
     };
 
-    [[ApplicationDelegate sharedDelegate].window.rootViewController presentYesNoAlertWithTitle:@"Future moves will be discarded"
+    [[ApplicationDelegate sharedDelegate].window.rootViewController presentYesNoAlertWithTitle:@"Future nodes will be discarded"
                                                                                        message:messageString
                                                                                     yesHandler:yesActionBlock
                                                                                      noHandler:noActionBlock];

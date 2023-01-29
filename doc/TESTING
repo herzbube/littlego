@@ -771,10 +771,10 @@ Board position
 - The status view displays "White played <vertex>. Black will play <vertex>"
 - The "Pass" button must be enabled
 - Make a move by panning. An alert must be displayed that informs the user that
-  all future moves will be discarded.
+  all future nodes will be discarded.
 - Cancel the move. The move must not be played.
 - Tap "Pass", "Computer play" and "Discard". For each tap an alert must be
-  displayed that informs the user that all future moves will be discarded. When
+  displayed that informs the user that all future nodes will be discarded. When
   the "Discard" button is tapped, the wording is slightly different. Cancel each
   of the alerts.
 - Make a move by panning. This time when the alert is displayed confirm that
@@ -784,7 +784,7 @@ Board position
   - When the computer player has generated its move, buttons that allow to view
     later board positions must be disabled, buttons that allow to view earlier
     board positions must be enabled.
-- Turn off the "Discard future moves alert" in the user preferences
+- Turn off the "Discard future nodes alert" in the user preferences
 - Repeat the following steps for 1) making a move by panning, 2) tapping "Pass",
   and 3) tapping "Computer play":
   - Go back two moves
@@ -1703,12 +1703,12 @@ Tests for placing setup stones
 - Play a move.
 - Change board position to board position 0.
 - Switch to board setup mode.
-- Tap an empty intersection. The "Discard all future moves" alert is displayed.
-- Decline to discard future moves.
+- Tap an empty intersection. The "Discard all future nodes" alert is displayed.
+- Decline to discard future nodes.
   - Check that moves have not been discarded.
   - Check that the intersection remains empty.
-- Tap an empty intersection. The "Discard all future moves" alert is displayed.
-- Agree to discard future moves.
+- Tap an empty intersection. The "Discard all future nodes" alert is displayed.
+- Agree to discard future nodes.
   - Check that moves have been discarded and that it is no longer possible to
     change board position.
   - Check that a black stone is placed on the empty intersection.
@@ -1756,21 +1756,21 @@ Tests for placing setup stones
   - Check that the previously placed black setup stone is still present.
   - Check that at least one handicap stone is still present.
   - Check that the game action "Discard all setup stones" is available.
-- Tap "Discard all setup stones". The "Discard all future moves" alert is
+- Tap "Discard all setup stones". The "Discard all future nodes" alert is
   displayed.
-- Decline to discard future moves.
+- Decline to discard future nodes.
   - Check that moves have not been discarded.
   - Check that the black setup stone is still present.
-- Tap "Discard all setup stones". The "Discard all future moves" alert is
+- Tap "Discard all setup stones". The "Discard all future nodes" alert is
   displayed.
-- Agree to discard future moves. A "Discard all setup stones" alert is
+- Agree to discard future nodes. A "Discard all setup stones" alert is
   displayed.
 - Decline to discard all setup stones.
   - Check that moves have not been discarded.
   - Check that the black setup stone is still present.
-- Tap "Discard all setup stones". The "Discard all future moves" alert is
+- Tap "Discard all setup stones". The "Discard all future nodes" alert is
   displayed.
-- Agree to discard future moves. A "Discard all setup stones" alert is
+- Agree to discard future nodes. A "Discard all setup stones" alert is
   displayed.
 - Agree to discard all setup stones.
   - Check that moves have been discarded and that it is no longer possible to
@@ -1786,12 +1786,12 @@ Board setup tests when game has ended
   - In the "Game info" screen, check that the game is ended.
 - Change board position to board position 0.
 - Switch to board setup mode.
-- Tap an empty intersection. The "Discard all future moves" alert is displayed.
-- Decline to discard future moves.
+- Tap an empty intersection. The "Discard all future nodes" alert is displayed.
+- Decline to discard future nodes.
   - Check that moves have not been discarded.
   - In the "Game info" screen, check that the game is still ended.
-- Tap an empty intersection. The "Discard all future moves" alert is displayed.
-- Agree to discard future moves
+- Tap an empty intersection. The "Discard all future nodes" alert is displayed.
+- Agree to discard future nodes
   - Check that moves have been discarded and that it is no longer possible to
     change board position.
   - Check that a setup stone is placed on the empty intersection.
@@ -1802,23 +1802,23 @@ Board setup tests when game has ended
   - In the "Game info" screen, check that the game is ended.
 - Change board position to board position 0.
 - Switch to board setup mode.
-- Tap "Discard all setup stones". The "Discard all future moves" alert is
+- Tap "Discard all setup stones". The "Discard all future nodes" alert is
   displayed.
-- Decline to discard future moves.
+- Decline to discard future nodes.
   - Check that moves have not been discarded.
   - Check that the setup stone is still present.
   - In the "Game info" screen, check that the game is still ended.
-- Tap "Discard all setup stones". The "Discard all future moves" alert is
+- Tap "Discard all setup stones". The "Discard all future nodes" alert is
   displayed.
-- Agree to discard future moves. A "Discard all setup stones" alert is
+- Agree to discard future nodes. A "Discard all setup stones" alert is
   displayed.
 - Decline to discard all setup stones.
   - Check that moves have not been discarded.
   - Check that the setup stone is still present.
   - In the "Game info" screen, check that the game is still ended.
-- Tap "Discard all setup stones". The "Discard all future moves" alert is
+- Tap "Discard all setup stones". The "Discard all future nodes" alert is
   displayed.
-- Agree to discard future moves. A "Discard all setup stones" alert is
+- Agree to discard future nodes. A "Discard all setup stones" alert is
   displayed.
 - Agree to discard all setup stones.
   - Check that moves have been discarded and that it is no longer possible to
@@ -1891,18 +1891,18 @@ Player setup tests
     "Game Information" section displays the information that the side to move
     first is currently determined by the normal game rules.
 - In the "More game actions" alert, select "Set up a side to play first".
-- Select "Black" and tap "Done". The "Discard all future moves" alert is
+- Select "Black" and tap "Done". The "Discard all future nodes" alert is
   displayed.
-- Decline to discard future moves.
+- Decline to discard future nodes.
   - Check that moves have not been discarded.
   - In the "Game info" screen, check that "Side to play first" displays "White".
   - In the "Game info" screen, check that the footer message of the
     "Game Information" section displays the information that the side to move
     first is currently determined by the normal game rules.
 - In the "More game actions" alert, select "Set up a side to play first".
-- Select "Black" and tap "Done". The "Discard all future moves" alert is
+- Select "Black" and tap "Done". The "Discard all future nodes" alert is
   displayed.
-- Agree to discard future moves.
+- Agree to discard future nodes.
   - Check that moves have been discarded and that it is no longer possible to
     change board position.
   - In the "Game info" screen, check that "Side to play first" displays "Black".
@@ -1932,8 +1932,8 @@ Board setup and player setup tests in a computer vs. computer game
     - Start play mode
     - Switch setup stone color to black
     - In the "More game actions" menu: Set up a side to play first
-- Tap an empty intersection. The "Discard all future moves" alert is displayed.
-- Agree to discard future moves
+- Tap an empty intersection. The "Discard all future nodes" alert is displayed.
+- Agree to discard future nodes
   - Check that moves have been discarded and that it is no longer possible to
     change board position.
   - Check that a setup stone is placed on the empty intersection.
@@ -1944,9 +1944,9 @@ Board setup and player setup tests in a computer vs. computer game
 - Pause the game after the computer has played at least one move.
 - Change board position to board position 0.
 - Switch to board setup mode.
-- Tap "Discard all setup stones". The "Discard all future moves" alert is
+- Tap "Discard all setup stones". The "Discard all future nodes" alert is
   displayed.
-- Agree to discard future moves. A "Discard all setup stones" alert is
+- Agree to discard future nodes. A "Discard all setup stones" alert is
   displayed.
 - Agree to discard all setup stones.
   - Check that moves have been discarded and that it is no longer possible to

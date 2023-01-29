@@ -1365,7 +1365,7 @@ extern const float iPhoneMaximumZoomScale;
 extern const float iPadMaximumZoomScale;
 extern const float moveNumbersPercentageDefault;
 extern const bool displayPlayerInfluenceDefault;
-extern const bool discardFutureMovesAlertDefault;
+extern const bool discardFutureNodesAlertDefault;
 extern const bool markNextMoveDefault;
 extern const bool discardMyLastMoveDefault;
 //@}
@@ -2007,7 +2007,7 @@ extern NSString* allowContactCrashDataKey;
 extern NSString* contactEmailCrashDataKey;
 // Board position settings
 extern NSString* boardPositionKey;
-extern NSString* discardFutureMovesAlertKey;
+extern NSString* discardFutureNodesAlertKey;
 extern NSString* markNextMoveKey;
 extern NSString* discardMyLastMoveKey;
 // Logging settings

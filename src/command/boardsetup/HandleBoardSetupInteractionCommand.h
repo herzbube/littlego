@@ -28,9 +28,9 @@
 /// GoPoint object that is passed to the initializer.
 ///
 /// Before it discards setup stones, HandleBoardSetupInteractionCommand also
-/// discards any moves that the game currently has. Whoever invoked
+/// discards any nodes that the current game variation has. Whoever invoked
 /// HandleBoardSetupInteractionCommand must have previously made sure that it's
-/// OK to discard future moves.
+/// OK to discard future nodes.
 ///
 /// After it has processed the board setup interaction,
 /// HandleBoardSetupInteractionCommand syncs the GTP engine, saves the

@@ -24,9 +24,9 @@
 /// the game with a side that is to play the first move.
 ///
 /// Before it discards setup stones, SetupFirstMoveColorCommand also discards
-/// any moves that the game currently has. Whoever invoked
+/// any nodes that the current game variation has. Whoever invoked
 /// SetupFirstMoveColorCommand must have previously made sure that it's OK to
-/// discard future moves.
+/// discard future nodes.
 ///
 /// After it has processed the board setup interaction,
 /// SetupFirstMoveColorCommand syncs the GTP engine, saves the application state

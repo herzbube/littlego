@@ -734,14 +734,14 @@ Playing while viewing an old board position
 ===========================================
 When you view an old board position and it is your turn to play, you can make
 a move just as you would during regular game play. Making that move, however,
-will discard all future moves after the board position you are viewing. You
+will discard all future nodes after the board position you are viewing. You
 will see an alert when this happens, giving you the opportunity to abort and
-keep those future moves. You can disable the alert in the user preferences under
+keep those future nodes. You can disable the alert in the user preferences under
 "Settings > Board position".
 
 When you view an old board position and it is the computer's turn to play, you
 can tap the "Computer play" button to let the computer make a move. Unless you
-have disabled it, the same alert about future moves being discarded will be
+have disabled it, the same alert about future nodes being discarded will be
 displayed.
 
 ===============
@@ -749,15 +749,15 @@ Game variations
 ===============
 You might be used to game variations from other, more sophisticated
 applications. Little Go currently has no support for game variations, which is
-why you must discard future moves when you want to play while you view an old
+why you must discard future nodes when you want to play while you view an old
 board position.
 
 ==============================================
 Discarding while viewing an old board position
 ==============================================
-When you view an old board position and you tap the "Discard" button, the move
+When you view an old board position and you tap the "Discard" button, the node
 that created the board position you are viewing will be discarded, along with
-all future moves. As with playing (see above), you will be alerted when this is
+all future nodes. As with playing (see above), you will be alerted when this is
 happening, and you can disable the alert in the user preferences.
 
 In a computer vs. human game a "double discard" occurs when you're discarding
@@ -933,12 +933,12 @@ You can change the board setup only if no moves have been played yet. The reason
 is simple: Moves build upon each other, and the very first move of the game
 builds upon the initial board position that exists when the game is started.
 When you change this initial board position, the first move thus becomes
-invalid, and with it all future moves that in turn build upon the first move.
+invalid, and with it all future nodes that in turn build upon the first move.
 
 So when you want to change something about the board setup, and one or more
-moves have already been played, the app will automatically discard all moves.
+moves have already been played, the app will automatically discard all nodes.
 The app will alert you when this is about to happen, giving you the opportunity
-to abort and keep those moves. You can disable the alert in the user preferences
+to abort and keep those nodes. You can disable the alert in the user preferences
 under "Settings > Board position".
 
 
