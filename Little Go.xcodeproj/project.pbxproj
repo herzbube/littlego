@@ -1728,6 +1728,7 @@
 		CDE0FC62298598C1008E55A8 /* GameVariationsSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameVariationsSettingsController.h; sourceTree = "<group>"; };
 		CDE0FC652985994E008E55A8 /* GameVariationsModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameVariationsModel.m; sourceTree = "<group>"; };
 		CDE0FC662985994E008E55A8 /* GameVariationsModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameVariationsModel.h; sourceTree = "<group>"; };
+		CDE0FC692986CEA5008E55A8 /* GoGameAdditions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoGameAdditions.h; sourceTree = "<group>"; };
 		CDE1A13514C1CED200317ECA /* About.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = About.html; sourceTree = "<group>"; };
 		CDE1A13614C1CED200317ECA /* BoostSoftwareLicense.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = BoostSoftwareLicense.html; sourceTree = "<group>"; };
 		CDE1A13714C1CED200317ECA /* COPYING.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = COPYING.html; sourceTree = "<group>"; };
@@ -2108,6 +2109,7 @@
 				CDBB035A133537C8007C1C3E /* GoBoardRegion.m */,
 				CD10881A13255A4700E83543 /* GoGame.h */,
 				CD10881B13255A4700E83543 /* GoGame.m */,
+				CDE0FC692986CEA5008E55A8 /* GoGameAdditions.h */,
 				CD1DB60816FE181400C2E648 /* GoGameDocument.h */,
 				CD1DB60916FE181400C2E648 /* GoGameDocument.m */,
 				CDC97A8C18301CC000755EB2 /* GoGameRules.h */,

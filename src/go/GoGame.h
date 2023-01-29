@@ -62,9 +62,7 @@
 }
 
 + (GoGame*) sharedGame;
-- (void) play:(GoPoint*)point;
 - (void) play:(GoPoint*)point withMoveNodeCreationOptions:(GoMoveNodeCreationOptions*)moveNodeCreationOptions;
-- (void) pass;
 - (void) passWithMoveNodeCreationOptions:(GoMoveNodeCreationOptions*)moveNodeCreationOptions;
 - (void) resign;
 - (void) pause;

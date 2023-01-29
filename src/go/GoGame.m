@@ -20,6 +20,7 @@
 #import "GoBoard.h"
 #import "GoBoardPosition.h"
 #import "GoBoardRegion.h"
+#import "GoGameAdditions.h"
 #import "GoGameDocument.h"
 #import "GoGameRules.h"
 #import "GoMove.h"

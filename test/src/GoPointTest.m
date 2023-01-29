@@ -21,6 +21,7 @@
 // Application includes
 #import <go/GoBoard.h>
 #import <go/GoGame.h>
+#import <go/GoGameAdditions.h>
 #import <go/GoPoint.h>
 #import <go/GoVertex.h>
 #import <go/GoUtilities.h>

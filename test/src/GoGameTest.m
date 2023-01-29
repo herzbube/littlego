@@ -23,6 +23,7 @@
 #import <go/GoBoardPosition.h>
 #import <go/GoBoardRegion.h>
 #import <go/GoGame.h>
+#import <go/GoGameAdditions.h>
 #import <go/GoGameDocument.h>
 #import <go/GoMove.h>
 #import <go/GoMoveAdditions.h>
@@ -670,7 +671,7 @@
 /// @brief Exercises the play:withMoveNodeCreationOptions:() method with
 /// insert policy #GoNewMoveInsertPolicyReplaceFutureBoardPositions.
 // -----------------------------------------------------------------------------
-- (void) testPlayWithMoveNodeCreationOptions_GoNewMoveInsertPolicyReplaceFutureBoardPositionss
+- (void) testPlayWithMoveNodeCreationOptions_GoNewMoveInsertPolicyReplaceFutureBoardPositions
 {
   [self testPlayOrPassWithMoveNodeCreationOptions_GoNewMoveInsertPolicyReplaceFutureBoardPositions_MoveType:GoMoveTypePlay];
 }

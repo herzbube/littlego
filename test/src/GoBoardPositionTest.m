@@ -22,6 +22,7 @@
 #import <go/GoBoard.h>
 #import <go/GoBoardPosition.h>
 #import <go/GoGame.h>
+#import <go/GoGameAdditions.h>
 #import <go/GoNode.h>
 #import <go/GoNodeModel.h>
 #import <go/GoPoint.h>

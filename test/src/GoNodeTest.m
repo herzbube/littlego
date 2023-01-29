@@ -21,6 +21,7 @@
 // Application includes
 #import <go/GoBoard.h>
 #import <go/GoGame.h>
+#import <go/GoGameAdditions.h>
 #import <go/GoMove.h>
 #import <go/GoNode.h>
 #import <go/GoNodeAdditions.h>
