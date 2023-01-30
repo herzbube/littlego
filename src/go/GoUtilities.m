@@ -798,12 +798,12 @@
     {
       GoMove* move = currentNode.goMove;
       if (move)
-      {
         [move setUnarchivedPreviousMove:previousMove];
-        previousMove = move;
-      }
 
       [stack addObject:@[currentNode, previousMove ? previousMove : nullValue]];
+
+      if (move)
+        previousMove = move;
 
       currentNode = currentNode.firstChild;
     }
