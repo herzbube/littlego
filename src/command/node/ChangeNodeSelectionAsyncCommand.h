@@ -51,7 +51,9 @@
 ///   notifications #currentGameVariationWillChange and
 ///   #currentGameVariationDidChange to be sent once, optionally with the
 ///   notification #numberOfBoardPositionsDidChange being sent once in between
-///   if the number of nodes in the old and new game variations differ.
+///   if the number of nodes in the old and new game variations differ. Also
+///   the game state may change during this step to match the newly selected
+///   game variation.
 /// - Invoke ChangeBoardPositionCommand, to change the current board position
 ///   to match the GoNode to be selected (forward). This causes the notification
 ///   #boardPositionChangeProgress to be posted <n> times, and the notification

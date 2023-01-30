@@ -35,6 +35,7 @@
 /// - Send notification #numberOfBoardPositionsDidChange (optional, only if the
 ///   number of nodes in the old and new game variations differ).
 /// - Send notification #currentGameVariationDidChange.
+/// - Update the game state to match the end of the new game variation.
 /// - Mark the application state as having changed, so that the game variation
 ///   can be restored when the application launches the next time. Whoever
 ///   executes ChangeNodeSelectionCommand is responsible for actually saving

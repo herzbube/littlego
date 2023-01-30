@@ -175,7 +175,8 @@
 /// not have to obtain the desired GoMove object from @e nodeModel.
 @property(nonatomic, assign, readonly) GoMove* lastMove;
 /// @brief The state of the game. Note that this property is tied to the LAST
-/// board position, not the CURRENT board position.
+/// board position, not the CURRENT board position, of the current game
+/// variation.
 @property(nonatomic, assign) enum GoGameState state;
 /// @brief The reason why the game has reached the state
 /// #GoGameStateGameHasEnded. Is #GoGameHasEndedReasonNotYetEnded if property
@@ -202,8 +203,8 @@
 @property(nonatomic, retain) GoScore* score;
 /// @brief The side that is set up to play the first move. Is #GoColorNone
 /// if no side is set up to play first. Note that this property is tied to the
-/// CURRENT board position, which if the user is viewing an old board position
-/// is not the same as the LAST board position.
+/// CURRENT board position of the current game variation, which if the user is
+/// viewing an old board position is not the same as the LAST board position.
 ///
 /// Note that the side that is set up to play the first move is @b not
 /// necessarily the side that actually does play the first move - notably in a
