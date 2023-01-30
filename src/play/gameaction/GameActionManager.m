@@ -63,6 +63,7 @@
 @property(nonatomic, assign) bool visibleStatesNeedUpdate;
 @property(nonatomic, assign) bool enabledStatesNeedUpdate;
 @property(nonatomic, assign) bool scoringModeNeedUpdate;
+@property(nonatomic, assign) bool gameVariationChangeInProgress;
 @property(nonatomic, assign) GameInfoViewController* gameInfoViewController;
 @property(nonatomic, retain) MoreGameActionsController* moreGameActionsController;
 @property(nonatomic, assign) ItemPickerController* itemPickerController;
@@ -129,6 +130,7 @@ static GameActionManager* sharedGameActionManager = nil;
   self.visibleStatesNeedUpdate = false;
   self.enabledStatesNeedUpdate = false;
   self.scoringModeNeedUpdate = false;
+  self.gameVariationChangeInProgress = false;
   self.gameInfoViewController = nil;
   self.moreGameActionsController = nil;
   self.itemPickerController = nil;
@@ -182,6 +184,8 @@ static GameActionManager* sharedGameActionManager = nil;
   [center addObserver:self selector:@selector(allMarkupDidDiscard:) name:allMarkupDidDiscard object:nil];
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   [center addObserver:self selector:@selector(numberOfBoardPositionsDidChange:) name:numberOfBoardPositionsDidChange object:nil];
+  [center addObserver:self selector:@selector(currentGameVariationWillChange:) name:currentGameVariationWillChange object:nil];
+  [center addObserver:self selector:@selector(currentGameVariationDidChange:) name:currentGameVariationDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // Note: UIApplicationWillChangeStatusBarOrientationNotification is also sent
   // if a view controller is modally presented on iPhone while in
@@ -796,7 +800,10 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   self.visibleStatesNeedUpdate = true;
   self.enabledStatesNeedUpdate = true;
-  self.scoringModeNeedUpdate = true;
+
+  if (! self.gameVariationChangeInProgress)
+    self.scoringModeNeedUpdate = true;
+
   [self delayedUpdate];
 }
 
@@ -933,6 +940,22 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   self.visibleStatesNeedUpdate = true;
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #currentGameVariationWillChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentGameVariationWillChange:(NSNotification*)notification
+{
+  self.gameVariationChangeInProgress = true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #currentGameVariationDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) currentGameVariationDidChange:(NSNotification*)notification
+{
+  self.gameVariationChangeInProgress = false;
 }
 
 // -----------------------------------------------------------------------------
