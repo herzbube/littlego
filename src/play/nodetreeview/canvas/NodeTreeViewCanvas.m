@@ -963,27 +963,11 @@ highestMoveNumberThatAppearsInAtLeastTwoBranches:(int*)highestMoveNumberThatAppe
          lowestOccupiedXPositionOfRow:(unsigned short*)lowestOccupiedXPositionOfRow
                        branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
 {
-  // The y-position of a child branch is at least one below the y-position
-  // of the parent branch
-  unsigned short yPosition;
-  if (branch->parentBranch)
-    yPosition = branch->parentBranch->yPosition + 1;
-  else
-    yPosition = 0;
-
-  NodeTreeViewBranchTuple* lastBranchTuple = branch->branchTuples.lastObject;
-  unsigned short highestXPositionOfBranch = (lastBranchTuple->xPositionOfFirstCell +
-                                             lastBranchTuple->numberOfCellsForNode -
-                                             1);
-  while (highestXPositionOfBranch >= lowestOccupiedXPositionOfRow[yPosition])
-    yPosition++;
-
-  branch->yPosition = yPosition;
-
-  unsigned short lowestXPositionOfBranch;
+  unsigned short lowestXPositionOfBranchOnIntermediateYPositions;
+  unsigned short lowestXPositionOfBranchOnFinalYPosition;
   if (branch->parentBranch)
   {
-    lowestXPositionOfBranch = branch->parentBranchTupleBranchingNode->xPositionOfFirstCell;
+    lowestXPositionOfBranchOnIntermediateYPositions = branch->parentBranchTupleBranchingNode->xPositionOfFirstCell;
 
     // Diagonal branching style allows for a small optimization of the
     // available space on the LAST child branch:
@@ -1001,23 +985,48 @@ highestMoveNumberThatAppearsInAtLeastTwoBranches:(int*)highestMoveNumberThatAppe
         branch->parentBranchTupleBranchingNode->childBranches.lastObject == branch)
     {
       // The desired space gain would be
-      //   lowestXPositionOfBranch += currentBranch->parentBranchTupleBranchingNode->numberOfCellsForNode;
-      // However since a diagonal line crosses only a single sub-cell, and
-      // there are no sub-cells in y-direction, diagonal branching can only
-      // ever gain space that is worth 1 sub-cell. As a result, when move nodes
-      // are condensed (which means that a multipart cell's number of
-      // sub-cells is >1) the space gain from diagonal branching is never
-      // sufficient to fit a branch on an y-position where it would not have
-      // fit with right-angle branching.
-      lowestXPositionOfBranch += 1;
+      //   currentBranch->parentBranchTupleBranchingNode->numberOfCellsForNode
+      // instead of just +1. However, since a diagonal line crosses only a
+      // single sub-cell, and there are no sub-cells in y-direction, diagonal
+      // branching can only ever gain space that is worth 1 sub-cell. As a
+      // result, when move nodes are condensed (which means that a multipart
+      // cell's number of sub-cells is >1) the space gain from diagonal
+      // branching is never sufficient to fit a branch on an y-position where
+      // it would not have fit with right-angle branching.
+      lowestXPositionOfBranchOnFinalYPosition = lowestXPositionOfBranchOnIntermediateYPositions + 1;
+    }
+    else
+    {
+      lowestXPositionOfBranchOnFinalYPosition = lowestXPositionOfBranchOnIntermediateYPositions;
     }
   }
   else
   {
-    lowestXPositionOfBranch = 0;
+    lowestXPositionOfBranchOnIntermediateYPositions = 0;
+    lowestXPositionOfBranchOnFinalYPosition = 0;
   }
 
-  lowestOccupiedXPositionOfRow[yPosition] = lowestXPositionOfBranch;
+  // The y-position of a child branch is at least one below the y-position
+  // of the parent branch
+  unsigned short yPosition;
+  if (branch->parentBranch)
+    yPosition = branch->parentBranch->yPosition + 1;
+  else
+    yPosition = 0;
+
+  NodeTreeViewBranchTuple* lastBranchTuple = branch->branchTuples.lastObject;
+  unsigned short highestXPositionOfBranch = (lastBranchTuple->xPositionOfFirstCell +
+                                             lastBranchTuple->numberOfCellsForNode -
+                                             1);
+
+  while (highestXPositionOfBranch >= lowestOccupiedXPositionOfRow[yPosition])
+  {
+    lowestOccupiedXPositionOfRow[yPosition] = lowestXPositionOfBranchOnIntermediateYPositions;
+    yPosition++;
+  }
+
+  lowestOccupiedXPositionOfRow[yPosition] = lowestXPositionOfBranchOnFinalYPosition;
+  branch->yPosition = yPosition;
 }
 
 #pragma mark - Private API - Canvas calculation - Part 4: Generate cells

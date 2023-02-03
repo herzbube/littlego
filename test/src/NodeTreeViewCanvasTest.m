@@ -276,6 +276,92 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
+/// a branch's y-position is increased by its sibling branches. The user
+/// preferences "condense move nodes" and "branching style" are not relevant
+/// for this test case because they have no particular influence on the part of
+/// the algorithm that is under test.
+///
+/// The following diagram illustrates how the node tree built in this test looks
+/// like. Important is that not only the branch with node G is pushed down by
+/// the branch with node F, but the branches with nodes H and I as well. An
+/// initial simplistic implementation of the algorithm did not take this
+/// cascading scenario into account properly.
+/// @verbatim
+/// A---B---C---D---E
+/// |   |   |   +---F
+/// |   |   +---G
+/// |   +---H
+/// +---I
+/// @endverbatim
+// -----------------------------------------------------------------------------
+- (void) testCalculateCanvas_BranchIsPushedDownBySiblingBranch
+{
+  // Arrange
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:false branchingStyle:NodeTreeViewBranchingStyleRightAngle];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
+  GoNode* nodeA = m_game.nodeModel.rootNode;
+  GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
+  GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createBlackMoveNode]];
+  GoNode* nodeD = [self parentNode:nodeC appendChildNode:[self createBlackMoveNode]];
+  [self parentNode:nodeD appendChildNode:[self createBlackMoveNode]];
+  [self parentNode:nodeD appendChildNode:[self createBlackMoveNode]];
+  [self parentNode:nodeC appendChildNode:[self createBlackMoveNode]];
+  [self parentNode:nodeB appendChildNode:[self createBlackMoveNode]];
+  [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
+
+  // Act
+  [testee recalculateCanvas];
+
+  // Assert
+  NSDictionary* expectedCellsDictionary =
+  @{
+    // nodeA (= rootNode)
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
+    // nodeB
+    [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
+    // nodeC
+    [self positionWithX:2 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
+    // nodeD
+    [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
+    // nodeE
+    [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft],
+    // nodeA > nodeI
+    [self positionWithX:0 y:1]: [self cellWithLines:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToBottom],
+    // nodeB > nodeH
+    [self positionWithX:1 y:1]: [self cellWithLines:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToBottom],
+    // nodeC > nodeG
+    [self positionWithX:2 y:1]: [self cellWithLines:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToBottom],
+    // nodeD > nodeF
+    [self positionWithX:3 y:1]: [self cellWithLines:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToRight],
+    // nodeF
+    [self positionWithX:4 y:1]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft],
+    // nodeA > nodeI
+    [self positionWithX:0 y:2]: [self cellWithLines:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToBottom],
+    // nodeB > nodeH
+    [self positionWithX:1 y:2]: [self cellWithLines:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToBottom],
+    // nodeC > nodeG
+    [self positionWithX:2 y:2]: [self cellWithLines:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToRight],
+    // nodeG
+    [self positionWithX:3 y:2]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft],
+    // nodeA > nodeI
+    [self positionWithX:0 y:3]: [self cellWithLines:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToBottom],
+    // nodeB > nodeH
+    [self positionWithX:1 y:3]: [self cellWithLines:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToRight],
+    // nodeH
+    [self positionWithX:2 y:3]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft],
+    // nodeA > nodeI
+    [self positionWithX:0 y:4]: [self cellWithLines:NodeTreeViewCellLineCenterToTop | NodeTreeViewCellLineCenterToRight],
+    // nodeI
+    [self positionWithX:1 y:4]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft],
+  };
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
+
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
 /// the user preference "condense move nodes" is disabled and the user
 /// preference "branching style" is set to diagonal. The node tree is built so
 /// that all scenarios are covered where the algorithm must decide between the

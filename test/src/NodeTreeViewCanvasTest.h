@@ -33,6 +33,7 @@
 - (void) testCalculateCanvas_NodeSymbols;
 - (void) testCalculateCanvas_UncondenseMoveNodes_Selected;
 - (void) testCalculateCanvas_CondenseMoveNodes_Selected;
+- (void) testCalculateCanvas_BranchIsPushedDownBySiblingBranch;
 - (void) testCalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_Lines;
 - (void) testCalculateCanvas_UncondenseMoveNodes_BranchingStyleRightAngle_Lines;
 - (void) testCalculateCanvas_CondenseMoveNodes_BranchingStyleDiagonal_Lines;
