@@ -462,6 +462,8 @@
 		<integer>0</integer>
 		<key>NodeSelectionStyle</key>
 		<integer>0</integer>
+		<key>FocusMode</key>
+		<integer>0</integer>
 	</dict>
 	<key>GameVariation</key>
 	<dict>

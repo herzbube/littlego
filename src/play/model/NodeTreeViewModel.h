@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2022 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2022-2023 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@
 @property(nonatomic, assign) bool alignMoveNodes;
 @property(nonatomic, assign) enum NodeTreeViewBranchingStyle branchingStyle;
 @property(nonatomic, assign) enum NodeTreeViewNodeSelectionStyle nodeSelectionStyle;
+@property(nonatomic, assign) enum NodeTreeViewFocusMode focusMode;
 @property(nonatomic, assign) int numberOfCellsOfMultipartCell;
 
 @end

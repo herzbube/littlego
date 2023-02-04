@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2022 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2022-2023 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@
   self.alignMoveNodes = true;
   self.branchingStyle = NodeTreeViewBranchingStyleRightAngle;
   self.nodeSelectionStyle = NodeTreeViewNodeSelectionStyleLightCircular;
+  self.focusMode = NodeTreeViewFocusModeMakeSelectedNodeVisible;
 
   // The number chosen here must fulfill the following criteria:
   // - The number must be greater than 1, so that condensed nodes (which are
@@ -88,6 +89,7 @@
   self.alignMoveNodes = [[dictionary valueForKey:alignMoveNodesKey] boolValue];
   self.branchingStyle = [[dictionary valueForKey:branchingStyleKey] intValue];
   self.nodeSelectionStyle = [[dictionary valueForKey:nodeSelectionStyleKey] intValue];
+  self.focusMode = [[dictionary valueForKey:focusModeKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -102,6 +104,7 @@
   [dictionary setValue:[NSNumber numberWithBool:self.alignMoveNodes] forKey:alignMoveNodesKey];
   [dictionary setValue:[NSNumber numberWithInt:self.branchingStyle] forKey:branchingStyleKey];
   [dictionary setValue:[NSNumber numberWithInt:self.nodeSelectionStyle] forKey:nodeSelectionStyleKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.focusMode] forKey:focusModeKey];
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:nodeTreeViewKey];
 }

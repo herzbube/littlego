@@ -34,6 +34,7 @@ enum NodeTreeViewTableViewSection
   AlignMoveNodesSection,
   CondenseMoveNodesSection,
   NodeSelectionStyleSection,
+  FocusModeSection,
   MaxSection
 };
 
@@ -71,6 +72,17 @@ enum NodeSelectionStyleSectionItem
 {
   NodeSelectionStyleItem,
   MaxNodeSelectionStyleSectionItem
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates items in the FocusModeSection.
+// -----------------------------------------------------------------------------
+enum FocusModeSectionItem
+{
+  FocusModeEnabledItem,
+  FocusModeItem,
+  MaxFocusModeSectionItem_FocusModeEnabled = FocusModeItem + 1,
+  MaxFocusModeSectionItem_FocusModeDisabled = FocusModeEnabledItem + 1
 };
 
 
@@ -148,6 +160,11 @@ enum NodeSelectionStyleSectionItem
       return MaxCondenseMoveNodesSectionItem;
     case NodeSelectionStyleSection:
       return MaxNodeSelectionStyleSectionItem;
+    case FocusModeSection:
+      if (self.nodeTreeViewModel.focusMode == NodeTreeViewFocusModeDisabled)
+        return MaxFocusModeSectionItem_FocusModeDisabled;
+      else
+        return MaxFocusModeSectionItem_FocusModeEnabled;
     default:
       assert(0);
       break;
@@ -170,6 +187,8 @@ enum NodeSelectionStyleSectionItem
       return @"If turned on, moves within a sequence of moves are condensed, i.e. they are drawn smaller than moves at the beginning or end of the sequence. If turned off, all nodes are drawn with the same size. Condensing move nodes de-emphasizes repetitive content, at the cost of making the tree look less uniform. The default is to not condense moves.";
     case NodeSelectionStyleSection:
       return @"The style with which to mark the selected node. You can choose between light and heavy markers, drawn either as a circle or rectangle around the node symbol. A heavy marker clearly stands out from the rest of the node tree, but is not as elegant. The default is to draw a light circle.";
+    case FocusModeSection:
+      return @"If turned on, when the selected node changes the node tree view automatically scrolls to focus on the newly selected node.";
     default:
       break;
   }
@@ -220,6 +239,26 @@ enum NodeSelectionStyleSectionItem
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
+    case FocusModeSection:
+    {
+      if (indexPath.row == FocusModeEnabledItem)
+      {
+        cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+        UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+        cell.textLabel.text = @"Focus on selected node";
+        accessoryView.on = self.nodeTreeViewModel.focusMode != NodeTreeViewFocusModeDisabled;
+        [accessoryView addTarget:self action:@selector(toggleEnableFocusMode:) forControlEvents:UIControlEventValueChanged];
+      }
+      else
+      {
+        cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
+        TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+        variableHeightCell.descriptionLabel.text = @"Focus mode";
+        variableHeightCell.valueLabel.text = [self focusModeAsString:self.nodeTreeViewModel.focusMode];
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      }
+      break;
+    }
     default:
     {
       assert(0);
@@ -250,6 +289,12 @@ enum NodeSelectionStyleSectionItem
     case NodeSelectionStyleSection:
     {
       [self pickNodeSelectionStyle];
+      break;
+    }
+    case FocusModeSection:
+    {
+      if (indexPath.row == FocusModeItem)
+        [self pickFocusMode];
       break;
     }
     default:
@@ -299,6 +344,26 @@ enum NodeSelectionStyleSectionItem
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Displays ItemPickerController to allow the user to pick a new value
+/// for the "focus mode" user preference.
+// -----------------------------------------------------------------------------
+- (void) pickFocusMode
+{
+  NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
+  [itemList addObject:[self focusModeAsString:NodeTreeViewFocusModeMakeSelectedNodeVisible]];
+  [itemList addObject:[self focusModeAsString:NodeTreeViewFocusModeMakeSelectedNodeVisibleCentered]];
+  [itemList addObject:[self focusModeAsString:NodeTreeViewFocusModeMakeSelectedNodeCentered]];
+  ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
+                                                                                screenTitle:@"Select focus mode"
+                                                                         indexOfDefaultItem:self.nodeTreeViewModel.focusMode
+                                                                                   delegate:self];
+  itemPickerController.context = [NSNumber numberWithInt:FocusModeSection];
+  itemPickerController.footerTitle = @"Select one of the first two options if you want the node tree view to focus-scroll only if the newly selected node is currently not visible, or only partially visible. The view either scrolls just enough to make the newly selected node visible at one of the view's edges (option 1), or it scrolls to make the newly selected node visible at the center of the view (option 2).\n\nSelect the last option if you want the node tree view to always focus-scroll, even if the node is already visible. The view in this case scrolls to show the newly selected node at the center of the view.";
+
+  [self presentNavigationControllerWithRootViewController:itemPickerController];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Reacts to a tap gesture on the "Align Move Nodes" switch. Writes the
 /// new value to the appropriate model.
 // -----------------------------------------------------------------------------
@@ -316,6 +381,23 @@ enum NodeSelectionStyleSectionItem
 {
   UISwitch* accessoryView = (UISwitch*)sender;
   self.nodeTreeViewModel.condenseMoveNodes = accessoryView.on;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Focus mode" switch. Writes
+/// the new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleEnableFocusMode:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  if (accessoryView.on)
+    self.nodeTreeViewModel.focusMode = NodeTreeViewFocusModeMakeSelectedNodeVisible;
+  else
+    self.nodeTreeViewModel.focusMode = NodeTreeViewFocusModeDisabled;
+
+  NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:FocusModeSection];
+  [self.tableView reloadSections:indexSet
+                withRowAnimation:UITableViewRowAnimationAutomatic];
 }
 
 #pragma mark - ItemPickerDelegate overrides
@@ -344,6 +426,16 @@ enum NodeSelectionStyleSectionItem
       {
         self.nodeTreeViewModel.nodeSelectionStyle = controller.indexOfSelectedItem;
         NSIndexPath* indexPath = [NSIndexPath indexPathForRow:NodeSelectionStyleItem inSection:NodeSelectionStyleSection];
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                              withRowAnimation:UITableViewRowAnimationNone];
+      }
+    }
+    else if (context.intValue == FocusModeSection)
+    {
+      if (self.nodeTreeViewModel.focusMode != controller.indexOfSelectedItem)
+      {
+        self.nodeTreeViewModel.focusMode = controller.indexOfSelectedItem;
+        NSIndexPath* indexPath = [NSIndexPath indexPathForRow:FocusModeItem inSection:FocusModeSection];
         [self.tableView reloadRowsAtIndexPaths:@[indexPath]
                               withRowAnimation:UITableViewRowAnimationNone];
       }
@@ -387,6 +479,27 @@ enum NodeSelectionStyleSectionItem
       return @"Heavy & circular";
     case NodeTreeViewNodeSelectionStyleHeavyRectangular:
       return @"Heavy & rectangular";
+    default:
+      assert(0);
+      break;
+  }
+  return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a short string for @a focusMode that is suitable for
+/// display in a cell in the table view managed by this controller.
+// -----------------------------------------------------------------------------
+- (NSString*) focusModeAsString:(enum NodeTreeViewFocusMode)focusMode
+{
+  switch (focusMode)
+  {
+    case NodeTreeViewFocusModeMakeSelectedNodeVisible:
+      return @"Scroll to make visible";
+    case NodeTreeViewFocusModeMakeSelectedNodeVisibleCentered:
+      return @"Scroll to make visible centered";
+    case NodeTreeViewFocusModeMakeSelectedNodeCentered:
+      return @"Scroll to center (even if visible)";
     default:
       assert(0);
       break;

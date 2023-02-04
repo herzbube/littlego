@@ -1524,6 +1524,16 @@ enum NodeTreeViewNodeSelectionStyle
   NodeTreeViewNodeSelectionStyleHeavyCircular,     ///< @brief The node selection marker is drawn in a heavy style as a circle around the node symbol.
   NodeTreeViewNodeSelectionStyleHeavyRectangular,  ///< @brief The node selection marker is drawn in a heavy style as a rectangle around the node symbol.
 };
+
+/// @brief Enumerates all possible modes in which the node tree view can focus
+/// on the selected node when the selected node changes.
+enum NodeTreeViewFocusMode
+{
+  NodeTreeViewFocusModeMakeSelectedNodeVisible,          ///< @brief When the newly selected node is not fully visible, the view scrolls so that the selected node becomes fully visible at the nearest edge.
+  NodeTreeViewFocusModeMakeSelectedNodeVisibleCentered,  ///< @brief When the newly selected node is not fully visible, the view scrolls so that the selected node becomes fully visible at the center of the view.
+  NodeTreeViewFocusModeMakeSelectedNodeCentered,         ///< @brief The view always scrolls to place the newly selected node at the center of the view (even if the node was already fully visible).
+  NodeTreeViewFocusModeDisabled,                         ///< @brief Focusing on the selected node is disabled, i.e. when the selected node changes the node tree view does not scroll.
+};
 //@}
 
 // -----------------------------------------------------------------------------
@@ -2043,6 +2053,7 @@ extern NSString* condenseMoveNodesKey;
 extern NSString* alignMoveNodesKey;
 extern NSString* branchingStyleKey;
 extern NSString* nodeSelectionStyleKey;
+extern NSString* focusModeKey;
 // Game variation settings
 extern NSString* gameVariationKey;
 extern NSString* newMoveInsertPolicyKey;

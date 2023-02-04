@@ -26,6 +26,7 @@
 #import "layer/NodeTreeViewDrawingHelper.h"
 #import "../gesture/DoubleTapGestureController.h"
 #import "../gesture/TwoFingerTapGestureController.h"
+#import "../model/NodeTreeViewModel.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiUtilities.h"
@@ -678,6 +679,9 @@
     return;
   self.visibleRectNeedsUpdate = false;
 
+  if (self.nodeTreeViewModel.focusMode == NodeTreeViewFocusModeDisabled)
+    return;
+
   CGRect canvasRectOfAllSelectedNodePositions = CGRectZero;
 
   NSArray* selectedNodePositions = [self.nodeTreeViewCanvas selectedNodePositions];
@@ -697,8 +701,58 @@
     }
   }
 
-  CGRect scrollToRect = [UiUtilities rectWithSize:self.nodeTreeView.bounds.size
-                                   centeredInRect:canvasRectOfAllSelectedNodePositions];
+  CGRect bounds = self.nodeTreeView.bounds;
+  if (self.nodeTreeViewModel.focusMode != NodeTreeViewFocusModeMakeSelectedNodeCentered)
+  {
+    if (CGRectContainsRect(bounds, canvasRectOfAllSelectedNodePositions))
+      return;
+  }
+
+  CGRect scrollToRect;
+  if (self.nodeTreeViewModel.focusMode == NodeTreeViewFocusModeMakeSelectedNodeVisible)
+  {
+    CGFloat xOffset;
+    CGFloat yOffset;
+
+    CGFloat leftEdgeBoundsRect = CGRectGetMinX(bounds);
+    CGFloat leftEdgeCanvasRect = CGRectGetMinX(canvasRectOfAllSelectedNodePositions);
+    if (leftEdgeCanvasRect < leftEdgeBoundsRect)
+    {
+      xOffset = leftEdgeCanvasRect - leftEdgeBoundsRect;
+    }
+    else
+    {
+      CGFloat rightEdgeBoundsRect = CGRectGetMaxX(bounds);
+      CGFloat rightEdgeCanvasRect = CGRectGetMaxX(canvasRectOfAllSelectedNodePositions);
+      if (rightEdgeCanvasRect > rightEdgeBoundsRect)
+        xOffset = rightEdgeCanvasRect - rightEdgeBoundsRect;
+      else
+        xOffset = 0.0f;
+    }
+
+    CGFloat topEdgeBoundsRect = CGRectGetMinY(bounds);
+    CGFloat topEdgeCanvasRect = CGRectGetMinY(canvasRectOfAllSelectedNodePositions);
+    if (topEdgeCanvasRect < topEdgeBoundsRect)
+    {
+      yOffset = topEdgeCanvasRect - topEdgeBoundsRect;
+    }
+    else
+    {
+      CGFloat bottomEdgeBoundsRect = CGRectGetMaxY(bounds);
+      CGFloat bottomEdgeCanvasRect = CGRectGetMaxY(canvasRectOfAllSelectedNodePositions);
+      if (bottomEdgeCanvasRect > bottomEdgeBoundsRect)
+        yOffset = bottomEdgeCanvasRect - bottomEdgeBoundsRect;
+      else
+        yOffset = 0.0f;
+    }
+
+    scrollToRect = CGRectOffset(self.nodeTreeView.bounds, xOffset, yOffset);
+  }
+  else
+  {
+    scrollToRect = [UiUtilities rectWithSize:self.nodeTreeView.bounds.size
+                              centeredInRect:canvasRectOfAllSelectedNodePositions];
+  }
 
   [self.nodeTreeView scrollRectToVisible:scrollToRect animated:YES];
 }
