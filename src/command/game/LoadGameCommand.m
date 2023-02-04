@@ -1500,10 +1500,9 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 
   // GoBoardPosition must now be sync'ed with the content of GoNodeModel. This
   // updates the numberOfBoardPosition and currentBoardPosition values (the
-  // latter via changeToLastBoardPositionWithoutUpdatingGoObjects) and posts
-  // the corresponding notifications to the global notification centre.
-  // TODO xxx RestoreApplicationStateCommand also does this - can it be done better?
-  [game updateBoardPositionAfterGameIsLoaded];
+  // latter via changeToLastBoardPositionWithoutUpdatingGoObjects).
+  game.boardPosition.numberOfBoardPositions = game.nodeModel.numberOfNodes;
+  [game.boardPosition changeToLastBoardPositionWithoutUpdatingGoObjects];
 
   // Configure nextMoveColor. No need to check GoGame's property alternatingPlay
   // because after loading a game from SGF we always start out with alternating

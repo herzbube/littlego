@@ -443,7 +443,13 @@
 // -----------------------------------------------------------------------------
 - (void) recalculateCanvasPrivate
 {
+  // Game is missing during app launch 
   GoGame* game = [GoGame sharedGame];
+  if (! game)
+    return;
+
+  DDLogDebug(@"%@: Canvas calculation started", self);
+
   GoNodeModel* nodeModel = game.nodeModel;
   GoBoardPosition* boardPosition = game.boardPosition;
 
@@ -478,6 +484,8 @@
 
   self.canvasData = canvasData;
   self.canvasSize = CGSizeMake(canvasData.highestXPosition + 1, canvasData.highestYPosition + 1);
+
+  DDLogDebug(@"%@: Canvas calculation finished", self);
 }
 
 #pragma mark - Private API - Canvas calculation - Part 1: Collect branch data

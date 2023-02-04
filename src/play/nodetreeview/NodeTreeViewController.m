@@ -245,6 +245,7 @@
   self.notificationRespondersAreSetup = true;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 
@@ -554,6 +555,15 @@
 }
 
 #pragma mark - Notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #goGameDidCreate notification.
+// -----------------------------------------------------------------------------
+- (void) goGameDidCreate:(NSNotification*)notification
+{
+  self.visibleRectNeedsUpdate = true;
+  [self delayedUpdate];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Responds to the #currentBoardPositionDidChange notification.
