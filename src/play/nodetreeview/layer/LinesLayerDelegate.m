@@ -17,7 +17,6 @@
 
 // Project includes
 #import "LinesLayerDelegate.h"
-//#import "NodeTreeViewCGLayerCache.h"
 #import "NodeTreeViewDrawingHelper.h"
 #import "../NodeTreeViewMetrics.h"
 #import "../canvas/NodeTreeViewCanvas.h"
@@ -64,29 +63,11 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  // There are times when no LinesLayerDelegate instances are around to
-  // react to events that invalidate the cached CGLayers, so the cached CGLayers
-  // will inevitably become out-of-date. To prevent this, we invalidate the
-  // CGLayers *NOW*.
-  // TODO xxx is this needed?
-//  [self invalidateLayers];
-
   self.nodeTreeViewCanvas = nil;
   self.drawingCellsOnTile = nil;
 
   [super dealloc];
 }
-
-// -----------------------------------------------------------------------------
-/// @brief Invalidates node symbol layers.
-// -----------------------------------------------------------------------------
-// TODO xxx remove if not needed
-//- (void) invalidateLayers
-//{
-//  NodeTreeViewCGLayerCache* cache = [NodeTreeViewCGLayerCache sharedCache];
-//  // TODO xxx As long as the only layers are for node symbols this is correct
-//  [cache invalidateAllLayers];
-//}
 
 // -----------------------------------------------------------------------------
 /// @brief NodeTreeViewLayerDelegate method.
@@ -132,33 +113,6 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  // TODO xxx remove
-  int row = self.tile.row;
-  int column = self.tile.column;
-  if (row == 0 && column == 0)
-  {
-    int i = 99;
-  }
-  else if (row == 0 && column == 1)
-  {
-    int i = 99;
-//    return;
-  }
-  else if (row == 1 && column == 0)
-  {
-    int i = 99;
-//    return;
-  }
-  else if (row == 1 && column == 1)
-  {
-    int i = 99;
-//    return;
-  }
-  else
-  {
-//    return;
-  }
-
   bool condenseMoveNodes = self.nodeTreeViewMetrics.condenseMoveNodes;
   CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
                                                          metrics:self.nodeTreeViewMetrics];

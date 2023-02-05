@@ -105,26 +105,6 @@
 // -----------------------------------------------------------------------------
 - (void) notify:(enum NodeTreeViewLayerDelegateEvent)event eventInfo:(id)eventInfo
 {
-  // TODO xxx remove
-  int row = self.tile.row;
-  int column = self.tile.column;
-  if (row == 0 && column == 0)
-  {
-    int i = 99;
-  }
-  else if (row == 0 && column == 1)
-  {
-    int i = 99;
-  }
-  else if (row == 1 && column == 0)
-  {
-    int i = 99;
-  }
-  else if (row == 1 && column == 1)
-  {
-    int i = 99;
-  }
-
   switch (event)
   {
     case NTVLDEventNodeTreeGeometryChanged:
@@ -214,29 +194,6 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  // TODO xxx remove
-  int row = self.tile.row;
-  int column = self.tile.column;
-  if (row == 0 && column == 0)
-  {
-    int i = 99;
-  }
-  else if (row == 0 && column == 1)
-  {
-    int i = 99;
-  }
-  else if (row == 1 && column == 0)
-  {
-    int i = 99;
-  }
-  else if (row == 1 && column == 1)
-  {
-    int i = 99;
-  }
-  else if (row == 0 && column == 4)
-  {
-    int i = 99;
-  }
   [self createLayersIfNecessaryWithContext:context];
 
   bool condenseMoveNodes = self.nodeTreeViewMetrics.condenseMoveNodes;

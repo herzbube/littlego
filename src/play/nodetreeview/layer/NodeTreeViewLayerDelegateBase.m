@@ -127,18 +127,6 @@
 {
   NSMutableArray* drawingCells = [NSMutableArray array];
 
-  // TODO xxx remove
-  int row = (int)[self.tile row];
-  int column = (int)[self.tile column];
-  if (row == 0 && column == 0)
-  {
-    int i = 99;
-  }
-  else if (row == 0 && column == 1)
-  {
-    int i = 99;
-  }
-
   // Abort early if NodeTreeViewMetrics does not yet have useful values (e.g.
   // during app launch)
   CGSize nodeTreeViewCellSize = self.nodeTreeViewMetrics.nodeTreeViewCellSize;
@@ -190,7 +178,6 @@
   CGFloat topLeftCornerCellTreeRectLeftEdge = CGRectGetMinX(topLeftCornerCellTreeRect);
   CGFloat topLeftCornerCellTreeRectTopEdge = CGRectGetMinY(topLeftCornerCellTreeRect);
 
-  // TODO xxx better names?
   unsigned short xPositionOfTopLeftCellIntersectingWithTile;
   unsigned short yPositionOfTopLeftCellIntersectingWithTile;
   CGRect topLeftCellIntersectingWithTileRect = CGRectZero;
