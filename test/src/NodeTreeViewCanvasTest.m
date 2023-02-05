@@ -56,7 +56,7 @@
   [testee recalculateCanvas];
 
   // Assert
-  NSDictionary* expectedCellsDictionary = @{ [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty] };
+  NSDictionary* expectedCellsDictionary = @{ [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi] };
   [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
@@ -78,9 +78,9 @@
   // Assert
   NSDictionary* expectedCellsDictionary =
   @{
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:1],
-    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:2],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi part:2],
   };
   [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
@@ -139,9 +139,9 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // rootNode
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight part:1],
-    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToRight part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
     // emptyNode
     [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
     [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:1],
@@ -231,7 +231,7 @@
   // Assert
   NSDictionary* expectedCellsDictionary =
   @{
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToRight],
     [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
     [self positionWithX:2 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackSetupStones lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
     [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolWhiteSetupStones lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
@@ -318,7 +318,7 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
     // nodeB
     [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
     // nodeC
@@ -428,7 +428,7 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToRight],
     // nodeB
     [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
     // nodeC
@@ -514,7 +514,7 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToRight],
     // nodeB
     [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
     // nodeC
@@ -603,9 +603,9 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight part:1],
-    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToRight part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
     // nodeB
     [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
     [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom part:1],
@@ -718,11 +718,11 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:1],
-    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottomRight part:2],
-    [self positionWithX:3 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:3],
-    [self positionWithX:4 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:4],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottomRight part:2],
+    [self positionWithX:3 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:3],
+    [self positionWithX:4 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:4],
     // nodeB
     [self positionWithX:5 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
     [self positionWithX:6 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:1],
@@ -782,9 +782,9 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight part:1],
-    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToRight part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
     // nodeB
     [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
     [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom part:1],
@@ -937,7 +937,7 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToRight],
     // nodeB
     [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
     // nodeC
@@ -1037,7 +1037,7 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToRight],
     // nodeB
     [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
     // nodeC
@@ -1118,7 +1118,7 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToRight],
     // nodeB
     [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom],
     // nodeC
@@ -1268,9 +1268,9 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom part:1],
-    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
     // nodeB
     [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
     [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:1],
@@ -1446,9 +1446,9 @@
   NSDictionary* expectedCellsDictionary =
   @{
     // nodeA (= rootNode)
-    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty part:0],
-    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToRight part:1],
-    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolEmpty linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    [self positionWithX:0 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi part:0],
+    [self positionWithX:1 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToRight part:1],
+    [self positionWithX:2 y:0]: [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
     // nodeB
     [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
     [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolAnnotations lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottom linesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToBottom part:1],
