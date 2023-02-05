@@ -9,6 +9,7 @@ Xcode version
 -------------
 Since version 1.6.0, the current build should work out of the box for
 
+  Intel Mac
   Xcode 13.2.1
   iOS base SDK 15.2
 
@@ -21,8 +22,10 @@ build-env.sh is found automatically, so in effect you should only need to make
 changes to files if you change the deployment target.
 
 If your setup is newer, the build may or may not work, depending on how much
-Apple changed the compiler toolchain inside Xcode. If the build does not work,
-you are on your own to resolve the problem.
+Apple changed the compiler toolchain inside Xcode. Also if you're using a Mac
+with a different processor architecture than the one listed above, then all
+sorts of linker errors may occur. If the build does not work, you are on your
+own to resolve the problem.
 
 If your setup is older and the build does not work, you may find a solution by
 looking at older versions of the build files in the Git repository. Here is a
@@ -327,3 +330,57 @@ Note: I encountered this problem for the first time with Xcode 13.2.1 and the
 device having installing iOS 15.4.
 
 [1] https://github.com/mspvirajpatel/Xcode_Developer_Disk_Images
+
+
+Profiling on Intel Mac for simulator build
+------------------------------------------
+Environment:
+- Intel Mac
+- Xcode 13.2.1
+- Selected target is any simulator
+
+When selecting "Product > Profile" in Xcode then the build fails with this error
+message:
+
+  ld: in /path/to/littlego/3rdparty/install/boost.framework/boost(greg_month.o), building for iOS Simulator, but linking in object file built for iOS, file '/path/to/littlego/3rdparty/install/boost.framework/boost' for architecture arm64
+
+Looking at the line that triggers this build error in Xcode's issue navigator,
+it can be seen that it is a linker command that includes this option:
+
+  -target arm64-apple-ios9.0-simulator
+
+Obviously this target is wrong - on an Intel Mac, the simulator does not yet
+use an ARM architecture. The workaround for this is to temporarily exclude the
+architecture "arm64" from the Release configuration build. The initial hint that
+this could be a solution was found in [1]. Some notes:
+- The exclusion must be done for the Release configuration, not the Debug
+  configuration, because Xcode automatically selects the Release configuration
+  for profiling.
+- The workaround must be done locally and temporarily, because the change to the
+  build settings must not be added to version control so that there will be no
+  problems when the supported development environment eventually switches to
+  Silicon Macs.
+
+How to make the change:
+
+- Quit Xcode.
+- Use a text editor to open the Xcode project file (project.pbxproj).
+- Look for the XCBuildConfiguration section that contains the settings for the
+  Release build configuration.
+- Add this line
+      "EXCLUDED_ARCHS[sdk=iphonesimulator*]" = "arm64";
+- Save and close the text editor, then launch Xcode.
+
+The change must be done manually in a text editor because Xcode since version 12
+no longer exposes EXCLUDED_ARCHS in the UI, so it can't be added via the Xcode
+UI. Once the setting exists in the project file, however, Xcode will display
+the setting and let you edit (or delete) it directly in the Xcode UI.
+
+Note that you can also profile a Debug build on the simulator: Run the build,
+then in the Debug navigator select one of the categories that you're interested
+in (CPU, Memory, Disk, Network). You should now see a button
+"Profile in Instruments" - click this to start a profiling session. Instruments
+will even offer to restart the app so that you can profile from the very
+beginning.
+
+[1] https://stackoverflow.com/q/63607158/1054378
