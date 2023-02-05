@@ -80,6 +80,11 @@ enum NodeTreeViewLayerDelegateEvent
   /// NSArray is empty, no node has been selected, i.e. there no longer is a
   /// selected node.
   NTVLDEventNodeTreeSelectedNodeChanged,
+  /// @brief Is sent whenever the symbol of a node changes. The event info
+  /// object that accompanies this event type is an NSArray that contains 1-n
+  /// horizontally consecutive NodeTreeViewCellPosition objects that indicate
+  /// which cells on the canvas display the node whose symbol has changed.
+  NTVLDEventNodeTreeNodeSymbolChanged,
 };
 
 
@@ -96,8 +101,8 @@ enum NodeTreeViewLayerDelegateEvent
 ///
 /// For performance reasons, and for optimizing battery life, the delegate
 /// should strive to reduce the layer's drawing to a minimum. For instance,
-/// the node connection lines do not need to be redrawn if a new node is created
-/// on a different tile.
+/// the node connection lines do not need to be redrawn if a node symbol
+/// changes.
 - (void) drawLayer;
 
 /// @brief This method is invoked to notify the delegate that the specified

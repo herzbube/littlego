@@ -173,7 +173,8 @@
     [[ApplicationStateManager sharedManager] beginSavePoint];
     [[LongRunningActionCounter sharedCounter] increment];
 
-    if (game.boardPosition.numberOfBoardPositions > 0 || game.state == GoGameStateGameHasEnded)
+    GoBoardPosition* boardPosition = game.boardPosition;
+    if (boardPosition.numberOfBoardPositions > 0 || game.state == GoGameStateGameHasEnded)
     {
       // Whoever invoked HandleBoardSetupInteractionCommand must have previously
       // made sure that it's OK to discard future nodes. We can therefore safely
@@ -189,6 +190,9 @@
       [game toggleHandicapPoint:self.point];
     else
       [game changeSetupPoint:self.point toStoneState:newStoneState];
+
+    GoNode* nodeWithChangedSetupData = boardPosition.currentNode;
+    [[NSNotificationCenter defaultCenter] postNotificationName:nodeSetupDataDidChange object:nodeWithChangedSetupData];
 
     SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];
     bool syncSuccess = [syncCommand submit];

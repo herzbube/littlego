@@ -134,6 +134,7 @@
   [center addObserver:self selector:@selector(nodeTreeViewBranchingStyleDidChange:) name:nodeTreeViewBranchingStyleDidChange object:nil];
   [center addObserver:self selector:@selector(nodeTreeViewNodeSelectionStyleDidChange:) name:nodeTreeViewNodeSelectionStyleDidChange object:nil];
   [center addObserver:self selector:@selector(nodeTreeViewSelectedNodeDidChange:) name:nodeTreeViewSelectedNodeDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeTreeViewNodeSymbolDidChange:) name:nodeTreeViewNodeSymbolDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 
   // KVO observing
@@ -381,6 +382,15 @@
 - (void) nodeTreeViewSelectedNodeDidChange:(NSNotification*)notification
 {
   [self notifyLayerDelegates:NTVLDEventNodeTreeSelectedNodeChanged eventInfo:notification.object];
+  [self delayedDrawLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeViewNodeSymbolDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeViewNodeSymbolDidChange:(NSNotification*)notification
+{
+  [self notifyLayerDelegates:NTVLDEventNodeTreeNodeSymbolChanged eventInfo:notification.object];
   [self delayedDrawLayers];
 }
 

@@ -48,4 +48,41 @@
   return [set1 isEqualToSet:set2];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Creates and returns an array containing the object in the receiver
+/// that are also in @a otherArray. The order in which objects appear in the
+/// returned array is not defined. Returns an empty array if @a otherArray is
+/// @e nil.
+///
+/// Object equality is tested using isEqual:().
+// -----------------------------------------------------------------------------
+- (NSArray*) intersectionWithArray:(NSArray*)otherArray
+{
+  if (! otherArray)
+    return @[];
+
+  NSArray* arrayToIterate;
+  NSArray* arrayToSearch;
+  if (self.count <= otherArray.count)
+  {
+    arrayToIterate = self;
+    arrayToSearch = otherArray;
+  }
+  else
+  {
+    arrayToIterate = otherArray;
+    arrayToSearch = self;
+  }
+
+  NSMutableArray* intersection = [NSMutableArray array];
+
+  for (id object in arrayToIterate)
+  {
+    if ([arrayToSearch containsObject:object])
+      [intersection addObject:object];
+  }
+
+  return intersection;
+}
+
 @end

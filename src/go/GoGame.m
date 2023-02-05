@@ -2035,10 +2035,6 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// includes any change to the property @e setupFirstMoveColor. Does nothing if
 /// no setup exists for the current board position.
 ///
-/// Posts #allSetupStonesWillDiscard to the global notification centre before
-/// any changes are made. Posts #allSetupStonesDidDiscard to the global
-/// notification centre after the discard is complete.
-///
 /// Raises @e NSInternalInconsistencyException if it is invoked when this GoGame
 /// object is not in state #GoGameStateGameHasStarted, or if it is in that state
 /// but already has moves. Summing it up, this property can be set only at the
@@ -2060,8 +2056,6 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     @throw exception;
   }
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:allSetupStonesWillDiscard object:self];
-
   GoNode* currentNode = self.boardPosition.currentNode;
   GoNodeSetup* nodeSetup = currentNode.goNodeSetup;
   if (! nodeSetup)
@@ -2071,8 +2065,6 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
   currentNode.goNodeSetup = nil;
 
   currentNode.zobristHash = [self.board.zobristTable hashForNode:currentNode inGame:self];
-
-  [[NSNotificationCenter defaultCenter] postNotificationName:allSetupStonesDidDiscard object:self];
 }
 
 @end

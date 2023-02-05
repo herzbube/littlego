@@ -24,6 +24,7 @@
 #import "../canvas/NodeTreeViewCell.h"
 #import "../canvas/NodeTreeViewCellPosition.h"
 #import "../../../ui/Tile.h"
+#import "../../../utility/NSArrayAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -32,6 +33,11 @@
 @interface NodeSymbolLayerDelegate()
 @property(nonatomic, assign) NodeTreeViewCanvas* nodeTreeViewCanvas;
 @property(nonatomic, retain) NSArray* drawingCellsOnTile;
+/// @brief The dirty rect calculated by notify:eventInfo:() that later needs to
+/// be used by drawLayer(). Used only when drawing is required because of a
+/// node symbol change.
+@property(nonatomic, assign) CGRect dirtyRectForNodeSymbolChanged;
+@property(nonatomic, retain) NSArray* nodeSymbolChangedPositionsOnTile;
 @end
 
 
@@ -53,6 +59,8 @@
 
   self.nodeTreeViewCanvas = nodeTreeViewCanvas;
   self.drawingCellsOnTile = @[];
+  self.dirtyRectForNodeSymbolChanged = CGRectZero;
+  self.nodeSymbolChangedPositionsOnTile = nil;
 
   return self;
 }
@@ -70,6 +78,7 @@
 
   self.nodeTreeViewCanvas = nil;
   self.drawingCellsOnTile = nil;
+  self.nodeSymbolChangedPositionsOnTile = nil;
 
   [super dealloc];
 }
@@ -81,6 +90,14 @@
 {
   NodeTreeViewCGLayerCache* cache = [NodeTreeViewCGLayerCache sharedCache];
   [cache invalidateAllNodeSymbolLayers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invalidates the "node symbol changed" dirty rectangle.
+// -----------------------------------------------------------------------------
+- (void) invalidateDirtyRectForNodeSymbolChanged
+{
+  self.dirtyRectForNodeSymbolChanged = CGRectZero;
 }
 
 // -----------------------------------------------------------------------------
@@ -115,6 +132,8 @@
     {
       [self invalidateLayers];
       self.drawingCellsOnTile = [self calculateDrawingCellsOnTile];
+      [self invalidateDirtyRectForNodeSymbolChanged];
+      self.nodeSymbolChangedPositionsOnTile = nil;
       self.dirty = true;
       break;
     }
@@ -124,6 +143,8 @@
       if (! [self.drawingCellsOnTile isEqualToArray:newDrawingCellsOnTile])
       {
         self.drawingCellsOnTile = newDrawingCellsOnTile;
+        [self invalidateDirtyRectForNodeSymbolChanged];
+        self.nodeSymbolChangedPositionsOnTile = nil;
         self.dirty = true;
       }
       break;
@@ -133,13 +154,58 @@
     case NTVLDEventNodeTreeAlignMoveNodesChanged:
     case NTVLDEventNodeTreeBranchingStyleChanged:
     {
+      [self invalidateDirtyRectForNodeSymbolChanged];
+      self.nodeSymbolChangedPositionsOnTile = nil;
       self.dirty = true;
+      break;
+    }
+    case NTVLDEventNodeTreeNodeSymbolChanged:
+    {
+      NSArray* newNodeSymbolChangedPositionsOnTile = [self.drawingCellsOnTile intersectionWithArray:eventInfo];
+      if (newNodeSymbolChangedPositionsOnTile.count > 0)
+      {
+        NodeTreeViewCellPosition* position = newNodeSymbolChangedPositionsOnTile.firstObject;
+        NodeTreeViewCell* cell = [self.nodeTreeViewCanvas cellAtPosition:position];
+        if (cell.isMultipart)
+        {
+          self.dirtyRectForNodeSymbolChanged = [NodeTreeViewDrawingHelper drawingRectForTile:self.tile
+                                                                           multipartCellPart:cell.part
+                                                                                partPosition:position
+                                                                                     metrics:self.nodeTreeViewMetrics];
+        }
+        else
+        {
+          self.dirtyRectForNodeSymbolChanged = [NodeTreeViewDrawingHelper drawingRectForTile:self.tile
+                                                                              cellAtPosition:position
+                                                                                     metrics:self.nodeTreeViewMetrics];
+        }
+        self.nodeSymbolChangedPositionsOnTile = newNodeSymbolChangedPositionsOnTile;
+        self.dirty = true;
+      }
       break;
     }
     default:
     {
       break;
     }
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NodeTreeViewLayerDelegate method.
+// -----------------------------------------------------------------------------
+- (void) drawLayer
+{
+  if (self.dirty)
+  {
+    self.dirty = false;
+
+    if (CGRectIsEmpty(self.dirtyRectForNodeSymbolChanged))
+      [self.layer setNeedsDisplay];
+    else
+      [self.layer setNeedsDisplayInRect:self.dirtyRectForNodeSymbolChanged];
+
+    [self invalidateDirtyRectForNodeSymbolChanged];
   }
 }
 
@@ -178,7 +244,18 @@
   CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
                                                          metrics:self.nodeTreeViewMetrics];
 
-  for (NodeTreeViewCellPosition* position in self.drawingCellsOnTile)
+  NSArray* positionsToDraw;
+  if (self.nodeSymbolChangedPositionsOnTile)
+  {
+    positionsToDraw = [[self.nodeSymbolChangedPositionsOnTile retain] autorelease];
+    self.nodeSymbolChangedPositionsOnTile = nil;
+  }
+  else
+  {
+    positionsToDraw = self.drawingCellsOnTile;
+  }
+
+  for (NodeTreeViewCellPosition* position in positionsToDraw)
   {
     NodeTreeViewCell* cell = [self.nodeTreeViewCanvas cellAtPosition:position];
     if (! cell || cell.symbol == NodeTreeViewCellSymbolNone)

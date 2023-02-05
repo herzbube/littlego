@@ -114,7 +114,8 @@
     [[ApplicationStateManager sharedManager] beginSavePoint];
     [[LongRunningActionCounter sharedCounter] increment];
 
-    if (game.boardPosition.numberOfBoardPositions > 0 || game.state == GoGameStateGameHasEnded)
+    GoBoardPosition* boardPosition = game.boardPosition;
+    if (boardPosition.numberOfBoardPositions > 0 || game.state == GoGameStateGameHasEnded)
     {
       // Whoever invoked DiscardAllSetupStonesCommand must have previously
       // made sure that it's OK to discard future nodes. We can therefore safely
@@ -126,7 +127,13 @@
       [[[[ChangeAndDiscardCommand alloc] init] autorelease] submit];
     }
 
+    [[NSNotificationCenter defaultCenter] postNotificationName:allSetupStonesWillDiscard object:nil];
+
     [game discardAllSetup];
+
+    [[NSNotificationCenter defaultCenter] postNotificationName:allSetupStonesDidDiscard object:nil];
+    GoNode* nodeWithChangedSetupData = boardPosition.currentNode;
+    [[NSNotificationCenter defaultCenter] postNotificationName:nodeSetupDataDidChange object:nodeWithChangedSetupData];
 
     SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];
     bool syncSuccess = [syncCommand submit];

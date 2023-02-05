@@ -719,11 +719,12 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the rectangle occupied by the multipart cell on the "canvas",
-/// i.e. the area covered by the entire node tree view, of which the specified
-/// sub-cell is a part of. @a part identifies the sub-cell within the multipart
-/// cell, @a position the sub-cell's position on the canvas. The origin is in
-/// the upper-left corner.
+/// @brief Returns the rectangle occupied by the specified multipart cell on
+/// the "canvas", i.e. the area covered by the entire node tree view. The
+/// multipart cell is identified by one of its sub-cells. @a part identifies
+/// the sub-cell within the multipart cell, @a position the sub-cell's position
+/// on the canvas. The origin of the returned rectangle is in the upper-left
+/// corner.
 // -----------------------------------------------------------------------------
 + (CGRect) canvasRectForMultipartCellPart:(int)part
                              partPosition:(NodeTreeViewCellPosition*)position
@@ -743,7 +744,8 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 // -----------------------------------------------------------------------------
 /// @brief Returns the rectangle occupied by a cell on the "canvas", i.e. the
 /// area covered by the entire node tree view, which is identified by
-/// @a position. The origin is in the upper-left corner.
+/// @a position. The cell can be either a standalone cell, or a sub-cell. The
+/// origin of the returned rectangle is in the upper-left corner.
 // -----------------------------------------------------------------------------
 + (CGRect) canvasRectForCellAtPosition:(NodeTreeViewCellPosition*)position
                                metrics:(NodeTreeViewMetrics*)metrics
@@ -757,8 +759,9 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 // -----------------------------------------------------------------------------
 /// @brief Returns the rectangle occupied by @a layer on the "canvas", i.e. the
 /// area covered by the entire node tree view, after placing @a layer so that it
-/// is centered within the cell identified by @a position. The origin is in the
-/// upper-left corner.
+/// is centered within the cell identified by @a position. The cell can be
+/// either a standalone cell, or a sub-cell. The origin of the returned
+/// rectangle is in the upper-left corner.
 // -----------------------------------------------------------------------------
 + (CGRect) canvasRectForScaledLayer:(CGLayerRef)layer
                          centeredAt:(NodeTreeViewCellPosition*)position
@@ -773,8 +776,9 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 // -----------------------------------------------------------------------------
 /// @brief Returns a rectangle of size @a size whose center on the "canvas",
 /// i.e. the area covered by the entire node tree view, is the same as the
-/// center of the cell identified by @a position. The origin is in the
-/// upper-left corner.
+/// center of the cell identified by @a position. The cell can be either a
+/// standalone cell, or a sub-cell. The origin of the returned rectangle is in
+/// the upper-left corner.
 // -----------------------------------------------------------------------------
 + (CGRect) canvasRectForSize:(CGSize)size
                   centeredAt:(NodeTreeViewCellPosition*)position
@@ -785,6 +789,75 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
   cellRect.size = metrics.nodeTreeViewCellSize;
 
   return [UiUtilities rectWithSize:size centeredInRect:cellRect];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the rectangle occupied by the specified multipart cell on
+/// @a tile. The multipart cell is identified by one of its sub-cells. @a part
+/// identifies the sub-cell within the multipart cell, @a position the
+/// sub-cell's position on the canvas. The origin of the returned rectangle is
+/// in the upper-left corner. Returns CGRectZero if the multipart cell is not
+/// located on @a tile.
+// -----------------------------------------------------------------------------
++ (CGRect) drawingRectForTile:(id<Tile>)tile
+            multipartCellPart:(int)part
+                 partPosition:(NodeTreeViewCellPosition*)position
+                      metrics:(NodeTreeViewMetrics*)metrics
+{
+  if (! position)
+    return CGRectZero;
+
+  CGRect canvasRectForTile = [NodeTreeViewDrawingHelper canvasRectForTile:tile
+                                                                  metrics:metrics];
+  CGRect canvasRectForMultipartCell = [NodeTreeViewDrawingHelper canvasRectForMultipartCellPart:part
+                                                                                   partPosition:position
+                                                                                        metrics:metrics];
+  CGRect canvasRectForMultipartCellOnTile = CGRectIntersection(canvasRectForTile, canvasRectForMultipartCell);
+  // Rectangles that are adjacent and share a side *do* intersect: The
+  // intersection rectangle has either zero width or zero height, depending on
+  // which side the two intersecting rectangles share. For this reason, we
+  // must check CGRectIsEmpty() in addition to CGRectIsNull().
+  if (CGRectIsNull(canvasRectForMultipartCellOnTile) || CGRectIsEmpty(canvasRectForMultipartCellOnTile))
+  {
+    return CGRectZero;
+  }
+
+  CGRect drawingRectForMultipartCell = [NodeTreeViewDrawingHelper drawingRectFromCanvasRect:canvasRectForMultipartCellOnTile
+                                                                             inTileWithRect:canvasRectForTile];
+  return drawingRectForMultipartCell;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the rectangle occupied by the specified cell on @a tile.
+/// @a position identifies the cell's position on the canvas. The cell can be
+/// either a standalone cell, or a sub-cell. The origin of the returned
+/// rectangle is in the upper-left corner. Returns CGRectZero if the standalone
+/// cell is not located on @a tile.
+// -----------------------------------------------------------------------------
++ (CGRect) drawingRectForTile:(id<Tile>)tile
+               cellAtPosition:(NodeTreeViewCellPosition*)position
+                      metrics:(NodeTreeViewMetrics*)metrics
+{
+  if (! position)
+    return CGRectZero;
+
+  CGRect canvasRectForTile = [NodeTreeViewDrawingHelper canvasRectForTile:tile
+                                                                  metrics:metrics];
+  CGRect canvasRectForCell = [NodeTreeViewDrawingHelper canvasRectForCellAtPosition:position
+                                                                            metrics:metrics];
+  CGRect canvasRectForCellOnTile = CGRectIntersection(canvasRectForTile, canvasRectForCell);
+  // Rectangles that are adjacent and share a side *do* intersect: The
+  // intersection rectangle has either zero width or zero height, depending on
+  // which side the two intersecting rectangles share. For this reason, we
+  // must check CGRectIsEmpty() in addition to CGRectIsNull().
+  if (CGRectIsNull(canvasRectForCellOnTile) || CGRectIsEmpty(canvasRectForCellOnTile))
+  {
+    return CGRectZero;
+  }
+
+  CGRect drawingRectForCell = [NodeTreeViewDrawingHelper drawingRectFromCanvasRect:canvasRectForCellOnTile
+                                                                    inTileWithRect:canvasRectForTile];
+  return drawingRectForCell;
 }
 
 // -----------------------------------------------------------------------------

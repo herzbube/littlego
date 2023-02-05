@@ -83,7 +83,15 @@ NSString* boardViewMarkupLocationDidChange = @"BoardViewMarkupLocationDidChange"
 NSString* boardViewSelectionRectangleDidChange = @"BoardViewSelectionRectangleDidChange";
 // Go node notifications
 NSString* goNodeTreeLayoutDidChange = @"GoNodeTreeLayoutDidChange";
-NSString* goNodeRepresentationInTreeViewDidChange = @"GoNodeRepresentationInTreeViewDidChange";
+NSString* handicapPointDidChange = @"HandicapPointDidChange";
+NSString* setupPointDidChange = @"SetupPointDidChange";
+NSString* nodeSetupDataDidChange = @"NodeSetupDataDidChange";
+NSString* allSetupStonesWillDiscard = @"AllSetupStonesWillDiscard";
+NSString* allSetupStonesDidDiscard = @"AllSetupStonesDidDiscard";
+NSString* nodeAnnotationDataDidChange = @"NodeAnnotationDataDidChange";
+NSString* markupOnPointsDidChange = @"MarkupOnPointsDidChange";
+NSString* nodeMarkupDataDidChange = @"NodeMarkupDataDidChange";
+NSString* allMarkupDidDiscard = @"AllMarkupDidDiscard";
 // Game variation notifications
 NSString* numberOfBoardPositionsDidChange = @"NumberOfBoardPositionsDidChange";
 NSString* currentBoardPositionDidChange = @"CurrentBoardPositionDidChange";
@@ -97,6 +105,7 @@ NSString* nodeTreeViewAlignMoveNodesDidChange = @"NodeTreeViewAlignMoveNodesDidC
 NSString* nodeTreeViewBranchingStyleDidChange = @"NodeTreeViewBranchingStyleDidChange";
 NSString* nodeTreeViewNodeSelectionStyleDidChange = @"NodeTreeViewNodeSelectionStyleDidChange";
 NSString* nodeTreeViewSelectedNodeDidChange = @"NodeTreeViewSelectedNodeDidChange";
+NSString* nodeTreeViewNodeSymbolDidChange = @"NodeTreeViewNodeSymbolDidChange";
 // Other notifications
 NSString* longRunningActionStarts = @"LongRunningActionStarts";
 NSString* longRunningActionEnds = @"LongRunningActionEnds";
@@ -105,15 +114,8 @@ NSString* playersAndProfilesDidReset = @"PlayersAndProfilesDidReset";
 NSString* territoryStatisticsChanged = @"TerritoryStatisticsChanged";
 NSString* uiAreaPlayModeWillChange = @"UIAreaPlayModeWillChange";
 NSString* uiAreaPlayModeDidChange = @"UIAreaPlayModeDidChange";
-NSString* handicapPointDidChange = @"HandicapPointDidChange";
-NSString* setupPointDidChange = @"SetupPointDidChange";
-NSString* allSetupStonesWillDiscard = @"AllSetupStonesWillDiscard";
-NSString* allSetupStonesDidDiscard = @"AllSetupStonesDidDiscard";
 NSString* boardViewAnimationWillBegin = @"BoardViewAnimationWillBegin";
 NSString* boardViewAnimationDidEnd = @"BoardViewAnimationDidEnd";
-NSString* nodeAnnotationDataDidChange = @"NodeAnnotationDataDidChange";
-NSString* markupOnPointsDidChange = @"MarkupOnPointsDidChange";
-NSString* allMarkupDidDiscard = @"AllMarkupDidDiscard";
 
 // Default values for properties that define how the Go board is displayed
 const float iPhoneMaximumZoomScale = 2.5;

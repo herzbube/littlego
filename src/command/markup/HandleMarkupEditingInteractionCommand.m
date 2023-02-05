@@ -464,7 +464,7 @@ enum MarkupEditingInteraction
     if (pointsWithChangedMarkup)
     {
       applicationStateDidChange = true;
-      [self postMarkupOnPointsDidChangeNotification:pointsWithChangedMarkup];
+      [self postNotificationsWithNode:node pointsWithChangedMarkup:pointsWithChangedMarkup];
       [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
     }
   }
@@ -477,12 +477,18 @@ enum MarkupEditingInteraction
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Posts #markupOnPointsDidChange to the global notification center
-/// with an appropriate notification object.
+/// @brief Posts #nodeMarkupDataDidChange and #markupOnPointsDidChange to the
+/// global notification center, with appropriate notification objects.
+///
+/// #nodeMarkupDataDidChange is posted with @a node as the notification object.
+///
+/// #markupOnPointsDidChange is posted with a notification object that is based
+/// on the data in @a pointsWithChangedMarkup.
 // -----------------------------------------------------------------------------
-- (void) postMarkupOnPointsDidChangeNotification:(NSArray*)pointsWithChangedMarkup
+- (void) postNotificationsWithNode:(GoNode*)node pointsWithChangedMarkup:(NSArray*)pointsWithChangedMarkup
 {
-  NSArray* notificationObject;
+  NSObject* notificationObjectNodeMarkupDataDidChange = node;
+  NSArray* notificationObjectMarkupOnPointsDidChange;
 
   if (pointsWithChangedMarkup.count == 2 &&
       [pointsWithChangedMarkup.firstObject isKindOfClass:[GoPoint class]] &&
@@ -493,14 +499,15 @@ enum MarkupEditingInteraction
     NSArray* pointsInConnectionRectangle = [GoUtilities pointsInRectangleDelimitedByCornerPoint:connectionFromPoint
                                                                             oppositeCornerPoint:connectionToPoint
                                                                                          inGame:[GoGame sharedGame]];
-    notificationObject = @[connectionFromPoint, connectionToPoint, pointsInConnectionRectangle];
+    notificationObjectMarkupOnPointsDidChange = @[connectionFromPoint, connectionToPoint, pointsInConnectionRectangle];
   }
   else
   {
-    notificationObject = pointsWithChangedMarkup;
+    notificationObjectMarkupOnPointsDidChange = pointsWithChangedMarkup;
   }
 
-  [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:notificationObject];
+  [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:notificationObjectMarkupOnPointsDidChange];
+  [[NSNotificationCenter defaultCenter] postNotificationName:nodeMarkupDataDidChange object:notificationObjectNodeMarkupDataDidChange];
 }
 
 // -----------------------------------------------------------------------------

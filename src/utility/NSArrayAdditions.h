@@ -28,4 +28,5 @@
 @interface NSArray(NSArrayAdditions)
 + (NSArray*) arrayWithArrayInReverseOrder:(NSArray*)otherArray;
 - (BOOL) isEqualToArrayIgnoringOrder:(NSArray*)otherArray;
+- (NSArray*) intersectionWithArray:(NSArray*)otherArray;
 @end

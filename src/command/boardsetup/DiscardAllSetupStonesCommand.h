@@ -35,6 +35,11 @@
 /// GTP engine, saves the application state and performs a backup of the
 /// current game.
 ///
+/// Posts #allSetupStonesWillDiscard to the global notification centre before
+/// any changes are made. Posts #allSetupStonesDidDiscard and
+/// #nodeSetupDataDidChange to the global notification centre after the discard
+/// is complete.
+///
 /// @note Because DiscardAllSetupStonesCommand always shows an alert as its
 /// first action, command execution will always succeed and control will always
 /// return to the client who submitted the command before the setup stones are

@@ -253,24 +253,25 @@ NS_ASSUME_NONNULL_BEGIN
 // -----------------------------------------------------------------------------
 - (void) temporarilyRemoveOriginalMarkupToMoveAtGestureStartPoint:(GoPoint*)gestureStartPoint
 {
+  GoNode* node = [self currentNode];
   GoNodeMarkup* nodeMarkup = [self currentNodeMarkup];
 
   switch (self.markupCategoryToMove)
   {
     case MarkupToolSymbol:
     {
-      [self temporarilyRemoveOriginalSymbolToMoveAtGestureStartPoint:gestureStartPoint nodeMarkup:nodeMarkup];
+      [self temporarilyRemoveOriginalSymbolToMoveAtGestureStartPoint:gestureStartPoint nodeMarkup:nodeMarkup node:node];
       break;
     }
     case MarkupToolConnection:
     {
-      [self temporarilyRemoveOriginalConnectionToMove:nodeMarkup];
+      [self temporarilyRemoveOriginalConnectionToMove:nodeMarkup node:node];
       break;
     }
     case MarkupToolMarker:
     case MarkupToolLabel:
     {
-      [self temporarilyRemoveOriginalLabelToMoveAtGestureStartPoint:gestureStartPoint nodeMarkup:nodeMarkup];
+      [self temporarilyRemoveOriginalLabelToMoveAtGestureStartPoint:gestureStartPoint nodeMarkup:nodeMarkup node:node];
       break;
     }
     default:
@@ -404,12 +405,16 @@ NS_ASSUME_NONNULL_BEGIN
 // -----------------------------------------------------------------------------
 - (void) temporarilyRemoveOriginalSymbolToMoveAtGestureStartPoint:(GoPoint*)gestureStartPoint
                                                        nodeMarkup:(GoNodeMarkup*)nodeMarkup
+                                                             node:(GoNode*)node
 {
   NSString* intersection = gestureStartPoint.vertex.string;
   [nodeMarkup removeSymbolAtVertex:intersection];
 
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+
   NSArray* pointsWithChangedMarkup = @[gestureStartPoint];
-  [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+  [center postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+  [center postNotificationName:nodeMarkupDataDidChange object:node];
 }
 
 // -----------------------------------------------------------------------------
@@ -434,8 +439,13 @@ NS_ASSUME_NONNULL_BEGIN
     [nodeMarkup setSymbol:symbol
                  atVertex:gestureStartPoint.vertex.string];
 
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+
     NSArray* pointsWithChangedMarkup = @[gestureStartPoint];
-    [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+    [center postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+
+    GoNode* node = [self currentNode];
+    [center postNotificationName:nodeMarkupDataDidChange object:node];
   }
 }
 
@@ -511,15 +521,20 @@ NS_ASSUME_NONNULL_BEGIN
 /// gesture completes) or restored (if the gesture is canceled).
 // -----------------------------------------------------------------------------
 - (void) temporarilyRemoveOriginalConnectionToMove:(GoNodeMarkup*)nodeMarkup
+                                              node:(GoNode*)node
 {
   [nodeMarkup removeConnectionFromVertex:self.connectionToMoveStartPoint.vertex.string
                                 toVertex:self.connectionToMoveEndPoint.vertex.string];
+
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
 
   NSArray* pointsInConnectionRectangle = [GoUtilities pointsInRectangleDelimitedByCornerPoint:self.connectionToMoveStartPoint
                                                                           oppositeCornerPoint:self.connectionToMoveEndPoint
                                                                                        inGame:[GoGame sharedGame]];
   NSArray* pointsWithChangedMarkup = @[self.connectionToMoveStartPoint, self.connectionToMoveEndPoint, pointsInConnectionRectangle];
-  [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+  [center postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+
+  [center postNotificationName:nodeMarkupDataDidChange object:node];
 }
 
 // -----------------------------------------------------------------------------
@@ -558,11 +573,16 @@ NS_ASSUME_NONNULL_BEGIN
                    fromVertex:self.connectionToMoveStartPoint.vertex.string
                      toVertex:self.connectionToMoveEndPoint.vertex.string];
 
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+
     NSArray* pointsInConnectionRectangle = [GoUtilities pointsInRectangleDelimitedByCornerPoint:self.connectionToMoveStartPoint
                                                                             oppositeCornerPoint:self.connectionToMoveEndPoint
                                                                                          inGame:[GoGame sharedGame]];
     NSArray* pointsWithChangedMarkup = @[self.connectionToMoveStartPoint, self.connectionToMoveEndPoint, pointsInConnectionRectangle];
-    [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+    [center postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+
+    GoNode* node = [self currentNode];
+    [center postNotificationName:nodeMarkupDataDidChange object:node];
   }
 }
 
@@ -601,13 +621,18 @@ NS_ASSUME_NONNULL_BEGIN
 // -----------------------------------------------------------------------------
 - (void) temporarilyRemoveOriginalLabelToMoveAtGestureStartPoint:(GoPoint*)gestureStartPoint
                                                       nodeMarkup:(GoNodeMarkup*)nodeMarkup
+                                                            node:(GoNode*)node
 {
   NSString* intersection = gestureStartPoint.vertex.string;
   [nodeMarkup removeLabelAtVertex:intersection];
 
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+
   enum GoMarkupLabel label = [MarkupUtilities labelForMarkupType:self.markupTypeToMove];
   NSArray* pointsWithChangedMarkup = @[gestureStartPoint, [NSNumber numberWithInt:label]];
-  [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+  [center postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+
+  [center postNotificationName:nodeMarkupDataDidChange object:node];
 }
 
 // -----------------------------------------------------------------------------
@@ -634,12 +659,28 @@ NS_ASSUME_NONNULL_BEGIN
                labelText:self.labelTextToMove
                 atVertex:gestureStartPoint.vertex.string];
 
+    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+
     NSArray* pointsWithChangedMarkup = @[gestureStartPoint, [NSNumber numberWithInt:label]];
-    [[NSNotificationCenter defaultCenter] postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+    [center postNotificationName:markupOnPointsDidChange object:pointsWithChangedMarkup];
+
+    GoNode* node = [self currentNode];
+    [center postNotificationName:nodeMarkupDataDidChange object:node];
   }
 }
 
 #pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the GoNode object that corresponds to the current board
+/// position.
+// -----------------------------------------------------------------------------
+- (GoNode*) currentNode
+{
+  GoGame* game = [GoGame sharedGame];
+  GoBoardPosition* boardPosition = game.boardPosition;
+  return boardPosition.currentNode;
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the GoNodeMarkup object associated with the node of the
@@ -647,9 +688,7 @@ NS_ASSUME_NONNULL_BEGIN
 // -----------------------------------------------------------------------------
 - (GoNodeMarkup*) currentNodeMarkup
 {
-  GoGame* game = [GoGame sharedGame];
-  GoBoardPosition* boardPosition = game.boardPosition;
-  GoNode* currentNode = boardPosition.currentNode;
+  GoNode* currentNode = [self currentNode];
   GoNodeMarkup* nodeMarkup = currentNode.goNodeMarkup;
   return nodeMarkup;
 }

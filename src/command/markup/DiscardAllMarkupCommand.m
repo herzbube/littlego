@@ -114,6 +114,7 @@
     if (applicationStateDidChange)
     {
       [[NSNotificationCenter defaultCenter] postNotificationName:allMarkupDidDiscard object:currentNode];
+      [[NSNotificationCenter defaultCenter] postNotificationName:nodeMarkupDataDidChange object:currentNode];
       [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
     }
   }

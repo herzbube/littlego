@@ -45,6 +45,8 @@
 @property(nonatomic, assign) bool selectedNodePositionsNeedsUpdate;
 @property(nonatomic, retain) NSArray* cachedSelectedNodePositions;
 @property(nonatomic, assign) bool nodeSelectionStyleNeedsUpdate;
+@property(nonatomic, assign) bool nodeSymbolNeedsUpdate;
+@property(nonatomic, retain) GoNode* nodeWhoseSymbolNeedsUpdate;
 @end
 
 
@@ -73,6 +75,8 @@
   self.selectedNodePositionsNeedsUpdate = false;
   self.cachedSelectedNodePositions = nil;
   self.nodeSelectionStyleNeedsUpdate = false;
+  self.nodeSymbolNeedsUpdate = false;
+  self.nodeWhoseSymbolNeedsUpdate = nil;
 
   [self setupNotificationResponders];
 
@@ -90,6 +94,7 @@
   self.nodeTreeViewModel = nil;
   self.canvasData = nil;
   self.cachedSelectedNodePositions = nil;
+  self.nodeWhoseSymbolNeedsUpdate = nil;
 
   [super dealloc];
 }
@@ -106,6 +111,9 @@
   [center addObserver:self selector:@selector(goNodeTreeLayoutDidChange:) name:goNodeTreeLayoutDidChange object:nil];
   [center addObserver:self selector:@selector(currentGameVariationDidChange:) name:currentGameVariationDidChange object:nil];
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeSetupDataDidChange:) name:nodeSetupDataDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeAnnotationDataDidChange:) name:nodeAnnotationDataDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeMarkupDataDidChange:) name:nodeMarkupDataDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 
   [self.nodeTreeViewModel addObserver:self forKeyPath:@"condenseMoveNodes" options:0 context:NULL];
@@ -171,6 +179,36 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeSetupDataDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeSetupDataDidChange:(NSNotification*)notification
+{
+  self.nodeSymbolNeedsUpdate = true;
+  self.nodeWhoseSymbolNeedsUpdate = notification.object;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeAnnotationDataDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeAnnotationDataDidChange:(NSNotification*)notification
+{
+  self.nodeSymbolNeedsUpdate = true;
+  self.nodeWhoseSymbolNeedsUpdate = notification.object;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeMarkupDataDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeMarkupDataDidChange:(NSNotification*)notification
+{
+  self.nodeSymbolNeedsUpdate = true;
+  self.nodeWhoseSymbolNeedsUpdate = notification.object;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #longRunningActionEnds notification.
 // -----------------------------------------------------------------------------
 - (void) longRunningActionEnds:(NSNotification*)notification
@@ -227,6 +265,7 @@
   [self updateCanvas];
   [self updateSelectedNodePositions];
   [self updateNodeSelectionStyle];
+  [self updateNodeSymbol];
 }
 
 // -----------------------------------------------------------------------------
@@ -291,6 +330,41 @@
   [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeViewNodeSelectionStyleDidChange object:nil];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Updater method.
+// -----------------------------------------------------------------------------
+- (void) updateNodeSymbol
+{
+  if (! self.nodeSymbolNeedsUpdate)
+    return;
+  self.nodeSymbolNeedsUpdate = false;
+
+  if (! self.nodeWhoseSymbolNeedsUpdate)
+    return;
+
+  enum NodeTreeViewCellSymbol newNodeSymbol = [self symbolForNode:self.nodeWhoseSymbolNeedsUpdate];
+  NodeTreeViewBranchTuple* branchTuple = [self branchTupleForNode:self.nodeWhoseSymbolNeedsUpdate];
+
+  self.nodeWhoseSymbolNeedsUpdate = nil;
+
+  if (branchTuple->symbol == newNodeSymbol)
+    return;
+
+  branchTuple->symbol = newNodeSymbol;
+
+  NSArray* positionsOfNodeWithChangedSymbol = [self positionsForBranchTuple:branchTuple];
+  for (NodeTreeViewCellPosition* position in positionsOfNodeWithChangedSymbol)
+  {
+    NSArray* tuple = [self.canvasData.cellsDictionary objectForKey:position];
+    NodeTreeViewCell* cell = tuple.firstObject;
+    cell.symbol = newNodeSymbol;
+
+    self.canvasData.cellsDictionary[position] = @[cell, tuple.lastObject];
+  }
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeViewNodeSymbolDidChange object:positionsOfNodeWithChangedSymbol];
+}
+
 #pragma mark - Public API
 
 // -----------------------------------------------------------------------------
@@ -340,26 +414,8 @@
 // -----------------------------------------------------------------------------
 - (NSArray*) positionsForNode:(GoNode*)node
 {
-  NSMutableArray* positions = [NSMutableArray array];
-
-  if (! node)
-    return positions;
-
-  NSValue* key = [NSValue valueWithNonretainedObject:node];
-  NodeTreeViewBranchTuple* branchTuple = [self.canvasData.nodeMap objectForKey:key];
-  if (! branchTuple)
-    return positions;
-
-  unsigned short xPositionOfFirstCell = branchTuple->xPositionOfFirstCell;
-  unsigned short xPositionOfLastCell = branchTuple->xPositionOfFirstCell + branchTuple->numberOfCellsForNode - 1;
-  for (unsigned short xPosition = xPositionOfFirstCell; xPosition <= xPositionOfLastCell; xPosition++)
-  {
-    NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition
-                                                                               y:branchTuple->branch->yPosition];
-    [positions addObject:position];
-  }
-
-  return positions;
+  NodeTreeViewBranchTuple* branchTuple = [self branchTupleForNode:node];
+  return [self positionsForBranchTuple:branchTuple];
 }
 
 // -----------------------------------------------------------------------------
@@ -1904,6 +1960,45 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 }
 
 #pragma mark - Private API - Other methods
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the NodeTreeViewBranchTuple object that corresponds to
+/// @a node. Returns @e nil if @a node is @e nil or if no such object exists.
+// -----------------------------------------------------------------------------
+- (NodeTreeViewBranchTuple*) branchTupleForNode:(GoNode*)node
+{
+  if (! node)
+    return nil;
+
+  NSValue* key = [NSValue valueWithNonretainedObject:node];
+  NodeTreeViewBranchTuple* branchTuple = [self.canvasData.nodeMap objectForKey:key];
+  return branchTuple;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a list of horizontally consecutive NodeTreeViewCellPosition
+/// objects that indicate which cells on the canvas display the node represented
+/// by @a branchTuple. The list is empty if @a branchTuple is @e nil, or if no
+/// positions exist for @a branchTuple.
+// -----------------------------------------------------------------------------
+- (NSArray*) positionsForBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
+{
+  NSMutableArray* positions = [NSMutableArray array];
+
+  if (! branchTuple)
+    return positions;
+
+  unsigned short xPositionOfFirstCell = branchTuple->xPositionOfFirstCell;
+  unsigned short xPositionOfLastCell = branchTuple->xPositionOfFirstCell + branchTuple->numberOfCellsForNode - 1;
+  for (unsigned short xPosition = xPositionOfFirstCell; xPosition <= xPositionOfLastCell; xPosition++)
+  {
+    NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition
+                                                                               y:branchTuple->branch->yPosition];
+    [positions addObject:position];
+  }
+
+  return positions;
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the @e selected property value of those NodeTreeViewCell

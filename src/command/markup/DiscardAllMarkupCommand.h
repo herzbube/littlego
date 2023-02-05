@@ -26,8 +26,8 @@
 /// confirmation.
 ///
 /// After it has made the discard, DiscardAllMarkupCommand posts the
-/// notification #allMarkupDidDiscard, performs a backup of the current game
-/// and saves the application state.
+/// notifications #allMarkupDidDiscard and #nodeMarkupDataDidChange, performs
+/// a backup of the current game and saves the application state.
 ///
 /// @note Because DiscardAllMarkupCommand always shows an alert as its
 /// first action, command execution will always succeed and control will always

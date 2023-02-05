@@ -1048,7 +1048,8 @@ extern NSString* boardViewPanningGestureWillStart;
 extern NSString* boardViewPanningGestureWillEnd;
 /// @brief Is sent to indicate that the board view changed the location of the
 /// stone being placed, typically to display it at a new intersection. Is sent
-/// after #boardViewPanningGestureWillStart and after
+/// once after #boardViewPanningGestureWillStart, 0-n times before
+/// #boardViewPanningGestureWillEnd, and once after
 /// #boardViewPanningGestureWillEnd.
 ///
 /// An NSArray object is associated with the notification that contains
@@ -1077,8 +1078,10 @@ extern NSString* boardViewPanningGestureWillEnd;
 /// notification has been delivered.
 extern NSString* boardViewStoneLocationDidChange;
 /// @brief Is sent to indicate that the board view changed the location of a
-/// markup element, typically to display it at a new intersection. Is sent after
-/// #boardViewPanningGestureWillStart and after #boardViewPanningGestureWillEnd.
+/// markup element, typically to display it at a new intersection. Is sent once
+/// after #boardViewPanningGestureWillStart, then 0-n times before
+/// #boardViewPanningGestureWillEnd, and once after
+/// #boardViewPanningGestureWillEnd.
 ///
 /// An NSArray object is associated with the notification that contains
 /// information about the new markup element location.
@@ -1109,7 +1112,8 @@ extern NSString* boardViewStoneLocationDidChange;
 /// notification has been delivered.
 extern NSString* boardViewMarkupLocationDidChange;
 /// @brief Is sent to indicate that the board view changed a selection
-/// rectangle. Is sent after #boardViewPanningGestureWillStart and after
+/// rectangle. Is sent once after #boardViewPanningGestureWillStart, 0-n times
+/// before #boardViewPanningGestureWillEnd, and once after
 /// #boardViewPanningGestureWillEnd.
 ///
 /// An NSArray object is associated with the notification that contains
@@ -1145,10 +1149,70 @@ extern NSString* boardViewSelectionRectangleDidChange;
 /// nodes in GoNodeModel has changed, i.e. one or more nodes were added, deleted
 /// or moved to a new location.
 extern NSString* goNodeTreeLayoutDidChange;
-/// @brief Is sent to indicate that the content of a node has changed in a way
-/// that causes its representation in the node tree view to change. The GoNode
-/// object whose content changed is associated with the notification.
-extern NSString* goNodeRepresentationInTreeViewDidChange;
+// TODO xxx remove if no longer needed
+/// @brief Is sent to indicate that the state of an intersection has changed
+/// during board setup. The intersection now has a handicap stone, or a
+/// previously set handicap stone has been removed. The GoPoint object that
+/// identifies the intersection is associated with the notification.
+extern NSString* handicapPointDidChange;
+/// @brief Is sent to indicate that the state of an intersection has changed
+/// during board setup. The intersection now has a black or white stone, or the
+/// color of a previously set setup stone has been changed, or a previously set
+/// setup stone has been removed. The GoPoint object that identifies the
+/// intersection is associated with the notification.
+extern NSString* setupPointDidChange;
+/// @brief Is sent to indicate that all setup stones are about to be discarded.
+extern NSString* allSetupStonesWillDiscard;
+/// @brief Is sent to indicate that all setup stones have been discarded.
+extern NSString* allSetupStonesDidDiscard;
+/// @brief Is sent to indicate that the setup data in a node changed. The
+/// GoNode object that identifies the node with the changed data is associated
+/// with the notification.
+extern NSString* nodeSetupDataDidChange;
+/// @brief Is sent to indicate that the annotation data in a node changed. The
+/// GoNode object that identifies the node with the changed data is associated
+/// with the notification.
+extern NSString* nodeAnnotationDataDidChange;
+/// @brief Is sent to indicate that the markup on at least one intersection has
+/// changed during markup editing.
+///
+/// An NSArray object is associated with the notification that contains
+/// information about the intersections on which markup did change.
+///
+/// If the NSArray contains 1 object, the markup that was added or removed
+/// was a symbol. The object in the array in this case is a GoPoint object
+/// identifying the intersection on which the symbol was added or removed.
+///
+/// If the NSArray contains 2 objects, the markup that was added or removed
+/// was a marker or label. The NSArray in this case contains the following
+/// objects:
+/// - Object at index position 0: A GoPoint object identifying the intersection
+///   on which the marker or label was added or removed.
+/// - Object at index position 1: An NSNumber object that holds an @e int value
+///   that is actually a value from the enumeration #GoMarkupLabel. This
+///   identifes the type of the markup element that was added or removed.
+///
+/// If the NSArray contains 3 objects, the markup that was added or removed
+/// was a connection. The NSArray in this case contains the following objects:
+/// - Objects at index positions 0 and 1: Two GoPoint objects that identify the
+///   start and end points of the connection.
+/// - Object at index position 2: An NSArray with all GoPoint objects in the
+///   rectangle defined by the connection's start and end points. The start/end
+///   points are on opposite corners of the rectangle. This information can be
+///   used to optimize drawing.
+///
+/// If the NSArray is empty, the markup did change on two or more intersections
+/// that potentionally do not form a connected area, so that there is no benefit
+/// in enumerating the GoPoint objects that identify the intersections.
+extern NSString* markupOnPointsDidChange;
+/// @brief Is sent to indicate that all markup data has been discarded during
+/// markup editing. The GoNode object that identifies the node with the discared
+/// data is associated with the notification.
+extern NSString* allMarkupDidDiscard;
+/// @brief Is sent to indicate that the markup data in a node changed. The
+/// GoNode object that identifies the node with the changed data is associated
+/// with the notification.
+extern NSString* nodeMarkupDataDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -1253,6 +1317,17 @@ extern NSString* nodeTreeViewNodeSelectionStyleDidChange;
 /// display the node that is currently selected. The list is empty if currently
 /// no node is selected.
 extern NSString* nodeTreeViewSelectedNodeDidChange;
+/// @brief Is sent to indicate that the symbol of a node in the node tree view
+/// has changed. An NSArray object is associated with the notification that
+/// contains NodeTreeViewCellPosition objects that indicate which cells on the
+/// canvas display the node whose symbol has changed.
+///
+/// A node symbol may change when the node data changes. Move data is immutable,
+/// only setup, annotations or markup data can change. As a consequence, a valid
+/// assumption is that when a node symbol changes the node's representation in
+/// the node tree view can never change from condensed to uncondensed, or vice
+/// versa.
+extern NSString* nodeTreeViewNodeSymbolDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -1291,22 +1366,6 @@ extern NSString* uiAreaPlayModeWillChange;
 /// may be deallocated, or its content changed, after the notification has been
 /// delivered.
 extern NSString* uiAreaPlayModeDidChange;
-// TODO xxx remove if no longer needed
-/// @brief Is sent to indicate that the state of an intersection has changed
-/// during board setup. The intersection now has a handicap stone, or a
-/// previously set handicap stone has been removed. The GoPoint object that
-/// identifies the intersection is associated with the notification.
-extern NSString* handicapPointDidChange;
-/// @brief Is sent to indicate that the state of an intersection has changed
-/// during board setup. The intersection now has a black or white stone, or the
-/// color of a previously set setup stone has been changed, or a previously set
-/// setup stone has been removed. The GoPoint object that identifies the
-/// intersection is associated with the notification.
-extern NSString* setupPointDidChange;
-/// @brief Is sent to indicate that all setup stones are about to be discarded.
-extern NSString* allSetupStonesWillDiscard;
-/// @brief Is sent to indicate that all setup stones have been discarded.
-extern NSString* allSetupStonesDidDiscard;
 /// @brief Is sent before an animation is started on the board view. As a
 /// response user interaction should be suspended until the balancing
 /// #boardAnimationDidEnd is sent.
@@ -1314,46 +1373,6 @@ extern NSString* boardViewAnimationWillBegin;
 /// @brief Is sent after an animation has ended on the board view. This is the
 /// balancing notification to #boardAnimationWillBegin.
 extern NSString* boardViewAnimationDidEnd;
-/// @brief Is sent to indicate that the annotation data in a node changed. The
-/// GoNode object that identifies the node with the changed data is associated
-/// with the notification.
-extern NSString* nodeAnnotationDataDidChange;
-/// @brief Is sent to indicate that the markup on at least one intersection has
-/// changed during markup editing.
-///
-/// An NSArray object is associated with the notification that contains
-/// information about the intersections on which markup did change.
-///
-/// If the NSArray contains 1 object, the markup that was added or removed
-/// was a symbol. The object in the array in this case is a GoPoint object
-/// identifying the intersection on which the symbol was added or removed.
-///
-/// If the NSArray contains 2 objects, the markup that was added or removed
-/// was a marker or label. The NSArray in this case contains the following
-/// objects:
-/// - Object at index position 0: A GoPoint object identifying the intersection
-///   on which the marker or label was added or removed.
-/// - Object at index position 1: An NSNumber object that holds an @e int value
-///   that is actually a value from the enumeration #GoMarkupLabel. This
-///   identifes the type of the markup element that was added or removed.
-///
-/// If the NSArray contains 3 objects, the markup that was added or removed
-/// was a connection. The NSArray in this case contains the following objects:
-/// - Objects at index positions 0 and 1: Two GoPoint objects that identify the
-///   start and end points of the connection.
-/// - Object at index position 2: An NSArray with all GoPoint objects in the
-///   rectangle defined by the connection's start and end points. The start/end
-///   points are on opposite corners of the rectangle. This information can be
-///   used to optimize drawing.
-///
-/// If the NSArray is empty, the markup did change on two or more intersections
-/// that potentionally do not form a connected area, so that there is no benefit
-/// in enumerating the GoPoint objects that identify the intersections.
-extern NSString* markupOnPointsDidChange;
-/// @brief Is sent to indicate that all markup data has been discarded during
-/// markup editing. The GoNode object that identifies the node with the discared
-/// data is associated with the notification.
-extern NSString* allMarkupDidDiscard;
 //@}
 
 // -----------------------------------------------------------------------------

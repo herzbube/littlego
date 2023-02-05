@@ -87,6 +87,14 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 + (CGRect) canvasRectForSize:(CGSize)size
                   centeredAt:(NodeTreeViewCellPosition*)position
                      metrics:(NodeTreeViewMetrics*)metrics;
+
++ (CGRect) drawingRectForTile:(id<Tile>)tile
+            multipartCellPart:(int)part
+                 partPosition:(NodeTreeViewCellPosition*)position
+                      metrics:(NodeTreeViewMetrics*)metrics;
++ (CGRect) drawingRectForTile:(id<Tile>)tile
+               cellAtPosition:(NodeTreeViewCellPosition*)position
+                      metrics:(NodeTreeViewMetrics*)metrics;
 + (CGRect) drawingRectForCell:(bool)condensed
                   withMetrics:(NodeTreeViewMetrics*)metrics;
 + (CGRect) drawingRectForNodeSymbolInCell:(bool)condensed

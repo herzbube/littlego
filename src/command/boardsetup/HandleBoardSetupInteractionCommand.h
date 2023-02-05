@@ -33,8 +33,9 @@
 /// OK to discard future nodes.
 ///
 /// After it has processed the board setup interaction,
-/// HandleBoardSetupInteractionCommand syncs the GTP engine, saves the
-/// application state and performs a backup of the current game.
+/// HandleBoardSetupInteractionCommand posts #nodeSetupDataDidChange to the
+/// global notification centre, syncs the GTP engine, saves the application
+/// state and performs a backup of the current game.
 ///
 /// @note Because HandleBoardSetupInteractionCommand may show an alert, command
 /// execution may succeed and control may return to the client who submitted

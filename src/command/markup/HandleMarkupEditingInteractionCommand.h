@@ -30,9 +30,9 @@
 /// identified by GoPoint objects that are passed to one of the initializers.
 ///
 /// After it has processed the markup editing interaction, if any markup data
-/// changed HandleMarkupEditingInteractionCommand posts the notification
-/// #markupOnPointsDidChange, performs a backup of the current game and saves
-/// the application state.
+/// changed HandleMarkupEditingInteractionCommand posts the notifications
+/// #markupOnPointsDidChange and #nodeMarkupDataDidChange, performs a backup of
+/// the current game and saves the application state.
 ///
 /// @note Because HandleMarkupEditingInteractionCommand may show an
 /// EditTextController or an alert, code execution may return to the client who
