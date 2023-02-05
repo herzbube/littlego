@@ -1473,25 +1473,63 @@ extern const int moveSuggestionAnimationRepeatCount;
 /// @name Node tree view constants
 // -----------------------------------------------------------------------------
 //@{
-// TODO xxx document
+/// @brief Enumerates all possible symbols with which nodes can be drawn in the
+/// node tree view.
 enum NodeTreeViewCellSymbol
 {
-  // This value is used for cells that contain only lines
+  /// @brief This value is used for node tree view cells that contain only
+  /// lines and that don't depict a node.
   NodeTreeViewCellSymbolNone,
-  // A root node without setup, annotations or markup is drawn with this symbol
+  /// @brief A non-root node without setup, annotations or markup is drawn with
+  /// this symbol
   NodeTreeViewCellSymbolEmpty,
+  /// @brief Symbol for a node with setup consisting of instructions where to
+  /// place black setup stones.
   NodeTreeViewCellSymbolBlackSetupStones,
+  /// @brief Symbol for a node with setup consisting of instructions where to
+  /// place white setup stones.
   NodeTreeViewCellSymbolWhiteSetupStones,
+  /// @brief Symbol for a node with setup consisting of instructions where to
+  /// clear previously placed setup stones.
   NodeTreeViewCellSymbolNoSetupStones,
+  /// @brief Symbol for a node with setup consisting of instructions where to
+  /// place black and white setup stones.
   NodeTreeViewCellSymbolBlackAndWhiteSetupStones,
+  /// @brief Symbol for a node with setup consisting of instructions where to
+  /// place black setup stones and where to clear previously placed setup
+  /// stones.
   NodeTreeViewCellSymbolBlackAndNoSetupStones,
+  /// @brief Symbol for a node with setup consisting of instructions where to
+  /// place white setup stones and where to clear previously placed setup
+  /// stones.
   NodeTreeViewCellSymbolWhiteAndNoSetupStones,
+  /// @brief Symbol for a node with setup consisting of instructions where to
+  /// place black and white setup stones and where to clear previously placed
+  /// setup stones.
   NodeTreeViewCellSymbolBlackAndWhiteAndNoSetupStones,
+  /// @brief Symbol for a node that contains a move made by the black player.
   NodeTreeViewCellSymbolBlackMove,
+  /// @brief Symbol for a node that contains a move made by the white player.
   NodeTreeViewCellSymbolWhiteMove,
+  /// @brief Symbol for a node that contains annotations, but no setup or move.
   NodeTreeViewCellSymbolAnnotations,
+  /// @brief Symbol for a node that contains markup, but no setup or move.
   NodeTreeViewCellSymbolMarkup,
+  /// @brief Symbol for a node that contains both annotations and markup, but
+  /// no setup or move.
   NodeTreeViewCellSymbolAnnotationsAndMarkup,
+  /// @brief Symbol for a root node that contains a handicap > 0, but no setup,
+  /// annotations or markup.
+  NodeTreeViewCellSymbolHandicap,
+  /// @brief Symbol for a root node that contains a komi > 0, but no setup,
+  /// annotations or markup.
+  NodeTreeViewCellSymbolKomi,
+  /// @brief Symbol for a root node that contains both a handicap and komi > 0,
+  /// but no setup, annotations or markup.
+  NodeTreeViewCellSymbolHandicapAndKomi,
+  /// @brief Symbol for a root node that contains both a handicap and komi == 0,
+  /// but no setup, annotations or markup.
+  NodeTreeViewCellSymbolRoot,
 };
 
 // TODO xxx document

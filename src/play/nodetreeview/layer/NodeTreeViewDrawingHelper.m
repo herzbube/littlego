@@ -295,22 +295,30 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
       break;
     }
     case NodeTreeViewCellSymbolAnnotations:
+    case NodeTreeViewCellSymbolHandicap:
+    case NodeTreeViewCellSymbolKomi:
+    case NodeTreeViewCellSymbolRoot:
     {
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
-      [NodeTreeViewDrawingHelper drawNodeSymbolString:@"i"
+
+      NSString* nodeSymbolString = [NodeTreeViewDrawingHelper stringForNodeSymbolType:symbolType];
+      [NodeTreeViewDrawingHelper drawNodeSymbolString:nodeSymbolString
                                           withContext:layerContext
                                           drawingRect:drawingRect
-                                                 font:metrics.annotationNodeSymbolFont
+                                                 font:metrics.singleCharacterNodeSymbolFont
                                               metrics:metrics];
       break;
     }
     case NodeTreeViewCellSymbolMarkup:
+    case NodeTreeViewCellSymbolHandicapAndKomi:
     {
       DrawSurroundingCircle(layerContext, drawingRectCenter, radius, metrics.normalLineColor, strokeLineWidth);
-      [NodeTreeViewDrawingHelper drawNodeSymbolString:@"</>"
+
+      NSString* nodeSymbolString = [NodeTreeViewDrawingHelper stringForNodeSymbolType:symbolType];
+      [NodeTreeViewDrawingHelper drawNodeSymbolString:nodeSymbolString
                                           withContext:layerContext
                                           drawingRect:drawingRect
-                                                 font:metrics.markupNodeSymbolFont
+                                                 font:metrics.threeCharactersNodeSymbolFont
                                               metrics:metrics];
       break;
     }
@@ -320,10 +328,11 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
 
       CGRect drawingRectSymbolAnnotation = drawingRect;
       drawingRectSymbolAnnotation.size.height /= 2.0;
-      [NodeTreeViewDrawingHelper drawNodeSymbolString:@"i"
+      NSString* annotationsNodeSymbolString = [NodeTreeViewDrawingHelper stringForNodeSymbolType:NodeTreeViewCellSymbolAnnotations];
+      [NodeTreeViewDrawingHelper drawNodeSymbolString:annotationsNodeSymbolString
                                           withContext:layerContext
                                           drawingRect:drawingRectSymbolAnnotation
-                                                 font:metrics.annotationsAndMarkupNodeSymbolFont
+                                                 font:metrics.twoLinesOfCharactersNodeSymbolFont
                                               metrics:metrics];
 
       CGRect drawingRectSymbolMarkup = drawingRect;
@@ -332,10 +341,11 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
       // Without this adjustment the text + its shadow are too close to the
       // surrounding circle's bounding line
       drawingRectSymbolMarkup.origin.y -= 3 * metrics.contentsScale;
-      [NodeTreeViewDrawingHelper drawNodeSymbolString:@"</>"
+      NSString* markupNodeSymbolString = [NodeTreeViewDrawingHelper stringForNodeSymbolType:NodeTreeViewCellSymbolMarkup];
+      [NodeTreeViewDrawingHelper drawNodeSymbolString:markupNodeSymbolString
                                           withContext:layerContext
                                           drawingRect:drawingRectSymbolMarkup
-                                                 font:metrics.annotationsAndMarkupNodeSymbolFont
+                                                 font:metrics.twoLinesOfCharactersNodeSymbolFont
                                               metrics:metrics];
       break;
     }
@@ -445,6 +455,32 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 }
 
 #pragma mark - Private API - Helpers for layer creation functions
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method for CreateNodeSymbolLayer() that returns the string
+/// that should be used to depict a node with symbol type @a symbolType.
+// -----------------------------------------------------------------------------
++ (NSString*) stringForNodeSymbolType:(enum NodeTreeViewCellSymbol)symbolType
+{
+  switch (symbolType)
+  {
+    case NodeTreeViewCellSymbolAnnotations:
+      return @"i";
+    case NodeTreeViewCellSymbolMarkup:
+      return @"</>";
+    case NodeTreeViewCellSymbolHandicap:
+      return @"h";
+    case NodeTreeViewCellSymbolKomi:
+      return @"k";
+    case NodeTreeViewCellSymbolHandicapAndKomi:
+      return @"h/k";
+    case NodeTreeViewCellSymbolRoot:
+      return @"r";
+    default:
+      assert(0);
+      return nil;
+  }
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Helper method for CreateNodeSymbolLayer(), to draw @a string as part

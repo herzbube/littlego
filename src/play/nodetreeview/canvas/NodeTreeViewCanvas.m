@@ -1800,6 +1800,20 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
   {
     return NodeTreeViewCellSymbolMarkup;
   }
+  else if (node.isRoot)
+  {
+    GoGame* game = [GoGame sharedGame];
+    bool hasHandicap = game.handicapPoints.count > 0;
+    bool hasKomi = game.komi > 0.0;
+    if (hasHandicap && hasKomi)
+      return NodeTreeViewCellSymbolHandicapAndKomi;
+    else if (hasHandicap)
+      return NodeTreeViewCellSymbolHandicap;
+    else if (hasKomi)
+      return NodeTreeViewCellSymbolKomi;
+    else
+      return NodeTreeViewCellSymbolRoot;
+  }
 
   return NodeTreeViewCellSymbolEmpty;
 }

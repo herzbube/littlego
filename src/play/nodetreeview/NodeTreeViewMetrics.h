@@ -189,9 +189,9 @@
 @property(nonatomic, assign) unsigned short bottomRightCellY;
 @property(nonatomic, assign) CGSize condensedNodeSymbolSize;
 @property(nonatomic, assign) CGSize uncondensedNodeSymbolSize;
-@property(nonatomic, retain) UIFont* annotationNodeSymbolFont;
-@property(nonatomic, retain) UIFont* markupNodeSymbolFont;
-@property(nonatomic, retain) UIFont* annotationsAndMarkupNodeSymbolFont;
+@property(nonatomic, retain) UIFont* singleCharacterNodeSymbolFont;
+@property(nonatomic, retain) UIFont* threeCharactersNodeSymbolFont;
+@property(nonatomic, retain) UIFont* twoLinesOfCharactersNodeSymbolFont;
 //@}
 
 // -----------------------------------------------------------------------------

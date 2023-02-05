@@ -31,9 +31,9 @@
 @property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
 @property(nonatomic, assign) NodeTreeViewCanvas* nodeTreeViewCanvas;
 @property(nonatomic, retain) FontRange* nodeNumberLabelFontRange;
-@property(nonatomic, retain) FontRange* annotationNodeSymbolFontRange;
-@property(nonatomic, retain) FontRange* markupNodeSymbolFontRange;
-@property(nonatomic, retain) FontRange* annotationsAndMarkupNodeSymbolFontRange;
+@property(nonatomic, retain) FontRange* singleCharacterNodeSymbolFontRange;
+@property(nonatomic, retain) FontRange* threeCharactersNodeSymbolFontRange;
+@property(nonatomic, retain) FontRange* twoLinesOfCharactersNodeSymbolFontRange;
 @end
 
 
@@ -78,12 +78,12 @@
 
   self.nodeNumberLabelFont = nil;
   self.nodeNumberLabelFontRange = nil;
-  self.annotationNodeSymbolFont = nil;
-  self.annotationNodeSymbolFontRange = nil;
-  self.markupNodeSymbolFont = nil;
-  self.markupNodeSymbolFontRange = nil;
-  self.annotationsAndMarkupNodeSymbolFont = nil;
-  self.annotationsAndMarkupNodeSymbolFontRange = nil;
+  self.singleCharacterNodeSymbolFont = nil;
+  self.singleCharacterNodeSymbolFontRange = nil;
+  self.threeCharactersNodeSymbolFont = nil;
+  self.threeCharactersNodeSymbolFontRange = nil;
+  self.twoLinesOfCharactersNodeSymbolFont = nil;
+  self.twoLinesOfCharactersNodeSymbolFontRange = nil;
   self.normalLineColor = nil;
   self.selectedLineColor = nil;
   self.selectedNodeColor = nil;
@@ -175,16 +175,19 @@
                                                    minimumFontSize:minimumFontSize
                                                    maximumFontSize:maximumFontSize] autorelease];
 
-  NSString* widestAnnotationsNodeSymbolText = @"i";
-  self.annotationNodeSymbolFontRange = [[[FontRange alloc] initWithMonospacedFontAndText:widestAnnotationsNodeSymbolText
-                                                                         minimumFontSize:minimumFontSize
-                                                                         maximumFontSize:maximumFontSize] autorelease];
-  NSString* widestMarkupNodeSymbolText = @"</>";
-  self.markupNodeSymbolFontRange = [[[FontRange alloc] initWithMonospacedFontAndText:widestMarkupNodeSymbolText
-                                                                     minimumFontSize:minimumFontSize
-                                                                     maximumFontSize:maximumFontSize] autorelease];
-  NSString* widestAnnotationsAndMarkupNodeSymbolText = @"</>";
-  self.annotationsAndMarkupNodeSymbolFontRange = [[[FontRange alloc] initWithMonospacedFontAndText:widestAnnotationsAndMarkupNodeSymbolText
+  // Because we are using a mono-spaced font for the textual node symbols, it
+  // doesn't really matter which characters we give to FontRange, as long as
+  // it's the correct number
+  NSString* widestSingleCharacterNodeSymbolText = @"i";
+  self.singleCharacterNodeSymbolFontRange = [[[FontRange alloc] initWithMonospacedFontAndText:widestSingleCharacterNodeSymbolText
+                                                                              minimumFontSize:minimumFontSize
+                                                                              maximumFontSize:maximumFontSize] autorelease];
+  NSString* widestThreeCharactersNodeSymbolText = @"</>";
+  self.threeCharactersNodeSymbolFontRange = [[[FontRange alloc] initWithMonospacedFontAndText:widestThreeCharactersNodeSymbolText
+                                                                              minimumFontSize:minimumFontSize
+                                                                              maximumFontSize:maximumFontSize] autorelease];
+  NSString* widestTwoLinesOfCharactersNodeSymbolText = @"</>";
+  self.twoLinesOfCharactersNodeSymbolFontRange = [[[FontRange alloc] initWithMonospacedFontAndText:widestTwoLinesOfCharactersNodeSymbolText
                                                                                    minimumFontSize:minimumFontSize
                                                                                    maximumFontSize:maximumFontSize] autorelease];
 }
@@ -439,35 +442,35 @@
   // surrounded with a bounding circle line. Here we say that by default a
   // textual symbol gets the full symbol size.
   CGFloat textualNodeSymbolBaseWidth = uncondensedNodeSymbolWidthAndHeight;
-  // The textual symbol for a node with annotations consists of a lowercase "i"
-  // character. This character takes up more space vertically than it does
-  // horizontally. For this reason the node symbol must not get the full node
-  // symbol width, otherwise the "i" character's upper/lower parts will be too
-  // close to the upper/lower parts of the bounding circle line. The factor
-  // used here was determined experimentally to still look good.
-  static const CGFloat annotationsNodeSymbolFactor = 0.8;
-  CGFloat annotationsNodeSymbolWidth = textualNodeSymbolBaseWidth * annotationsNodeSymbolFactor;
-  self.annotationNodeSymbolFont = [self.annotationNodeSymbolFontRange queryForWidth:annotationsNodeSymbolWidth];
-  // For some unknown reason, if the textual symbol for a node with markup
-  // is rendered with the font that is found for the regular node symbol width,
-  // the text appears too small. Because of this the markup node symbol gets
-  // more width than it should. The factor used here was determined
+  // Some single-character textual symbols consist of a character that takes up
+  // more space vertically than it does horizontally (e.g. "i", "k", "h"). For
+  // this reason the symbol must not get the full node symbol width, otherwise
+  // the character's upper/lower parts will be too close to the upper/lower
+  // parts of the bounding circle line. The factor used here was determined
   // experimentally to still look good.
-  static const CGFloat markupNodeSymbolFactor = 1.3;
-  CGFloat markupNodeSymbolWidth = textualNodeSymbolBaseWidth * markupNodeSymbolFactor;
-  self.markupNodeSymbolFont = [self.markupNodeSymbolFontRange queryForWidth:markupNodeSymbolWidth];
-  // The textual symbol for a node with both annotations and markup contains
-  // two lines of text, vertically stacked. Because of this, and because the
-  // node symbol is surrounded with a bounding circle line, both lines don't get
-  // the same full width as a single line would (which would be drawn in the
-  // vertical center of the circle). For the same unknown reason as for
-  // markupNodeSymbolFactor (see above), the factor used here can be larger
-  // than zero, but the factor must still be smaller than markupNodeSymbolFactor
-  // because, as explained, two lines get less width than a single line. The
-  // factor used here was determined experimentally to still look good.
-  static const CGFloat annotationsAndMarkupNodeSymbolFactor = 1.2;
-  CGFloat annotationsAndMarkupNodeSymbolWidth = textualNodeSymbolBaseWidth * annotationsAndMarkupNodeSymbolFactor;
-  self.annotationsAndMarkupNodeSymbolFont = [self.annotationsAndMarkupNodeSymbolFontRange queryForWidth:annotationsAndMarkupNodeSymbolWidth];
+  static const CGFloat singleCharacterNodeSymbolFactor = 0.8;
+  CGFloat singleCharacterNodeSymbolWidth = textualNodeSymbolBaseWidth * singleCharacterNodeSymbolFactor;
+  self.singleCharacterNodeSymbolFont = [self.singleCharacterNodeSymbolFontRange queryForWidth:singleCharacterNodeSymbolWidth];
+  // For some unknown reason, if a three-character textual symbol is rendered
+  // with the font that is found for the regular node symbol width, the text
+  // appears too small. Because of this, three-character textual symbols get
+  // more width than they should. The factor used here was determined
+  // experimentally to still look good.
+  static const CGFloat threeCharactersNodeSymbolFactor = 1.3;
+  CGFloat threeCharactersNodeSymbolWidth = textualNodeSymbolBaseWidth * threeCharactersNodeSymbolFactor;
+  self.threeCharactersNodeSymbolFont = [self.threeCharactersNodeSymbolFontRange queryForWidth:threeCharactersNodeSymbolWidth];
+  // A textual symbol consisting of two lines of characters that are vertically
+  // stacked is surrounded with a bounding circle line, therefore both lines of
+  // text don't get the same full width as a single line would (which would be
+  // drawn in the vertical center of the circle). For the same unknown reason as
+  // for threeCharactersNodeSymbolFactor (see above), the factor used here can
+  // be larger than 1.0, but the factor must still be smaller than
+  // threeCharactersNodeSymbolFactor because, as explained, two lines get less
+  // width than a single line. The factor used here was determined
+  // experimentally to still look good.
+  static const CGFloat twoLinesOfCharactersNodeSymbolFactor = 1.2;
+  CGFloat twoLinesOfCharactersNodeSymbolWidth = textualNodeSymbolBaseWidth * twoLinesOfCharactersNodeSymbolFactor;
+  self.twoLinesOfCharactersNodeSymbolFont = [self.twoLinesOfCharactersNodeSymbolFontRange queryForWidth:twoLinesOfCharactersNodeSymbolWidth];
 
   // Update property only after everything has been re-calculated so that KVO
   // observers get the new values

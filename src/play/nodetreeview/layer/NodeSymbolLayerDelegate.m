@@ -265,6 +265,14 @@
       return NodeTreeViewCellSymbolMarkup;
     case NodeTreeViewLayerTypeAnnotationsAndMarkup:
       return NodeTreeViewCellSymbolAnnotationsAndMarkup;
+    case NodeTreeViewLayerTypeHandicap:
+      return NodeTreeViewCellSymbolHandicap;
+    case NodeTreeViewLayerTypeKomi:
+      return NodeTreeViewCellSymbolKomi;
+    case NodeTreeViewLayerTypeHandicapAndKomi:
+      return NodeTreeViewCellSymbolHandicapAndKomi;
+    case NodeTreeViewLayerTypeRoot:
+      return NodeTreeViewCellSymbolRoot;
     default:
       assert(0);
       return NodeTreeViewCellSymbolNone;
@@ -309,6 +317,14 @@
       return NodeTreeViewLayerTypeMarkup;
     case NodeTreeViewCellSymbolAnnotationsAndMarkup:
       return NodeTreeViewLayerTypeAnnotationsAndMarkup;
+    case NodeTreeViewCellSymbolHandicap:
+      return NodeTreeViewLayerTypeHandicap;
+    case NodeTreeViewCellSymbolKomi:
+      return NodeTreeViewLayerTypeKomi;
+    case NodeTreeViewCellSymbolHandicapAndKomi:
+      return NodeTreeViewLayerTypeHandicapAndKomi;
+    case NodeTreeViewCellSymbolRoot:
+      return NodeTreeViewLayerTypeRoot;
     default:
       assert(0);
       return NodeTreeViewLayerTypeBlackSetupStones;  // dummy return

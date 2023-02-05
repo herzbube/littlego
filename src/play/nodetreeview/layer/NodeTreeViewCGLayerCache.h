@@ -38,9 +38,13 @@ enum NodeTreeViewLayerType
   NodeTreeViewLayerTypeAnnotations,
   NodeTreeViewLayerTypeMarkup,
   NodeTreeViewLayerTypeAnnotationsAndMarkup,
+  NodeTreeViewLayerTypeHandicap,
+  NodeTreeViewLayerTypeKomi,
+  NodeTreeViewLayerTypeHandicapAndKomi,
+  NodeTreeViewLayerTypeRoot,
 
-  NodeTreeViewLayerTypeNodeSymbolFirst = NodeTreeViewLayerTypeEmpty,                // Helper enum value used for iteration
-  NodeTreeViewLayerTypeNodeSymbolLast = NodeTreeViewLayerTypeAnnotationsAndMarkup,  // Helper enum value used for iteration
+  NodeTreeViewLayerTypeNodeSymbolFirst = NodeTreeViewLayerTypeEmpty,  // Helper enum value used for iteration
+  NodeTreeViewLayerTypeNodeSymbolLast = NodeTreeViewLayerTypeRoot,    // Helper enum value used for iteration
 
   NodeTreeViewLayerTypeNodeSelectionCondensed,
   NodeTreeViewLayerTypeNodeSelectionUncondensed,
