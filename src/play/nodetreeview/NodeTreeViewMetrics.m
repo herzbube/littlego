@@ -117,7 +117,7 @@
   self.selectedNodeColor = [UIColor redColor];
   self.nodeSymbolColor = [UIColor blackColor];
   self.nodeSymbolTextColor = [UIColor whiteColor];
-  self.nodeNumberTextColor = [UIColor blackColor];
+  self.nodeNumberTextColor = [UIColor whiteColor];
   self.whiteTextShadow = [[[NSShadow alloc] init] autorelease];
   self.whiteTextShadow.shadowColor = [UIColor blackColor];
   self.whiteTextShadow.shadowBlurRadius = 5.0;
@@ -383,12 +383,14 @@
     static const CGFloat coordinateLabelStripWidthFactor = 2.0f / 3.0f;
     int nodeNumberStripHeight = floor(self.nodeTreeViewCellSize.height * coordinateLabelStripWidthFactor);
 
+    self.nodeNumberViewCellSize = CGSizeMake(self.nodeTreeViewCellSize.width, self.nodeNumberStripHeight);
+
     // Node number labels can take up almost the entire
     // self.nodeTreeViewCellSize.width, we only subtract a small padding on both
     // sides so that adjacent node numbers have a small spacing between them
     // TODO xxx does this work with condensed move nodes?
     int nodeNumberLabelPaddingX = 1;
-    int nodeNumberLabelAvailableWidth = (self.nodeTreeViewCellSize.width
+    int nodeNumberLabelAvailableWidth = (self.nodeNumberViewCellSize.width
                                          - 2 * nodeNumberLabelPaddingX);
     UIFont* nodeNumberLabelFont = nil;
     CGSize nodeNumberLabelMaximumSize = CGSizeZero;
@@ -404,6 +406,7 @@
     else
     {
       self.nodeNumberStripHeight = 0;
+      self.nodeNumberViewCellSize = CGSizeZero;
       self.nodeNumberLabelFont = nil;
       self.nodeNumberLabelMaximumSize = CGSizeZero;
     }
@@ -411,6 +414,7 @@
   else
   {
     self.nodeNumberStripHeight = 0;
+    self.nodeNumberViewCellSize = CGSizeZero;
     self.nodeNumberLabelFont = nil;
     self.nodeNumberLabelMaximumSize = CGSizeZero;
   }
@@ -481,8 +485,8 @@
 #pragma mark - Public API - Calculators
 
 // -----------------------------------------------------------------------------
-/// @brief Returns view coordinates that correspond to the origin of the
-/// rectangle occupied by the cell identified by @a position.
+/// @brief Returns node tree view coordinates that correspond to the origin of
+/// the rectangle occupied by the node tree view cell identified by @a position.
 ///
 /// The origin of the coordinate system is assumed to be in the top-left corner.
 // -----------------------------------------------------------------------------
@@ -560,6 +564,19 @@
     return nil;
 
   return [self.nodeTreeViewCanvas nodeAtPosition:position];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns node number view coordinates that correspond to the origin
+/// of the rectangle occupied by the node number view cell identified by
+/// @a position.
+///
+/// The origin of the coordinate system is assumed to be in the top-left corner.
+// -----------------------------------------------------------------------------
+- (CGPoint) nodeNumberCellRectOriginFromPosition:(NodeTreeViewCellPosition*)position
+{
+  return CGPointMake(self.paddingX + (self.nodeNumberViewCellSize.width * position.x),
+                     self.paddingY + (self.nodeNumberViewCellSize.height * position.y));
 }
 
 #pragma mark - Notification responders

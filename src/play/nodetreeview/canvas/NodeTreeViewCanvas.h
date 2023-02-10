@@ -95,6 +95,8 @@
 - (NSArray*) positionsForNode:(GoNode*)node;
 - (NSArray*) selectedNodePositions;
 
+- (int) nodeNumberAtPosition:(NodeTreeViewCellPosition*)position;
+
 /// @brief The canvas size. Width and height are integral numbers.
 ///
 /// The canvas width corresponds to the height (aka depth) of the node tree. In

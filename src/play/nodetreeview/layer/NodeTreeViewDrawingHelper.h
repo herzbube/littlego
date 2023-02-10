@@ -81,6 +81,8 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
                                metrics:(NodeTreeViewMetrics*)metrics;
 + (CGRect) canvasRectForCellAtPosition:(NodeTreeViewCellPosition*)position
                                metrics:(NodeTreeViewMetrics*)metrics;
++ (CGRect) canvasRectForNodeNumberCellAtPosition:(NodeTreeViewCellPosition*)position
+                                         metrics:(NodeTreeViewMetrics*)metrics;
 + (CGRect) canvasRectForScaledLayer:(CGLayerRef)layer
                          centeredAt:(NodeTreeViewCellPosition*)position
                             metrics:(NodeTreeViewMetrics*)metrics;
@@ -88,13 +90,13 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
                   centeredAt:(NodeTreeViewCellPosition*)position
                      metrics:(NodeTreeViewMetrics*)metrics;
 
-+ (CGRect) drawingRectForTile:(id<Tile>)tile
-            multipartCellPart:(int)part
-                 partPosition:(NodeTreeViewCellPosition*)position
-                      metrics:(NodeTreeViewMetrics*)metrics;
-+ (CGRect) drawingRectForTile:(id<Tile>)tile
-               cellAtPosition:(NodeTreeViewCellPosition*)position
-                      metrics:(NodeTreeViewMetrics*)metrics;
++ (CGRect) drawingRectForMultipartCellPart:(int)part
+                              partPosition:(NodeTreeViewCellPosition*)position
+                                    onTile:(id<Tile>)tile
+                                   metrics:(NodeTreeViewMetrics*)metrics;
++ (CGRect) drawingRectForCellAtPosition:(NodeTreeViewCellPosition*)position
+                                 onTile:(id<Tile>)tile
+                                metrics:(NodeTreeViewMetrics*)metrics;
 + (CGRect) drawingRectForCell:(bool)condensed
                   withMetrics:(NodeTreeViewMetrics*)metrics;
 + (CGRect) drawingRectForNodeSymbolInCell:(bool)condensed
@@ -104,6 +106,8 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
                               withMetrics:(NodeTreeViewMetrics*)metrics;
 + (CGRect) drawingRectForScaledLayer:(CGLayerRef)layer
                          withMetrics:(NodeTreeViewMetrics*)metrics;
++ (CGRect) drawingRectFromCanvasRect:(CGRect)canvasRect
+                      inTileWithRect:(CGRect)tileRect;
 + (void) circularDrawingParametersInRect:(CGRect)rect
                          strokeLineWidth:(CGFloat)strokeLineWidth
                                   center:(CGPoint*)center

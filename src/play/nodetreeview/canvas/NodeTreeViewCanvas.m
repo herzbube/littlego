@@ -434,6 +434,21 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns the node number that is located at position @a position on
+/// the node number canvas. Returns -1 if @a position denotes a position that is
+/// outside the canvas' bounds, or if there is no node number to display at
+/// position @a position.
+// -----------------------------------------------------------------------------
+- (int) nodeNumberAtPosition:(NodeTreeViewCellPosition*)position
+{
+  NSNumber* nodeNumber = [self.canvasData.nodeNumbersDictionary objectForKey:position];
+  if (nodeNumber)
+    return nodeNumber.intValue;
+  else
+    return -1;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Triggers a full re-calculation of the node tree view canvas at the
 /// next opportunity. Posts #nodeTreeViewContentDidChange to the default
 /// notification centre when the re-calculation has finished.
@@ -538,6 +553,9 @@
   [self generateCells:canvasData
        branchingStyle:branchingStyle];
 
+  // Step 5: Generate node numbers
+  [self generateNodeNumbers:canvasData];
+
   self.canvasData = canvasData;
   self.canvasSize = CGSizeMake(canvasData.highestXPosition + 1, canvasData.highestYPosition + 1);
 
@@ -570,6 +588,7 @@
   // branch
   NodeTreeViewBranch* parentBranch = nil;
   unsigned short xPosition = 0;
+  unsigned short nodeNumber = 0;
   int indexOfNodeFromCurrentGameVariation = 0;
   GoNode* nodeFromCurrentGameVariation = [nodeModel nodeAtIndex:indexOfNodeFromCurrentGameVariation];
 
@@ -596,6 +615,7 @@
       NodeTreeViewBranchTuple* branchTuple = [[[NodeTreeViewBranchTuple alloc] init] autorelease];
       branchTuple->xPositionOfFirstCell = xPosition;
       branchTuple->node = currentNode;
+      branchTuple->nodeNumber = nodeNumber;
       branchTuple->symbol = [self symbolForNode:currentNode];
       branchTuple->numberOfCellsForNode = [self numberOfCellsForNode:currentNode condenseMoveNodes:condenseMoveNodes numberOfCellsOfMultipartCell:numberOfCellsOfMultipartCell];
       // This assumes that numberOfCellsForNode is always an uneven number
@@ -627,6 +647,8 @@
       NSValue* key = [NSValue valueWithNonretainedObject:currentNode];
       nodeMap[key] = branchTuple;
 
+      // TODO xxx Take user preference "numbering style" into account
+      nodeNumber++;
       xPosition += branchTuple->numberOfCellsForNode;
 
       if (alignMoveNodes)
@@ -647,6 +669,7 @@
       [stack removeLastObject];
 
       currentNode = branchTuple->node;
+      nodeNumber = branchTuple->nodeNumber;
       xPosition = branchTuple->xPositionOfFirstCell;
       if (! currentNode.parent || currentNode.parent.firstChild == currentNode)
         parentBranch = branchTuple->branch;
@@ -1795,6 +1818,39 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 
   cell.lines |= lines;
   cell.linesSelectedGameVariation |= linesSelectedGameVariation;
+}
+
+#pragma mark - Private API - Canvas calculation - Part 5: Generate node numbers
+
+// -----------------------------------------------------------------------------
+/// @brief Iterates over all branches and nodes that are present in
+/// @a canvasData and generates node numbers to horizontally label the cells
+/// that represent the nodes on the canvas.
+// -----------------------------------------------------------------------------
+- (void) generateNodeNumbers:(NodeTreeViewCanvasData*)canvasData
+{
+  // Everty n'th node number is displayed
+  // TODO xxx Take user preference into account
+  const int numberingInterval = 1;
+
+  NSMutableDictionary* nodeNumbersDictionary = canvasData.nodeNumbersDictionary;
+
+  NSMutableArray* branches = canvasData.branches;
+  for (NodeTreeViewBranch* branch in branches)
+  {
+    for (NodeTreeViewBranchTuple* branchTuple in branch->branchTuples)
+    {
+      if (branchTuple->nodeNumber % numberingInterval != 0)
+        continue;
+
+      unsigned short xPositionOfNodeNumber = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
+      // TODO xxx Use some other number if numbers are too close
+      unsigned int yPositionOfNodeNumber = 0;
+      NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfNodeNumber y:yPositionOfNodeNumber];
+
+      nodeNumbersDictionary[position] = [NSNumber numberWithInt:branchTuple->nodeNumber];
+    }
+  }
 }
 
 #pragma mark - Private API - Canvas calculation - Helper methods

@@ -119,6 +119,7 @@
 - (NodeTreeViewCellPosition*) positionFromCellRectOrigin:(CGPoint)cellRectOrigin;
 - (NodeTreeViewCellPosition*) positionNear:(CGPoint)coordinates;
 - (GoNode*) nodeNear:(CGPoint)coordinates;
+- (CGPoint) nodeNumberCellRectOriginFromPosition:(NodeTreeViewCellPosition*)position;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -158,12 +159,13 @@
 /// @name Properties that depend on main properties
 // -----------------------------------------------------------------------------
 //@{
-/// @brief The size of a single cell. Width and height are different when the
-/// move nodes are displayed condensed. Width and height are the same when move
-/// nodes are displayed uncondensed.
+/// @brief The size of a single cell in the node tree view. Width and height are
+/// different when the move nodes are displayed condensed. Width and height are
+/// the same when move nodes are displayed uncondensed.
 @property(nonatomic, assign) CGSize nodeTreeViewCellSize;
-/// @brief The size of a multipart cell. Width and height are always the same,
-/// regardless of whether move nodes are displayed condensed or uncondensed.
+/// @brief The size of a multipart cell in the node tree view. Width and height
+/// are always the same, regardless of whether move nodes are displayed
+/// condensed or uncondensed.
 ///
 /// When move nodes are displayed uncondensed this size is the same as
 /// @e nodeTreeViewCellSize because in that scenario there are no multipart
@@ -174,8 +176,12 @@
 /// height is the same as the height of @e nodeTreeViewCellSize.
 @property(nonatomic, assign) CGSize nodeTreeViewMultipartCellSize;
 @property(nonatomic, assign) int nodeNumberStripHeight;
-/// @brief The font to use for drawing node number labels. Is nil if no suitable
-/// font exists for the current metrics.
+/// @brief The size of a single cell in the node number view. The width is
+/// equal to the width of @e nodeTreeViewCellSize, the height is equal to
+/// @e nodeNumberStripHeight.
+@property(nonatomic, assign) CGSize nodeNumberViewCellSize;
+/// @brief The font to use for drawing node number labels. Is @e nil if no
+/// suitable font exists for the current metrics.
 @property(nonatomic, retain) UIFont* nodeNumberLabelFont;
 /// @brief The maximum size required for drawing the widest possible node number
 /// label using the current @e nodeNumberLabelFont. Is CGSizeZero if no suitable

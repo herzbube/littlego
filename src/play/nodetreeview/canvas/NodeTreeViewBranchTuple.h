@@ -34,6 +34,10 @@
 @public
   /// @brief The node that the NodeTreeViewBranchTuple represents.
   GoNode* node;
+  /// @brief The 0-based number to display for the node at the top of the node
+  /// tree view. The user preference "numbering style" determines the meaning
+  /// of the node number.
+  int nodeNumber;
   /// @brief The x-position on the canvas of the first cell that has content
   /// representing @e node.
   unsigned short xPositionOfFirstCell;

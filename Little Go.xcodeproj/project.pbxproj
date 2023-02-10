@@ -663,6 +663,8 @@
 		CDBCF1F9282FB1FD00411CA6 /* EditNodeDescriptionController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBCF1F6282FB1FC00411CA6 /* EditNodeDescriptionController.m */; };
 		CDBCF1FC282FD5C700411CA6 /* KeyboardHeightAdjustment.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBCF1FB282FD5C700411CA6 /* KeyboardHeightAdjustment.m */; };
 		CDBCF1FD282FD5C700411CA6 /* KeyboardHeightAdjustment.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBCF1FB282FD5C700411CA6 /* KeyboardHeightAdjustment.m */; };
+		CDBDD0952994624200641E3B /* NodeNumbersLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBDD0942994624200641E3B /* NodeNumbersLayerDelegate.m */; };
+		CDBDD0962994624200641E3B /* NodeNumbersLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBDD0942994624200641E3B /* NodeNumbersLayerDelegate.m */; };
 		CDBEBA3C27B1A218000F9BF5 /* AnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBEBA3A27B1A218000F9BF5 /* AnnotationViewController.m */; };
 		CDBEBA3D27B1A218000F9BF5 /* AnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBEBA3A27B1A218000F9BF5 /* AnnotationViewController.m */; };
 		CDBFCBBD16C3ED01001D78C0 /* SetupApplicationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */; };
@@ -1618,6 +1620,8 @@
 		CDBCF1F7282FB1FD00411CA6 /* EditNodeDescriptionController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditNodeDescriptionController.h; sourceTree = "<group>"; };
 		CDBCF1FA282FD5C700411CA6 /* KeyboardHeightAdjustment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = KeyboardHeightAdjustment.h; sourceTree = "<group>"; };
 		CDBCF1FB282FD5C700411CA6 /* KeyboardHeightAdjustment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyboardHeightAdjustment.m; sourceTree = "<group>"; };
+		CDBDD0932994624200641E3B /* NodeNumbersLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeNumbersLayerDelegate.h; sourceTree = "<group>"; };
+		CDBDD0942994624200641E3B /* NodeNumbersLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeNumbersLayerDelegate.m; sourceTree = "<group>"; };
 		CDBEBA3A27B1A218000F9BF5 /* AnnotationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnnotationViewController.m; sourceTree = "<group>"; };
 		CDBEBA3B27B1A218000F9BF5 /* AnnotationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnnotationViewController.h; sourceTree = "<group>"; };
 		CDBFCBBB16C3ED00001D78C0 /* SetupApplicationCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupApplicationCommand.h; sourceTree = "<group>"; };
@@ -3268,6 +3272,8 @@
 				CDC8DF0128EF0FFA00619305 /* DummyLayerDelegate.m */,
 				CD1A7EEA29512E0B00013D80 /* LinesLayerDelegate.h */,
 				CD1A7EE929512E0B00013D80 /* LinesLayerDelegate.m */,
+				CDBDD0932994624200641E3B /* NodeNumbersLayerDelegate.h */,
+				CDBDD0942994624200641E3B /* NodeNumbersLayerDelegate.m */,
 				CD1A7EDA293A58EE00013D80 /* NodeSymbolLayerDelegate.h */,
 				CD1A7EDB293A58EF00013D80 /* NodeSymbolLayerDelegate.m */,
 				CD1A7EE2293B852D00013D80 /* NodeTreeViewCGLayerCache.h */,
@@ -4271,6 +4277,7 @@
 				CD1E6EB32865FE9500785E23 /* PlayStonePanGestureHandler.m in Sources */,
 				CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */,
 				CD46627E2960376400B58CC9 /* NodeTreeViewCanvas.m in Sources */,
+				CDBDD0952994624200641E3B /* NodeNumbersLayerDelegate.m in Sources */,
 				CDEF3BAF140A192F002D9C1C /* GtpEngineProfile.m in Sources */,
 				CDAF17151967FFD500271396 /* BoardViewMetrics.m in Sources */,
 				CDEF3C77140A69A2002D9C1C /* UIDebugging.m in Sources */,
@@ -4725,6 +4732,7 @@
 				CDFD9F7218F1D3700031CBCF /* DisplaySettingsController.m in Sources */,
 				CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */,
 				CDACF0B119041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */,
+				CDBDD0962994624200641E3B /* NodeNumbersLayerDelegate.m in Sources */,
 				CDFD9F7718F1D5600031CBCF /* DocumentViewController.m in Sources */,
 				CD1311CB17180B7C006CE699 /* GameInfoViewController.m in Sources */,
 				CD1E6EBC2867543E00785E23 /* EraseMarkupInRectanglePanGestureHandler.m in Sources */,

@@ -111,7 +111,7 @@
     case NTVLDEventInvalidateContent:
     {
       [self invalidateLayers];
-      self.drawingCellsOnTile = [self calculateDrawingCellsOnTile];
+      self.drawingCellsOnTile = [self calculateNodeTreeViewDrawingCellsOnTile];
       [self invalidateDirtyRectForNodeSymbolChanged];
       self.nodeSymbolChangedPositionsOnTile = nil;
       self.dirty = true;
@@ -119,7 +119,7 @@
     }
     case NTVLDEventAbstractCanvasSizeChanged:
     {
-      NSArray* newDrawingCellsOnTile = [self calculateDrawingCellsOnTile];
+      NSArray* newDrawingCellsOnTile = [self calculateNodeTreeViewDrawingCellsOnTile];
       if (! [self.drawingCellsOnTile isEqualToArray:newDrawingCellsOnTile])
       {
         self.drawingCellsOnTile = newDrawingCellsOnTile;
@@ -148,16 +148,16 @@
         NodeTreeViewCell* cell = [self.nodeTreeViewCanvas cellAtPosition:position];
         if (cell.isMultipart)
         {
-          self.dirtyRectForNodeSymbolChanged = [NodeTreeViewDrawingHelper drawingRectForTile:self.tile
-                                                                           multipartCellPart:cell.part
-                                                                                partPosition:position
-                                                                                     metrics:self.nodeTreeViewMetrics];
+          self.dirtyRectForNodeSymbolChanged = [NodeTreeViewDrawingHelper drawingRectForMultipartCellPart:cell.part
+                                                                                             partPosition:position
+                                                                                                   onTile:self.tile
+                                                                                                  metrics:self.nodeTreeViewMetrics];
         }
         else
         {
-          self.dirtyRectForNodeSymbolChanged = [NodeTreeViewDrawingHelper drawingRectForTile:self.tile
-                                                                              cellAtPosition:position
-                                                                                     metrics:self.nodeTreeViewMetrics];
+          self.dirtyRectForNodeSymbolChanged = [NodeTreeViewDrawingHelper drawingRectForCellAtPosition:position
+                                                                                                onTile:self.tile
+                                                                                               metrics:self.nodeTreeViewMetrics];
         }
         self.nodeSymbolChangedPositionsOnTile = newNodeSymbolChangedPositionsOnTile;
         self.dirty = true;

@@ -45,7 +45,6 @@
 /// @brief Prevents unregistering by dealloc if registering hasn't happened
 /// yet. Registering may not happen if the controller's view is never loaded.
 @property(nonatomic, assign) bool notificationRespondersAreSetup;
-@property(nonatomic, assign) bool viewDidLayoutSubviewsInProgress;
 @property(nonatomic, retain) NodeTreeView* nodeTreeView;
 @property(nonatomic, retain) TiledScrollView* nodeNumbersView;
 @property(nonatomic, retain) NSArray* nodeNumbersViewConstraints;
@@ -76,7 +75,6 @@
   self.nodeTreeViewCanvas = nil;
   self.nodeTreeViewMetrics = nil;
   self.notificationRespondersAreSetup = false;
-  self.viewDidLayoutSubviewsInProgress = false;
   self.nodeTreeView = nil;
   self.nodeNumbersView = nil;
   self.nodeNumbersViewConstraints = nil;
@@ -228,9 +226,7 @@
 // -----------------------------------------------------------------------------
 - (void) viewDidLayoutSubviews
 {
-  self.viewDidLayoutSubviewsInProgress = true;
   [self updateContentSizeInScrollViews];
-  self.viewDidLayoutSubviewsInProgress = false;
 }
 
 #pragma mark - Setup/remove notification responders
@@ -251,6 +247,7 @@
 
   [self.nodeTreeViewMetrics addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
   [self.nodeTreeViewMetrics addObserver:self forKeyPath:@"displayNodeNumbers" options:0 context:NULL];
+  [self.nodeTreeViewMetrics addObserver:self forKeyPath:@"condenseMoveNodes" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -266,6 +263,7 @@
 
   [self.nodeTreeViewMetrics removeObserver:self forKeyPath:@"canvasSize"];
   [self.nodeTreeViewMetrics removeObserver:self forKeyPath:@"displayNodeNumbers"];
+  [self.nodeTreeViewMetrics removeObserver:self forKeyPath:@"condenseMoveNodes"];
 }
 
 #pragma mark TiledScrollViewDataSource overrides
@@ -283,7 +281,7 @@
     if (tiledScrollView == self.nodeTreeView)
       tileView = [[[NodeTreeTileView alloc] initWithFrame:CGRectZero metrics:self.nodeTreeViewMetrics canvas:self.nodeTreeViewCanvas model:self.nodeTreeViewModel] autorelease];
     else if (tiledScrollView == self.nodeNumbersView)
-      tileView = [[[NodeNumbersTileView alloc] initWithFrame:CGRectZero] autorelease];
+      tileView = [[[NodeNumbersTileView alloc] initWithFrame:CGRectZero metrics:self.nodeTreeViewMetrics canvas:self.nodeTreeViewCanvas] autorelease];
   }
   tileView.row = row;
   tileView.column = column;
@@ -386,7 +384,9 @@
 #pragma mark - Manage node numbers view
 
 // -----------------------------------------------------------------------------
-/// @brief Creates or deallocates the node numbers view depending on xxx
+/// @brief Creates or deallocates the node numbers view depending on the value
+/// of the "display node numbers" user preference, and depending on whether the
+/// current node tree view geometry allows node numbers to be displayed.
 // -----------------------------------------------------------------------------
 - (void) createOrDeallocNodeNumbersView
 {
@@ -417,10 +417,7 @@
 // -----------------------------------------------------------------------------
 - (bool) nodeNumbersViewShouldExist
 {
-  // TODO xxx remove
-  return false;
-
-  return self.nodeTreeViewMetrics.displayNodeNumbers;
+  return self.nodeTreeViewMetrics.displayNodeNumbers && self.nodeTreeViewMetrics.nodeNumberStripHeight > 0.0f;
 }
 
 // -----------------------------------------------------------------------------
@@ -602,54 +599,17 @@
       }
       else
       {
-        if (self.viewDidLayoutSubviewsInProgress)
-        {
-          // TODO xxx review if this special handling during layouting is
-          // necessary; cf. the origin of this in BoardViewController
-          [self performSelector:@selector(updateContentSizeInScrollViews) withObject:nil afterDelay:0];
-        }
-        else
-        {
-          [self updateContentSizeInScrollViews];
-        }
+        [self updateContentSizeInScrollViews];
       }
     }
-    else if ([keyPath isEqualToString:@"displayNodeNumbers"])
+    else if ([keyPath isEqualToString:@"displayNodeNumbers"] ||
+             [keyPath isEqualToString:@"condenseMoveNodes"])
     {
-      // TODO xxx review this entire branch => unlike the display coordinates
-      // view in BoardView, the presence of the node numbers view is not
-      // dependent on the content of GoGame, so it should be possible to
-      // simplify the handling here
-      if ([NSThread currentThread] != [NSThread mainThread])
-      {
-        // Make sure that our handler executes on the main thread because it
-        // creates or deallocates views and generally calls thread-unsafe UIKit
-        // functions. A KVO notification can come in on a secondary thread when
-        // a game is loaded from the archive, or when a game is restored during
-        // app launch.
-        [self performSelectorOnMainThread:@selector(createOrDeallocNodeNumbersView) withObject:nil waitUntilDone:NO];
-      }
-      else
-      {
-        if (self.viewDidLayoutSubviewsInProgress)
-        {
-          // UIKit sometimes crashes if we add the node numbers view while a
-          // layouting cycle is in progress. The crash happens if 1) the app
-          // starts up and initially displays some other than the Play UI area,
-          // then 2) the user switches to the Play UI area. At this moment
-          // viewDidLayoutSubviews is executed, it invokes
-          // updateBaseSizeInNodeTreeViewMetrics, which in turn triggers this
-          // KVO observer. If we now add the node numbers view, the app crashes.
-          // The exact reason for the crash is unknown, but probable causes are
-          // either adding subviews, or adding constraints, in the middle of a
-          // layouting cycle. The workaround is to add a bit of asynchrony.
-          [self performSelector:@selector(createOrDeallocNodeNumbersView) withObject:nil afterDelay:0];
-        }
-        else
-        {
-          [self createOrDeallocNodeNumbersView];
-        }
-      }
+      // The cell size in the node number view depends on the cell size of the
+      // main view, which changes significantly when the the user preference
+      // "condense move nodes" is toggled. Obviously, the user preference
+      // "display node numbers" is also important.
+      [self createOrDeallocNodeNumbersView];
     }
   }
 }

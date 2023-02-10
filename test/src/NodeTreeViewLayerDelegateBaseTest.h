@@ -23,16 +23,16 @@
 {
 }
 
-- (void) testCalculateDrawingCellsOnTile_TopLeftTileStartsBeforeTopLeftCell;
-- (void) testCalculateDrawingCellsOnTile_TopLeftTileStartsAtTopLeftCell_TileAndCellSizeAligned;
-- (void) testCalculateDrawingCellsOnTile_TopLeftTileStartsAtTopLeftCell_TileAndCellSizeNotAligned;
-- (void) testCalculateDrawingCellsOnTile_TopLeftTileEndsAfterBottomRightCell;
-- (void) testCalculateDrawingCellsOnTile_TileStartsWithinCell;
-- (void) testCalculateDrawingCellsOnTile_TileStartsAtCell;
-- (void) testCalculateDrawingCellsOnTile_TileEndsAtCell;
-- (void) testCalculateDrawingCellsOnTile_BottomRightTileEndsAtBottomRightCell;
-- (void) testCalculateDrawingCellsOnTile_BottomRightTileEndsAfterBottomRightCell;
-- (void) testCalculateDrawingCellsOnTile_BottomRightTileStartsAfterBottomRightCell;
-- (void) testCalculateDrawingCellsOnTile_TileSizeSmallerThanCellSize;
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TopLeftTileStartsBeforeTopLeftCell;
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TopLeftTileStartsAtTopLeftCell_TileAndCellSizeAligned;
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TopLeftTileStartsAtTopLeftCell_TileAndCellSizeNotAligned;
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TopLeftTileEndsAfterBottomRightCell;
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TileStartsWithinCell;
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TileStartsAtCell;
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TileEndsAtCell;
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_BottomRightTileEndsAtBottomRightCell;
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_BottomRightTileEndsAfterBottomRightCell;
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_BottomRightTileStartsAfterBottomRightCell;
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TileSizeSmallerThanCellSize;
 
 @end

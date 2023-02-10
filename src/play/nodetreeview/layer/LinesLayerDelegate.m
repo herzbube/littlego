@@ -79,13 +79,13 @@
     case NTVLDEventNodeTreeGeometryChanged:
     case NTVLDEventInvalidateContent:
     {
-      self.drawingCellsOnTile = [self calculateDrawingCellsOnTile];
+      self.drawingCellsOnTile = [self calculateNodeTreeViewDrawingCellsOnTile];
       self.dirty = true;
       break;
     }
     case NTVLDEventAbstractCanvasSizeChanged:
     {
-      NSArray* newDrawingCellsOnTile = [self calculateDrawingCellsOnTile];
+      NSArray* newDrawingCellsOnTile = [self calculateNodeTreeViewDrawingCellsOnTile];
       if (! [self.drawingCellsOnTile isEqualToArray:newDrawingCellsOnTile])
       {
         self.drawingCellsOnTile = newDrawingCellsOnTile;

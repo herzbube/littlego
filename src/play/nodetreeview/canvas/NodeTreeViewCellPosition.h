@@ -50,6 +50,7 @@
 }
 
 + (NodeTreeViewCellPosition*) positionWithX:(unsigned short)x y:(unsigned short)y;
++ (NodeTreeViewCellPosition*) topLeftPosition;
 
 - (BOOL) isEqualToPosition:(NodeTreeViewCellPosition*)otherPosition;
 

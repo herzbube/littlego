@@ -69,15 +69,15 @@
 #pragma mark - Test methods
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the testCalculateDrawingCellsOnTile() method for the
-/// top-left tile.
+/// @brief Exercises the calculateNodeTreeViewDrawingCellsOnTile() method for
+/// the top-left tile.
 ///
 /// - Padding is > 0 so that the top/left edges of the top-left tile are
 ///   above/on the left of the top-left cell
 /// - Canvas size is sufficient to fill the tile
 /// - Tile/cell size alignment is not the focus of this test
 // -----------------------------------------------------------------------------
-- (void) testCalculateDrawingCellsOnTile_TopLeftTileStartsBeforeTopLeftCell
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TopLeftTileStartsBeforeTopLeftCell
 {
   // Arrange
   NodeTreeViewMetrics* metrics = [self paddedMetricsWithCellsPerTile:2];
@@ -87,22 +87,22 @@
                              [self cellWithX:0 y:1], [self cellWithX:1 y:1]];
 
   // Act
-  NSArray* cells = [testee calculateDrawingCellsOnTile];
+  NSArray* cells = [testee calculateNodeTreeViewDrawingCellsOnTile];
 
   // Assert
   XCTAssertEqualObjects(cells, expectedCells);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the testCalculateDrawingCellsOnTile() method for the
-/// top-left tile.
+/// @brief Exercises the calculateNodeTreeViewDrawingCellsOnTile() method for
+/// the top-left tile.
 ///
 /// - Padding is 0 so that the top/left edges of the top-left tile and of the
 ///   top-left cell are aligned
 /// - Canvas size is sufficient to fill the tile
 /// - Tile/cell sizes are aligned
 // -----------------------------------------------------------------------------
-- (void) testCalculateDrawingCellsOnTile_TopLeftTileStartsAtTopLeftCell_TileAndCellSizeAligned
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TopLeftTileStartsAtTopLeftCell_TileAndCellSizeAligned
 {
   // Arrange
   NodeTreeViewMetrics* metrics = [self unpaddedMetricsWithCellsPerTile:2];
@@ -112,22 +112,22 @@
                              [self cellWithX:0 y:1], [self cellWithX:1 y:1]];
 
   // Act
-  NSArray* cells = [testee calculateDrawingCellsOnTile];
+  NSArray* cells = [testee calculateNodeTreeViewDrawingCellsOnTile];
 
   // Assert
   XCTAssertEqualObjects(cells, expectedCells);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the testCalculateDrawingCellsOnTile() method for the
-/// top-left tile.
+/// @brief Exercises the calculateNodeTreeViewDrawingCellsOnTile() method for
+/// the top-left tile.
 ///
 /// - Padding is 0 so that the top/left edges of the top-left tile and of the
 ///   top-left cell are aligned
 /// - Canvas size is sufficient to fill the tile
 /// - Tile/cell sizes are not aligned
 // -----------------------------------------------------------------------------
-- (void) testCalculateDrawingCellsOnTile_TopLeftTileStartsAtTopLeftCell_TileAndCellSizeNotAligned
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TopLeftTileStartsAtTopLeftCell_TileAndCellSizeNotAligned
 {
   // Arrange
   NodeTreeViewMetrics* metrics = [self unpaddedMetricsWithCellsPerTile:2.1];
@@ -138,21 +138,21 @@
                              [self cellWithX:0 y:2], [self cellWithX:1 y:2], [self cellWithX:2 y:2]];
 
   // Act
-  NSArray* cells = [testee calculateDrawingCellsOnTile];
+  NSArray* cells = [testee calculateNodeTreeViewDrawingCellsOnTile];
 
   // Assert
   XCTAssertEqualObjects(cells, expectedCells);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the testCalculateDrawingCellsOnTile() method for the
-/// top-left tile.
+/// @brief Exercises the calculateNodeTreeViewDrawingCellsOnTile() method for
+/// the top-left tile.
 ///
 /// - Tile/cell top/left edge alignment is not the focus of this test
 /// - Canvas size is not sufficient to fill the tile
 /// - Tile/cell size alignment is not the focus of this test
 // -----------------------------------------------------------------------------
-- (void) testCalculateDrawingCellsOnTile_TopLeftTileEndsAfterBottomRightCell
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TopLeftTileEndsAfterBottomRightCell
 {
   // Arrange
   NodeTreeViewMetrics* metrics = [self paddedMetricsWithCellsPerTile:5 canvasSize:2];
@@ -162,22 +162,22 @@
                              [self cellWithX:0 y:1], [self cellWithX:1 y:1]];
 
   // Act
-  NSArray* cells = [testee calculateDrawingCellsOnTile];
+  NSArray* cells = [testee calculateNodeTreeViewDrawingCellsOnTile];
 
   // Assert
   XCTAssertEqualObjects(cells, expectedCells);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the testCalculateDrawingCellsOnTile() method for a tile
-/// in the middle of the canvas.
+/// @brief Exercises the calculateNodeTreeViewDrawingCellsOnTile() method for
+/// a tile in the middle of the canvas.
 ///
 /// - Cells/tile is a number with fractions so that the top/left edges of the
 ///   tile start within a cell, and the bottom/right edges of the tile end
 ///   within a cell
 /// - Canvas size is sufficient to fill the tile
 // -----------------------------------------------------------------------------
-- (void) testCalculateDrawingCellsOnTile_TileStartsWithinCell
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TileStartsWithinCell
 {
   // Arrange
   NodeTreeViewMetrics* metrics = [self unpaddedMetricsWithCellsPerTile:2.6];
@@ -190,22 +190,22 @@
                              [self cellWithX:2 y:5], [self cellWithX:3 y:5], [self cellWithX:4 y:5], [self cellWithX:5 y:5]];
 
   // Act
-  NSArray* cells = [testee calculateDrawingCellsOnTile];
+  NSArray* cells = [testee calculateNodeTreeViewDrawingCellsOnTile];
 
   // Assert
   XCTAssertEqualObjects(cells, expectedCells);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the testCalculateDrawingCellsOnTile() method for a tile
-/// in the middle of the canvas.
+/// @brief Exercises the calculateNodeTreeViewDrawingCellsOnTile() method for
+/// a tile in the middle of the canvas.
 ///
 /// - Cells/tile is a number with fractions but the tile is chosen so that its
 ///   top/left edges are exactly aligned with the top/left edges of a cell.
 ///   The bottom/right edges of the tile end within a cell due to the fraction.
 /// - Canvas size is sufficient to fill the tile
 // -----------------------------------------------------------------------------
-- (void) testCalculateDrawingCellsOnTile_TileStartsAtCell
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TileStartsAtCell
 {
   // Arrange
   NodeTreeViewMetrics* metrics = [self unpaddedMetricsWithCellsPerTile:2.5];
@@ -216,22 +216,22 @@
                              [self cellWithX:5 y:7], [self cellWithX:6 y:7], [self cellWithX:7 y:7]];
 
   // Act
-  NSArray* cells = [testee calculateDrawingCellsOnTile];
+  NSArray* cells = [testee calculateNodeTreeViewDrawingCellsOnTile];
 
   // Assert
   XCTAssertEqualObjects(cells, expectedCells);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the testCalculateDrawingCellsOnTile() method for a tile
-/// in the middle of the canvas.
+/// @brief Exercises the calculateNodeTreeViewDrawingCellsOnTile() method for
+/// a tile in the middle of the canvas.
 ///
 /// - Cells/tile is a number with fractions so that the top/left edges of the
 ///   tile start within a cell, but the tile is chosen so that its bottom/right
 ///   edges are exactly aligned with the bottom/right edges of a cell.
 /// - Canvas size is sufficient to fill the tile
 // -----------------------------------------------------------------------------
-- (void) testCalculateDrawingCellsOnTile_TileEndsAtCell
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TileEndsAtCell
 {
   // Arrange
   id<Tile> tile = [MockTile tileWithRow:1 column:1];
@@ -242,15 +242,15 @@
                              [self cellWithX:2 y:4], [self cellWithX:3 y:4], [self cellWithX:4 y:4]];
 
   // Act
-  NSArray* cells = [testee calculateDrawingCellsOnTile];
+  NSArray* cells = [testee calculateNodeTreeViewDrawingCellsOnTile];
 
   // Assert
   XCTAssertEqualObjects(cells, expectedCells);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the testCalculateDrawingCellsOnTile() method for the
-/// bottom-right tile.
+/// @brief Exercises the calculateNodeTreeViewDrawingCellsOnTile() method for
+/// the bottom-right tile.
 ///
 /// - Cells/tile is a number with fractions so that the top/left edges of the
 ///   tile start within a cell, but the tile's bottom/right edges are exactly
@@ -258,7 +258,7 @@
 ///   canvas.
 /// - Canvas size is sufficient to fill the tile
 // -----------------------------------------------------------------------------
-- (void) testCalculateDrawingCellsOnTile_BottomRightTileEndsAtBottomRightCell
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_BottomRightTileEndsAtBottomRightCell
 {
   // Arrange
   NodeTreeViewMetrics* metrics = [self unpaddedMetricsWithCellsPerTile:2.5 canvasSize:10];
@@ -269,21 +269,21 @@
                              [self cellWithX:7 y:9], [self cellWithX:8 y:9], [self cellWithX:9 y:9]];
 
   // Act
-  NSArray* cells = [testee calculateDrawingCellsOnTile];
+  NSArray* cells = [testee calculateNodeTreeViewDrawingCellsOnTile];
 
   // Assert
   XCTAssertEqualObjects(cells, expectedCells);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the testCalculateDrawingCellsOnTile() method for the
-/// bottom-right tile.
+/// @brief Exercises the calculateNodeTreeViewDrawingCellsOnTile() method for
+/// the bottom-right tile.
 ///
 /// - Cells/tile is a number with fractions so that the top/left edges of the
 ///   tile start within a cell
 /// - Canvas size is not sufficient to fill the tile
 // -----------------------------------------------------------------------------
-- (void) testCalculateDrawingCellsOnTile_BottomRightTileEndsAfterBottomRightCell
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_BottomRightTileEndsAfterBottomRightCell
 {
   // Arrange
   NodeTreeViewMetrics* metrics = [self unpaddedMetricsWithCellsPerTile:2.5 canvasSize:9];
@@ -293,22 +293,22 @@
                              [self cellWithX:7 y:8], [self cellWithX:8 y:8]];
 
   // Act
-  NSArray* cells = [testee calculateDrawingCellsOnTile];
+  NSArray* cells = [testee calculateNodeTreeViewDrawingCellsOnTile];
 
   // Assert
   XCTAssertEqualObjects(cells, expectedCells);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the testCalculateDrawingCellsOnTile() method for the
-/// bottom-right tile.
+/// @brief Exercises the calculateNodeTreeViewDrawingCellsOnTile() method for
+/// the bottom-right tile.
 ///
 /// - Padding is > 0 so that the content of the bottom-right tile only contains
 ///   padding
 /// - Tile/cell sizes are chosen so that the bottom-right tile starts after the
 ///   bottom-right cell
 // -----------------------------------------------------------------------------
-- (void) testCalculateDrawingCellsOnTile_BottomRightTileStartsAfterBottomRightCell
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_BottomRightTileStartsAfterBottomRightCell
 {
   // Arrange
   NodeTreeViewMetrics* metrics = [self metricsWithCellsPerTile:3 padding:20 cellSize:10 canvasSize:3];
@@ -327,9 +327,9 @@
   NSArray* expectedCells2 = @[];
 
   // Act
-  NSArray* cells0 = [testee0 calculateDrawingCellsOnTile];
-  NSArray* cells1 = [testee1 calculateDrawingCellsOnTile];
-  NSArray* cells2 = [testee2 calculateDrawingCellsOnTile];
+  NSArray* cells0 = [testee0 calculateNodeTreeViewDrawingCellsOnTile];
+  NSArray* cells1 = [testee1 calculateNodeTreeViewDrawingCellsOnTile];
+  NSArray* cells2 = [testee2 calculateNodeTreeViewDrawingCellsOnTile];
 
   // Assert
   XCTAssertEqualObjects(cells0, expectedCells0);
@@ -338,10 +338,10 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the testCalculateDrawingCellsOnTile() method for tiles
-/// that are smaller than cells.
+/// @brief Exercises the calculateNodeTreeViewDrawingCellsOnTile() method for
+/// tiles that are smaller than cells.
 // -----------------------------------------------------------------------------
-- (void) testCalculateDrawingCellsOnTile_TileSizeSmallerThanCellSize
+- (void) testCalculateNodeTreeViewDrawingCellsOnTile_TileSizeSmallerThanCellSize
 {
   // Arrange
   NodeTreeViewMetrics* metrics = [self metricsWithCellsPerTile:0.4 padding:10 cellSize:40 canvasSize:100];
@@ -363,10 +363,10 @@
                              [self cellWithX:0 y:1], [self cellWithX:1 y:1]];
 
   // Act
-  NSArray* cells0 = [testee0 calculateDrawingCellsOnTile];
-  NSArray* cells1 = [testee1 calculateDrawingCellsOnTile];
-  NSArray* cells2 = [testee2 calculateDrawingCellsOnTile];
-  NSArray* cells3 = [testee3 calculateDrawingCellsOnTile];
+  NSArray* cells0 = [testee0 calculateNodeTreeViewDrawingCellsOnTile];
+  NSArray* cells1 = [testee1 calculateNodeTreeViewDrawingCellsOnTile];
+  NSArray* cells2 = [testee2 calculateNodeTreeViewDrawingCellsOnTile];
+  NSArray* cells3 = [testee3 calculateNodeTreeViewDrawingCellsOnTile];
 
   // Assert
   XCTAssertEqualObjects(cells0, expectedCells0);

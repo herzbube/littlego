@@ -43,6 +43,7 @@
   self.cellsDictionary = [NSMutableDictionary dictionary];
   self.highestXPosition = -1;
   self.highestYPosition = -1;
+  self.nodeNumbersDictionary = [NSMutableDictionary dictionary];
 
   return self;
 }
@@ -57,7 +58,8 @@
   self.branchTuplesForMoveNumbers = nil;
   self.currentBoardPositionNode = nil;
   self.cellsDictionary = nil;
-
+  self.nodeNumbersDictionary = nil;
+  
   [super dealloc];
 }
 

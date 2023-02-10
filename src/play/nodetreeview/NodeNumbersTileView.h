@@ -19,6 +19,7 @@
 #import "../../ui/Tile.h"
 
 // Forward declarations
+@class NodeTreeViewCanvas;
 @class NodeTreeViewMetrics;
 
 
@@ -57,6 +58,7 @@
 }
 
 - (id) initWithFrame:(CGRect)rect
-             metrics:(NodeTreeViewMetrics*)nodeTreeViewMetrics;
+             metrics:(NodeTreeViewMetrics*)nodeTreeViewMetrics
+              canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas;
 
 @end

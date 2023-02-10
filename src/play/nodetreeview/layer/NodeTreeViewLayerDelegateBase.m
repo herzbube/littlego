@@ -110,9 +110,9 @@
 #pragma mark - Helper methods for subclasses
 
 // -----------------------------------------------------------------------------
-/// @brief Returns an array that identifies the cells whose drawing rectangle
-/// intersects with this tile's canvas rectangle. Array elements are
-/// NodeTreeViewCellPosition objects.
+/// @brief Returns an array that identifies the node tree view cells whose
+/// drawing rectangle intersects with this tile's canvas rectangle. Array
+/// elements are NodeTreeViewCellPosition objects.
 ///
 /// @note The cell drawing rectangle is defined as having a size that is equal
 /// to the value of the NodeTreeViewMetrics property @e nodeTreeViewCellSize,
@@ -123,21 +123,61 @@
 /// turn out that the artifact's drawing rectangle falls completely outside of
 /// the tile's canvas rectangle.
 // -----------------------------------------------------------------------------
-- (NSArray*) calculateDrawingCellsOnTile
+- (NSArray*) calculateNodeTreeViewDrawingCellsOnTile
+{
+  NodeTreeViewCellPosition* topLeftPosition = [NodeTreeViewCellPosition topLeftPosition];
+  CGPoint topLeftCellRectOrigin = [self.nodeTreeViewMetrics cellRectOriginFromPosition:topLeftPosition];
+  CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
+                                                         metrics:self.nodeTreeViewMetrics];
+  return [self calculateDrawingCellsOnTile:self.nodeTreeViewMetrics.nodeTreeViewCellSize
+                     topLeftCellRectOrigin:topLeftCellRectOrigin
+                                  tileRect:tileRect];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns an array that identifies the node number view cells whose
+/// drawing rectangle intersects with this tile's canvas rectangle. Array
+/// elements are NodeTreeViewCellPosition objects.
+///
+/// @note The cell drawing rectangle is defined as having a size that is equal
+/// to the value of the NodeTreeViewMetrics property @e nodeNumberViewCellSize,
+/// and a position that is derived from the @e x/y values in
+/// NodeTreeViewCellPosition. If only a small part of the drawing rectangle
+/// intersects with the tile's canvas rectangle,  and the tile wants to draw an
+/// artifact with a size that is less than @e nodeNumberViewCellSize, then it
+/// may turn out that the artifact's drawing rectangle falls completely outside
+/// of the tile's canvas rectangle.
+// -----------------------------------------------------------------------------
+- (NSArray*) calculateNodeNumberViewDrawingCellsOnTile
+{
+  NodeTreeViewCellPosition* topLeftPosition = [NodeTreeViewCellPosition topLeftPosition];
+  CGPoint topLeftCellRectOrigin = [self.nodeTreeViewMetrics nodeNumberCellRectOriginFromPosition:topLeftPosition];
+  CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
+                                                         metrics:self.nodeTreeViewMetrics];
+  tileRect.size.height = self.nodeTreeViewMetrics.nodeNumberStripHeight;
+  return [self calculateDrawingCellsOnTile:self.nodeTreeViewMetrics.nodeNumberViewCellSize
+                     topLeftCellRectOrigin:topLeftCellRectOrigin
+                                  tileRect:tileRect];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for calculateDrawingCellsOnTile() and
+/// calculateNodeTreeViewDrawingCellsOnTile().
+// -----------------------------------------------------------------------------
+- (NSArray*) calculateDrawingCellsOnTile:(CGSize)cellSize
+                   topLeftCellRectOrigin:(CGPoint)topLeftCellRectOrigin
+                                tileRect:(CGRect)tileRect
 {
   NSMutableArray* drawingCells = [NSMutableArray array];
 
-  // Abort early if NodeTreeViewMetrics does not yet have useful values (e.g.
-  // during app launch)
-  CGSize nodeTreeViewCellSize = self.nodeTreeViewMetrics.nodeTreeViewCellSize;
-  if (CGSizeEqualToSize(nodeTreeViewCellSize, CGSizeZero))
+  // Abort early if no useful cell size is available yet (e.g. during app
+  // launch)
+  if (CGSizeEqualToSize(cellSize, CGSizeZero))
     return drawingCells;
   // Also abort early if the tree is empty
   if (CGSizeEqualToSize(self.nodeTreeViewMetrics.abstractCanvasSize, CGSizeZero))
     return drawingCells;
 
-  CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
-                                                         metrics:self.nodeTreeViewMetrics];
   CGFloat tileRectLeftEdge = CGRectGetMinX(tileRect);
   CGFloat tileRectRightEdge = CGRectGetMaxX(tileRect);
   CGFloat tileRectTopEdge = CGRectGetMinY(tileRect);
@@ -145,59 +185,63 @@
 
   // Currently cells are adjacent horizontally as well as vertically. This
   // may change in the future, especially vertically.
-  CGFloat xDistanceBetweenCellEdges = nodeTreeViewCellSize.width;
-  CGFloat yDistanceBetweenCellEdges = nodeTreeViewCellSize.height;
+  CGFloat xDistanceBetweenCellEdges = cellSize.width;
+  CGFloat yDistanceBetweenCellEdges = cellSize.height;
 
-  // Simplified schematics how tile rects and cell rects can overlap. Also
-  // this shows that there is a padding around the tree edges.
+  // Simplified schematics how tile rects and cell rects can overlap.
   //
   // canvas origin
-  // o--->
-  // |
-  // |
-  // v   topLeftTreeCorner
-  //     +---++---++---++---++---++---+
-  //     |   ||   ||   ||   ||   ||   |
-  //     +---++---++---++---++---++---+
-  //                 +--------------+
-  //                 |              |
-  //     +---++---++-+-++---++---++-|-++---+
-  //     |   ||   || | ||   ||   || | ||   |
-  //     +---++---++-+-++---++---++-+-++---+
-  //                 |              |
-  //                 |              |
-  //     +---++---++-+-++---++---++-|-+
-  //     |   ||   || +-||---||---||-+ |
-  //     +---++---++---++---++---++---+
+  // o---------------------------------------->
+  // |       ^
+  // |       | paddingY
+  // |       |
+  // |       | +--- top left cell
+  // |       v v
+  // |      +---++---++---++---++---++---+
+  // |<---->|   ||   ||   ||   ||   ||   |
+  // |  p   +---++---++---++---++---++---+
+  // |  a               +--------------+
+  // |  d               |              |
+  // |  d   +---++---++-+-++---++---++-|-++---+
+  // |  i   |   ||   || | ||   ||   || | ||   |
+  // |  n   +---++---++-+-++---++---++-+-++---+
+  // |  g               |              |
+  // |  X               |              |
+  // |      +---++---++-+-++---++---++-|-+
+  // |      |   ||   || +-||---||---||-+ |
+  // v      +---++---++---++---++---++---+
 
   // The canvas coordinate system has its origin in the upper-left corner, so
-  // we base our calculations and iterations also on the top-left tree corner
+  // we base our calculations and iterations also on the top-left corner
   // coordinates.
-  CGRect topLeftCornerCellTreeRect = [NodeTreeViewDrawingHelper canvasRectForCellAtPosition:[NodeTreeViewCellPosition positionWithX:self.nodeTreeViewMetrics.topLeftCellX y:self.nodeTreeViewMetrics.topLeftCellY]
-                                                                                    metrics:self.nodeTreeViewMetrics];
-  CGFloat topLeftCornerCellTreeRectLeftEdge = CGRectGetMinX(topLeftCornerCellTreeRect);
-  CGFloat topLeftCornerCellTreeRectTopEdge = CGRectGetMinY(topLeftCornerCellTreeRect);
+  CGRect topLeftCornerCellRect = CGRectZero;
+  topLeftCornerCellRect.origin = topLeftCellRectOrigin;
+  topLeftCornerCellRect.size = cellSize;
+  CGFloat topLeftCornerCellRectLeftEdge = CGRectGetMinX(topLeftCornerCellRect);
+  CGFloat topLeftCornerCellRectTopEdge = CGRectGetMinY(topLeftCornerCellRect);
 
+  // Step 1: Determine the x/y position of the top-left cell that intersects
+  // with the tile
   unsigned short xPositionOfTopLeftCellIntersectingWithTile;
   unsigned short yPositionOfTopLeftCellIntersectingWithTile;
   CGRect topLeftCellIntersectingWithTileRect = CGRectZero;
-  topLeftCellIntersectingWithTileRect.size =  nodeTreeViewCellSize;
+  topLeftCellIntersectingWithTileRect.size =  cellSize;
 
-  if (tileRectLeftEdge > topLeftCornerCellTreeRectLeftEdge)
+  if (tileRectLeftEdge > topLeftCornerCellRectLeftEdge)
   {
-    int numberOfFullCellsOutsideOfTileOnTheLeft = floor((tileRectLeftEdge - topLeftCornerCellTreeRectLeftEdge) / xDistanceBetweenCellEdges);
+    int numberOfFullCellsOutsideOfTileOnTheLeft = floor((tileRectLeftEdge - topLeftCornerCellRectLeftEdge) / xDistanceBetweenCellEdges);
     xPositionOfTopLeftCellIntersectingWithTile = numberOfFullCellsOutsideOfTileOnTheLeft;
-    topLeftCellIntersectingWithTileRect.origin.x = topLeftCornerCellTreeRectLeftEdge + numberOfFullCellsOutsideOfTileOnTheLeft * xDistanceBetweenCellEdges;
+    topLeftCellIntersectingWithTileRect.origin.x = topLeftCornerCellRectLeftEdge + numberOfFullCellsOutsideOfTileOnTheLeft * xDistanceBetweenCellEdges;
 
     if (xPositionOfTopLeftCellIntersectingWithTile > self.nodeTreeViewMetrics.bottomRightCellX)
       return drawingCells;
   }
   else
   {
-    if (tileRectRightEdge > topLeftCornerCellTreeRectLeftEdge)
+    if (tileRectRightEdge > topLeftCornerCellRectLeftEdge)
     {
       xPositionOfTopLeftCellIntersectingWithTile = 0;
-      topLeftCellIntersectingWithTileRect.origin.x = topLeftCornerCellTreeRect.origin.x;
+      topLeftCellIntersectingWithTileRect.origin.x = topLeftCornerCellRect.origin.x;
     }
     else
     {
@@ -208,21 +252,21 @@
     }
   }
 
-  if (tileRectTopEdge > topLeftCornerCellTreeRectTopEdge)
+  if (tileRectTopEdge > topLeftCornerCellRectTopEdge)
   {
-    int numberOfFullCellsOutsideOfTileAbove = floor((tileRectTopEdge - topLeftCornerCellTreeRectTopEdge) / yDistanceBetweenCellEdges);
+    int numberOfFullCellsOutsideOfTileAbove = floor((tileRectTopEdge - topLeftCornerCellRectTopEdge) / yDistanceBetweenCellEdges);
     yPositionOfTopLeftCellIntersectingWithTile = numberOfFullCellsOutsideOfTileAbove;
-    topLeftCellIntersectingWithTileRect.origin.y = topLeftCornerCellTreeRectTopEdge + numberOfFullCellsOutsideOfTileAbove * yDistanceBetweenCellEdges;
+    topLeftCellIntersectingWithTileRect.origin.y = topLeftCornerCellRectTopEdge + numberOfFullCellsOutsideOfTileAbove * yDistanceBetweenCellEdges;
 
     if (yPositionOfTopLeftCellIntersectingWithTile > self.nodeTreeViewMetrics.bottomRightCellY)
       return drawingCells;
   }
   else
   {
-    if (tileRectBottomEdge > topLeftCornerCellTreeRectTopEdge)
+    if (tileRectBottomEdge > topLeftCornerCellRectTopEdge)
     {
       yPositionOfTopLeftCellIntersectingWithTile = 0;
-      topLeftCellIntersectingWithTileRect.origin.y = topLeftCornerCellTreeRect.origin.y;
+      topLeftCellIntersectingWithTileRect.origin.y = topLeftCornerCellRect.origin.y;
     }
     else
     {
@@ -233,6 +277,8 @@
     }
   }
 
+  // Step 2: Determine the x/y position of the bottom-right cell that intersects
+  // with the tile
   CGFloat topLeftCellIntersectingWithTileRectLeftEdge = CGRectGetMinX(topLeftCellIntersectingWithTileRect);
   CGFloat topLeftCellIntersectingWithTileRectRightEdge = CGRectGetMaxX(topLeftCellIntersectingWithTileRect);
   CGFloat topLeftCellIntersectingWithTileRectTopEdge = CGRectGetMinY(topLeftCellIntersectingWithTileRect);
@@ -269,6 +315,8 @@
     yPositionOfBottomRightCellIntersectingWithTile = yPositionOfTopLeftCellIntersectingWithTile;
   }
 
+  // Step 3: Simple iteration of x/y positions to create the desired
+  // NodeTreeViewCellPosition objects
   for (unsigned int yPosition = yPositionOfTopLeftCellIntersectingWithTile; yPosition <= yPositionOfBottomRightCellIntersectingWithTile; yPosition++)
   {
     for (unsigned int xPosition = xPositionOfTopLeftCellIntersectingWithTile; xPosition <= xPositionOfBottomRightCellIntersectingWithTile; xPosition++)

@@ -742,10 +742,11 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the rectangle occupied by a cell on the "canvas", i.e. the
-/// area covered by the entire node tree view, which is identified by
-/// @a position. The cell can be either a standalone cell, or a sub-cell. The
-/// origin of the returned rectangle is in the upper-left corner.
+/// @brief Returns the rectangle occupied by a cell on the node tree view
+/// "canvas", i.e. the area covered by the entire node tree view, which is
+/// identified by @a position. The cell can be either a standalone cell, or
+/// a sub-cell. The origin of the returned rectangle is in the upper-left
+/// corner.
 // -----------------------------------------------------------------------------
 + (CGRect) canvasRectForCellAtPosition:(NodeTreeViewCellPosition*)position
                                metrics:(NodeTreeViewMetrics*)metrics
@@ -753,6 +754,20 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
   CGRect canvasRect = CGRectZero;
   canvasRect.origin = [metrics cellRectOriginFromPosition:position];
   canvasRect.size = metrics.nodeTreeViewCellSize;
+  return canvasRect;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the rectangle occupied by a cell on the node number view
+/// "canvas", i.e. the area covered by the entire node number view, which is
+/// identified by @a position.
+// -----------------------------------------------------------------------------
++ (CGRect) canvasRectForNodeNumberCellAtPosition:(NodeTreeViewCellPosition*)position
+                                         metrics:(NodeTreeViewMetrics*)metrics
+{
+  CGRect canvasRect = CGRectZero;
+  canvasRect.origin = [metrics nodeNumberCellRectOriginFromPosition:position];
+  canvasRect.size = metrics.nodeNumberViewCellSize;
   return canvasRect;
 }
 
@@ -799,10 +814,10 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 /// in the upper-left corner. Returns CGRectZero if the multipart cell is not
 /// located on @a tile.
 // -----------------------------------------------------------------------------
-+ (CGRect) drawingRectForTile:(id<Tile>)tile
-            multipartCellPart:(int)part
-                 partPosition:(NodeTreeViewCellPosition*)position
-                      metrics:(NodeTreeViewMetrics*)metrics
++ (CGRect) drawingRectForMultipartCellPart:(int)part
+                              partPosition:(NodeTreeViewCellPosition*)position
+                                    onTile:(id<Tile>)tile
+                                   metrics:(NodeTreeViewMetrics*)metrics
 {
   if (! position)
     return CGRectZero;
@@ -834,9 +849,9 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 /// rectangle is in the upper-left corner. Returns CGRectZero if the standalone
 /// cell is not located on @a tile.
 // -----------------------------------------------------------------------------
-+ (CGRect) drawingRectForTile:(id<Tile>)tile
-               cellAtPosition:(NodeTreeViewCellPosition*)position
-                      metrics:(NodeTreeViewMetrics*)metrics
++ (CGRect) drawingRectForCellAtPosition:(NodeTreeViewCellPosition*)position
+                                 onTile:(id<Tile>)tile
+                                metrics:(NodeTreeViewMetrics*)metrics
 {
   if (! position)
     return CGRectZero;

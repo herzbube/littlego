@@ -45,6 +45,17 @@ static unsigned short numberOfUnsignedShortBits = CHAR_BIT * sizeof(unsigned sho
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a newly constructed NodeTreeViewCellPosition object that
+/// refers to the top-left position in a canvas whose origin is in the top-left
+/// corner. The returned NodeTreeViewCellPosition object has both the
+/// x-coordinate and y-coordinate set to 0 (zero).
+// -----------------------------------------------------------------------------
++ (NodeTreeViewCellPosition*) topLeftPosition
+{
+  return [NodeTreeViewCellPosition positionWithX:0 y:0];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Initializes a NodeTreeViewCellPosition object with x-coordinate @a x
 /// and y-coordinate @a y.
 ///
