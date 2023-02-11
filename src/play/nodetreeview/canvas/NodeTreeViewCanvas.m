@@ -302,13 +302,13 @@
     return;
   self.selectedNodePositionsNeedsUpdate = false;
 
-  // TODO xxx should self.canvasData.currentBoardPositionNode not be updated?
   GoNode* previousCurrentBoardPositionNode = self.canvasData.currentBoardPositionNode;
   [self updateSelectedStateOfCellsForNode:previousCurrentBoardPositionNode
                                toNewState:false
                           cellsDictionary:self.canvasData.cellsDictionary];
 
   GoNode* newCurrentBoardPositionNode =  [GoGame sharedGame].boardPosition.currentNode;
+  self.canvasData.currentBoardPositionNode = newCurrentBoardPositionNode;
   NSArray* positionsOfNewlySelectedCells = [self updateSelectedStateOfCellsForNode:newCurrentBoardPositionNode
                                                                         toNewState:true
                                                                    cellsDictionary:self.canvasData.cellsDictionary];

@@ -121,6 +121,10 @@
       if (! [self.selectedNodePositionsOnTile isEqualToArray:newSelectedNodePositionsOnTile])
       {
         self.selectedNodePositionsOnTile = newSelectedNodePositionsOnTile;
+        // Instead of redrawing the entire tile, we could only redraw the cells
+        // for the de-selected node and for the newly selected node. See
+        // handling of NTVLDEventNodeTreeNodeSymbolChanged for an example how
+        // to calculate the dirty rect for a node's cells.
         self.dirty = true;
       }
       break;
