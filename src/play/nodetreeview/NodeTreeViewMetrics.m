@@ -64,7 +64,8 @@
   [self updateWithAbstractCanvasSize:self.abstractCanvasSize
                    condenseMoveNodes:self.condenseMoveNodes
                    absoluteZoomScale:self.absoluteZoomScale
-                  displayNodeNumbers:self.displayNodeNumbers];
+                  displayNodeNumbers:self.displayNodeNumbers
+             nodeNumberViewIsOverlay:self.nodeNumberViewIsOverlay];
 
   return self;
 }
@@ -154,7 +155,10 @@
   }
 
   self.paddingX = 8;  // TODO xxx get from UIElementMetrics?
-  self.paddingY = 8;
+  // No need for an additional vertical padding - the cell height is sufficient
+  // so that there is some vertical space that is unused for drawing, which
+  // also serves as a minimal vertical padding
+  self.paddingY = 0;
 }
 
 // -----------------------------------------------------------------------------
@@ -200,6 +204,7 @@
   self.abstractCanvasSize = self.nodeTreeViewCanvas.canvasSize;
   self.condenseMoveNodes = self.nodeTreeViewModel.condenseMoveNodes;
   self.absoluteZoomScale = 1.0f;
+  self.nodeNumberViewIsOverlay = self.nodeTreeViewModel.nodeNumberViewIsOverlay;
   self.canvasSize = CGSizeZero;
 
   self.displayNodeNumbers = self.nodeTreeViewModel.displayNodeNumbers;
@@ -244,7 +249,8 @@
   [self updateWithAbstractCanvasSize:newAbstractCanvasSize
                    condenseMoveNodes:self.condenseMoveNodes
                    absoluteZoomScale:self.absoluteZoomScale
-                  displayNodeNumbers:self.displayNodeNumbers];
+                  displayNodeNumbers:self.displayNodeNumbers
+             nodeNumberViewIsOverlay:self.nodeNumberViewIsOverlay];
   // Update property only after everything has been re-calculated so that KVO
   // observers get the new values
   self.abstractCanvasSize = newAbstractCanvasSize;
@@ -265,7 +271,8 @@
   [self updateWithAbstractCanvasSize:self.abstractCanvasSize
                    condenseMoveNodes:newCondenseMoveNodes
                    absoluteZoomScale:self.absoluteZoomScale
-                  displayNodeNumbers:self.displayNodeNumbers];
+                  displayNodeNumbers:self.displayNodeNumbers
+             nodeNumberViewIsOverlay:self.nodeNumberViewIsOverlay];
   // Update property only after everything has been re-calculated so that KVO
   // observers get the new values
   self.condenseMoveNodes = newCondenseMoveNodes;
@@ -307,10 +314,34 @@
   [self updateWithAbstractCanvasSize:self.abstractCanvasSize
                    condenseMoveNodes:self.condenseMoveNodes
                    absoluteZoomScale:newAbsoluteZoomScale
-                  displayNodeNumbers:self.displayNodeNumbers];
+                  displayNodeNumbers:self.displayNodeNumbers
+             nodeNumberViewIsOverlay:self.nodeNumberViewIsOverlay];
   // Update property only after everything has been re-calculated so that KVO
   // observers get the new values
   self.absoluteZoomScale = newAbsoluteZoomScale;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the values stored by this NodeTreeViewMetrics object based on
+/// @a newNodeNumberViewIsOverlay.
+///
+/// The new canvas size will be the current @e abstractCanvasSize multiplied by
+/// the new @e nodeTreeViewCellSize and the current absolute zoom scale. If
+/// @a newNodeNumberViewIsOverlay is true the value of
+/// @e self.nodeNumberStripHeight is added as a padding at the top.
+// -----------------------------------------------------------------------------
+- (void) updateWithNodeNumberViewIsOverlay:(bool)newNodeNumberViewIsOverlay
+{
+  if (newNodeNumberViewIsOverlay == self.nodeNumberViewIsOverlay)
+    return;
+  [self updateWithAbstractCanvasSize:self.abstractCanvasSize
+                   condenseMoveNodes:self.condenseMoveNodes
+                   absoluteZoomScale:self.absoluteZoomScale
+                  displayNodeNumbers:self.displayNodeNumbers
+             nodeNumberViewIsOverlay:newNodeNumberViewIsOverlay];
+  // Update property only after everything has been re-calculated so that KVO
+  // observers get the new values
+  self.nodeNumberViewIsOverlay = newNodeNumberViewIsOverlay;
 }
 
 // -----------------------------------------------------------------------------
@@ -327,7 +358,8 @@
   [self updateWithAbstractCanvasSize:self.abstractCanvasSize
                    condenseMoveNodes:self.condenseMoveNodes
                    absoluteZoomScale:self.absoluteZoomScale
-                  displayNodeNumbers:newDisplayNodeNumbers];
+                  displayNodeNumbers:newDisplayNodeNumbers
+             nodeNumberViewIsOverlay:self.nodeNumberViewIsOverlay];
   // Update property only after everything has been re-calculated so that KVO
   // observers get the new values
   self.displayNodeNumbers = newDisplayNodeNumbers;
@@ -345,6 +377,7 @@
                     condenseMoveNodes:(bool)newCondenseMoveNodes
                     absoluteZoomScale:(CGFloat)newAbsoluteZoomScale
                    displayNodeNumbers:(bool)newDisplayNodeNumbers
+              nodeNumberViewIsOverlay:(bool)newNodeNumberViewIsOverlay
 {
   // ----------------------------------------------------------------------
   // All calculations in this method must use the new... parameters.
@@ -400,12 +433,14 @@
     if (didFindNodeNumberLabelFont)
     {
       self.nodeNumberStripHeight = nodeNumberStripHeight;
+      self.nodeNumberViewHeight = self.paddingY + self.nodeNumberStripHeight;
       self.nodeNumberLabelFont = nodeNumberLabelFont;
       self.nodeNumberLabelMaximumSize = nodeNumberLabelMaximumSize;
     }
     else
     {
       self.nodeNumberStripHeight = 0;
+      self.nodeNumberViewHeight = 0;
       self.nodeNumberViewCellSize = CGSizeZero;
       self.nodeNumberLabelFont = nil;
       self.nodeNumberLabelMaximumSize = CGSizeZero;
@@ -414,13 +449,14 @@
   else
   {
     self.nodeNumberStripHeight = 0;
+    self.nodeNumberViewHeight = 0;
     self.nodeNumberViewCellSize = CGSizeZero;
     self.nodeNumberLabelFont = nil;
     self.nodeNumberLabelMaximumSize = CGSizeZero;
   }
 
   self.topLeftTreeCornerX = self.paddingX;
-  self.topLeftTreeCornerY = self.paddingY + self.nodeNumberStripHeight;
+  self.topLeftTreeCornerY = newNodeNumberViewIsOverlay ? self.nodeNumberViewHeight : self.paddingY;
 
   self.topLeftCellX = 0;
   self.topLeftCellY = 0;

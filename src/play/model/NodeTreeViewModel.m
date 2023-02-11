@@ -49,6 +49,8 @@
   self.branchingStyle = NodeTreeViewBranchingStyleRightAngle;
   self.nodeSelectionStyle = NodeTreeViewNodeSelectionStyleLightCircular;
   self.focusMode = NodeTreeViewFocusModeMakeSelectedNodeVisible;
+  // TODO xxx should this be a user preference?
+  self.nodeNumberViewIsOverlay = false;
 
   // The number chosen here must fulfill the following criteria:
   // - The number must be greater than 1, so that condensed nodes (which are

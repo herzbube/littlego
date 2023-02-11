@@ -154,7 +154,7 @@
   CGPoint topLeftCellRectOrigin = [self.nodeTreeViewMetrics nodeNumberCellRectOriginFromPosition:topLeftPosition];
   CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
                                                          metrics:self.nodeTreeViewMetrics];
-  tileRect.size.height = self.nodeTreeViewMetrics.nodeNumberStripHeight;
+  tileRect.size.height = self.nodeTreeViewMetrics.nodeNumberViewHeight;
   return [self calculateDrawingCellsOnTile:self.nodeTreeViewMetrics.nodeNumberViewCellSize
                      topLeftCellRectOrigin:topLeftCellRectOrigin
                                   tileRect:tileRect];

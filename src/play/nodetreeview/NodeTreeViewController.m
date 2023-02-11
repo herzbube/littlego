@@ -47,7 +47,8 @@
 @property(nonatomic, assign) bool notificationRespondersAreSetup;
 @property(nonatomic, retain) NodeTreeView* nodeTreeView;
 @property(nonatomic, retain) TiledScrollView* nodeNumbersView;
-@property(nonatomic, retain) NSArray* nodeNumbersViewConstraints;
+@property(nonatomic, retain) NSArray* autoLayoutConstraintsWithoutNodeNumbersView;
+@property(nonatomic, retain) NSArray* autoLayoutConstraintsWithNodeNumbersView;
 @property(nonatomic, assign) bool visibleRectNeedsUpdate;
 @property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
 @property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
@@ -77,7 +78,8 @@
   self.notificationRespondersAreSetup = false;
   self.nodeTreeView = nil;
   self.nodeNumbersView = nil;
-  self.nodeNumbersViewConstraints = nil;
+  self.autoLayoutConstraintsWithoutNodeNumbersView = nil;
+  self.autoLayoutConstraintsWithNodeNumbersView = nil;
   self.visibleRectNeedsUpdate = false;
   [self setupChildControllers];
 
@@ -91,7 +93,8 @@
 {
   [self removeNotificationResponders];
 
-  self.nodeNumbersViewConstraints = nil;
+  self.autoLayoutConstraintsWithoutNodeNumbersView = nil;
+  self.autoLayoutConstraintsWithNodeNumbersView = nil;
   self.nodeTreeView = nil;
   self.nodeNumbersView = nil;
   self.doubleTapGestureController = nil;
@@ -142,7 +145,7 @@
   [self createCanvasAndMetrics];
   [self createSubviews];
   [self setupViewHierarchy];
-  [self setupAutoLayoutConstraints];
+  [self setupAutoLayoutConstraintsWithoutNodeNumbersView];
   [self configureViews];
   [self configureControllers];
   [self setupNotificationResponders];
@@ -185,12 +188,25 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
+/// @brief Creates and adds auto layout constraints for layouting the controller
+/// view's subviews when the node numbers view is not visible.
 // -----------------------------------------------------------------------------
-- (void) setupAutoLayoutConstraints
+- (void) setupAutoLayoutConstraintsWithoutNodeNumbersView
 {
   self.nodeTreeView.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutUtility fillSuperview:self.view withSubview:self.nodeTreeView];
+  self.autoLayoutConstraintsWithoutNodeNumbersView = [AutoLayoutUtility fillSuperview:self.view withSubview:self.nodeTreeView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes and deallocates auto layout constraints for layouting the
+/// controller view's subviews when the node numbers view is not visible.
+// -----------------------------------------------------------------------------
+- (void) removeAutoLayoutConstraintsWithoutNodeNumbersView
+{
+  if (! self.autoLayoutConstraintsWithoutNodeNumbersView)
+    return;
+  [self.view removeConstraints:self.autoLayoutConstraintsWithoutNodeNumbersView];
+  self.autoLayoutConstraintsWithoutNodeNumbersView = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -397,7 +413,8 @@
     Class nodeNumbersTileViewClass = [NodeNumbersTileView class];
     self.nodeNumbersView = [[[TiledScrollView alloc] initWithFrame:CGRectZero tileViewClass:nodeNumbersTileViewClass] autorelease];
     [self.view addSubview:self.nodeNumbersView];
-    [self addNodeNumbersViewConstraints];
+    [self removeAutoLayoutConstraintsWithoutNodeNumbersView];
+    [self setupAutoLayoutConstraintsWithNodeNumbersView];
     [self configureNodeNumbersView:self.nodeNumbersView];
     [self updateContentSizeInNodeNumbersScrollView];
     [self updateContentOffsetInNodeNumbersScrollView];
@@ -406,7 +423,8 @@
   {
     if (! [self nodeNumbersViewExists])
       return;
-    [self removeNodeNumbersViewConstraints];
+    [self removeAutoLayoutConstraintsWithNodeNumbersView];
+    [self setupAutoLayoutConstraintsWithoutNodeNumbersView];
     [self.nodeNumbersView removeFromSuperview];
     self.nodeNumbersView = nil;
   }
@@ -429,26 +447,26 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Creates and adds auto layout constraints for layouting the node
-/// numbers view.
+/// @brief Creates and adds auto layout constraints for layouting the controller
+/// view's subviews when the node numbers view is visible.
 // -----------------------------------------------------------------------------
-- (void) addNodeNumbersViewConstraints
+- (void) setupAutoLayoutConstraintsWithNodeNumbersView
 {
   self.nodeNumbersView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.nodeNumbersViewConstraints = [self createNodeNumbersViewConstraints];
-  [self.view addConstraints:self.nodeNumbersViewConstraints];
+  self.autoLayoutConstraintsWithNodeNumbersView = [self createNodeNumbersViewConstraints];
+  [self.view addConstraints:self.autoLayoutConstraintsWithNodeNumbersView];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Removes and deallocates auto layout constraints for layouting the
-/// node numbers view.
+/// controller view's subviews when the node numbers view is visible.
 // -----------------------------------------------------------------------------
-- (void) removeNodeNumbersViewConstraints
+- (void) removeAutoLayoutConstraintsWithNodeNumbersView
 {
-  if (! self.nodeNumbersViewConstraints)
+  if (! self.autoLayoutConstraintsWithNodeNumbersView)
     return;
-  [self.view removeConstraints:self.nodeNumbersViewConstraints];
-  self.nodeNumbersViewConstraints = nil;
+  [self.view removeConstraints:self.autoLayoutConstraintsWithNodeNumbersView];
+  self.autoLayoutConstraintsWithNodeNumbersView = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -457,12 +475,31 @@
 // -----------------------------------------------------------------------------
 - (NSArray*) createNodeNumbersViewConstraints
 {
-  return [NSArray arrayWithObjects:
-          [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1 constant:0],
-          [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1 constant:0],
-          [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1 constant:0],
-          [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:self.nodeTreeViewMetrics.tileSize.height],
-          nil];
+  if (self.nodeTreeViewModel.nodeNumberViewIsOverlay)
+  {
+    NSArray* autoLayoutConstraintsNodeTreeView = [AutoLayoutUtility fillSuperview:self.view withSubview:self.nodeTreeView];
+    NSArray* autoLayoutConstraintsNodeNumbersView = @[
+      [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1 constant:0],
+      [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1 constant:0],
+      [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1 constant:0],
+      [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:self.nodeTreeViewMetrics.nodeNumberViewHeight],
+    ];
+    return [autoLayoutConstraintsNodeTreeView arrayByAddingObjectsFromArray:autoLayoutConstraintsNodeNumbersView];
+  }
+  else
+  {
+    NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+    NSMutableArray* visualFormats = [NSMutableArray array];
+
+    viewsDictionary[@"nodeTreeView"] = self.nodeTreeView;
+    viewsDictionary[@"nodeNumbersView"] = self.nodeNumbersView;
+
+    [visualFormats addObject:@"H:|-0-[nodeNumbersView]-0-|"];
+    [visualFormats addObject:@"H:|-0-[nodeTreeView]-0-|"];
+    [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[nodeNumbersView(==%d)]-0-[nodeTreeView]-0-|", self.nodeTreeViewMetrics.nodeNumberViewHeight]];
+
+    return [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+  }
 }
 
 // -----------------------------------------------------------------------------

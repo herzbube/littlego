@@ -111,6 +111,7 @@
 - (void) updateWithAbstractCanvasSize:(CGSize)newAbstractCanvasSize;
 - (void) updateWithCondenseMoveNodes:(bool)newCondenseMoveNodes;
 - (void) updateWithRelativeZoomScale:(CGFloat)newRelativeZoomScale;
+- (void) updateWithNodeNumberViewIsOverlay:(bool)newNodeNumberViewIsOverlay;
 //@}
 
 /// @name Calculators
@@ -153,6 +154,7 @@
 @property(nonatomic, assign) CGSize abstractCanvasSize;
 @property(nonatomic, assign) bool condenseMoveNodes;
 @property(nonatomic, assign) CGFloat absoluteZoomScale;
+@property(nonatomic, assign) bool nodeNumberViewIsOverlay;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -176,6 +178,7 @@
 /// height is the same as the height of @e nodeTreeViewCellSize.
 @property(nonatomic, assign) CGSize nodeTreeViewMultipartCellSize;
 @property(nonatomic, assign) int nodeNumberStripHeight;
+@property(nonatomic, assign) int nodeNumberViewHeight;
 /// @brief The size of a single cell in the node number view. The width is
 /// equal to the width of @e nodeTreeViewCellSize, the height is equal to
 /// @e nodeNumberStripHeight.
