@@ -78,6 +78,8 @@
 + (NSArray*) installVisualFormats:(NSArray*)visualFormats
                         withViews:(NSDictionary*)viewsDictionary
                            inView:(UIView*)view;
++ (NSArray*) createConstraintsWithVisualFormats:(NSArray*)visualFormats
+                                          views:(NSDictionary*)viewsDictionary;
 + (CGFloat) horizontalSpacingSiblings;
 + (CGFloat) verticalSpacingSiblings;
 + (CGFloat) horizontalSpacingSuperview;

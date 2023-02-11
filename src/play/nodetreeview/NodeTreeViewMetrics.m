@@ -405,8 +405,6 @@
     self.nodeTreeViewMultipartCellSize = nodeTreeViewCellUncondensedSize;
   }
 
-  // TODO xxx Do we need to multiply line widths by newAbsoluteZoomScale, too, to avoid anti-aliasing?
-
   if (newDisplayNodeNumbers)
   {
     // The node number label strip can be substantially less high than
@@ -421,7 +419,7 @@
     // numbers are drawn outside the bounds mandated by this size. This is
     // important when move nodes are condensed and this size refers to only a
     // condensed cell width.
-    self.nodeNumberViewCellSize = CGSizeMake(self.nodeTreeViewCellSize.width, self.nodeNumberStripHeight);
+    self.nodeNumberViewCellSize = CGSizeMake(self.nodeTreeViewCellSize.width, nodeNumberStripHeight);
 
     // Condensed move nodes are not numbered, so the base width available to
     // node number labels is always the uncondensed cell width. This works

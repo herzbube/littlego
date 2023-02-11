@@ -49,6 +49,7 @@
 @property(nonatomic, retain) TiledScrollView* nodeNumbersView;
 @property(nonatomic, retain) NSArray* autoLayoutConstraintsWithoutNodeNumbersView;
 @property(nonatomic, retain) NSArray* autoLayoutConstraintsWithNodeNumbersView;
+@property(nonatomic, retain) NSLayoutConstraint* autoLayoutConstraintNodeNumbersViewHeight;
 @property(nonatomic, assign) bool visibleRectNeedsUpdate;
 @property(nonatomic, retain) DoubleTapGestureController* doubleTapGestureController;
 @property(nonatomic, retain) TwoFingerTapGestureController* twoFingerTapGestureController;
@@ -80,6 +81,7 @@
   self.nodeNumbersView = nil;
   self.autoLayoutConstraintsWithoutNodeNumbersView = nil;
   self.autoLayoutConstraintsWithNodeNumbersView = nil;
+  self.autoLayoutConstraintNodeNumbersViewHeight = nil;
   self.visibleRectNeedsUpdate = false;
   [self setupChildControllers];
 
@@ -95,6 +97,7 @@
 
   self.autoLayoutConstraintsWithoutNodeNumbersView = nil;
   self.autoLayoutConstraintsWithNodeNumbersView = nil;
+  self.autoLayoutConstraintNodeNumbersViewHeight = nil;
   self.nodeTreeView = nil;
   self.nodeNumbersView = nil;
   self.doubleTapGestureController = nil;
@@ -453,8 +456,13 @@
 - (void) setupAutoLayoutConstraintsWithNodeNumbersView
 {
   self.nodeNumbersView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.autoLayoutConstraintsWithNodeNumbersView = [self createNodeNumbersViewConstraints];
+
+  NSArray* constraintsTuple = [self createNodeNumbersViewConstraints];
+  self.autoLayoutConstraintsWithNodeNumbersView = constraintsTuple.firstObject;
+  self.autoLayoutConstraintNodeNumbersViewHeight = constraintsTuple.lastObject;
+
   [self.view addConstraints:self.autoLayoutConstraintsWithNodeNumbersView];
+  [self.view addConstraint:self.autoLayoutConstraintNodeNumbersViewHeight];
 }
 
 // -----------------------------------------------------------------------------
@@ -465,8 +473,12 @@
 {
   if (! self.autoLayoutConstraintsWithNodeNumbersView)
     return;
+
   [self.view removeConstraints:self.autoLayoutConstraintsWithNodeNumbersView];
+  [self.view removeConstraint:self.autoLayoutConstraintNodeNumbersViewHeight];
+
   self.autoLayoutConstraintsWithNodeNumbersView = nil;
+  self.autoLayoutConstraintNodeNumbersViewHeight = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -475,6 +487,9 @@
 // -----------------------------------------------------------------------------
 - (NSArray*) createNodeNumbersViewConstraints
 {
+  NSLayoutConstraint* nodeNumbersViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:self.nodeTreeViewMetrics.nodeNumberViewHeight];
+
+  NSArray* otherConstraints;
   if (self.nodeTreeViewModel.nodeNumberViewIsOverlay)
   {
     NSArray* autoLayoutConstraintsNodeTreeView = [AutoLayoutUtility fillSuperview:self.view withSubview:self.nodeTreeView];
@@ -482,9 +497,8 @@
       [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1 constant:0],
       [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1 constant:0],
       [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1 constant:0],
-      [NSLayoutConstraint constraintWithItem:self.nodeNumbersView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:self.nodeTreeViewMetrics.nodeNumberViewHeight],
     ];
-    return [autoLayoutConstraintsNodeTreeView arrayByAddingObjectsFromArray:autoLayoutConstraintsNodeNumbersView];
+    otherConstraints = [autoLayoutConstraintsNodeTreeView arrayByAddingObjectsFromArray:autoLayoutConstraintsNodeNumbersView];
   }
   else
   {
@@ -496,10 +510,13 @@
 
     [visualFormats addObject:@"H:|-0-[nodeNumbersView]-0-|"];
     [visualFormats addObject:@"H:|-0-[nodeTreeView]-0-|"];
-    [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[nodeNumbersView(==%d)]-0-[nodeTreeView]-0-|", self.nodeTreeViewMetrics.nodeNumberViewHeight]];
+    [visualFormats addObject:@"V:|-0-[nodeNumbersView]-0-[nodeTreeView]-0-|"];
 
-    return [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+    otherConstraints = [AutoLayoutUtility createConstraintsWithVisualFormats:visualFormats
+                                                                       views:viewsDictionary];
   }
+
+  return @[otherConstraints, nodeNumbersViewHeightConstraint];
 }
 
 // -----------------------------------------------------------------------------
@@ -588,6 +605,19 @@
   self.nodeNumbersView.contentOffset = nodeNumbersViewContentOffset;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+///
+/// If the node numbers view is visible, updates the Auto Layout constraint that
+/// governs the view's height to match the height provided by
+/// NodeTreeViewMetrics.
+// -----------------------------------------------------------------------------
+- (void) updateNodeNumbersHeightIfNecessary
+{
+  if (self.autoLayoutConstraintNodeNumbersViewHeight)
+    self.autoLayoutConstraintNodeNumbersViewHeight.constant = self.nodeTreeViewMetrics.nodeNumberViewHeight;
+}
+
 #pragma mark - Notification responders
 
 // -----------------------------------------------------------------------------
@@ -632,11 +662,13 @@
         // functions. A KVO notification can come in on a secondary thread when
         // a game is loaded from the archive, or when a game is restored during
         // app launch.
-        [self performSelectorOnMainThread:@selector(updateContentSizeInScrollViews) withObject:nil waitUntilDone:NO];
+        [self performSelectorOnMainThread:@selector(updateContentSizeInScrollViews) withObject:nil waitUntilDone:YES];
+        [self performSelectorOnMainThread:@selector(updateNodeNumbersHeightIfNecessary) withObject:nil waitUntilDone:YES];
       }
       else
       {
         [self updateContentSizeInScrollViews];
+        [self updateNodeNumbersHeightIfNecessary];
       }
     }
     else if ([keyPath isEqualToString:@"displayNodeNumbers"] ||
