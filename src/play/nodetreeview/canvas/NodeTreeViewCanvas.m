@@ -163,7 +163,9 @@
 - (void) currentGameVariationDidChange:(NSNotification*)notification
 {
   // TODO xxx Find a way to update the selected lines properties only instead
-  // of brute-force recalculating the entire canvas
+  // of brute-force recalculating the entire canvas. What also needs to be
+  // updated is the node numbers in case either "align move nodes" or
+  // "condense move nodes" is true.
   self.canvasNeedsUpdate = true;
   self.notificationToPostAfterCanvasUpdate = nodeTreeViewContentDidChange;
   [self delayedUpdate];
@@ -300,6 +302,7 @@
     return;
   self.selectedNodePositionsNeedsUpdate = false;
 
+  // TODO xxx should self.canvasData.currentBoardPositionNode not be updated?
   GoNode* previousCurrentBoardPositionNode = self.canvasData.currentBoardPositionNode;
   [self updateSelectedStateOfCellsForNode:previousCurrentBoardPositionNode
                                toNewState:false
@@ -554,7 +557,8 @@
        branchingStyle:branchingStyle];
 
   // Step 5: Generate node numbers
-  [self generateNodeNumbers:canvasData];
+  [self generateNodeNumbers:canvasData
+                  nodeModel:nodeModel];
 
   self.canvasData = canvasData;
   self.canvasSize = CGSizeMake(canvasData.highestXPosition + 1, canvasData.highestYPosition + 1);
@@ -1135,6 +1139,7 @@ highestMoveNumberThatAppearsInAtLeastTwoBranches:(int*)highestMoveNumberThatAppe
         branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
 {
   unsigned short highestXPosition = 0;
+  GoNode* highestXPositionNode = nil;
   NSMutableDictionary* cellsDictionary = canvasData.cellsDictionary;
 
   NSMutableArray* branches = canvasData.branches;
@@ -1155,10 +1160,12 @@ highestMoveNumberThatAppearsInAtLeastTwoBranches:(int*)highestMoveNumberThatAppe
 xPositionAfterLastCellInBranchingTuple:xPositionAfterLastCellInBranchingTuple
                   branchingStyle:branchingStyle
                  cellsDictionary:cellsDictionary
-                highestXPosition:&highestXPosition];
+                highestXPosition:&highestXPosition
+            highestXPositionNode:&highestXPositionNode];
   }
 
   canvasData.highestXPosition = highestXPosition;
+  canvasData.highestXPositionNode = highestXPositionNode;
 }
 
 // -----------------------------------------------------------------------------
@@ -1169,6 +1176,7 @@ xPositionAfterLastCellInBranchingTuple:(unsigned short)xPositionAfterLastCellInB
                         branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
                        cellsDictionary:(NSMutableDictionary*)cellsDictionary
                       highestXPosition:(unsigned short*)highestXPosition
+                  highestXPositionNode:(GoNode**)highestXPositionNode
 {
   unsigned short xPositionAfterPreviousBranchTuple = xPositionAfterLastCellInBranchingTuple;
 
@@ -1185,7 +1193,8 @@ xPositionAfterLastCellInBranchingTuple:(unsigned short)xPositionAfterLastCellInB
                                                  firstBranchTupleOfBranch:firstBranchTupleOfBranch
                                                   lastBranchTupleOfBranch:lastBranchTupleOfBranch
                                                            branchingStyle:branchingStyle                 cellsDictionary:cellsDictionary
-                                                         highestXPosition:highestXPosition];
+                                                         highestXPosition:highestXPosition
+                                                     highestXPositionNode:highestXPositionNode];
   }
 }
 
@@ -1208,6 +1217,7 @@ xPositionAfterLastCellInBranchingTuple:(unsigned short)xPositionAfterLastCellInB
                                 branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
                                cellsDictionary:(NSMutableDictionary*)cellsDictionary
                               highestXPosition:(unsigned short*)highestXPosition
+                          highestXPositionNode:(GoNode**)highestXPositionNode
 {
   bool diagonalConnectionToBranchingLineEstablished = [self generateCellsLeftOfBranchTuple:branchTuple
                                                          xPositionAfterPreviousBranchTuple:xPositionAfterPreviousBranchTuple
@@ -1231,7 +1241,8 @@ xPositionAfterLastCellInBranchingTuple:(unsigned short)xPositionAfterLastCellInB
 diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEstablished
                      branchingStyle:branchingStyle
                     cellsDictionary:cellsDictionary
-                   highestXPosition:highestXPosition];
+                   highestXPosition:highestXPosition
+               highestXPositionNode:highestXPositionNode];
 
   unsigned short xPositionAfterBranchTuple = (branchTuple->xPositionOfFirstCell +
                                               branchTuple->numberOfCellsForNode);
@@ -1578,6 +1589,7 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
                       branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
                      cellsDictionary:(NSMutableDictionary*)cellsDictionary
                     highestXPosition:(unsigned short*)highestXPosition
+                highestXPositionNode:(GoNode**)highestXPositionNode
 {
   for (unsigned int indexOfCell = 0; indexOfCell < branchTuple->numberOfCellsForNode; indexOfCell++)
   {
@@ -1599,9 +1611,13 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
     unsigned short xPosition = branchTuple->xPositionOfFirstCell + indexOfCell;
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPosition y:yPositionOfBranch];
     cellsDictionary[position] = @[cell, branchTuple];
+  }
 
-    if (xPosition > *highestXPosition)
-      *highestXPosition = xPosition;
+  unsigned short xPositionOfLastCell = branchTuple->xPositionOfFirstCell + branchTuple->numberOfCellsForNode - 1;
+  if (xPositionOfLastCell > *highestXPosition)
+  {
+    *highestXPosition = xPositionOfLastCell;
+    *highestXPositionNode = branchTuple->node;
   }
 }
 
@@ -1823,11 +1839,19 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 #pragma mark - Private API - Canvas calculation - Part 5: Generate node numbers
 
 // -----------------------------------------------------------------------------
-/// @brief Iterates over all branches and nodes that are present in
-/// @a canvasData and generates node numbers to horizontally label the cells
+/// @brief Generates node numbers to horizontally label some or all of the cells
 /// that represent the nodes on the canvas.
+///
+/// If one or both of the user preferences "Align move nodes" and
+/// "Condense move nodes" is enabled, node numbers are generated only for the
+/// nodes that are in the current game variation. Reason: Node numbering in
+/// these cases is not the same across all branches.
+///
+/// If neither of the two user preferences is enabled, node numbers are
+/// generated for all nodes in all branches.
 // -----------------------------------------------------------------------------
 - (void) generateNodeNumbers:(NodeTreeViewCanvasData*)canvasData
+                   nodeModel:(GoNodeModel*)nodeModel
 {
   // Everty n'th node number is displayed
   // TODO xxx Take user preference into account
@@ -1835,21 +1859,28 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 
   NSMutableDictionary* nodeNumbersDictionary = canvasData.nodeNumbersDictionary;
 
-  NSMutableArray* branches = canvasData.branches;
-  for (NodeTreeViewBranch* branch in branches)
+  GoNode* node;
+  if (self.nodeTreeViewModel.alignMoveNodes || self.nodeTreeViewModel.condenseMoveNodes)
+    node = nodeModel.leafNode;
+  else
+    node = canvasData.highestXPositionNode;
+
+  while (node)
   {
-    for (NodeTreeViewBranchTuple* branchTuple in branch->branchTuples)
-    {
-      if (branchTuple->nodeNumber % numberingInterval != 0)
-        continue;
+    NSValue* key = [NSValue valueWithNonretainedObject:node];
+    NodeTreeViewBranchTuple* branchTuple = [canvasData.nodeMap objectForKey:key];
 
-      unsigned short xPositionOfNodeNumber = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
-      // TODO xxx Use some other number if numbers are too close
-      unsigned int yPositionOfNodeNumber = 0;
-      NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfNodeNumber y:yPositionOfNodeNumber];
+    if (branchTuple->nodeNumber % numberingInterval != 0)
+      return;
 
-      nodeNumbersDictionary[position] = [NSNumber numberWithInt:branchTuple->nodeNumber];
-    }
+    unsigned short xPositionOfNodeNumber = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
+    // TODO xxx Use some other number if numbers are too close
+    unsigned int yPositionOfNodeNumber = 0;
+    NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfNodeNumber y:yPositionOfNodeNumber];
+
+    nodeNumbersDictionary[position] = [NSNumber numberWithInt:branchTuple->nodeNumber];
+
+    node = node.parent;
   }
 }
 

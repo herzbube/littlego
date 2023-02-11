@@ -66,6 +66,10 @@
 /// zero-based width of the canvas.
 @property(nonatomic, assign) unsigned short highestXPosition;
 
+/// @brief A GoNode object which is represented by a cell in @a cellsDictionary
+/// whose x-position is equal to @e highestXPosition.
+@property(nonatomic, assign) GoNode* highestXPositionNode;
+
 /// @brief The highest y-position of any cell in @a cellsDictionary, i.e. the
 /// zero-based height of the canvas.
 @property(nonatomic, assign) unsigned short highestYPosition;
