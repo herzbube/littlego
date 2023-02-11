@@ -502,8 +502,32 @@
                         string:(NSString*)string
                 textAttributes:(NSDictionary*)textAttributes
 {
+  return [CGDrawingHelper drawStringWithContext:context
+                                 centeredInRect:rectangle
+                            rotatedCcwByDegrees:0.0f
+                                         string:string
+                                 textAttributes:textAttributes];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Draws the string @a string using the attributes @a textAttributes.
+/// The string is drawn both horizontally and vertically centered within the
+/// rectangle with origin and size specified by @a rectangle. The string is
+/// rotated counter-clockwise by @a degrees, with the rotation center being the
+/// center of @a rectangle, which is the same as the center of the rendered text
+/// itself. The string is not clipped to the bounds defined by @a rectangle.
+// -----------------------------------------------------------------------------
++ (void) drawStringWithContext:(CGContextRef)context
+                centeredInRect:(CGRect)rectangle
+           rotatedCcwByDegrees:(CGFloat)degrees
+                        string:(NSString*)string
+                textAttributes:(NSDictionary*)textAttributes;
+{
   CGRect boundingBox = CGRectZero;
   boundingBox.size = [string sizeWithAttributes:textAttributes];
+
+  CGPoint centerOfRectangle = CGPointMake(CGRectGetMidX(rectangle), CGRectGetMidY(rectangle));
+  CGPoint centerOfBoundingBox = CGPointMake(CGRectGetMidX(boundingBox), CGRectGetMidY(boundingBox));
 
   CGRect drawingRect = CGRectZero;
   // Use the bounding box size for drawing so that the string is not clipped
@@ -512,8 +536,23 @@
   // vertically. Horizontal centering could also be achieved via text attributes
   // (with a paragraph style that uses NSTextAlignmentCenter), but vertical
   // centering cannot.
-  drawingRect.origin.x = CGRectGetMidX(rectangle) - CGRectGetMidX(boundingBox);
-  drawingRect.origin.y = CGRectGetMidY(rectangle) - CGRectGetMidY(boundingBox);
+  drawingRect.origin.x = centerOfRectangle.x - centerOfBoundingBox.x;
+  drawingRect.origin.y = centerOfRectangle.y - centerOfBoundingBox.y;
+
+  bool shouldRotate = degrees != 0.0f;
+  if (shouldRotate)
+  {
+    CGFloat angle = [UiUtilities radians:360 - degrees];
+    CGPoint rotationCenter = centerOfRectangle;
+
+    CGContextSaveGState(context);
+
+    // Shift the CTM to make the rotation center the origin
+    CGContextTranslateCTM(context, rotationCenter.x, rotationCenter.y);
+    CGContextRotateCTM(context, angle);
+    // Undo the shift
+    CGContextTranslateCTM(context, -rotationCenter.x, -rotationCenter.y);
+  }
 
   // NSString's drawInRect:withAttributes: is a UIKit drawing function. To make
   // it work we need to push the specified drawing context to the top of the
@@ -521,6 +560,9 @@
   UIGraphicsPushContext(context);
   [string drawInRect:drawingRect withAttributes:textAttributes];
   UIGraphicsPopContext();
+
+  if (shouldRotate)
+    CGContextRestoreGState(context);
 }
 
 // -----------------------------------------------------------------------------

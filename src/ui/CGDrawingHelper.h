@@ -105,6 +105,12 @@
                         string:(NSString*)string
                 textAttributes:(NSDictionary*)textAttributes;
 
++ (void) drawStringWithContext:(CGContextRef)context
+                centeredInRect:(CGRect)rectangle
+           rotatedCcwByDegrees:(CGFloat)degrees
+                        string:(NSString*)string
+                textAttributes:(NSDictionary*)textAttributes;
+
 + (void) setCircularClippingPathWithContext:(CGContextRef)context
                                      center:(CGPoint)center
                                      radius:(CGFloat)radius;
