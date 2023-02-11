@@ -558,7 +558,10 @@
 
   // Step 5: Generate node numbers
   [self generateNodeNumbers:canvasData
-                  nodeModel:nodeModel];
+                  nodeModel:nodeModel
+          condenseMoveNodes:condenseMoveNodes
+             alignMoveNodes:alignMoveNodes
+   numberCondensedMoveNodes:self.nodeTreeViewModel.numberCondensedMoveNodes];
 
   self.canvasData = canvasData;
   self.canvasSize = CGSizeMake(canvasData.highestXPosition + 1, canvasData.highestYPosition + 1);
@@ -1852,20 +1855,19 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 // -----------------------------------------------------------------------------
 - (void) generateNodeNumbers:(NodeTreeViewCanvasData*)canvasData
                    nodeModel:(GoNodeModel*)nodeModel
+           condenseMoveNodes:(bool)condenseMoveNodes
+              alignMoveNodes:(bool)alignMoveNodes
+    numberCondensedMoveNodes:(bool)numberCondensedMoveNodes
 {
   // Everty n'th node number is displayed
   // TODO xxx Take user preference into account
   const int numberingInterval = 1;
+  const unsigned short yPositionOfNodeNumber = 0;
+  const bool doNotNumberSingleCellNodes = condenseMoveNodes && ! numberCondensedMoveNodes;
 
   NSMutableDictionary* nodeNumbersDictionary = canvasData.nodeNumbersDictionary;
 
-  GoNode* node;
-  if (self.nodeTreeViewModel.alignMoveNodes || self.nodeTreeViewModel.condenseMoveNodes)
-    node = nodeModel.leafNode;
-  else
-    node = canvasData.highestXPositionNode;
-
-  while (node)
+  void (^generateNodeNumberIfNecessary) (GoNode*) = ^(GoNode* node)
   {
     NSValue* key = [NSValue valueWithNonretainedObject:node];
     NodeTreeViewBranchTuple* branchTuple = [canvasData.nodeMap objectForKey:key];
@@ -1873,13 +1875,35 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
     if (branchTuple->nodeNumber % numberingInterval != 0)
       return;
 
+    // Don't display node numbers for condensed move nodes, because the single
+    // cell that represents a condensed move node is not wide enough to show
+    // multi-digit node numbers => node numbers would overlap. Ideas to avoid
+    // the overlap:
+    // - Display node numbers rotated by a 45° or even a 90° angle (like the
+    //   tick labels on the horizontal axis of a diagram).
+    // - Have multiple rows in the node number view and distribute neighbouring
+    //   node numbers over these rows. This would mean that the constant
+    //   yPositionOfNodeNumber (see definition at the beginning of the method)
+    //   would become a variable.
+    // These ideas need more exploration, though.
+    if (doNotNumberSingleCellNodes && branchTuple->numberOfCellsForNode == 1)
+      return;
+
     unsigned short xPositionOfNodeNumber = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
-    // TODO xxx Use some other number if numbers are too close
-    unsigned int yPositionOfNodeNumber = 0;
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfNodeNumber y:yPositionOfNodeNumber];
 
     nodeNumbersDictionary[position] = [NSNumber numberWithInt:branchTuple->nodeNumber];
+  };
 
+  GoNode* node;
+  if (alignMoveNodes || condenseMoveNodes)
+    node = nodeModel.leafNode;
+  else
+    node = canvasData.highestXPositionNode;
+
+  while (node)
+  {
+    generateNodeNumberIfNecessary(node);
     node = node.parent;
   }
 }

@@ -51,6 +51,7 @@
   self.focusMode = NodeTreeViewFocusModeMakeSelectedNodeVisible;
   // TODO xxx should this be a user preference?
   self.nodeNumberViewIsOverlay = false;
+  self.numberCondensedMoveNodes = false;
 
   // The number chosen here must fulfill the following criteria:
   // - The number must be greater than 1, so that condensed nodes (which are

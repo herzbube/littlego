@@ -36,6 +36,7 @@
 @property(nonatomic, assign) enum NodeTreeViewNodeSelectionStyle nodeSelectionStyle;
 @property(nonatomic, assign) enum NodeTreeViewFocusMode focusMode;
 @property(nonatomic, assign) bool nodeNumberViewIsOverlay;
+@property(nonatomic, assign) bool numberCondensedMoveNodes;
 @property(nonatomic, assign) int numberOfCellsOfMultipartCell;
 
 @end
