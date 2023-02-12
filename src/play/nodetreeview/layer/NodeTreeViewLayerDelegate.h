@@ -74,11 +74,14 @@ enum NodeTreeViewLayerDelegateEvent
   NTVLDEventNodeTreeNodeSelectionStyleChanged,
   /// @brief Is sent whenever the selected node changed. The selected node is
   /// the node that corresponds to the current board position. The event info
-  /// object that accompanies this event type is an NSArray that contains 1-n
-  /// horizontally consecutive NodeTreeViewCellPosition objects that indicate
-  /// which cells on the canvas display the node that has been selected. If the
-  /// NSArray is empty, no node has been selected, i.e. there no longer is a
-  /// selected node.
+  /// object that accompanies this event type is an NSArray object that contains
+  /// two arrays, each of which contains 0-n horizontally consecutive
+  /// NodeTreeViewCellPosition objects. The positions in the first array
+  /// indicate which cells on the node tree view canvas display the node that
+  /// has been selected, the positions in the second array indicate which cells
+  /// on the node numbers view canvas display the node number of the node that
+  /// has been selected. Both array are empty if no node has been selected, i.e.
+  /// there no longer is a selected node.
   NTVLDEventNodeTreeSelectedNodeChanged,
   /// @brief Is sent whenever the symbol of a node changes. The event info
   /// object that accompanies this event type is an NSArray that contains 1-n

@@ -21,6 +21,7 @@
 // Forward declarations
 @class NodeTreeViewCanvas;
 @class NodeTreeViewMetrics;
+@class NodeTreeViewModel;
 
 
 // -----------------------------------------------------------------------------
@@ -59,6 +60,7 @@
 
 - (id) initWithFrame:(CGRect)rect
              metrics:(NodeTreeViewMetrics*)nodeTreeViewMetrics
-              canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas;
+              canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
+               model:(NodeTreeViewModel*)nodeTreeViewModel;
 
 @end

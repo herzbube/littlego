@@ -17,6 +17,7 @@
 
 // Project includes
 #import "NodeTreeViewCanvas.h"
+#import "NodeNumbersViewCell.h"
 #import "NodeTreeViewBranch.h"
 #import "NodeTreeViewBranchTuple.h"
 #import "NodeTreeViewCanvasAdditions.h"
@@ -34,6 +35,11 @@
 #import "../../../shared/LongRunningActionCounter.h"
 
 
+// Currently the node numbers view canvas has only one row, so node numbers
+// always have y-position 0 (zero).
+static const unsigned short yPositionOfNodeNumber = 0;
+
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for NodeTreeViewCanvas.
 // -----------------------------------------------------------------------------
@@ -44,6 +50,7 @@
 @property(nonatomic, retain) NodeTreeViewCanvasData* canvasData;
 @property(nonatomic, assign) bool selectedNodePositionsNeedsUpdate;
 @property(nonatomic, retain) NSArray* cachedSelectedNodePositions;
+@property(nonatomic, retain) NSArray* cachedSelectedNodeNodeNumbersViewPositions;
 @property(nonatomic, assign) bool nodeSelectionStyleNeedsUpdate;
 @property(nonatomic, assign) bool nodeSymbolNeedsUpdate;
 @property(nonatomic, retain) GoNode* nodeWhoseSymbolNeedsUpdate;
@@ -74,6 +81,7 @@
   self.canvasData = [[[NodeTreeViewCanvasData alloc] init] autorelease];
   self.selectedNodePositionsNeedsUpdate = false;
   self.cachedSelectedNodePositions = nil;
+  self.cachedSelectedNodeNodeNumbersViewPositions = nil;
   self.nodeSelectionStyleNeedsUpdate = false;
   self.nodeSymbolNeedsUpdate = false;
   self.nodeWhoseSymbolNeedsUpdate = nil;
@@ -94,6 +102,7 @@
   self.nodeTreeViewModel = nil;
   self.canvasData = nil;
   self.cachedSelectedNodePositions = nil;
+  self.cachedSelectedNodeNodeNumbersViewPositions = nil;
   self.nodeWhoseSymbolNeedsUpdate = nil;
 
   [super dealloc];
@@ -281,6 +290,7 @@
 
   [self recalculateCanvasPrivate];
   [self invalidateCachedSelectedNodePositions];
+  [self invalidateCachedSelectedNodeNodeNumbersViewPositions];
 
   if (self.notificationToPostAfterCanvasUpdate)
   {
@@ -305,18 +315,23 @@
   GoNode* previousCurrentBoardPositionNode = self.canvasData.currentBoardPositionNode;
   [self updateSelectedStateOfCellsForNode:previousCurrentBoardPositionNode
                                toNewState:false
-                          cellsDictionary:self.canvasData.cellsDictionary];
+                          cellsDictionary:self.canvasData.cellsDictionary
+           nodeNumbersViewCellsDictionary:self.canvasData.nodeNumbersViewCellsDictionary];
 
   GoNode* newCurrentBoardPositionNode =  [GoGame sharedGame].boardPosition.currentNode;
   self.canvasData.currentBoardPositionNode = newCurrentBoardPositionNode;
-  NSArray* positionsOfNewlySelectedCells = [self updateSelectedStateOfCellsForNode:newCurrentBoardPositionNode
-                                                                        toNewState:true
-                                                                   cellsDictionary:self.canvasData.cellsDictionary];
+  NSArray* positionsTupleOfNewlySelectedCells = [self updateSelectedStateOfCellsForNode:newCurrentBoardPositionNode
+                                                                             toNewState:true
+                                                                        cellsDictionary:self.canvasData.cellsDictionary
+                                                         nodeNumbersViewCellsDictionary:self.canvasData.nodeNumbersViewCellsDictionary];
+  NSArray* positionsOfNewlySelectedCells = positionsTupleOfNewlySelectedCells.firstObject;
+  NSArray* nodeNumbersViewPositionsOfNewlySelectedCells = positionsTupleOfNewlySelectedCells.lastObject;
 
   self.cachedSelectedNodePositions = positionsOfNewlySelectedCells;
+  self.cachedSelectedNodeNodeNumbersViewPositions = nodeNumbersViewPositionsOfNewlySelectedCells;
 
   [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeViewSelectedNodeDidChange
-                                                      object:positionsOfNewlySelectedCells];
+                                                      object:positionsTupleOfNewlySelectedCells];
 }
 
 // -----------------------------------------------------------------------------
@@ -411,9 +426,9 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a list of horizontally consecutive NodeTreeViewCellPosition
-/// objects that indicate which cells on the canvas display the node @a node.
-/// The list is empty if @a node is @e nil, or if no positions exist for
-/// @a node.
+/// objects that indicate which cells on the node tree view canvas display the
+/// node @a node. The list is empty if @a node is @e nil, or if no positions
+/// exist for @a node.
 // -----------------------------------------------------------------------------
 - (NSArray*) positionsForNode:(GoNode*)node
 {
@@ -423,8 +438,9 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a list of horizontally consecutive NodeTreeViewCellPosition
-/// objects that indicate which cells on the canvas display the node that is
-/// currently selected. The list is empty if currently no node is selected.
+/// objects that indicate which cells on the node tree view canvas display the
+/// node that is currently selected. The list is empty if currently no node is
+/// selected.
 // -----------------------------------------------------------------------------
 - (NSArray*) selectedNodePositions
 {
@@ -437,18 +453,50 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the node number that is located at position @a position on
-/// the node number canvas. Returns -1 if @a position denotes a position that is
-/// outside the canvas' bounds, or if there is no node number to display at
-/// position @a position.
+/// @brief Returns the NodeNumbersViewCell object that is located at position
+/// @a position on the node numbers canvas. Returns a NodeNumbersViewCell object
+/// with node number -1 if there is no node number to display at position
+/// @a position. Returns @e nil if @a position denotes a position that is
+/// outside the canvas' bounds.
 // -----------------------------------------------------------------------------
-- (int) nodeNumberAtPosition:(NodeTreeViewCellPosition*)position
+- (NodeNumbersViewCell*) nodeNumbersViewCellAtPosition:(NodeTreeViewCellPosition*)position
 {
-  NSNumber* nodeNumber = [self.canvasData.nodeNumbersDictionary objectForKey:position];
-  if (nodeNumber)
-    return nodeNumber.intValue;
+  NodeNumbersViewCell* nodeNumbersViewCell = [self.canvasData.nodeNumbersViewCellsDictionary objectForKey:position];
+  if (nodeNumbersViewCell)
+    return nodeNumbersViewCell;
+
+  if (position.x < self.canvasSize.width && position.y < 1)
+    return [NodeNumbersViewCell emptyCell];
   else
-    return -1;
+    return nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a list of horizontally consecutive NodeTreeViewCellPosition
+/// objects that indicate which cells on the node numbers view canvas display
+/// the node number for node @a node. The list is empty if @a node is @e nil, or
+/// if no positions exist for @a node.
+// -----------------------------------------------------------------------------
+- (NSArray*) nodeNumbersViewPositionsForNode:(GoNode*)node
+{
+  NodeTreeViewBranchTuple* branchTuple = [self branchTupleForNode:node];
+  return [self nodeNumbersViewPositionsForBranchTuple:branchTuple];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a list of horizontally consecutive NodeTreeViewCellPosition
+/// objects that indicate which cells on the node numbers view canvas display
+/// the node number for the node that is currently selected. The list is empty
+/// if currently no node is selected.
+// -----------------------------------------------------------------------------
+- (NSArray*) selectedNodeNodeNumbersViewPositions
+{
+  if (self.cachedSelectedNodeNodeNumbersViewPositions)
+    return self.cachedSelectedNodeNodeNumbersViewPositions;
+
+  NSArray* selectedNodeNodeNumbersViewPositions = [self nodeNumbersViewPositionsForNode:self.canvasData.currentBoardPositionNode];
+  self.cachedSelectedNodeNodeNumbersViewPositions = selectedNodeNodeNumbersViewPositions;
+  return selectedNodeNodeNumbersViewPositions;
 }
 
 // -----------------------------------------------------------------------------
@@ -560,8 +608,7 @@
   [self generateNodeNumbers:canvasData
                   nodeModel:nodeModel
           condenseMoveNodes:condenseMoveNodes
-             alignMoveNodes:alignMoveNodes
-   numberCondensedMoveNodes:self.nodeTreeViewModel.numberCondensedMoveNodes];
+             alignMoveNodes:alignMoveNodes];
 
   self.canvasData = canvasData;
   self.canvasSize = CGSizeMake(canvasData.highestXPosition + 1, canvasData.highestYPosition + 1);
@@ -1857,15 +1904,12 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
                    nodeModel:(GoNodeModel*)nodeModel
            condenseMoveNodes:(bool)condenseMoveNodes
               alignMoveNodes:(bool)alignMoveNodes
-    numberCondensedMoveNodes:(bool)numberCondensedMoveNodes
 {
   // Everty n'th node number is displayed
   // TODO xxx Take user preference into account
   const int numberingInterval = 1;
-  const unsigned short yPositionOfNodeNumber = 0;
-  const bool doNotNumberSingleCellNodes = condenseMoveNodes && ! numberCondensedMoveNodes;
 
-  NSMutableDictionary* nodeNumbersDictionary = canvasData.nodeNumbersDictionary;
+  NSMutableDictionary* nodeNumbersViewCellsDictionary = canvasData.nodeNumbersViewCellsDictionary;
 
   void (^generateNodeNumberIfNecessary) (GoNode*) = ^(GoNode* node)
   {
@@ -1875,24 +1919,15 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
     if (branchTuple->nodeNumber % numberingInterval != 0)
       return;
 
-    // Don't display node numbers for condensed move nodes, because the single
-    // cell that represents a condensed move node is not wide enough to show
-    // multi-digit node numbers => node numbers would overlap. Ideas to avoid
-    // the overlap:
-    // - Display node numbers rotated by a 45° or even a 90° angle (like the
-    //   tick labels on the horizontal axis of a diagram).
-    // - Have multiple rows in the node number view and distribute neighbouring
-    //   node numbers over these rows. This would mean that the constant
-    //   yPositionOfNodeNumber (see definition at the beginning of the method)
-    //   would become a variable.
-    // These ideas need more exploration, though.
-    if (doNotNumberSingleCellNodes && branchTuple->numberOfCellsForNode == 1)
-      return;
+    NodeNumbersViewCell* cell = [NodeNumbersViewCell emptyCell];
+    cell.nodeNumber = branchTuple->nodeNumber;
+    cell.selected = branchTuple->nodeIsCurrentBoardPositionNode;
+    cell.condensedMoveNode = condenseMoveNodes && branchTuple->numberOfCellsForNode == 1;
 
     unsigned short xPositionOfNodeNumber = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfNodeNumber y:yPositionOfNodeNumber];
 
-    nodeNumbersDictionary[position] = [NSNumber numberWithInt:branchTuple->nodeNumber];
+    nodeNumbersViewCellsDictionary[position] = cell;
   };
 
   GoNode* node;
@@ -2088,9 +2123,9 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a list of horizontally consecutive NodeTreeViewCellPosition
-/// objects that indicate which cells on the canvas display the node represented
-/// by @a branchTuple. The list is empty if @a branchTuple is @e nil, or if no
-/// positions exist for @a branchTuple.
+/// objects that indicate which cells on the node tree view canvas display the
+/// node represented by @a branchTuple. The list is empty if @a branchTuple is
+/// @e nil, or if no positions exist for @a branchTuple.
 // -----------------------------------------------------------------------------
 - (NSArray*) positionsForBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
 {
@@ -2112,14 +2147,38 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the @e selected property value of those NodeTreeViewCell
-/// objects that display the node @a node on the canvas. Returns a list of
-/// NodeTreeViewCellPosition objects that refer to the canvas positions of the
-/// updated cells.
+/// @brief Returns a list of horizontally consecutive NodeTreeViewCellPosition
+/// objects that indicate which cells on the node numbers view canvas display
+/// the node number for the node represented by @a branchTuple. The list is
+/// empty if @a branchTuple is @e nil, or if no positions exist for
+/// @a branchTuple.
+// -----------------------------------------------------------------------------
+- (NSArray*) nodeNumbersViewPositionsForBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
+{
+  NSMutableArray* positions = [NSMutableArray array];
+
+  if (! branchTuple)
+    return positions;
+
+  unsigned short xPositionOfNodeNumber = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
+  NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfNodeNumber
+                                                                             y:yPositionOfNodeNumber];
+  [positions addObject:position];
+
+  return positions;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the @e selected property value of those NodeTreeViewCell and
+/// NodeNumbersViewCell objects that display the node @a node on the canvas.
+/// Returns a tuple with two lists of NodeTreeViewCellPosition objects that
+/// refer to the positions of the updated cells on the node tree view canvas
+/// (first list) and on the node numbers view canvas (second list).
 // -----------------------------------------------------------------------------
 - (NSArray*) updateSelectedStateOfCellsForNode:(GoNode*)node
                                     toNewState:(bool)newSelectedState
                                cellsDictionary:(NSDictionary*)cellsDictionary
+                nodeNumbersViewCellsDictionary:(NSDictionary*)nodeNumbersViewCellsDictionary
 {
   NSArray* positions = [self positionsForNode:node];
   for (NodeTreeViewCellPosition* position in positions)
@@ -2131,7 +2190,16 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
       cell.selected = newSelectedState;
     }
   }
-  return positions;
+
+  NSArray* nodeNumbersViewPositions = [self nodeNumbersViewPositionsForNode:node];
+  for (NodeTreeViewCellPosition* position in nodeNumbersViewPositions)
+  {
+    NodeNumbersViewCell* cell = [nodeNumbersViewCellsDictionary objectForKey:position];
+    if (cell)
+      cell.selected = newSelectedState;
+  }
+
+  return @[positions, nodeNumbersViewPositions];
 }
 
 // -----------------------------------------------------------------------------
@@ -2140,6 +2208,15 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 - (void) invalidateCachedSelectedNodePositions
 {
   self.cachedSelectedNodePositions = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Invalidates the cached value returned by
+/// selectedNodeNodeNumbersViewPositions().
+// -----------------------------------------------------------------------------
+- (void) invalidateCachedSelectedNodeNodeNumbersViewPositions
+{
+  self.cachedSelectedNodeNodeNumbersViewPositions = nil;
 }
 
 @end

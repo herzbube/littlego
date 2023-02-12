@@ -16,10 +16,10 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The NodeTreeViewCell class represents a cell on the abstract canvas
-/// used by NodeTreeViewModel. NodeTreeViewCell contains data that describes the
-/// content that should be drawn when the cell is rendered on screen. A
-/// NodeTreeViewCell and its position on the canvas is uniquely identified by a
+/// @brief The NodeTreeViewCell class represents a cell on the abstract node
+/// tree view canvas. NodeTreeViewCell contains data that describes the content
+/// that should be drawn when the cell is rendered on screen. A NodeTreeViewCell
+/// and its position on the node tree view canvas is uniquely identified by a
 /// NodeTreeViewCellPosition value.
 ///
 /// NodeTreeViewCell can be either a standalone cell, or it can form, together

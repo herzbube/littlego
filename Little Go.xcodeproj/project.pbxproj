@@ -665,6 +665,8 @@
 		CDBCF1FD282FD5C700411CA6 /* KeyboardHeightAdjustment.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBCF1FB282FD5C700411CA6 /* KeyboardHeightAdjustment.m */; };
 		CDBDD0952994624200641E3B /* NodeNumbersLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBDD0942994624200641E3B /* NodeNumbersLayerDelegate.m */; };
 		CDBDD0962994624200641E3B /* NodeNumbersLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBDD0942994624200641E3B /* NodeNumbersLayerDelegate.m */; };
+		CDBDD0992997F38700641E3B /* NodeNumbersViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBDD0982997F38700641E3B /* NodeNumbersViewCell.m */; };
+		CDBDD09A2997F38800641E3B /* NodeNumbersViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBDD0982997F38700641E3B /* NodeNumbersViewCell.m */; };
 		CDBEBA3C27B1A218000F9BF5 /* AnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBEBA3A27B1A218000F9BF5 /* AnnotationViewController.m */; };
 		CDBEBA3D27B1A218000F9BF5 /* AnnotationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBEBA3A27B1A218000F9BF5 /* AnnotationViewController.m */; };
 		CDBFCBBD16C3ED01001D78C0 /* SetupApplicationCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */; };
@@ -1622,6 +1624,8 @@
 		CDBCF1FB282FD5C700411CA6 /* KeyboardHeightAdjustment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KeyboardHeightAdjustment.m; sourceTree = "<group>"; };
 		CDBDD0932994624200641E3B /* NodeNumbersLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeNumbersLayerDelegate.h; sourceTree = "<group>"; };
 		CDBDD0942994624200641E3B /* NodeNumbersLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeNumbersLayerDelegate.m; sourceTree = "<group>"; };
+		CDBDD0972997F38700641E3B /* NodeNumbersViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeNumbersViewCell.h; sourceTree = "<group>"; };
+		CDBDD0982997F38700641E3B /* NodeNumbersViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeNumbersViewCell.m; sourceTree = "<group>"; };
 		CDBEBA3A27B1A218000F9BF5 /* AnnotationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AnnotationViewController.m; sourceTree = "<group>"; };
 		CDBEBA3B27B1A218000F9BF5 /* AnnotationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AnnotationViewController.h; sourceTree = "<group>"; };
 		CDBFCBBB16C3ED00001D78C0 /* SetupApplicationCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupApplicationCommand.h; sourceTree = "<group>"; };
@@ -2583,6 +2587,8 @@
 		CD46627B2960376400B58CC9 /* canvas */ = {
 			isa = PBXGroup;
 			children = (
+				CDBDD0972997F38700641E3B /* NodeNumbersViewCell.h */,
+				CDBDD0982997F38700641E3B /* NodeNumbersViewCell.m */,
 				CD4662812960A0E700B58CC9 /* NodeTreeViewBranch.h */,
 				CD4662802960A0E700B58CC9 /* NodeTreeViewBranch.m */,
 				CD4662842960A1A700B58CC9 /* NodeTreeViewBranchTuple.h */,
@@ -4242,6 +4248,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				CDEE1A0B1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,
+				CDBDD0992997F38700641E3B /* NodeNumbersViewCell.m in Sources */,
 				CD4662862960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */,
 				CD8178FF25D8553100F39091 /* ComputerSuggestMoveCommand.m in Sources */,
 				CD1087891323D83F00E83543 /* GtpClient.mm in Sources */,
@@ -4686,6 +4693,7 @@
 				CD1A7EEC29512E0B00013D80 /* LinesLayerDelegate.m in Sources */,
 				CDF2462E296AE2BF00350B42 /* NodeTreeViewCanvasData.m in Sources */,
 				CD1DB6131702581100C2E648 /* TableViewCellFactory.m in Sources */,
+				CDBDD09A2997F38800641E3B /* NodeNumbersViewCell.m in Sources */,
 				CDAF1724196CA81900271396 /* GoVertexNumeric.m in Sources */,
 				CD7C57C421FD3E1C00694520 /* DiscardAllSetupStonesCommand.m in Sources */,
 				CD1DB6141702581900C2E648 /* ItemPickerController.m in Sources */,

@@ -300,7 +300,7 @@
     if (tiledScrollView == self.nodeTreeView)
       tileView = [[[NodeTreeTileView alloc] initWithFrame:CGRectZero metrics:self.nodeTreeViewMetrics canvas:self.nodeTreeViewCanvas model:self.nodeTreeViewModel] autorelease];
     else if (tiledScrollView == self.nodeNumbersView)
-      tileView = [[[NodeNumbersTileView alloc] initWithFrame:CGRectZero metrics:self.nodeTreeViewMetrics canvas:self.nodeTreeViewCanvas] autorelease];
+      tileView = [[[NodeNumbersTileView alloc] initWithFrame:CGRectZero metrics:self.nodeTreeViewMetrics canvas:self.nodeTreeViewCanvas model:self.nodeTreeViewModel] autorelease];
   }
   tileView.row = row;
   tileView.column = column;

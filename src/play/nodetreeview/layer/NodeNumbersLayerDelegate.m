@@ -19,7 +19,9 @@
 #import "NodeNumbersLayerDelegate.h"
 #import "NodeTreeViewDrawingHelper.h"
 #import "../NodeTreeViewMetrics.h"
+#import "../canvas/NodeNumbersViewCell.h"
 #import "../canvas/NodeTreeViewCanvas.h"
+#import "../../model/NodeTreeViewModel.h"
 #import "../../../ui/CGDrawingHelper.h"
 
 
@@ -28,7 +30,9 @@
 // -----------------------------------------------------------------------------
 @interface NodeNumbersLayerDelegate()
 @property(nonatomic, assign) NodeTreeViewCanvas* nodeTreeViewCanvas;
+@property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
 @property(nonatomic, retain) NSArray* drawingCellsOnTile;
+@property(nonatomic, retain) NSArray* selectedNodePositionsOnTile;
 @end
 
 
@@ -42,6 +46,7 @@
 - (id) initWithTile:(id<Tile>)tile
             metrics:(NodeTreeViewMetrics*)metrics
              canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
+              model:(NodeTreeViewModel*)nodeTreeViewModel
 {
   // Call designated initializer of superclass (NodeTreeViewLayerDelegateBase)
   self = [super initWithTile:tile metrics:metrics];
@@ -49,7 +54,9 @@
     return nil;
 
   self.nodeTreeViewCanvas = nodeTreeViewCanvas;
+  self.nodeTreeViewModel = nodeTreeViewModel;
   self.drawingCellsOnTile = @[];
+  self.selectedNodePositionsOnTile = @[];
 
   return self;
 }
@@ -60,7 +67,9 @@
 - (void) dealloc
 {
   self.nodeTreeViewCanvas = nil;
+  self.nodeTreeViewModel = nil;
   self.drawingCellsOnTile = nil;
+  self.selectedNodePositionsOnTile = nil;
 
   [super dealloc];
 }
@@ -76,15 +85,19 @@
     case NTVLDEventInvalidateContent:
     {
       self.drawingCellsOnTile = [self calculateNodeNumberViewDrawingCellsOnTile];
+      self.selectedNodePositionsOnTile = [self calculateSelectedNodePositionsOnTile];
       self.dirty = true;
       break;
     }
     case NTVLDEventAbstractCanvasSizeChanged:
     {
       NSArray* newDrawingCellsOnTile = [self calculateNodeNumberViewDrawingCellsOnTile];
-      if (! [self.drawingCellsOnTile isEqualToArray:newDrawingCellsOnTile])
+      NSArray* newSelectedNodePositionsOnTile = [self calculateSelectedNodePositionsOnTile];
+      if (! [self.drawingCellsOnTile isEqualToArray:newDrawingCellsOnTile] ||
+          ! [self.selectedNodePositionsOnTile isEqualToArray:newSelectedNodePositionsOnTile])
       {
         self.drawingCellsOnTile = newDrawingCellsOnTile;
+        self.selectedNodePositionsOnTile = newSelectedNodePositionsOnTile;
         self.dirty = true;
       }
       break;
@@ -94,7 +107,24 @@
     case NTVLDEventNodeTreeAlignMoveNodesChanged:
     case NTVLDEventNodeTreeBranchingStyleChanged:
     {
+      self.selectedNodePositionsOnTile = [self calculateSelectedNodePositionsOnTile];
       self.dirty = true;
+      break;
+    }
+    case NTVLDEventNodeTreeSelectedNodeChanged:
+    {
+      NSArray* newSelectedNodePositionsTuple = eventInfo;
+      NSArray* newSelectedNodeNumbersViewPositions = newSelectedNodePositionsTuple.firstObject;
+      NSArray* newSelectedNodePositionsOnTile = [self calculateSelectedNodePositionsOnTile:newSelectedNodeNumbersViewPositions];
+      if (! [self.selectedNodePositionsOnTile isEqualToArray:newSelectedNodePositionsOnTile])
+      {
+        self.selectedNodePositionsOnTile = newSelectedNodePositionsOnTile;
+        // Instead of redrawing the entire tile, we could only redraw the cells
+        // for the de-selected node and for the newly selected node. See
+        // handling of NTVLDEventNodeTreeNodeSymbolChanged for an example how
+        // to calculate the dirty rect for a node's cells.
+        self.dirty = true;
+      }
       break;
     }
     default:
@@ -113,20 +143,30 @@
   if (! nodeNumberLabelFont)
     return;
 
-  NSDictionary* textAttributes = @{ NSFontAttributeName : nodeNumberLabelFont,
-                                    NSForegroundColorAttributeName : self.nodeTreeViewMetrics.nodeNumberTextColor,
-                                    NSShadowAttributeName: self.nodeTreeViewMetrics.whiteTextShadow };
+  bool numberCondensedMoveNodes = self.nodeTreeViewModel.numberCondensedMoveNodes;
+
+  NSDictionary* textAttributesUnselected = @{ NSFontAttributeName : nodeNumberLabelFont,
+                                              NSForegroundColorAttributeName : self.nodeTreeViewMetrics.nodeNumberTextColor,
+                                              NSShadowAttributeName: self.nodeTreeViewMetrics.whiteTextShadow };
+  NSDictionary* textAttributesSelected = @{ NSFontAttributeName : nodeNumberLabelFont,
+                                            NSForegroundColorAttributeName : self.nodeTreeViewMetrics.selectedNodeColor };
 
   CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
                                                          metrics:self.nodeTreeViewMetrics];
 
   for (NodeTreeViewCellPosition* position in self.drawingCellsOnTile)
   {
-    int nodeNumber = [self.nodeTreeViewCanvas nodeNumberAtPosition:position];
+    NodeNumbersViewCell* cell = [self.nodeTreeViewCanvas nodeNumbersViewCellAtPosition:position];
+
+    int nodeNumber = cell.nodeNumber;
     if (nodeNumber == -1)
       continue;
 
+    if (cell.condensedMoveNode && ! numberCondensedMoveNodes)
+      continue;
+
     NSString* nodeNumberText = [NSString stringWithFormat:@"%d", nodeNumber];
+    NSDictionary* textAttributes = cell.isSelected ? textAttributesSelected : textAttributesUnselected;
 
     CGRect canvasRect = [NodeTreeViewDrawingHelper canvasRectForNodeNumberCellAtPosition:position
                                                                                  metrics:self.nodeTreeViewMetrics];
@@ -138,6 +178,40 @@
                                     string:nodeNumberText
                             textAttributes:textAttributes];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Examines all NodeTreeViewCellPosition objects in
+/// @a selectedNodePositions and returns only those whose canvas rectangle
+/// intersects with this tile.
+// -----------------------------------------------------------------------------
+- (NSArray*) calculateSelectedNodePositionsOnTile:(NSArray*)selectedNodePositions
+{
+  CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
+                                                         metrics:self.nodeTreeViewMetrics];
+
+  NSMutableArray* selectedNodePositionsOnTile = [NSMutableArray array];
+
+  for (NodeTreeViewCellPosition* position in selectedNodePositions)
+  {
+    CGRect canvasRectForCell = [NodeTreeViewDrawingHelper canvasRectForNodeNumberCellAtPosition:position metrics:self.nodeTreeViewMetrics];
+    if (CGRectIntersectsRect(tileRect, canvasRectForCell))
+      [selectedNodePositionsOnTile addObject:position];
+  }
+
+  return selectedNodePositionsOnTile;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a list of NodeTreeViewCellPosition objects which refer to the
+/// currently selected node on the node numbers view canvas and whose canvas
+/// rectangle intersects with this tile.
+// -----------------------------------------------------------------------------
+- (NSArray*) calculateSelectedNodePositionsOnTile
+{
+  NSArray* selectedNodePositions = [self.nodeTreeViewCanvas selectedNodeNodeNumbersViewPositions];
+  NSArray* newSelectedNodePositionsOnTile = [self calculateSelectedNodePositionsOnTile:selectedNodePositions];
+  return newSelectedNodePositionsOnTile;
 }
 
 @end

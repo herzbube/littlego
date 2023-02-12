@@ -74,11 +74,10 @@
 /// zero-based height of the canvas.
 @property(nonatomic, assign) unsigned short highestYPosition;
 
-/// @brief Maps NodeTreeViewCellPosition objects to NSNumber objects, each
-/// holding an int value.
+/// @brief Maps NodeTreeViewCellPosition objects to NodeNumbersViewCell objects.
 ///
-/// This dictionary provides the data that is consumed by the node tree number
+/// This dictionary provides the data that is consumed by the node numbers
 /// view's drawing routines.
-@property(nonatomic, retain) NSMutableDictionary* nodeNumbersDictionary;
+@property(nonatomic, retain) NSMutableDictionary* nodeNumbersViewCellsDictionary;
 
 @end

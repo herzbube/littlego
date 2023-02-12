@@ -1313,9 +1313,12 @@ extern NSString* nodeTreeViewBranchingStyleDidChange;
 extern NSString* nodeTreeViewNodeSelectionStyleDidChange;
 /// @brief Is sent to indicate that the selected node in the node tree view has
 /// changed. An NSArray object is associated with the notification that contains
-/// NodeTreeViewCellPosition objects that indicate which cells on the canvas
-/// display the node that is currently selected. The list is empty if currently
-/// no node is selected.
+/// two arrays, each of which contains NodeTreeViewCellPosition objects. The
+/// positions in the first array indicate which cells on the node tree view
+/// canvas display the node that is currently selected, the positions in the
+/// second array indicate which cells on the node numbers view canvas display
+/// the node number of the node that is currently selected. Both array are empty
+/// if currently no node is selected.
 extern NSString* nodeTreeViewSelectedNodeDidChange;
 /// @brief Is sent to indicate that the symbol of a node in the node tree view
 /// has changed. An NSArray object is associated with the notification that

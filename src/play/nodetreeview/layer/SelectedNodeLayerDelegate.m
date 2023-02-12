@@ -98,9 +98,7 @@
     case NTVLDEventInvalidateContent:
     {
       [self invalidateLayers];
-      NSArray* selectedNodePositions = [self.nodeTreeViewCanvas selectedNodePositions];
-      NSArray* newSelectedNodePositionsOnTile = [self calculateSelectedNodePositionsOnTile:selectedNodePositions];
-      self.selectedNodePositionsOnTile = newSelectedNodePositionsOnTile;
+      self.selectedNodePositionsOnTile = [self calculateSelectedNodePositionsOnTile];
       self.dirty = true;
       break;
     }
@@ -109,15 +107,15 @@
     case NTVLDEventNodeTreeAlignMoveNodesChanged:
     case NTVLDEventNodeTreeBranchingStyleChanged:
     {
-      NSArray* selectedNodePositions = [self.nodeTreeViewCanvas selectedNodePositions];
-      NSArray* newSelectedNodePositionsOnTile = [self calculateSelectedNodePositionsOnTile:selectedNodePositions];
-      self.selectedNodePositionsOnTile = newSelectedNodePositionsOnTile;
+      self.selectedNodePositionsOnTile = [self calculateSelectedNodePositionsOnTile];
       self.dirty = true;
       break;
     }
     case NTVLDEventNodeTreeSelectedNodeChanged:
     {
-      NSArray* newSelectedNodePositionsOnTile = [self calculateSelectedNodePositionsOnTile:eventInfo];
+      NSArray* newSelectedNodePositionsTuple = eventInfo;
+      NSArray* newSelectedNodeTreeViewPositions = newSelectedNodePositionsTuple.firstObject;
+      NSArray* newSelectedNodePositionsOnTile = [self calculateSelectedNodePositionsOnTile:newSelectedNodeTreeViewPositions];
       if (! [self.selectedNodePositionsOnTile isEqualToArray:newSelectedNodePositionsOnTile])
       {
         self.selectedNodePositionsOnTile = newSelectedNodePositionsOnTile;
@@ -230,6 +228,18 @@
   }
 
   return selectedNodePositionsOnTile;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a list of NodeTreeViewCellPosition objects which refer to the
+/// currently selected node on the node tree view canvas and whose canvas
+/// rectangle intersects with this tile.
+// -----------------------------------------------------------------------------
+- (NSArray*) calculateSelectedNodePositionsOnTile
+{
+  NSArray* selectedNodePositions = [self.nodeTreeViewCanvas selectedNodePositions];
+  NSArray* newSelectedNodePositionsOnTile = [self calculateSelectedNodePositionsOnTile:selectedNodePositions];
+  return newSelectedNodePositionsOnTile;
 }
 
 @end

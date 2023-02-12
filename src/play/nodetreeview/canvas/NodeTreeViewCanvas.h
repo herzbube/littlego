@@ -17,6 +17,7 @@
 
 // Forward declarations
 @class GoNode;
+@class NodeNumbersViewCell;
 @class NodeTreeViewCell;
 @class NodeTreeViewCellPosition;
 @class NodeTreeViewModel;
@@ -95,7 +96,9 @@
 - (NSArray*) positionsForNode:(GoNode*)node;
 - (NSArray*) selectedNodePositions;
 
-- (int) nodeNumberAtPosition:(NodeTreeViewCellPosition*)position;
+- (NodeNumbersViewCell*) nodeNumbersViewCellAtPosition:(NodeTreeViewCellPosition*)position;
+- (NSArray*) nodeNumbersViewPositionsForNode:(GoNode*)node;
+- (NSArray*) selectedNodeNodeNumbersViewPositions;
 
 /// @brief The canvas size. Width and height are integral numbers.
 ///
