@@ -51,6 +51,7 @@
   self.focusMode = NodeTreeViewFocusModeMakeSelectedNodeVisible;
   // TODO xxx should this be a user preference?
   self.nodeNumberViewIsOverlay = false;
+  // TODO xxx can we remove this setting?
   // Don't display node numbers for condensed move nodes, because the single
   // cell that represents a condensed move node is not wide enough to show
   // multi-digit node numbers => node numbers would overlap. Ideas to avoid
@@ -61,7 +62,9 @@
   //   node numbers over these rows. This would mean that the static constant
   //   yPositionOfNodeNumber would become a variable.
   // These ideas need more exploration, though.
-  self.numberCondensedMoveNodes = false;
+  self.numberCondensedMoveNodes = true;
+  // Display only every n'th node number
+  self.nodeNumberInterval = 1;
 
   // The number chosen here must fulfill the following criteria:
   // - The number must be greater than 1, so that condensed nodes (which are

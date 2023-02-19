@@ -45,6 +45,7 @@
   self.highestXPositionNode = nil;
   self.highestYPosition = -1;
   self.nodeNumbersViewCellsDictionary = [NSMutableDictionary dictionary];
+  self.nodeNumberingTuples = [NSMutableArray array];
 
   return self;
 }
@@ -61,6 +62,7 @@
   self.cellsDictionary = nil;
   self.highestXPositionNode = nil;
   self.nodeNumbersViewCellsDictionary = nil;
+  self.nodeNumberingTuples = nil;
   
   [super dealloc];
 }

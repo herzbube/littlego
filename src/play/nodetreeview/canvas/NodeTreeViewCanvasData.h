@@ -80,4 +80,27 @@
 /// view's drawing routines.
 @property(nonatomic, retain) NSMutableDictionary* nodeNumbersViewCellsDictionary;
 
+/// @brief Ordered list of tuples describing which node numbers were generated.
+/// List elements are NSArray objects, each representing a tuple. Each tuple
+/// has two values: Value 1 (index position 0 in the tuple NSArray) is an
+/// NodeTreeViewBranchTuple object referring to the node that was considered
+/// for numbering. Value 2 (index position 1 in the tuple NSArray) is an
+/// NSNumber encapsulating a boolean value that indicates whether the node was
+/// numbered or not.
+///
+/// The first <n> tuples in the ordered list are guaranteed to refer to the
+/// nodes in the current game variation, in the order in which they appear in
+/// the current game variation. The tuple at index position 0 therefore refers
+/// to the root node, the tuple at index position <n-1> refers to the leaf node
+/// of the current game variation.
+///
+/// The ordered list may contain more than <n> tuples. If that is the case, the
+/// tuples at index positions <n> and beyond refer to nodes in the longest game
+/// variation. See rule 9 of the node numbering algorithm for details.
+///
+/// @note If a node number is generated solely to mark the selected node, the
+/// tuple that refers to the selected node is not updated to have @e true as
+/// the tuple value 2.
+@property(nonatomic, retain) NSMutableArray* nodeNumberingTuples;
+
 @end

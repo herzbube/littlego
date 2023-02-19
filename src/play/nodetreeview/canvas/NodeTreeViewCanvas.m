@@ -172,9 +172,8 @@ static const unsigned short yPositionOfNodeNumber = 0;
 - (void) currentGameVariationDidChange:(NSNotification*)notification
 {
   // TODO xxx Find a way to update the selected lines properties only instead
-  // of brute-force recalculating the entire canvas. What also needs to be
-  // updated is the node numbers in case either "align move nodes" or
-  // "condense move nodes" is true.
+  // of brute-force recalculating the entire canvas. Node numbers would also
+  // need to be updated.
   self.canvasNeedsUpdate = true;
   self.notificationToPostAfterCanvasUpdate = nodeTreeViewContentDidChange;
   [self delayedUpdate];
@@ -315,18 +314,29 @@ static const unsigned short yPositionOfNodeNumber = 0;
   GoNode* previousCurrentBoardPositionNode = self.canvasData.currentBoardPositionNode;
   [self updateSelectedStateOfCellsForNode:previousCurrentBoardPositionNode
                                toNewState:false
+                                  nodeMap:self.canvasData.nodeMap
                           cellsDictionary:self.canvasData.cellsDictionary
-           nodeNumbersViewCellsDictionary:self.canvasData.nodeNumbersViewCellsDictionary];
+           nodeNumbersViewCellsDictionary:self.canvasData.nodeNumbersViewCellsDictionary
+                      nodeNumberingTuples:self.canvasData.nodeNumberingTuples
+                        condenseMoveNodes:self.nodeTreeViewModel.condenseMoveNodes
+                  numberOfNodeNumberCells:self.nodeTreeViewModel.numberOfCellsOfMultipartCell];
 
+  // Update canvasData with the newly selected node NOW, to make sure that if
+  // new node number cells are generated their "selected" state is set correctly
   GoNode* newCurrentBoardPositionNode =  [GoGame sharedGame].boardPosition.currentNode;
   self.canvasData.currentBoardPositionNode = newCurrentBoardPositionNode;
+
   NSArray* positionsTupleOfNewlySelectedCells = [self updateSelectedStateOfCellsForNode:newCurrentBoardPositionNode
                                                                              toNewState:true
+                                                                                nodeMap:self.canvasData.nodeMap
                                                                         cellsDictionary:self.canvasData.cellsDictionary
-                                                         nodeNumbersViewCellsDictionary:self.canvasData.nodeNumbersViewCellsDictionary];
+                                                         nodeNumbersViewCellsDictionary:self.canvasData.nodeNumbersViewCellsDictionary
+                                                                    nodeNumberingTuples:self.canvasData.nodeNumberingTuples
+                                                                      condenseMoveNodes:self.nodeTreeViewModel.condenseMoveNodes
+                                                                numberOfNodeNumberCells:self.nodeTreeViewModel.numberOfCellsOfMultipartCell];
+
   NSArray* positionsOfNewlySelectedCells = positionsTupleOfNewlySelectedCells.firstObject;
   NSArray* nodeNumbersViewPositionsOfNewlySelectedCells = positionsTupleOfNewlySelectedCells.lastObject;
-
   self.cachedSelectedNodePositions = positionsOfNewlySelectedCells;
   self.cachedSelectedNodeNodeNumbersViewPositions = nodeNumbersViewPositionsOfNewlySelectedCells;
 
@@ -608,7 +618,9 @@ static const unsigned short yPositionOfNodeNumber = 0;
   [self generateNodeNumbers:canvasData
                   nodeModel:nodeModel
           condenseMoveNodes:condenseMoveNodes
-             alignMoveNodes:alignMoveNodes];
+             alignMoveNodes:alignMoveNodes
+    numberOfNodeNumberCells:numberOfCellsOfMultipartCell
+         nodeNumberInterval:self.nodeTreeViewModel.nodeNumberInterval];
 
   self.canvasData = canvasData;
   self.canvasSize = CGSizeMake(canvasData.highestXPosition + 1, canvasData.highestYPosition + 1);
@@ -1892,54 +1904,575 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 /// @brief Generates node numbers to horizontally label some or all of the cells
 /// that represent the nodes on the canvas.
 ///
-/// If one or both of the user preferences "Align move nodes" and
-/// "Condense move nodes" is enabled, node numbers are generated only for the
-/// nodes that are in the current game variation. Reason: Node numbering in
-/// these cases is not the same across all branches.
-///
-/// If neither of the two user preferences is enabled, node numbers are
-/// generated for all nodes in all branches.
+/// The following are the rules that govern the node numbering algorithm. In
+/// general, if two rules seem to conflict then the earlier rule takes
+/// precedence over the later rule.
+/// - Rule 1: A node that is a candidate for numbering is numbered only if there
+///   is sufficient space to display the node number (e.g. without overlapping
+///   with other node numbers).
+/// - Rule 2: An uncondensed node is sufficiently wide to provide space for
+///   displaying even the highest possible node number.
+/// - Rule 3: Numbering uncondensed nodes has higher priority than numbering
+///   condensed move nodes. If a decision must be made whether to number a
+///   number an uncondensed node or a condensed move node, it is always the
+///   uncondensed node that "wins". The reasoning behind this rule (besides the
+///   convenient fact that it makes the implementation of the numbering
+///   algorithm more manageable) is that condensed move nodes are considered,
+///   by definition, less important than uncondensed nodes. This is why they
+///   are displayed condensed in the first place, i.e. they are displayed
+///   de-emphasized in favor of uncondensed nodes.
+/// - Rule 4: Numbering nodes that are closer to the root node has higher
+///   priority than numbering nodes that are farther away from the root node.
+///   If a decision must be made whether to number two adjacent nodes, the one
+///   that is closer to the root node "wins". The reasoning behind this rule is
+///   that in general the game logic, and also the user's thought, travels along
+///   a line that originates from the root node. The numbering should follow
+///   this direction.
+/// - Rule 5: The nodes of the current game variation are candidates for
+///   numbering. Ideally the node tree is rendered in a tabular fashion so that
+///   nodes with the same number are located in the same column - displaying a
+///   node number in the column header in that case makes sense for all the
+///   nodes in that column even if they are located in different game
+///   variations. However, if one or both of the user preferences
+///   "Align move nodes" and "Condense move nodes" is enabled, this tabular
+///   model breaks down because nodes in different game variations may have
+///   different node numbers even if they are rendered in the same x-position.
+///   Even in the ideal tabular case, though, we want to number certain nodes
+///   to draw attention to them (e.g. branching nodes, see rule 8), and this
+///   makes sense only for the current game variation.
+/// - Rule 6: Nodes in the current game variation whose number matches the user
+///   preference "Numbering interval" are numbered. As a special case, because
+///   the root node has node number 0, which always matches the numbering
+///   interval, the root node is always numbered. If this were not the case it
+///   would be a separate rule.
+/// - Rule 7: The leaf node of the current game variation is numbered, even if
+///   its node number does not match the numbering interval.
+/// - Rule 8: All branching nodes in the current game variation as well as the
+///   branching node's child node in the current game variation are numbered,
+///   even if their node numbers do not match the numbering interval.
+/// - Rule 9: If the current game variation is not the longest game variation,
+///   and if none of the user preferences "Align move nodes" and
+///   "Condense move nodes" is enabled, then nodes in the longest game variation
+///   with an x-position beyond the leaf node of the current game variation also
+///   become candidates for numbering. The goal of this rule is that the whole
+///   width of the node tree view is numbered so that the user can scroll the
+///   node tree view away from the current game variation and still have a rough
+///   notion of which depth of the tree she is looking at. This is possible only
+///   if the mentioned user preferences are disabled and the tabular model, as
+///   explained in rule 5, holds true. Only the leaf node and the nodes that
+///   match the user preference "numbering interval" are numbered.
+/// - Rule 10: The selected node in the current game variation is numbered, even
+///   if its node number does not match the numbering interval. Numbering of the
+///   selected node occurs only after all the other node numbers have been
+///   generated. The intent of this rule is that the selected node should only
+///   be numbered if it has sufficient space after all the other node numbers
+///   were already generated, i.e. numbering of the selected node must never
+///   take away space so that another node would not be numbered. Reasoning
+///   behind the rule: The user should not see other node numbers
+///   appear/disappear only because the node selection changes.
 // -----------------------------------------------------------------------------
 - (void) generateNodeNumbers:(NodeTreeViewCanvasData*)canvasData
                    nodeModel:(GoNodeModel*)nodeModel
            condenseMoveNodes:(bool)condenseMoveNodes
               alignMoveNodes:(bool)alignMoveNodes
+     numberOfNodeNumberCells:(int)numberOfNodeNumberCells
+          nodeNumberInterval:(int)nodeNumberInterval
 {
-  // Everty n'th node number is displayed
-  // TODO xxx Take user preference into account
-  const int numberingInterval = 1;
-
+  NSDictionary* nodeMap = canvasData.nodeMap;
   NSMutableDictionary* nodeNumbersViewCellsDictionary = canvasData.nodeNumbersViewCellsDictionary;
 
-  void (^generateNodeNumberIfNecessary) (GoNode*) = ^(GoNode* node)
+  // Rule 5: Number the current game variation
+  NSMutableArray* nodeNumberingTuplesCurrentGameVariation = [self generateNodeNumbersForGameVariation:nodeModel.leafNode
+                                                                  gameVariationIsCurrentGameVariation:true
+                                                                 nodeNumberingTuplesPreviousVariation:nil
+                                                                                              nodeMap:nodeMap
+                                                                       nodeNumbersViewCellsDictionary:nodeNumbersViewCellsDictionary
+                                                                                    condenseMoveNodes:condenseMoveNodes
+                                                                              numberOfNodeNumberCells:numberOfNodeNumberCells
+                                                                                   nodeNumberInterval:nodeNumberInterval];
+  canvasData.nodeNumberingTuples = nodeNumberingTuplesCurrentGameVariation;
+
+  // Rule 9: Number the longest game variation, unless the user preferences
+  // prevent it
+  if (nodeModel.leafNode != canvasData.highestXPositionNode && ! (condenseMoveNodes || alignMoveNodes))
+  {
+    NSMutableArray* nodeNumberingTuplesLongestGameVariation = [self generateNodeNumbersForGameVariation:canvasData.highestXPositionNode
+                                                                    gameVariationIsCurrentGameVariation:false
+                                                                   nodeNumberingTuplesPreviousVariation:nodeNumberingTuplesCurrentGameVariation
+                                                                                                nodeMap:nodeMap
+                                                                         nodeNumbersViewCellsDictionary:nodeNumbersViewCellsDictionary
+                                                                                      condenseMoveNodes:condenseMoveNodes
+                                                                                numberOfNodeNumberCells:numberOfNodeNumberCells
+                                                                                     nodeNumberInterval:nodeNumberInterval];
+
+    [canvasData.nodeNumberingTuples addObjectsFromArray:nodeNumberingTuplesLongestGameVariation];
+  }
+
+  // Rule 10: Number selected node after all other nodes were numbered
+  [self generateNodeNumberForSelectedNodeIfNoneExistsYet:canvasData.currentBoardPositionNode
+                                     nodeNumberingTuples:canvasData.nodeNumberingTuples
+                                                 nodeMap:nodeMap
+                          nodeNumbersViewCellsDictionary:nodeNumbersViewCellsDictionary
+                                       condenseMoveNodes:condenseMoveNodes
+                                 numberOfNodeNumberCells:numberOfNodeNumberCells];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Generates node numbers for the game variation whose leaf node is
+/// @a leafNodeOfGameVariationToNumber. @a gameVariationIsCurrentGameVariation
+/// indicates whether the game variation to number is the current game variation
+/// (@e true) or the longest game variation (@e false). In the latter case
+/// @a nodeNumberingTuplesPreviousVariation is expected to contain the
+/// result of numbering the previous game variation (which must have been the
+/// current game variation).
+///
+/// The numbering is performed in two passes: In pass 1 uncondensed nodes are
+/// numbered, in pass 2 condensed move nodes are numbered. This satisfies
+/// rule 3 (numbering uncondensed nodes has higher priority than numbering
+/// condensed move nodes).
+///
+/// The return value is an array consisting of tuples (NSArray objects). Each
+/// tuple has two values: Value 1 is an NodeTreeViewBranchTuple object referring
+/// to the node that was considered for numbering. Value 2 is an NSNumber
+/// encapsulating a boolean value indicating whether the node was numbered or
+/// not.
+// -----------------------------------------------------------------------------
+- (NSMutableArray*) generateNodeNumbersForGameVariation:(GoNode*)leafNodeOfGameVariationToNumber
+                    gameVariationIsCurrentGameVariation:(bool)gameVariationIsCurrentGameVariation
+                   nodeNumberingTuplesPreviousVariation:(NSMutableArray*)nodeNumberingTuplesPreviousVariation
+                                                nodeMap:(NSDictionary*)nodeMap
+                         nodeNumbersViewCellsDictionary:(NSMutableDictionary*)nodeNumbersViewCellsDictionary
+                                      condenseMoveNodes:(bool)condenseMoveNodes
+                                numberOfNodeNumberCells:(int)numberOfNodeNumberCells
+                                     nodeNumberInterval:(int)nodeNumberInterval
+{
+  // Rule 9: Add numbers for the longest game variation. We don't number all
+  // nodes, only those that are beyond the leaf node of the previous game
+  // variation.
+  unsigned short xPositionWherePass1ShouldStop;
+  if (! gameVariationIsCurrentGameVariation)
+  {
+    NSArray* nodeNumberingTupleOfLeafNodeOfPreviousGameVariation = nodeNumberingTuplesPreviousVariation.lastObject;
+    NodeTreeViewBranchTuple* branchTupleOfLeafNode = nodeNumberingTupleOfLeafNodeOfPreviousGameVariation.firstObject;
+    xPositionWherePass1ShouldStop = branchTupleOfLeafNode->xPositionOfFirstCell + branchTupleOfLeafNode->numberOfCellsForNode;
+  }
+  else
+  {
+    xPositionWherePass1ShouldStop = 0;
+  }
+
+  // Pass 1: Number uncondensed nodes. A second pass is necessary only if
+  // the user preference "condense move nodes" is enabled and pass 1 actually
+  // encountered at least one condensed move node.
+  bool didFindCondensedMoveNode = false;
+  NSMutableArray* nodeNumberingTuples = [self generateNodeNumbersForUncondensedNodes:leafNodeOfGameVariationToNumber
+                                                 gameVariationIsCurrentGameVariation:gameVariationIsCurrentGameVariation
+                                                                             nodeMap:nodeMap
+                                                      nodeNumbersViewCellsDictionary:nodeNumbersViewCellsDictionary
+                                                                   condenseMoveNodes:condenseMoveNodes
+                                                                  nodeNumberInterval:nodeNumberInterval
+                                                       xPositionWherePass1ShouldStop:xPositionWherePass1ShouldStop
+                                                            didFindCondensedMoveNode:&didFindCondensedMoveNode];
+
+  // Pass 2: Number condensed move nodes
+  // The iteration progresses from the root node towards the leaf node because
+  // we pass the previously collected array nodeNumberingTuples. This satisfies
+  // rule 4 (numbering nodes that are closer to the root node has higher
+  // priority than numbering nodes that are farther away from the root node).
+  // The first pass cannot violate rule 4 because there we don't consider space
+  // constraints, i.e. in the first pass all nodes that need numbering are
+  // numbered.
+  if (didFindCondensedMoveNode)
+  {
+    [self generateNodeNumbersForCondensedMoveNodes:nodeNumberingTuples
+                    nodeNumbersViewCellsDictionary:nodeNumbersViewCellsDictionary
+                           numberOfNodeNumberCells:numberOfNodeNumberCells
+                                nodeNumberInterval:nodeNumberInterval];
+  }
+
+  return nodeNumberingTuples;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Generates node numbers for all uncondensed nodes in the game
+/// variation whose leaf node is @a leafNodeOfGameVariationToNumber.
+/// @a gameVariationIsCurrentGameVariation indicates whether the game variation
+/// to number is the current game variation (@e true) or the longest game
+/// variation (@e false). In the latter case @a xPositionWherePass1ShouldStop
+/// is expected to contain a threshold after which this method should stop
+/// processing nodes in the game variation.
+///
+/// The return value is an array consisting of tuples (NSArray objects). Each
+/// tuple has two values: Value 1 is an NodeTreeViewBranchTuple object referring
+/// to the node that was considered for numbering. Value 2 is an NSNumber
+/// encapsulating a boolean value indicating whether the node was numbered or
+/// not.
+// -----------------------------------------------------------------------------
+- (NSMutableArray*) generateNodeNumbersForUncondensedNodes:(GoNode*)leafNodeOfGameVariationToNumber
+                       gameVariationIsCurrentGameVariation:(bool)gameVariationIsCurrentGameVariation
+                                                   nodeMap:(NSDictionary*)nodeMap
+                            nodeNumbersViewCellsDictionary:(NSMutableDictionary*)nodeNumbersViewCellsDictionary
+                                         condenseMoveNodes:(bool)condenseMoveNodes
+                                        nodeNumberInterval:(int)nodeNumberInterval
+                             xPositionWherePass1ShouldStop:(unsigned short)xPositionWherePass1ShouldStop
+                                  didFindCondensedMoveNode:(bool*)didFindCondensedMoveNode
+{
+  NSMutableArray* nodeNumberingTuples = [NSMutableArray array];
+
+  for (GoNode* node = leafNodeOfGameVariationToNumber; node; node = node.parent)
   {
     NSValue* key = [NSValue valueWithNonretainedObject:node];
-    NodeTreeViewBranchTuple* branchTuple = [canvasData.nodeMap objectForKey:key];
+    NodeTreeViewBranchTuple* branchTuple = [nodeMap objectForKey:key];
 
-    if (branchTuple->nodeNumber % numberingInterval != 0)
-      return;
+    if (branchTuple->xPositionOfFirstCell < xPositionWherePass1ShouldStop)
+      break;
 
-    NodeNumbersViewCell* cell = [NodeNumbersViewCell emptyCell];
-    cell.nodeNumber = branchTuple->nodeNumber;
-    cell.selected = branchTuple->nodeIsCurrentBoardPositionNode;
-    cell.condensedMoveNode = condenseMoveNodes && branchTuple->numberOfCellsForNode == 1;
+    // Rule 1: Number nodes only if there is enough space.
+    // - For condensed move nodes we delay the check for sufficient space after
+    //   all uncondensed nodes were numbered (rule 3).
+    // - For uncondensed nodes there is always enough space (rule 2).
+    if (condenseMoveNodes && branchTuple->numberOfCellsForNode == 1)
+    {
+      [nodeNumberingTuples insertObject:@[branchTuple, @false] atIndex:0];
+      *didFindCondensedMoveNode = true;
+      continue;
+    }
 
-    unsigned short xPositionOfNodeNumber = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
-    NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfNodeNumber y:yPositionOfNodeNumber];
+    // Rule 8: Number branching nodes and their child node in the current game
+    // variation
+    if ((gameVariationIsCurrentGameVariation && (node.isBranchingNode || node.parent.isBranchingNode)) ||
+        // Rule 7: Always number the leaf node
+        node == leafNodeOfGameVariationToNumber ||
+        // Rule 6: Number nodes if the numbering interval matches
+        branchTuple->nodeNumber % nodeNumberInterval == 0)
+    {
+      [nodeNumberingTuples insertObject:@[branchTuple, @true] atIndex:0];
+      [self generateNodeNumberForBranchTuple:branchTuple
+              nodeNumbersViewCellsDictionary:nodeNumbersViewCellsDictionary
+                         isCondensedMoveNode:false
+            nodeNumberExistsOnlyForSelection:false];
+    }
+    else
+    {
+      [nodeNumberingTuples insertObject:@[branchTuple, @false] atIndex:0];
+    }
+  }
 
-    nodeNumbersViewCellsDictionary[position] = cell;
-  };
+  return nodeNumberingTuples;
+}
 
-  GoNode* node;
-  if (alignMoveNodes || condenseMoveNodes)
-    node = nodeModel.leafNode;
-  else
-    node = canvasData.highestXPositionNode;
+// -----------------------------------------------------------------------------
+/// @brief Generates node numbers for all condensed move nodes listed in
+/// @a nodeNumberingTuples. If a condensed move node is actually numbered,
+/// its tuple in @a nodeNumberingTuples is updated so that the tuple's second
+/// value becomes @e true.
+// -----------------------------------------------------------------------------
+- (void) generateNodeNumbersForCondensedMoveNodes:(NSMutableArray*)nodeNumberingTuples
+                   nodeNumbersViewCellsDictionary:(NSMutableDictionary*)nodeNumbersViewCellsDictionary
+                          numberOfNodeNumberCells:(int)numberOfNodeNumberCells
+                               nodeNumberInterval:(int)nodeNumberInterval
+{
+  const int numberOfNodeNumberCellsExtendingFromCenter = (numberOfNodeNumberCells - 1) / 2;
 
-  while (node)
+  NSUInteger numberOfNodeNumberingResultTuples = nodeNumberingTuples.count;
+  for (NSUInteger indexOfNodeNumberingResultTuple = 0;
+       indexOfNodeNumberingResultTuple < numberOfNodeNumberingResultTuples;
+       indexOfNodeNumberingResultTuple++)
   {
-    generateNodeNumberIfNecessary(node);
-    node = node.parent;
+    NSArray* nodeNumberingResultTuple = [nodeNumberingTuples objectAtIndex:indexOfNodeNumberingResultTuple];
+    NodeTreeViewBranchTuple* branchTuple = nodeNumberingResultTuple.firstObject;
+
+    // If it's not a condensed move node we can skip it => it was already
+    // numbered in pass 1
+    if (branchTuple->numberOfCellsForNode > 1)
+      continue;
+
+    // Rule 6: Number nodes if the numbering interval matches
+    if (branchTuple->nodeNumber % nodeNumberInterval != 0)
+      continue;
+
+    bool sufficientSpace = [self canGenerateNodeNumberForBranchTuple:branchTuple
+                                                 nodeNumberingTuples:nodeNumberingTuples
+                                  indexOfCandidateNodeNumberingTuple:indexOfNodeNumberingResultTuple
+                                             numberOfNodeNumberCells:numberOfNodeNumberCells
+                          numberOfNodeNumberCellsExtendingFromCenter:numberOfNodeNumberCellsExtendingFromCenter];
+    if (! sufficientSpace)
+      continue;
+
+    [self generateNodeNumberForBranchTuple:branchTuple
+            nodeNumbersViewCellsDictionary:nodeNumbersViewCellsDictionary
+                       isCondensedMoveNode:true
+          nodeNumberExistsOnlyForSelection:false];
+
+    // Future iterations need to know that the node was numbered
+    [nodeNumberingTuples replaceObjectAtIndex:indexOfNodeNumberingResultTuple withObject:@[branchTuple, @true]];
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Checks if there is sufficient space to generate a node number for
+/// @a branchTuple. Examines the neighbours of @a branchTuple whether a node
+/// number was already generated for them. The information for this is taken
+/// from @a nodeNumberingTuples. @a indexOfCandidateNodeNumberingTuple is the
+/// index pointing into @a nodeNumberingTuples to the tuple that contains
+/// @a branchTuple.
+///
+/// The "sufficient space checking" algorithm works like this:
+/// - It assumes that all node numbers occupy a window with width equal to the
+///   number of cells @a numberOfNodeNumberCells.
+/// - It determines the node number window for @a branchTuple, specifically
+///   the window's x-position on the node number canvas.
+/// - It examines the nearest neighbours of @a branchTuple to the left and to
+///   the right. A node number window is created for both neighbours.
+///   - Important: The neighbouring node number windows's x-position could be
+///     anything due to the user preference "Align move nodes".
+/// - If the node number window of a neighbour intersects with the node number
+///   window of @a branchTuple, a check is made whether the neighbour was
+///   numbered.
+///   - If the neighbour was numbered, the neighbour's node number occupies some
+///     of the space that would be required for the node number for
+///     @a branchTuple => Decision: There is not sufficient space to number
+///     @a branchTuple and the algorithm returns @e false.
+///   - If the neighbour was not numbered, the algorithm continues the search.
+///     The next neighbour in the same direction is examined.
+/// - If the node number window of a neighbour does not intersect with the node
+///   number window of @a branchTuple, the algorithm considers the side on which
+///   that neighbour lies to have sufficient space. The algorithm does not
+///   continue the search in that direction.
+/// - If the algorithm finds that both the left and right side of @a branchTuple
+///   have sufficient space, the algorithm returns @e true.
+/// - Boundary check: If there are no more neighbours on a side because
+///   @a branchTuple is too close to either the start or end of
+///   @a nodeNumberingTuples, the algorithm considers that side to have
+///   sufficient space.
+///
+/// @note The reason why all node numbers occupy a window with equal width,
+/// regardless of how many digits they have, is the way how the node number
+/// drawing code is organized (tiling, each tile is divided into cells of equal
+/// width, nodes and therefore node numbers must be represented by an uneven
+/// number of cells so that content can be easily centered on the center cell).
+///
+/// @todo The algorithm here could be made a lot more efficient if it were made
+/// stateful, i.e. if it would "remember" from one invocation to the next which
+/// cells on either side are occupied.
+// -----------------------------------------------------------------------------
+- (bool) canGenerateNodeNumberForBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
+                         nodeNumberingTuples:(NSMutableArray*)nodeNumberingTuples
+          indexOfCandidateNodeNumberingTuple:(NSUInteger)indexOfCandidateNodeNumberingTuple
+                     numberOfNodeNumberCells:(int)numberOfNodeNumberCells
+  numberOfNodeNumberCellsExtendingFromCenter:(int)numberOfNodeNumberCellsExtendingFromCenter
+{
+  const NSUInteger numberOfNodeNumberingTuples = nodeNumberingTuples.count;
+
+  // Calculate the window occupied by the node number of branchTuple
+  unsigned short xPositionOfCenterCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
+  unsigned short xPositionOfFirstCell = xPositionOfCenterCell - numberOfNodeNumberCellsExtendingFromCenter;
+  unsigned short xPositionOfLastCell = xPositionOfCenterCell + numberOfNodeNumberCellsExtendingFromCenter;
+
+  bool spaceIsSufficient = true;
+  bool stopLookingForSpaceOnLeftSide = false;
+  bool stopLookingForSpaceOnRightSide = false;
+
+  // The iteration is based on the worst case: That the nodes surrounding the
+  // node represented by branchTuple are all only 1 cell wide. This means that
+  // the algorithm at maximum has to examine numberOfCellsOfNodeNumber nodes on
+  // both sides to come to a conclusion. If surrounding nodes are wider the
+  // iteration will end early because the node number windows will no longer
+  // intersect.
+  for (int distanceFromCandidateNodeNumberingTuple = 1;
+       distanceFromCandidateNodeNumberingTuple <= numberOfNodeNumberCells;
+       distanceFromCandidateNodeNumberingTuple++)
+  {
+    if (! stopLookingForSpaceOnLeftSide)
+    {
+      if (indexOfCandidateNodeNumberingTuple >= distanceFromCandidateNodeNumberingTuple)
+      {
+        NSUInteger indexOfPrecedingNodeNumberingTuple = indexOfCandidateNodeNumberingTuple - distanceFromCandidateNodeNumberingTuple;
+
+        spaceIsSufficient = [self doesNeighbouringBranchTupleWithIndex:indexOfPrecedingNodeNumberingTuple
+                                                               inArray:nodeNumberingTuples
+             leaveSufficientSpaceForNodeNumberWithXPositionOfFirstCell:xPositionOfFirstCell
+                                                   xPositionOfLastCell:xPositionOfLastCell
+                            numberOfNodeNumberCellsExtendingFromCenter:numberOfNodeNumberCellsExtendingFromCenter
+                                                   stopLookingForSpace:&stopLookingForSpaceOnLeftSide];
+        if (! spaceIsSufficient)
+          break;
+      }
+      else
+      {
+        stopLookingForSpaceOnLeftSide = true;
+      }
+    }
+
+    if (! stopLookingForSpaceOnRightSide)
+    {
+      NSUInteger indexOfSuccedingNodeNumberingTuple = indexOfCandidateNodeNumberingTuple + distanceFromCandidateNodeNumberingTuple;
+      if (indexOfSuccedingNodeNumberingTuple < numberOfNodeNumberingTuples)
+      {
+        NSUInteger indexOfSucceedingNodeNumberingTuple = indexOfCandidateNodeNumberingTuple + distanceFromCandidateNodeNumberingTuple;
+
+        spaceIsSufficient = [self doesNeighbouringBranchTupleWithIndex:indexOfSucceedingNodeNumberingTuple
+                                                               inArray:nodeNumberingTuples
+             leaveSufficientSpaceForNodeNumberWithXPositionOfFirstCell:xPositionOfFirstCell
+                                                   xPositionOfLastCell:xPositionOfLastCell
+                            numberOfNodeNumberCellsExtendingFromCenter:numberOfNodeNumberCellsExtendingFromCenter
+                                                   stopLookingForSpace:&stopLookingForSpaceOnRightSide];
+        if (! spaceIsSufficient)
+          break;
+      }
+      else
+      {
+        stopLookingForSpaceOnRightSide = true;
+      }
+    }
+
+    if (stopLookingForSpaceOnLeftSide && stopLookingForSpaceOnRightSide)
+      break;
+  }
+
+  return spaceIsSufficient;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Checks if the branch tuple contained by the node numbering tuple at
+/// index position @a indexOfNodeNumberingTuple in @a nodeNumberingTuples leaves
+/// sufficient space for a node number that would be rendered in the cells in
+/// the x-position range from @a xPositionOfFirstCell to @a xPositionOfLastCell.
+///
+/// This is a privat helper for the "sufficient space checking" algorithm.
+// -----------------------------------------------------------------------------
+            - (bool) doesNeighbouringBranchTupleWithIndex:(NSUInteger)indexOfNeighbouringNodeNumberingTuple
+                                                  inArray:(NSArray*)nodeNumberingTuples
+leaveSufficientSpaceForNodeNumberWithXPositionOfFirstCell:(unsigned short)xPositionOfFirstCell
+                                      xPositionOfLastCell:(unsigned short)xPositionOfLastCell
+               numberOfNodeNumberCellsExtendingFromCenter:(int)numberOfNodeNumberCellsExtendingFromCenter
+                                      stopLookingForSpace:(bool*)stopLookingForSpace
+{
+  NSArray* neighbouringNodeNumberTuple = [nodeNumberingTuples objectAtIndex:indexOfNeighbouringNodeNumberingTuple];
+  NodeTreeViewBranchTuple* neighbouringBranchTuple = neighbouringNodeNumberTuple.firstObject;
+
+  // Calculate the window occupied by the node number of neighbouringBranchTuple
+  unsigned short xPositionOfCenterCellNeighbouringBranchTuple = neighbouringBranchTuple->xPositionOfFirstCell + neighbouringBranchTuple->indexOfCenterCell;
+  unsigned short xPositionOfFirstCellNeighbouringBranchTuple = xPositionOfCenterCellNeighbouringBranchTuple - numberOfNodeNumberCellsExtendingFromCenter;
+  unsigned short xPositionOfLastCellNeighbouringBranchTuple = xPositionOfCenterCellNeighbouringBranchTuple + numberOfNodeNumberCellsExtendingFromCenter;
+
+  bool areNodeNumberWindowsIntersecting = [self areNodeNumberWindowsIntersectingWindow1Start:xPositionOfFirstCell
+                                                                                  window1End:xPositionOfLastCell
+                                                                                window2Start:xPositionOfFirstCellNeighbouringBranchTuple
+                                                                                  window2End:xPositionOfLastCellNeighbouringBranchTuple];
+  if (areNodeNumberWindowsIntersecting)
+  {
+    NSNumber* didNumberNeighbouringBranchTuple = neighbouringNodeNumberTuple.lastObject;
+    if (didNumberNeighbouringBranchTuple.boolValue)
+      return false;
+  }
+  else
+  {
+    *stopLookingForSpace = true;
+  }
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns @e true if the two node number windows defined by the
+/// supplied start and end positions intersect. Returns @e false if they do not
+/// intersect.
+///
+/// This is a privat helper for the "sufficient space checking" algorithm.
+// -----------------------------------------------------------------------------
+- (bool) areNodeNumberWindowsIntersectingWindow1Start:(unsigned short)xPositionOfWindow1Start
+                                           window1End:(unsigned short)xPositionOfWindow1End
+                                         window2Start:(unsigned short)xPositionOfWindow2Start
+                                           window2End:(unsigned short)xPositionOfWindow2End
+{
+  return ((xPositionOfWindow1Start >= xPositionOfWindow2Start && xPositionOfWindow1Start <= xPositionOfWindow2End) ||
+          (xPositionOfWindow1End >= xPositionOfWindow2Start && xPositionOfWindow1End <= xPositionOfWindow2End));
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Generates NodeNumbersViewCell objects that describe the node number
+/// with which to number @a branchTuple. The objects are added to
+/// @a nodeNumbersViewCellsDictionary with the appropriate
+/// NodeTreeViewCellPosition objects as key.
+// -----------------------------------------------------------------------------
+- (void) generateNodeNumberForBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
+           nodeNumbersViewCellsDictionary:(NSMutableDictionary*)nodeNumbersViewCellsDictionary
+                      isCondensedMoveNode:(bool)isCondensedMoveNode
+         nodeNumberExistsOnlyForSelection:(bool)nodeNumberExistsOnlyForSelection
+{
+  // TODO xxx Generate more than just one cell to avoid that a node number is
+  // rendered only partially if it is located at the edge of a tile of the node
+  // numbers view.
+  unsigned short xPositionOfCenterCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
+
+  NodeNumbersViewCell* cell = [NodeNumbersViewCell emptyCell];
+  cell.nodeNumber = branchTuple->nodeNumber;
+  cell.selected = branchTuple->nodeIsCurrentBoardPositionNode;
+  cell.nodeNumberExistsOnlyForSelection = nodeNumberExistsOnlyForSelection;
+  cell.condensedMoveNode = isCondensedMoveNode;
+
+  NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfCenterCell y:yPositionOfNodeNumber];
+  nodeNumbersViewCellsDictionary[position] = cell;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Generates a node number for @a selectedNode if none exists yet and
+/// there is sufficient space for it.
+// -----------------------------------------------------------------------------
+- (void) generateNodeNumberForSelectedNodeIfNoneExistsYet:(GoNode*)selectedNode
+                                      nodeNumberingTuples:(NSMutableArray*)nodeNumberingTuples
+                                                  nodeMap:(NSDictionary*)nodeMap
+                           nodeNumbersViewCellsDictionary:(NSMutableDictionary*)nodeNumbersViewCellsDictionary
+                                        condenseMoveNodes:(bool)condenseMoveNodes
+                                  numberOfNodeNumberCells:(int)numberOfNodeNumberCells
+{
+  NSValue* key = [NSValue valueWithNonretainedObject:selectedNode];
+  NodeTreeViewBranchTuple* branchTuple = [nodeMap objectForKey:key];
+
+  unsigned short xPositionOfCenterCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
+  NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfCenterCell y:yPositionOfNodeNumber];
+  NodeNumbersViewCell* cell = [nodeNumbersViewCellsDictionary objectForKey:position];
+  if (cell)
+    return;
+
+  if (condenseMoveNodes)
+  {
+    const int numberOfNodeNumberCellsExtendingFromCenter = (numberOfNodeNumberCells - 1) / 2;
+
+    NSUInteger indexOfNodeNumberingTuple = 0;
+    for (NSArray* nodeNumberingTuple in nodeNumberingTuples)
+    {
+      if (nodeNumberingTuple.firstObject == branchTuple)
+        break;
+      indexOfNodeNumberingTuple++;
+    }
+
+    // Rule 10: Number the selected node only if there is sufficient space.
+    // Note that we have to check for sufficient space even if the selected node
+    // is an uncondensed node! Reason: A previously generated node number for a
+    // neighbouring condensed move node might overlap into the uncondensed
+    // selected node's node number window.
+    bool sufficientSpace = [self canGenerateNodeNumberForBranchTuple:branchTuple
+                                                 nodeNumberingTuples:nodeNumberingTuples
+                                  indexOfCandidateNodeNumberingTuple:indexOfNodeNumberingTuple
+                                             numberOfNodeNumberCells:numberOfNodeNumberCells
+                          numberOfNodeNumberCellsExtendingFromCenter:numberOfNodeNumberCellsExtendingFromCenter];
+    if (sufficientSpace)
+    {
+      bool isCondensedMoveNode = branchTuple->numberOfCellsForNode == 1;
+      [self generateNodeNumberForBranchTuple:branchTuple
+              nodeNumbersViewCellsDictionary:nodeNumbersViewCellsDictionary
+                         isCondensedMoveNode:isCondensedMoveNode
+            nodeNumberExistsOnlyForSelection:true];
+    }
+  }
+  else
+  {
+    [self generateNodeNumberForBranchTuple:branchTuple
+            nodeNumbersViewCellsDictionary:nodeNumbersViewCellsDictionary
+                       isCondensedMoveNode:false
+          nodeNumberExistsOnlyForSelection:true];
   }
 }
 
@@ -2160,8 +2693,8 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
   if (! branchTuple)
     return positions;
 
-  unsigned short xPositionOfNodeNumber = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
-  NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfNodeNumber
+  unsigned short xPositionOfCenterCell = branchTuple->xPositionOfFirstCell + branchTuple->indexOfCenterCell;
+  NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfCenterCell
                                                                              y:yPositionOfNodeNumber];
   [positions addObject:position];
 
@@ -2171,16 +2704,29 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 // -----------------------------------------------------------------------------
 /// @brief Updates the @e selected property value of those NodeTreeViewCell and
 /// NodeNumbersViewCell objects that display the node @a node on the canvas.
-/// Returns a tuple with two lists of NodeTreeViewCellPosition objects that
-/// refer to the positions of the updated cells on the node tree view canvas
-/// (first list) and on the node numbers view canvas (second list).
+/// Creates or deletes NodeNumbersViewCell objects as necessary. Returns a tuple
+/// with two lists of NodeTreeViewCellPosition objects that refer to the
+/// positions of the updated cells on the node tree view canvas (first list) and
+/// on the node numbers view canvas (second list).
+///
+/// If @a newSelectedState is false, i.e. @a node is de-selected, the
+/// NodeTreeViewCellPosition objects in the second list may refer to cells for
+/// which there no longer are any NodeNumbersViewCell objects. This happens if
+/// the node number for @a node existed purely to mark @a node as selected.
 // -----------------------------------------------------------------------------
 - (NSArray*) updateSelectedStateOfCellsForNode:(GoNode*)node
                                     toNewState:(bool)newSelectedState
+                                       nodeMap:(NSDictionary*)nodeMap
                                cellsDictionary:(NSDictionary*)cellsDictionary
-                nodeNumbersViewCellsDictionary:(NSDictionary*)nodeNumbersViewCellsDictionary
+                nodeNumbersViewCellsDictionary:(NSMutableDictionary*)nodeNumbersViewCellsDictionary
+                           nodeNumberingTuples:(NSMutableArray*)nodeNumberingTuples
+                             condenseMoveNodes:(bool)condenseMoveNodes
+                       numberOfNodeNumberCells:(int)numberOfNodeNumberCells
 {
-  NSArray* positions = [self positionsForNode:node];
+  NodeTreeViewBranchTuple* branchTuple = [self branchTupleForNode:node];
+  branchTuple->nodeIsCurrentBoardPositionNode = newSelectedState;
+
+  NSArray* positions = [self positionsForBranchTuple:branchTuple];
   for (NodeTreeViewCellPosition* position in positions)
   {
     NSArray* tuple = [cellsDictionary objectForKey:position];
@@ -2191,12 +2737,36 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
     }
   }
 
-  NSArray* nodeNumbersViewPositions = [self nodeNumbersViewPositionsForNode:node];
+  NSArray* nodeNumbersViewPositions = [self nodeNumbersViewPositionsForBranchTuple:branchTuple];
   for (NodeTreeViewCellPosition* position in nodeNumbersViewPositions)
   {
     NodeNumbersViewCell* cell = [nodeNumbersViewCellsDictionary objectForKey:position];
     if (cell)
+    {
       cell.selected = newSelectedState;
+
+      // If the node is de-selected and the node number cell exists only for
+      // marking the selected node, then the cell can be deleted
+      if (! newSelectedState && cell.nodeNumberExistsOnlyForSelection)
+        [nodeNumbersViewCellsDictionary removeObjectForKey:position];
+    }
+    else
+    {
+      // If the node is selected but is not yet numbered, we now generate the
+      // node numbers for it. If the node is de-selected but is not yet numbered
+      // this is unexpected.
+      if (newSelectedState)
+      {
+        [self generateNodeNumberForSelectedNodeIfNoneExistsYet:node
+                                           nodeNumberingTuples:nodeNumberingTuples
+                                                       nodeMap:nodeMap
+                                nodeNumbersViewCellsDictionary:nodeNumbersViewCellsDictionary
+                                             condenseMoveNodes:condenseMoveNodes
+                                       numberOfNodeNumberCells:numberOfNodeNumberCells];
+        // All cells were generated, no further need to iterate
+        break;
+      }
+    }
   }
 
   return @[positions, nodeNumbersViewPositions];

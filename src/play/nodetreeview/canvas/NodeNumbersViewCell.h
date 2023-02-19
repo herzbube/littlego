@@ -40,6 +40,15 @@
 /// @e false if the node number does not refer to the currently selected node.
 @property(nonatomic, assign, getter=isSelected) bool selected;
 
+/// @brief @e true if the node number was generated only to mark the currently
+/// selected node. @e false if the node number also exists to satisfy other
+/// node numbering rules.
+///
+/// The value of this property is important so that when the currently selected
+/// node changes the node number of the previously selected node can be removed
+/// if it is no longer required by other node numbering rules.
+@property(nonatomic, assign) bool nodeNumberExistsOnlyForSelection;
+
 /// @brief @e true if the node number refers to a condensed move node, @e false
 /// if the node number refers to an uncondensed node.
 ///

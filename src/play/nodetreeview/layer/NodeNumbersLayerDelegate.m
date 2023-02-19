@@ -114,7 +114,7 @@
     case NTVLDEventNodeTreeSelectedNodeChanged:
     {
       NSArray* newSelectedNodePositionsTuple = eventInfo;
-      NSArray* newSelectedNodeNumbersViewPositions = newSelectedNodePositionsTuple.firstObject;
+      NSArray* newSelectedNodeNumbersViewPositions = newSelectedNodePositionsTuple.lastObject;
       NSArray* newSelectedNodePositionsOnTile = [self calculateSelectedNodePositionsOnTile:newSelectedNodeNumbersViewPositions];
       if (! [self.selectedNodePositionsOnTile isEqualToArray:newSelectedNodePositionsOnTile])
       {
