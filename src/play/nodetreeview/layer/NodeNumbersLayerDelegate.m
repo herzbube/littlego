@@ -143,6 +143,7 @@
   if (! nodeNumberLabelFont)
     return;
 
+  bool condenseMoveNodes = self.nodeTreeViewModel.condenseMoveNodes;
   bool numberCondensedMoveNodes = self.nodeTreeViewModel.numberCondensedMoveNodes;
 
   NSDictionary* textAttributesUnselected = @{ NSFontAttributeName : nodeNumberLabelFont,
@@ -153,6 +154,8 @@
 
   CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
                                                          metrics:self.nodeTreeViewMetrics];
+
+  NSMutableDictionary* nodeNumbersAlreadyDrawn = [NSMutableDictionary dictionary];
 
   for (NodeTreeViewCellPosition* position in self.drawingCellsOnTile)
   {
@@ -165,18 +168,33 @@
     if (cell.condensedMoveNode && ! numberCondensedMoveNodes)
       continue;
 
-    NSString* nodeNumberText = [NSString stringWithFormat:@"%d", nodeNumber];
+    NSNumber* nodeNumberAsNumber = @(nodeNumber);
+    if ([nodeNumbersAlreadyDrawn objectForKey:nodeNumberAsNumber])
+      continue;
+    nodeNumbersAlreadyDrawn[nodeNumberAsNumber] = nodeNumberAsNumber;
+
+    NSString* nodeNumberString = [NSString stringWithFormat:@"%d", nodeNumber];
     NSDictionary* textAttributes = cell.isSelected ? textAttributesSelected : textAttributesUnselected;
 
-    CGRect canvasRect = [NodeTreeViewDrawingHelper canvasRectForNodeNumberCellAtPosition:position
-                                                                                 metrics:self.nodeTreeViewMetrics];
-    CGRect drawingRect = [NodeTreeViewDrawingHelper drawingRectFromCanvasRect:canvasRect
-                                                               inTileWithRect:tileRect];
-
-    [CGDrawingHelper drawStringWithContext:context
-                            centeredInRect:drawingRect
-                                    string:nodeNumberText
-                            textAttributes:textAttributes];
+    if (condenseMoveNodes)
+    {
+      [NodeTreeViewDrawingHelper drawNodeNumber:nodeNumberString
+                                    withContext:context
+                                 textAttributes:textAttributes
+                                           part:cell.part
+                                   partPosition:position
+                                 inTileWithRect:tileRect
+                                    withMetrics:self.nodeTreeViewMetrics];
+    }
+    else
+    {
+      [NodeTreeViewDrawingHelper drawNodeNumber:nodeNumberString
+                                    withContext:context
+                                 textAttributes:textAttributes
+                                     centeredAt:position
+                                 inTileWithRect:tileRect
+                                    withMetrics:self.nodeTreeViewMetrics];
+    }
   }
 }
 

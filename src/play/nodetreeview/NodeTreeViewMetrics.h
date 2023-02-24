@@ -183,6 +183,10 @@
 /// equal to the width of @e nodeTreeViewCellSize, the height is equal to
 /// @e nodeNumberStripHeight.
 @property(nonatomic, assign) CGSize nodeNumberViewCellSize;
+/// @brief The size of a multipart cell in the node number view. The width is
+/// equal to the width of @e nodeTreeViewMultipartCellSize, the height is equal
+/// to @e nodeNumberStripHeight.
+@property(nonatomic, assign) CGSize nodeNumberViewMultipartCellSize;
 /// @brief The font to use for drawing node number labels. Is @e nil if no
 /// suitable font exists for the current metrics.
 @property(nonatomic, retain) UIFont* nodeNumberLabelFont;

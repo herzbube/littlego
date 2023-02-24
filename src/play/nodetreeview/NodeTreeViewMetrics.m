@@ -414,18 +414,10 @@
     static const CGFloat coordinateLabelStripWidthFactor = 2.0f / 3.0f;
     int nodeNumberStripHeight = floor(self.nodeTreeViewCellSize.height * coordinateLabelStripWidthFactor);
 
-    // This size is used by the node number drawing code to calculate the
-    // positions of node number labels. It is not used for clipping, i.e. node
-    // numbers are drawn outside the bounds mandated by this size. This is
-    // important when move nodes are condensed and this size refers to only a
-    // condensed cell width.
     self.nodeNumberViewCellSize = CGSizeMake(self.nodeTreeViewCellSize.width, nodeNumberStripHeight);
+    self.nodeNumberViewMultipartCellSize = CGSizeMake(self.nodeTreeViewMultipartCellSize.width, nodeNumberStripHeight);
 
-    // Condensed move nodes are not numbered, so the base width available to
-    // node number labels is always the uncondensed cell width. This works
-    // because, as mentioned above, the node number drawing code overdraws,
-    // i.e. it draws outside the bounds mandated by self.nodeNumberViewCellSize.
-    // Note: A small padding on both sides is subtracted from the base width so
+    // A small padding on both sides is subtracted from the base width so
     // that adjacent node numbers have a small spacing between them.
     static const int nodeNumberLabelPaddingX = 1;
     int nodeNumberLabelAvailableWidth = (nodeTreeViewCellUncondensedWidth
@@ -447,6 +439,7 @@
       self.nodeNumberStripHeight = 0;
       self.nodeNumberViewHeight = 0;
       self.nodeNumberViewCellSize = CGSizeZero;
+      self.nodeNumberViewMultipartCellSize = CGSizeZero;
       self.nodeNumberLabelFont = nil;
       self.nodeNumberLabelMaximumSize = CGSizeZero;
     }
@@ -456,6 +449,7 @@
     self.nodeNumberStripHeight = 0;
     self.nodeNumberViewHeight = 0;
     self.nodeNumberViewCellSize = CGSizeZero;
+    self.nodeNumberViewMultipartCellSize = CGSizeZero;
     self.nodeNumberLabelFont = nil;
     self.nodeNumberLabelMaximumSize = CGSizeZero;
   }

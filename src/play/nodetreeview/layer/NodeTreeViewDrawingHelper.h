@@ -60,6 +60,21 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
     inTileWithRect:(CGRect)tileRect
        withMetrics:(NodeTreeViewMetrics*)metrics;
 
++ (void) drawNodeNumber:(NSString*)nodeNumberText
+            withContext:(CGContextRef)context
+         textAttributes:(NSDictionary*)textAttributes
+             centeredAt:(NodeTreeViewCellPosition*)position
+         inTileWithRect:(CGRect)tileRect
+            withMetrics:(NodeTreeViewMetrics*)metrics;
+
++ (void) drawNodeNumber:(NSString*)nodeNumberText
+            withContext:(CGContextRef)context
+         textAttributes:(NSDictionary*)textAttributes
+                   part:(int)part
+           partPosition:(NodeTreeViewCellPosition*)position
+         inTileWithRect:(CGRect)tileRect
+            withMetrics:(NodeTreeViewMetrics*)metrics;
+
 + (void) setNodeSymbolClippingPathInContext:(CGContextRef)context
              allowDrawingInCircleWithCenter:(CGPoint)center
                                      radius:(CGFloat)radius;
@@ -79,6 +94,9 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 + (CGRect) canvasRectForMultipartCellPart:(int)part
                              partPosition:(NodeTreeViewCellPosition*)position
                                metrics:(NodeTreeViewMetrics*)metrics;
++ (CGRect) canvasRectForNodeNumberMultipartCellPart:(int)part
+                                       partPosition:(NodeTreeViewCellPosition*)position
+                                            metrics:(NodeTreeViewMetrics*)metrics;
 + (CGRect) canvasRectForCellAtPosition:(NodeTreeViewCellPosition*)position
                                metrics:(NodeTreeViewMetrics*)metrics;
 + (CGRect) canvasRectForNodeNumberCellAtPosition:(NodeTreeViewCellPosition*)position

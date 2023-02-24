@@ -521,7 +521,7 @@
                 centeredInRect:(CGRect)rectangle
            rotatedCcwByDegrees:(CGFloat)degrees
                         string:(NSString*)string
-                textAttributes:(NSDictionary*)textAttributes;
+                textAttributes:(NSDictionary*)textAttributes
 {
   CGRect boundingBox = CGRectZero;
   boundingBox.size = [string sizeWithAttributes:textAttributes];

@@ -51,7 +51,7 @@
   self.focusMode = NodeTreeViewFocusModeMakeSelectedNodeVisible;
   // TODO xxx should this be a user preference?
   self.nodeNumberViewIsOverlay = false;
-  // TODO xxx can we remove this setting?
+  // TODO xxx can we remove this setting? If yes then we also no longer need the condensedMoveNode property in NodeNumbersViewCell
   // Don't display node numbers for condensed move nodes, because the single
   // cell that represents a condensed move node is not wide enough to show
   // multi-digit node numbers => node numbers would overlap. Ideas to avoid

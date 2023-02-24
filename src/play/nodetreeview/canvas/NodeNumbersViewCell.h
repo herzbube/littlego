@@ -36,6 +36,13 @@
 /// number.
 @property(nonatomic, assign) int nodeNumber;
 
+/// @brief Denotes which part of a multipart cell the cell is. The value of this
+/// property is zero-based, i.e. it can be treated like an array index. If
+/// the value is 0, then the current value of the user preference
+/// "Condense move nodes" must be consulted to find out whether the cell is a
+/// standalone cell.
+@property(nonatomic, assign) unsigned short part;
+
 /// @brief @e true if the node number refers to the currently selected node.
 /// @e false if the node number does not refer to the currently selected node.
 @property(nonatomic, assign, getter=isSelected) bool selected;

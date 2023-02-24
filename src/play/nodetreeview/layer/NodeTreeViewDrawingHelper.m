@@ -694,12 +694,76 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 
   if (! CGRectIntersectsRect(tileRect, canvasRectForLayer))
     return;
+
   CGRect drawingRect = [NodeTreeViewDrawingHelper drawingRectFromCanvasRect:canvasRectForLayer
                                                              inTileWithRect:tileRect];
-
-  // TODO xxx set clipping bounds? if yes => canvasRectForCell
-
   CGContextDrawLayerInRect(context, drawingRect, layer);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Draws the node number string @a nodeNumberString using the specified
+/// drawing context and attributes @a textAttributes so that the string is
+/// centered within the cell identified by @a position.
+///
+/// The layer is not drawn if it does not intersect with the tile @a tileRect.
+/// The tile rectangle origin must be in the canvas coordinate system.
+// -----------------------------------------------------------------------------
++ (void) drawNodeNumber:(NSString*)nodeNumberString
+            withContext:(CGContextRef)context
+         textAttributes:(NSDictionary*)textAttributes
+             centeredAt:(NodeTreeViewCellPosition*)position
+         inTileWithRect:(CGRect)tileRect
+            withMetrics:(NodeTreeViewMetrics*)metrics
+{
+  CGRect canvasRectForNodeNumberCell = [NodeTreeViewDrawingHelper canvasRectForNodeNumberCellAtPosition:position metrics:metrics];
+  CGSize drawingSizeForNodeNumber = metrics.nodeNumberLabelMaximumSize;
+  CGRect canvasRectForNodeNumber = [UiUtilities rectWithSize:drawingSizeForNodeNumber
+                                              centeredInRect:canvasRectForNodeNumberCell];
+  if (! CGRectIntersectsRect(tileRect, canvasRectForNodeNumber))
+    return;
+
+  CGRect drawingRect = [NodeTreeViewDrawingHelper drawingRectFromCanvasRect:canvasRectForNodeNumber
+                                                             inTileWithRect:tileRect];
+  [CGDrawingHelper drawStringWithContext:context
+                          centeredInRect:drawingRect
+                                  string:nodeNumberString
+                          textAttributes:textAttributes];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Draws the node number string @a nodeNumberString using the specified
+/// drawing context and attributes @a textAttributes so that the string is
+/// centered within a multipart cell. Only that part of the string which
+/// intersects with the standalone cell @a part of the multipart cell needs
+/// to be drawn. The standalone cell is identified by @a position, this defines
+/// the multipart cell's location on the canvas.
+///
+/// The string is not drawn if it does not intersect with the tile @a tileRect.
+/// The tile rectangle origin must be in the canvas coordinate system.
+// -----------------------------------------------------------------------------
++ (void) drawNodeNumber:(NSString*)nodeNumberString
+            withContext:(CGContextRef)context
+         textAttributes:(NSDictionary*)textAttributes
+                   part:(int)part
+           partPosition:(NodeTreeViewCellPosition*)position
+         inTileWithRect:(CGRect)tileRect
+            withMetrics:(NodeTreeViewMetrics*)metrics
+{
+  CGRect canvasRectForNodeNumberMultipartCell = [NodeTreeViewDrawingHelper canvasRectForNodeNumberMultipartCellPart:part
+                                                                                                       partPosition:position
+                                                                                                            metrics:metrics];
+  CGSize drawingSizeForNodeNumber = metrics.nodeNumberLabelMaximumSize;
+  CGRect canvasRectForNodeNumber = [UiUtilities rectWithSize:drawingSizeForNodeNumber
+                                              centeredInRect:canvasRectForNodeNumberMultipartCell];
+  if (! CGRectIntersectsRect(tileRect, canvasRectForNodeNumber))
+    return;
+
+  CGRect drawingRect = [NodeTreeViewDrawingHelper drawingRectFromCanvasRect:canvasRectForNodeNumber
+                                                             inTileWithRect:tileRect];
+  [CGDrawingHelper drawStringWithContext:context
+                          centeredInRect:drawingRect
+                                  string:nodeNumberString
+                          textAttributes:textAttributes];
 }
 
 // -----------------------------------------------------------------------------
@@ -728,13 +792,36 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 // -----------------------------------------------------------------------------
 + (CGRect) canvasRectForMultipartCellPart:(int)part
                              partPosition:(NodeTreeViewCellPosition*)position
-                               metrics:(NodeTreeViewMetrics*)metrics;
+                               metrics:(NodeTreeViewMetrics*)metrics
 {
   CGRect canvasRectForCell = [NodeTreeViewDrawingHelper canvasRectForCellAtPosition:position metrics:metrics];
 
   CGRect canvasRectForMultipartCell = CGRectZero;
   canvasRectForMultipartCell.size.height = canvasRectForCell.size.height;
   canvasRectForMultipartCell.size.width =  metrics.nodeTreeViewMultipartCellSize.width;
+  canvasRectForMultipartCell.origin.y = canvasRectForCell.origin.y;
+  canvasRectForMultipartCell.origin.x = canvasRectForCell.origin.x - (canvasRectForCell.size.width * part);
+
+  return canvasRectForMultipartCell;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the rectangle occupied by the specified multipart cell on
+/// the node number view "canvas", i.e. the area covered by the entire node
+/// number view. The multipart cell is identified by one of its sub-cells.
+/// @a part identifies the sub-cell within the multipart cell, @a position the
+/// sub-cell's position on the canvas. The origin of the returned rectangle is
+/// in the upper-left corner.
+// -----------------------------------------------------------------------------
++ (CGRect) canvasRectForNodeNumberMultipartCellPart:(int)part
+                                       partPosition:(NodeTreeViewCellPosition*)position
+                                            metrics:(NodeTreeViewMetrics*)metrics
+{
+  CGRect canvasRectForCell = [NodeTreeViewDrawingHelper canvasRectForNodeNumberCellAtPosition:position metrics:metrics];
+
+  CGRect canvasRectForMultipartCell = CGRectZero;
+  canvasRectForMultipartCell.size.height = canvasRectForCell.size.height;
+  canvasRectForMultipartCell.size.width =  metrics.nodeNumberViewMultipartCellSize.width;
   canvasRectForMultipartCell.origin.y = canvasRectForCell.origin.y;
   canvasRectForMultipartCell.origin.x = canvasRectForCell.origin.x - (canvasRectForCell.size.width * part);
 
