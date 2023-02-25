@@ -14,11 +14,6 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
-// TODO xxx Move margin handling into ResizableStackViewController - we do this
-// mainly to provide space for drag handles, but even when resizingEnabled is
-// false it is usually desirable to have a spacing between resizable panes.
-static int spacingBetweenResizablePanes = 4;
-
 // TODO xxx The initial size for the node tree view, should be a user preference
 static NSArray* resizableStackViewControllerInitialSizes = nil;
 
@@ -557,7 +552,7 @@ enum ResizablePane2Content
   NSMutableArray* visualFormats = [NSMutableArray array];
   [visualFormats addObject:@"H:|-0-[boardContainerView]-0-|"];
   [visualFormats addObject:@"H:|-[boardPositionButtonBoxAndAnnotationContainerView]-|"];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:|-[boardContainerView]-[boardPositionButtonBoxAndAnnotationContainerView]-%d-|", spacingBetweenResizablePanes]];
+  [visualFormats addObject:@"V:|-[boardContainerView]-[boardPositionButtonBoxAndAnnotationContainerView]-0-|"];
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.boardContainerView.superview];
 }
@@ -871,12 +866,7 @@ enum ResizablePane2Content
   viewsDictionary[@"contentView"] = contentView;
   // Horizontal margin is important to provide the space for the switch button
   [visualFormats addObject:@"H:|-[contentView]-|"];
-  // Top vertical margin is important to provide half the space for the drag
-  // handle (the other half is provided by the bottom vertical margin of the
-  // resizable pane 1).
-  // Vertical margin at the bottom can be zero because the main resizable view
-  // is already providing a margin.
-  [visualFormats addObject:[NSString stringWithFormat:@"V:|-%d-[contentView]-0-|", spacingBetweenResizablePanes]];
+  [visualFormats addObject:@"V:|-0-[contentView]-0-|"];
 
   if (resizablePane2Content == ResizablePane2ContentBoardPositionCollectionView)
   {

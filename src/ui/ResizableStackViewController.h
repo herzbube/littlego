@@ -264,6 +264,14 @@ enum DragHandlePresentationStyle
 /// #DragHandleStyleOverlay.
 @property (nonatomic, assign) enum DragHandleStyle dragHandleStyle;
 
+/// @brief The spacing to add between resizable panes. Half of the value of this
+/// property is added to both panes where they have a common edge. The spacing
+/// is useful when @a dragHandleStyle has the value #DragHandleStyleOverlay and
+/// the drag handles would draw over the content of the resizable panes.
+///
+/// The spacing is included in the size of each pane.
+@property (nonatomic, assign) CGFloat spacingBetweenResizablePanes;
+
 /// @brief The presentation style of drag handles to be used. The default value
 /// is #DragHandlePresentationStyleBar.
 @property (nonatomic, assign) enum DragHandlePresentationStyle dragHandlePresentationStyle;

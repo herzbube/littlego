@@ -85,6 +85,7 @@ struct GestureInfo
 /// ResizableStackViewController.
 // -----------------------------------------------------------------------------
 @interface ResizableStackViewController()
+@property (nonatomic, retain) NSMutableArray* childViews;
 @property (nonatomic, retain) NSArray* arrangingAutoLayoutConstraints;
 @property (nonatomic, retain) NSMutableArray* sizingAutoLayoutConstraints;
 @property (nonatomic, retain) NSMutableArray* dragHandleViews;
@@ -145,6 +146,7 @@ struct GestureInfo
   self.resizingEnabled = true;
   self.resizeStepSize = 100;
   self.dragHandleStyle = DragHandleStyleOverlay;
+  self.spacingBetweenResizablePanes = 8.0f;
   self.dragHandlePresentationStyle = DragHandlePresentationStyleBar;
   self.dragHandleColorLightUserInterfaceStyle = [UIColor colorWithWhite:0.0 alpha:0.2f];
   self.dragHandleColorDarkUserInterfaceStyle = [UIColor colorWithWhite:1.0 alpha:0.7f];
@@ -152,6 +154,7 @@ struct GestureInfo
   self.dragHandleGrabAreaMargin = 4.0f;
   self.dragHandleSizePercentageCounterAxis = 0.25f;
 
+  self.childViews = [NSMutableArray array];
   self.arrangingAutoLayoutConstraints = @[];
   self.sizingAutoLayoutConstraints = [NSMutableArray array];
   self.dragHandleViews = [NSMutableArray array];
@@ -179,7 +182,7 @@ struct GestureInfo
     [self removeSizingAutoLayoutConstraints];
   }
   [self removeArrangingAutoLayoutConstraints];
-  [self removeChildViewsFromViewHierarchy];
+  [self releaseAndRemoveChildViewsFromViewHierarchy];
   [self removeChildViewControllers];
 
   [_viewControllers release];
@@ -196,6 +199,7 @@ struct GestureInfo
   [_dragHandleColorDarkUserInterfaceStyle release];
   _dragHandleColorDarkUserInterfaceStyle = nil;
 
+  self.childViews = nil;
   self.arrangingAutoLayoutConstraints = nil;
   self.sizingAutoLayoutConstraints = nil;
   self.dragHandleViews = nil;
@@ -230,7 +234,7 @@ struct GestureInfo
       [self removeSizingAutoLayoutConstraints];
     }
     [self removeArrangingAutoLayoutConstraints];
-    [self removeChildViewsFromViewHierarchy];
+    [self releaseAndRemoveChildViewsFromViewHierarchy];
   }
 
   [_viewControllers release];
@@ -240,7 +244,7 @@ struct GestureInfo
 
   if (self.isViewLoaded)
   {
-    [self addChildViewsToViewHierarchy];
+    [self createAndAddChildViewsToViewHierarchy];
     [self addArrangingAutoLayoutConstraints];
   }
 
@@ -1012,7 +1016,7 @@ struct GestureInfo
 {
   [super loadView];
 
-  [self addChildViewsToViewHierarchy];
+  [self createAndAddChildViewsToViewHierarchy];
   [self addArrangingAutoLayoutConstraints];
 
   if (self.resizingEnabled)
@@ -1026,27 +1030,40 @@ struct GestureInfo
 #pragma mark - Child view handling
 
 // -----------------------------------------------------------------------------
-/// @brief Adds the views of all child view controllers as subviews to the view
-/// of this view controller.
+/// @brief Creates a child view for each child view controller and adds each
+/// child view as subview to the view of this view controller. Adds the view
+/// of each child view controllers as subview to the corresponding child view.
 // -----------------------------------------------------------------------------
-- (void) addChildViewsToViewHierarchy
+- (void) createAndAddChildViewsToViewHierarchy
 {
   for (UIViewController* childViewController in self.viewControllers)
   {
-    [self.view addSubview:childViewController.view];
+    UIView* childView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+    [self.childViews addObject:childView];
+
+    [self.view addSubview:childView];
+    [childView addSubview:childViewController.view];
   }
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Removes the views of all child view controllers from the view of this
-/// view controller.
+/// @brief Removes all child views from the view of this view controller, then
+/// releases all child views. Also removes the view of each child view
+/// controller from the corresponding child view.
 // -----------------------------------------------------------------------------
-- (void) removeChildViewsFromViewHierarchy
+- (void) releaseAndRemoveChildViewsFromViewHierarchy
 {
   for (UIViewController* childViewController in self.viewControllers)
   {
     [childViewController.view removeFromSuperview];
   }
+
+  for (UIView* childView in self.childViews)
+  {
+    [childView removeFromSuperview];
+  }
+  [self.childViews removeAllObjects];
+
 }
 
 #pragma mark - Auto layout constraint handling
@@ -1058,28 +1075,57 @@ struct GestureInfo
 - (void) addArrangingAutoLayoutConstraints
 {
   NSArray* viewControllers = self.viewControllers;
-  NSUInteger numberOfChildViews = viewControllers.count;
-  if (numberOfChildViews == 0)
+  NSUInteger numberOfChildViewControllers = viewControllers.count;
+  NSArray* childViews = self.childViews;
+  NSUInteger numberOfChildViews = childViews.count;
+  if (numberOfChildViews == 0 ||numberOfChildViewControllers != numberOfChildViews)
     return;
+
+  CGFloat marginResizablePanes = self.spacingBetweenResizablePanes / 2.0f;
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
 
-  NSString* visualFormatAlongArrangedAxis = self.axis == UILayoutConstraintAxisHorizontal ? @"H:|-0-" : @"V:|-0-";
-  NSString* visualFormatPrefixAlongOtherAxis = self.axis == UILayoutConstraintAxisHorizontal ? @"V:" : @"H:";
+  NSString* visualFormatAlongArrangedAxisChildView = self.axis == UILayoutConstraintAxisHorizontal ? @"H:|-0-" : @"V:|-0-";
+  NSString* visualFormatPrefixAlongOtherAxisChildView = self.axis == UILayoutConstraintAxisHorizontal ? @"V:" : @"H:";
+  NSString* visualFormatPrefixAlongArrangedAxisChildViewControllerView = self.axis == UILayoutConstraintAxisHorizontal ? @"H:" : @"V:";
+  NSString* visualFormatPrefixAlongOtherAxisChildViewControllerView = self.axis == UILayoutConstraintAxisHorizontal ? @"V:" : @"H:";
 
   for (int indexOfChildView = 0; indexOfChildView < numberOfChildViews; ++indexOfChildView)
   {
     UIViewController* childViewController = [viewControllers objectAtIndex:indexOfChildView];
-    UIView* childView = childViewController.view;
+    UIView* childViewControllerView = childViewController.view;
+    UIView* childView = [childViews objectAtIndex:indexOfChildView];
 
+    childViewControllerView.translatesAutoresizingMaskIntoConstraints = NO;
     childView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    NSString* viewName = [NSString stringWithFormat:@"childView%d", indexOfChildView];
-    viewsDictionary[viewName] = childView;
+    NSString* childViewControllerViewName = [NSString stringWithFormat:@"childViewControllerView%d", indexOfChildView];
+    NSString* childViewName = [NSString stringWithFormat:@"childView%d", indexOfChildView];
+    viewsDictionary[childViewControllerViewName] = childViewControllerView;
+    viewsDictionary[childViewName] = childView;
 
-    visualFormatAlongArrangedAxis = [visualFormatAlongArrangedAxis stringByAppendingFormat:@"[%@]-0-", viewName];
-    [visualFormats addObject:[visualFormatPrefixAlongOtherAxis stringByAppendingFormat:@"|-0-[%@]-0-|", viewName]];
+    visualFormatAlongArrangedAxisChildView = [visualFormatAlongArrangedAxisChildView stringByAppendingFormat:@"[%@]-0-", childViewName];
+    [visualFormats addObject:[visualFormatPrefixAlongOtherAxisChildView stringByAppendingFormat:@"|-0-[%@]-0-|", childViewName]];
+
+    NSString* visualFormatAlongArrangedAxisChildViewControllerView;
+    if (numberOfChildViews == 1)
+    {
+      visualFormatAlongArrangedAxisChildViewControllerView = [NSString stringWithFormat:@"|-0-[%@]-0-|", childViewControllerViewName];
+    }
+    else
+    {
+      bool isFirstChildView = (indexOfChildView == 0);
+      bool isLastChildView = (indexOfChildView + 1 == numberOfChildViews);
+      if (isFirstChildView)
+        visualFormatAlongArrangedAxisChildViewControllerView = [NSString stringWithFormat:@"|-0-[%@]-%f-|", childViewControllerViewName, marginResizablePanes];
+      else if (isLastChildView)
+        visualFormatAlongArrangedAxisChildViewControllerView = [NSString stringWithFormat:@"|-%f-[%@]-0-|", marginResizablePanes, childViewControllerViewName];
+      else
+        visualFormatAlongArrangedAxisChildViewControllerView = [NSString stringWithFormat:@"|-%f-[%@]-%f-|", marginResizablePanes, childViewControllerViewName, marginResizablePanes];
+    }
+    [visualFormats addObject:[visualFormatPrefixAlongArrangedAxisChildViewControllerView stringByAppendingString:visualFormatAlongArrangedAxisChildViewControllerView]];
+    [visualFormats addObject:[visualFormatPrefixAlongOtherAxisChildViewControllerView stringByAppendingFormat:@"|-0-[%@]-0-|", childViewControllerViewName]];
   }
 
   // When sizing constraints are created we don't want to connect the last
@@ -1090,9 +1136,9 @@ struct GestureInfo
   // child views try to occupy slightly less or more than 100% of the size of
   // their superview along the arrange axis.
   if (! self.resizingEnabled)
-    [visualFormats addObject:[visualFormatAlongArrangedAxis stringByAppendingString:@"|"]];
+    [visualFormats addObject:[visualFormatAlongArrangedAxisChildView stringByAppendingString:@"|"]];
   else
-    [visualFormats addObject:[visualFormatAlongArrangedAxis substringWithRange:NSMakeRange(0, visualFormatAlongArrangedAxis.length - @"-0-".length)]];
+    [visualFormats addObject:[visualFormatAlongArrangedAxisChildView substringWithRange:NSMakeRange(0, visualFormatAlongArrangedAxisChildView.length - @"-0-".length)]];
 
   self.arrangingAutoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
                                                                       withViews:viewsDictionary
@@ -1153,8 +1199,7 @@ struct GestureInfo
 {
   NSLayoutAttribute sizeAttribute = self.axis == UILayoutConstraintAxisHorizontal ? NSLayoutAttributeWidth : NSLayoutAttributeHeight;
 
-  UIViewController* childViewController = [self.viewControllers objectAtIndex:indexOfChildView];
-  UIView* childView = childViewController.view;
+  UIView* childView = [self.childViews objectAtIndex:indexOfChildView];
 
   NSLayoutConstraint* sizingConstraint = [AutoLayoutUtility alignFirstView:childView
                                                             withSecondView:self.view
@@ -1193,8 +1238,8 @@ struct GestureInfo
   if (self.dragHandleStyle == DragHandleStyleNone)
     return;
 
-  NSArray* viewControllers = self.viewControllers;
-  NSUInteger numberOfChildViews = viewControllers.count;
+  NSArray* childViews = self.childViews;
+  NSUInteger numberOfChildViews = childViews.count;
   NSUInteger numberOfDragHandles = numberOfChildViews - 1;
   if (numberOfDragHandles <= 0)
     return;
@@ -1203,8 +1248,7 @@ struct GestureInfo
 
   for (int indexOfChildView = 0; indexOfChildView < numberOfDragHandles; ++indexOfChildView)
   {
-    UIViewController* childViewController = [viewControllers objectAtIndex:indexOfChildView];
-    UIView* childView = childViewController.view;
+    UIView* childView = [childViews objectAtIndex:indexOfChildView];
 
     UIView* dragHandleView = [self createDragHandleView];
     [self.dragHandleViews addObject:dragHandleView];
@@ -1405,7 +1449,7 @@ struct GestureInfo
   // Need to collect information about all child views because we don't know
   // which one will be the one whose edge is closest to the gesture start
   // location.
-  NSUInteger numberOfChildViews = self.viewControllers.count;
+  NSUInteger numberOfChildViews = self.childViews.count;
   struct ChildViewGestureInfo childViewGestureInfos[numberOfChildViews];
 
   // This will identify which child view is the one whose edge is closest to
@@ -1492,8 +1536,7 @@ struct GestureInfo
 - (struct ChildViewGestureInfo) gestureInfoForChildViewAtIndex:(NSUInteger)indexOfChildView
                                           gestureStartLocation:(CGPoint)gestureStartLocation
 {
-  UIViewController* childViewController = [self.viewControllers objectAtIndex:indexOfChildView];
-  UIView* childView = childViewController.view;
+  UIView* childView = [self.childViews objectAtIndex:indexOfChildView];
   CGRect childViewFrame = childView.frame;
   CGRect convertedChildViewFrame = [childView.superview convertRect:childViewFrame toView:self.view];
 
