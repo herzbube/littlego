@@ -18,7 +18,7 @@
 // Project includes
 #import "ResizableStackViewController.h"
 #import "AutoLayoutUtility.h"
-#import "../utility/UIColorAdditions.h"
+#import "UiUtilities.h"
 
 
 /// @brief Collects information about a child view that is affected by a resize
@@ -46,6 +46,38 @@ struct GestureInfo
   CGFloat totalExtentAlongAxisToDistribute;
   double totalSizeToDistribute;
 };
+
+
+/// @brief The DragHandleView class is a private helper class of
+/// ResizableStackViewController that performs the drawing necessary to render
+/// a drag handle.
+@interface DragHandleView : UIView
+{
+}
+
+/// @brief The presentation style with which the drag handle should draw itself.
+/// See the ResizableStackViewController property @e dragHandlePresentationStyle
+/// for details.
+@property (nonatomic, assign) enum DragHandlePresentationStyle dragHandlePresentationStyle;
+
+/// @brief The fill/stroke color which the drag handle should use for drawing
+/// in light user interface style (i.e. not dark mode). See the
+/// ResizableStackViewController property
+/// @e dragHandleColorLightUserInterfaceStyle for details.
+@property (nonatomic, retain) UIColor* dragHandleColorLightUserInterfaceStyle;
+
+/// @brief The fill/stroke color which the drag handle should use for drawing
+/// in dark user interface style (i.e. dark mode). See the
+/// ResizableStackViewController property
+/// @e dragHandleColorDarkUserInterfaceStyle for details.
+@property (nonatomic, retain) UIColor* dragHandleColorDarkUserInterfaceStyle;
+
+/// @brief The size of an additional margin added to increase the grab area of
+/// the drag handle. See the ResizableStackViewController properties
+/// @e dragHandleThickness and @e dragHandleGrabAreaMargin for details.
+@property (nonatomic, assign) CGFloat dragHandleGrabAreaMargin;
+
+@end
 
 
 // -----------------------------------------------------------------------------
@@ -113,6 +145,13 @@ struct GestureInfo
   self.resizingEnabled = true;
   self.resizeStepSize = 100;
   self.dragHandleStyle = DragHandleStyleOverlay;
+  self.dragHandlePresentationStyle = DragHandlePresentationStyleBar;
+  self.dragHandleColorLightUserInterfaceStyle = [UIColor colorWithWhite:0.0 alpha:0.2f];
+  self.dragHandleColorDarkUserInterfaceStyle = [UIColor colorWithWhite:1.0 alpha:0.7f];
+  self.dragHandleThickness = 4.0f;
+  self.dragHandleGrabAreaMargin = 4.0f;
+  self.dragHandleSizePercentageCounterAxis = 0.25f;
+
   self.arrangingAutoLayoutConstraints = @[];
   self.sizingAutoLayoutConstraints = [NSMutableArray array];
   self.dragHandleViews = [NSMutableArray array];
@@ -151,6 +190,11 @@ struct GestureInfo
 
   [_minimumSizes release];
   _minimumSizes = nil;
+
+  [_dragHandleColorLightUserInterfaceStyle release];
+  _dragHandleColorLightUserInterfaceStyle = nil;
+  [_dragHandleColorDarkUserInterfaceStyle release];
+  _dragHandleColorDarkUserInterfaceStyle = nil;
 
   self.arrangingAutoLayoutConstraints = nil;
   self.sizingAutoLayoutConstraints = nil;
@@ -823,6 +867,142 @@ struct GestureInfo
   }
 }
 
+#pragma mark - Drag handle presentation handling
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setDragHandlePresentationStyle:(enum DragHandlePresentationStyle)dragHandlePresentationStyle
+{
+  if (dragHandlePresentationStyle == _dragHandlePresentationStyle)
+    return;
+
+  _dragHandlePresentationStyle = dragHandlePresentationStyle;
+
+  if (self.isViewLoaded && self.resizingEnabled)
+  {
+    for (DragHandleView* dragHandleView in self.dragHandleViews)
+      dragHandleView.dragHandlePresentationStyle = dragHandlePresentationStyle;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setDragHandleColorLightUserInterfaceStyle:(UIColor*)dragHandleColorLightUserInterfaceStyle
+{
+  if (dragHandleColorLightUserInterfaceStyle == _dragHandleColorLightUserInterfaceStyle)
+    return;
+
+  if (_dragHandleColorLightUserInterfaceStyle)
+    [_dragHandleColorLightUserInterfaceStyle release];
+
+  _dragHandleColorLightUserInterfaceStyle = dragHandleColorLightUserInterfaceStyle;
+
+  if (dragHandleColorLightUserInterfaceStyle)
+    [dragHandleColorLightUserInterfaceStyle retain];
+
+  if (self.isViewLoaded && self.resizingEnabled)
+  {
+    for (DragHandleView* dragHandleView in self.dragHandleViews)
+      dragHandleView.dragHandleColorLightUserInterfaceStyle = dragHandleColorLightUserInterfaceStyle;
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setDragHandleColorDarkUserInterfaceStyle:(UIColor*)dragHandleColorDarkUserInterfaceStyle
+{
+  if (dragHandleColorDarkUserInterfaceStyle == _dragHandleColorDarkUserInterfaceStyle)
+    return;
+
+  if (_dragHandleColorDarkUserInterfaceStyle)
+    [_dragHandleColorDarkUserInterfaceStyle release];
+
+  _dragHandleColorDarkUserInterfaceStyle = dragHandleColorDarkUserInterfaceStyle;
+
+  if (dragHandleColorDarkUserInterfaceStyle)
+    [dragHandleColorDarkUserInterfaceStyle retain];
+
+  if (self.isViewLoaded && self.resizingEnabled)
+  {
+    for (DragHandleView* dragHandleView in self.dragHandleViews)
+      dragHandleView.dragHandleColorDarkUserInterfaceStyle = dragHandleColorDarkUserInterfaceStyle;
+  }
+}
+
+#pragma mark - Drag handle size handling
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setDragHandleThickness:(CGFloat)dragHandleThickness
+{
+  if (dragHandleThickness == _dragHandleThickness)
+    return;
+
+  if (self.isViewLoaded && self.resizingEnabled)
+  {
+    [self removeGestureHandling];
+    [self removeDragHandles];
+  }
+
+  _dragHandleThickness = dragHandleThickness;
+
+  if (self.isViewLoaded && self.resizingEnabled)
+  {
+    [self addDragHandles];
+    [self addGestureHandling];
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setDragHandleGrabAreaMargin:(CGFloat)dragHandleGrabAreaMargin
+{
+  if (dragHandleGrabAreaMargin == _dragHandleGrabAreaMargin)
+    return;
+
+  if (self.isViewLoaded && self.resizingEnabled)
+  {
+    [self removeGestureHandling];
+    [self removeDragHandles];
+  }
+
+  _dragHandleGrabAreaMargin = dragHandleGrabAreaMargin;
+
+  if (self.isViewLoaded && self.resizingEnabled)
+  {
+    [self addDragHandles];
+    [self addGestureHandling];
+  }
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setDragHandleSizePercentageCounterAxis:(CGFloat)dragHandleSizePercentageCounterAxis
+{
+  if (dragHandleSizePercentageCounterAxis == _dragHandleSizePercentageCounterAxis)
+    return;
+
+  if (self.isViewLoaded && self.resizingEnabled)
+  {
+    [self removeGestureHandling];
+    [self removeDragHandles];
+  }
+
+  _dragHandleSizePercentageCounterAxis = dragHandleSizePercentageCounterAxis;
+
+  if (self.isViewLoaded && self.resizingEnabled)
+  {
+    [self addDragHandles];
+    [self addGestureHandling];
+  }
+}
+
 #pragma mark - UIViewController overrides
 
 // -----------------------------------------------------------------------------
@@ -1067,10 +1247,11 @@ struct GestureInfo
   if (self.dragHandleStyle == DragHandleStyleNone)
     return nil;
 
-  UIView* dragHandleView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-
-  // TODO xxx Make the drag handle more sophisticated, e.g. rounded rectangle, with dark mode support, add invisible margin to increase the grab area
-  dragHandleView.backgroundColor = [UIColor colorWithRed:1.0f green:0.0f blue:0.0f alpha:0.8f];
+  DragHandleView* dragHandleView = [[[DragHandleView alloc] initWithFrame:CGRectZero] autorelease];
+  dragHandleView.dragHandlePresentationStyle = self.dragHandlePresentationStyle;
+  dragHandleView.dragHandleColorLightUserInterfaceStyle = self.dragHandleColorLightUserInterfaceStyle;
+  dragHandleView.dragHandleColorDarkUserInterfaceStyle = self.dragHandleColorDarkUserInterfaceStyle;
+  dragHandleView.dragHandleGrabAreaMargin = self.dragHandleGrabAreaMargin;
 
   return dragHandleView;
 }
@@ -1083,30 +1264,21 @@ struct GestureInfo
 - (NSArray*) createAutoLayoutConstraintsForDragHandleView:(UIView*)dragHandleView
                                            afterChildView:(UIView*)childView
 {
-  // TODO xxx Make this flexible?
-  int dragHandleWidth = 20;
-  int dragHandleHeight = 5;
-
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
-  NSMutableArray* visualFormats = [NSMutableArray array];
-
   dragHandleView.translatesAutoresizingMaskIntoConstraints = NO;
-  viewsDictionary[@"dragHandleView"] = dragHandleView;
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[dragHandleView(==%d)]", dragHandleWidth]];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:[dragHandleView(==%d)]", dragHandleHeight]];
-  NSArray* sizingConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
-                                                             withViews:viewsDictionary
-                                                                inView:dragHandleView.superview];
 
   UIView* referenceViewPositioningAlongAxis = childView;
   UIView* referenceViewPositioningCounterAxis = dragHandleView.superview;
 
+  NSLayoutAttribute dragHandleViewAttributeSizingThickness;
+  NSLayoutAttribute dragHandleViewAttributeSizingCounterAxis;
   NSLayoutAttribute dragHandleViewAttributePositioningAlongAxis;
   NSLayoutAttribute referenceViewAttributePositioningAlongAxis;
   NSLayoutAttribute dragHandleViewAttributePositioningCounterAxis;
   NSLayoutAttribute referenceViewAttributePositioningCounterAxis;
   if (self.axis == UILayoutConstraintAxisHorizontal)
   {
+    dragHandleViewAttributeSizingThickness = NSLayoutAttributeWidth;
+    dragHandleViewAttributeSizingCounterAxis = NSLayoutAttributeHeight;
     dragHandleViewAttributePositioningAlongAxis = NSLayoutAttributeCenterX;
     referenceViewAttributePositioningAlongAxis = NSLayoutAttributeRight;
     dragHandleViewAttributePositioningCounterAxis = NSLayoutAttributeCenterY;
@@ -1114,11 +1286,32 @@ struct GestureInfo
   }
   else
   {
+    dragHandleViewAttributeSizingThickness = NSLayoutAttributeHeight;
+    dragHandleViewAttributeSizingCounterAxis = NSLayoutAttributeWidth;
     dragHandleViewAttributePositioningAlongAxis = NSLayoutAttributeCenterY;
     referenceViewAttributePositioningAlongAxis = NSLayoutAttributeBottom;
     dragHandleViewAttributePositioningCounterAxis = NSLayoutAttributeCenterX;
     referenceViewAttributePositioningCounterAxis = NSLayoutAttributeCenterX;
   }
+
+  CGFloat totalThickness = self.dragHandleThickness + 2 * self.dragHandleGrabAreaMargin;
+  NSLayoutConstraint* constraintSizingThickness = [NSLayoutConstraint constraintWithItem:dragHandleView
+                                                                               attribute:dragHandleViewAttributeSizingThickness
+                                                                               relatedBy:NSLayoutRelationEqual
+                                                                                  toItem:nil
+                                                                               attribute:NSLayoutAttributeNotAnAttribute
+                                                                              multiplier:1.0f
+                                                                                constant:totalThickness];
+  constraintSizingThickness.active = YES;
+  NSLayoutConstraint* constraintSizingCounterAxis = [NSLayoutConstraint constraintWithItem:dragHandleView
+                                                                                 attribute:dragHandleViewAttributeSizingCounterAxis
+                                                                                 relatedBy:NSLayoutRelationEqual
+                                                                                    toItem:dragHandleView.superview
+                                                                                 attribute:dragHandleViewAttributeSizingCounterAxis
+                                                                                multiplier:self.dragHandleSizePercentageCounterAxis
+                                                                                  constant:0.0f];
+  constraintSizingCounterAxis.active = YES;
+
 
   NSLayoutConstraint* constraintPositioningAlongAxis = [NSLayoutConstraint constraintWithItem:dragHandleView
                                                                                     attribute:dragHandleViewAttributePositioningAlongAxis
@@ -1137,10 +1330,8 @@ struct GestureInfo
                                                                                      constant:0.0f];
   constraintPositioningCounterAxis.active = YES;
 
-  NSMutableArray* constraints = [NSMutableArray arrayWithArray:sizingConstraints];
-  [constraints addObject:constraintPositioningAlongAxis];
-  [constraints addObject:constraintPositioningCounterAxis];
-  return constraints;
+  return @[constraintSizingThickness, constraintSizingCounterAxis,
+           constraintPositioningAlongAxis, constraintPositioningCounterAxis];
 }
 
 #pragma mark - Gesture handling
@@ -1453,3 +1644,204 @@ struct GestureInfo
 }
 
 @end
+
+@implementation DragHandleView
+
+#pragma mark - Initialization and deallocation
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes an DragHandleView object.
+///
+/// @note This is the designated initializer of DragHandleView.
+// -----------------------------------------------------------------------------
+- (id) initWithFrame:(CGRect)rect
+{
+  self = [super initWithFrame:rect];
+  if (! self)
+    return nil;
+
+  self.dragHandlePresentationStyle = DragHandlePresentationStyleBar;
+  self.dragHandleColorLightUserInterfaceStyle = [UIColor blackColor];
+  self.dragHandleColorDarkUserInterfaceStyle = [UIColor whiteColor];
+  self.dragHandleGrabAreaMargin = 0.0f;
+
+  self.opaque = NO;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Deallocates memory allocated by this DragHandleView object.
+// -----------------------------------------------------------------------------
+- (void) dealloc
+{
+  self.dragHandleColorLightUserInterfaceStyle = nil;
+  self.dragHandleColorDarkUserInterfaceStyle = nil;
+
+  [super dealloc];
+}
+
+#pragma mark - Property setters
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setDragHandlePresentationStyle:(enum DragHandlePresentationStyle)dragHandlePresentationStyle
+{
+  if (dragHandlePresentationStyle == _dragHandlePresentationStyle)
+    return;
+
+  _dragHandlePresentationStyle = dragHandlePresentationStyle;
+
+  [self setNeedsDisplay];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setDragHandleColorLightUserInterfaceStyle:(UIColor*)dragHandleColorLightUserInterfaceStyle
+{
+  if (dragHandleColorLightUserInterfaceStyle == _dragHandleColorLightUserInterfaceStyle)
+    return;
+
+  if (_dragHandleColorLightUserInterfaceStyle)
+    [_dragHandleColorLightUserInterfaceStyle release];
+
+  _dragHandleColorLightUserInterfaceStyle = dragHandleColorLightUserInterfaceStyle;
+
+  if (dragHandleColorLightUserInterfaceStyle)
+    [dragHandleColorLightUserInterfaceStyle retain];
+
+  [self setNeedsDisplay];
+}
+
+// -----------------------------------------------------------------------------
+// Property is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) setDragHandleColorDarkUserInterfaceStyle:(UIColor*)dragHandleColorDarkUserInterfaceStyle
+{
+  if (dragHandleColorDarkUserInterfaceStyle == _dragHandleColorDarkUserInterfaceStyle)
+    return;
+
+  if (_dragHandleColorDarkUserInterfaceStyle)
+    [_dragHandleColorDarkUserInterfaceStyle release];
+
+  _dragHandleColorDarkUserInterfaceStyle = dragHandleColorDarkUserInterfaceStyle;
+
+  if (dragHandleColorDarkUserInterfaceStyle)
+    [dragHandleColorDarkUserInterfaceStyle retain];
+
+  [self setNeedsDisplay];
+}
+
+#pragma mark - UIView overrides
+
+// -----------------------------------------------------------------------------
+/// @brief UIView method.
+///
+/// Drawing for #DragHandlePresentationStyleLine is simple - just stroke the
+/// line.
+///
+/// Drawing for #DragHandlePresentationStyleBar is more complicated due to the
+/// rounded cap. The following diagram shows points A-D which define the path
+/// that is being filled for a horizontal drag handle. Points X and Y are the
+/// center points of the arcs used to draw the rounded caps.
+/// @verbatim
+///      -A--------------B-     <---+
+///    /                    \       | radius
+///   |                      |      |
+///  +    X              Y    +  <--+
+///   |                      |      |
+///    \                    / ^     | radius
+///      -D--------------C-   | <---+
+///       ^              ^    |
+///       +--------------+    |
+///       lineLength     ^    |
+///                      +----+
+///                      radius
+/// @endverbatim
+// -----------------------------------------------------------------------------
+- (void) drawRect:(CGRect)rect
+{
+  CGContextRef context = UIGraphicsGetCurrentContext();
+
+  bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:self.traitCollection];
+  UIColor* dragHandleColor = (isLightUserInterfaceStyle
+                              ? self.dragHandleColorLightUserInterfaceStyle
+                              : self.dragHandleColorDarkUserInterfaceStyle);
+
+  CGPoint rectCenter = CGPointMake(CGRectGetMidX(rect), CGRectGetMidY(rect));
+
+  bool rotate;
+  CGFloat smallerDimension;
+  CGFloat largerDimension;
+  if (rect.size.width >= rect.size.height)
+  {
+    smallerDimension = rect.size.height;
+    largerDimension = rect.size.width;
+    rotate = false;
+  }
+  else
+  {
+    smallerDimension = rect.size.width;
+    largerDimension = rect.size.height;
+    rotate = true;
+  }
+
+  CGFloat dragHandleThickness = smallerDimension - 2.0f * self.dragHandleGrabAreaMargin;
+
+  if (rotate)
+  {
+    // TODO xxx Implement drawing for vertical drag handles
+  }
+
+  if (self.dragHandlePresentationStyle == DragHandlePresentationStyleLine)
+  {
+    CGContextMoveToPoint(context, 0.0f, rectCenter.y);
+    CGContextAddLineToPoint(context, CGRectGetMaxX(rect), rectCenter.y);
+
+    CGContextSetLineWidth(context, dragHandleThickness);
+    CGContextSetStrokeColorWithColor(context, dragHandleColor.CGColor);
+    CGContextStrokePath(context);
+  }
+  else
+  {
+    CGFloat radius = dragHandleThickness / 2.0f;
+    CGFloat lineLength = largerDimension - radius * 2.0f;
+    CGPoint centerLeftArc = CGPointMake(radius, rectCenter.y);
+    CGPoint centerRightArc = CGPointMake(centerLeftArc.x + lineLength, centerLeftArc.y);
+
+    // Move to point A
+    CGContextMoveToPoint(context, centerLeftArc.x, centerLeftArc.y - radius);
+
+    // Adds line from point A to B, then draws arc from point B to C
+    const CGFloat startAngleRightArc = [UiUtilities radians:270];
+    const CGFloat endAngleRightArc = [UiUtilities radians:90];
+    const int clockwiseRightArc = 0;
+    CGContextAddArc(context,
+                    centerRightArc.x,
+                    centerRightArc.y,
+                    radius,
+                    startAngleRightArc,
+                    endAngleRightArc,
+                    clockwiseRightArc);
+
+    // Adds line from point C to D, then draws arc from point D to A
+    const CGFloat startAngleLeftArc = [UiUtilities radians:90];
+    const CGFloat endAngleLeftArc = [UiUtilities radians:270];
+    const int clockwiseLeftArc = 0;
+    CGContextAddArc(context,
+                    centerLeftArc.x,
+                    centerLeftArc.y,
+                    radius,
+                    startAngleLeftArc,
+                    endAngleLeftArc,
+                    clockwiseLeftArc);
+
+    CGContextSetFillColorWithColor(context, dragHandleColor.CGColor);
+    CGContextFillPath(context);
+  }
+}
+
+@end
+

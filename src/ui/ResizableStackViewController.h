@@ -30,8 +30,10 @@ enum DragHandleStyle
   /// separated by slim divider views into which the drag handles are embedded.
   /// Drag handles of this style use up a small amount of space.
   ///
-  /// THIS STYLE IS CURRENTLY NOT YET IMPLEMENTED. It behaves the same as
-  /// #DragHandleStyleOverlay.
+  /// THIS STYLE IS CURRENTLY NOT YET IMPLEMENTED. If this style is used it
+  /// currently behaves the same as #DragHandleStyleOverlay.
+  ///
+  /// @todo Implement #DragHandleStyleIntegrated.
   DragHandleStyleIntegrated,
   /// @brief ResizableStackViewController does not display any drag handles.
   /// Child views can be resized by simply dragging them. The edge that is
@@ -44,6 +46,23 @@ enum DragHandleStyle
   /// exists only because ResizableStackViewController was initially developed
   /// with this style and it seemed a pity to discard the code.
   DragHandleStyleNone,
+};
+
+// -----------------------------------------------------------------------------
+/// @brief Enumerates the presentation styles of drag handles supported by
+/// ResizableStackViewController.
+// -----------------------------------------------------------------------------
+enum DragHandlePresentationStyle
+{
+  /// @brief Drag handles are drawn as bars with a rounded cap at both ends.
+  /// The bar thickness is determined by the ResizableStackViewController
+  /// property @e dragHandleThickness. This is the default drag handle
+  /// presentation style.
+  DragHandlePresentationStyleBar,
+  /// @brief Drag handles are drawn as stroked lines. The stroke width is
+  /// determined by the ResizableStackViewController property
+  /// @e dragHandleThickness.
+  DragHandlePresentationStyleLine,
 };
 
 // -----------------------------------------------------------------------------
@@ -68,8 +87,8 @@ enum DragHandleStyle
 ///
 /// Resizing can be disabled by setting the property @e resizingEnabled to
 /// @e false. ResizableStackViewController in that case removes all sizing
-/// Auto Layout constraints and no longer allows interactive resizing (drag
-/// handles are no longer displayed). The values of the properties @e sizes
+/// Auto Layout constraints and no longer allows interactive resizing. Drag
+/// handles are no longer displayed. The values of the properties @e sizes
 /// and @e minimumSizes are ignored.
 ///
 /// ResizableStackViewController also does not allow interactive resizing while
@@ -244,5 +263,59 @@ enum DragHandleStyle
 /// @brief The style of drag handles to be used. The default value is
 /// #DragHandleStyleOverlay.
 @property (nonatomic, assign) enum DragHandleStyle dragHandleStyle;
+
+/// @brief The presentation style of drag handles to be used. The default value
+/// is #DragHandlePresentationStyleBar.
+@property (nonatomic, assign) enum DragHandlePresentationStyle dragHandlePresentationStyle;
+
+/// @brief The color with which drag handles are filled or stroked (which is
+/// determined by the value of the property @e dragHandlePresentationStyle) in
+/// light user interface style (i.e. not dark mode). The default is a
+/// semi-transparent black color.
+@property (nonatomic, retain) UIColor* dragHandleColorLightUserInterfaceStyle;
+
+/// @brief The color with which drag handles are filled or stroked (which is
+/// determined by the value of the property @e dragHandlePresentationStyle) in
+/// dark user interface style (i.e. dark mode). The default is a
+/// semi-transparent white color.
+@property (nonatomic, retain) UIColor* dragHandleColorDarkUserInterfaceStyle;
+
+/// @brief The thickness of the visible part of drag handles, i.e. the size
+/// of the visible part of drag handles in direction of the axis along which
+/// ResizableStackViewController arranges the views of its child view
+/// controllers. See property @e dragHandleGrabAreaMargin. The default value is
+/// 4.0f.
+///
+/// If the @e axis property holds the value #UILayoutConstraintAxisHorizontal
+/// then this property determines the width of the visible part of drag handles.
+/// If the @e axis property holds the value #UILayoutConstraintAxisVertical
+/// then this property determines the height of the visible part of drag
+/// handles.
+@property (nonatomic, assign) CGFloat dragHandleThickness;
+
+/// @brief The size of an additional margin added to increase the grab area of
+/// drag handles. Nothing is drawn in the area covered by the margin, i.e. the
+/// margin is transparent. The margin is added to @b both sides of drag handles,
+/// along the same axis that is also used for @e dragHandleThickness. The
+/// default value is 4.0f.
+///
+/// If the @e axis property holds the value #UILayoutConstraintAxisHorizontal
+/// then this property increases the width of drag handles. If the @e axis
+/// property holds the value #UILayoutConstraintAxisVertical then this property
+/// increases the height of drag handles.
+@property (nonatomic, assign) CGFloat dragHandleGrabAreaMargin;
+
+/// @brief The size of drag handles counter the direction of the axis along
+/// which ResizableStackViewController arranges the views of its child view
+/// controllers. The size is expressed as a percentage relative to the size of
+/// ResizableStackViewController's main view in the same direction. For
+/// instance, 50% is expressed as the float value 0.5f. The default value is
+/// 0.25f.
+///
+/// If the @e axis property holds the value #UILayoutConstraintAxisHorizontal
+/// then this property determines the height of drag handles. If the @e axis
+/// property holds the value #UILayoutConstraintAxisVertical then this property
+/// determines the width of drag handles.
+@property (nonatomic, assign) CGFloat dragHandleSizePercentageCounterAxis;
 
 @end
