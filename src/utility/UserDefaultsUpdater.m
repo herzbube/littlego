@@ -155,16 +155,32 @@ NSString* crashDataContactEmailKey = @"CrashDataContactEmailKey";
       // Incrementally perform upgrades. We allow for gaps in the user defaults
       // versioning scheme.
       ++applicationDomainVersion;
-      NSString* upgradeMethodName = [NSString stringWithFormat:@"upgradeToVersion%d:", applicationDomainVersion];
-      SEL upgradeSelector = NSSelectorFromString(upgradeMethodName);
-      if ([[UserDefaultsUpdater class] respondsToSelector:upgradeSelector])
+
+      // Passing the registration domain defaults as parameter is deprecated.
+      // See the class documentation for details. At this point we still
+      // support upgrade methods that require the parameter, but once GitHub
+      // issue #405 is resolved this support should be removed from here.
+      NSString* upgradeMethodName1 = [NSString stringWithFormat:@"upgradeToVersion%d:", applicationDomainVersion];
+      SEL upgradeSelector1 = NSSelectorFromString(upgradeMethodName1);
+      bool respondsToUpgradeSelector1 = [[UserDefaultsUpdater class] respondsToSelector:upgradeSelector1];
+
+      NSString* upgradeMethodName2 = [NSString stringWithFormat:@"upgradeToVersion%d", applicationDomainVersion];
+      SEL upgradeSelector2 = NSSelectorFromString(upgradeMethodName2);
+      bool respondsToUpgradeSelector2 = [[UserDefaultsUpdater class] respondsToSelector:upgradeSelector2];
+
+      if (respondsToUpgradeSelector1 || respondsToUpgradeSelector2)
       {
         DDLogInfo(@"UserDefaultsUpdater performs incremental upgrade to version = %d. Final target version = %d",
                   applicationDomainVersion,
                   registrationDomainVersion);
+
         // TODO How do we learn of success/failure of upgradeSelector, and how
         // do we react to failure?
-        [[UserDefaultsUpdater class] performSelector:upgradeSelector withObject:registrationDomainDefaults];
+        if (respondsToUpgradeSelector1)
+          [[UserDefaultsUpdater class] performSelector:upgradeSelector1 withObject:registrationDomainDefaults];
+        else
+          [[UserDefaultsUpdater class] performSelector:upgradeSelector2];
+
         ++numberOfUpgradesPerformed;
         // Update the application domain version number
         [userDefaults setValue:[NSNumber numberWithInt:applicationDomainVersion]
@@ -897,7 +913,7 @@ NSString* crashDataContactEmailKey = @"CrashDataContactEmailKey";
 /// @brief Performs the incremental upgrade to the user defaults format
 /// version 13.
 // -----------------------------------------------------------------------------
-+ (void) upgradeToVersion13:(NSDictionary*)registrationDomainDefaults
++ (void) upgradeToVersion13
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
 

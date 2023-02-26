@@ -102,8 +102,13 @@
 /// automatically finds and invokes all upgrade methods that are named
 /// according to the above scheme.
 ///
-/// The parameter passed to the class method is an NSDictionary that stores the
-/// registration domain defaults.
+/// The implementation of an upgrade method must not rely on any data defined
+/// outside of UserDefaultsUpdater (e.g. global constants, registration domain
+/// defaults data) because this data could change over time, which would cause
+/// the upgrade method to fail, or work in an unexpected way. The only way to
+/// avoid failure would be for the developer who changed the registration domain
+/// defaults to also change the upgrade method. It is unlikely that this can be
+/// guaranteed.
 // -----------------------------------------------------------------------------
 @interface UserDefaultsUpdater : NSObject
 {
