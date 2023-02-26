@@ -254,6 +254,13 @@
     [GameActionManager sharedGameActionManager].uiDelegate = nil;
   self.statusViewController = nil;
   self.boardViewController = nil;
+
+  // Workaround for issue seen on some iOS versions where
+  // traitCollectionDidChange is invoked on ButtonBoxController during interface
+  // rotation, causing it to reload data and access its data source. This
+  // happens after the data source is already deallocated, resulting in a crash.
+  self.boardPositionButtonBoxController.buttonBoxControllerDataSource = nil;
+
   self.boardPositionButtonBoxController = nil;
   self.boardPositionButtonBoxDataSource = nil;
   self.annotationViewController = nil;
