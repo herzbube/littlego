@@ -418,6 +418,7 @@ NSString* visibleUIAreaKey = @"VisibleUIArea";
 NSString* tabOrderKey = @"TabOrder";
 NSString* uiAreaPlayModeKey = @"UiAreaPlayMode";
 NSString* visibleAnnotationViewPageKey = @"VisibleAnnotationViewPage";
+NSString* resizableStackViewControllerInitialSizesUiAreaPlayKey = @"ResizableStackViewControllerInitialSizesUiAreaPlay";
 // Magnifying glass settings
 NSString* magnifyingGlassKey = @"MagnifyingGlass";
 NSString* magnifyingGlassEnableModeKey = @"MagnifyingGlassEnableMode";

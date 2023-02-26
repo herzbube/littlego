@@ -14,9 +14,6 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
-// TODO xxx The initial size for the node tree view, should be a user preference
-static NSArray* resizableStackViewControllerInitialSizes = nil;
-
 // TODO xxx Will become part of a future controller of some sort that will
 // handle the content switching for all PlayRootViewController subclasses.
 enum ResizablePane2Content
@@ -39,8 +36,8 @@ enum ResizablePane2Content
 #import "../nodetreeview/NodeTreeViewController.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../ui/AutoLayoutUtility.h"
-#import "../../ui/ResizableStackViewController.h"
 #import "../../ui/UiElementMetrics.h"
+#import "../../ui/UiSettingsModel.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/UIColorAdditions.h"
 #import "../../utility/UIImageAdditions.h"
@@ -91,14 +88,6 @@ enum ResizablePane2Content
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
-
-  if (! resizableStackViewControllerInitialSizes)
-  {
-    CGFloat resizablePane1Size = 1.0f - uiAreaPlayResizablePaneMinimumSize;
-    NSNumber* resizablePane1SizeAsNumber = [NSNumber numberWithDouble:resizablePane1Size];
-    NSNumber* resizablePane2SizeAsNumber = [NSNumber numberWithDouble:uiAreaPlayResizablePaneMinimumSize];
-    resizableStackViewControllerInitialSizes = @[resizablePane1SizeAsNumber, resizablePane2SizeAsNumber];
-  }
 
   ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
   NodeTreeViewModel* nodeTreeViewModel = applicationDelegate.nodeTreeViewModel;
@@ -178,7 +167,9 @@ enum ResizablePane2Content
   NSArray* resizablePaneViewControllers = @[self.resizablePane1ViewController, self.resizablePane2ViewController];
   self.resizableStackViewController = [ResizableStackViewController resizableStackViewControllerWithViewControllers:resizablePaneViewControllers
                                                                                                                axis:UILayoutConstraintAxisVertical];
-  self.resizableStackViewController.sizes = resizableStackViewControllerInitialSizes;
+  self.resizableStackViewController.delegate = self;
+  UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+  self.resizableStackViewController.sizes = uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlay;
   NSNumber* uiAreaPlayResizablePaneMinimumSizeAsNumber = [NSNumber numberWithDouble:uiAreaPlayResizablePaneMinimumSize];
   self.resizableStackViewController.minimumSizes = @[uiAreaPlayResizablePaneMinimumSizeAsNumber, uiAreaPlayResizablePaneMinimumSizeAsNumber];
 
@@ -699,6 +690,18 @@ enum ResizablePane2Content
     updateIconOfGameAction:(enum GameAction)gameAction
 {
   [self.navigationBarButtonModel updateIconOfGameAction:gameAction];
+}
+
+#pragma mark - ResizableStackViewControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief ResizableStackViewControllerDelegate method.
+// -----------------------------------------------------------------------------
+- (void) resizableStackViewController:(ResizableStackViewController*)controller
+                   viewSizesDidChange:(NSArray*)newSizes;
+{
+  UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+  uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlay = newSizes;
 }
 
 #pragma mark - Navigation bar population

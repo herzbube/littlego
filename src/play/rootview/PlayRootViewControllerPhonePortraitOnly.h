@@ -18,6 +18,7 @@
 // Project includes
 #include "PlayRootViewController.h"
 #import "GameActionManager.h"
+#import "../../ui/ResizableStackViewController.h"
 #import "../../ui/OrientationChangeNotifyingView.h"
 
 
@@ -28,7 +29,10 @@
 /// The PlayRootViewController class method playRootViewController() should be
 /// used to create a PlayRootViewControllerPhonePortraitOnly instance.
 // -----------------------------------------------------------------------------
-@interface PlayRootViewControllerPhonePortraitOnly : PlayRootViewController <GameActionManagerUIDelegate, OrientationChangeNotifyingViewDelegate>
+@interface PlayRootViewControllerPhonePortraitOnly
+  : PlayRootViewController <GameActionManagerUIDelegate,
+                            OrientationChangeNotifyingViewDelegate,
+                            ResizableStackViewControllerDelegate>
 {
 }
 

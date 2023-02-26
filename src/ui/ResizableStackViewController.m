@@ -39,6 +39,7 @@ struct ChildViewGestureInfo
 struct GestureInfo
 {
   CGPoint gestureStartLocation;
+  NSArray* gestureStartSizes;
   NSUInteger indexOfChildView1;
   NSUInteger indexOfChildView2;
   CGFloat initialExtentAlongAxisChildView1;
@@ -139,6 +140,7 @@ struct GestureInfo
   if (! self)
     return nil;
 
+  self.delegate = nil;
   self.viewControllers = @[];
   self.axis = UILayoutConstraintAxisHorizontal;
   self.sizes = @[];
@@ -164,6 +166,7 @@ struct GestureInfo
 
   struct GestureInfo gestureInfo;
   gestureInfo.gestureStartLocation = CGPointZero;
+  gestureInfo.gestureStartSizes = nil;
   self.gestureInfo = gestureInfo;
 
   return self;
@@ -1601,6 +1604,7 @@ struct GestureInfo
 
       struct GestureInfo gestureInfo;
       gestureInfo.gestureStartLocation = gestureLocation;
+      gestureInfo.gestureStartSizes = [self.sizes copy];  // copy must be released when gesture ends
 
       bool didFindChildViews;
       struct ChildViewGestureInfo childViewGestureInfo1;
@@ -1661,12 +1665,25 @@ struct GestureInfo
     // being handled, or if the gesture recognizer was disabled.
     case UIGestureRecognizerStateCancelled:
     {
+      struct GestureInfo oldGestureInfo = self.gestureInfo;
+
       struct GestureInfo gestureInfo;
       gestureInfo.gestureStartLocation = CGPointZero;
+      gestureInfo.gestureStartSizes = nil;
       self.gestureInfo = gestureInfo;
 
       // TODO xxx Re-enable rotation? [LayoutManager sharedManager].shouldAutorotate = true;
 
+      if (oldGestureInfo.gestureStartSizes)
+      {
+        NSArray* newSizes = self.sizes;
+        if (self.delegate && ! [oldGestureInfo.gestureStartSizes isEqualToArray:newSizes])
+          [self.delegate resizableStackViewController:self viewSizesDidChange:newSizes];
+
+        // Release copy of the original sizes property value that was made when
+        // the gesture started
+        [oldGestureInfo.gestureStartSizes release];
+      }
       break;
     }
     default:

@@ -15,6 +15,10 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@class ResizableStackViewController;
+
+
 // -----------------------------------------------------------------------------
 /// @brief Enumerates the styles of drag handles supported by
 /// ResizableStackViewController.
@@ -66,6 +70,23 @@ enum DragHandlePresentationStyle
 };
 
 // -----------------------------------------------------------------------------
+/// @brief The ResizableStackViewControllerDelegate protocol must be implemented
+/// by the delegate of ResizableStackViewController.
+// -----------------------------------------------------------------------------
+@protocol ResizableStackViewControllerDelegate <NSObject>
+/// @brief This method is invoked when an interactive gesture ends that caused
+/// the sizes of the views managed by @a controller to change. @a newSizes
+/// contains the new view sizes. The content of @a newSizes is equal to the
+/// current value of the @e sizes property of @a controller.
+///
+/// This method is @b not invoked if the value of the @e sizes property of
+/// @a controller is changed programmatically, either by @a controller itself
+/// or by an external actor. Use KVO to observe programmatical changes if this
+/// is important.
+- (void) resizableStackViewController:(ResizableStackViewController*)controller viewSizesDidChange:(NSArray*)newSizes;
+@end
+
+// -----------------------------------------------------------------------------
 /// @brief The ResizableStackViewController class is a container view controller
 /// that arranges the views of its child view controllers in a stack along one
 /// axis and lets the user interactively change the view sizes along that axis.
@@ -102,6 +123,9 @@ enum DragHandlePresentationStyle
 + (ResizableStackViewController*) resizableStackViewControllerWithViewControllers:(NSArray*)viewControllers;
 + (ResizableStackViewController*) resizableStackViewControllerWithViewControllers:(NSArray*)viewControllers
                                                                              axis:(UILayoutConstraintAxis)axis;
+
+/// @brief The delegate of ResizableStackViewController.
+@property(nonatomic, assign) id<ResizableStackViewControllerDelegate> delegate;
 
 /// @brief The child view controllers of ResizableStackViewController.
 ///

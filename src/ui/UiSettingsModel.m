@@ -40,6 +40,11 @@
   _uiAreaPlayMode = UIAreaPlayModeDefault;
   self.visibleAnnotationViewPage = AnnotationViewPageValuation;
 
+  CGFloat resizablePane1Size = 1.0f - uiAreaPlayResizablePaneMinimumSize;
+  NSNumber* resizablePane1SizeAsNumber = [NSNumber numberWithDouble:resizablePane1Size];
+  NSNumber* resizablePane2SizeAsNumber = [NSNumber numberWithDouble:uiAreaPlayResizablePaneMinimumSize];
+  self.resizableStackViewControllerInitialSizesUiAreaPlay = @[resizablePane1SizeAsNumber, resizablePane2SizeAsNumber];
+
   return self;
 }
 
@@ -49,6 +54,8 @@
 - (void) dealloc
 {
   self.tabOrder = nil;
+  self.resizableStackViewControllerInitialSizesUiAreaPlay = nil;
+
   [super dealloc];
 }
 
@@ -64,6 +71,7 @@
   self.tabOrder = [dictionary valueForKey:tabOrderKey];
   self.uiAreaPlayMode = (enum UIAreaPlayMode)[[dictionary valueForKey:uiAreaPlayModeKey] intValue];
   self.visibleAnnotationViewPage = (enum AnnotationViewPage)[[dictionary valueForKey:visibleAnnotationViewPageKey] intValue];
+  self.resizableStackViewControllerInitialSizesUiAreaPlay = [dictionary valueForKey:resizableStackViewControllerInitialSizesUiAreaPlayKey];
 }
 
 // -----------------------------------------------------------------------------
@@ -77,6 +85,7 @@
   [dictionary setValue:self.tabOrder forKey:tabOrderKey];
   [dictionary setValue:[NSNumber numberWithInt:self.uiAreaPlayMode] forKey:uiAreaPlayModeKey];
   [dictionary setValue:[NSNumber numberWithInt:self.visibleAnnotationViewPage] forKey:visibleAnnotationViewPageKey];
+  [dictionary setValue:self.resizableStackViewControllerInitialSizesUiAreaPlay forKey:resizableStackViewControllerInitialSizesUiAreaPlayKey];
 
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:uiSettingsKey];

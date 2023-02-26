@@ -449,6 +449,11 @@
 		<integer>0</integer>
 		<key>VisibleAnnotationViewPage</key>
 		<integer>0</integer>
+		<key>ResizableStackViewControllerInitialSizesUiAreaPlay</key>
+		<array>
+			<real>0.7</real>
+			<real>0.3</real>
+		</array>
 	</dict>
 	<key>MagnifyingGlass</key>
 	<dict>

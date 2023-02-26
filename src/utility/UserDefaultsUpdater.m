@@ -929,11 +929,14 @@ NSString* crashDataContactEmailKey = @"CrashDataContactEmailKey";
   }
 
   // Move some top-level keys to new "UiSettings" dictionary
+  // Also add a key for a new user preference
   NSMutableDictionary* uiSettingsDictionaryUpgrade = [NSMutableDictionary dictionary];
   [uiSettingsDictionaryUpgrade setValue:[userDefaults valueForKey:visibleUIAreaKey] forKey:visibleUIAreaKey];
   [uiSettingsDictionaryUpgrade setValue:[userDefaults valueForKey:tabOrderKey] forKey:tabOrderKey];
   [uiSettingsDictionaryUpgrade setValue:[userDefaults valueForKey:uiAreaPlayModeKey] forKey:uiAreaPlayModeKey];
   [uiSettingsDictionaryUpgrade setValue:[userDefaults valueForKey:visibleAnnotationViewPageKey] forKey:visibleAnnotationViewPageKey];
+  // Add key for new user preference
+  [uiSettingsDictionaryUpgrade setValue:@[@0.7, @0.3] forKey:resizableStackViewControllerInitialSizesUiAreaPlayKey];
   [userDefaults setObject:uiSettingsDictionaryUpgrade forKey:uiSettingsKey];
   [userDefaults removeObjectForKey:visibleUIAreaKey];
   [userDefaults removeObjectForKey:tabOrderKey];

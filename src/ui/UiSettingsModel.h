@@ -44,5 +44,12 @@
 @property(nonatomic, assign) enum UIAreaPlayMode uiAreaPlayMode;
 /// @brief The page that is currently visible in the annotation view.
 @property(nonatomic, assign) enum AnnotationViewPage visibleAnnotationViewPage;
+/// @brief The current size distribution in the ResizableStackViewController
+/// that is visible in the "Play" UI area.
+///
+/// Array elements are NSNumber objects with double values. Double values
+/// express percentages. For details see the documentation of the
+/// ResizableStackViewController property @a sizes.
+@property(nonatomic, retain) NSArray* resizableStackViewControllerInitialSizesUiAreaPlay;
 
 @end
