@@ -58,10 +58,12 @@
 - (void) readUserDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  self.visibleUIArea = (enum UIArea)[[userDefaults valueForKey:visibleUIAreaKey] intValue];
-  self.tabOrder = [userDefaults arrayForKey:tabOrderKey];
-  self.uiAreaPlayMode = (enum UIAreaPlayMode)[[userDefaults valueForKey:uiAreaPlayModeKey] intValue];
-  self.visibleAnnotationViewPage = (enum AnnotationViewPage)[[userDefaults valueForKey:visibleAnnotationViewPageKey] intValue];
+  NSDictionary* dictionary = [userDefaults dictionaryForKey:uiSettingsKey];
+
+  self.visibleUIArea = (enum UIArea)[[dictionary valueForKey:visibleUIAreaKey] intValue];
+  self.tabOrder = [dictionary valueForKey:tabOrderKey];
+  self.uiAreaPlayMode = (enum UIAreaPlayMode)[[dictionary valueForKey:uiAreaPlayModeKey] intValue];
+  self.visibleAnnotationViewPage = (enum AnnotationViewPage)[[dictionary valueForKey:visibleAnnotationViewPageKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -70,11 +72,14 @@
 // -----------------------------------------------------------------------------
 - (void) writeUserDefaults
 {
+  NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:[NSNumber numberWithInt:self.visibleUIArea] forKey:visibleUIAreaKey];
+  [dictionary setValue:self.tabOrder forKey:tabOrderKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.uiAreaPlayMode] forKey:uiAreaPlayModeKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.visibleAnnotationViewPage] forKey:visibleAnnotationViewPageKey];
+
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  [userDefaults setValue:[NSNumber numberWithInt:self.visibleUIArea] forKey:visibleUIAreaKey];
-  [userDefaults setObject:self.tabOrder forKey:tabOrderKey];
-  [userDefaults setValue:[NSNumber numberWithInt:self.uiAreaPlayMode] forKey:uiAreaPlayModeKey];
-  [userDefaults setValue:[NSNumber numberWithInt:self.visibleAnnotationViewPage] forKey:visibleAnnotationViewPageKey];
+  [userDefaults setObject:dictionary forKey:uiSettingsKey];
 }
 
 @end

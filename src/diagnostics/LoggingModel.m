@@ -42,7 +42,9 @@
 - (void) readUserDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  self.loggingEnabled = [userDefaults boolForKey:loggingEnabledKey];
+  NSDictionary* dictionary = [userDefaults dictionaryForKey:loggingKey];
+
+  self.loggingEnabled = [[dictionary valueForKey:loggingEnabledKey] boolValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -51,8 +53,11 @@
 // -----------------------------------------------------------------------------
 - (void) writeUserDefaults
 {
+  NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:[NSNumber numberWithBool:self.loggingEnabled] forKey:loggingEnabledKey];
+
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  [userDefaults setBool:self.loggingEnabled forKey:loggingEnabledKey];
+  [userDefaults setObject:dictionary forKey:loggingKey];
 }
 
 @end

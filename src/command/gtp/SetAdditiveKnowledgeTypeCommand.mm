@@ -30,7 +30,8 @@
 - (bool) doIt
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  int additiveKnowledgeMemoryThreshold = [[userDefaults valueForKey:additiveKnowledgeMemoryThresholdKey] intValue];
+  NSDictionary* dictionary = [userDefaults dictionaryForKey:gtpEngineConfigurationKey];
+  int additiveKnowledgeMemoryThreshold = [[dictionary valueForKey:additiveKnowledgeMemoryThresholdKey] intValue];
   int physicalMemoryMegabytes = [UIDevice physicalMemoryMegabytes];
   DDLogVerbose(@"%@: Physical memory = %d, additive knowledge memory threshold = %d",
                [self shortDescription],

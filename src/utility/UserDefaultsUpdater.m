@@ -67,6 +67,8 @@ NSString* stoneDistanceFromFingertipKey = @"StoneDistanceFromFingertip";
 const float stoneDistanceFromFingertipDefault = 0.5;
 NSString* scoreWhenGameEndsKey = @"ScoreWhenGameEnds";
 NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
+NSString* crashDataContactAllowKey = @"CrashDataContactAllowKey";
+NSString* crashDataContactEmailKey = @"CrashDataContactEmailKey";
 //@}
 
 
@@ -909,6 +911,69 @@ NSString* discardFutureMovesAlertKey = @"DiscardFutureMovesAlert";
     [boardPositionDictionaryUpgrade setValue:[NSNumber numberWithBool:discardFutureMovesAlert] forKey:discardFutureNodesAlertKey];
     [userDefaults setObject:boardPositionDictionaryUpgrade forKey:boardPositionKey];
   }
+
+  // Move some top-level keys to new "UiSettings" dictionary
+  NSMutableDictionary* uiSettingsDictionaryUpgrade = [NSMutableDictionary dictionary];
+  [uiSettingsDictionaryUpgrade setValue:[userDefaults valueForKey:visibleUIAreaKey] forKey:visibleUIAreaKey];
+  [uiSettingsDictionaryUpgrade setValue:[userDefaults valueForKey:tabOrderKey] forKey:tabOrderKey];
+  [uiSettingsDictionaryUpgrade setValue:[userDefaults valueForKey:uiAreaPlayModeKey] forKey:uiAreaPlayModeKey];
+  [uiSettingsDictionaryUpgrade setValue:[userDefaults valueForKey:visibleAnnotationViewPageKey] forKey:visibleAnnotationViewPageKey];
+  [userDefaults setObject:uiSettingsDictionaryUpgrade forKey:uiSettingsKey];
+  [userDefaults removeObjectForKey:visibleUIAreaKey];
+  [userDefaults removeObjectForKey:tabOrderKey];
+  [userDefaults removeObjectForKey:uiAreaPlayModeKey];
+  [userDefaults removeObjectForKey:visibleAnnotationViewPageKey];
+
+  // Move some top-level keys to new "MagnifyingGlass" dictionary
+  NSMutableDictionary* magnifyingGlassDictionaryUpgrade = [NSMutableDictionary dictionary];
+  [magnifyingGlassDictionaryUpgrade setValue:[userDefaults valueForKey:magnifyingGlassEnableModeKey] forKey:magnifyingGlassEnableModeKey];
+  [magnifyingGlassDictionaryUpgrade setValue:[userDefaults valueForKey:magnifyingGlassAutoThresholdKey] forKey:magnifyingGlassAutoThresholdKey];
+  [magnifyingGlassDictionaryUpgrade setValue:[userDefaults valueForKey:magnifyingGlassVeerDirectionKey] forKey:magnifyingGlassVeerDirectionKey];
+  [magnifyingGlassDictionaryUpgrade setValue:[userDefaults valueForKey:magnifyingGlassDistanceFromMagnificationCenterKey] forKey:magnifyingGlassDistanceFromMagnificationCenterKey];
+  [userDefaults setObject:magnifyingGlassDictionaryUpgrade forKey:magnifyingGlassKey];
+  [userDefaults removeObjectForKey:magnifyingGlassEnableModeKey];
+  [userDefaults removeObjectForKey:magnifyingGlassAutoThresholdKey];
+  [userDefaults removeObjectForKey:magnifyingGlassVeerDirectionKey];
+  [userDefaults removeObjectForKey:magnifyingGlassDistanceFromMagnificationCenterKey];
+
+  // Move some top-level keys to new "GameSetup" dictionary
+  NSMutableDictionary* gameSetupDictionaryUpgrade = [NSMutableDictionary dictionary];
+  [gameSetupDictionaryUpgrade setValue:[userDefaults valueForKey:boardSetupStoneColorKey] forKey:boardSetupStoneColorKey];
+  [gameSetupDictionaryUpgrade setValue:[userDefaults valueForKey:doubleTapToZoomKey] forKey:doubleTapToZoomKey];
+  [gameSetupDictionaryUpgrade setValue:[userDefaults valueForKey:autoEnableBoardSetupModeKey] forKey:autoEnableBoardSetupModeKey];
+  [gameSetupDictionaryUpgrade setValue:[userDefaults valueForKey:changeHandicapAlertKey] forKey:changeHandicapAlertKey];
+  [gameSetupDictionaryUpgrade setValue:[userDefaults valueForKey:tryNotToPlaceIllegalStonesKey] forKey:tryNotToPlaceIllegalStonesKey];
+  [userDefaults setObject:gameSetupDictionaryUpgrade forKey:gameSetupKey];
+  [userDefaults removeObjectForKey:boardSetupStoneColorKey];
+  [userDefaults removeObjectForKey:doubleTapToZoomKey];
+  [userDefaults removeObjectForKey:autoEnableBoardSetupModeKey];
+  [userDefaults removeObjectForKey:changeHandicapAlertKey];
+  [userDefaults removeObjectForKey:tryNotToPlaceIllegalStonesKey];
+
+  // Move some top-level keys to new "CrashReporting" dictionary
+  // Also rename some of the keys (remove unnecessary "Key" suffix)
+  NSMutableDictionary* crashReportingDictionaryUpgrade = [NSMutableDictionary dictionary];
+  [crashReportingDictionaryUpgrade setValue:[userDefaults valueForKey:collectCrashDataKey] forKey:collectCrashDataKey];
+  [crashReportingDictionaryUpgrade setValue:[userDefaults valueForKey:automaticReportCrashDataKey] forKey:automaticReportCrashDataKey];
+  [crashReportingDictionaryUpgrade setValue:[userDefaults valueForKey:crashDataContactAllowKey] forKey:allowContactCrashDataKey];
+  [crashReportingDictionaryUpgrade setValue:[userDefaults valueForKey:crashDataContactEmailKey] forKey:contactEmailCrashDataKey];
+  [userDefaults setObject:crashReportingDictionaryUpgrade forKey:crashReportingKey];
+  [userDefaults removeObjectForKey:collectCrashDataKey];
+  [userDefaults removeObjectForKey:automaticReportCrashDataKey];
+  [userDefaults removeObjectForKey:crashDataContactAllowKey];
+  [userDefaults removeObjectForKey:crashDataContactEmailKey];
+
+  // Move some top-level keys to new "Logging" dictionary
+  NSMutableDictionary* loggingDictionaryUpgrade = [NSMutableDictionary dictionary];
+  [loggingDictionaryUpgrade setValue:[userDefaults valueForKey:loggingEnabledKey] forKey:loggingEnabledKey];
+  [userDefaults setObject:loggingDictionaryUpgrade forKey:loggingKey];
+  [userDefaults removeObjectForKey:loggingEnabledKey];
+
+  // For user defaults format 13, the registration domain defaults also move the
+  // key additiveKnowledgeMemoryThresholdKey to a new "GtpEngineConfiguration"
+  // dictionary. Because the value for this key was never exposed in the UI as
+  // a configurable user preference it cannot appear in the user defaults, and
+  // therefore no migration needs to be done for this.
 }
 
 // -----------------------------------------------------------------------------

@@ -56,10 +56,12 @@
 - (void) readUserDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  self.collectCrashData = [userDefaults boolForKey:collectCrashDataKey];
-  self.automaticReport = [userDefaults boolForKey:automaticReportCrashDataKey];
-  self.allowContact = [userDefaults boolForKey:allowContactCrashDataKey];
-  self.contactEmail = [userDefaults stringForKey:contactEmailCrashDataKey];
+  NSDictionary* dictionary = [userDefaults dictionaryForKey:crashReportingKey];
+
+  self.collectCrashData = [[dictionary valueForKey:collectCrashDataKey] boolValue];
+  self.automaticReport = [[dictionary valueForKey:automaticReportCrashDataKey] boolValue];
+  self.allowContact = [[dictionary valueForKey:allowContactCrashDataKey] boolValue];
+  self.contactEmail = [dictionary valueForKey:contactEmailCrashDataKey];
 }
 
 // -----------------------------------------------------------------------------
@@ -68,11 +70,14 @@
 // -----------------------------------------------------------------------------
 - (void) writeUserDefaults
 {
+  NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:[NSNumber numberWithBool:self.collectCrashData] forKey:collectCrashDataKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.automaticReport] forKey:automaticReportCrashDataKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.allowContact] forKey:allowContactCrashDataKey];
+  [dictionary setValue:self.contactEmail forKey:contactEmailCrashDataKey];
+  
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  [userDefaults setBool:self.collectCrashData forKey:collectCrashDataKey];
-  [userDefaults setBool:self.automaticReport forKey:automaticReportCrashDataKey];
-  [userDefaults setBool:self.allowContact forKey:allowContactCrashDataKey];
-  [userDefaults setObject:self.contactEmail forKey:contactEmailCrashDataKey];
+  [userDefaults setObject:dictionary forKey:uiSettingsKey];
 }
 
 @end

@@ -4,8 +4,6 @@
 <dict>
 	<key>UserDefaultsVersionRegistrationDomain</key>
 	<integer>13</integer>
-	<key>LoggingEnabled</key>
-	<false/>
 	<key>BoardView</key>
 	<dict>
 		<key>MarkLastMove</key>
@@ -388,6 +386,11 @@
 		<string>list_stones</string>
 		<string>showboard</string>
 	</array>
+	<key>GtpEngineConfiguration</key>
+	<dict>
+		<key>AdditiveKnowledgeMemoryThreshold</key>
+		<integer>768</integer>
+	</dict>
 	<key>Scoring</key>
 	<dict>
 		<key>AutoScoringAndResumingPlay</key>
@@ -401,6 +404,17 @@
 		<key>ScoreMarkMode</key>
 		<integer>0</integer>
 	</dict>
+	<key>CrashReporting</key>
+	<dict>
+		<key>CrashReportActivated</key>
+		<true/>
+		<key>AutomaticallySendCrashReports</key>
+		<false/>
+		<key>CrashDataContactAllow</key>
+		<false/>
+		<key>CrashDataContactEmail</key>
+		<string></string>
+	</dict>
 	<key>BoardPosition</key>
 	<dict>
 		<key>DiscardFutureNodesAlert</key>
@@ -408,6 +422,56 @@
 		<key>MarkNextMove</key>
 		<true/>
 		<key>DiscardMyLastMove</key>
+		<true/>
+	</dict>
+	<key>Logging</key>
+	<dict>
+		<key>LoggingEnabled</key>
+		<false/>
+	</dict>
+	<key>UiSettings</key>
+	<dict>
+		<key>VisibleUIArea</key>
+		<integer>0</integer>
+		<key>TabOrder</key>
+		<array>
+			<integer>0</integer>
+			<integer>1</integer>
+			<integer>2</integer>
+			<integer>4</integer>
+			<integer>3</integer>
+			<integer>5</integer>
+			<integer>6</integer>
+			<integer>7</integer>
+			<integer>8</integer>
+		</array>
+		<key>UiAreaPlayMode</key>
+		<integer>0</integer>
+		<key>VisibleAnnotationViewPage</key>
+		<integer>0</integer>
+	</dict>
+	<key>MagnifyingGlass</key>
+	<dict>
+		<key>MagnifyingGlassEnableMode</key>
+		<integer>0</integer>
+		<key>MagnifyingGlassAutoThreshold</key>
+		<integer>30</integer>
+		<key>MagnifyingGlassVeerDirection</key>
+		<integer>0</integer>
+		<key>MagnifyingGlassDistanceFromMagnificationCenter</key>
+		<real>100</real>
+	</dict>
+	<key>GameSetup</key>
+	<dict>
+		<key>BoardSetupStoneColor</key>
+		<integer>1</integer>
+		<key>DoubleTapToZoom</key>
+		<false/>
+		<key>AutoEnableBoardSetupMode</key>
+		<false/>
+		<key>ChangeHandicapAlert</key>
+		<true/>
+		<key>TryNotToPlaceIllegalStones</key>
 		<true/>
 	</dict>
 	<key>Sgf</key>
@@ -472,49 +536,5 @@
 		<key>NewMoveInsertPosition</key>
 		<integer>3</integer>
 	</dict>
-	<key>CrashReportActivated</key>
-	<true/>
-	<key>AutomaticallySendCrashReports</key>
-	<false/>
-	<key>CrashDataContactAllowKey</key>
-	<false/>
-	<key>CrashDataContactEmailKey</key>
-	<string></string>
-	<key>TabOrder</key>
-	<array>
-		<integer>0</integer>
-		<integer>1</integer>
-		<integer>2</integer>
-		<integer>4</integer>
-		<integer>3</integer>
-		<integer>5</integer>
-		<integer>6</integer>
-		<integer>7</integer>
-		<integer>8</integer>
-	</array>
-	<key>AdditiveKnowledgeMemoryThreshold</key>
-	<integer>768</integer>
-	<key>VisibleUIArea</key>
-	<integer>0</integer>
-	<key>VisibleAnnotationViewPage</key>
-	<integer>0</integer>
-	<key>MagnifyingGlassEnableMode</key>
-	<integer>0</integer>
-	<key>MagnifyingGlassAutoThreshold</key>
-	<integer>30</integer>
-	<key>MagnifyingGlassVeerDirection</key>
-	<integer>0</integer>
-	<key>MagnifyingGlassDistanceFromMagnificationCenter</key>
-	<real>100</real>
-	<key>BoardSetupStoneColor</key>
-	<integer>1</integer>
-	<key>DoubleTapToZoom</key>
-	<false/>
-	<key>AutoEnableBoardSetupMode</key>
-	<false/>
-	<key>ChangeHandicapAlert</key>
-	<true/>
-	<key>TryNotToPlaceIllegalStones</key>
-	<true/>
 </dict>
 </plist>

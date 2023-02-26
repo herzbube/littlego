@@ -48,12 +48,13 @@
 - (void) readUserDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  NSDictionary* dictionary = [userDefaults dictionaryForKey:gameSetupKey];
 
-  self.boardSetupStoneColor = [[userDefaults valueForKey:boardSetupStoneColorKey] intValue];
-  self.doubleTapToZoom = [[userDefaults valueForKey:doubleTapToZoomKey] boolValue] == YES;
-  self.autoEnableBoardSetupMode = [[userDefaults valueForKey:autoEnableBoardSetupModeKey] boolValue] == YES;
-  self.changeHandicapAlert = [[userDefaults valueForKey:changeHandicapAlertKey] boolValue] == YES;
-  self.tryNotToPlaceIllegalStones = [[userDefaults valueForKey:tryNotToPlaceIllegalStonesKey] boolValue] == YES;
+  self.boardSetupStoneColor = [[dictionary valueForKey:boardSetupStoneColorKey] intValue];
+  self.doubleTapToZoom = [[dictionary valueForKey:doubleTapToZoomKey] boolValue] == YES;
+  self.autoEnableBoardSetupMode = [[dictionary valueForKey:autoEnableBoardSetupModeKey] boolValue] == YES;
+  self.changeHandicapAlert = [[dictionary valueForKey:changeHandicapAlertKey] boolValue] == YES;
+  self.tryNotToPlaceIllegalStones = [[dictionary valueForKey:tryNotToPlaceIllegalStonesKey] boolValue] == YES;
 }
 
 // -----------------------------------------------------------------------------
@@ -62,13 +63,15 @@
 // -----------------------------------------------------------------------------
 - (void) writeUserDefaults
 {
-  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:[NSNumber numberWithInt:self.boardSetupStoneColor] forKey:boardSetupStoneColorKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.doubleTapToZoom ? YES : NO] forKey:doubleTapToZoomKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.autoEnableBoardSetupMode ? YES : NO] forKey:autoEnableBoardSetupModeKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.changeHandicapAlert ? YES : NO] forKey:changeHandicapAlertKey];
+  [dictionary setValue:[NSNumber numberWithBool:self.tryNotToPlaceIllegalStones ? YES : NO] forKey:tryNotToPlaceIllegalStonesKey];
 
-  [userDefaults setValue:[NSNumber numberWithInt:self.boardSetupStoneColor] forKey:boardSetupStoneColorKey];
-  [userDefaults setValue:[NSNumber numberWithBool:self.doubleTapToZoom ? YES : NO] forKey:doubleTapToZoomKey];
-  [userDefaults setValue:[NSNumber numberWithBool:self.autoEnableBoardSetupMode ? YES : NO] forKey:autoEnableBoardSetupModeKey];
-  [userDefaults setValue:[NSNumber numberWithBool:self.changeHandicapAlert ? YES : NO] forKey:changeHandicapAlertKey];
-  [userDefaults setValue:[NSNumber numberWithBool:self.tryNotToPlaceIllegalStones ? YES : NO] forKey:tryNotToPlaceIllegalStonesKey];
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  [userDefaults setObject:dictionary forKey:gameSetupKey];
 }
 
 @end

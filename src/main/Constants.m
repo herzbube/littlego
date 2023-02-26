@@ -369,6 +369,7 @@ NSString* autoSelectFuegoResignMinGamesKey = @"AutoSelectFuegoResignMinGames";
 NSString* fuegoResignMinGamesKey = @"FuegoResignMinGames";
 NSString* fuegoResignThresholdKey = @"FuegoResignThreshold";
 // GTP engine configuration not related to profiles
+NSString* gtpEngineConfigurationKey = @"GtpEngineConfiguration";
 NSString* additiveKnowledgeMemoryThresholdKey = @"AdditiveKnowledgeMemoryThreshold";
 // Archive view settings
 NSString* archiveViewKey = @"ArchiveView";
@@ -398,28 +399,33 @@ NSString* markDeadStonesIntelligentlyKey = @"MarkDeadStonesIntelligently";
 NSString* inconsistentTerritoryMarkupTypeKey = @"InconsistentTerritoryMarkupType";
 NSString* scoreMarkModeKey = @"ScoreMarkMode";
 // Crash reporting settings
+NSString* crashReportingKey = @"CrashReporting";
 NSString* collectCrashDataKey = @"CrashReportActivated";
 NSString* automaticReportCrashDataKey = @"AutomaticallySendCrashReports";
-NSString* allowContactCrashDataKey = @"CrashDataContactAllowKey";
-NSString* contactEmailCrashDataKey = @"CrashDataContactEmailKey";
+NSString* allowContactCrashDataKey = @"CrashDataContactAllow";
+NSString* contactEmailCrashDataKey = @"CrashDataContactEmail";
 // Board position settings
 NSString* boardPositionKey = @"BoardPosition";
 NSString* discardFutureNodesAlertKey = @"DiscardFutureNodesAlert";
 NSString* markNextMoveKey = @"MarkNextMove";
 NSString* discardMyLastMoveKey = @"DiscardMyLastMove";
 // Logging settings
+NSString* loggingKey = @"Logging";
 NSString* loggingEnabledKey = @"LoggingEnabled";
 // User interface settings
+NSString* uiSettingsKey = @"UiSettings";
 NSString* visibleUIAreaKey = @"VisibleUIArea";
 NSString* tabOrderKey = @"TabOrder";
 NSString* uiAreaPlayModeKey = @"UiAreaPlayMode";
 NSString* visibleAnnotationViewPageKey = @"VisibleAnnotationViewPage";
 // Magnifying glass settings
+NSString* magnifyingGlassKey = @"MagnifyingGlass";
 NSString* magnifyingGlassEnableModeKey = @"MagnifyingGlassEnableMode";
 NSString* magnifyingGlassAutoThresholdKey = @"MagnifyingGlassAutoThreshold";
 NSString* magnifyingGlassVeerDirectionKey = @"MagnifyingGlassVeerDirection";
 NSString* magnifyingGlassDistanceFromMagnificationCenterKey = @"MagnifyingGlassDistanceFromMagnificationCenter";
 // Game setup settings
+NSString* gameSetupKey = @"GameSetup";
 NSString* boardSetupStoneColorKey = @"BoardSetupStoneColor";
 NSString* doubleTapToZoomKey = @"DoubleTapToZoom";
 NSString* autoEnableBoardSetupModeKey = @"AutoEnableBoardSetupMode";

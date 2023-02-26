@@ -2042,6 +2042,7 @@ extern NSString* autoSelectFuegoResignMinGamesKey;
 extern NSString* fuegoResignMinGamesKey;
 extern NSString* fuegoResignThresholdKey;
 // GTP engine configuration not related to profiles
+extern NSString* gtpEngineConfigurationKey;
 extern NSString* additiveKnowledgeMemoryThresholdKey;
 // Archive view settings
 extern NSString* archiveViewKey;
@@ -2071,6 +2072,7 @@ extern NSString* markDeadStonesIntelligentlyKey;
 extern NSString* inconsistentTerritoryMarkupTypeKey;
 extern NSString* scoreMarkModeKey;
 // Crash reporting settings
+extern NSString* crashReportingKey;
 extern NSString* collectCrashDataKey;
 extern NSString* automaticReportCrashDataKey;
 extern NSString* allowContactCrashDataKey;
@@ -2081,18 +2083,22 @@ extern NSString* discardFutureNodesAlertKey;
 extern NSString* markNextMoveKey;
 extern NSString* discardMyLastMoveKey;
 // Logging settings
+extern NSString* loggingKey;
 extern NSString* loggingEnabledKey;
 // User interface settings
+extern NSString* uiSettingsKey;
 extern NSString* visibleUIAreaKey;
 extern NSString* tabOrderKey;
 extern NSString* uiAreaPlayModeKey;
 extern NSString* visibleAnnotationViewPageKey;
 // Magnifying glass settings
+extern NSString* magnifyingGlassKey;
 extern NSString* magnifyingGlassEnableModeKey;
 extern NSString* magnifyingGlassAutoThresholdKey;
 extern NSString* magnifyingGlassVeerDirectionKey;
 extern NSString* magnifyingGlassDistanceFromMagnificationCenterKey;
 // Game setup settings
+extern NSString* gameSetupKey;
 extern NSString* boardSetupStoneColorKey;
 extern NSString* doubleTapToZoomKey;
 extern NSString* autoEnableBoardSetupModeKey;

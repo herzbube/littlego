@@ -48,10 +48,12 @@
 - (void) readUserDefaults
 {
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  self.enableMode = [[userDefaults valueForKey:magnifyingGlassEnableModeKey] intValue];
-  self.autoThreshold = [[userDefaults valueForKey:magnifyingGlassAutoThresholdKey] floatValue];
-  self.distanceFromMagnificationCenter = [[userDefaults valueForKey:magnifyingGlassDistanceFromMagnificationCenterKey] floatValue];
-  self.veerDirection = [[userDefaults valueForKey:magnifyingGlassVeerDirectionKey] intValue];
+  NSDictionary* dictionary = [userDefaults dictionaryForKey:magnifyingGlassKey];
+
+  self.enableMode = [[dictionary valueForKey:magnifyingGlassEnableModeKey] intValue];
+  self.autoThreshold = [[dictionary valueForKey:magnifyingGlassAutoThresholdKey] floatValue];
+  self.distanceFromMagnificationCenter = [[dictionary valueForKey:magnifyingGlassDistanceFromMagnificationCenterKey] floatValue];
+  self.veerDirection = [[dictionary valueForKey:magnifyingGlassVeerDirectionKey] intValue];
 }
 
 // -----------------------------------------------------------------------------
@@ -60,11 +62,14 @@
 // -----------------------------------------------------------------------------
 - (void) writeUserDefaults
 {
+  NSMutableDictionary* dictionary = [NSMutableDictionary dictionary];
+  [dictionary setValue:[NSNumber numberWithInt:self.enableMode] forKey:magnifyingGlassEnableModeKey];
+  [dictionary setValue:[NSNumber numberWithFloat:self.autoThreshold] forKey:magnifyingGlassAutoThresholdKey];
+  [dictionary setValue:[NSNumber numberWithFloat:self.distanceFromMagnificationCenter] forKey:magnifyingGlassDistanceFromMagnificationCenterKey];
+  [dictionary setValue:[NSNumber numberWithInt:self.veerDirection] forKey:magnifyingGlassVeerDirectionKey];
+
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
-  [userDefaults setValue:[NSNumber numberWithInt:self.enableMode] forKey:magnifyingGlassEnableModeKey];
-  [userDefaults setValue:[NSNumber numberWithFloat:self.autoThreshold] forKey:magnifyingGlassAutoThresholdKey];
-  [userDefaults setValue:[NSNumber numberWithFloat:self.distanceFromMagnificationCenter] forKey:magnifyingGlassDistanceFromMagnificationCenterKey];
-  [userDefaults setValue:[NSNumber numberWithInt:self.veerDirection] forKey:magnifyingGlassVeerDirectionKey];
+  [userDefaults setObject:dictionary forKey:magnifyingGlassKey];
 }
 
 @end
