@@ -747,18 +747,15 @@ static UIFont* smallFont = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the GoNode object whose data is displayed by the cell.
-/// Returns @e nil if the cell refers to the root node (the data in that case
-/// must be obtained from GoGame) or to a node that does not exist. The latter
-/// can occur if this method is invoked for a reused cell before the cell's
+/// Returns @e nil if the cell refers to a node that does not exist. This can
+/// occur if this method is invoked for a reused cell before the cell's
 /// @e boardPosition property has been updated.
 // -----------------------------------------------------------------------------
 - (GoNode*) nodeWithDataOrNil
 {
-  int nodeIndex = self.boardPosition;
-  if (0 == nodeIndex)
-    return nil;
-
   GoNodeModel* nodeModel = [GoGame sharedGame].nodeModel;
+
+  int nodeIndex = self.boardPosition;
   if (nodeIndex >= nodeModel.numberOfNodes)
     return nil;
 
