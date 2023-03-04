@@ -494,7 +494,7 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 {
   NSDictionary* textAttributes = @{ NSFontAttributeName : font,
                                     NSForegroundColorAttributeName : metrics.nodeSymbolTextColor,
-                                    NSShadowAttributeName: metrics.whiteTextShadow };
+                                    NSShadowAttributeName: metrics.nodeSymbolTextShadow };
 
   [CGDrawingHelper drawStringWithContext:context
                           centeredInRect:drawingRect

@@ -50,6 +50,7 @@
 + (UIColor*) malachiteColor;
 + (UIColor*) ncsYellowColor;
 + (UIColor*) pantoneRedColor;
++ (UIColor*) constructionOrangeColor;
 + (UIColor*) randomColor;
 + (UIColor*) iPadGroupTableViewBackgroundGradientStartColor;
 + (UIColor*) iPadGroupTableViewBackgroundGradientEndColor;

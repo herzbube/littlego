@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// Copyright 2022 Patrick Näf (herzbube@herzbube.ch)
+// Copyright 2023 Patrick Näf (herzbube@herzbube.ch)
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,27 +16,18 @@
 
 
 // Project includes
-#import "PlayRootViewController.h"
-#import "GameActionManager.h"
-#import "../../ui/OrientationChangeNotifyingView.h"
-#import "../../ui/ResizableStackViewController.h"
+#import "../../ui/TiledScrollView.h"
 
 
 // -----------------------------------------------------------------------------
-/// @brief The PlayRootViewControllerPhoneAndPad class is the root view
-/// controller of the #UIAreaPlay for both #UITypePhone and #UITypePad. It is
-/// used in both Portrait and Landscape interface orientations.
-///
-/// The PlayRootViewController class method playRootViewController() should be
-/// used to create a PlayRootViewControllerPhoneAndPads instance.
+/// @brief The NodeNumbersView class subclasses TiledScrollView to add updater
+/// methods that initiate redrawing of tiles.
 // -----------------------------------------------------------------------------
-@interface PlayRootViewControllerPhoneAndPad
-  : PlayRootViewController <GameActionManagerUIDelegate,
-                            OrientationChangeNotifyingViewDelegate,
-                            ResizableStackViewControllerDelegate>
+@interface NodeNumbersView : TiledScrollView
 {
 }
 
-- (id) initWithUiType:(enum UIType)uiType;
+- (void) updateColors;
+- (void) removeNotificationResponders;
 
 @end

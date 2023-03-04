@@ -18,8 +18,8 @@
 // Project includes
 #include "PlayRootViewController.h"
 #import "GameActionManager.h"
-#import "../../ui/ResizableStackViewController.h"
 #import "../../ui/OrientationChangeNotifyingView.h"
+#import "../../ui/ResizableStackViewController.h"
 
 
 // -----------------------------------------------------------------------------

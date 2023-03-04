@@ -23,7 +23,7 @@ const float gInfluenceColorAlphaWhite = 0.6;
 const CFTimeInterval gGoBoardLongPressDelay = 0.15;
 const int arraySizeDefaultTabOrder = 9;
 const int defaultTabOrder[arraySizeDefaultTabOrder] = {0, 1, 2, 4, 3, 5, 6, 7, 8};
-const CGFloat uiAreaPlayResizablePaneMinimumSize = 0.3f;
+const CGFloat uiAreaPlayResizablePaneMinimumSize = 0.1f;
 
 // Logging constants
 #ifndef LITTLEGO_UITESTS

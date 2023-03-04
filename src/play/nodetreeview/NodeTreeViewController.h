@@ -46,6 +46,7 @@
 {
 }
 
-- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel;
+- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel
+      darkBackground:(bool)darkBackground;
 
 @end

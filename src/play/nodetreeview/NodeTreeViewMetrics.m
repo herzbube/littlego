@@ -21,7 +21,9 @@
 #import "canvas/NodeTreeViewCellPosition.h"
 #import "../model/NodeTreeViewModel.h"
 #import "../../shared/LayoutManager.h"
+#import "../../ui/UiUtilities.h"
 #import "../../utility/FontRange.h"
+#import "../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -30,6 +32,11 @@
 @interface NodeTreeViewMetrics()
 @property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
 @property(nonatomic, assign) NodeTreeViewCanvas* nodeTreeViewCanvas;
+@property(nonatomic, assign) bool darkBackground;
+/// @brief Prevents double-unregistering of notification responders by
+/// an external actor followed by dealloc. This is possible because
+/// removeNotificationResponders() is in the public API of this class.
+@property(nonatomic, assign) bool notificationRespondersAreSetup;
 @property(nonatomic, retain) FontRange* nodeNumberLabelFontRange;
 @property(nonatomic, retain) FontRange* singleCharacterNodeSymbolFontRange;
 @property(nonatomic, retain) FontRange* threeCharactersNodeSymbolFontRange;
@@ -46,7 +53,10 @@
 ///
 /// @note This is the designated initializer of NodeTreeViewMetrics.
 // -----------------------------------------------------------------------------
-- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas;
+- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel
+              canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
+     traitCollection:(UITraitCollection*)traitCollection
+      darkBackground:(bool)darkBackground
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
@@ -55,17 +65,22 @@
 
   self.nodeTreeViewModel = nodeTreeViewModel;
   self.nodeTreeViewCanvas = nodeTreeViewCanvas;
+  self.darkBackground = darkBackground;
+
+  self.notificationRespondersAreSetup = false;
 
   [self setupStaticProperties];
   [self setupFontRanges];
   [self setupMainProperties];
   [self setupNotificationResponders];
+  [self updateWithTraitCollection:traitCollection];
   // Remaining properties are initialized by this updater
   [self updateWithAbstractCanvasSize:self.abstractCanvasSize
                    condenseMoveNodes:self.condenseMoveNodes
                    absoluteZoomScale:self.absoluteZoomScale
                   displayNodeNumbers:self.displayNodeNumbers
-             nodeNumberViewIsOverlay:self.nodeNumberViewIsOverlay];
+             nodeNumberViewIsOverlay:self.nodeNumberViewIsOverlay
+            numberCondensedMoveNodes:self.numberCondensedMoveNodes];
 
   return self;
 }
@@ -77,6 +92,8 @@
 {
   [self removeNotificationResponders];
 
+  self.nodeTreeViewModel = nil;
+  self.nodeTreeViewCanvas = nil;
   self.nodeNumberLabelFont = nil;
   self.nodeNumberLabelFontRange = nil;
   self.singleCharacterNodeSymbolFont = nil;
@@ -91,7 +108,7 @@
   self.nodeSymbolColor = nil;
   self.nodeSymbolTextColor = nil;
   self.nodeNumberTextColor = nil;
-  self.whiteTextShadow = nil;
+  self.nodeNumberTextShadow = nil;
 
   [super dealloc];
 }
@@ -112,17 +129,6 @@
     self.maximumAbsoluteZoomScale = iPhoneMaximumZoomScale;
   else
     self.maximumAbsoluteZoomScale = iPadMaximumZoomScale;
-
-  self.normalLineColor = [UIColor blackColor];
-  self.selectedLineColor = [UIColor redColor];
-  self.selectedNodeColor = [UIColor redColor];
-  self.nodeSymbolColor = [UIColor blackColor];
-  self.nodeSymbolTextColor = [UIColor whiteColor];
-  self.nodeNumberTextColor = [UIColor whiteColor];
-  self.whiteTextShadow = [[[NSShadow alloc] init] autorelease];
-  self.whiteTextShadow.shadowColor = [UIColor blackColor];
-  self.whiteTextShadow.shadowBlurRadius = 5.0;
-  self.whiteTextShadow.shadowOffset = CGSizeMake(1.0, 1.0);
 
   // TODO xxx Is the following fine-tuning worth it? When zoomed a factor is
   // applied, so the fine-tuning is lost. Also self.numberOfCellsOfMultipartCell
@@ -218,6 +224,10 @@
 // -----------------------------------------------------------------------------
 - (void) setupNotificationResponders
 {
+  if (self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = true;
+
   [self.nodeTreeViewCanvas addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
   [self.nodeTreeViewModel addObserver:self forKeyPath:@"displayNodeNumbers" options:0 context:NULL];
   [self.nodeTreeViewModel addObserver:self forKeyPath:@"condenseMoveNodes" options:0 context:NULL];
@@ -228,6 +238,10 @@
 // -----------------------------------------------------------------------------
 - (void) removeNotificationResponders
 {
+  if (! self.notificationRespondersAreSetup)
+    return;
+  self.notificationRespondersAreSetup = false;
+
   [self.nodeTreeViewCanvas removeObserver:self forKeyPath:@"canvasSize"];
   [self.nodeTreeViewModel removeObserver:self forKeyPath:@"displayNodeNumbers"];
   [self.nodeTreeViewModel removeObserver:self forKeyPath:@"condenseMoveNodes"];
@@ -363,6 +377,71 @@
   // Update property only after everything has been re-calculated so that KVO
   // observers get the new values
   self.displayNodeNumbers = newDisplayNodeNumbers;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the colors used for drawing the node tree view and the node
+/// numbers view to match the UIUserInterfaceStyle (light/dark mode) found in
+/// @a traitCollection. If @a traitCollection is @e nil the colors are updated
+/// for light mode.
+///
+/// The value specified for @e darkBackground during initialization indicates
+/// whether the node tree view and node numbers view are drawn on a dark or
+/// light background when in light mode.
+// -----------------------------------------------------------------------------
+- (void) updateWithTraitCollection:(UITraitCollection*)traitCollection
+{
+  bool isLightUserInterfaceStyle = (traitCollection
+                                    ? [UiUtilities isLightUserInterfaceStyle:traitCollection]
+                                    : true);
+
+  UIColor* textShadowColor;
+
+  if (isLightUserInterfaceStyle)
+  {
+    self.normalLineColor = [UIColor blackColor];
+    self.selectedLineColor = [UIColor redColor];
+    self.selectedNodeColor = [UIColor redColor];
+    self.nodeSymbolColor = [UIColor blackColor];
+    if (self.darkBackground)
+    {
+      self.nodeSymbolTextColor = [UIColor whiteColor];
+      self.nodeNumberTextColor = [UIColor whiteColor];
+      textShadowColor = [UIColor blackColor];
+    }
+    else
+    {
+      self.nodeSymbolTextColor = [UIColor blackColor];
+      self.nodeNumberTextColor = [UIColor blackColor];
+      textShadowColor = [UIColor whiteColor];
+    }
+  }
+  else
+  {
+    self.normalLineColor = [UIColor whiteColor];
+    self.selectedLineColor = [UIColor constructionOrangeColor];
+    self.selectedNodeColor = [UIColor constructionOrangeColor];
+    self.nodeSymbolColor = [UIColor whiteColor];
+    if (self.darkBackground)
+    {
+      self.nodeSymbolTextColor = [UIColor blackColor];
+      self.nodeNumberTextColor = [UIColor blackColor];
+      textShadowColor = [UIColor whiteColor];
+    }
+    else
+    {
+      self.nodeSymbolTextColor = [UIColor whiteColor];
+      self.nodeNumberTextColor = [UIColor whiteColor];
+      textShadowColor = [UIColor blackColor];
+    }
+  }
+
+  NSShadow* textShadow = [[[NSShadow alloc] init] autorelease];
+  textShadow.shadowColor = textShadowColor;
+  textShadow.shadowBlurRadius = 5.0;
+  textShadow.shadowOffset = CGSizeMake(1.0, 1.0);
+  self.nodeSymbolTextShadow = textShadow;
+  self.nodeNumberTextShadow = textShadow;
 }
 
 #pragma mark - Private backend invoked from all public API updaters

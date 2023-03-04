@@ -34,5 +34,7 @@
 - (id) initWithFrame:(CGRect)rect nodeTreeViewMetrics:(NodeTreeViewMetrics*)nodeTreeViewMetrics;
 
 - (GoNode*) nodeNear:(CGPoint)coordinates;
+- (void) updateColors;
+- (void) removeNotificationResponders;
 
 @end

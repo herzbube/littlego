@@ -33,7 +33,9 @@
 /// @brief Prevents double-unregistering of notification responders by
 /// willMoveToSuperview: followed by dealloc, or double-registering by two
 /// consecutive invocations of willMoveToSuperview: where the argument is not
-/// nil.
+/// nil. Also the method removeNotificationResponders() is in the public API,
+/// so if an external actor performs the unregistering there is no need to do
+/// it again in dealloc.
 ///
 /// With the current tiling implementation these precautions are probably
 /// unnecessary because the two scenarios should never occur. The keyword is
@@ -199,6 +201,18 @@
   [self.nodeNumbersLayerDelegate drawLayer];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Notifies the view layer that @a event has occurred. The event
+/// info object supplied to the delegate is @a eventInfo.
+///
+/// The delegate will ignore the event, or react to the event, as appropriate
+/// for the content that it manages.
+// -----------------------------------------------------------------------------
+- (void) notifyLayerDelegate:(enum NodeTreeViewLayerDelegateEvent)event eventInfo:(id)eventInfo
+{
+  [self.nodeNumbersLayerDelegate notify:event eventInfo:eventInfo];
+}
+
 #pragma mark - Tile protocol overrides
 
 // -----------------------------------------------------------------------------
@@ -206,7 +220,7 @@
 // -----------------------------------------------------------------------------
 - (void) invalidateContent
 {
-  [self.nodeNumbersLayerDelegate notify:NTVLDEventInvalidateContent eventInfo:nil];
+  [self notifyLayerDelegate:NTVLDEventInvalidateContent eventInfo:nil];
   [self delayedDrawLayer];
 }
 
@@ -218,7 +232,7 @@
 - (void) nodeTreeViewContentDidChange:(NSNotification*)notification
 {
   // TODO xxx arrives on main thread when application starts up => test if this also happens when game is loaded
-  [self.nodeNumbersLayerDelegate notify:NTVLDEventNodeTreeContentChanged eventInfo:nil];
+  [self notifyLayerDelegate:NTVLDEventNodeTreeContentChanged eventInfo:nil];
   [self delayedDrawLayer];
 }
 
@@ -231,7 +245,7 @@
   // changes => see KVO responder. To avoid a dependency on event ordering it
   // is best to handle the two things separately.
 
-  [self.nodeNumbersLayerDelegate notify:NTVLDEventNodeTreeCondenseMoveNodesChanged eventInfo:nil];
+  [self notifyLayerDelegate:NTVLDEventNodeTreeCondenseMoveNodesChanged eventInfo:nil];
   [self delayedDrawLayer];
 }
 
@@ -240,7 +254,7 @@
 // -----------------------------------------------------------------------------
 - (void) nodeTreeViewAlignMoveNodesDidChange:(NSNotification*)notification
 {
-  [self.nodeNumbersLayerDelegate notify:NTVLDEventNodeTreeAlignMoveNodesChanged eventInfo:nil];
+  [self notifyLayerDelegate:NTVLDEventNodeTreeAlignMoveNodesChanged eventInfo:nil];
   [self delayedDrawLayer];
 }
 
@@ -249,7 +263,7 @@
 // -----------------------------------------------------------------------------
 - (void) nodeTreeViewBranchingStyleDidChange:(NSNotification*)notification
 {
-  [self.nodeNumbersLayerDelegate notify:NTVLDEventNodeTreeBranchingStyleChanged eventInfo:nil];
+  [self notifyLayerDelegate:NTVLDEventNodeTreeBranchingStyleChanged eventInfo:nil];
   [self delayedDrawLayer];
 }
 
@@ -258,7 +272,7 @@
 // -----------------------------------------------------------------------------
 - (void) nodeTreeViewSelectedNodeDidChange:(NSNotification*)notification
 {
-  [self.nodeNumbersLayerDelegate notify:NTVLDEventNodeTreeSelectedNodeChanged eventInfo:notification.object];
+  [self notifyLayerDelegate:NTVLDEventNodeTreeSelectedNodeChanged eventInfo:notification.object];
   [self delayedDrawLayer];
 }
 
@@ -282,7 +296,7 @@
   {
     if ([keyPath isEqualToString:@"abstractCanvasSize"])
     {
-      [self.nodeNumbersLayerDelegate notify:NTVLDEventAbstractCanvasSizeChanged eventInfo:nil];
+      [self notifyLayerDelegate:NTVLDEventAbstractCanvasSizeChanged eventInfo:nil];
       [self delayedDrawLayer];
     }
     else if ([keyPath isEqualToString:@"nodeNumberViewCellSize"])
@@ -290,7 +304,7 @@
       // There are several reasons why the cell size could have changed.
       // Typical examples: The zoom scale did change, or the condense move nodes
       // user preference did change.
-      [self.nodeNumbersLayerDelegate notify:NTVLDEventNodeTreeGeometryChanged eventInfo:nil];
+      [self notifyLayerDelegate:NTVLDEventNodeTreeGeometryChanged eventInfo:nil];
       [self delayedDrawLayer];
     }
   }

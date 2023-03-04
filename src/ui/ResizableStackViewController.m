@@ -1066,7 +1066,6 @@ struct GestureInfo
     [childView removeFromSuperview];
   }
   [self.childViews removeAllObjects];
-
 }
 
 #pragma mark - Auto layout constraint handling

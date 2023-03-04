@@ -104,7 +104,11 @@
 {
 }
 
-- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas;
+- (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel
+              canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
+     traitCollection:(UITraitCollection*)traitCollection
+      darkBackground:(bool)darkBackground;
+- (void) removeNotificationResponders;
 
 /// @name Updaters
 //@{
@@ -228,8 +232,9 @@
 @property(nonatomic, retain) UIColor* selectedNodeColor;
 @property(nonatomic, retain) UIColor* nodeSymbolColor;
 @property(nonatomic, retain) UIColor* nodeSymbolTextColor;
+@property(nonatomic, retain) NSShadow* nodeSymbolTextShadow;
 @property(nonatomic, retain) UIColor* nodeNumberTextColor;
-@property(nonatomic, retain) NSShadow* whiteTextShadow;
+@property(nonatomic, retain) NSShadow* nodeNumberTextShadow;
 @property(nonatomic, assign) int paddingX;
 @property(nonatomic, assign) int paddingY;
 //@}

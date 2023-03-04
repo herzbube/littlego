@@ -18,6 +18,7 @@
 // Project includes
 #import "NodeTreeViewController.h"
 #import "NodeNumbersTileView.h"
+#import "NodeNumbersView.h"
 #import "NodeTreeTileView.h"
 #import "NodeTreeView.h"
 #import "NodeTreeViewMetrics.h"
@@ -40,13 +41,14 @@
 // -----------------------------------------------------------------------------
 @interface NodeTreeViewController()
 @property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
+@property(nonatomic, assign) bool darkBackground;
 @property(nonatomic, retain) NodeTreeViewCanvas* nodeTreeViewCanvas;
 @property(nonatomic, retain) NodeTreeViewMetrics* nodeTreeViewMetrics;
 /// @brief Prevents unregistering by dealloc if registering hasn't happened
 /// yet. Registering may not happen if the controller's view is never loaded.
 @property(nonatomic, assign) bool notificationRespondersAreSetup;
 @property(nonatomic, retain) NodeTreeView* nodeTreeView;
-@property(nonatomic, retain) TiledScrollView* nodeNumbersView;
+@property(nonatomic, retain) NodeNumbersView* nodeNumbersView;
 @property(nonatomic, retain) NSArray* autoLayoutConstraintsWithoutNodeNumbersView;
 @property(nonatomic, retain) NSArray* autoLayoutConstraintsWithNodeNumbersView;
 @property(nonatomic, retain) NSLayoutConstraint* autoLayoutConstraintNodeNumbersViewHeight;
@@ -67,6 +69,7 @@
 /// @note This is the designated initializer of NodeTreeViewController.
 // -----------------------------------------------------------------------------
 - (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel
+      darkBackground:(bool)darkBackground
 {
   // Call designated initializer of superclass (UIViewController)
   self = [super initWithNibName:nil bundle:nil];
@@ -74,6 +77,7 @@
     return nil;
 
   self.nodeTreeViewModel = nodeTreeViewModel;
+  self.darkBackground = darkBackground;
   self.nodeTreeViewCanvas = nil;
   self.nodeTreeViewMetrics = nil;
   self.notificationRespondersAreSetup = false;
@@ -93,7 +97,23 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self.view removeFromSuperview];
+
   [self removeNotificationResponders];
+
+  // We can't wait for dealloc to happen in NodeTreeView and NodeNumbersView
+  // and their respective tile objects - dealloc will be invoked on these
+  // objects long after NodeTreeViewMetrics and NodeTreeViewCanvas objects have
+  // been deallocated (in fact long after super's dealloc has completed its
+  // work), which would cause the removal of observer registrations to crash
+  // the app. A previous attempt at keeping NodeTreeViewMetrics and
+  // NodeTreeViewCanvas alive until observer registrations are removed via
+  // dealloc failed, so the current solution is to explicitly perform unregister
+  // here when we can guarantee that NodeTreeViewMetrics and NodeTreeViewCanvas
+  // are still around.
+  [self.nodeTreeViewMetrics removeNotificationResponders];
+  [self.nodeTreeView removeNotificationResponders];
+  [self.nodeNumbersView removeNotificationResponders];
 
   self.autoLayoutConstraintsWithoutNodeNumbersView = nil;
   self.autoLayoutConstraintsWithNodeNumbersView = nil;
@@ -104,26 +124,11 @@
   self.twoFingerTapGestureController = nil;
   self.nodeTreeViewTapGestureController = nil;
 
-  NodeTreeViewMetrics* localReferenceMetrics = [_nodeTreeViewMetrics retain];
-  NodeTreeViewCanvas* localReferenceCanvas = [_nodeTreeViewCanvas retain];
-
   self.nodeTreeViewMetrics = nil;
   self.nodeTreeViewCanvas = nil;
   self.nodeTreeViewModel = nil;
 
-  // For unknown reasons NodeTreeView and its tiles are deallocated only when
-  // super's dealloc is invoked. This means that at this point the
-  // NodeTreeViewMetrics and NodeTreeViewCanvas objects must still live so that
-  // tiles can remove their observer registrations. Explicitly setting
-  // self.view to nil, or invoking [self.nodeTreeView removeFromSuperview],
-  // did not help with deallocating NodeTreeView earlier.
   [super dealloc];
-
-  // As per comment above: Deallocate the following two objects only after
-  // views which depend on them have been deallocated. Deallocate the objects
-  // in observer dependency order.
-  [localReferenceMetrics release];
-  [localReferenceCanvas release];
 }
 
 // -----------------------------------------------------------------------------
@@ -171,7 +176,10 @@
 {
   self.nodeTreeViewCanvas = [[[NodeTreeViewCanvas alloc] initWithModel:self.nodeTreeViewModel] autorelease];
   [self.nodeTreeViewCanvas recalculateCanvas];
-  self.nodeTreeViewMetrics = [[[NodeTreeViewMetrics alloc] initWithModel:self.nodeTreeViewModel canvas:self.nodeTreeViewCanvas] autorelease];
+  self.nodeTreeViewMetrics = [[[NodeTreeViewMetrics alloc] initWithModel:self.nodeTreeViewModel
+                                                                  canvas:self.nodeTreeViewCanvas
+                                                         traitCollection:self.traitCollection
+                                                          darkBackground:self.darkBackground] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -246,6 +254,22 @@
 - (void) viewDidLayoutSubviews
 {
   [self updateContentSizeInScrollViews];
+}
+
+#pragma mark - traitCollectionDidChange
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) traitCollectionDidChange:(UITraitCollection*)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 12.0, *))
+  {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+      [self updateColors];
+  }
 }
 
 #pragma mark - Setup/remove notification responders
@@ -414,7 +438,7 @@
     if ([self nodeNumbersViewExists])
       return;
     Class nodeNumbersTileViewClass = [NodeNumbersTileView class];
-    self.nodeNumbersView = [[[TiledScrollView alloc] initWithFrame:CGRectZero tileViewClass:nodeNumbersTileViewClass] autorelease];
+    self.nodeNumbersView = [[[NodeNumbersView alloc] initWithFrame:CGRectZero tileViewClass:nodeNumbersTileViewClass] autorelease];
     [self.view addSubview:self.nodeNumbersView];
     [self removeAutoLayoutConstraintsWithoutNodeNumbersView];
     [self setupAutoLayoutConstraintsWithNodeNumbersView];
@@ -794,6 +818,20 @@
   }
 
   [self.nodeTreeView scrollRectToVisible:scrollToRect animated:YES];
+}
+
+#pragma mark - User interface style handling (light/dark mode)
+
+// -----------------------------------------------------------------------------
+/// @brief Updates all kinds of colors to match the current
+/// UIUserInterfaceStyle (light/dark mode).
+// -----------------------------------------------------------------------------
+- (void) updateColors
+{
+  [self.nodeTreeViewMetrics updateWithTraitCollection:self.traitCollection];
+
+  [self.nodeTreeView updateColors];
+  [self.nodeNumbersView updateColors];
 }
 
 @end

@@ -25,12 +25,16 @@
 #import "../controller/AutoLayoutConstraintHelper.h"
 #import "../controller/StatusViewController.h"
 #import "../model/NavigationBarButtonModel.h"
+#import "../model/NodeTreeViewModel.h"
+#import "../nodetreeview/NodeTreeViewController.h"
 #import "../splitview/LeftPaneViewController.h"
 #import "../splitview/RightPaneViewController.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/ButtonBoxController.h"
 #import "../../ui/SplitViewController.h"
 #import "../../ui/UiElementMetrics.h"
+#import "../../ui/UiSettingsModel.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/ExceptionUtility.h"
 #import "../../utility/UIColorAdditions.h"
@@ -56,6 +60,9 @@
 @property(nonatomic, retain) OrientationChangeNotifyingView* boardContainerView;
 @property(nonatomic, retain) UIView* boardPositionButtonBoxAndAnnotationContainerView;
 @property(nonatomic, retain) UIView* boardPositionButtonBoxContainerView;
+@property(nonatomic, retain) ResizableStackViewController* resizableStackViewController;
+@property(nonatomic, retain) UIViewController* resizablePane1ViewController;
+@property(nonatomic, retain) UIViewController* resizablePane2ViewController;
 @property(nonatomic, retain) NavigationBarButtonModel* navigationBarButtonModel;
 @property(nonatomic, retain) StatusViewController* statusViewController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
@@ -63,6 +70,7 @@
 @property(nonatomic, retain) AnnotationViewController* annotationViewController;
 @property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
 @property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
+@property(nonatomic, retain) NodeTreeViewController* nodeTreeViewController;
 @property(nonatomic, assign) UILayoutConstraintAxis boardViewSmallerDimension;
 @property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
 @property(nonatomic, assign) CGFloat boardPositionCollectionViewBorderWidth;
@@ -180,12 +188,16 @@
   self.boardContainerView = nil;
   self.boardPositionButtonBoxAndAnnotationContainerView = nil;
   self.boardPositionButtonBoxContainerView = nil;
+  self.resizableStackViewController = nil;
+  self.resizablePane1ViewController = nil;
+  self.resizablePane2ViewController = nil;
   self.navigationBarButtonModel = nil;
   self.statusViewController = nil;
   self.boardViewController = nil;
   self.boardPositionButtonBoxController = nil;
   self.boardPositionButtonBoxDataSource = nil;
   self.boardPositionCollectionViewController = nil;
+  self.nodeTreeViewController = nil;
   self.boardViewAutoLayoutConstraints = nil;
   self.splitViewControllerChild = nil;
   self.leftPaneViewController = nil;
@@ -221,10 +233,28 @@
     //   what we want!
     self.statusViewController = [[[StatusViewController alloc] init] autorelease];
 
+    ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+    self.resizablePane1ViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+    self.resizablePane2ViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
+    NSArray* resizablePaneViewControllers = @[self.resizablePane1ViewController, self.resizablePane2ViewController];
+    self.resizableStackViewController = [ResizableStackViewController resizableStackViewControllerWithViewControllers:resizablePaneViewControllers
+                                                                                                                 axis:UILayoutConstraintAxisVertical];
+    self.resizableStackViewController.delegate = self;
+    UiSettingsModel* uiSettingsModel = applicationDelegate.uiSettingsModel;
+    self.resizableStackViewController.sizes = uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlay;
+    NSNumber* uiAreaPlayResizablePaneMinimumSizeAsNumber = [NSNumber numberWithDouble:uiAreaPlayResizablePaneMinimumSize];
+    self.resizableStackViewController.minimumSizes = @[uiAreaPlayResizablePaneMinimumSizeAsNumber, uiAreaPlayResizablePaneMinimumSizeAsNumber];
+    self.resizableStackViewController.resizeStepSize /= 2;
+    self.resizableStackViewController.spacingBetweenResizablePanes *= 2;
+    self.resizableStackViewController.dragHandleThickness *= 1.5;
+    self.resizableStackViewController.dragHandleGrabAreaMargin *= 2;
+
     self.boardViewController = [[[BoardViewController alloc] init] autorelease];
     self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
     self.annotationViewController = [AnnotationViewController annotationViewController];
     self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
+    self.nodeTreeViewController = [[[NodeTreeViewController alloc] initWithModel:applicationDelegate.nodeTreeViewModel
+                                                                  darkBackground:false] autorelease];
 
     self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
     self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;
@@ -254,6 +284,7 @@
     [GameActionManager sharedGameActionManager].uiDelegate = nil;
   self.statusViewController = nil;
   self.boardViewController = nil;
+  self.nodeTreeViewController = nil;
 
   // Workaround for issue seen on some iOS versions where
   // traitCollectionDidChange is invoked on ButtonBoxController during interface
@@ -265,9 +296,38 @@
   self.boardPositionButtonBoxDataSource = nil;
   self.annotationViewController = nil;
   self.boardPositionCollectionViewController = nil;
+  self.resizableStackViewController = nil;
+  self.resizablePane1ViewController = nil;
+  self.resizablePane2ViewController = nil;
+
   self.splitViewControllerChild = nil;
   self.leftPaneViewController = nil;
   self.rightPaneViewController = nil;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setResizableStackViewController:(ResizableStackViewController*)resizableStackViewController
+{
+  if (_resizableStackViewController == resizableStackViewController)
+    return;
+  if (_resizableStackViewController)
+  {
+    [_resizableStackViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_resizableStackViewController removeFromParentViewController];
+    [_resizableStackViewController release];
+    _resizableStackViewController = nil;
+  }
+  if (resizableStackViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:resizableStackViewController];
+    [resizableStackViewController didMoveToParentViewController:self];
+    [resizableStackViewController retain];
+    _resizableStackViewController = resizableStackViewController;
+  }
 }
 
 // -----------------------------------------------------------------------------
@@ -288,8 +348,8 @@
   if (boardViewController)
   {
     // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:boardViewController];
-    [boardViewController didMoveToParentViewController:self];
+    [self.resizablePane1ViewController addChildViewController:boardViewController];
+    [boardViewController didMoveToParentViewController:self.resizablePane1ViewController];
     [boardViewController retain];
     _boardViewController = boardViewController;
   }
@@ -313,8 +373,8 @@
   if (boardPositionButtonBoxController)
   {
     // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:boardPositionButtonBoxController];
-    [boardPositionButtonBoxController didMoveToParentViewController:self];
+    [self.resizablePane1ViewController addChildViewController:boardPositionButtonBoxController];
+    [boardPositionButtonBoxController didMoveToParentViewController:self.resizablePane1ViewController];
     [boardPositionButtonBoxController retain];
     _boardPositionButtonBoxController = boardPositionButtonBoxController;
   }
@@ -338,8 +398,8 @@
   if (annotationViewController)
   {
     // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:annotationViewController];
-    [annotationViewController didMoveToParentViewController:self];
+    [self.resizablePane1ViewController addChildViewController:annotationViewController];
+    [annotationViewController didMoveToParentViewController:self.resizablePane1ViewController];
     [annotationViewController retain];
     _annotationViewController = annotationViewController;
   }
@@ -363,10 +423,35 @@
   if (boardPositionCollectionViewController)
   {
     // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:boardPositionCollectionViewController];
-    [boardPositionCollectionViewController didMoveToParentViewController:self];
+    [self.resizablePane1ViewController addChildViewController:boardPositionCollectionViewController];
+    [boardPositionCollectionViewController didMoveToParentViewController:self.resizablePane1ViewController];
     [boardPositionCollectionViewController retain];
     _boardPositionCollectionViewController = boardPositionCollectionViewController;
+  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setNodeTreeViewController:(NodeTreeViewController*)nodeTreeViewController
+{
+  if (_nodeTreeViewController == nodeTreeViewController)
+    return;
+  if (_nodeTreeViewController)
+  {
+    [_nodeTreeViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_nodeTreeViewController removeFromParentViewController];
+    [_nodeTreeViewController release];
+    _nodeTreeViewController = nil;
+  }
+  if (nodeTreeViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self.resizablePane2ViewController addChildViewController:nodeTreeViewController];
+    [nodeTreeViewController didMoveToParentViewController:self.resizablePane2ViewController];
+    [nodeTreeViewController retain];
+    _nodeTreeViewController = nodeTreeViewController;
   }
 }
 
@@ -406,9 +491,9 @@
 
   UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
   [self setupChildControllersForInterfaceOrientation:interfaceOrientation];
-  [self updateViewHierarchyForInterfaceOrientation:interfaceOrientation];
+  [self setupViewHierarchyForInterfaceOrientation:interfaceOrientation];
   [self configureViewsForInterfaceOrientation:interfaceOrientation];
-  [self updateAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
+  [self setupAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
   [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
 }
 
@@ -504,46 +589,25 @@
 - (void) completeInterfaceOrientationChange:(UIInterfaceOrientation)interfaceOrientation
 {
   [self setupChildControllersForInterfaceOrientation:interfaceOrientation];
-  [self updateViewHierarchyForInterfaceOrientation:interfaceOrientation];
+  [self setupViewHierarchyForInterfaceOrientation:interfaceOrientation];
   [self configureViewsForInterfaceOrientation:interfaceOrientation];
-  [self updateAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
+  [self setupAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
 }
 
 #pragma mark - View hierarchy handling
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the view hierarchy managed by this view controller to
+/// @brief Sets up the view hierarchy managed by this view controller to
 /// match the specified interface orientation.
 // -----------------------------------------------------------------------------
-- (void) updateViewHierarchyForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) setupViewHierarchyForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
   bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
   if (isPortraitOrientation)
   {
-    // This view provides a wooden texture background not only for the Go board,
-    // but for the entire area in which the Go board resides
-    self.woodenBackgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-
-    // This is a simple container view that takes up all the unused vertical
-    // space and within which the board view is then vertically centered.
-    self.boardContainerView = [[[OrientationChangeNotifyingView alloc] initWithFrame:CGRectZero] autorelease];
-    self.boardContainerView.delegate = self;
-
-    self.boardPositionButtonBoxAndAnnotationContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-    self.boardPositionButtonBoxContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-
-    [self.view addSubview:self.woodenBackgroundView];
-
-    [self.woodenBackgroundView addSubview:self.boardContainerView];
-    [self.woodenBackgroundView addSubview:self.boardPositionButtonBoxAndAnnotationContainerView];
-    [self.woodenBackgroundView addSubview:self.boardPositionCollectionViewController.view];
-
-    [self.boardContainerView addSubview:self.boardViewController.view];
-
-    [self.boardPositionButtonBoxAndAnnotationContainerView addSubview:self.boardPositionButtonBoxContainerView];
-    [self.boardPositionButtonBoxAndAnnotationContainerView addSubview:self.annotationViewController.view];
-
-    [self.boardPositionButtonBoxContainerView addSubview:self.boardPositionButtonBoxController.view];
+    [self setupWoodenBackgroundView];
+    [self setupResizablePane1ViewHierarchy];
+    [self setupResizablePane2ViewHierarchy];
 
     self.navigationItem.titleView = self.statusViewController.view;
     [self.navigationBarButtonModel updateVisibleGameActions];
@@ -553,6 +617,51 @@
   {
     [self.view addSubview:self.splitViewControllerChild.view];
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupViewHierarchyForInterfaceOrientation.
+// -----------------------------------------------------------------------------
+- (void) setupWoodenBackgroundView
+{
+  // This view provides a wooden texture background not only for the Go board,
+  // but for the entire area in which the Go board resides
+  self.woodenBackgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+
+  [self.view addSubview:self.woodenBackgroundView];
+
+  [self.woodenBackgroundView addSubview:self.resizableStackViewController.view];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupViewHierarchyForInterfaceOrientation.
+// -----------------------------------------------------------------------------
+- (void) setupResizablePane1ViewHierarchy
+{
+  // This is a simple container view that takes up all the unused vertical
+  // space and within which the board view is then centered, either horizontally
+  // or vertically depending on which dimension gets more space.
+  self.boardContainerView = [[[OrientationChangeNotifyingView alloc] initWithFrame:CGRectZero] autorelease];
+  self.boardContainerView.delegate = self;
+  [self.boardContainerView addSubview:self.boardViewController.view];
+  [self.resizablePane1ViewController.view addSubview:self.boardContainerView];
+
+  self.boardPositionButtonBoxContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.boardPositionButtonBoxContainerView addSubview:self.boardPositionButtonBoxController.view];
+  [self.resizablePane1ViewController.view addSubview:self.boardPositionCollectionViewController.view];
+
+  self.boardPositionButtonBoxAndAnnotationContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.boardPositionButtonBoxAndAnnotationContainerView addSubview:self.boardPositionButtonBoxContainerView];
+  [self.boardPositionButtonBoxAndAnnotationContainerView addSubview:self.annotationViewController.view];
+  [self.resizablePane1ViewController.view addSubview:self.boardPositionButtonBoxAndAnnotationContainerView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupViewHierarchyForInterfaceOrientation.
+// -----------------------------------------------------------------------------
+- (void) setupResizablePane2ViewHierarchy
+{
+  [self.resizablePane2ViewController.view addSubview:self.nodeTreeViewController.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -567,6 +676,7 @@
   self.boardContainerView = nil;
   self.boardPositionButtonBoxAndAnnotationContainerView = nil;
   self.boardPositionButtonBoxContainerView = nil;
+
   self.navigationItem.titleView = nil;
   [self depopulateNavigationBar];
 }
@@ -611,31 +721,66 @@
 /// @brief Sets up the auto layout constraints of the view of this view
 /// controller to match the specified interface orientation.
 // -----------------------------------------------------------------------------
-- (void) updateAutoLayoutConstraintsForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) setupAutoLayoutConstraintsForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
   bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
   if (isPortraitOrientation)
-    [self updateAutoLayoutConstraintsPortrait];
+    [self setupAutoLayoutConstraintsPortrait];
   else
-    [self updateAutoLayoutConstraintsLandscape];
+    [self setupAutoLayoutConstraintsLandscape];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for
-/// updateAutoLayoutConstraintsForInterfaceOrientation:().
+/// setupAutoLayoutConstraintsForInterfaceOrientation:().
 // -----------------------------------------------------------------------------
-- (void) updateAutoLayoutConstraintsPortrait
+- (void) setupAutoLayoutConstraintsPortrait
 {
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
-  NSMutableArray* visualFormats = [NSMutableArray array];
+  self.autoLayoutConstraints = [NSMutableArray array];
+  [self setupAutoLayoutConstraintsPortraitMainView];
+  [self setupAutoLayoutConstraintsPortraitWoodenBackgroundView];
+  [self setupAutoLayoutConstraintsPortraitResizablePane1];
+  [self setupAutoLayoutConstraintsPortraitResizablePane2];
+}
 
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraintsPortrait.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsPortraitMainView
+{
   // Wooden background view is laid out within the safe area of the main view.
   // Especially important are the top/bottom of the safe area - this prevents
   // the wooden background from extending behind the navigation bar at the top
   // or the tab bar at the bottom
   self.woodenBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   NSArray* constraints = [AutoLayoutUtility fillSafeAreaOfSuperview:self.view withSubview:self.woodenBackgroundView];
-  self.autoLayoutConstraints = [NSMutableArray arrayWithArray:constraints];
+  [self.autoLayoutConstraints addObjectsFromArray:constraints];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraintsPortrait.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsPortraitWoodenBackgroundView
+{
+  self.resizableStackViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  viewsDictionary[@"resizableStackView"] = self.resizableStackViewController.view;
+
+  NSMutableArray* visualFormats = [NSMutableArray array];
+  [visualFormats addObject:@"H:|-[resizableStackView]-|"];
+  [visualFormats addObject:@"V:|-[resizableStackView]-|"];
+
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.resizableStackViewController.view.superview];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraintsPortrait.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsPortraitResizablePane1
+{
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
 
   // Here we define the layout of the container views within the wooden
   // background view. The height of
@@ -650,11 +795,11 @@
   viewsDictionary[@"boardPositionButtonBoxAndAnnotationContainerView"] = self.boardPositionButtonBoxAndAnnotationContainerView;
   viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
   [visualFormats addObject:@"H:|-0-[boardContainerView]-0-|"];
-  [visualFormats addObject:@"H:|-[boardPositionButtonBoxAndAnnotationContainerView]-|"];
-  [visualFormats addObject:@"H:|-[boardPositionCollectionView]-|"];
+  [visualFormats addObject:@"H:|-0-[boardPositionButtonBoxAndAnnotationContainerView]-0-|"];
+  [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
   [visualFormats addObject:@"V:|-[boardContainerView]-[boardPositionButtonBoxAndAnnotationContainerView]-[boardPositionCollectionView]-|"];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight]];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.woodenBackgroundView];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.boardContainerView.superview];
 
   // Here we define the height of
   // boardPositionButtonBoxAndAnnotationContainerView. The width of the button
@@ -697,14 +842,28 @@
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
                                                   forAxis:self.boardViewSmallerDimension
-                                         constraintHolder:self.boardViewController.view.superview];
+                                         constraintHolder:self.boardViewController.view.superview];}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraintsPortrait.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsPortraitResizablePane2
+{
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
+  self.nodeTreeViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  viewsDictionary[@"nodeTreeView"] = self.nodeTreeViewController.view;
+  [visualFormats addObject:@"H:|-0-[nodeTreeView]-0-|"];
+  [visualFormats addObject:@"V:|-[nodeTreeView]-|"];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.nodeTreeViewController.view.superview];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for
-/// updateAutoLayoutConstraintsForInterfaceOrientation:().
+/// setupAutoLayoutConstraintsForInterfaceOrientation:().
 // -----------------------------------------------------------------------------
-- (void) updateAutoLayoutConstraintsLandscape
+- (void) setupAutoLayoutConstraintsLandscape
 {
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
@@ -808,6 +967,19 @@
   [self.navigationBarButtonModel updateIconOfGameAction:gameAction];
 }
 
+#pragma mark - ResizableStackViewControllerDelegate overrides
+
+// -----------------------------------------------------------------------------
+/// @brief ResizableStackViewControllerDelegate method.
+// -----------------------------------------------------------------------------
+- (void) resizableStackViewController:(ResizableStackViewController*)controller
+                   viewSizesDidChange:(NSArray*)newSizes;
+{
+  // TODO xxx this should save only portrait sizes
+  UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+  uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlay = newSizes;
+}
+
 #pragma mark - Navigation bar population
 
 // -----------------------------------------------------------------------------
@@ -865,6 +1037,7 @@
   UITraitCollection* traitCollection = self.traitCollection;
   [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView traitCollection:traitCollection];
   [UiUtilities applyTransparentStyleToView:self.annotationViewController.view traitCollection:traitCollection];
+  [UiUtilities applyTransparentStyleToView:self.nodeTreeViewController.view traitCollection:traitCollection];
 }
 
 @end

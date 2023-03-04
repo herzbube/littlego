@@ -14,14 +14,6 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
-// TODO xxx Will become part of a future controller of some sort that will
-// handle the content switching for all PlayRootViewController subclasses.
-enum ResizablePane2Content
-{
-  ResizablePane2ContentBoardPositionCollectionView,
-  ResizablePane2ContentNodeTreeView,
-};
-
 // Project includes
 #import "PlayRootViewControllerPhonePortraitOnly.h"
 #import "../annotationview/AnnotationViewController.h"
@@ -41,6 +33,13 @@ enum ResizablePane2Content
 #import "../../ui/UiUtilities.h"
 #import "../../utility/UIColorAdditions.h"
 #import "../../utility/UIImageAdditions.h"
+
+
+enum ResizablePane2Content
+{
+  ResizablePane2ContentBoardPositionCollectionView,
+  ResizablePane2ContentNodeTreeView,
+};
 
 
 // -----------------------------------------------------------------------------
@@ -462,7 +461,6 @@ enum ResizablePane2Content
   self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
 
   [self updateColors];
-  self.boardPositionCollectionViewController.view.layer.borderWidth = self.boardPositionCollectionViewBorderWidth;
 
   [self.boardPositionButtonBoxController reloadData];
 
@@ -513,11 +511,11 @@ enum ResizablePane2Content
   self.resizableStackViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
-  viewsDictionary[@"resizableStackViewController"] = self.resizableStackViewController.view;
+  viewsDictionary[@"resizableStackView"] = self.resizableStackViewController.view;
 
   NSMutableArray* visualFormats = [NSMutableArray array];
-  [visualFormats addObject:@"H:|-[resizableStackViewController]-|"];
-  [visualFormats addObject:@"V:|-[resizableStackViewController]-|"];
+  [visualFormats addObject:@"H:|-[resizableStackView]-|"];
+  [visualFormats addObject:@"V:|-[resizableStackView]-|"];
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.resizableStackViewController.view.superview];
 }
@@ -542,7 +540,7 @@ enum ResizablePane2Content
 
   NSMutableArray* visualFormats = [NSMutableArray array];
   [visualFormats addObject:@"H:|-0-[boardContainerView]-0-|"];
-  [visualFormats addObject:@"H:|-[boardPositionButtonBoxAndAnnotationContainerView]-|"];
+  [visualFormats addObject:@"H:|-0-[boardPositionButtonBoxAndAnnotationContainerView]-0-|"];
   [visualFormats addObject:@"V:|-[boardContainerView]-[boardPositionButtonBoxAndAnnotationContainerView]-0-|"];
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.boardContainerView.superview];
@@ -700,6 +698,7 @@ enum ResizablePane2Content
 - (void) resizableStackViewController:(ResizableStackViewController*)controller
                    viewSizesDidChange:(NSArray*)newSizes;
 {
+  // TODO xxx this should save only portrait sizes
   UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
   uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlay = newSizes;
 }
@@ -815,6 +814,7 @@ enum ResizablePane2Content
 
     self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
     UIView* boardPositionCollectionView = self.boardPositionCollectionViewController.view;
+    boardPositionCollectionView.layer.borderWidth = self.boardPositionCollectionViewBorderWidth;
 
     [self.resizablePane2ViewController.view addSubview:boardPositionCollectionView];
     [self setupAutoLayoutConstraintsForContentInResizablePane2:boardPositionCollectionView
@@ -837,10 +837,10 @@ enum ResizablePane2Content
     self.resizableStackViewController.resizingEnabled = true;
 
     ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-    self.nodeTreeViewController = [[[NodeTreeViewController alloc] initWithModel:applicationDelegate.nodeTreeViewModel] autorelease];
+    self.nodeTreeViewController = [[[NodeTreeViewController alloc] initWithModel:applicationDelegate.nodeTreeViewModel
+                                                                  darkBackground:false] autorelease];
     UIView* nodeTreeView = self.nodeTreeViewController.view;
-    // TODO xxx Remove this when the node tree view properly draws its content
-    nodeTreeView.backgroundColor = [UIColor lightGrayColor];
+    [UiUtilities applyTransparentStyleToView:nodeTreeView traitCollection:self.traitCollection];
 
     [self.resizablePane2ViewController.view addSubview:nodeTreeView];
     [self setupAutoLayoutConstraintsForContentInResizablePane2:nodeTreeView
@@ -868,7 +868,7 @@ enum ResizablePane2Content
   contentView.translatesAutoresizingMaskIntoConstraints = NO;
   viewsDictionary[@"contentView"] = contentView;
   // Horizontal margin is important to provide the space for the switch button
-  [visualFormats addObject:@"H:|-[contentView]-|"];
+  [visualFormats addObject:@"H:|-0-[contentView]-|"];
   [visualFormats addObject:@"V:|-0-[contentView]-0-|"];
 
   if (resizablePane2Content == ResizablePane2ContentBoardPositionCollectionView)
@@ -914,6 +914,8 @@ enum ResizablePane2Content
   UITraitCollection* traitCollection = self.traitCollection;
   [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView traitCollection:traitCollection];
   [UiUtilities applyTransparentStyleToView:self.annotationViewController.view traitCollection:traitCollection];
+  if (self.currentResizablePane2Content == ResizablePane2ContentNodeTreeView)
+    [UiUtilities applyTransparentStyleToView:self.nodeTreeViewController.view traitCollection:traitCollection];
   [UiUtilities applyTintColorToButton:self.switchContentInResizablePane2Button traitCollection:traitCollection];
 }
 

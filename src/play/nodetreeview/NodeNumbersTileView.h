@@ -16,6 +16,7 @@
 
 
 // Project includes
+#import "layer/NodeTreeViewLayerDelegate.h"
 #import "../../ui/Tile.h"
 
 // Forward declarations
@@ -62,5 +63,9 @@
              metrics:(NodeTreeViewMetrics*)nodeTreeViewMetrics
               canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
                model:(NodeTreeViewModel*)nodeTreeViewModel;
+
+- (void) notifyLayerDelegate:(enum NodeTreeViewLayerDelegateEvent)event eventInfo:(id)eventInfo;
+- (void) delayedDrawLayer;
+- (void) removeNotificationResponders;
 
 @end

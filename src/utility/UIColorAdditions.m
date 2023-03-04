@@ -327,6 +327,18 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns a color object whose hex code is "FE5000", and whose alpha
+/// value is 1.0.
+///
+/// This is a bright orange that has a better contrast than the pure red color
+/// "FF0000" when displayed on top of a very dark background.
+// -----------------------------------------------------------------------------
++ (UIColor*) constructionOrangeColor
+{
+  return [UIColor colorFromHexString:@"FE5000"];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns a color object whose RGB values are randomly chosen and
 /// whose alpha value is 1.0.
 // -----------------------------------------------------------------------------

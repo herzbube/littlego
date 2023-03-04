@@ -148,7 +148,7 @@
 
   NSDictionary* textAttributesUnselected = @{ NSFontAttributeName : nodeNumberLabelFont,
                                               NSForegroundColorAttributeName : self.nodeTreeViewMetrics.nodeNumberTextColor,
-                                              NSShadowAttributeName: self.nodeTreeViewMetrics.whiteTextShadow };
+                                              NSShadowAttributeName: self.nodeTreeViewMetrics.nodeNumberTextShadow };
   NSDictionary* textAttributesSelected = @{ NSFontAttributeName : nodeNumberLabelFont,
                                             NSForegroundColorAttributeName : self.nodeTreeViewMetrics.selectedNodeColor };
 

@@ -458,7 +458,10 @@
 
   NodeTreeViewCanvas* nodeTreeViewCanvas = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
-  NodeTreeViewMetrics* metrics = [[[NodeTreeViewMetrics alloc] initWithModel:nodeTreeViewModel canvas:nodeTreeViewCanvas] autorelease];
+  NodeTreeViewMetrics* metrics = [[[NodeTreeViewMetrics alloc] initWithModel:nodeTreeViewModel
+                                                                      canvas:nodeTreeViewCanvas
+                                                             traitCollection:nil
+                                                              darkBackground:true] autorelease];
 
   metrics.nodeTreeViewCellBaseSize = cellSize;
   metrics.tileSize = CGSizeMake(metrics.nodeTreeViewCellBaseSize * cellsPerTile,

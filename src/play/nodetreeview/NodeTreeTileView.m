@@ -35,7 +35,9 @@
 /// @brief Prevents double-unregistering of notification responders by
 /// willMoveToSuperview: followed by dealloc, or double-registering by two
 /// consecutive invocations of willMoveToSuperview: where the argument is not
-/// nil.
+/// nil. Also the method removeNotificationResponders() is in the public API,
+/// so if an external actor performs the unregistering there is no need to do
+/// it again in dealloc.
 ///
 /// With the current tiling implementation these precautions are probably
 /// unnecessary because the two scenarios should never occur. The keyword is
@@ -104,6 +106,7 @@
 
   self.nodeTreeViewMetrics = nil;
   self.nodeTreeViewCanvas = nil;
+  self.nodeTreeViewModel = nil;
 
   for (id<NodeTreeViewLayerDelegate> layerDelegate in self.layerDelegates)
     [layerDelegate.layer removeFromSuperlayer];

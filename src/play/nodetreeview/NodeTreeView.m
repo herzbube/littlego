@@ -75,4 +75,48 @@
   return [self.nodeTreeViewMetrics nodeNear:coordinates];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Redraws the node tree view with updated colors.
+// -----------------------------------------------------------------------------
+- (void) updateColors
+{
+  [self notifyTiles:NTVLDEventInvalidateContent eventInfo:nil];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Removes notification responders in all parts of the node tree view.
+/// This message is sent shortly before the node tree view is deallocated.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  for (id subview in [self.tileContainerView subviews])
+  {
+    if (! [subview isKindOfClass:[NodeTreeTileView class]])
+      continue;
+
+    NodeTreeTileView* tileView = subview;
+    [tileView removeNotificationResponders];
+  }
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Notifies all subviews that are NodeTreeTileView objects that @a event
+/// has occurred. The event info object supplied to the tile view is
+/// @a eventInfo. Also triggers each subview's delayed drawing mechanism.
+// -----------------------------------------------------------------------------
+- (void) notifyTiles:(enum NodeTreeViewLayerDelegateEvent)event eventInfo:(id)eventInfo
+{
+  for (id subview in [self.tileContainerView subviews])
+  {
+    if (! [subview isKindOfClass:[NodeTreeTileView class]])
+      continue;
+
+    NodeTreeTileView* tileView = subview;
+    [tileView notifyLayerDelegates:event eventInfo:eventInfo];
+    [tileView delayedDrawLayers];
+  }
+}
+
 @end
