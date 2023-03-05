@@ -79,8 +79,7 @@
                    condenseMoveNodes:self.condenseMoveNodes
                    absoluteZoomScale:self.absoluteZoomScale
                   displayNodeNumbers:self.displayNodeNumbers
-             nodeNumberViewIsOverlay:self.nodeNumberViewIsOverlay
-            numberCondensedMoveNodes:self.numberCondensedMoveNodes];
+             nodeNumberViewIsOverlay:self.nodeNumberViewIsOverlay];
 
   return self;
 }

@@ -116,6 +116,7 @@
 - (void) updateWithCondenseMoveNodes:(bool)newCondenseMoveNodes;
 - (void) updateWithRelativeZoomScale:(CGFloat)newRelativeZoomScale;
 - (void) updateWithNodeNumberViewIsOverlay:(bool)newNodeNumberViewIsOverlay;
+- (void) updateWithTraitCollection:(UITraitCollection*)traitCollection;
 //@}
 
 /// @name Calculators
