@@ -14,6 +14,7 @@
 // limitations under the License.
 // -----------------------------------------------------------------------------
 
+
 // Project includes
 #import "PlayRootViewControllerPhonePortraitOnly.h"
 #import "../annotationview/AnnotationViewController.h"
@@ -35,36 +36,31 @@
 #import "../../utility/UIImageAdditions.h"
 
 
-enum ResizablePane2Content
-{
-  ResizablePane2ContentBoardPositionCollectionView,
-  ResizablePane2ContentNodeTreeView,
-};
-
-
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for
 /// PlayRootViewControllerPhonePortraitOnly.
 // -----------------------------------------------------------------------------
 @interface PlayRootViewControllerPhonePortraitOnly()
-@property(nonatomic, retain) NavigationBarButtonModel* navigationBarButtonModel;
-@property(nonatomic, retain) StatusViewController* statusViewController;
+// Views
+@property(nonatomic, retain) UIView* woodenBackgroundView;
+@property(nonatomic, retain) OrientationChangeNotifyingView* boardContainerView;
+@property(nonatomic, retain) UIView* boardPositionButtonBoxAndAnnotationContainerView;
+@property(nonatomic, retain) UIView* boardPositionButtonBoxContainerView;
+// Controllers and data sources
 @property(nonatomic, retain) ResizableStackViewController* resizableStackViewController;
 @property(nonatomic, retain) UIViewController* resizablePane1ViewController;
 @property(nonatomic, retain) UIViewController* resizablePane2ViewController;
+@property(nonatomic, retain) NavigationBarButtonModel* navigationBarButtonModel;
+@property(nonatomic, retain) StatusViewController* statusViewController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
 @property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
 @property(nonatomic, retain) AnnotationViewController* annotationViewController;
 @property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
 @property(nonatomic, retain) NodeTreeViewController* nodeTreeViewController;
-@property(nonatomic, retain) UIView* woodenBackgroundView;
-@property(nonatomic, retain) OrientationChangeNotifyingView* boardContainerView;
-@property(nonatomic, retain) UIView* boardPositionButtonBoxAndAnnotationContainerView;
-@property(nonatomic, retain) UIView* boardPositionButtonBoxContainerView;
+// Other properties
 @property(nonatomic, retain) UIButton* switchContentInResizablePane2Button;
 @property(nonatomic, retain) NSMutableArray* resizablePane2ContentAutoLayoutConstraints;
-@property(nonatomic, assign) enum ResizablePane2Content currentResizablePane2Content;
 @property(nonatomic, assign) UILayoutConstraintAxis boardViewSmallerDimension;
 @property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
 @property(nonatomic, assign) CGFloat boardPositionCollectionViewBorderWidth;
@@ -88,11 +84,7 @@ enum ResizablePane2Content
   if (! self)
     return nil;
 
-  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-  NodeTreeViewModel* nodeTreeViewModel = applicationDelegate.nodeTreeViewModel;
-
   self.resizablePane2ContentAutoLayoutConstraints = [NSMutableArray array];
-  self.currentResizablePane2Content = nodeTreeViewModel.displayNodeTreeView ? ResizablePane2ContentNodeTreeView : ResizablePane2ContentBoardPositionCollectionView;
   self.boardViewSmallerDimension = UILayoutConstraintAxisHorizontal;
   self.boardPositionCollectionViewBorderWidth = 1.0f;
   [self setupChildControllers];
@@ -116,21 +108,23 @@ enum ResizablePane2Content
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
-  self.navigationBarButtonModel = nil;
-  self.statusViewController = nil;
+  self.woodenBackgroundView = nil;
+  self.boardContainerView = nil;
+  self.boardPositionButtonBoxAndAnnotationContainerView = nil;
+  self.boardPositionButtonBoxContainerView = nil;
+
   self.resizableStackViewController = nil;
   self.resizablePane1ViewController = nil;
   self.resizablePane2ViewController = nil;
+  self.navigationBarButtonModel = nil;
+  self.statusViewController = nil;
   self.boardViewController = nil;
   self.boardPositionButtonBoxController = nil;
   self.boardPositionButtonBoxDataSource = nil;
   self.annotationViewController = nil;
   self.boardPositionCollectionViewController = nil;
   self.nodeTreeViewController = nil;
-  self.woodenBackgroundView = nil;
-  self.boardContainerView = nil;
-  self.boardPositionButtonBoxAndAnnotationContainerView = nil;
-  self.boardPositionButtonBoxContainerView = nil;
+
   self.switchContentInResizablePane2Button = nil;
   self.resizablePane2ContentAutoLayoutConstraints = nil;
   self.boardViewAutoLayoutConstraints = nil;
@@ -161,13 +155,14 @@ enum ResizablePane2Content
   //   what we want!
   self.statusViewController = [[[StatusViewController alloc] init] autorelease];
 
+  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
   self.resizablePane1ViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
   self.resizablePane2ViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
   NSArray* resizablePaneViewControllers = @[self.resizablePane1ViewController, self.resizablePane2ViewController];
   self.resizableStackViewController = [ResizableStackViewController resizableStackViewControllerWithViewControllers:resizablePaneViewControllers
                                                                                                                axis:UILayoutConstraintAxisVertical];
   self.resizableStackViewController.delegate = self;
-  UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+  UiSettingsModel* uiSettingsModel = applicationDelegate.uiSettingsModel;
   self.resizableStackViewController.sizes = uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlay;
   NSNumber* uiAreaPlayResizablePaneMinimumSizeAsNumber = [NSNumber numberWithDouble:uiAreaPlayResizablePaneMinimumSize];
   self.resizableStackViewController.minimumSizes = @[uiAreaPlayResizablePaneMinimumSizeAsNumber, uiAreaPlayResizablePaneMinimumSizeAsNumber];
@@ -175,6 +170,9 @@ enum ResizablePane2Content
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
   self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
   self.annotationViewController = [AnnotationViewController annotationViewController];
+  self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
+  self.nodeTreeViewController = [[[NodeTreeViewController alloc] initWithModel:applicationDelegate.nodeTreeViewModel
+                                                                darkBackground:false] autorelease];
 
   self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
   self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;
@@ -298,8 +296,8 @@ enum ResizablePane2Content
   if (boardPositionCollectionViewController)
   {
     // Automatically calls willMoveToParentViewController:
-    [self.resizablePane2ViewController addChildViewController:boardPositionCollectionViewController];
-    [boardPositionCollectionViewController didMoveToParentViewController:self.resizablePane2ViewController];
+    [self.resizablePane1ViewController addChildViewController:boardPositionCollectionViewController];
+    [boardPositionCollectionViewController didMoveToParentViewController:self.resizablePane1ViewController];
     [boardPositionCollectionViewController retain];
     _boardPositionCollectionViewController = boardPositionCollectionViewController;
   }
@@ -343,9 +341,6 @@ enum ResizablePane2Content
   [self setupViewHierarchy];
   [self configureViews];
   [self setupAutoLayoutConstraints];
-
-  // Dynamic setup
-  [self setupContentInResizablePane2:self.currentResizablePane2Content isInitialSetup:true];
 }
 
 // -----------------------------------------------------------------------------
@@ -372,7 +367,6 @@ enum ResizablePane2Content
   [self setupWoodenBackgroundView];
   [self setupResizablePane1ViewHierarchy];
   [self setupResizablePane2ViewHierarchy];
-  [self setupSwitchContentInResizablePane2Button];
   [self setupNavigationBar];
 }
 
@@ -398,19 +392,18 @@ enum ResizablePane2Content
   // or vertically depending on which dimension gets more space.
   self.boardContainerView = [[[OrientationChangeNotifyingView alloc] initWithFrame:CGRectZero] autorelease];
   self.boardContainerView.delegate = self;
-
-  self.boardPositionButtonBoxAndAnnotationContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-  self.boardPositionButtonBoxContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
-
-  [self.resizablePane1ViewController.view addSubview:self.boardContainerView];
-  [self.resizablePane1ViewController.view addSubview:self.boardPositionButtonBoxAndAnnotationContainerView];
-
   [self.boardContainerView addSubview:self.boardViewController.view];
+  [self.resizablePane1ViewController.view addSubview:self.boardContainerView];
 
+  self.boardPositionButtonBoxContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.boardPositionButtonBoxContainerView addSubview:self.boardPositionButtonBoxController.view];
+  
+  self.boardPositionButtonBoxAndAnnotationContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   [self.boardPositionButtonBoxAndAnnotationContainerView addSubview:self.boardPositionButtonBoxContainerView];
   [self.boardPositionButtonBoxAndAnnotationContainerView addSubview:self.annotationViewController.view];
+  [self.resizablePane1ViewController.view addSubview:self.boardPositionButtonBoxAndAnnotationContainerView];
 
-  [self.boardPositionButtonBoxContainerView addSubview:self.boardPositionButtonBoxController.view];
+  [self.resizablePane1ViewController.view addSubview:self.boardPositionCollectionViewController.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -418,19 +411,7 @@ enum ResizablePane2Content
 // -----------------------------------------------------------------------------
 - (void) setupResizablePane2ViewHierarchy
 {
-  [self.resizablePane2ViewController.view addSubview:self.boardPositionCollectionViewController.view];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for setupViewHierarchy.
-// -----------------------------------------------------------------------------
-- (void) setupSwitchContentInResizablePane2Button
-{
-  self.switchContentInResizablePane2Button = [UIButton buttonWithType:UIButtonTypeSystem];
-
-  // Add button to a superview where it is completely inside the superview
-  // bounds => only then does the full button area react to touch events
-  [self.woodenBackgroundView addSubview:self.switchContentInResizablePane2Button];
+  [self.resizablePane2ViewController.view addSubview:self.nodeTreeViewController.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -461,12 +442,9 @@ enum ResizablePane2Content
   self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
 
   [self updateColors];
+  self.boardPositionCollectionViewController.view.layer.borderWidth = self.boardPositionCollectionViewBorderWidth;
 
   [self.boardPositionButtonBoxController reloadData];
-
-  [self.switchContentInResizablePane2Button addTarget:self
-                                               action:@selector(switchContentInResizablePane2:)
-                                     forControlEvents:UIControlEventTouchUpInside];
 }
 
 // -----------------------------------------------------------------------------
@@ -474,20 +452,10 @@ enum ResizablePane2Content
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  CGSize buttonBoxSize = self.boardPositionButtonBoxController.buttonBoxSize;
-  // The annotation view should be high enough to display most description
-  // texts without scrolling. It can't be arbitrarily high because it must
-  // leave enough space for the board view. It can't be arbitrarily small
-  // because it must have sufficient space to display two vertically stacked
-  // buttons.
-  int annotationViewHeight = buttonBoxSize.height * 1.1;
-
   [self setupAutoLayoutConstraintsMainView];
   [self setupAutoLayoutConstraintsWoodenBackgroundView];
   [self setupAutoLayoutConstraintsResizablePane1];
-  [self setupAutoLayoutConstraintsBoardPositionButtonBoxAndAnnotationContainerView:annotationViewHeight];
-  [self setupAutoLayoutConstraintsBoardPositionButtonBoxContainerView:buttonBoxSize];
-  [self setupAutoLayoutConstraintsBoardContainerView];
+  [self setupAutoLayoutConstraintsResizablePane2];
 }
 
 // -----------------------------------------------------------------------------
@@ -508,12 +476,13 @@ enum ResizablePane2Content
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsWoodenBackgroundView
 {
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
   self.resizableStackViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   viewsDictionary[@"resizableStackView"] = self.resizableStackViewController.view;
 
-  NSMutableArray* visualFormats = [NSMutableArray array];
   [visualFormats addObject:@"H:|-[resizableStackView]-|"];
   [visualFormats addObject:@"V:|-[resizableStackView]-|"];
 
@@ -525,29 +494,43 @@ enum ResizablePane2Content
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsResizablePane1
 {
-  // boardContainerView height:
-  // - When the board position collection view is visible, boardContainerView
-  //   gets the remaining height due to the fixed height of the collection view
-  // - When the node tree view is visible, the user can interactively resize and
-  //   boardContainerView shares the height with the node tree view
+  CGSize buttonBoxSize = self.boardPositionButtonBoxController.buttonBoxSize;
+  // The annotation view should be high enough to display most description
+  // texts without scrolling. It can't be arbitrarily high because it must
+  // leave enough space for the board view. It can't be arbitrarily small
+  // because it must have sufficient space to display two vertically stacked
+  // buttons.
+  int annotationViewHeight = buttonBoxSize.height * 1.1;
+
+  CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewMaximumCellSize].height;
+  boardPositionCollectionViewHeight += 2 * self.boardPositionCollectionViewBorderWidth;
+
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
 
   self.boardContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionButtonBoxAndAnnotationContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   viewsDictionary[@"boardContainerView"] = self.boardContainerView;
   viewsDictionary[@"boardPositionButtonBoxAndAnnotationContainerView"] = self.boardPositionButtonBoxAndAnnotationContainerView;
+  viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
 
-  NSMutableArray* visualFormats = [NSMutableArray array];
   [visualFormats addObject:@"H:|-0-[boardContainerView]-0-|"];
   [visualFormats addObject:@"H:|-0-[boardPositionButtonBoxAndAnnotationContainerView]-0-|"];
-  [visualFormats addObject:@"V:|-[boardContainerView]-[boardPositionButtonBoxAndAnnotationContainerView]-0-|"];
+  [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
+  [visualFormats addObject:@"V:|-[boardContainerView]-[boardPositionButtonBoxAndAnnotationContainerView]-[boardPositionCollectionView]-|"];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight]];
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.boardContainerView.superview];
+
+  [self setupAutoLayoutConstraintsBoardPositionButtonBoxAndAnnotationContainerView:annotationViewHeight];
+  [self setupAutoLayoutConstraintsBoardPositionButtonBoxContainerView:buttonBoxSize];
+  [self setupAutoLayoutConstraintsBoardContainerView];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for setupAutoLayoutConstraints.
+/// @brief Private helper for setupAutoLayoutConstraintsResizablePane1.
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsBoardPositionButtonBoxAndAnnotationContainerView:(int)annotationViewHeight
 {
@@ -555,14 +538,15 @@ enum ResizablePane2Content
   // boardPositionButtonBoxAndAnnotationContainerView. The button box width is
   // defined elsewhere, the annotation view gets the remaining width.
 
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
   self.boardPositionButtonBoxContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.annotationViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   viewsDictionary[@"boardPositionButtonBoxContainerView"] = self.boardPositionButtonBoxContainerView;
   viewsDictionary[@"annotationView"] = self.annotationViewController.view;
 
-  NSMutableArray* visualFormats = [NSMutableArray array];
   [visualFormats addObject:@"H:|-0-[boardPositionButtonBoxContainerView]-[annotationView]-0-|"];
   [visualFormats addObject:@"V:|-0-[boardPositionButtonBoxContainerView]-0-|"];
   [visualFormats addObject:@"V:|-0-[annotationView]-0-|"];
@@ -572,7 +556,7 @@ enum ResizablePane2Content
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for setupAutoLayoutConstraints.
+/// @brief Private helper for setupAutoLayoutConstraintsResizablePane1.
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsBoardPositionButtonBoxContainerView:(CGSize)buttonBoxSize
 {
@@ -581,12 +565,13 @@ enum ResizablePane2Content
   // annotation view), so we give the button box a fixed height and position it
   // vertically centered within its container view.
 
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
   self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   viewsDictionary[@"boardPositionButtonBox"] = self.boardPositionButtonBoxController.view;
 
-  NSMutableArray* visualFormats = [NSMutableArray array];
   [visualFormats addObject:@"H:|-0-[boardPositionButtonBox]-0-|"];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox(==%f)]", buttonBoxSize.width]];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]", buttonBoxSize.height]];
@@ -600,7 +585,7 @@ enum ResizablePane2Content
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for setupAutoLayoutConstraints.
+/// @brief Private helper for setupAutoLayoutConstraintsResizablePane1.
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsBoardContainerView
 {
@@ -612,6 +597,24 @@ enum ResizablePane2Content
                                               ofBoardView:self.boardViewController.view
                                                   forAxis:self.boardViewSmallerDimension
                                          constraintHolder:self.boardViewController.view.superview];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraints.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsResizablePane2
+{
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
+  self.nodeTreeViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
+  viewsDictionary[@"nodeTreeView"] = self.nodeTreeViewController.view;
+
+  [visualFormats addObject:@"H:|-0-[nodeTreeView]-0-|"];
+  [visualFormats addObject:@"V:|-[nodeTreeView]-|"];
+  
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.nodeTreeViewController.view.superview];
 }
 
 #pragma mark - OrientationChangeNotifyingViewDelegate overrides
@@ -749,160 +752,6 @@ enum ResizablePane2Content
   self.navigationItem.rightBarButtonItems = nil;
 }
 
-#pragma mark - Switching contents in resizable pane 2
-
-// -----------------------------------------------------------------------------
-/// @brief Initiates switching content in the resizable pane 2.
-// -----------------------------------------------------------------------------
-- (void) switchContentInResizablePane2:(id)sender
-{
-  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-  NodeTreeViewModel* nodeTreeViewModel = applicationDelegate.nodeTreeViewModel;
-
-  if (self.currentResizablePane2Content == ResizablePane2ContentBoardPositionCollectionView)
-  {
-    self.currentResizablePane2Content = ResizablePane2ContentNodeTreeView;
-    nodeTreeViewModel.displayNodeTreeView = true;
-  }
-  else
-  {
-    self.currentResizablePane2Content = ResizablePane2ContentBoardPositionCollectionView;
-    nodeTreeViewModel.displayNodeTreeView = false;
-  }
-
-  [self setupContentInResizablePane2:self.currentResizablePane2Content
-                      isInitialSetup:false];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Handles setting up content in the resizable pane 2 to the new content
-/// of type @a resizablePane2Content. @a isInitialSetup is @e true if the setup
-/// is invoked as part of the initial view hierarchy setup. @a isInitialSetup
-/// is @e false if the setup is invoked as part of a switch operation.
-///
-/// Resizable pane 2 alternatively shows one of the the following contents:
-/// - Either the board position collection view,
-/// - Or the node tree view
-///
-/// Content setup consists of the following operations:
-/// - Only when switching, i.e. @e isInitialSetup is @e false
-///   - Removing Auto Layout constraints for the current content view
-///   - Removing the current content view from the view hierarchy
-///   - Deallocating the current content view controller
-/// - Setting resizableStackViewController.resizingEnabled to the correct value
-///   for the new content
-/// - Allocating the new content view controller
-/// - Adding the new content view to the view hierarchy
-/// - Adding Auto Layout constraints for the new content view
-/// - Configuring the button that initiates a switch with the appropriate icon
-// -----------------------------------------------------------------------------
-- (void) setupContentInResizablePane2:(enum ResizablePane2Content)resizablePane2Content
-                       isInitialSetup:(bool)isInitialSetup
-{
-  if (resizablePane2Content == ResizablePane2ContentBoardPositionCollectionView)
-  {
-    if (! isInitialSetup)
-    {
-      for (NSLayoutConstraint* constraint in self.resizablePane2ContentAutoLayoutConstraints)
-        constraint.active = NO;
-      [self.resizablePane2ContentAutoLayoutConstraints removeAllObjects];
-      [self.nodeTreeViewController.view removeFromSuperview];
-      self.nodeTreeViewController = nil;
-    }
-
-    self.resizableStackViewController.resizingEnabled = false;
-
-    self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
-    UIView* boardPositionCollectionView = self.boardPositionCollectionViewController.view;
-    boardPositionCollectionView.layer.borderWidth = self.boardPositionCollectionViewBorderWidth;
-
-    [self.resizablePane2ViewController.view addSubview:boardPositionCollectionView];
-    [self setupAutoLayoutConstraintsForContentInResizablePane2:boardPositionCollectionView
-                                         resizablePane2Content:ResizablePane2ContentBoardPositionCollectionView];
-
-    [self.switchContentInResizablePane2Button setImage:[UIImage imageNamed:nodeTreeSmallIconResource]
-                                              forState:UIControlStateNormal];
-  }
-  else
-  {
-    if (! isInitialSetup)
-    {
-      for (NSLayoutConstraint* constraint in self.resizablePane2ContentAutoLayoutConstraints)
-        constraint.active = NO;
-      [self.resizablePane2ContentAutoLayoutConstraints removeAllObjects];
-      [self.boardPositionCollectionViewController.view removeFromSuperview];
-      self.boardPositionCollectionViewController = nil;
-    }
-
-    self.resizableStackViewController.resizingEnabled = true;
-
-    ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-    self.nodeTreeViewController = [[[NodeTreeViewController alloc] initWithModel:applicationDelegate.nodeTreeViewModel
-                                                                  darkBackground:false] autorelease];
-    UIView* nodeTreeView = self.nodeTreeViewController.view;
-    [UiUtilities applyTransparentStyleToView:nodeTreeView traitCollection:self.traitCollection];
-
-    [self.resizablePane2ViewController.view addSubview:nodeTreeView];
-    [self setupAutoLayoutConstraintsForContentInResizablePane2:nodeTreeView
-                                         resizablePane2Content:ResizablePane2ContentNodeTreeView];
-
-    [self.switchContentInResizablePane2Button setImage:[UIImage imageNamed:nodeSequenceIconResource]
-                                              forState:UIControlStateNormal];
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Creates and activates Auto Layout constraints for the content view
-/// @a contentView which is currently displayed in the resizable pane 2. The
-/// value of @a resizablePane2Content indicates what kind of content is
-/// displayed by @a contentView.
-// -----------------------------------------------------------------------------
-- (void) setupAutoLayoutConstraintsForContentInResizablePane2:(UIView*)contentView
-                                        resizablePane2Content:(enum ResizablePane2Content)resizablePane2Content
-{
-  [self.resizablePane2ContentAutoLayoutConstraints removeAllObjects];
-
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
-  NSMutableArray* visualFormats = [NSMutableArray array];
-
-  contentView.translatesAutoresizingMaskIntoConstraints = NO;
-  viewsDictionary[@"contentView"] = contentView;
-  // Horizontal margin is important to provide the space for the switch button
-  [visualFormats addObject:@"H:|-0-[contentView]-|"];
-  [visualFormats addObject:@"V:|-0-[contentView]-0-|"];
-
-  if (resizablePane2Content == ResizablePane2ContentBoardPositionCollectionView)
-  {
-    CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewMaximumCellSize].height;
-    boardPositionCollectionViewHeight += 2 * self.boardPositionCollectionViewBorderWidth;
-    [visualFormats addObject:[NSString stringWithFormat:@"V:[contentView(==%f)]", boardPositionCollectionViewHeight]];
-  }
-
-  NSArray* visualFormatsConstraints = [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:contentView.superview];
-  [self.resizablePane2ContentAutoLayoutConstraints addObjectsFromArray:visualFormatsConstraints];
-
-  self.switchContentInResizablePane2Button.translatesAutoresizingMaskIntoConstraints = NO;
-  NSLayoutConstraint* constraint;
-  constraint = [NSLayoutConstraint constraintWithItem:self.switchContentInResizablePane2Button
-                                            attribute:NSLayoutAttributeLeft
-                                            relatedBy:NSLayoutRelationEqual
-                                               toItem:contentView
-                                            attribute:NSLayoutAttributeRight
-                                           multiplier:1.0f
-                                             constant:2.0f];
-  constraint.active = YES;
-  [self.resizablePane2ContentAutoLayoutConstraints addObject:constraint];
-  constraint = [NSLayoutConstraint constraintWithItem:self.switchContentInResizablePane2Button
-                                            attribute:NSLayoutAttributeBottom
-                                            relatedBy:NSLayoutRelationEqual
-                                               toItem:contentView
-                                            attribute:NSLayoutAttributeBottom
-                                           multiplier:1.0f
-                                             constant:0.0f];
-  constraint.active = YES;
-  [self.resizablePane2ContentAutoLayoutConstraints addObject:constraint];
-}
-
 #pragma mark - User interface style handling (light/dark mode)
 
 // -----------------------------------------------------------------------------
@@ -914,8 +763,7 @@ enum ResizablePane2Content
   UITraitCollection* traitCollection = self.traitCollection;
   [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView traitCollection:traitCollection];
   [UiUtilities applyTransparentStyleToView:self.annotationViewController.view traitCollection:traitCollection];
-  if (self.currentResizablePane2Content == ResizablePane2ContentNodeTreeView)
-    [UiUtilities applyTransparentStyleToView:self.nodeTreeViewController.view traitCollection:traitCollection];
+  [UiUtilities applyTransparentStyleToView:self.nodeTreeViewController.view traitCollection:traitCollection];
   [UiUtilities applyTintColorToButton:self.switchContentInResizablePane2Button traitCollection:traitCollection];
 }
 

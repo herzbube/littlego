@@ -38,12 +38,14 @@
 /// @brief Class extension with private properties for RightPaneViewController.
 // -----------------------------------------------------------------------------
 @interface RightPaneViewController()
+// Views
 @property(nonatomic, retain) UIView* woodenBackgroundView;
 @property(nonatomic, retain) UIView* leftColumnView;
 @property(nonatomic, retain) UIView* middleColumnView;
 @property(nonatomic, retain) UIView* rightColumnView;
 @property(nonatomic, retain) UIView* boardPositionButtonBoxContainerView;
 @property(nonatomic, retain) OrientationChangeNotifyingView* boardContainerView;
+// Controllers and data sources
 @property(nonatomic, retain) ResizableStackViewController* resizableStackViewController;
 @property(nonatomic, retain) UIViewController* resizablePane1ViewController;
 @property(nonatomic, retain) UIViewController* resizablePane2ViewController;
@@ -54,6 +56,7 @@
 @property(nonatomic, retain) AnnotationViewController* annotationViewController;
 @property(nonatomic, retain) ButtonBoxController* gameActionButtonBoxController;
 @property(nonatomic, retain) GameActionButtonBoxDataSource* gameActionButtonBoxDataSource;
+// Other properties
 @property(nonatomic, assign) UILayoutConstraintAxis boardViewSmallerDimension;
 @property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
 @property(nonatomic, retain) NSArray* gameActionButtonBoxAutoLayoutConstraints;
@@ -93,25 +96,26 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.woodenBackgroundView = nil;
   self.leftColumnView = nil;
   self.middleColumnView = nil;
   self.rightColumnView = nil;
   self.boardPositionButtonBoxContainerView = nil;
   self.boardContainerView = nil;
+
+  self.resizableStackViewController = nil;
+  self.resizablePane1ViewController = nil;
+  self.resizablePane2ViewController = nil;
+  self.boardViewController = nil;
+  self.nodeTreeViewController = nil;
   self.boardPositionButtonBoxController = nil;
   self.boardPositionButtonBoxDataSource = nil;
   self.annotationViewController = nil;
   self.gameActionButtonBoxController = nil;
   self.gameActionButtonBoxDataSource = nil;
-  self.gameActionButtonBoxAutoLayoutConstraints = nil;
 
-  self.woodenBackgroundView = nil;
-  self.boardViewController = nil;
   self.boardViewAutoLayoutConstraints = nil;
-  self.nodeTreeViewController = nil;
-  self.resizableStackViewController = nil;
-  self.resizablePane1ViewController = nil;
-  self.resizablePane2ViewController = nil;
+  self.gameActionButtonBoxAutoLayoutConstraints = nil;
 
   [super dealloc];
 }
@@ -480,9 +484,6 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsLeftColumn
 {
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
-  NSMutableArray* visualFormats = [NSMutableArray array];
-
   CGFloat annotationViewWidthMultiplier;
   enum UIType uiType = [LayoutManager sharedManager].uiType;
   if (uiType == UITypePhone)
@@ -490,36 +491,65 @@
   else
     annotationViewWidthMultiplier = 2.00;
 
-  // Here we define the width of the left column view. The height of the button
-  // box in the left column view is defined further down, the annotation view
-  // gets the remaining height.
   CGSize buttonBoxSize = self.boardPositionButtonBoxController.buttonBoxSize;
-
   // The annotation view should be wide enough to display most description
   // texts without scrolling. It can't be arbitrarily wide because it must
   // leave enough space for the board view.
   int annotationViewWidth = buttonBoxSize.width * annotationViewWidthMultiplier;
 
+  [self setupAutoLayoutConstraintsBoardPositionButtonBoxAndAnnotationContainerView:annotationViewWidth];
+  [self setupAutoLayoutConstraintsBoardPositionButtonBoxContainerView:buttonBoxSize];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraintsLeftColumn.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsBoardPositionButtonBoxAndAnnotationContainerView:(int)annotationViewWidth
+{
+  // The annotation view width defines the width of the entire
+  // left column. The button box height is
+  // defined elsewhere, the annotation view gets the remaining height.
+
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
   self.annotationViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionButtonBoxContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+
   viewsDictionary[@"annotationView"] = self.annotationViewController.view;
   viewsDictionary[@"boardPositionButtonBoxContainerView"] = self.boardPositionButtonBoxContainerView;
+
   [visualFormats addObject:@"H:|-[annotationView]-|"];
   [visualFormats addObject:@"H:|-[boardPositionButtonBoxContainerView]-|"];
   [visualFormats addObject:@"V:|-[annotationView]-[boardPositionButtonBoxContainerView]-|"];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[annotationView(==%d)]", annotationViewWidth]];
+
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.leftColumnView];
+}
 
-  [viewsDictionary removeAllObjects];
-  [visualFormats removeAllObjects];
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraintsLeftColumn.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsBoardPositionButtonBoxContainerView:(CGSize)buttonBoxSize
+{
+  // Here we define the button box width. Also, the button box is expected to be
+  // less wide than its container view (whose width is defined by the
+  // annotation view), so we give the button box a fixed width and position it
+  // horizontally centered within its container view.
 
-  // Here we define the height of the button box in the left column view
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
   self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
   viewsDictionary[@"boardPositionButtonBox"] = self.boardPositionButtonBoxController.view;
+
   [visualFormats addObject:@"V:|-0-[boardPositionButtonBox]-0-|"];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox(==%f)]", buttonBoxSize.width]];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]", buttonBoxSize.height]];
+
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.boardPositionButtonBoxController.view.superview];
+
   [AutoLayoutUtility alignFirstView:self.boardPositionButtonBoxController.view
                      withSecondView:self.boardPositionButtonBoxController.view.superview
                         onAttribute:NSLayoutAttributeCenterX
@@ -535,9 +565,12 @@
   NSMutableArray* visualFormats = [NSMutableArray array];
 
   self.resizableStackViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
   viewsDictionary[@"resizableStackView"] = self.resizableStackViewController.view;
+
   [visualFormats addObject:@"H:|-[resizableStackView]-|"];
   [visualFormats addObject:@"V:|-[resizableStackView]-|"];
+
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.resizableStackViewController.view.superview];
 
   [self setupAutoLayoutConstraintsResizablePane1];

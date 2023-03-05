@@ -56,10 +56,12 @@
 
 /// @name Properties used for portrait
 //@{
+// Views
 @property(nonatomic, retain) UIView* woodenBackgroundView;
 @property(nonatomic, retain) OrientationChangeNotifyingView* boardContainerView;
 @property(nonatomic, retain) UIView* boardPositionButtonBoxAndAnnotationContainerView;
 @property(nonatomic, retain) UIView* boardPositionButtonBoxContainerView;
+// Controllers and data sources
 @property(nonatomic, retain) ResizableStackViewController* resizableStackViewController;
 @property(nonatomic, retain) UIViewController* resizablePane1ViewController;
 @property(nonatomic, retain) UIViewController* resizablePane2ViewController;
@@ -67,10 +69,11 @@
 @property(nonatomic, retain) StatusViewController* statusViewController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
-@property(nonatomic, retain) AnnotationViewController* annotationViewController;
 @property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
+@property(nonatomic, retain) AnnotationViewController* annotationViewController;
 @property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
 @property(nonatomic, retain) NodeTreeViewController* nodeTreeViewController;
+// Other properties
 @property(nonatomic, assign) UILayoutConstraintAxis boardViewSmallerDimension;
 @property(nonatomic, retain) NSMutableArray* boardViewAutoLayoutConstraints;
 @property(nonatomic, assign) CGFloat boardPositionCollectionViewBorderWidth;
@@ -181,9 +184,11 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
+  // Properties used for both interface orientations
   self.view = nil;
   self.autoLayoutConstraints = nil;
-  self.annotationViewController = nil;
+
+  // Properties used for portrait
   self.woodenBackgroundView = nil;
   self.boardContainerView = nil;
   self.boardPositionButtonBoxAndAnnotationContainerView = nil;
@@ -196,9 +201,12 @@
   self.boardViewController = nil;
   self.boardPositionButtonBoxController = nil;
   self.boardPositionButtonBoxDataSource = nil;
+  self.annotationViewController = nil;
   self.boardPositionCollectionViewController = nil;
   self.nodeTreeViewController = nil;
   self.boardViewAutoLayoutConstraints = nil;
+
+  // Properties used for landscape
   self.splitViewControllerChild = nil;
   self.leftPaneViewController = nil;
   self.rightPaneViewController = nil;
@@ -648,12 +656,13 @@
 
   self.boardPositionButtonBoxContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   [self.boardPositionButtonBoxContainerView addSubview:self.boardPositionButtonBoxController.view];
-  [self.resizablePane1ViewController.view addSubview:self.boardPositionCollectionViewController.view];
 
   self.boardPositionButtonBoxAndAnnotationContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   [self.boardPositionButtonBoxAndAnnotationContainerView addSubview:self.boardPositionButtonBoxContainerView];
   [self.boardPositionButtonBoxAndAnnotationContainerView addSubview:self.annotationViewController.view];
   [self.resizablePane1ViewController.view addSubview:self.boardPositionButtonBoxAndAnnotationContainerView];
+
+  [self.resizablePane1ViewController.view addSubview:self.boardPositionCollectionViewController.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -779,31 +788,6 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsPortraitResizablePane1
 {
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
-  NSMutableArray* visualFormats = [NSMutableArray array];
-
-  // Here we define the layout of the container views within the wooden
-  // background view. The height of
-  // boardPositionButtonBoxAndAnnotationContainerView is defined further down,
-  // boardContainerView gets the remaining height.
-  CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewMaximumCellSize].height;
-  boardPositionCollectionViewHeight += 2 * self.boardPositionCollectionViewBorderWidth;
-  self.boardContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.boardPositionButtonBoxAndAnnotationContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  viewsDictionary[@"boardContainerView"] = self.boardContainerView;
-  viewsDictionary[@"boardPositionButtonBoxAndAnnotationContainerView"] = self.boardPositionButtonBoxAndAnnotationContainerView;
-  viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
-  [visualFormats addObject:@"H:|-0-[boardContainerView]-0-|"];
-  [visualFormats addObject:@"H:|-0-[boardPositionButtonBoxAndAnnotationContainerView]-0-|"];
-  [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
-  [visualFormats addObject:@"V:|-[boardContainerView]-[boardPositionButtonBoxAndAnnotationContainerView]-[boardPositionCollectionView]-|"];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight]];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.boardContainerView.superview];
-
-  // Here we define the height of
-  // boardPositionButtonBoxAndAnnotationContainerView. The width of the button
-  // box is defined further down, the annotation view gets the remaining width.
   CGSize buttonBoxSize = self.boardPositionButtonBoxController.buttonBoxSize;
   // The annotation view should be high enough to display most description
   // texts without scrolling. It can't be arbitrarily high because it must
@@ -811,38 +795,103 @@
   // because it must have sufficient space to display two vertically stacked
   // buttons.
   int annotationViewHeight = buttonBoxSize.height * self.annotationViewHeightMultiplier;
-  [viewsDictionary removeAllObjects];
-  [visualFormats removeAllObjects];
+
+  CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewMaximumCellSize].height;
+  boardPositionCollectionViewHeight += 2 * self.boardPositionCollectionViewBorderWidth;
+
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
+  self.boardContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.boardPositionButtonBoxAndAnnotationContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  
+  viewsDictionary[@"boardContainerView"] = self.boardContainerView;
+  viewsDictionary[@"boardPositionButtonBoxAndAnnotationContainerView"] = self.boardPositionButtonBoxAndAnnotationContainerView;
+  viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
+
+  [visualFormats addObject:@"H:|-0-[boardContainerView]-0-|"];
+  [visualFormats addObject:@"H:|-0-[boardPositionButtonBoxAndAnnotationContainerView]-0-|"];
+  [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
+  [visualFormats addObject:@"V:|-[boardContainerView]-[boardPositionButtonBoxAndAnnotationContainerView]-[boardPositionCollectionView]-|"];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight]];
+
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.boardContainerView.superview];
+
+  [self setupAutoLayoutConstraintsPortraitBoardPositionButtonBoxAndAnnotationContainerView:annotationViewHeight];
+  [self setupAutoLayoutConstraintsPortraitBoardPositionButtonBoxContainerView:buttonBoxSize];
+  [self setupAutoLayoutConstraintsPortraitBoardContainerView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraintsPortraitResizablePane1.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsPortraitBoardPositionButtonBoxAndAnnotationContainerView:(int)annotationViewHeight
+{
+  // The annotation view height defines the height of the entire
+  // boardPositionButtonBoxAndAnnotationContainerView. The button box width is
+  // defined elsewhere, the annotation view gets the remaining width.
+
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
   self.boardPositionButtonBoxContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.annotationViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
   viewsDictionary[@"boardPositionButtonBoxContainerView"] = self.boardPositionButtonBoxContainerView;
   viewsDictionary[@"annotationView"] = self.annotationViewController.view;
+
   [visualFormats addObject:@"H:|-0-[boardPositionButtonBoxContainerView]-[annotationView]-0-|"];
   [visualFormats addObject:@"V:|-0-[boardPositionButtonBoxContainerView]-0-|"];
   [visualFormats addObject:@"V:|-0-[annotationView]-0-|"];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[annotationView(==%d)]", annotationViewHeight]];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.boardPositionButtonBoxContainerView.superview];
 
-  // Here we define the width of the button box
-  [viewsDictionary removeAllObjects];
-  [visualFormats removeAllObjects];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.boardPositionButtonBoxContainerView.superview];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraintsPortraitResizablePane1.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsPortraitBoardPositionButtonBoxContainerView:(CGSize)buttonBoxSize
+{
+  // Here we define the button box width. Also, the button box is expected to be
+  // less high than its container view (whose height is defined by the
+  // annotation view), so we give the button box a fixed height and position it
+  // vertically centered within its container view.
+
+  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
   self.boardPositionButtonBoxController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
   viewsDictionary[@"boardPositionButtonBox"] = self.boardPositionButtonBoxController.view;
+
   [visualFormats addObject:@"H:|-0-[boardPositionButtonBox]-0-|"];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[boardPositionButtonBox(==%f)]", buttonBoxSize.width]];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionButtonBox(==%f)]", buttonBoxSize.height]];
+
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.boardPositionButtonBoxController.view.superview];
+
   [AutoLayoutUtility alignFirstView:self.boardPositionButtonBoxController.view
                      withSecondView:self.boardPositionButtonBoxController.view.superview
                         onAttribute:NSLayoutAttributeCenterY
                    constraintHolder:self.boardPositionButtonBoxController.view.superview];
+}
 
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupAutoLayoutConstraintsPortraitResizablePane1.
+// -----------------------------------------------------------------------------
+- (void) setupAutoLayoutConstraintsPortraitBoardContainerView
+{
   self.boardViewAutoLayoutConstraints = [NSMutableArray array];
+
   self.boardViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  
   [AutoLayoutConstraintHelper updateAutoLayoutConstraints:self.boardViewAutoLayoutConstraints
                                               ofBoardView:self.boardViewController.view
                                                   forAxis:self.boardViewSmallerDimension
-                                         constraintHolder:self.boardViewController.view.superview];}
+                                         constraintHolder:self.boardViewController.view.superview];
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupAutoLayoutConstraintsPortrait.
@@ -853,9 +902,12 @@
   NSMutableArray* visualFormats = [NSMutableArray array];
 
   self.nodeTreeViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+
   viewsDictionary[@"nodeTreeView"] = self.nodeTreeViewController.view;
+
   [visualFormats addObject:@"H:|-0-[nodeTreeView]-0-|"];
   [visualFormats addObject:@"V:|-[nodeTreeView]-|"];
+
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.nodeTreeViewController.view.superview];
 }
 
