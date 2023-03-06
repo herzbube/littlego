@@ -1130,17 +1130,17 @@ struct GestureInfo
     [visualFormats addObject:[visualFormatPrefixAlongOtherAxisChildViewControllerView stringByAppendingFormat:@"|-0-[%@]-0-|", childViewControllerViewName]];
   }
 
-  // When sizing constraints are created we don't want to connect the last
-  // child view to the superview edge, because this can trigger the following
-  // warning (displayed in the Xcode debug view):
+  // Here we connect the last child view to the superview edge. This used to
+  // trigger the following warning (displayed in the Xcode debug view):
   //   Unable to simultaneously satisfy constraints
-  // The warning is probably due to rounding errors accumulating so that the
-  // child views try to occupy slightly less or more than 100% of the size of
-  // their superview along the arrange axis.
-  if (! self.resizingEnabled)
-    [visualFormats addObject:[visualFormatAlongArrangedAxisChildView stringByAppendingString:@"|"]];
-  else
-    [visualFormats addObject:[visualFormatAlongArrangedAxisChildView substringWithRange:NSMakeRange(0, visualFormatAlongArrangedAxisChildView.length - @"-0-".length)]];
+  // The warning was probably due to rounding errors accumulating so that the
+  // child views tried to occupy slightly less or more than 100% of the size of
+  // their superview along the arrange axis. The warning is no longer triggered
+  // because our sizing constraints now use a lower priority than the default
+  // UILayoutPriorityRequired, which is used by the arranging constraints we
+  // create here. In other words: If any rounding errors occur for sizing, then
+  // Auto Layout ignores them in favor of the arranging constraints.
+  [visualFormats addObject:[visualFormatAlongArrangedAxisChildView stringByAppendingString:@"|"]];
 
   self.arrangingAutoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
                                                                       withViews:viewsDictionary
