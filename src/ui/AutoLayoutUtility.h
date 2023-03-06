@@ -82,6 +82,14 @@
                          widthToHeight:(bool)widthToHeight
                                 ofView:(UIView*)view
                       constraintHolder:(UIView*)constraintHolder;
++ (NSLayoutConstraint*) setMinimumConstraint:(UIView*)view
+                                   attribute:(NSLayoutAttribute)attribute
+                                withConstant:(CGFloat)constant
+                            constraintHolder:(UIView*)constraintHolder;
++ (NSLayoutConstraint*) setMaximumConstraint:(UIView*)view
+                                   attribute:(NSLayoutAttribute)attribute
+                                withConstant:(CGFloat)constant
+                            constraintHolder:(UIView*)constraintHolder;
 + (NSArray*) installVisualFormats:(NSArray*)visualFormats
                         withViews:(NSDictionary*)viewsDictionary
                            inView:(UIView*)view;

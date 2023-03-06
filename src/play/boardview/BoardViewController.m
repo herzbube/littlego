@@ -27,6 +27,7 @@
 #import "../gesture/TwoFingerTapGestureController.h"
 #import "../model/BoardSetupModel.h"
 #import "../model/BoardViewMetrics.h"
+#import "../model/BoardViewModel.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiSettingsModel.h"
@@ -151,6 +152,12 @@
 {
   self.boardView.translatesAutoresizingMaskIntoConstraints = NO;
   [AutoLayoutUtility fillSuperview:self.view withSubview:self.boardView];
+
+  CGFloat minimumBoardViewHeight = [ApplicationDelegate sharedDelegate].boardViewModel.minimumBoardViewHeight;
+  [AutoLayoutUtility setMinimumConstraint:self.boardView
+                                attribute:NSLayoutAttributeHeight
+                             withConstant:minimumBoardViewHeight
+                         constraintHolder:self.boardView.superview];
 }
 
 // -----------------------------------------------------------------------------

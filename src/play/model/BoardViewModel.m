@@ -33,6 +33,7 @@
   self = [super init];
   if (! self)
     return nil;
+
   self.markLastMove = false;
   self.displayCoordinates = false;
   self.displayPlayerInfluence = displayPlayerInfluenceDefault;
@@ -43,6 +44,10 @@
   self.computerAssistanceType = ComputerAssistanceTypeNone;
   self.boardViewPanningGestureIsInProgress = false;
   self.boardViewDisplaysAnimation = false;
+  // An arbitrary height that prevents the user from resizing the board view to
+  // zero height.
+  self.minimumBoardViewHeight = 50.0f;
+  
   return self;
 }
 
