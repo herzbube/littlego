@@ -256,14 +256,9 @@ struct GestureInfo
 
   // We let the setter distribute all of the available size (100%) by not
   // specifying any size. The setter also triggers
-  // addSizingAutoLayoutConstraints if the view is already loaded.
+  // addSizingAutoLayoutConstraints, addDragHandles and addGestureHandling
+  // if the view is already loaded.
   self.sizes = @[];
-
-  if (self.isViewLoaded && self.resizingEnabled)
-  {
-    [self addDragHandles];
-    [self addGestureHandling];
-  }
 }
 
 // -----------------------------------------------------------------------------
