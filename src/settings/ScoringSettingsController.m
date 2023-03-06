@@ -174,7 +174,7 @@ enum InconsistentTerritoryMarkupTypeSectionItem
               "automatically resumes play when you leave scoring mode so that "
               "you and your opponent can settle life & death disputes.");
     case AskGtpEngineForDeadStonesItemSection:
-      return @"When scoring mode is activated the app suggests an initial set of dead stones. The process of finding these dead stones takes a moment, so you may wish to turn this option off.";
+      return @"When scoring mode is activated the app suggests an initial set of dead stones. The process of finding these dead stones takes a moment, and the suggestion may not always be accurate, so you may wish to turn this option off.";
     case MarkDeadStonesIntelligentlySection:
       return @"If turned on, whenever you toggle the dead/alive status of a stone group, all adjacent stone groups of the same color are automatically toggled to the same dead/alive status. This can greatly speed up the scoring process.";
     case InconsistentTerritoryMarkupTypeSection:

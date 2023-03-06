@@ -179,11 +179,11 @@ enum FillMarkerGapsSectionItem
     case MarkupPrecedenceSection:
       return @"The order of precedence for drawing symbol and label markup on the board. When both symbol and label markup exists for a given intersection, only one of them can be drawn. This setting determines which of the two should be drawn.";
     case UniqueSymbolsSection:
-      return @"If turned on, whenever you place a symbol the app will choose a different symbol for you that is unique on the board; when all symbols are on the board you cannot place symbols anymore. If turned off, the same symbol can be placed multiple times on the board. Turning this on can be convenient to save a couple of taps if you frequently mark up multiple intersections on the same board position.";
+      return @"If turned on, whenever you place a symbol the app will choose a different symbol for you that is unique on the board. As a consequence, when all symbols are on the board you cannot place symbols anymore. If turned off, the same symbol can be placed multiple times on the board. Turning this on can be convenient to save a couple of taps if you frequently mark up multiple intersections on the same board position.";
     case ConnectionToolAllowsDeleteSection:
       return @"If turned on, tapping on a connection's end point while the connection tool is active will delete the connection. If turned off tapping does nothing while the connection tool is active - connections in that case can only be deleted with the eraser tool. You may want to turn this setting off if you accidentally delete connections instead of placing new ones.";
     case FillMarkerGapsSection:
-      return @"Should gaps in the sequence of existing markers be filled when you place a letter or number marker? Example if number markers 1, 2 and 4 already exist: If the setting is turned on the next number marker placed will be 3, if the setting is turned off the next number marker placed will be 5.";
+      return @"Should gaps in the sequence of existing markers be filled when you place a letter or number marker? Example if number markers 1, 2 and 4 already exist: If the setting is turned on the next number marker placed will be 3 (filling the gap), if the setting is turned off the next number marker placed will be 5.";
     default:
       break;
   }
