@@ -30,7 +30,7 @@
 // -----------------------------------------------------------------------------
 enum NodeTreeViewTableViewSection
 {
-  BranchingStyleSection,
+  DisplayTreeViewSection,
   AlignMoveNodesSection,
   CondenseMoveNodesSection,
   NodeSelectionStyleSection,
@@ -39,12 +39,13 @@ enum NodeTreeViewTableViewSection
 };
 
 // -----------------------------------------------------------------------------
-/// @brief Enumerates items in the BranchingStyleSection.
+/// @brief Enumerates items in the DisplayTreeViewSection.
 // -----------------------------------------------------------------------------
-enum BranchingStyleSectionItem
+enum DisplayTreeViewSectionItem
 {
+  DisplayTreeViewItem,
   BranchingStyleItem,
-  MaxBranchingStyleSectionItem
+  MaxDisplayTreeViewSectionItem
 };
 
 // -----------------------------------------------------------------------------
@@ -152,8 +153,8 @@ enum FocusModeSectionItem
 {
   switch (section)
   {
-    case BranchingStyleSection:
-      return MaxBranchingStyleSectionItem;
+    case DisplayTreeViewSection:
+      return MaxDisplayTreeViewSectionItem;
     case AlignMoveNodesSection:
       return MaxAlignMoveNodesSectionItem;
     case CondenseMoveNodesSection:
@@ -179,7 +180,7 @@ enum FocusModeSectionItem
 {
   switch (section)
   {
-    case BranchingStyleSection:
+    case DisplayTreeViewSection:
       return @"The style with which to draw branching lines. The last section of a branching line can be drawn either diagonally or at a right angle. A diagonal line makes better use of the available space and can lead to a tighter diagram. Right angle lines may require more space but may also be easier to read. The default is to draw diagonal lines.";
     case AlignMoveNodesSection:
       return @"If turned on, moves with the same number that appear in different game variations are aligned, i.e. drawn at the same position. If turned off, all nodes are drawn in their natural position. Aligning moves has no effect if there are no other nodes in between the moves. The default is to not align moves.";
@@ -203,13 +204,29 @@ enum FocusModeSectionItem
   UITableViewCell* cell = nil;
   switch (indexPath.section)
   {
-    case BranchingStyleSection:
+    case DisplayTreeViewSection:
     {
-      cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
-      TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
-      variableHeightCell.descriptionLabel.text = @"Branching style";
-      variableHeightCell.valueLabel.text = [self branchingStyleAsString:self.nodeTreeViewModel.branchingStyle];
-      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      switch (indexPath.row)
+      {
+        case DisplayTreeViewItem:
+        {
+          cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
+          UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
+          cell.textLabel.text = @"Display tree view";
+          accessoryView.on = self.nodeTreeViewModel.displayNodeTreeView;
+          [accessoryView addTarget:self action:@selector(toggleDisplayNodeTreeView:) forControlEvents:UIControlEventValueChanged];
+          break;
+        }
+        case BranchingStyleItem:
+        {
+          cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
+          TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
+          variableHeightCell.descriptionLabel.text = @"Branching style";
+          variableHeightCell.valueLabel.text = [self branchingStyleAsString:self.nodeTreeViewModel.branchingStyle];
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          break;
+        }
+      }
       break;
     }
     case AlignMoveNodesSection:
@@ -281,9 +298,10 @@ enum FocusModeSectionItem
 
   switch (indexPath.section)
   {
-    case BranchingStyleSection:
+    case DisplayTreeViewSection:
     {
-      [self pickBranchingStyle];
+      if (indexPath.row == BranchingStyleItem)
+        [self pickBranchingStyle];
       break;
     }
     case NodeSelectionStyleSection:
@@ -319,7 +337,7 @@ enum FocusModeSectionItem
                                                                                 screenTitle:@"Select branching style"
                                                                          indexOfDefaultItem:self.nodeTreeViewModel.branchingStyle
                                                                                    delegate:self];
-  itemPickerController.context = [NSNumber numberWithInt:BranchingStyleSection];
+  itemPickerController.context = [NSNumber numberWithInt:DisplayTreeViewSection];
 
   [self presentNavigationControllerWithRootViewController:itemPickerController];
 }
@@ -361,6 +379,16 @@ enum FocusModeSectionItem
   itemPickerController.footerTitle = @"Select one of the first two options if you want the node tree view to focus-scroll only if the newly selected node is currently not visible, or only partially visible. The view either scrolls just enough to make the newly selected node visible at one of the view's edges (option 1), or it scrolls to make the newly selected node visible at the center of the view (option 2).\n\nSelect the last option if you want the node tree view to always focus-scroll, even if the node is already visible. The view in this case scrolls to show the newly selected node at the center of the view.";
 
   [self presentNavigationControllerWithRootViewController:itemPickerController];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Reacts to a tap gesture on the "Display Tree View" switch. Writes the
+/// new value to the appropriate model.
+// -----------------------------------------------------------------------------
+- (void) toggleDisplayNodeTreeView:(id)sender
+{
+  UISwitch* accessoryView = (UISwitch*)sender;
+  self.nodeTreeViewModel.displayNodeTreeView = accessoryView.on;
 }
 
 // -----------------------------------------------------------------------------
@@ -410,12 +438,12 @@ enum FocusModeSectionItem
   if (didMakeSelection)
   {
     NSNumber* context = controller.context;
-    if (context.intValue == BranchingStyleSection)
+    if (context.intValue == DisplayTreeViewSection)
     {
       if (self.nodeTreeViewModel.branchingStyle != controller.indexOfSelectedItem)
       {
         self.nodeTreeViewModel.branchingStyle = controller.indexOfSelectedItem;
-        NSIndexPath* indexPath = [NSIndexPath indexPathForRow:BranchingStyleItem inSection:BranchingStyleSection];
+        NSIndexPath* indexPath = [NSIndexPath indexPathForRow:BranchingStyleItem inSection:DisplayTreeViewSection];
         [self.tableView reloadRowsAtIndexPaths:@[indexPath]
                               withRowAnimation:UITableViewRowAnimationNone];
       }

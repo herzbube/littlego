@@ -19,7 +19,6 @@
 #import "PlayRootViewController.h"
 #import "GameActionManager.h"
 #import "../../ui/OrientationChangeNotifyingView.h"
-#import "../../ui/ResizableStackViewController.h"
 
 
 // -----------------------------------------------------------------------------
@@ -32,8 +31,7 @@
 // -----------------------------------------------------------------------------
 @interface PlayRootViewControllerPhoneAndPad
   : PlayRootViewController <GameActionManagerUIDelegate,
-                            OrientationChangeNotifyingViewDelegate,
-                            ResizableStackViewControllerDelegate>
+                            OrientationChangeNotifyingViewDelegate>
 {
 }
 

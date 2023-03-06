@@ -18,7 +18,6 @@
 // Project includes
 #import "../../ui/ButtonBoxController.h"
 #import "../../ui/OrientationChangeNotifyingView.h"
-#import "../../ui/ResizableStackViewController.h"
 
 
 // -----------------------------------------------------------------------------
@@ -31,8 +30,7 @@
 // -----------------------------------------------------------------------------
 @interface RightPaneViewController
   : UIViewController <ButtonBoxControllerDataDelegate,
-                      OrientationChangeNotifyingViewDelegate,
-                      ResizableStackViewControllerDelegate>
+                      OrientationChangeNotifyingViewDelegate>
 {
 }
 

@@ -24,11 +24,12 @@
 #import "../gameaction/GameActionButtonBoxDataSource.h"
 #import "../gameaction/GameActionManager.h"
 #import "../model/NodeTreeViewModel.h"
-#import "../nodetreeview/NodeTreeViewController.h"
+#import "../nodetreeview/NodeTreeViewIntegration.h"
 #import "../../main/ApplicationDelegate.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
+#import "../../ui/ResizableStackViewController.h"
 #import "../../ui/UiSettingsModel.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/UIColorAdditions.h"
@@ -48,9 +49,8 @@
 // Controllers and data sources
 @property(nonatomic, retain) ResizableStackViewController* resizableStackViewController;
 @property(nonatomic, retain) UIViewController* resizablePane1ViewController;
-@property(nonatomic, retain) UIViewController* resizablePane2ViewController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
-@property(nonatomic, retain) NodeTreeViewController* nodeTreeViewController;
+@property(nonatomic, retain) NodeTreeViewIntegration* nodeTreeViewIntegration;
 @property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
 @property(nonatomic, retain) BoardPositionButtonBoxDataSource* boardPositionButtonBoxDataSource;
 @property(nonatomic, retain) AnnotationViewController* annotationViewController;
@@ -105,9 +105,8 @@
 
   self.resizableStackViewController = nil;
   self.resizablePane1ViewController = nil;
-  self.resizablePane2ViewController = nil;
   self.boardViewController = nil;
-  self.nodeTreeViewController = nil;
+  self.nodeTreeViewIntegration = nil;
   self.boardPositionButtonBoxController = nil;
   self.boardPositionButtonBoxDataSource = nil;
   self.annotationViewController = nil;
@@ -133,23 +132,17 @@
 
   ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
   self.resizablePane1ViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
-  self.resizablePane2ViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
-  NSArray* resizablePaneViewControllers = @[self.resizablePane1ViewController, self.resizablePane2ViewController];
+  NSArray* resizablePaneViewControllers = @[self.resizablePane1ViewController];
   self.resizableStackViewController = [ResizableStackViewController resizableStackViewControllerWithViewControllers:resizablePaneViewControllers
                                                                                                                axis:UILayoutConstraintAxisVertical];
-  self.resizableStackViewController.delegate = self;
-  UiSettingsModel* uiSettingsModel = applicationDelegate.uiSettingsModel;
-  self.resizableStackViewController.sizes = uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlay;
-  NSNumber* uiAreaPlayResizablePaneMinimumSizeAsNumber = [NSNumber numberWithDouble:uiAreaPlayResizablePaneMinimumSize];
-  self.resizableStackViewController.minimumSizes = @[uiAreaPlayResizablePaneMinimumSizeAsNumber, uiAreaPlayResizablePaneMinimumSizeAsNumber];
   self.resizableStackViewController.resizeStepSize /= 2;
   self.resizableStackViewController.spacingBetweenResizablePanes *= 2;
   self.resizableStackViewController.dragHandleThickness *= 1.5;
   self.resizableStackViewController.dragHandleGrabAreaMargin *= 2;
-
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
-  self.nodeTreeViewController = [[[NodeTreeViewController alloc] initWithModel:applicationDelegate.nodeTreeViewModel
-                                                                darkBackground:false] autorelease];
+  self.nodeTreeViewIntegration = [[[NodeTreeViewIntegration alloc] initWithResizableStackViewController:self.resizableStackViewController
+                                                                                      nodeTreeViewModel:applicationDelegate.nodeTreeViewModel
+                                                                                        uiSettingsModel:applicationDelegate.uiSettingsModel] autorelease];
 
   self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
   self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;
@@ -237,31 +230,6 @@
 // -----------------------------------------------------------------------------
 /// @brief Private setter implementation.
 // -----------------------------------------------------------------------------
-- (void) setNodeTreeViewController:(NodeTreeViewController*)nodeTreeViewController
-{
-  if (_nodeTreeViewController == nodeTreeViewController)
-    return;
-  if (_nodeTreeViewController)
-  {
-    [_nodeTreeViewController willMoveToParentViewController:nil];
-    // Automatically calls didMoveToParentViewController:
-    [_nodeTreeViewController removeFromParentViewController];
-    [_nodeTreeViewController release];
-    _nodeTreeViewController = nil;
-  }
-  if (nodeTreeViewController)
-  {
-    // Automatically calls willMoveToParentViewController:
-    [self.resizablePane2ViewController addChildViewController:nodeTreeViewController];
-    [nodeTreeViewController didMoveToParentViewController:self.resizablePane2ViewController];
-    [nodeTreeViewController retain];
-    _nodeTreeViewController = nodeTreeViewController;
-  }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
-// -----------------------------------------------------------------------------
 - (void) setBoardPositionButtonBoxController:(ButtonBoxController*)boardPositionButtonBoxController
 {
   if (_boardPositionButtonBoxController == boardPositionButtonBoxController)
@@ -317,9 +285,11 @@
 - (void) loadView
 {
   [super loadView];
+
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
   [self configureViews];
+  [self.nodeTreeViewIntegration performIntegration];
 }
 
 // -----------------------------------------------------------------------------
@@ -391,7 +361,6 @@
   [self.boardContainerView addSubview:self.boardViewController.view];
 
   [self.resizablePane1ViewController.view addSubview:self.boardContainerView];
-  [self.resizablePane2ViewController.view addSubview:self.nodeTreeViewController.view];
 }
 
 // -----------------------------------------------------------------------------
@@ -574,7 +543,6 @@
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.resizableStackViewController.view.superview];
 
   [self setupAutoLayoutConstraintsResizablePane1];
-  [self setupAutoLayoutConstraintsResizablePane2];
 }
 
 // -----------------------------------------------------------------------------
@@ -604,21 +572,6 @@
                                               ofBoardView:self.boardViewController.view
                                                   forAxis:self.boardViewSmallerDimension
                                          constraintHolder:self.boardViewController.view.superview];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for setupAutoLayoutConstraintsMiddleColumn.
-// -----------------------------------------------------------------------------
-- (void) setupAutoLayoutConstraintsResizablePane2
-{
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
-  NSMutableArray* visualFormats = [NSMutableArray array];
-
-  self.nodeTreeViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
-  viewsDictionary[@"nodeTreeView"] = self.nodeTreeViewController.view;
-  [visualFormats addObject:@"H:|-0-[nodeTreeView]-0-|"];
-  [visualFormats addObject:@"V:|-[nodeTreeView]-|"];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.nodeTreeViewController.view.superview];
 }
 
 // -----------------------------------------------------------------------------
@@ -728,19 +681,6 @@
   }
 }
 
-#pragma mark - ResizableStackViewControllerDelegate overrides
-
-// -----------------------------------------------------------------------------
-/// @brief ResizableStackViewControllerDelegate method.
-// -----------------------------------------------------------------------------
-- (void) resizableStackViewController:(ResizableStackViewController*)controller
-                   viewSizesDidChange:(NSArray*)newSizes;
-{
-  // TODO xxx this should save only landscape sizes
-  UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
-  uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlay = newSizes;
-}
-
 #pragma mark - User interface style handling (light/dark mode)
 
 // -----------------------------------------------------------------------------
@@ -752,7 +692,7 @@
   UITraitCollection* traitCollection = self.traitCollection;
   [UiUtilities applyTransparentStyleToView:self.annotationViewController.view traitCollection:traitCollection];
   [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView traitCollection:traitCollection];
-  [UiUtilities applyTransparentStyleToView:self.nodeTreeViewController.view traitCollection:traitCollection];
+  [self.nodeTreeViewIntegration updateColors];
   [UiUtilities applyTransparentStyleToView:self.gameActionButtonBoxController.view traitCollection:traitCollection];
 }
 

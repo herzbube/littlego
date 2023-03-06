@@ -522,7 +522,7 @@
 	<key>NodeTreeView</key>
 	<dict>
 		<key>DisplayNodeTreeView</key>
-		<false/>
+		<true/>
 		<key>CondenseMoveNodes</key>
 		<false/>
 		<key>AlignMoveNodes</key>

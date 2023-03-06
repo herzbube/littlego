@@ -295,6 +295,8 @@
 		CD613D9A143CD1B70002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DAB143CD65C0002759E /* GtpCommandModel.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613D99143CD1B70002759E /* GtpCommandModel.m */; };
 		CD613DE5143CD9DC0002759E /* GtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */; };
+		CD63309629B4F86800287A73 /* NodeTreeViewIntegration.m in Sources */ = {isa = PBXBuildFile; fileRef = CD63309429B4F86800287A73 /* NodeTreeViewIntegration.m */; };
+		CD63309729B4F86900287A73 /* NodeTreeViewIntegration.m in Sources */ = {isa = PBXBuildFile; fileRef = CD63309429B4F86800287A73 /* NodeTreeViewIntegration.m */; };
 		CD63B9E221C1F8B100E013B5 /* PipeStreamBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD63B9E021C1F8B100E013B5 /* PipeStreamBuffer.cpp */; };
 		CD63B9E321C1F8B100E013B5 /* PipeStreamBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = CD63B9E021C1F8B100E013B5 /* PipeStreamBuffer.cpp */; };
 		CD6C7DB9175004AE009FBEC4 /* MainTabBarController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD377F0716BD154A00972F04 /* MainTabBarController.m */; };
@@ -1247,6 +1249,8 @@
 		CD613D99143CD1B70002759E /* GtpCommandModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandModel.m; sourceTree = "<group>"; };
 		CD613DE3143CD9DC0002759E /* GtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GtpCommandViewController.h; sourceTree = "<group>"; };
 		CD613DE4143CD9DC0002759E /* GtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GtpCommandViewController.m; sourceTree = "<group>"; };
+		CD63309429B4F86800287A73 /* NodeTreeViewIntegration.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewIntegration.m; sourceTree = "<group>"; };
+		CD63309529B4F86800287A73 /* NodeTreeViewIntegration.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewIntegration.h; sourceTree = "<group>"; };
 		CD63B9E021C1F8B100E013B5 /* PipeStreamBuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PipeStreamBuffer.cpp; sourceTree = "<group>"; };
 		CD63B9E121C1F8B100E013B5 /* PipeStreamBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PipeStreamBuffer.h; sourceTree = "<group>"; };
 		CD6BBED81723161D00BCC492 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
@@ -3269,6 +3273,8 @@
 				CDC8DEEE28EDECC900619305 /* NodeTreeView.m */,
 				CDC8DEE728EDE20800619305 /* NodeTreeViewController.h */,
 				CDC8DEE828EDE20800619305 /* NodeTreeViewController.m */,
+				CD63309529B4F86800287A73 /* NodeTreeViewIntegration.h */,
+				CD63309429B4F86800287A73 /* NodeTreeViewIntegration.m */,
 				CDC8DEFD28EDF8E500619305 /* NodeTreeViewMetrics.h */,
 				CDC8DEFE28EDF8E600619305 /* NodeTreeViewMetrics.m */,
 				CDF2462029679D2300350B42 /* NodeTreeViewTapGestureController.h */,
@@ -4502,6 +4508,7 @@
 				CDEE1A07194391AE00DF2389 /* SymbolsLayerDelegate.m in Sources */,
 				CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */,
 				CD1A7EDC293A58EF00013D80 /* NodeSymbolLayerDelegate.m in Sources */,
+				CD63309629B4F86800287A73 /* NodeTreeViewIntegration.m in Sources */,
 				CD1F501325B6591F0098037A /* GameInfoItemController.m in Sources */,
 				CDB5AE2E1AC714CF0075C8DC /* MagnifyingViewModel.m in Sources */,
 				CD0AF19017401C56003BFC21 /* SliderInputController.m in Sources */,
@@ -4578,6 +4585,7 @@
 				CD85B5F71401CB9C001715B8 /* UIColorAdditions.m in Sources */,
 				CDB3ECDB2843ADD7007512F6 /* ChangeAnnotationDataCommand.m in Sources */,
 				CDF43D9D1402E970007F44A4 /* BaseTestCase.m in Sources */,
+				CD63309729B4F86900287A73 /* NodeTreeViewIntegration.m in Sources */,
 				CDEE19F619433EAC00DF2389 /* BoardViewController.m in Sources */,
 				CDD85B04290EF6840069A761 /* NSArrayAdditions.m in Sources */,
 				CD2230B825E6640A00187C57 /* LogFormatter.m in Sources */,
