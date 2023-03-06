@@ -99,7 +99,11 @@ enum DragHandlePresentationStyle
 /// other views does not change.
 ///
 /// ResizableStackViewController supports setting a minimum size for each of its
-/// arranged views.
+/// arranged views. Sizing constraints created by ResizableStackViewController
+/// use priority UILayoutPriorityDefaultHigh so that other constraints, which
+/// typically have the default UILayoutPriorityRequired, take precedence. For
+/// instance, if a view has a fixed width or height, that view will not be made
+/// wider/higher or less wide/high than the fixed width or height.
 ///
 /// @note If ResizableStackViewController is configured with
 /// #DragHandleStyleNone, no drag handles are shown and resizing works by simply

@@ -1203,10 +1203,14 @@ struct GestureInfo
 
   UIView* childView = [self.childViews objectAtIndex:indexOfChildView];
 
+  // See class documentation for the reason why we use a custom priority
+  UILayoutPriority priority = UILayoutPriorityDefaultHigh;
   NSLayoutConstraint* sizingConstraint = [AutoLayoutUtility alignFirstView:childView
                                                             withSecondView:self.view
                                                                onAttribute:sizeAttribute
                                                             withMultiplier:size
+                                                              withConstant:0.0f
+                                                              withPriority:priority
                                                           constraintHolder:self.view];
 
   return sizingConstraint;
