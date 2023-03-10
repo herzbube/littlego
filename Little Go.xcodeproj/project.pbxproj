@@ -695,8 +695,6 @@
 		CDC8DEFC28EDF2A400619305 /* NodeTreeViewLayerDelegateBase.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC8DEF928EDF2A400619305 /* NodeTreeViewLayerDelegateBase.m */; };
 		CDC8DEFF28EDF8E600619305 /* NodeTreeViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC8DEFE28EDF8E600619305 /* NodeTreeViewMetrics.m */; };
 		CDC8DF0028EDF8E600619305 /* NodeTreeViewMetrics.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC8DEFE28EDF8E600619305 /* NodeTreeViewMetrics.m */; };
-		CDC8DF0328EF0FFA00619305 /* DummyLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC8DF0128EF0FFA00619305 /* DummyLayerDelegate.m */; };
-		CDC8DF0428EF0FFA00619305 /* DummyLayerDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC8DF0128EF0FFA00619305 /* DummyLayerDelegate.m */; };
 		CDC8DF1128F1F32800619305 /* node-tree-small.svg in Resources */ = {isa = PBXBuildFile; fileRef = CDC8DF0D28F1F32700619305 /* node-tree-small.svg */; };
 		CDC8DF1228F1F32800619305 /* node-tree-small.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC8DF0E28F1F32700619305 /* node-tree-small.png */; };
 		CDC8DF1328F1F32800619305 /* node-tree-small@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC8DF0F28F1F32800619305 /* node-tree-small@3x.png */; };
@@ -1659,8 +1657,6 @@
 		CDC8DEFA28EDF2A400619305 /* NodeTreeViewLayerDelegateBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewLayerDelegateBase.h; sourceTree = "<group>"; };
 		CDC8DEFD28EDF8E500619305 /* NodeTreeViewMetrics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewMetrics.h; sourceTree = "<group>"; };
 		CDC8DEFE28EDF8E600619305 /* NodeTreeViewMetrics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewMetrics.m; sourceTree = "<group>"; };
-		CDC8DF0128EF0FFA00619305 /* DummyLayerDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DummyLayerDelegate.m; sourceTree = "<group>"; };
-		CDC8DF0228EF0FFA00619305 /* DummyLayerDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DummyLayerDelegate.h; sourceTree = "<group>"; };
 		CDC8DF0D28F1F32700619305 /* node-tree-small.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "node-tree-small.svg"; sourceTree = "<group>"; };
 		CDC8DF0E28F1F32700619305 /* node-tree-small.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "node-tree-small.png"; sourceTree = "<group>"; };
 		CDC8DF0F28F1F32800619305 /* node-tree-small@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "node-tree-small@3x.png"; sourceTree = "<group>"; };
@@ -3286,8 +3282,6 @@
 		CDC8DEF728EDF2A400619305 /* layer */ = {
 			isa = PBXGroup;
 			children = (
-				CDC8DF0228EF0FFA00619305 /* DummyLayerDelegate.h */,
-				CDC8DF0128EF0FFA00619305 /* DummyLayerDelegate.m */,
 				CD1A7EEA29512E0B00013D80 /* LinesLayerDelegate.h */,
 				CD1A7EE929512E0B00013D80 /* LinesLayerDelegate.m */,
 				CDBDD0932994624200641E3B /* NodeNumbersLayerDelegate.h */,
@@ -4359,7 +4353,6 @@
 				CD0CCB7A142FF82100A3F869 /* GtpLogItem.m in Sources */,
 				CD0CCBF214311AD300A3F869 /* GtpLogViewController.m in Sources */,
 				CD0CCC98143140E300A3F869 /* GtpLogItemViewController.m in Sources */,
-				CDC8DF0328EF0FFA00619305 /* DummyLayerDelegate.m in Sources */,
 				CD1A7EEB29512E0B00013D80 /* LinesLayerDelegate.m in Sources */,
 				CD7C6A1D1AB61893009EC5AD /* ButtonBoxCell.m in Sources */,
 				CD0CCEC61439147D00A3F869 /* GtpLogSettingsController.m in Sources */,
@@ -4724,7 +4717,6 @@
 				CDFD9F7418F1D37B0031CBCF /* SoundSettingsController.m in Sources */,
 				CD9A49E1171250AA009E7514 /* DoubleTapGestureController.m in Sources */,
 				CD9A49E2171250AE009E7514 /* PanGestureController.m in Sources */,
-				CDC8DF0428EF0FFA00619305 /* DummyLayerDelegate.m in Sources */,
 				CDB5AE261AC5A86D0075C8DC /* MagnifyingView.m in Sources */,
 				CD9A49E3171250B0009E7514 /* BoardViewTapGestureController.m in Sources */,
 				CD9A49E4171250B3009E7514 /* TwoFingerTapGestureController.m in Sources */,
