@@ -584,6 +584,10 @@
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
 
+  // Must be sent first so that observers get a chance to incorporate the new
+  // node into their models before it becomes the new current board position
+  [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
+
   if (shouldChangeCurrentGameVariation)
   {
     [center postNotificationName:currentGameVariationWillChange object:nil];
@@ -619,8 +623,6 @@
   {
     [center postNotificationName:currentGameVariationDidChange object:nil];
   }
-
-  [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
 }
 
 // -----------------------------------------------------------------------------
