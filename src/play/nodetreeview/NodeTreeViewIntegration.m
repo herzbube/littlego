@@ -20,6 +20,7 @@
 #import "../model/NodeTreeViewModel.h"
 #import "../nodetreeview/NodeTreeViewController.h"
 #import "../../ui/AutoLayoutUtility.h"
+#import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiSettingsModel.h"
 #import "../../ui/UiUtilities.h"
 
@@ -193,7 +194,11 @@
   [resizablePaneViewControllers addObject:self.resizablePane2ViewController];
   self.resizableStackViewController.viewControllers = resizablePaneViewControllers;
 
-  self.resizableStackViewController.sizes = self.uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlay;
+  bool interfaceOrientationIsPortrait = [UiElementMetrics interfaceOrientationIsPortrait];
+  if (interfaceOrientationIsPortrait)
+    self.resizableStackViewController.sizes = self.uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlayPortrait;
+  else
+    self.resizableStackViewController.sizes = self.uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlayLandscape;
 
   NSNumber* uiAreaPlayResizablePaneMinimumSizeAsNumber = [NSNumber numberWithDouble:uiAreaPlayResizablePaneMinimumSize];
   self.resizableStackViewController.minimumSizes = @[uiAreaPlayResizablePaneMinimumSizeAsNumber, uiAreaPlayResizablePaneMinimumSizeAsNumber];
@@ -256,8 +261,11 @@
 - (void) resizableStackViewController:(ResizableStackViewController*)controller
                    viewSizesDidChange:(NSArray*)newSizes;
 {
-  // TODO xxx this should save only portrait sizes
-  self.uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlay = newSizes;
+  bool interfaceOrientationIsPortrait = [UiElementMetrics interfaceOrientationIsPortrait];
+  if (interfaceOrientationIsPortrait)
+    self.uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlayPortrait = newSizes;
+  else
+    self.uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlayLandscape = newSizes;
 }
 
 #pragma mark - User interface style handling (light/dark mode)

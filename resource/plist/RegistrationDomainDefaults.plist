@@ -449,7 +449,12 @@
 		<integer>0</integer>
 		<key>VisibleAnnotationViewPage</key>
 		<integer>0</integer>
-		<key>ResizableStackViewControllerInitialSizesUiAreaPlay</key>
+		<key>ResizableStackViewControllerInitialSizesUiAreaPlayPortrait</key>
+		<array>
+			<real>0.7</real>
+			<real>0.3</real>
+		</array>
+		<key>ResizableStackViewControllerInitialSizesUiAreaPlayLandscape</key>
 		<array>
 			<real>0.7</real>
 			<real>0.3</real>

@@ -936,7 +936,8 @@ NSString* crashDataContactEmailKey = @"CrashDataContactEmailKey";
   [uiSettingsDictionaryUpgrade setValue:[userDefaults valueForKey:uiAreaPlayModeKey] forKey:uiAreaPlayModeKey];
   [uiSettingsDictionaryUpgrade setValue:[userDefaults valueForKey:visibleAnnotationViewPageKey] forKey:visibleAnnotationViewPageKey];
   // Add key for new user preference
-  [uiSettingsDictionaryUpgrade setValue:@[@0.7, @0.3] forKey:resizableStackViewControllerInitialSizesUiAreaPlayKey];
+  [uiSettingsDictionaryUpgrade setValue:@[@0.7, @0.3] forKey:[resizableStackViewControllerInitialSizesUiAreaPlayKey stringByAppendingString:uiSettingsPortraitSuffix]];
+  [uiSettingsDictionaryUpgrade setValue:@[@0.7, @0.3] forKey:[resizableStackViewControllerInitialSizesUiAreaPlayKey stringByAppendingString:uiSettingsLandscapeSuffix]];
   [userDefaults setObject:uiSettingsDictionaryUpgrade forKey:uiSettingsKey];
   [userDefaults removeObjectForKey:visibleUIAreaKey];
   [userDefaults removeObjectForKey:tabOrderKey];

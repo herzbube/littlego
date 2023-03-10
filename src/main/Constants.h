@@ -2092,6 +2092,8 @@ extern NSString* tabOrderKey;
 extern NSString* uiAreaPlayModeKey;
 extern NSString* visibleAnnotationViewPageKey;
 extern NSString* resizableStackViewControllerInitialSizesUiAreaPlayKey;
+extern NSString* uiSettingsPortraitSuffix;
+extern NSString* uiSettingsLandscapeSuffix;
 // Magnifying glass settings
 extern NSString* magnifyingGlassKey;
 extern NSString* magnifyingGlassEnableModeKey;

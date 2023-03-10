@@ -43,7 +43,8 @@
   CGFloat resizablePane1Size = 1.0f - uiAreaPlayResizablePaneMinimumSize;
   NSNumber* resizablePane1SizeAsNumber = [NSNumber numberWithDouble:resizablePane1Size];
   NSNumber* resizablePane2SizeAsNumber = [NSNumber numberWithDouble:uiAreaPlayResizablePaneMinimumSize];
-  self.resizableStackViewControllerInitialSizesUiAreaPlay = @[resizablePane1SizeAsNumber, resizablePane2SizeAsNumber];
+  self.resizableStackViewControllerInitialSizesUiAreaPlayPortrait = @[resizablePane1SizeAsNumber, resizablePane2SizeAsNumber];
+  self.resizableStackViewControllerInitialSizesUiAreaPlayLandscape = self.resizableStackViewControllerInitialSizesUiAreaPlayPortrait;
 
   return self;
 }
@@ -54,7 +55,8 @@
 - (void) dealloc
 {
   self.tabOrder = nil;
-  self.resizableStackViewControllerInitialSizesUiAreaPlay = nil;
+  self.resizableStackViewControllerInitialSizesUiAreaPlayPortrait = nil;
+  self.resizableStackViewControllerInitialSizesUiAreaPlayLandscape = nil;
 
   [super dealloc];
 }
@@ -71,7 +73,8 @@
   self.tabOrder = [dictionary valueForKey:tabOrderKey];
   self.uiAreaPlayMode = (enum UIAreaPlayMode)[[dictionary valueForKey:uiAreaPlayModeKey] intValue];
   self.visibleAnnotationViewPage = (enum AnnotationViewPage)[[dictionary valueForKey:visibleAnnotationViewPageKey] intValue];
-  self.resizableStackViewControllerInitialSizesUiAreaPlay = [dictionary valueForKey:resizableStackViewControllerInitialSizesUiAreaPlayKey];
+  self.resizableStackViewControllerInitialSizesUiAreaPlayPortrait = [dictionary valueForKey:[resizableStackViewControllerInitialSizesUiAreaPlayKey stringByAppendingString:uiSettingsPortraitSuffix]];
+  self.resizableStackViewControllerInitialSizesUiAreaPlayLandscape = [dictionary valueForKey:[resizableStackViewControllerInitialSizesUiAreaPlayKey stringByAppendingString:uiSettingsLandscapeSuffix]];
 }
 
 // -----------------------------------------------------------------------------
@@ -85,7 +88,8 @@
   [dictionary setValue:self.tabOrder forKey:tabOrderKey];
   [dictionary setValue:[NSNumber numberWithInt:self.uiAreaPlayMode] forKey:uiAreaPlayModeKey];
   [dictionary setValue:[NSNumber numberWithInt:self.visibleAnnotationViewPage] forKey:visibleAnnotationViewPageKey];
-  [dictionary setValue:self.resizableStackViewControllerInitialSizesUiAreaPlay forKey:resizableStackViewControllerInitialSizesUiAreaPlayKey];
+  [dictionary setValue:self.resizableStackViewControllerInitialSizesUiAreaPlayPortrait forKey:[resizableStackViewControllerInitialSizesUiAreaPlayKey stringByAppendingString:uiSettingsPortraitSuffix]];
+  [dictionary setValue:self.resizableStackViewControllerInitialSizesUiAreaPlayLandscape forKey:[resizableStackViewControllerInitialSizesUiAreaPlayKey stringByAppendingString:uiSettingsLandscapeSuffix]];
 
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   [userDefaults setObject:dictionary forKey:uiSettingsKey];

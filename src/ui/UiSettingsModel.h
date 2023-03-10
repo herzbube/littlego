@@ -45,11 +45,19 @@
 /// @brief The page that is currently visible in the annotation view.
 @property(nonatomic, assign) enum AnnotationViewPage visibleAnnotationViewPage;
 /// @brief The current size distribution in the ResizableStackViewController
-/// that is visible in the "Play" UI area.
+/// that is visible in the "Play" UI area when the user interface orientation
+/// is Portrait.
 ///
 /// Array elements are NSNumber objects with double values. Double values
 /// express percentages. For details see the documentation of the
 /// ResizableStackViewController property @a sizes.
-@property(nonatomic, retain) NSArray* resizableStackViewControllerInitialSizesUiAreaPlay;
+@property(nonatomic, retain) NSArray* resizableStackViewControllerInitialSizesUiAreaPlayPortrait;
+/// @brief The current size distribution in the ResizableStackViewController
+/// that is visible in the "Play" UI area when the user interface orientation
+/// is Landscape.
+///
+/// The structure of the array content is identical to the property
+/// @e resizableStackViewControllerInitialSizesUiAreaPlayPortrait.
+@property(nonatomic, retain) NSArray* resizableStackViewControllerInitialSizesUiAreaPlayLandscape;
 
 @end
