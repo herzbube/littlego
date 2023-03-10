@@ -162,9 +162,18 @@
     // because they are covered by the overlapping. We are using the selected
     // line width to enlarge the rectangle because it is wider than the regular
     // line width, so both line types can be safely drawn.
-    // Note: We have to enlarge the canvas rect, not the drawing rect, because
-    // the canvas rect may be used for setting up a clipping path.
-    canvasRectForCell = CGRectInset(canvasRectForCell, -selectedLineWidth, -selectedLineWidth);
+    //
+    // Notes:
+    // - We have to enlarge the canvas rect, not the drawing rect, because the
+    //   canvas rect may be used for setting up a clipping path.
+    // - Enlarging the cell rectangle is necessary only if diagonally adjacent
+    //   cell rectangles are square, because only then are lines joined in the
+    //   corners of the cell rectangles. If "condense move nodes" is enabled,
+    //   cell rectangles are NOT square, hence no enlargement is needed. In fact
+    //   enlargement must NOT be done, because it would change the aspect ratio
+    //   of the cell rectangle, which would cause lines to not join at all.
+    if (! condenseMoveNodes)
+      canvasRectForCell = CGRectInset(canvasRectForCell, -selectedLineWidth, -selectedLineWidth);
 
     CGRect drawingRectForCell = canvasRectForCell;
     // TODO xxx do we have a method in drawing helper for this?
