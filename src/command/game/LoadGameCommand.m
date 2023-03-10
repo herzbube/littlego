@@ -515,11 +515,16 @@ static const int maxStepsForCreateNodes = 9;
 /// - Phase 2: Validate setup information and moves to make sure that no board
 ///   positions are created that the app considers to be illegal. A by-product
 ///   of this phase is that, after the phase ends, the board state is set up
-///   for the last node of the main game variation.  For details see
+///   for the last node of the main game variation. For details see
 ///   validateSetupAndMoveNodes:errorMessage:().
 /// - Phase 3: Fix the state of the remaining Go model objects so that
 ///   everything is set up for the app to display the last board position of the
 ///   main game variation. For details see fixStateOfGoModelObjects:().
+///
+/// Once all the phases have been gone through, a number of notifications are
+/// posted to the default notification center to inform the rest of the
+/// application about the final state of the Go model. For details see
+/// notifyApplicationAboutFinalGoModelState:().
 // -----------------------------------------------------------------------------
 - (bool) setupNodes:(NSString**)errorMessage
 {
@@ -534,7 +539,11 @@ static const int maxStepsForCreateNodes = 9;
     if (! success)
       return false;
 
-    return [self fixStateOfGoModelObjects:errorMessage];
+    success = [self fixStateOfGoModelObjects:errorMessage];
+    if (! success)
+      return false;
+
+    return [self notifyApplicationAboutFinalGoModelState:errorMessage];
   }
   @catch (NSException* exception)
   {
@@ -1518,6 +1527,47 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   // that can be mapped to one of the app's recognized game endings
   // (e.g. resignation).
   [game endGameDueToPassMovesIfGameRulesRequireIt];
+
+  return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Posts a number of notifications to the default notification center to
+/// inform the rest of the application about the final state of the Go model.
+///
+/// This is a helper function for setupNodes:().
+// -----------------------------------------------------------------------------
+- (bool) notifyApplicationAboutFinalGoModelState:(NSString**)errorMessage
+{
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  GoGame* game = [GoGame sharedGame];
+  GoNodeModel* nodeModel = game.nodeModel;
+  GoBoardPosition* boardPosition = game.boardPosition;
+
+  // If the loaded game does not have any other nodes besides the root node,
+  // then we don't have to post any notifications
+  if (! nodeModel.rootNode.hasChildren)
+    return true;
+
+  // A new game consists of only the root node and therefore has exactly one
+  // board position, and the current board position is the one that refers to
+  // the root node
+  int oldNumberOfBoardPositions = 1;
+  int oldCurrentBoardPosition = 0;
+  // These new values refer to whichever game variation has been set up by the
+  // rest of this command to be the current game variation
+  int newNumberOfBoardPositions = boardPosition.numberOfBoardPositions;
+  int newCurrentBoardPosition = boardPosition.currentBoardPosition;
+
+  // Needs to be posted because the node tree does not consist of only the root
+  // node
+  [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
+
+  if (oldNumberOfBoardPositions != newNumberOfBoardPositions)
+    [center postNotificationName:numberOfBoardPositionsDidChange object:@[[NSNumber numberWithInt:oldNumberOfBoardPositions], [NSNumber numberWithInt:newNumberOfBoardPositions]]];
+
+  if (oldCurrentBoardPosition != newCurrentBoardPosition)
+    [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:newCurrentBoardPosition]]];
 
   return true;
 }
