@@ -35,6 +35,7 @@
 #import "../../main/ApplicationDelegate.h"
 #import "../../play/model/GameVariationModel.h"
 #import "../../shared/ApplicationStateManager.h"
+#import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UIViewControllerAdditions.h"
 
 
@@ -128,6 +129,7 @@ enum AlertType
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
+    [[LongRunningActionCounter sharedCounter] increment];
 
     if (! response.status)
     {
@@ -140,6 +142,7 @@ enum AlertType
     bool success = [self playMoveInsideResponse:response];
     if (! success)
       return;
+
     // Don't check command execution result, it is irrelevant for us whether the
     // command succeeds or not. There is a known case where the command fails:
     // If statistics collection was enabled while the "genmove" command above
@@ -147,12 +150,16 @@ enum AlertType
     // try to acquire statistics data, but will fail because the GTP engine has
     // not yet collected any data.
     [[[[UpdateTerritoryStatisticsCommand alloc] init] autorelease] submit];
+
+    // If another ComputerPlayMoveCommand is submitted, this returns after the
+    // next ComputerPlayMoveCommand has submitted its GTP command
     [self continuePlayingIfNecessary];
   }
   @finally
   {
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
+    [[LongRunningActionCounter sharedCounter] decrement];
   }
 }
 

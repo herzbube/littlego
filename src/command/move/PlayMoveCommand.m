@@ -31,6 +31,7 @@
 #import "../../main/ApplicationDelegate.h"
 #import "../../play/model/GameVariationModel.h"
 #import "../../shared/ApplicationStateManager.h"
+#import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UIViewControllerAdditions.h"
 
 
@@ -162,6 +163,7 @@ enum AlertType
   @try
   {
     [[ApplicationStateManager sharedManager] beginSavePoint];
+    [[LongRunningActionCounter sharedCounter] increment];
 
     GoMoveNodeCreationOptions* options;
     GameVariationModel* gameVariationModel = [ApplicationDelegate sharedDelegate].gameVariationModel;
@@ -203,6 +205,7 @@ enum AlertType
   {
     [[ApplicationStateManager sharedManager] applicationStateDidChange];
     [[ApplicationStateManager sharedManager] commitSavePoint];
+    [[LongRunningActionCounter sharedCounter] decrement];
   }
 
   [[[[BackupGameToSgfCommand alloc] init] autorelease] submit];
