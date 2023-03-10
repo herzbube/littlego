@@ -312,7 +312,36 @@ only fix for this problem that I know of is by manually downloading/installing
 an Xcode Developer Disk Image. The GitHub project I use as a source for such
 disk images is [1].
 
-1. Download the disk image .zip file that matches the iOS version on the device.
+Before you continue, make sure that you have Developer Mode enabled on the
+device [2].
+- If iOS 15 and older is on the device: You don't need to do anything. iOS 15
+  and older does not expose a setting with which to enable Developer Mode. It
+  can be said that Developer Mode is built into the OS and always enabled.
+- If iOS 16 and newer is on the device: Developer Mode is a dedicated option
+  that you must enable explicitly.
+  1. Open the Settings app on the device.
+  2. Navigate to "Privacy & Security".
+  3. Scroll down to the bottom of the screen.
+  4. There you should have a switch labeled "Developer Mode". Enable this,
+     then follow the on-screen instructions (you'll need to enter your device
+     passcode a couple of times and restart the device).
+  NOTE: If you do not see the "Developer Mode" switch you must somehow indicate
+  to iOS 16 that you want to use the device for development - only then will the
+  OS expose the setting and make it visible to the user. Apparently one way to
+  give this indication to iOS is to sideload an app onto the device. At the time
+  of writing this, the process for sideloading was highly irregular and required
+  a lot of trust that nothing nefarious is going on. A much simpler way that I
+  found was to install a Development Provisioning Profile on the device. Once
+  that profile is installed iOS also displays the Developer Mode setting. A
+  profile can be generated when logged in to your account on developer.apple.com
+  under "Certificates, Identifiers & Profiles" > Profiles > Tap the "+" button.
+  The profile type is "iOS App Development".
+
+When the Development Mode requirement is met, you can continue with the disk
+image installation as follows:
+
+1. Download from [1] the disk image .zip file that matches the iOS version on
+   the device.
 2. Go to your XCode app in the Application folder & open its content.
 3. Locate the "DeviceSupport" folder of the appropriate platform.
    Example path: /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/DeviceSupport
@@ -327,9 +356,10 @@ a few moments:
 After that the build should run just fine.
 
 Note: I encountered this problem for the first time with Xcode 13.2.1 and the
-device having installing iOS 15.4.
+device having installed iOS 15.4.
 
 [1] https://github.com/mspvirajpatel/Xcode_Developer_Disk_Images
+[2] https://developer.apple.com/documentation/xcode/enabling-developer-mode-on-a-device
 
 
 Profiling on Intel Mac for simulator build
