@@ -133,6 +133,39 @@
     NodeTreeViewCellLines linesSelected = cell.linesSelectedGameVariation;
 
     CGRect canvasRectForCell = [NodeTreeViewDrawingHelper canvasRectForCellAtPosition:position metrics:self.nodeTreeViewMetrics];
+
+    // If we are drawing exactly within the cell boundaries then diagonal
+    // branching lines of two diagonally adjacent cells do not join seamlessly
+    // at the corner points because the joining is clipped by the cell rectangle
+    // boundaries. This is especially visible for selected lines because they
+    // are wider than normal lines.
+    //
+    // Two diagonal lines from different    The same two lines where the joining
+    // cells joining seamlessly             is clipped by the cell rectangle
+    //     o                                    o  |
+    //    / \                                  / \ |
+    //   o   \                                o   \|
+    //    \   \                                \   |
+    //     \   o                                \  |o
+    //      \ / o                           -------+ o
+    //       o / \                                o +-------
+    //        o   \                                o|  \
+    //         \   \                                |   \
+    //          \   o                               |\   o
+    //           \ /                                | \ /
+    //            o                                 |  o
+    //
+    // By making the rectangle slightly larger we allow the lines drawing to
+    // take place sightly outside of the area that is strictly necessary. This
+    // causes the lines drawn for adjacent cells to slightly overlap, which for
+    // diagonal lines makes sure that the clipped line endings are not visible
+    // because they are covered by the overlapping. We are using the selected
+    // line width to enlarge the rectangle because it is wider than the regular
+    // line width, so both line types can be safely drawn.
+    // Note: We have to enlarge the canvas rect, not the drawing rect, because
+    // the canvas rect may be used for setting up a clipping path.
+    canvasRectForCell = CGRectInset(canvasRectForCell, -selectedLineWidth, -selectedLineWidth);
+
     CGRect drawingRectForCell = canvasRectForCell;
     // TODO xxx do we have a method in drawing helper for this?
     drawingRectForCell.origin.x = canvasRectForCell.origin.x - tileRect.origin.x;
