@@ -54,7 +54,8 @@ enum DeleteAllSectionItem
 // -----------------------------------------------------------------------------
 @interface ArchiveViewController()
 @property(nonatomic, retain) PlaceholderView* placeholderView;
-@property(nonatomic, retain) UITableView* tableView;
+@property(nonatomic, retain) UITableViewController* tableViewController;
+@property(nonatomic, retain) NSArray* autoLayoutConstraints;
 @end
 
 
@@ -73,10 +74,13 @@ enum DeleteAllSectionItem
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+
   self.placeholderView = nil;
-  self.tableView = nil;
+  self.tableViewController = nil;
+  self.autoLayoutConstraints = nil;
   self.archiveViewModel = [ApplicationDelegate sharedDelegate].archiveViewModel;
   [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
+
   return self;
 }
 
@@ -86,10 +90,39 @@ enum DeleteAllSectionItem
 - (void) dealloc
 {
   self.placeholderView = nil;
-  self.tableView = nil;
+  self.tableViewController = nil;
+  self.autoLayoutConstraints = nil;
   [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
   self.archiveViewModel = nil;
+
   [super dealloc];
+}
+
+#pragma mark - Container view controller handling
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setTableViewController:(UITableViewController*)tableViewController
+{
+  if (_tableViewController == tableViewController)
+    return;
+  if (_tableViewController)
+  {
+    [_tableViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_tableViewController removeFromParentViewController];
+    [_tableViewController release];
+    _tableViewController = nil;
+  }
+  if (tableViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:tableViewController];
+    [tableViewController didMoveToParentViewController:self];
+    [tableViewController retain];
+    _tableViewController = tableViewController;
+  }
 }
 
 #pragma mark - UIViewController overrides
@@ -108,11 +141,9 @@ enum DeleteAllSectionItem
   // is shown.
   self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
 
-  [self setupPlaceholderView];
-  [self setupTableView];
+  [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
 
-  [self updateVisibleStateOfMainViews];
   [self updateVisibleStateOfEditButton];
 }
 
@@ -122,10 +153,54 @@ enum DeleteAllSectionItem
 - (void) setEditing:(BOOL)editing animated:(BOOL)animated
 {
   [super setEditing:editing animated:animated];
-  [self.tableView setEditing:editing animated:animated];
+  [self.tableViewController setEditing:editing animated:animated];
 }
 
-#pragma mark - Private helpers for view setup
+#pragma mark - View hierarchy handling
+
+// -----------------------------------------------------------------------------
+/// @brief Initial setup of the view hierarchy.
+// -----------------------------------------------------------------------------
+- (void) setupViewHierarchy
+{
+  if (0 == self.archiveViewModel.gameCount)
+    [self setupPlaceholderView];
+  else
+    [self setupTableView];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Makes either the placeholder view or the table view visible. The
+/// placeholder view is visible if there are no archived games to display.
+// -----------------------------------------------------------------------------
+- (void) updateViewHierarchy
+{
+  if (0 == self.archiveViewModel.gameCount)
+  {
+    if (self.placeholderView)
+      return;
+
+    [self.tableViewController.view removeFromSuperview];
+    self.tableViewController = nil;
+    self.autoLayoutConstraints = nil;
+
+    [self setupViewHierarchy];
+    [self setupAutoLayoutConstraints];
+  }
+  else
+  {
+    if (self.tableViewController)
+      return;
+
+    [self.placeholderView removeFromSuperview];
+    self.placeholderView = nil;
+    self.autoLayoutConstraints = nil;
+
+    [self setupViewHierarchy];
+    [self setupAutoLayoutConstraints];
+  }
+}
+
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the placeholder view and the static label inside.
@@ -141,41 +216,36 @@ enum DeleteAllSectionItem
 // -----------------------------------------------------------------------------
 - (void) setupTableView
 {
-  self.tableView = [UiUtilities createTableViewWithStyle:UITableViewStyleGrouped
-                               withDelegateAndDataSource:self];
-  [self.view addSubview:self.tableView];
+  self.tableViewController = [[[UITableViewController alloc] initWithStyle:UITableViewStyleGrouped] autorelease];
+
+  UITableView* tableView = self.tableViewController.tableView;
+  [self.view addSubview:tableView];
+
+  tableView.delegate = self;
+  tableView.dataSource = self;
 }
 
+#pragma mark - Auto Layout constraints
+
 // -----------------------------------------------------------------------------
-/// @brief Private helper
+/// @brief Main method for setting up Auto Layout constraints.
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
-  self.placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
-  [AutoLayoutUtility fillSuperview:self.view withSubview:self.placeholderView];
-  [AutoLayoutUtility fillSuperview:self.view withSubview:self.tableView];
-}
-
-#pragma mark - Private helpers for managing view visibility
-
-// -----------------------------------------------------------------------------
-/// @brief Makes either the placeholder view or the table view visible. The
-/// placeholder view is visible if there are no archived games to display.
-// -----------------------------------------------------------------------------
-- (void) updateVisibleStateOfMainViews
-{
-  if (0 == self.archiveViewModel.gameCount)
+  if (self.placeholderView)
   {
-    self.placeholderView.hidden = NO;
-    self.tableView.hidden = YES;
+    self.placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.autoLayoutConstraints = [AutoLayoutUtility fillSuperview:self.view withSubview:self.placeholderView];
   }
   else
   {
-    self.placeholderView.hidden = YES;
-    self.tableView.hidden = NO;
+    UIView* tableViewControllerView = self.tableViewController.view;
+    tableViewControllerView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.autoLayoutConstraints = [AutoLayoutUtility fillSuperview:self.view withSubview:tableViewControllerView];
   }
 }
+
+#pragma mark - Private helpers for managing view visibility
 
 // -----------------------------------------------------------------------------
 /// @brief Makes the edit button visible if the table view contains 1 or more
@@ -196,11 +266,11 @@ enum DeleteAllSectionItem
 // -----------------------------------------------------------------------------
 - (void) updateArchiveViewAfterLastGameWasDeleted
 {
-  [self updateVisibleStateOfMainViews];
+  [self updateViewHierarchy];
   [self updateVisibleStateOfEditButton];
   // "Delete All" button must go away, the simplest way to achieve this is to
   // reload all data
-  [self.tableView reloadData];
+  [self.tableViewController.tableView reloadData];
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -365,10 +435,10 @@ enum DeleteAllSectionItem
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  [self updateVisibleStateOfMainViews];
+  [self updateViewHierarchy];
   [self updateVisibleStateOfEditButton];
   // "Delete All" button may need to be shown if game count goes from 0 to 1
-  [self.tableView reloadData];
+  [self.tableViewController.tableView reloadData];
 }
 
 #pragma mark - Action handlers
