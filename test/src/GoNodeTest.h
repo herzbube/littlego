@@ -29,7 +29,6 @@
 
 - (void) testInitialState;
 - (void) testNode;
-- (void) testNodeWithMove;
 - (void) testSetFirstChild;
 - (void) testChildrenAndHasChildrenAndIsBranchingNode;
 - (void) testAppendChild;

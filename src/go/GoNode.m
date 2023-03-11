@@ -50,19 +50,6 @@
   return [[[self alloc] init] autorelease];
 }
 
-// TODO xxx is this still needed now that goMove property is readwrite?
-// -----------------------------------------------------------------------------
-/// @brief Returns a newly constructed GoNode object that has no parent,
-/// child or sibling and is not associated with any game. The supplied GoMove
-/// object @a goMove is associated with the node.
-// -----------------------------------------------------------------------------
-+ (GoNode*) nodeWithMove:(GoMove*)goMove
-{
-  GoNode* node = [[[self alloc] init] autorelease];
-  node.goMove = goMove;
-  return node;
-}
-
 // -----------------------------------------------------------------------------
 /// @brief Initializes an GoNode object that has no parent,
 /// child or sibling and is not associated with any game.

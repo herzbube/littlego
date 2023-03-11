@@ -337,7 +337,8 @@
     @throw newException;
   }
 
-  GoNode* node = [GoNode nodeWithMove:move];
+  GoNode* node = [GoNode node];
+  node.goMove = move;
   [self addNodeToTreeAndUpdateBoardPosition:node withMoveNodeCreationOptions:moveNodeCreationOptions];
 }
 
@@ -461,7 +462,8 @@
   GoMove* mostRecentMove = nodeWithMostRecentMove ? nodeWithMostRecentMove.goMove : nil;
   GoMove* move = [GoMove move:GoMoveTypePass by:self.nextMovePlayer after:mostRecentMove];
 
-  GoNode* node = [GoNode nodeWithMove:move];
+  GoNode* node = [GoNode node];
+  node.goMove = move;
   [self addNodeToTreeAndUpdateBoardPosition:node withMoveNodeCreationOptions:moveNodeCreationOptions];
 
   // This may change the game state. Such a change must occur after the move was

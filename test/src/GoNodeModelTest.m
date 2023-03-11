@@ -271,7 +271,8 @@
 
   GoNode* mainVariationNode0 = rootNode;
   GoNode* mainVariationNode1 = [GoNode node];
-  GoNode* mainVariationNode2 = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];
+  GoNode* mainVariationNode2 = [GoNode node];
+  mainVariationNode2.goMove = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil];
   GoNode* mainVariationNode3 = [GoNode node];
   [mainVariationNode0 setFirstChild:mainVariationNode1];
   [mainVariationNode1 setFirstChild:mainVariationNode2];
@@ -279,7 +280,8 @@
 
   GoNode* secondaryVariationNode0 = rootNode;
   GoNode* secondaryVariationNode1 = [GoNode node];
-  GoNode* secondaryVariationNode2 = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];;
+  GoNode* secondaryVariationNode2 = [GoNode node];
+  secondaryVariationNode2.goMove = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil];
   [secondaryVariationNode0 appendChild:secondaryVariationNode1];
   [secondaryVariationNode1 setFirstChild:secondaryVariationNode2];
 
@@ -367,7 +369,8 @@
 
   GoMove* move = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:nil];
   move.point = [m_game.board pointAtVertex:@"A1"];
-  GoNode* node2 = [GoNode nodeWithMove:move];
+  GoNode* node2 = [GoNode node];
+  node2.goMove = move;
   [nodeModel appendNode:node2];
   XCTAssertTrue(m_game.document.isDirty);
   XCTAssertEqual(nodeModel.numberOfNodes, 3);
@@ -402,9 +405,12 @@
   move1.point = [m_game.board pointAtVertex:@"A1"];
   GoMove* move2 = [GoMove move:GoMoveTypePass by:m_game.playerWhite after:move1];
   GoMove* move3 = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:move2];
-  GoNode* node1 = [GoNode nodeWithMove:move1];
-  GoNode* node2 = [GoNode nodeWithMove:move2];
-  GoNode* node3 = [GoNode nodeWithMove:move3];
+  GoNode* node1 = [GoNode node];
+  GoNode* node2 = [GoNode node];
+  GoNode* node3 = [GoNode node];
+  node1.goMove = move1;
+  node2.goMove = move2;
+  node3.goMove = move3;
   [nodeModel appendNode:node1];
   [nodeModel appendNode:node2];
   [nodeModel appendNode:node3];
@@ -460,8 +466,10 @@
   GoMove* move1 = [GoMove move:GoMoveTypePlay by:m_game.playerBlack after:nil];
   move1.point = [m_game.board pointAtVertex:@"A1"];
   GoMove* move2 = [GoMove move:GoMoveTypePass by:m_game.playerWhite after:move1];
-  GoNode* node1 = [GoNode nodeWithMove:move1];
-  GoNode* node2 = [GoNode nodeWithMove:move2];
+  GoNode* node1 = [GoNode node];
+  GoNode* node2 = [GoNode node];
+  node1.goMove = move1;
+  node2.goMove = move2;
 
   XCTAssertEqual(nodeModel.numberOfNodes, 1);
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
@@ -505,9 +513,12 @@
   move1.point = [m_game.board pointAtVertex:@"A1"];
   GoMove* move2 = [GoMove move:GoMoveTypePass by:m_game.playerWhite after:move1];
   GoMove* move3 = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:move2];
-  GoNode* node1 = [GoNode nodeWithMove:move1];
-  GoNode* node2 = [GoNode nodeWithMove:move2];
-  GoNode* node3 = [GoNode nodeWithMove:move3];
+  GoNode* node1 = [GoNode node];
+  GoNode* node2 = [GoNode node];
+  GoNode* node3 = [GoNode node];
+  node1.goMove = move1;
+  node2.goMove = move2;
+  node3.goMove = move3;
   [nodeModel appendNode:node1];
   [nodeModel appendNode:node2];
   [nodeModel appendNode:node3];
@@ -570,15 +581,21 @@
 - (void) setupNodeTree_FirstDiscardedNodeHasNextOrPreviousSibling
 {
   self.nodeA = [GoNode node];
-  self.nodeB = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];;
+  self.nodeB = [GoNode node];
   self.nodeC = [GoNode node];
-  self.nodeD = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:self.nodeB.goMove]];;
-  self.nodeE = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];;
-  self.nodeF = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];;
-  self.nodeG = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:self.nodeE.goMove]];;
+  self.nodeD = [GoNode node];
+  self.nodeE = [GoNode node];
+  self.nodeF = [GoNode node];
+  self.nodeG = [GoNode node];
   self.nodeH = [GoNode node];
-  self.nodeI = [GoNode nodeWithMove:[GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil]];;
+  self.nodeI = [GoNode node];
   self.nodeJ = [GoNode node];
+  self.nodeB.goMove = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil];
+  self.nodeD.goMove = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:self.nodeB.goMove];
+  self.nodeE.goMove = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil];
+  self.nodeF.goMove = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil];
+  self.nodeG.goMove = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:self.nodeE.goMove];
+  self.nodeI.goMove = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil];
 
   GoNodeModel* nodeModel = m_game.nodeModel;
   [nodeModel.rootNode setFirstChild:self.nodeA];
@@ -803,7 +820,8 @@
   [nodeModel appendNode:node1];
   XCTAssertEqual(nodeModel.numberOfNodes, 2);
   GoMove* move = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil];
-  GoNode* node2 = [GoNode nodeWithMove:move];
+  GoNode* node2 = [GoNode node];
+  node2.goMove = move;
   [nodeModel appendNode:node2];
   XCTAssertEqual(nodeModel.numberOfNodes, 3);
   [nodeModel discardAllNodes];
@@ -822,7 +840,8 @@
   [nodeModel appendNode:node1];
   XCTAssertEqual(nodeModel.numberOfMoves, 0);
   GoMove* move = [GoMove move:GoMoveTypePass by:m_game.playerBlack after:nil];
-  GoNode* node2 = [GoNode nodeWithMove:move];
+  GoNode* node2 = [GoNode node];
+  node2.goMove = move;
   [nodeModel appendNode:node2];
   XCTAssertEqual(nodeModel.numberOfMoves, 1);
   [nodeModel discardAllNodes];

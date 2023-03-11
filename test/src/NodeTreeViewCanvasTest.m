@@ -1997,7 +1997,8 @@
 // -----------------------------------------------------------------------------
 - (GoNode*) createMoveNodeForPlayer:(GoPlayer*)player moveNumber:(int)moveNumber
 {
-  GoNode* node = [GoNode nodeWithMove:[self createMoveForPlayer:player moveNumber:moveNumber]];
+  GoNode* node = [GoNode node];
+  node.goMove = [self createMoveForPlayer:player moveNumber:moveNumber];
   return node;
 }
 
