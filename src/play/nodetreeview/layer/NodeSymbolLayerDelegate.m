@@ -212,11 +212,35 @@
     positionsToDraw = self.drawingCellsOnTile;
   }
 
+  NSMutableDictionary* nodeSymbolsAlreadyDrawn = [NSMutableDictionary dictionary];
+
   for (NodeTreeViewCellPosition* position in positionsToDraw)
   {
     NodeTreeViewCell* cell = [self.nodeTreeViewCanvas cellAtPosition:position];
     if (! cell || cell.symbol == NodeTreeViewCellSymbolNone)
       continue;
+
+    // If the cell is a sub-cell that belongs to a multipart cell then there is
+    // a good chance that other sub-cells from the same multipart cell are also
+    // on this tile, which would cause the symbol to be drawn multiple times.
+    // We prevent drawing multiple times by remembering which symbols were
+    // already drawn. Alas there is some overhead involved in the optimization
+    // (lookup of the GoNode that the symbol represents) because the
+    // NodeTreeViewCell does not contain any data that allows to uniquely
+    // identify the symbol. No measuring was done how much speed is gained by
+    // the optimization, but it is reasonable to expect that the time saved for
+    // not drawing the same symbol far outweighs the optimization overhead.
+    if (cell.isMultipart)
+    {
+      GoNode* node = [self.nodeTreeViewCanvas nodeAtPosition:position];
+      if (node)
+      {
+        NSValue* key = [NSValue valueWithNonretainedObject:node];
+        if ([nodeSymbolsAlreadyDrawn objectForKey:key])
+          continue;
+        nodeSymbolsAlreadyDrawn[key] = key;
+      }
+    }
 
     enum NodeTreeViewLayerType layerType = [self layerTypeForSymbol:cell.symbol
                                                 cellIsMultipartCell:cell.isMultipart
