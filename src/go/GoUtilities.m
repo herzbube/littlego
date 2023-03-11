@@ -853,10 +853,10 @@
 {
   GoNodeModel* nodeModel = game.nodeModel;
 
-  int startIndexOfNode = [nodeModel indexOfNode:node] + 1;
-  if (-1 == startIndexOfNode)
+  int indexOfNode = [nodeModel indexOfNode:node];
+  if (-1 == indexOfNode)
   {
-    NSString* errorMessage = @"indexOfNode: failed: node not found";
+    NSString* errorMessage = @"nodeWithNextMove:inCurrentGameVariation: failed: node not found";
     DDLogError(@"%@: %@", self, errorMessage);
     NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
                                                      reason:errorMessage
@@ -864,11 +864,12 @@
     @throw exception;
   }
 
+  int startNodeIndex = indexOfNode + 1;
   int numberOfNodes = nodeModel.numberOfNodes;
 
-  for (int indexOfNode = startIndexOfNode; indexOfNode < numberOfNodes; indexOfNode++)
+  for (int nodeIndex = startNodeIndex; nodeIndex < numberOfNodes; nodeIndex++)
   {
-    node = [nodeModel nodeAtIndex:indexOfNode];
+    node = [nodeModel nodeAtIndex:nodeIndex];
     if (node.goMove)
       return node;
   }
@@ -909,22 +910,34 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Examines the direct descendants of @a node (excluding @a node).
-/// Returns the number of direct descendant nodes that contain a move. Returns
-/// zero if @a node is @e nil.
+/// @brief Examines the successors of @a node (excluding @a node) in the current
+/// game variation available from @a game. Returns the number of successor nodes
+/// that contain a move. Returns zero if @a node is @e nil.
 // -----------------------------------------------------------------------------
-+ (int) numberOfMovesAfterNode:(GoNode*)node
++ (int) numberOfMovesAfterNode:(GoNode*)node inCurrentGameVariation:(GoGame*)game
 {
+  GoNodeModel* nodeModel = game.nodeModel;
+
+  int indexOfNode = [nodeModel indexOfNode:node];
+  if (-1 == indexOfNode)
+  {
+    NSString* errorMessage = @"numberOfMovesAfterNode:inCurrentGameVariation: failed: node not found";
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSInvalidArgumentException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  int startNodeIndex = indexOfNode + 1;
+  int numberOfNodes = nodeModel.numberOfNodes;
   int numberOfMovesAfterNode = 0;
 
-  // TODO xxx Variation support
-  if (node)
-    node = node.firstChild;
-  while (node)
+  for (int nodeIndex = startNodeIndex; nodeIndex < numberOfNodes; nodeIndex++)
   {
+    node = [nodeModel nodeAtIndex:nodeIndex];
     if (node.goMove)
       numberOfMovesAfterNode++;
-    node = node.firstChild;
   }
 
   return numberOfMovesAfterNode;

@@ -62,7 +62,7 @@
 + (GoNode*) nodeWithNextMove:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
 + (bool) nodeWithNextMoveExists:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
 + (int) numberOfMovesBeforeNode:(GoNode*)node;
-+ (int) numberOfMovesAfterNode:(GoNode*)node;
++ (int) numberOfMovesAfterNode:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
 + (GoNode*) nodeWithMostRecentSetup:(GoNode*)node inCurrentGameVariation:(GoGame*)game;
 + (GoNode*) nodeWithMostRecentBoardStateChange:(GoNode*)node;
 + (bool) showInfoIndicatorForNode:(GoNode*)node;
