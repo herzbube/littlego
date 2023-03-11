@@ -1108,6 +1108,9 @@ Archive, document interaction
   - illegal-move.sgf: The game cannot be loaded. An error message is displayed
     that explains the reason (white plays on an intersection that is already
     occupied).
+  - illegal-setup.sgf: The game cannot be loaded. An error message is displayed
+    that explains the reason (setup attempts to place stones with zero
+    liberties).
   - positional-superko.sgf, with simple and situational superko rules (rulesets
     "Little Go" and "AGA", respectively): The game can be loaded
   - positional-superko.sgf, with positional superko rule (ruleset "Chinese"):
@@ -1125,9 +1128,9 @@ Archive, document interaction
   - not-enough-handicap-stones.sgf: The game cannot be loaded. An error message
     is displayed that explains the reason (not enough handicap stones are set
     up).
-  - setup-manipulates-handicap.sgf. The game cannot be loaded. An error message
-    is displayed that explains the reason (handicap stones are changed after
-    being set up).
+  - setup-before-handicap-setup.sgf: The game cannot be loaded. An error message
+    is displayed that explains the reason (a setup property is found in a node
+    before handicap stones are set up).
   - setup-after-first-move.sgf. The game cannot be loaded. An error message is
     displayed that explains the reason (stone setup appears after first move).
   - setup-player-after-first-move.sgf. The game cannot be loaded. An error
