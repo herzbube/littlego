@@ -1598,8 +1598,6 @@ struct GestureInfo
   {
     case UIGestureRecognizerStateBegan:
     {
-      // TODO xxx Disable rotation? [LayoutManager sharedManager].shouldAutorotate = false;
-
       struct GestureInfo gestureInfo;
       gestureInfo.gestureStartLocation = gestureLocation;
       gestureInfo.gestureStartSizes = [self.sizes copy];  // copy must be released when gesture ends
@@ -1669,8 +1667,6 @@ struct GestureInfo
       gestureInfo.gestureStartLocation = CGPointZero;
       gestureInfo.gestureStartSizes = nil;
       self.gestureInfo = gestureInfo;
-
-      // TODO xxx Re-enable rotation? [LayoutManager sharedManager].shouldAutorotate = true;
 
       if (oldGestureInfo.gestureStartSizes)
       {

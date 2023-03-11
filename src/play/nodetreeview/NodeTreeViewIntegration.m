@@ -32,6 +32,7 @@
 @property(nonatomic, retain) ResizableStackViewController* resizableStackViewController;
 @property(nonatomic, retain) NodeTreeViewModel* nodeTreeViewModel;
 @property(nonatomic, retain) UiSettingsModel* uiSettingsModel;
+@property(nonatomic, assign) bool interfaceOrientationIsPortrait;
 @property(nonatomic, retain) UIViewController* resizablePane2ViewController;
 @property(nonatomic, retain) NodeTreeViewController* nodeTreeViewController;
 @end
@@ -58,6 +59,18 @@
   self.resizableStackViewController = resizableStackViewController;
   self.nodeTreeViewModel = nodeTreeViewModel;
   self.uiSettingsModel = uiSettingsModel;
+
+  // Determine the interface orientation which the NodeTreeViewIntegration
+  // object manages only once and keep it static afterwards. If it were
+  // determined dynamically by resizableStackViewController:viewSizesDidChange:
+  // then there would be a potential that the wrong interface orientation would
+  // be determined. Specifically, if a resize gesture is in progress and the
+  // device changes the interface orientation => the gesture is cancelled, but
+  // resizableStackViewController:viewSizesDidChange: is still invoked; at the
+  // time the new interface orientation is already in effect, which would cause
+  // resizableStackViewController:viewSizesDidChange: to write to the wrong
+  // user preference.
+  self.interfaceOrientationIsPortrait = [UiElementMetrics interfaceOrientationIsPortrait];
 
   self.resizablePane2ViewController = nil;
   self.nodeTreeViewController = nil;
@@ -194,8 +207,7 @@
   [resizablePaneViewControllers addObject:self.resizablePane2ViewController];
   self.resizableStackViewController.viewControllers = resizablePaneViewControllers;
 
-  bool interfaceOrientationIsPortrait = [UiElementMetrics interfaceOrientationIsPortrait];
-  if (interfaceOrientationIsPortrait)
+  if (self.interfaceOrientationIsPortrait)
     self.resizableStackViewController.sizes = self.uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlayPortrait;
   else
     self.resizableStackViewController.sizes = self.uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlayLandscape;
@@ -261,8 +273,7 @@
 - (void) resizableStackViewController:(ResizableStackViewController*)controller
                    viewSizesDidChange:(NSArray*)newSizes;
 {
-  bool interfaceOrientationIsPortrait = [UiElementMetrics interfaceOrientationIsPortrait];
-  if (interfaceOrientationIsPortrait)
+  if (self.interfaceOrientationIsPortrait)
     self.uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlayPortrait = newSizes;
   else
     self.uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlayLandscape = newSizes;
