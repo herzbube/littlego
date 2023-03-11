@@ -325,7 +325,7 @@ static const int maxStepsForCreateNodes = 9;
 
     for (SGFCNode* child in parent.children)
     {
-      if (child == node)
+      if ([child isEqualToNode:node])
         continue;
 
       [treeBuilder removeChild:child fromNode:parent];
@@ -754,7 +754,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
              previousMove:(GoMove*)previousMove
              errorMessage:(NSString**)errorMessage
 {
-  bool sgfNodeIsGameInfoNode = sgfNode == self.sgfGameInfoNode;
+  bool sgfNodeIsGameInfoNode = [sgfNode isEqualToNode:self.sgfGameInfoNode];
 
   bool atLeastOneSetupPropertyWasFound = false;
   GoNodeSetup* goNodeSetup = [[[GoNodeSetup alloc] init] autorelease];
