@@ -582,10 +582,13 @@
     }
   }
 
+  // At this point the new node exists in the node tree, but it is still missing
+  // the Zobrist hash.
+
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
 
   // Must be sent first so that observers get a chance to incorporate the new
-  // node into their models before it becomes the new current board position
+  // node into their models before it becomes the new current board position.
   [center postNotificationName:goNodeTreeLayoutDidChange object:nil];
 
   if (shouldChangeCurrentGameVariation)
@@ -603,9 +606,7 @@
   }
 
   // Changing the current board position has the following effects:
-  // - It invokes GoNode modifyBoard. Important: GoNode modifyBoard must be
-  //   invoked only AFTER the node was added to the node tree, otherwise the
-  //   Zobrist hash (which is based on the previous node) cannot be calculated.
+  // - It invokes GoNode modifyBoard.
   // - If self.alternatingPlay is true, it switches the nextMovePlayer.
   int oldCurrentBoardPosition = self.boardPosition.currentBoardPosition;
   int newCurrentBoardPosition = oldCurrentBoardPosition + 1;
@@ -617,6 +618,14 @@
     return;
   }
   self.boardPosition.currentBoardPosition = newCurrentBoardPosition;
+
+  // The Zobrist hash can be calculated only AFTER GoNode modifyBoard was
+  // invoked. Also the new node must have been added to the node tree so that
+  // the parent node's Zobrist hash can be used as the base for the calculation.
+  // We perform the hash calculation as soon as possible, even before posting
+  // the notification about the board position change.
+  [newNode calculateZobristHash];
+
   [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:newCurrentBoardPosition]]];
 
   if (shouldChangeCurrentGameVariation)

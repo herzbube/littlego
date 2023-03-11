@@ -935,22 +935,17 @@
   GoPoint* point2 = [board pointAtVertex:@"B1"];
   GoBoardRegion* mainRegion = point1.region;
   XCTAssertEqual(mainRegion, point2.region);
-  long long zobristHashEmptyBoard = 0;
 
   // In practice modifyBoard is never invoked on the root node because the user
   // cannot go back to a board position before the first. However, at the moment
   // there is no guard against invoking modifyBoard on the root node.
   GoNode* rootNode = m_game.nodeModel.rootNode;
   [rootNode modifyBoard];
-  long long zobristHashRootNode = rootNode.zobristHash;
-  XCTAssertEqual(zobristHashRootNode, zobristHashEmptyBoard);
 
   // Modify board when node is empty
   [m_game addEmptyNodeToCurrentGameVariation];
   GoNode* emptyNode = m_game.nodeModel.leafNode;;
   [emptyNode modifyBoard];
-  long long zobristHashEmptyNode = emptyNode.zobristHash;
-  XCTAssertEqual(zobristHashEmptyNode, zobristHashRootNode);
 
   // Modify board when node contains setup information
   [m_game addEmptyNodeToCurrentGameVariation];
@@ -961,8 +956,6 @@
   [nodeWithSetupInformation modifyBoard];
   XCTAssertEqual(point1.stoneState, GoColorBlack);
   XCTAssertNotEqual(point1.region, mainRegion);
-  long long zobristHashSetupInformation = nodeWithSetupInformation.zobristHash;
-  XCTAssertNotEqual(zobristHashSetupInformation, zobristHashEmptyNode);
 
   // Modify board when node contains move
   [m_game addEmptyNodeToCurrentGameVariation];
@@ -974,9 +967,6 @@
   XCTAssertEqual(point2.stoneState, GoColorWhite);
   XCTAssertNotEqual(point2.region, mainRegion);
   XCTAssertNotEqual(point2.region, point1.region);
-  long long zobristHashMove = nodeWithMove.zobristHash;
-  XCTAssertNotEqual(zobristHashMove, zobristHashEmptyNode);
-  XCTAssertNotEqual(zobristHashMove, zobristHashSetupInformation);
 
   // Modify board when node is not empty but does not contain setup information
   // or a move
@@ -987,8 +977,6 @@
   nodeWithAnnotationsAndMarkup.goNodeMarkup = [[[GoNodeMarkup alloc] init] autorelease];
   [nodeWithAnnotationsAndMarkup.goNodeMarkup setSymbol:GoMarkupSymbolCircle atVertex:@"A1"];
   [nodeWithAnnotationsAndMarkup modifyBoard];
-  long long zobristHashAnnotationsAndMarkup = nodeWithAnnotationsAndMarkup.zobristHash;
-  XCTAssertEqual(zobristHashAnnotationsAndMarkup, zobristHashMove);
 }
 
 // -----------------------------------------------------------------------------
@@ -1069,6 +1057,66 @@
   XCTAssertEqual(point2.stoneState, GoColorNone);
   XCTAssertEqual(point1.region, mainRegion);
   XCTAssertEqual(point2.region, mainRegion);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the calculateZobristHash() method.
+// -----------------------------------------------------------------------------
+- (void) testCalculateZobristHash
+{
+  GoBoard* board = m_game.board;
+  GoPoint* point1 = [board pointAtVertex:@"A1"];
+  GoPoint* point2 = [board pointAtVertex:@"B1"];
+  GoBoardRegion* mainRegion = point1.region;
+  XCTAssertEqual(mainRegion, point2.region);
+  long long zobristHashEmptyBoard = 0;
+
+  GoNode* rootNode = m_game.nodeModel.rootNode;
+  [rootNode calculateZobristHash];
+  long long zobristHashRootNode = rootNode.zobristHash;
+  XCTAssertEqual(zobristHashRootNode, zobristHashEmptyBoard);
+
+  // Calculate Zobrist hash when node is empty
+  [m_game addEmptyNodeToCurrentGameVariation];
+  GoNode* emptyNode = m_game.nodeModel.leafNode;;
+  [emptyNode modifyBoard];
+  [emptyNode calculateZobristHash];
+  long long zobristHashEmptyNode = emptyNode.zobristHash;
+  XCTAssertEqual(zobristHashEmptyNode, zobristHashRootNode);
+
+  // Calculate Zobrist hash when node contains setup information
+  [m_game addEmptyNodeToCurrentGameVariation];
+  GoNode* nodeWithSetupInformation = m_game.nodeModel.leafNode;;
+  nodeWithSetupInformation.goNodeSetup = [GoNodeSetup nodeSetupWithPreviousSetupCapturedFromGame:m_game];
+  [nodeWithSetupInformation.goNodeSetup setupBlackStone:point1];
+  [nodeWithSetupInformation modifyBoard];
+  [nodeWithSetupInformation calculateZobristHash];
+  long long zobristHashSetupInformation = nodeWithSetupInformation.zobristHash;
+  XCTAssertNotEqual(zobristHashSetupInformation, zobristHashEmptyNode);
+
+  // Calculate Zobrist hash when node contains move
+  [m_game addEmptyNodeToCurrentGameVariation];
+  GoNode* nodeWithMove = m_game.nodeModel.leafNode;
+  nodeWithMove.goMove = [GoMove move:GoMoveTypePlay by:m_game.playerWhite after:nil];
+  nodeWithMove.goMove.point = point2;
+  [nodeWithMove modifyBoard];
+  [nodeWithMove calculateZobristHash];
+  long long zobristHashMove = nodeWithMove.zobristHash;
+  XCTAssertNotEqual(zobristHashMove, zobristHashEmptyNode);
+  XCTAssertNotEqual(zobristHashMove, zobristHashSetupInformation);
+
+  // Calculate Zobrist hash when node is not empty but does not contain setup
+  // information or a move
+  [m_game addEmptyNodeToCurrentGameVariation];
+  GoNode* nodeWithAnnotationsAndMarkup = m_game.nodeModel.leafNode;
+  nodeWithAnnotationsAndMarkup.goNodeAnnotation = [[[GoNodeAnnotation alloc] init] autorelease];
+  nodeWithAnnotationsAndMarkup.goNodeAnnotation.shortDescription = @"foo";
+  nodeWithAnnotationsAndMarkup.goNodeMarkup = [[[GoNodeMarkup alloc] init] autorelease];
+  [nodeWithAnnotationsAndMarkup.goNodeMarkup setSymbol:GoMarkupSymbolCircle atVertex:@"A1"];
+  [nodeWithAnnotationsAndMarkup modifyBoard];
+  [nodeWithAnnotationsAndMarkup calculateZobristHash];
+  long long zobristHashAnnotationsAndMarkup = nodeWithAnnotationsAndMarkup.zobristHash;
+  XCTAssertEqual(zobristHashAnnotationsAndMarkup, zobristHashMove);
 }
 
 @end

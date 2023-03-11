@@ -44,5 +44,6 @@
 - (void) testEmpty;
 - (void) testModifyBoard;
 - (void) testRevertBoard;
+- (void) testCalculateZobristHash;
 
 @end

@@ -208,7 +208,7 @@
   // self.zobristHash is that the overall archive becomes smaller.
 }
 
-#pragma mark - Public API - Game tree navigation
+#pragma mark - Public API - Node tree navigation
 
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
@@ -380,7 +380,7 @@
   return (self.firstChild == nil);
 }
 
-#pragma mark - Public API - Other operations
+#pragma mark - Public API - Node tree navigation
 
 // -----------------------------------------------------------------------------
 // Property is documented in the header file.
@@ -393,6 +393,8 @@
           (! self.goNodeMarkup || ! self.goNodeMarkup.hasMarkup));
 }
 
+#pragma mark - Public API - Changing the board based upon the node's data
+
 // -----------------------------------------------------------------------------
 // Method is documented in the header file.
 // -----------------------------------------------------------------------------
@@ -402,13 +404,6 @@
     [self.goMove doIt];
   else if (self.goNodeSetup)
     [self.goNodeSetup applySetup];
-
-  // GoZobristTable needs to have the Zobrist hash of the node's parent. The
-  // node therefore must have been added to the node tree at this point.
-  // TODO xxx Can the hash calculation be omitted if the user navigates between board positions?
-  GoGame* game = [GoGame sharedGame];
-  self.zobristHash = [game.board.zobristTable hashForNode:self
-                                                   inGame:game];
 }
 
 // -----------------------------------------------------------------------------
@@ -420,6 +415,20 @@
     [self.goMove undo];
   else if (self.goNodeSetup)
     [self.goNodeSetup revertSetup];
+}
+
+#pragma mark - Public API - Calculating the Zobrist hash
+
+// -----------------------------------------------------------------------------
+// Method is documented in the header file.
+// -----------------------------------------------------------------------------
+- (void) calculateZobristHash
+{
+  // GoZobristTable needs to have the Zobrist hash of the node's parent. The
+  // node therefore must have been added to the node tree at this point.
+  GoGame* game = [GoGame sharedGame];
+  self.zobristHash = [game.board.zobristTable hashForNode:self
+                                                   inGame:game];
 }
 
 @end

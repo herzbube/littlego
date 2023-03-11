@@ -175,15 +175,25 @@
 /// @name Changing the board based upon the node's data
 //@{
 /// @brief Modifies the board to reflect the data that is present in this
-/// GoNode. Also calculates a new Zobrist hash for the board position that is
-/// in effect after the board is modified.
-///
-/// Important: Invoke this only after the node was added to the node tree.
+/// GoNode.
 - (void) modifyBoard;
 
 /// @brief Reverts the board to the state it had before modifyBoard() was
 /// invoked.
 - (void) revertBoard;
+//@}
+
+/// @name Calculating the Zobrist hash
+//@{
+/// @brief Calculates the node's Zobrist hash and updates the property
+/// @e zobristHash with the new Zobrist hash.
+///
+/// The Zobrist hash calculation uses the parent node's Zobrist hash as the base
+/// and combines it with the current board state. See GoZobristHash for details.
+///
+/// @attention A new node must have been added to the node tree when this method
+/// is invoked, otherwise the parent node is not known.
+- (void) calculateZobristHash;
 //@}
 
 @end

@@ -1311,6 +1311,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
       {
         // Setup validation requires the board to be already in the new state
         [currentNode modifyBoard];
+        [currentNode calculateZobristHash];
         bool success = [self validateBoardSetupWithGame:game errorMessage:errorMessage];
         if (! success)
           return false;
@@ -1323,11 +1324,12 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
         if (! success)
           return false;
         [currentNode modifyBoard];
+        [currentNode calculateZobristHash];
       }
       else
       {
         // Calculates the correct Zobrist hash based on the parent node
-        [currentNode modifyBoard];
+        [currentNode calculateZobristHash];
       }
 
       ++numberOfNodesProcessed;
