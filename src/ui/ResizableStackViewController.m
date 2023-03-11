@@ -1846,7 +1846,12 @@ struct GestureInfo
 
   if (rotate)
   {
-    // TODO xxx Implement drawing for vertical drag handles
+    CGFloat angle = [UiUtilities radians:90];
+    // Shift the CTM to make the rotation center the origin
+    CGContextTranslateCTM(context, rectCenter.x, rectCenter.y);
+    CGContextRotateCTM(context, angle);
+    // Undo the shift
+    CGContextTranslateCTM(context, -rectCenter.x, -rectCenter.y);
   }
 
   if (self.dragHandlePresentationStyle == DragHandlePresentationStyleLine)
