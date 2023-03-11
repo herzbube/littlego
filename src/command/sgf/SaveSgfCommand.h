@@ -45,23 +45,23 @@
 ///
 /// The resulting SGF file is structured as follows:
 /// - Contains only one game
-/// - Contains only one variation
+/// - Contains 1-n variations
+/// - The root node is also used as the game info node, as per the SGF standard
+///   which states that game info properties are usually stored in the root
+///   node.
 /// - Root node: Contains root properties, e.g. GM and SZ. May also contain
 ///   node annotation properties (e.g. C, N, GB) and/or markup properties (e.g.
 ///   CR, AR, LB) if the user for some reason decided to define these things for
 ///   board position 0.
-/// - Game info node: Contains game info properties, e.g. KM, HA, PB, PW. Also
-///   contains the board setup property AB to place handicap stones. Note that
-///   LoadGameCommand requires the node that contains the HA property to also
-///   have an AB property.
-/// - Currently the root node is also used as the game info node, as per the
-///   SGF standard which states that game info properties are usually stored
-///   in the root node.
+/// - Game info node (same as root node): Contains game info properties, e.g.
+///   KM, HA, PB, PW. Also contains the board setup property AB to place
+///   handicap stones. Note that LoadGameCommand requires the node that contains
+///   the HA property to also have an AB property.
+/// - If board position 0 contains setup, this data is written to the game info
+///   node (same as root node).
 /// - 0-n remaining nodes with setup properties (AB, AW, AE, PL), move
 ///   properties (e.g. B, W), node and move annotation properties
 ///   (e.g. C, N, GB, TE), and/or markup properties (e.g. CR, AR, LB).
-/// - If the first board position contains setup, annotation and/or markup
-///   data, this data is written to the game info node.
 // -----------------------------------------------------------------------------
 @interface SaveSgfCommand : CommandBase
 {

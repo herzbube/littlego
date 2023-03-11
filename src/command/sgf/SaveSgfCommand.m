@@ -248,10 +248,12 @@
         // We add the node to the document even if we don't add any properties
         // to it. If we were skipping the node there would be a gap between the
         // in-memory model and the saved data, which could cause trouble or at
-        // least irritation later on (e.g. user saves a game, then loads it
-        // again => where the heck did the empty node go?).
-        // Note: SGFC has an option to skip empty nodes (-n), but by default it
-        // retains them.
+        // least irritation later on (e.g. user saves a game, then loads it in
+        // some other application => where the heck did the empty node go?).
+        // Note 1: Loading an SGF file in this app will result in empty nodes
+        // being discarded.
+        // Note 2: SGFC has an option to skip empty nodes (-n), but by default
+        // it retains them.
         [treeBuilder appendChild:sgfNode toNode:parentSgfNode];
       }
 
