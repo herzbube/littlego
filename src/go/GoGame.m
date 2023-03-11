@@ -981,6 +981,35 @@
 // -----------------------------------------------------------------------------
 - (bool) isLegalMove:(GoPoint*)point byColor:(enum GoColor)color isIllegalReason:(enum GoMoveIsIllegalReason*)reason
 {
+  // Ko detection must be based on the current board position, so we must not
+  // use self.lastMove!
+  GoNode* node = self.boardPosition.currentNode;
+
+  return [self isLegalMove:point
+                   byColor:color
+                 afterNode:node
+           isIllegalReason:reason];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if playing a stone on the intersection represented by
+/// @a point would be legal for the player who plays @a color in the board
+/// position represented by @a node. This includes checking for suicide moves
+/// and Ko situations, but not for alternating play.
+///
+/// If this method returns false, the out parameter @a reason is filled with
+/// the reason why the move is not legal. If this method returns true, the
+/// value of @a reason is undefined.
+///
+/// Alternating play, if it is desired, must be enforced by the application
+/// logic. This method simply assumes that the player who plays @a color has the
+/// right to move in the board position represented by @a node.
+///
+/// Raises @e NSInvalidArgumentException if @a point is nil, or if @a color is
+/// neither #GoColorBlack nor #GoColorWhite.
+// -----------------------------------------------------------------------------
+- (bool) isLegalMove:(GoPoint*)point byColor:(enum GoColor)color afterNode:(GoNode*)node isIllegalReason:(enum GoMoveIsIllegalReason*)reason
+{
   if (! point)
   {
     NSString* errorMessage = @"Point argument is nil";
@@ -1013,12 +1042,9 @@
     return false;
   }
 
-  // IMPORTANT: The node we find here is re-used below for Ko detection. Ko
-  // detection must be based on the current board position, so we must not
-  // use self.lastMove!
-  // ALSO IMPORTANT: The current board position's node might be a non-move node,
-  // so we have to search through the variation backwards until we find a move.
-  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:self.boardPosition.currentNode];
+  // IMPORTANT: The specified node might be a non-move node, so we have to
+  // search through the variation backwards until we find a move.
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:node];
   if (nodeWithMostRecentMove)
   {
     if (nodeWithMostRecentMove.goMove.moveNumber == maximumNumberOfMoves)
@@ -1339,6 +1365,31 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 // -----------------------------------------------------------------------------
 - (bool) isLegalPassMoveByColor:(enum GoColor)color illegalReason:(enum GoMoveIsIllegalReason*)reason
 {
+  GoNode* node = self.boardPosition.currentNode;
+
+  return [self isLegalPassMoveByColor:color
+                            afterNode:node
+                        illegalReason:reason];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns true if playing a pass move would be legal for the player
+/// who plays @a color in the board position represented by @a node. This does
+/// not include checking for alternating play.
+///
+/// If this method returns false, the out parameter @a reason is filled with
+/// the reason why the move is not legal. If this method returns true, the
+/// value of @a reason is undefined.
+///
+/// Alternating play, if it is desired, must be enforced by the application
+/// logic. This method simply assumes that the player who plays @a color has the
+/// right to move in the board position represented by @a node.
+///
+/// Raises @e NSInvalidArgumentException if @a color is neither #GoColorBlack
+/// nor #GoColorWhite.
+// -----------------------------------------------------------------------------
+- (bool) isLegalPassMoveByColor:(enum GoColor)color afterNode:(GoNode*)node illegalReason:(enum GoMoveIsIllegalReason*)reason
+{
   if (color != GoColorBlack && color != GoColorWhite)
   {
     NSString* errorMessage = [NSString stringWithFormat:@"Invalid color argument %d", color];
@@ -1349,7 +1400,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     @throw exception;
   }
 
-  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:self.boardPosition.currentNode];
+  GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:node];
   if (nodeWithMostRecentMove)
   {
     if (nodeWithMostRecentMove.goMove.moveNumber >= maximumNumberOfMoves)

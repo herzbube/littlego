@@ -1320,7 +1320,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
       {
         // Move validation requires the board to be still in the state before
         // the move was played
-        bool success = [self validateMove:currentNode.goMove withGame:game errorMessage:errorMessage];
+        bool success = [self validateMove:currentNode withGame:game errorMessage:errorMessage];
         if (! success)
           return false;
         [currentNode modifyBoard];
@@ -1444,14 +1444,17 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Checks with the help of @a game whether @a move is a legal move.
-/// Returns @e true if the move is legal, returns @e false if the move is not
-/// legal.
+/// @brief Checks with the help of @a game whether the GoMove found in @a node
+/// is a legal move. Returns @e true if the move is legal, returns @e false if
+/// the move is not legal.
 ///
 /// This is a helper function for validateSetupAndMoveNodes:errorMessage:().
 // -----------------------------------------------------------------------------
-- (bool) validateMove:(GoMove*)move withGame:(GoGame*)game errorMessage:(NSString**)errorMessage
+- (bool) validateMove:(GoNode*)node withGame:(GoGame*)game errorMessage:(NSString**)errorMessage
 {
+  GoMove* move = node.goMove;
+  GoNode* predecessorNode = node.parent;
+
   // Here we support if the SGF file contains moves by non-alternating colors,
   // anywhere in the game. Thus the user can ***VIEW*** almost any game from an
   // SGF file, even though the app itself is not capable of producing such
@@ -1462,11 +1465,16 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   enum GoMoveIsIllegalReason illegalReason;
   if (move.type == GoMoveTypePlay)
   {
-    isLegalMove = [game isLegalMove:move.point byColor:moveColor isIllegalReason:&illegalReason];
+    isLegalMove = [game isLegalMove:move.point
+                            byColor:moveColor
+                          afterNode:predecessorNode
+                    isIllegalReason:&illegalReason];
   }
   else
   {
-    isLegalMove = [game isLegalPassMoveByColor:moveColor illegalReason:&illegalReason];
+    isLegalMove = [game isLegalPassMoveByColor:moveColor
+                                     afterNode:predecessorNode
+                                 illegalReason:&illegalReason];
   }
 
   if (! isLegalMove)

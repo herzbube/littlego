@@ -22,6 +22,7 @@
 @class GoGameRules;
 @class GoMove;
 @class GoMoveNodeCreationOptions;
+@class GoNode;
 @class GoNodeModel;
 @class GoPlayer;
 @class GoPoint;
@@ -74,8 +75,10 @@
 - (bool) isLegalBoardSetup:(NSString**)errorMessage;
 - (bool) isLegalMove:(GoPoint*)point isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isLegalMove:(GoPoint*)point byColor:(enum GoColor)color isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
+- (bool) isLegalMove:(GoPoint*)point byColor:(enum GoColor)color afterNode:(GoNode*)node isIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isLegalPassMoveIllegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (bool) isLegalPassMoveByColor:(enum GoColor)color illegalReason:(enum GoMoveIsIllegalReason*)reason;
+- (bool) isLegalPassMoveByColor:(enum GoColor)color afterNode:(GoNode*)node illegalReason:(enum GoMoveIsIllegalReason*)reason;
 - (void) endGameDueToPassMovesIfGameRulesRequireIt;
 - (void) revertStateFromEndedToInProgress;
 - (void) switchNextMoveColor;
