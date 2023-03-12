@@ -56,11 +56,4 @@
 /// if it is no longer required by other node numbering rules.
 @property(nonatomic, assign) bool nodeNumberExistsOnlyForSelection;
 
-/// @brief @e true if the node number refers to a condensed move node, @e false
-/// if the node number refers to an uncondensed node.
-///
-/// If @e true this property indicates to the node numbers drawing code that
-/// there is less horizontal space  available for rendering the node number.
-@property(nonatomic, assign, getter=isCondensedMoveNode) bool condensedMoveNode;
-
 @end

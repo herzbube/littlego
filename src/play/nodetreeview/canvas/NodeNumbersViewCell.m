@@ -54,7 +54,6 @@
   self.nodeNumber = -1;
   self.selected = false;
   self.nodeNumberExistsOnlyForSelection = false;
-  self.condensedMoveNode = false;
 
   return self;
 }
@@ -91,7 +90,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"NodeNumbersViewCell: nodeNumber = %u, selected = %d, nodeNumberExistsOnlyForSelection = %d, condensedMoveNode = %d", _nodeNumber, _selected, _nodeNumberExistsOnlyForSelection, _condensedMoveNode];
+  return [NSString stringWithFormat:@"NodeNumbersViewCell: nodeNumber = %u, selected = %d, nodeNumberExistsOnlyForSelection = %d", _nodeNumber, _selected, _nodeNumberExistsOnlyForSelection];
 }
 
 #pragma mark - Public API
@@ -111,8 +110,7 @@
   else
     return (_nodeNumber == otherCell.nodeNumber &&
             _selected == otherCell.selected &&
-            _nodeNumberExistsOnlyForSelection == otherCell.nodeNumberExistsOnlyForSelection &&
-            _condensedMoveNode == otherCell.condensedMoveNode);
+            _nodeNumberExistsOnlyForSelection == otherCell.nodeNumberExistsOnlyForSelection);
 }
 
 @end

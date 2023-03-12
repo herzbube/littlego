@@ -316,8 +316,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
                                toNewState:false
                                   nodeMap:self.canvasData.nodeMap
                           cellsDictionary:self.canvasData.cellsDictionary
-           nodeNumbersViewCellsDictionary:self.canvasData.nodeNumbersViewCellsDictionary
-                        condenseMoveNodes:self.nodeTreeViewModel.condenseMoveNodes];
+           nodeNumbersViewCellsDictionary:self.canvasData.nodeNumbersViewCellsDictionary];
 
   // Update canvasData with the newly selected node NOW, to make sure that if
   // new node number cells are generated their "selected" state is set correctly
@@ -328,8 +327,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
                                                                              toNewState:true
                                                                                 nodeMap:self.canvasData.nodeMap
                                                                         cellsDictionary:self.canvasData.cellsDictionary
-                                                         nodeNumbersViewCellsDictionary:self.canvasData.nodeNumbersViewCellsDictionary
-                                                                      condenseMoveNodes:self.nodeTreeViewModel.condenseMoveNodes];
+                                                         nodeNumbersViewCellsDictionary:self.canvasData.nodeNumbersViewCellsDictionary];
 
   NSArray* positionsOfNewlySelectedCells = positionsTupleOfNewlySelectedCells.firstObject;
   NSArray* nodeNumbersViewPositionsOfNewlySelectedCells = positionsTupleOfNewlySelectedCells.lastObject;
@@ -2012,7 +2010,6 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
   [self generateNodeNumberForSelectedNodeIfNoneExistsYet:canvasData.currentBoardPositionNode
                                                  nodeMap:nodeMap
                           nodeNumbersViewCellsDictionary:nodeNumbersViewCellsDictionary
-                                       condenseMoveNodes:condenseMoveNodes
                                  numberOfNodeNumberCells:numberOfNodeNumberCells
               numberOfNodeNumberCellsExtendingFromCenter:numberOfNodeNumberCellsExtendingFromCenter];
 }
@@ -2418,7 +2415,6 @@ numberOfNodeNumberCellsExtendingFromCenter:(int)numberOfNodeNumberCellsExtending
     cell.part = xPositionOfCell - xPositionOfFirstCell;
     cell.selected = branchTuple->nodeIsCurrentBoardPositionNode;
     cell.nodeNumberExistsOnlyForSelection = nodeNumberExistsOnlyForSelection;
-    cell.condensedMoveNode = isCondensedMoveNode;
 
     NodeTreeViewCellPosition* position = [NodeTreeViewCellPosition positionWithX:xPositionOfCell y:yPositionOfNodeNumber];
     nodeNumbersViewCellsDictionary[position] = cell;
@@ -2432,14 +2428,11 @@ numberOfNodeNumberCellsExtendingFromCenter:(int)numberOfNodeNumberCellsExtending
 - (void) generateNodeNumberForSelectedNodeIfNoneExistsYet:(GoNode*)selectedNode
                                                   nodeMap:(NSDictionary*)nodeMap
                            nodeNumbersViewCellsDictionary:(NSMutableDictionary*)nodeNumbersViewCellsDictionary
-                                        condenseMoveNodes:(bool)condenseMoveNodes
                                   numberOfNodeNumberCells:(int)numberOfNodeNumberCells
                numberOfNodeNumberCellsExtendingFromCenter:(int)numberOfNodeNumberCellsExtendingFromCenter
 {
   NSValue* key = [NSValue valueWithNonretainedObject:selectedNode];
   NodeTreeViewBranchTuple* branchTuple = [nodeMap objectForKey:key];
-
-  bool isCondensedMoveNode = condenseMoveNodes && branchTuple->numberOfCellsForNode == 1;
 
   NSMutableArray* positionCellTuples = [NSMutableArray array];
 
@@ -2471,7 +2464,6 @@ numberOfNodeNumberCellsExtendingFromCenter:(int)numberOfNodeNumberCellsExtending
       cell.part = xPositionOfCell - xPositionOfFirstCell;
       cell.selected = true;
       cell.nodeNumberExistsOnlyForSelection = true;
-      cell.condensedMoveNode = isCondensedMoveNode;
 
       // We can't add the cell immediately to nodeNumbersViewCellsDictionary
       // because it may turn out in a later iteration that one of the cells is
@@ -2741,7 +2733,6 @@ numberOfNodeNumberCellsExtendingFromCenter:(int)numberOfNodeNumberCellsExtending
                                        nodeMap:(NSDictionary*)nodeMap
                                cellsDictionary:(NSDictionary*)cellsDictionary
                 nodeNumbersViewCellsDictionary:(NSMutableDictionary*)nodeNumbersViewCellsDictionary
-                             condenseMoveNodes:(bool)condenseMoveNodes
 {
   NodeTreeViewBranchTuple* branchTuple = [self branchTupleForNode:node];
   branchTuple->nodeIsCurrentBoardPositionNode = newSelectedState;
@@ -2788,7 +2779,6 @@ numberOfNodeNumberCellsExtendingFromCenter:(int)numberOfNodeNumberCellsExtending
         [self generateNodeNumberForSelectedNodeIfNoneExistsYet:node
                                                        nodeMap:nodeMap
                                 nodeNumbersViewCellsDictionary:nodeNumbersViewCellsDictionary
-                                             condenseMoveNodes:condenseMoveNodes
                                        numberOfNodeNumberCells:numberOfNodeNumberCells
                     numberOfNodeNumberCellsExtendingFromCenter:numberOfNodeNumberCellsExtendingFromCenter];
         // All cells were generated, no further need to iterate

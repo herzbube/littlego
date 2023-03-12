@@ -144,7 +144,6 @@
     return;
 
   bool condenseMoveNodes = self.nodeTreeViewModel.condenseMoveNodes;
-  bool numberCondensedMoveNodes = self.nodeTreeViewModel.numberCondensedMoveNodes;
 
   NSDictionary* textAttributesUnselected = @{ NSFontAttributeName : nodeNumberLabelFont,
                                               NSForegroundColorAttributeName : self.nodeTreeViewMetrics.nodeNumberTextColor,
@@ -163,9 +162,6 @@
 
     int nodeNumber = cell.nodeNumber;
     if (nodeNumber == -1)
-      continue;
-
-    if (cell.condensedMoveNode && ! numberCondensedMoveNodes)
       continue;
 
     NSNumber* nodeNumberAsNumber = @(nodeNumber);
