@@ -24,6 +24,7 @@
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
+#import "../../../ui/CGDrawingHelper.h"
 
 
 @implementation GridLayerDelegate
@@ -82,8 +83,8 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.boardViewMetrics.tileSize];
   [self drawGridLinesWithContext:context inTileRect:tileRect];
   [self drawStarPointsWithContext:context inTileRect:tileRect];
 }
@@ -103,8 +104,8 @@
     // must check CGRectIsEmpty() in addition to CGRectIsNull().
     if (CGRectIsNull(drawingRect) || CGRectIsEmpty(drawingRect))
       continue;
-    drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRect
-                                                     inTileWithRect:tileRect];
+    drawingRect = [CGDrawingHelper drawingRectFromCanvasRect:drawingRect
+                                              inTileWithRect:tileRect];
     CGContextSetFillColorWithColor(context, self.boardViewMetrics.lineColor.CGColor);
     CGContextFillRect(context, drawingRect);
   }

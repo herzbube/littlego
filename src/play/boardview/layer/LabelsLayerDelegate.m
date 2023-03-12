@@ -28,6 +28,7 @@
 #import "../../../go/GoNodeMarkup.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
+#import "../../../ui/CGDrawingHelper.h"
 #import "../../../utility/MarkupUtilities.h"
 
 
@@ -335,8 +336,8 @@
   if (! nodeMarkup || (! nodeMarkup.labels && ! self.shouldDrawRowWithTemporaryMarkup))
     return;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.boardViewMetrics.tileSize];
 
   GoBoard* board = game.board;
 

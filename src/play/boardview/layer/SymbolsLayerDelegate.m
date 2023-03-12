@@ -36,6 +36,7 @@
 #import "../../../go/GoScore.h"
 #import "../../../go/GoUtilities.h"
 #import "../../../go/GoVertex.h"
+#import "../../../ui/CGDrawingHelper.h"
 #import "../../../ui/UiSettingsModel.h"
 #import "../../../utility/MarkupUtilities.h"
 #import "../../../utility/UIColorAdditions.h"
@@ -480,8 +481,8 @@
   // invoked
   [self createLayersIfNecessaryWithContext:context];
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.boardViewMetrics.tileSize];
 
   if (uiAreaPlayMode == UIAreaPlayModePlay || uiAreaPlayMode == UIAreaPlayModeEditMarkup)
   {

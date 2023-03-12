@@ -17,12 +17,12 @@
 
 // Project includes
 #import "CoordinatesLayerDelegate.h"
-#import "BoardViewDrawingHelper.h"
 #import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
+#import "../../../ui/CGDrawingHelper.h"
 
 
 // -----------------------------------------------------------------------------
@@ -105,8 +105,8 @@
   if (! coordinateLabelFont)
     return;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.boardViewMetrics.tileSize];
 
   NSDictionary* textAttributes = @{ NSFontAttributeName : coordinateLabelFont,
                                     NSForegroundColorAttributeName : self.textColor,
@@ -140,8 +140,8 @@
   {
     if (CGRectIntersectsRect(tileRect, coordinateLabelRect))
     {
-      CGRect drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:coordinateLabelRect
-                                                              inTileWithRect:tileRect];
+      CGRect drawingRect = [CGDrawingHelper drawingRectFromCanvasRect:coordinateLabelRect
+                                                       inTileWithRect:tileRect];
 
       NSString* coordinateLabelText;
       if (CoordinateLabelAxisLetter == self.coordinateLabelAxis)

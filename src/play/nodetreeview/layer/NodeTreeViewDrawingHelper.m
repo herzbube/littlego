@@ -185,6 +185,16 @@ void DrawNodeTreeViewCellSymbolSetup(CGContextRef layerContext,
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws a circle surrounding the node symbol with center point
+/// @a center and radius @a radius. The circle is stroked with color
+/// @a strokeColor and stroke line width @a strokeLineWidth.
+///
+/// This is a simple front-end method for a corresponding backend method in
+/// CGDrawingHelper. The reason why this method exists is purely to give it a
+/// name to make explicit when a node symbol surrounding circle needs to be
+/// drawn.
+// -----------------------------------------------------------------------------
 void DrawSurroundingCircle(CGContextRef layerContext, CGPoint center, CGFloat radius, UIColor* strokeColor, CGFloat strokeLineWidth)
 {
   [CGDrawingHelper drawCircleWithContext:layerContext center:center radius:radius fillColor:nil strokeColor:strokeColor strokeLineWidth:strokeLineWidth];
@@ -662,8 +672,8 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
                                                                           metrics:metrics];
   if (! CGRectIntersectsRect(tileRect, canvasRectForLayer))
     return;
-  CGRect drawingRect = [NodeTreeViewDrawingHelper drawingRectFromCanvasRect:canvasRectForLayer
-                                                             inTileWithRect:tileRect];
+  CGRect drawingRect = [CGDrawingHelper drawingRectFromCanvasRect:canvasRectForLayer
+                                                   inTileWithRect:tileRect];
   CGContextDrawLayerInRect(context, drawingRect, layer);
 }
 
@@ -687,16 +697,16 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
   CGRect canvasRectForMultipartCell = [NodeTreeViewDrawingHelper canvasRectForMultipartCellPart:part
                                                                                    partPosition:position
                                                                                         metrics:metrics];
-  CGRect drawingRectForLayerWithCorrectSize = [NodeTreeViewDrawingHelper drawingRectForScaledLayer:layer
-                                                                                       withMetrics:metrics];
+  CGRect drawingRectForLayerWithCorrectSize = [CGDrawingHelper drawingRectForScaledLayer:layer
+                                                                       withContentsScale:metrics.contentsScale];
   CGRect canvasRectForLayer = [UiUtilities rectWithSize:drawingRectForLayerWithCorrectSize.size
                                          centeredInRect:canvasRectForMultipartCell];
 
   if (! CGRectIntersectsRect(tileRect, canvasRectForLayer))
     return;
 
-  CGRect drawingRect = [NodeTreeViewDrawingHelper drawingRectFromCanvasRect:canvasRectForLayer
-                                                             inTileWithRect:tileRect];
+  CGRect drawingRect = [CGDrawingHelper drawingRectFromCanvasRect:canvasRectForLayer
+                                                   inTileWithRect:tileRect];
   CGContextDrawLayerInRect(context, drawingRect, layer);
 }
 
@@ -722,8 +732,8 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
   if (! CGRectIntersectsRect(tileRect, canvasRectForNodeNumber))
     return;
 
-  CGRect drawingRect = [NodeTreeViewDrawingHelper drawingRectFromCanvasRect:canvasRectForNodeNumber
-                                                             inTileWithRect:tileRect];
+  CGRect drawingRect = [CGDrawingHelper drawingRectFromCanvasRect:canvasRectForNodeNumber
+                                                   inTileWithRect:tileRect];
   [CGDrawingHelper drawStringWithContext:context
                           centeredInRect:drawingRect
                                   string:nodeNumberString
@@ -758,28 +768,12 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
   if (! CGRectIntersectsRect(tileRect, canvasRectForNodeNumber))
     return;
 
-  CGRect drawingRect = [NodeTreeViewDrawingHelper drawingRectFromCanvasRect:canvasRectForNodeNumber
-                                                             inTileWithRect:tileRect];
+  CGRect drawingRect = [CGDrawingHelper drawingRectFromCanvasRect:canvasRectForNodeNumber
+                                                   inTileWithRect:tileRect];
   [CGDrawingHelper drawStringWithContext:context
                           centeredInRect:drawingRect
                                   string:nodeNumberString
                           textAttributes:textAttributes];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the rectangle occupied by @a tile on the "canvas", i.e. the
-/// area covered by the entire node tree view. The origin is in the upper-left
-/// corner.
-// -----------------------------------------------------------------------------
-+ (CGRect) canvasRectForTile:(id<Tile>)tile
-                     metrics:(NodeTreeViewMetrics*)metrics
-{
-  CGRect canvasRect = CGRectZero;
-  canvasRect.size = metrics.tileSize;
-  // The tile with row/column = 0/0 is in the upper-left corner
-  canvasRect.origin.x = tile.column * canvasRect.size.width;
-  canvasRect.origin.y = tile.row * canvasRect.size.height;
-  return canvasRect;
 }
 
 // -----------------------------------------------------------------------------
@@ -870,8 +864,8 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
                             metrics:(NodeTreeViewMetrics*)metrics
 {
   CGRect canvasRectForCell = [NodeTreeViewDrawingHelper canvasRectForCellAtPosition:position metrics:metrics];
-  CGRect drawingRect = [NodeTreeViewDrawingHelper drawingRectForScaledLayer:layer
-                                                                withMetrics:metrics];
+  CGRect drawingRect = [CGDrawingHelper drawingRectForScaledLayer:layer
+                                                withContentsScale:metrics.contentsScale];
   return [UiUtilities rectWithSize:drawingRect.size centeredInRect:canvasRectForCell];
 }
 
@@ -909,8 +903,8 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
   if (! position)
     return CGRectZero;
 
-  CGRect canvasRectForTile = [NodeTreeViewDrawingHelper canvasRectForTile:tile
-                                                                  metrics:metrics];
+  CGRect canvasRectForTile = [CGDrawingHelper canvasRectForTile:tile
+                                                       withSize:metrics.tileSize];
   CGRect canvasRectForMultipartCell = [NodeTreeViewDrawingHelper canvasRectForMultipartCellPart:part
                                                                                    partPosition:position
                                                                                         metrics:metrics];
@@ -924,8 +918,8 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
     return CGRectZero;
   }
 
-  CGRect drawingRectForMultipartCell = [NodeTreeViewDrawingHelper drawingRectFromCanvasRect:canvasRectForMultipartCellOnTile
-                                                                             inTileWithRect:canvasRectForTile];
+  CGRect drawingRectForMultipartCell = [CGDrawingHelper drawingRectFromCanvasRect:canvasRectForMultipartCellOnTile
+                                                                   inTileWithRect:canvasRectForTile];
   return drawingRectForMultipartCell;
 }
 
@@ -943,8 +937,8 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
   if (! position)
     return CGRectZero;
 
-  CGRect canvasRectForTile = [NodeTreeViewDrawingHelper canvasRectForTile:tile
-                                                                  metrics:metrics];
+  CGRect canvasRectForTile = [CGDrawingHelper canvasRectForTile:tile
+                                                        withSize:metrics.tileSize];
   CGRect canvasRectForCell = [NodeTreeViewDrawingHelper canvasRectForCellAtPosition:position
                                                                             metrics:metrics];
   CGRect canvasRectForCellOnTile = CGRectIntersection(canvasRectForTile, canvasRectForCell);
@@ -957,8 +951,8 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
     return CGRectZero;
   }
 
-  CGRect drawingRectForCell = [NodeTreeViewDrawingHelper drawingRectFromCanvasRect:canvasRectForCellOnTile
-                                                                    inTileWithRect:canvasRectForTile];
+  CGRect drawingRectForCell = [CGDrawingHelper drawingRectFromCanvasRect:canvasRectForCellOnTile
+                                                          inTileWithRect:canvasRectForTile];
   return drawingRectForCell;
 }
 
@@ -1014,40 +1008,6 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
   drawingRectSize.height *= metrics.contentsScale;
   CGRect drawingRect = [UiUtilities rectWithSize:drawingRectSize centeredInRect:drawingRectForCell];
 
-  return drawingRect;
-}
-
-// TODO xxx this is exactly the same as the identically named method in BoardViewDrawingHelper => code duplication
-// -----------------------------------------------------------------------------
-/// @brief Returns the rectangle that must be passed to CGContextDrawLayerInRect
-/// for drawing the specified layer, which must have a size that is scaled up
-/// using @e metrics.contentScale.
-// -----------------------------------------------------------------------------
-+ (CGRect) drawingRectForScaledLayer:(CGLayerRef)layer
-                         withMetrics:(NodeTreeViewMetrics*)metrics
-{
-  CGSize drawingSize = CGLayerGetSize(layer);
-  drawingSize.width /= metrics.contentsScale;
-  drawingSize.height /= metrics.contentsScale;
-  CGRect drawingRect;
-  drawingRect.origin = CGPointZero;
-  drawingRect.size = drawingSize;
-  return drawingRect;
-}
-
-// TODO xxx this is exactly the same as the identically named method in BoardViewDrawingHelper => code duplication
-// -----------------------------------------------------------------------------
-/// @brief Translates the origin of @a canvasRect (a rectangle on the "canvas",
-/// i.e. the area covered by the entire node tree view) into the coordinate
-/// system of the tile described by @a tileRect (the rectangle on the "canvas"
-/// occupied by the tile). The origin is in the upper-left corner.
-// -----------------------------------------------------------------------------
-+ (CGRect) drawingRectFromCanvasRect:(CGRect)canvasRect
-                      inTileWithRect:(CGRect)tileRect
-{
-  CGRect drawingRect = canvasRect;
-  drawingRect.origin.x -= tileRect.origin.x;
-  drawingRect.origin.y -= tileRect.origin.y;
   return drawingRect;
 }
 
@@ -1161,6 +1121,5 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
                                               clippingRadius:clippingRadius
                                                drawingRadius:&drawingRadius];
 }
-
 
 @end

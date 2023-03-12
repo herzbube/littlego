@@ -21,6 +21,7 @@
 #import "BoardViewDrawingHelper.h"
 #import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoUtilities.h"
+#import "../../../ui/CGDrawingHelper.h"
 
 
 enum DrawingArtifactType
@@ -314,8 +315,8 @@ enum DrawingArtifactType
   if (! self.fromPoint || ! self.toPoint)
     return;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.boardViewMetrics.tileSize];
   CGRect canvasRect = [BoardViewDrawingHelper canvasRectFromPoint:self.fromPoint
                                                           toPoint:self.toPoint
                                                           metrics:self.boardViewMetrics];

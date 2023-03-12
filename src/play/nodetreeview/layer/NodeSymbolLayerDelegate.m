@@ -23,6 +23,7 @@
 #import "../canvas/NodeTreeViewCanvas.h"
 #import "../canvas/NodeTreeViewCell.h"
 #import "../canvas/NodeTreeViewCellPosition.h"
+#import "../../../ui/CGDrawingHelper.h"
 #import "../../../ui/Tile.h"
 #import "../../../utility/NSArrayAdditions.h"
 
@@ -198,8 +199,8 @@
 
   bool condenseMoveNodes = self.nodeTreeViewMetrics.condenseMoveNodes;
   NodeTreeViewCGLayerCache* cache = [NodeTreeViewCGLayerCache sharedCache];
-  CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
-                                                         metrics:self.nodeTreeViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.nodeTreeViewMetrics.tileSize];
 
   NSArray* positionsToDraw;
   if (self.nodeSymbolChangedPositionsOnTile)

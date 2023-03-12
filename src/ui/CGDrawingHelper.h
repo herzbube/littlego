@@ -15,6 +15,10 @@
 // -----------------------------------------------------------------------------
 
 
+// Forward declarations
+@protocol Tile;
+
+
 // -----------------------------------------------------------------------------
 /// @brief The CGDrawingHelper class provides generic helper functions for
 /// drawing UI elements with Core Graphics.
@@ -158,6 +162,18 @@
                                         radius:(CGFloat)radius;
 
 + (void) removeClippingPathWithContext:(CGContextRef)context;
+//@}
+
+/// @name Calculating points, sizes and rectangles
+//@{
++ (CGRect) canvasRectForTile:(id<Tile>)tile
+                    withSize:(CGSize)tileSize;
+
++ (CGRect) drawingRectForScaledLayer:(CGLayerRef)layer
+                   withContentsScale:(CGFloat)contentsScale;
+
++ (CGRect) drawingRectFromCanvasRect:(CGRect)canvasRect
+                      inTileWithRect:(CGRect)tileRect;
 //@}
 
 @end

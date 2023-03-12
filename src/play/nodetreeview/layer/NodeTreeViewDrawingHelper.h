@@ -89,8 +89,6 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 
 + (void) removeNodeSymbolClippingPathWithContext:(CGContextRef)context;
 
-+ (CGRect) canvasRectForTile:(id<Tile>)tile
-                     metrics:(NodeTreeViewMetrics*)metrics;
 + (CGRect) canvasRectForMultipartCellPart:(int)part
                              partPosition:(NodeTreeViewCellPosition*)position
                                metrics:(NodeTreeViewMetrics*)metrics;
@@ -122,10 +120,6 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 + (CGRect) drawingRectForNodeSymbolInCell:(bool)condensed
                    withDrawingRectForCell:(CGRect)drawingRectForCell
                               withMetrics:(NodeTreeViewMetrics*)metrics;
-+ (CGRect) drawingRectForScaledLayer:(CGLayerRef)layer
-                         withMetrics:(NodeTreeViewMetrics*)metrics;
-+ (CGRect) drawingRectFromCanvasRect:(CGRect)canvasRect
-                      inTileWithRect:(CGRect)tileRect;
 + (void) circularDrawingParametersInRect:(CGRect)rect
                          strokeLineWidth:(CGFloat)strokeLineWidth
                                   center:(CGPoint*)center

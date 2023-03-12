@@ -114,8 +114,8 @@
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
   bool condenseMoveNodes = self.nodeTreeViewMetrics.condenseMoveNodes;
-  CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
-                                                         metrics:self.nodeTreeViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.nodeTreeViewMetrics.tileSize];
 
   UIColor* normalLineColor = self.nodeTreeViewMetrics.normalLineColor;
   UIColor* selectedLineColor = self.nodeTreeViewMetrics.selectedLineColor;
@@ -175,10 +175,8 @@
     if (! condenseMoveNodes)
       canvasRectForCell = CGRectInset(canvasRectForCell, -selectedLineWidth, -selectedLineWidth);
 
-    CGRect drawingRectForCell = canvasRectForCell;
-    // TODO xxx do we have a method in drawing helper for this?
-    drawingRectForCell.origin.x = canvasRectForCell.origin.x - tileRect.origin.x;
-    drawingRectForCell.origin.y = canvasRectForCell.origin.y - tileRect.origin.y;
+    CGRect drawingRectForCell = [CGDrawingHelper drawingRectFromCanvasRect:canvasRectForCell
+                                                            inTileWithRect:tileRect];
     CGPoint centerOfDrawingRectForCell = CGPointMake(CGRectGetMidX(drawingRectForCell), CGRectGetMidY(drawingRectForCell));
 
     bool didSetClippingPath = false;
@@ -293,10 +291,8 @@
       symbolSize = self.nodeTreeViewMetrics.uncondensedNodeSymbolSize;
   }
 
-  CGRect drawingRectForFullCell = canvasRectForFullCell;
-  // TODO xxx do we have a method in drawing helper for this?
-  drawingRectForFullCell.origin.x = canvasRectForFullCell.origin.x - tileRect.origin.x;
-  drawingRectForFullCell.origin.y = canvasRectForFullCell.origin.y - tileRect.origin.y;
+  CGRect drawingRectForFullCell = [CGDrawingHelper drawingRectFromCanvasRect:canvasRectForFullCell
+                                                              inTileWithRect:tileRect];
   CGPoint centerOfDrawingRectForFullCell = CGPointMake(CGRectGetMidX(drawingRectForFullCell),
                                                        CGRectGetMidY(drawingRectForFullCell));
   CGFloat clippingRadius = MIN(symbolSize.width, symbolSize.height) / 2.0;

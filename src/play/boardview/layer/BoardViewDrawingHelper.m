@@ -594,8 +594,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
                                                               metrics:metrics];
   if (! CGRectIntersectsRect(tileRect, layerRect))
     return;
-  CGRect drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:layerRect
-                                                          inTileWithRect:tileRect];
+  CGRect drawingRect = [CGDrawingHelper drawingRectFromCanvasRect:layerRect
+                                                   inTileWithRect:tileRect];
   CGContextDrawLayerInRect(context, drawingRect, layer);
 }
 
@@ -617,8 +617,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
     inTileWithRect:(CGRect)tileRect
        withMetrics:(BoardViewMetrics*)metrics
 {
-  CGRect drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:canvasRect
-                                                          inTileWithRect:tileRect];
+  CGRect drawingRect = [CGDrawingHelper drawingRectFromCanvasRect:canvasRect
+                                                   inTileWithRect:tileRect];
   CGContextDrawLayerInRect(context, drawingRect, layer);
 }
 
@@ -641,29 +641,13 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   if (! CGRectIntersectsRect(tileRect, textRect))
     return;
 
-  CGRect drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:textRect
-                                                          inTileWithRect:tileRect];
+  CGRect drawingRect = [CGDrawingHelper drawingRectFromCanvasRect:textRect
+                                                   inTileWithRect:tileRect];
 
   [CGDrawingHelper drawStringWithContext:context
                           centeredInRect:drawingRect
                                   string:string
                           textAttributes:attributes];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the rectangle occupied by @a tile on the "canvas", i.e. the
-/// area covered by the entire board view. The origin is in the upper-left
-/// corner.
-// -----------------------------------------------------------------------------
-+ (CGRect) canvasRectForTile:(id<Tile>)tile
-                     metrics:(BoardViewMetrics*)metrics
-{
-  CGRect canvasRect = CGRectZero;
-  canvasRect.size = metrics.tileSize;
-  // The tile with row/column = 0/0 is in the upper-left corner
-  canvasRect.origin.x = tile.column * canvasRect.size.width;
-  canvasRect.origin.y = tile.row * canvasRect.size.height;
-  return canvasRect;
 }
 
 // -----------------------------------------------------------------------------
@@ -743,8 +727,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 {
   CGPoint pointCoordinates = [metrics coordinatesFromPoint:point];
 
-  CGRect drawingRect = [BoardViewDrawingHelper drawingRectForScaledLayer:layer
-                                                             withMetrics:metrics];
+  CGRect drawingRect = [CGDrawingHelper drawingRectForScaledLayer:layer
+                                                withContentsScale:metrics.contentsScale];
   CGPoint drawingCenter = CGPointMake(CGRectGetMidX(drawingRect), CGRectGetMidY(drawingRect));
 
   CGRect canvasRect;
@@ -773,38 +757,6 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the rectangle that must be passed to CGContextDrawLayerInRect
-/// for drawing the specified layer, which must have a size that is scaled up
-/// using @e metrics.contentScale.
-// -----------------------------------------------------------------------------
-+ (CGRect) drawingRectForScaledLayer:(CGLayerRef)layer
-                         withMetrics:(BoardViewMetrics*)metrics
-{
-  CGSize drawingSize = CGLayerGetSize(layer);
-  drawingSize.width /= metrics.contentsScale;
-  drawingSize.height /= metrics.contentsScale;
-  CGRect drawingRect;
-  drawingRect.origin = CGPointZero;
-  drawingRect.size = drawingSize;
-  return drawingRect;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Translates the origin of @a canvasRect (a rectangle on the "canvas",
-/// i.e. the area covered by the entire board view) into the coordinate system
-/// of the tile described by @a tileRect (the rectangle on the "canvas" occupied
-/// by the tile). The origin is in the upper-left corner.
-// -----------------------------------------------------------------------------
-+ (CGRect) drawingRectFromCanvasRect:(CGRect)canvasRect
-                      inTileWithRect:(CGRect)tileRect
-{
-  CGRect drawingRect = canvasRect;
-  drawingRect.origin.x -= tileRect.origin.x;
-  drawingRect.origin.y -= tileRect.origin.y;
-  return drawingRect;
-}
-
-// -----------------------------------------------------------------------------
 /// @brief Returns a rectangle in which to draw the stone centered at the
 /// specified point. Returns CGRectZero if the point is not located on this
 /// tile.
@@ -816,8 +768,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   if (! point)
     return CGRectZero;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:tile
-                                                      metrics:metrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:tile
+                                               withSize:metrics.tileSize];
   CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
                                                                metrics:metrics];
   CGRect drawingRectForPoint = CGRectIntersection(tileRect, stoneRect);
@@ -831,8 +783,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   }
   else
   {
-    drawingRectForPoint = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRectForPoint
-                                                             inTileWithRect:tileRect];
+    drawingRectForPoint = [CGDrawingHelper drawingRectFromCanvasRect:drawingRectForPoint
+                                                      inTileWithRect:tileRect];
   }
   return drawingRectForPoint;
 }
@@ -851,8 +803,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   if (! fromPoint || ! toPoint)
     return CGRectZero;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:tile
-                                                      metrics:metrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:tile
+                                              withSize:metrics.tileSize];
   CGRect canvasRect = [BoardViewDrawingHelper canvasRectFromPoint:fromPoint
                                                           toPoint:toPoint
                                                           metrics:metrics];
@@ -866,8 +818,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   if (CGRectIsNull(drawingRect) || CGRectIsEmpty(drawingRect))
     return CGRectZero;
 
-  drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRect
-                                                   inTileWithRect:tileRect];
+  drawingRect = [CGDrawingHelper drawingRectFromCanvasRect:drawingRect
+                                            inTileWithRect:tileRect];
 
   return drawingRect;
 }
@@ -885,8 +837,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   if (! point)
     return CGRectZero;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:tile
-                                                      metrics:metrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:tile
+                                              withSize:metrics.tileSize];
   CGRect rowRect = [BoardViewDrawingHelper canvasRectForRowContainingPoint:point
                                                                    metrics:metrics];
   CGRect drawingRectForRow = CGRectIntersection(tileRect, rowRect);
@@ -900,8 +852,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   }
   else
   {
-    drawingRectForRow = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRectForRow
-                                                           inTileWithRect:tileRect];
+    drawingRectForRow = [CGDrawingHelper drawingRectFromCanvasRect:drawingRectForRow
+                                                    inTileWithRect:tileRect];
   }
   return drawingRectForRow;
 }

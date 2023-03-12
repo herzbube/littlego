@@ -17,8 +17,8 @@
 
 // Project includes
 #import "CrossHairLinesLayerDelegate.h"
-#import "BoardViewDrawingHelper.h"
 #import "../../model/BoardViewMetrics.h"
+#import "../../../ui/CGDrawingHelper.h"
 
 
 // -----------------------------------------------------------------------------
@@ -172,8 +172,8 @@
   if (! crossHairPoint)
     return drawingRectangles;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.boardViewMetrics.tileSize];
   CGPoint crossHairPointCoordinates = [self.boardViewMetrics coordinatesFromPoint:crossHairPoint];
 
   for (NSValue* lineRectValue in self.boardViewMetrics.lineRectangles)
@@ -188,8 +188,8 @@
     // must check CGRectIsEmpty() in addition to CGRectIsNull().
     if (CGRectIsNull(drawingRect) || CGRectIsEmpty(drawingRect))
       continue;
-    drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:drawingRect
-                                                     inTileWithRect:tileRect];
+    drawingRect = [CGDrawingHelper drawingRectFromCanvasRect:drawingRect
+                                              inTileWithRect:tileRect];
     [drawingRectangles addObject:[NSValue valueWithCGRect:drawingRect]];
   }
 

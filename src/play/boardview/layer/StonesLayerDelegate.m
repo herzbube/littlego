@@ -19,11 +19,13 @@
 #import "StonesLayerDelegate.h"
 #import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
+#import "../../model/BoardViewMetrics.h"
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoUtilities.h"
 #import "../../../go/GoVertex.h"
+#import "../../../ui/CGDrawingHelper.h"
 #import "../../../ui/Tile.h"
 
 
@@ -343,8 +345,8 @@
 
   GoGame* game = [GoGame sharedGame];
   GoBoard* board = game.board;
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.boardViewMetrics.tileSize];
 
   [self.drawingPoints enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* stoneStateAsNumber, BOOL* stop)
    {
@@ -418,8 +420,8 @@
 {
   NSMutableDictionary* drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.boardViewMetrics.tileSize];
 
   // TODO: Currently we always iterate over all points. This could be
   // optimized: If the tile rect stays the same, we should already know which

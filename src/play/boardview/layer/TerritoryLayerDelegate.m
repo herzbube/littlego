@@ -27,6 +27,7 @@
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
 #import "../../../main/ApplicationDelegate.h"
+#import "../../../ui/CGDrawingHelper.h"
 #import "../../../ui/UiSettingsModel.h"
 
 
@@ -168,8 +169,8 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.boardViewMetrics.tileSize];
   GoBoard* board = [GoGame sharedGame].board;
 
   // Make sure that layers are created before drawing methods that use them are
@@ -433,8 +434,8 @@
   if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return drawingPoints;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.boardViewMetrics.tileSize];
 
   // TODO: Currently we always iterate over all points. This could be
   // optimized: If the tile rect stays the same, we should already know which

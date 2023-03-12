@@ -17,6 +17,7 @@
 
 // Project includes
 #import "CGDrawingHelper.h"
+#import "Tile.h"
 #import "UiUtilities.h"
 
 
@@ -782,6 +783,57 @@
   // Clipping can only be removed by restoring a previously saved graphics
   // state
   CGContextRestoreGState(context);
+}
+
+#pragma mark - Calculating points, sizes and rectangles
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the rectangle occupied by @a tile on the "canvas", i.e. the
+/// entire drawing area covered by a tiled view. The origin is in the upper-left
+/// corner. The tile with row/column = 0/0 is assumed to contain the origin.
+// -----------------------------------------------------------------------------
++ (CGRect) canvasRectForTile:(id<Tile>)tile
+                    withSize:(CGSize)tileSize
+{
+  CGRect canvasRect = CGRectZero;
+  canvasRect.size = tileSize;
+  canvasRect.origin.x = tile.column * tileSize.width;
+  canvasRect.origin.y = tile.row * tileSize.height;
+  return canvasRect;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the rectangle that must be passed to CGContextDrawLayerInRect
+/// for drawing the specified layer, which must have a size that is scaled up
+/// using @a contentScale.
+// -----------------------------------------------------------------------------
++ (CGRect) drawingRectForScaledLayer:(CGLayerRef)layer
+                   withContentsScale:(CGFloat)contentsScale
+{
+  CGSize drawingSize = CGLayerGetSize(layer);
+  drawingSize.width /= contentsScale;
+  drawingSize.height /= contentsScale;
+
+  CGRect drawingRect;
+  drawingRect.origin = CGPointZero;
+  drawingRect.size = drawingSize;
+
+  return drawingRect;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Translates the origin of @a canvasRect (a rectangle on the "canvas",
+/// i.e. the entire drawing area covered by a tiled view) into the coordinate
+/// system of the tile described by @a tileRect (the rectangle on the "canvas"
+/// occupied by the tile). The origin is in the upper-left corner.
+// -----------------------------------------------------------------------------
++ (CGRect) drawingRectFromCanvasRect:(CGRect)canvasRect
+                      inTileWithRect:(CGRect)tileRect
+{
+  CGRect drawingRect = canvasRect;
+  drawingRect.origin.x -= tileRect.origin.x;
+  drawingRect.origin.y -= tileRect.origin.y;
+  return drawingRect;
 }
 
 @end

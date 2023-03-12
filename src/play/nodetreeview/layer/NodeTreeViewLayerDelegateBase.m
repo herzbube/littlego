@@ -17,9 +17,9 @@
 
 // Project includes
 #import "NodeTreeViewLayerDelegateBase.h"
-#import "NodeTreeViewDrawingHelper.h"
 #import "../NodeTreeViewMetrics.h"
 #import "../canvas/NodeTreeViewCellPosition.h"
+#import "../../../ui/CGDrawingHelper.h"
 
 
 @implementation NodeTreeViewLayerDelegateBase
@@ -127,8 +127,8 @@
 {
   NodeTreeViewCellPosition* topLeftPosition = [NodeTreeViewCellPosition topLeftPosition];
   CGPoint topLeftCellRectOrigin = [self.nodeTreeViewMetrics cellRectOriginFromPosition:topLeftPosition];
-  CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
-                                                         metrics:self.nodeTreeViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.nodeTreeViewMetrics.tileSize];
   return [self calculateDrawingCellsOnTile:self.nodeTreeViewMetrics.nodeTreeViewCellSize
                      topLeftCellRectOrigin:topLeftCellRectOrigin
                                   tileRect:tileRect];
@@ -152,8 +152,8 @@
 {
   NodeTreeViewCellPosition* topLeftPosition = [NodeTreeViewCellPosition topLeftPosition];
   CGPoint topLeftCellRectOrigin = [self.nodeTreeViewMetrics nodeNumberCellRectOriginFromPosition:topLeftPosition];
-  CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
-                                                         metrics:self.nodeTreeViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.nodeTreeViewMetrics.tileSize];
   tileRect.size.height = self.nodeTreeViewMetrics.nodeNumberViewHeight;
   return [self calculateDrawingCellsOnTile:self.nodeTreeViewMetrics.nodeNumberViewCellSize
                      topLeftCellRectOrigin:topLeftCellRectOrigin

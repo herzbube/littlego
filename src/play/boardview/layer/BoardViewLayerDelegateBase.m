@@ -22,6 +22,7 @@
 #import "../../../go/GoBoard.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
+#import "../../../ui/CGDrawingHelper.h"
 
 
 @implementation BoardViewLayerDelegateBase
@@ -155,8 +156,8 @@
   if (CGSizeEqualToSize(pointCellSize, CGSizeZero))
     return drawingPoints;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.boardViewMetrics.tileSize];
   CGFloat tileRectLeftEdge = CGRectGetMinX(tileRect);
   CGFloat tileRectRightEdge = CGRectGetMaxX(tileRect);
   CGFloat tileRectTopEdge = CGRectGetMinY(tileRect);

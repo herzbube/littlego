@@ -152,8 +152,8 @@
   NSDictionary* textAttributesSelected = @{ NSFontAttributeName : nodeNumberLabelFont,
                                             NSForegroundColorAttributeName : self.nodeTreeViewMetrics.selectedNodeColor };
 
-  CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
-                                                         metrics:self.nodeTreeViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.nodeTreeViewMetrics.tileSize];
 
   NSMutableDictionary* nodeNumbersAlreadyDrawn = [NSMutableDictionary dictionary];
 
@@ -205,8 +205,8 @@
 // -----------------------------------------------------------------------------
 - (NSArray*) calculateSelectedNodePositionsOnTile:(NSArray*)selectedNodePositions
 {
-  CGRect tileRect = [NodeTreeViewDrawingHelper canvasRectForTile:self.tile
-                                                         metrics:self.nodeTreeViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.nodeTreeViewMetrics.tileSize];
 
   NSMutableArray* selectedNodePositionsOnTile = [NSMutableArray array];
 

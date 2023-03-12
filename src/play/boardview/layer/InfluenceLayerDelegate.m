@@ -25,6 +25,7 @@
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
 #import "../../../main/ApplicationDelegate.h"
+#import "../../../ui/CGDrawingHelper.h"
 #import "../../../ui/UiSettingsModel.h"
 
 
@@ -129,8 +130,8 @@
 // -----------------------------------------------------------------------------
 - (void) drawLayer:(CALayer*)layer inContext:(CGContextRef)context
 {
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.boardViewMetrics.tileSize];
   GoBoard* board = [GoGame sharedGame].board;
   [self.drawingPoints enumerateKeysAndObjectsUsingBlock:^(NSString* vertexString, NSNumber* influenceScoreAsNumber, BOOL* stop){
     GoPoint* point = [board pointAtVertex:vertexString];
@@ -157,8 +158,8 @@
   CGRect influenceRect = [BoardViewDrawingHelper canvasRectForSize:influenceSize
                                                    centeredAtPoint:point
                                                            metrics:self.boardViewMetrics];
-  CGRect drawingRect = [BoardViewDrawingHelper drawingRectFromCanvasRect:influenceRect
-                                                          inTileWithRect:tileRect];
+  CGRect drawingRect = [CGDrawingHelper drawingRectFromCanvasRect:influenceRect
+                                                   inTileWithRect:tileRect];
   [self drawInfluenceRectWithContext:context
                               inRect:drawingRect
                            withColor:influenceColor];
@@ -248,8 +249,8 @@
   if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModePlay)
     return drawingPoints;
 
-  CGRect tileRect = [BoardViewDrawingHelper canvasRectForTile:self.tile
-                                                      metrics:self.boardViewMetrics];
+  CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile
+                                              withSize:self.boardViewMetrics.tileSize];
   // TODO: Currently we always iterate over all points. This could be
   // optimized: If the tile rect stays the same, we should already know which
   // points intersect with the tile, so we could fall back on a pre-filtered
