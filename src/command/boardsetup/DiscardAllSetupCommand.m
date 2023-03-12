@@ -16,7 +16,7 @@
 
 
 // Project includes
-#import "DiscardAllSetupStonesCommand.h"
+#import "DiscardAllSetupCommand.h"
 #import "../backup/BackupGameToSgfCommand.h"
 #import "../boardposition/ChangeAndDiscardCommand.h"
 #import "../boardposition/SyncGTPEngineCommand.h"
@@ -29,7 +29,7 @@
 #import "../../ui/UIViewControllerAdditions.h"
 
 
-@implementation DiscardAllSetupStonesCommand
+@implementation DiscardAllSetupCommand
 
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.
@@ -117,7 +117,7 @@
     GoBoardPosition* boardPosition = game.boardPosition;
     if (boardPosition.numberOfBoardPositions > 0 || game.state == GoGameStateGameHasEnded)
     {
-      // Whoever invoked DiscardAllSetupStonesCommand must have previously
+      // Whoever invoked DiscardAllSetupCommand must have previously
       // made sure that it's OK to discard future nodes. We can therefore safely
       // submit ChangeAndDiscardCommand without user interaction. Note that
       // ChangeAndDiscardCommand reverts the game state to "in progress" if the

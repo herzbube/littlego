@@ -109,8 +109,8 @@ enum GameAction
   /// stone icon, indicating the current default color instead of what the game
   /// action actually does.
   GameActionSwitchSetupStoneColorToBlack,
-  /// @brief Discards all board setup stones. Handicap stones remain.
-  GameActionDiscardAllSetupStones,
+  /// @brief Discards all board setup. Handicap stones remain.
+  GameActionDiscardAllSetup,
   /// @brief Displays a popup that lets the user select which type of markup she
   /// wants to place on the board.
   GameActionSelectMarkupType,

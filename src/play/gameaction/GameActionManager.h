@@ -155,7 +155,7 @@ dismissNavigationControllerWithRootViewController:(UIViewController*)rootViewCon
 - (void) playStart:(id)sender;
 - (void) switchSetupStoneColorToWhite:(id)sender;
 - (void) switchSetupStoneColorToBlack:(id)sender;
-- (void) discardAllSetupStones:(id)sender;
+- (void) discardAllSetup:(id)sender;
 - (void) selectMarkupType:(id)sender;
 - (void) discardAllMarkup:(id)sender;
 - (void) gameInfo:(id)sender;

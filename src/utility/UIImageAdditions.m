@@ -559,7 +559,7 @@
       return stoneBlackButtonIconResource;
     case GameActionSwitchSetupStoneColorToBlack:
       return stoneWhiteButtonIconResource;
-    case GameActionDiscardAllSetupStones:
+    case GameActionDiscardAllSetup:
       return trashcanButtonIconResource;
     case GameActionDiscardAllMarkup:
       return trashcanButtonIconResource;

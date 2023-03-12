@@ -19,29 +19,26 @@
 #import "../CommandBase.h"
 
 
-// TODO xxx The command should be named "DiscardAllSetupCommand". The discard includes setupFirstMoveColor.
 // -----------------------------------------------------------------------------
-/// @brief The DiscardAllSetupStonesCommand class is responsible for discarding
-/// all stones that the board is currently set up with.
-/// DiscardAllSetupStonesCommand first displays an alert that asks the user for
-/// confirmation.
+/// @brief The DiscardAllSetupCommand class is responsible for discarding all
+/// stones that the board is currently set up with. DiscardAllSetupCommand
+/// first displays an alert that asks the user for confirmation.
 ///
-/// Before it discards setup stones, DiscardAllSetupStonesCommand also discards
-/// any nodes that the current game variation has. Whoever invoked
-/// DiscardAllSetupStonesCommand must have previously made sure that it's OK to
+/// Before it discards setup stones, DiscardAllSetupCommand also discards any
+/// nodes that the current game variation has. Whoever invoked
+/// DiscardAllSetupCommand must have previously made sure that it's OK to
 /// discard future nodes.
 ///
-/// After it has made the discard, DiscardAllSetupStonesCommand syncs the
-/// GTP engine, saves the application state and performs a backup of the
-/// current game.
+/// After it has made the discard, DiscardAllSetupCommand syncs the GTP engine,
+/// saves the application state and performs a backup of the current game.
 ///
 /// Posts #allSetupStonesWillDiscard to the global notification centre before
 /// any changes are made. Posts #allSetupStonesDidDiscard and
 /// #nodeSetupDataDidChange to the global notification centre after the discard
 /// is complete.
 ///
-/// @note Because DiscardAllSetupStonesCommand always shows an alert as its
-/// first action, command execution will always succeed and control will always
+/// @note Because DiscardAllSetupCommand always shows an alert as its first
+/// action, command execution will always succeed and control will always
 /// return to the client who submitted the command before the setup stones are
 /// actually discarded.
 ///
@@ -50,7 +47,7 @@
 /// conditions is not met an alert is displayed (but command execution still
 /// succeeds, as explained further up).
 // -----------------------------------------------------------------------------
-@interface DiscardAllSetupStonesCommand : CommandBase
+@interface DiscardAllSetupCommand : CommandBase
 {
 }
 

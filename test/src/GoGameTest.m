@@ -2065,9 +2065,9 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Exercises the discardAllSetupStones() method.
+/// @brief Exercises the discardAllSetup() method.
 // -----------------------------------------------------------------------------
-- (void) testDiscardAllSetupStones
+- (void) testDiscardAllSetup
 {
   GoPoint* pointA1 = [m_game.board pointAtVertex:@"A1"];
   GoPoint* pointB1 = [m_game.board pointAtVertex:@"B1"];

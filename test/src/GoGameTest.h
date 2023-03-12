@@ -64,7 +64,7 @@
 - (void) testAddEmptyNodeToCurrentGameVariation;
 - (void) testChangeSetupFirstMoveColor;
 - (void) testChangeSetupPoint;
-- (void) testDiscardAllSetupStones;
+- (void) testDiscardAllSetup;
 - (void) testDiscardCausesRegionToFragment;
 - (void) testIssue2;
 - (void) testIssue289;

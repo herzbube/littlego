@@ -253,7 +253,7 @@ enum ButtonBoxSection
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionPlayStart]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionSwitchSetupStoneColorToWhite]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionSwitchSetupStoneColorToBlack]];
-  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionDiscardAllSetupStones]];
+  [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionDiscardAllSetup]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionSelectMarkupType]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionDiscardAllMarkup]];
   [variableButtonBoxSectionOrder addObject:[NSNumber numberWithInt:GameActionPass]];

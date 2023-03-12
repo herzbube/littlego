@@ -100,8 +100,11 @@
     case GameActionSwitchSetupStoneColorToBlack:
       buttonName = stoneWhiteButtonIconResource;
       break;
-    case GameActionDiscardAllSetupStones:
-      buttonName = discardButtonIconResource;
+    case GameActionDiscardAllSetup:
+      buttonName = trashcanButtonIconResource;
+      break;
+    case GameActionDiscardAllMarkup:
+      buttonName = trashcanButtonIconResource;
       break;
     case GameActionMoves:
       buttonName = @"Moves";

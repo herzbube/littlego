@@ -179,7 +179,7 @@
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionPlayStart]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionSwitchSetupStoneColorToWhite]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionSwitchSetupStoneColorToBlack]];
-  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionDiscardAllSetupStones]];
+  [buttonOrderList addObject:[NSNumber numberWithInt:GameActionDiscardAllSetup]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionSelectMarkupType]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionDiscardAllMarkup]];
   [buttonOrderList addObject:[NSNumber numberWithInt:GameActionPass]];

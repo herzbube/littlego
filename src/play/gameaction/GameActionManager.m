@@ -33,7 +33,7 @@
 #import "../../command/gtp/InterruptComputerCommand.h"
 #import "../../command/boardposition/ChangeAndDiscardCommand.h"
 #import "../../command/boardposition/PlayCommand.h"
-#import "../../command/boardsetup/DiscardAllSetupStonesCommand.h"
+#import "../../command/boardsetup/DiscardAllSetupCommand.h"
 #import "../../command/boardsetup/HandleBoardSetupInteractionCommand.h"
 #import "../../command/boardsetup/SetupFirstMoveColorCommand.h"
 #import "../../command/game/PauseGameCommand.h"
@@ -452,8 +452,8 @@ static GameActionManager* sharedGameActionManager = nil;
       return @selector(switchSetupStoneColorToWhite:);
     case GameActionSwitchSetupStoneColorToBlack:
       return @selector(switchSetupStoneColorToBlack:);
-    case GameActionDiscardAllSetupStones:
-      return @selector(discardAllSetupStones:);
+    case GameActionDiscardAllSetup:
+      return @selector(discardAllSetup:);
     case GameActionSelectMarkupType:
       return @selector(selectMarkupType:);
     case GameActionDiscardAllMarkup:
@@ -608,11 +608,11 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Handles execution of game action #GameActionDiscardAllSetupStones.
+/// @brief Handles execution of game action #GameActionDiscardAllSetup.
 // -----------------------------------------------------------------------------
-- (void) discardAllSetupStones:(id)sender
+- (void) discardAllSetup:(id)sender
 {
-  DiscardAllSetupStonesCommand* command = [[[DiscardAllSetupStonesCommand alloc] init] autorelease];
+  DiscardAllSetupCommand* command = [[[DiscardAllSetupCommand alloc] init] autorelease];
   [self.commandDelegate gameActionManager:self discardOrAlertWithCommand:command];
 }
 
@@ -1195,7 +1195,7 @@ static GameActionManager* sharedGameActionManager = nil;
     // TODO xxx The game action is no longer "discard all setup stones" but "discard all setup". This includes setupFirstMoveColor.
     GoNodeSetup* nodeSetup = game.boardPosition.currentNode.goNodeSetup;
     if (nodeSetup && ! nodeSetup.isEmpty)
-      [self addGameAction:GameActionDiscardAllSetupStones toVisibleStatesDictionary:visibleStates];
+      [self addGameAction:GameActionDiscardAllSetup toVisibleStatesDictionary:visibleStates];
   }
   else if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeEditMarkup)
   {
@@ -1233,7 +1233,7 @@ static GameActionManager* sharedGameActionManager = nil;
   [self updatePlayStartEnabledState];
   [self updateSwitchSetupStoneColorToWhiteEnabledState];
   [self updateSwitchSetupStoneColorToBlackEnabledState];
-  [self updateGameActionDiscardAllSetupStonesEnabledState];
+  [self updateGameActionDiscardAllSetupEnabledState];
   [self updateGameActionSelectMarkupTypeEnabledState];
   [self updateGameActionDiscardAllMarkupEnabledState];
   [self updateGameInfoEnabledState];
@@ -1539,9 +1539,9 @@ static GameActionManager* sharedGameActionManager = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the enabled state of game action
-/// #GameActionDiscardAllSetupStones.
+/// #GameActionDiscardAllSetup.
 // -----------------------------------------------------------------------------
-- (void) updateGameActionDiscardAllSetupStonesEnabledState
+- (void) updateGameActionDiscardAllSetupEnabledState
 {
   BOOL enabled = NO;
 
@@ -1556,7 +1556,7 @@ static GameActionManager* sharedGameActionManager = nil;
     enabled = YES;
   }
 
-  [self updateEnabledState:enabled forGameAction:GameActionDiscardAllSetupStones];
+  [self updateEnabledState:enabled forGameAction:GameActionDiscardAllSetup];
 }
 
 // -----------------------------------------------------------------------------

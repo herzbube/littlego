@@ -317,8 +317,8 @@
 		CD7C57B621FCB0D100694520 /* stone-white-icon.svg in Resources */ = {isa = PBXBuildFile; fileRef = CD7C57B221FCB0D100694520 /* stone-white-icon.svg */; };
 		CD7C57B721FCB0D100694520 /* stone-white-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C57B321FCB0D100694520 /* stone-white-icon@2x.png */; };
 		CD7C57B821FCB0D100694520 /* stone-white-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = CD7C57B421FCB0D100694520 /* stone-white-icon.png */; };
-		CD7C57C321FD3E1C00694520 /* DiscardAllSetupStonesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57C121FD3E1C00694520 /* DiscardAllSetupStonesCommand.m */; };
-		CD7C57C421FD3E1C00694520 /* DiscardAllSetupStonesCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57C121FD3E1C00694520 /* DiscardAllSetupStonesCommand.m */; };
+		CD7C57C321FD3E1C00694520 /* DiscardAllSetupCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57C121FD3E1C00694520 /* DiscardAllSetupCommand.m */; };
+		CD7C57C421FD3E1C00694520 /* DiscardAllSetupCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57C121FD3E1C00694520 /* DiscardAllSetupCommand.m */; };
 		CD7C57C721FF8E9500694520 /* HandleBoardSetupInteractionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57C521FF8E9400694520 /* HandleBoardSetupInteractionCommand.m */; };
 		CD7C57C821FF8E9500694520 /* HandleBoardSetupInteractionCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57C521FF8E9400694520 /* HandleBoardSetupInteractionCommand.m */; };
 		CD7C57CC21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C57CB21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.m */; };
@@ -1289,8 +1289,8 @@
 		CD7C57B321FCB0D100694520 /* stone-white-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-white-icon@2x.png"; sourceTree = "<group>"; };
 		CD7C57B421FCB0D100694520 /* stone-white-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-white-icon.png"; sourceTree = "<group>"; };
 		CD7C57BA21FCC18E00694520 /* 181278-reversed.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "181278-reversed.svg"; sourceTree = "<group>"; };
-		CD7C57C121FD3E1C00694520 /* DiscardAllSetupStonesCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardAllSetupStonesCommand.m; sourceTree = "<group>"; };
-		CD7C57C221FD3E1C00694520 /* DiscardAllSetupStonesCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardAllSetupStonesCommand.h; sourceTree = "<group>"; };
+		CD7C57C121FD3E1C00694520 /* DiscardAllSetupCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DiscardAllSetupCommand.m; sourceTree = "<group>"; };
+		CD7C57C221FD3E1C00694520 /* DiscardAllSetupCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DiscardAllSetupCommand.h; sourceTree = "<group>"; };
 		CD7C57C521FF8E9400694520 /* HandleBoardSetupInteractionCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandleBoardSetupInteractionCommand.m; sourceTree = "<group>"; };
 		CD7C57C621FF8E9400694520 /* HandleBoardSetupInteractionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandleBoardSetupInteractionCommand.h; sourceTree = "<group>"; };
 		CD7C57CA21FF9E1500694520 /* ToggleScoringStateOfStoneGroupCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToggleScoringStateOfStoneGroupCommand.h; sourceTree = "<group>"; };
@@ -2697,8 +2697,8 @@
 		CD7C57C021FD3E1C00694520 /* boardsetup */ = {
 			isa = PBXGroup;
 			children = (
-				CD7C57C221FD3E1C00694520 /* DiscardAllSetupStonesCommand.h */,
-				CD7C57C121FD3E1C00694520 /* DiscardAllSetupStonesCommand.m */,
+				CD7C57C221FD3E1C00694520 /* DiscardAllSetupCommand.h */,
+				CD7C57C121FD3E1C00694520 /* DiscardAllSetupCommand.m */,
 				CD7C57C621FF8E9400694520 /* HandleBoardSetupInteractionCommand.h */,
 				CD7C57C521FF8E9400694520 /* HandleBoardSetupInteractionCommand.m */,
 				CD7C57CF2201E89400694520 /* SetupFirstMoveColorCommand.h */,
@@ -4515,7 +4515,7 @@
 				CD072710180B292E0083B138 /* ToggleTerritoryStatisticsCommand.m in Sources */,
 				CD072714180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
 				CDC97A8A182EEB5F00755EB2 /* GoZobristTable.mm in Sources */,
-				CD7C57C321FD3E1C00694520 /* DiscardAllSetupStonesCommand.m in Sources */,
+				CD7C57C321FD3E1C00694520 /* DiscardAllSetupCommand.m in Sources */,
 				CD7C69B61A9AB86A009EC5AD /* BoardPositionButtonBoxDataSource.m in Sources */,
 				CDC97A8E18301CC100755EB2 /* GoGameRules.m in Sources */,
 			);
@@ -4704,7 +4704,7 @@
 				CD1DB6131702581100C2E648 /* TableViewCellFactory.m in Sources */,
 				CDBDD09A2997F38800641E3B /* NodeNumbersViewCell.m in Sources */,
 				CDAF1724196CA81900271396 /* GoVertexNumeric.m in Sources */,
-				CD7C57C421FD3E1C00694520 /* DiscardAllSetupStonesCommand.m in Sources */,
+				CD7C57C421FD3E1C00694520 /* DiscardAllSetupCommand.m in Sources */,
 				CD1DB6141702581900C2E648 /* ItemPickerController.m in Sources */,
 				CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */,
 				CDB49E422221A981006DC1A4 /* BoardViewAccessibility.m in Sources */,
