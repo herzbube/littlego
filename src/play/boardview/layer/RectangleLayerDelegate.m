@@ -358,10 +358,10 @@ enum DrawingArtifactType
 {
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
 
-  CGLayerRef selectionRectangleLayer = [cache layerOfType:SelectionRectangleLayerType];
-  if (! selectionRectangleLayer)
+  BoardViewCGLayerCacheEntry selectionRectangleLayerEntry = [cache layerOfType:SelectionRectangleLayerType];
+  if (! selectionRectangleLayerEntry.isValid)
   {
-    selectionRectangleLayer = CreateTerritoryLayer(context, TerritoryMarkupStyleWhite, self.boardViewMetrics);
+    CGLayerRef selectionRectangleLayer = CreateTerritoryLayer(context, TerritoryMarkupStyleWhite, self.boardViewMetrics);
     [cache setLayer:selectionRectangleLayer ofType:SelectionRectangleLayerType];
     CGLayerRelease(selectionRectangleLayer);
   }
@@ -376,11 +376,11 @@ enum DrawingArtifactType
                                 inTileRect:(CGRect)tileRect
 {
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
-  CGLayerRef selectionRectangleLayer = [cache layerOfType:SelectionRectangleLayerType];
+  BoardViewCGLayerCacheEntry selectionRectangleLayerEntry = [cache layerOfType:SelectionRectangleLayerType];
 
   for (GoPoint* pointOnTileInSelectionRectangle in self.pointsOnTileInSelectionRectangle)
   {
-    [BoardViewDrawingHelper drawLayer:selectionRectangleLayer
+    [BoardViewDrawingHelper drawLayer:selectionRectangleLayerEntry.layer
                           withContext:context
                       centeredAtPoint:pointOnTileInSelectionRectangle
                        inTileWithRect:tileRect

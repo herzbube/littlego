@@ -117,17 +117,17 @@
 - (void) drawStarPointsWithContext:(CGContextRef)context inTileRect:(CGRect)tileRect
 {
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
-  CGLayerRef starPointLayer = [cache layerOfType:StarPointLayerType];
-  if (! starPointLayer)
+  BoardViewCGLayerCacheEntry starPointLayerEntry = [cache layerOfType:StarPointLayerType];
+  if (! starPointLayerEntry.isValid)
   {
-    starPointLayer = CreateStarPointLayer(context, self.boardViewMetrics);
-    [cache setLayer:starPointLayer ofType:StarPointLayerType];
-    CGLayerRelease(starPointLayer);
+    starPointLayerEntry.layer = CreateStarPointLayer(context, self.boardViewMetrics);
+    [cache setLayer:starPointLayerEntry.layer ofType:StarPointLayerType];
+    CGLayerRelease(starPointLayerEntry.layer);
   }
 
   for (GoPoint* starPoint in [GoGame sharedGame].board.starPoints)
   {
-    [BoardViewDrawingHelper drawLayer:starPointLayer
+    [BoardViewDrawingHelper drawLayer:starPointLayerEntry.layer
                           withContext:context
                       centeredAtPoint:starPoint
                        inTileWithRect:tileRect

@@ -23,7 +23,7 @@
 // and therefore very fast. Since only one instance of BoardViewCGLayerCache
 // can exist, there are no array access conflicts to solve.
 static const int arraySizeLayers = MaxLayerType;
-static CGLayerRef layers[arraySizeLayers];
+static BoardViewCGLayerCacheEntry layers[arraySizeLayers];
 
 
 @implementation BoardViewCGLayerCache
@@ -57,7 +57,7 @@ static BoardViewCGLayerCache* sharedCache = nil;
   if (! self)
     return nil;
   for (int layerIndex = 0; layerIndex < arraySizeLayers; ++layerIndex)
-    layers[layerIndex] = NULL;
+    layers[layerIndex] = (BoardViewCGLayerCacheEntry){false, NULL};
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
   return self;
 }
@@ -80,16 +80,7 @@ static BoardViewCGLayerCache* sharedCache = nil;
 
 #pragma mark - Caching methods
 
-// TODO xxx Currently layer delegates use this method to check if a layer
-// exists - if this method returns NULL they assume that the layer does not
-// exist and needs to be created. This logic is no longer viable because the
-// board view is now resizable and can result in BoardViewDrawingHelper's
-// Create...Layer functions returning NULL if the metrics refer to extremely
-// small board dimensions. Layer delegates will therefore try to create layers
-// over and over again in each drawing cycle, because they stored a NULL value
-// in the cache in the previous drawing cycle. BoardViewCGLayerCache needs a
-// new mechanism how to check whether a layer needs to be created.
-- (CGLayerRef) layerOfType:(enum LayerType)layerType
+- (BoardViewCGLayerCacheEntry) layerOfType:(enum LayerType)layerType
 {
   return layers[layerType];
 }
@@ -97,28 +88,21 @@ static BoardViewCGLayerCache* sharedCache = nil;
 - (void) setLayer:(CGLayerRef)layer ofType:(enum LayerType)layerType
 {
   CGLayerRetain(layer);
-  layers[layerType] = layer;
+  layers[layerType] = (BoardViewCGLayerCacheEntry){true, layer};
 }
 
 - (void) invalidateLayerOfType:(enum LayerType)layerType
 {
-  if (layers[layerType])
-  {
-    CGLayerRelease(layers[layerType]);
-    layers[layerType] = NULL;
-  }
+  BoardViewCGLayerCacheEntry entry = layers[layerType];
+  if (entry.isValid && entry.layer)
+    CGLayerRelease(entry.layer);
+  layers[layerType] = (BoardViewCGLayerCacheEntry){false, NULL};
 }
 
 - (void) invalidateAllLayers
 {
   for (int layerIndex = 0; layerIndex < arraySizeLayers; ++layerIndex)
-  {
-    if (layers[layerIndex])
-    {
-      CGLayerRelease(layers[layerIndex]);
-      layers[layerIndex] = NULL;
-    }
-  }
+    [self invalidateLayerOfType:layerIndex];
 }
 
 @end

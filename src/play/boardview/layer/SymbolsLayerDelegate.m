@@ -576,19 +576,19 @@
 - (void) createLayersIfNecessaryWithContext:(CGContextRef)context
 {
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
-  CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
-  if (! blackLastMoveLayer)
+  BoardViewCGLayerCacheEntry blackLastMoveLayerEntry = [cache layerOfType:BlackLastMoveLayerType];
+  if (! blackLastMoveLayerEntry.isValid)
   {
-    blackLastMoveLayer = CreateSquareSymbolLayer(context, self.boardViewMetrics.lastMoveColorOnWhiteStone, self.boardViewMetrics);
-    [cache setLayer:blackLastMoveLayer ofType:BlackLastMoveLayerType];
-    CGLayerRelease(blackLastMoveLayer);
+    blackLastMoveLayerEntry.layer = CreateSquareSymbolLayer(context, self.boardViewMetrics.lastMoveColorOnWhiteStone, self.boardViewMetrics);
+    [cache setLayer:blackLastMoveLayerEntry.layer ofType:BlackLastMoveLayerType];
+    CGLayerRelease(blackLastMoveLayerEntry.layer);
   }
-  CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
-  if (! whiteLastMoveLayer)
+  BoardViewCGLayerCacheEntry whiteLastMoveLayerEntry = [cache layerOfType:WhiteLastMoveLayerType];
+  if (! whiteLastMoveLayerEntry.isValid)
   {
-    whiteLastMoveLayer = CreateSquareSymbolLayer(context, self.boardViewMetrics.lastMoveColorOnBlackStone, self.boardViewMetrics);
-    [cache setLayer:whiteLastMoveLayer ofType:WhiteLastMoveLayerType];
-    CGLayerRelease(whiteLastMoveLayer);
+    whiteLastMoveLayerEntry.layer = CreateSquareSymbolLayer(context, self.boardViewMetrics.lastMoveColorOnBlackStone, self.boardViewMetrics);
+    [cache setLayer:whiteLastMoveLayerEntry.layer ofType:WhiteLastMoveLayerType];
+    CGLayerRelease(whiteLastMoveLayerEntry.layer);
   }
   [self createSymbolLayersIfNecessary:self.blackStrokeSymbolLayerTypes withFillColor:[UIColor whiteColor] strokeColor:[UIColor blackColor] context:context];
   [self createSymbolLayersIfNecessary:self.whiteStrokeSymbolLayerTypes withFillColor:[UIColor blackColor] strokeColor:[UIColor whiteColor] context:context];
@@ -603,13 +603,13 @@
   [symbolLayerTypes enumerateKeysAndObjectsUsingBlock:^(NSNumber* symbolAsNumber, NSNumber* layerTypeAsNumber, BOOL* stop)
   {
     enum LayerType layerType = layerTypeAsNumber.intValue;
-    CGLayerRef layer = [cache layerOfType:layerType];
-    if (! layer)
+    BoardViewCGLayerCacheEntry layerEntry = [cache layerOfType:layerType];
+    if (! layerEntry.isValid)
     {
       enum GoMarkupSymbol symbol = symbolAsNumber.intValue;
-      layer = CreateSymbolLayer(context, symbol, fillColor, strokeColor, self.markupModel, self.boardViewMetrics);
-      [cache setLayer:layer ofType:layerType];
-      CGLayerRelease(layer);
+      layerEntry.layer = CreateSymbolLayer(context, symbol, fillColor, strokeColor, self.markupModel, self.boardViewMetrics);
+      [cache setLayer:layerEntry.layer ofType:layerType];
+      CGLayerRelease(layerEntry.layer);
     }
   }];
 }
@@ -857,9 +857,9 @@
 
   NSNumber* layerTypeAsNumber = symbolLayerTypes[symbolAsNumber];
   enum LayerType layerType = layerTypeAsNumber.intValue;
-  CGLayerRef layer = [cache layerOfType:layerType];
+  BoardViewCGLayerCacheEntry layerEntry = [cache layerOfType:layerType];
 
-  [BoardViewDrawingHelper drawLayer:layer
+  [BoardViewDrawingHelper drawLayer:layerEntry.layer
                         withContext:context
                     centeredAtPoint:pointWithSymbol
                      inTileWithRect:tileRect
@@ -1093,14 +1093,14 @@
   [pointsWithMarkup addObject:pointWithLastMoveSymbol];
 
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
-  CGLayerRef blackLastMoveLayer = [cache layerOfType:BlackLastMoveLayerType];
-  CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
+  BoardViewCGLayerCacheEntry blackLastMoveLayerEntry = [cache layerOfType:BlackLastMoveLayerType];
+  BoardViewCGLayerCacheEntry whiteLastMoveLayerEntry = [cache layerOfType:WhiteLastMoveLayerType];
 
   CGLayerRef lastMoveLayer;
   if (mostRecentMove.player.isBlack)
-    lastMoveLayer = whiteLastMoveLayer;
+    lastMoveLayer = whiteLastMoveLayerEntry.layer;
   else
-    lastMoveLayer = blackLastMoveLayer;
+    lastMoveLayer = blackLastMoveLayerEntry.layer;
 
   [BoardViewDrawingHelper drawLayer:lastMoveLayer
                         withContext:context
@@ -1167,7 +1167,7 @@
                            inTileWithRect:(CGRect)tileRect
 {
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
-  CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
+  BoardViewCGLayerCacheEntry whiteLastMoveLayerEntry = [cache layerOfType:WhiteLastMoveLayerType];
 
   GoGame* game = [GoGame sharedGame];
   GoNode* rootNode = game.nodeModel.rootNode;
@@ -1219,7 +1219,7 @@
     if (handicapStoneWasReplacedByBlackSetupStone)
       continue;
 
-    [BoardViewDrawingHelper drawLayer:whiteLastMoveLayer
+    [BoardViewDrawingHelper drawLayer:whiteLastMoveLayerEntry.layer
                           withContext:context
                       centeredAtPoint:handicapPoint
                        inTileWithRect:tileRect

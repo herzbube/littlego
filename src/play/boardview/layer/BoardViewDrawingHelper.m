@@ -869,15 +869,15 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 {
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
 
-  CGLayerRef blackStoneLayer = [cache layerOfType:BlackStoneLayerType];
-  if (! blackStoneLayer)
+  BoardViewCGLayerCacheEntry blackStoneLayerEntry = [cache layerOfType:BlackStoneLayerType];
+  if (! blackStoneLayerEntry.isValid)
   {
-    blackStoneLayer = CreateStoneLayerWithImage(context, stoneBlackImageResource, metrics);
-    [cache setLayer:blackStoneLayer ofType:BlackStoneLayerType];
-    CGLayerRelease(blackStoneLayer);
+    blackStoneLayerEntry.layer = CreateStoneLayerWithImage(context, stoneBlackImageResource, metrics);
+    [cache setLayer:blackStoneLayerEntry.layer ofType:BlackStoneLayerType];
+    CGLayerRelease(blackStoneLayerEntry.layer);
   }
 
-  return blackStoneLayer;
+  return blackStoneLayerEntry.layer;
 }
 
 // -----------------------------------------------------------------------------
@@ -891,15 +891,15 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 {
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
 
-  CGLayerRef whiteStoneLayer = [cache layerOfType:WhiteStoneLayerType];
-  if (! whiteStoneLayer)
+  BoardViewCGLayerCacheEntry whiteStoneLayerEntry = [cache layerOfType:WhiteStoneLayerType];
+  if (! whiteStoneLayerEntry.isValid)
   {
-    whiteStoneLayer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, metrics);
-    [cache setLayer:whiteStoneLayer ofType:WhiteStoneLayerType];
-    CGLayerRelease(whiteStoneLayer);
+    whiteStoneLayerEntry.layer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, metrics);
+    [cache setLayer:whiteStoneLayerEntry.layer ofType:WhiteStoneLayerType];
+    CGLayerRelease(whiteStoneLayerEntry.layer);
   }
 
-  return whiteStoneLayer;
+  return whiteStoneLayerEntry.layer;
 }
 
 // -----------------------------------------------------------------------------
@@ -913,15 +913,15 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 {
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
 
-  CGLayerRef crossHairStoneLayer = [cache layerOfType:CrossHairStoneLayerType];
-  if (! crossHairStoneLayer)
+  BoardViewCGLayerCacheEntry crossHairStoneLayerEntry = [cache layerOfType:CrossHairStoneLayerType];
+  if (! crossHairStoneLayerEntry.isValid)
   {
-    crossHairStoneLayer = CreateStoneLayerWithImage(context, stoneCrosshairImageResource, metrics);
-    [cache setLayer:crossHairStoneLayer ofType:CrossHairStoneLayerType];
-    CGLayerRelease(crossHairStoneLayer);
+    crossHairStoneLayerEntry.layer = CreateStoneLayerWithImage(context, stoneCrosshairImageResource, metrics);
+    [cache setLayer:crossHairStoneLayerEntry.layer ofType:CrossHairStoneLayerType];
+    CGLayerRelease(crossHairStoneLayerEntry.layer);
   }
 
-  return crossHairStoneLayer;
+  return crossHairStoneLayerEntry.layer;
 }
 
 // -----------------------------------------------------------------------------

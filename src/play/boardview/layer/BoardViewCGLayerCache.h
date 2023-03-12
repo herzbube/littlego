@@ -50,6 +50,24 @@ enum LayerType
 };
 
 
+/// @brief A cache entry in BoardViewCGLayerCache.
+///
+/// The Go board view is resizable. Because of this when layers are created for
+/// drawing the board the result may be a NULL layer if the metrics refer to
+/// extremely small board dimensions. In such a case, a NULL layer must
+/// therefore be considered a valid entry in BoardViewCGLayerCache. Consequently
+/// NULL can not be used as a special CGLayerRef marker value to distinguish
+/// between valid or invalid cache entries. Instead the
+/// BoardViewCGLayerCacheEntry struct contains the boolean member @e isValid to
+/// indicate validity.
+typedef struct
+{
+  bool isValid;
+  CGLayerRef layer;
+}
+BoardViewCGLayerCacheEntry;
+
+
 // -----------------------------------------------------------------------------
 /// @brief The BoardViewCGLayerCache class provides a cache of CGLayer objects
 /// that can be reused for drawing the Go board.
@@ -61,7 +79,7 @@ enum LayerType
 + (BoardViewCGLayerCache*) sharedCache;
 + (void) releaseSharedCache;
 
-- (CGLayerRef) layerOfType:(enum LayerType)layerType;
+- (BoardViewCGLayerCacheEntry) layerOfType:(enum LayerType)layerType;
 - (void) setLayer:(CGLayerRef)layer ofType:(enum LayerType)layerType;
 - (void) invalidateLayerOfType:(enum LayerType)layerType;
 - (void) invalidateAllLayers;
