@@ -26,6 +26,8 @@
 {
 }
 
+/// @name Drawing shapes
+//@{
 + (void) drawCircleWithContext:(CGContextRef)context
                         center:(CGPoint)center
                         radius:(CGFloat)radius
@@ -79,6 +81,15 @@
                       strokeColor:(UIColor*)strokeColor
                   strokeLineWidth:(CGFloat)strokeLineWidth;
 
++ (void) drawLineWithContext:(CGContextRef)context
+                   fromPoint:(CGPoint)startPoint
+                     toPoint:(CGPoint)endPoint
+                 strokeColor:(UIColor*)strokeColor
+             strokeLineWidth:(CGFloat)strokeLineWidth;
+//@}
+
+/// @name Filling and stroking
+//@{
 + (void) fillOrStrokePathWithContext:(CGContextRef)context
                            fillColor:(UIColor*)fillColor
                          strokeColor:(UIColor*)strokeColor
@@ -87,7 +98,10 @@
 + (void) fillAndStrokeColorsForStoneColor:(enum GoColor)stoneColor
                                 fillColor:(UIColor**)fillColor
                               strokeColor:(UIColor**)strokeColor;
+//@}
 
+/// @name Drawing images
+//@{
 + (void) drawImageWithContext:(CGContextRef)context
                        inRect:(CGRect)rectangle
                     imageName:(NSString*)imageName;
@@ -99,7 +113,10 @@
 + (void) drawImageWithContext:(CGContextRef)context
                        inRect:(CGRect)rectangle
                         image:(UIImage*)image;
+//@}
 
+/// @name Drawing strings
+//@{
 + (void) drawStringWithContext:(CGContextRef)context
                 centeredInRect:(CGRect)rectangle
                         string:(NSString*)string
@@ -110,7 +127,10 @@
            rotatedCcwByDegrees:(CGFloat)degrees
                         string:(NSString*)string
                 textAttributes:(NSDictionary*)textAttributes;
+//@}
 
+/// @name Setting and removing clipping paths
+//@{
 + (void) setCircularClippingPathWithContext:(CGContextRef)context
                                      center:(CGPoint)center
                                      radius:(CGFloat)radius;
@@ -138,5 +158,6 @@
                                         radius:(CGFloat)radius;
 
 + (void) removeClippingPathWithContext:(CGContextRef)context;
+//@}
 
 @end

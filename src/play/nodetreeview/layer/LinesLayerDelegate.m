@@ -196,61 +196,61 @@
     if (lines & NodeTreeViewCellLineCenterToLeft)
     {
       bool isLineSelected = linesSelected & NodeTreeViewCellLineCenterToLeft;
-      [self drawLineFromPoint:CGPointMake(drawingRectForCell.origin.x, centerOfDrawingRectForCell.y)
-                      toPoint:centerOfDrawingRectForCell
-                    withColor:isLineSelected ? selectedLineColor : normalLineColor
-                    withWidth:isLineSelected ? selectedLineWidth : normalLineWidth
-                    inContext:context];
+      [CGDrawingHelper drawLineWithContext:context
+                                 fromPoint:CGPointMake(drawingRectForCell.origin.x, centerOfDrawingRectForCell.y)
+                                   toPoint:centerOfDrawingRectForCell
+                               strokeColor:isLineSelected ? selectedLineColor : normalLineColor
+                           strokeLineWidth:isLineSelected ? selectedLineWidth : normalLineWidth];
     }
 
     if (lines & NodeTreeViewCellLineCenterToRight)
     {
       bool isLineSelected = linesSelected & NodeTreeViewCellLineCenterToRight;
-      [self drawLineFromPoint:centerOfDrawingRectForCell
-                      toPoint:CGPointMake(CGRectGetMaxX(drawingRectForCell), centerOfDrawingRectForCell.y)
-                    withColor:isLineSelected ? selectedLineColor : normalLineColor
-                    withWidth:isLineSelected ? selectedLineWidth : normalLineWidth
-                    inContext:context];
+      [CGDrawingHelper drawLineWithContext:context
+                                 fromPoint:centerOfDrawingRectForCell
+                                   toPoint:CGPointMake(CGRectGetMaxX(drawingRectForCell), centerOfDrawingRectForCell.y)
+                               strokeColor:isLineSelected ? selectedLineColor : normalLineColor
+                           strokeLineWidth:isLineSelected ? selectedLineWidth : normalLineWidth];
     }
 
     if (lines & NodeTreeViewCellLineCenterToTop)
     {
       bool isLineSelected = linesSelected & NodeTreeViewCellLineCenterToTop;
-      [self drawLineFromPoint:CGPointMake(centerOfDrawingRectForCell.x, drawingRectForCell.origin.y)
-                      toPoint:centerOfDrawingRectForCell
-                    withColor:isLineSelected ? selectedLineColor : normalLineColor
-                    withWidth:isLineSelected ? selectedLineWidth : normalLineWidth
-                    inContext:context];
+      [CGDrawingHelper drawLineWithContext:context
+                                 fromPoint:CGPointMake(centerOfDrawingRectForCell.x, drawingRectForCell.origin.y)
+                                   toPoint:centerOfDrawingRectForCell
+                               strokeColor:isLineSelected ? selectedLineColor : normalLineColor
+                           strokeLineWidth:isLineSelected ? selectedLineWidth : normalLineWidth];
     }
 
     if (lines & NodeTreeViewCellLineCenterToBottom)
     {
       bool isLineSelected = linesSelected & NodeTreeViewCellLineCenterToBottom;
-      [self drawLineFromPoint:centerOfDrawingRectForCell
-                      toPoint:CGPointMake(centerOfDrawingRectForCell.x, CGRectGetMaxY(drawingRectForCell))
-                    withColor:isLineSelected ? selectedLineColor : normalLineColor
-                    withWidth:isLineSelected ? selectedLineWidth : normalLineWidth
-                    inContext:context];
+      [CGDrawingHelper drawLineWithContext:context
+                                 fromPoint:centerOfDrawingRectForCell
+                                   toPoint:CGPointMake(centerOfDrawingRectForCell.x, CGRectGetMaxY(drawingRectForCell))
+                               strokeColor:isLineSelected ? selectedLineColor : normalLineColor
+                           strokeLineWidth:isLineSelected ? selectedLineWidth : normalLineWidth];
     }
 
     if (lines & NodeTreeViewCellLineCenterToTopLeft)
     {
       bool isLineSelected = linesSelected & NodeTreeViewCellLineCenterToTopLeft;
-      [self drawLineFromPoint:drawingRectForCell.origin
-                      toPoint:centerOfDrawingRectForCell
-                    withColor:isLineSelected ? selectedLineColor : normalLineColor
-                    withWidth:isLineSelected ? selectedLineWidth : normalLineWidth
-                    inContext:context];
+      [CGDrawingHelper drawLineWithContext:context
+                                 fromPoint:drawingRectForCell.origin
+                                   toPoint:centerOfDrawingRectForCell
+                               strokeColor:isLineSelected ? selectedLineColor : normalLineColor
+                           strokeLineWidth:isLineSelected ? selectedLineWidth : normalLineWidth];
     }
 
     if (lines & NodeTreeViewCellLineCenterToBottomRight)
     {
       bool isLineSelected = linesSelected & NodeTreeViewCellLineCenterToBottomRight;
-      [self drawLineFromPoint:centerOfDrawingRectForCell
-                      toPoint:CGPointMake(CGRectGetMaxX(drawingRectForCell), CGRectGetMaxY(drawingRectForCell))
-                    withColor:isLineSelected ? selectedLineColor : normalLineColor
-                    withWidth:isLineSelected ? selectedLineWidth : normalLineWidth
-                    inContext:context];
+      [CGDrawingHelper drawLineWithContext:context
+                                 fromPoint:centerOfDrawingRectForCell
+                                   toPoint:CGPointMake(CGRectGetMaxX(drawingRectForCell), CGRectGetMaxY(drawingRectForCell))
+                               strokeColor:isLineSelected ? selectedLineColor : normalLineColor
+                           strokeLineWidth:isLineSelected ? selectedLineWidth : normalLineWidth];
     }
 
     if (didSetClippingPath)
@@ -319,25 +319,6 @@
 - (void) removeClippingPathInContext:(CGContextRef)context
 {
   [CGDrawingHelper removeClippingPathWithContext:context];
-}
-
-// TODO xxx document
-- (void) drawLineFromPoint:(CGPoint)lineStartPoint
-                   toPoint:(CGPoint)lineEndPoint
-                 withColor:(UIColor*)lineColor
-                 withWidth:(CGFloat)lineWidth
-                 inContext:(CGContextRef)context
-{
-  // TODO xxx intersection of drawing rect with tile rect => see GridLinesLayerDelegate
-
-  CGContextBeginPath(context);
-
-  CGContextMoveToPoint(context, lineStartPoint.x, lineStartPoint.y);
-  CGContextAddLineToPoint(context, lineEndPoint.x, lineEndPoint.y);
-
-  CGContextSetStrokeColorWithColor(context, lineColor.CGColor);
-  CGContextSetLineWidth(context, lineWidth);
-  CGContextStrokePath(context);
 }
 
 @end

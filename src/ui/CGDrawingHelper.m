@@ -22,6 +22,8 @@
 
 @implementation CGDrawingHelper
 
+#pragma mark - Drawing shapes
+
 // -----------------------------------------------------------------------------
 /// @brief Draws a circle with center point @a center and radius @a radius.
 /// The circle is either filled, or stroked, or both, or none.
@@ -365,6 +367,29 @@
                                strokeLineWidth:strokeLineWidth];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Draws a line between the two points @a startPoint and @e endPoint.
+/// The line is stroked with @a strokeColor, using the stroke line width
+/// @a strokeLineWidth.
+// -----------------------------------------------------------------------------
++ (void) drawLineWithContext:(CGContextRef)context
+                   fromPoint:(CGPoint)startPoint
+                     toPoint:(CGPoint)endPoint
+                 strokeColor:(UIColor*)strokeColor
+             strokeLineWidth:(CGFloat)strokeLineWidth
+{
+  CGContextBeginPath(context);
+
+  CGContextMoveToPoint(context, startPoint.x, startPoint.y);
+  CGContextAddLineToPoint(context, endPoint.x, endPoint.y);
+
+  [CGDrawingHelper fillOrStrokePathWithContext:context
+                                     fillColor:nil
+                                   strokeColor:strokeColor
+                               strokeLineWidth:strokeLineWidth];
+}
+
+#pragma mark - Filling and stroking
 
 // -----------------------------------------------------------------------------
 /// @brief Fills and/or strokes an existing path.
@@ -446,6 +471,8 @@
   }
 }
 
+#pragma mark - Drawing images
+
 // -----------------------------------------------------------------------------
 /// @brief Draws a bitmap image within the rectangle with origin and size
 /// specified by @a rectangle. The bitmap image is resized so that it fits
@@ -490,6 +517,8 @@
   [image drawInRect:rectangle];
   UIGraphicsPopContext();
 }
+
+#pragma mark - Drawing strings
 
 // -----------------------------------------------------------------------------
 /// @brief Draws the string @a string using the attributes @a textAttributes.
@@ -564,6 +593,8 @@
   if (shouldRotate)
     CGContextRestoreGState(context);
 }
+
+#pragma mark - Setting and removing clipping paths
 
 // -----------------------------------------------------------------------------
 /// @brief Configures the drawing context @a context with a circular clipping
