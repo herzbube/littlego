@@ -1149,7 +1149,6 @@ extern NSString* boardViewSelectionRectangleDidChange;
 /// nodes in GoNodeModel has changed, i.e. one or more nodes were added, deleted
 /// or moved to a new location.
 extern NSString* goNodeTreeLayoutDidChange;
-// TODO xxx remove if no longer needed
 /// @brief Is sent to indicate that the state of an intersection has changed
 /// during board setup. The intersection now has a handicap stone, or a
 /// previously set handicap stone has been removed. The GoPoint object that
@@ -1554,10 +1553,17 @@ enum NodeTreeViewCellSymbol
   NodeTreeViewCellSymbolRoot,
 };
 
-// TODO xxx document
+/// @brief A NodeTreeViewCellLines value specifies which branching lines should
+/// be drawn within a cell that is displayed by the node tree view. The value is
+/// a combination of individual flags defined in the #NodeTreeViewCellLine
+/// enumeration.
 typedef unsigned short NodeTreeViewCellLines;
 
-// TODO xxx document
+/// @brief NodeTreeViewCellLine enumerates the individual branching lines that
+/// can be drawn within a cell that is displayed by the node tree view. A cell
+/// can contain several lines at once, which is why the enumeration values are
+/// defined as flags that can be combined into a single #NodeTreeViewCellLines
+/// value.
 typedef NS_ENUM(NodeTreeViewCellLines, NodeTreeViewCellLine)
 {
   NodeTreeViewCellLineNone = 0,
@@ -1569,11 +1575,12 @@ typedef NS_ENUM(NodeTreeViewCellLines, NodeTreeViewCellLine)
   NodeTreeViewCellLineCenterToTopLeft = 32,
 };
 
-// TODO xxx document
+/// @brief Enumerates all possible styles with which branching lines can be
+/// drawn in the node tree view.
 enum NodeTreeViewBranchingStyle
 {
-  NodeTreeViewBranchingStyleDiagonal,
-  NodeTreeViewBranchingStyleRightAngle,
+  NodeTreeViewBranchingStyleDiagonal,    ///< @brief The last section of a branching line is drawn diagonally.
+  NodeTreeViewBranchingStyleRightAngle,  ///< @brief The last section of a branching line is drawn at a right angle.
 };
 
 /// @brief Enumerates all possible styles how the node selection marker can be

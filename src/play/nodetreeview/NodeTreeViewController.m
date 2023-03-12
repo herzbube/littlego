@@ -32,8 +32,6 @@
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/NSObjectAdditions.h"
-// TODO xxx remove if no longer needed
-//#import "../../utility/UIColorAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -160,6 +158,8 @@
 
   [self createOrDeallocNodeNumbersView];
 
+  [self updateContentSizeInScrollViews];
+
   // Set the initial scroll position. Execution must be slightly delayed
   // (0.0 is not sufficient) if the node tree view is created later after the
   // app has already launched.
@@ -241,19 +241,6 @@
   self.doubleTapGestureController.scrollView = self.nodeTreeView;
   self.twoFingerTapGestureController.scrollView = self.nodeTreeView;
   self.nodeTreeViewTapGestureController.nodeTreeView = self.nodeTreeView;
-}
-
-#pragma mark - viewDidLayoutSubviews
-
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-///
-/// This override exists to resize the scroll view content after a change to
-/// the interface orientation.
-// -----------------------------------------------------------------------------
-- (void) viewDidLayoutSubviews
-{
-  [self updateContentSizeInScrollViews];
 }
 
 #pragma mark - traitCollectionDidChange
@@ -570,12 +557,14 @@
 
 #pragma mark - Private helpers
 
-// TODO xxx document
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+///
+/// Updates the content size of all scroll views to match the current
+/// values from NodeTreeViewMetrics.
+// -----------------------------------------------------------------------------
 - (void) updateContentSizeInScrollViews
 {
-  // TODO xxx does changing the content size trigger a redraw?
-  // If yes => this is bad because then we cannot optimize redrawing
-  // If no => this is bad because no one triggers drawing
   [self updateContentSizeInMainScrollView];
   [self updateContentSizeInNodeNumbersScrollView];
 }
@@ -583,8 +572,8 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper.
 ///
-/// Updates the content size of all scroll views to match the current values in
-/// NodeTreeViewMetrics.
+/// Updates the node tree scroll view's content size to match the current
+/// values from NodeTreeViewMetrics.
 // -----------------------------------------------------------------------------
 - (void) updateContentSizeInMainScrollView
 {

@@ -41,7 +41,7 @@
 + (NSArray*) verticesForHandicap:(int)handicap boardSize:(enum GoBoardSize)boardSize;
 + (NSArray*) pointsForHandicap:(int)handicap inGame:(GoGame*)game;
 + (int) maximumHandicapForBoardSize:(enum GoBoardSize)boardSize;
-+ (GoPlayer*) playerAfter:(GoMove*)move inGame:(GoGame*)game;
++ (GoPlayer*) playerAfter:(GoMove*)move inCurrentGameVariation:(GoGame*)game;
 + (NSArray*) pointsInRectangleDelimitedByCornerPoint:(GoPoint*)pointA
                                  oppositeCornerPoint:(GoPoint*)pointB
                                               inGame:(GoGame*)game;

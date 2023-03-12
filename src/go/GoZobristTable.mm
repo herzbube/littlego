@@ -134,7 +134,6 @@
   return res;
 }
 
-// TODO xxx remove if no longer needed
 // -----------------------------------------------------------------------------
 /// @brief Generates the Zobrist hash for the current board position represented
 /// by @a board.

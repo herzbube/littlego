@@ -91,6 +91,7 @@
 - (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel;
 
 - (void) recalculateCanvas;
+
 - (NodeTreeViewCell*) cellAtPosition:(NodeTreeViewCellPosition*)position;
 - (GoNode*) nodeAtPosition:(NodeTreeViewCellPosition*)position;
 - (NSArray*) positionsForNode:(GoNode*)node;

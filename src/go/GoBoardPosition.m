@@ -154,7 +154,7 @@
     GoMove* mostRecentMove = nodeWithMostRecentMove ? nodeWithMostRecentMove.goMove : nil;
     // Requires setupFirstMoveColor to be set correctly, i.e.
     // updateGoObjectsToNewPosition must have been invoked
-    self.game.nextMoveColor = [GoUtilities playerAfter:mostRecentMove inGame:self.game].color;
+    self.game.nextMoveColor = [GoUtilities playerAfter:mostRecentMove inCurrentGameVariation:self.game].color;
   }
 }
 

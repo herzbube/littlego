@@ -290,7 +290,9 @@
   }
 }
 
-// TODO xxx document
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
 - (enum NodeTreeViewCellSymbol) symbolTypeForLayerType:(enum NodeTreeViewLayerType)layerType
 {
   switch (layerType)
@@ -337,6 +339,9 @@
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+// -----------------------------------------------------------------------------
 - (enum NodeTreeViewLayerType) layerTypeForSymbol:(enum NodeTreeViewCellSymbol)symbolType
                               cellIsMultipartCell:(bool)cellIsMultipartCell
                                 condenseMoveNodes:(bool)condenseMoveNodes

@@ -114,8 +114,6 @@ enum GameInfoSectionItem
   LifeAndDeathSettlingRuleItem,
   DisputeResolutionRuleItem,
   FourPassesRuleItem,
-  BlackSetupStonesItem,
-  WhiteSetupStonesItem,
   SideToPlayFirstItem,
   MaxGameInfoSectionItem
 };
@@ -745,28 +743,6 @@ enum BoardPositionSectionItem
           cell.detailTextLabel.text = [NSString stringWithFourPassesRule:game.rules.fourPassesRule];
           break;
         }
-        // TODO xxx Do these items still make sense?
-        case BlackSetupStonesItem:
-        case WhiteSetupStonesItem:
-        {
-//          NSUInteger numberOfSetupStones;
-          if (indexPath.row == BlackSetupStonesItem)
-          {
-            cell.textLabel.text = @"Black setup stones";
-//            numberOfSetupStones = game.blackSetupPoints.count;
-          }
-          else
-          {
-            cell.textLabel.text = @"White setup stones";
-//            numberOfSetupStones = game.whiteSetupPoints.count;
-          }
-//          if (0 == numberOfSetupStones)
-//            cell.detailTextLabel.text = @"None";
-//          else
-//            cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)numberOfSetupStones];
-          cell.detailTextLabel.text = @"n/a";
-          break;
-        }
         case SideToPlayFirstItem:
         {
           // We need an item that somehow shows the influence of the non-obvious
@@ -778,7 +754,7 @@ enum BoardPositionSectionItem
           // the normal game rules.
           cell.textLabel.text = @"Side to play first";
           enum GoColor colorToPlayFirst = [GoUtilities playerAfter:nil
-                                                            inGame:game].color;
+                                            inCurrentGameVariation:game].color;
           cell.detailTextLabel.text = [NSString stringWithGoColor:colorToPlayFirst];
           break;
         }

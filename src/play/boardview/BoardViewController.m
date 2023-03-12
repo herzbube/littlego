@@ -196,7 +196,8 @@
 /// @brief UIViewController method.
 ///
 /// This override exists to resize the scroll view content after a change to
-/// the interface orientation.
+/// the interface orientation or after the view size was changed by
+/// ResizableStackViewController.
 // -----------------------------------------------------------------------------
 - (void) viewDidLayoutSubviews
 {

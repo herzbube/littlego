@@ -1530,7 +1530,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   // - nextMovePlayerIsComputerPlayer
   GoNode* nodeWithMostRecentMove = [GoUtilities nodeWithMostRecentMove:game.nodeModel.leafNode];
   GoMove* mostRecentMove = nodeWithMostRecentMove ? nodeWithMostRecentMove.goMove : nil;
-  game.nextMoveColor = [GoUtilities playerAfter:mostRecentMove inGame:game].color;
+  game.nextMoveColor = [GoUtilities playerAfter:mostRecentMove inCurrentGameVariation:game].color;
 
   // Possibly set the GoGame properties state and reasonForGameHasEnded. Note
   // that this may be overridden later if the SGF file contains a SGFCGameResult

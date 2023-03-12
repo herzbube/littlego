@@ -48,7 +48,10 @@
 ///   documentation of the TiledScrollView class for more details.
 /// - Layers are dynamically added and removed depending on application events
 ///   that require certain node tree elements to be displayed / not to be
-///   displayed. TODO xxx Mention an example similar to the BoardTileView docs.
+///   displayed. Note: Currently all node tree elements are displayed at all
+///   times, so for the node tree view adding/removing layers is a theoretical
+///   concept only. To see the concept in practice see the implementation of
+///   BoardTileView.
 ///
 /// The layers of NodeTreeTileView draw all node tree elements except node
 /// numbers. See the documentation of the NodeNumbersTileView class for more

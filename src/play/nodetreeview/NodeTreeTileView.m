@@ -333,7 +333,6 @@
 // -----------------------------------------------------------------------------
 - (void) nodeTreeViewContentDidChange:(NSNotification*)notification
 {
-  // TODO xxx arrives on main thread when application starts up => test if this also happens when game is loaded
   [self notifyLayerDelegates:NTVLDEventNodeTreeContentChanged eventInfo:nil];
   [self delayedDrawLayers];
 }

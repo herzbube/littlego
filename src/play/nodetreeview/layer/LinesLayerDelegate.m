@@ -260,9 +260,14 @@
   }
 }
 
-// TODO xxx document
-// The goal is that lines are not drawn within the area where the node symbol
-// is drawn by another layer
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+///
+/// This method set a clipping path that prevents lines (or anything else) from
+/// being drawn within the area where the node symbol is drawn by the node
+/// symbol layer. We can't rely on the symbol covering any lines that are drawn
+/// within the symbol area because many symbols contain transparent parts.
+// -----------------------------------------------------------------------------
 - (void) setClippingPathInContext:(CGContextRef)context
                              cell:(NodeTreeViewCell*)cell
                          position:(NodeTreeViewCellPosition*)position
@@ -302,7 +307,15 @@
                                        outerRectangle:drawingRectForFullCell];
 }
 
-// TODO xxx document
+// -----------------------------------------------------------------------------
+/// @brief Private helper for drawLayer:inContext:().
+///
+/// Removes a previously configured node symbol clipping path from the
+/// drawing context @a context. Invocation of this method balances a previous
+/// invocation of the
+/// setClippingPathInContext:cell:position:canvasRectForCell:condenseMoveNodes:tileRect:()
+/// method.
+// -----------------------------------------------------------------------------
 - (void) removeClippingPathInContext:(CGContextRef)context
 {
   [CGDrawingHelper removeClippingPathWithContext:context];

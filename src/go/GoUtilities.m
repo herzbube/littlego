@@ -288,10 +288,17 @@
 // -----------------------------------------------------------------------------
 /// @brief Assuming that alternating play is desired, returns the player whose
 /// turn it is after @a move was played. If @a move is nil, returns the player
-/// who plays first in @a game (after taking the setup player or handicap into
-/// consideration).
+/// who plays first in the current game variation available from @a game.
+///
+/// The player who plays first depends on two things:
+/// - The most recent explicitly setup player in the current or any previous
+///   board positions.
+/// - If no explicit player has been set up to play first (or an explicit setup
+///   player has been cleared), then handicap is taken into consideration.
+///   No handicap means the black player plays first. A handicap of 1 or more
+///   means the white player plays first.
 // -----------------------------------------------------------------------------
-+ (GoPlayer*) playerAfter:(GoMove*)move inGame:(GoGame*)game
++ (GoPlayer*) playerAfter:(GoMove*)move inCurrentGameVariation:(GoGame*)game
 {
   if (! move)
   {

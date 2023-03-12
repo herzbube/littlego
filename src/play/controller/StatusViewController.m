@@ -562,7 +562,7 @@
             tapString = @" - Tap to mark stones in seki";
 
           if (GoGameStateGameHasEnded != game.state ||
-              [GoUtilities numberOfMovesAfterNode:game.boardPosition.currentNode] > 0)
+              [GoUtilities numberOfMovesAfterNode:game.boardPosition.currentNode inCurrentGameVariation:game] > 0)
           {
             // If the user is viewing an old board position we don't care
             // whether the game has ended, nor what the reason was - we always
