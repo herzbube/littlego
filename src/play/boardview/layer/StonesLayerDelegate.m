@@ -341,7 +341,7 @@
 {
   CGLayerRef blackStoneLayer = [BoardViewDrawingHelper cachedBlackStoneLayerWithContext:context withMetrics:self.boardViewMetrics];
   CGLayerRef whiteStoneLayer = [BoardViewDrawingHelper cachedWhiteStoneLayerWithContext:context withMetrics:self.boardViewMetrics];
-  CGLayerRef crossHairStoneLayer = [BoardViewDrawingHelper cachedBCrossHairStoneLayerWithContext:context withMetrics:self.boardViewMetrics];
+  CGLayerRef crossHairStoneLayer = [BoardViewDrawingHelper cachedCrossHairStoneLayerWithContext:context withMetrics:self.boardViewMetrics];
 
   GoGame* game = [GoGame sharedGame];
   GoBoard* board = game.board;

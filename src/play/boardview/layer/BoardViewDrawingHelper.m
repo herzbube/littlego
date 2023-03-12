@@ -908,8 +908,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 /// contain the requested layer this method draws the layer and populates the
 /// cache with it.
 // -----------------------------------------------------------------------------
-+ (CGLayerRef) cachedBCrossHairStoneLayerWithContext:(CGContextRef)context
-                                         withMetrics:(BoardViewMetrics*)metrics
++ (CGLayerRef) cachedCrossHairStoneLayerWithContext:(CGContextRef)context
+                                        withMetrics:(BoardViewMetrics*)metrics
 {
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
 

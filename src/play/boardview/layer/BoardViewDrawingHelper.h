@@ -103,8 +103,8 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
                                     withMetrics:(BoardViewMetrics*)metrics;
 + (CGLayerRef) cachedWhiteStoneLayerWithContext:(CGContextRef)context
                                     withMetrics:(BoardViewMetrics*)metrics;
-+ (CGLayerRef) cachedBCrossHairStoneLayerWithContext:(CGContextRef)context
-                                         withMetrics:(BoardViewMetrics*)metrics;
++ (CGLayerRef) cachedCrossHairStoneLayerWithContext:(CGContextRef)context
+                                        withMetrics:(BoardViewMetrics*)metrics;
 //@}
 
 /// @name Drawing arrows
