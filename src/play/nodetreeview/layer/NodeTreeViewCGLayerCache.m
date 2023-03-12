@@ -93,6 +93,7 @@ static NodeTreeViewCGLayerCache* sharedCache = nil;
 
 - (void) setLayer:(CGLayerRef)layer ofType:(enum NodeTreeViewLayerType)nodeTreeViewLayerType
 {
+  [self invalidateLayerOfType:nodeTreeViewLayerType];
   CGLayerRetain(layer);
   layers[nodeTreeViewLayerType] = layer;
 }

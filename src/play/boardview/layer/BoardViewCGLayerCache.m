@@ -87,6 +87,7 @@ static BoardViewCGLayerCache* sharedCache = nil;
 
 - (void) setLayer:(CGLayerRef)layer ofType:(enum LayerType)layerType
 {
+  [self invalidateLayerOfType:layerType];
   CGLayerRetain(layer);
   layers[layerType] = (BoardViewCGLayerCacheEntry){true, layer};
 }
