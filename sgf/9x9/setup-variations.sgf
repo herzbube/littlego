@@ -28,5 +28,13 @@
    AW[ei][ce]
    LB[aa:c][cc:c][ff:c][ea:s][ei:s][fh:s][ce:s]
   ;C[The second node of the third variation contains the first move]
-   B[hb])
+   B[hc])
+ (;C[The first node of the fourth variation replaces handicap stones with white setup stones (marked with 'w'). This intermediate node to change the handicap stone color is necessary, because if an AB property value attempts to change a handicap stone to black SGFC ignores that property value because it does not actually change the stone color.]
+   AW[aa][ab][ac]
+   LB[aa:w][ab:w][ac:w]
+  ;C[The second node of the fourth variation changes the color of the white setup stones that replaced handicap stones (see previous node) back to black (marked with 'b'). The board now looks the same as in the root node, but technically the black stones are no longer handicap stones.]
+   AB[aa][ab][ac]
+   LB[aa:b][ab:b][ac:b]
+  ;C[The third node of the fourth variation contains the first move]
+   B[hd])
 )

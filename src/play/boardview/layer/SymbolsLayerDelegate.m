@@ -30,6 +30,7 @@
 #import "../../../go/GoNode.h"
 #import "../../../go/GoNodeMarkup.h"
 #import "../../../go/GoNodeModel.h"
+#import "../../../go/GoNodeSetup.h"
 #import "../../../go/GoPlayer.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoScore.h"
@@ -1164,18 +1165,57 @@
 - (void) drawHandicapStoneSymbolInContext:(CGContextRef)context
                            inTileWithRect:(CGRect)tileRect
 {
-  // TODO xxx The implementation needs to be changed - handicap stones may be
-  // removed by later setup, or even replaced by other black setup stones
-
   BoardViewCGLayerCache* cache = [BoardViewCGLayerCache sharedCache];
   CGLayerRef whiteLastMoveLayer = [cache layerOfType:WhiteLastMoveLayerType];
 
   GoGame* game = [GoGame sharedGame];
+  GoNode* rootNode = game.nodeModel.rootNode;
+  GoNode* currentBoardPositionNode = game.boardPosition.currentNode;
+
+  // Collect GoNodeSetup objects to examine whether they replace a handicap
+  // stone with a black setup stone. The GoNodeSetup object in the root node
+  // does not need to be examined - the app does not allow the user to replace
+  // handicap stones in the root node.
+  NSMutableArray* blackSetupStonesList = [NSMutableArray array];
+  GoNode* node = currentBoardPositionNode;
+  while (node && node != rootNode)
+  {
+    GoNodeSetup* nodeSetup = node.goNodeSetup;
+    if (nodeSetup)
+    {
+      NSArray* blackSetupStones = nodeSetup.blackSetupStones;
+      if (blackSetupStones && blackSetupStones.count > 0)
+        [blackSetupStonesList addObject:blackSetupStones];
+    }
+    node = node.parent;
+  }
+
   for (GoPoint* handicapPoint in game.handicapPoints)
   {
     if (self.drawingPoint && self.drawingPoint != handicapPoint)
       continue;
     if (! [self.drawingPointsOnTile containsObject:handicapPoint])
+      continue;
+
+    // If the user is viewing a board position > 0 then handicap stones may
+    // have been removed by later setup (AE) or replaced by white setup stones
+    // (AW).
+    if (handicapPoint.stoneState != GoColorBlack)
+      continue;
+
+    // Even if the intersection currently has a black stone, we can't be sure
+    // that this is still the original handicap stone - it could also be a black
+    // setup stone that has replaced the handicap stone
+    bool handicapStoneWasReplacedByBlackSetupStone = false;
+    for (NSArray* blackSetupStones in blackSetupStonesList)
+    {
+      if ([blackSetupStones containsObject:handicapPoint])
+      {
+        handicapStoneWasReplacedByBlackSetupStone = true;
+        break;
+      }
+    }
+    if (handicapStoneWasReplacedByBlackSetupStone)
       continue;
 
     [BoardViewDrawingHelper drawLayer:whiteLastMoveLayer
