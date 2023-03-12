@@ -582,6 +582,9 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 ///
 /// The layer is not drawn if it does not intersect with the tile @a tileRect.
 /// The tile rectangle origin must be in the canvas coordinate system.
+///
+/// If @a layer is NULL (e.g. because the Go board has been reduced to very
+/// small dimensions) this method returns immediately without drawing.
 // -----------------------------------------------------------------------------
 + (void) drawLayer:(CGLayerRef)layer
        withContext:(CGContextRef)context
@@ -589,6 +592,9 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
     inTileWithRect:(CGRect)tileRect
        withMetrics:(BoardViewMetrics*)metrics
 {
+  if (! layer)
+    return;
+
   CGRect layerRect = [BoardViewDrawingHelper canvasRectForScaledLayer:layer
                                                       centeredAtPoint:point
                                                               metrics:metrics];
@@ -610,6 +616,9 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
 ///   method assumes that the check has already been made by the caller.
 ///
 /// The origin of @a tileRect must be in the canvas coordinate system.
+///
+/// If @a layer is NULL (e.g. because the Go board has been reduced to very
+/// small dimensions) this method returns immediately without drawing.
 // -----------------------------------------------------------------------------
 + (void) drawLayer:(CGLayerRef)layer
        withContext:(CGContextRef)context
@@ -617,6 +626,9 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
     inTileWithRect:(CGRect)tileRect
        withMetrics:(BoardViewMetrics*)metrics
 {
+  if (! layer)
+    return;
+
   CGRect drawingRect = [CGDrawingHelper drawingRectFromCanvasRect:canvasRect
                                                    inTileWithRect:tileRect];
   CGContextDrawLayerInRect(context, drawingRect, layer);
