@@ -21,6 +21,7 @@
 #import "canvas/NodeTreeViewCellPosition.h"
 #import "../model/NodeTreeViewModel.h"
 #import "../../shared/LayoutManager.h"
+#import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/FontRange.h"
 #import "../../utility/UIColorAdditions.h"
@@ -129,15 +130,18 @@
   else
     self.maximumAbsoluteZoomScale = iPadMaximumZoomScale;
 
-  // TODO xxx Is the following fine-tuning worth it? When zoomed a factor is
-  // applied, so the fine-tuning is lost. Also self.numberOfCellsOfMultipartCell
-  // is applied as a factor...
-
-  // The line widths and cell sizes assigned here must be selected so that lines
-  // can be drawn in the cell's horizontal and vertical center without
-  // anti-aliasing. Note that widths and sizes we specify here are in point
-  // units, which means they are multiplied by self.contentsScale to arrive at
-  // the effective number of pixels to be drawn.
+  // When the node tree view was originally designed, the line widths and cell
+  // sizes assigned here were selected so that lines could be drawn in the
+  // cell's horizontal and vertical center without anti-aliasing. Note that
+  // widths and sizes we specify here are in point units, which means they are
+  // multiplied by self.contentsScale to arrive at the effective number of
+  // pixels to be drawn.
+  //
+  // In any case, this fine-tuning is most likely unnecessary, because when the
+  // view is zoomed a factor is applied and the fine-tuning is lost. Also
+  // self.numberOfCellsOfMultipartCell is applied as a factor for multipart
+  // cell sizes. Should there be a need in the future to changes the values,
+  // it should be fine to do so.
   if (fmod(self.contentsScale, 2.0f) == 0.0f)
   {
     // self.contentsScale is an even number => any number multiplied by
@@ -159,7 +163,7 @@
     self.nodeTreeViewCellBaseSize = 13;
   }
 
-  self.paddingX = 8;  // TODO xxx get from UIElementMetrics?
+  self.paddingX = [UiElementMetrics horizontalSpacingSiblings];
   // No need for an additional vertical padding - the cell height is sufficient
   // so that there is some vertical space that is unused for drawing, which
   // also serves as a minimal vertical padding
@@ -607,29 +611,6 @@
 {
   return CGPointMake(self.topLeftTreeCornerX + (self.nodeTreeViewCellSize.width * position.x),
                      self.topLeftTreeCornerY + (self.nodeTreeViewCellSize.height * position.y));
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a NodeTreeViewCellPosition object for the cell that occupies
-/// a rectangle with origin @a cellRectOrigin.
-///
-/// Returns nil if @a cellRectOrigin does not refer to a valid cell (e.g.
-/// because @a cellRectOrigin is outside the board's edges).
-///
-/// The origin of the coordinate system is assumed to be in the top-left corner.
-// -----------------------------------------------------------------------------
-- (NodeTreeViewCellPosition*) positionFromCellRectOrigin:(CGPoint)cellRectOrigin
-{
-  // Make sure we don't get negative x/y values (which would underflow because
-  // cell positions use an unsigned type)
-  if (cellRectOrigin.x < self.topLeftTreeCornerX || cellRectOrigin.y < self.topLeftTreeCornerY)
-    return nil;
-
-  // TODO xxx Validate that this is maps exactly an origin? Without validation this is essentially the same as positionNear:()
-  // TODO xxx Validate this is not out-of-bounds
-  unsigned short x = (cellRectOrigin.x - self.topLeftTreeCornerX) / self.nodeTreeViewCellSize.width;
-  unsigned short y = (cellRectOrigin.y - self.topLeftTreeCornerY) / self.nodeTreeViewCellSize.height;
-  return [NodeTreeViewCellPosition positionWithX:x y:y];
 }
 
 // -----------------------------------------------------------------------------

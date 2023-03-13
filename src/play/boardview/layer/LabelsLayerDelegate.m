@@ -17,7 +17,6 @@
 
 // Project includes
 #import "LabelsLayerDelegate.h"
-#import "BoardViewCGLayerCache.h"
 #import "BoardViewDrawingHelper.h"
 #import "../../model/BoardViewMetrics.h"
 #import "../../model/MarkupModel.h"

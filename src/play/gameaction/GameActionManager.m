@@ -1192,7 +1192,6 @@ static GameActionManager* sharedGameActionManager = nil;
     else
       [self addGameAction:GameActionSwitchSetupStoneColorToBlack toVisibleStatesDictionary:visibleStates];
 
-    // TODO xxx The game action is no longer "discard all setup stones" but "discard all setup". This includes setupFirstMoveColor.
     GoNodeSetup* nodeSetup = game.boardPosition.currentNode.goNodeSetup;
     if (nodeSetup && ! nodeSetup.isEmpty)
       [self addGameAction:GameActionDiscardAllSetup toVisibleStatesDictionary:visibleStates];
