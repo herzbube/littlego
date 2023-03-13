@@ -1310,6 +1310,9 @@ extern NSString* nodeTreeViewBranchingStyleDidChange;
 /// @brief Is sent to indicate that the node selection style user preference
 /// has changed.
 extern NSString* nodeTreeViewNodeSelectionStyleDidChange;
+/// @brief Is sent to indicate that the selected game variation in the node tree
+/// view has changed.
+extern NSString* nodeTreeViewSelectedGameVariationDidChange;
 /// @brief Is sent to indicate that the selected node in the node tree view has
 /// changed. An NSArray object is associated with the notification that contains
 /// two arrays, each of which contains NodeTreeViewCellPosition objects. The

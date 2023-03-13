@@ -67,4 +67,33 @@
   [super dealloc];
 }
 
+#pragma mark - NSCopying protocol
+
+// -----------------------------------------------------------------------------
+/// @brief Returns a newly allocated NodeTreeViewCanvasData object that is a
+/// copy of the receiver and that is owned by the sender. Collections in the
+/// returned instance are shallow copies of the collections in the receiver,
+/// i.e. the collections in the returned instance share object references with
+/// the collections in the receiver.
+// -----------------------------------------------------------------------------
+- (instancetype) copyWithZone:(NSZone*)zone
+{
+  NodeTreeViewCanvasData* copy = [[[self class] allocWithZone:zone] init];
+  if (copy)
+  {
+    copy.nodeMap = [NSMutableDictionary dictionaryWithDictionary:_nodeMap];
+    copy.branches = [NSMutableArray arrayWithArray:_branches];
+    copy.branchTuplesForMoveNumbers = [NSMutableArray arrayWithArray:_branchTuplesForMoveNumbers];
+    copy.highestMoveNumberThatAppearsInAtLeastTwoBranches = _highestMoveNumberThatAppearsInAtLeastTwoBranches;
+    copy.currentBoardPositionNode = _currentBoardPositionNode;
+    copy.cellsDictionary = [NSMutableDictionary dictionaryWithDictionary:_cellsDictionary];
+    copy.highestXPosition = _highestXPosition;
+    copy.highestXPositionNode = _highestXPositionNode;
+    copy.highestYPosition = _highestYPosition;
+    copy.nodeNumbersViewCellsDictionary = [NSMutableDictionary dictionaryWithDictionary:_nodeNumbersViewCellsDictionary];
+    copy.nodeNumberingTuples = [NSMutableArray arrayWithArray:_nodeNumberingTuples];
+  }
+  return copy;
+}
+
 @end

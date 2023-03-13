@@ -72,6 +72,10 @@ enum NodeTreeViewLayerDelegateEvent
   /// changed. This affects only those layers that draw cells that display
   /// the currently selected node.
   NTVLDEventNodeTreeNodeSelectionStyleChanged,
+  /// @brief Is sent whenever the selected game variation changed. The selected
+  /// game variation is the game variation that corresponds to the current
+  /// game variation in GoNodeModel.
+  NTVLDEventNodeTreeSelectedGameVariationChanged,
   /// @brief Is sent whenever the selected node changed. The selected node is
   /// the node that corresponds to the current board position. The event info
   /// object that accompanies this event type is an NSArray object that contains

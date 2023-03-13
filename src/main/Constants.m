@@ -104,6 +104,7 @@ NSString* nodeTreeViewCondenseMoveNodesDidChange = @"NodeTreeViewCondenseMoveNod
 NSString* nodeTreeViewAlignMoveNodesDidChange = @"NodeTreeViewAlignMoveNodesDidChange";
 NSString* nodeTreeViewBranchingStyleDidChange = @"NodeTreeViewBranchingStyleDidChange";
 NSString* nodeTreeViewNodeSelectionStyleDidChange = @"NodeTreeViewNodeSelectionStyleDidChange";
+NSString* nodeTreeViewSelectedGameVariationDidChange = @"NodeTreeViewSelectedGameVariationDidChange";
 NSString* nodeTreeViewSelectedNodeDidChange = @"NodeTreeViewSelectedNodeDidChange";
 NSString* nodeTreeViewNodeSymbolDidChange = @"NodeTreeViewNodeSymbolDidChange";
 // Other notifications

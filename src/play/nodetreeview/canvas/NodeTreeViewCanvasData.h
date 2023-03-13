@@ -24,7 +24,7 @@
 /// that are the result of the canvas calculation algorithm implemented by
 /// NodeTreeViewCanvas.
 // -----------------------------------------------------------------------------
-@interface NodeTreeViewCanvasData : NSObject
+@interface NodeTreeViewCanvasData : NSObject <NSCopying>
 {
 }
 

@@ -127,6 +127,11 @@
       }
       break;
     }
+    case NTVLDEventNodeTreeSelectedGameVariationChanged:
+    {
+      self.dirty = true;
+      break;
+    }
     default:
     {
       break;

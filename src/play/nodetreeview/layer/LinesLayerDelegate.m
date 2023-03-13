@@ -97,6 +97,7 @@
     case NTVLDEventNodeTreeCondenseMoveNodesChanged:
     case NTVLDEventNodeTreeAlignMoveNodesChanged:
     case NTVLDEventNodeTreeBranchingStyleChanged:
+    case NTVLDEventNodeTreeSelectedGameVariationChanged:
     {
       self.dirty = true;
       break;

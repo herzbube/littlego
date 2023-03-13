@@ -135,6 +135,7 @@
   [center addObserver:self selector:@selector(nodeTreeViewCondenseMoveNodesDidChange:) name:nodeTreeViewCondenseMoveNodesDidChange object:nil];
   [center addObserver:self selector:@selector(nodeTreeViewAlignMoveNodesDidChange:) name:nodeTreeViewAlignMoveNodesDidChange object:nil];
   [center addObserver:self selector:@selector(nodeTreeViewBranchingStyleDidChange:) name:nodeTreeViewBranchingStyleDidChange object:nil];
+  [center addObserver:self selector:@selector(nodeTreeViewSelectedGameVariationDidChange:) name:nodeTreeViewSelectedGameVariationDidChange object:nil];
   [center addObserver:self selector:@selector(nodeTreeViewSelectedNodeDidChange:) name:nodeTreeViewSelectedNodeDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 
@@ -263,6 +264,16 @@
 - (void) nodeTreeViewBranchingStyleDidChange:(NSNotification*)notification
 {
   [self notifyLayerDelegate:NTVLDEventNodeTreeBranchingStyleChanged eventInfo:nil];
+  [self delayedDrawLayer];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeTreeViewSelectedGameVariationDidChange
+/// notification.
+// -----------------------------------------------------------------------------
+- (void) nodeTreeViewSelectedGameVariationDidChange:(NSNotification*)notification
+{
+  [self notifyLayerDelegate:NTVLDEventNodeTreeSelectedGameVariationChanged eventInfo:nil];
   [self delayedDrawLayer];
 }
 

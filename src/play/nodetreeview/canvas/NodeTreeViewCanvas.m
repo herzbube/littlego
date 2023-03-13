@@ -48,6 +48,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
 @property(nonatomic, assign) bool canvasNeedsUpdate;
 @property(nonatomic, retain) NSString* notificationToPostAfterCanvasUpdate;
 @property(nonatomic, retain) NodeTreeViewCanvasData* canvasData;
+@property(nonatomic, assign) bool selectedGameVariationNeedsUpdate;
 @property(nonatomic, assign) bool selectedNodePositionsNeedsUpdate;
 @property(nonatomic, retain) NSArray* cachedSelectedNodePositions;
 @property(nonatomic, retain) NSArray* cachedSelectedNodeNodeNumbersViewPositions;
@@ -80,6 +81,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
   self.canvasSize = CGSizeZero;
   self.canvasData = [[[NodeTreeViewCanvasData alloc] init] autorelease];
   self.selectedNodePositionsNeedsUpdate = false;
+  self.selectedGameVariationNeedsUpdate = false;
   self.cachedSelectedNodePositions = nil;
   self.cachedSelectedNodeNodeNumbersViewPositions = nil;
   self.nodeSelectionStyleNeedsUpdate = false;
@@ -171,11 +173,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
 // -----------------------------------------------------------------------------
 - (void) currentGameVariationDidChange:(NSNotification*)notification
 {
-  // TODO xxx Find a way to update the selected lines properties only instead
-  // of brute-force recalculating the entire canvas. Node numbers would also
-  // need to be updated.
-  self.canvasNeedsUpdate = true;
-  self.notificationToPostAfterCanvasUpdate = nodeTreeViewContentDidChange;
+  self.selectedGameVariationNeedsUpdate = true;
   [self delayedUpdate];
 }
 
@@ -273,6 +271,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
   }
 
   [self updateCanvas];
+  [self updateSelectedGameVariation];
   [self updateSelectedNodePositions];
   [self updateNodeSelectionStyle];
   [self updateNodeSymbol];
@@ -287,6 +286,13 @@ static const unsigned short yPositionOfNodeNumber = 0;
     return;
   self.canvasNeedsUpdate = false;
 
+  // Also reset all the other update flags that may have accumulated - a full
+  // canvas recalculation makes other updates redundant
+  self.selectedGameVariationNeedsUpdate = false;
+  self.selectedNodePositionsNeedsUpdate = false;
+  self.nodeSelectionStyleNeedsUpdate = false;
+  self.nodeSymbolNeedsUpdate = false;
+
   [self recalculateCanvasPrivate];
   [self invalidateCachedSelectedNodePositions];
   [self invalidateCachedSelectedNodeNodeNumbersViewPositions];
@@ -300,6 +306,22 @@ static const unsigned short yPositionOfNodeNumber = 0;
   {
     DDLogError(@"No notification found to post after node tree view canvas update");
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updater method.
+// -----------------------------------------------------------------------------
+- (void) updateSelectedGameVariation
+{
+  if (! self.selectedGameVariationNeedsUpdate)
+    return;
+  self.selectedGameVariationNeedsUpdate = false;
+
+  [self regenerateCellsAndNodeNumbers];
+  [self invalidateCachedSelectedNodePositions];
+  [self invalidateCachedSelectedNodeNodeNumbersViewPositions];
+
+  [[NSNotificationCenter defaultCenter] postNotificationName:nodeTreeViewSelectedGameVariationDidChange object:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -523,7 +545,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
   [self delayedUpdate];
 }
 
-#pragma mark - Private API - Canvas calculation - Main method
+#pragma mark - Private API - Canvas calculation - Main methods
 
 // -----------------------------------------------------------------------------
 /// @brief Private back-end method to perform a full re-calculation of the
@@ -621,6 +643,50 @@ static const unsigned short yPositionOfNodeNumber = 0;
   self.canvasSize = CGSizeMake(canvasData.highestXPosition + 1, canvasData.highestYPosition + 1);
 
   DDLogDebug(@"%@: Canvas calculation finished", self);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private back-end method to perform a partial re-calculation of the
+/// node tree view canvas (steps 4 and 5). Does not post a notification when
+/// finished.
+///
+/// See the documentation of recalculateCanvasPrivate() for details about what
+/// each step of the algorithm does.
+// -----------------------------------------------------------------------------
+- (void) regenerateCellsAndNodeNumbers
+{
+  GoGame* game = [GoGame sharedGame];
+  if (! game)
+    return;
+
+  DDLogDebug(@"%@: Partial canvas calculation started", self);
+
+  // Make a copy so that we can discard the data that we are going to
+  // regenerate without affecting the original data while regenerating is in
+  // progress. When we are finished we replace the entire object.
+  NodeTreeViewCanvasData* canvasData = [[self.canvasData copy] autorelease];
+  canvasData.cellsDictionary = [NSMutableDictionary dictionary];
+  canvasData.highestXPosition = -1;
+  canvasData.highestXPositionNode = nil;
+  canvasData.nodeNumbersViewCellsDictionary = [NSMutableDictionary dictionary];
+  canvasData.nodeNumberingTuples = [NSMutableArray array];
+
+  // Step 4: Generate cells
+  [self generateCells:canvasData
+       branchingStyle:self.nodeTreeViewModel.branchingStyle];
+
+  // Step 5: Generate node numbers
+  [self generateNodeNumbers:canvasData
+                  nodeModel:game.nodeModel
+          condenseMoveNodes:self.nodeTreeViewModel.condenseMoveNodes
+             alignMoveNodes:self.nodeTreeViewModel.alignMoveNodes
+    numberOfNodeNumberCells:[self numberOfNodeNumberCells]
+         nodeNumberInterval:self.nodeTreeViewModel.nodeNumberInterval];
+
+  self.canvasData = canvasData;
+  self.canvasSize = CGSizeMake(canvasData.highestXPosition + 1, canvasData.highestYPosition + 1);
+
+  DDLogDebug(@"%@: Partial canvas calculation finished", self);
 }
 
 #pragma mark - Private API - Canvas calculation - Part 1: Collect branch data
