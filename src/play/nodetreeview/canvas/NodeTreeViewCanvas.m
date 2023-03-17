@@ -671,6 +671,10 @@ static const unsigned short yPositionOfNodeNumber = 0;
   canvasData.nodeNumbersViewCellsDictionary = [NSMutableDictionary dictionary];
   canvasData.nodeNumberingTuples = [NSMutableArray array];
 
+  // Step 1: Update data about branches
+  [self recalculateNodeIsInCurrentGameVariation:canvasData
+                                      nodeModel:game.nodeModel];
+
   // Step 4: Generate cells
   [self generateCells:canvasData
        branchingStyle:self.nodeTreeViewModel.branchingStyle];
@@ -928,6 +932,23 @@ highestMoveNumberThatAppearsInAtLeastTwoBranches:(int*)highestMoveNumberThatAppe
     if (moveNumber > *highestMoveNumberThatAppearsInAtLeastTwoBranches)
       *highestMoveNumberThatAppearsInAtLeastTwoBranches = moveNumber;
   }
+}
+
+#pragma mark - Private API - Canvas calculation - Part 1: Update branch data
+
+// -----------------------------------------------------------------------------
+/// @brief Updates the value of the @e nodeIsInCurrentGameVariation property of
+/// all NodeTreeViewBranchTuple objects found in @a canvasData.
+// -----------------------------------------------------------------------------
+- (void) recalculateNodeIsInCurrentGameVariation:(NodeTreeViewCanvasData*)canvasData
+                                       nodeModel:(GoNodeModel*)nodeModel
+{
+  [canvasData.nodeMap enumerateKeysAndObjectsUsingBlock:^(NSValue* nodeAsValue, NodeTreeViewBranchTuple* branchTuple, BOOL* stop)
+   {
+    GoNode* node = [nodeAsValue nonretainedObjectValue];
+    bool nodeIsInCurrentGameVariation = [nodeModel indexOfNode:node] >= 0;
+    branchTuple->nodeIsInCurrentGameVariation = nodeIsInCurrentGameVariation;
+   }];
 }
 
 #pragma mark - Private API - Canvas calculation - Part 2: Align move nodes
