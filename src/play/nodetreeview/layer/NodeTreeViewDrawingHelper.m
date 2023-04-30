@@ -226,7 +226,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   CGRect drawingRect = [NodeTreeViewDrawingHelper drawingRectForNodeSymbolInCell:condensed
-                                                          withDrawingRectForCell:layerRect
+                                                    centeredInDrawingRectForCell:layerRect
                                                                      withMetrics:metrics];
 
   CGFloat strokeLineWidth = metrics.normalLineWidth * metrics.contentsScale;
@@ -400,7 +400,7 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
   CGContextRef layerContext = CGLayerGetContext(layer);
 
   CGRect drawingRect =  [NodeTreeViewDrawingHelper drawingRectForNodeSymbolInCell:condensed
-                                                           withDrawingRectForCell:layerRect
+                                                     centeredInDrawingRectForCell:layerRect
                                                                       withMetrics:metrics];
 
   if (model.nodeSelectionStyle == NodeTreeViewNodeSelectionStyleLightCircular)
@@ -977,22 +977,6 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 
 // -----------------------------------------------------------------------------
 /// @brief Returns a rectangle for drawing that covers the area of a node symbol
-/// within a cell. If @a condensed is @e true this indicates that the cell is a
-/// standalone cell, if @a condensed is @e false this indicates that the cell
-/// is a multipart cell.
-// -----------------------------------------------------------------------------
-+ (CGRect) drawingRectForNodeSymbolInCell:(bool)condensed
-                              withMetrics:(NodeTreeViewMetrics*)metrics
-{
-  CGRect drawingRectForCell = [NodeTreeViewDrawingHelper drawingRectForCell:condensed
-                                                                withMetrics:metrics];
-  return [NodeTreeViewDrawingHelper drawingRectForNodeSymbolInCell:condensed
-                                            withDrawingRectForCell:drawingRectForCell
-                                                       withMetrics:metrics];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a rectangle for drawing that covers the area of a node symbol
 /// within a cell whose drawing rect is @a drawingRectForCell. If @a condensed
 /// is @e true this indicates that the cell is a standalone cell, if
 /// @a condensed is @e false this indicates that the cell is a multipart cell.
@@ -1001,7 +985,7 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 /// drawingRectForCell:withMetrics:().
 // -----------------------------------------------------------------------------
 + (CGRect) drawingRectForNodeSymbolInCell:(bool)condensed
-                   withDrawingRectForCell:(CGRect)drawingRectForCell
+             centeredInDrawingRectForCell:(CGRect)drawingRectForCell
                               withMetrics:(NodeTreeViewMetrics*)metrics
 {
   CGSize drawingRectSize = condensed ? metrics.condensedNodeSymbolSize : metrics.uncondensedNodeSymbolSize;

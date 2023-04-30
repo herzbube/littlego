@@ -116,9 +116,7 @@ CGLayerRef CreateNodeSelectionLayer(CGContextRef context, bool condensed, NodeTr
 + (CGRect) drawingRectForCell:(bool)condensed
                   withMetrics:(NodeTreeViewMetrics*)metrics;
 + (CGRect) drawingRectForNodeSymbolInCell:(bool)condensed
-                              withMetrics:(NodeTreeViewMetrics*)metrics;
-+ (CGRect) drawingRectForNodeSymbolInCell:(bool)condensed
-                   withDrawingRectForCell:(CGRect)drawingRectForCell
+             centeredInDrawingRectForCell:(CGRect)drawingRectForCell
                               withMetrics:(NodeTreeViewMetrics*)metrics;
 + (void) circularDrawingParametersInRect:(CGRect)rect
                          strokeLineWidth:(CGFloat)strokeLineWidth
