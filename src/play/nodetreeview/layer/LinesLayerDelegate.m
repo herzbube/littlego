@@ -181,7 +181,10 @@
     CGPoint centerOfDrawingRectForCell = CGPointMake(CGRectGetMidX(drawingRectForCell), CGRectGetMidY(drawingRectForCell));
 
     bool didSetClippingPath = false;
-    if (cell.symbol != NodeTreeViewCellSymbolNone)
+    enum NodeTreeViewCellSymbol symbol = cell.symbol;
+    if (symbol != NodeTreeViewCellSymbolNone &&
+        symbol != NodeTreeViewCellSymbolBlackMove &&
+        symbol != NodeTreeViewCellSymbolWhiteMove)
     {
       [self setClippingPathInContext:context
                                 cell:cell
