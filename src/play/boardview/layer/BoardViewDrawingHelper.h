@@ -43,6 +43,7 @@
 //@{
 CGLayerRef CreateStarPointLayer(CGContextRef context, BoardViewMetrics* metrics);
 CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, BoardViewMetrics* metrics);
+CGLayerRef CreateStoneLayerWithCoreGraphics(CGContextRef context, enum GoColor stoneColor, bool isCrossHairStone, BoardViewMetrics* metrics);
 CGLayerRef CreateSymbolLayer(CGContextRef context, enum GoMarkupSymbol symbol, UIColor* symbolFillColor, UIColor* symbolStrokeColor, MarkupModel* markupModel, BoardViewMetrics* metrics);
 CGLayerRef CreateConnectionLayer(CGContextRef context, enum GoMarkupConnection connection, UIColor* connectionFillColor, UIColor* connectionStrokeColor, GoPoint* fromPoint, GoPoint* toPoint, CGRect canvasRect, BoardViewMetrics* metrics);
 CGLayerRef CreateSquareSymbolLayer(CGContextRef context, UIColor* symbolColor, BoardViewMetrics* metrics);

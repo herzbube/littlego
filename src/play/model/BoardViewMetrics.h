@@ -395,6 +395,7 @@
 @property(nonatomic, retain) UIColor* connectionFillColor;
 @property(nonatomic, retain) UIColor* connectionStrokeColor;
 @property(nonatomic, retain) NSShadow* whiteTextShadow;
+@property(nonatomic, assign) bool useImageFilesToDrawStones;
 //@}
 
 @end

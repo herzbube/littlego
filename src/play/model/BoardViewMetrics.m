@@ -149,6 +149,7 @@
   self.whiteTextShadow.shadowColor = [UIColor blackColor];
   self.whiteTextShadow.shadowBlurRadius = 5.0;
   self.whiteTextShadow.shadowOffset = CGSizeMake(1.0, 1.0);
+  self.useImageFilesToDrawStones = false;
 }
 
 // -----------------------------------------------------------------------------

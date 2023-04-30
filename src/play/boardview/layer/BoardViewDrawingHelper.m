@@ -25,6 +25,7 @@
 #import "../../../shared/LayoutManager.h"
 #import "../../../ui/Tile.h"
 #import "../../../ui/CGDrawingHelper.h"
+#import "../../../ui/GoDrawingHelper.h"
 #import "../../../ui/UiUtilities.h"
 
 
@@ -122,6 +123,60 @@ CGLayerRef CreateStarPointLayer(CGContextRef context, BoardViewMetrics* metrics)
 // -----------------------------------------------------------------------------
 CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageName, BoardViewMetrics* metrics)
 {
+  CGLayerRef layer = CreateStoneLayer(context, metrics);
+
+  CGContextRef layerContext = CGLayerGetContext(layer);
+  CGRect layerRect = CGRectZero;
+  layerRect.size = CGLayerGetSize(layer);
+
+  [CGDrawingHelper drawImageWithContext:layerContext
+                                 inRect:layerRect
+                              imageName:stoneImageName];
+
+  return layer;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates and returns a CGLayer object that is associated with graphics
+/// context @a context and contains the drawing operations to draw a stone the
+/// color of which is determined by @a stoneColor and @a isCrossHairStone (the
+/// latter indicates whether the stone has its natural color or uses a special
+/// cross-hair stone color).
+///
+/// All sizes are taken from the metrics values in @a metrics. This function may
+/// return @e NULL instead of a CGLayer object if the metrics values in
+/// @a metrics refer to a board with extremely small dimensions.
+///
+/// The drawing operations in the returned layer do not use gHalfPixel, i.e.
+/// gHalfPixel must be added to the CTM just before the layer is actually drawn.
+///
+/// @note Whoever invokes this function is responsible for releasing the
+/// returned CGLayer object using the function CGLayerRelease when the layer is
+/// no longer needed.
+// -----------------------------------------------------------------------------
+CGLayerRef CreateStoneLayerWithCoreGraphics(CGContextRef context, enum GoColor stoneColor, bool isCrossHairStone, BoardViewMetrics* metrics)
+{
+  CGLayerRef layer = CreateStoneLayer(context, metrics);
+
+  CGContextRef layerContext = CGLayerGetContext(layer);
+  CGRect layerRect = CGRectZero;
+  layerRect.size = CGLayerGetSize(layer);
+
+  [GoDrawingHelper draw3dStoneWithContext:layerContext
+                        boundingRectangle:layerRect
+                               stoneColor:stoneColor
+                         isCrossHairStone:isCrossHairStone];
+
+  return layer;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for CreateStoneLayerWithImage() and
+/// CreateStoneLayerWithCoreGraphics(). The returned CGLayer is ready to receive
+/// the drawing operations to draw a Go stone.
+// -----------------------------------------------------------------------------
+CGLayerRef CreateStoneLayer(CGContextRef context, BoardViewMetrics* metrics)
+{
   CGRect layerRect;
   layerRect.origin = CGPointZero;
   layerRect.size = metrics.pointCellSize;
@@ -134,7 +189,13 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
 
   CGContextRef layerContext = CGLayerGetContext(layer);
 
-  // The values assigned here have been determined experimentally
+  // The y-axis adjustment made here is done because the Go stone will be drawn
+  // with a shadow at the bottom, which causes the main stone circle center to
+  // be slightly offset in y-direction in relation to the layer center. The
+  // y-axis adjustment "pushes" the stone slightly downwards. The drawback of
+  // this is that the stone shadow does not fully fit into the layer and a bit
+  // of it will be cut off.
+  // Note: The values assigned here have been determined experimentally.
   CGFloat yAxisAdjustmentToVerticallyCenterImageOnIntersection;
   if ([LayoutManager sharedManager].uiType != UITypePad)
   {
@@ -154,8 +215,6 @@ CGLayerRef CreateStoneLayerWithImage(CGContextRef context, NSString* stoneImageN
     }
   }
   CGContextTranslateCTM(layerContext, 0, yAxisAdjustmentToVerticallyCenterImageOnIntersection);
-
-  [CGDrawingHelper drawImageWithContext:layerContext inRect:layerRect imageName:stoneImageName];
 
   return layer;
 }
@@ -884,7 +943,10 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   BoardViewCGLayerCacheEntry blackStoneLayerEntry = [cache layerOfType:BlackStoneLayerType];
   if (! blackStoneLayerEntry.isValid)
   {
-    blackStoneLayerEntry.layer = CreateStoneLayerWithImage(context, stoneBlackImageResource, metrics);
+    if (metrics.useImageFilesToDrawStones)
+      blackStoneLayerEntry.layer = CreateStoneLayerWithImage(context, stoneBlackImageResource, metrics);
+    else
+      blackStoneLayerEntry.layer = CreateStoneLayerWithCoreGraphics(context, GoColorBlack, false, metrics);
     [cache setLayer:blackStoneLayerEntry.layer ofType:BlackStoneLayerType];
     CGLayerRelease(blackStoneLayerEntry.layer);
   }
@@ -906,7 +968,10 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   BoardViewCGLayerCacheEntry whiteStoneLayerEntry = [cache layerOfType:WhiteStoneLayerType];
   if (! whiteStoneLayerEntry.isValid)
   {
-    whiteStoneLayerEntry.layer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, metrics);
+    if (metrics.useImageFilesToDrawStones)
+      whiteStoneLayerEntry.layer = CreateStoneLayerWithImage(context, stoneWhiteImageResource, metrics);
+    else
+      whiteStoneLayerEntry.layer = CreateStoneLayerWithCoreGraphics(context, GoColorWhite, false, metrics);
     [cache setLayer:whiteStoneLayerEntry.layer ofType:WhiteStoneLayerType];
     CGLayerRelease(whiteStoneLayerEntry.layer);
   }
@@ -928,7 +993,10 @@ CGLayerRef CreateTerritoryLayer(CGContextRef context, enum TerritoryMarkupStyle 
   BoardViewCGLayerCacheEntry crossHairStoneLayerEntry = [cache layerOfType:CrossHairStoneLayerType];
   if (! crossHairStoneLayerEntry.isValid)
   {
-    crossHairStoneLayerEntry.layer = CreateStoneLayerWithImage(context, stoneCrosshairImageResource, metrics);
+    if (metrics.useImageFilesToDrawStones)
+      crossHairStoneLayerEntry.layer = CreateStoneLayerWithImage(context, stoneCrosshairImageResource, metrics);
+    else
+      crossHairStoneLayerEntry.layer = CreateStoneLayerWithCoreGraphics(context, GoColorBlack, true, metrics);
     [cache setLayer:crossHairStoneLayerEntry.layer ofType:CrossHairStoneLayerType];
     CGLayerRelease(crossHairStoneLayerEntry.layer);
   }

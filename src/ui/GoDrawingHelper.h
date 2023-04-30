@@ -34,6 +34,11 @@
                          stoneColor:(enum GoColor)stoneColor
                     strokeLineWidth:(CGFloat)strokeLineWidth;
 
++ (void) draw3dStoneWithContext:(CGContextRef)context
+              boundingRectangle:(CGRect)boundingRectangle
+                     stoneColor:(enum GoColor)stoneColor
+               isCrossHairStone:(bool)isCrossHairStone;
+
 + (void) drawStoneRectangleWithContext:(CGContextRef)context
                              rectangle:(CGRect)rectangle
                             stoneColor:(enum GoColor)stoneColor

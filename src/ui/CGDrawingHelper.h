@@ -118,6 +118,26 @@
                 textAttributes:(NSDictionary*)textAttributes;
 //@}
 
+/// @name Drawing gradients
+//@{
++ (void) drawRadialGradientWithContext:(CGContextRef)context
+                            startColor:(UIColor*)startColor
+                              endColor:(UIColor*)endColor
+                           startCenter:(CGPoint)startCenter
+                             endCenter:(CGPoint)endCenter
+                             endRadius:(CGFloat)endRadius
+                 endRadiusScaleFactorX:(CGFloat)endRadiusScaleFactorX
+                 endRadiusScaleFactorY:(CGFloat)endRadiusScaleFactorY;
+
++ (void) drawRadialGradientWithContext:(CGContextRef)context
+                            startColor:(UIColor*)startColor
+                              endColor:(UIColor*)endColor
+                           startCenter:(CGPoint)startCenter
+                           startRadius:(CGFloat)startRadius
+                             endCenter:(CGPoint)endCenter
+                             endRadius:(CGFloat)endRadius;
+//@}
+
 /// @name Setting and removing clipping paths
 //@{
 + (void) setCircularClippingPathWithContext:(CGContextRef)context

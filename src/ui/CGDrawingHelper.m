@@ -494,6 +494,133 @@
     CGContextRestoreGState(context);
 }
 
+#pragma mark - Drawing gradients
+
+// -----------------------------------------------------------------------------
+/// @brief Draws a radial gradient with only two colors, @a startColor and
+/// @a endColor, which are set at the gradient stops 0.0 and 1.0, respectively.
+/// The gradient start circle (aka focal circle) is defined by @a startCenter
+/// and a radius of length zero. The gradient end circle, which effectively is
+/// an ellipse, is defined by @a endCenter and a base radius @a @a endRadius,
+/// which is then scaled in x- and y-direction by @a endRadiusScaleFactorX and
+/// @a endRadiusScaleFactorY, respectively, to give the end circle its
+/// elliptical form.
+///
+/// This method imitates the Inkscape user interface which allows the user to
+/// give the end circle an elliptical form by defining different lengths for the
+/// end circle radius in x- and y-direction. How is it possible to have two
+/// radius values, given that in the underlying SVG source, the end circle can
+/// have only one radius value (SVG attribute @e r)? Inkscape solves this by
+/// setting the SVG attribute @e gradientTransform with an affine transform that
+/// has scaling factors in x- and y-direction, resulting in the end circle
+/// radius (SVG attribute @e r) to have different values in the two directions.
+/// But Inkscape then also adds translation to the affine transform to reverse
+/// the effect that the scaling has on the location of the start/end circle
+/// centers. Because the radius of the start (= focal) circle is always zero, it
+/// is unaffected by the scaling.
+///
+/// To achieve its task, this method duplicates Inkscape's behaviour: It
+/// temporarily applies the affine transform describe above to the CTM of
+/// @a context, draws the gradient, and then restores the original CTM of
+/// @a context.
+///
+/// @see drawRadialGradientWithContext:startColor:endColor:startCenter:startRadius:endCenter:endRadius:()
+/// for details how to match method parameters to the SVG model for drawing
+/// radial gradients:
+// -----------------------------------------------------------------------------
++ (void) drawRadialGradientWithContext:(CGContextRef)context
+                            startColor:(UIColor*)startColor
+                              endColor:(UIColor*)endColor
+                           startCenter:(CGPoint)startCenter
+                             endCenter:(CGPoint)endCenter
+                             endRadius:(CGFloat)endRadius
+                 endRadiusScaleFactorX:(CGFloat)endRadiusScaleFactorX
+                 endRadiusScaleFactorY:(CGFloat)endRadiusScaleFactorY
+{
+  CGFloat a = endRadiusScaleFactorX;
+  CGFloat b = 0.0;
+  CGFloat c = 0.0;
+  CGFloat d = endRadiusScaleFactorY;
+  // Translation is used to move the start/end centers back to their original
+  // position
+  CGFloat tx = endRadius - endRadius * endRadiusScaleFactorX;
+  CGFloat ty = endRadius - endRadius * endRadiusScaleFactorY;
+  CGAffineTransform affineTransform = CGAffineTransformMake(a, b, c, d, tx, ty);
+
+  CGPoint startCenterBeforeTransform = CGPointMake((startCenter.x - tx) / a,
+                                                   (startCenter.y - ty) / d);
+  CGPoint endCenterBeforeTransform = CGPointMake((endCenter.x - tx) / a,
+                                                 (endCenter.y - ty) / d);
+
+  CGContextSaveGState(context);
+
+  CGContextConcatCTM(context, affineTransform);
+
+  [CGDrawingHelper drawRadialGradientWithContext:context
+                                      startColor:startColor
+                                        endColor:endColor
+                                     startCenter:startCenterBeforeTransform
+                                     startRadius:0.0f
+                                       endCenter:endCenterBeforeTransform
+                                       endRadius:endRadius];
+  // Remove transform
+  CGContextRestoreGState(context);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Draws a radial gradient with only two colors, @a startColor and
+/// @a endColor, which are set at the gradient stops 0.0 and 1.0, respectively.
+/// The gradient start circle (aka focal circle) is defined by @a startCenter
+/// and @a startRadius, and the gradient end circle is defined by @a endCenter.
+///
+/// The parameters of this method can be matched as follows to the SVG model
+/// for drawing radial gradients:
+/// - @a startCenter corresponds to the SVG attributes @e fx and @e fy
+///   (prefix "f" referring to the term "focal").
+/// - @a startRadius corresponds to the SVG attribute @e fr.
+/// - @a endCenter corresponds to the SVG attributes @e cx and @e cy.
+/// - @a endRadius corresponds to the SVG attribute @e r.
+///
+/// The SVG attribute @e gradientTransform, is not a parameter of this method
+/// by design. If an affine transform is desired, it must be applied to
+/// @a context prior to invoking this method.
+///
+/// The following SVG attributes are not part of this API because they don't
+/// make sense for the CoreGraphics drawing model:
+/// - @e gradientUnits
+/// - @e spreadMethod
+///
+/// @see https://svgwg.org/svg2-draft/pservers.html#RadialGradients
+// -----------------------------------------------------------------------------
++ (void) drawRadialGradientWithContext:(CGContextRef)context
+                            startColor:(UIColor*)startColor
+                              endColor:(UIColor*)endColor
+                           startCenter:(CGPoint)startCenter
+                           startRadius:(CGFloat)startRadius
+                             endCenter:(CGPoint)endCenter
+                             endRadius:(CGFloat)endRadius
+{
+  CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+  NSArray* colors = @[(id)startColor.CGColor, (id)endColor.CGColor];
+  CGFloat locations[] = { 0.0, 1.0 };
+
+  // NSArray is toll-free bridged, so we can simply cast to CGArrayRef
+  CGGradientRef gradient = CGGradientCreateWithColors(colorSpace,
+                                                      (CFArrayRef)colors,
+                                                      locations);
+
+  CGContextDrawRadialGradient(context,
+                              gradient,
+                              startCenter,
+                              startRadius,
+                              endCenter,
+                              endRadius,
+                              0);
+
+  CGGradientRelease(gradient);
+  CGColorSpaceRelease(colorSpace);
+}
+
 #pragma mark - Setting and removing clipping paths
 
 // -----------------------------------------------------------------------------
