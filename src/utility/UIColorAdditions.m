@@ -121,14 +121,18 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Converts @a hexString, which must be a string representation of a
-/// color (e.g. "0c88ff"), into a UIColor object. The object has alpha 1.0.
+/// color into a UIColor object. The string representation of the color must
+/// contain either 3 color components (e.g. "0c88ff"), in which case the
+/// returned UIColor object has alpha 1.0, or 4 color components
+/// (e.g. "0c88ff00"), in which case the fourth component describes the alpha.
 ///
 /// Returns a black color object if any error occurs (e.g. the format of the
 /// string representation is incorrect).
 // -----------------------------------------------------------------------------
 + (UIColor*) colorFromHexString:(NSString*)hexString
 {
-  if ([hexString length] != 6)
+  NSUInteger hexStringLength = hexString.length;
+  if (hexStringLength != 6 && hexStringLength != 8)
     return [UIColor blackColor];
 
   NSRange range = NSMakeRange(0, 2);
@@ -145,10 +149,22 @@
   unsigned int blue;
   [[NSScanner scannerWithString:blueString] scanHexInt:&blue];
 
+  unsigned int alpha;
+  if (hexStringLength == 6)
+  {
+    alpha = 255.0;
+  }
+  else
+  {
+    range = NSMakeRange(6, 2);
+    NSString* alphaString = [hexString substringWithRange:range];
+    [[NSScanner scannerWithString:alphaString] scanHexInt:&alpha];
+  }
+
   return [UIColor colorWithRed:red / 255.0
                          green:green / 255.0
                           blue:blue / 255.0
-                         alpha:1.0]; 
+                         alpha:alpha / 255.0];
 }
 
 // -----------------------------------------------------------------------------
