@@ -39,22 +39,11 @@
                    strokeColor:(UIColor*)strokeColor
                strokeLineWidth:(CGFloat)strokeLineWidth;
 
-+ (void) drawStoneCircleWithContext:(CGContextRef)context
-                             center:(CGPoint)center
-                             radius:(CGFloat)radius
-                         stoneColor:(enum GoColor)stoneColor
-                    strokeLineWidth:(CGFloat)strokeLineWidth;
-
 + (void) drawRectangleWithContext:(CGContextRef)context
                         rectangle:(CGRect)rectangle
                         fillColor:(UIColor*)fillColor
                       strokeColor:(UIColor*)strokeColor
                   strokeLineWidth:(CGFloat)strokeLineWidth;
-
-+ (void) drawStoneRectangleWithContext:(CGContextRef)context
-                             rectangle:(CGRect)rectangle
-                            stoneColor:(enum GoColor)stoneColor
-                       strokeLineWidth:(CGFloat)strokeLineWidth;
 
 + (void) drawRoundedRectangleWithContext:(CGContextRef)context
                                rectangle:(CGRect)rectangle
@@ -98,10 +87,6 @@
                            fillColor:(UIColor*)fillColor
                          strokeColor:(UIColor*)strokeColor
                      strokeLineWidth:(CGFloat)strokeLineWidth;
-
-+ (void) fillAndStrokeColorsForStoneColor:(enum GoColor)stoneColor
-                                fillColor:(UIColor**)fillColor
-                              strokeColor:(UIColor**)strokeColor;
 //@}
 
 /// @name Drawing images

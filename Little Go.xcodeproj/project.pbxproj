@@ -305,6 +305,8 @@
 		CD6E846E17FF99D100643576 /* boost.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CD6E846D17FF99D000643576 /* boost.framework */; };
 		CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
 		CD75AB0D145CA454007119D2 /* PauseGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AA741423D80C00214BBE /* PauseGameCommand.m */; };
+		CD7C43A729FEA52A006D2063 /* GoDrawingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C43A629FEA529006D2063 /* GoDrawingHelper.m */; };
+		CD7C43A829FEA52A006D2063 /* GoDrawingHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C43A629FEA529006D2063 /* GoDrawingHelper.m */; };
 		CD7C578221F4A3A900694520 /* UnarchiveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C578021F4A3A900694520 /* UnarchiveGameCommand.m */; };
 		CD7C578321F4A3A900694520 /* UnarchiveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C578021F4A3A900694520 /* UnarchiveGameCommand.m */; };
 		CD7C578621F79C3000694520 /* ChangeUIAreaPlayModeCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD7C578421F79C2F00694520 /* ChangeUIAreaPlayModeCommand.m */; };
@@ -1261,6 +1263,8 @@
 		CD72170423EAF35B008373BA /* fuego-knowledge-memoryusage.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "fuego-knowledge-memoryusage.txt"; sourceTree = "<group>"; };
 		CD72216714633F1D005EAC65 /* TableViewGridCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TableViewGridCell.h; sourceTree = "<group>"; };
 		CD72216814633F1D005EAC65 /* TableViewGridCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TableViewGridCell.m; sourceTree = "<group>"; };
+		CD7C43A529FEA529006D2063 /* GoDrawingHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GoDrawingHelper.h; sourceTree = "<group>"; };
+		CD7C43A629FEA529006D2063 /* GoDrawingHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoDrawingHelper.m; sourceTree = "<group>"; };
 		CD7C578021F4A3A900694520 /* UnarchiveGameCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UnarchiveGameCommand.m; sourceTree = "<group>"; };
 		CD7C578121F4A3A900694520 /* UnarchiveGameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnarchiveGameCommand.h; sourceTree = "<group>"; };
 		CD7C578421F79C2F00694520 /* ChangeUIAreaPlayModeCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ChangeUIAreaPlayModeCommand.m; sourceTree = "<group>"; };
@@ -3655,6 +3659,8 @@
 				CD46628C29658A7C00B58CC9 /* CGDrawingHelper.m */,
 				CDFABCAB14194DA00065C93B /* EditTextController.h */,
 				CDFABCAC14194DA00065C93B /* EditTextController.m */,
+				CD7C43A529FEA529006D2063 /* GoDrawingHelper.h */,
+				CD7C43A629FEA529006D2063 /* GoDrawingHelper.m */,
 				CDDD52591482DD9F0027476B /* ItemPickerController.h */,
 				CDDD525A1482DD9F0027476B /* ItemPickerController.m */,
 				CDBCF1FA282FD5C700411CA6 /* KeyboardHeightAdjustment.h */,
@@ -4367,6 +4373,7 @@
 				CD72216914633F1D005EAC65 /* TableViewGridCell.m in Sources */,
 				CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */,
 				CDAF1723196CA81900271396 /* GoVertexNumeric.m in Sources */,
+				CD7C43A729FEA52A006D2063 /* GoDrawingHelper.m in Sources */,
 				CDC8DEF328EDECCA00619305 /* NodeTreeView.m in Sources */,
 				CDB4579A147ADEAD0043EDE4 /* GtpEngineProfileModel.m in Sources */,
 				CD1D606425BC230A00345506 /* UIViewControllerAdditions.m in Sources */,
@@ -4667,6 +4674,7 @@
 				CDA096FC1A915085002FCD78 /* LayoutManager.m in Sources */,
 				CD931EE31684E4A6002E1262 /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
 				CD931EED16851E5C002E1262 /* SaveGameCommand.m in Sources */,
+				CD7C43A829FEA52A006D2063 /* GoDrawingHelper.m in Sources */,
 				CDEE1A181946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
 				CDE0FC64298598C1008E55A8 /* GameVariationSettingsController.m in Sources */,
 				CD15A484168D044400D4472A /* GoNodeModelTest.m in Sources */,

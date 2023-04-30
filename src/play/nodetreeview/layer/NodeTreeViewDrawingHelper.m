@@ -21,6 +21,7 @@
 #import "../../model/NodeTreeViewModel.h"
 #import "../../../ui/Tile.h"
 #import "../../../ui/CGDrawingHelper.h"
+#import "../../../ui/GoDrawingHelper.h"
 #import "../../../ui/UiUtilities.h"
 
 
@@ -59,16 +60,16 @@ void DrawNodeTreeViewCellSymbolSetupRectangleStyle(CGContextRef layerContext,
   CGFloat offsetSecondHalfY = drawingRectHalfY + 2 * gap;
 
   CGRect topLeftRect = CGRectMake(drawingRect.origin.x, drawingRect.origin.y, drawingSize.width, drawingSize.height);
-  [CGDrawingHelper drawStoneRectangleWithContext:layerContext rectangle:topLeftRect stoneColor:topLeftStoneColor strokeLineWidth:strokeLineWidth];
+  [GoDrawingHelper drawStoneRectangleWithContext:layerContext rectangle:topLeftRect stoneColor:topLeftStoneColor strokeLineWidth:strokeLineWidth];
 
   CGRect topRightRect = CGRectMake(drawingRect.origin.x + offsetSecondHalfX, drawingRect.origin.y, drawingSize.width, drawingSize.height);
-  [CGDrawingHelper drawStoneRectangleWithContext:layerContext rectangle:topRightRect stoneColor:topRightStoneColor strokeLineWidth:strokeLineWidth];
+  [GoDrawingHelper drawStoneRectangleWithContext:layerContext rectangle:topRightRect stoneColor:topRightStoneColor strokeLineWidth:strokeLineWidth];
 
   CGRect bottomLeftRect = CGRectMake(drawingRect.origin.x, drawingRect.origin.y + offsetSecondHalfY, drawingSize.width, drawingSize.height);
-  [CGDrawingHelper drawStoneRectangleWithContext:layerContext rectangle:bottomLeftRect stoneColor:bottomLeftStoneColor strokeLineWidth:strokeLineWidth];
+  [GoDrawingHelper drawStoneRectangleWithContext:layerContext rectangle:bottomLeftRect stoneColor:bottomLeftStoneColor strokeLineWidth:strokeLineWidth];
 
   CGRect bottomRightRect = CGRectMake(drawingRect.origin.x + offsetSecondHalfX, drawingRect.origin.y + offsetSecondHalfY, drawingSize.width, drawingSize.height);
-  [CGDrawingHelper drawStoneRectangleWithContext:layerContext rectangle:bottomRightRect stoneColor:bottomRightStoneColor strokeLineWidth:strokeLineWidth];
+  [GoDrawingHelper drawStoneRectangleWithContext:layerContext rectangle:bottomRightRect stoneColor:bottomRightStoneColor strokeLineWidth:strokeLineWidth];
 }
 
 // -----------------------------------------------------------------------------
@@ -117,22 +118,22 @@ void DrawNodeTreeViewCellSymbolSetupCircleStyle(CGContextRef layerContext,
   UIColor* symbolXStrokeColor = [UIColor blackColor];
 
   CGPoint topLeftCenter = CGPointMake(drawingRect.origin.x + drawingRectQuarterX + insetCenter, drawingRect.origin.y + drawingRectQuarterY + insetCenter);
-  [CGDrawingHelper drawStoneCircleWithContext:layerContext center:topLeftCenter radius:radius stoneColor:topLeftStoneColor strokeLineWidth:strokeLineWidth];
+  [GoDrawingHelper drawStoneCircleWithContext:layerContext center:topLeftCenter radius:radius stoneColor:topLeftStoneColor strokeLineWidth:strokeLineWidth];
   if (topLeftStoneColor == GoColorNone)
     [CGDrawingHelper drawSymbolXWithContext:layerContext center:topLeftCenter symbolSize:symbolXSize strokeColor:symbolXStrokeColor strokeLineWidth:strokeLineWidth];
 
   CGPoint topRightCenter = CGPointMake(drawingRect.origin.x + 3 * drawingRectQuarterX - insetCenter, drawingRect.origin.y + drawingRectQuarterY + insetCenter);
-  [CGDrawingHelper drawStoneCircleWithContext:layerContext center:topRightCenter radius:radius stoneColor:topRightStoneColor strokeLineWidth:strokeLineWidth];
+  [GoDrawingHelper drawStoneCircleWithContext:layerContext center:topRightCenter radius:radius stoneColor:topRightStoneColor strokeLineWidth:strokeLineWidth];
   if (topRightStoneColor == GoColorNone)
     [CGDrawingHelper drawSymbolXWithContext:layerContext center:topRightCenter symbolSize:symbolXSize strokeColor:symbolXStrokeColor strokeLineWidth:strokeLineWidth];
 
   CGPoint bottomLeftCenter = CGPointMake(drawingRect.origin.x + drawingRectQuarterX + insetCenter, drawingRect.origin.y + 3 * drawingRectQuarterY - insetCenter);
-  [CGDrawingHelper drawStoneCircleWithContext:layerContext center:bottomLeftCenter radius:radius stoneColor:bottomLeftStoneColor strokeLineWidth:strokeLineWidth];
+  [GoDrawingHelper drawStoneCircleWithContext:layerContext center:bottomLeftCenter radius:radius stoneColor:bottomLeftStoneColor strokeLineWidth:strokeLineWidth];
   if (bottomLeftStoneColor == GoColorNone)
     [CGDrawingHelper drawSymbolXWithContext:layerContext center:bottomLeftCenter symbolSize:symbolXSize strokeColor:symbolXStrokeColor strokeLineWidth:strokeLineWidth];
 
   CGPoint bottomRightCenter = CGPointMake(drawingRect.origin.x + 3 * drawingRectQuarterX - insetCenter, drawingRect.origin.y + 3 * drawingRectQuarterY - insetCenter);
-  [CGDrawingHelper drawStoneCircleWithContext:layerContext center:bottomRightCenter radius:radius stoneColor:bottomRightStoneColor strokeLineWidth:strokeLineWidth];
+  [GoDrawingHelper drawStoneCircleWithContext:layerContext center:bottomRightCenter radius:radius stoneColor:bottomRightStoneColor strokeLineWidth:strokeLineWidth];
   if (bottomRightStoneColor == GoColorNone)
     [CGDrawingHelper drawSymbolXWithContext:layerContext center:bottomRightCenter symbolSize:symbolXSize strokeColor:symbolXStrokeColor strokeLineWidth:strokeLineWidth];
 }
@@ -301,7 +302,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     case NodeTreeViewCellSymbolWhiteMove:
     {
       enum GoColor stoneColor = symbolType == NodeTreeViewCellSymbolBlackMove ? GoColorBlack : GoColorWhite;
-      [CGDrawingHelper drawStoneCircleWithContext:layerContext center:drawingRectCenter radius:radius stoneColor:stoneColor strokeLineWidth:strokeLineWidth];
+      [GoDrawingHelper drawStoneCircleWithContext:layerContext center:drawingRectCenter radius:radius stoneColor:stoneColor strokeLineWidth:strokeLineWidth];
       break;
     }
     case NodeTreeViewCellSymbolAnnotations:
