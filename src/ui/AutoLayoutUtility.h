@@ -33,11 +33,8 @@
                    margins:(UIEdgeInsets)margins;
 + (NSArray*) fillSafeAreaOfSuperview:(UIView*)superview
                          withSubview:(UIView*)subview;
-+ (NSArray*) centerSubview:(UIView*)subview
-               inSuperview:(UIView*)superview;
-+ (NSLayoutConstraint*) centerSubview:(UIView*)subview
-                          inSuperview:(UIView*)superview
-                               onAxis:(UILayoutConstraintAxis)axis;
++ (NSArray*) centerFirstView:(UIView*)firstView
+                inSecondView:(UIView*)secondView;
 + (NSArray*) alignFirstView:(UIView*)firstView
              withSecondView:(UIView*)secondView
                     onEdges:(UIRectEdge)edges

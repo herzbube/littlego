@@ -119,6 +119,8 @@
 		CD1DB6141702581900C2E648 /* ItemPickerController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD525A1482DD9F0027476B /* ItemPickerController.m */; };
 		CD1DB6161702583000C2E648 /* TableViewSliderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CDEF3D89140C2F39002D9C1C /* TableViewSliderCell.m */; };
 		CD1DB6181702583700C2E648 /* TableViewGridCell.m in Sources */ = {isa = PBXBuildFile; fileRef = CD72216814633F1D005EAC65 /* TableViewGridCell.m */; };
+		CD1DFF4A2A05043D00020C06 /* GoNode+NodeTreeView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DFF482A05043D00020C06 /* GoNode+NodeTreeView.m */; };
+		CD1DFF4B2A05043D00020C06 /* GoNode+NodeTreeView.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1DFF482A05043D00020C06 /* GoNode+NodeTreeView.m */; };
 		CD1E6EAA2860F0BC00785E23 /* MarkupUtilities.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EA82860F0BC00785E23 /* MarkupUtilities.mm */; };
 		CD1E6EAB2860F0BC00785E23 /* MarkupUtilities.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EA82860F0BC00785E23 /* MarkupUtilities.mm */; };
 		CD1E6EAF2865F9BD00785E23 /* PanGestureHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = CD1E6EAE2865F9BD00785E23 /* PanGestureHandler.m */; };
@@ -1018,6 +1020,8 @@
 		CD1DB60916FE181400C2E648 /* GoGameDocument.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoGameDocument.m; sourceTree = "<group>"; };
 		CD1DB60C1702436700C2E648 /* HandleDocumentInteractionCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HandleDocumentInteractionCommand.h; sourceTree = "<group>"; };
 		CD1DB60D1702436800C2E648 /* HandleDocumentInteractionCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HandleDocumentInteractionCommand.m; sourceTree = "<group>"; };
+		CD1DFF482A05043D00020C06 /* GoNode+NodeTreeView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GoNode+NodeTreeView.m"; sourceTree = "<group>"; };
+		CD1DFF492A05043D00020C06 /* GoNode+NodeTreeView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GoNode+NodeTreeView.h"; sourceTree = "<group>"; };
 		CD1E6EA82860F0BC00785E23 /* MarkupUtilities.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = MarkupUtilities.mm; sourceTree = "<group>"; };
 		CD1E6EA92860F0BC00785E23 /* MarkupUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MarkupUtilities.h; sourceTree = "<group>"; };
 		CD1E6EAD2865F9BD00785E23 /* PanGestureHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PanGestureHandler.h; sourceTree = "<group>"; };
@@ -3263,6 +3267,8 @@
 			children = (
 				CD46627B2960376400B58CC9 /* canvas */,
 				CDC8DEF728EDF2A400619305 /* layer */,
+				CD1DFF492A05043D00020C06 /* GoNode+NodeTreeView.h */,
+				CD1DFF482A05043D00020C06 /* GoNode+NodeTreeView.m */,
 				CDC8DEEF28EDECC900619305 /* NodeNumbersTileView.h */,
 				CDC8DEEC28EDECC900619305 /* NodeNumbersTileView.m */,
 				CD51227229B26E4E00C249B5 /* NodeNumbersView.h */,
@@ -4472,6 +4478,7 @@
 				CD85068627B95046000D2CCD /* GoNode.m in Sources */,
 				CD7C57D7220257B800694520 /* BoardSetupModel.m in Sources */,
 				CD1E9E68171806FE00E1B7D1 /* SoundHandling.m in Sources */,
+				CD1DFF4A2A05043D00020C06 /* GoNode+NodeTreeView.m in Sources */,
 				CDB5AE251AC5A86D0075C8DC /* MagnifyingView.m in Sources */,
 				CD1311C217180B45006CE699 /* ScoringModel.m in Sources */,
 				CDE5D7CE27E509200096858C /* StatusViewController.m in Sources */,
@@ -4611,6 +4618,7 @@
 				CDFABB901416E3CB0065C93B /* ArchiveGame.m in Sources */,
 				CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */,
 				CDEE19FC19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
+				CD1DFF4B2A05043D00020C06 /* GoNode+NodeTreeView.m in Sources */,
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,
 				CDD67B6D28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */,
 				CDEE1A0419438AE000DF2389 /* StonesLayerDelegate.m in Sources */,

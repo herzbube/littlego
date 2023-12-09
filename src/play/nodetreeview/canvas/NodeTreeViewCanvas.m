@@ -24,14 +24,13 @@
 #import "NodeTreeViewCanvasData.h"
 #import "NodeTreeViewCell.h"
 #import "NodeTreeViewCellPosition.h"
+#import "../GoNode+NodeTreeView.h"
 #import "../../model/NodeTreeViewModel.h"
 #import "../../../go/GoBoardPosition.h"
 #import "../../../go/GoGame.h"
 #import "../../../go/GoMove.h"
 #import "../../../go/GoNode.h"
 #import "../../../go/GoNodeModel.h"
-#import "../../../go/GoNodeSetup.h"
-#import "../../../go/GoPlayer.h"
 #import "../../../shared/LongRunningActionCounter.h"
 
 
@@ -386,7 +385,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
   if (! self.nodeWhoseSymbolNeedsUpdate)
     return;
 
-  enum NodeTreeViewCellSymbol newNodeSymbol = [self symbolForNode:self.nodeWhoseSymbolNeedsUpdate];
+  enum NodeTreeViewCellSymbol newNodeSymbol = self.nodeWhoseSymbolNeedsUpdate.nodeSymbol;
   NodeTreeViewBranchTuple* branchTuple = [self branchTupleForNode:self.nodeWhoseSymbolNeedsUpdate];
 
   self.nodeWhoseSymbolNeedsUpdate = nil;
@@ -747,7 +746,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
       branchTuple->xPositionOfFirstCell = xPosition;
       branchTuple->node = currentNode;
       branchTuple->nodeNumber = nodeNumber;
-      branchTuple->symbol = [self symbolForNode:currentNode];
+      branchTuple->symbol = currentNode.nodeSymbol;
       branchTuple->numberOfCellsForNode = [self numberOfCellsForNode:currentNode condenseMoveNodes:condenseMoveNodes numberOfCellsOfMultipartCell:numberOfCellsOfMultipartCell];
       // This assumes that numberOfCellsForNode is always an uneven number
       branchTuple->indexOfCenterCell = floorf(branchTuple->numberOfCellsForNode / 2.0);
@@ -2571,81 +2570,6 @@ numberOfNodeNumberCellsExtendingFromCenter:(int)numberOfNodeNumberCellsExtending
 }
 
 #pragma mark - Private API - Canvas calculation - Helper methods
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the NodeTreeViewCellSymbol enumeration value that represents
-/// the node @a node on the canvas.
-// --------------------------x---------------------------------------------------
-- (enum NodeTreeViewCellSymbol) symbolForNode:(GoNode*)node
-{
-  GoNodeSetup* nodeSetup = node.goNodeSetup;
-  if (nodeSetup)
-  {
-    bool hasBlackSetupStones = nodeSetup.blackSetupStones;
-    bool hasWhiteSetupStones = nodeSetup.whiteSetupStones;
-    bool hasNoSetupStones = nodeSetup.noSetupStones;
-
-    if (hasBlackSetupStones)
-    {
-      if (hasWhiteSetupStones)
-      {
-        if (hasNoSetupStones)
-          return NodeTreeViewCellSymbolBlackAndWhiteAndNoSetupStones;
-        else
-          return NodeTreeViewCellSymbolBlackAndWhiteSetupStones;
-      }
-      else if (hasNoSetupStones)
-        return NodeTreeViewCellSymbolBlackAndNoSetupStones;
-      else
-        return NodeTreeViewCellSymbolBlackSetupStones;
-    }
-    else if (hasWhiteSetupStones)
-    {
-      if (hasNoSetupStones)
-        return NodeTreeViewCellSymbolWhiteAndNoSetupStones;
-      else
-        return NodeTreeViewCellSymbolWhiteSetupStones;
-    }
-    else
-    {
-      return NodeTreeViewCellSymbolNoSetupStones;
-    }
-  }
-  else if (node.goMove)
-  {
-    if (node.goMove.player.isBlack)
-      return NodeTreeViewCellSymbolBlackMove;
-    else
-      return NodeTreeViewCellSymbolWhiteMove;
-  }
-  else if (node.goNodeAnnotation)
-  {
-    if (node.goNodeMarkup)
-      return NodeTreeViewCellSymbolAnnotationsAndMarkup;
-    else
-      return NodeTreeViewCellSymbolAnnotations;
-  }
-  else if (node.goNodeMarkup)
-  {
-    return NodeTreeViewCellSymbolMarkup;
-  }
-  else if (node.isRoot)
-  {
-    GoGame* game = [GoGame sharedGame];
-    bool hasHandicap = game.handicapPoints.count > 0;
-    bool hasKomi = game.komi > 0.0;
-    if (hasHandicap && hasKomi)
-      return NodeTreeViewCellSymbolHandicapAndKomi;
-    else if (hasHandicap)
-      return NodeTreeViewCellSymbolHandicap;
-    else if (hasKomi)
-      return NodeTreeViewCellSymbolKomi;
-    else
-      return NodeTreeViewCellSymbolRoot;
-  }
-
-  return NodeTreeViewCellSymbolEmpty;
-}
 
 // -----------------------------------------------------------------------------
 /// @brief Returns the number of cells that are needed to represent the node

@@ -228,9 +228,10 @@ static UIFont* smallFont = nil;
   [visualFormats addObject:[NSString stringWithFormat:@"V:|-%d-[intersectionLabel]-%d-[boardPositionLabel]-%d-|", verticalSpacingSuperview, verticalSpacingSiblings, verticalSpacingSuperview]];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.intersectionLabel.superview];
 
-  [AutoLayoutUtility centerSubview:self.stoneImageView
-                       inSuperview:self
-                            onAxis:UILayoutConstraintAxisVertical];
+  [AutoLayoutUtility alignFirstView:self.stoneImageView
+                     withSecondView:self
+                        onAttribute:NSLayoutAttributeCenterY
+                   constraintHolder:self];
   [AutoLayoutUtility alignFirstView:self.capturedStonesLabel
                      withSecondView:self.intersectionLabel
                         onAttribute:NSLayoutAttributeCenterY

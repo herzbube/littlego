@@ -165,6 +165,7 @@
 // -----------------------------------------------------------------------------
 - (void) removeChildViewControllers
 {
+  // TODO xxx Should we make a copy?
   for (UIViewController* controller in self.childViewControllers)
   {
     [controller willMoveToParentViewController:nil];

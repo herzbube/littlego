@@ -84,7 +84,8 @@
   self.button = button;
   [self.contentView addSubview:self.button];
   self.button.translatesAutoresizingMaskIntoConstraints = false;
-  self.autoLayoutConstraints = [AutoLayoutUtility centerSubview:self.button inSuperview:self.contentView];
+  self.autoLayoutConstraints = [AutoLayoutUtility centerFirstView:self.button
+                                                     inSecondView:self.contentView];
 }
 
 // -----------------------------------------------------------------------------
