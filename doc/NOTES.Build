@@ -153,9 +153,11 @@ Provisioning profile
 
 Xcode build system configuration
 --------------------------------
-Important configuration settings in Xcode (both for the "Little Go" and the
-"Unit tests" targets):
-- IPHONEOS_DEPLOYMENT_TARGET = 9.0
+This section lists a number of important / notable configuration settings of
+the Xcode project.
+
+Project-wide configuration settings applying to all targets:
+- IPHONEOS_DEPLOYMENT_TARGET = 15.0
   - This must match the deployment target in script/build-env.sh and in Podfile.
 - FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install"
   - This is required to find the Fuego, Boost, SgfcKit and libsgfc++ frameworks.
@@ -173,7 +175,9 @@ Important configuration settings in Xcode (both for the "Little Go" and the
   links against a release build of Fuego. Because of this NDEBUG becomes useless
   for distinguishing between debug/release builds, so we need our own project
   specific macro, in this case named LITTLEGO_NDEBUG.
-- The "Little Go" target has a "Run Script" build phase that automatically
+
+Configuration settings for the "Little Go" target:
+- The target has a "Run Script" build phase that automatically
   uploads dSYM files to Crashlytics when an App Store build is made. The
   Firebase configuration file GoogleService-Info.plist that is required to
   perform this upload is ***NOT*** part of the public source code - if you
@@ -278,8 +282,8 @@ Platform notes
   iPhone Simulator.
 - The base SDK is "Latest" so that a simple rebuild is sufficient after an
   Xcode upgrade.
-- The deployment target is set to 9.0 so that the application keeps running on
-  iOS 9.0 devices.
+- The deployment target is set to 15.0 so that the application keeps running on
+  iOS 15.0 devices.
 
 
 Upgrading the iOS SDK

@@ -18,12 +18,20 @@ BOOST_SRC_DIR="$SRC_DIR/boost"
 BOOST_FRAMEWORK_NAME="boost.framework"
 BOOST_FRAMEWORK_SRC_DIR="$BOOST_SRC_DIR/ios/framework/$BOOST_FRAMEWORK_NAME"
 BOOST_FRAMEWORK_DEST_DIR="$DEST_DIR/$BOOST_FRAMEWORK_NAME"
+# The Boost build script has some hardcoded default architectures to build.
+# These include 32-bit architectures. Because our deployment target is newer
+# than 10.0 only 64-bit architectures are supported by clang. We therefore must
+# override the Boost build script's default and specify only 64-bit
+# architectures. To support building both on Intel and Silicon Macs we specify
+# two platforms for the simulator platform. Note that for Fuego the
+# architectures to build are selected automatically by Xcode.
+BOOST_IPHONE_ARCHITECTURES="arm64"
+BOOST_IPHONE_SIMULATOR_ARCHITECTURES="x86_64"
 
 FUEGO_SRC_DIR="$SRC_DIR"
 FUEGO_XCFRAMEWORK_NAME="fuego-on-ios.xcframework"
 FUEGO_XCFRAMEWORK_SRC_DIR="$FUEGO_SRC_DIR/ios/framework/$FUEGO_XCFRAMEWORK_NAME"
 FUEGO_XCFRAMEWORK_DEST_DIR="$DEST_DIR/$FUEGO_XCFRAMEWORK_NAME"
-
 
 # +------------------------------------------------------------------------
 # | Performs pre-build steps.
@@ -76,6 +84,10 @@ BUILD_STEPS_SOFTWARE()
   export IPHONEOS_DEPLOYMENT_TARGET
   export IPHONE_SIMULATOR_BASESDK_VERSION
   export IPHONE_SIMULATOR_DEPLOYMENT_TARGET
+  # Export some more variables just for the Boost build. We expect these
+  # variables to be set at the top of this build script.
+  export IPHONE_ARCHITECTURES="$BOOST_IPHONE_ARCHITECTURES"
+  export IPHONE_SIMULATOR_ARCHITECTURES="$BOOST_IPHONE_SIMULATOR_ARCHITECTURES"
 
   # Build Boost first. Build script runs both the iPhone and simulator builds.
   echo "Begin building Boost ..."

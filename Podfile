@@ -1,6 +1,6 @@
 DEPLOYMENT_TARGET_KEY = 'IPHONEOS_DEPLOYMENT_TARGET'.freeze
 # All pods will have at least this version to prevent Xcode warnings
-DEPLOYMENT_TARGET_VALUE = '9.0'.freeze
+DEPLOYMENT_TARGET_VALUE = '15.0'.freeze
 
 workspace 'Little Go'
 project 'Little Go'

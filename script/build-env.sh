@@ -29,9 +29,9 @@ IPHONEOS_BUILD_ENABLED=1
 IPHONE_SIMULATOR_BUILD_ENABLED=1
 
 IPHONEOS_BASESDK_VERSION=$(xcrun --sdk iphoneos --show-sdk-version)
-IPHONEOS_DEPLOYMENT_TARGET=9.0
+IPHONEOS_DEPLOYMENT_TARGET=15.0
 IPHONE_SIMULATOR_BASESDK_VERSION=$(xcrun --sdk iphonesimulator --show-sdk-version)
-IPHONE_SIMULATOR_DEPLOYMENT_TARGET=9.0
+IPHONE_SIMULATOR_DEPLOYMENT_TARGET=15.0
 
 
 # ----------------------------------------------------------------------
