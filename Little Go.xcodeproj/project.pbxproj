@@ -21,7 +21,8 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
-		19BC6071EDF78D418FF44E38 /* libPods-All Targets-Little Go.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EFA40757AA3D18B0C541BBC3 /* libPods-All Targets-Little Go.a */; };
+		535982650F8E85D845D7947D /* libPods-All Targets-Unit tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4267F5A17683A21108511E /* libPods-All Targets-Unit tests.a */; };
+		5FA2EF5CA0C1B2E8BB943701 /* libPods-All Targets-Little Go.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6694FF209961C63D15300CB3 /* libPods-All Targets-Little Go.a */; };
 		CD00A34E1487F9CF004E1A0C /* MANUAL in Resources */ = {isa = PBXBuildFile; fileRef = CD00A34D1487F9CF004E1A0C /* MANUAL */; };
 		CD00A363148C2C26004E1A0C /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD00A358148C2C26004E1A0C /* ApplicationDelegate.mm */; };
 		CD00A364148C2C26004E1A0C /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35A148C2C26004E1A0C /* Constants.m */; };
@@ -868,7 +869,6 @@
 		CDFD9F8418F1D5FF0031CBCF /* SubmitGtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */; };
 		CDFD9F8518F1D6170031CBCF /* DocumentGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD52691485B05C0027476B /* DocumentGenerator.m */; };
 		CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */; };
-		D1180DF100FA850BAE6D58F9 /* libPods-All Targets-Unit tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7BB5815F5E765A57F1FEB04D /* libPods-All Targets-Unit tests.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -882,16 +882,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		05AC832DFFAF3D04A84F5A88 /* Pods-All Targets-Unit tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Unit tests.release.xcconfig"; path = "Target Support Files/Pods-All Targets-Unit tests/Pods-All Targets-Unit tests.release.xcconfig"; sourceTree = "<group>"; };
+		0918CEA40C1F7C5BC3764DA8 /* Pods-All Targets-Unit tests.distribute_adhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Unit tests.distribute_adhoc.xcconfig"; path = "Target Support Files/Pods-All Targets-Unit tests/Pods-All Targets-Unit tests.distribute_adhoc.xcconfig"; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* Little Go.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Little Go.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		5EF15C963D408E9DCB73E098 /* Pods-All Targets-Unit tests.distribute_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Unit tests.distribute_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-All Targets-Unit tests/Pods-All Targets-Unit tests.distribute_appstore.xcconfig"; sourceTree = "<group>"; };
-		7BB5815F5E765A57F1FEB04D /* libPods-All Targets-Unit tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-All Targets-Unit tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		88F44D38B400A752F557FD4D /* Pods-All Targets-Unit tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Unit tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-All Targets-Unit tests/Pods-All Targets-Unit tests.release.xcconfig"; sourceTree = "<group>"; };
-		8C541D2D4A74644B90D0227C /* Pods-All Targets-Unit tests.distribute_adhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Unit tests.distribute_adhoc.xcconfig"; path = "Pods/Target Support Files/Pods-All Targets-Unit tests/Pods-All Targets-Unit tests.distribute_adhoc.xcconfig"; sourceTree = "<group>"; };
-		AC8C42284311F8034BB91177 /* Pods-All Targets-Little Go.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Little Go.debug.xcconfig"; path = "Pods/Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go.debug.xcconfig"; sourceTree = "<group>"; };
-		BEAF6B6B3F755DEAC049501E /* Pods-All Targets-Little Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Little Go.release.xcconfig"; path = "Pods/Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go.release.xcconfig"; sourceTree = "<group>"; };
-		BEBE20ABC813BBD1CA8A32AD /* Pods-All Targets-Little Go.distribute_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Little Go.distribute_appstore.xcconfig"; path = "Pods/Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go.distribute_appstore.xcconfig"; sourceTree = "<group>"; };
-		C1CEA6D355E6B115AB346441 /* Pods-All Targets-Unit tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Unit tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-All Targets-Unit tests/Pods-All Targets-Unit tests.debug.xcconfig"; sourceTree = "<group>"; };
-		C800DF7BFF18E915311E0E1A /* Pods-All Targets-Little Go.distribute_adhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Little Go.distribute_adhoc.xcconfig"; path = "Pods/Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go.distribute_adhoc.xcconfig"; sourceTree = "<group>"; };
+		367AB474D33810C16C59F25E /* Pods-All Targets-Unit tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Unit tests.debug.xcconfig"; path = "Target Support Files/Pods-All Targets-Unit tests/Pods-All Targets-Unit tests.debug.xcconfig"; sourceTree = "<group>"; };
+		657AB671899CE1D18CB36E1C /* Pods-All Targets-Little Go.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Little Go.debug.xcconfig"; path = "Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go.debug.xcconfig"; sourceTree = "<group>"; };
+		6694FF209961C63D15300CB3 /* libPods-All Targets-Little Go.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-All Targets-Little Go.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		781EC54040A40C8A768461F6 /* Pods-All Targets-Little Go.distribute_adhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Little Go.distribute_adhoc.xcconfig"; path = "Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go.distribute_adhoc.xcconfig"; sourceTree = "<group>"; };
+		805A10BE91DF62871C08501E /* Pods-All Targets-Unit tests.distribute_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Unit tests.distribute_appstore.xcconfig"; path = "Target Support Files/Pods-All Targets-Unit tests/Pods-All Targets-Unit tests.distribute_appstore.xcconfig"; sourceTree = "<group>"; };
+		AA65495119D713AE31FA3D7C /* Pods-All Targets-Little Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Little Go.release.xcconfig"; path = "Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go.release.xcconfig"; sourceTree = "<group>"; };
 		CD00A34D1487F9CF004E1A0C /* MANUAL */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MANUAL; sourceTree = "<group>"; };
 		CD00A357148C2C26004E1A0C /* ApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationDelegate.h; sourceTree = "<group>"; };
 		CD00A358148C2C26004E1A0C /* ApplicationDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ApplicationDelegate.mm; sourceTree = "<group>"; };
@@ -1866,7 +1865,8 @@
 		CDFE66AC173EC446003D8776 /* EditResignBehaviourSettingsController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EditResignBehaviourSettingsController.h; sourceTree = "<group>"; };
 		CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EditResignBehaviourSettingsController.m; sourceTree = "<group>"; };
 		CDFF8A87149E2F2900E75B71 /* TESTING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TESTING; sourceTree = "<group>"; };
-		EFA40757AA3D18B0C541BBC3 /* libPods-All Targets-Little Go.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-All Targets-Little Go.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE4267F5A17683A21108511E /* libPods-All Targets-Unit tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-All Targets-Unit tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D17AB36719C02584C00F4587 /* Pods-All Targets-Little Go.distribute_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Little Go.distribute_appstore.xcconfig"; path = "Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go.distribute_appstore.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1879,7 +1879,7 @@
 				CD6E846E17FF99D100643576 /* boost.framework in Frameworks */,
 				CD093E69259B9B1B0058D170 /* libsgfcplusplus_static.framework in Frameworks */,
 				CD093E65259B99670058D170 /* SgfcKit_static.framework in Frameworks */,
-				19BC6071EDF78D418FF44E38 /* libPods-All Targets-Little Go.a in Frameworks */,
+				5FA2EF5CA0C1B2E8BB943701 /* libPods-All Targets-Little Go.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1890,7 +1890,7 @@
 				CD9B63C525A67606003E032B /* SgfcKit_static.framework in Frameworks */,
 				CD9B63C425A675F9003E032B /* libsgfcplusplus_static.framework in Frameworks */,
 				CD9B63BF25A675ED003E032B /* libiconv.tbd in Frameworks */,
-				D1180DF100FA850BAE6D58F9 /* libPods-All Targets-Unit tests.a in Frameworks */,
+				535982650F8E85D845D7947D /* libPods-All Targets-Unit tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1934,7 +1934,7 @@
 				CD3AE864134A33A500B58E08 /* doxygen */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
-				B449B8B1CDAFFFC1E6728B41 /* Pods */,
+				72B2EDF07DD97CF150DB5C9D /* Pods */,
 			);
 			name = "Little Go";
 			sourceTree = "<group>";
@@ -1949,25 +1949,25 @@
 				CD093E64259B99660058D170 /* SgfcKit_static.framework */,
 				CD6E846D17FF99D000643576 /* boost.framework */,
 				CD6E846F17FF99EC00643576 /* fuego-on-ios.framework */,
-				EFA40757AA3D18B0C541BBC3 /* libPods-All Targets-Little Go.a */,
-				7BB5815F5E765A57F1FEB04D /* libPods-All Targets-Unit tests.a */,
+				6694FF209961C63D15300CB3 /* libPods-All Targets-Little Go.a */,
+				CE4267F5A17683A21108511E /* libPods-All Targets-Unit tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		B449B8B1CDAFFFC1E6728B41 /* Pods */ = {
+		72B2EDF07DD97CF150DB5C9D /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				AC8C42284311F8034BB91177 /* Pods-All Targets-Little Go.debug.xcconfig */,
-				BEAF6B6B3F755DEAC049501E /* Pods-All Targets-Little Go.release.xcconfig */,
-				BEBE20ABC813BBD1CA8A32AD /* Pods-All Targets-Little Go.distribute_appstore.xcconfig */,
-				C800DF7BFF18E915311E0E1A /* Pods-All Targets-Little Go.distribute_adhoc.xcconfig */,
-				C1CEA6D355E6B115AB346441 /* Pods-All Targets-Unit tests.debug.xcconfig */,
-				88F44D38B400A752F557FD4D /* Pods-All Targets-Unit tests.release.xcconfig */,
-				5EF15C963D408E9DCB73E098 /* Pods-All Targets-Unit tests.distribute_appstore.xcconfig */,
-				8C541D2D4A74644B90D0227C /* Pods-All Targets-Unit tests.distribute_adhoc.xcconfig */,
+				657AB671899CE1D18CB36E1C /* Pods-All Targets-Little Go.debug.xcconfig */,
+				AA65495119D713AE31FA3D7C /* Pods-All Targets-Little Go.release.xcconfig */,
+				D17AB36719C02584C00F4587 /* Pods-All Targets-Little Go.distribute_appstore.xcconfig */,
+				781EC54040A40C8A768461F6 /* Pods-All Targets-Little Go.distribute_adhoc.xcconfig */,
+				367AB474D33810C16C59F25E /* Pods-All Targets-Unit tests.debug.xcconfig */,
+				05AC832DFFAF3D04A84F5A88 /* Pods-All Targets-Unit tests.release.xcconfig */,
+				805A10BE91DF62871C08501E /* Pods-All Targets-Unit tests.distribute_appstore.xcconfig */,
+				0918CEA40C1F7C5BC3764DA8 /* Pods-All Targets-Unit tests.distribute_adhoc.xcconfig */,
 			);
-			name = Pods;
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		CD00A356148C2C21004E1A0C /* main */ = {
@@ -3786,7 +3786,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "Little Go" */;
 			buildPhases = (
-				EED1787E51B6052FDF32F0F9 /* [CP] Check Pods Manifest.lock */,
+				04E01BECE031B33E8250107F /* [CP] Check Pods Manifest.lock */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
@@ -3805,7 +3805,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = CDA595B41401384000B250D8 /* Build configuration list for PBXNativeTarget "Unit tests" */;
 			buildPhases = (
-				FB13904BEFC67FF4CE93D645 /* [CP] Check Pods Manifest.lock */,
+				48AF5A8BEE9536B270B7EF02 /* [CP] Check Pods Manifest.lock */,
 				CDA595AA1401383E00B250D8 /* Resources */,
 				CDA595AB1401383E00B250D8 /* Sources */,
 				CDA595AC1401383E00B250D8 /* Frameworks */,
@@ -4183,6 +4183,50 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		04E01BECE031B33E8250107F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-All Targets-Little Go-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		48AF5A8BEE9536B270B7EF02 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-All Targets-Unit tests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		CD3AE855134A333D00B58E08 /* ShellScript */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -4214,42 +4258,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "APPSTORE_CONFIGURATION=\"Distribute_AppStore\"\n\nif test \"$APPSTORE_CONFIGURATION\" = \"${CONFIGURATION}\"; then\n  echo \"Uploading dSYM files to Crashlytics\"\n  \"${PODS_ROOT}/FirebaseCrashlytics/run\"\nfi\n";
-		};
-		EED1787E51B6052FDF32F0F9 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-All Targets-Little Go-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		FB13904BEFC67FF4CE93D645 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-All Targets-Unit tests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -4843,7 +4851,7 @@
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AC8C42284311F8034BB91177 /* Pods-All Targets-Little Go.debug.xcconfig */;
+			baseConfigurationReference = 657AB671899CE1D18CB36E1C /* Pods-All Targets-Little Go.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -4865,7 +4873,7 @@
 		};
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BEAF6B6B3F755DEAC049501E /* Pods-All Targets-Little Go.release.xcconfig */;
+			baseConfigurationReference = AA65495119D713AE31FA3D7C /* Pods-All Targets-Little Go.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -5073,7 +5081,7 @@
 		};
 		CD89232C149FDC8A00A94A7B /* Distribute_AppStore */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BEBE20ABC813BBD1CA8A32AD /* Pods-All Targets-Little Go.distribute_appstore.xcconfig */;
+			baseConfigurationReference = D17AB36719C02584C00F4587 /* Pods-All Targets-Little Go.distribute_appstore.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -5106,7 +5114,7 @@
 		};
 		CD89232E149FDC8A00A94A7B /* Distribute_AppStore */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5EF15C963D408E9DCB73E098 /* Pods-All Targets-Unit tests.distribute_appstore.xcconfig */;
+			baseConfigurationReference = 805A10BE91DF62871C08501E /* Pods-All Targets-Unit tests.distribute_appstore.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -5131,7 +5139,7 @@
 		};
 		CDA595B11401384000B250D8 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C1CEA6D355E6B115AB346441 /* Pods-All Targets-Unit tests.debug.xcconfig */;
+			baseConfigurationReference = 367AB474D33810C16C59F25E /* Pods-All Targets-Unit tests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -5156,7 +5164,7 @@
 		};
 		CDA595B21401384000B250D8 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 88F44D38B400A752F557FD4D /* Pods-All Targets-Unit tests.release.xcconfig */;
+			baseConfigurationReference = 05AC832DFFAF3D04A84F5A88 /* Pods-All Targets-Unit tests.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -5181,7 +5189,7 @@
 		};
 		CDA595B31401384000B250D8 /* Distribute_AdHoc */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8C541D2D4A74644B90D0227C /* Pods-All Targets-Unit tests.distribute_adhoc.xcconfig */;
+			baseConfigurationReference = 0918CEA40C1F7C5BC3764DA8 /* Pods-All Targets-Unit tests.distribute_adhoc.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
@@ -5413,7 +5421,7 @@
 		};
 		CDE3010E1357942E005235F2 /* Distribute_AdHoc */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C800DF7BFF18E915311E0E1A /* Pods-All Targets-Little Go.distribute_adhoc.xcconfig */;
+			baseConfigurationReference = 781EC54040A40C8A768461F6 /* Pods-All Targets-Little Go.distribute_adhoc.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_OBJC_WEAK = YES;
