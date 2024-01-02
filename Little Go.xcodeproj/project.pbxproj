@@ -3846,7 +3846,6 @@
 				LastUpgradeCheck = 1320;
 				TargetAttributes = {
 					1D6058900D05DD3D006BFB54 = {
-						DevelopmentTeam = P7NZKNP5L2;
 						ProvisioningStyle = Automatic;
 					};
 					CDB49E212208ABA2006DC1A4 = {
@@ -4852,7 +4851,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 26;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				EXCLUDED_SOURCE_FILE_NAMES = "GoogleService-Info.plist";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
@@ -4874,7 +4873,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 26;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
@@ -5082,7 +5081,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 26;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
@@ -5110,6 +5109,9 @@
 			baseConfigurationReference = 5EF15C963D408E9DCB73E098 /* Pods-All Targets-Unit tests.distribute_appstore.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -5123,6 +5125,7 @@
 				INFOPLIST_FILE = test/resource/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.unittests;
 				PRODUCT_NAME = "Unit tests";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Distribute_AppStore;
 		};
@@ -5131,6 +5134,9 @@
 			baseConfigurationReference = C1CEA6D355E6B115AB346441 /* Pods-All Targets-Unit tests.debug.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -5144,6 +5150,7 @@
 				INFOPLIST_FILE = test/resource/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.unittests;
 				PRODUCT_NAME = "Unit tests";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
@@ -5152,6 +5159,9 @@
 			baseConfigurationReference = 88F44D38B400A752F557FD4D /* Pods-All Targets-Unit tests.release.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -5165,6 +5175,7 @@
 				INFOPLIST_FILE = test/resource/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.unittests;
 				PRODUCT_NAME = "Unit tests";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};
@@ -5173,6 +5184,9 @@
 			baseConfigurationReference = 8C541D2D4A74644B90D0227C /* Pods-All Targets-Unit tests.distribute_adhoc.xcconfig */;
 			buildSettings = {
 				CLANG_ENABLE_OBJC_WEAK = YES;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -5186,6 +5200,7 @@
 				INFOPLIST_FILE = test/resource/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.unittests;
 				PRODUCT_NAME = "Unit tests";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Distribute_AdHoc;
 		};
@@ -5201,6 +5216,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -5239,6 +5255,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
@@ -5276,6 +5293,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
@@ -5313,6 +5331,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
@@ -5402,7 +5421,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 26;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = P7NZKNP5L2;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = src/main/Prefix.pch;
 				INFOPLIST_FILE = resource/plist/Info.plist;
