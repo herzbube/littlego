@@ -4242,6 +4242,7 @@
 		};
 		CDB3AC3F1D1B1CB400DE4B38 /* Submit dSYM files to Crashlytics */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
