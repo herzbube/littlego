@@ -22,11 +22,15 @@ BOOST_XCFRAMEWORK_DEST_DIR="$DEST_DIR/$BOOST_XCFRAMEWORK_NAME"
 # These include 32-bit architectures. Because our deployment target is newer
 # than 10.0 only 64-bit architectures are supported by clang. We therefore must
 # override the Boost build script's default and specify only 64-bit
-# architectures. To support building both on Intel and Silicon Macs we specify
-# two platforms for the simulator platform. Note that for Fuego the
-# architectures to build are selected automatically by Xcode.
+# architectures. To support building out of the box for both Intel and Silicon
+# Macs we attempt to determine the simulator platform by looking at the host
+# machine's hardware platform. Note that for Fuego the architecture to build is
+# selected automatically by Xcode.
 BOOST_IPHONE_ARCHITECTURES="arm64"
-BOOST_IPHONE_SIMULATOR_ARCHITECTURES="x86_64"
+case "$(uname -m)" in
+  *x86*) BOOST_IPHONE_SIMULATOR_ARCHITECTURES="x86_64" ;;
+      *) BOOST_IPHONE_SIMULATOR_ARCHITECTURES="arm64" ;;
+esac
 
 FUEGO_SRC_DIR="$SRC_DIR"
 FUEGO_XCFRAMEWORK_NAME="fuego-on-ios.xcframework"
