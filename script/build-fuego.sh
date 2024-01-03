@@ -15,9 +15,9 @@ SRC_DIR="$SRC_BASEDIR/fuego-on-ios"
 DEST_DIR="$PREFIX_BASEDIR"
 
 BOOST_SRC_DIR="$SRC_DIR/boost"
-BOOST_FRAMEWORK_NAME="boost.framework"
-BOOST_FRAMEWORK_SRC_DIR="$BOOST_SRC_DIR/ios/framework/$BOOST_FRAMEWORK_NAME"
-BOOST_FRAMEWORK_DEST_DIR="$DEST_DIR/$BOOST_FRAMEWORK_NAME"
+BOOST_XCFRAMEWORK_NAME="boost.xcframework"
+BOOST_XCFRAMEWORK_SRC_DIR="$BOOST_SRC_DIR/ios/framework/$BOOST_XCFRAMEWORK_NAME"
+BOOST_XCFRAMEWORK_DEST_DIR="$DEST_DIR/$BOOST_XCFRAMEWORK_NAME"
 # The Boost build script has some hardcoded default architectures to build.
 # These include 32-bit architectures. Because our deployment target is newer
 # than 10.0 only 64-bit architectures are supported by clang. We therefore must
@@ -102,7 +102,11 @@ BUILD_STEPS_SOFTWARE()
   # Build Fuego after Boost. Build script Runs both the iPhone and simulator builds.
   echo "Begin building Fuego ..."
   ./build.sh
-  return $?
+  if test $? -ne 0; then
+    return 1
+  fi
+
+  return 0
 }
 
 # +------------------------------------------------------------------------
@@ -121,7 +125,7 @@ BUILD_STEPS_SOFTWARE()
 INSTALL_STEPS_SOFTWARE()
 {
   echo "Removing installation files from previous build ..."
-  rm -rf "$BOOST_FRAMEWORK_DEST_DIR"
+  rm -rf "$BOOST_XCFRAMEWORK_DEST_DIR"
   if test $? -ne 0; then
     return 1
   fi
@@ -133,8 +137,8 @@ INSTALL_STEPS_SOFTWARE()
   echo "Creating installation folder $DEST_DIR ..."
   mkdir -p "$DEST_DIR"
 
-  echo "Copying Boost installation files to $BOOST_FRAMEWORK_DEST_DIR ..."
-  cp -R "$BOOST_FRAMEWORK_SRC_DIR" "$BOOST_FRAMEWORK_DEST_DIR"
+  echo "Copying Boost installation files to $BOOST_XCFRAMEWORK_DEST_DIR ..."
+  cp -R "$BOOST_XCFRAMEWORK_SRC_DIR" "$BOOST_XCFRAMEWORK_DEST_DIR"
   if test $? -ne 0; then
     return 1
   fi
@@ -144,5 +148,6 @@ INSTALL_STEPS_SOFTWARE()
   if test $? -ne 0; then
     return 1
   fi
+
   return 0
 }
