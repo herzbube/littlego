@@ -296,14 +296,14 @@ enum FormattedTextSectionItem
         {
           cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
           cell.textLabel.text = @"Line number";
-          cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (long)self.message.lineNumber];
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", [self.message.lineNumber unsignedLongValue]];
           break;
         }
         case ColumnNumberItem:
         {
           cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
           cell.textLabel.text = @"Column number";
-          cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", (long)self.message.columnNumber];
+          cell.detailTextLabel.text = [NSString stringWithFormat:@"%ld", [self.message.columnNumber unsignedLongValue]];
           break;
         }
         default:
