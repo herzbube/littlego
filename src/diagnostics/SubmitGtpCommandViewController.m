@@ -81,7 +81,7 @@
   // self.edgesForExtendedLayout is UIRectEdgeAll, therefore we have to provide
   // a background color that is visible behind the navigation bar at the top
   // (which may extend behind the statusbar) and the tab bar at the bottom.
-  self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+  self.view.backgroundColor = [UIColor systemGroupedBackgroundColor];
 
   [self setupContentView];
   [self setupTextField];

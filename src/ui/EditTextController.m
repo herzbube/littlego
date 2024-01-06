@@ -135,7 +135,7 @@
   self.validationErrorLabel.numberOfLines = 0;
 
   // A background color is required to support UIModalPresentationAutomatic
-  self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+  self.view.backgroundColor = [UIColor systemGroupedBackgroundColor];
 
   [self setupNavigationItem];
   switch (self.editTextControllerStyle)

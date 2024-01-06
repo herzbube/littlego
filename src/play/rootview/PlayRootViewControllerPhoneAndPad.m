@@ -667,7 +667,7 @@
   // Any sort of whiteish color is OK as long as it doesn't deviate too much
   // from the background colors on the other tabs (typically a table view
   // background color).
-  self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+  self.view.backgroundColor = [UIColor systemGroupedBackgroundColor];
 
   bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
   if (isPortraitOrientation)
