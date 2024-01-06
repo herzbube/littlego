@@ -183,27 +183,27 @@ BUILD_STEPS_SOFTWARE()
 {
   echo "Begin building libsgfc++ ..."
 
-#  echo "Begin libsgfc++ simulator build ..."
-#  BUILD_STEPS_PLATFORM "$LIBSGFCPLUSPLUS_SRC_DIR" \
-#                       "$LIBSGFCPLUSPLUS_SRC_DIR/$BUILD_FOLDER/$SIMULATOR_BUILD_FOLDER" \
-#                       "$IPHONE_SIMULATOR_SDKNAME" \
-#                       "$IPHONE_SIMULATOR_DEPLOYMENT_TARGET" \
-#                       "" \
-#                       ""
-#  if test $? -ne 0; then
-#    return 1
-#  fi
-#
-#  echo "Begin libsgfc++ device build ..."
-#  BUILD_STEPS_PLATFORM "$LIBSGFCPLUSPLUS_SRC_DIR" \
-#                       "$LIBSGFCPLUSPLUS_SRC_DIR/$BUILD_FOLDER/$DEVICE_BUILD_FOLDER" \
-#                       "$IPHONEOS_SDKNAME" \
-#                       "$IPHONEOS_DEPLOYMENT_TARGET" \
-#                       "" \
-#                       ""
-#  if test $? -ne 0; then
-#    return 1
-#  fi
+  echo "Begin libsgfc++ simulator build ..."
+  BUILD_STEPS_PLATFORM "$LIBSGFCPLUSPLUS_SRC_DIR" \
+                       "$LIBSGFCPLUSPLUS_SRC_DIR/$BUILD_FOLDER/$SIMULATOR_BUILD_FOLDER" \
+                       "$IPHONE_SIMULATOR_SDKNAME" \
+                       "$IPHONE_SIMULATOR_DEPLOYMENT_TARGET" \
+                       "" \
+                       ""
+  if test $? -ne 0; then
+    return 1
+  fi
+
+  echo "Begin libsgfc++ device build ..."
+  BUILD_STEPS_PLATFORM "$LIBSGFCPLUSPLUS_SRC_DIR" \
+                       "$LIBSGFCPLUSPLUS_SRC_DIR/$BUILD_FOLDER/$DEVICE_BUILD_FOLDER" \
+                       "$IPHONEOS_SDKNAME" \
+                       "$IPHONEOS_DEPLOYMENT_TARGET" \
+                       "" \
+                       ""
+  if test $? -ne 0; then
+    return 1
+  fi
 
   echo "Begin building SgfcKit ..."
 
