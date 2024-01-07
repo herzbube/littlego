@@ -93,16 +93,24 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
-  self.mutableBlackSetupStones = [decoder decodeObjectForKey:goNodeSetupBlackSetupStonesKey];
-  self.mutableWhiteSetupStones = [decoder decodeObjectForKey:goNodeSetupWhiteSetupStonesKey];
-  self.mutableNoSetupStones = [decoder decodeObjectForKey:goNodeSetupNoSetupStonesKey];
+  self.mutableBlackSetupStones = [decoder decodeObjectOfClass:[NSMutableArray class] forKey:goNodeSetupBlackSetupStonesKey];
+  self.mutableWhiteSetupStones = [decoder decodeObjectOfClass:[NSMutableArray class] forKey:goNodeSetupWhiteSetupStonesKey];
+  self.mutableNoSetupStones = [decoder decodeObjectOfClass:[NSMutableArray class] forKey:goNodeSetupNoSetupStonesKey];
   self.setupFirstMoveColor = [decoder decodeIntForKey:goNodeSetupSetupFirstMoveColorKey];
-  self.mutablePreviousBlackSetupStones = [decoder decodeObjectForKey:goNodeSetupPreviousBlackSetupStonesKey];
-  self.mutablePreviousWhiteSetupStones = [decoder decodeObjectForKey:goNodeSetupPreviousWhiteSetupStonesKey];
+  self.mutablePreviousBlackSetupStones = [decoder decodeObjectOfClass:[NSMutableArray class] forKey:goNodeSetupPreviousBlackSetupStonesKey];
+  self.mutablePreviousWhiteSetupStones = [decoder decodeObjectOfClass:[NSMutableArray class] forKey:goNodeSetupPreviousWhiteSetupStonesKey];
   self.previousSetupFirstMoveColor = [decoder decodeIntForKey:goNodeSetupPreviousSetupFirstMoveColorKey];
   self.previousSetupInformationWasCaptured = [decoder decodeBoolForKey:goNodeSetupPreviousSetupInformationWasCapturedKey];
 
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

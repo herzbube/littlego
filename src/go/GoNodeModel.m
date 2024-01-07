@@ -93,16 +93,24 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
-  NSDictionary* nodeDictionary = [decoder decodeObjectForKey:goNodeModelNodeDictionaryKey];
+  NSDictionary* nodeDictionary = [decoder decodeObjectOfClass:[NSDictionary class] forKey:goNodeModelNodeDictionaryKey];
   [self restoreTreeLinks:nodeDictionary];
 
-  self.game = [decoder decodeObjectForKey:goNodeModelGameKey];
-  self.rootNode = [decoder decodeObjectForKey:goNodeModelRootNodeKey];
-  self.nodeList = [decoder decodeObjectForKey:goNodeModelNodeListKey];
+  self.game = [decoder decodeObjectOfClass:[GoGame class] forKey:goNodeModelGameKey];
+  self.rootNode = [decoder decodeObjectOfClass:[GoNode class] forKey:goNodeModelRootNodeKey];
+  self.nodeList = [decoder decodeObjectOfClass:[NSMutableArray class] forKey:goNodeModelNodeListKey];
   self.numberOfNodes = [decoder decodeIntForKey:goNodeModelNumberOfNodesKey];
   self.numberOfMoves = [decoder decodeIntForKey:goNodeModelNumberOfMovesKey];
 
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

@@ -41,7 +41,7 @@
 /// are in some way or other based on the three primitive properties and require
 /// a certain amount of processing time for calculation.
 // -----------------------------------------------------------------------------
-@interface GoNode : NSObject <NSCoding>
+@interface GoNode : NSObject <NSSecureCoding>
 {
 }
 

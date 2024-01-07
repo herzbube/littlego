@@ -161,15 +161,15 @@
 {
   DDLogVerbose(@"%@: Writing in-memory objects to file", [self shortDescription]);
 
-  NSMutableData* data = [NSMutableData data];
-  NSKeyedArchiver* archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+  NSKeyedArchiver* archiver = [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
 
   GoGame* game = [GoGame sharedGame];
   [archiver encodeObject:game forKey:nsCodingGoGameKey];
   [archiver finishEncoding];
 
+  NSData* encodedData = archiver.encodedData;
   NSString* archivePath = [self.diagnosticsInformationFolderPath stringByAppendingPathComponent:bugReportInMemoryObjectsArchiveFileName];
-  BOOL success = [data writeToFile:archivePath atomically:YES];
+  BOOL success = [encodedData writeToFile:archivePath atomically:YES];
   [archiver release];
 
   if (! success)

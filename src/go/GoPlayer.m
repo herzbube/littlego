@@ -160,7 +160,8 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
-  NSString* uuid = [decoder decodeObjectForKey:goPlayerPlayerUUIDKey];
+
+  NSString* uuid = [decoder decodeObjectOfClass:[NSString class] forKey:goPlayerPlayerUUIDKey];
   self.player = [GoPlayer playerWithUUID:uuid];
   self.black = [decoder decodeBoolForKey:goPlayerIsBlackKey];
 
@@ -175,6 +176,14 @@
   }
 
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

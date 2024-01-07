@@ -58,7 +58,7 @@
 ///   The new GoGame object becomes officially available via sharedGame() when
 ///   the notification #goGameDidCreate is being sent.
 // -----------------------------------------------------------------------------
-@interface GoGame : NSObject <NSCoding>
+@interface GoGame : NSObject <NSSecureCoding>
 {
 }
 

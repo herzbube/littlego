@@ -67,14 +67,22 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
-  self.shortDescription = [decoder decodeObjectForKey:goNodeAnnotationShortDescriptionKey];
-  self.longDescription = [decoder decodeObjectForKey:goNodeAnnotationLongDescriptionKey];
+  self.shortDescription = [decoder decodeObjectOfClass:[NSString class] forKey:goNodeAnnotationShortDescriptionKey];
+  self.longDescription = [decoder decodeObjectOfClass:[NSString class] forKey:goNodeAnnotationLongDescriptionKey];
   self.goBoardPositionValuation = [decoder decodeIntForKey:goNodeAnnotationGoBoardPositionValuationKey];
   self.goBoardPositionHotspotDesignation = [decoder decodeIntForKey:goNodeAnnotationGoBoardPositionHotspotDesignationKey];
   self.estimatedScoreSummary = [decoder decodeIntForKey:goNodeAnnotationEstimatedScoreSummaryKey];
   self.estimatedScoreValue = [decoder decodeDoubleForKey:goNodeAnnotationEstimatedScoreValueKey];
 
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

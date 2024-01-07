@@ -104,27 +104,35 @@
   // Don't use "self" because most properties have non-trivial setter methods
   // (e.g. notifications are triggered, but also other stuff)
   _type = [decoder decodeIntForKey:goGameTypeKey];
-  _board = [[decoder decodeObjectForKey:goGameBoardKey] retain];
-  _handicapPoints = [[decoder decodeObjectForKey:goGameHandicapPointsKey] retain];
+  _board = [[decoder decodeObjectOfClass:[GoBoard class] forKey:goGameBoardKey] retain];
+  _handicapPoints = [[decoder decodeObjectOfClass:[NSArray class] forKey:goGameHandicapPointsKey] retain];
   _komi = [decoder decodeDoubleForKey:goGameKomiKey];
-  _playerBlack = [[decoder decodeObjectForKey:goGamePlayerBlackKey] retain];
-  _playerWhite = [[decoder decodeObjectForKey:goGamePlayerWhiteKey] retain];
+  _playerBlack = [[decoder decodeObjectOfClass:[GoPlayer class] forKey:goGamePlayerBlackKey] retain];
+  _playerWhite = [[decoder decodeObjectOfClass:[GoPlayer class] forKey:goGamePlayerWhiteKey] retain];
   _nextMoveColor = [decoder decodeIntForKey:goGameNextMoveColorKey];
   _alternatingPlay = ([decoder decodeBoolForKey:goGameAlternatingPlayKey] == YES);
-  _nodeModel = [[decoder decodeObjectForKey:goGameNodeModelKey] retain];
+  _nodeModel = [[decoder decodeObjectOfClass:[GoNodeModel class] forKey:goGameNodeModelKey] retain];
   _state = [decoder decodeIntForKey:goGameStateKey];
   _reasonForGameHasEnded = [decoder decodeIntForKey:goGameReasonForGameHasEndedKey];
   _reasonForComputerIsThinking = [decoder decodeIntForKey:goGameReasonForComputerIsThinking];
-  _boardPosition = [[decoder decodeObjectForKey:goGameBoardPositionKey] retain];
-  _rules = [[decoder decodeObjectForKey:goGameRulesKey] retain];
-  _document = [[decoder decodeObjectForKey:goGameDocumentKey] retain];
-  _score = [[decoder decodeObjectForKey:goGameScoreKey] retain];
+  _boardPosition = [[decoder decodeObjectOfClass:[GoBoardPosition class] forKey:goGameBoardPositionKey] retain];
+  _rules = [[decoder decodeObjectOfClass:[GoGameRules class] forKey:goGameRulesKey] retain];
+  _document = [[decoder decodeObjectOfClass:[GoGameDocument class] forKey:goGameDocumentKey] retain];
+  _score = [[decoder decodeObjectOfClass:[GoScore class] forKey:goGameScoreKey] retain];
   self.setupFirstMoveColor = [decoder decodeIntForKey:goGameSetupFirstMoveColorKey];
   // The hash was not archived. Whoever is unarchiving this GoGame is
   // responsible for re-calculating the hash.
   _zobristHashAfterHandicap = 0;
 
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------
@@ -1541,7 +1549,9 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
     _handicapPoints = nil;
   }
 
-  _handicapPoints = [newValue copy];
+  // We cannot be sure what kind of array we receive (e.g. could be a mutable
+  // array), but we want the property to always contain a non-mutable array
+  _handicapPoints = [[NSArray arrayWithArray:newValue] retain];
   if (_handicapPoints)
   {
     for (GoPoint* point in _handicapPoints)
@@ -1850,7 +1860,8 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
         @throw exception;
       }
 
-      self.handicapPoints = newHandicapPoints;
+      // The property should always contain a non-mutable array
+      self.handicapPoints = [NSArray arrayWithArray:newHandicapPoints];
       assert(point.stoneState == GoColorNone);
 
       break;

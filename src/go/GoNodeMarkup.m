@@ -68,12 +68,20 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
-  self.mutableSymbols = [decoder decodeObjectForKey:goNodeMarkupSymbolsKey];
-  self.mutableConnections = [decoder decodeObjectForKey:goNodeMarkupConnectionsKey];
-  self.mutableLabels = [decoder decodeObjectForKey:goNodeMarkupLabelsKey];
-  self.mutableDimmings = [decoder decodeObjectForKey:goNodeMarkupDimmingsKey];
+  self.mutableSymbols = [decoder decodeObjectOfClass:[NSMutableDictionary class] forKey:goNodeMarkupSymbolsKey];
+  self.mutableConnections = [decoder decodeObjectOfClass:[NSMutableDictionary class] forKey:goNodeMarkupConnectionsKey];
+  self.mutableLabels = [decoder decodeObjectOfClass:[NSMutableDictionary class] forKey:goNodeMarkupLabelsKey];
+  self.mutableDimmings = [decoder decodeObjectOfClass:[NSMutableArray class] forKey:goNodeMarkupDimmingsKey];
 
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

@@ -84,6 +84,7 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
+
   _komi = [decoder decodeDoubleForKey:goScoreKomiKey];
   _capturedByBlack = [decoder decodeIntForKey:goScoreCapturedByBlackKey];
   _capturedByWhite = [decoder decodeIntForKey:goScoreCapturedByWhiteKey];
@@ -103,7 +104,7 @@
   _stonesPlayedByWhite = [decoder decodeIntForKey:goScoreStonesPlayedByWhiteKey];
   _passesPlayedByBlack = [decoder decodeIntForKey:goScorePassesPlayedByBlackKey];
   _passesPlayedByWhite = [decoder decodeIntForKey:goScorePassesPlayedByWhiteKey];
-  _game = [decoder decodeObjectForKey:goScoreGameKey];
+  _game = [decoder decodeObjectOfClass:[GoGame class] forKey:goScoreGameKey];
   _didAskGtpEngineForDeadStones = [decoder decodeBoolForKey:goScoreDidAskGtpEngineForDeadStonesKey];
   _lastCalculationHadError = [decoder decodeBoolForKey:goScoreLastCalculationHadErrorKey];
 
@@ -117,6 +118,14 @@
   _operationQueue = [[NSOperationQueue alloc] init];
 
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

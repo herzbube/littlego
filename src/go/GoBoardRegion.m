@@ -119,7 +119,8 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
-  self.points = [decoder decodeObjectForKey:goBoardRegionPointsKey];
+
+  self.points = [decoder decodeObjectOfClass:[NSMutableArray class] forKey:goBoardRegionPointsKey];
   self.randomColor = [UIColor randomColor];
   // Don't use self.scoringMode, otherwise we trigger the setter!
   if ([decoder containsValueForKey:goBoardRegionScoringModeKey])
@@ -155,11 +156,19 @@
   else
     self.cachedLiberties = -1;
   if ([decoder containsValueForKey:goBoardRegionCachedAdjacentRegionsKey])
-    self.cachedAdjacentRegions = [decoder decodeObjectForKey:goBoardRegionCachedAdjacentRegionsKey];
+    self.cachedAdjacentRegions = [decoder decodeObjectOfClass:[NSArray class] forKey:goBoardRegionCachedAdjacentRegionsKey];
   else
     self.cachedAdjacentRegions = nil;
 
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

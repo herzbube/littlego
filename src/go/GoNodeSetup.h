@@ -37,7 +37,7 @@
 /// empty points can (and must) infer what these points are, at the cost of
 /// additional processing time and power.
 // -----------------------------------------------------------------------------
-@interface GoNodeSetup : NSObject <NSCoding>
+@interface GoNodeSetup : NSObject <NSSecureCoding>
 {
 }
 

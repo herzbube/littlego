@@ -57,7 +57,7 @@
 /// @note doIt() and undo() must never be invoked twice in a row. They can be
 /// invoked in alternation any number of times.
 // -----------------------------------------------------------------------------
-@interface GoMove : NSObject <NSCoding>
+@interface GoMove : NSObject <NSSecureCoding>
 {
 }
 

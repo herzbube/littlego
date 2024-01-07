@@ -20,6 +20,7 @@
 #import "GoBoard.h"
 #import "GoGame.h"
 #import "GoMove.h"
+#import "GoNodeAnnotation.h"
 #import "GoNodeMarkup.h"
 #import "GoNodeSetup.h"
 #import "GoZobristTable.h"
@@ -144,16 +145,24 @@
   self.nextSiblingNodeID = [decoder decodeIntForKey:goNodeNextSiblingKey];
   self.parentNodeID = [decoder decodeIntForKey:goNodeParentKey];
 
-  self.goNodeSetup = [decoder decodeObjectForKey:goNodeGoNodeSetupKey];
-  self.goMove = [decoder decodeObjectForKey:goNodeGoMoveKey];
-  self.goNodeAnnotation = [decoder decodeObjectForKey:goNodeGoNodeAnnotationKey];
-  self.goNodeMarkup = [decoder decodeObjectForKey:goNodeGoNodeMarkupKey];
+  self.goNodeSetup = [decoder decodeObjectOfClass:[GoNodeSetup class] forKey:goNodeGoNodeSetupKey];
+  self.goMove = [decoder decodeObjectOfClass:[GoMove class] forKey:goNodeGoMoveKey];
+  self.goNodeAnnotation = [decoder decodeObjectOfClass:[GoNodeAnnotation class] forKey:goNodeGoNodeAnnotationKey];
+  self.goNodeMarkup = [decoder decodeObjectOfClass:[GoNodeMarkup class] forKey:goNodeGoNodeMarkupKey];
 
   // The hash was not archived. Whoever is unarchiving this GoNode is
   // responsible for re-calculating the hash.
   self.zobristHash = 0;
 
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

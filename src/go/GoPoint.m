@@ -17,6 +17,7 @@
 
 // Project includes
 #import "GoPoint.h"
+#import "GoBoardRegion.h"
 #import "GoBoard.h"
 #import "GoVertex.h"
 
@@ -120,10 +121,11 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
+
   // We can do this because there is a 1:1 relationship between GoPoint and
   // GoVertex
-  self.vertex = [GoVertex vertexFromString:[decoder decodeObjectForKey:goPointVertexKey]];
-  self.board = [decoder decodeObjectForKey:goPointBoardKey];
+  self.vertex = [GoVertex vertexFromString:[decoder decodeObjectOfClass:[NSString class] forKey:goPointVertexKey]];
+  self.board = [decoder decodeObjectOfClass:[GoBoard class] forKey:goPointBoardKey];
   if ([decoder containsValueForKey:goPointIsStarPointKey])
     self.starPoint = true;
   else
@@ -136,7 +138,7 @@
     self.territoryStatisticsScore = [decoder decodeFloatForKey:goPointTerritoryStatisticsScoreKey];
   else
     self.territoryStatisticsScore = 0.0f;
-  self.region = [decoder decodeObjectForKey:goPointRegionKey];
+  self.region = [decoder decodeObjectOfClass:[GoBoardRegion class] forKey:goPointRegionKey];
 
   _left = nil;
   _right = nil;
@@ -153,6 +155,14 @@
   _isPreviousValid = false;
 
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------
