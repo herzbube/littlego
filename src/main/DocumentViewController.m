@@ -177,7 +177,9 @@
 {
   if (navigationAction.navigationType == WKNavigationTypeLinkActivated)
   {
-    [[UIApplication sharedApplication] openURL:[navigationAction.request URL]];
+    [[UIApplication sharedApplication] openURL:[navigationAction.request URL]
+                                       options:@{}
+                             completionHandler:nil];
     decisionHandler(WKNavigationActionPolicyAllow);
   }
   else if (webView.isLoading)
