@@ -149,8 +149,9 @@ Reacting to interface orientation changes
 In a UIViewController a valid event source is to override
 viewWillLayoutSubviews. This occurs only if the controller's view is currently
 visible. A reliable source of what interface orientation is in force when
-viewWillLayoutSubviews occurs is the statusbar orientation. This can be queried
-at any time using [UIApplication sharedApplication].statusBarOrientation.
+viewWillLayoutSubviews occurs is the current UIWindowScene. Since this
+application has only one window, this can be queried like this:
+[ApplicationDelegate sharedDelegate].window.windowScene.interfaceOrientation.
 
 Up until iOS 13, UIApplicationWillChangeStatusBarOrientationNotification and
 UIApplicationDidChangeStatusBarOrientationNotification were also reliable event

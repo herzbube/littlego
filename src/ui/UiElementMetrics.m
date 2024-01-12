@@ -17,6 +17,7 @@
 
 // Project includes
 #import "UiElementMetrics.h"
+#import "../main/ApplicationDelegate.h"
 #import "../utility/UIDeviceAdditions.h"
 
 /// @brief Helper class used internally by UiElementMetrics.
@@ -31,18 +32,20 @@
 
 + (UIInterfaceOrientation) interfaceOrientation
 {
-  return [UIApplication sharedApplication].statusBarOrientation;
+  // Since this application supports only one window, and therefore only one
+  // scene, we can simply obtain the window and its scene from the window owner,
+  // which is the application delegate.
+  //
+  // A more generic approach would work something like this: Get the
+  // connectedScenes from UIApplication, then check each scene whether it's a
+  // UIWindowScene, then select the UIWindowScene which has a window that is
+  // the key window.
+  return [ApplicationDelegate sharedDelegate].window.windowScene.interfaceOrientation;
 }
 
 + (bool) interfaceOrientationIsPortrait
 {
   return UIInterfaceOrientationIsPortrait([UiElementMetrics interfaceOrientation]);
-}
-
-+ (int) statusBarHeight
-{
-  CGRect statusbarFrame = [UIApplication sharedApplication].statusBarFrame;
-  return MIN(statusbarFrame.size.width, statusbarFrame.size.height);
 }
 
 + (CGFloat) horizontalSpacingSiblings
