@@ -1083,7 +1083,7 @@ static const int spacerBottomTag = 2;
     bool isItemImageAlreadyTinted = false;
     if (hotspotDesignation == GoBoardPositionHotspotDesignationYesEmphasized)
     {
-      hotspotDesignationIcon = [hotspotDesignationIcon imageByTintingWithColor:[UIColor hotspotColor:hotspotDesignation]];
+      hotspotDesignationIcon = [hotspotDesignationIcon imageWithTintColor:[UIColor hotspotColor:hotspotDesignation]];
       isItemImageAlreadyTinted = true;
     }
     [itemList addObject:@[hotspotDesignationText, hotspotDesignationIcon, [NSNumber numberWithBool:isItemImageAlreadyTinted]]];
