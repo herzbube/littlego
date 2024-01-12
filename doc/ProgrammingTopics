@@ -152,13 +152,17 @@ visible. A reliable source of what interface orientation is in force when
 viewWillLayoutSubviews occurs is the statusbar orientation. This can be queried
 at any time using [UIApplication sharedApplication].statusBarOrientation.
 
-That being said, UIApplicationWillChangeStatusBarOrientationNotification and
-UIApplicationDidChangeStatusBarOrientationNotification are also reliable event
-sources. The benefit of these notifications is that anyone can observe them, not
-only UIViewController subclasses.
+Up until iOS 13, UIApplicationWillChangeStatusBarOrientationNotification and
+UIApplicationDidChangeStatusBarOrientationNotification were also reliable event
+sources. The benefit of these notifications was that anyone could observe them,
+not only UIViewController subclasses.
 
-I vaguely remember that viewWillTransitionToSize is also an interesting override
-point in UIViewController, but currently I don't have any details.
+Alas, the notifications were deprecated in favor of overriding
+viewWillTransitionToSize:withTransitionCoordinator:() in UIViewController.
+As a replacement for UIApplicationWillChangeStatusBarOrientationNotification
+this application defines uiWillChangeInterfaceOrientation, which is an
+application-defined notification posted by the application's root view
+controller.
 
 DeviceOrientationDidChangeNotification definitely is not a good trigger. Besides
 the usual four orientations, there are two additional ones that are difficult

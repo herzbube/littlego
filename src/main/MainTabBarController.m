@@ -229,6 +229,19 @@
   return [LayoutManager sharedManager].supportedInterfaceOrientations;
 }
 
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) viewWillTransitionToSize:(CGSize)size
+        withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+  [[NSNotificationCenter defaultCenter] postNotificationName:uiWillChangeInterfaceOrientation
+                                                      object:nil];
+
+  [super viewWillTransitionToSize:size
+        withTransitionCoordinator:coordinator];
+}
+
 #pragma mark - UITabBarControllerDelegate overrides
 
 // -----------------------------------------------------------------------------

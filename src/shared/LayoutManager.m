@@ -177,6 +177,8 @@ static LayoutManager* sharedManager = nil;
   {
     case UITypePhonePortraitOnly:
     {
+      // Although here we indicate support for upside-down, iOS does not rotate
+      // to upside-down on devices with a notch
       return (UIInterfaceOrientationMaskPortrait | UIInterfaceOrientationMaskPortraitUpsideDown);
     }
     case UITypePhone:
