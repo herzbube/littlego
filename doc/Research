@@ -1345,7 +1345,7 @@ Conclusions
   Another measurement should be made where it is possible to dynamically turn
   on/off the background image, i.e. without having to recompile the app.
 
-[1] https://en.wikipedia.org/wiki/List_of_iOS_devices
+[1] https://en.wikipedia.org/wiki/List_of_iPhone_models
 
 
 Redesigning the drawing mechanism to use tiling (v1.1.0)

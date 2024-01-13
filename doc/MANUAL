@@ -1145,8 +1145,10 @@ better use of this time in a single thread of straightforward calculations.
 
 Note that the iPhone 4S is the first iOS device that has a processor with 2
 cores, so on older devices you should leave the number of threads set to 1. If
-you don't know how many processor cores your device has, you can consult this
-Wikipedia page: https://en.wikipedia.org/wiki/List_of_iOS_devices.
+you don't know how many processor cores your device has, you can consult one of
+these Wikipedia pages:
+- https://en.wikipedia.org/wiki/List_of_iPhone_models
+- https://en.wikipedia.org/wiki/List_of_iPad_models
 
 =========
 Pondering
