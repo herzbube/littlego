@@ -56,11 +56,22 @@
   self = [super init];
   if (! self)
     return nil;
+
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
+
   _dirty = [decoder decodeBoolForKey:goGameDocumentDirtyKey];
-  _documentName = [[decoder decodeObjectForKey:goGameDocumentDocumentNameKey] retain];
+  _documentName = [[decoder decodeObjectOfClass:[NSString class] forKey:goGameDocumentDocumentNameKey] retain];
+  
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

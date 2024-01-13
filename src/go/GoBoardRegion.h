@@ -52,7 +52,7 @@
 /// Clients do not need to know or care about which pieces of information are
 /// cached, this is an implementation detail.
 // -----------------------------------------------------------------------------
-@interface GoBoardRegion : NSObject <NSCoding>
+@interface GoBoardRegion : NSObject <NSSecureCoding>
 {
 }
 

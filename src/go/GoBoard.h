@@ -34,7 +34,7 @@
 /// intersection it is located on, or by its association with its neighbouring
 /// GoPoint objects in one of several directions (see #GoBoardDirection).
 // -----------------------------------------------------------------------------
-@interface GoBoard : NSObject <NSCoding>
+@interface GoBoard : NSObject <NSSecureCoding>
 {
 @private
   /// @brief Keys = Vertices as NSString objects, values = GoPoint objects

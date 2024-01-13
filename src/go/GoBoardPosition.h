@@ -94,7 +94,7 @@
 /// #boardPositionChangeProgress. The setter of @e currentBoardPosition posts
 /// this notification (B-A) times for a board position change from A to B.
 // -----------------------------------------------------------------------------
-@interface GoBoardPosition : NSObject
+@interface GoBoardPosition : NSObject <NSSecureCoding>
 {
 }
 

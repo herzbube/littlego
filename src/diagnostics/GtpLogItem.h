@@ -19,7 +19,7 @@
 /// @brief The GtpLogItem class collects data that describes a GTP command and
 /// its response.
 // -----------------------------------------------------------------------------
-@interface GtpLogItem : NSObject <NSCoding>
+@interface GtpLogItem : NSObject <NSSecureCoding>
 {
 }
 

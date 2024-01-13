@@ -1378,6 +1378,14 @@ extern NSString* boardViewAnimationWillBegin;
 /// @brief Is sent after an animation has ended on the board view. This is the
 /// balancing notification to #boardAnimationWillBegin.
 extern NSString* boardViewAnimationDidEnd;
+/// @brief Is sent when the user interface is about to change orientation. This
+/// notification is sent even if the device is rotated 180 degrees.
+///
+/// This notification is intended as trigger for observers that are not
+/// UIViewController subclasses. UIViewController subclasses should not use this
+/// notification and instead override
+/// viewWillTransitionToSize:withTransitionCoordinator().
+extern NSString* uiWillChangeInterfaceOrientation;
 //@}
 
 // -----------------------------------------------------------------------------

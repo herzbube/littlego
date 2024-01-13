@@ -21,7 +21,7 @@
 ///
 /// @ingroup go
 // -----------------------------------------------------------------------------
-@interface GoNodeAnnotation : NSObject <NSCoding>
+@interface GoNodeAnnotation : NSObject <NSSecureCoding>
 {
 }
 

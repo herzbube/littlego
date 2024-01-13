@@ -236,12 +236,8 @@
     {
       self.view.backgroundColor = [UIColor blackColor];
       self.statusLabel.textColor = [UIColor whiteColor];
-      self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleWhite;
+      self.activityIndicator.color = [UIColor whiteColor];
     }
-  }
-  else
-  {
-    self.activityIndicator.activityIndicatorViewStyle = UIActivityIndicatorViewStyleGray;
   }
 }
 

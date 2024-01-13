@@ -106,7 +106,7 @@
 
   // Status view
   XCUIElement* statusLabel = [self.uiElementFinder findStatusLabelWithUiApplication:app];
-  XCTAssertTrue([statusLabel.label isEqualToString:@"Game started Black to move"]);  // Newline character is converted to space
+  XCTAssertTrue([statusLabel.label isEqualToString:@"Game started\nBlack to move"]);
 
   // Board positions
   NSArray* boardPositionCells = [self.uiElementFinder findBoardPositionCellsWithUiApplication:app];

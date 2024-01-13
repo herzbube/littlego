@@ -91,7 +91,14 @@
 
   NSString* archiveFilePath = [[BugReportUtilities diagnosticsInformationFolderPath] stringByAppendingPathComponent:bugReportInMemoryObjectsArchiveFileName];
   NSData* data = [NSData dataWithContentsOfFile:archiveFilePath];
-  NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+
+  // This initializer uses NSDecodingFailurePolicySetErrorAndReturn, i.e. when
+  // decoding fails it returns nil and does not raise an exception. The
+  // initializer itself *does* throw an exception, though, if data is not a
+  // valid keyed archive in the first place.
+  NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data
+                                                                              error:nil];
+
   self.unarchivedGame = [unarchiver decodeObjectForKey:nsCodingGoGameKey];
   [unarchiver finishDecoding];
   [unarchiver release];

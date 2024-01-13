@@ -39,7 +39,6 @@
 
 + (UIInterfaceOrientation) interfaceOrientation;
 + (bool) interfaceOrientationIsPortrait;
-+ (int) statusBarHeight;
 + (CGFloat) horizontalSpacingSiblings;
 + (CGFloat) verticalSpacingSiblings;
 + (CGFloat) horizontalSpacingSuperview;

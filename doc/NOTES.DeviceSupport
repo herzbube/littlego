@@ -1,12 +1,12 @@
 Purpose of this document
 ------------------------
-This document has notes about the project's support for iOS devices. The
-oldest iOS version still supported is defined by IPHONEOS_DEPLOYMENT_TARGET
-(search keyword: deployment target). The source for the information which
-iOS versions support which devices is Wikipedia [1].
-
-[1] https://en.wikipedia.org/wiki/List_of_iOS_and_iPadOS_devices
-
+This document has notes about the project's support for iOS/iPadOS devices. The
+oldest iOS/iPadOS version still supported is defined by
+IPHONEOS_DEPLOYMENT_TARGET (search keyword: deployment target). The source for
+the information which iOS versions support which devices is Wikipedia:
+- https://en.wikipedia.org/wiki/List_of_iPhone_models
+- https://en.wikipedia.org/wiki/List_of_iPad_models
+- https://en.wikipedia.org/wiki/IPod
 
 iOS / device support
 --------------------
@@ -15,40 +15,61 @@ version is the last one to support the device. If the project stops supporting
 a given iOS version then all devices listed under that iOS version, and older
 iOS versions, will no longer be able to run the app.
 
-
-iOS 15
-- iPhone 6S / 6S Plus and newer
-- iPod Touch 7th Generation and newer
-- iPad Pro 12.9 inch 1st Generation and newer
-- iPad Pro 11 inch 1st Generation and newer
-- iPad Pro 9.7 inch
+Latest iOS/iPadOS (iOS/iPadOS 17 at the time this document was last updated)
+- iPhone XS / XS Max
+- iPhone XR
+- iPhone 11 / 11 Pro / 11 Pro Max
+- iPhone SE 2nd generation / 3rd generation
+- iPhone 12 Mini / 12 / 12 Pro / 12 Pro Max
+- iPhone 13 Mini / 13 / 13 Pro / 13 Pro Max
+- iPhone 14 / 14 Plus / 14 Pro / 14 Pro Max
+- iPhone 15 / 15 Plus / 15 Pro / 15 Pro Max
+- iPad Pro 12.9 inch 2nd / 3rd / 4th / 5th / 6th generation
+- iPad Pro 11 inch 1st / 2nd / 3rd / 4th generation
 - iPad Pro 10.5 inch
-- iPad Air 2
-- iPad Air 3rd Generation and newer
-- iPad Mini
-- iPad Mini 5th Generationa and newer
-- iPad 5th Generation and newer
+- iPad Air 3rd / 4th / 5th generation
+- iPad Mini 5th / 6th generation
+- iPad 6th / 7th / 8th / 9th / 10th generation
 
-iOS 14, 13
-iOS 12
+iOS/iPadOS 16
+- iPhone 8 / 8 Plus
+- iPhone X
+- iPad Pro 9.7 inch
+- iPad Pro 12.9 inch 1st generation
+- iPad 5th generation
+
+iOS/iPadOS 15
+- iPhone 6S / 6S Plus
+- iPhone SE 1st generation
+- iPhone 7 / 7 Plus
+- iPod Touch 7th generation (final iPod version before product was discontinued)
+- iPad Air 2
+- iPad Mini 4
+
+iOS/iPadOS 14, 13
+- None
+
+iOS/iPadOS 12
 - iPhone 6 / 6 Plus
 - iPhone 5S
-- iPod Touch 6th Generation
-- iPad Air 1st Generation
+- iPod Touch 6th generation
+- iPad Air 1st generation
 - iPad Mini 2 and 3
 
-iOS 11
-iOS 10
+iOS/iPadOS 11
+- None
+
+iOS/iPadOS 10
 - iPhone 5
 - iPhone 5C
-- iPad 4th Generation
+- iPad 4th generation
 
-iOS 9 - minimum required version since app version 1.6.0 (February 26 2021)
+iOS/iPadOS 9 - minimum required version since app version 1.6.0 (February 26 2021)
 - iPhone 4S
-- iPod Touch 5th Generation
-- iPad Mini 1st Generation
+- iPod Touch 5th generation
+- iPad Mini 1st generation
 - iPad 2
-- iPad 3rd Generation
+- iPad 3rd generation
 
 No information about device support in older iOS versions was collected.
 

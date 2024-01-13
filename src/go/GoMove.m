@@ -130,16 +130,24 @@
     return nil;
 
   self.type = [decoder decodeIntForKey:goMoveTypeKey];
-  self.player = [decoder decodeObjectForKey:goMovePlayerKey];
-  _point = [decoder decodeObjectForKey:goMovePointKey];  // don't use self, otherwise we trigger the setter!
+  self.player = [decoder decodeObjectOfClass:[GoPlayer class] forKey:goMovePlayerKey];
+  _point = [decoder decodeObjectOfClass:[GoPoint class] forKey:goMovePointKey];  // don't use self, otherwise we trigger the setter!
   // The previous move was not archived. Whoever is unarchiving this
   // GoMove is responsible for setting the previous move.
   self.previous = nil;
-  self.capturedStones = [decoder decodeObjectForKey:goMoveCapturedStonesKey];
+  self.capturedStones = [decoder decodeObjectOfClass:[NSMutableArray class] forKey:goMoveCapturedStonesKey];
   self.moveNumber = [decoder decodeIntForKey:goMoveMoveNumberKey];
   self.goMoveValuation = [decoder decodeIntForKey:goMoveGoMoveValuationKey];
 
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

@@ -48,14 +48,25 @@
   self = [super init];
   if (! self)
     return nil;
+
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
+
   self.koRule = [decoder decodeIntForKey:goGameRulesKoRuleKey];
   self.scoringSystem = [decoder decodeIntForKey:goGameRulesScoringSystemKey];
   self.lifeAndDeathSettlingRule = [decoder decodeIntForKey:goGameRulesLifeAndDeathSettlingRuleKey];
   self.disputeResolutionRule = [decoder decodeIntForKey:goGameRulesDisputeResolutionRuleKey];
   self.fourPassesRule = [decoder decodeIntForKey:goGameRulesFourPassesRuleKey];
+  
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

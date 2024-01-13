@@ -187,16 +187,14 @@ static GameActionManager* sharedGameActionManager = nil;
   [center addObserver:self selector:@selector(currentGameVariationWillChange:) name:currentGameVariationWillChange object:nil];
   [center addObserver:self selector:@selector(currentGameVariationDidChange:) name:currentGameVariationDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
-  // Note: UIApplicationWillChangeStatusBarOrientationNotification is also sent
-  // if a view controller is modally presented on iPhone while in
-  // UIInterfaceOrientationPortraitUpsideDown. This is unexpected and not
-  // something we want, because our notification handler dismisses a controller
-  // that might be the one doing the presenting, which would cause a crash. So
-  // here we make sure that we react to the notification only on iPad - which
-  // is exactly the device we want to handle anyway because popovers exist only
-  // on iPad.
+  // We want to dismiss popovers that are wrongly positioned after an interface
+  // orientation change. Since popovers exist only on iPad we need to react to
+  // the notification only on UITypePad. Note that in the past the condition
+  // also existed to avoid a crash on iPhone devices, but this is probably no
+  // longer necessary because the way how the UI layout works has significantly
+  // changed. If in doubt consult the version control history of this file.
   if ([LayoutManager sharedManager].uiType == UITypePad)
-    [center addObserver:self selector:@selector(statusBarOrientationWillChange:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
+    [center addObserver:self selector:@selector(uiWillChangeInterfaceOrientation:) name:uiWillChangeInterfaceOrientation object:nil];
 
   // KVO observing
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
@@ -967,10 +965,9 @@ static GameActionManager* sharedGameActionManager = nil;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the
-/// #UIApplicationWillChangeStatusBarOrientationNotification notification.
+/// @brief Responds to the #uiWillChangeInterfaceOrientation notification.
 // -----------------------------------------------------------------------------
-- (void) statusBarOrientationWillChange:(NSNotification*)notification
+- (void) uiWillChangeInterfaceOrientation:(NSNotification*)notification
 {
   // Dismiss any popover that is still visible because it will be wrongly
   // positioned after the interface has rotated

@@ -40,7 +40,7 @@
 /// Invoking GoNodeModel methods that add or discard nodes generally sets the
 /// GoGameDocument dirty flag.
 // -----------------------------------------------------------------------------
-@interface GoNodeModel : NSObject <NSCoding>
+@interface GoNodeModel : NSObject <NSSecureCoding>
 {
 }
 

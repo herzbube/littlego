@@ -22,7 +22,7 @@
 ///
 /// @ingroup go
 // -----------------------------------------------------------------------------
-@interface GoNodeMarkup : NSObject <NSCoding>
+@interface GoNodeMarkup : NSObject <NSSecureCoding>
 {
 }
 

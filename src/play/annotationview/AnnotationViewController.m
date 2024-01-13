@@ -218,7 +218,6 @@ static const int spacerBottomTag = 2;
   [center addObserver:self selector:@selector(nodeAnnotationDataDidChange:) name:nodeAnnotationDataDidChange object:nil];
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
-  [center addObserver:self selector:@selector(statusBarOrientationWillChange:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -335,6 +334,26 @@ static const int spacerBottomTag = 2;
       [self updateColors:node];
     }
   }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) viewWillTransitionToSize:(CGSize)size
+        withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+  // When the interface orientation changes this controller will be deallocated.
+  // Presented view controllers have this controller set as their delegate, so
+  // we must dismiss them now to avoid access to a deallocated object.
+  //
+  // Note: This method is also invoked when the device is rotated 180 degrees
+  // and the view size does not actually change. This causes the dismissal of
+  // the presented view controller even though it would not be necessary.
+  if (self.presentedViewController)
+    [self dismissViewControllerAnimated:YES completion:nil];
+
+  [super viewWillTransitionToSize:size
+        withTransitionCoordinator:coordinator];
 }
 
 #pragma mark - View hierarchy setup
@@ -828,26 +847,6 @@ static const int spacerBottomTag = 2;
   [self delayedUpdate];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Responds to the
-/// #UIApplicationWillChangeStatusBarOrientationNotification notification.
-// -----------------------------------------------------------------------------
-- (void) statusBarOrientationWillChange:(NSNotification*)notification
-{
-  // When the interface orientation changes this controller will be deallocated.
-  // Presented view controllers have this controller set as their delegate, so
-  // we must dismiss them now to avoid access to a deallocated object.
-  //
-  // Note: On UITypePhone we don't support landscape, but when the interface
-  // orientation changes from UIInterfaceOrientationPortrait to
-  // UIInterfaceOrientationPortraitUpsideDown or vice versa the notification
-  // UIApplicationWillChangeStatusBarOrientationNotification is still sent,
-  // causing the dismissal of the presented view controller even though it
-  // would not be necessary.
-  if (self.presentedViewController)
-    [self dismissViewControllerAnimated:YES completion:nil];
-}
-
 #pragma mark - Updaters
 
 // -----------------------------------------------------------------------------
@@ -1084,7 +1083,7 @@ static const int spacerBottomTag = 2;
     bool isItemImageAlreadyTinted = false;
     if (hotspotDesignation == GoBoardPositionHotspotDesignationYesEmphasized)
     {
-      hotspotDesignationIcon = [hotspotDesignationIcon imageByTintingWithColor:[UIColor hotspotColor:hotspotDesignation]];
+      hotspotDesignationIcon = [hotspotDesignationIcon imageWithTintColor:[UIColor hotspotColor:hotspotDesignation]];
       isItemImageAlreadyTinted = true;
     }
     [itemList addObject:@[hotspotDesignationText, hotspotDesignationIcon, [NSNumber numberWithBool:isItemImageAlreadyTinted]]];

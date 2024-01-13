@@ -68,12 +68,20 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
-  self.game = [decoder decodeObjectForKey:goBoardPositionGameKey];
+  self.game = [decoder decodeObjectOfClass:[GoGame class] forKey:goBoardPositionGameKey];
   // Don't use self, otherwise we trigger the setter!
   _currentBoardPosition = [decoder decodeIntForKey:goBoardPositionCurrentBoardPositionKey];
   self.numberOfBoardPositions = [decoder decodeIntForKey:goBoardPositionNumberOfBoardPositionsKey];
 
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

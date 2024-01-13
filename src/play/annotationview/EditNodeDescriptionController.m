@@ -166,7 +166,7 @@
   self.contentView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
 
   // A background color is required to support UIModalPresentationAutomatic
-  self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+  self.view.backgroundColor = [UIColor systemGroupedBackgroundColor];
 }
 
 #pragma mark - Setup short description text field

@@ -76,11 +76,16 @@
   NSKeyedUnarchiver* unarchiver;
   @try
   {
-    unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+    // This initializer uses NSDecodingFailurePolicySetErrorAndReturn, i.e. when
+    // decoding fails it returns nil and does not raise an exception. The
+    // initializer itself *does* throw an exception, though, if data is not a
+    // valid keyed archive in the first place.
+    unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data
+                                                             error:nil];
   }
   @catch (NSException* exception)
   {
-    DDLogError(@"%@: Unarchiving not possible, NSKeyedUnarchiver's initForReadingWithData raises exception, exception name = %@, reason = %@", [self shortDescription], exception.name, exception.reason);
+    DDLogError(@"%@: Unarchiving not possible, file %@ is not a valid NSCoding archive, exception name = %@, reason = %@", [self shortDescription], archiveFilePath, exception.name, exception.reason);
 
     if (self.shouldRemoveArchiveFileIfUnarchivingFails)
     {

@@ -97,9 +97,9 @@
   char programName[255];
   char nobookParameterName[255];
   char quietParameterName[255];
-  sprintf(programName, "fuego");
-  sprintf(nobookParameterName, "--nobook");  // opening book is loaded separately from a project resource
-  sprintf(quietParameterName, "--quiet");  // don't print debug messages, otherwise the project's debugging console becomes overloaded
+  snprintf(programName, sizeof(programName), "fuego");
+  snprintf(nobookParameterName, sizeof(nobookParameterName), "--nobook");  // opening book is loaded separately from a project resource
+  snprintf(quietParameterName, sizeof(quietParameterName), "--quiet");  // don't print debug messages, otherwise the project's debugging console becomes overloaded
   int argc = 3;
   char* argv[argc];
   argv[0] = programName;

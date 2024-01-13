@@ -228,43 +228,7 @@
 - (UIImage*) imageByPaddingToSize:(CGSize)newSize tintedWith:(UIColor*)tintColor
 {
   UIImage* paddedImage = [self imageByPaddingToSize:newSize];
-
-  if (@available(iOS 13, *))
-    return [paddedImage imageWithTintColor:tintColor];
-  else
-    return [paddedImage imageByTintingWithColor:tintColor];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns a new image by tinting the current image with @a tintColor.
-///
-/// The code for this method is based on https://stackoverflow.com/a/19275079.
-/// It has not been analyzed for correctness or tested thoroughly.
-///
-/// This method exists only to support tinting in iOS versions older than 13.0.
-/// Beginning with iOS 13.0 the native UIImage::imageWithTintColor:() should
-/// be used.
-// -----------------------------------------------------------------------------
-- (UIImage*) imageByTintingWithColor:(UIColor*)tintColor
-{
-  BOOL opaque = NO;
-  UIGraphicsBeginImageContextWithOptions(self.size, opaque, self.scale);
-
-  CGContextRef context = UIGraphicsGetCurrentContext();
-  CGContextTranslateCTM(context, 0, self.size.height);
-  CGContextScaleCTM(context, 1.0, -1.0);
-
-  CGContextSetBlendMode(context, kCGBlendModeNormal);
-
-  CGRect drawingRect = CGRectMake(0, 0, self.size.width, self.size.height);
-  CGContextClipToMask(context, drawingRect, self.CGImage);
-
-  [tintColor setFill];
-  CGContextFillRect(context, drawingRect);
-
-  UIImage* tintedImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return tintedImage;
+  return [paddedImage imageWithTintColor:tintColor];
 }
 
 // -----------------------------------------------------------------------------

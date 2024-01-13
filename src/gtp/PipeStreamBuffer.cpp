@@ -17,6 +17,9 @@
 // Project includes
 #include "PipeStreamBuffer.h"
 
+// System includes
+#include <cassert>  // for assert()
+
 // Global constants
 // At the moment this is a rather arbitrary value. It was chosen because it is
 // small enough that on modern iOS devices it uses up a negligible amount of

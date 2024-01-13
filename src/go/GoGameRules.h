@@ -21,7 +21,7 @@
 ///
 /// @ingroup go
 // -----------------------------------------------------------------------------
-@interface GoGameRules : NSObject <NSCoding>
+@interface GoGameRules : NSObject <NSSecureCoding>
 {
 }
 

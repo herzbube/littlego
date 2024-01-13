@@ -166,7 +166,7 @@
     }
     case ActivityIndicatorCellType:
     {
-      UIActivityIndicatorView* accessoryViewActivityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+      UIActivityIndicatorView* accessoryViewActivityIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
       cell.accessoryView = accessoryViewActivityIndicator;
       [accessoryViewActivityIndicator release];
       cell.selectionStyle = UITableViewCellSelectionStyleNone;

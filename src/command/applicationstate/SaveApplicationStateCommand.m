@@ -28,19 +28,20 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  NSMutableData* data = [NSMutableData data];
-  NSKeyedArchiver* archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
-  [archiver encodeObject:[GoGame sharedGame] forKey:nsCodingGoGameKey];
+  NSKeyedArchiver* archiver = [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
+
+  GoGame* game = [GoGame sharedGame];
+  [archiver encodeObject:game forKey:nsCodingGoGameKey];
   [archiver finishEncoding];
 
-  NSString* backupFolderPath = [PathUtilities backupFolderPath];
-  NSString* archiveFilePath = [backupFolderPath stringByAppendingPathComponent:archiveBackupFileName];
-  BOOL success = [data writeToFile:archiveFilePath atomically:YES];
+  NSData* encodedData = archiver.encodedData;
+  NSString* archivePath = [[PathUtilities backupFolderPath] stringByAppendingPathComponent:archiveBackupFileName];
+  BOOL success = [encodedData writeToFile:archivePath atomically:YES];
   [archiver release];
 
   if (! success)
   {
-    NSString* errorMessage = [NSString stringWithFormat:@"Failed to save NSCoding archive file %@", archiveFilePath];
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to save NSCoding archive file %@", archivePath];
     DDLogError(@"%@: %@", [self shortDescription], errorMessage);
     NSException* exception = [NSException exceptionWithName:NSGenericException
                                                      reason:errorMessage

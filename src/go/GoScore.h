@@ -170,7 +170,7 @@
 ///     that the problem can be made visible to user. For scoring purposes, the
 ///     empty region is considered to be neutral.
 // -----------------------------------------------------------------------------
-@interface GoScore : NSObject <NSCoding>
+@interface GoScore : NSObject <NSSecureCoding>
 {
 }
 

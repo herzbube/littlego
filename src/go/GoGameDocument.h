@@ -21,7 +21,7 @@
 ///
 /// @ingroup go
 // -----------------------------------------------------------------------------
-@interface GoGameDocument : NSObject <NSCoding>
+@interface GoGameDocument : NSObject <NSSecureCoding>
 {
 }
 

@@ -90,7 +90,7 @@
   // self.edgesForExtendedLayout is UIRectEdgeAll, therefore we have to provide
   // a background color that is visible behind the navigation bar at the top
   // (which may extend behind the statusbar) and the tab bar at the bottom.
-  self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+  self.view.backgroundColor = [UIColor systemGroupedBackgroundColor];
 
   [self setupContentView];
   [self setupFrontSideView];
@@ -495,28 +495,41 @@
 // -----------------------------------------------------------------------------
 - (void) flipView:(id)sender
 {
-  [UIView beginAnimations:nil context:nil];
-  [UIView setAnimationDuration:0.75];
-
   bool flipToFrontSideView = ! self.model.gtpLogViewFrontSideIsVisible;
+
+  // Content must be reloaded explicitly
+  if (! flipToFrontSideView)
+    [self reloadBackSideView];
+
+  // Immediately remember which is the new visible view so that this view
+  // controller operates on the correct view while the animation is still in
+  // progress (e.g. user flips views again, a new log item is created, etc.).
+  self.model.gtpLogViewFrontSideIsVisible = flipToFrontSideView;
+
+  UIViewAnimationOptions animationOptions;
+  UIView* fromView;
+  UIView* toView;
   if (flipToFrontSideView)
   {
-    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromLeft forView:self.contentView cache:YES];
-    self.backSideView.hidden = YES;
-    self.frontSideView.hidden = NO;
+    fromView = self.backSideView;
+    toView = self.frontSideView;
+    animationOptions = UIViewAnimationOptionTransitionFlipFromLeft;
   }
   else
   {
-    [UIView setAnimationTransition:UIViewAnimationTransitionFlipFromRight forView:self.contentView cache:YES];
-    self.frontSideView.hidden = YES;
-    self.backSideView.hidden = NO;
-    // Content must be reloaded explicitly
-    [self reloadBackSideView];
+    fromView = self.frontSideView;
+    toView = self.backSideView;
+    animationOptions = UIViewAnimationOptionTransitionFlipFromRight;
   }
-  [UIView commitAnimations];
 
-  // Remember which view is visible
-  self.model.gtpLogViewFrontSideIsVisible = flipToFrontSideView;
+  // Don't change the view hierarchy, just show/hide the views
+  animationOptions |= UIViewAnimationOptionShowHideTransitionViews;
+
+  [UIView transitionFromView:fromView
+                      toView:toView
+                    duration:0.75
+                     options:animationOptions
+                  completion:nil];
 }
 
 #pragma mark - Action handlers

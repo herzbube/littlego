@@ -139,7 +139,7 @@ enum DeleteAllSectionItem
   // (which on smaller iPhones extends behind the statusbar) and the tab bar
   // at the bottom. The background is only visible when the placeholder view
   // is shown.
-  self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
+  self.view.backgroundColor = [UIColor systemGroupedBackgroundColor];
 
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];

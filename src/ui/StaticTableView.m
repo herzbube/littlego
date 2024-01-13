@@ -59,7 +59,7 @@
   [spacerView setContentHuggingPriority:UILayoutPriorityRequired forAxis:UILayoutConstraintAxisVertical];
   [self addSubview:spacerView];
   if (tableViewStyle == UITableViewStyleGrouped)
-    spacerView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    spacerView.backgroundColor = [UIColor systemGroupedBackgroundColor];
   else
     spacerView.backgroundColor = [UIColor whiteColor];
 

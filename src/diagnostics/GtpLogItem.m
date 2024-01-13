@@ -56,14 +56,23 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
-  self.commandString = [decoder decodeObjectForKey:gtpLogItemCommandStringKey];
-  self.timeStamp = [decoder decodeObjectForKey:gtpLogItemTimeStampKey];
+
+  self.commandString = [decoder decodeObjectOfClass:[NSString class] forKey:gtpLogItemCommandStringKey];
+  self.timeStamp = [decoder decodeObjectOfClass:[NSString class] forKey:gtpLogItemTimeStampKey];
   self.hasResponse = [decoder decodeBoolForKey:gtpLogItemHasResponseKey];
   self.responseStatus = [decoder decodeBoolForKey:gtpLogItemResponseStatusKey];
-  self.parsedResponseString = [decoder decodeObjectForKey:gtpLogItemParsedResponseStringKey];
-  self.rawResponseString = [decoder decodeObjectForKey:gtpLogItemRawResponseStringKey];
+  self.parsedResponseString = [decoder decodeObjectOfClass:[NSString class] forKey:gtpLogItemParsedResponseStringKey];
+  self.rawResponseString = [decoder decodeObjectOfClass:[NSString class] forKey:gtpLogItemRawResponseStringKey];
 
   return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
 }
 
 // -----------------------------------------------------------------------------

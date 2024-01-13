@@ -117,6 +117,7 @@ NSString* uiAreaPlayModeWillChange = @"UIAreaPlayModeWillChange";
 NSString* uiAreaPlayModeDidChange = @"UIAreaPlayModeDidChange";
 NSString* boardViewAnimationWillBegin = @"BoardViewAnimationWillBegin";
 NSString* boardViewAnimationDidEnd = @"BoardViewAnimationDidEnd";
+NSString* uiWillChangeInterfaceOrientation = @"UiWillChangeInterfaceOrientation";
 
 // Default values for properties that define how the Go board is displayed
 const float iPhoneMaximumZoomScale = 2.5;
