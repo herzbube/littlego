@@ -5232,7 +5232,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = "Little Go";
 			};
 			name = Debug;
@@ -5269,7 +5268,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = "Little Go";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -5307,7 +5305,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = "Little Go";
 				VALIDATE_PRODUCT = YES;
 			};
@@ -5345,7 +5342,6 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = ch.herzbube.littlego.uitests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_TARGET_NAME = "Little Go";
 				VALIDATE_PRODUCT = YES;
 			};
