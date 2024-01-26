@@ -35,6 +35,7 @@
          onBoardWithSize:(enum GoBoardSize)boardSize
        withUiApplication:(XCUIApplication*)app;
 
+- (void) tapPageControl:(XCUIElement*)pageControl;
 - (void) tapPageControl:(XCUIElement*)pageControl
             onRightSide:(bool)shouldTapOnRightSide;
 

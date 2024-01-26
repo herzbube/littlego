@@ -104,6 +104,15 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Taps on the specified page control @a pageControl. The coordinate
+/// that is being tapped is computed automatically by XCTest.
+// -----------------------------------------------------------------------------
+- (void) tapPageControl:(XCUIElement*)pageControl
+{
+  [pageControl tap];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Taps on the specified page control @a pageControl.
 /// @a shouldTapOnRightSide specifies whether the tap should occur on the left
 /// or right side of the control (i.e. activating the next page on the left or
@@ -112,6 +121,9 @@
 - (void) tapPageControl:(XCUIElement*)pageControl
             onRightSide:(bool)shouldTapOnRightSide
 {
+  // TODO xxx This no longer works in Xcode 15.1 / iOS 17.2 SDK. Currently the
+  // only known way how to tap a page control is by invoking tap() on the
+  // page control's XCUIElement.
   CGFloat xOffset = shouldTapOnRightSide ? pageControl.frame.size.width - 1 : 0;
   XCUICoordinate* pageControlLeftEdge = [pageControl coordinateWithNormalizedOffset:CGVectorMake(0, 0)];
   XCUICoordinate* tapCoordinate = [pageControlLeftEdge coordinateWithOffset:CGVectorMake(xOffset, 0)];

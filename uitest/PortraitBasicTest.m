@@ -137,7 +137,8 @@
   XCTAssertTrue(estimatedScoreButton.enabled);
 
   XCUIElement* annotationViewPageControl = [self.uiElementFinder findAnnotationViewPageControlWithUiApplication:app];
-  [self.uiTestHelper tapPageControl:annotationViewPageControl onRightSide:true];
+  [self.uiTestHelper tapPageControl:annotationViewPageControl];
+
   XCTAssertFalse(annotationViewPageValuation.exists);
   XCTAssertTrue(annotationViewPageDescription.exists);
 
