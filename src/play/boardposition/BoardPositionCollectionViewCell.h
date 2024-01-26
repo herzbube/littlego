@@ -17,29 +17,138 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The BoardPositionCollectionViewCell class shows information about a
-/// board position.
+/// board position. A board position is how the Go board looks like after the
+/// information in a game tree node has been applied to the board.
+/// BoardPositionCollectionViewCell is therefore effectively a description of
+/// the content of a game tree node.
 ///
 /// All BoardPositionCollectionViewCell instances have the same pre-calculated
 /// size.
 ///
-/// The view layout looks like this:
+/// The basic view layout, when all subviews are visible at the same time, looks
+/// like this:
 ///
 /// @verbatim
 /// +-------------------------------------------------------------------------------------+
 /// | +-UIImageView-----------+  +-UILabel--------+ +-UILabel---------+ +-UIImageView---+ |
-/// | |                       |  | Intersection   | | Captured stones | | Info icon     | |
-/// | | Stone image           |  +----------------+ +-----------------+ +---------------+ |
-/// | | (vertically centered) |  +-UILabel----------------------------+ +-UIImageView---+ |
-/// | |                       |  | Board position                     | | Hotspot icon  | |
-/// | +-----------------------+  +------------------------------------+ +---------------+ |
+/// | |                       |  | Text           | | Captured stones | | Info icon     | |
+/// | | Node symbol image     |  +----------------+ +-----------------+ +---------------+ |
+/// | | (vertically centered) |  +-UILabel--------+ +-UIImageView-----+ +-UIImageView---+ |
+/// | |                       |  | Detail text    | | Hotspot icon    | | Markup icon   | |
+/// | +-----------------------+  +----------------+ +-----------------+ +---------------+ |
 /// +-------------------------------------------------------------------------------------+
 /// @endverbatim
 ///
 /// The size ratios depicted in the above scheme are incorrect because the
 /// labels have different font sizes.
 ///
-/// BoardPositionCollectionViewCell is used for #UITypePad (both Portrait
-/// and Landscape) and #UITypePhone (Landscape only).
+/// Only the node symbol image and the main text label are visible at all times.
+/// The other subviews are visible only if the content of the game tree node
+/// requires it. The layout shown above changes when some subviews are not
+/// visible.
+///
+/// Here are some more variants of the layout above if some subviews are not
+/// visible:
+///
+/// @verbatim
+/// +-------------------------------------------------------------------------------------+
+/// | +-UIImageView-----------+  +-UILabel--------+                   +-UILabel---------+ |
+/// | |                       |  | Text           |                   | Captured stones | |
+/// | | Node symbol image     |  +----------------+                   +-----------------+ |
+/// | | (vertically centered) |  +-UILabel--------+                   +-UIImageView-----+ |
+/// | |                       |  | Detail text    |                   | Hotspot icon    | |
+/// | +-----------------------+  +----------------+                   +-----------------+ |
+/// +-------------------------------------------------------------------------------------+
+///
+/// +-------------------------------------------------------------------------------------+
+/// | +-UIImageView-----------+  +-UILabel--------+                     +-UIImageView---+ |
+/// | |                       |  | Text           |                     | Info icon     | |
+/// | | Node symbol image     |  +----------------+                     +---------------+ |
+/// | | (vertically centered) |  +-UILabel--------+                     +-UIImageView---+ |
+/// | |                       |  | Detail text    |                     | Markup icon   | |
+/// | +-----------------------+  +----------------+                     +---------------+ |
+/// +-------------------------------------------------------------------------------------+
+///
+/// +-------------------------------------------------------------------------------------+
+/// | +-UIImageView-----------+  +-UILabel--------+ +-UILabel---------+ +-UIImageView---+ |
+/// | |                       |  | Text           | | Captured stones | | Info icon     | |
+/// | | Node symbol image     |  +----------------+ +-----------------+ +---------------+ |
+/// | | (vertically centered) |  +-UILabel--------+                                       |
+/// | |                       |  | Detail text    |                                       |
+/// | +-----------------------+  +----------------+                                       |
+/// +-------------------------------------------------------------------------------------+
+
+/// +-------------------------------------------------------------------------------------+
+/// | +-UIImageView-----------+  +-UILabel--------+                                       |
+/// | |                       |  | Text           |                                       |
+/// | | Node symbol image     |  +----------------+                                       |
+/// | | (vertically centered) |  +-UILabel--------+ +-UIImageView-----+ +-UIImageView---+ |
+/// | |                       |  | Detail text    | | Hotspot icon    | | Markup icon   | |
+/// | +-----------------------+  +----------------+ +-----------------+ +---------------+ |
+/// +-------------------------------------------------------------------------------------+
+
+/// @endverbatim
+///
+/// So far nothing surprising. The main change comes when the detail text label
+/// is no longer shown. When that happens the main text label gets all the
+/// vertical, with the text being vertically centered. The captured stones label
+/// cannot appear in this layout because the detail text label is only then not
+/// visible when the node does not contain a move.
+///
+/// As long as the info icon is visible, the info icon is placed in a top row
+/// and one or both of the other two icons are placed in a bottom row:
+///
+/// @verbatim
+/// +-------------------------------------------------------------------------------------+
+/// | +-UIImageView-----------+  +-UILabel--------+                     +-UIImageView---+ |
+/// | |                       |  |                |                     | Info icon     | |
+/// | | Node symbol image     |  | Text           |                     +---------------+ |
+/// | |                       |  | (vertically    |                                       |
+/// | | (vertically centered) |  | centered)      | +-UIImageView-----+ +-UIImageView---+ |
+/// | |                       |  |                | | Hotspot icon    | | Markup icon   | |
+/// | +-----------------------+  +----------------+ +-----------------+ +---------------+ |
+/// +-------------------------------------------------------------------------------------+
+///
+/// +-------------------------------------------------------------------------------------+
+/// | +-UIImageView-----------+  +-UILabel--------+                     +-UIImageView---+ |
+/// | |                       |  |                |                     | Info icon     | |
+/// | | Node symbol image     |  | Text           |                     +---------------+ |
+/// | |                       |  | (vertically    |                                       |
+/// | | (vertically centered) |  | centered)      |                     +-UIImageView---+ |
+/// | |                       |  |                |                     | Hotspot icon  | |
+/// | +-----------------------+  +----------------+                     +---------------+ |
+/// +-------------------------------------------------------------------------------------+
+/// @endverbatim
+///
+/// When the info icon is not visible, the other two icons are placed in a
+/// middle row, i.e. in a vertically centered location:
+///
+/// @verbatim
+/// +-------------------------------------------------------------------------------------+
+/// | +-UIImageView-----------+  +-UILabel--------+                                       |
+/// | |                       |  |                |                                       |
+/// | | Node symbol image     |  | Text           |   +-UIImageView---+ +-UIImageView---+ |
+/// | |                       |  | (vertically    |   | Hotspot icon  | | Markup icon   | |
+/// | | (vertically centered) |  | centered)      |   +---------------+ +---------------+ |
+/// | |                       |  |                |                                       |
+/// | +-----------------------+  +----------------+                                       |
+/// +-------------------------------------------------------------------------------------+
+/// @endverbatim
+///
+/// Finally, if only one of the icons is visible it is placed in a vertically
+/// centered location:
+///
+/// @verbatim
+/// +-------------------------------------------------------------------------------------+
+/// | +-UIImageView-----------+  +-UILabel--------+                                       |
+/// | |                       |  |                |                                       |
+/// | | Node symbol image     |  | Text           |                     +-UIImageView---+ |
+/// | |                       |  | (vertically    |                     | Info icon     | |
+/// | | (vertically centered) |  | centered)      |                     +---------------+ |
+/// | |                       |  |                |                      (can be any of   |
+/// | +-----------------------+  +----------------+                       the 3 icons)    |
+/// +-------------------------------------------------------------------------------------+
+/// @endverbatim
 // -----------------------------------------------------------------------------
 @interface BoardPositionCollectionViewCell : UICollectionViewCell
 {

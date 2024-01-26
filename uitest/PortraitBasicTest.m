@@ -115,10 +115,10 @@
 
   XCTAssertTrue([self.uiTestHelper verifyWithUiApplication:app
                             doesContentOfBoardPositionCell:firstBoardPositionCell
-                            matchBoardPositionLabelContent:@"Handicap: 0, Komi: 7½"
-                                  intersectionLabelContent:@"Start of the game"
+                                     matchTextLabelContent:@"Game start"
+                                    detailTextLabelContent:@"H: 0, K: 7½"
                                 capturedStonesLabelContent:nil
-                                                 moveColor:GoColorNone]);
+                                                nodeSymbol:NodeTreeViewCellSymbolKomi]);
   XCTAssertTrue(firstBoardPositionCell.selected);
 
   // Annotation view

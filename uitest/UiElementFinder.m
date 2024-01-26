@@ -18,6 +18,7 @@
 // Project includes
 #import "UiElementFinder.h"
 #import "UiTestDeviceInfo.h"
+#import "../src/utility/AccessibilityUtility.h"
 
 
 // -----------------------------------------------------------------------------
@@ -389,23 +390,23 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the label that displays the intersection in a board position
-/// cell.
+/// @brief Returns the label that displays the main text in a board position
+/// collection view cell.
 // -----------------------------------------------------------------------------
-- (XCUIElement*) findIntersectionLabelInBoardPositionCell:(XCUIElement*)boardPositionCell
+- (XCUIElement*) findTextLabelInBoardPositionCell:(XCUIElement*)boardPositionCell
 {
-  XCUIElement* intersectionLabel = boardPositionCell.staticTexts[intersectionLabelBoardPositionAccessibilityIdentifier];
-  return intersectionLabel;
+  XCUIElement* textLabel = boardPositionCell.staticTexts[textLabelBoardPositionAccessibilityIdentifier];
+  return textLabel;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the label that displays the board position in a board
-/// position cell.
+/// @brief Returns the label that displays the detail text in a board position
+/// collection view cell.
 // -----------------------------------------------------------------------------
-- (XCUIElement*) findBoardPositionLabelInBoardPositionCell:(XCUIElement*)boardPositionCell
+- (XCUIElement*) findDetailTextLabelInBoardPositionCell:(XCUIElement*)boardPositionCell
 {
-  XCUIElement* boardPositionLabel = boardPositionCell.staticTexts[boardPositionLabelBoardPositionAccessibilityIdentifier];
-  return boardPositionLabel;
+  XCUIElement* detailTextLabel = boardPositionCell.staticTexts[detailTextLabelBoardPositionAccessibilityIdentifier];
+  return detailTextLabel;
 }
 
 // -----------------------------------------------------------------------------
@@ -419,17 +420,12 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the image view that displays the stone image of the specified
-/// color @a color in a board position cell.
+/// @brief Returns the image view that displays the specified node symbol
+/// @a symbol in a board position cell.
 // -----------------------------------------------------------------------------
-- (XCUIElement*) findStoneImageViewForColor:(enum GoColor)color inBoardPositionCell:(XCUIElement*)boardPositionCell
+- (XCUIElement*) findNodeSymbolImageViewForSymbol:(enum NodeTreeViewCellSymbol)symbol inBoardPositionCell:(XCUIElement*)boardPositionCell
 {
-  NSString* accessibilityIdentifier;
-  if (color == GoColorBlack)
-    accessibilityIdentifier = blackStoneImageViewBoardPositionAccessibilityIdentifier;
-  else
-    accessibilityIdentifier = whiteStoneImageViewBoardPositionAccessibilityIdentifier;
-
+  NSString* accessibilityIdentifier = [AccessibilityUtility accessibilityIdentifierForNodeSymbol:symbol];
   XCUIElement* stoneImageView = boardPositionCell.images[accessibilityIdentifier];
   return stoneImageView;
 }

@@ -62,4 +62,6 @@
                                         forStonePointVertexes:(NSArray*)stonePointVertexes
                                                     withColor:(enum GoColor)color;
 
++ (NSString*) accessibilityIdentifierForNodeSymbol:(enum NodeTreeViewCellSymbol)nodeSymbol;
+
 @end

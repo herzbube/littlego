@@ -40,10 +40,10 @@
 
 - (bool) verifyWithUiApplication:(XCUIApplication*)app
   doesContentOfBoardPositionCell:(XCUIElement*)boardPositionCell
-  matchBoardPositionLabelContent:(NSString*)boardPositionLabelContent
-        intersectionLabelContent:(NSString*)intersectionLabelContent
+           matchTextLabelContent:(NSString*)textLabelContent
+          detailTextLabelContent:(NSString*)detailTextLabelContent
       capturedStonesLabelContent:(NSString*)capturedStonesLabelContent
-                       moveColor:(enum GoColor)moveColor;
+                      nodeSymbol:(enum NodeTreeViewCellSymbol)nodeSymbol;
 
 - (bool) verifyWithUiApplication:(XCUIApplication*)app
       matchingUiElementExistsFor:(UIAccessibilityElement*)accessibilityElement;

@@ -120,47 +120,37 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Verifies with the help of @a app that @a boardPositionCell contains
-/// @a boardPositionLabelContent, @a intersectionLabelContent,
-/// @a capturedStonesLabelContent and an image that matches @a moveColor.
+/// @a textLabelContent, @a detailTextLabelContent,
+/// @a capturedStonesLabelContent and an image that matches @a nodeSymbol.
 /// Returns true if @a boardPositionCell meets all expectations. Returns false
-/// if @a boardPositionCell fails to meet any expectation.
+/// if @a boardPositionCell fails to meet any one of the expectations.
 ///
-/// If any one of @a boardPositionLabelContent, @a intersectionLabelContent or
-/// @a capturedStonesLabelContent is nil, this method verifies that the
+/// If any one of @a textLabelContent, @a detailTextLabelContent or
+/// @a capturedStonesLabelContent is @e nil, this method verifies that the
 /// corresponding label UI element does not exist.
-///
-/// If @a moveColor is #GoColorNone, this method verifies that the board
-/// position cell does not contain an image.
 // -----------------------------------------------------------------------------
 - (bool) verifyWithUiApplication:(XCUIApplication*)app
   doesContentOfBoardPositionCell:(XCUIElement*)boardPositionCell
-  matchBoardPositionLabelContent:(NSString*)boardPositionLabelContent
-        intersectionLabelContent:(NSString*)intersectionLabelContent
+           matchTextLabelContent:(NSString*)textLabelContent
+          detailTextLabelContent:(NSString*)detailTextLabelContent
       capturedStonesLabelContent:(NSString*)capturedStonesLabelContent
-                       moveColor:(enum GoColor)moveColor
+                      nodeSymbol:(enum NodeTreeViewCellSymbol)nodeSymbol
 {
-  XCUIElement* boardPositionLabel = [self.uiElementFinder findBoardPositionLabelInBoardPositionCell:boardPositionCell];
-  if (! [self verifyBoardPositionCellLabel:boardPositionLabel matchesContent:boardPositionLabelContent])
+  XCUIElement* textLabel = [self.uiElementFinder findTextLabelInBoardPositionCell:boardPositionCell];
+  if (! [self verifyBoardPositionCellLabel:textLabel matchesContent:textLabelContent])
     return false;
 
-  XCUIElement* intersectionLabel = [self.uiElementFinder findIntersectionLabelInBoardPositionCell:boardPositionCell];
-  if (! [self verifyBoardPositionCellLabel:intersectionLabel matchesContent:intersectionLabelContent])
+  XCUIElement* detailTextLabel = [self.uiElementFinder findDetailTextLabelInBoardPositionCell:boardPositionCell];
+  if (! [self verifyBoardPositionCellLabel:detailTextLabel matchesContent:detailTextLabelContent])
     return false;
 
   XCUIElement* capturedStonesLabel = [self.uiElementFinder findCapturedStonesLabelInBoardPositionCell:boardPositionCell];
   if (! [self verifyBoardPositionCellLabel:capturedStonesLabel matchesContent:capturedStonesLabelContent])
     return false;
 
-  if (moveColor == GoColorNone)
-  {
-    if (boardPositionCell.images.count != 0)
-      return false;
-  }
-  else
-  {
-    // TODO: Add proper verification code
+  XCUIElement* nodeSymbolImageView = [self.uiElementFinder findNodeSymbolImageViewForSymbol:nodeSymbol inBoardPositionCell:boardPositionCell];
+  if (nodeSymbolImageView.exists == NO)
     return false;
-  }
 
   return true;
 }

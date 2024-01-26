@@ -212,4 +212,54 @@
                                                            label:accessibilityLabel];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns an accessibility identifier that can be used to tag UI
+/// elements that represent a node whose symbol is @a nodeSymbol.
+// -----------------------------------------------------------------------------
++ (NSString*) accessibilityIdentifierForNodeSymbol:(enum NodeTreeViewCellSymbol)nodeSymbol
+{
+  switch (nodeSymbol)
+  {
+    case NodeTreeViewCellSymbolNone:
+      return noNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolEmpty:
+      return emptyNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolBlackSetupStones:
+      return blackSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolWhiteSetupStones:
+      return whiteSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolNoSetupStones:
+      return clearSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolBlackAndWhiteSetupStones:
+      return blackAndWhiteSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolBlackAndNoSetupStones:
+      return blackAndClearSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolWhiteAndNoSetupStones:
+      return whiteAndClearSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolBlackAndWhiteAndNoSetupStones:
+      return blackAndWhiteAndClearSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolBlackMove:
+      return blackMoveNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolWhiteMove:
+      return whiteMoveNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolAnnotations:
+      return annotationsNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolMarkup:
+      return markupNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolAnnotationsAndMarkup:
+      return annotationsAndMarkupNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolHandicap:
+      return handicapNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolKomi:
+      return komiNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolHandicapAndKomi:
+      return handicapAndKomiNodeImageViewBoardPositionAccessibilityIdentifier;
+    case NodeTreeViewCellSymbolRoot:
+      return rootNodeImageViewBoardPositionAccessibilityIdentifier;
+    default:
+      assert(0);
+      return nil;  // dummy return
+  }
+}
+
 @end

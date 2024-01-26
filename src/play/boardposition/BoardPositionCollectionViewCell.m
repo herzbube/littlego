@@ -17,18 +17,22 @@
 
 // Project includes
 #import "BoardPositionCollectionViewCell.h"
+#import "../model/NodeTreeViewModel.h"
+#import "../nodetreeview/canvas/NodeTreeViewCanvasDataProvider.h"
+#import "../nodetreeview/layer/NodeTreeViewDrawingHelper.h"
+#import "../nodetreeview/NodeTreeViewMetrics.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeAnnotation.h"
 #import "../../go/GoNodeModel.h"
-#import "../../go/GoPlayer.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
+#import "../../main/ApplicationDelegate.h"
 #import "../../ui/AutoLayoutUtility.h"
-#import "../../ui/UiElementMetrics.h"
 #import "../../ui/UiUtilities.h"
+#import "../../utility/AccessibilityUtility.h"
 #import "../../utility/MarkupUtilities.h"
 #import "../../utility/NSStringAdditions.h"
 #import "../../utility/UIColorAdditions.h"
@@ -41,20 +45,92 @@ enum BoardPositionCollectionViewCellType
   BoardPositionCollectionViewCellTypePositionNonZero
 };
 
+/// @brief A private implementation of the NodeTreeViewCanvasDataProvider
+/// protocol that provides data for a zero-size canvas. Used for drawing the
+/// node symbol images.
+@interface PrivateNodeTreeViewCanvasDataProvider : NSObject <NodeTreeViewCanvasDataProvider>
+{
+}
+@end
 
+@implementation PrivateNodeTreeViewCanvasDataProvider
+- (CGSize) canvasSize
+{
+  return CGSizeZero;
+}
+
+- (GoNode*) nodeAtPosition:(NodeTreeViewCellPosition*)position
+{
+  return nil;
+}
+@end
+
+// ----------------------------------------
+// Cell sizes
+// ----------------------------------------
 // This variable must be accessed via [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero]
 static CGSize boardPositionCollectionViewCellSizePositionZero = { 0.0f, 0.0f };
 // This variable must be accessed via [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionNonZero]
 static CGSize boardPositionCollectionViewCellSizePositionNonZero = { 0.0f, 0.0f };
-static int horizontalSpacingSuperview = 0;
-static int horizontalSpacingSiblings = 0;
-static int verticalSpacingSuperview = 0;
-static int verticalSpacingSiblings = 0;
-static int stoneImageWidthAndHeight = 0;
-static int iconImageWidthAndHeight = 0;
-static int verticalSpacingIconImages = 0;
-static UIImage* blackStoneImage = nil;
-static UIImage* whiteStoneImage = nil;
+
+// ----------------------------------------
+// Margins towards the superview edges
+// ----------------------------------------
+// 4 is not enough => the subviews are too close to the left/right cell edges
+// - if horizontalSpacingSiblings == 4 => 6 is good
+// - if horizontalSpacingSiblings == 8 => 8 is good
+static int horizontalMargin = 8;
+// 4 is stingy, but still OK
+// 8 is generous, also ok but not needed
+// 6 is a good middle ground => tested with horizontalMargin = 6 and 8
+static int verticalMargin = 6;
+
+// ----------------------------------------
+// Spacings between siblings
+// ----------------------------------------
+// 4 is not enough, the labels are too close to the node symbol and the icon
+//                  images are also too close to each other
+// 6 is stingy
+// 8 is generous and also looks good
+static int horizontalSpacingSiblings = 8;
+// if horizontalSpacingSiblings == 4
+// - 0 is very tight for the labels but OK - but it's not enough for the icons
+//                   the icons are then too close to each other vertically
+// - 2 is ok for the labels and a bit stingy for the icons
+// - 4 is too much for the labels and OK for the icons
+// if horizontalSpacingSiblings == 8
+// - 4 is good
+static int verticalSpacingLabels = 4;
+// 4 is not enough => the icons sit too close on top of each other
+// 8 is too much => the icons are too close to the top/bottom cell edges
+// 6 is a good middle ground
+static int verticalSpacingIconImageViews = 6;
+
+// ----------------------------------------
+// Fonts
+// ----------------------------------------
+// Cell height 42, Margin/Spacing 8: 14 allows 2 lines, 15+ allows only 1 line
+// Cell height 42, Margin/Spacing 4: 17 allows 2 lines, 18+ allows only 1 line
+// Cell height 50, vertical margin 6 / vertical spacing labels 4: 15 allows 2 lines, 16+ allows only 1 line
+// Cell height 53, vertical margin 6 / vertical spacing labels 4: 17 allows 2 lines, 18+ allows only 1 line
+static CGFloat largeFontSize = 17.0f;
+static CGFloat smallFontSize = 11.0f;
+
+// ----------------------------------------
+// Image dimensions
+// ----------------------------------------
+// 40 takes advantage of the cell height that results from the values above.
+// A bit more would be possible, but this would make the cell even wider than
+// it currently is.
+static CGFloat nodeSymbolImageDimension = 40.0f;
+// 13 is a good value to fill out the cell height that results from the values
+// above, when there are two rows of icons.
+static CGFloat iconImageDimension = 13.0f;
+
+// ----------------------------------------
+// Objects
+// ----------------------------------------
+static NSMutableDictionary* nodeSymbolImages = nil;
 static UIImage* infoIconImage = nil;
 static UIImage* hotspotIconImage = nil;
 static UIImage* markupIconImage = nil;
@@ -63,7 +139,7 @@ static UIColor* alternateCellBackgroundColor1 = nil;
 static UIColor* alternateCellBackgroundColor2 = nil;
 static UIColor* alternateCellBackgroundColor1DarkMode = nil;
 static UIColor* alternateCellBackgroundColor2DarkMode = nil;
-static UIColor* capturedStonesLabelBackgroundColor = nil;
+static UIColor* capturedStonesLabelTextColor = nil;
 static UIFont* largeFont = nil;
 static UIFont* smallFont = nil;
 
@@ -74,14 +150,24 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 @interface BoardPositionCollectionViewCell()
 @property(nonatomic, assign) bool offscreenMode;
-@property(nonatomic, assign) UIImageView* stoneImageView;
-@property(nonatomic, assign) UILabel* intersectionLabel;
-@property(nonatomic, assign) UILabel* boardPositionLabel;
+@property(nonatomic, assign) bool didLayoutSubviewsBefore;
+@property(nonatomic, assign) UIImageView* nodeSymbolImageView;
+@property(nonatomic, assign) UILabel* textLabel;
+@property(nonatomic, assign) UILabel* detailTextLabel;
 @property(nonatomic, assign) UILabel* capturedStonesLabel;
 @property(nonatomic, assign) UIImageView* infoIconImageView;
 @property(nonatomic, assign) UIImageView* hotspotIconImageView;
 @property(nonatomic, assign) UIImageView* markupIconImageView;
-@property(nonatomic, retain) NSArray* dynamicAutoLayoutConstraints;
+@property (nonatomic, retain) NSLayoutConstraint* detailTextLabelYPositionConstraint;
+@property (nonatomic, retain) NSLayoutConstraint* detailTextLabelZeroHeightConstraint;
+@property (nonatomic, retain) NSLayoutConstraint* infoIconImageViewLeftEdgeConstraint;
+@property (nonatomic, retain) NSLayoutConstraint* infoIconImageViewWidthConstraint;
+@property (nonatomic, retain) NSLayoutConstraint* hotspotIconImageViewWidthConstraint;
+@property (nonatomic, retain) NSLayoutConstraint* markupIconImageViewLeftEdgeConstraint;
+@property (nonatomic, retain) NSLayoutConstraint* markupIconImageViewWidthConstraint;
+@property (nonatomic, retain) NSLayoutConstraint* infoIconImageViewYPositionConstraint;
+@property (nonatomic, retain) NSLayoutConstraint* hotspotIconImageViewYPositionConstraint;
+@property (nonatomic, retain) NSLayoutConstraint* markupIconImageViewYPositionConstraint;
 @end
 
 
@@ -103,11 +189,12 @@ static UIFont* smallFont = nil;
     return nil;
 
   self.offscreenMode = false;
-  _boardPosition = -1;             // don't use self, we don't want to trigger the setter
-  self.dynamicAutoLayoutConstraints = nil;
+  self.didLayoutSubviewsBefore = false;
+
+  // Don't use self, we don't want to trigger the setter
+  _boardPosition = -1;
 
   [self setupViewHierarchy];
-  [self setupAutoLayoutConstraints];
   [self configureView];
 
   // No content to setup, we first need a board position
@@ -132,23 +219,25 @@ static UIFont* smallFont = nil;
   // warning to the debug console, but continue by breaking one of the
   // constraints.
   CGRect frame = CGRectMake(0, 0, 100, 100);
+
   // Call designated initializer of superclass (UICollectionViewCell)
   self = [super initWithFrame:frame];
   if (! self)
     return nil;
 
   self.offscreenMode = true;
+  self.didLayoutSubviewsBefore = false;
+
+  // Don't use self, we don't want to trigger the setter
   if (cellType == BoardPositionCollectionViewCellTypePositionZero)
     _boardPosition = 0;
   else
     _boardPosition = 1;
-  self.dynamicAutoLayoutConstraints = nil;
 
   [self setupViewHierarchy];
   // Setup content first because dynamic Auto Layout constraint calculation
   // examines the content
   [self setupDummyContent];
-  [self setupAutoLayoutConstraints];
   [self configureView];
 
   return self;
@@ -160,34 +249,87 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.stoneImageView = nil;
-  self.intersectionLabel = nil;
-  self.boardPositionLabel = nil;
+  self.nodeSymbolImageView = nil;
+  self.textLabel = nil;
+  self.detailTextLabel = nil;
   self.capturedStonesLabel = nil;
   self.infoIconImageView = nil;
   self.hotspotIconImageView = nil;
   self.markupIconImageView = nil;
-  self.dynamicAutoLayoutConstraints = nil;
+  self.detailTextLabelYPositionConstraint = nil;
+  self.detailTextLabelZeroHeightConstraint = nil;
+  self.infoIconImageViewLeftEdgeConstraint = nil;
+  self.infoIconImageViewWidthConstraint = nil;
+  self.hotspotIconImageViewWidthConstraint = nil;
+  self.markupIconImageViewLeftEdgeConstraint = nil;
+  self.markupIconImageViewWidthConstraint = nil;
+  self.infoIconImageViewYPositionConstraint = nil;
+  self.hotspotIconImageViewYPositionConstraint = nil;
+  self.markupIconImageViewYPositionConstraint = nil;
+
   [super dealloc];
 }
 
-#pragma mark - View setup
+#pragma mark - UIView overrides
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for the initializers.
+/// @brief UIView method.
+// -----------------------------------------------------------------------------
+- (void) layoutSubviews
+{
+  [super layoutSubviews];
+
+  if (! self.didLayoutSubviewsBefore)
+  {
+    self.didLayoutSubviewsBefore = true;
+
+    [self setupStaticAutoLayoutConstraints];
+  }
+
+  [self updateDynamicAutoLayoutConstraints];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIView method.
+// -----------------------------------------------------------------------------
+- (void) traitCollectionDidChange:(UITraitCollection*)previousTraitCollection
+{
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 12.0, *))
+  {
+    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+    {
+      // traitCollectionDidChange sometimes is invoked when a cell is reused
+      // before the boardPosition property value was updated. If that is the
+      // case then we don't get a GoNode object => there's no point in updating
+      // the colors, so we skip it and let setupRealContent do it later when the
+      // boardPosition property is updated.
+      GoNode* node = [self nodeWithDataOrNil];
+      if (node)
+        [self updateColors:node];
+    }
+  }
+}
+
+#pragma mark - One-time view setup
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the views and sets up the view hierarchy.
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
-  self.stoneImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
-  self.intersectionLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
-  self.boardPositionLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  self.nodeSymbolImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
+  self.textLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  self.detailTextLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
   self.capturedStonesLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
   self.infoIconImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
   self.hotspotIconImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
   self.markupIconImageView = [[[UIImageView alloc] initWithImage:nil] autorelease];
-  [self addSubview:self.stoneImageView];
-  [self addSubview:self.intersectionLabel];
-  [self addSubview:self.boardPositionLabel];
+
+  [self addSubview:self.nodeSymbolImageView];
+  [self addSubview:self.textLabel];
+  [self addSubview:self.detailTextLabel];
   [self addSubview:self.capturedStonesLabel];
   [self addSubview:self.infoIconImageView];
   [self addSubview:self.hotspotIconImageView];
@@ -197,88 +339,34 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 /// @brief Private helper for the initializers.
 // -----------------------------------------------------------------------------
-- (void) setupAutoLayoutConstraints
-{
-  self.stoneImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.intersectionLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  self.boardPositionLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  self.capturedStonesLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  self.infoIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.hotspotIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-  self.markupIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
-
-  NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
-  NSMutableArray* visualFormats = [NSMutableArray array];
-
-  viewsDictionary[@"intersectionLabel"] = self.intersectionLabel;
-  viewsDictionary[@"boardPositionLabel"] = self.boardPositionLabel;
-  viewsDictionary[@"capturedStonesLabel"] = self.capturedStonesLabel;
-  viewsDictionary[@"hotspotIconImageView"] = self.hotspotIconImageView;
-  // Spacing 0 is OK. In setupDummyContents we reserve space for a
-  // 3-digit number of captured stones, which is unlikely to occur.
-  // Numbers with 1 or 2 digits are much more likely, so the space
-  // reserved for a 2nd and/or 3rd digit acts as spacing (the label
-  // text is right-aligned). In the unlikely event that there *IS*
-  // a 3-digit number, spacing 0 is still tolerable.
-  [visualFormats addObject:@"H:[intersectionLabel]-0-[capturedStonesLabel]"];
-  // Spacing 0 is OK. boardPositionLabel gets more than enough width
-  // so that even with the longest text in it there is always a bit
-  // of leftover space at the right to act as spacing.
-  [visualFormats addObject:@"H:[boardPositionLabel]-0-[hotspotIconImageView]"];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:|-%d-[intersectionLabel]-%d-[boardPositionLabel]-%d-|", verticalSpacingSuperview, verticalSpacingSiblings, verticalSpacingSuperview]];
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.intersectionLabel.superview];
-
-  [AutoLayoutUtility centerSubview:self.stoneImageView
-                       inSuperview:self
-                            onAxis:UILayoutConstraintAxisVertical];
-  [AutoLayoutUtility alignFirstView:self.capturedStonesLabel
-                     withSecondView:self.intersectionLabel
-                        onAttribute:NSLayoutAttributeCenterY
-                   constraintHolder:self];
-
-  UIView* anchorView = self;
-  NSLayoutXAxisAnchor* leftAnchor;
-  NSLayoutXAxisAnchor* rightAnchor;
-  if (@available(iOS 11.0, *))
-  {
-    UILayoutGuide* layoutGuide = anchorView.safeAreaLayoutGuide;
-    leftAnchor = layoutGuide.leftAnchor;
-    rightAnchor = layoutGuide.rightAnchor;
-  }
-  else
-  {
-    leftAnchor = anchorView.leftAnchor;
-    rightAnchor = anchorView.rightAnchor;
-  }
-  [self.stoneImageView.leftAnchor constraintEqualToAnchor:leftAnchor constant:horizontalSpacingSuperview].active = YES;
-  [self.infoIconImageView.rightAnchor constraintEqualToAnchor:rightAnchor constant:-horizontalSpacingSuperview].active = YES;
-  [self.markupIconImageView.rightAnchor constraintEqualToAnchor:rightAnchor constant:-horizontalSpacingSuperview].active = YES;
-
-  [self updateDynamicAutoLayoutConstraints];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for the initializers.
-// -----------------------------------------------------------------------------
 - (void) configureView
 {
-  self.backgroundView.accessibilityIdentifier = unselectedBackgroundViewBoardPositionAccessibilityIdentifier;
-
   self.selectedBackgroundView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   self.selectedBackgroundView.backgroundColor = currentBoardPositionCellBackgroundColor;
-  self.selectedBackgroundView.accessibilityIdentifier = selectedBackgroundViewBoardPositionAccessibilityIdentifier;
 
-  self.intersectionLabel.font = largeFont;
-  self.boardPositionLabel.font = smallFont;
+  self.textLabel.font = largeFont;
+  self.detailTextLabel.font = smallFont;
   self.capturedStonesLabel.font = smallFont;
 
-  self.capturedStonesLabel.textAlignment = NSTextAlignmentRight;
-  self.capturedStonesLabel.textColor = capturedStonesLabelBackgroundColor;
+  self.capturedStonesLabel.textColor = capturedStonesLabelTextColor;
 
-  self.intersectionLabel.accessibilityIdentifier = intersectionLabelBoardPositionAccessibilityIdentifier;
-  self.boardPositionLabel.accessibilityIdentifier = boardPositionLabelBoardPositionAccessibilityIdentifier;
+  // Setting identifiers is extremely helpful when debugging auto layout issues.
+  // The identifiers are also used by UI tests for identifying UI elements.
+  // Note: self.nodeSymbolImageView does not have a static identifier, instead
+  // its identifier is assigned dynamically based on the node symbol it
+  // displays.
+  self.accessibilityIdentifier = boardPositionCollectionViewCellAccessibilityIdentifier;
+  self.backgroundView.accessibilityIdentifier = unselectedBackgroundViewBoardPositionAccessibilityIdentifier;
+  self.selectedBackgroundView.accessibilityIdentifier = selectedBackgroundViewBoardPositionAccessibilityIdentifier;
+  self.textLabel.accessibilityIdentifier = textLabelBoardPositionAccessibilityIdentifier;
+  self.detailTextLabel.accessibilityIdentifier = detailTextLabelBoardPositionAccessibilityIdentifier;
   self.capturedStonesLabel.accessibilityIdentifier = capturedStonesLabelBoardPositionAccessibilityIdentifier;
+  self.hotspotIconImageView.accessibilityIdentifier = hotspotIconImageViewBoardPositionAccessibilityIdentifier;
+  self.infoIconImageView.accessibilityIdentifier = infoIconImageViewBoardPositionAccessibilityIdentifier;
+  self.markupIconImageView.accessibilityIdentifier = markupIconImageViewBoardPositionAccessibilityIdentifier;
 }
+
+#pragma mark - Content setup
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for the designated initializer and the
@@ -292,12 +380,14 @@ static UIFont* smallFont = nil;
   GoGame* game = [GoGame sharedGame];
   GoNode* node = [self nodeWithDataOrNil];
 
+  enum NodeTreeViewCellSymbol nodeSymbol = [GoUtilities symbolForNode:node];
+  self.nodeSymbolImageView.image = [self nodeSymbolImageForNodeSymbol:nodeSymbol];
+
   if (0 == self.boardPosition)
   {
-    self.stoneImageView.image = nil;
-    self.intersectionLabel.text = @"Start of the game";
+    self.textLabel.text = @"Game start";
     NSString* komiString = [NSString stringWithKomi:game.komi numericZeroValue:true];
-    self.boardPositionLabel.text = [NSString stringWithFormat:@"Handicap: %1lu, Komi: %@", (unsigned long)game.handicapPoints.count, komiString];
+    self.detailTextLabel.text = [NSString stringWithFormat:@"H: %1lu, K: %@", (unsigned long)game.handicapPoints.count, komiString];
     self.capturedStonesLabel.text = nil;
     self.infoIconImageView.image = nil;
     self.hotspotIconImageView.image = nil;
@@ -308,16 +398,14 @@ static UIFont* smallFont = nil;
     if ([self showsMoveData:node])
     {
       GoMove* move = node.goMove;
-      self.stoneImageView.image = [self stoneImageForMove:move];
-      self.intersectionLabel.text = [self intersectionLabelTextForMove:move];
-      self.boardPositionLabel.text = [NSString stringWithFormat:@"Move %d", node.goMove.moveNumber];
+      self.textLabel.text = [self textLabelTextForMove:move];
+      self.detailTextLabel.text = [NSString stringWithFormat:@"Move %d", node.goMove.moveNumber];
       self.capturedStonesLabel.text = [self capturedStonesLabelTextForMove:move];
     }
     else
     {
-      self.stoneImageView.image = nil;
-      self.intersectionLabel.text = @"No move";
-      self.boardPositionLabel.text = nil;
+      self.textLabel.text = @"No move";
+      self.detailTextLabel.text = nil;
       self.capturedStonesLabel.text = nil;
     }
 
@@ -342,12 +430,8 @@ static UIFont* smallFont = nil;
   // (even though it exists), XCTest never finds any UIImages configured like
   // that. Presumably this is because XCTest only exposes views, and UIImage is
   // not a view - but UIImageView is.
-  if (self.stoneImageView.image == nil)
-    self.stoneImageView.accessibilityIdentifier = noStoneImageViewBoardPositionAccessibilityIdentifier;
-  else if (self.stoneImageView.image == blackStoneImage)
-    self.stoneImageView.accessibilityIdentifier = blackStoneImageViewBoardPositionAccessibilityIdentifier;
-  else
-    self.stoneImageView.accessibilityIdentifier = whiteStoneImageViewBoardPositionAccessibilityIdentifier;
+  NSString* accessibilityIdentifier = [AccessibilityUtility accessibilityIdentifierForNodeSymbol:nodeSymbol];
+  self.nodeSymbolImageView.accessibilityIdentifier = accessibilityIdentifier;
 
   [self updateColors:node];
 }
@@ -357,14 +441,14 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 - (void) setupDummyContent
 {
-  // Implementation note: Assign the longest strings that can possibly appear.
+  // Implementation note: Assign the widest/highest content that can possibly
+  // appear.
 
   if (0 == self.boardPosition)
   {
-    self.stoneImageView.image = nil;
-    self.intersectionLabel.text = @"Start of the game";
-    self.boardPositionLabel.text = @"Handicap: 9, Komi: 7½";
-    // Dynamic Auto Layout constraint calculation requires that we set nil here
+    self.nodeSymbolImageView.image = nil;
+    self.textLabel.text = @"Game start";
+    self.detailTextLabel.text = @"H: 99, K: 99½";
     self.capturedStonesLabel.text = nil;
     self.infoIconImageView.image = nil;
     self.hotspotIconImageView.image = nil;
@@ -372,12 +456,10 @@ static UIFont* smallFont = nil;
   }
   else
   {
-    self.stoneImageView.image = blackStoneImage;
-    // The longest string is actually "No move", but this is used only when the
-    // stone image is not displayed, which compensates for the longer string
-    self.intersectionLabel.text = @"Q19";
-    self.boardPositionLabel.text = @"Move 999";
-    self.capturedStonesLabel.text = @"999";
+    self.nodeSymbolImageView.image = [self nodeSymbolImageForNodeSymbol:NodeTreeViewCellSymbolBlackMove];
+    self.textLabel.text = @"No move";
+    self.detailTextLabel.text = @"Move 8888";
+    self.capturedStonesLabel.text = @"888";
     self.infoIconImageView.image = infoIconImage;
     self.hotspotIconImageView.image = hotspotIconImage;
     self.markupIconImageView.image = markupIconImage;
@@ -387,7 +469,7 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupRealContent().
 // -----------------------------------------------------------------------------
-- (NSString*) intersectionLabelTextForMove:(GoMove*)move
+- (NSString*) textLabelTextForMove:(GoMove*)move
 {
   if (GoMoveTypePlay == move.type)
     return move.point.vertex.string;
@@ -398,12 +480,11 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupRealContent().
 // -----------------------------------------------------------------------------
-- (UIImage*) stoneImageForMove:(GoMove*)move
+- (UIImage*) nodeSymbolImageForNodeSymbol:(enum NodeTreeViewCellSymbol)nodeSymbol
 {
-  if (move.player.black)
-    return blackStoneImage;
-  else
-    return whiteStoneImage;
+  NSNumber* nodeSymbolAsNumber = [NSNumber numberWithInt:nodeSymbol];
+  UIImage* nodeSymbolImage = nodeSymbolImages[nodeSymbolAsNumber];
+  return nodeSymbolImage;
 }
 
 // -----------------------------------------------------------------------------
@@ -469,31 +550,6 @@ static UIFont* smallFont = nil;
     return [MarkupUtilities shouldDisplayMarkupIndicatorForNode:node];
 }
 
-#pragma mark - UIView overrides
-
-// -----------------------------------------------------------------------------
-/// @brief UIView method.
-// -----------------------------------------------------------------------------
-- (void) traitCollectionDidChange:(UITraitCollection*)previousTraitCollection
-{
-  [super traitCollectionDidChange:previousTraitCollection];
-
-  if (@available(iOS 12.0, *))
-  {
-    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
-    {
-      // traitCollectionDidChange sometimes is invoked when a cell is reused
-      // before the boardPosition property value was updated. If that is the
-      // case then we don't get a GoNode object => there's no point in updating
-      // the colors, so we skip it and let setupRealContent do it later when the
-      // boardPosition property is updated.
-      GoNode* node = [self nodeWithDataOrNil];
-      if (node)
-        [self updateColors:node];
-    }
-  }
-}
-
 #pragma mark - Property setters
 
 // -----------------------------------------------------------------------------
@@ -515,7 +571,7 @@ static UIFont* smallFont = nil;
 
   _boardPosition = newValue;
 
-  bool oldPositionShowsMove = (self.stoneImageView.image != nil);
+  bool oldPositionShowsMove = (self.nodeSymbolImageView.image != nil);
   bool oldPositionHasCapturedStones = (self.capturedStonesLabel.text != nil);
   bool oldPositionShowsInfoIcon = (self.infoIconImageView.image != nil);
   bool oldPositionShowsHotspotIcon = (self.hotspotIconImageView.image != nil);
@@ -523,7 +579,7 @@ static UIFont* smallFont = nil;
   // Setup content first because dynamic Auto Layout constraint calculation
   // examines the content
   [self setupRealContent];
-  bool newPositionShowsMove = (self.stoneImageView.image != nil);
+  bool newPositionShowsMove = (self.nodeSymbolImageView.image != nil);
   bool newPositionHasCapturedStones = (self.capturedStonesLabel.text != nil);
   bool newPositionShowsInfoIcon = (self.infoIconImageView.image != nil);
   bool newPositionShowsHotspotIcon = (self.hotspotIconImageView.image != nil);
@@ -537,8 +593,324 @@ static UIFont* smallFont = nil;
       oldPositionShowsHotspotIcon != newPositionShowsHotspotIcon ||
       oldPositionShowsMarkupIcon != newPositionShowsMarkupIcon)
   {
-    [self updateDynamicAutoLayoutConstraints];
+    [self setNeedsLayout];
   }
+}
+
+#pragma mark - Static Auto Layout constraints
+
+// -----------------------------------------------------------------------------
+/// @brief Main method for setting up the static Auto Layout constraints.
+// -----------------------------------------------------------------------------
+- (void) setupStaticAutoLayoutConstraints
+{
+  self.nodeSymbolImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.textLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.detailTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.capturedStonesLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  self.infoIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.hotspotIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.markupIconImageView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   self.nodeSymbolImageView, @"nodeSymbolImageView",
+                                   self.textLabel, @"textLabel",
+                                   self.detailTextLabel, @"detailTextLabel",
+                                   self.capturedStonesLabel, @"capturedStonesLabel",
+                                   self.hotspotIconImageView, @"hotspotIconImageView",
+                                   self.infoIconImageView, @"infoIconImageView",
+                                   self.markupIconImageView, @"markupIconImageView",
+                                   nil];
+
+  [self setupStaticAutoLayoutConstraintsNodeSymbolImageView:viewsDictionary];
+  [self setupStaticAutoLayoutConstraintsTextLabel:viewsDictionary];
+  [self setupStaticAutoLayoutConstraintsDetailTextLabel:viewsDictionary];
+  [self setupStaticAutoLayoutConstraintsCapturedStonesLabel:viewsDictionary];
+  [self setupStaticAutoLayoutConstraintsInfoIconImageView:viewsDictionary];
+  [self setupStaticAutoLayoutConstraintsHotspotIconImageView:viewsDictionary];
+  [self setupStaticAutoLayoutConstraintsMarkupIconImageView:viewsDictionary];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Set up the static Auto Layout constraints for nodeSymbolImageView.
+// -----------------------------------------------------------------------------
+- (void) setupStaticAutoLayoutConstraintsNodeSymbolImageView:(NSDictionary*)viewsDictionary
+{
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
+  // C000
+  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[nodeSymbolImageView]", horizontalMargin]];
+  // C001
+  NSLayoutConstraint* constraint = [AutoLayoutUtility alignFirstView:self.nodeSymbolImageView
+                                                      withSecondView:self
+                                                         onAttribute:NSLayoutAttributeCenterY
+                                                    constraintHolder:self];
+  constraint.identifier = @"C001";
+  // C002
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[nodeSymbolImageView(==%f)]", nodeSymbolImageDimension]];
+  // C003
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[nodeSymbolImageView(==%f)]", nodeSymbolImageDimension]];
+
+  NSArray* constraints = [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self];
+  [self throwIfConstraints:constraints hasNotExpectedCount:3];
+  ((NSLayoutConstraint*)constraints[0]).identifier = @"C000";
+  ((NSLayoutConstraint*)constraints[1]).identifier = @"C002";
+  ((NSLayoutConstraint*)constraints[2]).identifier = @"C003";
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Set up the static Auto Layout constraints for textLabel.
+// -----------------------------------------------------------------------------
+- (void) setupStaticAutoLayoutConstraintsTextLabel:(NSDictionary*)viewsDictionary
+{
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
+  // C010
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[nodeSymbolImageView]-%d-[textLabel]", horizontalSpacingSiblings]];
+  // C011
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-%d-[textLabel]", verticalMargin]];
+
+  // C012 width = C030
+  // C013 height = C023
+  // C014 numberOfLines = 1 (the default)
+  // C015 horizontal text alignment = default (left)
+  // C016 vertical text alignment = default (center)
+
+  NSArray* constraints = [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self];
+  [self throwIfConstraints:constraints hasNotExpectedCount:2];
+  ((NSLayoutConstraint*)constraints[0]).identifier = @"C010";
+  ((NSLayoutConstraint*)constraints[1]).identifier = @"C011";
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Set up the static Auto Layout constraints for detailTextLabel.
+// -----------------------------------------------------------------------------
+- (void) setupStaticAutoLayoutConstraintsDetailTextLabel:(NSDictionary*)viewsDictionary
+{
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
+  // C020
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[nodeSymbolImageView]-%d-[detailTextLabel]", horizontalSpacingSiblings]];
+  // C021
+  self.detailTextLabelYPositionConstraint = [NSLayoutConstraint constraintWithItem:self.detailTextLabel
+                                                                         attribute:NSLayoutAttributeTop
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.textLabel
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                        multiplier:1.0
+                                                                          constant:verticalSpacingLabels];
+  self.detailTextLabelYPositionConstraint.active = YES;
+  self.detailTextLabelYPositionConstraint.identifier = @"C021";
+
+  // C022 width = C050
+
+  // C023
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[detailTextLabel]-%d-|", verticalMargin]];
+  // C024
+  self.detailTextLabelZeroHeightConstraint = [NSLayoutConstraint constraintWithItem:self.detailTextLabel
+                                                                          attribute:NSLayoutAttributeHeight
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:nil
+                                                                          attribute:NSLayoutAttributeNotAnAttribute
+                                                                         multiplier:1.0
+                                                                           constant:0.0f];
+  self.detailTextLabelZeroHeightConstraint.active = NO;
+  self.detailTextLabelZeroHeightConstraint.identifier = @"C024";
+
+  // C025 numberOfLines = 1 (the default)
+  // C026 horizontal text alignment = default (left)
+  // C027 vertical text alignment = default (center)
+
+  // C028
+  // If the cell is higher than required then without this constraint the detail
+  // text label gets all the surplus height while the text label stays at the
+  // minimum height. Activating the constraint makes sure that the two labels
+  // get an equal share of the available height.
+  // This constraint is disabled by default. It can be activated to test out
+  // alternate layouts.
+  static bool activateEqualHeightsConstraint = false;
+  if (activateEqualHeightsConstraint)
+  {
+    NSLayoutConstraint* equalHeightsConstraint = [AutoLayoutUtility alignFirstView:self.detailTextLabel
+                                                                    withSecondView:self.textLabel
+                                                                       onAttribute:NSLayoutAttributeHeight
+                                                                  constraintHolder:self];
+    equalHeightsConstraint.identifier = @"C028";
+  }
+
+  NSArray* constraints = [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self];
+  [self throwIfConstraints:constraints hasNotExpectedCount:2];
+  ((NSLayoutConstraint*)constraints[0]).identifier = @"C020";
+  ((NSLayoutConstraint*)constraints[1]).identifier = @"C023";
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Set up the static Auto Layout constraints for capturedStonesLabel.
+// -----------------------------------------------------------------------------
+- (void) setupStaticAutoLayoutConstraintsCapturedStonesLabel:(NSDictionary*)viewsDictionary
+{
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
+  // C030
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[textLabel]-%d-[capturedStonesLabel]", horizontalSpacingSiblings]];
+  // C031
+  NSLayoutConstraint* constraint = [AutoLayoutUtility alignFirstView:self.capturedStonesLabel
+                                                      withSecondView:self.textLabel
+                                                         onAttribute:NSLayoutAttributeCenterY
+                                                    constraintHolder:self];
+  constraint.identifier = @"C031";
+
+  // C032 width = C040
+  // C033 height = intrinsic height
+  // C034 numberOfLines = 1 (the default)
+
+  // C035
+  self.capturedStonesLabel.textAlignment = NSTextAlignmentRight;
+
+  // C036 vertical text alignment = default (center)
+
+  NSArray* constraints = [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self];
+  [self throwIfConstraints:constraints hasNotExpectedCount:1];
+  ((NSLayoutConstraint*)constraints[0]).identifier = @"C030";
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Set up the static Auto Layout constraints for infoIconImageView.
+// -----------------------------------------------------------------------------
+- (void) setupStaticAutoLayoutConstraintsInfoIconImageView:(NSDictionary*)viewsDictionary
+{
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
+  // C040
+  self.infoIconImageViewLeftEdgeConstraint = [NSLayoutConstraint constraintWithItem:self.infoIconImageView
+                                                                          attribute:NSLayoutAttributeLeading
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.capturedStonesLabel
+                                                                          attribute:NSLayoutAttributeTrailing
+                                                                         multiplier:1.0
+                                                                           constant:horizontalSpacingSiblings];
+  self.infoIconImageViewLeftEdgeConstraint.active = YES;
+  self.infoIconImageViewLeftEdgeConstraint.identifier = @"C040";
+
+  // C041 - wholly defined in dynamic constraints
+
+  // C042
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[infoIconImageView]-%d-|", horizontalMargin]];
+
+  // C043
+  // Start out with a non-zero width - the actual value will be updated
+  // dynamically
+  self.infoIconImageViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.infoIconImageView
+                                                                       attribute:NSLayoutAttributeWidth
+                                                                       relatedBy:NSLayoutRelationEqual
+                                                                          toItem:nil
+                                                                       attribute:NSLayoutAttributeNotAnAttribute
+                                                                      multiplier:1.0
+                                                                        constant:iconImageDimension];
+  self.infoIconImageViewWidthConstraint.active = YES;
+  self.infoIconImageViewWidthConstraint.identifier = @"C043";
+
+  // C044
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[infoIconImageView(==%f)]", iconImageDimension]];
+
+  NSArray* constraints = [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self];
+  [self throwIfConstraints:constraints hasNotExpectedCount:2];
+  ((NSLayoutConstraint*)constraints[0]).identifier = @"C042";
+  ((NSLayoutConstraint*)constraints[1]).identifier = @"C044";
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Set up the static Auto Layout constraints for hotspotIconImageView.
+// -----------------------------------------------------------------------------
+- (void) setupStaticAutoLayoutConstraintsHotspotIconImageView:(NSDictionary*)viewsDictionary
+{
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
+  // C050
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[detailTextLabel]-%d-[hotspotIconImageView]", horizontalSpacingSiblings]];
+
+  // C051 - wholly defined in dynamic constraints
+  // C052 width = C060
+
+  // C053
+  // Start out with a non-zero width - the actual value will be updated
+  // dynamically
+  self.hotspotIconImageViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.hotspotIconImageView
+                                                                          attribute:NSLayoutAttributeWidth
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:nil
+                                                                          attribute:NSLayoutAttributeNotAnAttribute
+                                                                         multiplier:1.0
+                                                                           constant:iconImageDimension];
+  self.hotspotIconImageViewWidthConstraint.active = YES;
+  self.hotspotIconImageViewWidthConstraint.identifier = @"C053";
+
+  // C054
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[hotspotIconImageView(==%f)]", iconImageDimension]];
+
+  NSArray* constraints = [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self];
+  [self throwIfConstraints:constraints hasNotExpectedCount:2];
+  ((NSLayoutConstraint*)constraints[0]).identifier = @"C050";
+  ((NSLayoutConstraint*)constraints[1]).identifier = @"C054";
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Set up the static Auto Layout constraints for markupIconImageView.
+// -----------------------------------------------------------------------------
+- (void) setupStaticAutoLayoutConstraintsMarkupIconImageView:(NSDictionary*)viewsDictionary
+{
+  NSMutableArray* visualFormats = [NSMutableArray array];
+
+  // C060
+  self.markupIconImageViewLeftEdgeConstraint = [NSLayoutConstraint constraintWithItem:self.markupIconImageView
+                                                                          attribute:NSLayoutAttributeLeading
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.hotspotIconImageView
+                                                                          attribute:NSLayoutAttributeTrailing
+                                                                         multiplier:1.0
+                                                                           constant:horizontalSpacingSiblings];
+  self.markupIconImageViewLeftEdgeConstraint.active = YES;
+  self.markupIconImageViewLeftEdgeConstraint.identifier = @"C060";
+
+  // C061 - wholly defined in dynamic constraints
+
+  // C062
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[markupIconImageView]-%d-|", horizontalMargin]];
+
+  // C063
+  // Start out with a non-zero width - the actual value will be updated
+  // dynamically
+  self.markupIconImageViewWidthConstraint = [NSLayoutConstraint constraintWithItem:self.markupIconImageView
+                                                                         attribute:NSLayoutAttributeWidth
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:nil
+                                                                         attribute:NSLayoutAttributeNotAnAttribute
+                                                                        multiplier:1.0
+                                                                          constant:iconImageDimension];
+  self.markupIconImageViewWidthConstraint.active = YES;
+  self.markupIconImageViewWidthConstraint.identifier = @"C063";
+
+  // C064
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[markupIconImageView(==%f)]", iconImageDimension]];
+
+  NSArray* constraints = [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self];
+  [self throwIfConstraints:constraints hasNotExpectedCount:2];
+  ((NSLayoutConstraint*)constraints[0]).identifier = @"C062";
+  ((NSLayoutConstraint*)constraints[1]).identifier = @"C064";
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper for setting up the static Auto Layout constraints.
+// -----------------------------------------------------------------------------
+- (void) throwIfConstraints:(NSArray*)constraints
+        hasNotExpectedCount:(NSUInteger)expectedCount
+{
+  if (constraints.count == expectedCount)
+    return;
+
+  @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                 reason:[NSString stringWithFormat:@"Unexpected constraints count %lu, expected was %lu", (unsigned long)constraints.count, (unsigned long)expectedCount]
+                               userInfo:nil];
 }
 
 #pragma mark - Dynamic Auto Layout constraints
@@ -549,164 +921,102 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 - (void) updateDynamicAutoLayoutConstraints
 {
-  if (self.dynamicAutoLayoutConstraints)
-    [self removeConstraints:self.dynamicAutoLayoutConstraints];
+  bool showDetailText = self.detailTextLabel.text != nil;
+  bool showInfoIcon = self.infoIconImageView.image != nil;
+  bool showHotspotIcon = self.hotspotIconImageView.image != nil;
+  bool showMarkupIcon = self.markupIconImageView.image != nil;
 
-  NSDictionary* viewsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
-                                   self.stoneImageView, @"stoneImageView",
-                                   self.intersectionLabel, @"intersectionLabel",
-                                   self.boardPositionLabel, @"boardPositionLabel",
-                                   self.capturedStonesLabel, @"capturedStonesLabel",
-                                   self.infoIconImageView, @"infoIconImageView",
-                                   self.hotspotIconImageView, @"hotspotIconImageView",
-                                   self.markupIconImageView, @"markupIconImageView",
-                                   nil];
-  int stoneImageWidth = 0;
-  int horizontalSpacingStoneImageView = 0;
-  int infoIconImageViewWidth = 0;
-  int hotspotIconImageViewWidth = 0;
-  int markupIconImageViewWidth = 0;
-  int horizontalSpacingInfoIconImageView = 0;
-  int horizontalSpacingBottomIcons = 0;
-  if (self.boardPosition > 0)
-  {
-    if (self.stoneImageView.image)
-    {
-      stoneImageWidth = stoneImageWidthAndHeight;
-      horizontalSpacingStoneImageView = horizontalSpacingSiblings;
-    }
-    else
-    {
-      stoneImageWidth = 0;
-      horizontalSpacingStoneImageView = 0;
-    }
+  // C021
+  self.detailTextLabelYPositionConstraint.constant = showDetailText ? verticalSpacingLabels : 0.0f;
+  // C024
+  self.detailTextLabelZeroHeightConstraint.active = showDetailText ? NO : YES;
 
-    if (self.infoIconImageView.image)
-    {
-      infoIconImageViewWidth = iconImageWidthAndHeight;
-      // If there are no captured stones the spacing can remain 0 - the info
-      // icon image is then directly adjacent to intersectionLabel, and in that
-      // label there is always sufficient space left to act as spacing.
-      if (self.capturedStonesLabel.text)
-        horizontalSpacingInfoIconImageView = horizontalSpacingSiblings;
-    }
-    else
-    {
-      infoIconImageViewWidth = 0;
-    }
+  // C040
+  self.infoIconImageViewLeftEdgeConstraint.constant = showInfoIcon ? horizontalSpacingSiblings : 0;
+  // C043
+  self.infoIconImageViewWidthConstraint.constant = showInfoIcon ? iconImageDimension : 0.0f;
 
-    if (self.hotspotIconImageView.image)
-      hotspotIconImageViewWidth = iconImageWidthAndHeight;
-    else
-      hotspotIconImageViewWidth = 0;
+  // C053
+  self.hotspotIconImageViewWidthConstraint.constant = showHotspotIcon ? iconImageDimension : 0.0f;
 
-    if (self.markupIconImageView.image)
-      markupIconImageViewWidth = iconImageWidthAndHeight;
-    else
-      markupIconImageViewWidth = 0;
+  // C060
+  self.markupIconImageViewLeftEdgeConstraint.constant = showMarkupIcon ? horizontalSpacingSiblings : 0;
+  // C063
+  self.markupIconImageViewWidthConstraint.constant = showMarkupIcon ? iconImageDimension : 0.0f;
 
-    if (self.hotspotIconImageView.image && self.markupIconImageView.image)
-      horizontalSpacingBottomIcons = horizontalSpacingSiblings / 2.0f;  // a bit of spacing is required, but as minimal as possible
-    else
-      horizontalSpacingBottomIcons = 0;
-  }
-  else
-  {
-    stoneImageWidth = 0;
-    horizontalSpacingStoneImageView = 0;
-    infoIconImageViewWidth = 0;
-    hotspotIconImageViewWidth = 0;
-    markupIconImageViewWidth = 0;
-    horizontalSpacingBottomIcons = 0;
-  }
-
-  NSMutableArray* visualFormats = [NSMutableArray array];
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[stoneImageView(==%d)]", stoneImageWidth]];
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[stoneImageView]-%d-[intersectionLabel]", horizontalSpacingStoneImageView]];
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[stoneImageView]-%d-[boardPositionLabel]", horizontalSpacingStoneImageView]];
-  if (! self.boardPositionLabel.text)
-    [visualFormats addObject:@"V:[boardPositionLabel(==0)]"];
-  if (nil == self.capturedStonesLabel.text)
-    [visualFormats addObject:@"H:[capturedStonesLabel(==0)]"];
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[capturedStonesLabel]-%d-[infoIconImageView(==%d)]", horizontalSpacingInfoIconImageView, infoIconImageViewWidth]];
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[hotspotIconImageView(==%d)]", hotspotIconImageViewWidth]];
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[markupIconImageView(==%d)]", markupIconImageViewWidth]];
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[hotspotIconImageView]-%d-[markupIconImageView]", horizontalSpacingBottomIcons]];
-  NSArray* visualFormatsAutoLayoutConstraints = [AutoLayoutUtility installVisualFormats:visualFormats
-                                                                              withViews:viewsDictionary
-                                                                                 inView:self];
-
-  // Because boardPositionLabel is sometimes not displayed the vertical
-  // positioning of the icon images needs to be dynamic. If boardPositionLabel
+  // Because detailTextLabel is sometimes not displayed the vertical
+  // positioning of the icon images needs to be dynamic. If detailTextLabel
   // is not shown, the hotspot icon and markup icon images are aligned instead
-  // on the center of intersectionLabel. In addition if both the info icon
+  // on the center of textLabel. In addition if both the info icon
   // image in the top row and one or both of the icon images in the bottom row
   // are shown, the two rows need to have a bit of spacing in between.
-  CGFloat infoIconAlignModifier = 0.0f;
-  UIView* bottomIconsAlignView = nil;
-  CGFloat bottomIconsAlignModifier = 0.0f;
-  if (self.boardPositionLabel.text)
+  UIView* alignViewTopRow;
+  UIView* alignViewBottomRow;
+  CGFloat constantTopRow;
+  CGFloat constantBottomRow;
+  if (showDetailText)
   {
-    bottomIconsAlignView = self.boardPositionLabel;
+    alignViewTopRow = self.textLabel;
+    alignViewBottomRow = self.detailTextLabel;
+    constantTopRow = 0.0f;
+    constantBottomRow = 0.0f;
   }
-  // The else branch relies on intersectionLabel being always shown
   else
   {
-    bottomIconsAlignView = self.intersectionLabel;
+    alignViewTopRow = self;
+    alignViewBottomRow = self;
 
-    if (self.infoIconImageView.image && (self.hotspotIconImageView.image || self.markupIconImageView.image))
+    if (showInfoIcon && (showHotspotIcon || showMarkupIcon))
     {
-      infoIconAlignModifier = -((infoIconImageViewWidth + verticalSpacingIconImages) / 2.0f);
-      if (self.hotspotIconImageView.image)
-        bottomIconsAlignModifier = (hotspotIconImageViewWidth + verticalSpacingIconImages) / 2.0f;
-      else
-        bottomIconsAlignModifier = (markupIconImageViewWidth + verticalSpacingIconImages) / 2.0f;
+      CGFloat alignModifier = (iconImageDimension + verticalSpacingIconImageViews) / 2.0f;
+      constantTopRow = -alignModifier;
+      constantBottomRow = alignModifier;
+    }
+    else
+    {
+      constantTopRow = 0.0f;
+      constantBottomRow = 0.0f;
     }
   }
 
-  NSLayoutConstraint* infoIconAutoLayoutConstraints = nil;
-  NSLayoutConstraint* hotspotIconAutoLayoutConstraints = nil;
-  NSLayoutConstraint* markupIconAutoLayoutConstraints = nil;
-  if (self.infoIconImageView.image)
-  {
-    infoIconAutoLayoutConstraints = [AutoLayoutUtility alignFirstView:self.infoIconImageView
-                                                       withSecondView:self.intersectionLabel
-                                                          onAttribute:NSLayoutAttributeCenterY
-                                                         withConstant:infoIconAlignModifier
-                                                     constraintHolder:self];
-  }
-  if (self.hotspotIconImageView.image)
-  {
-    hotspotIconAutoLayoutConstraints = [AutoLayoutUtility alignFirstView:self.hotspotIconImageView
-                                                          withSecondView:bottomIconsAlignView
-                                                             onAttribute:NSLayoutAttributeCenterY
-                                                            withConstant:bottomIconsAlignModifier
-                                                        constraintHolder:self];
-  }
-  if (self.markupIconImageView.image)
-  {
-    markupIconAutoLayoutConstraints = [AutoLayoutUtility alignFirstView:self.markupIconImageView
-                                                         withSecondView:bottomIconsAlignView
-                                                            onAttribute:NSLayoutAttributeCenterY
-                                                           withConstant:bottomIconsAlignModifier
-                                                       constraintHolder:self];
-  }
+  // C041
+  if (self.infoIconImageViewYPositionConstraint)
+    self.infoIconImageViewYPositionConstraint.active = NO;
+  self.infoIconImageViewYPositionConstraint = [NSLayoutConstraint constraintWithItem:self.infoIconImageView
+                                                                           attribute:NSLayoutAttributeCenterY
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:alignViewTopRow
+                                                                           attribute:NSLayoutAttributeCenterY
+                                                                          multiplier:1.0
+                                                                            constant:constantTopRow];
+  self.infoIconImageViewYPositionConstraint.active = YES;
+  self.infoIconImageViewYPositionConstraint.identifier = @"C041";
 
-  if (infoIconAutoLayoutConstraints || bottomIconsAlignView)
-  {
-    NSMutableArray* dynamicAutoLayoutConstraints = [NSMutableArray arrayWithArray:visualFormatsAutoLayoutConstraints];
-    if (infoIconAutoLayoutConstraints)
-      [dynamicAutoLayoutConstraints addObject:infoIconAutoLayoutConstraints];
-    if (hotspotIconAutoLayoutConstraints)
-      [dynamicAutoLayoutConstraints addObject:hotspotIconAutoLayoutConstraints];
-    if (markupIconAutoLayoutConstraints)
-      [dynamicAutoLayoutConstraints addObject:markupIconAutoLayoutConstraints];
-    self.dynamicAutoLayoutConstraints = dynamicAutoLayoutConstraints;
-  }
-  else
-  {
-    self.dynamicAutoLayoutConstraints = visualFormatsAutoLayoutConstraints;
-  }
+  // C051
+  if (self.hotspotIconImageViewYPositionConstraint)
+    self.hotspotIconImageViewYPositionConstraint.active = NO;
+  self.hotspotIconImageViewYPositionConstraint = [NSLayoutConstraint constraintWithItem:self.hotspotIconImageView
+                                                                              attribute:NSLayoutAttributeCenterY
+                                                                              relatedBy:NSLayoutRelationEqual
+                                                                                 toItem:alignViewBottomRow
+                                                                              attribute:NSLayoutAttributeCenterY
+                                                                             multiplier:1.0
+                                                                               constant:constantBottomRow];
+  self.hotspotIconImageViewYPositionConstraint.active = YES;
+  self.hotspotIconImageViewYPositionConstraint.identifier = @"C051";
+
+  // C061
+  if (self.markupIconImageViewYPositionConstraint)
+    self.markupIconImageViewYPositionConstraint.active = NO;
+  self.markupIconImageViewYPositionConstraint = [NSLayoutConstraint constraintWithItem:self.markupIconImageView
+                                                                             attribute:NSLayoutAttributeCenterY
+                                                                             relatedBy:NSLayoutRelationEqual
+                                                                                toItem:alignViewBottomRow
+                                                                             attribute:NSLayoutAttributeCenterY
+                                                                            multiplier:1.0
+                                                                              constant:constantBottomRow];
+  self.markupIconImageViewYPositionConstraint.active = YES;
+  self.markupIconImageViewYPositionConstraint.identifier = @"C061";
 }
 
 #pragma mark - User interface style handling (light/dark mode)
@@ -798,19 +1108,26 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 + (void) setupStaticViewMetrics
 {
-  horizontalSpacingSuperview = [UiElementMetrics horizontalSpacingSiblings];
-  horizontalSpacingSiblings = [UiElementMetrics horizontalSpacingSiblings];
-  verticalSpacingSuperview = [UiElementMetrics horizontalSpacingSiblings] / 2;
-  verticalSpacingSiblings = 0;
-  verticalSpacingIconImages = [UiElementMetrics verticalSpacingSiblings] / 2;
+  NodeTreeViewModel* nodeTreeViewModel = [ApplicationDelegate sharedDelegate].nodeTreeViewModel;
+  id<NodeTreeViewCanvasDataProvider> nodeTreeViewCanvasDataProvider = [[[PrivateNodeTreeViewCanvasDataProvider alloc] init] autorelease];
+  NodeTreeViewMetrics* metrics = [[[NodeTreeViewMetrics alloc] initWithModel:nodeTreeViewModel
+                                                          canvasDataProvider:nodeTreeViewCanvasDataProvider
+                                                             traitCollection:nil
+                                                              darkBackground:false] autorelease];
+  nodeSymbolImages = [[NSMutableDictionary alloc] init];
+  for (enum NodeTreeViewCellSymbol nodeSymbol = NodeTreeViewCellSymbolFirst;
+       nodeSymbol <= NodeTreeViewCellSymbolLast;
+       nodeSymbol++)
+  {
+    if (nodeSymbol == NodeTreeViewCellSymbolNone)
+      continue;
 
-  stoneImageWidthAndHeight = floor([UiElementMetrics tableViewCellContentViewHeight] * 0.7);
-  CGSize stoneImageSize = CGSizeMake(stoneImageWidthAndHeight, stoneImageWidthAndHeight);
-  blackStoneImage = [[[UIImage imageNamed:stoneBlackImageResource] imageByResizingToSize:stoneImageSize] retain];
-  whiteStoneImage = [[[UIImage imageNamed:stoneWhiteImageResource] imageByResizingToSize:stoneImageSize] retain];
+    [BoardPositionCollectionViewCell addNodeSymbolImage:nodeSymbol
+                                           toDictionary:nodeSymbolImages
+                                            withMetrics:metrics];
+  }
 
-  iconImageWidthAndHeight = floor([UiElementMetrics tableViewCellContentViewHeight] * 0.3);
-  CGSize iconImageSize = CGSizeMake(iconImageWidthAndHeight, iconImageWidthAndHeight);
+  CGSize iconImageSize = CGSizeMake(iconImageDimension, iconImageDimension);
   infoIconImage = [[[UIImage imageNamed:uiAreaAboutIconResource] templateImageByResizingToSize:iconImageSize] retain];
   markupIconImage = [[[UIImage imageNamed:markupIconResource] templateImageByResizingToSize:iconImageSize] retain];
   hotspotIconImage = [[[UIImage imageNamed:hotspotIconResource] templateImageByResizingToSize:iconImageSize] retain];
@@ -818,20 +1135,12 @@ static UIFont* smallFont = nil;
   currentBoardPositionCellBackgroundColor = [[UIColor darkTangerineColor] retain];
   alternateCellBackgroundColor1 = [[UIColor lightBlueColor] retain];
   alternateCellBackgroundColor2 = [[UIColor whiteColor] retain];
-  if (@available(iOS 13.0, *))
-  {
-    alternateCellBackgroundColor1DarkMode = [UIColor systemGrayColor];
-    alternateCellBackgroundColor2DarkMode = [UIColor systemGray2Color];
-  }
-  else
-  {
-    alternateCellBackgroundColor1DarkMode = alternateCellBackgroundColor1;
-    alternateCellBackgroundColor2DarkMode = alternateCellBackgroundColor2;
-  }
-  capturedStonesLabelBackgroundColor = [[UIColor redColor] retain];
+  alternateCellBackgroundColor1DarkMode = [UIColor systemGrayColor];
+  alternateCellBackgroundColor2DarkMode = [UIColor systemGray2Color];
+  capturedStonesLabelTextColor = [[UIColor redColor] retain];
 
-  largeFont = [[UIFont systemFontOfSize:17] retain];
-  smallFont = [[UIFont systemFontOfSize:11] retain];
+  largeFont = [[UIFont systemFontOfSize:largeFontSize] retain];
+  smallFont = [[UIFont systemFontOfSize:smallFontSize] retain];
 
   enum BoardPositionCollectionViewCellType cellType = BoardPositionCollectionViewCellTypePositionZero;
   BoardPositionCollectionViewCell* offscreenView = [[[BoardPositionCollectionViewCell alloc] initOffscreenViewWithCellType:cellType] autorelease];
@@ -850,6 +1159,42 @@ static UIFont* smallFont = nil;
                                                                ceilf(boardPositionCollectionViewCellSizePositionZero.height));
   boardPositionCollectionViewCellSizePositionNonZero = CGSizeMake(ceilf(boardPositionCollectionViewCellSizePositionNonZero.width),
                                                                   ceilf(boardPositionCollectionViewCellSizePositionNonZero.height));
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for setupStaticViewMetrics().
+// -----------------------------------------------------------------------------
++ (UIImage*) addNodeSymbolImage:(enum NodeTreeViewCellSymbol)nodeSymbol
+                   toDictionary:(NSMutableDictionary*)nodeSymbolImages
+                    withMetrics:(NodeTreeViewMetrics*)metrics
+{
+  // Create context
+  CGSize nodeSymbolImageSize = CGSizeMake(nodeSymbolImageDimension, nodeSymbolImageDimension);
+  BOOL opaque = NO;
+  CGFloat scale = 0.0f;
+  UIGraphicsBeginImageContextWithOptions(nodeSymbolImageSize, opaque, scale);
+
+  // Create layer using function provided by NodeTreeViewDrawingHelper
+  CGContextRef context = UIGraphicsGetCurrentContext();
+  static bool condensed = false;
+  CGLayerRef nodeSymbolLayer = CreateNodeSymbolLayer(context, nodeSymbol, condensed, metrics);
+
+  // Draw layer into context
+  CGRect drawingRect = CGRectZero;
+  drawingRect.size = nodeSymbolImageSize;
+  CGContextDrawLayerInRect(context, drawingRect, nodeSymbolLayer);
+
+  // Get image from context
+  UIImage* nodeSymbolImage = UIGraphicsGetImageFromCurrentImageContext();
+
+  // Release objects created above
+  CGLayerRelease(nodeSymbolLayer);
+  UIGraphicsEndImageContext();
+
+  NSNumber* nodeSymbolAsNumber = [NSNumber numberWithInt:nodeSymbol];
+  nodeSymbolImages[nodeSymbolAsNumber] = nodeSymbolImage;
+
+  return nodeSymbolImage;
 }
 
 @end

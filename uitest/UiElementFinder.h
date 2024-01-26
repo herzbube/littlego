@@ -45,10 +45,10 @@
 
 - (XCUIElement*) findBoardPositionCellContainerWithUiApplication:(XCUIApplication*)app;
 - (NSArray<XCUIElement*>*) findBoardPositionCellsWithUiApplication:(XCUIApplication*)app;
-- (XCUIElement*) findIntersectionLabelInBoardPositionCell:(XCUIElement*)boardPositionCell;
-- (XCUIElement*) findBoardPositionLabelInBoardPositionCell:(XCUIElement*)boardPositionCell;
+- (XCUIElement*) findTextLabelInBoardPositionCell:(XCUIElement*)boardPositionCell;
+- (XCUIElement*) findDetailTextLabelInBoardPositionCell:(XCUIElement*)boardPositionCell;
 - (XCUIElement*) findCapturedStonesLabelInBoardPositionCell:(XCUIElement*)boardPositionCell;
-- (XCUIElement*) findStoneImageViewForColor:(enum GoColor)color inBoardPositionCell:(XCUIElement*)boardPositionCell;
+- (XCUIElement*) findNodeSymbolImageViewForSymbol:(enum NodeTreeViewCellSymbol)symbol inBoardPositionCell:(XCUIElement*)boardPositionCell;
 
 - (XCUIElement*) findAnnotationViewPageControlWithUiApplication:(XCUIApplication*)app;
 - (XCUIElement*) findAnnotationViewPage:(enum AnnotationViewPage)annotationViewPage withUiApplication:(XCUIApplication*)app;

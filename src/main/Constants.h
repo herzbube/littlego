@@ -1562,6 +1562,10 @@ enum NodeTreeViewCellSymbol
   /// @brief Symbol for a root node that contains both a handicap and komi == 0,
   /// but no setup, annotations or markup.
   NodeTreeViewCellSymbolRoot,
+  /// @brief Pseudo symbol, used as the starting value during a for-loop.
+  NodeTreeViewCellSymbolFirst = NodeTreeViewCellSymbolNone,
+  /// @brief Pseudo symbol, used as the end value during a for-loop.
+  NodeTreeViewCellSymbolLast = NodeTreeViewCellSymbolRoot
 };
 
 /// @brief A NodeTreeViewCellLines value specifies which branching lines should
@@ -2294,12 +2298,31 @@ extern NSString* goGameRulesFourPassesRuleKey;
 //@{
 extern NSString* statusLabelAccessibilityIdentifier;
 extern NSString* boardPositionCollectionViewAccessibilityIdentifier;
-extern NSString* intersectionLabelBoardPositionAccessibilityIdentifier;
-extern NSString* boardPositionLabelBoardPositionAccessibilityIdentifier;
+extern NSString* boardPositionCollectionViewCellAccessibilityIdentifier;
+extern NSString* textLabelBoardPositionAccessibilityIdentifier;
+extern NSString* detailTextLabelBoardPositionAccessibilityIdentifier;
 extern NSString* capturedStonesLabelBoardPositionAccessibilityIdentifier;
-extern NSString* blackStoneImageViewBoardPositionAccessibilityIdentifier;
-extern NSString* whiteStoneImageViewBoardPositionAccessibilityIdentifier;
-extern NSString* noStoneImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* hotspotIconImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* infoIconImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* markupIconImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* noNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* emptyNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* blackSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* whiteSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* clearSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* blackAndWhiteSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* blackAndClearSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* whiteAndClearSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* blackAndWhiteAndClearSetupStonesNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* blackMoveNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* whiteMoveNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* annotationsNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* markupNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* annotationsAndMarkupNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* handicapNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* komiNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* handicapAndKomiNodeImageViewBoardPositionAccessibilityIdentifier;
+extern NSString* rootNodeImageViewBoardPositionAccessibilityIdentifier;
 extern NSString* unselectedBackgroundViewBoardPositionAccessibilityIdentifier;
 extern NSString* selectedBackgroundViewBoardPositionAccessibilityIdentifier;
 extern NSString* playRootViewNavigationBarAccessibilityIdentifier;
