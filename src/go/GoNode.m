@@ -115,6 +115,24 @@
   [super dealloc];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Returns a description for this GoNode object.
+///
+/// This method is invoked when GoNode needs to be represented as a string,
+/// i.e. by NSLog, or when the debugger command "po" is used on the object.
+// -----------------------------------------------------------------------------
+- (NSString*) description
+{
+  // Don't use self to access properties to avoid unnecessary overhead during
+  // debugging
+  return [NSString stringWithFormat:@"GoNode(%p): %@, %@, %@, %@",
+          self,
+          _goNodeSetup ? _goNodeSetup : @"No setup",
+          _goMove ? _goMove : @"No move",
+          _goNodeAnnotation ? _goNodeAnnotation : @"No annotation",
+          _goNodeMarkup ? _goNodeMarkup : @"No markup"];
+}
+
 #pragma mark - NSCoding overrides
 
 // -----------------------------------------------------------------------------

@@ -181,7 +181,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"GoMove(%p): type = %d, move number = %d", self, _type, _moveNumber];
+  return [NSString stringWithFormat:@"GoMove(%p): type = %d, move number = %d, %@", self, _type, _moveNumber, _point ? _point : @"No point"];
 }
 
 // -----------------------------------------------------------------------------
