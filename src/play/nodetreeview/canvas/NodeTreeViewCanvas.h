@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "NodeTreeViewCanvasDataProvider.h"
+
 // Forward declarations
 @class GoNode;
 @class NodeNumbersViewCell;
@@ -84,7 +87,7 @@
 /// - Memory usage should be minimized, but processing speed clearly trumps
 ///   memory consumption, while keeping an eye on the latter.
 // -----------------------------------------------------------------------------
-@interface NodeTreeViewCanvas : NSObject
+@interface NodeTreeViewCanvas : NSObject <NodeTreeViewCanvasDataProvider>
 {
 }
 
@@ -101,13 +104,6 @@
 - (NSArray*) nodeNumbersViewPositionsForNode:(GoNode*)node;
 - (NSArray*) selectedNodeNodeNumbersViewPositions;
 
-/// @brief The canvas size. Width and height are integral numbers.
-///
-/// The canvas width corresponds to the height (aka depth) of the node tree. In
-/// a tabular model, this can also be seen as the number of columns.
-///
-/// The canvas height corresponds to the width of the node tree. In a tabular
-/// model, this can also be seen as the number of rows.
-@property(nonatomic, assign) CGSize canvasSize;
+@property(nonatomic, assign, readonly) CGSize canvasSize;
 
 @end

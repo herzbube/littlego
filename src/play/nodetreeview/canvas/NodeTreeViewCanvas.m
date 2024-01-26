@@ -44,6 +44,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
 /// @brief Class extension with private properties for NodeTreeViewCanvas.
 // -----------------------------------------------------------------------------
 @interface NodeTreeViewCanvas()
+@property(nonatomic, assign, readwrite) CGSize canvasSize;
 @property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
 @property(nonatomic, assign) bool canvasNeedsUpdate;
 @property(nonatomic, retain) NSString* notificationToPostAfterCanvasUpdate;
@@ -429,10 +430,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the GoNode object that is represented by the cell that is
-/// located at position @a position. Returns @e nil if @a position denotes a
-/// position that is outside the canvas' bounds, or if the cell located at
-/// position @a position does not represent a GoNode.
+/// @brief NodeTreeViewCanvasDataProvider protocol method.
 // -----------------------------------------------------------------------------
 - (GoNode*) nodeAtPosition:(NodeTreeViewCellPosition*)position
 {

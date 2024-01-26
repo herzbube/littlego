@@ -17,9 +17,9 @@
 
 // Forward declarations
 @class GoNode;
-@class NodeTreeViewCanvas;
 @class NodeTreeViewCellPosition;
 @class NodeTreeViewModel;
+@protocol NodeTreeViewCanvasDataProvider;
 
 
 // -----------------------------------------------------------------------------
@@ -29,11 +29,11 @@
 /// canvas on which to draw.
 ///
 /// The size of the drawing canvas is determined by three things:
-/// - The size of an abstract canvas, maintained by NodeTreeViewModel, which
-///   contains the entire node tree. The abstract canvas can also be modeled as
-///   a table having a number of columns and rows. The number of columns and
-///   rows in the table is equal to the width and height, respectively, of the
-///   abstract canvas.
+/// - The size of an abstract canvas, obtained from an
+///   NodeTreeViewCanvasDataProvider object, which contains the entire node
+///   tree. The abstract canvas can also be modeled as a table having a number
+///   of columns and rows. The number of columns and rows in the table is equal
+///   to the width and height, respectively, of the abstract canvas.
 /// - The static column width and row height defined by NodeTreeViewMetrics.
 ///   These static sizes, multiplied with the number of columns and rows,
 ///   results in the drawing canvas' base size.
@@ -110,7 +110,7 @@
 }
 
 - (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel
-              canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
+  canvasDataProvider:(id<NodeTreeViewCanvasDataProvider>)canvasDataProvider
      traitCollection:(UITraitCollection*)traitCollection
       darkBackground:(bool)darkBackground;
 

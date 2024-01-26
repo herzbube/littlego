@@ -1368,6 +1368,7 @@
 		CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubmitGtpCommandViewController.m; sourceTree = "<group>"; };
 		CD908DC62B5EF2600058767E /* NodeTreeViewMetricsUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewMetricsUpdater.h; sourceTree = "<group>"; };
 		CD908DC72B5EF2610058767E /* NodeTreeViewMetricsUpdater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewMetricsUpdater.m; sourceTree = "<group>"; };
+		CD908DCA2B6407F10058767E /* NodeTreeViewCanvasDataProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewCanvasDataProvider.h; sourceTree = "<group>"; };
 		CD941363198BDBA20001F55A /* images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = images.xcassets; path = resource/images.xcassets; sourceTree = SOURCE_ROOT; };
 		CD968ADC1B026DD200984AEE /* stone-black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-black.png"; sourceTree = "<group>"; };
 		CD968ADD1B026DD200984AEE /* stone-crosshair.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-crosshair.png"; sourceTree = "<group>"; };
@@ -2608,6 +2609,7 @@
 				CD1A7EF029574A0900013D80 /* NodeTreeViewCanvasAdditions.h */,
 				CDF2462B296AE2BF00350B42 /* NodeTreeViewCanvasData.h */,
 				CDF2462C296AE2BF00350B42 /* NodeTreeViewCanvasData.m */,
+				CD908DCA2B6407F10058767E /* NodeTreeViewCanvasDataProvider.h */,
 				CDDB08C02927F15D00B38F91 /* NodeTreeViewCell.h */,
 				CDDB08C12927F15D00B38F91 /* NodeTreeViewCell.m */,
 				CDDB08BD2927D15700B38F91 /* NodeTreeViewCellPosition.h */,

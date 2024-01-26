@@ -459,7 +459,7 @@
   NodeTreeViewCanvas* nodeTreeViewCanvas = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   NodeTreeViewMetrics* metrics = [[[NodeTreeViewMetrics alloc] initWithModel:nodeTreeViewModel
-                                                                      canvas:nodeTreeViewCanvas
+                                                          canvasDataProvider:nodeTreeViewCanvas
                                                              traitCollection:nil
                                                               darkBackground:true] autorelease];
 

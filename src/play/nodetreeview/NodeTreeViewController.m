@@ -181,7 +181,7 @@
   self.nodeTreeViewCanvas = [[[NodeTreeViewCanvas alloc] initWithModel:self.nodeTreeViewModel] autorelease];
   [self.nodeTreeViewCanvas recalculateCanvas];
   self.nodeTreeViewMetrics = [[[NodeTreeViewMetrics alloc] initWithModel:self.nodeTreeViewModel
-                                                                  canvas:self.nodeTreeViewCanvas
+                                                      canvasDataProvider:self.nodeTreeViewCanvas
                                                          traitCollection:self.traitCollection
                                                           darkBackground:self.darkBackground] autorelease];
   self.nodeTreeViewMetricsUpdater = [[[NodeTreeViewMetricsUpdater alloc] initWithModel:self.nodeTreeViewModel

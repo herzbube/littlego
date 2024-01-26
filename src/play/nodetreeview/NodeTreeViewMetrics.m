@@ -31,7 +31,7 @@
 /// @brief Class extension with private properties for NodeTreeViewMetrics.
 // -----------------------------------------------------------------------------
 @interface NodeTreeViewMetrics()
-@property(nonatomic, assign) NodeTreeViewCanvas* nodeTreeViewCanvas;
+@property(nonatomic, assign) id<NodeTreeViewCanvasDataProvider> canvasDataProvider;
 @property(nonatomic, assign) bool darkBackground;
 /// @brief Prevents double-unregistering of notification responders by
 /// an external actor followed by dealloc. This is possible because
@@ -54,7 +54,7 @@
 /// @note This is the designated initializer of NodeTreeViewMetrics.
 // -----------------------------------------------------------------------------
 - (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel
-              canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
+  canvasDataProvider:(id<NodeTreeViewCanvasDataProvider>)canvasDataProvider
      traitCollection:(UITraitCollection*)traitCollection
       darkBackground:(bool)darkBackground
 {
@@ -63,7 +63,7 @@
   if (! self)
     return nil;
 
-  self.nodeTreeViewCanvas = nodeTreeViewCanvas;
+  self.canvasDataProvider = canvasDataProvider;
   self.darkBackground = darkBackground;
 
   self.notificationRespondersAreSetup = false;
@@ -87,7 +87,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.nodeTreeViewCanvas = nil;
+  self.canvasDataProvider = nil;
   self.nodeNumberLabelFont = nil;
   self.nodeNumberLabelFontRange = nil;
   self.singleCharacterNodeSymbolFont = nil;
@@ -204,7 +204,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupMainProperties:(NodeTreeViewModel*)nodeTreeViewModel
 {
-  self.abstractCanvasSize = self.nodeTreeViewCanvas.canvasSize;
+  self.abstractCanvasSize = self.canvasDataProvider.canvasSize;
   self.condenseMoveNodes = nodeTreeViewModel.condenseMoveNodes;
   self.absoluteZoomScale = 1.0f;
   self.nodeNumberViewIsOverlay = nodeTreeViewModel.nodeNumberViewIsOverlay;
@@ -621,7 +621,7 @@
   if (! position)
     return nil;
 
-  return [self.nodeTreeViewCanvas nodeAtPosition:position];
+  return [self.canvasDataProvider nodeAtPosition:position];
 }
 
 // -----------------------------------------------------------------------------
