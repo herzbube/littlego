@@ -25,7 +25,9 @@
 #import "GoMove.h"
 #import "GoNode.h"
 #import "GoNodeAnnotation.h"
+#import "GoNodeSetup.h"
 #import "GoNodeModel.h"
+#import "GoPlayer.h"
 #import "GoPoint.h"
 #import "GoVertex.h"
 #import "GoZobristTable.h"
@@ -1051,6 +1053,83 @@
     return false;
   else
     return true;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the NodeTreeViewCellSymbol enumeration value that represents
+/// the node @a node on the canvas. If no suitable symbol can be found this
+/// method returns #NodeTreeViewCellSymbolEmpty. This method never returns
+/// #NodeTreeViewCellSymbolNone.
+// -----------------------------------------------------------------------------
++ (enum NodeTreeViewCellSymbol) symbolForNode:(GoNode*)node
+{
+  GoNodeSetup* nodeSetup = node.goNodeSetup;
+  if (nodeSetup)
+  {
+    bool hasBlackSetupStones = nodeSetup.blackSetupStones;
+    bool hasWhiteSetupStones = nodeSetup.whiteSetupStones;
+    bool hasNoSetupStones = nodeSetup.noSetupStones;
+
+    if (hasBlackSetupStones)
+    {
+      if (hasWhiteSetupStones)
+      {
+        if (hasNoSetupStones)
+          return NodeTreeViewCellSymbolBlackAndWhiteAndNoSetupStones;
+        else
+          return NodeTreeViewCellSymbolBlackAndWhiteSetupStones;
+      }
+      else if (hasNoSetupStones)
+        return NodeTreeViewCellSymbolBlackAndNoSetupStones;
+      else
+        return NodeTreeViewCellSymbolBlackSetupStones;
+    }
+    else if (hasWhiteSetupStones)
+    {
+      if (hasNoSetupStones)
+        return NodeTreeViewCellSymbolWhiteAndNoSetupStones;
+      else
+        return NodeTreeViewCellSymbolWhiteSetupStones;
+    }
+    else
+    {
+      return NodeTreeViewCellSymbolNoSetupStones;
+    }
+  }
+  else if (node.goMove)
+  {
+    if (node.goMove.player.isBlack)
+      return NodeTreeViewCellSymbolBlackMove;
+    else
+      return NodeTreeViewCellSymbolWhiteMove;
+  }
+  else if (node.goNodeAnnotation)
+  {
+    if (node.goNodeMarkup)
+      return NodeTreeViewCellSymbolAnnotationsAndMarkup;
+    else
+      return NodeTreeViewCellSymbolAnnotations;
+  }
+  else if (node.goNodeMarkup)
+  {
+    return NodeTreeViewCellSymbolMarkup;
+  }
+  else if (node.isRoot)
+  {
+    GoGame* game = [GoGame sharedGame];
+    bool hasHandicap = game.handicapPoints.count > 0;
+    bool hasKomi = game.komi > 0.0;
+    if (hasHandicap && hasKomi)
+      return NodeTreeViewCellSymbolHandicapAndKomi;
+    else if (hasHandicap)
+      return NodeTreeViewCellSymbolHandicap;
+    else if (hasKomi)
+      return NodeTreeViewCellSymbolKomi;
+    else
+      return NodeTreeViewCellSymbolRoot;
+  }
+
+  return NodeTreeViewCellSymbolEmpty;
 }
 
 @end
