@@ -22,6 +22,7 @@
 #import "NodeTreeTileView.h"
 #import "NodeTreeView.h"
 #import "NodeTreeViewMetrics.h"
+#import "NodeTreeViewMetricsUpdater.h"
 #import "NodeTreeViewTapGestureController.h"
 #import "canvas/NodeTreeViewCanvas.h"
 #import "layer/NodeTreeViewDrawingHelper.h"
@@ -42,6 +43,7 @@
 @property(nonatomic, assign) bool darkBackground;
 @property(nonatomic, retain) NodeTreeViewCanvas* nodeTreeViewCanvas;
 @property(nonatomic, retain) NodeTreeViewMetrics* nodeTreeViewMetrics;
+@property(nonatomic, retain) NodeTreeViewMetricsUpdater* nodeTreeViewMetricsUpdater;
 /// @brief Prevents unregistering by dealloc if registering hasn't happened
 /// yet. Registering may not happen if the controller's view is never loaded.
 @property(nonatomic, assign) bool notificationRespondersAreSetup;
@@ -78,6 +80,7 @@
   self.darkBackground = darkBackground;
   self.nodeTreeViewCanvas = nil;
   self.nodeTreeViewMetrics = nil;
+  self.nodeTreeViewMetricsUpdater = nil;
   self.notificationRespondersAreSetup = false;
   self.nodeTreeView = nil;
   self.nodeNumbersView = nil;
@@ -104,12 +107,12 @@
   // objects long after NodeTreeViewMetrics and NodeTreeViewCanvas objects have
   // been deallocated (in fact long after super's dealloc has completed its
   // work), which would cause the removal of observer registrations to crash
-  // the app. A previous attempt at keeping NodeTreeViewMetrics and
+  // the app. A previous attempt at keeping NodeTreeViewMetricsUpdater and
   // NodeTreeViewCanvas alive until observer registrations are removed via
   // dealloc failed, so the current solution is to explicitly perform unregister
-  // here when we can guarantee that NodeTreeViewMetrics and NodeTreeViewCanvas
-  // are still around.
-  [self.nodeTreeViewMetrics removeNotificationResponders];
+  // here when we can guarantee that NodeTreeViewMetricsUpdater and
+  // NodeTreeViewCanvas are still around.
+  [self.nodeTreeViewMetricsUpdater removeNotificationResponders];
   [self.nodeTreeView removeNotificationResponders];
   [self.nodeNumbersView removeNotificationResponders];
 
@@ -123,6 +126,7 @@
   self.nodeTreeViewTapGestureController = nil;
 
   self.nodeTreeViewMetrics = nil;
+  self.nodeTreeViewMetricsUpdater = nil;
   self.nodeTreeViewCanvas = nil;
   self.nodeTreeViewModel = nil;
 
@@ -180,6 +184,9 @@
                                                                   canvas:self.nodeTreeViewCanvas
                                                          traitCollection:self.traitCollection
                                                           darkBackground:self.darkBackground] autorelease];
+  self.nodeTreeViewMetricsUpdater = [[[NodeTreeViewMetricsUpdater alloc] initWithModel:self.nodeTreeViewModel
+                                                                    canvasDataProvider:self.nodeTreeViewCanvas
+                                                                               metrics:self.nodeTreeViewMetrics] autorelease];
 }
 
 // -----------------------------------------------------------------------------

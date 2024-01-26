@@ -31,7 +31,6 @@
 /// @brief Class extension with private properties for NodeTreeViewMetrics.
 // -----------------------------------------------------------------------------
 @interface NodeTreeViewMetrics()
-@property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
 @property(nonatomic, assign) NodeTreeViewCanvas* nodeTreeViewCanvas;
 @property(nonatomic, assign) bool darkBackground;
 /// @brief Prevents double-unregistering of notification responders by
@@ -64,7 +63,6 @@
   if (! self)
     return nil;
 
-  self.nodeTreeViewModel = nodeTreeViewModel;
   self.nodeTreeViewCanvas = nodeTreeViewCanvas;
   self.darkBackground = darkBackground;
 
@@ -72,8 +70,7 @@
 
   [self setupStaticProperties];
   [self setupFontRanges];
-  [self setupMainProperties];
-  [self setupNotificationResponders];
+  [self setupMainProperties:nodeTreeViewModel];
   [self updateWithTraitCollection:traitCollection];
   // Remaining properties are initialized by this updater
   [self updateWithAbstractCanvasSize:self.abstractCanvasSize
@@ -90,9 +87,6 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  [self removeNotificationResponders];
-
-  self.nodeTreeViewModel = nil;
   self.nodeTreeViewCanvas = nil;
   self.nodeNumberLabelFont = nil;
   self.nodeNumberLabelFontRange = nil;
@@ -208,46 +202,16 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for the initializer.
 // -----------------------------------------------------------------------------
-- (void) setupMainProperties
+- (void) setupMainProperties:(NodeTreeViewModel*)nodeTreeViewModel
 {
   self.abstractCanvasSize = self.nodeTreeViewCanvas.canvasSize;
-  self.condenseMoveNodes = self.nodeTreeViewModel.condenseMoveNodes;
+  self.condenseMoveNodes = nodeTreeViewModel.condenseMoveNodes;
   self.absoluteZoomScale = 1.0f;
-  self.nodeNumberViewIsOverlay = self.nodeTreeViewModel.nodeNumberViewIsOverlay;
+  self.nodeNumberViewIsOverlay = nodeTreeViewModel.nodeNumberViewIsOverlay;
   self.canvasSize = CGSizeZero;
 
-  self.displayNodeNumbers = self.nodeTreeViewModel.displayNodeNumbers;
-  self.numberOfCellsOfMultipartCell = self.nodeTreeViewModel.numberOfCellsOfMultipartCell;
-}
-
-#pragma mark - Setup/remove notification responders
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for the initializer.
-// -----------------------------------------------------------------------------
-- (void) setupNotificationResponders
-{
-  if (self.notificationRespondersAreSetup)
-    return;
-  self.notificationRespondersAreSetup = true;
-
-  [self.nodeTreeViewCanvas addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
-  [self.nodeTreeViewModel addObserver:self forKeyPath:@"displayNodeNumbers" options:0 context:NULL];
-  [self.nodeTreeViewModel addObserver:self forKeyPath:@"condenseMoveNodes" options:0 context:NULL];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper.
-// -----------------------------------------------------------------------------
-- (void) removeNotificationResponders
-{
-  if (! self.notificationRespondersAreSetup)
-    return;
-  self.notificationRespondersAreSetup = false;
-
-  [self.nodeTreeViewCanvas removeObserver:self forKeyPath:@"canvasSize"];
-  [self.nodeTreeViewModel removeObserver:self forKeyPath:@"displayNodeNumbers"];
-  [self.nodeTreeViewModel removeObserver:self forKeyPath:@"condenseMoveNodes"];
+  self.displayNodeNumbers = nodeTreeViewModel.displayNodeNumbers;
+  self.numberOfCellsOfMultipartCell = nodeTreeViewModel.numberOfCellsOfMultipartCell;
 }
 
 #pragma mark - Public API - Updaters
@@ -672,28 +636,5 @@
   return CGPointMake(self.paddingX + (self.nodeNumberViewCellSize.width * position.x),
                      self.paddingY + (self.nodeNumberViewCellSize.height * position.y));
 }
-
-#pragma mark - Notification responders
-
-// -----------------------------------------------------------------------------
-/// @brief Responds to KVO notifications.
-// -----------------------------------------------------------------------------
-- (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
-{
-  if ([keyPath isEqualToString:@"canvasSize"])
-  {
-    [self updateWithAbstractCanvasSize:self.nodeTreeViewCanvas.canvasSize];
-  }
-  else if ([keyPath isEqualToString:@"displayNodeNumbers"])
-  {
-    [self updateWithDisplayNodeNumbers:self.nodeTreeViewModel.displayNodeNumbers];
-  }
-  else if ([keyPath isEqualToString:@"condenseMoveNodes"])
-  {
-    [self updateWithCondenseMoveNodes:self.nodeTreeViewModel.condenseMoveNodes];
-  }
-}
-
-#pragma mark - Private helpers
 
 @end

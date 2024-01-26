@@ -46,10 +46,15 @@
 /// changes someone must invoke updateWithAbstractCanvasSize:(). If the zoom
 /// scale changes, someone must invoke updateWithRelativeZoomScale:().
 ///
-/// If any of these 2 updaters is invoked, NodeTreeViewMetrics re-calculates
+/// Drawing of the node tree also depends on a few other characteristics, such
+/// as whether move nodes can be drawn in a condensed style. For each of these
+/// characteristics there is a corresponding updater method that someone must
+/// invoke when the characteristic changes.
+///
+/// If any of these updaters is invoked, NodeTreeViewMetrics re-calculates
 /// all of its properties. Clients are expected to use KVO to notice any changes
-/// in self.canvasSize, and to respond to such changes by initiating the
-/// re-drawing of the appropriate parts of the node tree.
+/// in self.canvasSize or other properties, and to respond to such changes by
+/// initiating the re-drawing of the appropriate parts of the node tree.
 ///
 ///
 /// @par Calculations
@@ -108,7 +113,6 @@
               canvas:(NodeTreeViewCanvas*)nodeTreeViewCanvas
      traitCollection:(UITraitCollection*)traitCollection
       darkBackground:(bool)darkBackground;
-- (void) removeNotificationResponders;
 
 /// @name Updaters
 //@{
@@ -116,6 +120,7 @@
 - (void) updateWithCondenseMoveNodes:(bool)newCondenseMoveNodes;
 - (void) updateWithRelativeZoomScale:(CGFloat)newRelativeZoomScale;
 - (void) updateWithNodeNumberViewIsOverlay:(bool)newNodeNumberViewIsOverlay;
+- (void) updateWithDisplayNodeNumbers:(bool)newDisplayNodeNumbers;
 - (void) updateWithTraitCollection:(UITraitCollection*)traitCollection;
 //@}
 

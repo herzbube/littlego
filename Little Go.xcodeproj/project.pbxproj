@@ -403,6 +403,8 @@
 		CD8EFD041466DA7200A700B1 /* GoScore.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EFD031466DA7200A700B1 /* GoScore.m */; };
 		CD8EFEAB14676C4400A700B1 /* GoScore.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8EFD031466DA7200A700B1 /* GoScore.m */; };
 		CD8F920B143E655E006351DB /* SubmitGtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */; };
+		CD908DC82B5EF2610058767E /* NodeTreeViewMetricsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CD908DC72B5EF2610058767E /* NodeTreeViewMetricsUpdater.m */; };
+		CD908DC92B5EF2610058767E /* NodeTreeViewMetricsUpdater.m in Sources */ = {isa = PBXBuildFile; fileRef = CD908DC72B5EF2610058767E /* NodeTreeViewMetricsUpdater.m */; };
 		CD931EE11684E48C002E1262 /* SendBugReportController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32AD15A10AD500439B4E /* SendBugReportController.m */; };
 		CD931EE31684E4A6002E1262 /* GenerateDiagnosticsInformationFileCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFA32A415A0A3C500439B4E /* GenerateDiagnosticsInformationFileCommand.m */; };
 		CD931EED16851E5C002E1262 /* SaveGameCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CD05AC7A1425470B00214BBE /* SaveGameCommand.m */; };
@@ -1364,6 +1366,8 @@
 		CD8EFD031466DA7200A700B1 /* GoScore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GoScore.m; sourceTree = "<group>"; };
 		CD8F9209143E655E006351DB /* SubmitGtpCommandViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SubmitGtpCommandViewController.h; sourceTree = "<group>"; };
 		CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SubmitGtpCommandViewController.m; sourceTree = "<group>"; };
+		CD908DC62B5EF2600058767E /* NodeTreeViewMetricsUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewMetricsUpdater.h; sourceTree = "<group>"; };
+		CD908DC72B5EF2610058767E /* NodeTreeViewMetricsUpdater.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewMetricsUpdater.m; sourceTree = "<group>"; };
 		CD941363198BDBA20001F55A /* images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = images.xcassets; path = resource/images.xcassets; sourceTree = SOURCE_ROOT; };
 		CD968ADC1B026DD200984AEE /* stone-black.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-black.png"; sourceTree = "<group>"; };
 		CD968ADD1B026DD200984AEE /* stone-crosshair.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "stone-crosshair.png"; sourceTree = "<group>"; };
@@ -3275,6 +3279,8 @@
 				CD63309429B4F86800287A73 /* NodeTreeViewIntegration.m */,
 				CDC8DEFD28EDF8E500619305 /* NodeTreeViewMetrics.h */,
 				CDC8DEFE28EDF8E600619305 /* NodeTreeViewMetrics.m */,
+				CD908DC62B5EF2600058767E /* NodeTreeViewMetricsUpdater.h */,
+				CD908DC72B5EF2610058767E /* NodeTreeViewMetricsUpdater.m */,
 				CDF2462029679D2300350B42 /* NodeTreeViewTapGestureController.h */,
 				CDF2461F29679D2300350B42 /* NodeTreeViewTapGestureController.m */,
 			);
@@ -4266,6 +4272,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CD908DC82B5EF2610058767E /* NodeTreeViewMetricsUpdater.m in Sources */,
 				CDEE1A0B1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,
 				CDBDD0992997F38700641E3B /* NodeNumbersViewCell.m in Sources */,
 				CD4662862960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */,
@@ -4705,6 +4712,7 @@
 				CD1A7EEF29568AF800013D80 /* NodeTreeViewCanvasTest.m in Sources */,
 				CD81791825DC606700F39091 /* BoardAnimationController.m in Sources */,
 				CD4662872960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */,
+				CD908DC92B5EF2610058767E /* NodeTreeViewMetricsUpdater.m in Sources */,
 				CD7C69BB1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
 				CD51227529B26E5000C249B5 /* NodeNumbersView.m in Sources */,
 				CDC8DEF628EDECCA00619305 /* NodeTreeTileView.m in Sources */,
