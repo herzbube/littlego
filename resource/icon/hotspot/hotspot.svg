@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="700pt"
+   height="700pt"
+   version="1.1"
+   viewBox="0 0 700 700"
+   id="svg54"
+   sodipodi:docname="hotspot.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview54"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="pt"
+     inkscape:zoom="0.66449955"
+     inkscape:cx="425.13197"
+     inkscape:cy="367.94607"
+     inkscape:window-width="1480"
+     inkscape:window-height="678"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg54" />
+  <defs
+     id="defs20">
+    <symbol
+       id="t"
+       overflow="visible">
+      <path
+         d="m0.015625 0h-0.015625v-0.015625h0.015625-0.015625v0.015625h0.015625z"
+         id="path1" />
+    </symbol>
+    <symbol
+       id="d"
+       overflow="visible">
+      <path
+         d="m0.015625-0.015625h-0.015625v0.015625-0.015625h0.015625z"
+         id="path2" />
+    </symbol>
+    <symbol
+       id="b"
+       overflow="visible">
+      <path
+         d="m0.015625-0.015625v0.015625h-0.015625 0.015625-0.015625v-0.015625h0.015625zm0 0h-0.015625z"
+         id="path3" />
+    </symbol>
+    <symbol
+       id="k"
+       overflow="visible">
+      <path
+         d="m0.015625 0h-0.015625 0.015625zm0-0.015625v0.015625h-0.015625c0-0.0078125 0.0039062-0.015625 0.015625-0.015625h-0.015625 0.015625z"
+         id="path4" />
+    </symbol>
+    <symbol
+       id="c"
+       overflow="visible">
+      <path
+         d="m0.015625-0.015625v0.015625h-0.015625v-0.015625z"
+         id="path5" />
+    </symbol>
+    <symbol
+       id="j"
+       overflow="visible">
+      <path
+         d="m0.015625-0.015625v0.015625h-0.015625v-0.015625h0.015625zm0 0.015625v-0.015625h-0.015625v0.015625h0.015625z"
+         id="path6" />
+    </symbol>
+    <symbol
+       id="i"
+       overflow="visible">
+      <path
+         d="m0.015625 0v-0.015625h-0.015625v0.015625h0.015625zm-0.015625-0.015625h0.015625v0.015625h-0.015625z"
+         id="path7" />
+    </symbol>
+    <symbol
+       id="h"
+       overflow="visible">
+      <path
+         d="m0-0.015625 0.015625 0.015625v-0.015625 0.015625h-0.015625z"
+         id="path8" />
+    </symbol>
+    <symbol
+       id="g"
+       overflow="visible">
+      <path
+         d="m0-0.015625h0.015625v0.015625h-0.015625z"
+         id="path9" />
+    </symbol>
+    <symbol
+       id="f"
+       overflow="visible">
+      <path
+         d="m0.015625-0.015625h-0.015625v0.015625h0.015625-0.015625v-0.015625h0.015625z"
+         id="path10" />
+    </symbol>
+    <symbol
+       id="a"
+       overflow="visible">
+      <path
+         d="m0.015625-0.015625h-0.015625v0.015625h0.015625v-0.015625zm0 0v0.015625h-0.015625v-0.015625h0.015625z"
+         id="path11" />
+    </symbol>
+    <symbol
+       id="s"
+       overflow="visible">
+      <path
+         d="m0-0.015625h0.03125v0.015625h-0.015625v-0.015625 0.015625l-0.015625-0.015625v0.015625z"
+         id="path12" />
+    </symbol>
+    <symbol
+       id="e"
+       overflow="visible">
+      <path
+         d="m0.015625-0.015625v0.015625-0.015625h-0.015625v0.015625-0.015625h0.015625z"
+         id="path13" />
+    </symbol>
+    <symbol
+       id="r"
+       overflow="visible">
+      <path
+         d="m0.015625-0.015625v0.015625h-0.015625v-0.015625h0.015625z"
+         id="path14" />
+    </symbol>
+    <symbol
+       id="q"
+       overflow="visible">
+      <path
+         d="m0.015625-0.015625h0.015625v0.015625h-0.015625v-0.015625 0.015625-0.015625h-0.015625v0.015625-0.015625h0.015625z"
+         id="path15" />
+    </symbol>
+    <symbol
+       id="p"
+       overflow="visible">
+      <path
+         d="m0.015625-0.015625v0.015625-0.015625h-0.015625v0.015625-0.015625h0.015625z"
+         id="path16" />
+    </symbol>
+    <symbol
+       id="o"
+       overflow="visible">
+      <path
+         d="m0-0.015625h0.015625v0.015625-0.015625 0.015625l-0.015625-0.015625v0.015625z"
+         id="path17" />
+    </symbol>
+    <symbol
+       id="n"
+       overflow="visible">
+      <path
+         d="m0 0v-0.015625 0.015625h0.015625v-0.015625 0.015625h-0.015625z"
+         id="path18" />
+    </symbol>
+    <symbol
+       id="m"
+       overflow="visible">
+      <path
+         d="m0-0.015625h0.015625v0.015625h-0.015625z"
+         id="path19" />
+    </symbol>
+    <symbol
+       id="l"
+       overflow="visible">
+      <path
+         d="m0-0.015625v0.015625z"
+         id="path20" />
+    </symbol>
+  </defs>
+  <path
+     d="m 355.00299,256.21669 c -2.33731,6.26367 -3.41178,13.1639 -0.79488,15.87376 2.85063,2.99205 7.29071,5.23497 10.42346,9.62916 4.15928,5.84189 4.86101,18.69576 -10.14178,22.06015 6.31056,-3.31901 7.66549,-12.94574 0.84268,-18.97613 1.77619,5.84229 -1.49583,9.58136 -5.56193,8.22653 -3.97293,-1.35524 -6.59022,1.49582 -6.49773,4.76782 0.0462,2.24333 0.93467,4.1593 3.2246,5.23499 -9.76853,-1.72919 -13.69406,-9.81634 -13.69406,-15.98591 0,-8.13293 7.24485,-9.25409 3.59816,-16.07766 4.34687,0.37275 5.8423,3.22419 5.42134,7.89804 -0.28037,3.08605 2.94547,5.18796 5.32969,3.78574 1.91555,-1.16806 1.86979,-3.41138 0.18716,-5.09439 -6.62201,-8.58141 7.66345,-21.3424 7.66345,-21.3424 z"
+     fill-rule="evenodd"
+     id="path21"
+     style="stroke:#000000;stroke-width:2.24987;stroke-dasharray:none;stroke-opacity:0" />
+  <use
+     x="70"
+     y="560.08594"
+     xlink:href="#t"
+     id="use21" />
+  <use
+     x="70.019531"
+     y="560.08594"
+     xlink:href="#d"
+     id="use22" />
+  <use
+     x="70.035156"
+     y="560.08594"
+     xlink:href="#b"
+     id="use23" />
+  <use
+     x="70.054688"
+     y="560.08594"
+     xlink:href="#k"
+     id="use24" />
+  <use
+     x="70.070312"
+     y="560.08594"
+     xlink:href="#c"
+     id="use25" />
+  <use
+     x="70.085938"
+     y="560.08594"
+     xlink:href="#b"
+     id="use26" />
+  <use
+     x="70.105469"
+     y="560.08594"
+     xlink:href="#j"
+     id="use27" />
+  <use
+     x="70.132812"
+     y="560.08594"
+     xlink:href="#i"
+     id="use28" />
+  <use
+     x="70.15625"
+     y="560.08594"
+     xlink:href="#h"
+     id="use29" />
+  <use
+     x="70.183594"
+     y="560.08594"
+     xlink:href="#g"
+     id="use30" />
+  <use
+     x="70.191406"
+     y="560.08594"
+     xlink:href="#f"
+     id="use31" />
+  <use
+     x="70.210938"
+     y="560.08594"
+     xlink:href="#a"
+     id="use32" />
+  <use
+     x="70.230469"
+     y="560.08594"
+     xlink:href="#s"
+     id="use33" />
+  <use
+     x="70.257812"
+     y="560.08594"
+     xlink:href="#a"
+     id="use34" />
+  <use
+     x="70.277344"
+     y="560.08594"
+     xlink:href="#a"
+     id="use35" />
+  <use
+     x="70.296875"
+     y="560.08594"
+     xlink:href="#e"
+     id="use36" />
+  <use
+     x="70"
+     y="560.11328"
+     xlink:href="#r"
+     id="use37" />
+  <use
+     x="70.011719"
+     y="560.11328"
+     xlink:href="#d"
+     id="use38" />
+  <use
+     x="70.027344"
+     y="560.11328"
+     xlink:href="#a"
+     id="use39" />
+  <use
+     x="70.046875"
+     y="560.11328"
+     xlink:href="#q"
+     id="use40" />
+  <use
+     x="70.085938"
+     y="560.11328"
+     xlink:href="#c"
+     id="use41" />
+  <use
+     x="70.097656"
+     y="560.11328"
+     xlink:href="#p"
+     id="use42" />
+  <use
+     x="70.117188"
+     y="560.11328"
+     xlink:href="#b"
+     id="use43" />
+  <use
+     x="70.144531"
+     y="560.11328"
+     xlink:href="#o"
+     id="use44" />
+  <use
+     x="70.167969"
+     y="560.11328"
+     xlink:href="#a"
+     id="use45" />
+  <use
+     x="70.1875"
+     y="560.11328"
+     xlink:href="#n"
+     id="use46" />
+  <use
+     x="70.207031"
+     y="560.11328"
+     xlink:href="#e"
+     id="use47" />
+  <use
+     x="70.238281"
+     y="560.11328"
+     xlink:href="#m"
+     id="use48" />
+  <use
+     x="70.257812"
+     y="560.11328"
+     xlink:href="#d"
+     id="use49" />
+  <use
+     x="70.273438"
+     y="560.11328"
+     xlink:href="#a"
+     id="use50" />
+  <use
+     x="70.292969"
+     y="560.11328"
+     xlink:href="#l"
+     id="use51" />
+  <use
+     x="70.300781"
+     y="560.11328"
+     xlink:href="#b"
+     id="use52" />
+  <use
+     x="70.320312"
+     y="560.11328"
+     xlink:href="#f"
+     id="use53" />
+  <use
+     x="70.335938"
+     y="560.11328"
+     xlink:href="#c"
+     id="use54" />
+</svg>
