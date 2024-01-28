@@ -1559,9 +1559,9 @@ position, such as "good move", "very bad move", "doubtful move", etc.
 You cannot assign a move valuation if no move was played to create the board
 position. For instance, you cannot assign a move valuation when you are viewing
 board position 0, i.e. the start of the game. SGF files created by other
-programs may also contain board positions with only annotations or markup but
-no move - the app in that case displays the board position with the text
-"No move".
+programs may also contain board positions with only setup, annotations or
+markup but no move - the app in that case displays the board position with the
+text "Setup" or "Empty".
 
 ===================
 Hotspot designation
@@ -1609,10 +1609,10 @@ annotation data:
 - The board position shows a "flame" icon if the board position is designated
   as a hotspot. The icon is either black (regular hotspot) or red (intense hot
   spot).
-- The board position shows the text "No move" if it only contains annotation
-  or markup data but no move. Currently there is no way to create such board
-  positions within the app itself, but you may encounter them when you load
-  SGF files created by other programs.
+- The board position shows the text "Setup" or "Empty" if it only contains
+  setup, annotation or markup data but no move. Currently there is no way to
+  create such board positions within the app itself, but you may encounter
+  them when you load SGF files created by other programs.
 
 
 --------------------------------------------------------------------------------

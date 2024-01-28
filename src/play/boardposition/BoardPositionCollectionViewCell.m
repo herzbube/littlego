@@ -404,7 +404,10 @@ static UIFont* smallFont = nil;
     }
     else
     {
-      self.textLabel.text = @"No move";
+      if (node.goNodeSetup)
+        self.textLabel.text = @"Setup";
+      else
+        self.textLabel.text = @"Empty";
       self.detailTextLabel.text = nil;
       self.capturedStonesLabel.text = nil;
     }
@@ -457,7 +460,7 @@ static UIFont* smallFont = nil;
   else
   {
     self.nodeSymbolImageView.image = [self nodeSymbolImageForNodeSymbol:NodeTreeViewCellSymbolBlackMove];
-    self.textLabel.text = @"No move";
+    self.textLabel.text = @"Setup";
     self.detailTextLabel.text = @"Move 8888";
     self.capturedStonesLabel.text = @"888";
     self.infoIconImageView.image = infoIconImage;
