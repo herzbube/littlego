@@ -41,10 +41,10 @@
 /// suppress the creation of a new GoGame by initializing NewGameCommand with
 /// a pre-fabricated GoGame object.
 ///
-/// @attention If @e shouldTriggerComputerPlayer is true, the calling thread
-/// must survive long enough for ComputerPlayMoveCommand to complete, otherwise
-/// the GTP client will be unable to deliver the GTP response and the
-/// application will hang forever.
+/// @attention If @e shouldTriggerComputerPlayerIfItIsTheirTurn is true, the
+/// calling thread must survive long enough for ComputerPlayMoveCommand to
+/// complete, otherwise the GTP client will be unable to deliver the GTP
+/// response and the application will hang forever.
 // -----------------------------------------------------------------------------
 @interface NewGameCommand : CommandBase
 {
@@ -57,6 +57,6 @@
 @property(nonatomic, assign) bool shouldHonorAutoEnableBoardSetupMode;
 @property(nonatomic, assign) bool shouldSetupGtpHandicapAndKomi;
 @property(nonatomic, assign) bool shouldSetupComputerPlayer;
-@property(nonatomic, assign) bool shouldTriggerComputerPlayer;
+@property(nonatomic, assign) bool shouldTriggerComputerPlayerIfItIsTheirTurn;
 
 @end

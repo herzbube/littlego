@@ -803,7 +803,8 @@ board setup mode. The idea is that usually you want to play, and setting up a
 board position is the exception. You can change this default behaviour in the
 user preferences under "Settings > Board setup": If you turn on the option
 "Auto-enable board setup" the app will automatically switch to board setup mode
-whenever you start a new game.
+whenever you start a new game and it is your turn to play first. If it is the
+computer player's turn to play first it will immediately play a move instead.
 
 While in board setup mode you can tap the "Play" button on the left-hand side of
 the toolbar at the top of the screen (iPhone 6+ landscape: on the right-hand

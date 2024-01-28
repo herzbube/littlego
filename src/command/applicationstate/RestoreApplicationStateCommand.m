@@ -55,7 +55,7 @@
   // Computer player must not be triggered before the GTP engine has been
   // sync'ed (it is irrelevant that we are not going to trigger the computer
   // player at all)
-  command.shouldTriggerComputerPlayer = false;
+  command.shouldTriggerComputerPlayerIfItIsTheirTurn = false;
   [command submit];
 
   SyncGTPEngineCommand* syncCommand = [[[SyncGTPEngineCommand alloc] init] autorelease];

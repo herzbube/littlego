@@ -72,7 +72,7 @@
   self.shouldHonorAutoEnableBoardSetupMode = true;
   self.shouldSetupGtpHandicapAndKomi = true;
   self.shouldSetupComputerPlayer = true;
-  self.shouldTriggerComputerPlayer = true;
+  self.shouldTriggerComputerPlayerIfItIsTheirTurn = true;
   return self;
 }
 
@@ -81,8 +81,12 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  // When a new game is started it is important to disable scoring mode while
+  // the old GoGame is still around because scoring mode affects the state of
+  // some Go model objects.
   if (self.shouldResetUIAreaPlayMode)
-    [self resetUIAreaPlayMode];
+    [self setUIAreaPlayMode:UIAreaPlayModePlay];
+
   [self newGame];
   [self setupGtpRules];
   [self setupGtpBoard];
@@ -90,31 +94,36 @@
     [self setupGtpHandicapAndKomi];
   if (self.shouldSetupComputerPlayer)
     [GtpUtilities setupComputerPlayer];
-  if (self.shouldTriggerComputerPlayer)
-    [self triggerComputerPlayer];
+
+  bool shouldTriggerComputerPlayer = (self.shouldTriggerComputerPlayerIfItIsTheirTurn &&
+                                      [GoGame sharedGame].nextMovePlayerIsComputerPlayer);
+  if (shouldTriggerComputerPlayer)
+    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
+
+  bool shouldConsiderAutoEnablingBoardSetupMode = (self.shouldResetUIAreaPlayMode &&
+                                                   self.shouldHonorAutoEnableBoardSetupMode &&
+                                                   ! shouldTriggerComputerPlayer);
+  if (shouldConsiderAutoEnablingBoardSetupMode)
+  {
+    if ([ApplicationDelegate sharedDelegate].boardSetupModel.autoEnableBoardSetupMode)
+      [self setUIAreaPlayMode:UIAreaPlayModeBoardSetup];
+  }
+
   return true;
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Resets the UI area "Play" to #UIAreaPlayModePlay.
+/// @brief Sets the UI area "Play" to @a uiAreaPlayMode.
+///
 // -----------------------------------------------------------------------------
-- (void) resetUIAreaPlayMode
+- (void) setUIAreaPlayMode:(enum UIAreaPlayMode)uiAreaPlayMode
 {
-  // When a new game is started it is especially important to disable scoring
-  // mode while the old GoGame is still around because scoring mode affects the
-  // state of some Go model objects.
-  enum UIAreaPlayMode uiAreaPlayMode;
-  if ([ApplicationDelegate sharedDelegate].boardSetupModel.autoEnableBoardSetupMode && self.shouldHonorAutoEnableBoardSetupMode)
-    uiAreaPlayMode = UIAreaPlayModeBoardSetup;
-  else
-    uiAreaPlayMode = UIAreaPlayModePlay;
-
   ChangeUIAreaPlayModeCommand* changeUIAreaPlayModeCommand = [[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:uiAreaPlayMode] autorelease];
   changeUIAreaPlayModeCommand.newGameSetupIsInProgress = true;
   [changeUIAreaPlayModeCommand submit];
 }
 
-  // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 /// @brief Creates a new GoGame instance (deallocates the old one first).
 // -----------------------------------------------------------------------------
 - (void) newGame
@@ -442,15 +451,6 @@
   GtpCommand* commandKomi = [GtpCommand command:[NSString stringWithFormat:@"komi %.1f", game.komi]];
   [commandKomi submit];
   assert(commandKomi.response.status);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Triggers the computer player to make a move, if it is his turn.
-// -----------------------------------------------------------------------------
-- (void) triggerComputerPlayer
-{
-  if ([GoGame sharedGame].nextMovePlayerIsComputerPlayer)
-    [[[[ComputerPlayMoveCommand alloc] init] autorelease] submit];
 }
 
 @end

@@ -284,7 +284,7 @@ static const int maxStepsForCreateNodes = 9;
   // Handicap and komi will later be set up by SyncGTPEngineCommand
   command.shouldSetupGtpHandicapAndKomi = false;
   // We have to do this ourselves, after setting up handicap + moves
-  command.shouldTriggerComputerPlayer = false;
+  command.shouldTriggerComputerPlayerIfItIsTheirTurn = false;
   // We want the load game command to proceed as quickly as possible, therefore
   // we set up the computer player ourselves, at the very end just before we
   // trigger the computer player. If we would allow the computer player to be
