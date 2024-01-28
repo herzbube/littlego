@@ -1153,16 +1153,25 @@ extern NSString* goNodeTreeLayoutDidChange;
 /// during board setup. The intersection now has a handicap stone, or a
 /// previously set handicap stone has been removed. The GoPoint object that
 /// identifies the intersection is associated with the notification.
+///
+/// #nodeSetupDataDidChange is sent after this notification.
 extern NSString* handicapPointDidChange;
 /// @brief Is sent to indicate that the state of an intersection has changed
 /// during board setup. The intersection now has a black or white stone, or the
 /// color of a previously set setup stone has been changed, or a previously set
 /// setup stone has been removed. The GoPoint object that identifies the
 /// intersection is associated with the notification.
+///
+/// #nodeSetupDataDidChange is sent after this notification.
 extern NSString* setupPointDidChange;
 /// @brief Is sent to indicate that all setup stones are about to be discarded.
+///
+/// #allSetupStonesDidDiscard and #nodeSetupDataDidChange are sent after this
+/// notification.
 extern NSString* allSetupStonesWillDiscard;
 /// @brief Is sent to indicate that all setup stones have been discarded.
+///
+/// #nodeSetupDataDidChange is sent after this notification.
 extern NSString* allSetupStonesDidDiscard;
 /// @brief Is sent to indicate that the setup data in a node changed. The
 /// GoNode object that identifies the node with the changed data is associated
@@ -1203,10 +1212,14 @@ extern NSString* nodeAnnotationDataDidChange;
 /// If the NSArray is empty, the markup did change on two or more intersections
 /// that potentionally do not form a connected area, so that there is no benefit
 /// in enumerating the GoPoint objects that identify the intersections.
+///
+/// #nodeMarkupDataDidChange is sent after this notification.
 extern NSString* markupOnPointsDidChange;
 /// @brief Is sent to indicate that all markup data has been discarded during
 /// markup editing. The GoNode object that identifies the node with the discared
 /// data is associated with the notification.
+///
+/// #nodeMarkupDataDidChange is sent after this notification.
 extern NSString* allMarkupDidDiscard;
 /// @brief Is sent to indicate that the markup data in a node changed. The
 /// GoNode object that identifies the node with the changed data is associated

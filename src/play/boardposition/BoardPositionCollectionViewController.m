@@ -165,6 +165,7 @@
   [center addObserver:self selector:@selector(handicapPointDidChange:) name:handicapPointDidChange object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
   [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
+  [center addObserver:self selector:@selector(nodeSetupDataDidChange:) name:nodeSetupDataDidChange object:nil];
   [center addObserver:self selector:@selector(nodeAnnotationDataDidChange:) name:nodeAnnotationDataDidChange object:nil];
   [center addObserver:self selector:@selector(markupOnPointsDidChange:) name:markupOnPointsDidChange object:nil];
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
@@ -364,6 +365,15 @@
 {
   self.userInteractionEnabledNeedsUpdate = true;
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #nodeSetupDataDidChange notification.
+// -----------------------------------------------------------------------------
+- (void) nodeSetupDataDidChange:(NSNotification*)notification
+{
+  GoNode* node = notification.object;
+  [self nodeDataDidChange:node];
 }
 
 // -----------------------------------------------------------------------------

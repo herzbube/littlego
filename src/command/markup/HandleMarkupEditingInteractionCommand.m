@@ -480,10 +480,10 @@ enum MarkupEditingInteraction
 /// @brief Posts #nodeMarkupDataDidChange and #markupOnPointsDidChange to the
 /// global notification center, with appropriate notification objects.
 ///
-/// #nodeMarkupDataDidChange is posted with @a node as the notification object.
-///
 /// #markupOnPointsDidChange is posted with a notification object that is based
 /// on the data in @a pointsWithChangedMarkup.
+///
+/// #nodeMarkupDataDidChange is posted with @a node as the notification object.
 // -----------------------------------------------------------------------------
 - (void) postNotificationsWithNode:(GoNode*)node pointsWithChangedMarkup:(NSArray*)pointsWithChangedMarkup
 {
