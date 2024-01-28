@@ -22,8 +22,17 @@
 /// BoardPositionCollectionViewCell is therefore effectively a description of
 /// the content of a game tree node.
 ///
-/// All BoardPositionCollectionViewCell instances have the same pre-calculated
-/// size.
+/// There are two kinds of BoardPositionCollectionViewCell:
+/// - A cell that represents board position 0, i.e. the root of the game tree
+///   node, which is the start of the game in all branches of the tree.
+/// - A cell that represents board positions >0.
+///
+/// All BoardPositionCollectionViewCell instances of the same type have the same
+/// pre-calculated size. All BoardPositionCollectionViewCell instances,
+/// regardless of their type, share the same Auto Layout constraints, with some
+/// constraints being modified dynamically when the content of the cell changes,
+/// resulting in substantially different view layouts. See the NOTES.Design
+/// document for a detailed explanation of all constraints.
 ///
 /// The basic view layout, when all subviews are visible at the same time, looks
 /// like this:

@@ -372,3 +372,231 @@ following needs to be known:
 The node tree view tile now knows which cells on each row it needs to draw, and
 can now query the data model based on the x/y position of cells (or column/row
 number if you like).
+
+
+BoardPositionCollectionViewCell Auto Layout Constraints
+-------------------------------------------------------
+This section documents the Auto Layout Constraints that are in place in
+BoardPositionCollectionViewCell, using Cxxx numbers to identify each constraint.
+You will find the same Cxxx numbers in the code. A Cxxx number with the note
+"NO CODE" indicates that the constraint exists, but in the implementation
+there is no actual code for it, because the UIKit defaults already fulfill the
+constraint.
+
+Basic principles:
+- For every subview constraints are needed to define four things:
+  - x-position
+  - y-position
+  - Width
+  - Height
+- The constraints must collaborate so that an off-screen layouting of the
+  subviews results in a width and height of the cell view. In other words:
+  There must be at least one row and one column of subviews that are
+  horizontally/vertically connected to each other and to the cell view's edges.
+- When a subview becomes not visible, if there is a spacing that must be reduced
+  to zero it must always be the spacing to its horizontal or vertical sibling
+  that is reduced, not the spacing to the cell view edge, i.e. the margin.
+  Reason: margin and sibling spacing could be different. If we reduced the
+  margin to zero a subview could then be aligned closer to the cell view edge
+  than another subview that still uses the margin.
+
+Characteristics that define the cell view size during off-screen layouting:
+- Width = Margin +
+          Node symbol image view width (explicit) + spacing +
+          Text label width (dummy text) + spacing +
+          Captured stones label width (dummy text) + spacing +
+          Info icon image view width (explicit) +
+          Margin
+    or
+  Width = Margin
+          Node symbol image view width (explicit) + spacing +
+          Detail text label width (dummy text) + spacing +
+          Hotspot icon image view width (explicit) + spacing +
+          Markup icon image view width (explicit) +
+          Margin
+  => Whichever of the two is wider (expected: the first variant)
+- Height = Margin +
+           Text label height (dummy text) + spacing +
+           Detail text label height (dummy text) +
+           Margin
+
+Node symbol image view
+- [C000] x-position = Superview left edge + margin
+- [C001] y-position = Vertically centered in superview
+- [C002 + C003] Width/Height = Fixed width/height
+
+Text label
+- [C010] x-position = Right edge of node symbol image view + spacing
+- [C011] y-position = Top edge of superview + margin
+- [C012] Width = Right edge of text label
+               = [C030] = Left edge of captured stones label - spacing
+  => The info icon has fixed width, so the text label + the captured stones
+     label get whatever width is left.
+  => The text label + the captured stones label share the available width. Auto
+     Layout can distribute the available width in whatever way it likes between
+     the two labels.
+  => Because the text label is left-aligned and the captured stones label is
+     right-aligned, the user does not care which label any unused space is
+     assigned to, because the captured stones text will always appear aligned
+     to the info icon (or to the superview edge if the icon is not shown).
+  => When we perform an off-screen layouting we give both labels a dummy text
+     that is the longest possible text; in this way we can be sure that there
+     will always be sufficient space to display all texts regardless of how
+     Auto Layout distributes the available width.
+  => Tested with iOS 15: If there is not sufficient space the text label has
+     higher priority and gets to display more of its text at the cost of the
+     captured stones label.
+  => No need to dynamically remove the spacing because, if captured stones text
+     and info icon are not displayed, the text label text will never be long
+     enough to reach the superview right edge (we made sure to give the cell
+     enough width during off-screen layouting).
+- [C013] Height = Bottom edge of text label
+                = [C023] = Top edge of detail text label - spacing
+  => See notes for C021.
+- [C014/NO CODE] numberOfLines = 1 (the default)
+  => This is OK because we choose texts that are short enough to fit one line.
+  => numberOfLines = 0 did not always work properly in the past, especially when
+     there was a non-trivial layout, so we try to avoid it.
+  => If we wanted to try numberOfLines = 0, then C014 would work like this:
+     => if detail text is shown: numberOfLines = 1
+         if no detail text is shown: numberOfLines = 0
+         => Allows the text label to grow in height when it gets more height due to
+            the detail text label having height 0.
+         => numberOfLines must not be 0 if the detail text is shown, because then
+            an overly long text would push the detail text label out of the cell.
+- [C015/NO CODE] Horizontal text alignment = left (the default)
+- [C016/NO CODE] Vertical text alignment = center (the default)
+  => The text label text should not stick to the top of the text label when the
+     detail text is not shown and the text label gets more height than usual.
+     The text in this case should be vertically centered on the node symbol
+     image view.
+  => Also covers the case where the cell has a height that is larger than the
+     one calculated by sizeToFit. In that case the text label stretches
+     vertically and the label text will be vertically centered.
+
+Detail text label
+- [C020] x-position = Right edge of node symbol image view + spacing
+  => No need to dynamically remove the spacing if the detail text is not
+     shown. Reason: The hotspot and markup icons will always stay on the right
+     edge of the superview because of their fixed width. We expect that, from
+     the Auto Layout perspective, the detail text label will stretch to consume
+     the space even if the detail text is not shown.
+- [C021] y-position = if detail text is shown: bottom edge of text label + spacing
+                      if no detail text is shown: bottom edge of text label
+  => The spacing must be removed so that the text label gets the full height and
+     the text in the text label is properly vertically centered in relation to
+     the node symbol image view.
+  => To achieve spacing/no spacing: dynamically adjust the y-positioning
+     constraint's constant.
+- [C022] Width = Right edge of detail text label
+               = [C050] = Left edge of hotspot icon - spacing
+  => The hotspot + markup icons have fixed width, so the detail text label gets
+     whatever width is left.
+  => No need to dynamically remove the spacing because, if hotspot + markup
+     icons are not displayed, the detail text label text will never be long
+     enough to reach the superview right edge (we made sure to give the cell
+     enough width during off-screen layouting).
+- [C023] Height 1 = Bottom edge of superview - spacing
+  => No need to dynamically remove the spacing because, if the detail text is
+     not displayed, the detail text label y-position constraint [C021] will
+     dynamically adjust the spacing towards the text label bottom edge.
+  [C024] Height 2 = Height constraint with constant = 0
+  => If detail text is shown: Deactivate constraint
+     => The detail text label gets whatever height is available.
+  => If detail text is not shown: Activate constraint
+     => The text label gets more height
+- [C025/NO CODE] numberOfLines = 1 (default)
+  => The detail text label text always fits on one line.
+- [C026/NO CODE] Horizontal text alignment = left (default)
+- [C027/NO CODE] Vertical text alignment = center (default)
+  => Covers the case where the cell has a height that is larger than the one
+     calculated by sizeToFit. In that case the detail text label stretches
+     vertically and the detail label text will be vertically centered.
+- [C028/OPTIONAL] Height 3 = Height of text label
+  => This is necessary only if the cell has a height that is larger than the
+     one calculated by sizeToFit. If the height is larger and this constraint is
+     not present, the detail text label will get the surplus height while the
+     text label stays at its minimal height.
+
+Captured stones label
+- [C030] x-position = Right edge of text label + spacing
+  => No need to dynamically remove the spacing if the captured stones text is
+     not shown. Reason: the text label will never have a text that is long
+     enough to get near to the info icon or the superview edge.
+- [C031] y-position = Vertically centered on text label
+  => Because this has a smaller font than the text label.
+  => No distinction needs to be made whether or not the detail text is shown,
+     because captured stones can only ever be shown if the node contains a move,
+     and if that is the case the detail text is also shown. If the detail text
+     is not shown, then the captured stones label will overlap the hotspot icon,
+     but this overlap is not visible to the user because the captured stones
+     label does not have any text.
+- [C032] Width = Right edge of captured stones label
+               = [C040] = Left edge of info icon - spacing
+  => The info icon has fixed width, so the text label + the captured stones
+     label get whatever width is left.
+  => See notes for width constraint of text label (C012).
+- [C033/NO CODE] Height = Intrinsic height
+  => Because this uses a smaller font size than the text label it will never
+     use more height than it is allowed to.
+- [C034/NO CODE] numberOfLines = 1 (default)
+  => The captured stones label text always fits on one line.
+- [C035] Horizontal text alignment = Right
+  => See notes for width constraint of text label (C012).
+- [C036/NO CODE] Vertical text alignment = center (default)
+  => Center is not actually needed because this label never stretches
+     vertically.
+
+Info icon image view
+- [C040] x-position = If info icon is shown: Right edge of captured stones label + spacing
+                      If info icon is not shown: Right edge of captured stones label
+  => The spacing must be removed so that the captured stones label can align to
+     the superview right edge.
+  => The width constraint's constant is dynamically adjusted.
+- [C041] y-position = If detail text is shown: Vertically centered on text label
+  => So that the info icon and the captured stones label are both centered on
+     the same thing.
+                      If detail text is not shown: Vertically centered in superview
+  => Vertical alignment with captured stones label is not relevant because the
+     captured stones text is not shown.
+                      => In addition if hotspot and/or markup icon is displayed: Modify constraint by -<n> to push the info icon up into a top row
+                          => Because we now have two rows.
+- [C042] Width 1 = Right edge of superview - spacing
+- [C043] Width 2 = If info icon is shown: Fixed width
+                   If info icon is not shown: 0
+  => The width constraint's constant is dynamically adjusted.
+- [C044] Height = Fixed height
+
+Hotspot icon image view
+- [C050] x-position = Right edge of detail text label + spacing
+  => No need to dynamically remove the spacing if the hotspot icon is not shown.
+     Reason: The detail text label will never have a text that is long enough to
+     get near to the markup icon or the superview edge.
+- [C051] y-position = If detail text is shown: Vertically centered on detail text label
+                      If detail text is not shown: Vertically centered in superview
+                      => In addition if info icon is displayed: Modify constraint by +<n> to push the hotspot icon down into a bottom row
+                         => Because we now have two rows.
+- [C052] Width 1 = Right edge of hotspot icon image view
+                 = [C060] = Right edge of markup icon image view - spacing
+  => Spacing needs to be dynamically remove if the markup icon is not shown.
+     See C060 for details.
+- [C0053] Width 2 = If hotspot icon is shown: Fixed width
+                    If hotspot icon is now shown: 0
+  => The width constraint's constant is dynamically adjusted.
+- [C0054] Height = Fixed height
+
+Markup icon image view
+- [C060] x-position = If markup icon is shown: Right edge of hotspot icon + spacing
+                      If markup icon is not shown: Right edge of hotspot icon
+  => The spacing must be removed so that the hotspot icon can align to the
+     superview right edge.
+  => The width constraint's constant is dynamically adjusted.
+- [C061] y-position = If detail text is shown: Vertically centered on detail text label
+                      If detail text is not shown: Vertically centered in superview
+                      => In addition if info icon is displayed: Modify constraint by +<n> to push the markup icon down into a bottom row
+                         => Because we now have two rows.
+- [C062] Width 1 = Right edge of superview - spacing
+- [C063] Width 2 = If markup icon is shown: Fixed width
+                   If markup icon is not shown: 0
+  => The width constraint's constant is dynamically adjusted.
+- [C0064] Height = Fixed height
