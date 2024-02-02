@@ -173,16 +173,17 @@
     [[ApplicationStateManager sharedManager] beginSavePoint];
     [[LongRunningActionCounter sharedCounter] increment];
 
+    // Whoever invoked HandleBoardSetupInteractionCommand must have previously
+    // made sure that it's OK to discard future nodes. We can therefore safely
+    // submit ChangeAndDiscardCommand without user interaction. If there is more
+    // than one game variation we have to submit the command multiple times
+    // (once for each game variation). Note that ChangeAndDiscardCommand also
+    // reverts the game state to "in progress" if the game is currently ended.
+    // The overall effect is that, after all executions of the command, GoGame
+    // is in a state that allows us to perform changes to the board setup.
     GoBoardPosition* boardPosition = game.boardPosition;
-    if (boardPosition.numberOfBoardPositions > 0 || game.state == GoGameStateGameHasEnded)
+    while (boardPosition.numberOfBoardPositions > 1 || game.state == GoGameStateGameHasEnded)
     {
-      // Whoever invoked HandleBoardSetupInteractionCommand must have previously
-      // made sure that it's OK to discard future nodes. We can therefore safely
-      // submit ChangeAndDiscardCommand without user interaction. Note that
-      // ChangeAndDiscardCommand reverts the game state to "in progress" if the
-      // game is currently ended. The overall effect is that after executing
-      // this command GoGame is in a state that allows us to perform changes to
-      // the board setup.
       [[[[ChangeAndDiscardCommand alloc] init] autorelease] submit];
     }
 
