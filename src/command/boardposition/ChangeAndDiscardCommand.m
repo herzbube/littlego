@@ -39,9 +39,9 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  bool shouldDiscardBoardPositions = [self shouldDiscardBoardPositions];
+  bool shouldDiscardNodes = [self shouldDiscardNodes];
   bool shouldRevertGameStateToInProgress = [self shouldRevertGameStateToInProgress];
-  if (! shouldDiscardBoardPositions && ! shouldRevertGameStateToInProgress)
+  if (! shouldDiscardNodes && ! shouldRevertGameStateToInProgress)
     return true;
 
   @try
@@ -51,14 +51,14 @@
 
     bool success;
 
-    // Before we discard, first change to a board position that will be valid
-    // even after the discard.
-    if (shouldDiscardBoardPositions)
+    // Before we discard, first change to a node that will be valid even after
+    // the discard.
+    if (shouldDiscardNodes)
     {
-      success = [self changeBoardPositionIfNecessary];
+      success = [self changeCurrentNodeIfNecessary];
       if (! success)
       {
-        DDLogError(@"%@: Aborting because changeBoardPositionIfNecessary failed", [self shortDescription]);
+        DDLogError(@"%@: Aborting because changeCurrentNodeIfNecessary failed", [self shortDescription]);
         return false;
       }
     }
@@ -73,7 +73,7 @@
       }
     }
 
-    if (shouldDiscardBoardPositions)
+    if (shouldDiscardNodes)
     {
       success = [self discardNodesIfNecessary];
       if (! success)
@@ -101,17 +101,23 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for doIt(). Returns true if board positions need to be
+/// @brief Private helper for doIt(). Returns true if nodes need to be
 /// discarded, false otherwise.
 // -----------------------------------------------------------------------------
-- (bool) shouldDiscardBoardPositions
+- (bool) shouldDiscardNodes
 {
   GoGame* game = [GoGame sharedGame];
-  GoBoardPosition* boardPosition = game.boardPosition;
-  if (boardPosition.isFirstPosition && 1 == boardPosition.numberOfBoardPositions)
-    return false;
-  else
-    return true;
+
+  // If the root node has any children, then
+  // - If the current node is not the root node: We have to discard at least the
+  //   current node
+  // - If the current node is the root node: We have to discard the first child
+  //   of the root node that comes next in the current game variation. It is
+  //   not possible that the current game variation consists of only the root
+  //   node.
+  // In both cases we have to discard at least one node and can therefore return
+  // true.
+  return game.nodeModel.rootNode.hasChildren;
 }
 
 // -----------------------------------------------------------------------------
@@ -127,17 +133,18 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt(). Returns true on success, false on failure.
 ///
-/// This method changes the current board position in preparation of the
-/// discard. When this method returns, all board positions after the current
-/// one can be discarded. Read the class documentation for details.
+/// This method changes the current node in preparation of the discard. When
+/// this method returns, the first child of the current node that comes next in
+/// the current game variation can be discarded. Read the class documentation
+/// for details.
 // -----------------------------------------------------------------------------
-- (bool) changeBoardPositionIfNecessary
+- (bool) changeCurrentNodeIfNecessary
 {
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
   if (boardPosition.currentBoardPosition == 0)
     return true;
 
-  int numberOfBoardPositionsToDiscard = 1;
+  int numberOfNodesInCurrentGameVariationToDiscard = 1;
 
   BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
   if (boardPositionModel.discardMyLastMove)
@@ -146,39 +153,39 @@
 
     // The idea of the "Discard my last move" feature is to make the user's life
     // easier when a computer vs. human game is going on. For the feature to
-    // have any effect the current board position must therefore be created by
-    // a move played by the computer player, and the previous board position
-    // must be created by a move played by the human player. Only then do we
-    // discard more than 1 board position. Multiple human player moves (which
-    // means non-alternating play) are all discarded together. This can occur
-    // even in a computer vs. human game. Any board positions that are non-moves
-    // break the discard chain.
+    // have any effect the current node must therefore be created by a move
+    // played by the computer player, and the current node's parent node must
+    // be created by a move played by the human player. Only then do we discard
+    // more than 1 board position. Multiple human player moves (which means
+    // non-alternating play) are all discarded together. This can occur even in
+    // a computer vs. human game. Any board positions that are non-moves break
+    // the discard chain.
     if (currentMove && ! currentMove.player.player.human)
     {
       GoNode* node = boardPosition.currentNode.parent;
       while (node && node.goMove && node.goMove.player.player.human)
       {
-        numberOfBoardPositionsToDiscard++;
+        numberOfNodesInCurrentGameVariationToDiscard++;
         node = node.parent;
       }
     }
   }
 
   // We want ChangeBoardPositionCommand to execute synchronously because the
-  // remaining parts of ChangeAndDiscardCommand depend on the board position
+  // remaining parts of ChangeAndDiscardCommand depend on the current node
   // having changed. ChangeBoardPositionCommand executes synchronously only if
   // the new board position is not more than a given maximum number of positions
   // away from the current board position. Because of this we use a loop that
   // changes board positions in chunks.
   int changeChunkSize = [ChangeBoardPositionCommand synchronousExecutionThreshold];
-  while (numberOfBoardPositionsToDiscard > 0)
+  while (numberOfNodesInCurrentGameVariationToDiscard > 0)
   {
     int offset;
-    if (numberOfBoardPositionsToDiscard > changeChunkSize)
+    if (numberOfNodesInCurrentGameVariationToDiscard > changeChunkSize)
       offset = -changeChunkSize;
     else
-      offset = -numberOfBoardPositionsToDiscard;
-    numberOfBoardPositionsToDiscard += offset;
+      offset = -numberOfNodesInCurrentGameVariationToDiscard;
+    numberOfNodesInCurrentGameVariationToDiscard += offset;
 
     // initWithOffset:() is permissive and allows us to specify an offset that
     // would result in an invalid board position. The offset is adjusted in that
@@ -205,8 +212,9 @@
 // -----------------------------------------------------------------------------
 /// @brief Private helper for doIt(). Returns true on success, false on failure.
 ///
-/// This method discards all board positions after the current one. This method
-/// expects that the current board position was changed before this method was
+/// This method discards the child node of the current node that comes next in
+/// the current game variation, and all of that child node's children. This
+/// method expects that the current node was changed before this method was
 /// invoked, so that the discard operation does what is documented in the
 /// class documentation.
 // -----------------------------------------------------------------------------
@@ -217,8 +225,8 @@
   GoNodeModel* nodeModel = game.nodeModel;
 
   int indexOfFirstNodeToDiscard = boardPosition.currentBoardPosition + 1;
-  int numberOfNodes = nodeModel.numberOfNodes;
-  if (indexOfFirstNodeToDiscard >= numberOfNodes)
+  int numberOfNodesInCurrentGameVariation = nodeModel.numberOfNodes;
+  if (indexOfFirstNodeToDiscard >= numberOfNodesInCurrentGameVariation)
     return true;
 
   GoNode* firstNodeToDiscard = [nodeModel nodeAtIndex:indexOfFirstNodeToDiscard];
@@ -230,8 +238,11 @@
   if (newNodesWillBeMergedIntoCurrentGameVariation)
     [center postNotificationName:currentGameVariationWillChange object:nil];
 
-  int numberOfNodesToDiscard = numberOfNodes - indexOfFirstNodeToDiscard;
-  DDLogInfo(@"%@: Index position of first node to discard = %d, number of nodes to discard = %d", [self shortDescription], indexOfFirstNodeToDiscard, numberOfNodesToDiscard);
+  // This counts only the direct descendant nodes in the current game variation.
+  // If any of the children of the first discarded node has siblings then
+  // the total number of discarded nodes is higher
+  int numberOfNodesInCurrentGameVariationToDiscard = numberOfNodesInCurrentGameVariation - indexOfFirstNodeToDiscard;
+  DDLogInfo(@"%@: Index position of first node to discard = %d, number of nodes in current game variation to discard = %d", [self shortDescription], indexOfFirstNodeToDiscard, numberOfNodesInCurrentGameVariationToDiscard);
   [nodeModel discardNodesFromIndex:indexOfFirstNodeToDiscard];
 
   // Adjust number of board positions and send numberOfBoardPositionsDidChange
