@@ -49,7 +49,6 @@
   self.branchingStyle = NodeTreeViewBranchingStyleRightAngle;
   self.nodeSelectionStyle = NodeTreeViewNodeSelectionStyleLightCircular;
   self.focusMode = NodeTreeViewFocusModeMakeSelectedNodeVisible;
-  // TODO xxx should this be a user preference?
   self.nodeNumberViewIsOverlay = false;
   // Display only every n'th node number
   self.nodeNumberInterval = 1;

@@ -121,7 +121,7 @@
 - (void) tapPageControl:(XCUIElement*)pageControl
             onRightSide:(bool)shouldTapOnRightSide
 {
-  // TODO xxx This no longer works in Xcode 15.1 / iOS 17.2 SDK. Currently the
+  // TODO This no longer works in Xcode 15.1 / iOS 17.2 SDK. Currently the
   // only known way how to tap a page control is by invoking tap() on the
   // page control's XCUIElement.
   CGFloat xOffset = shouldTapOnRightSide ? pageControl.frame.size.width - 1 : 0;

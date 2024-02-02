@@ -377,8 +377,8 @@ number if you like).
 BoardPositionCollectionViewCell Auto Layout Constraints
 -------------------------------------------------------
 This section documents the Auto Layout Constraints that are in place in
-BoardPositionCollectionViewCell, using Cxxx numbers to identify each constraint.
-You will find the same Cxxx numbers in the code. A Cxxx number with the note
+BoardPositionCollectionViewCell, using Cnnn numbers to identify each constraint.
+You will find the same Cnnn numbers in the code. A Cnnn number with the note
 "NO CODE" indicates that the constraint exists, but in the implementation
 there is no actual code for it, because the UIKit defaults already fulfill the
 constraint.

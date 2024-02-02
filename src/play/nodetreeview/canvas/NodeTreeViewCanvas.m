@@ -775,7 +775,6 @@ static const unsigned short yPositionOfNodeNumber = 0;
       NSValue* key = [NSValue valueWithNonretainedObject:currentNode];
       nodeMap[key] = branchTuple;
 
-      // TODO xxx Take user preference "numbering style" into account
       nodeNumber++;
       xPosition += branchTuple->numberOfCellsForNode;
 
@@ -2612,7 +2611,6 @@ numberOfNodeNumberCellsExtendingFromCenter:(int)numberOfNodeNumberCellsExtending
 
   // Nodes with a move => we don't care if they also contain annotations or
   // markup
-  // TODO xxx is it correct to not care? e.g. a hotspot should surely be uncodensed? what about annotations/markup in general?
   if (node.goMove)
   {
     // At this point we know the node is neither the root node (i.e. it has a

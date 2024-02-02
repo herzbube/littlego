@@ -1902,7 +1902,7 @@ nodeWithMostRecentMove:(GoNode*)nodeWithMostRecentMove
 /// populated with setup information, markup and annotations, but it cannot hold
 /// a move.
 ///
-/// TODO xxx Write a more sophisticated implementation. This currently exists
+/// TODO Write a more sophisticated implementation. This currently exists
 /// for unit testing purposes only.
 // -----------------------------------------------------------------------------
 - (void) addEmptyNodeToCurrentGameVariation

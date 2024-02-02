@@ -458,13 +458,11 @@
       numberOfMovesToDiscard++;
   }
 
-  // Variation support: Cutting the tree at node B not only removes the nodes,
-  // it also causes all variations that shared the same path up to node B
-  // with the current variation to be removed. Node H and its children will
-  // replace node B and its children in the current variation.
-  // An alternative scenario would be delete node K, i.e. the last variation
-  // below A. In that case node H and its children will replace node K in the
-  // current variation.
+  // Variation support: Discarding node B not only removes the node and its
+  // child nodes, it also causes all variations that shared the same path up to
+  // node B to be discarded. Node H (the next sibling of node B) and its
+  // children will replace node B and its children in the current variation.
+  //
   //      +-- branching node
   //      |    +-- first node to discard
   //      |    |              +-- current leaf node
@@ -477,6 +475,14 @@
   //      |    |         +-- new leaf node after all nodes were discarded
   //      |    +-- next sibling of first node to discard => replaces node to discard
   //      +----K                  <-- variation does not become the new current variation
+  //
+  // Alternative scenario: Discarding node K. In that case node H (the previous
+  // sibling of node K) and its children will replace node K in the current
+  // variation.
+  //
+  // If the node to discard has both a next sibling and a previous sibling, then
+  // the preference is to use the next sibling as replacement of the node to
+  // discard.
   GoNode* firstNodeToDiscard = [_nodeList objectAtIndex:index];
   GoNode* parentNode = firstNodeToDiscard.parent;
   GoNode* nextSiblingOfFirstNodeToDiscard = firstNodeToDiscard.nextSibling;
