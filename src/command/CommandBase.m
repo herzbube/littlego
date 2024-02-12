@@ -24,6 +24,7 @@
 
 @synthesize name;
 @synthesize undoable;
+@synthesize completionHandler;
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes a CommandBase object. The command is not undoable and
@@ -40,6 +41,7 @@
 
   self.name = NSStringFromClass([self class]);
   self.undoable = false;
+  self.completionHandler = nil;
 
   return self;
 }
@@ -51,6 +53,8 @@
 {
   DDLogInfo(@"Deallocating %@", self);
   self.name = nil;
+  self.completionHandler = nil;
+  
   [super dealloc];
 }
 
@@ -111,6 +115,16 @@
 {
   DDLogVerbose(@"CommandBase::submitAfterDelay() invoked with delay %f (%@)", delay, self);
   [self performSelector:@selector(submit) withObject:nil afterDelay:delay];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets the @e completionHandler property with @a completionHandler,
+/// then invokes submit().
+// -----------------------------------------------------------------------------
+- (bool) submitWithCompletionHandler:(void (^)(NSObject<Command>* command, bool success))completionHandler
+{
+  self.completionHandler = completionHandler;
+  return [self submit];
 }
 
 @end
