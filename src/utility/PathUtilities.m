@@ -138,6 +138,120 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Returns YES if the file or folder located at @a firstPath has a
+/// modification timestamp that is newer than the file or folder located at
+/// @a secondPath. Returns NO if it is the other way round, or if the two
+/// timestamps are equal.
+///
+/// Raises an @e NSException if one or both files/folders do not exist, or if
+/// the modification timestamp of one or both files/folders cannot be obtained
+/// for any reason.
+// -----------------------------------------------------------------------------
++ (BOOL) isItemAtPath:(NSString*)firstPath newerThanItemAtPath:(NSString*)secondPath
+{
+  NSDate* fileModificationDateOfFirstPath = [PathUtilities fileModificationDateOfItemAtPath:firstPath];
+  NSDate* fileModificationDateOfSecondPath = [PathUtilities fileModificationDateOfItemAtPath:secondPath];
+
+  NSTimeInterval timeInterval = [fileModificationDateOfFirstPath timeIntervalSinceDate:fileModificationDateOfSecondPath];
+  if (timeInterval > 0)
+    return YES;
+  else
+    return NO;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the modification timestamp of the file or folder located at
+/// @a path.
+///
+/// Raises an @e NSException if the file or folder does not exist, or the
+/// modification timestamp cannot be obtained for any reason.
+// -----------------------------------------------------------------------------
++ (NSDate*) fileModificationDateOfItemAtPath:(NSString*)path
+{
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSError* error;
+
+  if (! [fileManager fileExistsAtPath:path])
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Unable to obtain file modification date, path does not exist: %@", path];
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  NSDictionary* attributes = [fileManager attributesOfItemAtPath:path error:&error];
+  if (! attributes)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Unable to obtain file modification date, failed to obtain file attributes of path %@, reason: %@", path, [error description]];
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  NSDate* fileModificationDate = [attributes fileModificationDate];
+  if (! fileModificationDate)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Unable to obtain file modification date, failed to obtain timestamp of path: %@", path];
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+
+  return fileModificationDate;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Creates the file located at @a path, overwriting it if it already
+/// exists. The new file will have a modification timestamp that is equal to the
+/// modification timestamp of the file or folder located at @a referencePath,
+/// offset by @a timeInterval seconds.
+///
+/// The offset can be positive or negative to make the new file's modification
+/// timestamp later or earlier than the reference timestamp. Specifying offset
+/// 0 (zero) results in the two timestamps to be equal.
+///
+/// @attention When testing on the simulator, an offset of 0 (zero) resulted in
+/// a timestamp that was @b NOT equal when the two timestamps were read from the
+/// filesystem the next time. The difference was a fraction of a second
+/// (e.g. 2.384185791015625E-7 seconds) which was likely caused by some floating
+/// point error. Since at the moment it seems to be impossible to have fully
+/// equal timestamps, the usefulness of this method is reduced.
+///
+/// Raises an @e NSException if the file or folder located at @a referencePath
+/// does not exist, or the modification timestamp cannot be obtained for any
+/// reason.
+// -----------------------------------------------------------------------------
++ (void) createOrOverwriteFile:(NSString*)path withModificationDateOfItemAtPath:(NSString*)referencePath timeInterval:(NSTimeInterval)timeInterval
+{
+  NSDate* fileModificationDate = [PathUtilities fileModificationDateOfItemAtPath:referencePath];
+
+  if (timeInterval != 0)
+    fileModificationDate = [fileModificationDate dateByAddingTimeInterval:timeInterval];
+
+  NSDictionary* attributes = @{ NSFileModificationDate: fileModificationDate };
+
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  BOOL success = [fileManager createFileAtPath:path
+                                      contents:nil
+                                    attributes:attributes];
+  if (success == NO)
+  {
+    NSString* errorMessage = [NSString stringWithFormat:@"Failed to touch file: %@", path];
+    DDLogError(@"%@: %@", self, errorMessage);
+    NSException* exception = [NSException exceptionWithName:NSGenericException
+                                                     reason:errorMessage
+                                                   userInfo:nil];
+    @throw exception;
+  }
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Returns the name of the application's preferences file.
 ///
 /// The file name is based on the main bundle's identifier.
@@ -195,14 +309,9 @@
 + (NSString*) filePathForBackupFileNamed:(NSString*)fileName fileExists:(BOOL*)fileExists
 {
   NSString* backupFolderPath = [PathUtilities backupFolderPath];
-  NSString* backupFilePath = [backupFolderPath stringByAppendingPathComponent:fileName];
-  if (fileExists)
-  {
-    NSFileManager* fileManager = [NSFileManager defaultManager];
-    *fileExists = [fileManager fileExistsAtPath:backupFilePath];
-    DDLogVerbose(@"Checking backup file %@, file exists = %d", backupFilePath, *fileExists);
-  }
-  return backupFilePath;
+  return [PathUtilities filePathForFileNamed:fileName
+                                  folderPath:backupFolderPath
+                                  fileExists:fileExists];
 }
 
 // -----------------------------------------------------------------------------
@@ -231,6 +340,25 @@
   NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, expandTilde);
   NSString* documentsDirectory = [paths objectAtIndex:0];
   return [documentsDirectory stringByAppendingPathComponent:inboxFolderName];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Prepends @a folderPath to @a fileName, then returns the resulting
+/// full path.
+///
+/// If @a fileExists is not nil, this method also checks whether the file
+/// exists and fills @a fileExists with the result.
+// -----------------------------------------------------------------------------
++ (NSString*) filePathForFileNamed:(NSString*)fileName folderPath:(NSString*)folderPath fileExists:(BOOL*)fileExists
+{
+  NSString* filePath = [folderPath stringByAppendingPathComponent:fileName];
+  if (fileExists)
+  {
+    NSFileManager* fileManager = [NSFileManager defaultManager];
+    *fileExists = [fileManager fileExistsAtPath:filePath];
+    DDLogVerbose(@"Checking file existence for %@, file exists = %d", filePath, *fileExists);
+  }
+  return filePath;
 }
 
 @end

@@ -77,6 +77,7 @@
 #import "../utility/PathUtilities.h"
 #import "../utility/UserDefaultsUpdater.h"
 
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for ApplicationDelegate.
 // -----------------------------------------------------------------------------
