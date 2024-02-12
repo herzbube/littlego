@@ -38,6 +38,8 @@
 @implementation ChangeNodeSelectionAsyncCommand
 
 @synthesize asynchronousCommandDelegate;
+@synthesize showProgressHUD;
+
 
 #pragma mark - Initialization and deallocation
 
@@ -54,6 +56,8 @@
   if (! self)
     return nil;
 
+  self.showProgressHUD = true;
+  
   if (! node)
   {
     NSString* errorMessage = @"initWithNode: failed: node is nil object";

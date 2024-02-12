@@ -15,6 +15,9 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "Command.h"
+
 // Library includes
 #import <MBProgressHUD/MBProgressHUD.h>
 
@@ -27,10 +30,15 @@
 /// already adopt the Command protocol if they want to be executed
 /// asynchronously.
 // -----------------------------------------------------------------------------
-@protocol AsynchronousCommand
+@protocol AsynchronousCommand <Command>
 @required
 /// @brief The value of this property is set before the command is executed.
 @property(nonatomic, assign) id<AsynchronousCommandDelegate> asynchronousCommandDelegate;
+
+/// @brief Indicates whether or not the progress HUD should be displayed. If
+/// the property is @e false then the command must not call any
+/// AsynchronousCommandDelegate methods related to the progress HUD.
+@property(nonatomic, assign) bool showProgressHUD;
 @end
 
 // -----------------------------------------------------------------------------

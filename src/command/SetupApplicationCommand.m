@@ -44,6 +44,7 @@
 @implementation SetupApplicationCommand
 
 @synthesize asynchronousCommandDelegate;
+@synthesize showProgressHUD;
 
 
 // -----------------------------------------------------------------------------
@@ -57,9 +58,12 @@
   self = [super init];
   if (! self)
     return nil;
+
+  self.showProgressHUD = true;
   self.totalSteps = 1;
   self.stepIncrease = 1.0 / self.totalSteps;
   self.progress = 0.0;
+  
   return self;
 }
 

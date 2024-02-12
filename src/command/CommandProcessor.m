@@ -159,11 +159,13 @@ static CommandProcessor* sharedProcessor = nil;
   bool executionResult = true;
   if ([command conformsToProtocol:@protocol(AsynchronousCommand)])
   {
-    ((id<AsynchronousCommand>)command).asynchronousCommandDelegate = self;
+    id<AsynchronousCommand> asynchronousCommand = (NSObject<AsynchronousCommand>*)command;
+    asynchronousCommand.asynchronousCommandDelegate = self;
+
     if ([NSThread currentThread] == self.thread)
       executionResult = [self executeCommand:command];
     else
-      [self submitAsynchronousCommand:command];
+      [self submitAsynchronousCommand:asynchronousCommand];
   }
   else
   {
@@ -179,10 +181,13 @@ static CommandProcessor* sharedProcessor = nil;
 /// This helper method can be executed in arbitrary thread contexts (except for
 /// the context of the command execution secondary thread).
 // -----------------------------------------------------------------------------
-- (void) submitAsynchronousCommand:(id<Command>)command
+- (void) submitAsynchronousCommand:(id<AsynchronousCommand>)command
 {
-  BOOL animated = YES;
-  [self.progressHUD showAnimated:animated];
+  if (command.showProgressHUD)
+  {
+    BOOL animated = YES;
+    [self.progressHUD showAnimated:animated];
+  }
 
   // Retain to make sure that object is still alive when it "arrives" in
   // the secondary thread
@@ -199,13 +204,14 @@ static CommandProcessor* sharedProcessor = nil;
 /// This helper method is always executed in the command execution secondary
 /// thread.
 // -----------------------------------------------------------------------------
-- (void) executeCommandAsynchronously:(id<Command>)command
+- (void) executeCommandAsynchronously:(id<AsynchronousCommand>)command
 {
   // Undo retain message sent to the command object by
   // submitAsynchronousCommand:()
   [command autorelease];
   [self executeCommand:command];
-  [self performSelectorOnMainThread:@selector(hideProgressHUDOnMainThread) withObject:nil waitUntilDone:YES];
+  if (command.showProgressHUD)
+    [self performSelectorOnMainThread:@selector(hideProgressHUDOnMainThread) withObject:nil waitUntilDone:YES];
 }
 
 // -----------------------------------------------------------------------------
