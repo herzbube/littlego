@@ -581,6 +581,8 @@
 		CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */; };
 		CDAFAE6E195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
 		CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
+		CDB198C22B78D5B400E8512F /* WebBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB198C02B78D5B300E8512F /* WebBrowserViewController.m */; };
+		CDB198C32B78D5B400E8512F /* WebBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB198C02B78D5B300E8512F /* WebBrowserViewController.m */; };
 		CDB3ABFE1CFB401B00DE4B38 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ABFD1CFB401B00DE4B38 /* Launch Screen.storyboard */; };
 		CDB3ECD2284285DD007512F6 /* noun-code-4410725.svg in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ECCD284285DD007512F6 /* noun-code-4410725.svg */; };
 		CDB3ECD3284285DD007512F6 /* markup@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ECCE284285DD007512F6 /* markup@2x.png */; };
@@ -1537,6 +1539,8 @@
 		CDAFAE2B195DB78200EF84A9 /* Tile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tile.h; sourceTree = "<group>"; };
 		CDAFAE6C195F811D00EF84A9 /* BoardViewCGLayerCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewCGLayerCache.h; sourceTree = "<group>"; };
 		CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewCGLayerCache.m; sourceTree = "<group>"; };
+		CDB198C02B78D5B300E8512F /* WebBrowserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebBrowserViewController.m; sourceTree = "<group>"; };
+		CDB198C12B78D5B300E8512F /* WebBrowserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebBrowserViewController.h; sourceTree = "<group>"; };
 		CDB3ABFD1CFB401B00DE4B38 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		CDB3ECCD284285DD007512F6 /* noun-code-4410725.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "noun-code-4410725.svg"; sourceTree = "<group>"; };
 		CDB3ECCE284285DD007512F6 /* markup@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "markup@2x.png"; sourceTree = "<group>"; };
@@ -3712,6 +3716,8 @@
 				CDB457B3147F14490043EDE4 /* UiUtilities.m */,
 				CD1D606325BC230A00345506 /* UIViewControllerAdditions.h */,
 				CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */,
+				CDB198C12B78D5B300E8512F /* WebBrowserViewController.h */,
+				CDB198C02B78D5B300E8512F /* WebBrowserViewController.m */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -4449,6 +4455,7 @@
 				CDEE19F519433EAC00DF2389 /* BoardViewController.m in Sources */,
 				CDB684FE161591760038AADE /* EditPlayingStrengthSettingsController.m in Sources */,
 				CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */,
+				CDB198C22B78D5B400E8512F /* WebBrowserViewController.m in Sources */,
 				CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */,
 				CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */,
 				CDA493A7168F26890076E168 /* BoardPositionSettingsController.m in Sources */,
@@ -4706,6 +4713,7 @@
 				CDC8DEF228EDECCA00619305 /* NodeNumbersTileView.m in Sources */,
 				CD1A7EDD293A58EF00013D80 /* NodeSymbolLayerDelegate.m in Sources */,
 				CD5E6B371D7CD0500089D0B3 /* MoreGameActionsController.m in Sources */,
+				CDB198C32B78D5B400E8512F /* WebBrowserViewController.m in Sources */,
 				CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */,
 				CDFD9F7618F1D39E0031CBCF /* ResetPlayersAndProfilesCommand.m in Sources */,
 				CDFD9F7F18F1D5E20031CBCF /* DiagnosticsViewController.m in Sources */,
