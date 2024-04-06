@@ -29,6 +29,7 @@
 @property(nonatomic, retain) UIBarButtonItem* homeButton;
 @property(nonatomic, retain) NSString* titleString;
 @property(nonatomic, retain) NSURL* homeUrl;
+@property(nonatomic, retain) NSMutableArray* goToUrls;
 @end
 
 
@@ -41,7 +42,7 @@
 /// that displays @a title in its navigation item and navigates to the initial
 /// URL @a homeUrl in its web view.
 // -----------------------------------------------------------------------------
-+ (WebBrowserViewController*) controllerWithTitle:(NSString*)title homeUrl:(NSURL*)homeUrl;
++ (WebBrowserViewController*) controllerWithTitle:(NSString*)title homeUrl:(NSURL*)homeUrl
 {
   WebBrowserViewController* controller = [[WebBrowserViewController alloc] initWithNibName:nil bundle:nil];
   if (controller)
@@ -49,6 +50,7 @@
     [controller autorelease];
     controller.titleString = title;
     controller.homeUrl = homeUrl;
+    controller.goToUrls = [NSMutableArray array];
   }
   return controller;
 }
@@ -147,18 +149,48 @@
 
 // -----------------------------------------------------------------------------
 /// @brief WKNavigationDelegate method.
-///
-/// Makes sure that external links embedded in the HTML resource are opened in
-/// Safari (or whatever browser is configured to handle such URL requests).
 // -----------------------------------------------------------------------------
 - (void) webView:(WKWebView*)webView decidePolicyForNavigationAction:(WKNavigationAction*)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler
 {
   if (navigationAction.navigationType == WKNavigationTypeLinkActivated)
   {
-    [[UIApplication sharedApplication] openURL:[navigationAction.request URL]
-                                       options:@{}
-                             completionHandler:nil];
-    decisionHandler(WKNavigationActionPolicyAllow);
+    NSURL* requestUrl = navigationAction.request.URL;
+    if (requestUrl.isFileURL)
+    {
+      if (requestUrl.hasDirectoryPath)
+      {
+        // When a directory URL is requested from a web server it usually
+        // does *NOT* respond with the listing of the directory content, but
+        // instead delivers the content of index.html or some similar file.
+        // When accessing file URLs there is no web server involved, therefore
+        // we simulate here the behaviour of a web server.
+        decisionHandler(WKNavigationActionPolicyCancel);
+        NSURL* redirectRequestUrl = [requestUrl URLByAppendingPathComponent:@"index.html"];
+        [self goTo:redirectRequestUrl];
+      }
+      else
+      {
+        decisionHandler(WKNavigationActionPolicyAllow);
+      }
+    }
+    else
+    {
+      if (self.homeUrl.isFileURL)
+      {
+        // If we are browsing a serverless site (which is the case if the home
+        // URL is a file URL) then we assume that non-file URLs point to
+        // external resources that should be opened in Safari (or whatever
+        // browser is configured to handle such URL requests).
+        decisionHandler(WKNavigationActionPolicyCancel);
+        [[UIApplication sharedApplication] openURL:navigationAction.request.URL
+                                           options:@{}
+                                 completionHandler:nil];
+      }
+      else
+      {
+        decisionHandler(WKNavigationActionPolicyAllow);
+      }
+    }
   }
   else if (webView.isLoading)
   {
@@ -166,8 +198,9 @@
   }
   else
   {
-    // Allow JavaScript navigation to the home URL
-    if ([navigationAction.request.URL isEqual:self.homeUrl])
+    // If the URL is in the whitelist then we allow it, assuming that the
+    // request was caused by the goTo:() method's JavaScript navigation.
+    if ([self.goToUrls containsObject:navigationAction.request.URL])
       decisionHandler(WKNavigationActionPolicyAllow);
     else
       decisionHandler(WKNavigationActionPolicyCancel);
@@ -197,12 +230,7 @@
 // -----------------------------------------------------------------------------
 - (void) goHome:(id)sender
 {
-  // Can't use any of WKWebView's load... methods because these cause WKWebView
-  // to forget about the browsing history. To support navigating via JavaScript
-  // the navigation action needs to be allowed by the WKNavigationDelegate
-  // handler.
-  NSString* script = [NSString stringWithFormat:@"window.location.href = '%@';", [self.homeUrl absoluteString]];
-  [self.webView evaluateJavaScript:script completionHandler:nil];
+  [self goTo:self.homeUrl];
 }
 
 #pragma mark - Notification responders
@@ -222,6 +250,29 @@
     UIBarButtonItem* button = self.navigationItem.leftBarButtonItems[1];
     button.enabled = self.webView.canGoForward;
   }
+}
+
+#pragma mark - Private helpers
+
+// -----------------------------------------------------------------------------
+/// @brief Navigates the web view to the address encapsulated by @a url.
+///
+/// The implementation of this method uses JavaScript navigation. It can't use
+/// any of WKWebView's load... methods because these cause WKWebView to forget
+/// about the browsing history.
+// -----------------------------------------------------------------------------
+- (void) goTo:(NSURL*)url
+{
+  // To support navigating via JavaScript the navigation action needs to be
+  // allowed by the WKNavigationDelegate handler. Because of this we need to
+  // add the URL to a whitelist.
+  if (! [self.goToUrls containsObject:url])
+  {
+    [self.goToUrls addObject:url];
+  }
+
+  NSString* script = [NSString stringWithFormat:@"window.location.href = '%@';", [url absoluteString]];
+  [self.webView evaluateJavaScript:script completionHandler:nil];
 }
 
 @end
