@@ -59,7 +59,7 @@
 
   // Path components must match how the user manual zip archive was generated
   // upstream
-  NSArray* pathComponents = @[@"littlego-usermanual", @"public", @"index.html"];
+  NSArray* pathComponents = @[@"littlego-usermanual", @"public", @"offline", @"index.html"];
   for (NSString* pathComponent in pathComponents)
     path = [path stringByAppendingPathComponent:pathComponent];
 
