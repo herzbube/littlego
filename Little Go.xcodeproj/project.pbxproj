@@ -581,6 +581,15 @@
 		CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */; };
 		CDAFAE6E195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
 		CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
+		CDB198BB2B7696FA00E8512F /* littlego-usermanual.zip in Resources */ = {isa = PBXBuildFile; fileRef = CDB198BA2B7696F900E8512F /* littlego-usermanual.zip */; };
+		CDB198BE2B77ADBE00E8512F /* SetupUserManualCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB198BD2B77ADBD00E8512F /* SetupUserManualCommand.m */; };
+		CDB198BF2B77ADC500E8512F /* SetupUserManualCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB198BD2B77ADBD00E8512F /* SetupUserManualCommand.m */; };
+		CDB198C22B78D5B400E8512F /* WebBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB198C02B78D5B300E8512F /* WebBrowserViewController.m */; };
+		CDB198C32B78D5B400E8512F /* WebBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB198C02B78D5B300E8512F /* WebBrowserViewController.m */; };
+		CDB198C72B78E6C600E8512F /* UserManualViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB198C52B78E6C600E8512F /* UserManualViewController.m */; };
+		CDB198C82B78E6C600E8512F /* UserManualViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB198C52B78E6C600E8512F /* UserManualViewController.m */; };
+		CDB198CB2B78E7A000E8512F /* UserManualUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB198CA2B78E7A000E8512F /* UserManualUtilities.m */; };
+		CDB198CC2B78E7A000E8512F /* UserManualUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB198CA2B78E7A000E8512F /* UserManualUtilities.m */; };
 		CDB3ABFE1CFB401B00DE4B38 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ABFD1CFB401B00DE4B38 /* Launch Screen.storyboard */; };
 		CDB3ECD2284285DD007512F6 /* noun-code-4410725.svg in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ECCD284285DD007512F6 /* noun-code-4410725.svg */; };
 		CDB3ECD3284285DD007512F6 /* markup@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = CDB3ECCE284285DD007512F6 /* markup@2x.png */; };
@@ -1537,6 +1546,15 @@
 		CDAFAE2B195DB78200EF84A9 /* Tile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tile.h; sourceTree = "<group>"; };
 		CDAFAE6C195F811D00EF84A9 /* BoardViewCGLayerCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewCGLayerCache.h; sourceTree = "<group>"; };
 		CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewCGLayerCache.m; sourceTree = "<group>"; };
+		CDB198BA2B7696F900E8512F /* littlego-usermanual.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "littlego-usermanual.zip"; sourceTree = "<group>"; };
+		CDB198BC2B77ADBD00E8512F /* SetupUserManualCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupUserManualCommand.h; sourceTree = "<group>"; };
+		CDB198BD2B77ADBD00E8512F /* SetupUserManualCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetupUserManualCommand.m; sourceTree = "<group>"; };
+		CDB198C02B78D5B300E8512F /* WebBrowserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebBrowserViewController.m; sourceTree = "<group>"; };
+		CDB198C12B78D5B300E8512F /* WebBrowserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebBrowserViewController.h; sourceTree = "<group>"; };
+		CDB198C52B78E6C600E8512F /* UserManualViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserManualViewController.m; sourceTree = "<group>"; };
+		CDB198C62B78E6C600E8512F /* UserManualViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserManualViewController.h; sourceTree = "<group>"; };
+		CDB198C92B78E7A000E8512F /* UserManualUtilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserManualUtilities.h; sourceTree = "<group>"; };
+		CDB198CA2B78E7A000E8512F /* UserManualUtilities.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserManualUtilities.m; sourceTree = "<group>"; };
 		CDB3ABFD1CFB401B00DE4B38 /* Launch Screen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		CDB3ECCD284285DD007512F6 /* noun-code-4410725.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "noun-code-4410725.svg"; sourceTree = "<group>"; };
 		CDB3ECCE284285DD007512F6 /* markup@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "markup@2x.png"; sourceTree = "<group>"; };
@@ -3118,6 +3136,17 @@
 			path = newgame;
 			sourceTree = "<group>";
 		};
+		CDB198C42B78E6C600E8512F /* help */ = {
+			isa = PBXGroup;
+			children = (
+				CDB198C92B78E7A000E8512F /* UserManualUtilities.h */,
+				CDB198CA2B78E7A000E8512F /* UserManualUtilities.m */,
+				CDB198C62B78E6C600E8512F /* UserManualViewController.h */,
+				CDB198C52B78E6C600E8512F /* UserManualViewController.m */,
+			);
+			path = help;
+			sourceTree = "<group>";
+		};
 		CDB3ABFC1CFB401B00DE4B38 /* storyboard */ = {
 			isa = PBXGroup;
 			children = (
@@ -3366,6 +3395,8 @@
 				CDD7D7E4175257850068CBBA /* ResetPlayersAndProfilesCommand.m */,
 				CDBFCBBB16C3ED00001D78C0 /* SetupApplicationCommand.h */,
 				CDBFCBBC16C3ED00001D78C0 /* SetupApplicationCommand.m */,
+				CDB198BC2B77ADBD00E8512F /* SetupUserManualCommand.h */,
+				CDB198BD2B77ADBD00E8512F /* SetupUserManualCommand.m */,
 			);
 			path = command;
 			sourceTree = "<group>";
@@ -3524,6 +3555,7 @@
 				CD1088551326CBB300E83543 /* diagnostics */,
 				CD10881613255A1A00E83543 /* go */,
 				CD1087861323D83F00E83543 /* gtp */,
+				CDB198C42B78E6C600E8512F /* help */,
 				CD00A356148C2C21004E1A0C /* main */,
 				CDAB5EC613E4835900C4A4AA /* newgame */,
 				CD1088561326CBB300E83543 /* play */,
@@ -3574,6 +3606,7 @@
 				CDE1A13B14C1CED200317ECA /* icon */,
 				CDE1A15214C1CED200317ECA /* image */,
 				CD941363198BDBA20001F55A /* images.xcassets */,
+				CDB198BA2B7696F900E8512F /* littlego-usermanual.zip */,
 				CD02629A16E0F06E007B35CC /* openingbook */,
 				CDE1A19014C1CF4D00317ECA /* plist */,
 				CDE1A15514C1CED200317ECA /* sound */,
@@ -3712,6 +3745,8 @@
 				CDB457B3147F14490043EDE4 /* UiUtilities.m */,
 				CD1D606325BC230A00345506 /* UIViewControllerAdditions.h */,
 				CD1D606225BC230A00345506 /* UIViewControllerAdditions.m */,
+				CDB198C12B78D5B300E8512F /* WebBrowserViewController.h */,
+				CDB198C02B78D5B300E8512F /* WebBrowserViewController.m */,
 			);
 			path = ui;
 			sourceTree = "<group>";
@@ -4131,6 +4166,7 @@
 				CD968B611B026E2300984AEE /* about@3x.png in Resources */,
 				CD2AB1ED280301CF00BF0B4D /* good@3x.png in Resources */,
 				CD968B751B026E2300984AEE /* diagnostics.png in Resources */,
+				CDB198BB2B7696FA00E8512F /* littlego-usermanual.zip in Resources */,
 				CD968B811B026E2300984AEE /* computer-vs-computer.png in Resources */,
 				CD7C57B621FCB0D100694520 /* stone-white-icon.svg in Resources */,
 				CD81795E25DDEDDF00F39091 /* computer-suggest-move@3.png in Resources */,
@@ -4335,6 +4371,7 @@
 				CD05A9A61422A46200214BBE /* ComputerPlayMoveCommand.m in Sources */,
 				CDC8DEFF28EDF8E600619305 /* NodeTreeViewMetrics.m in Sources */,
 				CDE6C549183D820300186E89 /* SoundSettingsController.m in Sources */,
+				CDB198C72B78E6C600E8512F /* UserManualViewController.m in Sources */,
 				CDEE19F119433EAC00DF2389 /* BoardTileView.m in Sources */,
 				CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */,
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
@@ -4362,6 +4399,7 @@
 				CD05B121142A60A700214BBE /* RestoreGameFromSgfCommand.m in Sources */,
 				CD46628A296474D300B58CC9 /* NodeTreeViewSettingsController.m in Sources */,
 				CD05B210142BC4AF00214BBE /* GtpUtilities.m in Sources */,
+				CDB198BE2B77ADBE00E8512F /* SetupUserManualCommand.m in Sources */,
 				CD05B611142F618B00214BBE /* LoadOpeningBookCommand.m in Sources */,
 				CDF24625296852B700350B42 /* ChangeNodeSelectionAsyncCommand.m in Sources */,
 				CD97FA141AED1BD600148C16 /* ResumePlayCommand.m in Sources */,
@@ -4439,6 +4477,7 @@
 				CDA86E7F28A7A4A3000B49E2 /* MarkupSettingsController.m in Sources */,
 				CDFA32AE15A10AD600439B4E /* SendBugReportController.m in Sources */,
 				CDEE1A171946124E00DF2389 /* TerritoryLayerDelegate.m in Sources */,
+				CDB198CB2B78E7A000E8512F /* UserManualUtilities.m in Sources */,
 				CD1F4F8C25AF5CB80098037A /* SgfDisabledMessagesController.m in Sources */,
 				CDB5C5DA284E874F00DE5DD4 /* HandleMarkupEditingInteractionCommand.m in Sources */,
 				CD48ADA115A88EEF004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
@@ -4449,6 +4488,7 @@
 				CDEE19F519433EAC00DF2389 /* BoardViewController.m in Sources */,
 				CDB684FE161591760038AADE /* EditPlayingStrengthSettingsController.m in Sources */,
 				CD899E5D164875A900329154 /* CrashReportingModel.m in Sources */,
+				CDB198C22B78D5B400E8512F /* WebBrowserViewController.m in Sources */,
 				CD2BA77C1649D034000C6F09 /* CrashReportingSettingsController.m in Sources */,
 				CDF8229C164D490600F53C01 /* InterruptComputerCommand.m in Sources */,
 				CDA493A7168F26890076E168 /* BoardPositionSettingsController.m in Sources */,
@@ -4585,6 +4625,7 @@
 				CD85B5A71401C1FD001715B8 /* GoPlayer.m in Sources */,
 				CD85B5AD1401C23D001715B8 /* GtpClient.mm in Sources */,
 				CDFD9F7A18F1D57B0031CBCF /* ArchiveViewController.m in Sources */,
+				CDB198C82B78E6C600E8512F /* UserManualViewController.m in Sources */,
 				CD85B5AE1401C23D001715B8 /* GtpEngine.mm in Sources */,
 				CDFD9F6F18F1D34A0031CBCF /* SettingsViewController.m in Sources */,
 				CDAF17121967FAF100271396 /* BoardViewIntersection.m in Sources */,
@@ -4628,6 +4669,7 @@
 				CDFABF5C141D343B0065C93B /* CommandBase.m in Sources */,
 				CDEE19FC19433EAC00DF2389 /* GridLayerDelegate.m in Sources */,
 				CD05A9E81422B01600214BBE /* ComputerPlayMoveCommand.m in Sources */,
+				CDB198BF2B77ADC500E8512F /* SetupUserManualCommand.m in Sources */,
 				CDD67B6D28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */,
 				CDEE1A0419438AE000DF2389 /* StonesLayerDelegate.m in Sources */,
 				CD7C6A161AB49631009EC5AD /* BoardPositionCollectionViewController.m in Sources */,
@@ -4706,6 +4748,7 @@
 				CDC8DEF228EDECCA00619305 /* NodeNumbersTileView.m in Sources */,
 				CD1A7EDD293A58EF00013D80 /* NodeSymbolLayerDelegate.m in Sources */,
 				CD5E6B371D7CD0500089D0B3 /* MoreGameActionsController.m in Sources */,
+				CDB198C32B78D5B400E8512F /* WebBrowserViewController.m in Sources */,
 				CD1DB60B16FE69BC00C2E648 /* GoGameDocument.m in Sources */,
 				CDFD9F7618F1D39E0031CBCF /* ResetPlayersAndProfilesCommand.m in Sources */,
 				CDFD9F7F18F1D5E20031CBCF /* DiagnosticsViewController.m in Sources */,
@@ -4800,6 +4843,7 @@
 				CD3592031735A757000E2963 /* PlayRootViewController.m in Sources */,
 				CDD038092879708D002A2FFE /* LabelsLayerDelegate.m in Sources */,
 				CD46628F29658A7C00B58CC9 /* CGDrawingHelper.m in Sources */,
+				CDB198CC2B78E7A000E8512F /* UserManualUtilities.m in Sources */,
 				CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */,
 				CDFD9F7918F1D56A0031CBCF /* SectionedDocumentViewController.m in Sources */,
 				CD2D3A9E174C348C0030EDE4 /* EditPlayerProfileController.m in Sources */,

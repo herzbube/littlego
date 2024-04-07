@@ -25,7 +25,7 @@
 - (bool) doIt;
 
 @optional
-/// @brief Undo of the actions performed by execute(). Returns true if the undo
+/// @brief Undo of the actions performed by doIt(). Returns true if the undo
 /// operation was successful.
 - (bool) undo;
 
@@ -40,6 +40,23 @@
 /// @brief True if the command's undo() method may be invoked. The default is
 /// false.
 @property(nonatomic, assign, getter=isUndoable) bool undoable;
+
+@required
+/// @brief Callback to be invoked after the command's doIt() has returned. The
+/// callback parameters are the command instance and the value returned by
+/// doIt(). doIt() and the callback are invoked in the same thread.
+///
+/// Callbacks can be useful if the command submitter is not the same as the
+/// actor that needs the callback, or if a command is executed asynchronously
+/// (see AsynchronousCommand).
+///
+/// Instead of a callback a command could also post a completion notification.
+///
+/// Why copy and not retain? Because blocks are allocated on the stack, so they
+/// need to be copied to survive an unwind of the stack. If a command is
+/// executed asynchronously a stack unwind is exactly what happens. Also see
+/// https://www.cocoawithlove.com/2009/10/how-blocks-are-implemented-and.html
+@property (copy, nonatomic) void (^completionHandler) (NSObject<Command>* command, bool success);
 
 @end
 

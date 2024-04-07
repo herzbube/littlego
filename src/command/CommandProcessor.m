@@ -120,7 +120,8 @@ static CommandProcessor* sharedProcessor = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Submits @a command for synchronous or asynchronous execution. Invokes
-/// doIt() on @a command to execute the encapsulated command.
+/// doIt() on @a command to execute the encapsulated command, and executes an
+/// optional completion handler if one is associated with @a command.
 ///
 /// This method is usually (but not always) executed in the main thread's
 /// context. One notable example is when an asynchronous command, which is
@@ -153,17 +154,22 @@ static CommandProcessor* sharedProcessor = nil;
 /// was successful or not. Exceptions raised while executing the command are
 /// handled by the command execution secondary thread. Handling consists of
 /// logging the exception, then rethrowing it and thus crashing the application.
+///
+/// The completion handler is executed right after the command's doIt() method
+/// returns, in the same thread that the doIt() method was invoked in.
 // -----------------------------------------------------------------------------
 - (bool) submitCommand:(id<Command>)command
 {
   bool executionResult = true;
   if ([command conformsToProtocol:@protocol(AsynchronousCommand)])
   {
-    ((id<AsynchronousCommand>)command).asynchronousCommandDelegate = self;
+    id<AsynchronousCommand> asynchronousCommand = (NSObject<AsynchronousCommand>*)command;
+    asynchronousCommand.asynchronousCommandDelegate = self;
+
     if ([NSThread currentThread] == self.thread)
       executionResult = [self executeCommand:command];
     else
-      [self submitAsynchronousCommand:command];
+      [self submitAsynchronousCommand:asynchronousCommand];
   }
   else
   {
@@ -179,10 +185,13 @@ static CommandProcessor* sharedProcessor = nil;
 /// This helper method can be executed in arbitrary thread contexts (except for
 /// the context of the command execution secondary thread).
 // -----------------------------------------------------------------------------
-- (void) submitAsynchronousCommand:(id<Command>)command
+- (void) submitAsynchronousCommand:(id<AsynchronousCommand>)command
 {
-  BOOL animated = YES;
-  [self.progressHUD showAnimated:animated];
+  if (command.showProgressHUD)
+  {
+    BOOL animated = YES;
+    [self.progressHUD showAnimated:animated];
+  }
 
   // Retain to make sure that object is still alive when it "arrives" in
   // the secondary thread
@@ -199,13 +208,14 @@ static CommandProcessor* sharedProcessor = nil;
 /// This helper method is always executed in the command execution secondary
 /// thread.
 // -----------------------------------------------------------------------------
-- (void) executeCommandAsynchronously:(id<Command>)command
+- (void) executeCommandAsynchronously:(id<AsynchronousCommand>)command
 {
   // Undo retain message sent to the command object by
   // submitAsynchronousCommand:()
   [command autorelease];
   [self executeCommand:command];
-  [self performSelectorOnMainThread:@selector(hideProgressHUDOnMainThread) withObject:nil waitUntilDone:YES];
+  if (command.showProgressHUD)
+    [self performSelectorOnMainThread:@selector(hideProgressHUDOnMainThread) withObject:nil waitUntilDone:YES];
 }
 
 // -----------------------------------------------------------------------------
@@ -221,7 +231,8 @@ static CommandProcessor* sharedProcessor = nil;
 
 // -----------------------------------------------------------------------------
 /// @brief Invokes doIt() on @a command to execute the encapsulated command.
-/// Returns true if execution was successful.
+/// If a completion handler is associated with @a command then the completion
+/// handler is also executed. Returns the result of doIt().
 ///
 /// This is the backend method that actually executes a command. It is used both
 /// for synchronous and asynchronous command execution, thus it can be executed
@@ -250,6 +261,25 @@ static CommandProcessor* sharedProcessor = nil;
     else
       DDLogError(@"Command execution failed (%@)", command);
   }
+
+  if (command.completionHandler)
+  {
+    DDLogInfo(@"Executing completion handler of %@", command);
+    @try
+    {
+      command.completionHandler(command, result);
+    }
+    @catch (NSException* exception)
+    {
+      DDLogError(@"Exception raised while executing completion handler, exception reason: %@, exception stack trace %@", exception, [exception callStackSymbols]);
+      @throw;
+    }
+    @finally
+    {
+      DDLogVerbose(@"Completion handler execution succeeded");
+    }
+  }
+
   return result;
 }
 

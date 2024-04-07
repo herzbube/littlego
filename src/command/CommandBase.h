@@ -45,6 +45,7 @@
 - (id) init;
 - (bool) submit;
 - (void) submitAfterDelay:(NSTimeInterval)delay;
+- (bool) submitWithCompletionHandler:(void (^)(NSObject<Command>* command, bool success))completionHandler;
 - (NSString*) shortDescription;
 
 @end

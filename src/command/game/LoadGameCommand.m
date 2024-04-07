@@ -67,6 +67,8 @@ static const int maxStepsForCreateNodes = 9;
 @implementation LoadGameCommand
 
 @synthesize asynchronousCommandDelegate;
+@synthesize showProgressHUD;
+
 
 #pragma mark - Initialization and deallocation
 
@@ -82,6 +84,8 @@ static const int maxStepsForCreateNodes = 9;
   self = [super init];
   if (! self)
     return nil;
+
+  self.showProgressHUD = true;
 
   self.sgfGameInfoNode = sgfGameInfoNode;
   self.sgfGoGameInfo = sgfGoGameInfo;

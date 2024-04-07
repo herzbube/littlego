@@ -29,7 +29,26 @@
 @implementation ToggleTerritoryStatisticsCommand
 
 @synthesize asynchronousCommandDelegate;
+@synthesize showProgressHUD;
 
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a ToggleTerritoryStatisticsCommand object.
+///
+/// @note This is the designated initializer of
+/// ToggleTerritoryStatisticsCommand.
+// -----------------------------------------------------------------------------
+- (id) init
+{
+  // Call designated initializer of superclass (CommandBase)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  self.showProgressHUD = true;
+
+  return self;
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Executes this command. See the class documentation for details.

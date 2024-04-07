@@ -16,10 +16,8 @@
 
 
 // -----------------------------------------------------------------------------
-/// @brief The DocumentViewController class is responsible for loading an HTML
-/// resource file and displaying the content in its view (a WKWebView object).
-/// Alternatively, a client may provide the HTML document content as a string to
-/// DocumentViewController upon creation.
+/// @brief The DocumentViewController class is responsible for displaying an
+/// HTML document in its view (a WKWebView object).
 ///
 /// The GUI has a number of web views that display different documents such as
 /// the "About" information document. If DocumentViewController is not
@@ -28,8 +26,8 @@
 /// is expected to exist via category addition.
 ///
 /// If DocumentViewController is instantiated via one of its convenience
-/// constructors, it either just displays the provided HTML document, or loads
-/// and displays the resource named in the constructor.
+/// constructors, it obtains the HTML content to display from the source
+/// specified to the convenience constructor.
 ///
 /// @todo Research how much memory this controller and its associated view are
 /// using. If possible, try to reduce the memory requirements (e.g. only create

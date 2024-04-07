@@ -25,6 +25,7 @@
 #import "UIAreaInfo.h"
 #import "../archive/ArchiveViewController.h"
 #import "../diagnostics/DiagnosticsViewController.h"
+#import "../help/UserManualViewController.h"
 #import "../play/rootview/PlayRootViewController.h"
 #import "../settings/SettingsViewController.h"
 #import "../ui/UiSettingsModel.h"
@@ -122,7 +123,7 @@
       rootViewController = [DiagnosticsViewController controller];
       break;
     case UIAreaHelp:
-      rootViewController = [[[SectionedDocumentViewController alloc] init] autorelease];
+      rootViewController = [[[UserManualViewController alloc] init] autorelease];
       break;
     case UIAreaAbout:
       rootViewController = [[[DocumentViewController alloc] init] autorelease];

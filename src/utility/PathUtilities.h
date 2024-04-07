@@ -30,11 +30,15 @@
 + (void) deleteItemIfExists:(NSString*)path;
 + (BOOL) copyItemAtPath:(NSString*)sourcePath overwritePath:(NSString*)destinationPath error:(NSError**)error;
 + (BOOL) moveItemAtPath:(NSString*)sourcePath overwritePath:(NSString*)destinationPath error:(NSError**)error;
++ (BOOL) isItemAtPath:(NSString*)firstPath newerThanItemAtPath:(NSString*)secondPath;
++ (NSDate*) fileModificationDateOfItemAtPath:(NSString*)path;
++ (void) createOrOverwriteFile:(NSString*)path withModificationDateOfItemAtPath:(NSString*)referencePath timeInterval:(NSTimeInterval)timeInterval;
 + (NSString*) preferencesFileName;
 + (NSString*) preferencesFilePath;
 + (NSString*) backupFolderPath;
 + (NSString*) filePathForBackupFileNamed:(NSString*)fileName fileExists:(BOOL*)fileExists;
 + (NSString*) inboxFolderPath;
 + (NSString*) archiveFolderPath;
++ (NSString*) filePathForFileNamed:(NSString*)fileName folderPath:(NSString*)folderPath fileExists:(BOOL*)fileExists;
 
 @end

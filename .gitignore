@@ -28,6 +28,10 @@ dist/
 crash/
 bugreport/
 
+# User manual file. This file is an artifact produced by the separate
+# user manual project, it is not versioned within this project.
+resource/littlego-usermanual.zip
+
 # Other files
 3rdparty/install/
 .DS_Store

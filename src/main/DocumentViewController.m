@@ -83,6 +83,7 @@
   self.titleString = nil;
   self.htmlString = nil;
   self.resourceName = nil;
+
   [super dealloc];
 }
 
@@ -111,7 +112,9 @@
   {
     self.title = self.titleString;
     if (self.htmlString)
+    {
       [self.webView loadHTMLString:self.htmlString baseURL:nil];
+    }
     else
     {
       NSString* resourceContent = [appDelegate contentOfTextResource:self.resourceName];

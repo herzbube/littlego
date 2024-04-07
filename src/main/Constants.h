@@ -880,6 +880,12 @@ extern NSString* sgfBackupFileName;
 /// @brief Name of the folder used by the document interaction system to pass
 /// files into the app. The folder is located in the Documents folder.
 extern NSString* inboxFolderName;
+/// @brief Name of the folder that contains all files related to the user
+/// manual. The folder is located in the Library folder.
+extern NSString* userManualFolderName;
+/// @brief Name of the marker file that is used during application launch to
+/// check whether the user manual is already set up.
+extern NSString* userManualSetupMarkerFileName;
 //@}
 
 // -----------------------------------------------------------------------------
@@ -2009,6 +2015,7 @@ extern NSString* humanVsComputerImageResource;
 extern NSString* humanVsHumanImageResource;
 extern NSString* woodenBackgroundImageResource;
 extern NSString* bugReportMessageTemplateResource;
+extern NSString* userManualResource;
 //@}
 
 // -----------------------------------------------------------------------------

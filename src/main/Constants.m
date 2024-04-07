@@ -49,6 +49,8 @@ NSString* sgfTemporaryFileName = @"---tmp+++.sgf";
 NSString* archiveBackupFileName = @"backup.plist";
 NSString* sgfBackupFileName = @"backup.sgf";
 NSString* inboxFolderName = @"Inbox";
+NSString* userManualFolderName = @"usermanual";
+NSString* userManualSetupMarkerFileName = @"usermanual.setupmarker";
 
 // GTP notifications
 NSString* gtpCommandWillBeSubmittedNotification = @"GtpCommandWillBeSubmitted";
@@ -307,6 +309,7 @@ NSString* humanVsComputerImageResource = @"human-vs-computer.png";
 NSString* humanVsHumanImageResource = @"human-vs-human.png";
 NSString* woodenBackgroundImageResource = @"wooden-background-tile.png";
 NSString* bugReportMessageTemplateResource = @"bug-report-message-template.txt";
+NSString* userManualResource = @"littlego-usermanual.zip";
 
 // Constants (mostly keys) for user defaults
 // Device-specific suffixes

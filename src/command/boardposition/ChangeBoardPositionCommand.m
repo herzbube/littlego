@@ -238,6 +238,8 @@
 @implementation AsynchronousChangeBoardPositionCommand
 
 @synthesize asynchronousCommandDelegate;
+@synthesize showProgressHUD;
+
 
 // -----------------------------------------------------------------------------
 /// @brief Initializes an AsynchronousChangeBoardPositionCommand object that
@@ -252,11 +254,14 @@
   self = [super initWithBoardPosition:aBoardPosition isAsynchronous:true];
   if (! self)
     return nil;
+
+  self.showProgressHUD = true;
   self.stepIncrease = 0.0;
   self.progress = 0.0;
   self.boardPositionChangesPerStep = 0.0;
   self.nextProgressUpdate = 0.0;
   self.numberOfBoardPositionChanges = 0;
+
   return self;
 }
 
