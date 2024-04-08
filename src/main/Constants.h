@@ -1944,7 +1944,6 @@ extern NSString* zipkitLicenseDocumentResource;
 extern NSString* crashlyticsLicenseDocumentResource;
 extern NSString* firebaseLicenseDocumentResource;
 extern NSString* readmeDocumentResource;
-extern NSString* manualDocumentResource;
 extern NSString* creditsDocumentResource;
 extern NSString* changelogDocumentResource;
 extern NSString* registrationDomainDefaultsResource;

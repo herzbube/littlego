@@ -85,12 +85,6 @@ Documents described here are located in the "doc" folder.
 ReleaseSteps
   This document lists the steps needed to make a project release.
 
-MANUAL
-  This document contains a complete documentation of the application's end user
-  functionality in prose. The file is parsed and displayed in game under the
-  "Help" tab. For this to work, the content of this file must follow certain
-  guidelines that are documented in DocumentGenerator.h.
-
 ChangeLog
   This document contains an annotated compilation of all bugfixes, newly
   implemented features, and other improvements and changes for all released
@@ -174,6 +168,15 @@ but closed bugs that are still floating around there.
 
 [1] https://github.com/herzbube/littlego/issues
 [2] https://bugs.herzbube.ch/
+
+
+User manual
+-----------
+The application's user manual is maintained as a separate project on GitHub [1]
+to avoid bloat of the source code repository due to large image files that can
+potentially change with every new release of the app.
+
+[1] https://github.com/herzbube/littlego-usermanual
 
 
 Source code documentation with Doxygen

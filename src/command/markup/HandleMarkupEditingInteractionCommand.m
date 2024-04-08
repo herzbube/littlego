@@ -555,7 +555,7 @@ enum MarkupEditingInteraction
 /// @brief Entry point for handling symbol markup placing. Returns true if
 /// markup data changed, returns false if markup data did not change.
 ///
-/// See document MANUAL for details how this works.
+/// See user manual for details how this works.
 // -----------------------------------------------------------------------------
 - (bool) handlePlaceSymbol:(enum MarkupType)markupType
             onIntersection:(NSString*)intersection
@@ -650,7 +650,7 @@ enum MarkupEditingInteraction
 /// @brief Entry point for handling new marker markup placing. Returns true if
 /// markup data changed, returns false if markup data did not change.
 ///
-/// See document MANUAL for details how this works.
+/// See user manual for details how this works.
 // -----------------------------------------------------------------------------
 - (bool) handlePlaceNextFreeMarker:(enum GoMarkupLabel)markerTypeToPlace
                     onIntersection:(NSString*)intersection
@@ -696,7 +696,7 @@ enum MarkupEditingInteraction
 /// this returns true then the out parameter @a labelTypeThatChanged is filled,
 /// otherwise the out parameter's value is not defined.
 ///
-/// See document MANUAL for details how this works.
+/// See user manual for details how this works.
 // -----------------------------------------------------------------------------
 - (bool) handlePlaceLabelOrMarker:(enum GoMarkupLabel)labelTypeToPlace
                         labelText:(NSString*)labelText
@@ -825,7 +825,7 @@ enum MarkupEditingInteraction
 /// @brief Entry point for handling connection markup placing. Returns true if
 /// markup data changed, returns false if markup data did not change.
 ///
-/// See document MANUAL for details how this works.
+/// See user manual for details how this works.
 // -----------------------------------------------------------------------------
 - (bool) handlePlaceConnection:(enum MarkupType)markupType
               fromIntersection:(NSString*)fromIntersection
@@ -866,7 +866,7 @@ enum MarkupEditingInteraction
 /// with the start/end GoPoint objects of the connection that was removed.
 /// Returns @e nil if no connection was removed.
 ///
-/// See document MANUAL for details how this works.
+/// See user manual for details how this works.
 // -----------------------------------------------------------------------------
 - (NSArray*) handleRemoveConnectionIfExistsAtIntersection:(NSString*)intersection
                                            withNodeMarkup:(GoNodeMarkup*)nodeMarkup
@@ -907,7 +907,7 @@ enum MarkupEditingInteraction
 /// than one markup element was removed, returns an empty array. Returns @e nil
 /// if no markup was removed.
 ///
-/// See document MANUAL for details how this works.
+/// See user manual for details how this works.
 // -----------------------------------------------------------------------------
 - (NSArray*) handleEraseMarkupOnIntersection:(NSString*)intersection
                               withNodeMarkup:(GoNodeMarkup*)nodeMarkup
@@ -987,7 +987,7 @@ enum MarkupEditingInteraction
 /// type of label was removed. If more than one markup element was removed,
 /// returns an empty array. Returns @e nil if no markup was removed.
 ///
-/// See document MANUAL for details how this works.
+/// See user manual for details how this works.
 // -----------------------------------------------------------------------------
 - (NSArray*) handleEraseMarkupInRectangleFromIntersection:(NSString*)fromIntersection
                                            toIntersection:(NSString*)toIntersection

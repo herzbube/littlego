@@ -27,7 +27,7 @@ Features:
 - Save & load games to/from the archive
 - Use iTunes file sharing to transfer saved games to/from your iOS device
 - Import/export game files from/to other apps on your device (e.g. Mail, DropBox)
-- In-app user manual (text-only)
+- In-app user manual
 - Submit bug report email from inside the app (yes, this *is* a feature :-))
 - For the technically inclined: Watch what happens behind the scenes when Little Go and Fuego talk to each other over the Go Text Protocol (GTP)
 

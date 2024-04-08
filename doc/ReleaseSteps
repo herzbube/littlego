@@ -47,8 +47,11 @@ Before the release
     the user's preferences are clobbered by UserDefaultsUpdater
 - Replace the "Changes in this release" section of README.md with a collection
   of the most important changes from the ChangeLog.
-- Update the "Troubleshooting" section in the MANUAL file if there are any new
-  "known bugs"
+- Keep the user manual updated: https://github.com/herzbube/littlego-usermanual
+  Notably:
+  - Document new features
+  - Update screenshots if there were UI changes
+  - Update the "Troubleshooting" section if there are any new known bugs
 - Make sure that the version number is up to date in the following files:
   - README.md
   - Info.plist (can be changed in Xcode's summary page for the main target)

@@ -169,9 +169,6 @@
   NSString* resourceName = nil;
   switch (uiArea)
   {
-    case UIAreaHelp:
-      resourceName = manualDocumentResource;
-      break;
     case UIAreaAbout:
       resourceName = aboutDocumentResource;
       break;

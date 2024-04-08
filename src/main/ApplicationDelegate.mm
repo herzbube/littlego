@@ -402,7 +402,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
     self.fileLogger = [[[DDFileLogger alloc] init] autorelease];
     self.fileLogger.rollingFrequency = 0;
     // If you change one of these parameters, also update the documentation in
-    // the MANUAL document. Note that the log files are included in compressed
+    // the user manual. Note that the log files are included in compressed
     // form in a bug report's diagnostics information file, and that file is
     // intended to be sent as an email attachment. Take care that the maximum
     // size taken up by log files does not cause the attachment file to grow

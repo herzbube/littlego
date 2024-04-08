@@ -23,7 +23,6 @@
 /* Begin PBXBuildFile section */
 		535982650F8E85D845D7947D /* libPods-All Targets-Unit tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CE4267F5A17683A21108511E /* libPods-All Targets-Unit tests.a */; };
 		5FA2EF5CA0C1B2E8BB943701 /* libPods-All Targets-Little Go.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6694FF209961C63D15300CB3 /* libPods-All Targets-Little Go.a */; };
-		CD00A34E1487F9CF004E1A0C /* MANUAL in Resources */ = {isa = PBXBuildFile; fileRef = CD00A34D1487F9CF004E1A0C /* MANUAL */; };
 		CD00A363148C2C26004E1A0C /* ApplicationDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = CD00A358148C2C26004E1A0C /* ApplicationDelegate.mm */; };
 		CD00A364148C2C26004E1A0C /* Constants.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35A148C2C26004E1A0C /* Constants.m */; };
 		CD00A365148C2C26004E1A0C /* DocumentViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD00A35C148C2C26004E1A0C /* DocumentViewController.m */; };
@@ -581,7 +580,6 @@
 		CDAFAE2A195DB6B800EF84A9 /* CoordinateLabelsTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE28195DB6B800EF84A9 /* CoordinateLabelsTileView.m */; };
 		CDAFAE6E195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
 		CDAFAE6F195F811D00EF84A9 /* BoardViewCGLayerCache.m in Sources */ = {isa = PBXBuildFile; fileRef = CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */; };
-		CDB198BB2B7696FA00E8512F /* littlego-usermanual.zip in Resources */ = {isa = PBXBuildFile; fileRef = CDB198BA2B7696F900E8512F /* littlego-usermanual.zip */; };
 		CDB198BE2B77ADBE00E8512F /* SetupUserManualCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB198BD2B77ADBD00E8512F /* SetupUserManualCommand.m */; };
 		CDB198BF2B77ADC500E8512F /* SetupUserManualCommand.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB198BD2B77ADBD00E8512F /* SetupUserManualCommand.m */; };
 		CDB198C22B78D5B400E8512F /* WebBrowserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDB198C02B78D5B300E8512F /* WebBrowserViewController.m */; };
@@ -695,6 +693,7 @@
 		CDC66BC221EBB052006C73B3 /* noun_Changelog_365219.svg in Resources */ = {isa = PBXBuildFile; fileRef = CDC66BBE21EBB051006C73B3 /* noun_Changelog_365219.svg */; };
 		CDC66BC321EBB052006C73B3 /* changelog.png in Resources */ = {isa = PBXBuildFile; fileRef = CDC66BBF21EBB052006C73B3 /* changelog.png */; };
 		CDC66BC421EBB273006C73B3 /* ChangeLog in Resources */ = {isa = PBXBuildFile; fileRef = CDEC287C12F477E70069F5B7 /* ChangeLog */; };
+		CDC7F5B82BC40AC50025B81D /* littlego-usermanual.zip in Resources */ = {isa = PBXBuildFile; fileRef = CDC7F5B72BC40AC50025B81D /* littlego-usermanual.zip */; };
 		CDC8DEE928EDE20800619305 /* NodeTreeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC8DEE828EDE20800619305 /* NodeTreeViewController.m */; };
 		CDC8DEEA28EDE20800619305 /* NodeTreeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC8DEE828EDE20800619305 /* NodeTreeViewController.m */; };
 		CDC8DEF128EDECCA00619305 /* NodeNumbersTileView.m in Sources */ = {isa = PBXBuildFile; fileRef = CDC8DEEC28EDECC900619305 /* NodeNumbersTileView.m */; };
@@ -902,7 +901,6 @@
 		781EC54040A40C8A768461F6 /* Pods-All Targets-Little Go.distribute_adhoc.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Little Go.distribute_adhoc.xcconfig"; path = "Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go.distribute_adhoc.xcconfig"; sourceTree = "<group>"; };
 		805A10BE91DF62871C08501E /* Pods-All Targets-Unit tests.distribute_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Unit tests.distribute_appstore.xcconfig"; path = "Target Support Files/Pods-All Targets-Unit tests/Pods-All Targets-Unit tests.distribute_appstore.xcconfig"; sourceTree = "<group>"; };
 		AA65495119D713AE31FA3D7C /* Pods-All Targets-Little Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Little Go.release.xcconfig"; path = "Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go.release.xcconfig"; sourceTree = "<group>"; };
-		CD00A34D1487F9CF004E1A0C /* MANUAL */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = MANUAL; sourceTree = "<group>"; };
 		CD00A357148C2C26004E1A0C /* ApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ApplicationDelegate.h; sourceTree = "<group>"; };
 		CD00A358148C2C26004E1A0C /* ApplicationDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ApplicationDelegate.mm; sourceTree = "<group>"; };
 		CD00A359148C2C26004E1A0C /* Constants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
@@ -1546,7 +1544,6 @@
 		CDAFAE2B195DB78200EF84A9 /* Tile.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Tile.h; sourceTree = "<group>"; };
 		CDAFAE6C195F811D00EF84A9 /* BoardViewCGLayerCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoardViewCGLayerCache.h; sourceTree = "<group>"; };
 		CDAFAE6D195F811D00EF84A9 /* BoardViewCGLayerCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BoardViewCGLayerCache.m; sourceTree = "<group>"; };
-		CDB198BA2B7696F900E8512F /* littlego-usermanual.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = "littlego-usermanual.zip"; sourceTree = "<group>"; };
 		CDB198BC2B77ADBD00E8512F /* SetupUserManualCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SetupUserManualCommand.h; sourceTree = "<group>"; };
 		CDB198BD2B77ADBD00E8512F /* SetupUserManualCommand.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SetupUserManualCommand.m; sourceTree = "<group>"; };
 		CDB198C02B78D5B300E8512F /* WebBrowserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebBrowserViewController.m; sourceTree = "<group>"; };
@@ -1667,6 +1664,8 @@
 		CDC66BBE21EBB051006C73B3 /* noun_Changelog_365219.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = noun_Changelog_365219.svg; path = resource/icon/changelog/noun_Changelog_365219.svg; sourceTree = SOURCE_ROOT; };
 		CDC66BBF21EBB052006C73B3 /* changelog.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = changelog.png; path = resource/icon/changelog/changelog.png; sourceTree = SOURCE_ROOT; };
 		CDC66BC521EF4B0A006C73B3 /* BUGS */ = {isa = PBXFileReference; lastKnownFileType = text; path = BUGS; sourceTree = "<group>"; };
+		CDC7F5B62BC2B5900025B81D /* build-usermanual.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "build-usermanual.sh"; sourceTree = "<group>"; };
+		CDC7F5B72BC40AC50025B81D /* littlego-usermanual.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; name = "littlego-usermanual.zip"; path = "resource/littlego-usermanual.zip"; sourceTree = SOURCE_ROOT; };
 		CDC8DEE728EDE20800619305 /* NodeTreeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeViewController.h; sourceTree = "<group>"; };
 		CDC8DEE828EDE20800619305 /* NodeTreeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NodeTreeViewController.m; sourceTree = "<group>"; };
 		CDC8DEEB28EDECC900619305 /* NodeTreeTileView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NodeTreeTileView.h; sourceTree = "<group>"; };
@@ -3578,7 +3577,6 @@
 				CDD7D7E81753F4990068CBBA /* CodingGuidelines */,
 				CD72170423EAF35B008373BA /* fuego-knowledge-memoryusage.txt */,
 				CDD7D7EF1753FD130068CBBA /* littlego.asta */,
-				CD00A34D1487F9CF004E1A0C /* MANUAL */,
 				CD6EBE421753FE5200ABB980 /* MediaFiles */,
 				CDD7D7EA1753F6990068CBBA /* NOTES.Architecture */,
 				CDD7D7E61753F3FD0068CBBA /* NOTES.Build.3rdparty */,
@@ -3606,7 +3604,7 @@
 				CDE1A13B14C1CED200317ECA /* icon */,
 				CDE1A15214C1CED200317ECA /* image */,
 				CD941363198BDBA20001F55A /* images.xcassets */,
-				CDB198BA2B7696F900E8512F /* littlego-usermanual.zip */,
+				CDC7F5B72BC40AC50025B81D /* littlego-usermanual.zip */,
 				CD02629A16E0F06E007B35CC /* openingbook */,
 				CDE1A19014C1CF4D00317ECA /* plist */,
 				CDE1A15514C1CED200317ECA /* sound */,
@@ -3619,11 +3617,12 @@
 		CDEC28B112F55F270069F5B7 /* script */ = {
 			isa = PBXGroup;
 			children = (
+				CDEC28B212F55F270069F5B7 /* build-3rdparty-software.sh */,
 				CDE3F58F13117EFE00EC16CC /* build-env.sh */,
 				CDE3F585131147D800EC16CC /* build-fuego.sh */,
 				CD093E63259A7D300058D170 /* build-sgfckit.sh */,
 				CDE3F58E13117E3100EC16CC /* build-software.sh */,
-				CDEC28B212F55F270069F5B7 /* build-3rdparty-software.sh */,
+				CDC7F5B62BC2B5900025B81D /* build-usermanual.sh */,
 				CD3D8B9628CCC5C40008D22F /* generate-sgf-with-moves.awk */,
 				CD3D5147147436C70098D8E0 /* makedist.sh */,
 				CDD961001662A8E300B54E09 /* render-readme.rb */,
@@ -3937,7 +3936,6 @@
 				CDB3ED24284D5354007512F6 /* letter-marker.png in Resources */,
 				CD2AB1DB2802FCA500BF0B4D /* very-good@2x.png in Resources */,
 				CD968B721B026E2300984AEE /* credits@2x.png in Resources */,
-				CD00A34E1487F9CF004E1A0C /* MANUAL in Resources */,
 				CD968BBE1B026E2300984AEE /* settings.png in Resources */,
 				CD968B821B026E2300984AEE /* computer-vs-computer@2x.png in Resources */,
 				CD2AB2162803140900BF0B4D /* edit@3x.png in Resources */,
@@ -4002,6 +4000,7 @@
 				CD968B991B026E2300984AEE /* licenses@3x.png in Resources */,
 				CDA96F281D1EC97800CEE129 /* Crashlytics-opensource.txt in Resources */,
 				CD968B901B026E2300984AEE /* help.png in Resources */,
+				CDC7F5B82BC40AC50025B81D /* littlego-usermanual.zip in Resources */,
 				CD85068327B5C414000D2CCD /* hotspot.png in Resources */,
 				CD2AB20D28030D4B00BF0B4D /* interesting@3x.png in Resources */,
 				CD2AB1A62800B80B00BF0B4D /* stones-overlapping-white-icon.png in Resources */,
@@ -4166,7 +4165,6 @@
 				CD968B611B026E2300984AEE /* about@3x.png in Resources */,
 				CD2AB1ED280301CF00BF0B4D /* good@3x.png in Resources */,
 				CD968B751B026E2300984AEE /* diagnostics.png in Resources */,
-				CDB198BB2B7696FA00E8512F /* littlego-usermanual.zip in Resources */,
 				CD968B811B026E2300984AEE /* computer-vs-computer.png in Resources */,
 				CD7C57B621FCB0D100694520 /* stone-white-icon.svg in Resources */,
 				CD81795E25DDEDDF00F39091 /* computer-suggest-move@3.png in Resources */,
