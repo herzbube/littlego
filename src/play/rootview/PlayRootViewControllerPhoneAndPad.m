@@ -271,7 +271,7 @@
     self.rightPaneViewController = [[[RightPaneViewController alloc] init] autorelease];
     self.splitViewControllerChild.viewControllers = [NSArray arrayWithObjects:self.leftPaneViewController, self.rightPaneViewController, nil];
 
-    self.splitViewControllerChild.leftPaneWidth = ceilf(self.splitViewControllerLeftPaneWidthMultiplier * [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero].width);
+    self.splitViewControllerChild.leftPaneMinimumWidth = ceilf(self.splitViewControllerLeftPaneWidthMultiplier * [BoardPositionCollectionViewCell boardPositionCollectionViewCellSizePositionZero].width);
   }
 }
 

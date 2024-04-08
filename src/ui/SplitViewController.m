@@ -55,7 +55,7 @@
   self.deallocating = false;
   self.viewControllers = [NSArray array];
   self.delegate = nil;
-  self.leftPaneWidth = [UiElementMetrics splitViewControllerLeftPaneWidth];
+  self.leftPaneMinimumWidth = [UiElementMetrics splitViewControllerLeftPaneWidth];
   self.dividerView = nil;
   self.barButtonItemLeftPane = nil;
   self.leftPaneIsShownInOverlay = false;
@@ -437,13 +437,10 @@
                                                                withViews:viewsDictionary
                                                                   inView:self.view];
 
-    NSLayoutXAxisAnchor* leftAnchor;
-    if (@available(iOS 11.0, *))
-      leftAnchor = self.view.safeAreaLayoutGuide.leftAnchor;
-    else
-      leftAnchor = self.view.leftAnchor;
-    [leftPaneView.rightAnchor constraintEqualToAnchor:leftAnchor
-                                             constant:self.leftPaneWidth].active = YES;
+    // See the documentation of the leftPaneMinimumWidth property why we define
+    // the left pane width like this
+    [leftPaneView.rightAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leftAnchor
+                                             constant:self.leftPaneMinimumWidth].active = YES;
   }
 }
 
@@ -556,7 +553,7 @@
                                    transparentRightPaneView, @"transparentRightPaneView",
                                    nil];
   NSArray* visualFormats = [NSArray arrayWithObjects:
-                            [NSString stringWithFormat:@"H:[leftPaneView(==%d)]-0-[transparentRightPaneView]-0-|", self.leftPaneWidth],
+                            [NSString stringWithFormat:@"H:[leftPaneView(==%d)]-0-[transparentRightPaneView]-0-|", self.leftPaneMinimumWidth],
                             @"V:|-0-[leftPaneView]-0-|",
                             @"V:|-0-[transparentRightPaneView]-0-|",
                             nil];
@@ -569,7 +566,7 @@
                                                                     toItem:self.overlayView
                                                                  attribute:NSLayoutAttributeLeft
                                                                 multiplier:1.0f
-                                                                  constant:-self.leftPaneWidth];
+                                                                  constant:-self.leftPaneMinimumWidth];
   [self.overlayView addConstraint:self.leftPaneLeftEdgeConstraint];
 
   // First layout pass that will place the left pane outside of the visible
@@ -592,7 +589,7 @@
     return;
   [UIView animateWithDuration:0.2
                    animations:^{
-                     self.leftPaneLeftEdgeConstraint.constant = -self.leftPaneWidth;
+                     self.leftPaneLeftEdgeConstraint.constant = -self.leftPaneMinimumWidth;
                      [self.overlayView layoutIfNeeded];
                    }
                    completion:^(BOOL finished){

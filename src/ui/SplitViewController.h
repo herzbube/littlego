@@ -71,6 +71,22 @@
 
 @property (nonatomic, copy) NSArray* viewControllers;
 @property (nonatomic, assign) id <SplitViewControllerDelegate> delegate;
-@property (nonatomic, assign) int leftPaneWidth;
+/// @brief The minimum width that the left pane should get.
+///
+/// In portrait orientation when the left pane is shown in the overlay its
+/// width will be equal to this minimum width.
+///
+/// In landscape orientation the left pane's left edge is anchored to the left
+/// edge of the superview, and the left pane's right edge is anchored to the
+/// left edge of the safe area PLUS this minimum width. This has the following
+/// effect on the left pane width:
+/// - If the safe area left edge is equal to the superview left edge, the left
+///   pane width will be equal to this minimum width.
+/// - But if the safe area left edge is inset from the superview left edge (e.g.
+///   because of the presence of the notch on an iPhone), the left pane width
+///   will be equal to this minimum width + the safe area left inset. Given that
+///   the left pane view content is properly adjusting to the safe area it will
+///   therefore still have sufficient width to present its content.
+@property (nonatomic, assign) int leftPaneMinimumWidth;
 
 @end
