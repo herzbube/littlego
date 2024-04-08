@@ -642,23 +642,26 @@ static UIFont* smallFont = nil;
   NSMutableArray* visualFormats = [NSMutableArray array];
 
   // C000
-  [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[nodeSymbolImageView]", horizontalMargin]];
+  NSLayoutXAxisAnchor* leftAnchor = self.safeAreaLayoutGuide.leftAnchor;
+  NSLayoutConstraint* xPositionConstraint = [self.nodeSymbolImageView.leftAnchor constraintEqualToAnchor:leftAnchor
+                                                                                                constant:horizontalMargin];
+  xPositionConstraint.active = YES;
+  xPositionConstraint.identifier = @"C000";
   // C001
-  NSLayoutConstraint* constraint = [AutoLayoutUtility alignFirstView:self.nodeSymbolImageView
-                                                      withSecondView:self
-                                                         onAttribute:NSLayoutAttributeCenterY
-                                                    constraintHolder:self];
-  constraint.identifier = @"C001";
+  NSLayoutConstraint* yPositionConstraint = [AutoLayoutUtility alignFirstView:self.nodeSymbolImageView
+                                                               withSecondView:self
+                                                                  onAttribute:NSLayoutAttributeCenterY
+                                                             constraintHolder:self];
+  yPositionConstraint.identifier = @"C001";
   // C002
   [visualFormats addObject:[NSString stringWithFormat:@"H:[nodeSymbolImageView(==%f)]", nodeSymbolImageDimension]];
   // C003
   [visualFormats addObject:[NSString stringWithFormat:@"V:[nodeSymbolImageView(==%f)]", nodeSymbolImageDimension]];
 
   NSArray* constraints = [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self];
-  [self throwIfConstraints:constraints hasNotExpectedCount:3];
-  ((NSLayoutConstraint*)constraints[0]).identifier = @"C000";
-  ((NSLayoutConstraint*)constraints[1]).identifier = @"C002";
-  ((NSLayoutConstraint*)constraints[2]).identifier = @"C003";
+  [self throwIfConstraints:constraints hasNotExpectedCount:2];
+  ((NSLayoutConstraint*)constraints[0]).identifier = @"C002";
+  ((NSLayoutConstraint*)constraints[1]).identifier = @"C003";
 }
 
 // -----------------------------------------------------------------------------
@@ -798,7 +801,11 @@ static UIFont* smallFont = nil;
   // C041 - wholly defined in dynamic constraints
 
   // C042
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[infoIconImageView]-%d-|", horizontalMargin]];
+  NSLayoutXAxisAnchor* rightAnchor = self.safeAreaLayoutGuide.rightAnchor;
+  NSLayoutConstraint* widthConstraint = [self.infoIconImageView.rightAnchor constraintEqualToAnchor:rightAnchor
+                                                                                           constant:-horizontalMargin];
+  widthConstraint.active = YES;
+  widthConstraint.identifier = @"C042";
 
   // C043
   // Start out with a non-zero width - the actual value will be updated
@@ -817,9 +824,8 @@ static UIFont* smallFont = nil;
   [visualFormats addObject:[NSString stringWithFormat:@"V:[infoIconImageView(==%f)]", iconImageDimension]];
 
   NSArray* constraints = [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self];
-  [self throwIfConstraints:constraints hasNotExpectedCount:2];
-  ((NSLayoutConstraint*)constraints[0]).identifier = @"C042";
-  ((NSLayoutConstraint*)constraints[1]).identifier = @"C044";
+  [self throwIfConstraints:constraints hasNotExpectedCount:1];
+  ((NSLayoutConstraint*)constraints[0]).identifier = @"C044";
 }
 
 // -----------------------------------------------------------------------------
@@ -866,19 +872,23 @@ static UIFont* smallFont = nil;
 
   // C060
   self.markupIconImageViewLeftEdgeConstraint = [NSLayoutConstraint constraintWithItem:self.markupIconImageView
-                                                                          attribute:NSLayoutAttributeLeading
-                                                                          relatedBy:NSLayoutRelationEqual
-                                                                             toItem:self.hotspotIconImageView
-                                                                          attribute:NSLayoutAttributeTrailing
-                                                                         multiplier:1.0
-                                                                           constant:horizontalSpacingSiblings];
+                                                                            attribute:NSLayoutAttributeLeading
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.hotspotIconImageView
+                                                                            attribute:NSLayoutAttributeTrailing
+                                                                           multiplier:1.0
+                                                                             constant:horizontalSpacingSiblings];
   self.markupIconImageViewLeftEdgeConstraint.active = YES;
   self.markupIconImageViewLeftEdgeConstraint.identifier = @"C060";
 
   // C061 - wholly defined in dynamic constraints
 
   // C062
-  [visualFormats addObject:[NSString stringWithFormat:@"H:[markupIconImageView]-%d-|", horizontalMargin]];
+  NSLayoutXAxisAnchor* rightAnchor = self.safeAreaLayoutGuide.rightAnchor;
+  NSLayoutConstraint* widthConstraint = [self.markupIconImageView.rightAnchor constraintEqualToAnchor:rightAnchor
+                                                                                             constant:-horizontalMargin];
+  widthConstraint.active = YES;
+  widthConstraint.identifier = @"C062";
 
   // C063
   // Start out with a non-zero width - the actual value will be updated
@@ -897,9 +907,8 @@ static UIFont* smallFont = nil;
   [visualFormats addObject:[NSString stringWithFormat:@"V:[markupIconImageView(==%f)]", iconImageDimension]];
 
   NSArray* constraints = [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self];
-  [self throwIfConstraints:constraints hasNotExpectedCount:2];
-  ((NSLayoutConstraint*)constraints[0]).identifier = @"C062";
-  ((NSLayoutConstraint*)constraints[1]).identifier = @"C064";
+  [self throwIfConstraints:constraints hasNotExpectedCount:1];
+  ((NSLayoutConstraint*)constraints[0]).identifier = @"C064";
 }
 
 // -----------------------------------------------------------------------------

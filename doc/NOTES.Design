@@ -421,7 +421,10 @@ Characteristics that define the cell view size during off-screen layouting:
            Margin
 
 Node symbol image view
-- [C000] x-position = Superview left edge + margin
+- [C000] x-position = Left edge of superview safe area + margin
+  => It is important to use the safe area because cells are laid out at the
+     screen edge, which means that physical device constraints may reduce the
+     available area (e.g. the iPhone notch in Landscape orientation).
 - [C001] y-position = Vertically centered in superview
 - [C002 + C003] Width/Height = Fixed width/height
 
@@ -561,7 +564,7 @@ Info icon image view
      captured stones text is not shown.
                       => In addition if hotspot and/or markup icon is displayed: Modify constraint by -<n> to push the info icon up into a top row
                           => Because we now have two rows.
-- [C042] Width 1 = Right edge of superview - spacing
+- [C042] Width 1 = Right edge of superview safe area - spacing
 - [C043] Width 2 = If info icon is shown: Fixed width
                    If info icon is not shown: 0
   => The width constraint's constant is dynamically adjusted.
@@ -595,7 +598,7 @@ Markup icon image view
                       If detail text is not shown: Vertically centered in superview
                       => In addition if info icon is displayed: Modify constraint by +<n> to push the markup icon down into a bottom row
                          => Because we now have two rows.
-- [C062] Width 1 = Right edge of superview - spacing
+- [C062] Width 1 = Right edge of superview safe area - spacing
 - [C063] Width 2 = If markup icon is shown: Fixed width
                    If markup icon is not shown: 0
   => The width constraint's constant is dynamically adjusted.
