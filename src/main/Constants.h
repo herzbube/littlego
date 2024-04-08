@@ -1985,7 +1985,6 @@ extern NSString* doubtfulButtonIconResource;
 extern NSString* noneButtonIconResource;
 extern NSString* editButtonIconResource;
 extern NSString* trashcanButtonIconResource;
-extern NSString* moreGameActionsButtonIconResource;
 extern NSString* menuHamburgerButtonIconResource;
 extern NSString* forwardButtonIconResource;
 extern NSString* forwardToEndButtonIconResource;
