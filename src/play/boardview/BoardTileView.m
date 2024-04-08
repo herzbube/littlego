@@ -334,17 +334,18 @@
 - (void) setupLabelsLayerDelegate
 {
   ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
-  {
-    self.labelsLayerDelegate = nil;
-  }
-  else
+  enum UIAreaPlayMode uiAreaPlayMode = appDelegate.uiSettingsModel.uiAreaPlayMode;
+  if (uiAreaPlayMode == UIAreaPlayModePlay || uiAreaPlayMode == UIAreaPlayModeEditMarkup)
   {
     if (self.labelsLayerDelegate)
       return;
     self.labelsLayerDelegate = [[[LabelsLayerDelegate alloc] initWithTile:self
                                                                   metrics:appDelegate.boardViewMetrics
                                                               markupModel:appDelegate.markupModel] autorelease];
+  }
+  else
+  {
+    self.labelsLayerDelegate = nil;
   }
 }
 
