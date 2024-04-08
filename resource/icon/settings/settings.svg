@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="80"
+   height="80"
+   viewBox="25.6 -51.2 409.6 552.96"
+   enable-background="new 0 0 512 512"
+   xml:space="preserve"
+   sodipodi:docname="settings.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs3" /><sodipodi:namedview
+   id="namedview3"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="2.36"
+   inkscape:cx="50.423729"
+   inkscape:cy="50"
+   inkscape:window-width="1048"
+   inkscape:window-height="675"
+   inkscape:window-x="0"
+   inkscape:window-y="25"
+   inkscape:window-maximized="0"
+   inkscape:current-layer="Layer_1" />
+<g
+   id="g2"
+   transform="matrix(0.891,0,0,0.891,2.304,-2.816)">
+	<path
+   d="m 384,352 v -64 h -51.844 c -3.656,-16 -10.031,-30.906 -18.5,-44.375 l 36.75,-36.75 -45.281,-45.25 -36.734,36.719 C 254.906,189.875 240,183.5 224,179.844 V 128 h -64 v 51.844 c -16,3.656 -30.906,10.031 -44.391,18.531 l -36.75,-36.75 -45.25,45.25 36.75,36.75 C 61.875,257.094 55.5,272 51.844,288 H 0 v 64 h 51.844 c 3.656,16 10.016,30.906 18.5,44.375 l -36.734,36.75 45.25,45.281 36.75,-36.75 c 13.484,8.469 28.39,14.844 44.39,18.5 V 512 h 64 v -51.844 c 16,-3.656 30.891,-10.031 44.375,-18.5 l 36.75,36.75 45.281,-45.281 -36.75,-36.75 C 322.125,382.875 328.5,368 332.156,352 Z m -192,48 c -44.188,0 -80,-35.813 -80,-80 0,-44.187 35.813,-80 80,-80 44.187,0 80,35.813 80,80 0,44.187 -35.812,80 -80,80 z"
+   id="path1" />
+	<path
+   d="M 512,112 V 80 h -25.938 c -1.813,-8 -5,-15.438 -9.25,-22.188 L 495.187,39.437 472.562,16.812 454.187,35.187 c -6.75,-4.25 -14.188,-7.438 -22.188,-9.25 V 0 h -32 v 25.938 c -8,1.813 -15.438,5 -22.188,9.25 l -18.375,-18.375 -22.625,22.625 18.375,18.375 c -4.25,6.75 -7.438,14.188 -9.25,22.188 H 320 v 32 h 25.938 c 1.813,8 5,15.438 9.25,22.188 l -18.375,18.375 22.625,22.625 18.375,-18.375 c 6.75,4.25 14.188,7.438 22.188,9.25 V 192 h 32 v -25.938 c 8,-1.813 15.438,-5 22.188,-9.25 l 18.375,18.375 22.625,-22.625 -18.375,-18.375 c 4.25,-6.75 7.438,-14.188 9.25,-22.188 H 512 Z m -96,24 c -22.094,0 -40,-17.906 -40,-40 0,-22.094 17.906,-40 40,-40 22.094,0 40,17.906 40,40 0,22.094 -17.906,40 -40,40 z"
+   id="path2" />
+</g>
+</svg>

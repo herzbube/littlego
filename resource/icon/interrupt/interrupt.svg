@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   id="Ebene_1"
+   x="0px"
+   y="0px"
+   width="80"
+   height="80"
+   viewBox="5 -10 80 108"
+   enable-background="new 0 0 100 100"
+   xml:space="preserve"
+   sodipodi:docname="interrupt.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:i="http://ns.adobe.com/AdobeIllustrator/10.0/"><defs
+   id="defs2" /><sodipodi:namedview
+   id="namedview2"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="2.36"
+   inkscape:cx="50"
+   inkscape:cy="50.211864"
+   inkscape:window-width="968"
+   inkscape:window-height="648"
+   inkscape:window-x="0"
+   inkscape:window-y="25"
+   inkscape:window-maximized="0"
+   inkscape:current-layer="Ebene_1" />
+<switch
+   id="switch1"
+   transform="matrix(0.89053955,0,0,0.89053955,0.45037528,-0.54656937)">
+	<foreignObject
+   requiredExtensions="http://ns.adobe.com/AdobeIllustrator/10.0/"
+   x="0"
+   y="0"
+   width="1"
+   height="1">
+		</foreignObject>
+	<g
+   i:extraneous="self"
+   id="g1">
+		<path
+   d="M 50.008,100.044 C 38.015,100.044 26.411,95.725 17.329,87.878 7.215,79.147 1.112,66.995 0.136,53.669 -0.839,40.343 3.437,27.434 12.168,17.325 21.683,6.31 35.493,0 50.052,0 62.039,0 73.646,4.32 82.723,12.166 92.834,20.893 98.943,33.043 99.914,46.376 100.892,59.707 96.62,72.62 87.885,82.73 78.378,93.733 64.571,100.044 50.008,100.044 Z M 50.052,9.822 C 38.345,9.822 27.245,14.894 19.6,23.747 12.581,31.87 9.148,42.242 9.928,52.956 c 0.786,10.704 5.692,20.471 13.815,27.489 7.299,6.308 16.629,9.781 26.264,9.781 11.711,0 22.807,-5.075 30.444,-13.917 7.021,-8.124 10.452,-18.503 9.671,-29.22 C 89.335,36.378 84.434,26.613 76.309,19.598 69.007,13.293 59.688,9.822 50.052,9.822 Z"
+   id="path1" />
+		<polygon
+   points="31.956,40.908 38.369,33.477 68.102,59.152 61.687,66.59 "
+   id="polygon1" />
+		<rect
+   x="45.118"
+   y="30.389999"
+   transform="matrix(0.757,0.6535,-0.6535,0.757,44.8522,-20.5303)"
+   width="9.8170004"
+   height="39.285"
+   id="rect1" />
+	</g>
+</switch>
+</svg>

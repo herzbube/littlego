@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   x="0px"
+   y="0px"
+   width="80"
+   height="80"
+   viewBox="5 -10 80 108"
+   enable-background="new 0 0 100 100"
+   xml:space="preserve"
+   id="svg48"
+   sodipodi:docname="credits.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs48">
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</defs><sodipodi:namedview
+   id="namedview48"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="2.36"
+   inkscape:cx="80.084746"
+   inkscape:cy="31.355932"
+   inkscape:window-width="1336"
+   inkscape:window-height="793"
+   inkscape:window-x="0"
+   inkscape:window-y="25"
+   inkscape:window-maximized="0"
+   inkscape:current-layer="svg48" />
+
+<g
+   id="g47"
+   transform="matrix(0.91245174,0,0,0.91245174,-0.79367172,-1.4624517)">
+		<rect
+   x="67.305"
+   y="1"
+   width="17.497"
+   height="48"
+   id="rect45" />
+		<rect
+   x="15.862"
+   y="1"
+   width="17.487"
+   height="48"
+   id="rect46" />
+		<polygon
+   points="58.728,57.422 84.781,57.422 64.017,73.698 71.56,98.649 50.172,83.759 28.782,98.649 36.328,73.698 15.573,57.422 41.626,57.422 50.172,39.913 "
+   id="polygon46" />
+		<polygon
+   points="58.926,42.08 58.926,1 41.419,1 41.419,42.111 50.172,24.031 "
+   id="polygon47" />
+	</g>
+</svg>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.0"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="80"
+   height="80"
+   viewBox="2.2281 -3.9761 80 108"
+   enable-background="new 0 0 44.562 39.761"
+   xml:space="preserve"
+   sodipodi:docname="menu-hamburger.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:i="http://ns.adobe.com/AdobeIllustrator/10.0/"><defs
+   id="defs3" /><sodipodi:namedview
+   id="namedview3"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="5.9354642"
+   inkscape:cx="52.81811"
+   inkscape:cy="26.872372"
+   inkscape:window-width="1144"
+   inkscape:window-height="702"
+   inkscape:window-x="0"
+   inkscape:window-y="25"
+   inkscape:window-maximized="0"
+   inkscape:current-layer="Layer_1" />
+<switch
+   id="switch2"
+   transform="matrix(1.9994613,0,0,1.9994613,-2.3218972,10.27361)">
+	<foreignObject
+   requiredExtensions="http://ns.adobe.com/AdobeIllustrator/10.0/"
+   x="0"
+   y="0"
+   width="1"
+   height="1">
+		</foreignObject>
+	<g
+   i:extraneous="self"
+   id="g2">
+		<g
+   id="g1">
+			<path
+   d="M 0,2.88 C 0,1.28 1.28,0 2.88,0 h 38.8 c 1.601,0 2.881,1.28 2.881,2.88 0,1.6 -1.28,2.88 -2.881,2.88 H 2.88 C 1.28,5.76 0,4.48 0,2.88 Z m 44.562,17.04 c 0,1.521 -1.28,2.88 -2.881,2.88 H 2.88 C 1.28,22.8 0,21.441 0,19.92 0,18.319 1.28,17.04 2.88,17.04 h 38.8 c 1.601,0.001 2.882,1.28 2.882,2.88 z m 0,16.96 c 0,1.6 -1.28,2.881 -2.881,2.881 H 2.88 C 1.28,39.761 0,38.48 0,36.88 0,35.28 1.28,34 2.88,34 h 38.8 c 1.601,0 2.882,1.281 2.882,2.88 z"
+   id="path1" />
+		</g>
+	</g>
+</switch>
+</svg>

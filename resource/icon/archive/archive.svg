@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   x="0px"
+   y="0px"
+   width="80"
+   height="80"
+   viewBox="5 -10 80 108"
+   enable-background="new 0 0 100 100"
+   xml:space="preserve"
+   id="svg5"
+   sodipodi:docname="archive.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs5" /><sodipodi:namedview
+   id="namedview5"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="2.36"
+   inkscape:cx="49.788136"
+   inkscape:cy="50"
+   inkscape:window-width="1264"
+   inkscape:window-height="701"
+   inkscape:window-x="0"
+   inkscape:window-y="25"
+   inkscape:window-maximized="0"
+   inkscape:current-layer="svg5" />
+<g
+   id="Your_Icon"
+   transform="matrix(0.9045,0,0,0.891,-0.3651975,-0.55)">
+	<polygon
+   fill="#000000"
+   points="76.555,0 87.125,11.56 13.185,11.56 25.783,0 "
+   id="polygon1" />
+	<path
+   fill="#000000"
+   d="M 87.125,100 H 13.185 V 13.555 h 73.94 z M 82.351,17.964 H 17.959 V 41.543 H 82.35 V 17.964 Z M 19.959,19.96 H 80.35 V 39.546 H 19.959 Z M 82.351,72.319 H 17.959 V 95.898 H 82.35 V 72.319 Z M 19.959,74.315 H 80.35 V 93.902 H 19.959 Z M 82.351,44.988 H 17.959 V 68.566 H 82.35 V 44.988 Z M 19.959,46.984 H 80.35 V 66.571 H 19.959 Z m 36.195,-17.23 c 0,-3.302 -2.691,-5.988 -6,-5.988 -3.308,0 -6,2.686 -6,5.988 0,3.301 2.691,5.986 6,5.986 3.309,0 6,-2.685 6,-5.986 z m -2,0 c 0,2.201 -1.794,3.991 -4,3.991 -2.205,0 -4,-1.791 -4,-3.991 0,-2.201 1.794,-3.992 4,-3.992 2.206,0 4,1.791 4,3.992 z m 2,27.023 c 0,-3.301 -2.691,-5.986 -6,-5.986 -3.308,0 -6,2.686 -6,5.986 0,3.302 2.691,5.987 6,5.987 3.309,10e-4 6,-2.685 6,-5.987 z m -2,0 c 0,2.201 -1.794,3.991 -4,3.991 -2.205,0 -4,-1.79 -4,-3.991 0,-2.2 1.794,-3.991 4,-3.991 2.206,0 4,1.791 4,3.991 z m 2,27.332 c 0,-3.302 -2.691,-5.987 -6,-5.987 -3.308,0 -6,2.686 -6,5.987 0,3.301 2.691,5.986 6,5.986 3.309,0.001 6,-2.685 6,-5.986 z m -2,0 c 0,2.2 -1.794,3.99 -4,3.99 -2.205,0 -4,-1.79 -4,-3.99 0,-2.201 1.794,-3.991 4,-3.991 2.206,0 4,1.79 4,3.991 z"
+   id="path1" />
+</g>
+
+</svg>

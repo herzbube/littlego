@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="80"
+   height="80"
+   viewBox="0 0 80 80"
+   enable-background="new 0 0 100 100"
+   xml:space="preserve"
+   sodipodi:docname="discard.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><defs
+   id="defs1" /><sodipodi:namedview
+   id="namedview1"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="2.36"
+   inkscape:cx="50"
+   inkscape:cy="50.423729"
+   inkscape:window-width="1176"
+   inkscape:window-height="781"
+   inkscape:window-x="0"
+   inkscape:window-y="25"
+   inkscape:window-maximized="0"
+   inkscape:current-layer="Layer_1" />
+<path
+   d="M 70.63872,66.497613 H 37.886052 l 33.3097,-33.314321 c 2.405664,-2.405664 2.405664,-6.319405 0,-8.725069 L 59.414929,12.67806 c -0.937186,-0.937186 -2.102729,-1.484318 -3.31843,-1.690895 0.002,6.6e-4 -5.39014,0.284456 -10.597461,0.876467 -1.600476,0.180837 -2.936296,1.087664 -3.867542,2.01825 L 8.804248,46.711109 c -2.405664,2.405664 -2.405664,6.317426 0,8.723089 l 11.780163,11.780824 c 1.156963,1.158942 2.70398,1.797813 4.347355,1.797813 0.128038,0 7.952221,-0.154438 8.0334,-0.158398 0.394674,-0.03696 1.341759,-0.144538 1.341759,-0.144538 H 70.63806 c 0.609831,0 1.106144,-0.496312 1.106144,-1.106143 0.0013,-0.609831 -0.494993,-1.106143 -1.105484,-1.106143 z M 35.564207,65.32613 c -1.443399,1.441418 -3.790324,1.441418 -5.235702,0 L 18.548342,53.547287 c -1.444059,-1.446039 -1.444059,-3.794283 0,-5.236362 L 35.32793,31.531997 52.292316,48.595381 Z M 50.076069,13.625806 53.406379,13.35323 35.277111,31.483158 32.499873,31.202662 Z M 10.549922,53.691825 c -1.444719,-1.444059 -1.444719,-3.792303 0,-5.238342 l 17.722714,-17.722714 3.940801,0.423054 -15.410769,15.410769 c -2.405664,2.405663 -2.405664,6.322045 0,8.725069 L 28.00006,66.487053 c -0.178857,0.004 -0.339895,0.0059 -0.512152,0.0099 h -3.033975 c -0.803208,-0.103619 -1.547677,-0.449454 -2.125168,-1.028925 z"
+   id="path1"
+   style="stroke-width:0.65999" />
+</svg>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xml:space="preserve"
+   width="80"
+   height="80"
+   version="1.1"
+   style="clip-rule:evenodd;fill-rule:evenodd;image-rendering:optimizeQuality;shape-rendering:geometricPrecision;text-rendering:geometricPrecision"
+   viewBox="500 -1000 8000 10800"
+   id="svg2"
+   sodipodi:docname="diagnostics.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><sodipodi:namedview
+   id="namedview2"
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1.0"
+   inkscape:showpageshadow="2"
+   inkscape:pageopacity="0.0"
+   inkscape:pagecheckerboard="0"
+   inkscape:deskcolor="#d1d1d1"
+   inkscape:zoom="2.36"
+   inkscape:cx="50"
+   inkscape:cy="50.211864"
+   inkscape:window-width="728"
+   inkscape:window-height="480"
+   inkscape:window-x="0"
+   inkscape:window-y="25"
+   inkscape:window-maximized="0"
+   inkscape:current-layer="Camada_x0020_1" />
+ <defs
+   id="defs1">
+  <style
+   type="text/css"
+   id="style1">
+   
+    .fil0 {fill:black}
+   
+  </style>
+ </defs>
+ <g
+   id="Camada_x0020_1"
+   inkscape:label="Camada 1"
+   inkscape:groupmode="layer">
+  <metadata
+   id="CorelCorpID_0Corel-Layer" />
+  <path
+   class="fil0"
+   d="m 4098.06,3982.22 h 803.88 c 94.05,0 170.28,77.22 170.28,170.28 v 634.59 h 634.59 c 93.06,0 170.28,76.23 170.28,170.28 v 803.88 c 0,94.05 -77.22,170.28 -170.28,170.28 h -634.59 v 634.59 c 0,93.06 -76.23,170.28 -170.28,170.28 h -803.88 c -94.05,0 -170.28,-77.22 -170.28,-170.28 v -634.59 h -634.59 c -93.06,0 -170.28,-76.23 -170.28,-170.28 v -803.88 c 0,-94.05 77.22,-170.28 170.28,-170.28 h 634.59 V 4152.5 c 0,-93.06 76.23,-170.28 170.28,-170.28 z M 2176.47,68.75 h 510.84 c 59.4,0 107.91,48.51 107.91,107.91 v 1601.82 c 0,59.4 -48.51,107.91 -107.91,107.91 h -510.84 c -59.4,0 -108.9,-48.51 -108.9,-107.91 V 176.66 c 0,-59.4 49.5,-107.91 108.9,-107.91 z m 4141.17,0 h 510.84 c 59.4,0 107.91,48.51 107.91,107.91 v 1601.82 c 0,59.4 -48.51,107.91 -107.91,107.91 h -510.84 c -59.4,0 -107.91,-48.51 -107.91,-107.91 V 176.66 c 0,-59.4 48.51,-107.91 107.91,-107.91 z M 2880.36,687.5 V 176.66 c 0,-59.4 48.51,-107.91 107.91,-107.91 h 3028.41 c 59.4,0 107.91,48.51 107.91,107.91 V 687.5 c 0,59.4 -48.51,107.91 -107.91,107.91 H 2988.27 c -59.4,0 -107.91,-48.51 -107.91,-107.91 z M 1096.38,1987.37 h 6807.24 c 578.16,0 1051.38,473.22 1051.38,1051.38 v 4641.12 c 0,578.16 -473.22,1051.38 -1051.38,1051.38 H 1096.38 C 518.22,8731.25 45,8258.03 45,7679.87 V 3038.75 C 45,2460.59 518.22,1987.37 1096.38,1987.37 Z M 4500,3286.25 c -1144.44,0 -2073.06,928.62 -2073.06,2073.06 0,1144.44 928.62,2073.06 2073.06,2073.06 1144.44,0 2073.06,-928.62 2073.06,-2073.06 0,-1144.44 -928.62,-2073.06 -2073.06,-2073.06 z"
+   id="path1"
+   style="stroke-width:0.99" />
+ </g>
+</svg>
