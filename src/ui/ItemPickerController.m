@@ -237,6 +237,8 @@
     [self.view addSubview:self.placeholderView];
     self.placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
     [AutoLayoutUtility fillSuperview:self.view withSubview:self.placeholderView];
+
+    self.view.backgroundColor = [UIColor systemGroupedBackgroundColor];
   }
   else
   {
