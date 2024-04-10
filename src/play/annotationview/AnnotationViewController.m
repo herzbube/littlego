@@ -326,13 +326,10 @@ static const int spacerBottomTag = 2;
 {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 12.0, *))
+  if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
   {
-    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
-    {
-      GoNode* node = [self nodeWithAnnotationData];
-      [self updateColors:node];
-    }
+    GoNode* node = [self nodeWithAnnotationData];
+    [self updateColors:node];
   }
 }
 

@@ -163,11 +163,8 @@
 {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 12.0, *))
-  {
-    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
-      [self reloadData];
-  }
+  if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+    [self reloadData];
 }
 
 #pragma mark - UICollectionViewDataSource overrides

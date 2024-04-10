@@ -476,10 +476,7 @@
 // -----------------------------------------------------------------------------
 + (UIImage*) editIcon
 {
-  if (@available(iOS 13, *))
-    return [UIImage systemImageNamed:@"square.and.pencil"];
-  else
-    return [UIImage imageNamed:editButtonIconResource];
+  return [UIImage systemImageNamed:@"square.and.pencil"];
 }
 
 // -----------------------------------------------------------------------------
@@ -487,10 +484,7 @@
 // -----------------------------------------------------------------------------
 + (UIImage*) trashcanIcon
 {
-  if (@available(iOS 13, *))
-    return [UIImage systemImageNamed:@"trash"];
-  else
-    return [UIImage imageNamed:trashcanButtonIconResource];
+  return [UIImage systemImageNamed:@"trash"];
 }
 
 // -----------------------------------------------------------------------------

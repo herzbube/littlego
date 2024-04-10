@@ -382,73 +382,43 @@
   {
     case NSLayoutAttributeLeft:
       firstViewAnchor = firstView.leftAnchor;
-      if (@available(iOS 11.0, *))
-        secondViewAnchor = secondView.safeAreaLayoutGuide.leftAnchor;
-      else
-        secondViewAnchor = secondView.leftAnchor;
+      secondViewAnchor = secondView.safeAreaLayoutGuide.leftAnchor;
       break;
     case NSLayoutAttributeRight:
       firstViewAnchor = firstView.rightAnchor;
-      if (@available(iOS 11.0, *))
-        secondViewAnchor = secondView.safeAreaLayoutGuide.rightAnchor;
-      else
-        secondViewAnchor = secondView.rightAnchor;
+      secondViewAnchor = secondView.safeAreaLayoutGuide.rightAnchor;
       break;
     case NSLayoutAttributeTop:
       firstViewAnchor = firstView.topAnchor;
-      if (@available(iOS 11.0, *))
-        secondViewAnchor = secondView.safeAreaLayoutGuide.topAnchor;
-      else
-        secondViewAnchor = secondView.topAnchor;
+      secondViewAnchor = secondView.safeAreaLayoutGuide.topAnchor;
       break;
     case NSLayoutAttributeBottom:
       firstViewAnchor = firstView.bottomAnchor;
-      if (@available(iOS 11.0, *))
-        secondViewAnchor = secondView.safeAreaLayoutGuide.bottomAnchor;
-      else
-        secondViewAnchor = secondView.bottomAnchor;
+      secondViewAnchor = secondView.safeAreaLayoutGuide.bottomAnchor;
       break;
     case NSLayoutAttributeLeading:
       firstViewAnchor = firstView.leadingAnchor;
-      if (@available(iOS 11.0, *))
-        secondViewAnchor = secondView.safeAreaLayoutGuide.leadingAnchor;
-      else
-        secondViewAnchor = secondView.leadingAnchor;
+      secondViewAnchor = secondView.safeAreaLayoutGuide.leadingAnchor;
       break;
     case NSLayoutAttributeTrailing:
       firstViewAnchor = firstView.trailingAnchor;
-      if (@available(iOS 11.0, *))
-        secondViewAnchor = secondView.safeAreaLayoutGuide.trailingAnchor;
-      else
-        secondViewAnchor = secondView.trailingAnchor;
+      secondViewAnchor = secondView.safeAreaLayoutGuide.trailingAnchor;
       break;
     case NSLayoutAttributeWidth:
       firstViewAnchor = firstView.widthAnchor;
-      if (@available(iOS 11.0, *))
-        secondViewAnchor = secondView.safeAreaLayoutGuide.widthAnchor;
-      else
-        secondViewAnchor = secondView.widthAnchor;
+      secondViewAnchor = secondView.safeAreaLayoutGuide.widthAnchor;
       break;
     case NSLayoutAttributeHeight:
       firstViewAnchor = firstView.heightAnchor;
-      if (@available(iOS 11.0, *))
-        secondViewAnchor = secondView.safeAreaLayoutGuide.heightAnchor;
-      else
-        secondViewAnchor = secondView.heightAnchor;
+      secondViewAnchor = secondView.safeAreaLayoutGuide.heightAnchor;
       break;
     case NSLayoutAttributeCenterX:
       firstViewAnchor = firstView.centerXAnchor;
-      if (@available(iOS 11.0, *))
-        secondViewAnchor = secondView.safeAreaLayoutGuide.centerXAnchor;
-      else
-        secondViewAnchor = secondView.centerXAnchor;
+      secondViewAnchor = secondView.safeAreaLayoutGuide.centerXAnchor;
       break;
     case NSLayoutAttributeCenterY:
       firstViewAnchor = firstView.centerYAnchor;
-      if (@available(iOS 11.0, *))
-        secondViewAnchor = secondView.safeAreaLayoutGuide.centerYAnchor;
-      else
-        secondViewAnchor = secondView.centerYAnchor;
+      secondViewAnchor = secondView.safeAreaLayoutGuide.centerYAnchor;
       break;
     default:
       return nil;

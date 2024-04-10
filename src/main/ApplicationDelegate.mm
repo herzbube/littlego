@@ -422,11 +422,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   {
     [DDLog addLogger:self.fileLogger withLevel:ddLogLevel];
     self.fileLogger.logFormatter = [[[LogFormatter alloc] init] autorelease];
-    id<DDLogger> logger;
-    if (@available(iOS 10.0, *))
-      logger = [DDOSLogger sharedInstance];  // uses os_log
-    else
-      logger = [DDTTYLogger sharedInstance];  // uses stderr
+    id<DDLogger> logger = [DDOSLogger sharedInstance];  // uses os_log
     // The Xcode console adds its own timestamp
     logger.logFormatter = [[[LogFormatter alloc] initWithLogFormatStyle:LogFormatStyleWithoutTimestamp] autorelease];
     // Increase log level if you want to see more logging in the Debug console

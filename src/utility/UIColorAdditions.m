@@ -522,10 +522,7 @@
 // -----------------------------------------------------------------------------
 + (UIColor*) labelTextColorRegularText
 {
-  if (@available(iOS 13, *))
-    return [UIColor labelColor];
-  else
-    return [UIColor blackColor];
+  return [UIColor labelColor];
 }
 
 // -----------------------------------------------------------------------------
@@ -534,10 +531,7 @@
 // -----------------------------------------------------------------------------
 + (UIColor*) labelTextColorPlaceholderText
 {
-  if (@available(iOS 13, *))
-    return [UIColor placeholderTextColor];
-  else
-    return [UIColor grayColor];
+  return [UIColor placeholderTextColor];
 }
 
 @end

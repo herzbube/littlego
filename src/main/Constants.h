@@ -1983,7 +1983,6 @@ extern NSString* veryBadButtonIconResource;
 extern NSString* interestingButtonIconResource;
 extern NSString* doubtfulButtonIconResource;
 extern NSString* noneButtonIconResource;
-extern NSString* editButtonIconResource;
 extern NSString* trashcanButtonIconResource;
 extern NSString* menuHamburgerButtonIconResource;
 extern NSString* forwardButtonIconResource;

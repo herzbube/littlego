@@ -299,11 +299,8 @@
 {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 12.0, *))
-  {
-    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
-      [self updateColors];
-  }
+  if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+    [self updateColors];
 }
 
 #pragma mark - Private helpers for loadView
@@ -419,25 +416,12 @@
   // of the columns, and the left/right position of the left/right column
   // view.
   UIView* anchorView = self.woodenBackgroundView;
-  NSLayoutXAxisAnchor* leftAnchor;
-  NSLayoutXAxisAnchor* rightAnchor;
-  NSLayoutYAxisAnchor* topAnchor;
-  NSLayoutYAxisAnchor* bottomAnchor;
-  if (@available(iOS 11.0, *))
-  {
-    UILayoutGuide* layoutGuide = anchorView.safeAreaLayoutGuide;
-    leftAnchor = layoutGuide.leftAnchor;
-    rightAnchor = layoutGuide.rightAnchor;
-    topAnchor = layoutGuide.topAnchor;
-    bottomAnchor = layoutGuide.bottomAnchor;
-  }
-  else
-  {
-    leftAnchor = anchorView.leftAnchor;
-    rightAnchor = anchorView.rightAnchor;
-    topAnchor = anchorView.topAnchor;
-    bottomAnchor = anchorView.bottomAnchor;
-  }
+  UILayoutGuide* layoutGuide = anchorView.safeAreaLayoutGuide;
+  NSLayoutXAxisAnchor* leftAnchor = layoutGuide.leftAnchor;
+  NSLayoutXAxisAnchor* rightAnchor = layoutGuide.rightAnchor;
+  NSLayoutYAxisAnchor* topAnchor = layoutGuide.topAnchor;
+  NSLayoutYAxisAnchor* bottomAnchor = layoutGuide.bottomAnchor;
+
   [self.leftColumnView.leftAnchor constraintEqualToAnchor:leftAnchor].active = YES;
   [self.leftColumnView.topAnchor constraintEqualToAnchor:topAnchor].active = YES;
   [self.leftColumnView.bottomAnchor constraintEqualToAnchor:bottomAnchor].active = YES;

@@ -90,16 +90,8 @@
   {
     boardViewEdge1 = boardView.leftAnchor;
     boardViewEdge2 = boardView.rightAnchor;
-    if (@available(iOS 11.0, *))
-    {
-      superviewEdge1 = superviewOfBoardView.safeAreaLayoutGuide.leftAnchor;
-      superviewEdge2 = superviewOfBoardView.safeAreaLayoutGuide.rightAnchor;
-    }
-    else
-    {
-      superviewEdge1 = superviewOfBoardView.leftAnchor;
-      superviewEdge2 = superviewOfBoardView.rightAnchor;
-    }
+    superviewEdge1 = superviewOfBoardView.safeAreaLayoutGuide.leftAnchor;
+    superviewEdge2 = superviewOfBoardView.safeAreaLayoutGuide.rightAnchor;
     widthDependsOnHeight = false;
     centerConstraintAxis = UILayoutConstraintAxisVertical;
   }
@@ -107,16 +99,8 @@
   {
     boardViewEdge1 = boardView.topAnchor;
     boardViewEdge2 = boardView.bottomAnchor;
-    if (@available(iOS 11.0, *))
-    {
-      superviewEdge1 = superviewOfBoardView.safeAreaLayoutGuide.topAnchor;
-      superviewEdge2 = superviewOfBoardView.safeAreaLayoutGuide.bottomAnchor;
-    }
-    else
-    {
-      superviewEdge1 = superviewOfBoardView.topAnchor;
-      superviewEdge2 = superviewOfBoardView.bottomAnchor;
-    }
+    superviewEdge1 = superviewOfBoardView.safeAreaLayoutGuide.topAnchor;
+    superviewEdge2 = superviewOfBoardView.safeAreaLayoutGuide.bottomAnchor;
     widthDependsOnHeight = true;
     centerConstraintAxis = UILayoutConstraintAxisHorizontal;
   }

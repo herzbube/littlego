@@ -277,7 +277,6 @@ NSString* veryBadButtonIconResource = @"very-bad.png";
 NSString* interestingButtonIconResource = @"interesting.png";
 NSString* doubtfulButtonIconResource = @"doubtful.png";
 NSString* noneButtonIconResource = @"none.png";
-NSString* editButtonIconResource = @"edit.png";
 NSString* trashcanButtonIconResource = @"trashcan.png";
 NSString* menuHamburgerButtonIconResource = @"menu-hamburger.png";
 NSString* forwardButtonIconResource = @"forward.png";

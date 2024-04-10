@@ -259,11 +259,8 @@
 {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 12.0, *))
-  {
-    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
-      [self updateColors];
-  }
+  if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+    [self updateColors];
 }
 
 #pragma mark - Setup/remove notification responders

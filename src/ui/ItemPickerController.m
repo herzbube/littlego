@@ -449,14 +449,11 @@
 {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 12.0, *))
+  if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
   {
-    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
-    {
-      self.itemListWithTintedAndUniformAndWidthImages = [self generateItemListWithTintedAndUniformAndWidthImages];
-      UITableView* tableView = [self itemPickerTableView];
-      [tableView reloadData];
-    }
+    self.itemListWithTintedAndUniformAndWidthImages = [self generateItemListWithTintedAndUniformAndWidthImages];
+    UITableView* tableView = [self itemPickerTableView];
+    [tableView reloadData];
   }
 }
 

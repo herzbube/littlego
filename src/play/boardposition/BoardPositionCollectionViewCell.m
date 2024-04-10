@@ -296,19 +296,16 @@ static UIFont* smallFont = nil;
 {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 12.0, *))
+  if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
   {
-    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
-    {
-      // traitCollectionDidChange sometimes is invoked when a cell is reused
-      // before the boardPosition property value was updated. If that is the
-      // case then we don't get a GoNode object => there's no point in updating
-      // the colors, so we skip it and let setupRealContent do it later when the
-      // boardPosition property is updated.
-      GoNode* node = [self nodeWithDataOrNil];
-      if (node)
-        [self updateColors:node];
-    }
+    // traitCollectionDidChange sometimes is invoked when a cell is reused
+    // before the boardPosition property value was updated. If that is the
+    // case then we don't get a GoNode object => there's no point in updating
+    // the colors, so we skip it and let setupRealContent do it later when the
+    // boardPosition property is updated.
+    GoNode* node = [self nodeWithDataOrNil];
+    if (node)
+      [self updateColors:node];
   }
 }
 

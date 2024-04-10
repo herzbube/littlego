@@ -111,16 +111,9 @@
   {
     UIFont* font;
     if (monospacedFont)
-    {
-      if (@available(iOS 13, *))
-        font = [UIFont monospacedSystemFontOfSize:fontSize weight:UIFontWeightRegular];
-      else
-        font = [UIFont fontWithName:@"Menlo" size:fontSize];
-    }
+      font = [UIFont monospacedSystemFontOfSize:fontSize weight:UIFontWeightRegular];
     else
-    {
       font = [UIFont systemFontOfSize:fontSize];
-    }
     NSDictionary* textAttributes = @{ NSFontAttributeName : font };
     // If more control over how the drawing takes place is needed, another
     // useful NSString method is

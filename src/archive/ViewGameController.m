@@ -756,12 +756,8 @@ enum LoadResultType
                                                UIActivityTypePostToVimeo,
                                                UIActivityTypeSaveToCameraRoll,
                                                // Don't know what this is
-                                               UIActivityTypeOpenInIBooks]];
-  if (@available(iOS 11, *))
-  {
-    // Don't know what this is
-    [excludedActivityTypes addObject:UIActivityTypeMarkupAsPDF];
-  }
+                                               UIActivityTypeOpenInIBooks,
+                                               UIActivityTypeMarkupAsPDF]];
   activityViewController.excludedActivityTypes = excludedActivityTypes;
 
   [self presentViewController:activityViewController animated:YES completion:nil];

@@ -59,11 +59,8 @@
 {
   [super traitCollectionDidChange:previousTraitCollection];
 
-  if (@available(iOS 12.0, *))
-  {
-    if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
-      [self updateHeaderViewAppearance];
-  }
+  if (self.traitCollection.userInterfaceStyle != previousTraitCollection.userInterfaceStyle)
+    [self updateHeaderViewAppearance];
 }
 
 // -----------------------------------------------------------------------------
@@ -177,10 +174,7 @@
     else
     {
       headerFooterView.contentView.backgroundColor = nil;
-      if (@available(iOS 13.0, *))
-        headerFooterView.textLabel.textColor = [UIColor labelColor];
-      else
-        headerFooterView.textLabel.textColor = [UIColor darkTextColor];
+      headerFooterView.textLabel.textColor = [UIColor labelColor];
     }
   }
   else

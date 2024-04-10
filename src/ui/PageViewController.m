@@ -94,8 +94,7 @@
   self.pageControlCurrentPageIndicatorTintColor = nil;
   self.pageControlHeight = -1;
   self.pageControlVerticalSpacing = -1;
-  if (@available(iOS 14, *))
-    self.pageControlBackgroundStyle = UIPageControlBackgroundStyleAutomatic;
+  self.pageControlBackgroundStyle = UIPageControlBackgroundStyleAutomatic;
   self.pageControlAccessibilityIdentifier = nil;
 
   self.deallocating = false;
@@ -283,8 +282,7 @@
   if (self.pageControlCurrentPageIndicatorTintColor)
     self.pageControl.currentPageIndicatorTintColor = self.pageControlCurrentPageIndicatorTintColor;
   
-  if (@available(iOS 14, *))
-    self.pageControl.backgroundStyle = self.pageControlBackgroundStyle;
+  self.pageControl.backgroundStyle = self.pageControlBackgroundStyle;
 
   if (self.pageControlAccessibilityIdentifier)
     self.pageControl.accessibilityIdentifier = self.pageControlAccessibilityIdentifier;

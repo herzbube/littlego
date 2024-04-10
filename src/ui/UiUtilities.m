@@ -352,10 +352,7 @@
 // -----------------------------------------------------------------------------
 + (bool) isLightUserInterfaceStyle:(UITraitCollection*)traitCollection
 {
-  if (@available(iOS 12.0, *))
-    return (traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight);
-  else
-    return true;
+  return (traitCollection.userInterfaceStyle == UIUserInterfaceStyleLight);
 }
 
 // -----------------------------------------------------------------------------
