@@ -114,10 +114,7 @@
       // should make us less vulnerable to a change of the default cell height
       // in the future. Also experimentally determined: The default cell height
       // is 44.
-      if ([UIDevice systemVersionMajor] <= 10)
-        return tableViewCellSize;
-      else
-        return CGSizeMake(tableViewCellSize.width, tableViewCellSize.height + 13);
+      return CGSizeMake(tableViewCellSize.width, tableViewCellSize.height + 13);
     default:
       return tableViewCellSize;
   }
