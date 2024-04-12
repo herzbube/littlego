@@ -24,11 +24,6 @@
 // -----------------------------------------------------------------------------
 @interface WebBrowserViewController()
 @property(nonatomic, retain) WKWebView* webView;
-@property(nonatomic, retain) UIBarButtonItem* backButton;
-@property(nonatomic, retain) UIBarButtonItem* forwardButton;
-@property(nonatomic, retain) UIBarButtonItem* homeButton;
-@property(nonatomic, retain) NSString* titleString;
-@property(nonatomic, retain) NSURL* homeUrl;
 @property(nonatomic, retain) NSMutableArray* goToUrls;
 @end
 
@@ -38,21 +33,35 @@
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Convenience constructor. Creates a WebBrowserViewController instance
-/// that displays @a title in its navigation item and navigates to the initial
-/// URL @a homeUrl in its web view.
+/// @brief Initializes an WebBrowserViewController object that navigates to the
+/// initial URL @a homeUrl in its web view.
+///
+/// @note This is the designated initializer of WebBrowserViewController.
 // -----------------------------------------------------------------------------
-+ (WebBrowserViewController*) controllerWithTitle:(NSString*)title homeUrl:(NSURL*)homeUrl
+- (id) initWithHomeUrl:(NSURL*)homeUrl
 {
-  WebBrowserViewController* controller = [[WebBrowserViewController alloc] initWithNibName:nil bundle:nil];
-  if (controller)
-  {
-    [controller autorelease];
-    controller.titleString = title;
-    controller.homeUrl = homeUrl;
-    controller.goToUrls = [NSMutableArray array];
-  }
-  return controller;
+  // Call designated initializer of superclass (UIViewController)
+  self = [super initWithNibName:nil bundle:nil];
+  if (! self)
+    return nil;
+
+  self.homeUrl = homeUrl;
+  self.backButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"chevron.backward"]
+                                                      style:UIBarButtonItemStylePlain
+                                                     target:self
+                                                     action:@selector(goBack:)] autorelease];
+  self.forwardButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"chevron.forward"]
+                                                         style:UIBarButtonItemStylePlain
+                                                        target:self
+                                                        action:@selector(goForward:)] autorelease];
+  self.homeButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"house"]
+                                                      style:UIBarButtonItemStylePlain
+                                                     target:self
+                                                     action:@selector(goHome:)] autorelease];
+  self.webView = nil;
+  self.goToUrls = [NSMutableArray array];
+
+  return self;
 }
 
 // -----------------------------------------------------------------------------
@@ -60,12 +69,12 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.webView = nil;
+  self.homeUrl = nil;
   self.backButton = nil;
   self.forwardButton = nil;
   self.homeButton = nil;
-  self.titleString = nil;
-  self.homeUrl = nil;
+  self.webView = nil;
+  self.goToUrls = nil;
 
   [super dealloc];
 }
@@ -80,19 +89,7 @@
   self.webView = [[[WKWebView alloc] initWithFrame:CGRectZero] autorelease];
   self.view = self.webView;
 
-  self.backButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"chevron.backward"]
-                                                      style:UIBarButtonItemStylePlain
-                                                     target:self
-                                                     action:@selector(goBack:)] autorelease];
-  self.forwardButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"chevron.forward"]
-                                                         style:UIBarButtonItemStylePlain
-                                                        target:self
-                                                        action:@selector(goForward:)] autorelease];
-  self.homeButton = [[[UIBarButtonItem alloc] initWithImage:[UIImage systemImageNamed:@"house"]
-                                                      style:UIBarButtonItemStylePlain
-                                                     target:self
-                                                     action:@selector(goHome:)] autorelease];
-  self.navigationItem.leftBarButtonItems = @[self.backButton, self.forwardButton, self.homeButton];
+  self.navigationItem.rightBarButtonItems = @[self.homeButton, self.forwardButton, self.backButton];
 
   // KVO observing
   [self.webView addObserver:self forKeyPath:@"canGoBack" options:0 context:NULL];
@@ -242,13 +239,11 @@
 {
   if ([keyPath isEqualToString:@"canGoBack"])
   {
-    UIBarButtonItem* button = self.navigationItem.leftBarButtonItems[0];
-    button.enabled = self.webView.canGoBack;
+    self.backButton.enabled = self.webView.canGoBack;
   }
   else if ([keyPath isEqualToString:@"canGoForward"])
   {
-    UIBarButtonItem* button = self.navigationItem.leftBarButtonItems[1];
-    button.enabled = self.webView.canGoForward;
+    self.forwardButton.enabled = self.webView.canGoForward;
   }
 }
 

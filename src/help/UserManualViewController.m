@@ -28,8 +28,10 @@
 /// @brief Class extension with private properties for UserManualViewController.
 // -----------------------------------------------------------------------------
 @interface UserManualViewController()
+@property(nonatomic, retain) UIView* placeholderContainerView;
 @property(nonatomic, retain) PlaceholderView* placeholderView;
 @property(nonatomic, retain) UIActivityIndicatorView* activityIndicatorView;
+@property(nonatomic, retain) UIView* webBrowserContainerView;
 @property(nonatomic, retain) WebBrowserViewController* webBrowserViewController;
 @end
 
@@ -50,9 +52,14 @@
   if (! self)
     return nil;
 
+  self.placeholderContainerView = nil;
   self.placeholderView = nil;
   self.activityIndicatorView = nil;
-  self.webBrowserViewController = nil;
+  self.webBrowserContainerView = nil;
+
+  NSString* filePath = [UserManualUtilities userManualEntryPointFilePath];
+  NSURL* url = [NSURL fileURLWithPath:filePath];
+  self.webBrowserViewController = [[[WebBrowserViewController alloc] initWithHomeUrl:url] autorelease];
 
   return self;
 }
@@ -62,11 +69,40 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.placeholderContainerView = nil;
   self.placeholderView = nil;
   self.activityIndicatorView = nil;
+  self.webBrowserContainerView = nil;
   self.webBrowserViewController = nil;
 
   [super dealloc];
+}
+
+#pragma mark - Container view controller handling
+
+// -----------------------------------------------------------------------------
+/// @brief Private setter implementation.
+// -----------------------------------------------------------------------------
+- (void) setWebBrowserViewController:(WebBrowserViewController*)webBrowserViewController
+{
+  if (_webBrowserViewController == webBrowserViewController)
+    return;
+  if (_webBrowserViewController)
+  {
+    [_webBrowserViewController willMoveToParentViewController:nil];
+    // Automatically calls didMoveToParentViewController:
+    [_webBrowserViewController removeFromParentViewController];
+    [_webBrowserViewController release];
+    _webBrowserViewController = nil;
+  }
+  if (webBrowserViewController)
+  {
+    // Automatically calls willMoveToParentViewController:
+    [self addChildViewController:webBrowserViewController];
+    [webBrowserViewController didMoveToParentViewController:self];
+    [webBrowserViewController retain];
+    _webBrowserViewController = webBrowserViewController;
+  }
 }
 
 #pragma mark - UIViewController overrides
@@ -100,6 +136,29 @@
   [self setupUserManual];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) didReceiveMemoryWarning
+{
+  [super didReceiveMemoryWarning];
+
+  // In iOS 5, the system purges the view and self.isViewLoaded becomes false
+  // before didReceiveMemoryWarning() is invoked. In iOS 6 the system does not
+  // purge the view and self.isViewLoaded is still true when we get here. The
+  // view's window property then becomes important: It is nil if the main tab
+  // bar controller displays a different tab than the one where the view is
+  // visible.
+  if (self.isViewLoaded && ! self.view.window)
+  {
+    self.placeholderContainerView = nil;
+    self.placeholderView = nil;
+    self.activityIndicatorView = nil;
+    self.webBrowserContainerView = nil;
+    self.view = nil;
+  }
+}
+
 #pragma mark - View hierarchy and layout setup
 
 // -----------------------------------------------------------------------------
@@ -107,11 +166,17 @@
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
+  self.placeholderContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.view addSubview:self.placeholderContainerView];
+
+  self.webBrowserContainerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
+  [self.view addSubview:self.webBrowserContainerView];
+
   self.placeholderView = [[[PlaceholderView alloc] initWithFrame:CGRectZero placeholderText:@"Preparing the user manual.\n\nThis should take only a moment ..."] autorelease];
-  [self.view addSubview:self.placeholderView];
+  [self.placeholderContainerView addSubview:self.placeholderView];
 
   self.activityIndicatorView = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectZero] autorelease];
-  [self.view addSubview:self.activityIndicatorView];
+  [self.placeholderContainerView addSubview:self.activityIndicatorView];
 }
 
 // -----------------------------------------------------------------------------
@@ -127,19 +192,28 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
+  self.placeholderContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  self.webBrowserContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.placeholderContainerView];
+  [AutoLayoutUtility fillSuperview:self.view withSubview:self.webBrowserContainerView];
+
   self.placeholderView.translatesAutoresizingMaskIntoConstraints = NO;
   self.activityIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [AutoLayoutUtility fillSuperview:self.view withSubview:self.placeholderView];
+  [AutoLayoutUtility fillSuperview:self.placeholderContainerView withSubview:self.placeholderView];
 
   [AutoLayoutUtility alignFirstView:self.activityIndicatorView
                      withSecondView:self.placeholderView
                         onAttribute:NSLayoutAttributeCenterX
-                   constraintHolder:self.view];
-  [AutoLayoutUtility alignFirstView:self.activityIndicatorView
-                     withSecondView:self.placeholderView
-                        onAttribute:NSLayoutAttributeCenterY
-                   constraintHolder:self.view];
+                   constraintHolder:self.placeholderContainerView];
+  [NSLayoutConstraint constraintWithItem:self.activityIndicatorView
+                               attribute:NSLayoutAttributeTop
+                               relatedBy:NSLayoutRelationEqual
+                                  toItem:self.placeholderView.placeholderLabel
+                               attribute:NSLayoutAttributeBottom
+                              multiplier:1.0f
+                                constant:50.0f].active = YES;
 }
 
 #pragma mark - Handling of user manual setup
@@ -191,19 +265,38 @@
 /// @brief This handler needs to be invoked when setting up the user manual
 /// succeeds.
 ///
-/// Permanently pushes an instance of WebBrowserViewController to the top of the
-/// navigation controller associated with this UserManualViewController, thus
-/// hiding the no longer needed placeholder view and activity indicator view.
+/// Adds the view of WebBrowserViewController to the view hierarchy and hides
+/// the no longer needed placeholder view and activity indicator view. Also
+/// adds the web browser controls provided by WebBrowserViewController to the
+/// navigation item of this UserManualViewController.
+///
+/// @attention Accessing the view of WebBrowserViewController triggers a request
+/// to the home URL. This means that the view of WebBrowserViewController must
+/// only be accessed after the user manual is present.
 // -----------------------------------------------------------------------------
 - (void) handleUserManualSetupSucceeded
 {
   [self.activityIndicatorView stopAnimating];
 
-  NSString* title = self.title;
-  NSString* filePath = [UserManualUtilities userManualEntryPointFilePath];
-  NSURL* url = [NSURL fileURLWithPath:filePath];
-  UIViewController* webBrowserViewController = [WebBrowserViewController controllerWithTitle:title homeUrl:url];
-  [self.navigationController pushViewController:webBrowserViewController animated:false];
+  [self.webBrowserContainerView addSubview:self.webBrowserViewController.view];
+
+  self.webBrowserViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  // Vertically only fill the safe area because the web view should not extend
+  // below the navigation bar at the top and the tab bar at the bottom.
+  // Horizontally it's fine to fill the entire view and therefore to extend to
+  // the screen edges => we rely on the web view to render content only within
+  // its own safe area.
+  [AutoLayoutUtility fillSuperview:self.webBrowserContainerView
+                       withSubview:self.webBrowserViewController.view
+                     viewEdgesAxis:UILayoutConstraintAxisHorizontal
+                 safeAreaEdgesAxis:UILayoutConstraintAxisVertical];
+
+  self.placeholderContainerView.hidden = YES;
+
+  self.navigationItem.rightBarButtonItems = @[
+    self.webBrowserViewController.homeButton,
+    self.webBrowserViewController.forwardButton,
+    self.webBrowserViewController.backButton];
 }
 
 // -----------------------------------------------------------------------------

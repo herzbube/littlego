@@ -33,15 +33,15 @@
                    margins:(UIEdgeInsets)margins;
 + (NSArray*) fillSafeAreaOfSuperview:(UIView*)superview
                          withSubview:(UIView*)subview;
++ (NSArray*) fillSuperview:(UIView*)superview
+               withSubview:(UIView*)subview
+             viewEdgesAxis:(UILayoutConstraintAxis)viewEdgesAxis
+         safeAreaEdgesAxis:(UILayoutConstraintAxis)safeAreaEdgesAxis;
 + (NSArray*) centerSubview:(UIView*)subview
                inSuperview:(UIView*)superview;
 + (NSLayoutConstraint*) centerSubview:(UIView*)subview
                           inSuperview:(UIView*)superview
                                onAxis:(UILayoutConstraintAxis)axis;
-+ (NSArray*) alignFirstView:(UIView*)firstView
-             withSecondView:(UIView*)secondView
-                    onEdges:(UIRectEdge)edges
-           constraintHolder:(UIView*)constraintHolder;
 + (NSLayoutConstraint*) alignFirstView:(UIView*)firstView
                         withSecondView:(UIView*)secondView
                            onAttribute:(NSLayoutAttribute)attribute
@@ -72,9 +72,23 @@
 + (NSArray*) alignFirstView:(UIView*)firstView
              withSecondView:(UIView*)secondView
             onSafeAreaEdges:(UIRectEdge)edges;
++ (NSArray*) alignFirstView:(UIView*)firstView
+             withSecondView:(UIView*)secondView
+                    onEdges:(UIRectEdge)edges;
++ (NSArray*) alignFirstView:(UIView*)firstView
+             withSecondView:(UIView*)secondView
+                    onEdges:(UIRectEdge)edges
+      edgesAreSafeAreaEdges:(bool)edgesAreSafeAreaEdges;
 + (NSLayoutConstraint*) alignFirstView:(UIView*)firstView
                         withSecondView:(UIView*)secondView
            onSafeAreaLayoutGuideAnchor:(NSLayoutAttribute)attribute;
++ (NSLayoutConstraint*) alignFirstView:(UIView*)firstView
+                        withSecondView:(UIView*)secondView
+                              onAnchor:(NSLayoutAttribute)attribute;
++ (NSLayoutConstraint*) alignFirstView:(UIView*)firstView
+                        withSecondView:(UIView*)secondView
+                              onAnchor:(NSLayoutAttribute)attribute
+                anchorIsSafeAreaAnchor:(bool)anchorIsSafeAreaAnchor;
 + (NSLayoutConstraint*) makeSquare:(UIView*)view
               widthDependsOnHeight:(bool)widthDependsOnHeight
                   constraintHolder:(UIView*)constraintHolder;

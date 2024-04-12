@@ -24,9 +24,14 @@
 /// item. If the controls should be visible WebBrowserViewController therefore
 /// needs to be displayed in the stack of a UINavigationController.
 ///
-/// WebBrowserViewController displays the following web browser controls:
+/// If this is not possible, then whoever integrates WebBrowserViewController
+/// into the UI is responsible for making the controls visible. For that
+/// purpose, WebBrowserViewController exposes the controls as UIBarButtonItem
+/// properties.
+///
+/// WebBrowserViewController provides the following web browser controls:
 /// - A "go back" button.
-/// - A "go forward2 button.
+/// - A "go forward" button.
 /// - A "home" button. This button navigates to the "home" URL that was
 ///   specified when WebBrowserViewController was initialized.
 ///
@@ -41,11 +46,21 @@
 ///   access everything under /foo/bar.
 /// - The "home" URL refers to /foo/bar: The web view is allowed to access
 ///   everything under /foo.
+///
+/// If an attempt is made to navigate to a file URL that refers to a folder,
+/// then WebBrowserViewController redirects the request to instead navigate to
+/// the "index.html" file located in that folder. The purpose is to simulate
+/// the behaviour of web servers during serverless browsing of file resources.
 // -----------------------------------------------------------------------------
 @interface WebBrowserViewController : UIViewController<WKNavigationDelegate>
 {
 }
 
-+ (WebBrowserViewController*) controllerWithTitle:(NSString*)title homeUrl:(NSURL*)homeUrl;
+- (id) initWithHomeUrl:(NSURL*)homeUrl;
+
+@property(nonatomic, retain) NSURL* homeUrl;
+@property(nonatomic, retain) UIBarButtonItem* backButton;
+@property(nonatomic, retain) UIBarButtonItem* forwardButton;
+@property(nonatomic, retain) UIBarButtonItem* homeButton;
 
 @end
