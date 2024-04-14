@@ -1030,7 +1030,7 @@
   [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView traitCollection:traitCollection];
   [UiUtilities applyTransparentStyleToView:self.annotationViewController.view traitCollection:traitCollection];
   if (self.nodeTreeViewIntegration)
-    [self.nodeTreeViewIntegration updateColors];
+    [self.nodeTreeViewIntegration updateColors:traitCollection];
 }
 
 @end

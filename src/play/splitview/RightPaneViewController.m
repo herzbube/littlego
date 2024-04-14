@@ -676,7 +676,7 @@
   UITraitCollection* traitCollection = self.traitCollection;
   [UiUtilities applyTransparentStyleToView:self.annotationViewController.view traitCollection:traitCollection];
   [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView traitCollection:traitCollection];
-  [self.nodeTreeViewIntegration updateColors];
+  [self.nodeTreeViewIntegration updateColors:traitCollection];
   [UiUtilities applyTransparentStyleToView:self.gameActionButtonBoxController.view traitCollection:traitCollection];
 }
 

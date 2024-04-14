@@ -115,13 +115,13 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Updates the color styling of the node tree view to match the current
-/// UIUserInterfaceStyle (light/dark mode).
+/// @brief Updates the color styling of the node tree view to match the
+/// UIUserInterfaceStyle (light/dark mode) provided by @a traitCollection.
 // -----------------------------------------------------------------------------
-- (void) updateColors
+- (void) updateColors:(UITraitCollection*)traitCollection
 {
   if (self.nodeTreeViewController)
-    [self updateColors:self.nodeTreeViewController.traitCollection];
+    [UiUtilities applyTransparentStyleToView:self.nodeTreeViewController.view traitCollection:traitCollection];
 }
 
 #pragma mark - KVO responder
@@ -161,8 +161,7 @@
 {
   self.resizablePane2ViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
 
-  self.nodeTreeViewController = [[[NodeTreeViewController alloc] initWithModel:self.nodeTreeViewModel
-                                                                darkBackground:false] autorelease];
+  self.nodeTreeViewController = [[[NodeTreeViewController alloc] initWithModel:self.nodeTreeViewModel] autorelease];
 
   [self setupViewHierarchy];
   [self setupAutoLayoutConstraints];
@@ -277,18 +276,6 @@
     self.uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlayPortrait = newSizes;
   else
     self.uiSettingsModel.resizableStackViewControllerInitialSizesUiAreaPlayLandscape = newSizes;
-}
-
-#pragma mark - User interface style handling (light/dark mode)
-
-// -----------------------------------------------------------------------------
-/// @brief Updates the color styling of the node tree view to match the
-/// UIUserInterfaceStyle (light/dark mode) provided by @a traitCollection.
-// -----------------------------------------------------------------------------
-- (void) updateColors:(UITraitCollection*)traitCollection
-{
-  if (self.nodeTreeViewController)
-    [UiUtilities applyTransparentStyleToView:self.nodeTreeViewController.view traitCollection:traitCollection];
 }
 
 @end

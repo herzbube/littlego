@@ -69,6 +69,6 @@
                             uiSettingsModel:(UiSettingsModel*)uiSettingsModel;
 
 - (void) performIntegration;
-- (void) updateColors;
+- (void) updateColors:(UITraitCollection*)traitCollection;
 
 @end
