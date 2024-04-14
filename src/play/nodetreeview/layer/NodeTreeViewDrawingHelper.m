@@ -367,6 +367,7 @@ CGLayerRef CreateNodeSymbolLayer(CGContextRef context, enum NodeTreeViewCellSymb
     }
     default:
     {
+      CGLayerRelease(layer);
       assert(0);
       return NULL;
     }

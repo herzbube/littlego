@@ -101,6 +101,7 @@
   self.selectedNodeColor = nil;
   self.nodeSymbolColor = nil;
   self.nodeSymbolTextColor = nil;
+  self.nodeSymbolTextShadow = nil;
   self.nodeNumberTextColor = nil;
   self.nodeNumberTextShadow = nil;
 

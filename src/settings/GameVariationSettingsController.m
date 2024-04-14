@@ -176,7 +176,7 @@ enum NewMoveInsertPositionSectionItem
       cell = [TableViewCellFactory cellWithType:VariableHeightCellType tableView:tableView];
       TableViewVariableHeightCell* variableHeightCell = (TableViewVariableHeightCell*)cell;
       variableHeightCell.descriptionLabel.text = @"New game variation insert position";
-      variableHeightCell.valueLabel.text = [self newMoveInsertPositionAsString:self.gameVariationModel.newMoveInsertPosition];
+      variableHeightCell.valueLabel.text = [self goNewMoveInsertPositionAsString:self.gameVariationModel.newMoveInsertPosition];
       cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
       break;
     }
@@ -236,10 +236,10 @@ enum NewMoveInsertPositionSectionItem
 - (void) pickNewMoveInsertPosition
 {
   NSMutableArray* itemList = [NSMutableArray arrayWithCapacity:0];
-  [itemList addObject:[self newMoveInsertPositionAsString:GoNewMoveInsertPositionNewVariationAtTop]];
-  [itemList addObject:[self newMoveInsertPositionAsString:GoNewMoveInsertPositionNewVariationAtBottom]];
-  [itemList addObject:[self newMoveInsertPositionAsString:GoNewMoveInsertPositionNewVariationBeforeCurrentVariation]];
-  [itemList addObject:[self newMoveInsertPositionAsString:GoNewMoveInsertPositionNewVariationAfterCurrentVariation]];
+  [itemList addObject:[self goNewMoveInsertPositionAsString:GoNewMoveInsertPositionNewVariationAtTop]];
+  [itemList addObject:[self goNewMoveInsertPositionAsString:GoNewMoveInsertPositionNewVariationAtBottom]];
+  [itemList addObject:[self goNewMoveInsertPositionAsString:GoNewMoveInsertPositionNewVariationBeforeCurrentVariation]];
+  [itemList addObject:[self goNewMoveInsertPositionAsString:GoNewMoveInsertPositionNewVariationAfterCurrentVariation]];
   ItemPickerController* itemPickerController = [ItemPickerController controllerWithItemList:itemList
                                                                                 screenTitle:@"Select new game variation insert position"
                                                                          indexOfDefaultItem:self.gameVariationModel.newMoveInsertPosition
@@ -279,7 +279,7 @@ enum NewMoveInsertPositionSectionItem
 /// @brief Returns a short string for @a newMoveInsertPosition that is suitable
 /// for display in a cell in the table view managed by this controller.
 // -----------------------------------------------------------------------------
-- (NSString*) newMoveInsertPositionAsString:(enum GoNewMoveInsertPosition)newMoveInsertPosition
+- (NSString*) goNewMoveInsertPositionAsString:(enum GoNewMoveInsertPosition)newMoveInsertPosition
 {
   switch (newMoveInsertPosition)
   {

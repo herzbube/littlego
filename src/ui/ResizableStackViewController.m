@@ -48,6 +48,22 @@ struct GestureInfo
   double totalSizeToDistribute;
 };
 
+struct GestureInfo createGestureInfo(void)
+{
+  struct GestureInfo gestureInfo;
+
+  gestureInfo.gestureStartLocation = CGPointZero;
+  gestureInfo.gestureStartSizes = nil;
+  gestureInfo.indexOfChildView1 = 0;
+  gestureInfo.indexOfChildView2 = 0;
+  gestureInfo.initialExtentAlongAxisChildView1 = 0.0f;
+  gestureInfo.initialExtentAlongAxisChildView2 = 0.0f;
+  gestureInfo.totalExtentAlongAxisToDistribute = 0.0f;
+  gestureInfo.totalSizeToDistribute = 0;
+
+  return gestureInfo;
+};
+
 
 /// @brief The DragHandleView class is a private helper class of
 /// ResizableStackViewController that performs the drawing necessary to render
@@ -164,10 +180,7 @@ struct GestureInfo
   self.dragHandleGestureRecognizers = [NSMutableArray array];
   self.noDragHandleGestureRecognizer = nil;
 
-  struct GestureInfo gestureInfo;
-  gestureInfo.gestureStartLocation = CGPointZero;
-  gestureInfo.gestureStartSizes = nil;
-  self.gestureInfo = gestureInfo;
+  self.gestureInfo = createGestureInfo();
 
   return self;
 }
@@ -1663,10 +1676,7 @@ struct GestureInfo
     {
       struct GestureInfo oldGestureInfo = self.gestureInfo;
 
-      struct GestureInfo gestureInfo;
-      gestureInfo.gestureStartLocation = CGPointZero;
-      gestureInfo.gestureStartSizes = nil;
-      self.gestureInfo = gestureInfo;
+      self.gestureInfo = createGestureInfo();
 
       if (oldGestureInfo.gestureStartSizes)
       {

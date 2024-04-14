@@ -248,10 +248,20 @@
                           parent:(GoNode*)parent
 {
   if (! node)
+  {
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"createVariationWithNode:nextSibling:parent: failed: node is nil object"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return;
+  }
 
   if (node.parent || node.nextSibling || node.firstChild)
+  {
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"createVariationWithNode:nextSibling:parent: failed: node is already part of a game tree"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return;
+  }
 
   // GoNode performs most of the error handling for us
   [parent insertChild:node beforeReferenceChild:nextSibling];
@@ -279,7 +289,12 @@
 - (void) changeToVariationContainingNode:(GoNode*)node
 {
   if (! node)
+  {
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"changeToVariationContainingNode: failed: node is nil object"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return;
+  }
 
   NSMutableArray* newNodeList = [NSMutableArray arrayWithObject:node];
   int newNumberOfMoves = node.goMove ? 1 : 0;
@@ -296,7 +311,12 @@
   }
 
   if (newNodeList.firstObject != self.rootNode)
+  {
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"changeToVariationContainingNode: failed: root node is not at the variation start"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return;
+  }
 
   GoNode* firstChild = node.firstChild;
   while (firstChild)
@@ -330,7 +350,12 @@
 - (GoNode*) ancestorOfNodeInCurrentVariation:(GoNode*)node
 {
   if (! node)
+  {
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"ancestorOfNodeInCurrentVariation: failed: node is nil object"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return nil;
+  }
 
   while (node)
   {
@@ -372,7 +397,12 @@
 - (int) indexOfNode:(GoNode*)node
 {
   if (! node)
+  {
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"indexOfNode: failed: node is nil object"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return -1;
+  }
 
   NSUInteger index = [_nodeList indexOfObject:node];
   if (index == NSNotFound)
@@ -395,7 +425,12 @@
 - (void) appendNode:(GoNode*)node
 {
   if (! node)
+  {
     [ExceptionUtility throwInvalidArgumentExceptionWithErrorMessage:@"appendNode: failed: node is nil object"];
+    // Dummy return to make compiler happy (compiler does not see that an
+    // exception is thrown)
+    return;
+  }
 
   GoNode* leafNode = _nodeList.lastObject;
   leafNode.firstChild = node;

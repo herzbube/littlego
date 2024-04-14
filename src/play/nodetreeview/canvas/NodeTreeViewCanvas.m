@@ -723,7 +723,6 @@ static const unsigned short yPositionOfNodeNumber = 0;
   while (true)
   {
     NodeTreeViewBranch* branch = nil;
-    NSUInteger indexOfBranch = -1;
     NodeTreeViewBranchTuple* previousBranchTupleInBranch = nil;
 
     while (currentNode)
@@ -735,7 +734,6 @@ static const unsigned short yPositionOfNodeNumber = 0;
                                             nodeMap:nodeMap];
 
         [branches addObject:branch];
-        indexOfBranch = branches.count - 1;
       }
 
       // The childBranches member variable is initialized by the
@@ -1189,16 +1187,18 @@ highestMoveNumberThatAppearsInAtLeastTwoBranches:(int*)highestMoveNumberThatAppe
 
 // -----------------------------------------------------------------------------
 /// @brief Determines the y-position of @a branch.
+///
+/// Assigns the y-position to @a branch->yPosition. As a side-effect, also
+/// updates 1-n values in the @a lowestOccupiedXPositionOfRow array.
 // -----------------------------------------------------------------------------
 - (void) determineYCoordinateOfBranch:(NodeTreeViewBranch*)branch
          lowestOccupiedXPositionOfRow:(unsigned short*)lowestOccupiedXPositionOfRow
                        branchingStyle:(enum NodeTreeViewBranchingStyle)branchingStyle
 {
-  unsigned short lowestXPositionOfBranchOnIntermediateYPositions;
-  unsigned short lowestXPositionOfBranchOnFinalYPosition;
   if (branch->parentBranch)
   {
-    lowestXPositionOfBranchOnIntermediateYPositions = branch->parentBranchTupleBranchingNode->xPositionOfFirstCell;
+    unsigned short lowestXPositionOfBranchOnIntermediateYPositions = branch->parentBranchTupleBranchingNode->xPositionOfFirstCell;
+    unsigned short lowestXPositionOfBranchOnFinalYPosition;
 
     // Diagonal branching style allows for a small optimization of the
     // available space on the LAST child branch:
@@ -1230,34 +1230,34 @@ highestMoveNumberThatAppearsInAtLeastTwoBranches:(int*)highestMoveNumberThatAppe
     {
       lowestXPositionOfBranchOnFinalYPosition = lowestXPositionOfBranchOnIntermediateYPositions;
     }
+
+    // The y-position of a child branch is at least one below the y-position
+    // of the parent branch
+    unsigned short yPosition = branch->parentBranch->yPosition + 1;
+
+    NodeTreeViewBranchTuple* lastBranchTuple = branch->branchTuples.lastObject;
+    unsigned short highestXPositionOfBranch = (lastBranchTuple->xPositionOfFirstCell +
+                                               lastBranchTuple->numberOfCellsForNode -
+                                               1);
+
+    while (highestXPositionOfBranch >= lowestOccupiedXPositionOfRow[yPosition])
+    {
+      lowestOccupiedXPositionOfRow[yPosition] = lowestXPositionOfBranchOnIntermediateYPositions;
+      yPosition++;
+    }
+
+    lowestOccupiedXPositionOfRow[yPosition] = lowestXPositionOfBranchOnFinalYPosition;
+    branch->yPosition = yPosition;
+
   }
   else
   {
-    lowestXPositionOfBranchOnIntermediateYPositions = 0;
-    lowestXPositionOfBranchOnFinalYPosition = 0;
+    // The only branch that does not have a parent branch is the main branch.
+    // The main branch is known to be on y-position 0, and also to start at
+    // x-position 0 (the root node).
+    lowestOccupiedXPositionOfRow[0] = 0;
+    branch->yPosition = 0;
   }
-
-  // The y-position of a child branch is at least one below the y-position
-  // of the parent branch
-  unsigned short yPosition;
-  if (branch->parentBranch)
-    yPosition = branch->parentBranch->yPosition + 1;
-  else
-    yPosition = 0;
-
-  NodeTreeViewBranchTuple* lastBranchTuple = branch->branchTuples.lastObject;
-  unsigned short highestXPositionOfBranch = (lastBranchTuple->xPositionOfFirstCell +
-                                             lastBranchTuple->numberOfCellsForNode -
-                                             1);
-
-  while (highestXPositionOfBranch >= lowestOccupiedXPositionOfRow[yPosition])
-  {
-    lowestOccupiedXPositionOfRow[yPosition] = lowestXPositionOfBranchOnIntermediateYPositions;
-    yPosition++;
-  }
-
-  lowestOccupiedXPositionOfRow[yPosition] = lowestXPositionOfBranchOnFinalYPosition;
-  branch->yPosition = yPosition;
 }
 
 #pragma mark - Private API - Canvas calculation - Part 4: Generate cells
@@ -1543,7 +1543,16 @@ diagonalConnectionToBranchingLineEstablished:diagonalConnectionToBranchingLineEs
       if (yPosition == yPositionOfLastChildBranch)
       {
         indexOfNextChildBranchToHorizontallyConnect = -1;
+        // The clang analyzer sees the assignment on the next line as a problem:
+        // It thinks this will lead to a dereference of a null pointer in the
+        // next iteration of the loop. This is a false positive because the
+        // analyzer does not see that in the next iteration the loop end
+        // condition will be reached. The preprocessor directive causes the
+        // next line to be not compiled when analyzing is done, hence the
+        // analyzer does not see the line.
+#ifndef __clang_analyzer__
         nextChildBranchToHorizontallyConnect = nil;
+#endif
       }
       else
       {
@@ -2583,7 +2592,7 @@ numberOfNodeNumberCellsExtendingFromCenter:(int)numberOfNodeNumberCellsExtending
 /// content of @a node and/or its position in the tree of nodes. As a summary,
 /// only move nodes are condensed, and only those move nodes that do not form
 /// the start or end of a sequence of moves.
-// --------------------------x---------------------------------------------------
+// -----------------------------------------------------------------------------
 - (unsigned short) numberOfCellsForNode:(GoNode*)node
                       condenseMoveNodes:(bool)condenseMoveNodes
            numberOfCellsOfMultipartCell:(int)numberOfCellsOfMultipartCell

@@ -760,7 +760,6 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 {
   bool sgfNodeIsGameInfoNode = [sgfNode isEqualToNode:self.sgfGameInfoNode];
 
-  bool atLeastOneSetupPropertyWasFound = false;
   GoNodeSetup* goNodeSetup = [[[GoNodeSetup alloc] init] autorelease];
   GoMove* goMove = nil;
   enum GoMoveValuation goMoveValuation = GoMoveValuationNone;
@@ -774,8 +773,6 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 
     if (sgfProperty.propertyCategory == SGFCPropertyCategorySetup)
     {
-      atLeastOneSetupPropertyWasFound = true;
-
       bool success = [self populateGoNodeSetup:goNodeSetup
                              withSetupProperty:sgfProperty
                            foundInGameInfoNode:sgfNodeIsGameInfoNode
