@@ -111,8 +111,7 @@
 
 - (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel
   canvasDataProvider:(id<NodeTreeViewCanvasDataProvider>)canvasDataProvider
-     traitCollection:(UITraitCollection*)traitCollection
-      darkBackground:(bool)darkBackground;
+     traitCollection:(UITraitCollection*)traitCollection;
 
 /// @name Updaters
 //@{

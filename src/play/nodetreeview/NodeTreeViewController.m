@@ -40,7 +40,6 @@
 // -----------------------------------------------------------------------------
 @interface NodeTreeViewController()
 @property(nonatomic, assign) NodeTreeViewModel* nodeTreeViewModel;
-@property(nonatomic, assign) bool darkBackground;
 @property(nonatomic, retain) NodeTreeViewCanvas* nodeTreeViewCanvas;
 @property(nonatomic, retain) NodeTreeViewMetrics* nodeTreeViewMetrics;
 @property(nonatomic, retain) NodeTreeViewMetricsUpdater* nodeTreeViewMetricsUpdater;
@@ -69,7 +68,6 @@
 /// @note This is the designated initializer of NodeTreeViewController.
 // -----------------------------------------------------------------------------
 - (id) initWithModel:(NodeTreeViewModel*)nodeTreeViewModel
-      darkBackground:(bool)darkBackground
 {
   // Call designated initializer of superclass (UIViewController)
   self = [super initWithNibName:nil bundle:nil];
@@ -77,7 +75,6 @@
     return nil;
 
   self.nodeTreeViewModel = nodeTreeViewModel;
-  self.darkBackground = darkBackground;
   self.nodeTreeViewCanvas = nil;
   self.nodeTreeViewMetrics = nil;
   self.nodeTreeViewMetricsUpdater = nil;
@@ -182,8 +179,7 @@
   [self.nodeTreeViewCanvas recalculateCanvas];
   self.nodeTreeViewMetrics = [[[NodeTreeViewMetrics alloc] initWithModel:self.nodeTreeViewModel
                                                       canvasDataProvider:self.nodeTreeViewCanvas
-                                                         traitCollection:self.traitCollection
-                                                          darkBackground:self.darkBackground] autorelease];
+                                                         traitCollection:self.traitCollection] autorelease];
   self.nodeTreeViewMetricsUpdater = [[[NodeTreeViewMetricsUpdater alloc] initWithModel:self.nodeTreeViewModel
                                                                     canvasDataProvider:self.nodeTreeViewCanvas
                                                                                metrics:self.nodeTreeViewMetrics] autorelease];
