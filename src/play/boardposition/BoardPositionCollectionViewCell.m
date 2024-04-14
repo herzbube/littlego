@@ -218,7 +218,7 @@ static UIFont* smallFont = nil;
   // frame is not large enough (e.g. CGRectZero) Auto Layout will print a
   // warning to the debug console, but continue by breaking one of the
   // constraints.
-  CGRect frame = CGRectMake(0, 0, 100, 100);
+  CGRect frame = CGRectMake(0, 0, 1000, 1000);
 
   // Call designated initializer of superclass (UICollectionViewCell)
   self = [super initWithFrame:frame];
@@ -1121,8 +1121,7 @@ static UIFont* smallFont = nil;
   id<NodeTreeViewCanvasDataProvider> nodeTreeViewCanvasDataProvider = [[[PrivateNodeTreeViewCanvasDataProvider alloc] init] autorelease];
   NodeTreeViewMetrics* metrics = [[[NodeTreeViewMetrics alloc] initWithModel:nodeTreeViewModel
                                                           canvasDataProvider:nodeTreeViewCanvasDataProvider
-                                                             traitCollection:nil
-                                                              darkBackground:false] autorelease];
+                                                             traitCollection:nil] autorelease];
   nodeSymbolImages = [[NSMutableDictionary alloc] init];
   for (enum NodeTreeViewCellSymbol nodeSymbol = NodeTreeViewCellSymbolFirst;
        nodeSymbol <= NodeTreeViewCellSymbolLast;
