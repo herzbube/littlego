@@ -22,6 +22,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../go/GoGame.h"
 #import "../../go/GoUtilities.h"
 
 
@@ -99,7 +100,20 @@
   NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data
                                                                               error:nil];
 
-  self.unarchivedGame = [unarchiver decodeObjectForKey:nsCodingGoGameKey];
+  // Override default failure policy NSDecodingFailurePolicySetErrorAndReturn,
+  // because the default policy is no good at indicating the source of an
+  // error.
+  unarchiver.decodingFailurePolicy = NSDecodingFailurePolicyRaiseException;
+
+  @try
+  {
+    self.unarchivedGame = [unarchiver decodeObjectOfClass:[GoGame class] forKey:nsCodingGoGameKey];
+  }
+  @catch (NSException* exception)
+  {
+    DDLogError(@"%@: Unarchiving not possible, exception name = %@, reason = %@", [self shortDescription], exception.name, exception.reason);
+  }
+
   [unarchiver finishDecoding];
   [unarchiver release];
 }

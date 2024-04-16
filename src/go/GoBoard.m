@@ -168,9 +168,10 @@
 
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
+
   self.size = [decoder decodeIntForKey:goBoardSizeKey];
-  m_vertexDict = [[decoder decodeObjectForKey:goBoardVertexDictKey] retain];
-  self.starPoints = [decoder decodeObjectForKey:goBoardStarPointsKey];
+  m_vertexDict = [[decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSMutableDictionary class], [NSString class], [GoPoint class]]] forKey:goBoardVertexDictKey] retain];
+  self.starPoints = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSArray class], [GoPoint class]]] forKey:goBoardStarPointsKey];
   self.zobristTable = [[[GoZobristTable alloc] initWithBoardSize:self.size] autorelease];
 
   return self;

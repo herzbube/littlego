@@ -105,7 +105,7 @@
   // (e.g. notifications are triggered, but also other stuff)
   _type = [decoder decodeIntForKey:goGameTypeKey];
   _board = [[decoder decodeObjectOfClass:[GoBoard class] forKey:goGameBoardKey] retain];
-  _handicapPoints = [[decoder decodeObjectOfClass:[NSArray class] forKey:goGameHandicapPointsKey] retain];
+  _handicapPoints = [[decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSArray class], [GoPoint class]]] forKey:goGameHandicapPointsKey] retain];
   _komi = [decoder decodeDoubleForKey:goGameKomiKey];
   _playerBlack = [[decoder decodeObjectOfClass:[GoPlayer class] forKey:goGamePlayerBlackKey] retain];
   _playerWhite = [[decoder decodeObjectOfClass:[GoPlayer class] forKey:goGamePlayerWhiteKey] retain];

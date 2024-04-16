@@ -135,7 +135,7 @@
   // The previous move was not archived. Whoever is unarchiving this
   // GoMove is responsible for setting the previous move.
   self.previous = nil;
-  self.capturedStones = [decoder decodeObjectOfClass:[NSMutableArray class] forKey:goMoveCapturedStonesKey];
+  self.capturedStones = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSMutableArray class], [GoPoint class]]] forKey:goMoveCapturedStonesKey];
   self.moveNumber = [decoder decodeIntForKey:goMoveMoveNumberKey];
   self.goMoveValuation = [decoder decodeIntForKey:goMoveGoMoveValuationKey];
 

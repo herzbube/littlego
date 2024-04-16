@@ -93,12 +93,12 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
-  NSDictionary* nodeDictionary = [decoder decodeObjectOfClass:[NSDictionary class] forKey:goNodeModelNodeDictionaryKey];
+  NSDictionary* nodeDictionary = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSDictionary class], [NSNumber class], [GoNode class]]] forKey:goNodeModelNodeDictionaryKey];
   [self restoreTreeLinks:nodeDictionary];
 
   self.game = [decoder decodeObjectOfClass:[GoGame class] forKey:goNodeModelGameKey];
   self.rootNode = [decoder decodeObjectOfClass:[GoNode class] forKey:goNodeModelRootNodeKey];
-  self.nodeList = [decoder decodeObjectOfClass:[NSMutableArray class] forKey:goNodeModelNodeListKey];
+  self.nodeList = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSMutableArray class], [GoNode class]]] forKey:goNodeModelNodeListKey];
   self.numberOfNodes = [decoder decodeIntForKey:goNodeModelNumberOfNodesKey];
   self.numberOfMoves = [decoder decodeIntForKey:goNodeModelNumberOfMovesKey];
 

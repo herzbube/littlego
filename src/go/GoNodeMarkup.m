@@ -68,10 +68,10 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
-  self.mutableSymbols = [decoder decodeObjectOfClass:[NSMutableDictionary class] forKey:goNodeMarkupSymbolsKey];
-  self.mutableConnections = [decoder decodeObjectOfClass:[NSMutableDictionary class] forKey:goNodeMarkupConnectionsKey];
-  self.mutableLabels = [decoder decodeObjectOfClass:[NSMutableDictionary class] forKey:goNodeMarkupLabelsKey];
-  self.mutableDimmings = [decoder decodeObjectOfClass:[NSMutableArray class] forKey:goNodeMarkupDimmingsKey];
+  self.mutableSymbols = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSMutableDictionary class], [NSString class], [NSNumber class]]] forKey:goNodeMarkupSymbolsKey];
+  self.mutableConnections = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSMutableDictionary class], [NSArray class], [NSString class], [NSNumber class]]] forKey:goNodeMarkupConnectionsKey];
+  self.mutableLabels = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSMutableDictionary class], [NSString class], [NSArray class], [NSNumber class]]] forKey:goNodeMarkupLabelsKey];
+  self.mutableDimmings = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSMutableArray class], [NSString class]]] forKey:goNodeMarkupDimmingsKey];
 
   return self;
 }

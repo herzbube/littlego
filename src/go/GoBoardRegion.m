@@ -120,7 +120,7 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
-  self.points = [decoder decodeObjectOfClass:[NSMutableArray class] forKey:goBoardRegionPointsKey];
+  self.points = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSMutableArray class], [GoPoint class]]] forKey:goBoardRegionPointsKey];
   self.randomColor = [UIColor randomColor];
   // Don't use self.scoringMode, otherwise we trigger the setter!
   if ([decoder containsValueForKey:goBoardRegionScoringModeKey])
@@ -156,7 +156,7 @@
   else
     self.cachedLiberties = -1;
   if ([decoder containsValueForKey:goBoardRegionCachedAdjacentRegionsKey])
-    self.cachedAdjacentRegions = [decoder decodeObjectOfClass:[NSArray class] forKey:goBoardRegionCachedAdjacentRegionsKey];
+    self.cachedAdjacentRegions = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSArray class], [GoBoardRegion class]]] forKey:goBoardRegionCachedAdjacentRegionsKey];
   else
     self.cachedAdjacentRegions = nil;
 

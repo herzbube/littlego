@@ -18,6 +18,7 @@
 // Project includes
 #import "UnarchiveGameCommand.h"
 #import "../../utility/PathUtilities.h"
+#import "../../go/GoGame.h"
 
 
 // -----------------------------------------------------------------------------
@@ -97,7 +98,30 @@
     return false;
   }
 
-  GoGame* unarchivedGame = [unarchiver decodeObjectForKey:nsCodingGoGameKey];
+  // Override default failure policy NSDecodingFailurePolicySetErrorAndReturn,
+  // because the default policy is no good at indicating the source of an
+  // error.
+  unarchiver.decodingFailurePolicy = NSDecodingFailurePolicyRaiseException;
+
+  GoGame* unarchivedGame = nil;
+  @try
+  {
+    unarchivedGame = [unarchiver decodeObjectOfClass:[GoGame class] forKey:nsCodingGoGameKey];
+  }
+  @catch (NSException* exception)
+  {
+    DDLogError(@"%@: Unarchiving not possible, exception name = %@, reason = %@", [self shortDescription], exception.name, exception.reason);
+
+    if (self.shouldRemoveArchiveFileIfUnarchivingFails)
+    {
+      NSFileManager* fileManager = [NSFileManager defaultManager];
+      BOOL result = [fileManager removeItemAtPath:archiveFilePath error:nil];
+      DDLogVerbose(@"%@: Removed archive file %@, result = %d", [self shortDescription], archiveFilePath, result);
+    }
+
+    return false;
+  }
+
   [unarchiver finishDecoding];
   [unarchiver release];
   if (! unarchivedGame)
