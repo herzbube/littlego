@@ -413,6 +413,9 @@
 // -----------------------------------------------------------------------------
 - (NSString*) resultString
 {
+  if (! self.game)
+    return @"Game object is missing";
+
   if (self.lastCalculationHadError)
     return @"Error calculating score";
 

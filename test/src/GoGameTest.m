@@ -30,13 +30,18 @@
 #import <go/GoMoveNodeCreationOptions.h>
 #import <go/GoNode.h>
 #import <go/GoNodeAdditions.h>
+#import <go/GoNodeAnnotation.h>
+#import <go/GoNodeMarkup.h>
 #import <go/GoNodeModel.h>
 #import <go/GoNodeSetup.h>
+#import <go/GoPlayer.h>
 #import <go/GoPoint.h>
+#import <go/GoScore.h>
 #import <go/GoUtilities.h>
-#import <main/ApplicationDelegate.h>
 #import <command/game/NewGameCommand.h>
+#import <main/ApplicationDelegate.h>
 #import <newgame/NewGameModel.h>
+#import <player/Player.h>
 #import <utility/NSArrayAdditions.h>
 
 
@@ -82,6 +87,292 @@
   XCTAssertEqual(m_game.setupFirstMoveColor, GoColorNone);
   long long hashForEmptyBoard = 0;
   XCTAssertEqual(m_game.zobristHashAfterHandicap, hashForEmptyBoard);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the initWithCoder:() method.
+///
+/// Because initWithCoder:() also creates child objects, the scope of this test
+/// is much broader than just the GoGame initWithCoder:() initializer. In
+/// essence, this test attempts to verify that unarchiving the entire Go object
+/// tree with GoGame at its root is successful.
+///
+/// Some test setup is needed to make sure that all possible sub-objects to
+/// be archived/unarchived are present. To help with this, here is how the
+/// object tree looks like:
+///
+/// @verbatim
+/// GoGame
+/// - board: GoBoard
+///   - m_vertexDict: NSMutableDictionary with NSString keys and GoPoint values
+///   - starPoints: NSArray of GoPoint
+/// - handicapPoints: NSArray of GoPoint
+/// - playerBlack: GoPlayer
+///   - uuid: NSString
+/// - playerWhite: GoPlayer
+/// - nodeModel: GoNodeModel
+///   - game: GoGame
+///   - rootNode: GoNode
+///     - goNodeSetup: GoNodeSetup
+///       - mutableBlackSetupStones: NSMutableArray of GoPoint
+///       - mutableWhiteSetupStones: NSMutableArray of GoPoint
+///       - mutableNoSetupStones: NSMutableArray of GoPoint
+///       - mutablePreviousBlackSetupStones: NSMutableArray of GoPoint
+///       - mutablePreviousWhiteSetupStones: NSMutableArray of GoPoint
+///     - goMove: GoMove
+///       - player: GoPlayer
+///       - point: GoPoint
+///       - capturedStones: NSMutableArray of GoPoint
+///     - goNodeAnnotation: GoNodeAnnotation
+///       - shortDescription: NSString
+///       - longDescription: NSString
+///     - goNodeMarkup: GoNodeMarkup
+///       - mutableSymbols: NSMutableDictionary with NSString keys and NSNumber
+///         values
+///       - mutableConnections: NSMutableDictionary with NSArray keys
+///         (containing two NSString) and NSNumber values
+///       - mutableLabels: NSMutableDictionary with NSString keys and NSArray
+///         values (containing an NSNumber and an NSString)
+///       - mutableDimmings: NSMutableArray of NSString
+///   - nodeDictionary: NSDictionary with NSNumber keys and GoNode values
+///   - nodeList: NSMutableArray of GoNode
+/// - boardPosition: GoBoardPosition
+///   - game: GoGame
+/// - rules: GoGameRules
+///   - No child objects
+/// - document: GoGameDocument
+///   - documentName: NSString
+/// - score: GoScore
+///   - game: GoGame
+///
+/// GoPoint (linked to from various places in the tree above)
+/// - vertex: GoVertex
+///   - No child objects
+/// - board: GoBoard
+/// - region: GoBoardRegion
+///   - points: NSMutableArray of GoPoint
+///   - cachedAdjacentRegions: NSArray of GoBoardRegion
+/// @endverbatim
+// -----------------------------------------------------------------------------
+- (void) testInitWithCoder
+{
+  // ----------------------------------------------------------------------
+  // Arrange - Setup object tree
+  // ----------------------------------------------------------------------
+  GoGame* archivedGame = m_game;
+  GoPoint* pointA1 = [archivedGame.board pointAtVertex:@"A1"];
+  GoPoint* pointB1 = [archivedGame.board pointAtVertex:@"B1"];
+  GoPoint* pointA2 = [archivedGame.board pointAtVertex:@"A2"];
+  GoPoint* pointG7 = [archivedGame.board pointAtVertex:@"G7"];
+
+  // GoGame handicapPoints
+  archivedGame.handicapPoints = [GoUtilities pointsForHandicap:5 inGame:archivedGame];
+
+  // GoNode goNodeSetup
+  // GoNodeSetup mutableWhiteSetupStones
+  [archivedGame changeSetupPoint:pointA1 toStoneState:GoColorWhite];
+
+  // GoNodeSetup mutableBlackSetupStones
+  [archivedGame changeSetupPoint:pointB1 toStoneState:GoColorBlack];
+
+  [archivedGame addEmptyNodeToCurrentGameVariation];
+
+  // GoNodeSetup mutableNoSetupStones
+  // GoNodeSetup mutablePreviousWhiteSetupStones
+  [archivedGame changeSetupPoint:pointA1 toStoneState:GoColorNone];
+  // GoNodeSetup mutablePreviousBlackSetupStones
+  [archivedGame changeSetupPoint:pointB1 toStoneState:GoColorWhite];
+
+  // Make sure that the following moves result in a capture
+  [archivedGame changeSetupFirstMoveColor:GoColorBlack];
+
+  // GoNode goMove
+  // GoMove player
+  // GoMove point
+  [archivedGame play:pointA1];  // B
+  // GoMove capturedStones
+  [archivedGame play:pointA2];  // W captures B at A1
+  XCTAssertGreaterThan(archivedGame.nodeModel.leafNode.goMove.capturedStones.count, 0);
+
+  GoNode* node = archivedGame.boardPosition.currentNode;
+  // GoNode goNodeAnnotation
+  node.goNodeAnnotation = [[[GoNodeAnnotation alloc] init] autorelease];
+  // GoNodeAnnotation shortDescription
+  node.goNodeAnnotation.shortDescription = @"short description";
+  // GoNodeAnnotation longDescription
+  node.goNodeAnnotation.longDescription = @"long description";
+
+  // GoNode goNodeMarkup
+  node.goNodeMarkup = [[[GoNodeMarkup alloc] init] autorelease];
+  // GoNodeMarkup mutableSymbols
+  [node.goNodeMarkup setSymbol:GoMarkupSymbolCircle atVertex:@"C1"];
+  // GoNodeMarkup mutableConnections
+  [node.goNodeMarkup setConnection:GoMarkupConnectionArrow fromVertex:@"D1" toVertex:@"E1"];
+  // GoNodeMarkup mutableLabels
+  [node.goNodeMarkup setLabel:GoMarkupLabelLabel labelText:@"a label" atVertex:@"F1"];
+  // GoNodeMarkup mutableDimmings
+  [node.goNodeMarkup setDimmingAtVertex:@"G1"];
+
+  // GoGameDocument documentName
+  [archivedGame.document load:@"document name"];
+
+  // Create any kind of node that can be discarded during the Assert phase
+  [archivedGame play:pointG7];
+
+  // GoBoardRegion cachedAdjacentRegions
+  // Do this only after all moves have been played, otherwise the cached values
+  // in some GoBoardRegions will be wrong
+  [archivedGame.score enableScoring];
+
+  // ----------------------------------------------------------------------
+  // Arrange - Encode
+  // ----------------------------------------------------------------------
+  Class gameClass = [GoGame class];
+  NSString* topLevelKey = @"the top level key";
+
+  NSKeyedArchiver* archiver = [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
+  [archiver encodeObject:archivedGame forKey:topLevelKey];
+  [archiver finishEncoding];
+
+  NSData* data = archiver.encodedData;
+
+  // ----------------------------------------------------------------------
+  // Act
+  // ----------------------------------------------------------------------
+  NSKeyedUnarchiver* unarchiver = [[NSKeyedUnarchiver alloc] initForReadingFromData:data
+                                                                              error:nil];
+  unarchiver.decodingFailurePolicy = NSDecodingFailurePolicyRaiseException;
+  GoGame* unarchivedGame = [unarchiver decodeObjectOfClass:gameClass forKey:topLevelKey];
+  [unarchiver finishDecoding];
+  [unarchiver release];
+
+  // ----------------------------------------------------------------------
+  // Assert
+  //
+  // We don't verify every property, we only verify that objects were
+  // unarchived, because the change to NSSecureCoding added some logic to the
+  // unarchiving process.
+  //
+  // Some unarchived objects are private implementation details, and their
+  // unarchiving can therefore be verified only indirectly. The assertions in
+  // question are marked with a comment because they are fragile and may need
+  // to be changed when the implementaton changes.
+  // ----------------------------------------------------------------------
+  // GoGame
+  GoBoard* unarchivedBoard = unarchivedGame.board;
+  XCTAssertNotNil(unarchivedBoard);
+  [unarchivedGame.handicapPoints isEqualToArray:archivedGame.handicapPoints];
+  XCTAssertNotNil(unarchivedGame.playerBlack);
+  XCTAssertNotNil(unarchivedGame.playerWhite);
+  GoNodeModel* unarchivedNodeModel = unarchivedGame.nodeModel;
+  XCTAssertNotNil(unarchivedNodeModel);
+  GoBoardPosition* unarchivedBoardPosition = unarchivedGame.boardPosition;
+  XCTAssertNotNil(unarchivedBoardPosition);
+  XCTAssertNotNil(unarchivedGame.rules);
+  GoGameDocument* unarchivedGameDocument = unarchivedGame.document;
+  XCTAssertNotNil(unarchivedGameDocument);
+  GoScore* unarchivedScore = unarchivedGame.score;
+  XCTAssertNotNil(unarchivedScore);
+
+  // GoBoard
+  // Indirectly proves that m_vertexDict in GoBoard has been unarchived
+  XCTAssertNotNil([unarchivedBoard pointAtVertex:@"D13"]);
+  XCTAssertNotNil(unarchivedBoard.starPoints);
+  XCTAssertGreaterThan(unarchivedBoard.starPoints.count, 0);
+  [unarchivedBoard.starPoints.firstObject isKindOfClass:[GoPoint class]];
+
+  // GoPlayer
+  XCTAssertNotNil(unarchivedGame.playerBlack.player);
+  XCTAssertNotNil(unarchivedGame.playerBlack.player.uuid);
+  XCTAssertTrue([unarchivedGame.playerBlack.player.uuid isEqualToString:archivedGame.playerBlack.player.uuid]);
+
+  // GoNodeModel
+  GoNode* unarchivedRootNode = unarchivedNodeModel.rootNode;
+  XCTAssertNotNil(unarchivedRootNode);
+  // Indirectly proves that nodeDictionary in GoNodeModel has been unarchived
+  XCTAssertNotNil(unarchivedNodeModel.rootNode.firstChild);
+  // Indirectly proves that nodeList in GoNodeModel has been unarchived
+  XCTAssertNotNil([unarchivedNodeModel nodeAtIndex:2]);
+  // Indirectly proves that game in GoNodeModel has been unarchived
+  unarchivedGameDocument.dirty = false;
+  unarchivedBoardPosition.currentBoardPosition -= 1;  // prepare for the discard
+  [unarchivedNodeModel discardLeafNode];  // discards move played at G7 which we don't need for anything else
+  XCTAssertTrue(unarchivedGameDocument.dirty);
+
+  // GoNode
+  XCTAssertNotNil(unarchivedRootNode.goNodeSetup);
+  GoNode* unarchivedLeafNode = unarchivedNodeModel.leafNode;
+  GoMove* unarchivedGoMove = unarchivedLeafNode.goMove;
+  XCTAssertNotNil(unarchivedGoMove);
+  GoNodeAnnotation* unarchivedGoNodeAnnotation = unarchivedLeafNode.goNodeAnnotation;
+  XCTAssertNotNil(unarchivedGoNodeAnnotation);
+  GoNodeMarkup* unarchivedGoNodeMarkup = unarchivedLeafNode.goNodeMarkup;
+  XCTAssertNotNil(unarchivedGoNodeMarkup);
+
+  // GoNodeSetup
+  XCTAssertNotNil(unarchivedRootNode.goNodeSetup.blackSetupStones);
+  XCTAssertGreaterThan(unarchivedRootNode.goNodeSetup.blackSetupStones.count, 0);
+  XCTAssertNotNil(unarchivedRootNode.goNodeSetup.whiteSetupStones);
+  XCTAssertGreaterThan(unarchivedRootNode.goNodeSetup.whiteSetupStones.count, 0);
+  GoNodeSetup* unarchivedGoNodeSetup = unarchivedRootNode.firstChild.goNodeSetup;
+  XCTAssertNotNil(unarchivedGoNodeSetup);
+  XCTAssertNotNil(unarchivedGoNodeSetup.noSetupStones);
+  XCTAssertGreaterThan(unarchivedGoNodeSetup.noSetupStones.count, 0);
+  XCTAssertNotNil(unarchivedGoNodeSetup.previousBlackSetupStones);
+  XCTAssertGreaterThan(unarchivedGoNodeSetup.previousBlackSetupStones.count, 0);
+  XCTAssertNotNil(unarchivedGoNodeSetup.previousWhiteSetupStones);
+  XCTAssertGreaterThan(unarchivedGoNodeSetup.previousWhiteSetupStones.count, 0);
+
+  // GoMove
+  XCTAssertNotNil(unarchivedGoMove.player);
+  XCTAssertNotNil(unarchivedGoMove.point);
+  XCTAssertNotNil(unarchivedGoMove.capturedStones);
+  XCTAssertGreaterThan(unarchivedGoMove.capturedStones.count, 0);
+
+  // GoNodeAnnotation
+  XCTAssertNotNil(unarchivedGoNodeAnnotation.shortDescription);
+  XCTAssertNotNil(unarchivedGoNodeAnnotation.longDescription);
+
+  // GoNodeMarkup
+  XCTAssertNotNil(unarchivedGoNodeMarkup.symbols);
+  XCTAssertGreaterThan(unarchivedGoNodeMarkup.symbols.count, 0);
+  XCTAssertNotNil(unarchivedGoNodeMarkup.connections);
+  XCTAssertGreaterThan(unarchivedGoNodeMarkup.connections.count, 0);
+  XCTAssertNotNil(unarchivedGoNodeMarkup.labels);
+  XCTAssertGreaterThan(unarchivedGoNodeMarkup.labels.count, 0);
+  XCTAssertNotNil(unarchivedGoNodeMarkup.dimmings);
+  XCTAssertGreaterThan(unarchivedGoNodeMarkup.dimmings.count, 0);
+
+  // GoBoardPosition
+  // Indirectly proves that game in GoBoardPosition has been unarchived
+  XCTAssertNotNil(unarchivedBoardPosition.currentNode);
+
+  // GoGameDocument
+  XCTAssertTrue([unarchivedGameDocument.documentName isEqualToString:archivedGame.document.documentName]);
+
+  // GoScore
+  // Indirectly proves that game in GoScore has been unarchived
+  NSString* resultString = [unarchivedScore resultString];
+  XCTAssertFalse([resultString isEqualToString:@"Game object is missing"]);
+
+  // GoPoint
+  GoPoint* unarchivedPoint = [unarchivedBoard pointAtVertex:@"A1"];
+  XCTAssertNotNil(unarchivedPoint.vertex);
+  XCTAssertNotNil(unarchivedPoint.board);
+  XCTAssertNotNil(unarchivedPoint.region);
+
+  // GoBoardRegion
+  GoPoint* topLeftCornerPoint = [unarchivedBoard pointAtCorner:GoBoardCornerTopLeft];
+  GoBoardRegion* unarchivedBoardRegion = topLeftCornerPoint.region;
+  XCTAssertNotNil(unarchivedBoardRegion.points);
+  XCTAssertGreaterThan(unarchivedBoardRegion.points.count, 0);
+  // Indirectly proves that cachedAdjacentRegions in GoBoardRegion has been
+  // unarchived. If it had not been unarchived, then the two array objects would
+  // not be equal, because then each property access would return a newly
+  // created array object.
+  NSArray* adjacentRegions1 = unarchivedBoardRegion.adjacentRegions;
+  NSArray* adjacentRegions2 = unarchivedBoardRegion.adjacentRegions;
+  XCTAssertEqual(adjacentRegions1, adjacentRegions2);
 }
 
 // -----------------------------------------------------------------------------
