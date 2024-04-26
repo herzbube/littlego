@@ -22,6 +22,30 @@
 // -----------------------------------------------------------------------------
 /// @brief The GoNodeTest class contains unit tests that exercise the GoNode
 /// class (including the operations defined in the GoNodeAdditions category).
+///
+/// For the following properties there are no dedicated test methods, because
+/// these properties are tested extensively as part of the other tests.
+/// - firstChild
+/// - lastChild
+/// - nextSibling
+/// - previousSibling
+/// - parent
+/// - zobristHash
+///
+/// These properties are not explicitly tested because both their getter and
+/// setter do not contain any logic:
+/// - goNodeSetup
+/// - goMove
+/// - goNodeAnnotation
+/// - goNodeMarkup
+/// - nodeID (the property is declared privately and only the setter is exposed
+///   via GoNodeAdditions)
+///
+/// Finally, the GoNodeAdditions method restoreTreeLinks:() is not testable in
+/// an isolated manner because its implementation is closely tied to the
+/// archiving/unarchiving logic of GoNodeTest. Test coverage for
+/// restoreTreeLinks:() is therefore delegated to the archiving/unarchiving
+/// test(s) in GoGameTest.
 // -----------------------------------------------------------------------------
 @interface GoNodeTest : BaseTestCase
 {
@@ -40,6 +64,11 @@
 - (void) testSetParent;
 - (void) testIsDescendantOfNode;
 - (void) testIsAncestorOfNode;
+- (void) testHasNextSibling;
+- (void) testHasPreviousSibling;
+- (void) testHasParent;
+- (void) testIsRoot;
+- (void) testIsLeaf;
 - (void) testEmpty;
 - (void) testModifyBoard;
 - (void) testRevertBoard;

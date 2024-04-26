@@ -121,8 +121,26 @@
 // -----------------------------------------------------------------------------
 - (void) testInitialState
 {
-  GoNode* testee = [GoNode node];
+  GoNode* testee = [[[GoNode alloc] init] autorelease];
+  [self verifyInitialState:testee];
+}
 
+// -----------------------------------------------------------------------------
+/// @brief Exercises the node() convenience constructor.
+// -----------------------------------------------------------------------------
+- (void) testNode
+{
+  GoNode* testee = [GoNode node];
+  [self verifyInitialState:testee];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper to verify the initial state of @a testee after object
+/// creation.
+// -----------------------------------------------------------------------------
+- (void) verifyInitialState:(GoNode*)testee
+{
+  XCTAssertNotNil(testee);
   XCTAssertNil(testee.firstChild);
   XCTAssertNil(testee.lastChild);
   XCTAssertNotNil(testee.children);
@@ -143,14 +161,6 @@
   XCTAssertNil(testee.goNodeAnnotation);
   XCTAssertNil(testee.goNodeMarkup);
   XCTAssertEqual(0, testee.zobristHash);
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Exercises the node() convenience constructor.
-// -----------------------------------------------------------------------------
-- (void) testNode
-{
-  // TODO xxx implement
 }
 
 // -----------------------------------------------------------------------------
@@ -877,6 +887,136 @@
 
   XCTAssertThrowsSpecificNamed([self.rootNode isAncestorOfNode:nil],
                                NSException, NSInvalidArgumentException, @"isAncestorOfNode: node cannot be nil");
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e hasNextSibling property.
+// -----------------------------------------------------------------------------
+- (void) testHasNextSibling
+{
+  GoNode* root = [GoNode node];
+  GoNode* firstChild = [GoNode node];
+  GoNode* nextSibling = [GoNode node];
+
+  XCTAssertFalse(root.hasNextSibling);
+  XCTAssertFalse(firstChild.hasNextSibling);
+  XCTAssertFalse(nextSibling.hasNextSibling);
+
+  [root setFirstChild:firstChild];
+
+  XCTAssertFalse(root.hasNextSibling);
+  XCTAssertFalse(firstChild.hasNextSibling);
+  XCTAssertFalse(nextSibling.hasNextSibling);
+
+  [firstChild setNextSibling:nextSibling];
+
+  XCTAssertFalse(root.hasNextSibling);
+  XCTAssertTrue(firstChild.hasNextSibling);
+  XCTAssertFalse(nextSibling.hasNextSibling);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e hasPreviousSibling property.
+// -----------------------------------------------------------------------------
+- (void) testHasPreviousSibling
+{
+  GoNode* root = [GoNode node];
+  GoNode* firstChild = [GoNode node];
+  GoNode* nextSibling = [GoNode node];
+
+  XCTAssertFalse(root.hasPreviousSibling);
+  XCTAssertFalse(firstChild.hasPreviousSibling);
+  XCTAssertFalse(nextSibling.hasPreviousSibling);
+
+  [root setFirstChild:firstChild];
+
+  XCTAssertFalse(root.hasPreviousSibling);
+  XCTAssertFalse(firstChild.hasPreviousSibling);
+  XCTAssertFalse(nextSibling.hasPreviousSibling);
+
+  [firstChild setNextSibling:nextSibling];
+
+  XCTAssertFalse(root.hasPreviousSibling);
+  XCTAssertFalse(firstChild.hasPreviousSibling);
+  XCTAssertTrue(nextSibling.hasPreviousSibling);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e hasParent property.
+// -----------------------------------------------------------------------------
+- (void) testHasParent
+{
+  GoNode* root = [GoNode node];
+  GoNode* firstChild = [GoNode node];
+  GoNode* nextSibling = [GoNode node];
+
+  XCTAssertFalse(root.hasParent);
+  XCTAssertFalse(firstChild.hasParent);
+  XCTAssertFalse(nextSibling.hasParent);
+
+  [root setFirstChild:firstChild];
+
+  XCTAssertFalse(root.hasParent);
+  XCTAssertTrue(firstChild.hasParent);
+  XCTAssertFalse(nextSibling.hasParent);
+
+  [firstChild setNextSibling:nextSibling];
+
+  XCTAssertFalse(root.hasParent);
+  XCTAssertTrue(firstChild.hasParent);
+  XCTAssertTrue(nextSibling.hasParent);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e isRoot property.
+// -----------------------------------------------------------------------------
+- (void) testIsRoot
+{
+  GoNode* root = [GoNode node];
+  GoNode* firstChild = [GoNode node];
+  GoNode* nextSibling = [GoNode node];
+
+  XCTAssertTrue(root.isRoot);
+  XCTAssertTrue(firstChild.isRoot);
+  XCTAssertTrue(nextSibling.isRoot);
+
+  [root setFirstChild:firstChild];
+
+  XCTAssertTrue(root.isRoot);
+  XCTAssertFalse(firstChild.isRoot);
+  XCTAssertTrue(nextSibling.isRoot);
+
+  [firstChild setNextSibling:nextSibling];
+
+  XCTAssertTrue(root.isRoot);
+  XCTAssertFalse(firstChild.isRoot);
+  XCTAssertFalse(nextSibling.isRoot);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e isLeaf property.
+// -----------------------------------------------------------------------------
+- (void) testIsLeaf
+{
+  GoNode* root = [GoNode node];
+  GoNode* firstChild = [GoNode node];
+  GoNode* nextSibling = [GoNode node];
+
+  XCTAssertTrue(root.isLeaf);
+  XCTAssertTrue(firstChild.isLeaf);
+  XCTAssertTrue(nextSibling.isLeaf);
+
+  [root setFirstChild:firstChild];
+
+  XCTAssertFalse(root.isLeaf);
+  XCTAssertTrue(firstChild.isLeaf);
+  XCTAssertTrue(nextSibling.isLeaf);
+
+  [firstChild setNextSibling:nextSibling];
+
+  XCTAssertFalse(root.isLeaf);
+  XCTAssertTrue(firstChild.isLeaf);
+  XCTAssertTrue(nextSibling.isLeaf);
 }
 
 // -----------------------------------------------------------------------------
