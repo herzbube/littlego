@@ -16,6 +16,7 @@
 
 
 // Forward declarations
+@class GoGame;
 @class GoMove;
 @class GoNodeAnnotation;
 @class GoNodeMarkup;
@@ -188,11 +189,12 @@
 /// @e zobristHash with the new Zobrist hash.
 ///
 /// The Zobrist hash calculation uses the parent node's Zobrist hash as the base
-/// and combines it with the current board state. See GoZobristHash for details.
+/// and combines it with the current board state. See GoZobristTable for
+/// details.
 ///
 /// @attention A new node must have been added to the node tree when this method
 /// is invoked, otherwise the parent node is not known.
-- (void) calculateZobristHash;
+- (void) calculateZobristHash:(GoGame*)game;
 //@}
 
 @end

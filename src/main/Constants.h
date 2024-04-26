@@ -2233,6 +2233,7 @@ extern NSString* goNodeGoMoveKey;
 extern NSString* goNodeGoNodeAnnotationKey;
 extern NSString* goNodeGoNodeMarkupKey;
 // GoNodeSetup keys
+extern NSString* goNodeSetupGameKey;
 extern NSString* goNodeSetupBlackSetupStonesKey;
 extern NSString* goNodeSetupWhiteSetupStonesKey;
 extern NSString* goNodeSetupNoSetupStonesKey;

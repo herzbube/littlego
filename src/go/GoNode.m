@@ -436,11 +436,10 @@
 // -----------------------------------------------------------------------------
 // Method is documented in the header file.
 // -----------------------------------------------------------------------------
-- (void) calculateZobristHash
+- (void) calculateZobristHash:(GoGame*)game
 {
   // GoZobristTable needs to have the Zobrist hash of the node's parent. The
   // node therefore must have been added to the node tree at this point.
-  GoGame* game = [GoGame sharedGame];
   self.zobristHash = [game.board.zobristTable hashForNode:self
                                                    inGame:game];
 }

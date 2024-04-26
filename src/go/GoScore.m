@@ -449,11 +449,10 @@
     }
   }
 
-  GoGame* game = [GoGame sharedGame];
-  if (! [GoUtilities nodeWithNextMoveExists:game.boardPosition.currentNode inCurrentGameVariation:game]
-      && GoGameStateGameHasEnded == game.state)
+  if (! [GoUtilities nodeWithNextMoveExists:self.game.boardPosition.currentNode inCurrentGameVariation:self.game]
+      && GoGameStateGameHasEnded == self.game.state)
   {
-    SGFCGameResult gameResult = [SgfUtilities gameResultForGoGameHasEndedReason:game.reasonForGameHasEnded];
+    SGFCGameResult gameResult = [SgfUtilities gameResultForGoGameHasEndedReason:self.game.reasonForGameHasEnded];
     if (gameResult.IsValid)
     {
       NSString* gameResultString = [SgfUtilities stringForSgfGameResult:gameResult];

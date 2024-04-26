@@ -764,7 +764,7 @@
   {
     while (currentNode)
     {
-      currentNode.zobristHash = [zobristTable hashForNode:currentNode inGame:game];
+      [currentNode calculateZobristHash:game];
 
       [stack addObject:currentNode];
 
@@ -1061,7 +1061,7 @@
 /// method returns #NodeTreeViewCellSymbolEmpty. This method never returns
 /// #NodeTreeViewCellSymbolNone.
 // -----------------------------------------------------------------------------
-+ (enum NodeTreeViewCellSymbol) symbolForNode:(GoNode*)node
++ (enum NodeTreeViewCellSymbol) symbolForNode:(GoNode*)node inGame:(GoGame*)game
 {
   GoNodeSetup* nodeSetup = node.goNodeSetup;
   if (nodeSetup)
@@ -1116,7 +1116,6 @@
   }
   else if (node.isRoot)
   {
-    GoGame* game = [GoGame sharedGame];
     bool hasHandicap = game.handicapPoints.count > 0;
     bool hasKomi = game.komi > 0.0;
     if (hasHandicap && hasKomi)

@@ -67,6 +67,6 @@
 + (GoNode*) nodeWithMostRecentBoardStateChange:(GoNode*)node;
 + (bool) showInfoIndicatorForNode:(GoNode*)node;
 + (bool) showHotspotIndicatorForNode:(GoNode*)node;
-+ (enum NodeTreeViewCellSymbol) symbolForNode:(GoNode*)node;
++ (enum NodeTreeViewCellSymbol) symbolForNode:(GoNode*)node inGame:(GoGame*)game;
 
 @end

@@ -1064,7 +1064,7 @@
   long long zobristHashEmptyBoard = 0;
 
   GoNode* rootNode = m_game.nodeModel.rootNode;
-  [rootNode calculateZobristHash];
+  [rootNode calculateZobristHash:m_game];
   long long zobristHashRootNode = rootNode.zobristHash;
   XCTAssertEqual(zobristHashRootNode, zobristHashEmptyBoard);
 
@@ -1072,7 +1072,7 @@
   [m_game addEmptyNodeToCurrentGameVariation];
   GoNode* emptyNode = m_game.nodeModel.leafNode;;
   [emptyNode modifyBoard];
-  [emptyNode calculateZobristHash];
+  [emptyNode calculateZobristHash:m_game];
   long long zobristHashEmptyNode = emptyNode.zobristHash;
   XCTAssertEqual(zobristHashEmptyNode, zobristHashRootNode);
 
@@ -1082,7 +1082,7 @@
   nodeWithSetupInformation.goNodeSetup = [GoNodeSetup nodeSetupWithPreviousSetupCapturedFromGame:m_game];
   [nodeWithSetupInformation.goNodeSetup setupBlackStone:point1];
   [nodeWithSetupInformation modifyBoard];
-  [nodeWithSetupInformation calculateZobristHash];
+  [nodeWithSetupInformation calculateZobristHash:m_game];
   long long zobristHashSetupInformation = nodeWithSetupInformation.zobristHash;
   XCTAssertNotEqual(zobristHashSetupInformation, zobristHashEmptyNode);
 
@@ -1092,7 +1092,7 @@
   nodeWithMove.goMove = [GoMove move:GoMoveTypePlay by:m_game.playerWhite after:nil];
   nodeWithMove.goMove.point = point2;
   [nodeWithMove modifyBoard];
-  [nodeWithMove calculateZobristHash];
+  [nodeWithMove calculateZobristHash:m_game];
   long long zobristHashMove = nodeWithMove.zobristHash;
   XCTAssertNotEqual(zobristHashMove, zobristHashEmptyNode);
   XCTAssertNotEqual(zobristHashMove, zobristHashSetupInformation);
@@ -1106,7 +1106,7 @@
   nodeWithAnnotationsAndMarkup.goNodeMarkup = [[[GoNodeMarkup alloc] init] autorelease];
   [nodeWithAnnotationsAndMarkup.goNodeMarkup setSymbol:GoMarkupSymbolCircle atVertex:@"A1"];
   [nodeWithAnnotationsAndMarkup modifyBoard];
-  [nodeWithAnnotationsAndMarkup calculateZobristHash];
+  [nodeWithAnnotationsAndMarkup calculateZobristHash:m_game];
   long long zobristHashAnnotationsAndMarkup = nodeWithAnnotationsAndMarkup.zobristHash;
   XCTAssertEqual(zobristHashAnnotationsAndMarkup, zobristHashMove);
 }

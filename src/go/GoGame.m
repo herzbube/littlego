@@ -634,7 +634,7 @@
   // the parent node's Zobrist hash can be used as the base for the calculation.
   // We perform the hash calculation as soon as possible, even before posting
   // the notification about the board position change.
-  [newNode calculateZobristHash];
+  [newNode calculateZobristHash:self];
 
   [center postNotificationName:currentBoardPositionDidChange object:@[[NSNumber numberWithInt:oldCurrentBoardPosition], [NSNumber numberWithInt:newCurrentBoardPosition]]];
 

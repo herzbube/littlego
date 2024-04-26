@@ -377,7 +377,7 @@ static UIFont* smallFont = nil;
   GoGame* game = [GoGame sharedGame];
   GoNode* node = [self nodeWithDataOrNil];
 
-  enum NodeTreeViewCellSymbol nodeSymbol = [GoUtilities symbolForNode:node];
+  enum NodeTreeViewCellSymbol nodeSymbol = [GoUtilities symbolForNode:node inGame:game];
   self.nodeSymbolImageView.image = [self nodeSymbolImageForNodeSymbol:nodeSymbol];
 
   if (0 == self.boardPosition)

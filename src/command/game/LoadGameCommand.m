@@ -758,9 +758,10 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
              previousMove:(GoMove*)previousMove
              errorMessage:(NSString**)errorMessage
 {
+  GoGame* game = [GoGame sharedGame];
   bool sgfNodeIsGameInfoNode = [sgfNode isEqualToNode:self.sgfGameInfoNode];
 
-  GoNodeSetup* goNodeSetup = [[[GoNodeSetup alloc] init] autorelease];
+  GoNodeSetup* goNodeSetup = [[[GoNodeSetup alloc] initWithGame:game] autorelease];
   GoMove* goMove = nil;
   enum GoMoveValuation goMoveValuation = GoMoveValuationNone;
   GoNodeAnnotation* goNodeAnnotation = [[[GoNodeAnnotation alloc] init] autorelease];
@@ -1312,7 +1313,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
       {
         // Setup validation requires the board to be already in the new state
         [currentNode modifyBoard];
-        [currentNode calculateZobristHash];
+        [currentNode calculateZobristHash:game];
         bool success = [self validateBoardSetupWithGame:game errorMessage:errorMessage];
         if (! success)
           return false;
@@ -1325,12 +1326,12 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
         if (! success)
           return false;
         [currentNode modifyBoard];
-        [currentNode calculateZobristHash];
+        [currentNode calculateZobristHash:game];
       }
       else
       {
         // Calculates the correct Zobrist hash based on the parent node
-        [currentNode calculateZobristHash];
+        [currentNode calculateZobristHash:game];
       }
 
       ++numberOfNodesProcessed;

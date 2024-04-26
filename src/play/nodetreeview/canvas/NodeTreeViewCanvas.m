@@ -386,7 +386,8 @@ static const unsigned short yPositionOfNodeNumber = 0;
   if (! self.nodeWhoseSymbolNeedsUpdate)
     return;
 
-  enum NodeTreeViewCellSymbol newNodeSymbol = [GoUtilities symbolForNode:self.nodeWhoseSymbolNeedsUpdate];
+  GoGame* game = [GoGame sharedGame];
+  enum NodeTreeViewCellSymbol newNodeSymbol = [GoUtilities symbolForNode:self.nodeWhoseSymbolNeedsUpdate inGame:game];
   NodeTreeViewBranchTuple* branchTuple = [self branchTupleForNode:self.nodeWhoseSymbolNeedsUpdate];
 
   self.nodeWhoseSymbolNeedsUpdate = nil;
@@ -610,6 +611,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
   // Step 1: Collect data about branches
   [self collectBranchDataInCanvasData:canvasData
                   fromNodeTreeInModel:nodeModel
+                               inGame:game
                     condenseMoveNodes:condenseMoveNodes
          numberOfCellsOfMultipartCell:numberOfCellsOfMultipartCell
                        alignMoveNodes:alignMoveNodes];
@@ -698,6 +700,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
 // -----------------------------------------------------------------------------
 - (void) collectBranchDataInCanvasData:(NodeTreeViewCanvasData*)canvasData
                    fromNodeTreeInModel:(GoNodeModel*)nodeModel
+                                inGame:(GoGame*)game
                      condenseMoveNodes:(bool)condenseMoveNodes
           numberOfCellsOfMultipartCell:(int)numberOfCellsOfMultipartCell
                         alignMoveNodes:(bool)alignMoveNodes
@@ -742,7 +745,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
       branchTuple->xPositionOfFirstCell = xPosition;
       branchTuple->node = currentNode;
       branchTuple->nodeNumber = nodeNumber;
-      branchTuple->symbol = [GoUtilities symbolForNode:currentNode];
+      branchTuple->symbol = [GoUtilities symbolForNode:currentNode inGame:game];
       branchTuple->numberOfCellsForNode = [self numberOfCellsForNode:currentNode condenseMoveNodes:condenseMoveNodes numberOfCellsOfMultipartCell:numberOfCellsOfMultipartCell];
       // This assumes that numberOfCellsForNode is always an uneven number
       branchTuple->indexOfCenterCell = floorf(branchTuple->numberOfCellsForNode / 2.0);

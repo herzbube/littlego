@@ -52,7 +52,7 @@
 /// @brief Initializes a GoNodeSetup object.
 ///
 /// @note This is the designated initializer of GoNodeSetup.
-- (id) init;
+- (id) initWithGame:(GoGame*)game;
 //@}
 
 

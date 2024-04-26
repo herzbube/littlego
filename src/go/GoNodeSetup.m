@@ -33,6 +33,7 @@
 //@{
 @property(nonatomic, assign, readwrite) enum GoColor previousSetupFirstMoveColor;
 //@}
+@property(nonatomic, assign) GoGame* game;
 @property(nonatomic, retain) NSMutableArray* mutableBlackSetupStones;
 @property(nonatomic, retain) NSMutableArray* mutableWhiteSetupStones;
 @property(nonatomic, retain) NSMutableArray* mutableNoSetupStones;
@@ -51,7 +52,7 @@
 // -----------------------------------------------------------------------------
 + (GoNodeSetup*) nodeSetupWithPreviousSetupCapturedFromGame:(GoGame*)game
 {
-  GoNodeSetup* nodeSetup = [[[self alloc] init] autorelease];
+  GoNodeSetup* nodeSetup = [[[self alloc] initWithGame:game] autorelease];
 
   [nodeSetup capturePreviousSetupInformationFromGame:game];
   nodeSetup.previousSetupInformationWasCaptured = true;
@@ -62,13 +63,14 @@
 // -----------------------------------------------------------------------------
 // Method is documented in the header file.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithGame:(GoGame*)game
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
+  self.game = game;
   self.mutableBlackSetupStones = nil;
   self.mutableWhiteSetupStones = nil;
   self.mutableNoSetupStones = nil;
@@ -93,6 +95,7 @@
   if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
     return nil;
 
+  self.game = [decoder decodeObjectOfClass:[GoGame class] forKey:goNodeSetupGameKey];
   self.mutableBlackSetupStones = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSMutableArray class], [GoPoint class]]] forKey:goNodeSetupBlackSetupStonesKey];
   self.mutableWhiteSetupStones = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSMutableArray class], [GoPoint class]]] forKey:goNodeSetupWhiteSetupStonesKey];
   self.mutableNoSetupStones = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSMutableArray class], [GoPoint class]]] forKey:goNodeSetupNoSetupStonesKey];
@@ -118,6 +121,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.game = nil;
   self.mutableBlackSetupStones = nil;
   self.mutableWhiteSetupStones = nil;
   self.mutableNoSetupStones = nil;
@@ -134,6 +138,7 @@
 {
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
 
+  [encoder encodeObject:self.game forKey:goNodeSetupGameKey];
   [encoder encodeObject:self.mutableBlackSetupStones forKey:goNodeSetupBlackSetupStonesKey];
   [encoder encodeObject:self.mutableWhiteSetupStones forKey:goNodeSetupWhiteSetupStonesKey];
   [encoder encodeObject:self.mutableNoSetupStones forKey:goNodeSetupNoSetupStonesKey];
@@ -225,11 +230,9 @@
 // -----------------------------------------------------------------------------
 - (void) applySetup
 {
-  GoGame* game = [GoGame sharedGame];
-
   if (! self.previousSetupInformationWasCaptured)
   {
-    [self capturePreviousSetupInformationFromGame:game];
+    [self capturePreviousSetupInformationFromGame:self.game];
     self.previousSetupInformationWasCaptured = true;
   }
 
@@ -238,7 +241,7 @@
   [self setupPoints:self.mutableNoSetupStones withStoneState:GoColorNone];
 
   if (self.setupFirstMoveColor != GoColorNone)
-    game.setupFirstMoveColor = self.setupFirstMoveColor;
+    self.game.setupFirstMoveColor = self.setupFirstMoveColor;
 }
 
 // -----------------------------------------------------------------------------
@@ -252,13 +255,11 @@
     [ExceptionUtility throwInternalInconsistencyExceptionWithErrorMessage:errorMessage];
   }
 
-  GoGame* game = [GoGame sharedGame];
-
   [self revertPoints:self.mutableBlackSetupStones];
   [self revertPoints:self.mutableWhiteSetupStones];
   [self revertPoints:self.mutableNoSetupStones];
 
-  game.setupFirstMoveColor = self.previousSetupFirstMoveColor;
+  self.game.setupFirstMoveColor = self.previousSetupFirstMoveColor;
 }
 
 #pragma mark - Public API - Placing and removing stones
