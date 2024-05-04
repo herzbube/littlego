@@ -21,15 +21,18 @@
 // Application includes
 #import <main/ApplicationDelegate.h>
 #import <go/GoBoard.h>
+#import <go/GoBoardPosition.h>
 #import <go/GoGame.h>
 #import <go/GoMove.h>
 #import <go/GoMoveAdditions.h>
+#import <go/GoMoveNodeCreationOptions.h>
 #import <go/GoNodeAdditions.h>
 #import <go/GoNodeAnnotation.h>
 #import <go/GoNodeMarkup.h>
 #import <go/GoNodeModel.h>
 #import <go/GoNodeSetup.h>
 #import <play/model/NodeTreeViewModel.h>
+#import <play/nodetreeview/canvas/NodeNumbersViewCell.h>
 #import <play/nodetreeview/canvas/NodeTreeViewCanvas.h>
 #import <play/nodetreeview/canvas/NodeTreeViewCanvasAdditions.h>
 #import <play/nodetreeview/canvas/NodeTreeViewCell.h>
@@ -39,6 +42,22 @@
 @implementation NodeTreeViewCanvasTest
 
 #pragma mark - Test methods
+
+// -----------------------------------------------------------------------------
+/// @brief Checks the initial state of the NodeTreeViewCanvas object after a new
+/// instance has been created.
+// -----------------------------------------------------------------------------
+- (void) testInitialState
+{
+  // Arrange
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+
+  // Act
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
+  // Assert
+  XCTAssertTrue(CGSizeEqualToSize(testee.canvasSize, CGSizeZero));
+}
 
 // -----------------------------------------------------------------------------
 /// @brief Excercises NodeTreeViewCanvas's canvas calculation algorithm, when
@@ -261,7 +280,39 @@
 // -----------------------------------------------------------------------------
 - (void) testRecalculateCanvas_UncondenseMoveNodes_Selected
 {
-  // TODO xxx Node selection not yet implemented in NodeTreeViewCanvas
+  // Arrange
+  GoMoveNodeCreationOptions* moveNodeCreationOptions = [GoMoveNodeCreationOptions moveNodeCreationOptions];
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeB
+  [m_game play:[m_game.board pointAtVertex:@"A1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeC
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeD
+
+  m_game.boardPosition.currentBoardPosition = 2;  // select nodeC
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:false];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
+  // Act
+  [testee recalculateCanvas];
+
+  // Assert
+  NSDictionary* expectedCellsDictionary =
+  @{
+    // nodeA (= rootNode)
+    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolKomi linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToRight],
+    // nodeB
+    [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeC
+    [self positionWithX:2 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove
+                                            selected:true
+                                               lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight
+                          linesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight
+                                                part:0
+                                               parts:1],
+    // nodeD
+    [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolEmpty linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft],
+  };
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -271,7 +322,54 @@
 // -----------------------------------------------------------------------------
 - (void) testRecalculateCanvas_CondenseMoveNodes_Selected
 {
-  // TODO xxx Node selection not yet implemented in NodeTreeViewCanvas
+  // Arrange
+  GoMoveNodeCreationOptions* moveNodeCreationOptions = [GoMoveNodeCreationOptions moveNodeCreationOptions];
+  [m_game play:[m_game.board pointAtVertex:@"A1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeB
+  [m_game play:[m_game.board pointAtVertex:@"B1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeC
+  [m_game play:[m_game.board pointAtVertex:@"C1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeD
+  [m_game play:[m_game.board pointAtVertex:@"D1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeE
+  [m_game play:[m_game.board pointAtVertex:@"E1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeF
+  [m_game play:[m_game.board pointAtVertex:@"F1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeG
+
+  m_game.boardPosition.currentBoardPosition = 3;  // select nodeD
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:true];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
+  // Act
+  [testee recalculateCanvas];
+
+  // Assert
+  NSDictionary* expectedCellsDictionary =
+  @{
+    // nodeA (= rootNode)
+    [self positionWithX:0 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolKomi part:0],
+    [self positionWithX:1 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolKomi linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToRight part:1],
+    [self positionWithX:2 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolKomi linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    // nodeB
+    [self positionWithX:3 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:4 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:1],
+    [self positionWithX:5 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:2],
+    // nodeC
+    [self positionWithX:6 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolWhiteMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeD
+    [self positionWithX:7 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove
+                                            selected:true
+                                               lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight
+                          linesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight
+                                                part:0
+                                               parts:1],
+    // nodeE
+    [self positionWithX:8 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolWhiteMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeF
+    [self positionWithX:9 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight],
+    // nodeG
+    [self positionWithX:10 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolWhiteMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight part:0],
+    [self positionWithX:11 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolWhiteMove linesAndLinesSelectedGameVariation:NodeTreeViewCellLineCenterToLeft part:1],
+    [self positionWithX:12 y:0]: [self cellWithSymbol:NodeTreeViewCellSymbolWhiteMove part:2],
+  };
+  [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
 // -----------------------------------------------------------------------------
@@ -1544,6 +1642,896 @@
   [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Excercises the part of NodeTreeViewCanvas's canvas calculation
+/// algorithm that generates node numbers, when the user preferences
+/// "condensed move nodes" and "align move nodes" are both disabled.
+///
+/// The user preference "node number interval" is set to 3.
+///
+/// The following diagram illustrates how the node tree built in this test looks
+/// like. Note: If you change this tree, also adapt
+/// testRecalculateCanvas_NodeNumbers_UncondenseMoveNodes_AlignMoves().
+///
+/// @verbatim
+///     +-- selected        +---+-------+-- these three nodes are not move nodes
+///     v                   v   v       v
+/// 0   1   2   3   4   5   6   7   8   9   10  11  12  13  <-- theoretical node number
+/// A---B---C---D---E---F---G---H---I---J---K---L---M---N
+///                  \--O---P---Q---R        \--S
+///                                 ^
+///                                 +-- current game variation
+/// @endverbatim
+///
+/// Covered node numbering rules:
+/// - Rule 5: Nodes in the current game variation are considered for numbering.
+///   This is the main rule that is implicitly covered by most other rules.
+/// - Rule 6: Nodes A, D, and P are numbered because they are part of the
+///   current game variation and match the numbering interval. Nodes C and Q are
+///   not numbered although they are part of the current game variation, because
+///   do not match the numbering interval.
+/// - Rule 7: Node R is numbered because it is the leaf node of the current game
+///   variation, even though it does not match the numbering interval.
+/// - Rule 8: Nodes E and O are numbered because they are a branching node and
+///   its child node in the current game variation, even though they do not
+///   match the numbering interval. For comparison: The branching node K and its
+///   child node S are not numbered because they are not part of the current
+///   game variation (and they also do not match the numbering interval).
+/// - Rule 9: Nodes J and M are numbered because they are part of the longest
+///   game variation, they match the numbering interval, and
+///   "condense move nodes" and "align move nodes" are both disabled.
+/// - Rule 9: Node N is numbered befause it is the leaf node of the longest game
+///   variation, and "condense move nodes" and "align move nodes" are both
+///   disabled.
+/// - Rule 10: Node B is numbered because it is the selected node, even though
+///   it does not match the numbering interval.
+///
+/// Rules 1-4 are not relevant for this test because "condense move nodes" is
+/// not enabled in this test.
+///
+/// As a side effect, this test also shows that the following things have no
+/// effect on node numbering:
+/// - Consecutive move nodes do not affect node numbering because
+///   "condense move nodes" is disabled.
+/// - Nodes that are not move nodes (G, H, J) do not affect node numbering.
+///   This has nothing to do with "align move nodes" being disabled. In the next
+///   test it is shown that even when "align move nodes" is enabled it has no
+///   effect on node numbering.
+// -----------------------------------------------------------------------------
+- (void) testRecalculateCanvas_NodeNumbers_UncondenseMoveNodes
+{
+  // Arrange
+  GoMoveNodeCreationOptions* moveNodeCreationOptions = [GoMoveNodeCreationOptions moveNodeCreationOptions];
+  [m_game play:[m_game.board pointAtVertex:@"A1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeB
+  [m_game play:[m_game.board pointAtVertex:@"B1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeC
+  [m_game play:[m_game.board pointAtVertex:@"C1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeD
+  [m_game play:[m_game.board pointAtVertex:@"D1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeE
+  [m_game play:[m_game.board pointAtVertex:@"E1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeF
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeG
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeH
+  [m_game play:[m_game.board pointAtVertex:@"H1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeI
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeH
+  [m_game play:[m_game.board pointAtVertex:@"K1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeK
+  [m_game play:[m_game.board pointAtVertex:@"L1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeL
+  [m_game play:[m_game.board pointAtVertex:@"M1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeM
+  [m_game play:[m_game.board pointAtVertex:@"N1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeN
+
+  m_game.boardPosition.currentBoardPosition = 10;  // select nodeK
+  [m_game play:[m_game.board pointAtVertex:@"Q1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeS
+
+  m_game.boardPosition.currentBoardPosition = 4;  // select nodeE
+  [m_game play:[m_game.board pointAtVertex:@"M1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeO
+  [m_game play:[m_game.board pointAtVertex:@"N1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeP
+  [m_game play:[m_game.board pointAtVertex:@"O1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeQ
+  [m_game play:[m_game.board pointAtVertex:@"P1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeR
+
+  m_game.boardPosition.currentBoardPosition = 1;  // select nodeB
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  nodeTreeViewModel.nodeNumberInterval = 3;
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
+  // Act
+  [testee recalculateCanvas];
+
+  // Assert
+  NSDictionary* expectedNodeNumbersViewCellsDictionary =
+  @{
+    // nodeA
+    [self positionWithX:0 y:0]: [self cellWithNodeNumber:0],
+    // nodeB
+    [self positionWithX:1 y:0]: [self cellWithNodeNumber:1 selected:true part:0 nodeNumberExistsOnlyForSelection:true],
+    // nodeD
+    [self positionWithX:3 y:0]: [self cellWithNodeNumber:3],
+    // nodeE
+    [self positionWithX:4 y:0]: [self cellWithNodeNumber:4],
+    // nodeO
+    [self positionWithX:5 y:0]: [self cellWithNodeNumber:5],
+    // nodeP
+    [self positionWithX:6 y:0]: [self cellWithNodeNumber:6],
+    // nodeR
+    [self positionWithX:8 y:0]: [self cellWithNodeNumber:8],
+    // nodeJ
+    [self positionWithX:9 y:0]: [self cellWithNodeNumber:9],
+    // nodeM
+    [self positionWithX:12 y:0]: [self cellWithNodeNumber:12],
+    // nodeN
+    [self positionWithX:13 y:0]: [self cellWithNodeNumber:13],
+  };
+  [self assertNodeNumbersViewCells:[testee getNodeNumbersViewCellsDictionary] areEqualToExpectedCells:expectedNodeNumbersViewCellsDictionary];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Excercises the part of NodeTreeViewCanvas's canvas calculation
+/// algorithm that generates node numbers, when the user preference
+/// "condensed move nodes" is disabled and the user preference
+/// "align move nodes" is enabled.
+///
+/// The user preference "node number interval" is set to 3.
+///
+/// The following diagram illustrates how the node tree built in this test looks
+/// like. Note: The tree content is exactly the same as for
+/// testRecalculateCanvas_NodeNumbers_UncondenseMoveNodes(), the only difference
+/// is that the effect of "align move nodes" enabled is visually shown in the
+/// diagram.
+///
+/// @verbatim
+///     +-- selected        +---+-------+-- these three nodes are not move nodes
+///     v                   v   v       v
+/// A---B---C---D---E---F---G---H---I---J---K---L---M---N
+///                  \--O-----------P-------Q---R    \--S
+/// 0   1   2   3   4   5           6       7   8  <-- theoretical node number
+///                                             ^
+///                                             +-- current game variation
+/// @endverbatim
+///
+/// Covered node numbering rules:
+/// - Rules 5-8 and 10: Same as in
+///   testRecalculateCanvas_NodeNumbers_UncondenseMoveNodes().
+/// - Rule 9: Nodes J, M and N are not numbered because they are part of the
+///   longest game variation, but nodes in that game variation are not numbered
+///   due to "align move nodes" being enabled.
+/// - Because "align move node" is enabled the x-position of the node number of
+///   nodes P and R is different from the x-position of the node number of these
+///   nodes in testRecalculateCanvas_NodeNumbers_UncondenseMoveNodes().
+///
+/// Rules 1-4 are not relevant for this test because "condense move nodes" is
+/// not enabled in this test.
+///
+/// As a side effect, this test also shows that the following things have no
+/// effect on node numbering:
+/// - Consecutive move nodes do not affect node numbering because
+///   "condense move nodes" is disabled.
+/// - Aligning move nodes has no effect on node numbering, even though aligning
+///   move nodes causes nodes to be visually rendered in a different horizontal
+///   position. Node numbers are incremented one by one just as usual.
+// -----------------------------------------------------------------------------
+- (void) testRecalculateCanvas_NodeNumbers_UncondenseMoveNodes_AlignMoves
+{
+  // Arrange
+  GoMoveNodeCreationOptions* moveNodeCreationOptions = [GoMoveNodeCreationOptions moveNodeCreationOptions];
+  [m_game play:[m_game.board pointAtVertex:@"A1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeB
+  [m_game play:[m_game.board pointAtVertex:@"B1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeC
+  [m_game play:[m_game.board pointAtVertex:@"C1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeD
+  [m_game play:[m_game.board pointAtVertex:@"D1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeE
+  [m_game play:[m_game.board pointAtVertex:@"E1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeF
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeG
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeH
+  [m_game play:[m_game.board pointAtVertex:@"H1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeI
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeH
+  [m_game play:[m_game.board pointAtVertex:@"K1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeK
+  [m_game play:[m_game.board pointAtVertex:@"L1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeL
+  [m_game play:[m_game.board pointAtVertex:@"M1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeM
+  [m_game play:[m_game.board pointAtVertex:@"N1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeN
+
+  m_game.boardPosition.currentBoardPosition = 10;  // select nodeK
+  [m_game play:[m_game.board pointAtVertex:@"Q1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeS
+
+  m_game.boardPosition.currentBoardPosition = 4;  // select nodeE
+  [m_game play:[m_game.board pointAtVertex:@"M1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeO
+  [m_game play:[m_game.board pointAtVertex:@"N1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeP
+  [m_game play:[m_game.board pointAtVertex:@"O1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeQ
+  [m_game play:[m_game.board pointAtVertex:@"P1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeR
+
+  m_game.boardPosition.currentBoardPosition = 1;  // select nodeB
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  nodeTreeViewModel.nodeNumberInterval = 3;
+  nodeTreeViewModel.alignMoveNodes = true;
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
+  // Act
+  [testee recalculateCanvas];
+
+  // Assert
+  NSDictionary* expectedNodeNumbersViewCellsDictionary =
+  @{
+    // nodeA
+    [self positionWithX:0 y:0]: [self cellWithNodeNumber:0],
+    // nodeB
+    [self positionWithX:1 y:0]: [self cellWithNodeNumber:1 selected:true part:0 nodeNumberExistsOnlyForSelection:true],
+    // nodeD
+    [self positionWithX:3 y:0]: [self cellWithNodeNumber:3],
+    // nodeE
+    [self positionWithX:4 y:0]: [self cellWithNodeNumber:4],
+    // nodeO
+    [self positionWithX:5 y:0]: [self cellWithNodeNumber:5],
+    // nodeP
+    [self positionWithX:8 y:0]: [self cellWithNodeNumber:6],
+    // nodeR
+    [self positionWithX:11 y:0]: [self cellWithNodeNumber:8],
+  };
+  [self assertNodeNumbersViewCells:[testee getNodeNumbersViewCellsDictionary] areEqualToExpectedCells:expectedNodeNumbersViewCellsDictionary];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Excercises the part of NodeTreeViewCanvas's canvas calculation
+/// algorithm that generates node numbers, when the user preferences
+/// "condensed move nodes" and "align move nodes" are both enabled.
+///
+/// The user preference "node number interval" is set to 2.
+///
+/// This is a best-effort attempt to verify all scenarios in a single test.
+/// The node tree is built, and the user preferences are selected, to create
+/// a "worst case" scenario where all, or at least most, of the algorithm's
+/// decisions how to generate node numbers are covered.
+///
+/// The following diagram illustrates how the node tree built in this test looks
+/// like.
+/// @verbatim
+///                                                                                         +-- selected
+///                                                                                         v
+/// A---B*--C*--D---e---F---G*--H*--I---j---k---l---m---n---o---P---Q---R-------s---t---U---V*--W---X  <-- current game variation
+///                                                              \   \--Z---A1*-B1--c1--d1--e1--f1--g1--H1
+///                                                               \-Y
+/// 0   1   2   3   4   5   6   7   8   9   10  11  12  13  14  15  16  17      18  19  20  21  22  23  <-- theoretical node number
+/// ^       ^       ^       ^       ^       ^                   ^   ^   ^       ^       ^   ^   ^   ^
+///
+/// Legend:
+/// - Nodes marked with an asterisk (*) are no moves, i.e. they are uncondensed
+/// - Nodes with an uppercase letter and no asterisk (*) are uncondensed move
+///   nodes
+/// - Nodes with a lowercase letter and no asterisk (*) are condensed move nodes
+/// - Node numbers that are expected to be generated are marked with "^"
+/// @endverbatim
+///
+/// Covered node numbering rules:
+/// - Rule 1:
+///   - Node e is condensed but numbered because it gets sufficient space,
+///     because the two surrounding uncondensed nodes D and F are not numbered
+///     due to not matching the number interval.
+///   - Node k is condensed but numbered because it gets sufficient space,
+///     because the two surrounding condensed nodes j and l are not numbered
+///     due to not matching the number interval.
+///   - Node m is condensed but not numbered because it does not get sufficient
+///     space, because the space of the preceding unnumbered condensed node l
+///     is used up already for the number of node k.
+///   - Node o is condensed but not numbered because it does not get sufficient
+///     space, because the subsequent node P is uncondensed and numbered due to
+///     it being a branching node.
+///   - Node s is condensed but numbered because it gets sufficient space,
+///     because due to "align move nodes" it gets shifted so that it has
+///     sufficient distance to the previous numbered uncondensed node R, and
+///     the following condensed node is not numbered due to not matching number
+///     interval.
+/// - Rule 2a: Nodes E, K and S are condensed nodes, but their node numbers
+///   still take up the width of an uncondensed node.
+/// - Rule 2b: All uncondensed nodes, regardless of whether they are move nodes
+///   or not, always get sufficient space to be numbered if one of the other
+///   rules allows them to be numbered. Applies to nodes A, C, G, I, P, Q, R,
+///   U, V, W and X.
+/// - Rule 3: This rule cannot be covered with node number interval 2 because
+///   two adjacent uncondensed/condensed nodes can never be numbered at the same
+///   time due to the number interval. And if the uncondensed node is numbered
+///   due to some other rule it can always be argued that it is the other rule
+///   that has higher precedence, not the fact that the node is uncondensed.
+/// - Rule 4: Node k is numbered, node m is not numbered, because node k is
+///   closer to the root node and therefore has precedence.
+/// - Rule 5: Nodes in the current game variation are considered for numbering.
+///   This is the main rule that is implicitly covered by most other rules.
+/// - Rule 6: Nodes A, C, e, G, I, k, Q, s, U and W are numbered because they
+///   are part of the current game variation and match the numbering interval.
+///   Nodes B, D, F, H, j, l, n and t are not numbered although they are part
+///   of the current game variation, because do not match the numbering
+///   interval.
+///   - Nodes D and F not being numbered is of special interest, because it
+///     shows that uncondensed move nodes do not get numbered automatically
+///     even though they get sufficient space.
+/// - Rule 7: Node X is numbered because it is the leaf node of the current game
+///   variation, even though it does not match the numbering interval.
+/// - Rule 8: Nodes P and R are numbered even though they do not match the
+///   numbering interval, because they are, respectively, a branching node and
+///   a child node of a branching node in the current game variation.
+/// - Rule 9: Nodes G1 and H1 are not numbered because they are part of the
+///   longest game variation, but nodes in that game variation are not numbered
+///   due to "condense move nodes" and "align move nodes" being enabled.
+/// - Rule 10: Node V is numbered because it is the selected node, even though
+///   it does not match the numbering interval.
+///
+/// As a side effect, this test also shows that the following things have no
+/// effect on node numbering:
+/// - Aligning move nodes has no effect on node numbering, even though aligning
+///   move nodes causes nodes to be visually rendered in a different horizontal
+///   position. Node numbers are incremented one by one just as usual.
+// -----------------------------------------------------------------------------
+- (void) testRecalculateCanvas_NodeNumbers_CondenseMoveNodes_AlignMoves
+{
+  // Arrange
+  GoMoveNodeCreationOptions* moveNodeCreationOptions = [GoMoveNodeCreationOptions moveNodeCreationOptions];
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeB
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeC
+  [m_game play:[m_game.board pointAtVertex:@"A1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeD
+  [m_game play:[m_game.board pointAtVertex:@"B1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeE
+  [m_game play:[m_game.board pointAtVertex:@"C1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeF
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeG
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeH
+  [m_game play:[m_game.board pointAtVertex:@"D1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeI
+  [m_game play:[m_game.board pointAtVertex:@"E1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeJ
+  [m_game play:[m_game.board pointAtVertex:@"F1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeK
+  [m_game play:[m_game.board pointAtVertex:@"G1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeL
+  [m_game play:[m_game.board pointAtVertex:@"H1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeM
+  [m_game play:[m_game.board pointAtVertex:@"J1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeN
+  [m_game play:[m_game.board pointAtVertex:@"K1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeO
+  [m_game play:[m_game.board pointAtVertex:@"L1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeP
+  [m_game play:[m_game.board pointAtVertex:@"M1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeQ
+  [m_game play:[m_game.board pointAtVertex:@"N1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeR
+
+  [m_game play:[m_game.board pointAtVertex:@"O1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeS
+  [m_game play:[m_game.board pointAtVertex:@"P1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeT
+  [m_game play:[m_game.board pointAtVertex:@"Q1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeU
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeV
+  [m_game play:[m_game.board pointAtVertex:@"R1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeW
+  [m_game play:[m_game.board pointAtVertex:@"S1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeX
+
+  m_game.boardPosition.currentBoardPosition = 16;  // select nodeQ
+  [m_game play:[m_game.board pointAtVertex:@"N1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeZ
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeA1
+  [m_game play:[m_game.board pointAtVertex:@"O1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeB1
+  [m_game play:[m_game.board pointAtVertex:@"P1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeC1
+  [m_game play:[m_game.board pointAtVertex:@"Q1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeD1
+  [m_game play:[m_game.board pointAtVertex:@"R1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeE1
+  [m_game play:[m_game.board pointAtVertex:@"S1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeF1
+  [m_game play:[m_game.board pointAtVertex:@"T1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeG1
+  [m_game play:[m_game.board pointAtVertex:@"A2"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeH1
+
+  m_game.boardPosition.currentBoardPosition = 15;  // select nodeP
+  [m_game play:[m_game.board pointAtVertex:@"M1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeY
+
+  m_game.boardPosition.currentBoardPosition = 15;  // select nodeP (part of main variation)
+  [m_game.nodeModel changeToMainVariation];
+  m_game.boardPosition.numberOfBoardPositions = m_game.nodeModel.numberOfNodes;
+  m_game.boardPosition.currentBoardPosition = 21;  // select nodeV
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  nodeTreeViewModel.nodeNumberInterval = 2;
+  nodeTreeViewModel.alignMoveNodes = true;
+  nodeTreeViewModel.condenseMoveNodes = true;
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
+  // Act
+  [testee recalculateCanvas];
+
+  // Assert
+  NSDictionary* expectedNodeNumbersViewCellsDictionary =
+  @{
+    // nodeA
+    [self positionWithX:0 y:0]: [self cellWithNodeNumber:0 part:0],
+    [self positionWithX:1 y:0]: [self cellWithNodeNumber:0 part:1],
+    [self positionWithX:2 y:0]: [self cellWithNodeNumber:0 part:2],
+    // nodeC
+    [self positionWithX:6 y:0]: [self cellWithNodeNumber:2 part:0],
+    [self positionWithX:7 y:0]: [self cellWithNodeNumber:2 part:1],
+    [self positionWithX:8 y:0]: [self cellWithNodeNumber:2 part:2],
+    // nodeE - node is condensed but according to rule 2a the node number still
+    // takes up 3 cells
+    [self positionWithX:11 y:0]: [self cellWithNodeNumber:4 part:0],
+    [self positionWithX:12 y:0]: [self cellWithNodeNumber:4 part:1],
+    [self positionWithX:13 y:0]: [self cellWithNodeNumber:4 part:2],
+    // nodeG
+    [self positionWithX:16 y:0]: [self cellWithNodeNumber:6 part:0],
+    [self positionWithX:17 y:0]: [self cellWithNodeNumber:6 part:1],
+    [self positionWithX:18 y:0]: [self cellWithNodeNumber:6 part:2],
+    // nodeI
+    [self positionWithX:22 y:0]: [self cellWithNodeNumber:8 part:0],
+    [self positionWithX:23 y:0]: [self cellWithNodeNumber:8 part:1],
+    [self positionWithX:24 y:0]: [self cellWithNodeNumber:8 part:2],
+    // nodeK - node is condensed but according to rule 2a the node number still
+    // takes up 3 cells
+    [self positionWithX:25 y:0]: [self cellWithNodeNumber:10 part:0],
+    [self positionWithX:26 y:0]: [self cellWithNodeNumber:10 part:1],
+    [self positionWithX:27 y:0]: [self cellWithNodeNumber:10 part:2],
+    // nodeP
+    [self positionWithX:31 y:0]: [self cellWithNodeNumber:15 part:0],
+    [self positionWithX:32 y:0]: [self cellWithNodeNumber:15 part:1],
+    [self positionWithX:33 y:0]: [self cellWithNodeNumber:15 part:2],
+    // nodeQ
+    [self positionWithX:34 y:0]: [self cellWithNodeNumber:16 part:0],
+    [self positionWithX:35 y:0]: [self cellWithNodeNumber:16 part:1],
+    [self positionWithX:36 y:0]: [self cellWithNodeNumber:16 part:2],
+    // nodeR
+    [self positionWithX:37 y:0]: [self cellWithNodeNumber:17 part:0],
+    [self positionWithX:38 y:0]: [self cellWithNodeNumber:17 part:1],
+    [self positionWithX:39 y:0]: [self cellWithNodeNumber:17 part:2],
+    // nodeS - node is condensed but according to rule 2a the node number still
+    // takes up 3 cells
+    [self positionWithX:43 y:0]: [self cellWithNodeNumber:18 part:0],
+    [self positionWithX:44 y:0]: [self cellWithNodeNumber:18 part:1],
+    [self positionWithX:45 y:0]: [self cellWithNodeNumber:18 part:2],
+    // nodeU
+    [self positionWithX:47 y:0]: [self cellWithNodeNumber:20 part:0],
+    [self positionWithX:48 y:0]: [self cellWithNodeNumber:20 part:1],
+    [self positionWithX:49 y:0]: [self cellWithNodeNumber:20 part:2],
+    // nodeV
+    [self positionWithX:50 y:0]: [self cellWithNodeNumber:21 selected:true part:0 nodeNumberExistsOnlyForSelection:true],
+    [self positionWithX:51 y:0]: [self cellWithNodeNumber:21 selected:true part:1 nodeNumberExistsOnlyForSelection:true],
+    [self positionWithX:52 y:0]: [self cellWithNodeNumber:21 selected:true part:2 nodeNumberExistsOnlyForSelection:true],
+    // nodeW
+    [self positionWithX:53 y:0]: [self cellWithNodeNumber:22 part:0],
+    [self positionWithX:54 y:0]: [self cellWithNodeNumber:22 part:1],
+    [self positionWithX:55 y:0]: [self cellWithNodeNumber:22 part:2],
+    // nodeX
+    [self positionWithX:56 y:0]: [self cellWithNodeNumber:23 part:0],
+    [self positionWithX:57 y:0]: [self cellWithNodeNumber:23 part:1],
+    [self positionWithX:58 y:0]: [self cellWithNodeNumber:23 part:2],
+  };
+  [self assertNodeNumbersViewCells:[testee getNodeNumbersViewCellsDictionary] areEqualToExpectedCells:expectedNodeNumbersViewCellsDictionary];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Excercises the part of NodeTreeViewCanvas's canvas calculation
+/// algorithm that generates node numbers, specifically rule 3 of that
+/// algorithm, when the user preference "condensed move nodes" is enabled. The
+/// value of user preference "align move nodes" is not relevant for this test.
+///
+/// The user preference "node number interval" is set to 1 because rule 3 can
+/// only be tested with this interval: Two adjacent nodes can only be candidates
+/// for numbering with interval 1, and rule 3 can only be tested when the
+/// condensed and uncondensed nodes are adjacent.
+///
+/// The following diagram illustrates how the node tree built in this test looks
+/// like.
+/// @verbatim
+///                         +-- not numbered
+///                         |       +-- selected
+///                         v       v
+/// A---B---c---d---e---f---g---H---I*
+/// 0   1   2   3   4   5   6   7   8
+/// ^   ^       ^               ^   ^
+///
+/// Legend:
+/// - Nodes marked with an asterisk (*) are no moves, i.e. they are uncondensed
+/// - Nodes with an uppercase letter and no asterisk (*) are uncondensed move
+///   nodes
+/// - Nodes with a lowercase letter and no asterisk (*) are condensed move nodes
+/// - Node numbers that are expected to be generated are marked with "^"
+/// @endverbatim
+///
+/// Rule 3 stipulates that numbering uncondensed nodes has higher priority than
+/// numbering condensed move nodes. If a decision must be made whether to number
+/// an uncondensed node or a condensed move node, it is always the uncondensed
+/// node that "wins".
+///
+/// The reasoning behind the setup in this test is this:
+/// - Node G should be numbered because it belongs to the current game variation
+///   and matches the node number interval (rule 6).
+/// - Node G should be numbered because there is sufficient space to display
+///   the node number (rule 1) and numbering nodes that are closer to the root
+///   node has higher priority than numbering nodes that are farther away from
+///   the root node (rule 4).
+/// - But effectively node G is not numbered, because rule 3 takes precedence
+///   over rule 4 and therefore numbering the uncondensed node H has higher
+///   priority than numbering the condensed node G.
+/// - Also note that node H is a candidate for numbering solely because it
+///   belongs to the current game variation and matches the node number
+///   interval. There are no other special rules in play that somehow force the
+///   numbering of node H (e.g. it's not the leaf node or a branching node).
+// -----------------------------------------------------------------------------
+- (void) testRecalculateCanvas_NodeNumbers_CondenseMoveNodes_Rule3
+{
+  // Arrange
+  GoMoveNodeCreationOptions* moveNodeCreationOptions = [GoMoveNodeCreationOptions moveNodeCreationOptions];
+  [m_game play:[m_game.board pointAtVertex:@"A1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeB
+  [m_game play:[m_game.board pointAtVertex:@"B1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeC
+  [m_game play:[m_game.board pointAtVertex:@"C1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeD
+  [m_game play:[m_game.board pointAtVertex:@"D1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeE
+  [m_game play:[m_game.board pointAtVertex:@"E1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeF
+  [m_game play:[m_game.board pointAtVertex:@"F1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeG
+  [m_game play:[m_game.board pointAtVertex:@"G1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // nodeH
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeI
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  nodeTreeViewModel.nodeNumberInterval = 1;
+  nodeTreeViewModel.condenseMoveNodes = true;
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
+  // Act
+  [testee recalculateCanvas];
+
+  // Assert
+  NSDictionary* expectedNodeNumbersViewCellsDictionary =
+  @{
+    // nodeA
+    [self positionWithX:0 y:0]: [self cellWithNodeNumber:0 part:0],
+    [self positionWithX:1 y:0]: [self cellWithNodeNumber:0 part:1],
+    [self positionWithX:2 y:0]: [self cellWithNodeNumber:0 part:2],
+    // nodeB
+    [self positionWithX:3 y:0]: [self cellWithNodeNumber:1 part:0],
+    [self positionWithX:4 y:0]: [self cellWithNodeNumber:1 part:1],
+    [self positionWithX:5 y:0]: [self cellWithNodeNumber:1 part:2],
+    // nodeD - node is condensed but according to rule 2a the node number still
+    // takes up 3 cells
+    [self positionWithX:6 y:0]: [self cellWithNodeNumber:3 part:0],
+    [self positionWithX:7 y:0]: [self cellWithNodeNumber:3 part:1],
+    [self positionWithX:8 y:0]: [self cellWithNodeNumber:3 part:2],
+    // nodeH
+    [self positionWithX:11 y:0]: [self cellWithNodeNumber:7 part:0],
+    [self positionWithX:12 y:0]: [self cellWithNodeNumber:7 part:1],
+    [self positionWithX:13 y:0]: [self cellWithNodeNumber:7 part:2],
+    // nodeI
+    [self positionWithX:14 y:0]: [self selectedCellWithNodeNumber:8 part:0],
+    [self positionWithX:15 y:0]: [self selectedCellWithNodeNumber:8 part:1],
+    [self positionWithX:16 y:0]: [self selectedCellWithNodeNumber:8 part:2],
+  };
+  [self assertNodeNumbersViewCells:[testee getNodeNumbersViewCellsDictionary] areEqualToExpectedCells:expectedNodeNumbersViewCellsDictionary];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the cellAtPosition:() method.
+// -----------------------------------------------------------------------------
+- (void) testCellAtPosition
+{
+  // Arrange
+  //
+  // Root--NodeA--NodeB
+  //          \---NodeC                                                         |
+  GoNode* rootNode = m_game.nodeModel.rootNode;
+  GoNode* nodeA = [self parentNode:rootNode appendChildNode:[self createEmptyNode]];
+  [self parentNode:nodeA appendChildNode:[self createEmptyNode]];
+  [self parentNode:nodeA appendChildNode:[self createEmptyNode]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+  [testee recalculateCanvas];
+
+  // Act
+  NodeTreeViewCell* rootNodeCell = [testee cellAtPosition:[self positionWithX:0 y:0]];
+  NodeTreeViewCell* nodeACell = [testee cellAtPosition:[self positionWithX:1 y:0]];
+  NodeTreeViewCell* nodeBCell = [testee cellAtPosition:[self positionWithX:2 y:0]];
+  NodeTreeViewCell* emptyCell1 = [testee cellAtPosition:[self positionWithX:0 y:1]];
+  NodeTreeViewCell* emptyCell2 = [testee cellAtPosition:[self positionWithX:1 y:1]];
+  NodeTreeViewCell* nodeCCell = [testee cellAtPosition:[self positionWithX:2 y:1]];
+  NodeTreeViewCell* cellOutsideOfCanvas = [testee cellAtPosition:[self positionWithX:3 y:3]];
+
+  // Assert
+  XCTAssertNotNil(rootNodeCell);
+  XCTAssertEqualObjects(rootNodeCell, [self selectedCellWithSymbol:NodeTreeViewCellSymbolKomi lines:NodeTreeViewCellLineCenterToRight]);
+  XCTAssertNotNil(nodeACell);
+  XCTAssertEqualObjects(nodeACell, [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft | NodeTreeViewCellLineCenterToRight | NodeTreeViewCellLineCenterToBottomRight]);
+  XCTAssertNotNil(nodeBCell);
+  XCTAssertEqualObjects(nodeBCell, [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToLeft]);
+  XCTAssertNotNil(emptyCell1);
+  XCTAssertEqualObjects(emptyCell1, [NodeTreeViewCell emptyCell]);
+  XCTAssertNotNil(emptyCell2);
+  XCTAssertEqualObjects(emptyCell2, [NodeTreeViewCell emptyCell]);
+  XCTAssertNotNil(nodeCCell);
+  XCTAssertEqualObjects(nodeCCell, [self cellWithSymbol:NodeTreeViewCellSymbolEmpty lines:NodeTreeViewCellLineCenterToTopLeft]);
+  XCTAssertNil(cellOutsideOfCanvas);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the nodeAtPosition:() method.
+// -----------------------------------------------------------------------------
+- (void) testNodeAtPosition
+{
+  // Arrange
+  //
+  // Root--NodeA--NodeB
+  //          \---NodeC                                                         |
+  GoNode* rootNode = m_game.nodeModel.rootNode;
+  GoNode* nodeA = [self parentNode:rootNode appendChildNode:[self createEmptyNode]];
+  GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createEmptyNode]];
+  GoNode* nodeC = [self parentNode:nodeA appendChildNode:[self createEmptyNode]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+  [testee recalculateCanvas];
+
+  // Act
+  GoNode* nodeAtRootNodeCell = [testee nodeAtPosition:[self positionWithX:0 y:0]];
+  GoNode* nodeAtNodeACell = [testee nodeAtPosition:[self positionWithX:1 y:0]];
+  GoNode* nodeAtNodeBCell = [testee nodeAtPosition:[self positionWithX:2 y:0]];
+  GoNode* nodeAtEmptyCell1 = [testee nodeAtPosition:[self positionWithX:0 y:1]];
+  GoNode* nodeAtEmptyCell2 = [testee nodeAtPosition:[self positionWithX:1 y:1]];
+  GoNode* nodeAtNodeCCell = [testee nodeAtPosition:[self positionWithX:2 y:1]];
+  GoNode* nodeAtCellOutsideOfCanvas = [testee nodeAtPosition:[self positionWithX:3 y:3]];
+
+  // Assert
+  XCTAssertEqual(nodeAtRootNodeCell, rootNode);
+  XCTAssertEqual(nodeAtNodeACell, nodeA);
+  XCTAssertEqual(nodeAtNodeBCell, nodeB);
+  XCTAssertNil(nodeAtEmptyCell1);
+  XCTAssertNil(nodeAtEmptyCell2);
+  XCTAssertEqual(nodeAtNodeCCell, nodeC);
+  XCTAssertNil(nodeAtCellOutsideOfCanvas);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the positionsForNode:() method.
+// -----------------------------------------------------------------------------
+- (void) testPositionsForNode
+{
+  // Arrange
+  //
+  // Root--NodeMove1--NodeMove2---NodeMove3
+  //                  ^
+  //                  condensed
+  GoNode* rootNode = m_game.nodeModel.rootNode;
+  GoNode* nodeMove1 = [self parentNode:rootNode appendChildNode:[self createBlackMoveNodeWithMoveNumber:1]];
+  GoNode* nodeMove2 = [self parentNode:nodeMove1 appendChildNode:[self createWhiteMoveNodeWithMoveNumber:2]];
+  GoNode* nodeMove3 = [self parentNode:nodeMove2 appendChildNode:[self createBlackMoveNodeWithMoveNumber:3]];
+  GoNode* nodeNotInTree = [GoNode node];
+  GoNode* nilNode = nil;
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:true];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+  [testee recalculateCanvas];
+
+  // Act
+  NSArray* positionsForRootNode = [testee positionsForNode:rootNode];
+  NSArray* positionsForNodeMove1 = [testee positionsForNode:nodeMove1];
+  NSArray* positionsForNodeMove2 = [testee positionsForNode:nodeMove2];
+  NSArray* positionsForNodeMove3 = [testee positionsForNode:nodeMove3];
+  NSArray* positionsForNodeNotInTree = [testee positionsForNode:nodeNotInTree];
+  NSArray* positionsForNilNode = [testee positionsForNode:nilNode];
+
+  // Assert
+  XCTAssertNotNil(positionsForRootNode);
+  NSArray* expectedPositionsForRootNode = @[ [self positionWithX:0 y:0], [self positionWithX:1 y:0], [self positionWithX:2 y:0] ];
+  XCTAssertEqualObjects(positionsForRootNode, expectedPositionsForRootNode);
+
+  XCTAssertNotNil(positionsForNodeMove1);
+  NSArray* expectedPositionsForNodeMove1 = @[ [self positionWithX:3 y:0], [self positionWithX:4 y:0], [self positionWithX:5 y:0] ];
+  XCTAssertEqualObjects(positionsForNodeMove1, expectedPositionsForNodeMove1);
+
+  XCTAssertNotNil(positionsForNodeMove2);
+  NSArray* expectedPositionsForNodeMove2 = @[ [self positionWithX:6 y:0] ];
+  XCTAssertEqualObjects(positionsForNodeMove2, expectedPositionsForNodeMove2);
+
+  XCTAssertNotNil(positionsForNodeMove3);
+  NSArray* expectedPositionsForNodeMove3 = @[ [self positionWithX:7 y:0], [self positionWithX:8 y:0], [self positionWithX:9 y:0] ];
+  XCTAssertEqualObjects(positionsForNodeMove3, expectedPositionsForNodeMove3);
+
+  XCTAssertNotNil(positionsForNodeNotInTree);
+  XCTAssertEqual(positionsForNodeNotInTree.count, 0);
+
+  XCTAssertNotNil(positionsForNilNode);
+  XCTAssertEqual(positionsForNilNode.count, 0);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the selectedNodePositions() method.
+// -----------------------------------------------------------------------------
+- (void) testSelectedNodePositions
+{
+  // Arrange
+  GoNode* rootNode = m_game.nodeModel.rootNode;
+  [self parentNode:rootNode appendChildNode:[self createBlackMoveNodeWithMoveNumber:1]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:true];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+  [testee recalculateCanvas];
+
+  // Act
+  NSArray* selectedNodePositions = [testee selectedNodePositions];
+
+  // Assert
+  XCTAssertNotNil(selectedNodePositions);
+  NSArray* expectedSelectedNodePositions = @[ [self positionWithX:0 y:0], [self positionWithX:1 y:0], [self positionWithX:2 y:0] ];
+  XCTAssertEqualObjects(selectedNodePositions, expectedSelectedNodePositions);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the nodeNumbersViewCellAtPosition:() method.
+// -----------------------------------------------------------------------------
+- (void) testNodeNumbersViewCellAtPosition
+{
+  // Arrange
+  //
+  // Root--NodeA--NodeB
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeA
+  [m_game addEmptyNodeToCurrentGameVariation];  // nodeB
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  nodeTreeViewModel.nodeNumberInterval = 2;
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+  [testee recalculateCanvas];
+
+  // Act
+  NodeNumbersViewCell* rootNodeCell = [testee nodeNumbersViewCellAtPosition:[self positionWithX:0 y:0]];
+  NodeNumbersViewCell* nodeACell = [testee nodeNumbersViewCellAtPosition:[self positionWithX:1 y:0]];
+  NodeNumbersViewCell* nodeBCell = [testee nodeNumbersViewCellAtPosition:[self positionWithX:2 y:0]];
+  NodeNumbersViewCell* cellOutsideOfCanvas = [testee nodeNumbersViewCellAtPosition:[self positionWithX:3 y:0]];
+
+  // Assert
+  XCTAssertNotNil(rootNodeCell);
+  XCTAssertEqualObjects(rootNodeCell, [self cellWithNodeNumber:0]);
+  XCTAssertNotNil(nodeACell);
+  XCTAssertEqualObjects(nodeACell, [self cellWithNodeNumber:-1]);
+  XCTAssertNotNil(nodeBCell);
+  XCTAssertEqualObjects(nodeBCell, [self selectedCellWithNodeNumber:2]);
+  XCTAssertNil(cellOutsideOfCanvas);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the nodeNumbersViewPositionsForNode:() method.
+// -----------------------------------------------------------------------------
+- (void) testNodeNumbersViewPositionsForNode
+{
+  // Arrange
+  //
+  // Root--NodeMove1--NodeMove2---NodeMove3---Node4
+  //                  ^
+  //                  condensed
+  GoMoveNodeCreationOptions* moveNodeCreationOptions = [GoMoveNodeCreationOptions moveNodeCreationOptions];
+  [m_game play:[m_game.board pointAtVertex:@"A1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // NodeMove1
+  [m_game play:[m_game.board pointAtVertex:@"B1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // NodeMove2
+  [m_game play:[m_game.board pointAtVertex:@"C1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // NodeMove3
+  [m_game addEmptyNodeToCurrentGameVariation];  // Node4
+  GoNode* rootNode = m_game.nodeModel.rootNode;
+  GoNode* nodeMove1 = rootNode.firstChild;
+  GoNode* nodeMove2 = nodeMove1.firstChild;
+  GoNode* nodeMove3 = nodeMove2.firstChild;
+  GoNode* node4 = nodeMove3.firstChild;
+  GoNode* nodeNotInTree = [GoNode node];
+  GoNode* nilNode = nil;
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:true];
+  nodeTreeViewModel.nodeNumberInterval = 2;
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+  [testee recalculateCanvas];
+
+  // Act
+  NSArray* positionsForRootNode = [testee nodeNumbersViewPositionsForNode:rootNode];
+  NSArray* positionsForNodeMove1 = [testee nodeNumbersViewPositionsForNode:nodeMove1];
+  NSArray* positionsForNodeMove2 = [testee nodeNumbersViewPositionsForNode:nodeMove2];
+  NSArray* positionsForNodeMove3 = [testee nodeNumbersViewPositionsForNode:nodeMove3];
+  NSArray* positionsForNode4 = [testee nodeNumbersViewPositionsForNode:node4];
+  NSArray* positionsForNodeNotInTree = [testee nodeNumbersViewPositionsForNode:nodeNotInTree];
+  NSArray* positionsForNilNode = [testee nodeNumbersViewPositionsForNode:nilNode];
+
+  // Assert
+  XCTAssertNotNil(positionsForRootNode);
+  NSArray* expectedPositionsForRootNode = @[ [self positionWithX:0 y:0], [self positionWithX:1 y:0], [self positionWithX:2 y:0] ];
+  XCTAssertEqualObjects(positionsForRootNode, expectedPositionsForRootNode);
+
+  // We get positions even though NodeMove1 is not numbered
+  XCTAssertNotNil(positionsForNodeMove1);
+  NSArray* expectedPositionsForNodeMove1 = @[ [self positionWithX:3 y:0], [self positionWithX:4 y:0], [self positionWithX:5 y:0] ];
+  XCTAssertEqualObjects(positionsForNodeMove1, expectedPositionsForNodeMove1);
+
+  // We get the number of positions for an uncondensed node even though
+  // NodeMove2 is condensed - node numbers always take up the same amount of
+  // space
+  XCTAssertNotNil(positionsForNodeMove2);
+  NSArray* expectedPositionsForNodeMove2 = @[ [self positionWithX:5 y:0], [self positionWithX:6 y:0], [self positionWithX:7 y:0] ];
+  XCTAssertEqualObjects(positionsForNodeMove2, expectedPositionsForNodeMove2);
+
+  // We get positions even though NodeMove3 is not numbered
+  XCTAssertNotNil(positionsForNodeMove3);
+  NSArray* expectedPositionsForNodeMove3 = @[ [self positionWithX:7 y:0], [self positionWithX:8 y:0], [self positionWithX:9 y:0] ];
+  XCTAssertEqualObjects(positionsForNodeMove3, expectedPositionsForNodeMove3);
+
+  XCTAssertNotNil(positionsForNode4);
+  NSArray* expectedPositionsForNode4 = @[ [self positionWithX:10 y:0], [self positionWithX:11 y:0], [self positionWithX:12 y:0] ];
+  XCTAssertEqualObjects(positionsForNode4, expectedPositionsForNode4);
+
+  XCTAssertNotNil(positionsForNodeNotInTree);
+  XCTAssertEqual(positionsForNodeNotInTree.count, 0);
+
+  XCTAssertNotNil(positionsForNilNode);
+  XCTAssertEqual(positionsForNilNode.count, 0);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the selectedNodeNodeNumbersViewPositions() method.
+// -----------------------------------------------------------------------------
+- (void) testSelectedNodeNodeNumbersViewPositions
+{
+  // Arrange
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:true];
+  nodeTreeViewModel.nodeNumberInterval = 2;
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
+  // Act
+  // Not having a selected node is a theoretical scenario only, because
+  // GoBoardPosition must point to a valid note at all times. The only way to
+  // test the "no selected node" scenario is to invoke the method when no canvas
+  // data is available yet because no calculation has been performed yet.
+  NSArray* positionsForNoSelectedNode = [testee selectedNodeNodeNumbersViewPositions];
+
+  [testee recalculateCanvas];
+  NSArray* positionsForSelectedNodeIsRootNode = [testee selectedNodeNodeNumbersViewPositions];
+
+  // Root--NodeMove1--NodeMove2---NodeMove3---Node4
+  //                  ^
+  //                  condensed
+  GoMoveNodeCreationOptions* moveNodeCreationOptions = [GoMoveNodeCreationOptions moveNodeCreationOptions];
+  [m_game play:[m_game.board pointAtVertex:@"A1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // NodeMove1
+  [m_game play:[m_game.board pointAtVertex:@"B1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // NodeMove2
+  [m_game play:[m_game.board pointAtVertex:@"C1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // NodeMove3
+  [m_game addEmptyNodeToCurrentGameVariation];  // Node4
+  [testee recalculateCanvas];
+  NSArray* positionsForSelectedNodeIsNode4 = [testee selectedNodeNodeNumbersViewPositions];
+
+  m_game.boardPosition.currentBoardPosition = 3;  // select NodeMove3
+  [testee recalculateCanvas];
+  NSArray* positionsForSelectedNodeIsNodeMove3 = [testee selectedNodeNodeNumbersViewPositions];
+
+  m_game.boardPosition.currentBoardPosition = 2;  // select NodeMove2
+  [testee recalculateCanvas];
+  NSArray* positionsForSelectedNodeIsNodeMove2 = [testee selectedNodeNodeNumbersViewPositions];
+
+  // Assert
+  XCTAssertNotNil(positionsForNoSelectedNode);
+  XCTAssertEqual(positionsForNoSelectedNode.count, 0);
+
+  XCTAssertNotNil(positionsForSelectedNodeIsRootNode);
+  NSArray* expectedPositionsForSelectedNodeIsRootNode = @[ [self positionWithX:0 y:0], [self positionWithX:1 y:0], [self positionWithX:2 y:0] ];
+  XCTAssertEqualObjects(positionsForSelectedNodeIsRootNode, expectedPositionsForSelectedNodeIsRootNode);
+
+  XCTAssertNotNil(positionsForSelectedNodeIsNode4);
+  NSArray* expectedPositionsForSelectedNodeIsNode4 = @[ [self positionWithX:10 y:0], [self positionWithX:11 y:0], [self positionWithX:12 y:0] ];
+  XCTAssertEqualObjects(positionsForSelectedNodeIsNode4, expectedPositionsForSelectedNodeIsNode4);
+
+  // We get positions even though NodeMove3 is not numbered
+  XCTAssertNotNil(positionsForSelectedNodeIsNodeMove3);
+  NSArray* expectedPositionsForSelectedNodeIsNodeMove3 = @[ [self positionWithX:7 y:0], [self positionWithX:8 y:0], [self positionWithX:9 y:0] ];
+  XCTAssertEqualObjects(positionsForSelectedNodeIsNodeMove3, expectedPositionsForSelectedNodeIsNodeMove3);
+
+  // We get the number of positions for an uncondensed node even though
+  // NodeMove2 is condensed - node numbers always take up the same amount of
+  // space
+  XCTAssertNotNil(positionsForSelectedNodeIsNodeMove2);
+  NSArray* expectedPositionsForSelectedNodeIsNodeMove2 = @[ [self positionWithX:5 y:0], [self positionWithX:6 y:0], [self positionWithX:7 y:0] ];
+  XCTAssertEqualObjects(positionsForSelectedNodeIsNodeMove2, expectedPositionsForSelectedNodeIsNodeMove2);
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Exercises the @e canvasSize property.
+// -----------------------------------------------------------------------------
+- (void) testCanvasSize
+{
+  // Arrange
+  //
+  // Root--NodeMove1--NodeMove2---NodeMove3---Node4
+  //   \---NodeMove5  ^
+  //                  condensed
+  GoMoveNodeCreationOptions* moveNodeCreationOptions = [GoMoveNodeCreationOptions moveNodeCreationOptions];
+  [m_game play:[m_game.board pointAtVertex:@"A1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // NodeMove1
+  [m_game play:[m_game.board pointAtVertex:@"B1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // NodeMove2
+  [m_game play:[m_game.board pointAtVertex:@"C1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // NodeMove3
+  [m_game addEmptyNodeToCurrentGameVariation];  // Node4
+  m_game.boardPosition.currentBoardPosition = 0;  // select root node
+  [m_game play:[m_game.board pointAtVertex:@"A1"] withMoveNodeCreationOptions:moveNodeCreationOptions];  // NodeMove5
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:true];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
+
+  // Act
+  CGSize defaultCanvasSize = testee.canvasSize;
+  [testee recalculateCanvas];
+  CGSize calculatedCanvasSize = testee.canvasSize;
+
+  // Assert
+  XCTAssertTrue(CGSizeEqualToSize(defaultCanvasSize, CGSizeZero));
+  XCTAssertTrue(CGSizeEqualToSize(calculatedCanvasSize, CGSizeMake(13, 2)));
+}
+
 #pragma mark - Helper methods - Configure NodeTreeViewModel
 
 // -----------------------------------------------------------------------------
@@ -1880,6 +2868,81 @@
   return cell;
 }
 
+#pragma mark - Helper methods - Create NodeNumbersViewCell objects
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeNumbersViewCell object that is a
+/// standalone cell. The cell has the specified node number. The cell
+/// is unselected.
+// -----------------------------------------------------------------------------
+- (NodeNumbersViewCell*) cellWithNodeNumber:(int)nodeNumber
+{
+  return [self cellWithNodeNumber:nodeNumber
+                         selected:false
+                             part:0
+ nodeNumberExistsOnlyForSelection:false];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeNumbersViewCell object that is a
+/// standalone cell. The cell has the specified node number. The cell
+/// is selected, but the node number exists not just because of the selection.
+// -----------------------------------------------------------------------------
+- (NodeNumbersViewCell*) selectedCellWithNodeNumber:(int)nodeNumber
+{
+  return [self cellWithNodeNumber:nodeNumber
+                         selected:true
+                             part:0
+ nodeNumberExistsOnlyForSelection:false];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeNumbersViewCell object that is the
+/// sub-cell @a part of a multipart cell. The cell has the specified node
+/// number. The cell is unselected.
+// -----------------------------------------------------------------------------
+- (NodeNumbersViewCell*) cellWithNodeNumber:(int)nodeNumber
+                                       part:(int)part
+{
+  return [self cellWithNodeNumber:nodeNumber
+                         selected:false
+                             part:part
+ nodeNumberExistsOnlyForSelection:false];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeNumbersViewCell object that is the
+/// sub-cell @a part of a multipart cell. The cell has the specified node
+/// number. The cell is selected, but the node number exists not just because
+/// of the selection.
+// -----------------------------------------------------------------------------
+- (NodeNumbersViewCell*) selectedCellWithNodeNumber:(int)nodeNumber
+                                               part:(int)part
+{
+  return [self cellWithNodeNumber:nodeNumber
+                         selected:true
+                             part:part
+ nodeNumberExistsOnlyForSelection:false];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Helper method that creates a NodeNumbersViewCell object with the
+/// specified property values.
+// -----------------------------------------------------------------------------
+- (NodeNumbersViewCell*) cellWithNodeNumber:(int)nodeNumber
+                                   selected:(bool)selected
+                                       part:(int)part
+           nodeNumberExistsOnlyForSelection:(bool)nodeNumberExistsOnlyForSelection
+{
+  NodeNumbersViewCell* cell = [[[NodeNumbersViewCell alloc] init] autorelease];
+
+  cell.nodeNumber = nodeNumber;
+  cell.part = part;
+  cell.selected = selected;;
+  cell.nodeNumberExistsOnlyForSelection = nodeNumberExistsOnlyForSelection;
+  return cell;
+}
+
 #pragma mark - Helper methods - Create GoNode objects
 
 // -----------------------------------------------------------------------------
@@ -2109,6 +3172,23 @@
   {
     NSArray* tuple = actualCellsDictionary[expectedPosition];
     NodeTreeViewCell* actualCell = tuple.firstObject;
+
+    XCTAssertEqualObjects(actualCell, expectedCell);
+  }];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Assert helper method that verifies that the positions and cells in
+/// @a actualCellsDictionary match the expected ones in
+/// @a expectedCellsDictionary.
+// -----------------------------------------------------------------------------
+- (void) assertNodeNumbersViewCells:(NSDictionary*)actualCellsDictionary areEqualToExpectedCells:(NSDictionary*)expectedCellsDictionary
+{
+  XCTAssertEqual(actualCellsDictionary.allKeys.count, expectedCellsDictionary.allKeys.count);
+
+  [expectedCellsDictionary enumerateKeysAndObjectsUsingBlock:^(NodeTreeViewCellPosition* expectedPosition, NodeNumbersViewCell* expectedCell, BOOL* stop)
+  {
+    NodeNumbersViewCell* actualCell = actualCellsDictionary[expectedPosition];
 
     XCTAssertEqualObjects(actualCell, expectedCell);
   }];

@@ -27,6 +27,7 @@
 {
 }
 
+- (void) testInitialState;
 - (void) testRecalculateCanvas_UncondenseMoveNodes_RootNodeOnly;
 - (void) testRecalculateCanvas_CondenseMoveNodes_RootNodeOnly;
 - (void) testRecalculateCanvas_CondenseMoveNodes_UncondensedNodes;
@@ -44,5 +45,17 @@
 - (void) testRecalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_AlignMoves_BranchMovedToNewYPosition;
 - (void) testRecalculateCanvas_CondenseMoveNodes_BranchingStyleRightAngle_AlignMoves;
 - (void) testRecalculateCanvas_LinesSelectedGameVariation;
+- (void) testRecalculateCanvas_NodeNumbers_UncondenseMoveNodes;
+- (void) testRecalculateCanvas_NodeNumbers_UncondenseMoveNodes_AlignMoves;
+- (void) testRecalculateCanvas_NodeNumbers_CondenseMoveNodes_AlignMoves;
+- (void) testRecalculateCanvas_NodeNumbers_CondenseMoveNodes_Rule3;
+- (void) testCellAtPosition;
+- (void) testNodeAtPosition;
+- (void) testPositionsForNode;
+- (void) testSelectedNodePositions;
+- (void) testNodeNumbersViewCellAtPosition;
+- (void) testNodeNumbersViewPositionsForNode;
+- (void) testSelectedNodeNodeNumbersViewPositions;
+- (void) testCanvasSize;
 
 @end

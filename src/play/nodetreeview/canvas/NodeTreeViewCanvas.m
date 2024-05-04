@@ -442,6 +442,7 @@ static const unsigned short yPositionOfNodeNumber = 0;
   if (position.x < branchTuple->xPositionOfFirstCell ||
       position.x > branchTuple->xPositionOfFirstCell + branchTuple->numberOfCellsForNode - 1)
   {
+    assert(0);
     return nil;
   }
 
@@ -500,6 +501,10 @@ static const unsigned short yPositionOfNodeNumber = 0;
 /// objects that indicate which cells on the node numbers view canvas display
 /// the node number for node @a node. The list is empty if @a node is @e nil, or
 /// if no positions exist for @a node.
+///
+/// A non-empty list does @b not indicate that @a node is actually numbered - it
+/// merely indicates the positions where a node number needs to be placed if
+/// there is one.
 // -----------------------------------------------------------------------------
 - (NSArray*) nodeNumbersViewPositionsForNode:(GoNode*)node
 {
@@ -586,6 +591,9 @@ static const unsigned short yPositionOfNodeNumber = 0;
 ///    lines to connect a node to its predecessor branching node in the parent
 ///    branch, or an assortment of vertical, diagonal and/or horizontal lines to
 ///    connect a branching node to its successor nodes in child branches.
+/// 5. Iterate over the current game variation as well as the longest game
+///    variation (if the two are not the same and the user preferences support
+///    it) and generate cells for node numbers.
 // -----------------------------------------------------------------------------
 - (void) recalculateCanvasPrivate
 {
@@ -2000,17 +2008,25 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
 /// - Rule 1: A node that is a candidate for numbering is numbered only if there
 ///   is sufficient space to display the node number (e.g. without overlapping
 ///   with other node numbers).
-/// - Rule 2: An uncondensed node is sufficiently wide to provide space for
-///   displaying even the highest possible node number.
+/// - Rule 2a: Every node number, regardless of its number of digits, needs the
+///   width of an uncondensed node to be displayed. This rule solely exists to
+///   make the implementation of the numbering algorithm manageable. If the
+///   algorithm would also have to optimize the needed width it would need to
+///   consider whether the font used for drawing is monospaced or proportional,
+///   and in the latter case the relative width of each digit (e.g. the digit
+///   "1" uses less space than the digit "8").
+/// - Rule 2b: A corollary of rule 2a is that an uncondensed node is
+///   sufficiently wide to provide space for displaying even the highest
+///   possible node number.
 /// - Rule 3: Numbering uncondensed nodes has higher priority than numbering
-///   condensed move nodes. If a decision must be made whether to number a
-///   number an uncondensed node or a condensed move node, it is always the
-///   uncondensed node that "wins". The reasoning behind this rule (besides the
-///   convenient fact that it makes the implementation of the numbering
-///   algorithm more manageable) is that condensed move nodes are considered,
-///   by definition, less important than uncondensed nodes. This is why they
-///   are displayed condensed in the first place, i.e. they are displayed
-///   de-emphasized in favor of uncondensed nodes.
+///   condensed move nodes. If a decision must be made whether to number an
+///   uncondensed node or a condensed move node, it is always the uncondensed
+///   node that "wins". The reasoning behind this rule (besides the convenient
+///   fact that it makes the implementation of the numbering algorithm more
+///   manageable) is that condensed move nodes are considered, by definition,
+///   less important than uncondensed nodes. This is why they are displayed
+///   condensed in the first place, i.e. they are displayed de-emphasized in
+///   favor of uncondensed nodes.
 /// - Rule 4: Numbering nodes that are closer to the root node has higher
 ///   priority than numbering nodes that are farther away from the root node.
 ///   If a decision must be made whether to number two adjacent nodes, the one
@@ -2237,9 +2253,12 @@ diagonalConnectionToBranchingLineEstablished:(bool)diagonalConnectionToBranching
     // Rule 8: Number branching nodes and their child node in the current game
     // variation
     if ((gameVariationIsCurrentGameVariation && (node.isBranchingNode || node.parent.isBranchingNode)) ||
-        // Rule 7: Always number the leaf node
+        // Rule 7: Always number the leaf node of the current game variation
+        // Rule 9: Ditto for the longest game variation
         node == leafNodeOfGameVariationToNumber ||
-        // Rule 6: Number nodes if the numbering interval matches
+        // Rule 6: Number nodes of the current game variation if the numbering
+        //         interval matches
+        // Rule 9: Ditto for the longest game variation
         branchTuple->nodeNumber % nodeNumberInterval == 0)
     {
       [nodeNumberingTuples insertObject:@[branchTuple, @true] atIndex:0];
@@ -2711,6 +2730,10 @@ numberOfNodeNumberCellsExtendingFromCenter:(int)numberOfNodeNumberCellsExtending
 /// the node number for the node represented by @a branchTuple. The list is
 /// empty if @a branchTuple is @e nil, or if no positions exist for
 /// @a branchTuple.
+///
+/// A non-empty list does @b not indicate that the node represented by
+/// @a branchTuple is actually numbered - it merely indicates the positions
+/// where a node number needs to be placed if there is one.
 // -----------------------------------------------------------------------------
 - (NSArray*) nodeNumbersViewPositionsForBranchTuple:(NodeTreeViewBranchTuple*)branchTuple
 {
@@ -2858,11 +2881,19 @@ numberOfNodeNumberCellsExtendingFromCenter:(int)numberOfNodeNumberCellsExtending
 #pragma mark - NodeTreeViewCanvasAdditions - Unit testing
 
 // -----------------------------------------------------------------------------
-/// @brief Returns the dictionary with the results of the canvas re-calculation.
+// Method is documented in the NodeTreeViewCanvasAdditions header file.
 // -----------------------------------------------------------------------------
 - (NSDictionary*) getCellsDictionary
 {
   return self.canvasData.cellsDictionary;
+}
+
+// -----------------------------------------------------------------------------
+// Method is documented in the NodeTreeViewCanvasAdditions header file.
+// -----------------------------------------------------------------------------
+- (NSDictionary*) getNodeNumbersViewCellsDictionary
+{
+  return self.canvasData.nodeNumbersViewCellsDictionary;
 }
 
 @end

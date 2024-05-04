@@ -30,6 +30,7 @@
 /// @name Unit testing
 //@{
 - (NSDictionary*) getCellsDictionary;
+- (NSDictionary*) getNodeNumbersViewCellsDictionary;
 //@}
 
 @end
