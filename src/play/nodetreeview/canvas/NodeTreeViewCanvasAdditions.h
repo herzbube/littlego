@@ -29,7 +29,19 @@
 
 /// @name Unit testing
 //@{
+// -----------------------------------------------------------------------------
+/// @brief Returns the dictionary that contains the data that is consumed by the
+/// node tree view's drawing routines. Key type = NodeTreeViewCellPosition,
+/// value type = NSArray with two objects, object 1 type = NodeTreeViewCell,
+/// object 2 type = NodeTreeViewBranchTuple.
+// -----------------------------------------------------------------------------
 - (NSDictionary*) getCellsDictionary;
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the dictionary that contains the data that is consumed by the
+/// node numbers view's drawing routines. Key type = NodeTreeViewCellPosition,
+/// value type = NodeNumbersViewCell.
+// -----------------------------------------------------------------------------
 - (NSDictionary*) getNodeNumbersViewCellsDictionary;
 //@}
 

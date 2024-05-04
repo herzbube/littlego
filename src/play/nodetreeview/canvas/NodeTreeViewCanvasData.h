@@ -56,7 +56,8 @@
 /// the current board position.
 @property(nonatomic, retain) GoNode* currentBoardPositionNode;
 
-/// @brief Maps NodeTreeViewCellPosition objects to NodeTreeViewCell objects.
+/// @brief Maps NodeTreeViewCellPosition objects to tuples consisting of
+/// a NodeTreeViewCell object and a NodeTreeViewBranchTuple object.
 ///
 /// This dictionary provides the data that is consumed by the node tree view's
 /// drawing routines.

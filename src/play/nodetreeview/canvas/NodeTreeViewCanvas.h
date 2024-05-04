@@ -104,6 +104,7 @@
 - (NSArray*) nodeNumbersViewPositionsForNode:(GoNode*)node;
 - (NSArray*) selectedNodeNodeNumbersViewPositions;
 
+// Property is documented in the NodeTreeViewCanvasDataProvider header file.
 @property(nonatomic, assign, readonly) CGSize canvasSize;
 
 @end
