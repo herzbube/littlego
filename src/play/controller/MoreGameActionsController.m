@@ -244,10 +244,6 @@
           continue;
         if (game.rules.disputeResolutionRule != GoDisputeResolutionRuleNonAlternatingPlay)
           continue;
-        // In a computer vs. computer game there is no point in allowing to
-        // switch colors
-        if (GoGameTypeComputerVsComputer == game.type)
-          continue;
         enum GoColor alternatingNextMoveColor = [GoUtilities alternatingColorForColor:game.nextMoveColor];
         if (alternatingNextMoveColor == GoColorBlack && iterButtonIndex == MoreGameActionsButtonSetWhiteToMove)
           continue;
