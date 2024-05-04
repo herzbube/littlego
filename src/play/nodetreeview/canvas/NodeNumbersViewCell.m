@@ -90,7 +90,7 @@
 {
   // Don't use self to access properties to avoid unnecessary overhead during
   // debugging
-  return [NSString stringWithFormat:@"NodeNumbersViewCell: nodeNumber = %u, selected = %d, nodeNumberExistsOnlyForSelection = %d", _nodeNumber, _selected, _nodeNumberExistsOnlyForSelection];
+  return [NSString stringWithFormat:@"NodeNumbersViewCell: nodeNumber = %u, part = %hu, selected = %d, nodeNumberExistsOnlyForSelection = %d", _nodeNumber, _part, _selected, _nodeNumberExistsOnlyForSelection];
 }
 
 #pragma mark - Public API
@@ -98,8 +98,8 @@
 // -----------------------------------------------------------------------------
 /// @brief Returns @e YES if the receiving NodeNumbersViewCell object is equal
 /// to @a otherCell. Equality is measured by comparing the values of all
-/// properties (@e nodeNumber, @e selected, @e nodeNumberExistsOnlyForSelection
-/// and @e condensedMoveNode).
+/// properties (@e nodeNumber, @e part, @e selected and
+/// @e nodeNumberExistsOnlyForSelection).
 // -----------------------------------------------------------------------------
 - (BOOL) isEqualToCell:(NodeNumbersViewCell*)otherCell
 {
@@ -109,6 +109,7 @@
     return YES;
   else
     return (_nodeNumber == otherCell.nodeNumber &&
+            _part == otherCell.part &&
             _selected == otherCell.selected &&
             _nodeNumberExistsOnlyForSelection == otherCell.nodeNumberExistsOnlyForSelection);
 }
