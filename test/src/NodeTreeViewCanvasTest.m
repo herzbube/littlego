@@ -45,7 +45,7 @@
 /// the node tree is minimal and consists of only a root node, and the user
 /// preference "condense move nodes" is disabled.
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_UncondenseMoveNodes_RootNodeOnly
+- (void) testRecalculateCanvas_UncondenseMoveNodes_RootNodeOnly
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -65,7 +65,7 @@
 /// the node tree is minimal and consists of only a root node, and the user
 /// preference "condense move nodes" is enabled.
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_CondenseMoveNodes_RootNodeOnly
+- (void) testRecalculateCanvas_CondenseMoveNodes_RootNodeOnly
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -110,7 +110,7 @@
 ///                                                                      +-- condensed
 /// @endverbatim
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_CondenseMoveNodes_UncondensedNodes
+- (void) testRecalculateCanvas_CondenseMoveNodes_UncondensedNodes
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -201,7 +201,7 @@
 /// built so that the algorithm must generate each value in the enumeration
 /// #NodeTreeViewCellSymbol at least once.
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_NodeSymbols
+- (void) testRecalculateCanvas_NodeSymbols
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -259,7 +259,7 @@
 /// the user preference "condense move nodes" is disabled and there is a
 /// selected node.
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_UncondenseMoveNodes_Selected
+- (void) testRecalculateCanvas_UncondenseMoveNodes_Selected
 {
   // TODO xxx Node selection not yet implemented in NodeTreeViewCanvas
 }
@@ -269,7 +269,7 @@
 /// the user preference "condense move nodes" is enabled and there is a
 /// selected node.
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_CondenseMoveNodes_Selected
+- (void) testRecalculateCanvas_CondenseMoveNodes_Selected
 {
   // TODO xxx Node selection not yet implemented in NodeTreeViewCanvas
 }
@@ -294,7 +294,7 @@
 /// +---I
 /// @endverbatim
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_BranchIsPushedDownBySiblingBranch
+- (void) testRecalculateCanvas_BranchIsPushedDownBySiblingBranch
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -357,7 +357,6 @@
     [self positionWithX:1 y:4]: [self cellWithSymbol:NodeTreeViewCellSymbolBlackMove lines:NodeTreeViewCellLineCenterToLeft],
   };
   [self assertCells:[testee getCellsDictionary] areEqualToExpectedCells:expectedCellsDictionary];
-
 }
 
 // -----------------------------------------------------------------------------
@@ -398,7 +397,7 @@
 ///   - B1 is the branch with node J, B2 is the branch with H. Here B1 does not
 ///     fit because the vertical line leading from C to K takes away the space.
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_Lines
+- (void) testRecalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_Lines
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -480,11 +479,12 @@
 /// @endverbatim
 ///
 /// The tested scenarios are basically the same as in
-/// testCalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_Lines(). The
-/// differences are the perpendicular instead of diagonal lines, and that the
-/// branch with node J does not fit on the same line as the branch with node K.
+/// testRecalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_Lines().
+/// The differences are the perpendicular instead of diagonal lines, and that
+/// the branch with node J does not fit on the same line as the branch with
+/// node K.
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_UncondenseMoveNodes_BranchingStyleRightAngle_Lines
+- (void) testRecalculateCanvas_UncondenseMoveNodes_BranchingStyleRightAngle_Lines
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -566,14 +566,13 @@
 /// scenarios are covered where the algorithm must decide between the different
 /// diagonal line options.
 ///
-/// See testCalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_Lines()
+/// See testRecalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_Lines()
 /// for details on the possible options. The difference is the branch with
 /// node J no longer fits on y-position 2, because diagonal branching does not
 /// gain sufficient space when multipart cells are involved. See comment in
 /// implementation.
 // -----------------------------------------------------------------------------
-
-- (void) testCalculateCanvas_CondenseMoveNodes_BranchingStyleDiagonal_Lines
+- (void) testRecalculateCanvas_CondenseMoveNodes_BranchingStyleDiagonal_Lines
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -699,7 +698,7 @@
 ///      0    1    2    3    4    5    6    7    8    9
 /// @endverbatim
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_CondenseMoveNodes_ExtraWideMultipartCells_BranchingStyleDiagonal_Lines
+- (void) testRecalculateCanvas_CondenseMoveNodes_ExtraWideMultipartCells_BranchingStyleDiagonal_Lines
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -749,10 +748,11 @@
 /// scenarios are covered where the algorithm must decide between the different
 /// right-angle line options.
 ///
-/// See testCalculateCanvas_UncondenseMoveNodes_BranchingStyleRightAngle_Lines()
+/// See
+/// testRecalculateCanvas_UncondenseMoveNodes_BranchingStyleRightAngle_Lines()
 /// for details on the possible options.
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_CondenseMoveNodes_BranchingStyleRightAngle_Lines
+- (void) testRecalculateCanvas_CondenseMoveNodes_BranchingStyleRightAngle_Lines
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -905,7 +905,7 @@
 ///   algorithm must not stop when it encounters move <n> (move 4 exists only
 ///   in node G(M4), but move 5 exists in nodes H(M5) and Q(M5))
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_UncondenseMoveNodes_AlignMoves
+- (void) testRecalculateCanvas_UncondenseMoveNodes_AlignMoves
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -1014,7 +1014,7 @@
 /// x = 0       1       2       3       4       5
 /// @endverbatim
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_UncondenseMoveNodes_BranchingStyleRightAngle_AlignMoves_BranchMovedToNewYPosition
+- (void) testRecalculateCanvas_UncondenseMoveNodes_BranchingStyleRightAngle_AlignMoves_BranchMovedToNewYPosition
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -1093,7 +1093,7 @@
 /// x = 0       1       2       3       4       5       6
 /// @endverbatim
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_AlignMoves_BranchMovedToNewYPosition
+- (void) testRecalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_AlignMoves_BranchMovedToNewYPosition
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -1236,7 +1236,7 @@
 /// are not branching nodes or a child of a branching node) it is NOT possible
 /// for an uncondensed move node to be aligned with a condensed move node.
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_CondenseMoveNodes_BranchingStyleRightAngle_AlignMoves
+- (void) testRecalculateCanvas_CondenseMoveNodes_BranchingStyleRightAngle_AlignMoves
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
@@ -1414,7 +1414,7 @@
 ///   diagonal line is the last section of the branching line: Below G
 /// - Diagonal line directly below a node: L
 // -----------------------------------------------------------------------------
-- (void) testCalculateCanvas_LinesSelectedGameVariation
+- (void) testRecalculateCanvas_LinesSelectedGameVariation
 {
   // Arrange
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
