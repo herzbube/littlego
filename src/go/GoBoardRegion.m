@@ -156,7 +156,7 @@
   else
     self.cachedLiberties = -1;
   if ([decoder containsValueForKey:goBoardRegionCachedAdjacentRegionsKey])
-    self.cachedAdjacentRegions = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSArray class], [GoBoardRegion class]]] forKey:goBoardRegionCachedAdjacentRegionsKey];
+    self.cachedAdjacentRegions = [decoder decodeObjectOfClasses:[NSSet setWithArray:@[[NSMutableArray class], [GoBoardRegion class]]] forKey:goBoardRegionCachedAdjacentRegionsKey];
   else
     self.cachedAdjacentRegions = nil;
 
