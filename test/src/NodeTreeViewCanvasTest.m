@@ -113,10 +113,6 @@
 - (void) testRecalculateCanvas_CondenseMoveNodes_UncondensedNodes
 {
   // Arrange
-  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condenseMoveNodes:true];
-  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
-
   GoNode* rootNode = m_game.nodeModel.rootNode;
   GoNode* emptyNode = [self parentNode:rootNode appendChildNode:[self createEmptyNode]];
   GoNode* setupNode = [self parentNode:emptyNode appendChildNode:[self createSetupNodeForSymbol:NodeTreeViewCellSymbolBlackSetupStones]];
@@ -131,6 +127,10 @@
   GoNode* move4bNode = [self parentNode:move3Node appendChildNode:[self createBlackMoveNode]];
   GoNode* move5bNode = [self parentNode:move4bNode appendChildNode:[self createBlackMoveNodeWithAnnotationsAndMarkup]];
   [self parentNode:move5bNode appendChildNode:[self createBlackMoveNode]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:true];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [testee recalculateCanvas];
@@ -204,10 +204,6 @@
 - (void) testRecalculateCanvas_NodeSymbols
 {
   // Arrange
-  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condenseMoveNodes:false];
-  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
-
   GoNode* parentNode = m_game.nodeModel.rootNode;
   parentNode = [self parentNode:parentNode appendChildNode:[self createEmptyNode]];
   parentNode = [self parentNode:parentNode appendChildNode:[self createSetupNodeForSymbol:NodeTreeViewCellSymbolBlackSetupStones]];
@@ -224,6 +220,10 @@
   parentNode = [self parentNode:parentNode appendChildNode:[self createAnnotationsAndMarkupNode]];
   parentNode = [self parentNode:parentNode appendChildNode:[self createSetupNodeWithAnnotationsAndMarkupForSymbol:NodeTreeViewCellSymbolBlackSetupStones]];
   parentNode = [self parentNode:parentNode appendChildNode:[self createBlackMoveNodeWithAnnotationsAndMarkup]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:false];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [testee recalculateCanvas];
@@ -297,10 +297,6 @@
 - (void) testRecalculateCanvas_BranchIsPushedDownBySiblingBranch
 {
   // Arrange
-  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condenseMoveNodes:false branchingStyle:NodeTreeViewBranchingStyleRightAngle];
-  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
-
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createBlackMoveNode]];
@@ -310,6 +306,10 @@
   [self parentNode:nodeC appendChildNode:[self createBlackMoveNode]];
   [self parentNode:nodeB appendChildNode:[self createBlackMoveNode]];
   [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:false branchingStyle:NodeTreeViewBranchingStyleRightAngle];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [testee recalculateCanvas];
@@ -400,10 +400,6 @@
 - (void) testRecalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_Lines
 {
   // Arrange
-  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condenseMoveNodes:false branchingStyle:NodeTreeViewBranchingStyleDiagonal];
-  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
-
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createBlackMoveNode]];
@@ -419,6 +415,10 @@
   GoNode* nodeL = [self parentNode:nodeE appendChildNode:[self createBlackMoveNode]];
   [self parentNode:nodeL appendChildNode:[self createBlackMoveNode]];
   [self parentNode:nodeF appendChildNode:[self createBlackMoveNode]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:false branchingStyle:NodeTreeViewBranchingStyleDiagonal];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [testee recalculateCanvas];
@@ -487,10 +487,6 @@
 - (void) testRecalculateCanvas_UncondenseMoveNodes_BranchingStyleRightAngle_Lines
 {
   // Arrange
-  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condenseMoveNodes:false branchingStyle:NodeTreeViewBranchingStyleRightAngle];
-  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
-
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createBlackMoveNode]];
@@ -506,6 +502,10 @@
   GoNode* nodeL = [self parentNode:nodeE appendChildNode:[self createBlackMoveNode]];
   [self parentNode:nodeL appendChildNode:[self createBlackMoveNode]];
   [self parentNode:nodeF appendChildNode:[self createBlackMoveNode]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:false branchingStyle:NodeTreeViewBranchingStyleRightAngle];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [testee recalculateCanvas];
@@ -575,10 +575,6 @@
 - (void) testRecalculateCanvas_CondenseMoveNodes_BranchingStyleDiagonal_Lines
 {
   // Arrange
-  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condenseMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
-  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
-
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createBlackMoveNode]];
@@ -594,6 +590,10 @@
   GoNode* nodeL = [self parentNode:nodeE appendChildNode:[self createBlackMoveNode]];
   [self parentNode:nodeL appendChildNode:[self createBlackMoveNode]];
   [self parentNode:nodeF appendChildNode:[self createBlackMoveNode]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [testee recalculateCanvas];
@@ -701,14 +701,14 @@
 - (void) testRecalculateCanvas_CondenseMoveNodes_ExtraWideMultipartCells_BranchingStyleDiagonal_Lines
 {
   // Arrange
+  GoNode* nodeA = m_game.nodeModel.rootNode;
+  [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
+  [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
+
   NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
   [self setupModel:nodeTreeViewModel condenseMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
   nodeTreeViewModel.numberOfCellsOfMultipartCell = 5;
   NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
-
-  GoNode* nodeA = m_game.nodeModel.rootNode;
-  [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
-  [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
 
   // Act
   [testee recalculateCanvas];
@@ -755,10 +755,6 @@
 - (void) testRecalculateCanvas_CondenseMoveNodes_BranchingStyleRightAngle_Lines
 {
   // Arrange
-  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condenseMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleRightAngle];
-  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
-
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNode]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createBlackMoveNode]];
@@ -774,6 +770,10 @@
   GoNode* nodeL = [self parentNode:nodeE appendChildNode:[self createBlackMoveNode]];
   [self parentNode:nodeL appendChildNode:[self createBlackMoveNode]];
   [self parentNode:nodeF appendChildNode:[self createBlackMoveNode]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleRightAngle];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [testee recalculateCanvas];
@@ -908,10 +908,6 @@
 - (void) testRecalculateCanvas_UncondenseMoveNodes_AlignMoves
 {
   // Arrange
-  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condenseMoveNodes:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleRightAngle];
-  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
-
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNodeWithMoveNumber:1]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createAnnotationNode]];
@@ -929,6 +925,10 @@
   GoNode* nodeO = [self parentNode:nodeN appendChildNode:[self createAnnotationNode]];
   [self parentNode:nodeO appendChildNode:[self createBlackMoveNodeWithMoveNumber:3]];
   [self parentNode:nodeL appendChildNode:[self createBlackMoveNodeWithMoveNumber:5]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleRightAngle];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [testee recalculateCanvas];
@@ -1017,10 +1017,6 @@
 - (void) testRecalculateCanvas_UncondenseMoveNodes_BranchingStyleRightAngle_AlignMoves_BranchMovedToNewYPosition
 {
   // Arrange
-  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condenseMoveNodes:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleRightAngle];
-  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
-
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNodeWithMoveNumber:1]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createAnnotationNode]];
@@ -1029,6 +1025,10 @@
   [self parentNode:nodeE appendChildNode:[self createBlackMoveNodeWithMoveNumber:2]];
   [self parentNode:nodeB appendChildNode:[self createBlackMoveNodeWithMoveNumber:2]];
   [self parentNode:nodeD appendChildNode:[self createBlackMoveNodeWithMoveNumber:2]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleRightAngle];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [testee recalculateCanvas];
@@ -1096,10 +1096,6 @@
 - (void) testRecalculateCanvas_UncondenseMoveNodes_BranchingStyleDiagonal_AlignMoves_BranchMovedToNewYPosition
 {
   // Arrange
-  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condenseMoveNodes:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
-  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
-
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNodeWithMoveNumber:1]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createAnnotationNode]];
@@ -1110,6 +1106,10 @@
   [self parentNode:nodeB appendChildNode:[self createBlackMoveNodeWithMoveNumber:2]];
   [self parentNode:nodeD appendChildNode:[self createBlackMoveNodeWithMoveNumber:2]];
   [self parentNode:nodeE appendChildNode:[self createBlackMoveNodeWithMoveNumber:2]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:false alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [testee recalculateCanvas];
@@ -1239,10 +1239,6 @@
 - (void) testRecalculateCanvas_CondenseMoveNodes_BranchingStyleRightAngle_AlignMoves
 {
   // Arrange
-  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condenseMoveNodes:true alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleRightAngle];
-  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
-
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createBlackMoveNodeWithMoveNumber:1]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createBlackMoveNodeWithMoveNumber:2]];
@@ -1260,6 +1256,10 @@
   GoNode* nodeO = [self parentNode:nodeN appendChildNode:[self createBlackMoveNodeWithMoveNumber:5]];
   [self parentNode:nodeO appendChildNode:[self createBlackMoveNodeWithMoveNumber:6]];
   [self parentNode:nodeK appendChildNode:[self createAnnotationNode]];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:true alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleRightAngle];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [testee recalculateCanvas];
@@ -1417,10 +1417,6 @@
 - (void) testRecalculateCanvas_LinesSelectedGameVariation
 {
   // Arrange
-  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
-  [self setupModel:nodeTreeViewModel condenseMoveNodes:true alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
-  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
-
   GoNode* nodeA = m_game.nodeModel.rootNode;
   GoNode* nodeB = [self parentNode:nodeA appendChildNode:[self createAnnotationNode]];
   GoNode* nodeC = [self parentNode:nodeB appendChildNode:[self createAnnotationNode]];
@@ -1438,6 +1434,10 @@
   GoNode* nodeO = [self parentNode:nodeN appendChildNode:[self createBlackMoveNodeWithMoveNumber:3]];
   GoNode* nodeP = [self parentNode:nodeO appendChildNode:[self createBlackMoveNodeWithMoveNumber:4]];
   [m_game.nodeModel changeToVariationContainingNode:nodeP];
+
+  NodeTreeViewModel* nodeTreeViewModel = m_delegate.nodeTreeViewModel;
+  [self setupModel:nodeTreeViewModel condenseMoveNodes:true alignMoveNodes:true branchingStyle:NodeTreeViewBranchingStyleDiagonal];
+  NodeTreeViewCanvas* testee = [[[NodeTreeViewCanvas alloc] initWithModel:nodeTreeViewModel] autorelease];
 
   // Act
   [testee recalculateCanvas];
