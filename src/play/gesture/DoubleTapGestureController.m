@@ -94,11 +94,36 @@
   UIGestureRecognizerState recognizerState = gestureRecognizer.state;
   if (UIGestureRecognizerStateEnded != recognizerState)
     return;
+
   CGFloat newZoomScale = self.scrollView.zoomScale * 1.5f;
   newZoomScale = MIN(newZoomScale, self.scrollView.maximumZoomScale);
   CGPoint pointToZoomTo = [gestureRecognizer locationInView:self.scrollView];
   CGRect rectToZoomTo = [self rectForPointToZoomTo:pointToZoomTo zoomScale:newZoomScale];
-  [self.scrollView zoomToRect:rectToZoomTo animated:YES];
+
+  // If the maximum zoom scale is not yet reached we can use zoomToRect:() just
+  // fine. But if the maximum zoom scale is already reached and we still use
+  // zoomToRect:(), then we run into trouble if the scroll view's contentSize
+  // is smaller than the scroll view's bounds in one or both dimensions.
+  // => In that situation zoomToRect:() will shift the content so that the
+  //    content will right-align and/or bottom/align with the scroll view's
+  //    bounds! The result is that the content origin is no longer at the
+  //    scroll view's bounds origin, which will weirdly look like there is a
+  //    padding at the left and/or top of the content.
+  //
+  // A solution could be to not do anything at all if the maximumZoomScale is
+  // reached - after all the purpose of this gesture controller is to zoom, so
+  // if zooming is no longer possible then the gesture controller has no
+  // obligation to do anything.
+  //
+  // A slightly nicer solution is to use scrollRectToVisible:() - this does
+  // not exhibit the same "content shifting" behaviour of zoomToRect:(), and in
+  // some situations (depends on where the content offset currently is) can
+  // give the user a bit of visual feedback that the double-tap gesture had an
+  // effect.
+  if (self.scrollView.zoomScale < self.scrollView.maximumZoomScale)
+    [self.scrollView zoomToRect:rectToZoomTo animated:YES];
+  else
+    [self.scrollView scrollRectToVisible:rectToZoomTo animated:YES];
 }
 
 // -----------------------------------------------------------------------------

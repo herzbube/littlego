@@ -21,9 +21,12 @@
 /// Double-tapping is used to zoom in the scroll view.
 ///
 /// Every double-tap performs a 50% zoom-in at the location where the tap
-/// occurred. Repeated double-taps zoom in up to the maximum zoom scale. Once
-/// the maximum zoom scale has been reached, additional double-taps have no
-/// effect.
+/// occurred. Repeated double-taps zoom in up to the maximum zoom scale.
+///
+/// Once the maximum zoom scale has been reached, additional double-taps attempt
+/// to scroll to the tap location to give the user visual feedback about the
+/// gesture. If the scroll view's current content offset already places the
+/// content at the scroll view edges then no scrolling is possible.
 // -----------------------------------------------------------------------------
 @interface DoubleTapGestureController : NSObject <UIGestureRecognizerDelegate>
 {
