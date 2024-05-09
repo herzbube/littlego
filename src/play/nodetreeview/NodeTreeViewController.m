@@ -296,7 +296,7 @@
   [self.nodeTreeViewMetrics removeObserver:self forKeyPath:@"condenseMoveNodes"];
 }
 
-#pragma mark TiledScrollViewDataSource overrides
+#pragma mark - TiledScrollViewDataSource overrides
 
 // -----------------------------------------------------------------------------
 /// @brief TiledScrollViewDataSource protocol method.
@@ -329,7 +329,7 @@
   return 1.0;
 }
 
-#pragma mark UIScrollViewDelegate overrides
+#pragma mark - UIScrollViewDelegate overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UIScrollViewDelegate protocol method.
