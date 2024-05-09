@@ -180,10 +180,10 @@
 {
   if (navigationAction.navigationType == WKNavigationTypeLinkActivated)
   {
+    decisionHandler(WKNavigationActionPolicyCancel);
     [[UIApplication sharedApplication] openURL:[navigationAction.request URL]
                                        options:@{}
                              completionHandler:nil];
-    decisionHandler(WKNavigationActionPolicyAllow);
   }
   else if (webView.isLoading)
   {
