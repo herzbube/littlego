@@ -19,6 +19,7 @@
 #import "NodeTreeViewTapGestureController.h"
 #import "NodeTreeView.h"
 #import "../gameaction/GameActionManager.h"
+#import "../model/BoardViewModel.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
 #import "../../main/ApplicationDelegate.h"
@@ -92,6 +93,12 @@
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
   [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStarts object:nil];
+  [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
+  [center addObserver:self selector:@selector(boardViewPanningGestureWillStart:) name:boardViewPanningGestureWillStart object:nil];
+  [center addObserver:self selector:@selector(boardViewPanningGestureWillEnd:) name:boardViewPanningGestureWillEnd object:nil];
+  [center addObserver:self selector:@selector(boardViewAnimationWillBegin:) name:boardViewAnimationWillBegin object:nil];
+  [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
 }
@@ -155,6 +162,47 @@
 }
 
 // -----------------------------------------------------------------------------
+/// @brief Responds to the #computerPlayerThinkingStarts and
+/// #computerPlayerThinkingStops notifications.
+// -----------------------------------------------------------------------------
+- (void) computerPlayerThinkingChanged:(NSNotification*)notification
+{
+  [self updateTappingEnabled];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewPanningGestureWillStart notification.
+// -----------------------------------------------------------------------------
+- (void) boardViewPanningGestureWillStart:(NSNotification*)notification
+{
+  [self updateTappingEnabled];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewPanningGestureWillEnd notification.
+// -----------------------------------------------------------------------------
+- (void) boardViewPanningGestureWillEnd:(NSNotification*)notification
+{
+  [self updateTappingEnabled];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewAnimationWillBegin notification.
+// -----------------------------------------------------------------------------
+- (void) boardViewAnimationWillBegin:(NSNotification*)notification
+{
+  [self updateTappingEnabled];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewAnimationDidEnd notification.
+// -----------------------------------------------------------------------------
+- (void) boardViewAnimationDidEnd:(NSNotification*)notification
+{
+  [self updateTappingEnabled];
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Responds to the #goScoreCalculationStarts notification.
 // -----------------------------------------------------------------------------
 - (void) goScoreCalculationStarts:(NSNotification*)notification
@@ -175,7 +223,8 @@
 // -----------------------------------------------------------------------------
 - (void) updateTappingEnabled
 {
-  switch ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode)
+  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  switch (appDelegate.uiSettingsModel.uiAreaPlayMode)
   {
     case UIAreaPlayModeScoring:
     {
@@ -189,9 +238,25 @@
       self.tappingEnabled = true;
       break;
     }
+    case UIAreaPlayModePlay:
+    {
+      GoGame* game = [GoGame sharedGame];
+      if (! game ||
+          game.isComputerThinking ||
+          appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
+          appDelegate.boardViewModel.boardViewDisplaysAnimation)
+      {
+        self.tappingEnabled = false;
+      }
+      else
+      {
+        self.tappingEnabled = true;
+      }
+      break;
+    }
     default:
     {
-      self.tappingEnabled = true;
+      self.tappingEnabled = false;
       break;
     }
   }
