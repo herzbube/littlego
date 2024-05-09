@@ -30,7 +30,8 @@
   #import <SgfcKit_static/SgfcKit_static.h>
 #endif
 #if ! defined(LITTLEGO_UNITTESTS) && ! defined(LITTLEGO_UITESTS)
-  #import <FirebaseCrashlytics.h>
+  #import <FirebaseCore/FirebaseCore.h>  // for FIRApp
+  #import <FirebaseCrashlytics.h>  // for FIRCrashlytics
 #endif
 
   // Project includes
