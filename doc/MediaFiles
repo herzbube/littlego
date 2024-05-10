@@ -33,6 +33,19 @@ wood-on-wood-12.aiff
   that the System Sound Services function AudioServicesPlaySystemSound() is
   capable of playing.
 
+wooden-background-tile.png
+--------------------------
+The source for the image is this:
+  http://www.psdgraphics.com/backgrounds/light-wooden-background/
+
+To make the image tileable, I edited the original image in The Gimp like this:
+- Cut 11 pixels at the bottom to get rid of the watermark "www.psdgraphics.com".
+  The resulting image is sized 1280x949.
+- Increase the image size to 1280x1898, i.e. double the height.
+- Copy the image to a second layer and flip it vertically.
+- Align the second layer so that it becomes a continuation of the original
+  image. For alignment I use a horizontal guide line at y-coordinate 949.
+- Adjust the size of both layers to the image size.
 
 Icon files
 ----------
@@ -63,7 +76,6 @@ Icon files
   not used at runtime.
 
 [1] https://developer.apple.com/design/human-interface-guidelines/ios/icons-and-images/
-
 
 stone-black.png, stone-white.png, stone-crosshair.png
 -----------------------------------------------------
@@ -115,7 +127,6 @@ stone-black.png, stone-white.png, stone-crosshair.png
 
 [1] https://github.com/justinweiss/dragongoclient
 
-
 App Store icon
 --------------
 The original App Store icon used transparency. It was not shipped as part of
@@ -134,6 +145,43 @@ If the original image with transparency is needed in the future, it can be
 restored from vesion control history. The file was originally located under
 "resource/image/appicon-appstore@2x-with-transparency.png".
 
+gogrid2x2.svg
+-------------
+- The icon is supposed to depict a section of a Go board with 2 stones
+- Icon design guidelines:
+  - The width of the Go board grid lines must be 1 point. 2 points is
+    already too bulky.
+  - The stones must be relatively small. If they are drawn with a realistic
+    size (in relation to the cells formed by the grid lines) they make the
+    icon look too heavy.
+- The icon is designed for 23x23 points, not for 22x22 points as recommended
+  by the HIG for bar button icons. The reason: The icon design requires
+  the icon to be split into three equally large parts. Together with 1 point
+  width for the Go board grid lines there is no way to make use of exactly
+  22 points - there is either a choice of making the icon smaller or larger
+  than 22 points. Smaller = 20 points, larger = 23 points. I decided to make
+  the icon larger so that it can also be used as a tab bar icon.
+- Bitmaps for resolutions greater than 1x can be created by simply
+  downscaling the vector graphics
+- To create the bitmap for the 1x resolution, first downscale the vector
+  graphics, then translate all parts of the icon by +/- 0.5 pixels, for both
+  x- and y-axis. The goal is to align the grid lines with pixel boundaries.
+  If no translation is made before the export then the lines will appear
+  anti-aliased in the resulting bitmap.
+
+pass.svg
+--------
+- The icon is supposed to depict something like an ellipsis ("..."), indicating
+  that "time passes".
+- Maybe not the most logical depiction, but at least it's a distinct and simple
+  symbol - it's also stolen from Sente's Goban.
+- A bit unfortunate is that the "More" navigation controller uses practically
+  the same icon.
+
+computer-play.svg
+-----------------
+- The icon combines the icon for "play" with a computer icon, trying to
+  transport the meaning "computer plays" or "computer makes a move".
 
 go-motifs: stone-black-icon.svg, stone-white-icon.svg
 -----------------------------------------------------

@@ -42,7 +42,7 @@
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<false/>
 	<key>NSHumanReadableCopyright</key>
-	<string>© 2011-2022 Patrick Näf</string>
+	<string>© 2011-2024 Patrick Näf</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

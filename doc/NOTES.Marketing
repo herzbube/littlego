@@ -6,7 +6,7 @@ to advertise the app in Apple's app store.
 
 App Store page content
 ----------------------
-Little Go is a free and open source iOS application that lets you play the game of Go on the iPhone or iPad. You can play against another human (on the same device), or against the computer. The computer player is powered by the open source software library Fuego (http://fuego.sf.net/). The minimum requirement for running this version of Little Go is iOS 9.0.
+Little Go is a free and open source iOS application that lets you play the game of Go on the iPhone or iPad. You can play against another human (on the same device), or against the computer. The computer player is powered by the open source software library Fuego (http://fuego.sf.net/). The minimum requirement for running this version of Little Go is iOS 15.0.
 
 Features:
 - Board sizes between 7x7 and 19x19 (start a new game to change the board size)
@@ -16,7 +16,8 @@ Features:
 - Play even games, or games with 2-9 handicap stones (fixed stone placement)
 - Select from 5 pre-defined rulesets when you start a new game, or adjust game rules to your preference (komi, ko rule, area/territory scoring system, number of passes to end game, resume play by alternating/non-alternating play, four passes end game)
 - Place arbitrary black and white stones for initial board setup before a game starts
-- View board positions for moves played earlier during the game (no support for game variations, though)
+- View board positions for moves played earlier during the game
+- View and create game variations
 - Discard moves (aka "undo")
 - Display move numbers and coordinate labels
 - Zoom & scroll board
@@ -25,7 +26,7 @@ Features:
 - Display player influence (aka territory statistics) for an estimate who owns an area
 - Computer vs. computer game for entertainment
 - Save & load games to/from the archive
-- Use iTunes file sharing to transfer saved games to/from your iOS device
+- Use file sharing to transfer saved games from your iOS device to your computer, and vice versa
 - Import/export game files from/to other apps on your device (e.g. Mail, DropBox)
 - In-app user manual
 - Submit bug report email from inside the app (yes, this *is* a feature :-))
@@ -54,15 +55,31 @@ App Store Screenshots are prepared in the simulator. The content is the same
 for all devices. iPhone screenshots are taken in portrait orientation, iPad
 screenshots are taken in landscape orientation.
 
-Screenshots with the following dimensions are required by the App Store:
-- iPhone 6.5 inch display (e.g. iPhone 13 Pro Max)
+When this app was submitted the last time, screenshots with the following
+dimensions were required by the App Store.
+- iPhone 6.7 inch display (e.g. iPhone 15 Plus, iPhone 15 Pro Max)
+- iPhone 6.5 inch display (e.g. iPhone 14 Plus, iPhone 13 Pro Max)
 - iPhone 5.5 inch display (e.g. iPhone 8 Plus)
-- iPad 12.9 inch display (e.g. iPad Pro 4th generation)
+- iPad 13 inch display (e.g. iPad Pro 3rd-6th generation)
+- iPad 12.9 inch display (e.g. iPad Pro 2nd generation)
+
+Notes:
+- The example devices in the previous list were taken from the App Store Connect
+  support website [1].
+- If a set of screenshots is provided for a higher resolution it can often be
+  reused for lower resolutions. For instance, I am reusing the iPhone 6.7 inch
+  display screenshots for the iPhone 6.5 inch display.
+- The iPad 13 inch display screenshots cannot be reused for the iPad 12.9 inch
+  display even though the screenshots have exactly the same size. I therefore
+  upload the same files a second time for the iPad 12.9 inch display.
+
+[1] https://developer.apple.com/help/app-store-connect/reference/screenshot-specifications
 
 Before starting to take screenshots, prepare each simulator as follows:
 - Remove the app from the simulator
 - Install a clean new build
-- Add the following .sgf files to the archive:
+- Add the following .sgf files to the archive (use the script
+  copy-sgf-files-to-simulator.sh):
   - 9x9_1.sgf
   - 9x9_2.sgf
   - Anonymous vs. Fuego 1.sgf
@@ -72,8 +89,10 @@ Before starting to take screenshots, prepare each simulator as follows:
   - Lee's Broken Ladder Game.sgf
   - Fuego vs. Fuego.sgf
 - Launch the app
+- Set Tree view settings > Focus mode = Scroll to center (even if visible)
 - Load "Lee's Broken Ladder Game.sgf" as a human vs. human game
 - Go to board position 97
+- Resize the tree view to its minimum height
 
 Screenshots
 - Screenshot 1: Start placing a stone, then take a screenshot while the

@@ -8,8 +8,8 @@ or years :-)
 
 Quick-start guide on how to build and run Little Go
 ---------------------------------------------------
-The current build should work out of the box for Intel Macs, Xcode 13.2.1 and
-the iOS base SDK 15.2 (read NOTES.Build if you need help setting up this
+The current build should work out of the box for Intel Macs, Xcode 15.1 and
+the iOS base SDK 17.2 (read NOTES.Build if you need help setting up this
 combination). If you want to build with a different setup (especially a Silicon
 Mac or an older Xcode version) you will probably encounter errors. Consult
 NOTES.build and NOTES.Build.3rdparty, but mostly you will be on your own.
@@ -205,3 +205,15 @@ Notes about the configuration:
     /usr/local/bin
   dot is part of the Graphviz package and is used to generate a couple of
   diagram types (e.g. class diagrams, collaboration diagrams).
+
+
+On collaboration
+----------------
+Contributions in any form (coding, UI design, testing, bug reports, creating an
+app video preview, website design) are, of course, very welcome!
+
+Code contributors must have a certain level of experience with object-oriented
+coding because I don't have enough spare time to offer a lot of training. I will
+certainly coach and assist with getting the project to build and run, but a
+certain tech-savyness as well as the will to learn Objective-C (the language
+that this project is written in) is required.

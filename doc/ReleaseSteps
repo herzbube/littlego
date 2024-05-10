@@ -30,7 +30,7 @@ Before the release
   - README.md
   - NOTES.Build
   - NOTES.Marketing
-  - index.html on the gh-ages branch
+  - index.html on the gh-pages branch
 - If 3rd party software has been updated
   - Make sure that the third party software version numbers in About.html are
     up to date (including the fuego-on-ios commit ID)
@@ -64,7 +64,12 @@ Before the release
   - All source files that were touched since the last release. For instance,
     to list all files that were touched since the release 1.6.0 and were not
     updated to the current year 2022:
-    git diff --name-only 1.6.0 | egrep "^(src|test|uitest)" | sort | uniq | xargs grep "// Copyright" 2>/dev/null | grep -v 2022 | cut -d":" -f1
+      git diff --name-only 1.6.0 | egrep "^(src|test|uitest)" | sort | uniq | xargs grep "^// Copyright" 2>/dev/null | grep -v 2022 | cut -d":" -f1
+    The following sed command modifies a file in-place using the release
+    year 2024 (assuming either a single 4-digit year, or a range of two 4-digit
+    years):
+      sed -i '' -e 's/^\(\/\/ Copyright \)\([[:digit:]]\{4\}\)\(-[[:digit:]]\{4\}\)\{0,1\}\( \)/\1\2-2024\4/'
+    If you're brave you can pipe the first command into the second using xargs.
 - Remove the build directory to make sure that subsequent test and distribution
   builds are clean.
     rm -rf DerivedData
@@ -78,8 +83,8 @@ Before the release
   target devices. If there are any warnings, fix them.
 - Run the ad-hoc distribution build through the tests described in the TESTING
   document. If the device is physically available you can copy the build to the
-  device simply by selecting Product > Run in Xcode - in fact the same procedure
-  as when you run a Debug build on the device.
+  device simply by selecting "Product > Run" in Xcode - in fact the same
+  procedure as when you run a Debug build on the device.
   - In earlier years it used to be necessary to create an archive (see section
     "Create an archive") and from that an ad-hoc distribution (see section
     "Make an ad-hoc distribution (beta release)"), but I haven't used that
@@ -91,8 +96,9 @@ Before the release
   (see section "Make the release" below).
 - Select the "Little Go AppStore Distribution" scheme, then follow the
   instructions in the "Create an archive" section below to create an archive,
-  then follow the instructions in the "Make an AppStore distribution" section
-  below to upload the archived build to App Store Connect.
+  then follow the instructions in the
+  "Make an AppStore distribution (production release)" section below to upload
+  the archived build to App Store Connect.
 
 
 Create an archive
@@ -113,6 +119,9 @@ Create an archive
 
 Make an ad-hoc distribution (beta release)
 ------------------------------------------
+NOTE: I haven't used the procedure described in this section in years, so the
+information is likely outdated!
+
 - In Xcode in the Organizer window, select the archived build, then click the
   "Distribute..." button, followed by "Save for Enterprise or Ad-Hoc Deployment"
   on the next screen
@@ -151,11 +160,14 @@ Make an AppStore distribution (production release)
   the release the app manually or automatically after the review process has
   completed. You may also need to update the copyright year, and provide new
   screenshots if new devices were introduced by Apple, or if the app's UI layout
-  has changed.
+  has changed. The content of the "Description" field can be taken from
+  NOTES.Marketing, section "App Store page content".
 - When everything is ready, switch back to Xcode. In the Organizer window,
   select the archived build (instructions how to create an archive can be found
   further up in this document), then click the "Distribute app" button.
 - Step through the wizard that pops up.
+  Note: When releasing version 2.0.0 in Xcode 15, for the first time no wizard
+  popped up, so the following information may now be obsolete.
   - Page 1: Select "App Store Connect" as the method of distribution.
   - Page 2: Select "Upload" as destination.
   - Page 3: Select all distribution option checkboxes. These are:
@@ -221,24 +233,7 @@ Make the release
 ----------------
 - After Apple has completed the review process, the release can now be viewed
   as official and the remaining steps can be performed
-- Download Bitcode dSYMs into the local archive
-  - When a Bitcode enabled build is uploaded to App Store Connect, Apple
-    generates several new dSYMs that are not available locally.
-  - The dSYMs can be downloaded in Xcode's Organizer window: Select the archived
-    build, then click the button labelled "Download Debug Symbols". To make
-    sure that the download was successful, right-click the archived build, then
-    select "Show in Finder" from the context menu. Open the .xcarchive folder
-    (right-click and select "Show Package Contents") and navigate to the "dSYMs"
-    folder. Here you should now see one dSYM named after the app (i.e.
-    Little Go.app.dSYM) and several dSYMs named with a UUID.
-  - Alternatively you can manually download the Bitcode dSYMs from the App Store
-    Connect website: Navigate to the app's main page, select "Activity" and the
-    build in question, then click the "Download dSYM" link. This downloads a
-    single .zip archive appDsyms.zip that contains all dSYMs. Extract the
-    archive then copy the contents into the "dSYMs" folder within the .xcarchive
-    folder of the archived build.
-- Backup the archive that was uploaded to the App Store. In the previous step
-  the archive was updated with downloaded Bitcode dSYMs. A backup is important
+- Backup the archive that was uploaded to the App Store. A backup is important
   because that archive contains the symbols that are required to symbolicate any
   crash reports. Usually you will rely on Crashlytics for this, but you never
   know. To find the .xcarchive bundle to backup, right-click on the archived
@@ -261,9 +256,23 @@ Make the release
   content into the release description.
 - On the Crashlytics website, make sure that the new app version is enabled and
   the previous app version is disabled.
-- Upload the Bitcode dSYMs that you downloaded in a previous step (see above) to
-  the Crashlytics website. Note that the regular dSYM has already been uploaded
-  by a build script in the Xcode project.
 - Update website littlego.herzbube.ch
 - Release the new version to the App Store
 - Advertise the release (check out the NOTES.Marketing file)
+
+Historic notes about the "Download Debug Symbols" button in Xcode's 'Organizer
+window
+- For some time Apple required that builds submitted to App Store Connect
+  contain Bitcode. This was done by setting ENABLE_BITCODE = YES in the build
+  settings.
+- The "Download Debug Symbols" button had to be used after submission to
+  download Bitcode dSYMs that were generated server-side into the local archive.
+- Generation of Bitcode was deprecated in Xcode 14 complete removed in Xcode 15
+  (mentioned in the respective release notes). Therefore nowadays, with newly
+  submitted builds non containing Bitcode anymore, the button loses its
+  function. When you press it Xcode will say that no dSYMs were found.
+- It used to be necessary to manually upload the Bitcode dSYMs to the
+  Crashlytics website. With the removal of Bitcode this step is now also
+  obsolete.
+- For some background information about the removal of Bitcode, see this
+  Stackoverflow post: https://stackoverflow.com/q/72543728/1054378

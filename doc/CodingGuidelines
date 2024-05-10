@@ -69,3 +69,9 @@ Other stuff
 -----------
 - Everything should be documented with Doxygen documentation blocks; exceptions
   are possible but should remain rare
+- Use property chaining sparingly. When interfacing with SgfcKit property
+  chaining like this
+    SGFCReal someRealValue = sgfProperty.propertyValue.toSingleValue.toRealValue.realValue;
+  is acceptable because SgfcKit/libsgfc++/SGFC can be relied upon to contain
+  enough pre-processing checks and sanitizing that a property value matches the
+  requirements of the property.

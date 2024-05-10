@@ -1,5 +1,5 @@
 Little Go
-Copyright 2011-2022 Patrick Näf (herzbube@herzbube.ch)
+Copyright 2011-2024 Patrick Näf (herzbube@herzbube.ch)
 
 The information in this file is also available when displaying the "About" and
 the "Licenses" UI area from within the running application. The license files
@@ -33,7 +33,7 @@ license, is available from
   https://github.com/matej/MBProgressHUD
 
 Logging is achieved via the Cocoa Lumberjack framework, copyright by Deusty LLC
-and released under the BSD 2-Clause license. The original source code is
+and released under the BSD 3-Clause license. The original source code is
 available from
   https://github.com/CocoaLumberjack/CocoaLumberjack
   

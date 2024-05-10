@@ -1,4 +1,122 @@
 --------------------------------------------------------------------------------
+Version 2.0.0 (2024-05-09)
+--------------------------------------------------------------------------------
+========
+Features
+========
+Support for game variations (#380):
+- The app now supports displaying game variations. For that purpose a new view
+  was added at the bottom of the Play tab.
+- The new view displays the tree of nodes formed by all variations of the game.
+  The view is therefore named "Node tree" view, or just tree view for short.
+- The tree view can be resized, zoomed and scrolled, and you can tap on any
+  node to change the game board to display the content of that node.
+- The app also supports creating new game variations: Go back to an older node
+  and play a move and the app will automatically insert a new game variation.
+  Note that in previous versions of the app an alert was displayed in this
+  situation, asking whether you want to discard future board positions.
+- A number of new settings were added under "Settings > Tree view" and
+  "Settings > Game variation" that let you control various aspects of how the
+  tree view is rendered and how game variations are inserted.
+- If you do not want to work with game variations you can also use the settings
+  to hide the tree view completely and disable creation of new game variations.
+
+========================
+Improvements and changes
+========================
+User manual overhaul (#419):
+- The user manual has been rewritten from scratch, complete with icons,
+  illustrations, a few animatons and hyperlinks.
+- Besides the in-app version of the user manual there is now also an identical
+  online version that can be accessed in any web browser at
+  https://littlego-usermanual.herzbube.ch/.
+- Many users have had trouble with the dry text-only user manual of the past,
+  often being unable to match textual descriptions of icons to the actual
+  buttons in the app. Hopefully this is now an issue of the past. Many thanks
+  go to Andreas Fischlin who gave me the impetus to take on this long overdue
+  task.
+
+Other changes:
+- The content of the node list view (formerly called "board position list view")
+  was slightly redesigned. Previous app versions used to show a symbol only for
+  black and white moves, now the app always shows a symbol even if a node does
+  not contain a move. Also the textual representation of some node types was
+  slightly changed.
+- The setting "Board position setting > Discard future moves alert" was renamed
+  to the more generic "Discard future nodes alert", because the app now no
+  longer displays only moves, but arbitrary nodes in the node tree view.
+- The hotspot icon is now properly centered.
+
+========
+Bugfixes
+========
+- In-app web views now continue to display their content after an external link
+  is opened in Safari (#428). Affected views: Help tab, About tab, Credits tab,
+  Source Code tab, and any one of the entries on the Licenses and the Changelog
+  tabs.
+- The app no longer crashes when a handicap stone is removed while board setup
+  mode is active (#399).
+- Fixed a bug where sometimes handicap stones were not properly marked up while
+  board setup mode was active (#400).
+- Labels placed in markup mode are now no longer displayed while board setup
+  mode is active (#420). Because board setup mode has its own markup that is
+  specifically designed to facilitate board setup, it is by design that labels
+  and other graphical elements placed in markup mode are not shown when board
+  setup mode is active.
+- When the setting "auto-enable board setup" was enabled and a new game was
+  started with the "rematch" menu option, the app in some cases did not enter
+  board setup mode as designed. This has been fixed (#411).
+- Speculative fix for a potential app crash when the UI changes orientation
+  from Portrait to Landscape (#406).
+
+===========
+Regressions
+===========
+- Fixed the "Select player" screen to show a non-transparent background color
+  even when no players are available (#421).
+
+=================
+Technical changes
+=================
+Support for iOS 9 up to 14 has been dropped (#409).
+- The minimum required version is now iOS 15.0.
+- The following devices are no longer supported:
+  - iPhone models: iPhone 4S, iPhone 5, iPhone 5C, iPhone 5S, iPhone 6 and
+    iPhone 6 Plus.
+  - iPad models: iPad Mini 1st generation, iPad 2, iPad 3rd generation,
+    iPad 4th generation, iPad Air 1st generation, iPad Mini 2, and iPad Mini 3.
+  - iPod models: iPod Touch 5th generation, and iPod Touch 6th generation.
+- Although the list of devices is quite long it's not as bad as it might seem
+  because the devices left behind are all quite old. To give an estimate, the
+  newest devices that are now no longer supported were released by Apple 10
+  years ago, and were discontinued 7-8 years ago.
+- The main reason for the change was that new library versions required
+  technical features that older iOS versions could not provide. A secondary
+  reason was to get rid of old cruft in the source code that has accumulated
+  over the years to keep the app running on old iOS versions.
+
+Other technical changes:
+- The project has been upgraded to the iOS 17.2 SDK and Xcode 15.1 (#408).
+  One notable change that emerged from the upgrade was that the NSCoding
+  implementation had to be adapted to NSSecureCoding.
+- The following third party software has been upgraded to new versions:
+  SgfcKit and libsgfc++ (from 1.0.0 to 2.0.1), Cocoa Lumberjack (from 3.7.4
+  to 3.8.2) and Firebase Crashlytics (from 8.11.0 to 10.19.0).
+- The structure how user preferences are stored has been slightly changed by
+  moving top-level entries into child dictionaries (#404).
+- The way how the app internally communicates certain state changes has been
+  changed from the KVO (key-value observing) approach to posting notifications
+  to the global notification centre (#402). The change fixes at least one
+  potential but hard-to-pinpoint bug, but also makes the code more maintainable.
+
+=================
+GitHub issue list
+=================
+A list of all issues closed for this release is available on GitHub:
+https://github.com/herzbube/littlego/milestone/21?closed=1
+
+
+--------------------------------------------------------------------------------
 Version 1.7.1 (2022-09-23)
 --------------------------------------------------------------------------------
 ========
