@@ -1,10 +1,25 @@
 # Build products
 DerivedData/
-# Other files
-3rdparty/
-doxygen/
+doxygen/html
+
+# Xcode workspace
+Little Go.xcworkspace/
+
+# Xcode project
+Little Go.xcodeproj/
+
+# Firebase/Crashlytics files
+GoogleService-Info.plist
+
+# CocoaPods files
+Pods/
+
+# Folders for local/manual storage of beta test .ipa bundles,
+# crash reports and bug reports
 dist/
 crash/
 bugreport/
-Little Go.xcodeproj/
+
+# Other files
+3rdparty/
 .DS_Store
