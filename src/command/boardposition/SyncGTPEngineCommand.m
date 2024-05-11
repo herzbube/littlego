@@ -263,7 +263,7 @@
     [blackSetupPoints addObjectsFromArray:game.handicapPoints];
   }
 
-  if (blackSetupPoints.count == 0 || whiteSetupPoints.count == 0)
+  if (blackSetupPoints.count == 0 && whiteSetupPoints.count == 0)
     return true;
 
   NSString* commandString = @"gogui-setup";

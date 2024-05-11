@@ -30,7 +30,7 @@ enum SyncBoardPositionType
 
 // -----------------------------------------------------------------------------
 /// @brief The SyncGTPEngineCommand class is responsible for synchronizing the
-/// state of the GTP engine with the state of the current GoGame.
+/// state of the GTP engine with the state of the current game variation.
 ///
 /// By default SyncGTPEngineCommand synchronizes the GTP engine with the setup
 /// and/or moves from the current game variation up to the current board
