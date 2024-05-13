@@ -9,7 +9,9 @@ Little Go is released under the [Apache License](http://www.apache.org/licenses/
 
 ## Changes in this release
 
-This is the Little Go feature release 2.0.0. A selection of the most important changes are:
+This is the Little Go bugfix release 2.0.1. It contains a fix for a bug that caused the app and Fuego to become out of sync when a game with handicap was started, or when a game with black or white setup stones was loaded from the archive (#430).
+
+The previous release was the Little Go feature release 2.0.0. A selection of the most important changes are:
 
 - The app now has support for game variations (#380). A new tree view was added at the bottom of the Play tab that displays the tree of nodes formed by all variations of the game. New game variations can be created by going back to an older node and playing a move - the app will automatically insert a new game variation. Finally, a number of new settings were added under "Settings > Tree view" and "Settings > Game variation".
 - The user manual has been rewritten from scratch, complete with icons, illustrations, a few animatons and hyperlinks. Besides the in-app version of the user manual there is now also an identical [online version](https://littlego-usermanual.herzbube.ch/). Many thanks go to Andreas Fischlin who gave me the impetus to take on this long overdue task.

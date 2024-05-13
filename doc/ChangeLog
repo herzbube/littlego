@@ -1,4 +1,35 @@
 --------------------------------------------------------------------------------
+Version 2.0.1 (2024-05-11)
+--------------------------------------------------------------------------------
+========
+Features
+========
+- None
+
+========
+Bugfixes
+========
+- None
+
+===========
+Regressions
+===========
+- Fixed a bug that caused the app and Fuego to become out of sync when a game
+  with handicap was started, or when a game with black or white setup stones
+  was loaded from the archive (#430).
+
+=================
+Technical changes
+=================
+- None
+
+=================
+GitHub issue list
+=================
+A list of all issues closed for this release is available on GitHub:
+https://github.com/herzbube/littlego/milestone/24?closed=1
+
+--------------------------------------------------------------------------------
 Version 2.0.0 (2024-05-09)
 --------------------------------------------------------------------------------
 ========
