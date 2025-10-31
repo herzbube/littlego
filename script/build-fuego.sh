@@ -16,22 +16,8 @@ DEST_DIR="$PREFIX_BASEDIR"
 
 BOOST_SRC_DIR="$SRC_DIR/boost"
 BOOST_XCFRAMEWORK_NAME="boost.xcframework"
-BOOST_XCFRAMEWORK_SRC_DIR="$BOOST_SRC_DIR/ios/framework/$BOOST_XCFRAMEWORK_NAME"
+BOOST_XCFRAMEWORK_SRC_DIR="$BOOST_SRC_DIR/build/$BOOST_XCFRAMEWORK_NAME"
 BOOST_XCFRAMEWORK_DEST_DIR="$DEST_DIR/$BOOST_XCFRAMEWORK_NAME"
-# The Boost build script has some hardcoded default architectures to build.
-# These include 32-bit architectures. Because our deployment target is newer
-# than 10.0 only 64-bit architectures are supported by clang. We therefore must
-# override the Boost build script's default and specify only 64-bit
-# architectures. To support building out of the box for both Intel and Silicon
-# Macs we attempt to determine the simulator platform by looking at the host
-# machine's hardware platform. Note that for Fuego the architecture to build is
-# selected automatically by Xcode.
-BOOST_IPHONE_ARCHITECTURES="arm64"
-case "$(uname -m)" in
-  *x86*) BOOST_IPHONE_SIMULATOR_ARCHITECTURES="x86_64" ;;
-      *) BOOST_IPHONE_SIMULATOR_ARCHITECTURES="arm64" ;;
-esac
-
 FUEGO_SRC_DIR="$SRC_DIR"
 FUEGO_XCFRAMEWORK_NAME="fuego-on-ios.xcframework"
 FUEGO_XCFRAMEWORK_SRC_DIR="$FUEGO_SRC_DIR/ios/framework/$FUEGO_XCFRAMEWORK_NAME"
@@ -53,6 +39,7 @@ FUEGO_XCFRAMEWORK_DEST_DIR="$DEST_DIR/$FUEGO_XCFRAMEWORK_NAME"
 PRE_BUILD_STEPS_SOFTWARE()
 {
   echo "Cleaning up Git repository ..."
+
   # Remove everything not under version control...
   git clean -dfx
   if test $? -ne 0; then
@@ -63,7 +50,17 @@ PRE_BUILD_STEPS_SOFTWARE()
   if test $? -ne 0; then
     return 1
   fi
-  # The Boost build script performs its own cleanup in the Boost submodule
+
+  # The following script performs the same operations as above on the
+  # modular-boost Git submodule
+  pushd "$BOOST_SRC_DIR" >/dev/null
+  ./clean-and-reset.sh
+  RETVAL=$?
+  popd >/dev/null
+  if test $RETVAL -ne 0; then
+    return 1
+  fi
+
   return 0
 }
 
@@ -82,28 +79,36 @@ PRE_BUILD_STEPS_SOFTWARE()
 # +------------------------------------------------------------------------
 BUILD_STEPS_SOFTWARE()
 {
-  # Exporting these variables makes them visible to the Boost and Fuego build
-  # scripts. We expect that the variables are set by build-env.sh.
-  export IPHONEOS_BASESDK_VERSION
-  export IPHONEOS_DEPLOYMENT_TARGET
-  export IPHONE_SIMULATOR_BASESDK_VERSION
-  export IPHONE_SIMULATOR_DEPLOYMENT_TARGET
-  # Export some more variables just for the Boost build. We expect these
-  # variables to be set at the top of this build script.
-  export IPHONE_ARCHITECTURES="$BOOST_IPHONE_ARCHITECTURES"
-  export IPHONE_SIMULATOR_ARCHITECTURES="$BOOST_IPHONE_SIMULATOR_ARCHITECTURES"
+  # Exporting these variables makes them visible to the Boost build script.
+  # We expect that the deployment target variables are set by build-env.sh.
+  # Note: The Boost build script does not support specifying the base SDK at
+  # all.
+  export IOS_VERSION="$IPHONEOS_DEPLOYMENT_TARGET"
+  export IOS_SIM_VERSION="$IPHONE_SIMULATOR_DEPLOYMENT_TARGET"
 
-  # Build Boost first. Build script runs both the iPhone and simulator builds.
+  # Build Boost first. The build script supports a large number of platforms,
+  # but we only need the iPhone and simulator builds.
   echo "Begin building Boost ..."
   pushd "$BOOST_SRC_DIR" >/dev/null
-  ./boost.sh
+  ./boost.sh --platforms=ios,iossim
   RETVAL=$?
   popd >/dev/null
   if test $RETVAL -ne 0; then
     return 1
   fi
 
-  # Build Fuego after Boost. Build script Runs both the iPhone and simulator builds.
+  # Exporting these variables makes them visible to the Fuego build script.
+  # We expect that the variables are set by build-env.sh.
+  # IMPORTANT: The deployment target variables must be exported only AFTER the
+  # Boost build. Because these variables are known and interpreted by clang,
+  # they would interfere with how the Boost build script manages the build.
+  export IPHONEOS_BASESDK_VERSION
+  export IPHONEOS_DEPLOYMENT_TARGET
+  export IPHONE_SIMULATOR_BASESDK_VERSION
+  export IPHONE_SIMULATOR_DEPLOYMENT_TARGET
+
+  # Build Fuego after Boost. The build script runs both the iPhone and
+  # simulator builds.
   echo "Begin building Fuego ..."
   ./build.sh
   if test $? -ne 0; then
