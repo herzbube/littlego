@@ -77,8 +77,11 @@
 {
   static const int numberOfBoardSizes = (GoBoardSizeMax - GoBoardSizeMin) / 2 + 1;
   static const int arraySize = numberOfBoardSizes + 1;
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wgnu-folding-constant"
   static const int boardSizes[arraySize] = {GoBoardSize7, GoBoardSize9, GoBoardSize11, GoBoardSize13, GoBoardSize15, GoBoardSize17, GoBoardSize19, GoBoardSizeUndefined};
   static NSString* expectedBoardSizeStrings[arraySize] = {@"7", @"9", @"11", @"13", @"15", @"17", @"19", @"Undefined"};
+  #pragma clang diagnostic pop
 
   for (int index = 0; index < arraySize; ++index)
     XCTAssertTrue([expectedBoardSizeStrings[index] isEqualToString:[GoBoard stringForSize:boardSizes[index]]], @"%@", expectedBoardSizeStrings[index]);

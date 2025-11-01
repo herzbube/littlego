@@ -23,7 +23,10 @@
 // and therefore very fast. Since only one instance of BoardViewCGLayerCache
 // can exist, there are no array access conflicts to solve.
 static const int arraySizeLayers = MaxLayerType;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu-folding-constant"
 static BoardViewCGLayerCacheEntry layers[arraySizeLayers];
+#pragma clang diagnostic pop
 
 
 @implementation BoardViewCGLayerCache

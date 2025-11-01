@@ -23,7 +23,10 @@
 // and therefore very fast. Since only one instance of NodeTreeViewCGLayerCache
 // can exist, there are no array access conflicts to solve.
 static const int arraySizeLayers = NodeTreeViewLayerTypeMax;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu-folding-constant"
 static CGLayerRef layers[arraySizeLayers];
+#pragma clang diagnostic pop
 
 
 @implementation NodeTreeViewCGLayerCache

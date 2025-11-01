@@ -130,8 +130,11 @@
 + (NSArray*) verticesForHandicap:(int)handicap boardSize:(enum GoBoardSize)boardSize
 {
   static const int numberOfBoardSizes = (GoBoardSizeMax - GoBoardSizeMin) / 2 + 1;
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wgnu-folding-constant"
   static const int maxHandicaps[numberOfBoardSizes] = {4, 9, 9, 9, 9, 9, 9};
   static const int edgeDistances[numberOfBoardSizes] = {3, 3, 3, 4, 4, 4, 4};
+  #pragma clang diagnostic pop
 
   NSMutableArray* handicapVertices = [NSMutableArray arrayWithCapacity:0];
   if (0 == handicap)

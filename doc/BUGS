@@ -58,6 +58,34 @@ the future. If the IPHONEOS_DEPLOYMENT_TARGET is raised to a value that makes
 these enumerators go away I may have to start using a new zip library.
 
 
+These compiler warnings are generated when MBProgressHUD is built:
+  /Users/dev/Documents/littlego/Pods/MBProgressHUD/MBProgressHUD.m:382:100: 'UIActivityIndicatorViewStyleWhiteLarge' is deprecated: first deprecated in iOS 13.0
+  /Users/dev/Documents/littlego/Pods/MBProgressHUD/MBProgressHUD.m:746:21: 'UIApplicationDidChangeStatusBarOrientationNotification' is deprecated: first deprecated in iOS 13.0 - Use viewWillTransitionToSize:withTransitionCoordinator: instead.
+  /Users/dev/Documents/littlego/Pods/MBProgressHUD/MBProgressHUD.m:753:34: 'UIApplicationDidChangeStatusBarOrientationNotification' is deprecated: first deprecated in iOS 13.0 - Use viewWillTransitionToSize:withTransitionCoordinator: instead.
+These are deprecation warnings about an enumeration values that will go away in
+the future. If the IPHONEOS_DEPLOYMENT_TARGET is raised to a value that makes
+these enumerators go away I may have to start looking into using a customized
+version of MBProgressHUD, or replacing MBProgressHUD entirely.
+
+
+These compiler warnings are generated when CocoaLumberjack is built:
+  /Users/dev/Documents/littlego/Pods/CocoaLumberjack/Sources/CocoaLumberjack/DDTTYLogger.m:1210:28: Variable length array folded to constant array as an extension
+This is a warning about an array being declared with variable length. The
+warning is harmless because the compiler can actually calculate the array
+length. The warning stems from the fact that the calculation would not be
+possible if the compiler were strictly adhering to the language standard.
+
+
+Linker warnings
+---------------
+This linker warning is generated when linking the project:
+  Ignoring duplicate libraries: '-lc++'
+It's not clear where this warning is coming from. The only explanation I have
+is that the Boost 3rdparty build uses the flag "-stdlib=libc++" and that this
+somehow causes the warning. Needs investigation, but is low priority because
+the problem is not harmful.
+
+
 Xcode analyze issues
 --------------------
 Xcode analyze finds two issues in the nanopb source code, both in the static
@@ -182,4 +210,3 @@ issue tracker.
   back. The table view cell is no longer selected. Tried to fix this by
   setting the cell's "selected" and "highlighted" properties to YES, but didn't
   work.
-

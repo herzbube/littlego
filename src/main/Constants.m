@@ -22,7 +22,10 @@ const float gInfluenceColorAlphaBlack = 0.3;
 const float gInfluenceColorAlphaWhite = 0.6;
 const CFTimeInterval gGoBoardLongPressDelay = 0.15;
 const int arraySizeDefaultTabOrder = 9;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu-folding-constant"
 const int defaultTabOrder[arraySizeDefaultTabOrder] = {0, 1, 2, 4, 3, 5, 6, 7, 8};
+#pragma clang diagnostic pop
 const CGFloat uiAreaPlayResizablePaneMinimumSize = 0.1f;
 
 // Logging constants
@@ -178,7 +181,10 @@ const unsigned long long fuegoMaxGamesPlayingStrength3 = 10000;  // on fast CPUs
 const bool autoSelectFuegoResignMinGamesDefault = true;
 const unsigned long long fuegoResignMinGamesDefault = 5000;
 const int arraySizeFuegoResignThresholdDefault = (GoBoardSizeMax - GoBoardSizeMin) / 2 + 1;
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu-folding-constant"
 const int fuegoResignThresholdDefault[arraySizeFuegoResignThresholdDefault] = {5, 5, 5, 5, 8, 8, 8};
+#pragma clang diagnostic pop
 NSString* fallbackGtpEngineProfileUUID = @"5154D01A-1292-453F-B767-BE7389E3589F";
 
 // Archive view constants
