@@ -43,7 +43,7 @@
 #import "../../command/node/ChangeNodeSelectionAsyncCommand.h"
 #import "../../command/scoring/ToggleScoringStateOfStoneGroupCommand.h"
 #import "../../command/ChangeUIAreaPlayModeCommand.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -199,11 +199,11 @@ static GameActionManager* sharedGameActionManager = nil;
     [center addObserver:self selector:@selector(uiWillChangeInterfaceOrientation:) name:uiWillChangeInterfaceOrientation object:nil];
 
   // KVO observing
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  [appDelegate.boardSetupModel addObserver:self forKeyPath:@"boardSetupStoneColor" options:0 context:NULL];
-  [appDelegate.boardViewModel addObserver:self forKeyPath:@"computerAssistanceType" options:0 context:NULL];
-  [appDelegate.markupModel addObserver:self forKeyPath:@"selectedSymbolMarkupStyle" options:0 context:NULL];
-  [appDelegate.markupModel addObserver:self forKeyPath:@"markupType" options:0 context:NULL];
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  [modelProvider.boardSetupModel addObserver:self forKeyPath:@"boardSetupStoneColor" options:0 context:NULL];
+  [modelProvider.boardViewModel addObserver:self forKeyPath:@"computerAssistanceType" options:0 context:NULL];
+  [modelProvider.markupModel addObserver:self forKeyPath:@"selectedSymbolMarkupStyle" options:0 context:NULL];
+  [modelProvider.markupModel addObserver:self forKeyPath:@"markupType" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -213,11 +213,11 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  [appDelegate.boardSetupModel removeObserver:self forKeyPath:@"boardSetupStoneColor"];
-  [appDelegate.boardViewModel removeObserver:self forKeyPath:@"computerAssistanceType"];
-  [appDelegate.markupModel removeObserver:self forKeyPath:@"selectedSymbolMarkupStyle"];
-  [appDelegate.markupModel removeObserver:self forKeyPath:@"markupType"];
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  [modelProvider.boardSetupModel removeObserver:self forKeyPath:@"boardSetupStoneColor"];
+  [modelProvider.boardViewModel removeObserver:self forKeyPath:@"computerAssistanceType"];
+  [modelProvider.markupModel removeObserver:self forKeyPath:@"selectedSymbolMarkupStyle"];
+  [modelProvider.markupModel removeObserver:self forKeyPath:@"markupType"];
 }
 
 #pragma mark - Handlers for board interactions
@@ -595,7 +595,7 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) switchSetupStoneColorToWhite:(id)sender
 {
-  [ApplicationDelegate sharedDelegate].boardSetupModel.boardSetupStoneColor = GoColorWhite;
+  [Registry sharedRegistry].modelProvider.boardSetupModel.boardSetupStoneColor = GoColorWhite;
 }
 
 // -----------------------------------------------------------------------------
@@ -604,7 +604,7 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) switchSetupStoneColorToBlack:(id)sender
 {
-  [ApplicationDelegate sharedDelegate].boardSetupModel.boardSetupStoneColor = GoColorBlack;
+  [Registry sharedRegistry].modelProvider.boardSetupModel.boardSetupStoneColor = GoColorBlack;
 }
 
 // -----------------------------------------------------------------------------
@@ -621,7 +621,7 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) selectMarkupType:(id)sender
 {
-  enum SelectedSymbolMarkupStyle selectedSymbolMarkupStyle = [ApplicationDelegate sharedDelegate].markupModel.selectedSymbolMarkupStyle;
+  enum SelectedSymbolMarkupStyle selectedSymbolMarkupStyle = [Registry sharedRegistry].modelProvider.markupModel.selectedSymbolMarkupStyle;
 
   NSMutableArray* itemList = [NSMutableArray array];
   for (enum MarkupType markupType = MarkupTypeFirst; markupType <= MarkupTypeLast; markupType++)
@@ -631,7 +631,7 @@ static GameActionManager* sharedGameActionManager = nil;
     [itemList addObject:@[markupTypeText, markupTypeIcon]];
   }
 
-  int indexOfDefaultItem = [ApplicationDelegate sharedDelegate].markupModel.markupType;
+  int indexOfDefaultItem = [Registry sharedRegistry].modelProvider.markupModel.markupType;
   NSString* screenTitle = @"Select markup type";
   NSString* footerTitle = @"Select the type of markup that you want to place on the board. The eraser lets you delete existing markup.";
 
@@ -685,7 +685,7 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) gameInfo:(id)sender
 {
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
   {
     GoScore* score = [GoGame sharedGame].score;
     [score calculateWaitUntilDone:true];
@@ -758,7 +758,7 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   if (didMakeSelection)
   {
-    MarkupModel* markupModel = [ApplicationDelegate sharedDelegate].markupModel;
+    MarkupModel* markupModel = [Registry sharedRegistry].modelProvider.markupModel;
     if (markupModel.markupType != controller.indexOfSelectedItem)
       markupModel.markupType = controller.indexOfSelectedItem;
   }
@@ -991,9 +991,9 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
 
-  if (object == appDelegate.boardSetupModel)
+  if (object == modelProvider.boardSetupModel)
   {
     if ([keyPath isEqualToString:@"boardSetupStoneColor"])
     {
@@ -1001,7 +1001,7 @@ static GameActionManager* sharedGameActionManager = nil;
       [self delayedUpdate];
     }
   }
-  else if (object == appDelegate.boardViewModel)
+  else if (object == modelProvider.boardViewModel)
   {
     if ([keyPath isEqualToString:@"computerAssistanceType"])
     {
@@ -1009,7 +1009,7 @@ static GameActionManager* sharedGameActionManager = nil;
       [self delayedUpdate];
     }
   }
-  else if (object == appDelegate.markupModel)
+  else if (object == modelProvider.markupModel)
   {
     if ([keyPath isEqualToString:@"markupType"])
     {
@@ -1105,8 +1105,8 @@ static GameActionManager* sharedGameActionManager = nil;
   GoGame* game = [GoGame sharedGame];
   GoBoardPosition* boardPosition = game.boardPosition;
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  UiSettingsModel* uiSettingsModel = appDelegate.uiSettingsModel;
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  UiSettingsModel* uiSettingsModel = modelProvider.uiSettingsModel;
 
   if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
@@ -1157,7 +1157,7 @@ static GameActionManager* sharedGameActionManager = nil;
           }
           else
           {
-            switch (appDelegate.boardViewModel.computerAssistanceType)
+            switch (modelProvider.boardViewModel.computerAssistanceType)
             {
               case ComputerAssistanceTypePlayForMe:
                 [self addGameAction:GameActionComputerPlay toVisibleStatesDictionary:visibleStates];
@@ -1185,7 +1185,7 @@ static GameActionManager* sharedGameActionManager = nil;
   {
     [self addGameAction:GameActionPlayStart toVisibleStatesDictionary:visibleStates];
 
-    BoardSetupModel* boardSetupModel = appDelegate.boardSetupModel;
+    BoardSetupModel* boardSetupModel = modelProvider.boardSetupModel;
     if (boardSetupModel.boardSetupStoneColor == GoColorBlack)
       [self addGameAction:GameActionSwitchSetupStoneColorToWhite toVisibleStatesDictionary:visibleStates];
     else
@@ -1245,10 +1245,10 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
-      ! appDelegate.boardViewModel.boardViewPanningGestureIsInProgress &&
-      ! appDelegate.boardViewModel.boardViewDisplaysAnimation)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
+      ! modelProvider.boardViewModel.boardViewPanningGestureIsInProgress &&
+      ! modelProvider.boardViewModel.boardViewDisplaysAnimation)
   {
     switch (game.type)
     {
@@ -1286,13 +1286,13 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
-      appDelegate.boardViewModel.boardViewDisplaysAnimation)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.boardViewModel.boardViewPanningGestureIsInProgress ||
+      modelProvider.boardViewModel.boardViewDisplaysAnimation)
   {
     // always disabled
   }
-  else if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+  else if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (! game.score.scoringInProgress)
       enabled = YES;
@@ -1331,10 +1331,10 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
-      ! appDelegate.boardViewModel.boardViewPanningGestureIsInProgress &&
-      ! appDelegate.boardViewModel.boardViewDisplaysAnimation)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
+      ! modelProvider.boardViewModel.boardViewPanningGestureIsInProgress &&
+      ! modelProvider.boardViewModel.boardViewDisplaysAnimation)
   {
     switch (game.type)
     {
@@ -1368,10 +1368,10 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
-      ! appDelegate.boardViewModel.boardViewPanningGestureIsInProgress &&
-      ! appDelegate.boardViewModel.boardViewDisplaysAnimation)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
+      ! modelProvider.boardViewModel.boardViewPanningGestureIsInProgress &&
+      ! modelProvider.boardViewModel.boardViewDisplaysAnimation)
   {
     switch (game.type)
     {
@@ -1401,10 +1401,10 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
-      ! appDelegate.boardViewModel.boardViewPanningGestureIsInProgress &&
-      ! appDelegate.boardViewModel.boardViewDisplaysAnimation)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModePlay &&
+      ! modelProvider.boardViewModel.boardViewPanningGestureIsInProgress &&
+      ! modelProvider.boardViewModel.boardViewDisplaysAnimation)
   {
     switch (game.type)
     {
@@ -1434,13 +1434,13 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
-      appDelegate.boardViewModel.boardViewDisplaysAnimation)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.boardViewModel.boardViewPanningGestureIsInProgress ||
+      modelProvider.boardViewModel.boardViewDisplaysAnimation)
   {
     // always disabled
   }
-  else if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+  else if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (game.score.scoringInProgress)
       enabled = YES;
@@ -1460,11 +1460,11 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring ||
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring ||
       game.isComputerThinking ||
-      appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
-      appDelegate.boardViewModel.boardViewDisplaysAnimation)
+      modelProvider.boardViewModel.boardViewPanningGestureIsInProgress ||
+      modelProvider.boardViewModel.boardViewDisplaysAnimation)
   {
     // always disabled
   }
@@ -1482,14 +1482,14 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.boardViewModel.boardViewDisplaysAnimation)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.boardViewModel.boardViewDisplaysAnimation)
   {
     // always disabled
   }
   else
   {
-    UiSettingsModel* uiSettingsModel = appDelegate.uiSettingsModel;
+    UiSettingsModel* uiSettingsModel = modelProvider.uiSettingsModel;
     switch (uiSettingsModel.uiAreaPlayMode)
     {
       case UIAreaPlayModeScoring:
@@ -1543,9 +1543,9 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
-      appDelegate.boardViewModel.boardViewDisplaysAnimation)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.boardViewModel.boardViewPanningGestureIsInProgress ||
+      modelProvider.boardViewModel.boardViewDisplaysAnimation)
   {
     // always disabled
   }
@@ -1582,13 +1582,13 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
-      appDelegate.boardViewModel.boardViewDisplaysAnimation)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.boardViewModel.boardViewPanningGestureIsInProgress ||
+      modelProvider.boardViewModel.boardViewDisplaysAnimation)
   {
     // always disabled
   }
-  else if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+  else if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (! game.score.scoringInProgress)
       enabled = YES;
@@ -1620,14 +1620,14 @@ static GameActionManager* sharedGameActionManager = nil;
 {
   BOOL enabled = NO;
   GoGame* game = [GoGame sharedGame];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
   if (game.isComputerThinking ||
-      appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
-      appDelegate.boardViewModel.boardViewDisplaysAnimation)
+      modelProvider.boardViewModel.boardViewPanningGestureIsInProgress ||
+      modelProvider.boardViewModel.boardViewDisplaysAnimation)
   {
     // always disabled
   }
-  else if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+  else if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (! game.score.scoringInProgress)
       enabled = YES;
@@ -1676,7 +1676,7 @@ static GameActionManager* sharedGameActionManager = nil;
 // -----------------------------------------------------------------------------
 - (void) autoEnableScoringIfNecessary
 {
-  if (! [ApplicationDelegate sharedDelegate].scoringModel.autoScoringAndResumingPlay)
+  if (! [Registry sharedRegistry].modelProvider.scoringModel.autoScoringAndResumingPlay)
     return;
   GoGame* game = [GoGame sharedGame];
   if (GoGameStateGameHasEnded != game.state)

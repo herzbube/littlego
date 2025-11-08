@@ -29,7 +29,8 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/AccessibilityUtility.h"
@@ -1117,7 +1118,7 @@ static UIFont* smallFont = nil;
 // -----------------------------------------------------------------------------
 + (void) setupStaticViewMetrics
 {
-  NodeTreeViewModel* nodeTreeViewModel = [ApplicationDelegate sharedDelegate].nodeTreeViewModel;
+  NodeTreeViewModel* nodeTreeViewModel = [Registry sharedRegistry].modelProvider.nodeTreeViewModel;
   id<NodeTreeViewCanvasDataProvider> nodeTreeViewCanvasDataProvider = [[[PrivateNodeTreeViewCanvasDataProvider alloc] init] autorelease];
   NodeTreeViewMetrics* metrics = [[[NodeTreeViewMetrics alloc] initWithModel:nodeTreeViewModel
                                                           canvasDataProvider:nodeTreeViewCanvasDataProvider

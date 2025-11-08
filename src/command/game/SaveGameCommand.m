@@ -21,7 +21,7 @@
 #import "../../archive/ArchiveViewModel.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoGameDocument.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -62,7 +62,7 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
+  ArchiveViewModel* model = [Registry sharedRegistry].modelProvider.archiveViewModel;
   NSString* fileName = [self.gameName stringByAppendingString:@".sgf"];
   NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:fileName];
 

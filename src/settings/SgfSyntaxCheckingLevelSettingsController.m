@@ -17,7 +17,8 @@
 
 // Project includes
 #import "SgfSyntaxCheckingLevelSettingsController.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../sgf/SgfSettingsModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UIViewControllerAdditions.h"
@@ -108,7 +109,7 @@ enum ResetToDefaultsSectionItem
   {
     [controller autorelease];
     controller.delegate = delegate;
-    controller.sgfSettingsModel = [ApplicationDelegate sharedDelegate].sgfSettingsModel;
+    controller.sgfSettingsModel = [Registry sharedRegistry].modelProvider.sgfSettingsModel;
   }
   return controller;
 }

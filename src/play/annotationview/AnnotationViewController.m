@@ -24,7 +24,8 @@
 #import "../../go/GoMove.h"
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeAnnotation.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/AutoLayoutUtility.h"
@@ -238,8 +239,7 @@ static const int spacerBottomTag = 2;
   self.valuationViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
   self.descriptionViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  UiSettingsModel* uiSettingsModel = appDelegate.uiSettingsModel;
+  UiSettingsModel* uiSettingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
   UIViewController* initialViewController;
   if (uiSettingsModel.visibleAnnotationViewPage == AnnotationViewPageValuation)
     initialViewController = self.valuationViewController;
@@ -746,8 +746,7 @@ static const int spacerBottomTag = 2;
      didHideViewController:(UIViewController*)currentViewController
      didShowViewController:(UIViewController*)nextViewController
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  UiSettingsModel* uiSettingsModel = appDelegate.uiSettingsModel;
+  UiSettingsModel* uiSettingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
   if (nextViewController == self.valuationViewController)
     uiSettingsModel.visibleAnnotationViewPage = AnnotationViewPageValuation;
   else
@@ -954,7 +953,7 @@ static const int spacerBottomTag = 2;
   self.buttonStatesNeedsUpdate = false;
 
   GoGame* game = [GoGame sharedGame];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
   GoBoardPosition* boardPosition = game.boardPosition;
   GoNode* node = boardPosition.currentNode;
 
@@ -968,8 +967,8 @@ static const int spacerBottomTag = 2;
   if (! game ||
       ! node ||
       game.isComputerThinking ||
-      appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
-      appDelegate.boardViewModel.boardViewDisplaysAnimation)
+      modelProvider.boardViewModel.boardViewPanningGestureIsInProgress ||
+      modelProvider.boardViewModel.boardViewDisplaysAnimation)
   {
     isPositionValuationButtonEnabled = NO;
     isMoveValuationButtonEnabled = NO;

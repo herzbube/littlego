@@ -17,7 +17,8 @@
 
 // Project includes
 #import "GoPlayer.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
 #import "../newgame/NewGameModel.h"
@@ -45,7 +46,7 @@
 // -----------------------------------------------------------------------------
 + (GoPlayer*) defaultBlackPlayer
 {
-  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  NewGameModel* newGameModel = [Registry sharedRegistry].modelProvider.theNewGameModel;
   Player* player = [GoPlayer playerWithUUID:[newGameModel blackPlayerUUID]];
   if (player)
     return [GoPlayer blackPlayer:player];
@@ -61,7 +62,7 @@
 // -----------------------------------------------------------------------------
 + (GoPlayer*) defaultWhitePlayer
 {
-  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  NewGameModel* newGameModel = [Registry sharedRegistry].modelProvider.theNewGameModel;
   Player* player = [GoPlayer playerWithUUID:[newGameModel whitePlayerUUID]];
   if (player)
     return [GoPlayer whitePlayer:player];
@@ -239,7 +240,7 @@
 // -----------------------------------------------------------------------------
 + (Player*) playerWithUUID:(NSString*)uuid
 {
-  PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
+  PlayerModel* playerModel = [Registry sharedRegistry].modelProvider.playerModel;
   return [playerModel playerWithUUID:uuid];
 }
 

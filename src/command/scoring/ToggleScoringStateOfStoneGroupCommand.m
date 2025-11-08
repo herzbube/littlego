@@ -20,7 +20,8 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../play/model/ScoringModel.h"
 
 
@@ -74,8 +75,7 @@
 
   GoScore* score = [GoGame sharedGame].score;
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  switch (appDelegate.scoringModel.scoreMarkMode)
+  switch ([Registry sharedRegistry].modelProvider.scoringModel.scoreMarkMode)
   {
     case GoScoreMarkModeDead:
     {

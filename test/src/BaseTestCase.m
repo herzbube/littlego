@@ -20,6 +20,7 @@
 
 // Application includes
 #import <main/ApplicationDelegate.h>
+#import <main/Registry.h>
 #import <go/GoGame.h>
 #import <command/game/NewGameCommand.h>
 
@@ -72,6 +73,10 @@
     // into the file
     ///   ~/Library/Application Support/iPhone Simulator/Library/Preferences/otest.plist
     XCTAssertFalse(m_delegate.writeUserDefaultsEnabled, @"User defaults must not be written in unit testing environment");
+
+    // Once the models have been initialized, the registry can also be set up
+    [m_delegate setupRegistry];
+    m_registry = [Registry sharedRegistry];
 
     [[[[NewGameCommand alloc] init] autorelease] submit];
     m_game = m_delegate.game;

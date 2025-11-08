@@ -18,6 +18,7 @@
 // Forward declarations
 @class ApplicationDelegate;
 @class GoGame;
+@class Registry;
 
 
 // -----------------------------------------------------------------------------
@@ -37,6 +38,7 @@
 ///   data contains)
 /// - All of the main application's model objects are created and initialized
 ///   with user defaults data
+/// - The shared Registry object is set up
 /// - A new GoGame object is created by submitting a NewGameCommand instance.
 ///   The object is available through the instance variable m_game.
 ///
@@ -57,6 +59,7 @@
 @protected
   ApplicationDelegate* m_delegate;
   GoGame* m_game;
+  Registry* m_registry;
 }
 
 @property(nonatomic, assign, readonly) bool testSetupHasBeenDone;

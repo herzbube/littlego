@@ -23,6 +23,8 @@
 #import <go/GoGameRules.h>
 #import <command/game/NewGameCommand.h>
 #import <main/ApplicationDelegate.h>
+#import <main/ModelProvider.h>
+#import <main/Registry.h>
 #import <newgame/NewGameModel.h>
 
 
@@ -48,7 +50,7 @@
 // -----------------------------------------------------------------------------
 - (void) testNonDefaultRules
 {
-  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  NewGameModel* newGameModel = m_registry.modelProvider.theNewGameModel;
   newGameModel.koRule = GoKoRuleSuperkoPositional;
   newGameModel.scoringSystem = GoScoringSystemTerritoryScoring;
   newGameModel.lifeAndDeathSettlingRule = GoLifeAndDeathSettlingRuleThreePasses;

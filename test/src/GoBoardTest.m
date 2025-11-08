@@ -24,6 +24,8 @@
 #import <go/GoPoint.h>
 #import <go/GoVertex.h>
 #import <main/ApplicationDelegate.h>
+#import <main/ModelProvider.h>
+#import <main/Registry.h>
 #import <newgame/NewGameModel.h>
 #import <command/game/NewGameCommand.h>
 
@@ -48,7 +50,7 @@
 {
   enum GoBoardSize expectedBoardSize = GoBoardSize13;
 
-  NewGameModel* newGameModel = m_delegate.theNewGameModel;
+  NewGameModel* newGameModel = m_registry.modelProvider.theNewGameModel;
   newGameModel.boardSize = expectedBoardSize;
   GoBoard* board = [GoBoard boardWithDefaultSize];
 
@@ -257,7 +259,7 @@
   XCTAssertNotNil(regions);
   XCTAssertEqual(expectedNumberOfRegions, regions.count);
 
-  NewGameModel* newGameModel = m_delegate.theNewGameModel;
+  NewGameModel* newGameModel = m_registry.modelProvider.theNewGameModel;
   newGameModel.boardSize = GoBoardSize9;
   newGameModel.handicap = 5;
   expectedNumberOfRegions = 1 + newGameModel.handicap;

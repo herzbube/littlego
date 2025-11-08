@@ -17,7 +17,8 @@
 
 // Project includes
 #import "ToggleTerritoryStatisticsCommand.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../play/model/BoardViewModel.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
@@ -100,7 +101,7 @@
 // -----------------------------------------------------------------------------
 - (bool) submitGtpCommand
 {
-  BoardViewModel* model = [ApplicationDelegate sharedDelegate].boardViewModel;
+  BoardViewModel* model = [Registry sharedRegistry].modelProvider.boardViewModel;
   int territoryStaticsParameter = model.displayPlayerInfluence ? 1 : 0;
   NSString* commandString = [NSString stringWithFormat:@"uct_param_globalsearch territory_statistics %d", territoryStaticsParameter];
   GtpCommand* command = [GtpCommand command:commandString];

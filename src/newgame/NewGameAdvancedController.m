@@ -19,7 +19,8 @@
 #import "NewGameAdvancedController.h"
 #import "NewGameModel.h"
 #import "../go/GoUtilities.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
 #import "../ui/UiElementMetrics.h"
@@ -178,7 +179,7 @@ enum CellID
     [controller autorelease];
     controller.loadGame = loadGame;
     controller.gameType = gameType;
-    controller.theNewGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+    controller.theNewGameModel = [Registry sharedRegistry].modelProvider.theNewGameModel;
   }
   return controller;
 }

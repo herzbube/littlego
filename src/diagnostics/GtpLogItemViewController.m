@@ -19,7 +19,7 @@
 #import "GtpLogItemViewController.h"
 #import "GtpLogItem.h"
 #import "GtpCommandModel.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
 #import "../main/Registry.h"
 #import "../main/WindowProvider.h"
 #import "../ui/TableViewCellFactory.h"
@@ -115,8 +115,7 @@ enum ResponseStringSectionItem
 
   self.navigationItem.title = @"GTP Log Item";
 
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  if (! [delegate.gtpCommandModel hasCommand:self.logItem.commandString])
+  if (! [[Registry sharedRegistry].modelProvider.gtpCommandModel hasCommand:self.logItem.commandString])
   {
     self.navigationItem.rightBarButtonItem = [[[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd
                                                                                             target:self
@@ -298,8 +297,7 @@ enum ResponseStringSectionItem
 // -----------------------------------------------------------------------------
 - (void) addToCannedCommands:(id)sender
 {
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  GtpCommandModel* model = delegate.gtpCommandModel;
+  GtpCommandModel* model = [Registry sharedRegistry].modelProvider.gtpCommandModel;
   [model addCommand:self.logItem.commandString];
 
   [[Registry sharedRegistry].windowProvider.window.rootViewController presentOkAlertWithTitle:@"Command added"

@@ -18,7 +18,6 @@
 // Project includes
 #import "CrashReportingHandler.h"
 #import "CrashReportingModel.h"
-#import "../main/ApplicationDelegate.h"
 #import "../main/Registry.h"
 #import "../main/WindowProvider.h"
 

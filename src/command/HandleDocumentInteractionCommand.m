@@ -18,8 +18,8 @@
 // Project includes
 #import "HandleDocumentInteractionCommand.h"
 #import "../archive/ArchiveViewModel.h"
-#import "../main/ApplicationDelegate.h"
 #import "../main/MainUtility.h"
+#import "../main/ModelProvider.h"
 #import "../main/Registry.h"
 #import "../main/WindowProvider.h"
 #import "../ui/UIViewControllerAdditions.h"
@@ -85,8 +85,7 @@
 // -----------------------------------------------------------------------------
 - (bool) moveDocumentInteractionFilesToArchive
 {
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  ArchiveViewModel* model = delegate.archiveViewModel;
+  ArchiveViewModel* model = [Registry sharedRegistry].modelProvider.archiveViewModel;
 
   NSString* successfullyImportedGameNames = @"";
   NSString* failedImportedGameNames = @"";

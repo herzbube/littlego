@@ -17,7 +17,8 @@
 
 // Project includes
 #import "MarkupSettingsController.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../play/model/MarkupModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
@@ -107,7 +108,7 @@ enum FillMarkerGapsSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.markupModel = [ApplicationDelegate sharedDelegate].markupModel;
+    controller.markupModel = [Registry sharedRegistry].modelProvider.markupModel;
   }
   return controller;
 }

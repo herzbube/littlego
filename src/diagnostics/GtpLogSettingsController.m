@@ -19,7 +19,8 @@
 #import "GtpLogSettingsController.h"
 #import "GtpCommandModel.h"
 #import "GtpLogModel.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
 
@@ -87,8 +88,8 @@ enum ResetCannedCommandsSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.logModel = [ApplicationDelegate sharedDelegate].gtpLogModel;
-    controller.commandModel = [ApplicationDelegate sharedDelegate].gtpCommandModel;
+    controller.logModel = [Registry sharedRegistry].modelProvider.gtpLogModel;
+    controller.commandModel = [Registry sharedRegistry].modelProvider.gtpCommandModel;
   }
   return controller;
 }

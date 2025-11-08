@@ -17,7 +17,8 @@
 
 // Project includes
 #import "DeleteGameCommand.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../archive/ArchiveGame.h"
 #import "../../archive/ArchiveViewModel.h"
 
@@ -55,7 +56,7 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
+  ArchiveViewModel* model = [Registry sharedRegistry].modelProvider.archiveViewModel;
   NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
   NSFileManager* fileManager = [NSFileManager defaultManager];
   BOOL success = [fileManager removeItemAtPath:filePath error:nil];

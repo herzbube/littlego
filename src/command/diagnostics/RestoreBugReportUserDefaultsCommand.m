@@ -18,7 +18,6 @@
 // Project includes
 #import "RestoreBugReportUserDefaultsCommand.h"
 #import "../../diagnostics/BugReportUtilities.h"
-#import "../../main/ApplicationDelegate.h"
 #import "../../utility/PathUtilities.h"
 
 // 3rdparty library includes

@@ -17,7 +17,8 @@
 
 // Project includes
 #import "EditPlayerProfileController.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../player/GtpEngineProfile.h"
 #import "../player/GtpEngineProfileModel.h"
 #import "../player/Player.h"
@@ -185,7 +186,7 @@ enum ProfileNotesSectionItem
     if (self.player != nil)
       self.navigationItem.title = @"Edit Player";
     else
-      self.navigationItem.title = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel.fallbackProfile.name;
+      self.navigationItem.title = [Registry sharedRegistry].modelProvider.gtpEngineProfileModel.fallbackProfile.name;
     if (self == [self.navigationController.viewControllers objectAtIndex:0])
     {
       // We are the root view controller of the navigation stack, so we are
@@ -717,12 +718,12 @@ enum ProfileNotesSectionItem
 // -----------------------------------------------------------------------------
 - (void) create:(id)sender
 {
-  PlayerModel* model = [ApplicationDelegate sharedDelegate].playerModel;
+  PlayerModel* model = [Registry sharedRegistry].modelProvider.playerModel;
   [model add:self.player];
 
   if (self.profile)
   {
-    GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+    GtpEngineProfileModel* model = [Registry sharedRegistry].modelProvider.gtpEngineProfileModel;
     [model add:self.profile];
   }
 
@@ -758,7 +759,7 @@ enum ProfileNotesSectionItem
     @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"isHuman %d and hasOldProfile %d do not match", self.player.isHuman, hasOldProfile] userInfo:nil];
   }
 
-  GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+  GtpEngineProfileModel* model = [Registry sharedRegistry].modelProvider.gtpEngineProfileModel;
 
   if (self.player.isHuman)
   {

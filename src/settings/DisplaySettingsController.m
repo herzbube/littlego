@@ -18,7 +18,8 @@
 // Project includes
 #import "DisplaySettingsController.h"
 #import "../command/playerinfluence/ToggleTerritoryStatisticsCommand.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../play/model/BoardViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewSliderCell.h"
@@ -92,7 +93,7 @@ enum DisplayPlayerInfluenceSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
+    controller.boardViewModel = [Registry sharedRegistry].modelProvider.boardViewModel;
   }
   return controller;
 }

@@ -22,7 +22,7 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeMarkup.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -89,8 +89,7 @@
   GoBoardPosition* boardPosition = game.boardPosition;
   int currentBoardPosition = boardPosition.currentBoardPosition;
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeEditMarkup)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeEditMarkup)
   {
     // Alas, defensive programming. Cf. HandleBoardSetupInteractionCommand,
     // although the scenarios handled there should not be possible for markup

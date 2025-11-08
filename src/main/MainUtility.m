@@ -21,6 +21,7 @@
 #import "DocumentViewController.h"
 #import "LicensesViewController.h"
 #import "MainTabBarController.h"
+#import "ModelProvider.h"
 #import "Registry.h"
 #import "WindowProvider.h"
 #import "SectionedDocumentViewController.h"
@@ -205,10 +206,8 @@
 // -----------------------------------------------------------------------------
 + (void) mainApplicationViewController:(UIViewController*)viewController didDisplayUIArea:(enum UIArea)uiArea
 {
-  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-  UiSettingsModel* uiSettingsModel = applicationDelegate.uiSettingsModel;
-  uiSettingsModel.visibleUIArea = uiArea;
-  [applicationDelegate writeUserDefaults];
+  [Registry sharedRegistry].modelProvider.uiSettingsModel.visibleUIArea = uiArea;
+  [[ApplicationDelegate sharedDelegate] writeUserDefaults];
 }
 
 @end

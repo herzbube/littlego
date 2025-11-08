@@ -19,7 +19,8 @@
 #import "NavigationBarButtonModel.h"
 #import "../gameaction/GameActionManager.h"
 #import "../model/MarkupModel.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../utility/UIImageAdditions.h"
 
 
@@ -245,7 +246,7 @@
 // -----------------------------------------------------------------------------
 + (NSString*) imageResourceNameForGameActionSelectMarkupType
 {
-  MarkupModel* markupModel = [ApplicationDelegate sharedDelegate].markupModel;
+  MarkupModel* markupModel = [Registry sharedRegistry].modelProvider.markupModel;
   return [UIImage iconResourceNameForMarkupType:markupModel.markupType selectedSymbolMarkupStyle:markupModel.selectedSymbolMarkupStyle];
 }
 

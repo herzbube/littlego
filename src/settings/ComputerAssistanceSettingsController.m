@@ -17,7 +17,8 @@
 
 // Project includes
 #import "ComputerAssistanceSettingsController.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../play/model/BoardViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
@@ -67,7 +68,7 @@ enum ComputerAssistanceSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
+    controller.boardViewModel = [Registry sharedRegistry].modelProvider.boardViewModel;
   }
   return controller;
 }

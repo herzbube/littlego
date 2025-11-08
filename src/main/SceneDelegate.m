@@ -19,6 +19,7 @@
 #import "SceneDelegate.h"
 #import "ApplicationDelegate.h"
 #import "MainTabBarController.h"
+#import "ModelProvider.h"
 #import "Registry.h"
 #import "../command/game/PauseGameCommand.h"
 #import "../command/HandleDocumentInteractionCommand.h"
@@ -179,7 +180,7 @@ willConnectToSession:(UISceneSession*)session
     }
   }
 
-  [ApplicationDelegate sharedDelegate].soundHandling.disabled = true;
+  [Registry sharedRegistry].modelProvider.soundHandling.disabled = true;
 }
 
 // -----------------------------------------------------------------------------
@@ -191,7 +192,7 @@ willConnectToSession:(UISceneSession*)session
 {
   DDLogInfo(@"sceneDidBecomeActive:() received");
 
-  [ApplicationDelegate sharedDelegate].soundHandling.disabled = false;
+  [Registry sharedRegistry].modelProvider.soundHandling.disabled = false;
 
   // Send this notification just in case something changed in the documents
   // folder since the app was deactivated. Note: This is not just laziness - if
@@ -335,7 +336,7 @@ willConnectToSession:(UISceneSession*)session
 
   [FIRApp configure];
 
-  CrashReportingModel* crashReportingModel = [ApplicationDelegate sharedDelegate].crashReportingModel;
+  CrashReportingModel* crashReportingModel = [Registry sharedRegistry].modelProvider.crashReportingModel;
   CrashReportingHandler* crashReportingHandler = [[[CrashReportingHandler alloc] initWithModel:crashReportingModel] autorelease];
   [crashReportingHandler handleUnsentCrashReportsOrDoNothing];
 #endif

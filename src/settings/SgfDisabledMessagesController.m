@@ -18,7 +18,8 @@
 // Project includes
 #import "SgfDisabledMessagesController.h"
 #import "../sgf/SgfSettingsModel.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UIViewControllerAdditions.h"
@@ -48,7 +49,7 @@
   {
     [controller autorelease];
     controller.delegate = delegate;
-    controller.sgfSettingsModel = [ApplicationDelegate sharedDelegate].sgfSettingsModel;
+    controller.sgfSettingsModel = [Registry sharedRegistry].modelProvider.sgfSettingsModel;
   }
   return controller;
 }

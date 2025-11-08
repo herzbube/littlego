@@ -22,7 +22,8 @@
 #import "../boardposition/SyncGTPEngineCommand.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoBoardPosition.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -91,8 +92,7 @@
   GoGame* game = [GoGame sharedGame];
   int currentBoardPosition = game.boardPosition.currentBoardPosition;
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeBoardSetup)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeBoardSetup)
   {
     // Some rare scenarios have been found where this is possible - for details
     // see https://github.com/herzbube/littlego/issues/366. This block handles

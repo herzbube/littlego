@@ -17,7 +17,8 @@
 
 // Project includes
 #import "SgfSettingsController.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../sgf/SgfSettingsModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
@@ -93,7 +94,7 @@ enum OtherSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.sgfSettingsModel = [ApplicationDelegate sharedDelegate].sgfSettingsModel;
+    controller.sgfSettingsModel = [Registry sharedRegistry].modelProvider.sgfSettingsModel;
   }
   return controller;
 }

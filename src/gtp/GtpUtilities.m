@@ -20,7 +20,8 @@
 #import "GtpCommand.h"
 #import "../go/GoGame.h"
 #import "../go/GoPlayer.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../player/GtpEngineProfileModel.h"
 #import "../player/GtpEngineProfile.h"
 #import "../player/Player.h"
@@ -76,7 +77,7 @@
   if (player)
     profileToActivate = [player gtpEngineProfile];
   else
-    profileToActivate = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel fallbackProfile];
+    profileToActivate = [[Registry sharedRegistry].modelProvider.gtpEngineProfileModel fallbackProfile];
 
   // Invoking applyProfile makes the profile the active profile
   if (profileToActivate)
@@ -111,7 +112,7 @@
 // -----------------------------------------------------------------------------
 + (void) restorePondering
 {
-  GtpEngineProfile* profile = [[ApplicationDelegate sharedDelegate].gtpEngineProfileModel activeProfile];
+  GtpEngineProfile* profile = [[Registry sharedRegistry].modelProvider.gtpEngineProfileModel activeProfile];
   if (! profile)
     DDLogError(@"GtpUtilities::restorePondering(): Unable to determine profile with computer player settings");
   else if (profile.fuegoPondering)

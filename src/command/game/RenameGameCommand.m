@@ -17,7 +17,8 @@
 
 // Project includes
 #import "RenameGameCommand.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../archive/ArchiveGame.h"
 #import "../../archive/ArchiveViewModel.h"
 
@@ -61,7 +62,7 @@
   if ([self.game.fileName isEqualToString:newFileName])
     return true;
 
-  ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
+  ArchiveViewModel* model = [Registry sharedRegistry].modelProvider.archiveViewModel;
   NSString* oldPath = [model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
   NSString* newPath = [model.archiveFolder stringByAppendingPathComponent:newFileName];
 

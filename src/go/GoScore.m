@@ -28,7 +28,8 @@
 #import "GoPlayer.h"
 #import "GoPoint.h"
 #import "GoUtilities.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpResponse.h"
 #import "../play/model/ScoringModel.h"
@@ -302,7 +303,7 @@
 // -----------------------------------------------------------------------------
 - (void) willChangeBoardPosition
 {
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return;
   [self uninitializeRegions];
 }
@@ -318,7 +319,7 @@
 // -----------------------------------------------------------------------------
 - (void) didChangeBoardPosition
 {
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return;
   [self initializeRegionsRetainTerritory:false];
   self.didAskGtpEngineForDeadStones = false;
@@ -376,7 +377,7 @@
     self.lastCalculationHadError = false;
     [self resetValues];
 
-    if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+    if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
     {
       [self askGtpEngineForDeadStones];
       bool success = [self updateTerritoryColor];
@@ -472,7 +473,7 @@
 // -----------------------------------------------------------------------------
 - (void) askGtpEngineForDeadStones
 {
-  if (! [ApplicationDelegate sharedDelegate].scoringModel.askGtpEngineForDeadStones)
+  if (! [Registry sharedRegistry].modelProvider.scoringModel.askGtpEngineForDeadStones)
     return;
   if (self.didAskGtpEngineForDeadStones)
     return;
@@ -534,7 +535,7 @@
 - (void) postScoringModeNotification
 {
   NSString* notificationName;
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
     notificationName = goScoreScoringEnabled;
   else
     notificationName = goScoreScoringDisabled;
@@ -627,14 +628,14 @@
 // -----------------------------------------------------------------------------
 - (void) toggleDeadStateOfStoneGroup:(GoBoardRegion*)stoneGroup
 {
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return;
   if (self.scoringInProgress)
     return;
   if (! [stoneGroup isStoneGroup])
     return;
 
-  bool markDeadStonesIntelligently = [ApplicationDelegate sharedDelegate].scoringModel.markDeadStonesIntelligently;
+  bool markDeadStonesIntelligently = [Registry sharedRegistry].modelProvider.scoringModel.markDeadStonesIntelligently;
 
   // We use this array like a queue: We add GoBoardRegion objects to it that
   // need to be toggled, and we loop until the queue is empty. In each iteration
@@ -742,7 +743,7 @@
 // -----------------------------------------------------------------------------
 - (void) toggleSekiStateOfStoneGroup:(GoBoardRegion*)stoneGroup
 {
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return;
   if (self.scoringInProgress)
     return;
@@ -1097,7 +1098,7 @@
   }
 
   // Area, territory & dead stones (for current board position)
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     NSArray* allRegions = self.game.board.regions;
     for (GoBoardRegion* region in allRegions)

@@ -23,7 +23,8 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoScore.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../ui/UiSettingsModel.h"
 
 
@@ -122,8 +123,8 @@
 
   GameActionManager* gameActionManager = [GameActionManager sharedGameActionManager];
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  switch (appDelegate.uiSettingsModel.uiAreaPlayMode)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  switch (modelProvider.uiSettingsModel.uiAreaPlayMode)
   {
     case UIAreaPlayModeScoring:
     {
@@ -140,7 +141,7 @@
     }
     case UIAreaPlayModeEditMarkup:
     {
-      MarkupModel* markupModel = appDelegate.markupModel;
+      MarkupModel* markupModel = modelProvider.markupModel;
       if (markupModel.markupTool == MarkupToolConnection && ! markupModel.connectionToolAllowsDelete)
         return;
 
@@ -203,7 +204,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateTappingEnabled
 {
-  switch ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode)
+  switch ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode)
   {
     case UIAreaPlayModeScoring:
     {

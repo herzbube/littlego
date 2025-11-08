@@ -19,7 +19,8 @@
 #import "ResetPlayersAndProfilesCommand.h"
 #import "backup/CleanBackupSgfCommand.h"
 #import "game/NewGameCommand.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../newgame/NewGameModel.h"
 #import "../player/PlayerModel.h"
 #import "../player/GtpEngineProfileModel.h"
@@ -45,12 +46,12 @@
 // -----------------------------------------------------------------------------
 - (void) resetUserDefaultsToRegistrationDomainDefaults
 {
-  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-  [applicationDelegate.playerModel resetToRegistrationDomainDefaults];
-  [applicationDelegate.gtpEngineProfileModel resetToRegistrationDomainDefaults];
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  [modelProvider.playerModel resetToRegistrationDomainDefaults];
+  [modelProvider.gtpEngineProfileModel resetToRegistrationDomainDefaults];
   // Preserve those user preferences in NewGameModel that are not related to
   // players and profiles
-  NewGameModel* newGameModel = applicationDelegate.theNewGameModel;
+  NewGameModel* newGameModel = modelProvider.theNewGameModel;
   enum GoGameType gameType = newGameModel.gameType;
   enum GoGameType gameTypeLastSelected = newGameModel.gameTypeLastSelected;
   bool computerPlaysWhite = newGameModel.computerPlaysWhite;

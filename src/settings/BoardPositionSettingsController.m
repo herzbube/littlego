@@ -17,7 +17,8 @@
 
 // Project includes
 #import "BoardPositionSettingsController.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../play/model/BoardPositionModel.h"
 #import "../ui/TableViewCellFactory.h"
 
@@ -88,7 +89,7 @@ enum DiscardFutureNodesAlertSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+    controller.boardPositionModel = [Registry sharedRegistry].modelProvider.boardPositionModel;
   }
   return controller;
 }

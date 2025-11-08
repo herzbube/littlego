@@ -40,6 +40,8 @@
 #import <go/GoUtilities.h>
 #import <command/game/NewGameCommand.h>
 #import <main/ApplicationDelegate.h>
+#import <main/ModelProvider.h>
+#import <main/Registry.h>
 #import <newgame/NewGameModel.h>
 #import <player/Player.h>
 #import <utility/NSArrayAdditions.h>
@@ -797,7 +799,7 @@
 // -----------------------------------------------------------------------------
 - (void) testReasonForGameHasEnded
 {
-  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  NewGameModel* newGameModel = m_registry.modelProvider.theNewGameModel;
 
   XCTAssertEqual(GoGameHasEndedReasonNotYetEnded, m_game.reasonForGameHasEnded);
   [m_game resign];
@@ -1688,7 +1690,7 @@
 // -----------------------------------------------------------------------------
 - (void) testIsLegalMovePositionalSuperko
 {
-  NewGameModel* newGameModel = m_delegate.theNewGameModel;
+  NewGameModel* newGameModel = m_registry.modelProvider.theNewGameModel;
   newGameModel.koRule = GoKoRuleSuperkoPositional;
   enum GoMoveIsIllegalReason illegalReason;
 
@@ -1713,7 +1715,7 @@
 // -----------------------------------------------------------------------------
 - (void) testIsLegalMoveSituationalSuperko
 {
-  NewGameModel* newGameModel = m_delegate.theNewGameModel;
+  NewGameModel* newGameModel = m_registry.modelProvider.theNewGameModel;
   newGameModel.koRule = GoKoRuleSuperkoSituational;
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
@@ -1799,7 +1801,7 @@
 // -----------------------------------------------------------------------------
 - (void) testEndGameDueToPassMovesIfGameRulesRequireIt
 {
-  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  NewGameModel* newGameModel = m_registry.modelProvider.theNewGameModel;
 
   // Can resume play an arbitrary number of times; each time two passes are made
   // the game ends GoGameHasEndedReasonTwoPasses
@@ -2565,7 +2567,7 @@
 // -----------------------------------------------------------------------------
 - (void) testIssue289
 {
-  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  NewGameModel* newGameModel = m_registry.modelProvider.theNewGameModel;
   newGameModel.koRule = GoKoRuleSuperkoPositional;
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
@@ -2586,7 +2588,7 @@
 // -----------------------------------------------------------------------------
 - (void) testIssue307
 {
-  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  NewGameModel* newGameModel = m_registry.modelProvider.theNewGameModel;
   newGameModel.koRule = GoKoRuleSimple;
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
@@ -2617,7 +2619,7 @@
 // -----------------------------------------------------------------------------
 - (void) testSetupAndSimpleKo
 {
-  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  NewGameModel* newGameModel = m_registry.modelProvider.theNewGameModel;
   newGameModel.koRule = GoKoRuleSimple;
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;
@@ -2646,7 +2648,7 @@
 // -----------------------------------------------------------------------------
 - (void) testSetupAndPositionalSuperko;
 {
-  NewGameModel* newGameModel = m_delegate.theNewGameModel;
+  NewGameModel* newGameModel = m_registry.modelProvider.theNewGameModel;
   newGameModel.koRule = GoKoRuleSuperkoPositional;
   enum GoMoveIsIllegalReason illegalReason;
 
@@ -2672,7 +2674,7 @@
 // -----------------------------------------------------------------------------
 - (void) testSetupAndSituationalSuperko
 {
-  NewGameModel* newGameModel = m_delegate.theNewGameModel;
+  NewGameModel* newGameModel = m_registry.modelProvider.theNewGameModel;
   newGameModel.koRule = GoKoRuleSuperkoSituational;
   [[[[NewGameCommand alloc] init] autorelease] submit];
   m_game = m_delegate.game;

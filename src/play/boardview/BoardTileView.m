@@ -32,7 +32,8 @@
 #import "../model/MarkupModel.h"
 #import "../model/ScoringModel.h"
 #import "../../go/GoGame.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UiSettingsModel.h"
 
@@ -129,12 +130,12 @@
     return;
   self.notificationRespondersAreSetup = true;
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
-  BoardViewModel* boardViewModel = appDelegate.boardViewModel;
-  BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
-  MarkupModel* markupModel = appDelegate.markupModel;
-  ScoringModel* scoringModel = appDelegate.scoringModel;
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  BoardViewMetrics* metrics = modelProvider.boardViewMetrics;
+  BoardViewModel* boardViewModel = modelProvider.boardViewModel;
+  BoardPositionModel* boardPositionModel = modelProvider.boardPositionModel;
+  MarkupModel* markupModel = modelProvider.markupModel;
+  ScoringModel* scoringModel = modelProvider.scoringModel;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
@@ -173,12 +174,12 @@
     return;
   self.notificationRespondersAreSetup = false;
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
-  BoardViewModel* boardViewModel = appDelegate.boardViewModel;
-  BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
-  MarkupModel* markupModel = appDelegate.markupModel;
-  ScoringModel* scoringModel = appDelegate.scoringModel;
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  BoardViewMetrics* metrics = modelProvider.boardViewMetrics;
+  BoardViewModel* boardViewModel = modelProvider.boardViewModel;
+  BoardPositionModel* boardPositionModel = modelProvider.boardPositionModel;
+  MarkupModel* markupModel = modelProvider.markupModel;
+  ScoringModel* scoringModel = modelProvider.scoringModel;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center removeObserver:self];
@@ -233,7 +234,7 @@
 {
   if (self.gridLayerDelegate)
     return;
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   self.gridLayerDelegate = [[[GridLayerDelegate alloc] initWithTile:self
                                                             metrics:metrics] autorelease];
 }
@@ -246,7 +247,7 @@
 {
   if (self.stonesLayerDelegate)
     return;
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   self.stonesLayerDelegate = [[[StonesLayerDelegate alloc] initWithTile:self
                                                                 metrics:metrics] autorelease];
 }
@@ -264,11 +265,11 @@
 {
   if (layerIsRequired)
   {
-    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
     if (! self.crossHairLinesLayerDelegate)
     {
+      BoardViewMetrics* boardViewMetrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
       self.crossHairLinesLayerDelegate = [[[CrossHairLinesLayerDelegate alloc] initWithTile:self
-                                                                                    metrics:appDelegate.boardViewMetrics] autorelease];
+                                                                                    metrics:boardViewMetrics] autorelease];
     }
   }
   else
@@ -283,20 +284,20 @@
 // -----------------------------------------------------------------------------
 - (void) setupInfluenceLayerDelegate
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModePlay)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModePlay)
   {
     self.influenceLayerDelegate = nil;
   }
   else
   {
-    BoardViewModel* boardViewModel = appDelegate.boardViewModel;
+    BoardViewModel* boardViewModel = modelProvider.boardViewModel;
     if (boardViewModel.displayPlayerInfluence)
     {
       if (self.influenceLayerDelegate)
         return;
       self.influenceLayerDelegate = [[[InfluenceLayerDelegate alloc] initWithTile:self
-                                                                          metrics:appDelegate.boardViewMetrics
+                                                                          metrics:modelProvider.boardViewMetrics
                                                                    boardViewModel:boardViewModel] autorelease];
     }
     else
@@ -312,8 +313,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupSymbolsLayerDelegate
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     self.symbolsLayerDelegate = nil;
   }
@@ -322,11 +323,11 @@
     if (self.symbolsLayerDelegate)
       return;
     self.symbolsLayerDelegate = [[[SymbolsLayerDelegate alloc] initWithTile:self
-                                                                    metrics:appDelegate.boardViewMetrics
-                                                             boardViewModel:appDelegate.boardViewModel
-                                                         boardPositionModel:appDelegate.boardPositionModel
-                                                            uiSettingsModel:appDelegate.uiSettingsModel
-                                                                markupModel:appDelegate.markupModel] autorelease];
+                                                                    metrics:modelProvider.boardViewMetrics
+                                                             boardViewModel:modelProvider.boardViewModel
+                                                         boardPositionModel:modelProvider.boardPositionModel
+                                                            uiSettingsModel:modelProvider.uiSettingsModel
+                                                                markupModel:modelProvider.markupModel] autorelease];
   }
 }
 
@@ -336,15 +337,15 @@
 // -----------------------------------------------------------------------------
 - (void) setupLabelsLayerDelegate
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  enum UIAreaPlayMode uiAreaPlayMode = appDelegate.uiSettingsModel.uiAreaPlayMode;
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  enum UIAreaPlayMode uiAreaPlayMode = modelProvider.uiSettingsModel.uiAreaPlayMode;
   if (uiAreaPlayMode == UIAreaPlayModePlay || uiAreaPlayMode == UIAreaPlayModeEditMarkup)
   {
     if (self.labelsLayerDelegate)
       return;
     self.labelsLayerDelegate = [[[LabelsLayerDelegate alloc] initWithTile:self
-                                                                  metrics:appDelegate.boardViewMetrics
-                                                              markupModel:appDelegate.markupModel] autorelease];
+                                                                  metrics:modelProvider.boardViewMetrics
+                                                              markupModel:modelProvider.markupModel] autorelease];
   }
   else
   {
@@ -358,14 +359,14 @@
 // -----------------------------------------------------------------------------
 - (void) setupTerritoryLayerDelegate
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (self.territoryLayerDelegate)
       return;
     self.territoryLayerDelegate = [[[TerritoryLayerDelegate alloc] initWithTile:self
-                                                                        metrics:appDelegate.boardViewMetrics
-                                                                   scoringModel:appDelegate.scoringModel] autorelease];
+                                                                        metrics:modelProvider.boardViewMetrics
+                                                                   scoringModel:modelProvider.scoringModel] autorelease];
   }
   else
   {
@@ -379,13 +380,13 @@
 // -----------------------------------------------------------------------------
 - (void) setupRectangleLayerDelegate
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeEditMarkup)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeEditMarkup)
   {
     if (self.rectangleLayerDelegate)
       return;
     self.rectangleLayerDelegate = [[[RectangleLayerDelegate alloc] initWithTile:self
-                                                                        metrics:appDelegate.boardViewMetrics] autorelease];
+                                                                        metrics:modelProvider.boardViewMetrics] autorelease];
   }
   else
   {
@@ -652,18 +653,18 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
-  BoardViewModel* boardViewModel = appDelegate.boardViewModel;
-  BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
-  MarkupModel* markupModel = appDelegate.markupModel;
-  ScoringModel* scoringModel = appDelegate.scoringModel;
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  BoardViewMetrics* metrics = modelProvider.boardViewMetrics;
+  BoardViewModel* boardViewModel = modelProvider.boardViewModel;
+  BoardPositionModel* boardPositionModel = modelProvider.boardPositionModel;
+  MarkupModel* markupModel = modelProvider.markupModel;
+  ScoringModel* scoringModel = modelProvider.scoringModel;
 
   if (object == scoringModel)
   {
     if ([keyPath isEqualToString:@"inconsistentTerritoryMarkupType"])
     {
-      if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+      if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
       {
         [self notifyLayerDelegates:BVLDEventInconsistentTerritoryMarkupTypeChanged eventInfo:nil];
         [self delayedDrawLayers];
@@ -774,7 +775,7 @@
 // -----------------------------------------------------------------------------
 - (CGSize) intrinsicContentSize
 {
-  return [ApplicationDelegate sharedDelegate].boardViewMetrics.tileSize;
+  return [Registry sharedRegistry].modelProvider.boardViewMetrics.tileSize;
 }
 
 @end

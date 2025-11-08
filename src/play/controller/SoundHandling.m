@@ -18,7 +18,8 @@
 // Project includes
 #import "SoundHandling.h"
 #import "../model/BoardViewModel.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../go/GoGame.h"
 
 // System includes
@@ -57,8 +58,7 @@
   AudioServicesCreateSystemSoundID(playStoneURLRef, &_playStoneSystemSound);
   CFRelease(playStoneURLRef);
 
-  ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-  self.model = delegate.boardViewModel;
+  self.model = [Registry sharedRegistry].modelProvider.boardViewModel;
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(computerPlayerThinkingStops:) name:computerPlayerThinkingStops object:nil];

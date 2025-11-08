@@ -18,7 +18,8 @@
 // Project includes
 #import "GameActionButtonBoxDataSource.h"
 #import "../model/MarkupModel.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../utility/UIImageAdditions.h"
 
 
@@ -336,7 +337,7 @@ enum ButtonBoxSection
 // -----------------------------------------------------------------------------
 + (NSString*) imageResourceNameForGameActionSelectMarkupType
 {
-  MarkupModel* markupModel = [ApplicationDelegate sharedDelegate].markupModel;
+  MarkupModel* markupModel = [Registry sharedRegistry].modelProvider.markupModel;
   return [UIImage iconResourceNameForMarkupType:markupModel.markupType selectedSymbolMarkupStyle:markupModel.selectedSymbolMarkupStyle];
 }
 

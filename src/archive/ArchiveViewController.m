@@ -21,7 +21,8 @@
 #import "ArchiveGame.h"
 #import "ViewGameController.h"
 #import "../command/game/DeleteGameCommand.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/PlaceholderView.h"
 #import "../ui/TableViewCellFactory.h"
@@ -78,7 +79,7 @@ enum DeleteAllSectionItem
   self.placeholderView = nil;
   self.tableViewController = nil;
   self.autoLayoutConstraints = nil;
-  self.archiveViewModel = [ApplicationDelegate sharedDelegate].archiveViewModel;
+  self.archiveViewModel = [Registry sharedRegistry].modelProvider.archiveViewModel;
   [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
 
   return self;

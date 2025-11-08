@@ -17,7 +17,8 @@
 
 // Project includes
 #import "GameVariationSettingsController.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../play/model/GameVariationModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
@@ -78,7 +79,7 @@ enum NewMoveInsertPositionSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.gameVariationModel = [ApplicationDelegate sharedDelegate].gameVariationModel;
+    controller.gameVariationModel = [Registry sharedRegistry].modelProvider.gameVariationModel;
   }
   return controller;
 }

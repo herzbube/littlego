@@ -21,7 +21,8 @@
 #import "GtpLogItemViewController.h"
 #import "GtpLogModel.h"
 #import "SubmitGtpCommandViewController.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/TableViewCellFactory.h"
 
@@ -60,7 +61,7 @@
   if (controller)
   {
     [controller autorelease];
-    controller.model = [ApplicationDelegate sharedDelegate].gtpLogModel;
+    controller.model = [Registry sharedRegistry].modelProvider.gtpLogModel;
   }
   return controller;
 }

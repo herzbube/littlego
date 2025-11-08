@@ -22,7 +22,7 @@
 #import "../go/GoGame.h"
 #import "../go/GoScore.h"
 #import "../go/GoUtilities.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
 #import "../main/Registry.h"
 #import "../main/WindowProvider.h"
 #import "../play/model/ScoringModel.h"
@@ -80,7 +80,7 @@
 {
   DDLogInfo(@"Switch UI area 'Play' mode to %d", self.newUIAreaPlayMode);
 
-  UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+  UiSettingsModel* uiSettingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
   enum UIAreaPlayMode oldUIAreaPlayMode = uiSettingsModel.uiAreaPlayMode;
 
   // We gracefully handle clients that invoke this command even though there's
@@ -195,7 +195,7 @@
   if (self.newGameSetupIsInProgress)
     return;
 
-  if (! [ApplicationDelegate sharedDelegate].scoringModel.autoScoringAndResumingPlay)
+  if (! [Registry sharedRegistry].modelProvider.scoringModel.autoScoringAndResumingPlay)
     return;
   GoGame* game = [GoGame sharedGame];
   bool shouldAllowResumePlay = [GoUtilities shouldAllowResumePlay:game];

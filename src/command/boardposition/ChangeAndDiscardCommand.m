@@ -25,7 +25,8 @@
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeModel.h"
 #import "../../go/GoPlayer.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../player/Player.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
@@ -146,7 +147,7 @@
 
   int numberOfNodesInCurrentGameVariationToDiscard = 1;
 
-  BoardPositionModel* boardPositionModel = [ApplicationDelegate sharedDelegate].boardPositionModel;
+  BoardPositionModel* boardPositionModel = [Registry sharedRegistry].modelProvider.boardPositionModel;
   if (boardPositionModel.discardMyLastMove)
   {
     GoMove* currentMove = boardPosition.currentNode.goMove;

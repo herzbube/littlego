@@ -22,7 +22,8 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
 #import "../../go/GoVertex.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../shared/LayoutManager.h"
 #import "../../utility/FontRange.h"
 #import "../../utility/UIColorAdditions.h"
@@ -207,7 +208,7 @@
   self.canvasSize = CGSizeMake(self.baseSize.width * self.absoluteZoomScale,
                                self.baseSize.height * self.absoluteZoomScale);
   self.boardSize = GoBoardSizeUndefined;
-  self.displayCoordinates = [ApplicationDelegate sharedDelegate].boardViewModel.displayCoordinates;
+  self.displayCoordinates = [Registry sharedRegistry].modelProvider.boardViewModel.displayCoordinates;
 }
 
 #pragma mark - Setup/remove notification responders
@@ -218,7 +219,7 @@
 - (void) setupNotificationResponders
 {
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
-  [[ApplicationDelegate sharedDelegate].boardViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
+  [[Registry sharedRegistry].modelProvider.boardViewModel addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -227,7 +228,7 @@
 - (void) removeNotificationResponders
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [[ApplicationDelegate sharedDelegate].boardViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
+  [[Registry sharedRegistry].modelProvider.boardViewModel removeObserver:self forKeyPath:@"displayCoordinates"];
 }
 
 #pragma mark - Public API - Updaters

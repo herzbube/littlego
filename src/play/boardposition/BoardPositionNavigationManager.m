@@ -22,7 +22,8 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../shared/LongRunningActionCounter.h"
 
 
@@ -266,12 +267,12 @@ static BoardPositionNavigationManager* sharedNavigationManager = nil;
   self.navigationStatesNeedUpdate = false;
 
   GoGame* game = [GoGame sharedGame];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  BoardViewModel* boardViewModel = [Registry sharedRegistry].modelProvider.boardViewModel;
   if (! game ||
       game.isComputerThinking ||
       game.score.scoringInProgress ||
-      appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
-      appDelegate.boardViewModel.boardViewDisplaysAnimation)
+      boardViewModel.boardViewPanningGestureIsInProgress ||
+      boardViewModel.boardViewDisplaysAnimation)
   {
     self.isForwardNavigationEnabled = false;
     self.isBackwardNavigationEnabled = false;

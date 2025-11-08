@@ -19,7 +19,6 @@
 #import "UserDefaultsUpdater.h"
 #import "UIDeviceAdditions.h"
 #import "../go/GoUtilities.h"
-#import "../main/ApplicationDelegate.h"
 #import "../main/Registry.h"
 #import "../main/WindowProvider.h"
 #import "../player/GtpEngineProfile.h"

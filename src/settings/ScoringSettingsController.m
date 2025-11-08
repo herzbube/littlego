@@ -17,7 +17,8 @@
 
 // Project includes
 #import "ScoringSettingsController.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../play/model/ScoringModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
@@ -102,7 +103,7 @@ enum InconsistentTerritoryMarkupTypeSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.scoringModel = [ApplicationDelegate sharedDelegate].scoringModel;
+    controller.scoringModel = [Registry sharedRegistry].modelProvider.scoringModel;
   }
   return controller;
 }

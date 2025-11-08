@@ -38,7 +38,7 @@
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpUtilities.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../newgame/NewGameModel.h"
@@ -261,7 +261,7 @@ static const int maxStepsForCreateNodes = 9;
 
   // Temporarily re-configure NewGameModel with the new board size from the
   // loaded game
-  NewGameModel* model = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  NewGameModel* model = [Registry sharedRegistry].modelProvider.theNewGameModel;
   enum GoBoardSize oldBoardSize = model.boardSize;
   model.boardSize = goBoardSize;
 
@@ -1736,7 +1736,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
   //   because the default game type is Go.
   // - The default board size is 19x19.
 
-  NewGameModel* model = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  NewGameModel* model = [Registry sharedRegistry].modelProvider.theNewGameModel;
 
   self.sgfGame = [SGFCGame game];
   self.sgfGameInfoNode = self.sgfGame.rootNode;

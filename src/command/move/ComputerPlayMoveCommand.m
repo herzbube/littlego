@@ -33,6 +33,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../play/model/GameVariationModel.h"
@@ -174,7 +175,7 @@ enum AlertType
 - (bool) playMoveInsideResponse:(GtpResponse*)response
 {
   GoMoveNodeCreationOptions* options;
-  GameVariationModel* gameVariationModel = [ApplicationDelegate sharedDelegate].gameVariationModel;
+  GameVariationModel* gameVariationModel = [Registry sharedRegistry].modelProvider.gameVariationModel;
   if (gameVariationModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions)
     options = [GoMoveNodeCreationOptions moveNodeCreationOptionsWithInsertPolicyRetainFutureBoardPositionsAndInsertPosition:gameVariationModel.newMoveInsertPosition];
   else
@@ -239,7 +240,7 @@ enum AlertType
 {
   NSString* message = @"The computer played an illegal move. This is almost certainly a bug in Little Go. ";
   enum AlertType alertType;
-  bool loggingEnabled = [ApplicationDelegate sharedDelegate].loggingModel.loggingEnabled;
+  bool loggingEnabled = [Registry sharedRegistry].modelProvider.loggingModel.loggingEnabled;
   if (loggingEnabled)
   {
     message = [message stringByAppendingString:@"\n\nWould you like to report this incident now so that we can try to find and fix the bug?"];
@@ -281,7 +282,7 @@ enum AlertType
 // -----------------------------------------------------------------------------
 - (void) handleComputerPlayedIllegalMove2;
 {
-  ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
+  ArchiveViewModel* model = [Registry sharedRegistry].modelProvider.archiveViewModel;
   NSString* uniqueGameName = [model uniqueGameNameForGame:[GoGame sharedGame]];
   [[[[SaveGameCommand alloc] initWithSaveGame:uniqueGameName gameAlreadyExists:false] autorelease] submit];
 
@@ -381,9 +382,8 @@ enum AlertType
 // -----------------------------------------------------------------------------
 - (void) enableLogging
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  appDelegate.loggingModel.loggingEnabled = true;
-  [appDelegate setupLogging];
+  [Registry sharedRegistry].modelProvider.loggingModel.loggingEnabled = true;
+  [[ApplicationDelegate sharedDelegate] setupLogging];
 }
 
 // -----------------------------------------------------------------------------

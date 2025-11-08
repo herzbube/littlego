@@ -25,7 +25,8 @@
 #import "../gameaction/GameActionManager.h"
 #import "../model/NodeTreeViewModel.h"
 #import "../nodetreeview/NodeTreeViewIntegration.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
@@ -130,7 +131,7 @@
   self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
   self.gameActionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
 
-  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
   self.resizablePane1ViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
   NSArray* resizablePaneViewControllers = @[self.resizablePane1ViewController];
   self.resizableStackViewController = [ResizableStackViewController resizableStackViewControllerWithViewControllers:resizablePaneViewControllers
@@ -141,8 +142,8 @@
   self.resizableStackViewController.dragHandleGrabAreaMargin *= 2;
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
   self.nodeTreeViewIntegration = [[[NodeTreeViewIntegration alloc] initWithResizableStackViewController:self.resizableStackViewController
-                                                                                      nodeTreeViewModel:applicationDelegate.nodeTreeViewModel
-                                                                                        uiSettingsModel:applicationDelegate.uiSettingsModel] autorelease];
+                                                                                      nodeTreeViewModel:modelProvider.nodeTreeViewModel
+                                                                                        uiSettingsModel:modelProvider.uiSettingsModel] autorelease];
 
   self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
   self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;

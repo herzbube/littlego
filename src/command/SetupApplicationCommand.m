@@ -25,6 +25,8 @@
 #import "../go/GoGame.h"
 #import "../go/GoScore.h"
 #import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../shared/ApplicationStateManager.h"
 #import "../shared/LongRunningActionCounter.h"
 #import "../ui/UiSettingsModel.h"
@@ -116,6 +118,8 @@
     {
       [[ApplicationStateManager sharedManager] restoreApplicationState];
 
+      UiSettingsModel* uiSettingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
+
       // Board position vs. UIAreaPlayMode
       // - The documentation block below describes, with relevance to scoring,
       //   how app state and user preferences can get out of sync when the app
@@ -129,7 +133,7 @@
       // - Because changing board positions is non-trivial and may take
       //   considerable time to execute, the solution is to change the
       //   UIAreaPlayMode value.
-      if (delegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
+      if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
       {
         if ([GoGame sharedGame].boardPosition.currentBoardPosition != 0)
           [[[[ChangeUIAreaPlayModeCommand alloc] initWithUIAreaPlayMode:UIAreaPlayModePlay] autorelease] submit];
@@ -163,7 +167,7 @@
       //   of UiSettingsModel.uiAreaPlayMode takes precedence over what is in the
       //   Go model objects. The consequence of this decision is that the score
       //   from the previous app session may be lost.
-      if (delegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+      if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
           [[GoGame sharedGame].score enableScoringOnAppLaunch];
       else
           [[GoGame sharedGame].score disableScoringOnAppLaunch];

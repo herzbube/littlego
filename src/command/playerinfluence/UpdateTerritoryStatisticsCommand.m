@@ -17,7 +17,8 @@
 
 // Project includes
 #import "UpdateTerritoryStatisticsCommand.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoPoint.h"
@@ -34,7 +35,7 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
-  BoardViewModel* model = [ApplicationDelegate sharedDelegate].boardViewModel;
+  BoardViewModel* model = [Registry sharedRegistry].modelProvider.boardViewModel;
   if (! model.displayPlayerInfluence)
   {
     DDLogVerbose(@"%@: Display of player influence is turned off, nothing to do.", [self shortDescription]);

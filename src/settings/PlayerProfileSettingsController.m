@@ -21,7 +21,8 @@
 #import "../go/GoGame.h"
 #import "../go/GoGameDocument.h"
 #import "../go/GoPlayer.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../player/GtpEngineProfileModel.h"
 #import "../player/GtpEngineProfile.h"
 #import "../player/PlayerModel.h"
@@ -104,9 +105,9 @@ enum ResetToDefaultsSectionItem
   if (controller)
   {
     [controller autorelease];
-    ApplicationDelegate* delegate = [ApplicationDelegate sharedDelegate];
-    controller.playerModel = delegate.playerModel;
-    controller.gtpEngineProfileModel = delegate.gtpEngineProfileModel;
+    id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+    controller.playerModel = modelProvider.playerModel;
+    controller.gtpEngineProfileModel = modelProvider.gtpEngineProfileModel;
     [controller setupNotificationResponders];
   }
   return controller;

@@ -34,7 +34,8 @@
 #import "../../go/GoMove.h"
 #import "../../go/GoScore.h"
 #import "../../go/GoUtilities.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../play/model/BoardViewModel.h"
 #import "../../play/model/ScoringModel.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -128,8 +129,8 @@
 
   GoGame* game = [GoGame sharedGame];
 
-  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-  enum UIAreaPlayMode uiAreaPlayMode = applicationDelegate.uiSettingsModel.uiAreaPlayMode;
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  enum UIAreaPlayMode uiAreaPlayMode = modelProvider.uiSettingsModel.uiAreaPlayMode;
 
   // Add buttons in the order that they appear in the MoreGameActionsButton enum
   for (int iterButtonIndex = 0; iterButtonIndex < MoreGameActionsButtonMax; ++iterButtonIndex)
@@ -195,7 +196,7 @@
           default:
             break;
         }
-        ScoringModel* model = applicationDelegate.scoringModel;
+        ScoringModel* model = modelProvider.scoringModel;
         switch (model.scoreMarkMode)
         {
           case GoScoreMarkModeDead:
@@ -223,7 +224,7 @@
       }
       case MoreGameActionsButtonUpdatePlayerInfluence:
       {
-        BoardViewModel* model = applicationDelegate.boardViewModel;
+        BoardViewModel* model = modelProvider.boardViewModel;
         if (! model.displayPlayerInfluence)
           continue;
         if (uiAreaPlayMode != UIAreaPlayModePlay)
@@ -461,7 +462,7 @@
 // -----------------------------------------------------------------------------
 - (void) toggleScoringMarkMode
 {
-  ScoringModel* model = [ApplicationDelegate sharedDelegate].scoringModel;
+  ScoringModel* model = [Registry sharedRegistry].modelProvider.scoringModel;
   switch (model.scoreMarkMode)
   {
     case GoScoreMarkModeDead:
@@ -579,7 +580,7 @@
 // -----------------------------------------------------------------------------
 - (void) saveGame
 {
-  ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
+  ArchiveViewModel* model = [Registry sharedRegistry].modelProvider.archiveViewModel;
   NSString* defaultGameName = [model uniqueGameNameForGame:[GoGame sharedGame]];
   EditTextController* editTextController = [[EditTextController controllerWithText:defaultGameName
                                                                              style:EditTextControllerStyleTextField
@@ -660,7 +661,7 @@
   bool moreGameActionsControllerDidFinish = true;
   if (! didCancel)
   {
-    ArchiveViewModel* model = [ApplicationDelegate sharedDelegate].archiveViewModel;
+    ArchiveViewModel* model = [Registry sharedRegistry].modelProvider.archiveViewModel;
     if ([model gameWithName:editTextController.text])
     {
       void (^yesActionBlock) (UIAlertAction*) = ^(UIAlertAction* action)

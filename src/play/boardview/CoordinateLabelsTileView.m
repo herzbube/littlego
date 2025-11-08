@@ -20,7 +20,8 @@
 #import "layer/CoordinatesLayerDelegate.h"
 #import "../model/BoardViewMetrics.h"
 #import "../../go/GoGame.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../shared/LongRunningActionCounter.h"
 
 
@@ -95,7 +96,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupLayer
 {
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   self.layerDelegate = [[[CoordinatesLayerDelegate alloc] initWithTile:self
                                                                metrics:metrics
                                                                   axis:self.coordinateLabelAxis] autorelease];
@@ -115,7 +116,7 @@
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   [metrics addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
@@ -131,7 +132,7 @@
   self.notificationRespondersAreSetup = false;
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   [metrics removeObserver:self forKeyPath:@"canvasSize"];
   [metrics removeObserver:self forKeyPath:@"boardSize"];
   [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
@@ -209,7 +210,7 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   if (object == metrics)
   {
     if ([keyPath isEqualToString:@"canvasSize"])
@@ -268,7 +269,7 @@
 // -----------------------------------------------------------------------------
 - (CGSize) intrinsicContentSize
 {
-  return [ApplicationDelegate sharedDelegate].boardViewMetrics.tileSize;
+  return [Registry sharedRegistry].modelProvider.boardViewMetrics.tileSize;
 }
 
 @end

@@ -28,7 +28,8 @@
 #import "../../go/GoScore.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../player/Player.h"
 #import "../../shared/LayoutManager.h"
 #import "../../shared/LongRunningActionCounter.h"
@@ -336,9 +337,9 @@
   [center addObserver:self selector:@selector(numberOfBoardPositionsDidChange:) name:numberOfBoardPositionsDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
   // KVO observing
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  [appDelegate.markupModel addObserver:self forKeyPath:@"markupType" options:0 context:NULL];
-  [appDelegate.scoringModel addObserver:self forKeyPath:@"scoreMarkMode" options:0 context:NULL];
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  [modelProvider.markupModel addObserver:self forKeyPath:@"markupType" options:0 context:NULL];
+  [modelProvider.scoringModel addObserver:self forKeyPath:@"scoreMarkMode" options:0 context:NULL];
   GoGame* game = [GoGame sharedGame];
   if (game)
     [game addObserver:self forKeyPath:@"nextMoveColor" options:0 context:NULL];
@@ -354,9 +355,9 @@
   self.notificationRespondersAreSetup = false;
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  [appDelegate.markupModel removeObserver:self forKeyPath:@"markupType"];
-  [appDelegate.scoringModel removeObserver:self forKeyPath:@"scoreMarkMode"];
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  [modelProvider.markupModel removeObserver:self forKeyPath:@"markupType"];
+  [modelProvider.scoringModel removeObserver:self forKeyPath:@"scoreMarkMode"];
   GoGame* game = [GoGame sharedGame];
   if (game)
     [game removeObserver:self forKeyPath:@"nextMoveColor"];
@@ -399,7 +400,7 @@
 
   GoGame* game = [GoGame sharedGame];
   bool shouldDisplayActivityIndicator = false;
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (game.score.askGtpEngineForDeadStonesInProgress)
       shouldDisplayActivityIndicator = true;
@@ -538,8 +539,8 @@
     }
     else
     {
-      ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-      UiSettingsModel* uiSettingsModel = appDelegate.uiSettingsModel;
+      id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+      UiSettingsModel* uiSettingsModel = modelProvider.uiSettingsModel;
 
       if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
       {
@@ -552,7 +553,7 @@
         {
           NSString* resultString = [score resultString];
           NSString* tapString;
-          if (GoScoreMarkModeDead == [ApplicationDelegate sharedDelegate].scoringModel.scoreMarkMode)
+          if (GoScoreMarkModeDead == modelProvider.scoringModel.scoreMarkMode)
             tapString = @" - Tap to mark dead stones";
           else
             tapString = @" - Tap to mark stones in seki";
@@ -593,7 +594,7 @@
       }
       else if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeEditMarkup)
       {
-        MarkupModel* markupModel = appDelegate.markupModel;
+        MarkupModel* markupModel = modelProvider.markupModel;
         switch (markupModel.markupTool)
         {
           case MarkupToolSymbol:

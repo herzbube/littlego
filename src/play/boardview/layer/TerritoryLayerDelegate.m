@@ -26,7 +26,8 @@
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
-#import "../../../main/ApplicationDelegate.h"
+#import "../../../main/ModelProvider.h"
+#import "../../../main/Registry.h"
 #import "../../../ui/CGDrawingHelper.h"
 #import "../../../ui/UiSettingsModel.h"
 
@@ -352,7 +353,7 @@
 - (NSMutableDictionary*) calculateDrawingPointsTerritory
 {
   NSMutableDictionary* drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return drawingPoints;
 
   enum InconsistentTerritoryMarkupType inconsistentTerritoryMarkupType = self.scoringModel.inconsistentTerritoryMarkupType;
@@ -431,7 +432,7 @@
 {
   NSMutableDictionary* drawingPoints = [[[NSMutableDictionary alloc] initWithCapacity:0] autorelease];
   GoGame* game = [GoGame sharedGame];
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
     return drawingPoints;
 
   CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile

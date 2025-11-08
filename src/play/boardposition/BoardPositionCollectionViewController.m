@@ -24,7 +24,8 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoNodeModel.h"
 #import "../../go/GoScore.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UiUtilities.h"
 #import "../../utility/UIColorAdditions.h"
@@ -655,11 +656,11 @@
     return;
   self.userInteractionEnabledNeedsUpdate = false;
   GoGame* game = [GoGame sharedGame];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  BoardViewModel* boardViewModel = [Registry sharedRegistry].modelProvider.boardViewModel;
   if (game.isComputerThinking ||
       game.score.scoringInProgress ||
-      appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
-      appDelegate.boardViewModel.boardViewDisplaysAnimation)
+      boardViewModel.boardViewPanningGestureIsInProgress ||
+      boardViewModel.boardViewDisplaysAnimation)
   {
     self.collectionView.userInteractionEnabled = NO;
   }

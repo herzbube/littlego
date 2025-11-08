@@ -17,7 +17,8 @@
 
 // Project includes
 #import "CrashReportingSettingsController.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../diagnostics/CrashReportingModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiUtilities.h"
@@ -88,7 +89,7 @@ enum ContactSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.crashReportingModel = [ApplicationDelegate sharedDelegate].crashReportingModel;
+    controller.crashReportingModel = [Registry sharedRegistry].modelProvider.crashReportingModel;
   }
   return controller;
 }

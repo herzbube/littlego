@@ -19,6 +19,8 @@
 #import "MainTabBarController.h"
 #import "ApplicationDelegate.h"
 #import "MainUtility.h"
+#import "ModelProvider.h"
+#import "Registry.h"
 #import "UIAreaInfo.h"
 #import "../play/rootview/PlayRootViewNavigationController.h"
 #import "../shared/LayoutManager.h"
@@ -224,7 +226,7 @@
   if (! changed)
     return;
   NSArray* tabOrder = [tabBarController.viewControllers valueForKey:@"uiArea"];
-  [ApplicationDelegate sharedDelegate].uiSettingsModel.tabOrder = tabOrder;
+  [Registry sharedRegistry].modelProvider.uiSettingsModel.tabOrder = tabOrder;
 }
 
 #pragma mark - UINavigationControllerDelegate overrides
@@ -288,8 +290,8 @@
 // -----------------------------------------------------------------------------
 - (void) restoreTabBarControllerAppearanceToUserDefaults
 {
-  ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
-  NSArray* tabOrder = applicationDelegate.uiSettingsModel.tabOrder;
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  NSArray* tabOrder = modelProvider.uiSettingsModel.tabOrder;
   NSUInteger tabOrderCount = tabOrder.count;
   if (tabOrderCount == self.viewControllers.count)
   {
@@ -305,7 +307,7 @@
       self.viewControllers = tabControllers;
     }
   }
-  [self activateTabForUIArea:applicationDelegate.uiSettingsModel.visibleUIArea];
+  [self activateTabForUIArea:modelProvider.uiSettingsModel.visibleUIArea];
 }
 
 // -----------------------------------------------------------------------------

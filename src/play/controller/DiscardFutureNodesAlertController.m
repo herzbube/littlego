@@ -21,7 +21,7 @@
 #import "../../command/CommandBase.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../play/model/GameVariationModel.h"
@@ -124,9 +124,9 @@ enum ActionType
   DDLogVerbose(@"%@: Displaying alert for action type %d", self, actionType);
   GoBoardPosition* boardPosition = [GoGame sharedGame].boardPosition;
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  BoardPositionModel* boardPositionModel = appDelegate.boardPositionModel;
-  GameVariationModel* gameVariationModel = appDelegate.gameVariationModel;
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  BoardPositionModel* boardPositionModel = modelProvider.boardPositionModel;
+  GameVariationModel* gameVariationModel = modelProvider.gameVariationModel;
 
   if (boardPosition.isLastPosition ||
       (ActionTypePlay == actionType && gameVariationModel.newMoveInsertPolicy == GoNewMoveInsertPolicyRetainFutureBoardPositions) ||

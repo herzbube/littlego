@@ -22,7 +22,8 @@
 #import "../model/BoardViewModel.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../ui/UiSettingsModel.h"
 
 
@@ -223,8 +224,8 @@
 // -----------------------------------------------------------------------------
 - (void) updateTappingEnabled
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  switch (appDelegate.uiSettingsModel.uiAreaPlayMode)
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  switch (modelProvider.uiSettingsModel.uiAreaPlayMode)
   {
     case UIAreaPlayModeScoring:
     {
@@ -243,8 +244,8 @@
       GoGame* game = [GoGame sharedGame];
       if (! game ||
           game.isComputerThinking ||
-          appDelegate.boardViewModel.boardViewPanningGestureIsInProgress ||
-          appDelegate.boardViewModel.boardViewDisplaysAnimation)
+          modelProvider.boardViewModel.boardViewPanningGestureIsInProgress ||
+          modelProvider.boardViewModel.boardViewDisplaysAnimation)
       {
         self.tappingEnabled = false;
       }

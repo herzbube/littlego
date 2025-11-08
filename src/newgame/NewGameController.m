@@ -24,7 +24,8 @@
 #import "../go/GoGameRules.h"
 #import "../go/GoBoard.h"
 #import "../go/GoUtilities.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../player/PlayerModel.h"
 #import "../player/Player.h"
 #import "../ui/AutoLayoutUtility.h"
@@ -177,9 +178,9 @@ enum CellID
     [controller autorelease];
     controller.delegate = delegate;
     controller.loadGame = loadGame;
-    NewGameModel* theNewGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+    NewGameModel* theNewGameModel = [Registry sharedRegistry].modelProvider.theNewGameModel;
     controller.theNewGameModel = theNewGameModel;
-    PlayerModel* playerModel = [ApplicationDelegate sharedDelegate].playerModel;
+    PlayerModel* playerModel = [Registry sharedRegistry].modelProvider.playerModel;
     controller.playerModel = playerModel;
     controller.advancedScreenWasShown = false;
 

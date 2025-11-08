@@ -23,7 +23,8 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoScore.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UiSettingsModel.h"
@@ -182,7 +183,7 @@
   {
     [[LongRunningActionCounter sharedCounter] increment];
 
-    UiSettingsModel* uiSettingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+    UiSettingsModel* uiSettingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
 
     if (uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
     {

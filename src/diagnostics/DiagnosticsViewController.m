@@ -26,6 +26,8 @@
 #import "../go/GoGame.h"
 #import "../go/GoScore.h"
 #import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiSettingsModel.h"
 
@@ -152,7 +154,7 @@ enum BugReportSectionItem
   [center addObserver:self selector:@selector(computerPlayerThinkingChanged:) name:computerPlayerThinkingStops object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationStarts:) name:goScoreCalculationStarts object:nil];
   [center addObserver:self selector:@selector(goScoreCalculationEnds:) name:goScoreCalculationEnds object:nil];
-  LoggingModel* loggingModel = [ApplicationDelegate sharedDelegate].loggingModel;
+  LoggingModel* loggingModel = [Registry sharedRegistry].modelProvider.loggingModel;
   [loggingModel addObserver:self forKeyPath:@"loggingEnabled" options:0 context:NULL];
 }
 
@@ -166,7 +168,7 @@ enum BugReportSectionItem
   self.notificationRespondersAreSetup = false;
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  LoggingModel* loggingModel = [ApplicationDelegate sharedDelegate].loggingModel;
+  LoggingModel* loggingModel = [Registry sharedRegistry].modelProvider.loggingModel;
   [loggingModel removeObserver:self forKeyPath:@"loggingEnabled"];
 }
 
@@ -301,7 +303,7 @@ enum BugReportSectionItem
       cell = [TableViewCellFactory cellWithType:SwitchCellType tableView:tableView];
       UISwitch* accessoryView = (UISwitch*)cell.accessoryView;
       cell.textLabel.text = @"Collect logging data";
-      accessoryView.on = [ApplicationDelegate sharedDelegate].loggingModel.loggingEnabled;
+      accessoryView.on = [Registry sharedRegistry].modelProvider.loggingModel.loggingEnabled;
       [accessoryView addTarget:self action:@selector(toggleLoggingEnabled:) forControlEvents:UIControlEventValueChanged];
       break;
     }
@@ -486,11 +488,10 @@ enum BugReportSectionItem
 - (void) toggleLoggingEnabled:(id)sender
 {
   UISwitch* accessoryView = (UISwitch*)sender;
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
   self.ignoreLoggingEnabledModelUpdate = true;
-  appDelegate.loggingModel.loggingEnabled = accessoryView.on;
+  [Registry sharedRegistry].modelProvider.loggingModel.loggingEnabled = accessoryView.on;
   self.ignoreLoggingEnabledModelUpdate = false;
-  [appDelegate setupLogging];
+  [[ApplicationDelegate sharedDelegate] setupLogging];
 }
 
 #pragma mark - Notification responders
@@ -596,7 +597,7 @@ enum BugReportSectionItem
         break;
     }
   }
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeScoring)
   {
     if (game.score.scoringInProgress)
       return true;

@@ -25,8 +25,8 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoUtilities.h"
-#import "../../main/ApplicationDelegate.h"
 #import "../../main/MagnifyingGlassOwner.h"
+#import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/MagnifyingViewModel.h"
@@ -131,8 +131,7 @@
   [center addObserver:self selector:@selector(boardViewAnimationDidEnd:) name:boardViewAnimationDidEnd object:nil];
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   // KVO observing
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  [appDelegate.markupModel addObserver:self forKeyPath:@"markupTool" options:0 context:NULL];
+  [[Registry sharedRegistry].modelProvider.markupModel addObserver:self forKeyPath:@"markupTool" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -141,8 +140,7 @@
 - (void) removeNotificationResponders
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  [appDelegate.markupModel removeObserver:self forKeyPath:@"markupTool"];
+  [[Registry sharedRegistry].modelProvider.markupModel removeObserver:self forKeyPath:@"markupTool"];
 }
 
 #pragma mark - Property setter
@@ -201,8 +199,7 @@
   // 6. Place the stone with an offset to the fingertip position so that the
   //    user can see the stone location
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  BoardViewModel* boardViewModel = appDelegate.boardViewModel;
+  BoardViewModel* boardViewModel = [Registry sharedRegistry].modelProvider.boardViewModel;
 
   CGPoint panningLocation;
   BoardViewIntersection panningIntersection = [self boardViewIntersectionForGestureLocation:gestureRecognizer
@@ -408,9 +405,9 @@
     return;
   }
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
 
-  enum UIAreaPlayMode uiAreaPlayMode = appDelegate.uiSettingsModel.uiAreaPlayMode;
+  enum UIAreaPlayMode uiAreaPlayMode = modelProvider.uiSettingsModel.uiAreaPlayMode;
   if (uiAreaPlayMode == UIAreaPlayModeEditMarkup)
   {
     self.panningEnabled = true;
@@ -422,7 +419,7 @@
     return;
   }
 
-  if (appDelegate.boardViewModel.boardViewDisplaysAnimation)
+  if (modelProvider.boardViewModel.boardViewDisplaysAnimation)
   {
     self.panningEnabled = false;
     return;
@@ -462,12 +459,12 @@
 {
   if (self.boardView)
   {
-    ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-    self.panGestureHandler = [PanGestureHandler panGestureHandlerWithUiAreaPlayMode:appDelegate.uiSettingsModel.uiAreaPlayMode
-                                                                         markupTool:appDelegate.markupModel.markupTool
-                                                                        markupModel:appDelegate.markupModel
+    id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+    self.panGestureHandler = [PanGestureHandler panGestureHandlerWithUiAreaPlayMode:modelProvider.uiSettingsModel.uiAreaPlayMode
+                                                                         markupTool:modelProvider.markupModel.markupTool
+                                                                        markupModel:modelProvider.markupModel
                                                                           boardView:self.boardView
-                                                                   boardViewMetrics:appDelegate.boardViewMetrics];
+                                                                   boardViewMetrics:modelProvider.boardViewMetrics];
   }
   else
   {
@@ -486,7 +483,7 @@
 - (void) handleMagnifyingGlassForPanningLocation:(CGPoint)panningLocation
                              panningIntersection:(BoardViewIntersection)panningIntersection
 {
-  MagnifyingViewModel* magnifyingViewModel = [ApplicationDelegate sharedDelegate].magnifyingViewModel;
+  MagnifyingViewModel* magnifyingViewModel = [Registry sharedRegistry].modelProvider.magnifyingViewModel;
   switch (magnifyingViewModel.enableMode)
   {
     case MagnifyingGlassEnableModeAlwaysOn:
@@ -494,7 +491,7 @@
     case MagnifyingGlassEnableModeAlwaysOff:
       return;
     case MagnifyingGlassEnableModeAuto:
-      if ([ApplicationDelegate sharedDelegate].boardViewMetrics.cellWidth >= magnifyingViewModel.autoThreshold)
+      if ([Registry sharedRegistry].modelProvider.boardViewMetrics.cellWidth >= magnifyingViewModel.autoThreshold)
         return;
       break;
     default:
@@ -505,7 +502,7 @@
   switch (magnifyingViewModel.updateMode)
   {
     case MagnifyingGlassUpdateModeSmooth:
-      if ([ApplicationDelegate sharedDelegate].boardViewModel.boardViewPanningGestureIsInProgress)
+      if ([Registry sharedRegistry].modelProvider.boardViewModel.boardViewPanningGestureIsInProgress)
         [self updateMagnifyingGlassForPanningLocation:panningLocation];
       else
         [self disableMagnifyingGlass];
@@ -555,7 +552,7 @@
     [magnifyingGlassOwner enableMagnifyingGlass:self];
   }
   MagnifyingViewController* magnifyingViewController = magnifyingGlassOwner.magnifyingViewController;
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   CGPoint magnificationCenter = [metrics coordinatesFromPoint:panningIntersection.point];
   [magnifyingViewController updateMagnificationCenter:magnificationCenter inView:self.boardView];
 }
@@ -581,7 +578,7 @@
 // -----------------------------------------------------------------------------
 - (MagnifyingViewModel*) magnifyingViewControllerModel:(MagnifyingViewController*)magnifyingViewController;
 {
-  return [ApplicationDelegate sharedDelegate].magnifyingViewModel;
+  return [Registry sharedRegistry].modelProvider.magnifyingViewModel;
 }
 
 #pragma mark - Private helpers

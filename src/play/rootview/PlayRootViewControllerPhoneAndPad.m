@@ -29,7 +29,8 @@
 #import "../nodetreeview/NodeTreeViewIntegration.h"
 #import "../splitview/LeftPaneViewController.h"
 #import "../splitview/RightPaneViewController.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/ButtonBoxController.h"
 #import "../../ui/ResizableStackViewController.h"
@@ -240,7 +241,7 @@
     //   what we want!
     self.statusViewController = [[[StatusViewController alloc] init] autorelease];
 
-    ApplicationDelegate* applicationDelegate = [ApplicationDelegate sharedDelegate];
+    id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
     self.resizablePane1ViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
     NSArray* resizablePaneViewControllers = @[self.resizablePane1ViewController];
     self.resizableStackViewController = [ResizableStackViewController resizableStackViewControllerWithViewControllers:resizablePaneViewControllers
@@ -254,8 +255,8 @@
     self.annotationViewController = [AnnotationViewController annotationViewController];
     self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
     self.nodeTreeViewIntegration = [[[NodeTreeViewIntegration alloc] initWithResizableStackViewController:self.resizableStackViewController
-                                                                                        nodeTreeViewModel:applicationDelegate.nodeTreeViewModel
-                                                                                          uiSettingsModel:applicationDelegate.uiSettingsModel] autorelease];
+                                                                                        nodeTreeViewModel:modelProvider.nodeTreeViewModel
+                                                                                          uiSettingsModel:modelProvider.uiSettingsModel] autorelease];
 
     self.boardPositionButtonBoxDataSource = [[[BoardPositionButtonBoxDataSource alloc] init] autorelease];
     self.boardPositionButtonBoxController.buttonBoxControllerDataSource = self.boardPositionButtonBoxDataSource;

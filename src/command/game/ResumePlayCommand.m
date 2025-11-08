@@ -22,7 +22,6 @@
 #import "../../go/GoGameRules.h"
 #import "../../go/GoScore.h"
 #import "../../go/GoUtilities.h"
-#import "../../main/ApplicationDelegate.h"
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../shared/ApplicationStateManager.h"

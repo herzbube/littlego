@@ -22,7 +22,8 @@
 #import "../go/GoGame.h"
 #import "../gtp/GtpCommand.h"
 #import "../gtp/GtpUtilities.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../utility/NSStringAdditions.h"
 
 
@@ -220,7 +221,7 @@
   self.hasUnappliedChanges = false;
   if (! self.isActiveProfile)
   {
-    GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+    GtpEngineProfileModel* model = [Registry sharedRegistry].modelProvider.gtpEngineProfileModel;
     GtpEngineProfile* activeProfile = model.activeProfile;
     if (activeProfile)
     {

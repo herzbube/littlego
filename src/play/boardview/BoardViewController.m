@@ -28,7 +28,8 @@
 #import "../model/BoardSetupModel.h"
 #import "../model/BoardViewMetrics.h"
 #import "../model/BoardViewModel.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiSettingsModel.h"
 #import "../../utility/UIColorAdditions.h"
@@ -153,7 +154,7 @@
   self.boardView.translatesAutoresizingMaskIntoConstraints = NO;
   [AutoLayoutUtility fillSuperview:self.view withSubview:self.boardView];
 
-  CGFloat minimumBoardViewHeight = [ApplicationDelegate sharedDelegate].boardViewModel.minimumBoardViewHeight;
+  CGFloat minimumBoardViewHeight = [Registry sharedRegistry].modelProvider.boardViewModel.minimumBoardViewHeight;
   [AutoLayoutUtility setMinimumConstraint:self.boardView
                                 attribute:NSLayoutAttributeHeight
                              withConstant:minimumBoardViewHeight
@@ -165,7 +166,7 @@
 // -----------------------------------------------------------------------------
 - (void) configureViews
 {
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
 
   self.boardView.backgroundColor = [UIColor clearColor];
   self.boardView.delegate = self;
@@ -225,12 +226,12 @@
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(uiAreaPlayModeDidChange:) name:uiAreaPlayModeDidChange object:nil];
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
+  id<ModelProvider> modelprovider = [Registry sharedRegistry].modelProvider;
+  BoardViewMetrics* metrics = modelprovider.boardViewMetrics;
   [metrics addObserver:self forKeyPath:@"canvasSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"boardSize" options:0 context:NULL];
   [metrics addObserver:self forKeyPath:@"displayCoordinates" options:0 context:NULL];
-  [appDelegate.boardSetupModel addObserver:self forKeyPath:@"doubleTapToZoom" options:0 context:NULL];
+  [modelprovider.boardSetupModel addObserver:self forKeyPath:@"doubleTapToZoom" options:0 context:NULL];
 }
 
 // -----------------------------------------------------------------------------
@@ -244,12 +245,12 @@
 
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  BoardViewMetrics* metrics = appDelegate.boardViewMetrics;
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  BoardViewMetrics* metrics = modelProvider.boardViewMetrics;
   [metrics removeObserver:self forKeyPath:@"canvasSize"];
   [metrics removeObserver:self forKeyPath:@"boardSize"];
   [metrics removeObserver:self forKeyPath:@"displayCoordinates"];
-  [appDelegate.boardSetupModel removeObserver:self forKeyPath:@"doubleTapToZoom"];
+  [modelProvider.boardSetupModel removeObserver:self forKeyPath:@"doubleTapToZoom"];
 }
 
 #pragma mark - TiledScrollViewDataSource overrides
@@ -328,7 +329,7 @@
 // -----------------------------------------------------------------------------
 - (void) scrollViewDidEndZooming:(UIScrollView*)scrollView withView:(UIView*)view atScale:(CGFloat)scale
 {
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   CGFloat oldAbsoluteZoomScale = metrics.absoluteZoomScale;
   [metrics updateWithRelativeZoomScale:scale];
 
@@ -415,7 +416,7 @@
 // -----------------------------------------------------------------------------
 - (bool) coordinateLabelsViewsShouldExist
 {
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   if (! metrics.displayCoordinates)
     return false;
   return (metrics.coordinateLabelStripWidth > 0.0f);
@@ -459,7 +460,7 @@
 // -----------------------------------------------------------------------------
 - (NSArray*) createCoordinateLabelsViewConstraints
 {
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   return [NSArray arrayWithObjects:
           [NSLayoutConstraint constraintWithItem:self.coordinateLabelsLetterView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1 constant:0],
           [NSLayoutConstraint constraintWithItem:self.coordinateLabelsLetterView attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeWidth multiplier:1 constant:0],
@@ -478,7 +479,7 @@
 // -----------------------------------------------------------------------------
 - (void) configureCoordinateLabelsView:(TiledScrollView*)coordinateLabelsView
 {
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   coordinateLabelsView.backgroundColor = [UIColor clearColor];
   coordinateLabelsView.dataSource = self;
   coordinateLabelsView.tileSize = metrics.tileSize;
@@ -506,10 +507,11 @@
 // -----------------------------------------------------------------------------
 - (void) updateDoubleTapToZoomEnabled
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  BoardSetupModel* boardSetupModel = modelProvider.boardSetupModel;
 
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
-    self.doubleTapGestureController.tappingEnabled = appDelegate.boardSetupModel.doubleTapToZoom;
+  if (modelProvider.uiSettingsModel.uiAreaPlayMode == UIAreaPlayModeBoardSetup)
+    self.doubleTapGestureController.tappingEnabled = boardSetupModel.doubleTapToZoom;
   else
     self.doubleTapGestureController.tappingEnabled = true;
 }
@@ -524,7 +526,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateBaseSizeInBoardViewMetrics
 {
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   [metrics updateWithBaseSize:self.view.bounds.size];
 }
 
@@ -536,7 +538,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateContentSizeInMainScrollView
 {
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   CGSize contentSize = metrics.canvasSize;
   CGRect tileContainerViewFrame = CGRectZero;
   tileContainerViewFrame.size = contentSize;
@@ -553,7 +555,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateContentSizeInCoordinateLabelsScrollViews
 {
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   CGSize contentSize = metrics.canvasSize;
   CGSize tileSize = metrics.tileSize;
   CGRect tileContainerViewFrame = CGRectZero;
@@ -598,9 +600,9 @@
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
 
-  if (object == appDelegate.boardViewMetrics)
+  if (object == modelProvider.boardViewMetrics)
   {
     if ([keyPath isEqualToString:@"canvasSize"] ||
         [keyPath isEqualToString:@"boardSize"] ||
@@ -642,7 +644,7 @@
       }
     }
   }
-  else if (object == appDelegate.boardSetupModel)
+  else if (object == modelProvider.boardSetupModel)
   {
     if ([keyPath isEqualToString:@"doubleTapToZoom"])
       [self updateDoubleTapToZoomEnabled];

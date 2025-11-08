@@ -18,7 +18,8 @@
 // Project includes
 #import "GtpCommandViewController.h"
 #import "GtpCommandModel.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UIViewControllerAdditions.h"
@@ -46,7 +47,7 @@
   if (controller)
   {
     [controller autorelease];
-    controller.model = [ApplicationDelegate sharedDelegate].gtpCommandModel;
+    controller.model = [Registry sharedRegistry].modelProvider.gtpCommandModel;
   }
   return controller;
 }

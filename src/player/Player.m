@@ -20,10 +20,11 @@
 #import "PlayerStatistics.h"
 #import "GtpEngineProfile.h"
 #import "GtpEngineProfileModel.h"
-#import "../utility/NSStringAdditions.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../go/GoGame.h"
 #import "../go/GoPlayer.h"
+#import "../utility/NSStringAdditions.h"
 
 
 // -----------------------------------------------------------------------------
@@ -158,7 +159,7 @@
 {
   if (self.isHuman)
     return nil;
-  GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+  GtpEngineProfileModel* model = [Registry sharedRegistry].modelProvider.gtpEngineProfileModel;
   return [model profileWithUUID:self.gtpEngineProfileUUID];
 }
 
@@ -181,7 +182,7 @@
     self.gtpEngineProfileUUID = @"";
   else
   {
-    GtpEngineProfileModel* model = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel;
+    GtpEngineProfileModel* model = [Registry sharedRegistry].modelProvider.gtpEngineProfileModel;
     NSString* profileUUID = fallbackGtpEngineProfileUUID;
     for (GtpEngineProfile* profile in model.profileList)
     {

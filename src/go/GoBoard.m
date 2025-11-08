@@ -29,7 +29,8 @@
 #import "GoPoint.h"
 #import "GoVertex.h"
 #import "GoZobristTable.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../newgame/NewGameModel.h"
 
 
@@ -55,7 +56,7 @@
 // -----------------------------------------------------------------------------
 + (GoBoard*) boardWithDefaultSize
 {
-  NewGameModel* model = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  NewGameModel* model = [Registry sharedRegistry].modelProvider.theNewGameModel;
   return [GoBoard boardWithSize:model.boardSize];
 }
 

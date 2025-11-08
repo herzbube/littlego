@@ -17,7 +17,8 @@
 
 // Project includes
 #import "BoardSetupSettingsController.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../play/model/BoardSetupModel.h"
 #import "../ui/TableViewCellFactory.h"
 
@@ -95,7 +96,7 @@ enum TryNotToPlaceIllegalStonesSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.boardSetupModel = [ApplicationDelegate sharedDelegate].boardSetupModel;
+    controller.boardSetupModel = [Registry sharedRegistry].modelProvider.boardSetupModel;
   }
   return controller;
 }

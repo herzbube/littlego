@@ -29,7 +29,8 @@
 #import "../../go/GoScore.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../player/GtpEngineProfileModel.h"
 #import "../../player/GtpEngineProfile.h"
 #import "../../player/Player.h"
@@ -187,7 +188,7 @@ enum BoardPositionSectionItem
     return nil;
   self.gameInfoViewControllerCreator = nil;
   self.tableView = nil;
-  self.boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
+  self.boardViewModel = [Registry sharedRegistry].modelProvider.boardViewModel;
   self.kvoNotificationRespondersAreInstalled = false;
   return self;
 }
@@ -435,7 +436,7 @@ enum BoardPositionSectionItem
         titlePartOne = @"This score reflects the board position you are currently viewing, NOT the final score. Navigate to the last move of the game to see the final score.";
 
       NSString* titlePartTwo = nil;
-      if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
+      if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeScoring)
       {
         if (GoScoringSystemAreaScoring == game.rules.scoringSystem)
           titlePartTwo = @"Stone count";
@@ -987,7 +988,7 @@ enum BoardPositionSectionItem
     }
     case HumanVsHumanGameProfileItem:
     {
-      GtpEngineProfile* profile = [ApplicationDelegate sharedDelegate].gtpEngineProfileModel.fallbackProfile;
+      GtpEngineProfile* profile = [Registry sharedRegistry].modelProvider.gtpEngineProfileModel.fallbackProfile;
       if (profile)
       {
         EditPlayerProfileController* editPlayerProfileController = [EditPlayerProfileController controllerForProfile:profile withDelegate:self];
@@ -1036,7 +1037,7 @@ enum BoardPositionSectionItem
   GoGame* game = [GoGame sharedGame];
   GoGameRules* rules = game.rules;
   GoScore* score = game.score;
-  UiSettingsModel* settingsModel = [ApplicationDelegate sharedDelegate].uiSettingsModel;
+  UiSettingsModel* settingsModel = [Registry sharedRegistry].modelProvider.uiSettingsModel;
 
   switch (gridCell.tag)
   {

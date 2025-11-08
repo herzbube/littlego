@@ -22,7 +22,7 @@
 #import "layer/BoardViewDrawingHelper.h"
 #import "../model/BoardViewModel.h"
 #import "../../go/GoPoint.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../ui/UIViewControllerAdditions.h"
@@ -142,7 +142,7 @@
   }
   else
   {
-    BoardViewMetrics* boardViewMetrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+    BoardViewMetrics* boardViewMetrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
     CGRect stoneRect = [BoardViewDrawingHelper canvasRectForStoneAtPoint:point
                                                                  metrics:boardViewMetrics];
 
@@ -156,7 +156,7 @@
 
     [self.boardView.tileContainerView addSubview:stoneView];
 
-    BoardViewModel* boardViewModel = [ApplicationDelegate sharedDelegate].boardViewModel;
+    BoardViewModel* boardViewModel = [Registry sharedRegistry].modelProvider.boardViewModel;
     boardViewModel.boardViewDisplaysAnimation = true;
     [[NSNotificationCenter defaultCenter] postNotificationName:boardViewAnimationWillBegin object:nil];
     [self blinkView:stoneView repeatCount:moveSuggestionAnimationRepeatCount completionHandler:^

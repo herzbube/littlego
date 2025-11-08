@@ -19,7 +19,8 @@
 #import "SubmitGtpCommandViewController.h"
 #import "GtpCommandModel.h"
 #import "../gtp/GtpCommand.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../ui/AutoLayoutUtility.h"
 #import "../ui/EditTextController.h"
 #import "../ui/TableViewCellFactory.h"
@@ -51,7 +52,7 @@
   if (controller)
   {
     [controller autorelease];
-    controller.model = [ApplicationDelegate sharedDelegate].gtpCommandModel;
+    controller.model = [Registry sharedRegistry].modelProvider.gtpCommandModel;
   }
   return controller;
 }

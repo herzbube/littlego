@@ -26,7 +26,7 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../play/model/MarkupModel.h"
@@ -322,8 +322,7 @@ enum MarkupEditingInteraction
   GoBoardPosition* boardPosition = game.boardPosition;
   int currentBoardPosition = boardPosition.currentBoardPosition;
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeEditMarkup)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeEditMarkup)
   {
     // Alas, defensive programming. Cf. HandleBoardSetupInteractionCommand,
     // although the scenarios handled there should not be possible for markup
@@ -379,7 +378,7 @@ enum MarkupEditingInteraction
       {
         NSString* intersection = self.point.vertex.string;
         bool markupWasMoved = self.interaction == MEIPlaceMovedSymbol;
-        MarkupModel* markupModel = [ApplicationDelegate sharedDelegate].markupModel;
+        MarkupModel* markupModel = [Registry sharedRegistry].modelProvider.markupModel;
         bool markupDataDidChange = [self handlePlaceSymbol:self.markupType onIntersection:intersection withNodeMarkup:nodeMarkup markupWasMoved:markupWasMoved markupModel:markupModel];
         if (markupDataDidChange)
           pointsWithChangedMarkup = @[self.point];
@@ -400,7 +399,7 @@ enum MarkupEditingInteraction
       {
         NSString* intersection = self.point.vertex.string;
         enum GoMarkupLabel markerTypeToPlace = [MarkupUtilities labelForMarkupType:self.markupType];
-        MarkupModel* markupModel = [ApplicationDelegate sharedDelegate].markupModel;
+        MarkupModel* markupModel = [Registry sharedRegistry].modelProvider.markupModel;
         bool markupDataDidChange = [self handlePlaceNextFreeMarker:markerTypeToPlace onIntersection:intersection withNodeMarkup:nodeMarkup markupModel:markupModel];
         if (markupDataDidChange)
           pointsWithChangedMarkup = @[self.point, [NSNumber numberWithInt:markerTypeToPlace]];

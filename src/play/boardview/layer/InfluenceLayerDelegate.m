@@ -24,7 +24,8 @@
 #import "../../../go/GoGame.h"
 #import "../../../go/GoPoint.h"
 #import "../../../go/GoVertex.h"
-#import "../../../main/ApplicationDelegate.h"
+#import "../../../main/ModelProvider.h"
+#import "../../../main/Registry.h"
 #import "../../../ui/CGDrawingHelper.h"
 #import "../../../ui/UiSettingsModel.h"
 
@@ -246,7 +247,7 @@
   if (! self.boardViewModel.displayPlayerInfluence)
     return drawingPoints;
   GoGame* game = [GoGame sharedGame];
-  if ([ApplicationDelegate sharedDelegate].uiSettingsModel.uiAreaPlayMode != UIAreaPlayModePlay)
+  if ([Registry sharedRegistry].modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModePlay)
     return drawingPoints;
 
   CGRect tileRect = [CGDrawingHelper canvasRectForTile:self.tile

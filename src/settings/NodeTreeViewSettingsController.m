@@ -17,7 +17,8 @@
 
 // Project includes
 #import "NodeTreeViewSettingsController.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../play/model/NodeTreeViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/TableViewVariableHeightCell.h"
@@ -110,7 +111,7 @@ enum FocusModeSectionItem
   if (controller)
   {
     [controller autorelease];
-    controller.nodeTreeViewModel = [ApplicationDelegate sharedDelegate].nodeTreeViewModel;
+    controller.nodeTreeViewModel = [Registry sharedRegistry].modelProvider.nodeTreeViewModel;
   }
   return controller;
 }

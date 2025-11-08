@@ -17,7 +17,8 @@
 
 // Project includes
 #import "MagnifyingGlassSettingsController.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../ui/MagnifyingViewModel.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../utility/ExceptionUtility.h"
@@ -120,7 +121,7 @@ enum DistanceFromMagnificationCenterSetting
   if (controller)
   {
     [controller autorelease];
-    controller.magnifyingViewModel = [ApplicationDelegate sharedDelegate].magnifyingViewModel;
+    controller.magnifyingViewModel = [Registry sharedRegistry].modelProvider.magnifyingViewModel;
   }
   return controller;
 }

@@ -21,7 +21,8 @@
 // Application includes
 #import <go/GoGame.h>
 #import <go/GoPlayer.h>
-#import <main/ApplicationDelegate.h>
+#import <main/ModelProvider.h>
+#import <main/Registry.h>
 #import <newgame/NewGameModel.h>
 #import <player/Player.h>
 
@@ -72,7 +73,7 @@
 // -----------------------------------------------------------------------------
 - (void) testInvalidDefaultBlackWhitePlayer
 {
-  NewGameModel* newGameModel = [ApplicationDelegate sharedDelegate].theNewGameModel;
+  NewGameModel* newGameModel = m_registry.modelProvider.theNewGameModel;
   newGameModel.gameType = GoGameTypeHumanVsHuman;
   newGameModel.humanBlackPlayerUUID = @"invalid_black";
   newGameModel.humanWhitePlayerUUID = @"invalid_white";

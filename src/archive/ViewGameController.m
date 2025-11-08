@@ -27,8 +27,9 @@
 #import "../command/game/LoadGameCommand.h"
 #import "../command/sgf/LoadSgfCommand.h"
 #import "../go/GoGame.h"
-#import "../main/ApplicationDelegate.h"
 #import "../main/MainUtility.h"
+#import "../main/ModelProvider.h"
+#import "../main/Registry.h"
 #import "../sgf/SgfSettingsModel.h"
 #import "../sgf/SgfUtilities.h"
 #import "../ui/TableViewCellFactory.h"
@@ -152,7 +153,7 @@ enum LoadResultType
     [controller autorelease];
     controller.game = game;
     controller.model = model;
-    controller.sgfSettingsModel = [ApplicationDelegate sharedDelegate].sgfSettingsModel;
+    controller.sgfSettingsModel = [Registry sharedRegistry].modelProvider.sgfSettingsModel;
     controller.sgfDocumentReadResultSingleEncoding = nil;
     controller.sgfDocumentReadResultMultipleEncodings = nil;
     controller.loadResultType = LoadResultTypeFailedWithFatalError;

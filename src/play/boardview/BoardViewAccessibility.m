@@ -22,7 +22,8 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoBoard.h"
 #import "../../go/GoPoint.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../utility/AccessibilityUtility.h"
 
@@ -179,7 +180,7 @@
 
   if (board)
   {
-    BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+    BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
 
     // Tests use this accessibility element to perform taps on the game board.
     // For this the accessibilityFrame must be set up correctly, see next

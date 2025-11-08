@@ -20,6 +20,8 @@
 #import "../move/ComputerPlayMoveCommand.h"
 #import "../ChangeUIAreaPlayModeCommand.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../gtp/GtpUtilities.h"
@@ -105,7 +107,7 @@
                                                    ! shouldTriggerComputerPlayer);
   if (shouldConsiderAutoEnablingBoardSetupMode)
   {
-    if ([ApplicationDelegate sharedDelegate].boardSetupModel.autoEnableBoardSetupMode)
+    if ([Registry sharedRegistry].modelProvider.boardSetupModel.autoEnableBoardSetupMode)
       [self setUIAreaPlayMode:UIAreaPlayModeBoardSetup];
   }
 
@@ -157,7 +159,7 @@
   // by the client.
   if (! self.prefabricatedGame)
   {
-    NewGameModel* newGameModel = appDelegate.theNewGameModel;
+    NewGameModel* newGameModel = [Registry sharedRegistry].modelProvider.theNewGameModel;
     newGame.board = [GoBoard boardWithDefaultSize];
     newGame.komi = newGameModel.komi;
     newGame.handicapPoints = [GoUtilities pointsForHandicap:newGameModel.handicap inGame:newGame];
@@ -234,9 +236,9 @@
 // -----------------------------------------------------------------------------
 - (void) createEmergencyPlayerUsingColor:(enum GoColor)color
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  NewGameModel* newGameModel = appDelegate.theNewGameModel;
-  PlayerModel* playerModel = appDelegate.playerModel;
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
+  NewGameModel* newGameModel = modelProvider.theNewGameModel;
+  PlayerModel* playerModel = modelProvider.playerModel;
 
   NSString* playerUUID = nil;
   bool playerIsBlack;

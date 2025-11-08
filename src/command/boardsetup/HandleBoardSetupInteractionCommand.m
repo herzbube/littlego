@@ -26,7 +26,7 @@
 #import "../../go/GoPoint.h"
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../main/WindowProvider.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -83,9 +83,9 @@
 {
   GoGame* game = [GoGame sharedGame];
   int currentBoardPosition = game.boardPosition.currentBoardPosition;
+  id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
 
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  if (appDelegate.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeBoardSetup)
+  if (modelProvider.uiSettingsModel.uiAreaPlayMode != UIAreaPlayModeBoardSetup)
   {
     // Some rare scenarios have been found where this is possible - for details
     // see https://github.com/herzbube/littlego/issues/366. This block handles
@@ -104,7 +104,7 @@
     return false;
   }
 
-  if ([game.handicapPoints containsObject:self.point] && appDelegate.boardSetupModel.changeHandicapAlert)
+  if ([game.handicapPoints containsObject:self.point] && modelProvider.boardSetupModel.changeHandicapAlert)
     [self showAlertToConfirmHandicapChange];
   else
     [self handleBoardSetupInteraction];
@@ -142,7 +142,7 @@
                               createsIllegalStoneOrGroup:&illegalStoneOrGroupPoint];
       if (!isLegalSetupStone)
       {
-        if ([ApplicationDelegate sharedDelegate].boardSetupModel.tryNotToPlaceIllegalStones)
+        if ([Registry sharedRegistry].modelProvider.boardSetupModel.tryNotToPlaceIllegalStones)
         {
           newStoneState = [self determineAlternativeNewStoneStateForSetupPoint:newStoneState];
           if (newStoneState != GoColorNone)
@@ -224,8 +224,7 @@
 // -----------------------------------------------------------------------------
 - (enum GoColor) determineNewStoneStateForSetupPoint
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  BoardSetupModel* boardSetupModel = appDelegate.boardSetupModel;
+  BoardSetupModel* boardSetupModel = [Registry sharedRegistry].modelProvider.boardSetupModel;
 
   // The cycle is: Empty > Default Color > Alternate color > Empty
   if (self.point.stoneState == GoColorNone)
@@ -241,8 +240,7 @@
 // -----------------------------------------------------------------------------
 - (enum GoColor) determineAlternativeNewStoneStateForSetupPoint:(enum GoColor)previousStoneState
 {
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  BoardSetupModel* boardSetupModel = appDelegate.boardSetupModel;
+  BoardSetupModel* boardSetupModel = [Registry sharedRegistry].modelProvider.boardSetupModel;
 
   // The cycle is: Empty > Alternate color > Default Color > Empty
   if (self.point.stoneState == GoColorNone)

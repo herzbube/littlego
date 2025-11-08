@@ -23,7 +23,8 @@
 #import "../model/BoardViewModel.h"
 #import "../../go/GoGame.h"
 #import "../../go/GoUtilities.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 
 
 // -----------------------------------------------------------------------------
@@ -94,7 +95,7 @@
 // -----------------------------------------------------------------------------
 - (BoardViewIntersection) intersectionNear:(CGPoint)coordinates
 {
-  BoardViewMetrics* metrics = [ApplicationDelegate sharedDelegate].boardViewMetrics;
+  BoardViewMetrics* metrics = [Registry sharedRegistry].modelProvider.boardViewMetrics;
   return [metrics intersectionNear:coordinates];
 }
 

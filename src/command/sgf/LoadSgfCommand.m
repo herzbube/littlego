@@ -17,7 +17,8 @@
 
 // Project includes
 #import "LoadSgfCommand.h"
-#import "../../main/ApplicationDelegate.h"
+#import "../../main/ModelProvider.h"
+#import "../../main/Registry.h"
 #import "../../sgf/SgfSettingsModel.h"
 
 
@@ -75,7 +76,7 @@
   }
   DDLogVerbose(@"%@: Loading SGF file %@", [self shortDescription], self.sgfFilePath);
 
-  SgfSettingsModel* sgfSettingsModel = [ApplicationDelegate sharedDelegate].sgfSettingsModel;
+  SgfSettingsModel* sgfSettingsModel = [Registry sharedRegistry].modelProvider.sgfSettingsModel;
   SGFCDocumentReader* documentReader = [SGFCDocumentReader documentReader];
 
   if (self.ignoreSgfSettings)

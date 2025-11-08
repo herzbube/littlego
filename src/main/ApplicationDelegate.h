@@ -49,6 +49,7 @@
 - (void) setupRegistrationDomain;
 - (void) setupUserDefaults;
 - (void) writeUserDefaults;
+- (void) setupRegistry;
 - (NSString*) contentOfTextResource:(NSString*)resourceName;
 - (NSString*) logFolder;
 
