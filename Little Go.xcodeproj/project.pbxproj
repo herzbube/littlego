@@ -879,6 +879,8 @@
 		CDFD9F8418F1D5FF0031CBCF /* SubmitGtpCommandViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = CD8F920A143E655E006351DB /* SubmitGtpCommandViewController.m */; };
 		CDFD9F8518F1D6170031CBCF /* DocumentGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = CDDD52691485B05C0027476B /* DocumentGenerator.m */; };
 		CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */; };
+		D72FC0452EB66E0C00092C0F /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D72FC0442EB66E0C00092C0F /* SceneDelegate.m */; };
+		D72FC0462EB66E0C00092C0F /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D72FC0442EB66E0C00092C0F /* SceneDelegate.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1888,6 +1890,8 @@
 		CDFF8A87149E2F2900E75B71 /* TESTING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TESTING; sourceTree = "<group>"; };
 		CE4267F5A17683A21108511E /* libPods-All Targets-Unit tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-All Targets-Unit tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D17AB36719C02584C00F4587 /* Pods-All Targets-Little Go.distribute_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Little Go.distribute_appstore.xcconfig"; path = "Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go.distribute_appstore.xcconfig"; sourceTree = "<group>"; };
+		D72FC0432EB66E0C00092C0F /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
+		D72FC0442EB66E0C00092C0F /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2008,6 +2012,8 @@
 				CD7C69DD1AA67C31009EC5AD /* MainUtility.h */,
 				CD7C69DE1AA67C31009EC5AD /* MainUtility.m */,
 				CD00A360148C2C26004E1A0C /* Prefix.pch */,
+				D72FC0432EB66E0C00092C0F /* SceneDelegate.h */,
+				D72FC0442EB66E0C00092C0F /* SceneDelegate.m */,
 				CD00A361148C2C26004E1A0C /* SectionedDocumentViewController.h */,
 				CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */,
 				CD7C69EF1AB0F1F3009EC5AD /* UIAreaInfo.h */,
@@ -4393,6 +4399,7 @@
 				CDAB5ED113E483DE00C4A4AA /* NewGameController.m in Sources */,
 				CD63B9E221C1F8B100E013B5 /* PipeStreamBuffer.cpp in Sources */,
 				CDE4057513EB081C0091E719 /* SettingsViewController.m in Sources */,
+				D72FC0462EB66E0C00092C0F /* SceneDelegate.m in Sources */,
 				CD1E6EB32865FE9500785E23 /* PlayStonePanGestureHandler.m in Sources */,
 				CDFA4AD213F71859001A2A94 /* NSStringAdditions.m in Sources */,
 				CD46627E2960376400B58CC9 /* NodeTreeViewCanvas.m in Sources */,
@@ -4807,6 +4814,7 @@
 				CD4662872960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */,
 				CD908DC92B5EF2610058767E /* NodeTreeViewMetricsUpdater.m in Sources */,
 				CD7C69BB1A9ABDE2009EC5AD /* BoardPositionNavigationManager.m in Sources */,
+				D72FC0452EB66E0C00092C0F /* SceneDelegate.m in Sources */,
 				CD51227529B26E5000C249B5 /* NodeNumbersView.m in Sources */,
 				CDC8DEF628EDECCA00619305 /* NodeTreeTileView.m in Sources */,
 				CD1DB610170257C000C2E648 /* NewGameController.m in Sources */,

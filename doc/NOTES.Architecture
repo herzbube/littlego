@@ -119,6 +119,45 @@ are interesting to study are ApplicationDelegate and ApplicationStateManager.
 [1] https://www.cocoanetics.com/2010/07/understanding-ios-4-backgrounding-and-delegate-messaging/
 
 
+Scenes
+------
+iOS 13 started to support so-called "scenes". A scene is basically one instance
+of the app's user interface. An app may want to support different scenes, in
+order to show a different UI depending on the circumstance. Also an app may want
+to support showing multiple scenes at the same time (at the time of writing
+limited to iPad devices).
+
+Up until iOS 26, scene support in an app was optional, but the next iOS version
+after iOS 26 will require apps to have scene support. [1] is a tech note
+providing a guide how to add scene support to a project. Additional useful
+documents are [2], explaining the different aspects of an app's life cycle that
+can be managed by an app delegate, and a scene delegate. Finally, [3] describes
+how to specify and set up the scenes in an app.
+
+As usual, in this app as much as possible is done programmatically, in order to
+make explicit what is going on.
+
+- Info.plist contains the UIApplicationSceneManifest key, to indicate that the
+  app has scene support.
+- In addition, Info.plist contains the UIApplicationSupportsMultipleScenes with
+  value "NO", because Little Go currently does not support displaying multiple
+  scenes.
+- But Info.plist does not contain the UIWindowSceneSessionRoleApplication key
+  with an enumeration of the app scenes and their configurations. Instead, the
+  app scenes and their configurations are provided by ApplicationDelegate in
+  the override of application:configurationForConnectingSceneSession:options:().
+  The documentation of this method [4] has this statement:
+    "Implement this method if you don’t include scene-configuration data in
+     your app’s Info.plist file [...]"
+  The other documents are more vague about what is needed / not needed in
+  Info.plist, which is why this definite statement is mentioned here.
+
+[1] https://developer.apple.com/documentation/technotes/tn3187-migrating-to-the-uikit-scene-based-life-cycle
+[2] https://developer.apple.com/documentation/uikit/managing-your-app-s-life-cycle?language=objc
+[3] https://developer.apple.com/documentation/uikit/specifying-the-scenes-your-app-supports?language=objc
+[4] https://developer.apple.com/documentation/uikit/uiapplicationdelegate/application(_:configurationforconnecting:options:)?language=objc
+
+
 Preferences
 -----------
 The iOS Application Programming Guide says that "The Settings bundle is

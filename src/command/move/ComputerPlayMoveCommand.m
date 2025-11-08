@@ -33,6 +33,7 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../main/SceneDelegate.h"
 #import "../../play/model/GameVariationModel.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
@@ -261,10 +262,10 @@ enum AlertType
                           alertType:alertType];
   };
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentYesNoAlertWithTitle:@"Unexpected error"
-                                                                                     message:message
-                                                                                  yesHandler:yesActionBlock
-                                                                                   noHandler:noActionBlock];
+  [[SceneDelegate sharedDelegate].window.rootViewController presentYesNoAlertWithTitle:@"Unexpected error"
+                                                                               message:message
+                                                                            yesHandler:yesActionBlock
+                                                                             noHandler:noActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }
@@ -292,9 +293,9 @@ enum AlertType
                           alertType:AlertTypeNewGameAfterComputerPlayedIllegalMove];
   };
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"New game about to begin"
-                                                                                  message:message
-                                                                                okHandler:okActionBlock];
+  [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"New game about to begin"
+                                                                            message:message
+                                                                          okHandler:okActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }
@@ -313,9 +314,9 @@ enum AlertType
     self.game.reasonForComputerIsThinking = GoGameComputerIsThinkingReasonIsNotThinking;
   };
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Unexpected error"
-                                                                                  message:message
-                                                                                okHandler:okActionBlock];
+  [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Unexpected error"
+                                                                            message:message
+                                                                          okHandler:okActionBlock];
 }
 
 // -----------------------------------------------------------------------------
@@ -392,11 +393,7 @@ enum AlertType
 // -----------------------------------------------------------------------------
 - (void) sendBugReport
 {
-  // Use the view controller that is currently selected - this may not
-  // always be the UIAreaPlay root view controller, e.g. if the user has
-  // switched to another UI area while the computer was thinking
-  ApplicationDelegate* appDelegate = [ApplicationDelegate sharedDelegate];
-  UIViewController* modalViewControllerParent = appDelegate.windowRootViewController;
+  UIViewController* modalViewControllerParent = [SceneDelegate sharedDelegate].window.rootViewController;
   SendBugReportController* controller = [SendBugReportController controller];
   controller.delegate = self;
   if (self.illegalMove)

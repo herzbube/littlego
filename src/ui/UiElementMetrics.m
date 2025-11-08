@@ -17,7 +17,7 @@
 
 // Project includes
 #import "UiElementMetrics.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/SceneDelegate.h"
 #import "../utility/UIDeviceAdditions.h"
 
 /// @brief Helper class used internally by UiElementMetrics.
@@ -34,13 +34,13 @@
 {
   // Since this application supports only one window, and therefore only one
   // scene, we can simply obtain the window and its scene from the window owner,
-  // which is the application delegate.
+  // which is the scene delegate.
   //
   // A more generic approach would work something like this: Get the
   // connectedScenes from UIApplication, then check each scene whether it's a
   // UIWindowScene, then select the UIWindowScene which has a window that is
   // the key window.
-  return [ApplicationDelegate sharedDelegate].window.windowScene.interfaceOrientation;
+  return [SceneDelegate sharedDelegate].window.windowScene.interfaceOrientation;
 }
 
 + (bool) interfaceOrientationIsPortrait

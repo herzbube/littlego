@@ -18,7 +18,7 @@
 // Project includes
 #import "CommandProcessor.h"
 #import "Command.h"
-#import "../main/ApplicationDelegate.h"
+#import "../main/SceneDelegate.h"
 
 
 // -----------------------------------------------------------------------------
@@ -107,7 +107,7 @@ static CommandProcessor* sharedProcessor = nil;
 {
   if (! _progressHUD)
   {
-    UIView* superview = [ApplicationDelegate sharedDelegate].window;
+    UIView* superview = [SceneDelegate sharedDelegate].window;
     _progressHUD = [[MBProgressHUD alloc] initWithView:superview];
     [superview addSubview:_progressHUD];
     _progressHUD.mode = MBProgressHUDModeAnnularDeterminate;

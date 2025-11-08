@@ -22,6 +22,7 @@
 #import "../../go/GoBoardPosition.h"
 #import "../../go/GoGame.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../main/SceneDelegate.h"
 #import "../../play/model/GameVariationModel.h"
 #import "../../ui/UIViewControllerAdditions.h"
 
@@ -171,10 +172,10 @@ enum ActionType
       [self didDismissAlertWithButton:AlertButtonTypeYes];
     };
 
-    [[ApplicationDelegate sharedDelegate].window.rootViewController presentYesNoAlertWithTitle:@"Future nodes will be discarded"
-                                                                                       message:messageString
-                                                                                    yesHandler:yesActionBlock
-                                                                                     noHandler:noActionBlock];
+    [[SceneDelegate sharedDelegate].window.rootViewController presentYesNoAlertWithTitle:@"Future nodes will be discarded"
+                                                                                 message:messageString
+                                                                              yesHandler:yesActionBlock
+                                                                               noHandler:noActionBlock];
 
     // Store command object for later use by the alert handler
     objc_setAssociatedObject(self, associatedCommandObjectKey, command, OBJC_ASSOCIATION_RETAIN);

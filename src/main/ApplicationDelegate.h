@@ -39,7 +39,6 @@
 @class SgfSettingsModel;
 @class SoundHandling;
 @class UiSettingsModel;
-@protocol MagnifyingGlassOwner;
 
 
 // -----------------------------------------------------------------------------
@@ -63,7 +62,6 @@
 + (ApplicationDelegate*) sharedDelegate;
 + (ApplicationDelegate*) newDelegate;
 
-- (void) setupCrashReporting;
 - (void) setupLogging;
 - (void) setupApplicationLaunchMode;
 - (void) setupFolders;
@@ -71,16 +69,11 @@
 - (void) setupRegistrationDomain;
 - (void) setupUserDefaults;
 - (void) setupSound;
-- (void) setupGUI;
 - (void) setupFuego;
 - (void) writeUserDefaults;
 - (NSString*) contentOfTextResource:(NSString*)resourceName;
 - (NSString*) logFolder;
 
-/// @brief The main application window.
-@property(nonatomic, retain) UIWindow* window;
-/// @brief The main application window's root view controller.
-@property(nonatomic, retain) UIViewController<MagnifyingGlassOwner>* windowRootViewController;
 /// @brief Set this to true to create a fake UI that can be used to take
 /// screenshots that serve as the basis for launch images.
 @property(nonatomic, assign) bool launchImageModeEnabled;
@@ -93,9 +86,6 @@
 /// property can still be queried to see what happened during application
 /// launch.
 @property(nonatomic, assign) enum ApplicationLaunchMode applicationLaunchMode;
-/// @brief Refers to the last .sgf file passed into the app via the system's
-/// document interaction mechanism. Is nil if no .sgf file was ever passed in.
-@property(nonatomic, retain) NSURL* documentInteractionURL;
 /// @brief Flag is true if user defaults should be written to the user defaults
 /// system at the appropriate times. Flag is false if user defaults should never
 /// be written to the user defaults system.

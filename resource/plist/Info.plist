@@ -43,6 +43,13 @@
 	<false/>
 	<key>NSHumanReadableCopyright</key>
 	<string>© 2011-2024 Patrick Näf</string>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<false/>
+		<key>UISceneConfigurations</key>
+		<dict/>
+	</dict>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

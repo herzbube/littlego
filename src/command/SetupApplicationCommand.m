@@ -18,7 +18,6 @@
 // Project includes
 #import "SetupApplicationCommand.h"
 #import "ChangeUIAreaPlayModeCommand.h"
-#import "HandleDocumentInteractionCommand.h"
 #import "diagnostics/RestoreBugReportApplicationStateCommand.h"
 #import "gtp/LoadOpeningBookCommand.h"
 #import "gtp/SetAdditiveKnowledgeTypeCommand.h"
@@ -168,12 +167,6 @@
           [[GoGame sharedGame].score enableScoringOnAppLaunch];
       else
           [[GoGame sharedGame].score disableScoringOnAppLaunch];
-
-      if (delegate.documentInteractionURL)
-      {
-        // Control returns while an alert is still being displayed
-        [[[[HandleDocumentInteractionCommand alloc] init] autorelease] submit];
-      }
     }
 
     // Run this command *AFTER* the initial "uct_max_memory" GTP command has

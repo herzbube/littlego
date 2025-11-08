@@ -23,6 +23,7 @@
 #import "../go/GoScore.h"
 #import "../go/GoUtilities.h"
 #import "../main/ApplicationDelegate.h"
+#import "../main/SceneDelegate.h"
 #import "../play/model/ScoringModel.h"
 #import "../shared/ApplicationStateManager.h"
 #import "../ui/UiSettingsModel.h"
@@ -222,9 +223,9 @@
     [self autorelease];  // balance retain that is sent before an alert is shown
   };
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
-                                                                                  message:alertMessage
-                                                                                okHandler:okActionBlock];
+  [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
+                                                                            message:alertMessage
+                                                                          okHandler:okActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }

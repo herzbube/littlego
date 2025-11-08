@@ -19,6 +19,7 @@
 #import "SendBugReportController.h"
 #import "../command/diagnostics/GenerateDiagnosticsInformationFileCommand.h"
 #import "../main/ApplicationDelegate.h"
+#import "../main/SceneDelegate.h"
 
 
 // -----------------------------------------------------------------------------
@@ -265,7 +266,7 @@
                                                  handler:actionBlock];
   [alertController addAction:action];
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+  [[SceneDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
 
   [self retain];  // must survive until the delegate method is invoked
 }

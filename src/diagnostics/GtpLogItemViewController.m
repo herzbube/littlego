@@ -20,6 +20,7 @@
 #import "GtpLogItem.h"
 #import "GtpCommandModel.h"
 #import "../main/ApplicationDelegate.h"
+#import "../main/SceneDelegate.h"
 #import "../ui/TableViewCellFactory.h"
 #import "../ui/UiElementMetrics.h"
 #import "../ui/UIViewControllerAdditions.h"
@@ -300,8 +301,8 @@ enum ResponseStringSectionItem
   GtpCommandModel* model = delegate.gtpCommandModel;
   [model addCommand:self.logItem.commandString];
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Command added"
-                                                                                  message:@"The command was added to the list of predefined commands."];
+  [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Command added"
+                                                                            message:@"The command was added to the list of predefined commands."];
 
   // Make sure the command cannot be added a second time
   self.navigationItem.rightBarButtonItem = nil;

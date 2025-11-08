@@ -44,6 +44,7 @@
 #import "../../command/scoring/ToggleScoringStateOfStoneGroupCommand.h"
 #import "../../command/ChangeUIAreaPlayModeCommand.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../main/SceneDelegate.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../shared/LayoutManager.h"
@@ -490,9 +491,9 @@ static GameActionManager* sharedGameActionManager = nil;
   {
     NSString* isIllegalReasonString = [NSString stringWithMoveIsIllegalReason:illegalReason];
     NSString* message = [@"Playing a pass move is not possible at the moment. Reason:\n\n" stringByAppendingString:isIllegalReasonString];
-    [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Cannot play pass move"
-                                                                                    message:message
-                                                                                  okHandler:nil];
+    [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Cannot play pass move"
+                                                                              message:message
+                                                                            okHandler:nil];
     return;
   }
 
@@ -712,7 +713,7 @@ static GameActionManager* sharedGameActionManager = nil;
     return;
   }
 
-  UIViewController* modalMaster = [ApplicationDelegate sharedDelegate].window.rootViewController;
+  UIViewController* modalMaster = [SceneDelegate sharedDelegate].window.rootViewController;
   self.moreGameActionsController = [[[MoreGameActionsController alloc] initWithModalMaster:modalMaster delegate:self] autorelease];
 
   if ([sender isKindOfClass:[UIBarButtonItem class]])

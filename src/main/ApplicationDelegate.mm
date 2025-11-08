@@ -29,7 +29,7 @@
 
 // Project includes
 #import "ApplicationDelegate.h"
-#import "MainTabBarController.h"
+#import "SceneDelegate.h"
 #import "../gtp/GtpClient.h"
 #import "../gtp/GtpEngine.h"
 #import "../gtp/GtpUtilities.h"
@@ -52,20 +52,13 @@
 #import "../play/model/ScoringModel.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../diagnostics/BugReportUtilities.h"
-#ifndef LITTLEGO_UNITTESTS
-#import "../diagnostics/CrashReportingHandler.h"
-#endif
 #import "../diagnostics/CrashReportingModel.h"
 #import "../diagnostics/GtpCommandModel.h"
 #import "../diagnostics/GtpLogModel.h"
 #import "../diagnostics/LoggingModel.h"
 #import "../command/CommandProcessor.h"
-#import "../command/HandleDocumentInteractionCommand.h"
-#import "../command/SetupApplicationCommand.h"
 #import "../command/backup/CleanBackupSgfCommand.h"
 #import "../command/diagnostics/RestoreBugReportUserDefaultsCommand.h"
-#import "../command/game/PauseGameCommand.h"
-#import "../go/GoGame.h"
 #import "../shared/ApplicationStateManager.h"
 #import "../shared/LayoutManager.h"
 #import "../shared/LongRunningActionCounter.h"
@@ -83,14 +76,12 @@
 // -----------------------------------------------------------------------------
 @interface ApplicationDelegate()
 @property(nonatomic, retain) DDFileLogger* fileLogger;
-/// @brief Is true if application:OpenURL:sourceApplication:annotation: should
-/// not handle document interaction because
-/// application:didFinishLaunchingWithOptions: already does the handling.
-@property(nonatomic, assign) bool applicationOpenURLShouldIgnoreNextDocumentInteraction;
 @end
 
 
 @implementation ApplicationDelegate
+
+#pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
 /// @brief Shared instance of ApplicationDelegate.
@@ -135,9 +126,6 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
-  self.window = nil;
-  self.windowRootViewController = nil;
-  self.documentInteractionURL = nil;
   self.gtpClient = nil;
   self.gtpEngine = nil;
   // Observes BoardViewModel, so must be deallocated first
@@ -187,11 +175,17 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [super dealloc];
 }
 
+#pragma mark - UIApplicationDelegate overrides
+
 // -----------------------------------------------------------------------------
 /// @brief Performs major application initialization tasks.
 ///
 /// This method is invoked after the main .nib file (if there is any) has been
 /// loaded, but while the application is still in the inactive state.
+///
+/// After adopting the scene life cycle, @a launchOptions is now always @e nil.
+/// Instead SceneDelegate now receives information about why a scene was
+/// created.
 // -----------------------------------------------------------------------------
 - (BOOL) application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary*)launchOptions
 {
@@ -211,12 +205,13 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
     [self prepareForUiTests];
 
   // Don't change the following sequence without thoroughly checking the
-  // dependencies
+  // dependencies. Also note that scene handling in SceneDelegate is
+  // dependent on parts of this sequence having been executed.
+
   // The following steps have no dependencies
   [self setupResourceBundle];
   [self setupLogging];
   [self setupApplicationLaunchMode];
-  bool setupDocumentInteractionSuccess = [self setupDocumentInteraction:launchOptions];
   [self setupFolders];
   // Depends on setupResourceBundle for reading registration domain defaults
   [self setupRegistrationDomain];
@@ -227,93 +222,8 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self setupSound];
   // Has no dependencies
   [self setupFuego];
-  // Depends on setupUserDefaults (e.g. MainTabBarController wants to restore
-  // tab order)
-  [self setupGUI];
-  // Depends on
-  // - setupUserDefaults, for crashReportingModel
-  // - setupGUI, for setting up self.window and its rootViewController property,
-  //   which is required to present the alert that asks the user for permission
-  //   to submit a crash report
-  [self setupCrashReporting];
 
-  // Further setup steps are executed in a secondary thread so that we can
-  // display a progress HUD
-  [[[[SetupApplicationCommand alloc] init] autorelease] submit];
-
-  BOOL canHandleURL = setupDocumentInteractionSuccess ? YES : NO;
-  return canHandleURL;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Invoked to notify this delegate that the application is about to
-/// become inactive.
-///
-/// Known events that trigger this:
-/// - Modifying an app's document folder via iTunes' "File sharing" feature
-///   (only prior to iOS 5)
-/// - Any interrupt (e.g. incoming phone call, calling up the multitasking UI)
-/// - Anything that will put the app in the background (e.g. Home button, screen
-///   locking)
-// -----------------------------------------------------------------------------
-- (void) applicationWillResignActive:(UIApplication*)application
-{
-  DDLogInfo(@"applicationWillResignActive:() received");
-
-  if (GoGameTypeComputerVsComputer == self.game.type)
-  {
-    switch (self.game.state)
-    {
-      case GoGameStateGameHasStarted:
-        [[[[PauseGameCommand alloc] init] autorelease] submit];
-        break;
-      default:
-        break;
-    }
-  }
-  self.soundHandling.disabled = true;
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Invoked to notify this delegate that the application has become
-/// active (again).
-// -----------------------------------------------------------------------------
-- (void) applicationDidBecomeActive:(UIApplication*)application
-{
-  DDLogInfo(@"applicationDidBecomeActive:() received");
-
-  self.soundHandling.disabled = false;
-  // Send this notification just in case something changed in the documents
-  // folder since the app was deactivated. Note: This is not just laziness - if
-  // the user really *DID* change something via the file sharing feature of
-  // iTunes, we won't be notified in any special way. The only thing that
-  // happens in such a case is deactivation and reactivation.
-  // Update for iOS 5: This no longer works in iOS 5
-  [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Invoked to notify this delegate that the application has entered the
-/// background and is about to be suspended.
-///
-/// This method must complete within 5 seconds.
-// -----------------------------------------------------------------------------
-- (void) applicationDidEnterBackground:(UIApplication*)application
-{
-  DDLogInfo(@"applicationDidEnterBackground:() received");
-
-  [self writeUserDefaults];
-  [[ApplicationStateManager sharedManager] applicationDidEnterBackground];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Invoked to notify this delegate that the application is about to
-/// come to the foreground (after having been suspended in the background).
-// -----------------------------------------------------------------------------
-- (void) applicationWillEnterForeground:(UIApplication*)application
-{
-  DDLogInfo(@"applicationWillEnterForeground:() received");
-  [[ApplicationStateManager sharedManager] applicationWillEnterForeground];
+  return YES;
 }
 
 // -----------------------------------------------------------------------------
@@ -326,6 +236,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   // much memory, probably due to an "enthusiastic" maximum memory setting
   // in the current GTP engine profile.
   DDLogWarn(@"ApplicationDelegate received memory warning");
+
   GtpEngineProfile* profile = self.gtpEngineProfileModel.activeProfile;
   if (profile)
     DDLogWarn(@"Active GtpEngineProfile is %@, max. memory is %d", profile.name, profile.fuegoMaxMemory);
@@ -336,30 +247,51 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self writeUserDefaults];
 }
 
+#pragma mark - UIApplicationDelegate overrides - Scene support
+
 // -----------------------------------------------------------------------------
-/// @brief Asks the delegate to open a resource identified by @a url.
-///
-/// This method is invoked both during application launch and while the
-/// application is already running, to open an .sgf file passed into the app
-/// via the system's document interaction mechanism.
+/// @brief UIApplicationDelegate method.
 // -----------------------------------------------------------------------------
-- (BOOL) application:(UIApplication*)application
-             openURL:(NSURL*)url
-             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id>*)options
+ - (UISceneConfiguration*) application:(UIApplication*)application
+configurationForConnectingSceneSession:(UISceneSession*)connectingSceneSession
+                               options:(UISceneConnectionOptions*)options
 {
-  DDLogInfo(@"Document interaction wants to open URL %@", url);
-  if (! [url isFileURL])
-    return NO;
-  if (self.applicationOpenURLShouldIgnoreNextDocumentInteraction)
-  {
-    self.applicationOpenURLShouldIgnoreNextDocumentInteraction = false;
-    return NO;
-  }
-  self.documentInteractionURL = url;
-  // Control returns before the .sgf file is actually loaded
-  [[[[HandleDocumentInteractionCommand alloc] init] autorelease] submit];
-  return YES;
+  DDLogInfo(@"application:configurationForConnectingSceneSession:options:() received");
+
+  // Each UISceneConfiguration must have a unique configuration name that is
+  // used to identify the scene.
+  NSString* configurationName = @"Default Scene Configuration";
+
+  // This project does not define its scene configurations in Info.plist.
+  // This app only has one scene, and its configuration is created
+  // programmatically here.
+  UISceneConfiguration* sceneConfiguration = [UISceneConfiguration configurationWithName:configurationName
+                                                                             sessionRole:connectingSceneSession.role];
+  sceneConfiguration.sceneClass = [UIWindowScene class];
+  sceneConfiguration.delegateClass = [SceneDelegate class];
+  // The scene's initial view controller is not defined in a storyboard (this
+  // project does not use storyboards), but is is provided programmatically by
+  // the scene delegate.
+  sceneConfiguration.storyboard = nil;
+  
+  return sceneConfiguration;
 }
+
+// -----------------------------------------------------------------------------
+/// @brief UIApplicationDelegate method.
+// -----------------------------------------------------------------------------
+   - (void) application:(UIApplication*)application
+didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
+{
+  DDLogInfo(@"application:didDiscardSceneSessions:() received");
+
+  // From the documentation:
+  //   "If your app isn’t running, UIKit calls this method the next time your
+  //   app launches."
+  // Before implementing something here, consider the implications of the above.
+}
+
+#pragma mark - Setup methods for application:didFinishLaunchingWithOptions:
 
 // -----------------------------------------------------------------------------
 /// @brief Prepares the app for launching in UI test mode.
@@ -371,25 +303,6 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [[NSUserDefaults standardUserDefaults] synchronize];
 
   [[[[CleanBackupSgfCommand alloc] init] autorelease] submit];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Sets up the crash reporting service.
-// -----------------------------------------------------------------------------
-- (void) setupCrashReporting
-{
-#ifdef LITTLEGO_NDEBUG
-#ifndef LITTLEGO_UNITTESTS
-  // One way to disable everything programmatically is this:
-  //   [[FIRApp defaultApp] setDataCollectionDefaultEnabled:NO];
-  // Unfortunately this also disables crash reporting.
-
-  [FIRApp configure];
-
-  CrashReportingHandler* crashReportingHandler = [[[CrashReportingHandler alloc] initWithModel:self.crashReportingModel] autorelease];
-  [crashReportingHandler handleUnsentCrashReportsOrDoNothing];
-#endif
-#endif
 }
 
 // -----------------------------------------------------------------------------
@@ -451,41 +364,6 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
     DDLogInfo(@"Launching in mode ApplicationLaunchModeNormal");
     self.applicationLaunchMode = ApplicationLaunchModeNormal;
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Scans @a launchOptions if it contains a document interaction URL,
-/// and if it does whether the URL can be handled.
-///
-/// Returns true for success, false for failure. Success means either
-/// - @a launchOptions does not contain an URL, or
-/// - @a launchOptions contains an URL that can be handled
-///
-/// Failure means that @a launchOptions contains an URL that cannot be handled.
-///
-/// As a side-effect, if a URL that can be handled is detected this method sets
-/// up document interaction related properties of this app delegate.
-// -----------------------------------------------------------------------------
-- (bool) setupDocumentInteraction:(NSDictionary*)launchOptions
-{
-  self.documentInteractionURL = nil;
-  self.applicationOpenURLShouldIgnoreNextDocumentInteraction = false;
-
-  bool success = true;
-  NSURL* url = [launchOptions valueForKey:UIApplicationLaunchOptionsURLKey];
-  if (url)
-  {
-    if ([url isFileURL])
-    {
-      self.documentInteractionURL = url;
-      self.applicationOpenURLShouldIgnoreNextDocumentInteraction = true;
-    }
-    else
-    {
-      success = false;
-    }
-  }
-  return success;
 }
 
 // -----------------------------------------------------------------------------
@@ -659,48 +537,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   self.gtpEngine = [GtpEngine engineWithStreamBuffers:streamBuffers];
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Sets up the objects used to manage the GUI.
-// -----------------------------------------------------------------------------
-- (void) setupGUI
-{
-  [self setupWindow];
-  [self setupWindowRootViewController];
-  [self.window makeKeyAndVisible];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for setupGui.
-// -----------------------------------------------------------------------------
-- (void) setupWindow
-{
-  self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
-
-  // Don't set up a default window background color - it is the job of the
-  // root view controllers of the MainTabBarController to do this, and to use
-  // extended layout properly so that their background extends behind the
-  // status bar. If the window ever becomes visible it will show with a black
-  // background.
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Private helper for setupGui.
-// -----------------------------------------------------------------------------
-- (void) setupWindowRootViewController
-{
-  // It's important that a UITabBarController is used directly as the window
-  // root VC. If UITabBarController is used as the child VC of some other view
-  // controller, the extended layout handling of navigation bars does not work
-  // correctly.
-  self.windowRootViewController = [[[MainTabBarController alloc] init] autorelease];
-  self.window.rootViewController = self.windowRootViewController;
-  // UIWindow automatically adds the root VC's view as a subview to itself.
-  // It also manages the layout of that view, so there is no need to use
-  // Auto Layout and install constraints in UIWindow. In fact, doing so causes
-  // trouble later on during the application's lifetime, when VCs are dismissed
-  // after being presented modally. The problem is discussed here:
-  // https://stackoverflow.com/q/23313112/1054378
-}
+#pragma mark - Public helper methods
 
 // -----------------------------------------------------------------------------
 /// @brief Loads the content of the text resource named @a resourceName.

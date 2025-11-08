@@ -23,6 +23,7 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../main/SceneDelegate.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UiSettingsModel.h"
@@ -154,9 +155,9 @@
     [self autorelease];  // balance retain that is sent before an alert is shown
   };
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
-                                                                                  message:alertMessage
-                                                                                okHandler:okActionBlock];
+  [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
+                                                                            message:alertMessage
+                                                                          okHandler:okActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }
@@ -176,9 +177,9 @@
     [self autorelease];  // balance retain that is sent before an alert is shown
   };
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
-                                                                                  message:alertMessage
-                                                                                okHandler:okActionBlock];
+  [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
+                                                                            message:alertMessage
+                                                                          okHandler:okActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }

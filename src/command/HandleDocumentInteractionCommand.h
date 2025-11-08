@@ -21,18 +21,17 @@
 
 // -----------------------------------------------------------------------------
 /// @brief The HandleDocumentInteractionCommand class is responsible for
-/// importing an .sgf file that was passed into the application via the
-/// system's document interaction mechanism.
-///
-/// The URL referring to .sgf file is the value of the ApplicationDelegate
-/// property @e documentInteractionURL.
+/// importing one or more .sgf files that were passed into the application via
+/// the system's document interaction mechanism.
 ///
 /// HandleDocumentInteractionCommand displays an alert to the user informing
-/// her under which name the imported .sgf file can be found in the archive.
+/// them under which names the imported .sgf files can be found in the archive.
 /// Command execution returns while the alert is still displayed.
 // -----------------------------------------------------------------------------
 @interface HandleDocumentInteractionCommand : CommandBase
 {
 }
+
+- (id) initWithUrls:(NSArray*)documentInteractionUrls;
 
 @end

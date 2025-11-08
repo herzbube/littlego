@@ -23,6 +23,7 @@
 #import "../../go/GoNode.h"
 #import "../../go/GoNodeMarkup.h"
 #import "../../main/ApplicationDelegate.h"
+#import "../../main/SceneDelegate.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../ui/UiSettingsModel.h"
 #import "../../ui/UIViewControllerAdditions.h"
@@ -63,10 +64,10 @@
     [self didDismissAlertWithButton:AlertButtonTypeYes];
   };
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentYesNoAlertWithTitle:alertTitle
-                                                                                     message:alertMessage
-                                                                                  yesHandler:yesActionBlock
-                                                                                   noHandler:noActionBlock];
+  [[SceneDelegate sharedDelegate].window.rootViewController presentYesNoAlertWithTitle:alertTitle
+                                                                               message:alertMessage
+                                                                            yesHandler:yesActionBlock
+                                                                             noHandler:noActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }
@@ -148,9 +149,9 @@
     [self didDismissAlertWithButton:AlertButtonTypeOk];
   };
 
-  [[ApplicationDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
-                                                                                  message:alertMessage
-                                                                                okHandler:okActionBlock];
+  [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
+                                                                            message:alertMessage
+                                                                          okHandler:okActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }

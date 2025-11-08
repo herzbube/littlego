@@ -21,6 +21,7 @@
 #import "DocumentViewController.h"
 #import "LicensesViewController.h"
 #import "MainTabBarController.h"
+#import "SceneDelegate.h"
 #import "SectionedDocumentViewController.h"
 #import "UIAreaInfo.h"
 #import "../archive/ArchiveViewController.h"
@@ -154,7 +155,7 @@
 // -----------------------------------------------------------------------------
 + (UIView*) rootViewForUIAreaPlay
 {
-  UIViewController* windowRootViewController = [ApplicationDelegate sharedDelegate].windowRootViewController;
+  UIViewController* windowRootViewController = [SceneDelegate sharedDelegate].window.rootViewController;
   MainTabBarController* tabBarController = (MainTabBarController*)windowRootViewController;
   return [tabBarController tabViewForUIArea:UIAreaPlay];
 }
@@ -192,7 +193,7 @@
 // -----------------------------------------------------------------------------
 + (void) activateUIArea:(enum UIArea)uiArea
 {
-  UIViewController* windowRootViewController = [ApplicationDelegate sharedDelegate].windowRootViewController;
+  UIViewController* windowRootViewController = [SceneDelegate sharedDelegate].window.rootViewController;
   MainTabBarController* tabBarController = (MainTabBarController*)windowRootViewController;
   [tabBarController activateTabForUIArea:uiArea];
 }
@@ -218,7 +219,7 @@
 // -----------------------------------------------------------------------------
 + (id<MagnifyingGlassOwner>) magnifyingGlassOwner
 {
-  return [ApplicationDelegate sharedDelegate].windowRootViewController;
+  return [SceneDelegate sharedDelegate].windowRootViewController;
 }
 
 @end
