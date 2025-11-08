@@ -29,7 +29,8 @@
 #import "../../gtp/GtpCommand.h"
 #import "../../gtp/GtpResponse.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/SceneDelegate.h"
+#import "../../main/Registry.h"
+#import "../../main/WindowProvider.h"
 #import "../../play/model/GameVariationModel.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
@@ -266,10 +267,10 @@ enum AlertType
                           alertType:alertType];
   };
 
-  [[SceneDelegate sharedDelegate].window.rootViewController presentYesNoAlertWithTitle:@"Unexpected error"
-                                                                               message:message
-                                                                            yesHandler:yesActionBlock
-                                                                             noHandler:noActionBlock];
+  [[Registry sharedRegistry].windowProvider.window.rootViewController presentYesNoAlertWithTitle:@"Unexpected error"
+                                                                                         message:message
+                                                                                      yesHandler:yesActionBlock
+                                                                                       noHandler:noActionBlock];
 
   [self retain];  // must survive until the delegate method is invoked
 }
@@ -330,7 +331,7 @@ enum AlertType
 // -----------------------------------------------------------------------------
 - (void) sendBugReport
 {
-  UIViewController* modalViewControllerParent = [SceneDelegate sharedDelegate].window.rootViewController;
+  UIViewController* modalViewControllerParent = [Registry sharedRegistry].windowProvider.window.rootViewController;
   SendBugReportController* controller = [SendBugReportController controller];
   controller.delegate = self;
   if (self.moveType == GoMoveTypePlay)

@@ -27,7 +27,8 @@
 #import "../../go/GoUtilities.h"
 #import "../../go/GoVertex.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/SceneDelegate.h"
+#import "../../main/Registry.h"
+#import "../../main/WindowProvider.h"
 #import "../../play/model/MarkupModel.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../ui/UiSettingsModel.h"
@@ -533,9 +534,9 @@ enum MarkupEditingInteraction
     [self didDismissAlertWithButton:AlertButtonTypeOk];
   };
 
-  [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
-                                                                            message:alertMessage
-                                                                          okHandler:okActionBlock];
+  [[Registry sharedRegistry].windowProvider.window.rootViewController presentOkAlertWithTitle:alertTitle
+                                                                                      message:alertMessage
+                                                                                    okHandler:okActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }
@@ -785,7 +786,7 @@ enum MarkupEditingInteraction
   editTextController.acceptEmptyText = true;
   editTextController.context = node;
 
-  [[SceneDelegate sharedDelegate].window.rootViewController presentNavigationControllerWithRootViewController:editTextController];
+  [[Registry sharedRegistry].windowProvider.window.rootViewController presentNavigationControllerWithRootViewController:editTextController];
   [editTextController release];
 
   [self retain];  // must survive until EditTextController invokes the delegate method that indicates the end of the editing session
@@ -815,7 +816,7 @@ enum MarkupEditingInteraction
     [self handleMarkupEditingInteractionWithNode:node];
   }
 
-  [[SceneDelegate sharedDelegate].window.rootViewController dismissViewControllerAnimated:YES completion:nil];
+  [[Registry sharedRegistry].windowProvider.window.rootViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Place/remove connection

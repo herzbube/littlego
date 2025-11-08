@@ -22,7 +22,8 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoGameDocument.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/SceneDelegate.h"
+#import "../../main/Registry.h"
+#import "../../main/WindowProvider.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../ui/UIViewControllerAdditions.h"
 
@@ -79,8 +80,8 @@
   }
   else
   {
-    [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Failed to save game"
-                                                                              message:saveSgfCommand.errorMessage];
+    [[Registry sharedRegistry].windowProvider.window.rootViewController presentOkAlertWithTitle:@"Failed to save game"
+                                                                                        message:saveSgfCommand.errorMessage];
   }
 
   if (saveSgfCommand.destinationFolderWasTouched)

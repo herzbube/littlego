@@ -39,8 +39,5 @@
 
 + (SceneDelegate*) sharedDelegate;
 
-/// @brief The scene window's root view controller.
-@property(nonatomic, retain) UIViewController<MagnifyingGlassOwner>* windowRootViewController;
-
 @end
 

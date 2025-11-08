@@ -19,7 +19,8 @@
 #import "CrashReportingHandler.h"
 #import "CrashReportingModel.h"
 #import "../main/ApplicationDelegate.h"
-#import "../main/SceneDelegate.h"
+#import "../main/Registry.h"
+#import "../main/WindowProvider.h"
 
 /// @brief Enumerates the types of buttons used in alerts presented by this
 /// command.
@@ -146,7 +147,7 @@ enum AlertButtonTypeCrashReport
                                                        handler:dontSendBlock];
     [alertController addAction:dontSend];
 
-    [[SceneDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+    [[Registry sharedRegistry].windowProvider.window.rootViewController presentViewController:alertController animated:YES completion:nil];
 
     // This handler object must remain alive until the alert has been handled
     [self retain];

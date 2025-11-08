@@ -26,8 +26,8 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoUtilities.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/MainUtility.h"
 #import "../../main/MagnifyingGlassOwner.h"
+#import "../../main/Registry.h"
 #import "../../shared/LayoutManager.h"
 #import "../../ui/MagnifyingViewModel.h"
 #import "../../ui/UiSettingsModel.h"
@@ -528,7 +528,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateMagnifyingGlassForPanningLocation:(CGPoint)panningLocation
 {
-  id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
+  id<MagnifyingGlassOwner> magnifyingGlassOwner = [Registry sharedRegistry].magnifyingGlassOwner;
   if (! magnifyingGlassOwner.magnifyingGlassEnabled)
   {
     DDLogDebug(@"Enabling magnifying glass for panning location, owner = %@", magnifyingGlassOwner);
@@ -547,7 +547,7 @@
 // -----------------------------------------------------------------------------
 - (void) updateMagnifyingGlassForPanningIntersection:(BoardViewIntersection)panningIntersection
 {
-  id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
+  id<MagnifyingGlassOwner> magnifyingGlassOwner = [Registry sharedRegistry].magnifyingGlassOwner;
   if (! magnifyingGlassOwner.magnifyingGlassEnabled)
   {
     DDLogDebug(@"Enabling magnifying glass for panning intersection, owner = %@", magnifyingGlassOwner);
@@ -565,7 +565,7 @@
 // -----------------------------------------------------------------------------
 - (void) disableMagnifyingGlass
 {
-  id<MagnifyingGlassOwner> magnifyingGlassOwner = [MainUtility magnifyingGlassOwner];
+  id<MagnifyingGlassOwner> magnifyingGlassOwner = [Registry sharedRegistry].magnifyingGlassOwner;
   if (magnifyingGlassOwner.magnifyingGlassEnabled)
   {
     DDLogDebug(@"Disabling magnifying glass, owner = %@", magnifyingGlassOwner);

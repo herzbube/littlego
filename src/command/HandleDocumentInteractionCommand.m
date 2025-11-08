@@ -19,8 +19,9 @@
 #import "HandleDocumentInteractionCommand.h"
 #import "../archive/ArchiveViewModel.h"
 #import "../main/ApplicationDelegate.h"
-#import "../main/SceneDelegate.h"
 #import "../main/MainUtility.h"
+#import "../main/Registry.h"
+#import "../main/WindowProvider.h"
 #import "../ui/UIViewControllerAdditions.h"
 #import "../utility/PathUtilities.h"
 
@@ -153,8 +154,8 @@
 // -----------------------------------------------------------------------------
 - (void) showAlert:(NSString*)alertMessage
 {
-  [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Game import results"
-                                                                            message:alertMessage];
+  [[Registry sharedRegistry].windowProvider.window.rootViewController presentOkAlertWithTitle:@"Game import results"
+                                                                                      message:alertMessage];
 }
 
 // -----------------------------------------------------------------------------

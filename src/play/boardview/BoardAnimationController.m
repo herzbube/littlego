@@ -23,7 +23,8 @@
 #import "../model/BoardViewModel.h"
 #import "../../go/GoPoint.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/SceneDelegate.h"
+#import "../../main/Registry.h"
+#import "../../main/WindowProvider.h"
 #import "../../ui/UIViewControllerAdditions.h"
 
 
@@ -136,8 +137,8 @@
 
   if (alertMessage)
   {
-    [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
-                                                                              message:alertMessage];
+    [[Registry sharedRegistry].windowProvider.window.rootViewController presentOkAlertWithTitle:alertTitle
+                                                                                        message:alertMessage];
   }
   else
   {

@@ -39,7 +39,8 @@
 #import "../../go/GoVertex.h"
 #import "../../gtp/GtpUtilities.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/SceneDelegate.h"
+#import "../../main/Registry.h"
+#import "../../main/WindowProvider.h"
 #import "../../newgame/NewGameModel.h"
 #import "../../sgf/SgfUtilities.h"
 #import "../../shared/ApplicationStateManager.h"
@@ -1704,7 +1705,7 @@ withPropertiesFromSgfNode:(SGFCNode*)sgfNode
 // -----------------------------------------------------------------------------
 - (void) showAlert:(NSString*)message
 {
-  [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:@"Failed to load game" message:message];
+  [[Registry sharedRegistry].windowProvider.window.rootViewController presentOkAlertWithTitle:@"Failed to load game" message:message];
 }
 
 // -----------------------------------------------------------------------------

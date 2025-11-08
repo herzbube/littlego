@@ -20,7 +20,8 @@
 #import "UIDeviceAdditions.h"
 #import "../go/GoUtilities.h"
 #import "../main/ApplicationDelegate.h"
-#import "../main/SceneDelegate.h"
+#import "../main/Registry.h"
+#import "../main/WindowProvider.h"
 #import "../player/GtpEngineProfile.h"
 #import "../player/Player.h"
 #import "../ui/UIViewControllerAdditions.h"
@@ -752,7 +753,7 @@ NSString* crashDataContactEmailKey = @"CrashDataContactEmailKey";
                               "This is to preserve any customizations you may have made. If you don't need these "
                               "backups you can simply delete them.");
 
-    [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle message:alertMessage];
+    [[Registry sharedRegistry].windowProvider.window.rootViewController presentOkAlertWithTitle:alertTitle message:alertMessage];
   }
 }
 

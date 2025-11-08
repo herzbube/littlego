@@ -23,7 +23,8 @@
 #import "../../go/GoScore.h"
 #import "../../go/GoUtilities.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/SceneDelegate.h"
+#import "../../main/Registry.h"
+#import "../../main/WindowProvider.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../ui/UIViewControllerAdditions.h"
 #import "../../utility/NSStringAdditions.h"
@@ -94,12 +95,12 @@
     [self didDismissAlertWithColor:GoColorWhite];
   };
 
-  [[SceneDelegate sharedDelegate].window.rootViewController presentTwoButtonAlertWithTitle:alertTitle
-                                                                                   message:alertMessage
-                                                                          firstActionTitle:blackColorName
-                                                                        firstActionHandler:blackColorActionBlock
-                                                                         secondActionTitle:whiteColorName
-                                                                       secondActionHandler:whiteColorActionBlock];
+  [[Registry sharedRegistry].windowProvider.window.rootViewController presentTwoButtonAlertWithTitle:alertTitle
+                                                                                             message:alertMessage
+                                                                                    firstActionTitle:blackColorName
+                                                                                  firstActionHandler:blackColorActionBlock
+                                                                                   secondActionTitle:whiteColorName
+                                                                                 secondActionHandler:whiteColorActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }

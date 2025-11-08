@@ -21,7 +21,8 @@
 #import "DocumentViewController.h"
 #import "LicensesViewController.h"
 #import "MainTabBarController.h"
-#import "SceneDelegate.h"
+#import "Registry.h"
+#import "WindowProvider.h"
 #import "SectionedDocumentViewController.h"
 #import "UIAreaInfo.h"
 #import "../archive/ArchiveViewController.h"
@@ -155,7 +156,7 @@
 // -----------------------------------------------------------------------------
 + (UIView*) rootViewForUIAreaPlay
 {
-  UIViewController* windowRootViewController = [SceneDelegate sharedDelegate].window.rootViewController;
+  UIViewController* windowRootViewController = [Registry sharedRegistry].windowProvider.window.rootViewController;
   MainTabBarController* tabBarController = (MainTabBarController*)windowRootViewController;
   return [tabBarController tabViewForUIArea:UIAreaPlay];
 }
@@ -193,7 +194,7 @@
 // -----------------------------------------------------------------------------
 + (void) activateUIArea:(enum UIArea)uiArea
 {
-  UIViewController* windowRootViewController = [SceneDelegate sharedDelegate].window.rootViewController;
+  UIViewController* windowRootViewController = [Registry sharedRegistry].windowProvider.window.rootViewController;
   MainTabBarController* tabBarController = (MainTabBarController*)windowRootViewController;
   [tabBarController activateTabForUIArea:uiArea];
 }
@@ -208,18 +209,6 @@
   UiSettingsModel* uiSettingsModel = applicationDelegate.uiSettingsModel;
   uiSettingsModel.visibleUIArea = uiArea;
   [applicationDelegate writeUserDefaults];
-}
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the owner of the application's magnifying glass
-/// functionality.
-///
-/// If we ever decide to change the owner we only have to modify this method,
-/// client's won't be affected.
-// -----------------------------------------------------------------------------
-+ (id<MagnifyingGlassOwner>) magnifyingGlassOwner
-{
-  return [SceneDelegate sharedDelegate].windowRootViewController;
 }
 
 @end

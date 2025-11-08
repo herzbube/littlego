@@ -19,7 +19,8 @@
 #import "SendBugReportController.h"
 #import "../command/diagnostics/GenerateDiagnosticsInformationFileCommand.h"
 #import "../main/ApplicationDelegate.h"
-#import "../main/SceneDelegate.h"
+#import "../main/Registry.h"
+#import "../main/WindowProvider.h"
 
 
 // -----------------------------------------------------------------------------
@@ -266,7 +267,7 @@
                                                  handler:actionBlock];
   [alertController addAction:action];
 
-  [[SceneDelegate sharedDelegate].window.rootViewController presentViewController:alertController animated:YES completion:nil];
+  [[Registry sharedRegistry].windowProvider.window.rootViewController presentViewController:alertController animated:YES completion:nil];
 
   [self retain];  // must survive until the delegate method is invoked
 }

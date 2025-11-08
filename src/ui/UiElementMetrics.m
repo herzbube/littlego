@@ -17,7 +17,8 @@
 
 // Project includes
 #import "UiElementMetrics.h"
-#import "../main/SceneDelegate.h"
+#import "../main/Registry.h"
+#import "../main/WindowProvider.h"
 #import "../utility/UIDeviceAdditions.h"
 
 /// @brief Helper class used internally by UiElementMetrics.
@@ -40,7 +41,7 @@
   // connectedScenes from UIApplication, then check each scene whether it's a
   // UIWindowScene, then select the UIWindowScene which has a window that is
   // the key window.
-  return [SceneDelegate sharedDelegate].window.windowScene.interfaceOrientation;
+  return [Registry sharedRegistry].windowProvider.window.windowScene.interfaceOrientation;
 }
 
 + (bool) interfaceOrientationIsPortrait

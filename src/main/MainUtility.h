@@ -37,6 +37,5 @@
 + (NSString*) resourceNameForUIArea:(enum UIArea)uiArea;
 + (void) activateUIArea:(enum UIArea)uiArea;
 + (void) mainApplicationViewController:(UIViewController*)viewController didDisplayUIArea:(enum UIArea)uiArea;
-+ (id<MagnifyingGlassOwner>) magnifyingGlassOwner;
 
 @end

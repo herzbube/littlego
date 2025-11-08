@@ -87,7 +87,6 @@ static SceneDelegate* sharedDelegate = nil;
   sharedRegistry.magnifyingGlassOwner = nil;
 
   self.window = nil;
-  self.windowRootViewController = nil;
   self.pendingSceneConnectionOptions = nil;
   self.documentInteractionUrls = nil;
 
@@ -309,10 +308,10 @@ willConnectToSession:(UISceneSession*)session
   // root VC. If UITabBarController is used as the child VC of some other view
   // controller, the extended layout handling of navigation bars does not work
   // correctly.
-  self.windowRootViewController = [[[MainTabBarController alloc] init] autorelease];
-  [Registry sharedRegistry].magnifyingGlassOwner = self.windowRootViewController;
+  MainTabBarController* mainTabBarController = [[[MainTabBarController alloc] init] autorelease];
+  [Registry sharedRegistry].magnifyingGlassOwner = mainTabBarController;
 
-  self.window.rootViewController = self.windowRootViewController;
+  self.window.rootViewController = mainTabBarController;
   // UIWindow automatically adds the root VC's view as a subview to itself.
   // It also manages the layout of that view, so there is no need to use
   // Auto Layout and install constraints in UIWindow. In fact, doing so causes

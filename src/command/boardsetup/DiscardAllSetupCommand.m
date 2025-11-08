@@ -23,7 +23,8 @@
 #import "../../go/GoGame.h"
 #import "../../go/GoBoardPosition.h"
 #import "../../main/ApplicationDelegate.h"
-#import "../../main/SceneDelegate.h"
+#import "../../main/Registry.h"
+#import "../../main/WindowProvider.h"
 #import "../../shared/ApplicationStateManager.h"
 #import "../../shared/LongRunningActionCounter.h"
 #import "../../ui/UiSettingsModel.h"
@@ -67,10 +68,10 @@
     [self didDismissAlertWithButton:AlertButtonTypeYes];
   };
 
-  [[SceneDelegate sharedDelegate].window.rootViewController presentYesNoAlertWithTitle:alertTitle
-                                                                               message:alertMessage
-                                                                            yesHandler:yesActionBlock
-                                                                             noHandler:noActionBlock];
+  [[Registry sharedRegistry].windowProvider.window.rootViewController presentYesNoAlertWithTitle:alertTitle
+                                                                                         message:alertMessage
+                                                                                      yesHandler:yesActionBlock
+                                                                                       noHandler:noActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }
@@ -180,9 +181,9 @@
     [self didDismissAlertWithButton:AlertButtonTypeOk];
   };
 
-  [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
-                                                                            message:alertMessage
-                                                                          okHandler:okActionBlock];
+  [[Registry sharedRegistry].windowProvider.window.rootViewController presentOkAlertWithTitle:alertTitle
+                                                                                      message:alertMessage
+                                                                                    okHandler:okActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }
@@ -202,9 +203,9 @@
     [self didDismissAlertWithButton:AlertButtonTypeOk];
   };
 
-  [[SceneDelegate sharedDelegate].window.rootViewController presentOkAlertWithTitle:alertTitle
-                                                                            message:alertMessage
-                                                                          okHandler:okActionBlock];
+  [[Registry sharedRegistry].windowProvider.window.rootViewController presentOkAlertWithTitle:alertTitle
+                                                                                      message:alertMessage
+                                                                                    okHandler:okActionBlock];
 
   [self retain];  // must survive until the handler method is invoked
 }

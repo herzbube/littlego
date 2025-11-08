@@ -151,7 +151,7 @@ viewWillLayoutSubviews. This occurs only if the controller's view is currently
 visible. A reliable source of what interface orientation is in force when
 viewWillLayoutSubviews occurs is the current UIWindowScene. Since this
 application has only one window, this can be queried like this:
-[SceneDelegate sharedDelegate].window.windowScene.interfaceOrientation.
+[Registry sharedRegistry].windowProvider.window.windowScene.interfaceOrientation.
 
 Up until iOS 13, UIApplicationWillChangeStatusBarOrientationNotification and
 UIApplicationDidChangeStatusBarOrientationNotification were also reliable event
