@@ -29,6 +29,7 @@
 
 // Project includes
 #import "ApplicationDelegate.h"
+#import "Registry.h"
 #import "SceneDelegate.h"
 #import "../gtp/GtpClient.h"
 #import "../gtp/GtpEngine.h"
@@ -81,6 +82,32 @@
 
 @implementation ApplicationDelegate
 
+#pragma mark - Synthesize properties
+
+// Auto-synthesizing does not work for properties declared in a protocol, so we
+// have to explicitly synthesize these properties that are declared in the
+// ModelProvider protocol.
+@synthesize theNewGameModel = _theNewGameModel;
+@synthesize playerModel = _playerModel;
+@synthesize gtpEngineProfileModel = _gtpEngineProfileModel;
+@synthesize boardViewModel = _boardViewModel;
+@synthesize boardViewMetrics = _boardViewMetrics;
+@synthesize boardPositionModel = _boardPositionModel;
+@synthesize scoringModel = _scoringModel;
+@synthesize soundHandling = _soundHandling;
+@synthesize archiveViewModel = _archiveViewModel;
+@synthesize gtpLogModel = _gtpLogModel;
+@synthesize gtpCommandModel = _gtpCommandModel;
+@synthesize crashReportingModel = _crashReportingModel;
+@synthesize loggingModel = _loggingModel;
+@synthesize uiSettingsModel = _uiSettingsModel;
+@synthesize magnifyingViewModel = _magnifyingViewModel;
+@synthesize boardSetupModel = _boardSetupModel;
+@synthesize sgfSettingsModel = _sgfSettingsModel;
+@synthesize markupModel = _markupModel;
+@synthesize nodeTreeViewModel = _nodeTreeViewModel;
+@synthesize gameVariationModel = _gameVariationModel;
+
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
@@ -126,6 +153,11 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  // Unregister objects owned by ApplicationDelegate. We do this by releasing
+  // the whole registry. Should someone access the registry afterwards they will
+  // get a new registry object with all references set to nil.
+  [Registry releaseSharedRegistry];
+
   self.gtpClient = nil;
   self.gtpEngine = nil;
   // Observes BoardViewModel, so must be deallocated first
@@ -222,6 +254,8 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   [self setupSound];
   // Has no dependencies
   [self setupFuego];
+  // Depends on models having been set up
+  [self setupRegistry];
 
   return YES;
 }
@@ -535,6 +569,18 @@ didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
 
   self.gtpClient = [GtpClient clientWithStreamBuffers:streamBuffers];
   self.gtpEngine = [GtpEngine engineWithStreamBuffers:streamBuffers];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Sets up the shared Registry with objects owned by
+/// ApplicationDelegate.
+// -----------------------------------------------------------------------------
+- (void) setupRegistry
+{
+  Registry* sharedRegistry = [Registry sharedRegistry];
+
+  sharedRegistry.applicationDelegate = self;
+  sharedRegistry.modelProvider = self;
 }
 
 #pragma mark - Public helper methods

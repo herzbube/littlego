@@ -881,6 +881,8 @@
 		CDFE66AE173EC446003D8776 /* EditResignBehaviourSettingsController.m in Sources */ = {isa = PBXBuildFile; fileRef = CDFE66AD173EC446003D8776 /* EditResignBehaviourSettingsController.m */; };
 		D72FC0452EB66E0C00092C0F /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D72FC0442EB66E0C00092C0F /* SceneDelegate.m */; };
 		D72FC0462EB66E0C00092C0F /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D72FC0442EB66E0C00092C0F /* SceneDelegate.m */; };
+		D74980BA2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
+		D74980BB2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1892,6 +1894,10 @@
 		D17AB36719C02584C00F4587 /* Pods-All Targets-Little Go.distribute_appstore.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-All Targets-Little Go.distribute_appstore.xcconfig"; path = "Target Support Files/Pods-All Targets-Little Go/Pods-All Targets-Little Go.distribute_appstore.xcconfig"; sourceTree = "<group>"; };
 		D72FC0432EB66E0C00092C0F /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
 		D72FC0442EB66E0C00092C0F /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
+		D74980B82EBF87BD00BD595D /* Registry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Registry.h; sourceTree = "<group>"; };
+		D74980B92EBF87BD00BD595D /* Registry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Registry.m; sourceTree = "<group>"; };
+		D74980BC2EBF902500BD595D /* ModelProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModelProvider.h; sourceTree = "<group>"; };
+		D74980BD2EBFA19200BD595D /* WindowProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowProvider.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2011,13 +2017,17 @@
 				CD00A35F148C2C26004E1A0C /* main.m */,
 				CD7C69DD1AA67C31009EC5AD /* MainUtility.h */,
 				CD7C69DE1AA67C31009EC5AD /* MainUtility.m */,
+				D74980BC2EBF902500BD595D /* ModelProvider.h */,
 				CD00A360148C2C26004E1A0C /* Prefix.pch */,
+				D74980B82EBF87BD00BD595D /* Registry.h */,
+				D74980B92EBF87BD00BD595D /* Registry.m */,
 				D72FC0432EB66E0C00092C0F /* SceneDelegate.h */,
 				D72FC0442EB66E0C00092C0F /* SceneDelegate.m */,
 				CD00A361148C2C26004E1A0C /* SectionedDocumentViewController.h */,
 				CD00A362148C2C26004E1A0C /* SectionedDocumentViewController.m */,
 				CD7C69EF1AB0F1F3009EC5AD /* UIAreaInfo.h */,
 				CD7C69F01AB0FCA9009EC5AD /* UIAreaInfo.m */,
+				D74980BD2EBFA19200BD595D /* WindowProvider.h */,
 			);
 			path = main;
 			sourceTree = "<group>";
@@ -4366,6 +4376,7 @@
 			files = (
 				CD908DC82B5EF2610058767E /* NodeTreeViewMetricsUpdater.m in Sources */,
 				CDEE1A0B1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,
+				D74980BB2EBF87BD00BD595D /* Registry.m in Sources */,
 				CDBDD0992997F38700641E3B /* NodeNumbersViewCell.m in Sources */,
 				CD4662862960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */,
 				CD8178FF25D8553100F39091 /* ComputerSuggestMoveCommand.m in Sources */,
@@ -4771,6 +4782,7 @@
 				CD99EC6614B1205B007B3B67 /* GoPlayerTest.m in Sources */,
 				CDA6F0AC14B1C89600F71BC0 /* GoMoveTest.m in Sources */,
 				CDF446CB14D2173F0040D666 /* UiElementMetrics.m in Sources */,
+				D74980BA2EBF87BD00BD595D /* Registry.m in Sources */,
 				CD607BCC28109A7E000C111E /* EditEstimatedScoreController.m in Sources */,
 				CD2D453214F1B6AC003E3159 /* UiUtilities.m in Sources */,
 				CDDAB6F014FA728D00DEBAAF /* UIDeviceAdditions.m in Sources */,

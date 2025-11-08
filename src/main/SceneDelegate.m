@@ -19,6 +19,7 @@
 #import "SceneDelegate.h"
 #import "ApplicationDelegate.h"
 #import "MainTabBarController.h"
+#import "Registry.h"
 #import "../command/game/PauseGameCommand.h"
 #import "../command/HandleDocumentInteractionCommand.h"
 #import "../command/SetupApplicationCommand.h"
@@ -50,6 +51,13 @@
 
 @implementation SceneDelegate
 
+#pragma mark - Synthesize properties
+
+// Auto-synthesizing does not work for properties declared in a protocol, so we
+// have to explicitly synthesize these properties that are declared in the
+// ModelProvider protocol.
+@synthesize window = _window;
+
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
@@ -73,6 +81,11 @@ static SceneDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  Registry* sharedRegistry = [Registry sharedRegistry];
+  sharedRegistry.sceneDelegate = nil;
+  sharedRegistry.windowProvider = nil;
+  sharedRegistry.magnifyingGlassOwner = nil;
+
   self.window = nil;
   self.windowRootViewController = nil;
   self.pendingSceneConnectionOptions = nil;
@@ -99,8 +112,14 @@ willConnectToSession:(UISceneSession*)session
   // Singleton.
   sharedDelegate = self;
 
+  // Also make the shared object available via registry
+  Registry* sharedRegistry = [Registry sharedRegistry];
+  sharedRegistry.sceneDelegate = self;
+  sharedRegistry.windowProvider = self;
+
   if (! [scene isKindOfClass:[UIWindowScene class]])
   {
+    // TODO xxx Raise exception => fail early?
     DDLogWarn(@"scene:willConnectToSession:options:() received for a scene that is not a UIWindowScene");
     return;
   }
@@ -291,6 +310,8 @@ willConnectToSession:(UISceneSession*)session
   // controller, the extended layout handling of navigation bars does not work
   // correctly.
   self.windowRootViewController = [[[MainTabBarController alloc] init] autorelease];
+  [Registry sharedRegistry].magnifyingGlassOwner = self.windowRootViewController;
+
   self.window.rootViewController = self.windowRootViewController;
   // UIWindow automatically adds the root VC's view as a subview to itself.
   // It also manages the layout of that view, so there is no need to use
