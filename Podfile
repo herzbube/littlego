@@ -1,6 +1,6 @@
 DEPLOYMENT_TARGET_KEY = 'IPHONEOS_DEPLOYMENT_TARGET'.freeze
 # All pods will have at least this version to prevent Xcode warnings
-DEPLOYMENT_TARGET_VALUE = '15.0'.freeze
+DEPLOYMENT_TARGET_VALUE = '16.0'.freeze
 
 # Workaround for the error "The following Swift pods cannot yet be integrated as
 # static libraries". This error was printed for various pods when updating to

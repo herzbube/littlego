@@ -158,7 +158,7 @@ This section lists a number of important / notable configuration settings of
 the Xcode project.
 
 Project-wide configuration settings applying to all targets:
-- IPHONEOS_DEPLOYMENT_TARGET = 15.0
+- IPHONEOS_DEPLOYMENT_TARGET = 16.0
   - This must match the deployment target in script/build-env.sh and in Podfile.
 - FRAMEWORK_SEARCH_PATHS = "$(SRCROOT)/3rdparty/install"
   - This is required to find the Fuego, Boost, SgfcKit and libsgfc++ frameworks.
@@ -283,8 +283,8 @@ Platform notes
   iPhone Simulator.
 - The base SDK is "Latest" so that a simple rebuild is sufficient after an
   Xcode upgrade.
-- The deployment target is set to 15.0 so that the application keeps running on
-  iOS 15.0 devices.
+- The deployment target is set to 16.0 so that the application keeps running on
+  iOS 16.0 devices.
 
 
 Upgrading the iOS SDK

@@ -15,21 +15,32 @@ version is the last one to support the device. If the project stops supporting
 a given iOS version then all devices listed under that iOS version, and older
 iOS versions, will no longer be able to run the app.
 
-Latest iOS/iPadOS (iOS/iPadOS 17 at the time this document was last updated)
-- iPhone XS / XS Max
-- iPhone XR
+Latest iOS/iPadOS (iOS/iPadOS 26 at the time this document was last updated)
 - iPhone 11 / 11 Pro / 11 Pro Max
 - iPhone SE 2nd generation / 3rd generation
 - iPhone 12 Mini / 12 / 12 Pro / 12 Pro Max
 - iPhone 13 Mini / 13 / 13 Pro / 13 Pro Max
 - iPhone 14 / 14 Plus / 14 Pro / 14 Pro Max
 - iPhone 15 / 15 Plus / 15 Pro / 15 Pro Max
-- iPad Pro 12.9 inch 2nd / 3rd / 4th / 5th / 6th generation
-- iPad Pro 11 inch 1st / 2nd / 3rd / 4th generation
-- iPad Pro 10.5 inch
-- iPad Air 3rd / 4th / 5th generation
-- iPad Mini 5th / 6th generation
-- iPad 6th / 7th / 8th / 9th / 10th generation
+- iPhone 16 / 16 Plus / 16 Pro / 16 Pro Max / 16e
+- iPhone 17 / 17 Pro / 17 Pro Max
+- iPhone Air
+- iPad 8th / 9th / 10th / 11th generation
+- iPad Mini 5th / 6th / 7th generation
+- iPad Air 3rd / 4th / 5th / 6th / 7th generation
+- iPad Pro 11 inch 1st / 2nd / 3rd / 4th / 5th / 6th generation
+- iPad Pro 12.9 inch 3rd / 4th / 5th / 6th generation
+- iPad Pro 13 inch 1st / 2nd generation
+- iPad Pro 7th (M4) / 8th (M5) generation
+
+iOS/iPadOS 18
+- iPhone XS / XS Max
+- iPhone XR
+- iPad 7th generation
+
+iOS/iPadOS 17
+- iPad 6th generation
+- iPad Pro 2nd generation (both 10.5 and 12.9 inch)
 
 iOS/iPadOS 16
 - iPhone 8 / 8 Plus
