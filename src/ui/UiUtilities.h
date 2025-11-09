@@ -45,5 +45,6 @@
 + (void) applyTransparentStyleToView:(UIView*)view traitCollection:(UITraitCollection*)traitCollection;
 + (void) applyTintColorToButton:(UIButton*)button traitCollection:(UITraitCollection*)traitCollection;
 + (CGRect) rectWithSize:(CGSize)size centeredInRect:(CGRect)rect;
++ (UIInterfaceOrientationMask) interfaceOrientationMaskForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 
 @end

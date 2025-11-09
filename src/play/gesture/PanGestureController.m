@@ -228,8 +228,6 @@
       gestureRecognizerStateChangedCount = 0;
       DDLogDebug(@"UIGestureRecognizerStateBegan");
 
-      [LayoutManager sharedManager].shouldAutorotate = false;
-
       boardViewModel.boardViewPanningGestureIsInProgress = true;
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewPanningGestureWillStart object:nil];
 
@@ -274,8 +272,6 @@
 
       self.gestureStartPoint = nil;
       self.gestureMostRecentPoint = nil;
-
-      [LayoutManager sharedManager].shouldAutorotate = true;
 
       boardViewModel.boardViewPanningGestureIsInProgress = false;
       [[NSNotificationCenter defaultCenter] postNotificationName:boardViewPanningGestureWillEnd object:nil];

@@ -19,6 +19,7 @@
 #import "UiUtilities.h"
 #import "AutoLayoutUtility.h"
 #import "UiElementMetrics.h"
+#import "../utility/ExceptionUtility.h"
 #import "../utility/UIColorAdditions.h"
 #import "../utility/UIImageAdditions.h"
 
@@ -391,6 +392,31 @@
   newRect.origin.x = referenceRect.origin.x + (referenceRect.size.width - newRect.size.width) / 2.0f;
   newRect.origin.y = referenceRect.origin.y + (referenceRect.size.height - newRect.size.height) / 2.0f;
   return newRect;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Maps the UIInterfaceOrientation value in @e interfaceOrientation to
+/// an UIInterfaceOrientationMask value and returns the mapped value. Raises an
+/// exception if mapping is not possible.
+///
+/// @exception InvalidArgumentException Is thrown if @a interfaceOrientation
+/// cannot be mapped. Only UIInterfaceOrientationUnknown cannot be mapped.
+// -----------------------------------------------------------------------------
++ (UIInterfaceOrientationMask) interfaceOrientationMaskForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+  switch (interfaceOrientation) {
+    case UIInterfaceOrientationPortrait:
+      return UIInterfaceOrientationMaskPortrait;
+    case UIInterfaceOrientationLandscapeLeft:
+      return UIInterfaceOrientationMaskLandscapeLeft;
+    case UIInterfaceOrientationLandscapeRight:
+      return UIInterfaceOrientationMaskLandscapeRight;
+    case UIInterfaceOrientationPortraitUpsideDown:
+      return UIInterfaceOrientationMaskPortraitUpsideDown;
+    default:
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"interfaceOrientationMaskForInterfaceOrientation failed: invalid interface orientation %ld" argumentValue:interfaceOrientation];
+      return UIInterfaceOrientationMaskAll;  // dummy return to make compiler happy
+  }
 }
 
 @end

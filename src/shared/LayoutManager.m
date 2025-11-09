@@ -80,7 +80,6 @@ static LayoutManager* sharedManager = nil;
   // The order in which methods are called is important
   [self setupUIType];
   [self setupSupportedInterfaceOrientations];
-  self.shouldAutorotate = true;
   return self;
 }
 

@@ -26,6 +26,7 @@
 #import "../shared/LayoutManager.h"
 #import "../ui/MagnifyingViewController.h"
 #import "../ui/UiSettingsModel.h"
+#import "../ui/UiUtilities.h"
 
 
 // -----------------------------------------------------------------------------
@@ -37,6 +38,8 @@
 @property(nonatomic, assign, readwrite) bool magnifyingGlassEnabled;
 @property(nonatomic, retain, readwrite) MagnifyingViewController* magnifyingViewController;
 //@}
+@property(nonatomic, assign, readwrite) bool isInterfaceRotationDisabled;
+@property(nonatomic, assign, readwrite) UIInterfaceOrientationMask lockedSupportedInterfaceOrientations;
 @end
 
 
@@ -64,13 +67,21 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+
   self.delegate = self;
   self.moreNavigationController.delegate = self;
   self.moreNavigationController.uiArea = UIAreaNavigation;
+
   [self setupTabControllers];
   [self restoreTabBarControllerAppearanceToUserDefaults];
+  [self setupNotificationResponders];
+
   self.magnifyingGlassEnabled = false;
   self.magnifyingViewController = nil;
+
+  self.isInterfaceRotationDisabled = false;
+  self.lockedSupportedInterfaceOrientations = UIInterfaceOrientationMaskAll;
+
   return self;
 }
 
@@ -79,6 +90,7 @@
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  [self removeNotificationResponders];
   self.magnifyingGlassEnabled = false;
   self.magnifyingViewController = nil;
   [super dealloc];
@@ -171,22 +183,37 @@
     return [MainUtility iconResourceNameForUIArea:uiArea];
 }
 
-#pragma mark - UIViewController overrides
+#pragma mark - Setup/remove notification responders
 
 // -----------------------------------------------------------------------------
-/// @brief UIViewController method
+/// @brief Private helper.
 // -----------------------------------------------------------------------------
-- (BOOL) shouldAutorotate
+- (void) setupNotificationResponders
 {
-  return [LayoutManager sharedManager].shouldAutorotate;
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(boardViewPanningGestureWillStart:) name:boardViewPanningGestureWillStart object:nil];
+  [center addObserver:self selector:@selector(boardViewPanningGestureWillEnd:) name:boardViewPanningGestureWillEnd object:nil];
 }
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper.
+// -----------------------------------------------------------------------------
+- (void) removeNotificationResponders
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - UIViewController overrides
 
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method
 // -----------------------------------------------------------------------------
 - (UIInterfaceOrientationMask) supportedInterfaceOrientations
 {
-  return [LayoutManager sharedManager].supportedInterfaceOrientations;
+  if (self.isInterfaceRotationDisabled)
+    return self.lockedSupportedInterfaceOrientations;
+  else
+    return [LayoutManager sharedManager].supportedInterfaceOrientations;
 }
 
 // -----------------------------------------------------------------------------
@@ -391,6 +418,39 @@
   self.magnifyingGlassEnabled = false;
   [self.magnifyingViewController.view removeFromSuperview];
   self.magnifyingViewController = nil;
+}
+
+#pragma mark - Notification responders
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewPanningGestureWillStart notification.
+// -----------------------------------------------------------------------------
+- (void) boardViewPanningGestureWillStart:(NSNotification*)notification
+{
+  // Defensive coding -
+  UIWindowSceneGeometry* effectiveGeometry = self.view.window.windowScene.effectiveGeometry;
+  if (! effectiveGeometry)
+    return;
+
+  UIInterfaceOrientation currentInterfaceOrientation = effectiveGeometry.interfaceOrientation;
+  if (currentInterfaceOrientation == UIInterfaceOrientationUnknown)
+    return;
+
+  self.lockedSupportedInterfaceOrientations = [UiUtilities interfaceOrientationMaskForInterfaceOrientation:currentInterfaceOrientation];
+  self.isInterfaceRotationDisabled = true;
+
+  [self setNeedsUpdateOfSupportedInterfaceOrientations];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #boardViewPanningGestureWillEnd notification.
+// -----------------------------------------------------------------------------
+- (void) boardViewPanningGestureWillEnd:(NSNotification*)notification
+{
+  self.lockedSupportedInterfaceOrientations = UIInterfaceOrientationMaskAll;
+  self.isInterfaceRotationDisabled = false;
+
+  [self setNeedsUpdateOfSupportedInterfaceOrientations];
 }
 
 @end
