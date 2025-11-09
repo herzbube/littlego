@@ -67,7 +67,7 @@
     }
     default:
     {
-      [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"markupToolForMarkupType: failed, markup type has invalid value %d" argumentValue:markupType];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"markupToolForMarkupType: failed, markup type has invalid value %ld" argumentValue:markupType];
       return MarkupToolSymbol;   // dummy return to make compiler happy
     }
   }
@@ -96,7 +96,7 @@
     case MarkupTypeSymbolSelected:
       return GoMarkupSymbolSelected;
     default:
-      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"symbolForMarkupType failed: invalid markup type %d" argumentValue:markupType];
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"symbolForMarkupType failed: invalid markup type %ld" argumentValue:markupType];
       return GoMarkupSymbolCircle;  // dummy return to make compiler happy
   }
 }
@@ -120,7 +120,7 @@
     case GoMarkupSymbolSelected:
       return MarkupTypeSymbolSelected;
     default:
-      [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"markupTypeForSymbol failed: invalid symbol %d" argumentValue:symbol];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"markupTypeForSymbol failed: invalid symbol %ld" argumentValue:symbol];
       return MarkupTypeSymbolCircle;  // dummy return to make compiler happy
   }
 }
@@ -144,7 +144,7 @@
     case GoMarkupSymbolSelected:
       return GoMarkupSymbolCircle;
     default:
-      [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"nextSymbolAfterSymbol failed: invalid symbol %d" argumentValue:symbol];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"nextSymbolAfterSymbol failed: invalid symbol %ld" argumentValue:symbol];
       return GoMarkupSymbolCircle;  // dummy return to make compiler happy
   }
 }
@@ -166,7 +166,7 @@
     case MarkupTypeConnectionArrow:
       return GoMarkupConnectionArrow;
     default:
-      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"connectionForMarkupType failed: invalid markup type %d" argumentValue:markupType];
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"connectionForMarkupType failed: invalid markup type %ld" argumentValue:markupType];
       return GoMarkupConnectionLine;  // dummy return to make compiler happy
   }
 }
@@ -184,7 +184,7 @@
     case GoMarkupConnectionLine:
       return MarkupTypeConnectionLine;
     default:
-      [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"markupTypeForConnection failed: invalid connection %d" argumentValue:connection];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"markupTypeForConnection failed: invalid connection %ld" argumentValue:connection];
       return MarkupTypeConnectionArrow;  // dummy return to make compiler happy
   }
 }
@@ -208,7 +208,7 @@
     case MarkupTypeLabel:
       return GoMarkupLabelLabel;
     default:
-      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"labelForMarkupType failed: invalid markup type %d" argumentValue:markupType];
+      [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"labelForMarkupType failed: invalid markup type %ld" argumentValue:markupType];
       return GoMarkupLabelLabel;  // dummy return to make compiler happy
   }
 }
@@ -228,7 +228,7 @@
     case GoMarkupLabelLabel:
       return MarkupTypeLabel;
     default:
-      [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"markupTypeForLabel failed: invalid label %d" argumentValue:label];
+      [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"markupTypeForLabel failed: invalid label %ld" argumentValue:label];
       return MarkupTypeLabel;  // dummy return to make compiler happy
   }
 }
@@ -248,7 +248,7 @@
 {
   if (labelType != GoMarkupLabelMarkerLetter && labelType != GoMarkupLabelMarkerNumber)
   {
-    [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"nextFreeMarkerOfType:inNodeMarkup:fillMarkerGaps: failed: invalid label type %d" argumentValue:labelType];
+    [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"nextFreeMarkerOfType:inNodeMarkup:fillMarkerGaps: failed: invalid label type %ld" argumentValue:labelType];
     return nil;  // dummy return to make compiler happy
   }
 

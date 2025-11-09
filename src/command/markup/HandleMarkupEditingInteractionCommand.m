@@ -129,7 +129,7 @@ enum MarkupEditingInteraction
   else if (markupTool == MarkupToolLabel)
     self.interaction = MEIPlaceNewLabel;
   else
-    [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"initPlaceNewMarkupAtPoint:markupTool:markupType: failed, invalid markup tool %d" argumentValue:markupTool];
+    [ExceptionUtility throwInternalInconsistencyExceptionWithFormat:@"initPlaceNewMarkupAtPoint:markupTool:markupType: failed, invalid markup tool %ld" argumentValue:markupTool];
 
   self.point = point;
   self.markupTool = markupTool;

@@ -28,10 +28,10 @@
 
 + (void) throwInvalidUIType:(enum UIType)uiType;
 + (void) throwInvalidArgumentExceptionWithFormat:(NSString*)format
-                                   argumentValue:(int)argumentValue;
+                                   argumentValue:(NSInteger)argumentValue;
 + (void) throwInvalidArgumentExceptionWithErrorMessage:(NSString*)errorMessage;
 + (void) throwInternalInconsistencyExceptionWithFormat:(NSString*)format
-                                         argumentValue:(int)argumentValue;
+                                         argumentValue:(NSInteger)argumentValue;
 + (void) throwInternalInconsistencyExceptionWithErrorMessage:(NSString*)errorMessage;
 + (void) throwAbstractMethodException;
 + (void) throwNotImplementedException;
