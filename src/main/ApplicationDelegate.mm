@@ -242,7 +242,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
 
   // The following steps have no dependencies
   [self setupResourceBundle];
-  [self setupLogging];
+  [self setupLogging];   // reads directly from NSUserDefaults if loggingModel is not available
   [self setupApplicationLaunchMode];
   [self setupFolders];
   // Depends on setupResourceBundle for reading registration domain defaults
@@ -357,14 +357,21 @@ didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions
     self.fileLogger.maximumFileSize = 1024 * 1024;
     self.fileLogger.logFileManager.maximumNumberOfLogFiles = 10;
   }
+
   // If possible take the user preference from LoggingModel. If we're called
   // during application launch, however, that model object does not exist yet
   // and we have to fall back to reading directly from NSUserDefaults.
   bool loggingEnabled;
   if (self.loggingModel)
+  {
     loggingEnabled = self.loggingModel.loggingEnabled;
+  }
   else
-    loggingEnabled = [[[NSUserDefaults standardUserDefaults] valueForKey:loggingEnabledKey] boolValue];
+  {
+    NSDictionary* dictionary = [[NSUserDefaults standardUserDefaults] dictionaryForKey:loggingKey];
+    loggingEnabled = [[dictionary valueForKey:loggingEnabledKey] boolValue];
+  }
+
   if (loggingEnabled)
   {
     [DDLog addLogger:self.fileLogger withLevel:ddLogLevel];
