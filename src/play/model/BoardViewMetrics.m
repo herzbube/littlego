@@ -25,6 +25,7 @@
 #import "../../main/ModelProvider.h"
 #import "../../main/Registry.h"
 #import "../../shared/LayoutManager.h"
+#import "../../ui/UiElementMetrics.h"
 #import "../../utility/FontRange.h"
 #import "../../utility/UIColorAdditions.h"
 
@@ -356,7 +357,7 @@
   // The rect is rectangular, but the Go board is square. Examine the rect
   // orientation and use the smaller dimension of the rect as the base for
   // the Go board's side length.
-  self.portrait = newCanvasSize.height >= newCanvasSize.width;
+  self.portrait = [UiElementMetrics isSizeOrientationPortrait:newCanvasSize];
   int offsetForCenteringX = 0;
   int offsetForCenteringY = 0;
   if (self.portrait)

@@ -273,6 +273,19 @@ enum AlertButtonType
   AlertButtonTypeYes,
   AlertButtonTypeNo,
 };
+
+/// @brief Enumerates the orientations that two-dimensional sizes, defined by a
+/// pair of width/height values, can have.
+enum SizeOrientation
+{
+  /// @brief The size has Portrait orientation, i.e. the height value is greater
+  /// than the width value. The size also has Portrait orientation if the
+  /// width and height values are equal, i.e. the size denotes a square shape.
+  SizeOrientationPortrait,
+  /// @brief The size has Landscape orientation, i.e. the width value is greater
+  /// than the height value.
+  SizeOrientationLandscape,
+};
 //@}
 
 // -----------------------------------------------------------------------------

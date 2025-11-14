@@ -49,6 +49,33 @@
   return UIInterfaceOrientationIsPortrait([UiElementMetrics interfaceOrientation]);
 }
 
+// TODO xxx is this useful?
++ (enum SizeOrientation) windowSceneGeometrySizeOrientation
+{
+  CGSize windowSceneGeometrySize;
+
+  if (@available(iOS 26.0, *))
+    windowSceneGeometrySize = [Registry sharedRegistry].windowProvider.window.windowScene.effectiveGeometry.coordinateSpace.bounds.size;
+  else
+    windowSceneGeometrySize = [Registry sharedRegistry].windowProvider.window.bounds.size;
+
+  return [UiElementMetrics sizeOrientation:windowSceneGeometrySize];
+}
+
++ (enum SizeOrientation) sizeOrientation:(CGSize)size
+{
+  if (size.height >= size.width)
+    return SizeOrientationPortrait;
+  else
+    return SizeOrientationLandscape;
+}
+
++ (bool) isSizeOrientationPortrait:(CGSize)size
+{
+  enum SizeOrientation sizeOrientation = [UiElementMetrics sizeOrientation:size];
+  return (sizeOrientation == SizeOrientationPortrait);
+}
+
 + (CGFloat) horizontalSpacingSiblings
 {
   // This hard-coded value was experimentally determined in iOS 7 using Auto

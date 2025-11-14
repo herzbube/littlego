@@ -17,6 +17,7 @@
 
 // Project includes
 #import "OrientationChangeNotifyingView.h"
+#import "UiElementMetrics.h"
 
 
 // -----------------------------------------------------------------------------
@@ -69,10 +70,11 @@
   [super layoutSubviews];
 
   CGSize viewSize = self.bounds.size;
+  enum SizeOrientation sizeOrientation = [UiElementMetrics sizeOrientation:viewSize];
 
   UILayoutConstraintAxis newLargerDimension;
   UILayoutConstraintAxis newSmallerDimension;
-  if (viewSize.height >= viewSize.width)
+  if (sizeOrientation == SizeOrientationPortrait)
   {
     newLargerDimension = UILayoutConstraintAxisVertical;
     newSmallerDimension = UILayoutConstraintAxisHorizontal;

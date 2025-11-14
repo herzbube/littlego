@@ -39,6 +39,9 @@
 
 + (UIInterfaceOrientation) interfaceOrientation;
 + (bool) interfaceOrientationIsPortrait;
++ (enum SizeOrientation) windowSceneGeometrySizeOrientation;
++ (enum SizeOrientation) sizeOrientation:(CGSize)size;
++ (bool) isSizeOrientationPortrait:(CGSize)size;
 + (CGFloat) horizontalSpacingSiblings;
 + (CGFloat) verticalSpacingSiblings;
 + (CGFloat) horizontalSpacingSuperview;
