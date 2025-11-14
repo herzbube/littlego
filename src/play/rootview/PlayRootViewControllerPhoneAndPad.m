@@ -47,7 +47,7 @@
 /// PlayRootViewControllerPhoneAndPad.
 // -----------------------------------------------------------------------------
 @interface PlayRootViewControllerPhoneAndPad()
-/// @name Properties used for both interface orientations
+/// @name Properties used for both view orientations
 //@{
 @property (nonatomic, assign) bool viewsAreInPortraitOrientation;
 @property (nonatomic, retain) NSMutableArray* autoLayoutConstraints;
@@ -185,7 +185,7 @@
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
-  // Properties used for both interface orientations
+  // Properties used for both view size orientations
   self.view = nil;
   self.autoLayoutConstraints = nil;
 
@@ -216,11 +216,11 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the child view controllers hierarchy managed by this view
-/// controller to match the specified interface orientation.
+/// controller to match the specified view size orientation.
 // -----------------------------------------------------------------------------
-- (void) setupChildControllersForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) setupChildControllersForViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool isPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
   if (isPortraitOrientation)
   {
     self.navigationBarButtonModel = [[[NavigationBarButtonModel alloc] init] autorelease];
@@ -239,7 +239,7 @@
     //   made into a child VC of the navigation VC, StatusViewController is also
     //   added to the navigation VC's navigation stack - which is absolutely not
     //   what we want!
-    self.statusViewController = [[[StatusViewController alloc] init] autorelease];
+    self.statusViewController = [[[StatusViewController alloc] initWithSizeOrientation:viewSizeOrientation] autorelease];
 
     id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
     self.resizablePane1ViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
@@ -465,31 +465,34 @@
 {
   [super loadView];
 
-  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
-  [self setupChildControllersForInterfaceOrientation:interfaceOrientation];
-  [self setupViewHierarchyForInterfaceOrientation:interfaceOrientation];
-  [self configureViewsForInterfaceOrientation:interfaceOrientation];
-  [self setupAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
-  [self setupNodeTreeViewForInterfaceOrientation:interfaceOrientation];
-  [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
+  enum SizeOrientation viewSizeOrientation = [UiElementMetrics sizeOrientation:self.view.frame.size];
+  [self setupChildControllersForViewSizeOrientation:viewSizeOrientation];
+  [self setupViewHierarchyForViewSizeOrientation:viewSizeOrientation];
+  [self configureViewsForViewSizeOrientation:viewSizeOrientation];
+  [self setupAutoLayoutConstraintsForViewSizeOrientation:viewSizeOrientation];
+  [self setupNodeTreeViewForViewSizeOrientation:viewSizeOrientation];
+  [self viewLayoutDidChangeToViewSizeOrientation:viewSizeOrientation];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 ///
-/// This override handles interface orientation changes while this controller's
-/// view hierarchy is visible, and changes that occurred while this controller's
-/// view hierarchy was not visible (this method is invoked when the controller's
-/// view becomes visible again).
+/// This override handles interface orientation changes and view size changes
+/// (on iPad) while this controller's view hierarchy is visible, and changes
+/// that occurred while this controller's view hierarchy was not visible (this
+/// method is invoked when the controller's view becomes visible again).
 // -----------------------------------------------------------------------------
 - (void) viewWillLayoutSubviews
 {
-  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
-  if ([self isViewLayoutChangeRequiredForInterfaceOrientation:interfaceOrientation])
+  // On iPad when the user is resizing the app window while this controller's
+  // view is visible, the view size is continuously updated (with a certain
+  // delay).
+  enum SizeOrientation viewSizeOrientation = [UiElementMetrics sizeOrientation:self.view.frame.size];
+  if ([self isViewLayoutChangeRequiredForViewSizeOrientation:viewSizeOrientation])
   {
-    [self prepareForInterfaceOrientationChange:interfaceOrientation];
-    [self completeInterfaceOrientationChange:interfaceOrientation];
-    [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
+    [self prepareForViewSizeOrientationChange:viewSizeOrientation];
+    [self completeViewSizeOrientationChange:viewSizeOrientation];
+    [self viewLayoutDidChangeToViewSizeOrientation:viewSizeOrientation];
   }
 }
 
@@ -504,44 +507,44 @@
     [self updateColors];
 }
 
-#pragma mark - Interface orientation change handling
+#pragma mark - View size orientation change handling
 
 // -----------------------------------------------------------------------------
-/// @brief Returns true if rotating to the specified interface orientation
+/// @brief Returns true if rotating to the specified view size orientation
 /// requires a change to the view layout of this view controller.
 // -----------------------------------------------------------------------------
-- (bool) isViewLayoutChangeRequiredForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (bool) isViewLayoutChangeRequiredForViewSizeOrientation:(enum SizeOrientation)sizeOrientation
 {
-  bool newOrientationIsPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool newOrientationIsPortraitOrientation = (sizeOrientation == SizeOrientationPortrait);
   return (self.viewsAreInPortraitOrientation != newOrientationIsPortraitOrientation);
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the internal state of this view controller to remember
-/// that the current view layout now matches @a interfaceOrientation.
+/// that the current view layout now matches @a viewSizeOrientation.
 // -----------------------------------------------------------------------------
-- (void) viewLayoutDidChangeToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) viewLayoutDidChangeToViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
-  self.viewsAreInPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  self.viewsAreInPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Prepares this view controller for an upcoming interface orientation
-/// change. The new orientation is @a interfaceOrientation.
+/// @brief Prepares this view controller for an upcoming view size orientation
+/// change. The new orientation is @a viewSizeOrientation.
 ///
 /// This method should only be invoked if
-/// isViewLayoutChangeRequiredForInterfaceOrientation:() returns true for the
-/// specified interface orientation.
+/// isViewLayoutChangeRequiredForViewSizeOrientation:() returns true for the
+/// specified view size orientation.
 // -----------------------------------------------------------------------------
-- (void) prepareForInterfaceOrientationChange:(UIInterfaceOrientation)interfaceOrientation
+- (void) prepareForViewSizeOrientationChange:(enum SizeOrientation)viewSizeOrientation
 {
   self.nodeTreeViewIntegration = nil;
 
   // Remove constraints before views are resized (at the time
   // willAnimateRotationToInterfaceOrientation:duration:() is invoked it is too
-  // late, views are already resized to match the new interface orientation). If
-  // we don't remove constraints here, Auto Layout will have trouble resizing
-  // views (although the reason why is unknown).
+  // late, views are already resized to match the new orientation). If we don't
+  // remove constraints here, Auto Layout will have trouble resizing views
+  // (although the reason why is unknown).
   [self removeAutoLayoutConstraints];
   // Since we don't have any constraints anymore, we must also remove the view
   // hierarchy
@@ -550,36 +553,36 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Completes the interface orientation change that was begun when
-/// prepareForInterfaceOrientationChange:() was invoked. The new orientation is
-/// @a interfaceOrientation.
+/// @brief Completes the view size orientation change that was begun when
+/// prepareForViewSizeOrientationChange:() was invoked. The new orientation is
+/// @a viewSizeOrientation.
 ///
 /// This method should only be invoked if
-/// isViewLayoutChangeRequiredForInterfaceOrientation:() returns true for the
-/// specified interface orientation.
+/// isViewLayoutChangeRequiredForViewSizeOrientation:() returns true for the
+/// specified view size orientation.
 ///
 /// Clients that invoke this method must have previously also called
-/// prepareForInterfaceOrientationChange:() to perform the first step of the
+/// prepareForViewSizeOrientationChange:() to perform the first step of the
 /// orientation change.
 // -----------------------------------------------------------------------------
-- (void) completeInterfaceOrientationChange:(UIInterfaceOrientation)interfaceOrientation
+- (void) completeViewSizeOrientationChange:(enum SizeOrientation)viewSizeOrientation
 {
-  [self setupChildControllersForInterfaceOrientation:interfaceOrientation];
-  [self setupViewHierarchyForInterfaceOrientation:interfaceOrientation];
-  [self configureViewsForInterfaceOrientation:interfaceOrientation];
-  [self setupAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
-  [self setupNodeTreeViewForInterfaceOrientation:interfaceOrientation];
+  [self setupChildControllersForViewSizeOrientation:viewSizeOrientation];
+  [self setupViewHierarchyForViewSizeOrientation:viewSizeOrientation];
+  [self configureViewsForViewSizeOrientation:viewSizeOrientation];
+  [self setupAutoLayoutConstraintsForViewSizeOrientation:viewSizeOrientation];
+  [self setupNodeTreeViewForViewSizeOrientation:viewSizeOrientation];
 }
 
 #pragma mark - View hierarchy handling
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the view hierarchy managed by this view controller to
-/// match the specified interface orientation.
+/// match the specified view size orientation.
 // -----------------------------------------------------------------------------
-- (void) setupViewHierarchyForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) setupViewHierarchyForViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool isPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
   if (isPortraitOrientation)
   {
     [self setupWoodenBackgroundView];
@@ -596,7 +599,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for setupViewHierarchyForInterfaceOrientation.
+/// @brief Private helper for setupViewHierarchyForViewSizeOrientation.
 // -----------------------------------------------------------------------------
 - (void) setupWoodenBackgroundView
 {
@@ -610,7 +613,7 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for setupViewHierarchyForInterfaceOrientation.
+/// @brief Private helper for setupViewHierarchyForViewSizeOrientation.
 // -----------------------------------------------------------------------------
 - (void) setupResizablePane1ViewHierarchy
 {
@@ -655,7 +658,7 @@
 // -----------------------------------------------------------------------------
 /// @brief Configures views as part of the view hierarchy setup process.
 // -----------------------------------------------------------------------------
-- (void) configureViewsForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) configureViewsForViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
   // self.edgesForExtendedLayout is UIRectEdgeAll, therefore we have to provide
   // a background color that is visible behind the tab bar at the bottom and
@@ -667,7 +670,7 @@
   // background color).
   self.view.backgroundColor = [UIColor systemGroupedBackgroundColor];
 
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool isPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
   if (isPortraitOrientation)
   {
     self.woodenBackgroundView.backgroundColor = [UIColor woodenBackgroundColor];
@@ -688,11 +691,11 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the auto layout constraints of the view of this view
-/// controller to match the specified interface orientation.
+/// controller to match the specified view size orientation.
 // -----------------------------------------------------------------------------
-- (void) setupAutoLayoutConstraintsForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) setupAutoLayoutConstraintsForViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool isPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
   if (isPortraitOrientation)
     [self setupAutoLayoutConstraintsPortrait];
   else
@@ -701,7 +704,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for
-/// setupAutoLayoutConstraintsForInterfaceOrientation:().
+/// setupAutoLayoutConstraintsForViewSizeOrientation:().
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsPortrait
 {
@@ -854,7 +857,7 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper for
-/// setupAutoLayoutConstraintsForInterfaceOrientation:().
+/// setupAutoLayoutConstraintsForViewSizeOrientation:().
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsLandscape
 {
@@ -893,12 +896,12 @@
 #pragma mark - Node tree view handling
 
 // -----------------------------------------------------------------------------
-/// @brief Sets up the node tree view to match the specified interface
+/// @brief Sets up the node tree view to match the specified view size
 /// orientation.
 // -----------------------------------------------------------------------------
-- (void) setupNodeTreeViewForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) setupNodeTreeViewForViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool isPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
   if (isPortraitOrientation)
     [self.nodeTreeViewIntegration performIntegration];
 }
@@ -913,17 +916,17 @@
 /// round of layouting the board view can be constrained to be square for that
 /// dimension.
 ///
-/// This delegate method handles interface orientation changes while this
-/// controller's view hierarchy is visible, and changes that occurred while this
-/// controller's view hierarchy was not visible (this method is invoked when the
-/// controller's view becomes visible again). Typically an override of
-/// the UIViewController method viewWillLayoutSubviews could also be used for
-/// this.
+/// This delegate method handles interface orientation changes and view size
+/// changes (on iPad) while this controller's view hierarchy is visible, and
+/// changes that occurred while this controller's view hierarchy was not visible
+/// (this method is invoked when the controller's view becomes visible again).
+/// Typically an override of the UIViewController method viewWillLayoutSubviews
+/// could also be used for this.
 ///
-/// The reason why viewWillLayoutSubviews is not overridden is that UIKit does
-/// not invoke viewWillLayoutSubviews every time that the bounds of
-/// self.middleColumnView change, so it can't be relied on to find out the
-/// board view's smaller dimension.
+/// The reason why overriding viewWillLayoutSubviews is not sufficient for this
+/// controller is that UIKit does not invoke viewWillLayoutSubviews every time
+/// that the bounds of a subview change, so it can't be relied on to find out
+/// the board view's smaller dimension.
 // -----------------------------------------------------------------------------
 - (void) orientationChangeNotifyingView:(OrientationChangeNotifyingView*)orientationChangeNotifyingView
              didChangeToLargerDimension:(UILayoutConstraintAxis)largerDimension

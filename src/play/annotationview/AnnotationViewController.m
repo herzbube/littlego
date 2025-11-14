@@ -234,7 +234,7 @@ static const int spacerBottomTag = 2;
 // -----------------------------------------------------------------------------
 /// This is an internal helper invoked during initialization.
 // -----------------------------------------------------------------------------
-- (void) setupChildControllers
+- (void) setupChildControllersWithViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
   self.valuationViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
   self.descriptionViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];
@@ -253,8 +253,7 @@ static const int spacerBottomTag = 2;
   self.customPageViewController.delegate = self;
   self.customPageViewController.pageControlAccessibilityIdentifier = annotationViewPageControlAccessibilityIdentifier;
 
-  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
-  bool orientationIsPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool orientationIsPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
   if (orientationIsPortraitOrientation)
   {
     // In portrait orientation there is not a lot of vertical space, so we have
@@ -307,9 +306,10 @@ static const int spacerBottomTag = 2;
 {
   [super loadView];
 
-  [self setupChildControllers];
-  [self setupViewHierarchy];
-  [self setupAutoLayoutConstraints];
+  enum SizeOrientation viewSizeOrientation = [UiElementMetrics sizeOrientation:self.view.frame.size];
+  [self setupChildControllersWithViewSizeOrientation:viewSizeOrientation];
+  [self setupViewHierarchyWithViewSizeOrientation:viewSizeOrientation];
+  [self setupAutoLayoutConstraintsWithViewSizeOrientation:viewSizeOrientation];
 
   GoNode* node = [self nodeWithAnnotationData];
   [self updateColors:node];
@@ -339,7 +339,7 @@ static const int spacerBottomTag = 2;
 - (void) viewWillTransitionToSize:(CGSize)size
         withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
 {
-  // When the interface orientation changes this controller will be deallocated.
+  // When the view size orientation changes this controller will be deallocated.
   // Presented view controllers have this controller set as their delegate, so
   // we must dismiss them now to avoid access to a deallocated object.
   //
@@ -358,11 +358,12 @@ static const int spacerBottomTag = 2;
 // -----------------------------------------------------------------------------
 /// @brief Main method for setting up the view hierarchy.
 // -----------------------------------------------------------------------------
-- (void) setupViewHierarchy
+- (void) setupViewHierarchyWithViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
   [self.view addSubview:self.customPageViewController.view];
 
-  [self setupValuationView:self.valuationViewController.view];
+  [self setupValuationViewWithSuperview:self.valuationViewController.view
+                withViewSizeOrientation:viewSizeOrientation];
   self.valuationViewController.view.accessibilityIdentifier = annotationViewValuationPageAccessibilityIdentifier;
 
   [self setupDescriptionView:self.descriptionViewController.view];
@@ -372,11 +373,11 @@ static const int spacerBottomTag = 2;
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupViewHierarchy.
 // -----------------------------------------------------------------------------
-- (void) setupValuationView:(UIView*)superview
+- (void) setupValuationViewWithSuperview:(UIView*)superview
+                 withViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
   self.valuationViewStackView = [self createStackViewInSuperView:superview];
-  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
-  bool orientationIsPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool orientationIsPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
   if (orientationIsPortraitOrientation)
   {
     self.valuationViewStackView.axis = UILayoutConstraintAxisHorizontal;
@@ -537,7 +538,7 @@ static const int spacerBottomTag = 2;
 // -----------------------------------------------------------------------------
 /// @brief Main method for setting up Auto Layout constraints.
 // -----------------------------------------------------------------------------
-- (void) setupAutoLayoutConstraints
+- (void) setupAutoLayoutConstraintsWithViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
@@ -549,7 +550,7 @@ static const int spacerBottomTag = 2;
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.customPageViewController.view.superview];
 
   [self setupAutoLayoutConstraintsValuationView];
-  [self setupAutoLayoutConstraintsDescriptionView];
+  [self setupAutoLayoutConstraintsDescriptionViewWithViewSizeOrientation:viewSizeOrientation];
 }
 
 // -----------------------------------------------------------------------------
@@ -572,7 +573,7 @@ static const int spacerBottomTag = 2;
 - (void) setupAutoLayoutConstraintsForLabel:(UILabel*)label button:(UIButton*)button
 {
   // The two spacer views exist to solve a problem when the stack view's axis is
-  // UILayoutConstraintAxisVertical (i.e. interface orientation Landscape) and
+  // UILayoutConstraintAxisVertical (i.e. view size orientation Landscape) and
   // the distribution policy UIStackViewDistributionFillEqually is used. Without
   // the spacer views we would have to vertically layout label/button like this:
   //   V:|-0-[label]-%d-[button]-0-|
@@ -611,10 +612,9 @@ static const int spacerBottomTag = 2;
 // -----------------------------------------------------------------------------
 /// @brief Private helper for setupAutoLayoutConstraints.
 // -----------------------------------------------------------------------------
-- (void) setupAutoLayoutConstraintsDescriptionView
+- (void) setupAutoLayoutConstraintsDescriptionViewWithViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
-  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
-  bool orientationIsPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool orientationIsPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
 
   self.descriptionLabelContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.shortDescriptionLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -1263,7 +1263,7 @@ static const int spacerBottomTag = 2;
   // conditions:
   // - App must run on a real device, not on the simulator.
   // - UIType must be UITypePhone, i.e. problem does not occur on iPad.
-  // - Interface orientation must be Portrait, not Landscape.
+  // - View size orientation must be Portrait, not Landscape.
   // - The presented controller must be EditNodeDescriptionController, and the
   //   keyboard must be visible at the time when the user taps the "Done"
   //   button.

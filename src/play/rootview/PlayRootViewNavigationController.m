@@ -69,15 +69,15 @@
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 ///
-/// This override handles interface orientation changes while this controller's
-/// view hierarchy is visible, and changes that occurred while this controller's
-/// view hierarchy was not visible (this method is invoked when the controller's
-/// view becomes visible again).
+/// This override handles interface orientation changes and view size changes
+/// (on iPad) while this controller's view hierarchy is visible, and changes
+/// that occurred while this controller's view hierarchy was not visible (this
+/// method is invoked when the controller's view becomes visible again).
 // -----------------------------------------------------------------------------
 - (void) viewWillLayoutSubviews
 {
-  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
-  [self updateNavigationBarHiddenForInterfaceOrientation:interfaceOrientation];
+  enum SizeOrientation viewSizeOrientation = [UiElementMetrics sizeOrientation:self.view.frame.size];
+  [self updateNavigationBarHiddenForViewSizeOrientation:viewSizeOrientation];
 }
 
 #pragma mark - UINavigationControllerDelegate overrides
@@ -89,8 +89,8 @@
        willShowViewController:(UIViewController*)viewController
                      animated:(BOOL)animated
 {
-  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
-  [self updateNavigationBarHiddenForInterfaceOrientation:interfaceOrientation];
+  enum SizeOrientation viewSizeOrientation = [UiElementMetrics sizeOrientation:self.view.frame.size];
+  [self updateNavigationBarHiddenForViewSizeOrientation:viewSizeOrientation];
 }
 
 // -----------------------------------------------------------------------------
@@ -98,7 +98,7 @@
 /// the value of property self.navigationBarHidden.
 ///
 /// In portrait orientation the navigation bar is always shown. When the root
-/// view controller is diplayed this is necessary because game actions and the
+/// view controller is displayed this is necessary because game actions and the
 /// status view are displayed in the navigation bar.
 ///
 /// In landscape orientation the navigation bar is hidden when the root view
@@ -106,9 +106,9 @@
 /// somewhere else than in the navigation bar, to provide more vertical room for
 /// the board), and shown when any other view controller is pushed on the stack.
 // -----------------------------------------------------------------------------
-- (void) updateNavigationBarHiddenForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) updateNavigationBarHiddenForViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool isPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
   if (isPortraitOrientation)
   {
     self.navigationBarHidden = NO;

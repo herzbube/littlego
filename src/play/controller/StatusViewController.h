@@ -30,4 +30,6 @@
 {
 }
 
+- (id) initWithSizeOrientation:(enum SizeOrientation)sizeOrientation;
+
 @end

@@ -138,11 +138,11 @@
   [self setupChildViewControllers:_viewControllers];
   if (self.isViewLoaded && !self.deallocating)
   {
-    UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
-    [self updateViewHierarchyForInterfaceOrientation:interfaceOrientation];
-    [self updateAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
-    [self updateBarButtonItemForInterfaceOrientation:interfaceOrientation];
-    [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
+    enum SizeOrientation viewSizeOrientation = [UiElementMetrics sizeOrientation:self.view.frame.size];
+    [self updateViewHierarchyForViewSizeOrientation:viewSizeOrientation];
+    [self updateAutoLayoutConstraintsForViewSizeOrientation:viewSizeOrientation];
+    [self updateBarButtonItemForViewSizeOrientation:viewSizeOrientation];
+    [self viewLayoutDidChangeToViewSizeOrientation:viewSizeOrientation];
   }
 }
 
@@ -235,68 +235,62 @@
   self.dividerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   self.dividerView.backgroundColor = [UIColor blackColor];
 
-  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
-  [self updateViewHierarchyForInterfaceOrientation:interfaceOrientation];
-  [self updateAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
-  [self updateBarButtonItemForInterfaceOrientation:interfaceOrientation];
-  [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
+  enum SizeOrientation viewSizeOrientation = [UiElementMetrics sizeOrientation:self.view.frame.size];
+  [self updateViewHierarchyForViewSizeOrientation:viewSizeOrientation];
+  [self updateAutoLayoutConstraintsForViewSizeOrientation:viewSizeOrientation];
+  [self updateBarButtonItemForViewSizeOrientation:viewSizeOrientation];
+  [self viewLayoutDidChangeToViewSizeOrientation:viewSizeOrientation];
 }
 
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 ///
-/// This override handles interface orientation changes while this controller's
-/// view hierarchy is visible, and changes that occurred while this controller's
-/// view hierarchy was not visible (this method is invoked when the controller's
-/// view becomes visible again).
+/// This override handles interface orientation changes and view size changes
+/// (on iPad) while this controller's view hierarchy is visible, and changes
+/// that occurred while this controller's view hierarchy was not visible (this
+/// method is invoked when the controller's view becomes visible again).
 // -----------------------------------------------------------------------------
 - (void) viewWillLayoutSubviews
 {
-  UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
-  if ([self isViewLayoutChangeRequiredForInterfaceOrientation:interfaceOrientation])
+  enum SizeOrientation viewSizeOrientation = [UiElementMetrics sizeOrientation:self.view.frame.size];
+  if ([self isViewLayoutChangeRequiredForViewSizeOrientation:viewSizeOrientation])
   {
-    [self prepareForInterfaceOrientationChange:interfaceOrientation];
-    [self completeInterfaceOrientationChange:interfaceOrientation];
-    [self viewLayoutDidChangeToInterfaceOrientation:interfaceOrientation];
+    [self prepareForViewSizeOrientationChange:viewSizeOrientation];
+    [self completeViewSizeOrientationChange:viewSizeOrientation];
+    [self viewLayoutDidChangeToViewSizeOrientation:viewSizeOrientation];
   }
 }
 
-#pragma mark - Interface orientation change handling
+#pragma mark - View size orientation change handling
 
 // -----------------------------------------------------------------------------
-/// @brief Returns true if rotating to the specified interface orientation
+/// @brief Returns true if rotating to the specified view size orientation
 /// requires a change to the view layout of this SplitViewController.
 // -----------------------------------------------------------------------------
-- (bool) isViewLayoutChangeRequiredForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (bool) isViewLayoutChangeRequiredForViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
-  bool newOrientationIsPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool newOrientationIsPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
   return (self.viewsAreInPortraitOrientation != newOrientationIsPortraitOrientation);
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the internal state of this SplitViewController to remember
-/// that the current view layout now matches @a interfaceOrientation.
+/// that the current view layout now matches @a viewSizeOrientation.
 // -----------------------------------------------------------------------------
-- (void) viewLayoutDidChangeToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) viewLayoutDidChangeToViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
-  self.viewsAreInPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  self.viewsAreInPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Prepares this SplitViewController for an upcoming interface
-/// orientation change. The new orientation is @a interfaceOrientation.
+/// @brief Prepares this SplitViewController for an upcoming view size
+/// orientation change. The new orientation is @a viewSizeOrientation.
 ///
 /// This method should only be invoked if
-/// isViewLayoutChangeRequiredForInterfaceOrientation:() returns true for the
-/// specified interface orientation.
-///
-/// This method was originally invoked by
-/// willRotateToInterfaceOrientation:duration:() as the first step of a two-step
-/// orientation change. Clients that invoke this method must also call
-/// completeInterfaceOrientationChange:() to perform the second step of the
-/// orientation change.
+/// isViewLayoutChangeRequiredForViewSizeOrientation:() returns true for the
+/// specified view size orientation.
 // -----------------------------------------------------------------------------
-- (void) prepareForInterfaceOrientationChange:(UIInterfaceOrientation)interfaceOrientation
+- (void) prepareForViewSizeOrientationChange:(enum SizeOrientation)viewSizeOrientation
 {
   // Dismiss the left pane if it is currently shown in an overlay. This is
   // important so that the left pane view can be integrated into the regular
@@ -306,7 +300,7 @@
 
   // Invoke this so that the delegate is notified before the left pane is
   // actually shown/hidden
-  [self updateBarButtonItemForInterfaceOrientation:interfaceOrientation];
+  [self updateBarButtonItemForViewSizeOrientation:viewSizeOrientation];
 
   // Remove constraints before views are resized (at the time
   // willAnimateRotationToInterfaceOrientation:duration:() is invoked it is too
@@ -320,40 +314,38 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Completes the interface orientation change that was begun when
-/// prepareForInterfaceOrientationChange:() was invoked. The new orientation is
-/// @a interfaceOrientation.
+/// @brief Completes the view size orientation change that was begun when
+/// prepareForViewSizeOrientationChange:() was invoked. The new orientation is
+/// @a viewSizeOrientation.
 ///
 /// This method should only be invoked if
-/// isViewLayoutChangeRequiredForInterfaceOrientation:() returns true for the
-/// specified interface orientation.
+/// isViewLayoutChangeRequiredForViewSizeOrientation:() returns true for the
+/// specified view size orientation.
 ///
-/// This method was originally invoked by
-/// willAnimateRotationToInterfaceOrientation:duration:() as the second step of
-/// a two-step orientation change. Clients that invoke this method must have
-/// previously also called prepareForInterfaceOrientationChange:() to perform
-/// the first step of the orientation change.
+/// Clients that invoke this method must have previously also called
+/// prepareForViewSizeOrientationChange:() to perform the first step of the
+/// orientation change.
 // -----------------------------------------------------------------------------
-- (void) completeInterfaceOrientationChange:(UIInterfaceOrientation)interfaceOrientation
+- (void) completeViewSizeOrientationChange:(enum SizeOrientation)viewSizeOrientation
 {
-  [self updateViewHierarchyForInterfaceOrientation:interfaceOrientation];
-  [self updateAutoLayoutConstraintsForInterfaceOrientation:interfaceOrientation];
+  [self updateViewHierarchyForViewSizeOrientation:viewSizeOrientation];
+  [self updateAutoLayoutConstraintsForViewSizeOrientation:viewSizeOrientation];
 }
 
 #pragma mark - View hierarchy handling
 
 // -----------------------------------------------------------------------------
 /// @brief Updates the view hierarchy managed by this split view controller to
-/// match the specified interface orientation.
+/// match the specified view size orientation.
 // -----------------------------------------------------------------------------
-- (void) updateViewHierarchyForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) updateViewHierarchyForViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
   UIView* leftPaneView = [self leftPaneView];
   UIView* rightPaneView = [self rightPaneView];
   if (! leftPaneView || ! rightPaneView)
     return;
 
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool isPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
   if (isPortraitOrientation)
   {
     if (self.dividerView.superview)
@@ -387,9 +379,9 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the auto layout constraints of the view of this split view
-/// controller to match the specified interface orientation.
+/// controller to match the specified view size orientation.
 // -----------------------------------------------------------------------------
-- (void) updateAutoLayoutConstraintsForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) updateAutoLayoutConstraintsForViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
   UIView* leftPaneView = [self leftPaneView];
   UIView* rightPaneView = [self rightPaneView];
@@ -414,7 +406,7 @@
                                    rightPaneView, @"rightPaneView",
                                    nil];
 
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool isPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
   if (isPortraitOrientation)
   {
     NSArray* visualFormats = [NSArray arrayWithObjects:
@@ -463,11 +455,11 @@
 
 // -----------------------------------------------------------------------------
 /// @brief Sets up the bar button item used to display the left pane of this
-/// split view controller to match the specified interface orientation.
+/// split view controller to match the specified view size orientation.
 // -----------------------------------------------------------------------------
-- (void) updateBarButtonItemForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (void) updateBarButtonItemForViewSizeOrientation:(enum SizeOrientation)viewSizeOrientation
 {
-  bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+  bool isPortraitOrientation = (viewSizeOrientation == SizeOrientationPortrait);
   if (isPortraitOrientation)
   {
     self.barButtonItemLeftPane = [[[UIBarButtonItem alloc] initWithTitle:nil

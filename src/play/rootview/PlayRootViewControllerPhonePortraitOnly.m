@@ -147,7 +147,7 @@
   //   made into a child VC of the navigation VC, StatusViewController is also
   //   added to the navigation VC's navigation stack - which is absolutely not
   //   what we want!
-  self.statusViewController = [[[StatusViewController alloc] init] autorelease];
+  self.statusViewController = [[[StatusViewController alloc] initWithSizeOrientation:SizeOrientationPortrait] autorelease];
 
   id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
   self.resizablePane1ViewController = [[[UIViewController alloc] initWithNibName:nil bundle:nil] autorelease];

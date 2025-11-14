@@ -639,17 +639,17 @@
 /// round of layouting the board view can be constrained to be square for that
 /// dimension.
 ///
-/// This delegate method handles interface orientation changes while this
-/// controller's view hierarchy is visible, and changes that occurred while this
-/// controller's view hierarchy was not visible (this method is invoked when the
-/// controller's view becomes visible again). Typically an override of
-/// the UIViewController method viewWillLayoutSubviews could also be used for
-/// this.
+/// This delegate method handles interface orientation changes and view size
+/// changes (on iPad) while this controller's view hierarchy is visible, and
+/// changes that occurred while this controller's view hierarchy was not visible
+/// (this method is invoked when the controller's view becomes visible again).
+/// Typically an override of the UIViewController method viewWillLayoutSubviews
+/// could also be used for this.
 ///
-/// The reason why viewWillLayoutSubviews is not overridden is that UIKit does
-/// not invoke viewWillLayoutSubviews every time that the bounds of
-/// self.middleColumnView change, so it can't be relied on to find out the
-/// board view's smaller dimension.
+/// The reason why overriding viewWillLayoutSubviews is not sufficient for this
+/// controller is that UIKit does not invoke viewWillLayoutSubviews every time
+/// that the bounds of a subview change, so it can't be relied on to find out
+/// the board view's smaller dimension.
 // -----------------------------------------------------------------------------
 - (void) orientationChangeNotifyingView:(OrientationChangeNotifyingView*)orientationChangeNotifyingView
              didChangeToLargerDimension:(UILayoutConstraintAxis)largerDimension

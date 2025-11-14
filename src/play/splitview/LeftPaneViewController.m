@@ -70,7 +70,7 @@
 - (void) setupChildControllers
 {
   self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
-  self.statusViewController = [[[StatusViewController alloc] init] autorelease];
+  self.statusViewController = [[[StatusViewController alloc] initWithSizeOrientation:SizeOrientationLandscape] autorelease];
 }
 
 // -----------------------------------------------------------------------------

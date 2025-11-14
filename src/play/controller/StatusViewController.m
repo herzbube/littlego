@@ -45,6 +45,7 @@
 /// @brief Class extension with private properties for StatusViewController.
 // -----------------------------------------------------------------------------
 @interface StatusViewController()
+@property(nonatomic, assign) enum SizeOrientation sizeOrientation;
 /// @brief Prevents unregistering by dealloc if registering hasn't happened
 /// yet. Registering may not happen if the controller's view is never loaded.
 @property(nonatomic, assign) bool notificationRespondersAreSetup;
@@ -68,16 +69,19 @@
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a StatusViewController object.
+/// @brief Initializes a StatusViewController object with a view laid out for
+/// @a sizeOrientation.
 ///
 /// @note This is the designated initializer of StatusViewController.
 // -----------------------------------------------------------------------------
-- (id) init
+- (id) initWithSizeOrientation:(enum SizeOrientation)sizeOrientation
 {
   // Call designated initializer of superclass (UIViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+
+  self.sizeOrientation = sizeOrientation;
   [self releaseObjects];
   self.notificationRespondersAreSetup = false;
   self.autoLayoutConstraintsAreSetup = false;
@@ -86,6 +90,7 @@
   self.shouldDisplayActivityIndicator = false;
   self.activityIndicatorWidthConstraint = nil;
   self.activityIndicatorSpacingConstraint = nil;
+
   return self;
 }
 
@@ -137,10 +142,10 @@
 // -----------------------------------------------------------------------------
 /// @brief UIViewController method.
 ///
-/// This override handles interface orientation changes while this controller's
-/// view hierarchy is visible, and changes that occurred while this controller's
-/// view hierarchy was not visible (this method is invoked when the controller's
-/// view becomes visible again).
+/// This override handles interface orientation changes and view size changes
+/// (on iPad) while this controller's view hierarchy is visible, and changes
+/// that occurred while this controller's view hierarchy was not visible (this
+/// method is invoked when the controller's view becomes visible again).
 // -----------------------------------------------------------------------------
 - (void) viewWillLayoutSubviews
 {
@@ -231,8 +236,7 @@
 
   if ([LayoutManager sharedManager].uiType != UITypePhonePortraitOnly)
   {
-    UIInterfaceOrientation interfaceOrientation = [UiElementMetrics interfaceOrientation];
-    bool isPortraitOrientation = UIInterfaceOrientationIsPortrait(interfaceOrientation);
+    bool isPortraitOrientation = (self.sizeOrientation == SizeOrientationPortrait);
     if (! isPortraitOrientation)
     {
       self.view.backgroundColor = [UIColor blackColor];
