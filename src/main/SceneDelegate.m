@@ -262,6 +262,18 @@ willConnectToSession:(UISceneSession*)session
   }
 }
 
+// -----------------------------------------------------------------------------
+/// @brief UIWindowSceneDelegate method.
+// -----------------------------------------------------------------------------
+- (UISceneWindowingControlStyle*) preferredWindowingControlStyleForScene:(UIWindowScene*)windowScene API_AVAILABLE(ios(26.0))
+{
+  // Places the windowing controls (aka the "traffic light" buttons) outside of
+  // the scene. Without this override, the controls are drawn over the status
+  // view when the UI is in landscape orientation, partially obscuring the
+  // status text.
+  return [UISceneWindowingControlStyle minimalStyle];
+}
+
 #pragma mark - Setting up the GUI
 
 // -----------------------------------------------------------------------------
