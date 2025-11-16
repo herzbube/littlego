@@ -41,6 +41,10 @@
 #import "../../utility/NSStringAdditions.h"
 
 
+// This variable must be accessed via [StatusViewController statusLabelMinimumSize]
+static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
+
+
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for StatusViewController.
 // -----------------------------------------------------------------------------
@@ -197,42 +201,8 @@
 - (void) configureViews
 {
   self.statusLabel.accessibilityIdentifier = statusLabelAccessibilityIdentifier;
-  self.statusLabel.numberOfLines = 0;
-  // Font size must strike a balance between remaining legible and accomodating
-  // the longest possible status text in the most space-constrained application
-  // state. When testing consider this:
-  // - The longest possible status text is the one that includes the player
-  //   name, because that name is variable and can be entered by the user.
-  // - The longest status text without a variable component is the one in
-  //   scoring mode, when one of the players has resigned.
-  // - When testing, make sure that the longest non-variable text fits, then
-  //   also test with a long player name to make sure an acceptable part of the
-  //   name is still visible before it is truncated.
-  CGFloat fontSize;
-  switch ([LayoutManager sharedManager].uiType)
-  {
-    case UITypePhonePortraitOnly:
-      // Label can have 3 lines. Player names can be somewhat longer than 40
-      // characters but must consist of several words for line breaks.
-      fontSize = 9.0f;
-      break;
-    case UITypePhone:
-      // Portrait: See UITypePad.
-      // Landscape: Label can have 4 lines. Player names about 40 characters
-      // long are OK but must consist of several words for line breaks.
-      fontSize = 10.0f;
-      break;
-    case UITypePad:
-      // Label can have 3 lines. Player names can be insanely long and can
-      // even consist of long words.
-      fontSize = 10.0f;
-      break;
-    default:
-      [ExceptionUtility throwInvalidUIType:[LayoutManager sharedManager].uiType];
-  }
-  self.statusLabel.font = [UIFont systemFontOfSize:fontSize];
-  self.statusLabel.lineBreakMode = NSLineBreakByWordWrapping;
-  self.statusLabel.textAlignment = NSTextAlignmentCenter;
+
+  [StatusViewController configureStatusLabel:self.statusLabel];
 
   if ([LayoutManager sharedManager].uiType != UITypePhonePortraitOnly)
   {
@@ -260,11 +230,8 @@
   // color can extend to any screen edges that are outside the safe area.
   [AutoLayoutUtility fillSafeAreaOfSuperview:self.view withSubview:self.containerView];
 
-  int horizontalSpacingSuperview;
-  if ([LayoutManager sharedManager].uiType == UITypePhone)
-    horizontalSpacingSuperview = [AutoLayoutUtility horizontalSpacingTableViewCell];
-  else
-    horizontalSpacingSuperview = 0;
+  int horizontalSpacingSuperview = [AutoLayoutUtility horizontalSpacingTableViewCell];
+  int verticalSpacingSuperview = [AutoLayoutUtility verticalSpacingTableViewCell];
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
@@ -272,7 +239,12 @@
   viewsDictionary[@"activityIndicator"] = self.activityIndicator;
   [visualFormats addObject:[NSString stringWithFormat:@"H:|-%d-[statusLabel]", horizontalSpacingSuperview]];
   [visualFormats addObject:[NSString stringWithFormat:@"H:[activityIndicator]-%d-|", horizontalSpacingSuperview]];
-  [visualFormats addObject:@"V:|-0-[statusLabel]-0-|"];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-%d-[statusLabel]-%d-|", verticalSpacingSuperview, verticalSpacingSuperview]];
+
+  CGSize statusLabelMinimumSize = [StatusViewController statusLabelMinimumSize];
+  [visualFormats addObject:[NSString stringWithFormat:@"H:[statusLabel(>=%f)]", statusLabelMinimumSize.width]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:[statusLabel(>=%f)]", statusLabelMinimumSize.height]];
+
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 
   [AutoLayoutUtility alignFirstView:self.activityIndicator
@@ -955,6 +927,80 @@
 {
   self.statusLabelNeedsUpdate = true;
   [self delayedUpdate];
+}
+
+#pragma mark - One-time label size calculation
+
+// -----------------------------------------------------------------------------
+/// @brief Returns the pre-calculated minimum size of the status label.
+///
+/// When this method is invoked the first time, it performs the necessary size
+/// calculations.
+// -----------------------------------------------------------------------------
++ (CGSize) statusLabelMinimumSize
+{
+  if (CGSizeEqualToSize(statusLabelMinimumSize, CGSizeZero))
+    [StatusViewController setupStaticViewMetrics];
+  return statusLabelMinimumSize;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for statusLabelMinimumSize().
+// -----------------------------------------------------------------------------
++ (void) setupStaticViewMetrics
+{
+  UILabel* offscreenLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  [StatusViewController configureStatusLabel:offscreenLabel];
+
+  // Assumed to be the longest status text without a variable component
+  offscreenLabel.text = @"Black wins by\nresignation / White\nwins by 388½ - Tap to\nmark dead stones";
+
+  [offscreenLabel layoutIfNeeded];
+  statusLabelMinimumSize = [offscreenLabel systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for configuring @a statusLabel.
+// -----------------------------------------------------------------------------
++ (void) configureStatusLabel:(UILabel*)statusLabel
+{
+  CGFloat fontSize = [StatusViewController statusLabelFontSize];
+
+  statusLabel.numberOfLines = 4;
+  statusLabel.font = [UIFont systemFontOfSize:fontSize];
+  statusLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+  statusLabel.textAlignment = NSTextAlignmentCenter;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Private helper for configureStatusLabel().
+// -----------------------------------------------------------------------------
++ (CGFloat) statusLabelFontSize
+{
+  // Font size must strike a balance between remaining legible and accomodating
+  // the longest possible status text in the most space-constrained application
+  // state. When testing consider this:
+  // - The longest possible status text is the one that includes a player name
+  //   (e.g. "Computer is playing for <name>"), because player names are
+  //   variable and can be entered by the user.
+  // - The longest status text without a variable component is the one in
+  //   scoring mode, when one of the players has resigned.
+  // - When testing, make sure that the longest non-variable text fits, then
+  //   also test with a long player name to make sure an acceptable part of the
+  //   name is still visible before it is truncated.
+  switch ([LayoutManager sharedManager].uiType)
+  {
+    case UITypePhonePortraitOnly:
+      return 9.0f;
+    case UITypePhone:
+    case UITypePad:
+      return 10.0f;
+    default:
+      [ExceptionUtility throwInvalidUIType:[LayoutManager sharedManager].uiType];
+      // Dummy return to make compiler happy (compiler does not see that an
+      // exception is thrown)
+      return 0.0f;
+  }
 }
 
 @end
