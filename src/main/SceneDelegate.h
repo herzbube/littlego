@@ -26,9 +26,6 @@
 /// @brief The SceneDelegate class implements the role of the UIWindowScene
 /// delegate. It supports the application's scene-based life cycle.
 ///
-/// Currently there can be only one SceneDelegate object, and multiple scenes
-/// (an iPad feature) are not supported.
-///
 /// @note It's not clear why the scene delegate needs to be a subclass of
 /// UIResponder. This was taken over from the implementation example in TN3187
 /// when the migration from the app-wide life cycle was done.
@@ -36,8 +33,6 @@
 @interface SceneDelegate : UIResponder <UIWindowSceneDelegate, WindowProvider>
 {
 }
-
-+ (SceneDelegate*) sharedDelegate;
 
 @end
 

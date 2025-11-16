@@ -31,15 +31,8 @@
 #import "../play/controller/SoundHandling.h"
 #import "../shared/ApplicationStateManager.h"
 #import "../shared/LongRunningActionCounter.h"
+#import "../utility/ExceptionUtility.h"
 
-
-// TODO xxx Study the scene-based lifecycle events
-// https://developer.apple.com/documentation/uikit/managing-your-app-s-life-cycle?language=objc#Respond-to-scene-based-life-cycle-events
-
-// TODO xxx TN3187: After adopting scene-based life-cycle ensure to test your
-// app in Split View, Slide Over, and Stage Manager on iPad.
-
-// TODO xxx do we need a newDelegate method, as in ApplicationDelegate?
 
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for SceneDelegate.
@@ -62,19 +55,36 @@
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Shared instance of SceneDelegate.
+/// @brief Initializes a SceneDelegate object.
+///
+/// @note This is the designated initializer of SceneDelegate.
 // -----------------------------------------------------------------------------
-static SceneDelegate* sharedDelegate = nil;
-
-// -----------------------------------------------------------------------------
-/// @brief Returns the shared scene delegate object.
-// -----------------------------------------------------------------------------
-+ (SceneDelegate*) sharedDelegate
+- (id) init
 {
-  assert(sharedDelegate != nil);
-  if (! sharedDelegate)
-    DDLogError(@"Shared SceneDelegate instance is nil");
-  return sharedDelegate;
+  // Call designated initializer of superclass (UIResponder)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  Registry* sharedRegistry = [Registry sharedRegistry];
+  if (sharedRegistry.sceneDelegate)
+  {
+    // Because the app does not creating additional windows, there is currently
+    // no known scenario that would lead to the creation of a second scene.
+    DDLogError(@"Another scene delegate is already registered - multi-scene support not implemented");
+    [ExceptionUtility throwNotImplementedException];
+  }
+
+  self.pendingSceneConnectionOptions = nil;
+  self.documentInteractionUrls = nil;
+
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+
+  sharedRegistry.sceneDelegate = self;
+  sharedRegistry.windowProvider = self;
+
+  return self;
 }
 
 // -----------------------------------------------------------------------------
@@ -82,17 +92,17 @@ static SceneDelegate* sharedDelegate = nil;
 // -----------------------------------------------------------------------------
 - (void) dealloc
 {
+  self.pendingSceneConnectionOptions = nil;
+  self.documentInteractionUrls = nil;
+
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+
   Registry* sharedRegistry = [Registry sharedRegistry];
   sharedRegistry.sceneDelegate = nil;
   sharedRegistry.windowProvider = nil;
   sharedRegistry.magnifyingGlassOwner = nil;
 
   self.window = nil;
-  self.pendingSceneConnectionOptions = nil;
-  self.documentInteractionUrls = nil;
-
-  if (self == sharedDelegate)
-    sharedDelegate = nil;
 
   [super dealloc];
 }
@@ -106,26 +116,7 @@ static SceneDelegate* sharedDelegate = nil;
 willConnectToSession:(UISceneSession*)session
              options:(UISceneConnectionOptions*)connectionOptions
 {
-  DDLogInfo(@"scene:willConnectToSession:options:() received");
-
-  // Make the single instance of this class available as a "shared object", or
-  // Singleton.
-  sharedDelegate = self;
-
-  // Also make the shared object available via registry
-  Registry* sharedRegistry = [Registry sharedRegistry];
-  sharedRegistry.sceneDelegate = self;
-  sharedRegistry.windowProvider = self;
-
-  if (! [scene isKindOfClass:[UIWindowScene class]])
-  {
-    // TODO xxx Raise exception => fail early?
-    DDLogWarn(@"scene:willConnectToSession:options:() received for a scene that is not a UIWindowScene");
-    return;
-  }
-
-  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+  DDLogInfo(@"%@: scene:willConnectToSession:options:() received", self);
 
   UIWindowScene* windowScene = (UIWindowScene*)scene;
 
@@ -147,9 +138,6 @@ willConnectToSession:(UISceneSession*)session
 
   // Options are handled in sceneDidBecomeActive:()
   self.pendingSceneConnectionOptions = connectionOptions;
-
-  // Document interaction URLs are detected in scene:openURLContexts:()
-  self.documentInteractionUrls = nil;
 }
 
 // -----------------------------------------------------------------------------
@@ -165,7 +153,7 @@ willConnectToSession:(UISceneSession*)session
 // -----------------------------------------------------------------------------
 - (void) sceneWillResignActive:(UIScene*)scene
 {
-  DDLogInfo(@"sceneWillResignActive:() received");
+  DDLogInfo(@"%@: sceneWillResignActive:() received", self);
 
   GoGame* game = [GoGame sharedGame];
   if (GoGameTypeComputerVsComputer == game.type)
@@ -190,7 +178,7 @@ willConnectToSession:(UISceneSession*)session
 // -----------------------------------------------------------------------------
 - (void) sceneDidBecomeActive:(UIScene*)scene
 {
-  DDLogInfo(@"sceneDidBecomeActive:() received");
+  DDLogInfo(@"%@: sceneDidBecomeActive:() received", self);
 
   [Registry sharedRegistry].modelProvider.soundHandling.disabled = false;
 
@@ -221,7 +209,7 @@ willConnectToSession:(UISceneSession*)session
 // -----------------------------------------------------------------------------
 - (void) sceneDidEnterBackground:(UIScene*)scene
 {
-  DDLogInfo(@"sceneDidEnterBackground:() received");
+  DDLogInfo(@"%@: sceneDidEnterBackground:() received", self);
 
   [[ApplicationDelegate sharedDelegate] writeUserDefaults];
   [[ApplicationStateManager sharedManager] applicationDidEnterBackground];
@@ -235,7 +223,7 @@ willConnectToSession:(UISceneSession*)session
 // -----------------------------------------------------------------------------
 - (void) sceneWillEnterForeground:(UIScene*)scene
 {
-  DDLogInfo(@"sceneWillEnterForeground:() received");
+  DDLogInfo(@"%@: sceneWillEnterForeground:() received", self);
 
   [[ApplicationStateManager sharedManager] applicationWillEnterForeground];
 }
@@ -377,7 +365,7 @@ willConnectToSession:(UISceneSession*)session
   NSArray* documentInteractionUrls = self.documentInteractionUrls;
   self.documentInteractionUrls = nil;
 
-  DDLogInfo(@"Document interaction wants to open URLs %@", documentInteractionUrls);
+  DDLogInfo(@"%@: Document interaction wants to open URLs %@", self, documentInteractionUrls);
 
   // Control returns before the .sgf files are actually imported
   [[[[HandleDocumentInteractionCommand alloc] initWithUrls:documentInteractionUrls] autorelease] submit];
