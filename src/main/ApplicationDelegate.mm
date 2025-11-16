@@ -292,6 +292,21 @@ configurationForConnectingSceneSession:(UISceneSession*)connectingSceneSession
 {
   DDLogInfo(@"application:configurationForConnectingSceneSession:options:() received");
 
+  if (connectingSceneSession.role != UIWindowSceneSessionRoleApplication)
+  {
+    // The only currently known case where this occurs is when the user starts
+    // "Screen Mirroring" on an iOS device to mirror the device's screen on
+    // another device (e.g. a MacBook). In that case connectingSceneSession.role
+    // has value UIWindowSceneSessionRoleExternalDisplayNonInteractive. [1]
+    // has documentation how apps could support this scenario. For this app,
+    // there is currently nothing useful to do. Experimentally determined that
+    // in this case it's ok to return nil and let iOS configure the scene on its
+    // own.
+    // [1] https://developer.apple.com/documentation/uikit/presenting-content-on-a-connected-display?language=objc
+    DDLogWarn(@"Not creating a scene configuration because connectingSceneSession.role != UIWindowSceneSessionRoleApplication, actual value is %@", connectingSceneSession.role);
+    return nil;
+  }
+
   // Each UISceneConfiguration must have a unique configuration name that is
   // used to identify the scene.
   NSString* configurationName = @"Default Scene Configuration";
