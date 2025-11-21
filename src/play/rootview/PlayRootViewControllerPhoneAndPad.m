@@ -252,7 +252,7 @@
     self.resizableStackViewController.dragHandleGrabAreaMargin *= 2;
     self.boardViewController = [[[BoardViewController alloc] init] autorelease];
     self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
-    self.annotationViewController = [AnnotationViewController annotationViewController];
+    self.annotationViewController = [AnnotationViewController annotationViewControllerWithSizeOrientation:SizeOrientationPortrait];
     self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionHorizontal] autorelease];
     self.nodeTreeViewIntegration = [[[NodeTreeViewIntegration alloc] initWithResizableStackViewController:self.resizableStackViewController
                                                                                         nodeTreeViewModel:modelProvider.nodeTreeViewModel

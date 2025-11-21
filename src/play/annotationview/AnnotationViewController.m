@@ -54,6 +54,7 @@ static const int spacerBottomTag = 2;
 /// @brief Class extension with private properties for AnnotationViewController.
 // -----------------------------------------------------------------------------
 @interface AnnotationViewController()
+@property(nonatomic, assign) enum SizeOrientation sizeOrientation;
 @property(nonatomic, assign) bool presentViewControllersInPopover;
 @property(nonatomic, assign) bool contentNeedsUpdate;
 @property(nonatomic, assign) bool buttonStatesNeedsUpdate;
@@ -96,10 +97,10 @@ static const int spacerBottomTag = 2;
 /// object that knows how to set up the correct view hierarchy for the current
 /// UI type.
 // -----------------------------------------------------------------------------
-+ (AnnotationViewController*) annotationViewController
++ (AnnotationViewController*) annotationViewControllerWithSizeOrientation:(enum SizeOrientation)sizeOrientation
 {
   enum UIType uiType = [LayoutManager sharedManager].uiType;
-  AnnotationViewController* annotationViewController = [[[AnnotationViewController alloc] initWithUiType:uiType] autorelease];;
+  AnnotationViewController* annotationViewController = [[[AnnotationViewController alloc] initWithUiType:uiType sizeOrientation:sizeOrientation] autorelease];;
   return annotationViewController;
 }
 
@@ -110,13 +111,14 @@ static const int spacerBottomTag = 2;
 /// @note This is the designated initializer of
 /// AnnotationViewControllerPhonePortraitOnly.
 // -----------------------------------------------------------------------------
-- (id) initWithUiType:(enum UIType)uiType
+- (id) initWithUiType:(enum UIType)uiType sizeOrientation:(enum SizeOrientation)sizeOrientation
 {
   // Call designated initializer of superclass (AnnotationViewController)
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
 
+  self.sizeOrientation = sizeOrientation;
   self.contentNeedsUpdate = false;
   self.buttonStatesNeedsUpdate = false;
 
@@ -307,10 +309,9 @@ static const int spacerBottomTag = 2;
 {
   [super loadView];
 
-  enum SizeOrientation viewSizeOrientation = [UiElementMetrics sizeOrientation:self.view.frame.size];
-  [self setupChildControllersWithViewSizeOrientation:viewSizeOrientation];
-  [self setupViewHierarchyWithViewSizeOrientation:viewSizeOrientation];
-  [self setupAutoLayoutConstraintsWithViewSizeOrientation:viewSizeOrientation];
+  [self setupChildControllersWithViewSizeOrientation:self.sizeOrientation];
+  [self setupViewHierarchyWithViewSizeOrientation:self.sizeOrientation];
+  [self setupAutoLayoutConstraintsWithViewSizeOrientation:self.sizeOrientation];
 
   GoNode* node = [self nodeWithAnnotationData];
   [self updateColors:node];

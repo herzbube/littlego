@@ -127,7 +127,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupChildControllers
 {
-  self.annotationViewController = [AnnotationViewController annotationViewController];
+  self.annotationViewController = [AnnotationViewController annotationViewControllerWithSizeOrientation:SizeOrientationLandscape];
   self.boardPositionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
   self.gameActionButtonBoxController = [[[ButtonBoxController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
 

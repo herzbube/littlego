@@ -38,6 +38,6 @@
 {
 }
 
-+ (AnnotationViewController*) annotationViewController;
++ (AnnotationViewController*) annotationViewControllerWithSizeOrientation:(enum SizeOrientation)sizeOrientation;
 
 @end
