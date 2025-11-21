@@ -219,6 +219,7 @@ static const int spacerBottomTag = 2;
   [center addObserver:self selector:@selector(nodeAnnotationDataDidChange:) name:nodeAnnotationDataDidChange object:nil];
   [center addObserver:self selector:@selector(currentBoardPositionDidChange:) name:currentBoardPositionDidChange object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
+  [center addObserver:self selector:@selector(uiWillChangeLayoutOrientation:) name:uiWillChangeLayoutOrientation object:nil];
 }
 
 // -----------------------------------------------------------------------------
@@ -331,26 +332,6 @@ static const int spacerBottomTag = 2;
     GoNode* node = [self nodeWithAnnotationData];
     [self updateColors:node];
   }
-}
-
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-// -----------------------------------------------------------------------------
-- (void) viewWillTransitionToSize:(CGSize)size
-        withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
-{
-  // When the view size orientation changes this controller will be deallocated.
-  // Presented view controllers have this controller set as their delegate, so
-  // we must dismiss them now to avoid access to a deallocated object.
-  //
-  // Note: This method is also invoked when the device is rotated 180 degrees
-  // and the view size does not actually change. This causes the dismissal of
-  // the presented view controller even though it would not be necessary.
-  if (self.presentedViewController)
-    [self dismissViewControllerAnimated:YES completion:nil];
-
-  [super viewWillTransitionToSize:size
-        withTransitionCoordinator:coordinator];
 }
 
 #pragma mark - View hierarchy setup
@@ -841,6 +822,22 @@ static const int spacerBottomTag = 2;
 - (void) longRunningActionEnds:(NSNotification*)notification
 {
   [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #uiWillChangeLayoutOrientation notification.
+// -----------------------------------------------------------------------------
+- (void) uiWillChangeLayoutOrientation:(NSNotification*)notification
+{
+  // When the layout orientation changes this controller will be deallocated.
+  // Presented view controllers have this controller set as their delegate, so
+  // we must dismiss them now to avoid access to a deallocated object.
+  //
+  // Note: This method is also invoked when the device is rotated 180 degrees
+  // and the view size does not actually change. This causes the dismissal of
+  // the presented view controller even though it would not be necessary.
+  if (self.presentedViewController)
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - Updaters
