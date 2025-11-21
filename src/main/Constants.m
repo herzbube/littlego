@@ -122,6 +122,7 @@ NSString* uiAreaPlayModeWillChange = @"UIAreaPlayModeWillChange";
 NSString* uiAreaPlayModeDidChange = @"UIAreaPlayModeDidChange";
 NSString* boardViewAnimationWillBegin = @"BoardViewAnimationWillBegin";
 NSString* boardViewAnimationDidEnd = @"BoardViewAnimationDidEnd";
+NSString* uiWillChangeLayoutOrientation = @"UiWillChangeLayoutOrientation";
 NSString* uiWillChangeInterfaceOrientation = @"UiWillChangeInterfaceOrientation";
 
 // Default values for properties that define how the Go board is displayed

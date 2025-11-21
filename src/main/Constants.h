@@ -1410,6 +1410,13 @@ extern NSString* boardViewAnimationWillBegin;
 /// @brief Is sent after an animation has ended on the board view. This is the
 /// balancing notification to #boardAnimationWillBegin.
 extern NSString* boardViewAnimationDidEnd;
+/// @brief Is sent when the user interface layout is about to change
+/// orientation from Portrait to Landscape, or from Landscape to Portrait.
+///
+/// A Portrait/Landscape UI layout change can occur when the device is rotated,
+/// but also when the UI is resized (e.g. on iPad devices) without a device
+/// rotation so that the new aspect ratio requires a layout change.
+extern NSString* uiWillChangeLayoutOrientation;
 /// @brief Is sent when the user interface is about to change orientation. This
 /// notification is sent even if the device is rotated 180 degrees.
 ///

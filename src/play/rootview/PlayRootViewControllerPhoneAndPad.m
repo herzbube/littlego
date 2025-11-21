@@ -490,6 +490,9 @@
   enum SizeOrientation viewSizeOrientation = [UiElementMetrics sizeOrientation:self.view.frame.size];
   if ([self isViewLayoutChangeRequiredForViewSizeOrientation:viewSizeOrientation])
   {
+    [[NSNotificationCenter defaultCenter] postNotificationName:uiWillChangeLayoutOrientation
+                                                        object:nil];
+
     [self prepareForViewSizeOrientationChange:viewSizeOrientation];
     [self completeViewSizeOrientationChange:viewSizeOrientation];
     [self viewLayoutDidChangeToViewSizeOrientation:viewSizeOrientation];
