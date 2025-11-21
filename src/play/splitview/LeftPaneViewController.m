@@ -98,31 +98,6 @@
   }
 }
 
-// -----------------------------------------------------------------------------
-/// @brief Private setter implementation.
-// -----------------------------------------------------------------------------
-- (void) setStatusViewController:(StatusViewController*)statusViewController
-{
-  if (_statusViewController == statusViewController)
-    return;
-  if (_statusViewController)
-  {
-    [_statusViewController willMoveToParentViewController:nil];
-    // Automatically calls didMoveToParentViewController:
-    [_statusViewController removeFromParentViewController];
-    [_statusViewController release];
-    _statusViewController = nil;
-  }
-  if (statusViewController)
-  {
-    // Automatically calls willMoveToParentViewController:
-    [self addChildViewController:statusViewController];
-    [statusViewController didMoveToParentViewController:self];
-    [statusViewController retain];
-    _statusViewController = statusViewController;
-  }
-}
-
 #pragma mark - UIViewController overrides
 
 // -----------------------------------------------------------------------------
@@ -132,15 +107,15 @@
 {
   [super loadView];
 
-  [self.view addSubview:self.statusViewController.view];
+  [self.view addSubview:self.statusViewController.statusView];
   [self.view addSubview:self.boardPositionCollectionViewController.view];
 
-  self.statusViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.statusViewController.statusView.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
-  viewsDictionary[@"statusView"] = self.statusViewController.view;
+  viewsDictionary[@"statusView"] = self.statusViewController.statusView;
   viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
   // Let the subviews extend all the way to the left/right edges of our view.
   // The child view controllers take care of the safe area handling.

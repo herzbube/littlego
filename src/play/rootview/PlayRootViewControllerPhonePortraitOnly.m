@@ -134,19 +134,6 @@
   self.navigationBarButtonModel = [[[NavigationBarButtonModel alloc] init] autorelease];
   [GameActionManager sharedGameActionManager].uiDelegate = self;
 
-  // We don't treat this as a child view controller. Reason:
-  // - The status view is set as the title view of this container view
-  //   controller's navigation item.
-  // - This causes UIKit to add the status view as a subview to the navigation
-  //   bar of the navigation controller that shows this container view
-  //   controller.
-  // - When we add StatusViewController as a child VC to this container VC,
-  //   UIKit complains with the message that StatusViewController should be a
-  //   child VC of the navigation VC.
-  // - An attempt to follow this advice failed: When StatusViewController is
-  //   made into a child VC of the navigation VC, StatusViewController is also
-  //   added to the navigation VC's navigation stack - which is absolutely not
-  //   what we want!
   self.statusViewController = [[[StatusViewController alloc] initWithSizeOrientation:SizeOrientationPortrait] autorelease];
 
   id<ModelProvider> modelProvider = [Registry sharedRegistry].modelProvider;
@@ -370,7 +357,7 @@
 // -----------------------------------------------------------------------------
 - (void) setupNavigationBar
 {
-  self.navigationItem.titleView = self.statusViewController.view;
+  self.navigationItem.titleView = self.statusViewController.statusView;
   [self.navigationBarButtonModel updateVisibleGameActions];
   [self populateNavigationBar];
 }

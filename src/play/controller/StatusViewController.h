@@ -24,12 +24,18 @@
 /// the GTP engine is taking a long time to calculate something (e.g. computer
 /// player makes its move), the status view also displays an activity indicator.
 ///
-/// StatusViewController is a child view controller.
+/// StatusViewController is not a UIViewController because the status view is
+/// sometimes embedded into a navigation bar (via titleView property of
+/// UINavigationItem), in which case the UINavigationController takes control
+/// of the status view. If StatusViewController were also a UIViewController the
+/// two view controllers would get into each other's way.
 // -----------------------------------------------------------------------------
-@interface StatusViewController : UIViewController
+@interface StatusViewController : NSObject
 {
 }
 
 - (id) initWithSizeOrientation:(enum SizeOrientation)sizeOrientation;
+
+- (UIView*) statusView;
 
 @end

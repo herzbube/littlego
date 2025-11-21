@@ -53,7 +53,7 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
 /// @brief Prevents unregistering by dealloc if registering hasn't happened
 /// yet. Registering may not happen if the controller's view is never loaded.
 @property(nonatomic, assign) bool notificationRespondersAreSetup;
-@property(nonatomic, assign) bool autoLayoutConstraintsAreSetup;
+@property(nonatomic, retain) UIView* mainView;
 @property(nonatomic, retain) UIView* containerView;
 @property(nonatomic, retain) UILabel* statusLabel;
 @property(nonatomic, retain) UIActivityIndicatorView* activityIndicator;
@@ -80,15 +80,14 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
 // -----------------------------------------------------------------------------
 - (id) initWithSizeOrientation:(enum SizeOrientation)sizeOrientation
 {
-  // Call designated initializer of superclass (UIViewController)
-  self = [super initWithNibName:nil bundle:nil];
+  // Call designated initializer of superclass (NSObject)
+  self = [super init];
   if (! self)
     return nil;
 
   self.sizeOrientation = sizeOrientation;
   [self releaseObjects];
   self.notificationRespondersAreSetup = false;
-  self.autoLayoutConstraintsAreSetup = false;
   self.activityIndicatorNeedsUpdate = false;
   self.statusLabelNeedsUpdate = false;
   self.shouldDisplayActivityIndicator = false;
@@ -113,6 +112,7 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
 // -----------------------------------------------------------------------------
 - (void) releaseObjects
 {
+  self.mainView = nil;
   self.containerView = nil;
   self.statusLabel = nil;
   self.activityIndicator = nil;
@@ -123,80 +123,57 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
   self.activityIndicatorSpacingConstraint = nil;
 }
 
-#pragma mark - UIViewController overrides
+#pragma mark - Status view access and setup
 
 // -----------------------------------------------------------------------------
-/// @brief UIViewController method.
+/// @brief Returns the status view. Creates and sets up the status view when
+/// this method is invoked for the first time.
 // -----------------------------------------------------------------------------
-- (void) loadView
+- (UIView*) statusView
 {
-  [super loadView];
+  if (self.mainView)
+    return self.mainView;
 
   [self createViews];
   [self setupViewHierarchy];
   [self configureViews];
+  [self setupAutoLayoutConstraints];
+  [self updateAutoLayoutConstraints];
   [self setupNotificationResponders];
 
   // New controller instances may be created in mid-game after a layout change
   self.statusLabelNeedsUpdate = true;
   self.activityIndicatorNeedsUpdate = true;
   [self delayedUpdate];
+
+  return self.mainView;
 }
 
-// -----------------------------------------------------------------------------
-/// @brief UIViewController method.
-///
-/// This override handles interface orientation changes and view size changes
-/// (on iPad) while this controller's view hierarchy is visible, and changes
-/// that occurred while this controller's view hierarchy was not visible (this
-/// method is invoked when the controller's view becomes visible again).
-// -----------------------------------------------------------------------------
-- (void) viewWillLayoutSubviews
-{
-  if (self.autoLayoutConstraintsAreSetup)
-    return;
-
-  // We don't setup Auto Layout constraints in loadView, instead we delay until
-  // viewWillLayoutSubviews. Reason: When on UITypePhone and in landscape
-  // orientation, UIKit temporarily "thinks" that the safe area layout guide of
-  // this view controller's main view should honor the tab bar, even though
-  // this view controller's main view does not come even near the tab bar. As
-  // a result there is a temporary Auto Layout constraint that causes problems
-  // if the status view is less high than 70 (the height of a tab bar).
-  // Unfortunately the container view controller of this view controller does
-  // exactly that - it sets up a height for the status view that is less than
-  // 70. At the time viewWillLayoutSubviews is invoked, the temporary and
-  // erroneous Auto Layout constraint has gone, so by delaying creation of our
-  // Auto Layout constraints we work around the problem.
-  [self setupAutoLayoutConstraints];
-  [self updateAutoLayoutConstraints];
-  self.autoLayoutConstraintsAreSetup = true;
-}
-
-#pragma mark - Private helpers for loadView
+#pragma mark - Private helpers for statusView
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
+/// @brief Private helper for statusView.
 // -----------------------------------------------------------------------------
 - (void) createViews
 {
+  self.mainView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   self.containerView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   self.statusLabel = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
   self.activityIndicator = [[[UIActivityIndicatorView alloc] initWithFrame:CGRectZero] autorelease];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
+/// @brief Private helper for statusView.
 // -----------------------------------------------------------------------------
 - (void) setupViewHierarchy
 {
-  [self.view addSubview:self.containerView];
+  [self.mainView addSubview:self.containerView];
   [self.containerView addSubview:self.statusLabel];
   [self.containerView addSubview:self.activityIndicator];
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
+/// @brief Private helper for statusView.
 // -----------------------------------------------------------------------------
 - (void) configureViews
 {
@@ -209,7 +186,7 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
     bool isPortraitOrientation = (self.sizeOrientation == SizeOrientationPortrait);
     if (! isPortraitOrientation)
     {
-      self.view.backgroundColor = [UIColor blackColor];
+      self.mainView.backgroundColor = [UIColor blackColor];
       self.statusLabel.textColor = [UIColor whiteColor];
       self.activityIndicator.color = [UIColor whiteColor];
     }
@@ -217,7 +194,7 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Private helper for loadView.
+/// @brief Private helper for statusView.
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraints
 {
@@ -228,7 +205,7 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
   // The container view makes sure that the status view content is within the
   // safe area, while the view controller's main view that has a background
   // color can extend to any screen edges that are outside the safe area.
-  [AutoLayoutUtility fillSafeAreaOfSuperview:self.view withSubview:self.containerView];
+  [AutoLayoutUtility fillSafeAreaOfSuperview:self.mainView withSubview:self.containerView];
 
   int horizontalSpacingSuperview = [AutoLayoutUtility horizontalSpacingTableViewCell];
   int verticalSpacingSuperview = [AutoLayoutUtility verticalSpacingTableViewCell];
@@ -245,7 +222,7 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
   [visualFormats addObject:[NSString stringWithFormat:@"H:[statusLabel(>=%f)]", statusLabelMinimumSize.width]];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[statusLabel(>=%f)]", statusLabelMinimumSize.height]];
 
-  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
+  [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.mainView];
 
   [AutoLayoutUtility alignFirstView:self.activityIndicator
                      withSecondView:self.statusLabel
@@ -268,6 +245,8 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
   [self.containerView addConstraint:self.activityIndicatorWidthConstraint];
   [self.containerView addConstraint:self.activityIndicatorSpacingConstraint];
 }
+
+#pragma mark - Other private helpers
 
 // -----------------------------------------------------------------------------
 /// @brief Private helper.
