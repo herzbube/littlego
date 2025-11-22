@@ -59,6 +59,6 @@
 + (CGSize) tableViewHeaderViewSizeForStyle:(UITableViewStyle)tableViewStyle;
 + (CGSize) tableViewFooterViewSizeForStyle:(UITableViewStyle)tableViewStyle;
 + (int) splitViewControllerLeftPaneWidth;
-+ (CGSize) toolbarIconSize;
++ (CGSize) customButtonTouchAreaSize;
 
 @end

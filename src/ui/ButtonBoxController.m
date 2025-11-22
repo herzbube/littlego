@@ -57,6 +57,7 @@
   self = [super initWithCollectionViewLayout:flowLayout];
   if (! self)
     return nil;
+
   _scrollDirection = scrollDirection;
   self.reuseIdentifierCell = @"ButtonBoxCell";
   self.reuseIdentifierSeparatorView = @"ButtonBoxSeparatorView";
@@ -65,30 +66,30 @@
   self.buttonTintColorLightUserInterfaceStyle = [UIColor blackColor];
   self.buttonTintColorDarkUserInterfaceStyle = [UIColor whiteColor];
 
+  // In older versions of the app where the buttons used for button boxes were
+  // substantially smaller, most of the multipliers used to be greater than 1.
   CGFloat rowSpacingFactor;
   CGFloat columnSpacingFactor;
   CGFloat horizontalMarginFactor;
   CGFloat verticalMarginFactor;
   if (scrollDirection == UICollectionViewScrollDirectionHorizontal)
   {
-    // 1.0 is not sufficient, buttons are too close together
-    rowSpacingFactor = 1.5f;
-    columnSpacingFactor = 2.0f;
-    horizontalMarginFactor = 2.0f;
+    rowSpacingFactor = 1.0f;
+    columnSpacingFactor = 1.0f;
+    horizontalMarginFactor = 1.0f;
     verticalMarginFactor = 1.0f;
   }
   else
   {
-    rowSpacingFactor = 2.0f;
-    // 1.5 is not sufficient, buttons are too close together
-    columnSpacingFactor = 2.0f;
+    rowSpacingFactor = 1.0f;
+    columnSpacingFactor = 1.0f;
     horizontalMarginFactor = 1.0f;
-    verticalMarginFactor = 2.0f;
+    verticalMarginFactor = 1.0f;
   }
 
   // Need to use the same width all the time, otherwise there is no grid effect
   // Height can vary, flow layout will use the largest height for the line.
-  self.buttonSize = [UiElementMetrics toolbarIconSize];
+  self.buttonSize = [UiElementMetrics customButtonTouchAreaSize];
   self.rowSpacing = [UiElementMetrics verticalSpacingSiblings] * rowSpacingFactor;
   self.columnSpacing = [UiElementMetrics horizontalSpacingSiblings] * columnSpacingFactor;
   self.sectionInsets = UIEdgeInsetsMake([UiElementMetrics verticalSpacingSiblings] * verticalMarginFactor,

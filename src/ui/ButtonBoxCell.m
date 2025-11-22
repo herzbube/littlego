@@ -84,7 +84,10 @@
   self.button = button;
   [self.contentView addSubview:self.button];
   self.button.translatesAutoresizingMaskIntoConstraints = false;
-  self.autoLayoutConstraints = [AutoLayoutUtility centerSubview:self.button inSuperview:self.contentView];
+  // Let the button fill the entire button box, even if the content it displays
+  // is smaller. This increases the button's touch area size, making it easier
+  // to hit with a touch gesture.
+  self.autoLayoutConstraints = [AutoLayoutUtility fillSuperview:self.contentView withSubview:self.button];
 }
 
 // -----------------------------------------------------------------------------

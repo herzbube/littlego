@@ -260,11 +260,15 @@
   return 320;
 }
 
-+ (CGSize) toolbarIconSize
++ (CGSize) customButtonTouchAreaSize
 {
-  // This is the size (in points) recommended by the HIG for navigation and
-  // toolbar icons
-  return CGSizeMake(22.0f, 22.0f);
+  // Old versions of the HIG recommended 22x22 for navigation and toolbar icon
+  // sizes. These days it seems the HIG no longer contains icon size
+  // recommendations. In any case, the touch area of a button can (and should)
+  // be larger than the pure icon. 36x36 is the size that was measured in iOS 26
+  // simulators (both for iPhone and iPad devices) for buttons created in the
+  // navigation bar for UIBarButtonItem.
+  return CGSizeMake(36.0f, 36.0f);
 }
 
 @end
