@@ -333,6 +333,8 @@
 // -----------------------------------------------------------------------------
 - (void) setupResizablePane1ViewHierarchy
 {
+  [self.resizablePane1ViewController.view addSubview:self.statusViewController.statusView];
+
   // This is a simple container view that takes up all the unused vertical
   // space and within which the board view is then centered, either horizontally
   // or vertically depending on which dimension gets more space.
@@ -357,7 +359,6 @@
 // -----------------------------------------------------------------------------
 - (void) setupNavigationBar
 {
-  self.navigationItem.titleView = self.statusViewController.statusView;
   [self.navigationBarButtonModel updateVisibleGameActions];
   [self populateNavigationBar];
 }
@@ -445,18 +446,21 @@
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
 
+  self.statusViewController.statusView.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionButtonBoxAndAnnotationContainerView.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
+  viewsDictionary[@"statusView"] = self.statusViewController.statusView;
   viewsDictionary[@"boardContainerView"] = self.boardContainerView;
   viewsDictionary[@"boardPositionButtonBoxAndAnnotationContainerView"] = self.boardPositionButtonBoxAndAnnotationContainerView;
   viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
 
+  [visualFormats addObject:@"H:|-0-[statusView]-0-|"];
   [visualFormats addObject:@"H:|-0-[boardContainerView]-0-|"];
   [visualFormats addObject:@"H:|-0-[boardPositionButtonBoxAndAnnotationContainerView]-0-|"];
   [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
-  [visualFormats addObject:@"V:|-[boardContainerView]-[boardPositionButtonBoxAndAnnotationContainerView]-[boardPositionCollectionView]-|"];
+  [visualFormats addObject:@"V:|-[statusView]-[boardContainerView]-[boardPositionButtonBoxAndAnnotationContainerView]-[boardPositionCollectionView]-|"];
   [visualFormats addObject:[NSString stringWithFormat:@"V:[boardPositionCollectionView(==%f)]", boardPositionCollectionViewHeight]];
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.boardContainerView.superview];
@@ -667,6 +671,7 @@
 - (void) updateColors
 {
   UITraitCollection* traitCollection = self.traitCollection;
+  [UiUtilities applyTransparentStyleToView:self.statusViewController.statusView traitCollection:traitCollection];
   [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView traitCollection:traitCollection];
   [UiUtilities applyTransparentStyleToView:self.annotationViewController.view traitCollection:traitCollection];
   [self.nodeTreeViewIntegration updateColors:traitCollection];

@@ -21,6 +21,7 @@
 #import "../boardposition/BoardPositionButtonBoxDataSource.h"
 #import "../boardview/BoardViewController.h"
 #import "../controller/AutoLayoutConstraintHelper.h"
+#import "../controller/StatusViewController.h"
 #import "../gameaction/GameActionButtonBoxDataSource.h"
 #import "../gameaction/GameActionManager.h"
 #import "../model/NodeTreeViewModel.h"
@@ -50,6 +51,7 @@
 // Controllers and data sources
 @property(nonatomic, retain) ResizableStackViewController* resizableStackViewController;
 @property(nonatomic, retain) UIViewController* resizablePane1ViewController;
+@property(nonatomic, retain) StatusViewController* statusViewController;
 @property(nonatomic, retain) BoardViewController* boardViewController;
 @property(nonatomic, retain) NodeTreeViewIntegration* nodeTreeViewIntegration;
 @property(nonatomic, retain) ButtonBoxController* boardPositionButtonBoxController;
@@ -79,6 +81,7 @@
   self = [super initWithNibName:nil bundle:nil];
   if (! self)
     return nil;
+
   [self setupChildControllers];
   self.woodenBackgroundView = nil;
   self.leftColumnView = nil;
@@ -89,6 +92,7 @@
   self.boardViewSmallerDimension = UILayoutConstraintAxisVertical;
   self.boardViewAutoLayoutConstraints = [NSMutableArray array];
   self.gameActionButtonBoxAutoLayoutConstraints = nil;
+
   return self;
 }
 
@@ -106,6 +110,7 @@
 
   self.resizableStackViewController = nil;
   self.resizablePane1ViewController = nil;
+  self.statusViewController = nil;
   self.boardViewController = nil;
   self.nodeTreeViewIntegration = nil;
   self.boardPositionButtonBoxController = nil;
@@ -140,6 +145,7 @@
   self.resizableStackViewController.spacingBetweenResizablePanes *= 2;
   self.resizableStackViewController.dragHandleThickness *= 1.5;
   self.resizableStackViewController.dragHandleGrabAreaMargin *= 2;
+  self.statusViewController = [[[StatusViewController alloc] initWithSizeOrientation:SizeOrientationLandscape] autorelease];
   self.boardViewController = [[[BoardViewController alloc] init] autorelease];
   self.nodeTreeViewIntegration = [[[NodeTreeViewIntegration alloc] initWithResizableStackViewController:self.resizableStackViewController
                                                                                       nodeTreeViewModel:modelProvider.nodeTreeViewModel
@@ -349,6 +355,8 @@
   self.middleColumnView = [[[UIView alloc] initWithFrame:CGRectZero] autorelease];
   [self.woodenBackgroundView addSubview:self.middleColumnView];
 
+  [self.middleColumnView addSubview:self.statusViewController.statusView];
+
   [self.middleColumnView addSubview:self.resizableStackViewController.view];
 
   // This is a simple container view that takes up all the unused vertical
@@ -518,12 +526,15 @@
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
 
+  self.statusViewController.statusView.translatesAutoresizingMaskIntoConstraints = NO;
   self.resizableStackViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
+  viewsDictionary[@"statusView"] = self.statusViewController.statusView;
   viewsDictionary[@"resizableStackView"] = self.resizableStackViewController.view;
 
+  [visualFormats addObject:@"H:|-[statusView]-|"];
   [visualFormats addObject:@"H:|-[resizableStackView]-|"];
-  [visualFormats addObject:@"V:|-[resizableStackView]-|"];
+  [visualFormats addObject:@"V:|-[statusView]-[resizableStackView]-|"];
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.resizableStackViewController.view.superview];
 
@@ -677,6 +688,7 @@
   UITraitCollection* traitCollection = self.traitCollection;
   [UiUtilities applyTransparentStyleToView:self.annotationViewController.view traitCollection:traitCollection];
   [UiUtilities applyTransparentStyleToView:self.boardPositionButtonBoxContainerView traitCollection:traitCollection];
+  [UiUtilities applyTransparentStyleToView:self.statusViewController.statusView traitCollection:traitCollection];
   [self.nodeTreeViewIntegration updateColors:traitCollection];
   [UiUtilities applyTransparentStyleToView:self.gameActionButtonBoxController.view traitCollection:traitCollection];
 }

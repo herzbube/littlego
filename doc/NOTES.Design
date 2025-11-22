@@ -63,7 +63,7 @@ View controller hierarchy for UITypePhone and UITypePad:
     +-- PlayRootViewNavigationController : UINavigationController
         +-- PlayRootViewControllerPhoneAndPad : PlayRootViewController
             +-- Portrait orientation
-            |   +-- StatusViewController (no child view controller, statusView is titleView of navigation bar of PlayRootViewNavigationController)
+            |   +-- StatusViewController (no child view controller)
             |   |   +-- UILabel
             |   |   +-- UIActivityIndicatorView
             |   +-- ResizableStackViewController
@@ -86,9 +86,6 @@ View controller hierarchy for UITypePhone and UITypePad:
             +-- Landscape orientation
                 +-- SplitViewController
                     +-- LeftPaneViewController
-                    |   +-- StatusViewController (no child view controller, statusView is integrated as subview)
-                    |   |   +-- UILabel
-                    |   |   +-- UIActivityIndicatorView
                     |   +-- BoardPositionCollectionViewController : UICollectionViewController
                     |       +-- UICollectionView (BoardPositionCollectionViewCell cells)
                     +-- RightPaneViewController
@@ -97,6 +94,9 @@ View controller hierarchy for UITypePhone and UITypePad:
                         |   +-- ButtonBoxController : UICollectionViewController
                         |       +-- UICollectionView (board position navigation cells)
                         +-- MiddleColumnView
+                        |   +-- StatusViewController (no child view controller)
+                        |   |   +-- UILabel
+                        |   |   +-- UIActivityIndicatorView
                         |   +-- ResizableStackViewController
                         |       +-- UIViewController (resizable pane 1)
                         |       |   +-- BoardViewController
@@ -119,7 +119,7 @@ View controller hierarchy for UITypePhonePortraitOnly:
     MainTabBarController : UITabBarController
     +-- PlayRootViewNavigationController : UINavigationController
         +-- PlayRootViewControllerPhonePortraitOnly : PlayRootViewController
-            +-- StatusViewController (no child view controller, statusView is titleView of navigation bar of PlayRootViewNavigationController)
+            +-- StatusViewController (no child view controller)
             |   +-- UILabel
             |   +-- UIActivityIndicatorView
             +-- ResizableStackViewController

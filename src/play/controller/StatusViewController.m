@@ -180,17 +180,6 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
   self.statusLabel.accessibilityIdentifier = statusLabelAccessibilityIdentifier;
 
   [StatusViewController configureStatusLabel:self.statusLabel];
-
-  if ([LayoutManager sharedManager].uiType != UITypePhonePortraitOnly)
-  {
-    bool isPortraitOrientation = (self.sizeOrientation == SizeOrientationPortrait);
-    if (! isPortraitOrientation)
-    {
-      self.mainView.backgroundColor = [UIColor blackColor];
-      self.statusLabel.textColor = [UIColor whiteColor];
-      self.activityIndicator.color = [UIColor whiteColor];
-    }
-  }
 }
 
 // -----------------------------------------------------------------------------
@@ -932,7 +921,7 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
   [StatusViewController configureStatusLabel:offscreenLabel];
 
   // Assumed to be the longest status text without a variable component
-  offscreenLabel.text = @"Black wins by\nresignation / White\nwins by 388½ - Tap to\nmark dead stones";
+  offscreenLabel.text = @"Black wins by resignation / White\nwins by 388½ - Tap to mark dead stones";
 
   [offscreenLabel layoutIfNeeded];
   statusLabelMinimumSize = [offscreenLabel systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
@@ -945,7 +934,7 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
 {
   CGFloat fontSize = [StatusViewController statusLabelFontSize];
 
-  statusLabel.numberOfLines = 4;
+  statusLabel.numberOfLines = 2;
   statusLabel.font = [UIFont systemFontOfSize:fontSize];
   statusLabel.lineBreakMode = NSLineBreakByTruncatingTail;
   statusLabel.textAlignment = NSTextAlignmentCenter;

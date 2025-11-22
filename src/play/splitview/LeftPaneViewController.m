@@ -18,7 +18,6 @@
 // Project includes
 #import "LeftPaneViewController.h"
 #import "../boardposition/BoardPositionCollectionViewController.h"
-#import "../controller/StatusViewController.h"
 #import "../../ui/AutoLayoutUtility.h"
 #import "../../ui/UiElementMetrics.h"
 
@@ -28,7 +27,6 @@
 // -----------------------------------------------------------------------------
 @interface LeftPaneViewController()
 @property(nonatomic, retain) BoardPositionCollectionViewController* boardPositionCollectionViewController;
-@property(nonatomic, retain) StatusViewController* statusViewController;
 @end
 
 
@@ -57,8 +55,7 @@
 - (void) dealloc
 {
   self.boardPositionCollectionViewController = nil;
-  self.statusViewController = nil;
-  
+
   [super dealloc];
 }
 
@@ -70,7 +67,6 @@
 - (void) setupChildControllers
 {
   self.boardPositionCollectionViewController = [[[BoardPositionCollectionViewController alloc] initWithScrollDirection:UICollectionViewScrollDirectionVertical] autorelease];
-  self.statusViewController = [[[StatusViewController alloc] initWithSizeOrientation:SizeOrientationLandscape] autorelease];
 }
 
 // -----------------------------------------------------------------------------
@@ -107,30 +103,17 @@
 {
   [super loadView];
 
-  [self.view addSubview:self.statusViewController.statusView];
   [self.view addSubview:self.boardPositionCollectionViewController.view];
 
-  self.statusViewController.statusView.translatesAutoresizingMaskIntoConstraints = NO;
   self.boardPositionCollectionViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
 
   NSMutableDictionary* viewsDictionary = [NSMutableDictionary dictionary];
   NSMutableArray* visualFormats = [NSMutableArray array];
-  viewsDictionary[@"statusView"] = self.statusViewController.statusView;
   viewsDictionary[@"boardPositionCollectionView"] = self.boardPositionCollectionViewController.view;
   // Let the subviews extend all the way to the left/right edges of our view.
   // The child view controllers take care of the safe area handling.
-  [visualFormats addObject:@"H:|-0-[statusView]-0-|"];
   [visualFormats addObject:@"H:|-0-[boardPositionCollectionView]-0-|"];
-  [visualFormats addObject:@"V:|-0-[statusView]-0-[boardPositionCollectionView]-0-|"];
-
-  // This multiplier was experimentally determined so that even with 4 lines
-  // of text there is a comfortable spacing at the top/bottom of the status
-  // view label. The multiplier is closely linked to the label's font size.
-  CGFloat statusViewContentHeightMultiplier = 1.4f;
-  int statusViewContentHeight = [UiElementMetrics tableViewCellContentViewHeight] * statusViewContentHeightMultiplier;
-  // Here we define the statusView height, and by consequence the height of
-  // the boardPositionCollectionView.
-  [visualFormats addObject:[NSString stringWithFormat:@"V:[statusView(==%d)]", statusViewContentHeight]];
+  [visualFormats addObject:@"V:|-0-[boardPositionCollectionView]-0-|"];
 
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:self.view];
 }
