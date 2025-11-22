@@ -446,17 +446,20 @@
 // -----------------------------------------------------------------------------
 - (void) setupAutoLayoutConstraintsLeftColumn
 {
-  CGFloat annotationViewWidthMultiplier;
-  enum UIType uiType = [LayoutManager sharedManager].uiType;
-  if (uiType == UITypePhone)
-    annotationViewWidthMultiplier = 1.75;
-  else
-    annotationViewWidthMultiplier = 2.00;
-
-  CGSize buttonBoxSize = self.boardPositionButtonBoxController.buttonBoxSize;
   // The annotation view should be wide enough to display most description
   // texts without scrolling. It can't be arbitrarily wide because it must
   // leave enough space for the board view.
+  // Note: In older versions of the app where the navigation buttons were
+  // substantially smaller, the multipliers used to be greater than the current
+  // values.
+  CGFloat annotationViewWidthMultiplier;
+  enum UIType uiType = [LayoutManager sharedManager].uiType;
+  if (uiType == UITypePhone)
+    annotationViewWidthMultiplier = 1.0f;
+  else
+    annotationViewWidthMultiplier = 1.25f;
+
+  CGSize buttonBoxSize = self.boardPositionButtonBoxController.buttonBoxSize;
   int annotationViewWidth = buttonBoxSize.width * annotationViewWidthMultiplier;
 
   [self setupAutoLayoutConstraintsBoardPositionButtonBoxAndAnnotationContainerView:annotationViewWidth];

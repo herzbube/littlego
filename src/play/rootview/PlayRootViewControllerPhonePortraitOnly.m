@@ -438,7 +438,9 @@
   // leave enough space for the board view. It can't be arbitrarily small
   // because it must have sufficient space to display two vertically stacked
   // buttons.
-  int annotationViewHeight = buttonBoxSize.height * 1.1;
+  // Note: In older versions of the app where the navigation buttons were
+  // substantially smaller, the multiplier used to be greater than 1.
+  int annotationViewHeight = buttonBoxSize.height * 1.0;
 
   CGFloat boardPositionCollectionViewHeight = [self.boardPositionCollectionViewController boardPositionCollectionViewMaximumCellSize].height;
   boardPositionCollectionViewHeight += 2 * self.boardPositionCollectionViewBorderWidth;

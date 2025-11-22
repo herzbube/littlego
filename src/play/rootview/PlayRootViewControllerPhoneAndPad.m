@@ -137,11 +137,13 @@
       // UINavigationController's default layouting and force this VC's view to
       // go up to the screen top edge.
       self.splitViewControllerSafeAreaEdges = UIRectEdgeTop | UIRectEdgeBottom;
-      // On iPhone devices this multiplier is larger than on iPad devices
-      // because the annotation view does not get as much width, which means
-      // that the description labels need more vertical space to compensate
-      // => they should display most description texts without scrolling.
-      self.annotationViewHeightMultiplier = 1.4;
+      // On iPhone devices the annotation view does not get as much width as on
+      // iPad devices. Nevertheless, a multiplier of 1.0 is still sufficient so
+      // that description labels can display most description texts without
+      // scrolling.
+      // Note: In older versions of the app where the navigation buttons were
+      // substantially smaller, the multiplier used to be greater than 1.
+      self.annotationViewHeightMultiplier = 1.0;
       break;
     case UITypePad:
       // On iPad devices there is a lot of horizontal space available in
@@ -160,7 +162,9 @@
       // it should still be greater than 1.0 to give the annotation view
       // substantial height to make it visible and to make the overall layout
       // look good.
-      self.annotationViewHeightMultiplier = 1.25;
+      // Note: In older versions of the app where the navigation buttons were
+      // substantially smaller, the multiplier used to be even greater.
+      self.annotationViewHeightMultiplier = 1.1;
       break;
     default:
       [ExceptionUtility throwInvalidUIType:uiType];
