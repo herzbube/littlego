@@ -164,7 +164,7 @@
       // look good.
       // Note: In older versions of the app where the navigation buttons were
       // substantially smaller, the multiplier used to be even greater.
-      self.annotationViewHeightMultiplier = 1.1;
+      self.annotationViewHeightMultiplier = 1.25;
       break;
     default:
       [ExceptionUtility throwInvalidUIType:uiType];

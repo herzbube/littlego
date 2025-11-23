@@ -61,7 +61,7 @@ static const int spacerBottomTag = 2;
 @property(nonatomic, assign) int labelFontSize;
 @property(nonatomic, assign) int iconHeight;
 @property(nonatomic, assign) int mainViewMargin;
-@property(nonatomic, assign) int buttonVerticalSpacing;
+@property(nonatomic, assign) int verticalSpacingBetweenLabelAndButton;
 @property(nonatomic, retain) PageViewController* customPageViewController;
 @property(nonatomic, retain) UIViewController* valuationViewController;
 @property(nonatomic, retain) UIStackView* valuationViewStackView;
@@ -122,37 +122,28 @@ static const int spacerBottomTag = 2;
   self.contentNeedsUpdate = false;
   self.buttonStatesNeedsUpdate = false;
 
-  // Sizes were experimentally determined to not cause vertical scrolling or
-  // any kind of layout shifts on an iPhone 5S, even when a three-digit score
-  // is displayed. On larger iPhones or iPads there is more space available, so
-  // a slightly larger font size can be used for UITypePhone or UITypePad. The
-  // font size must not be too large, though, otherwise the layout no longer
-  // looks good (esp. valuation button labels must not gain too much weight
-  // when compared to valuation button icons).
+  // Sizes need to be chosen to not cause vertical scrolling or any kind of
+  // layout shifts on the smallest still supported devices, even when a
+  // three-digit score is displayed. Also font and icon sizes must be chosen
+  // so that the weight of labels and icons is balanced.
+  self.labelFontSize = [UiElementMetrics annotationViewLabelFontSizeForUiType:uiType];
+  self.iconHeight = [UiElementMetrics annotationViewIconHeightForUiType:uiType];
+  self.mainViewMargin = [UiElementMetrics horizontalSpacingSiblings];
+  self.verticalSpacingBetweenLabelAndButton = [UiElementMetrics verticalSpacingSiblings];
+
   switch (uiType)
   {
     case UITypePhonePortraitOnly:
-      self.presentViewControllersInPopover = false;
-      self.labelFontSize = 10;
-      break;
     case UITypePhone:
       self.presentViewControllersInPopover = false;
-      self.labelFontSize = 11;
       break;
     case UITypePad:
       self.presentViewControllersInPopover = true;
-      self.labelFontSize = 12;
       break;
     default:
       [ExceptionUtility throwInvalidUIType:uiType];
       break;
   }
-  self.iconHeight = 22;
-  // Margins and spacings were chosen experimentally to look good but not waste
-  // too much vertical space (important for smaller iPhones were space is at a
-  // premium).
-  self.mainViewMargin = 5;
-  self.buttonVerticalSpacing = 5;
 
   [self releaseObjects];
   [self setupNotificationResponders];
@@ -581,7 +572,7 @@ static const int spacerBottomTag = 2;
   [visualFormats addObject:@"H:|-0-[label]-0-|"];
   [visualFormats addObject:@"H:|-0-[button]-0-|"];
   [visualFormats addObject:@"H:|-0-[spacerBottom]-0-|"];
-  [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[spacerTop]-0-[label]-%d-[button]-0-[spacerBottom]-0-|", self.buttonVerticalSpacing]];
+  [visualFormats addObject:[NSString stringWithFormat:@"V:|-0-[spacerTop]-0-[label]-%d-[button]-0-[spacerBottom]-0-|", self.verticalSpacingBetweenLabelAndButton]];
   [AutoLayoutUtility installVisualFormats:visualFormats withViews:viewsDictionary inView:label.superview];
 
   // Make sure that the two spacer views get the same height - this makes sure

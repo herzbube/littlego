@@ -19,7 +19,9 @@
 #import "UiElementMetrics.h"
 #import "../main/Registry.h"
 #import "../main/WindowProvider.h"
+#import "../utility/ExceptionUtility.h"
 #import "../utility/UIDeviceAdditions.h"
+
 
 /// @brief Helper class used internally by UiElementMetrics.
 @interface OffscreenTableListViewController : UITableViewController
@@ -269,6 +271,42 @@
   // simulators (both for iPhone and iPad devices) for buttons created in the
   // navigation bar for UIBarButtonItem.
   return CGSizeMake(36.0f, 36.0f);
+}
+
++ (CGFloat) annotationViewLabelFontSizeForUiType:(enum UIType)uiType
+{
+  switch (uiType)
+  {
+    case UITypePhonePortraitOnly:
+      return 10.0f;
+    case UITypePhone:
+      return 11.0f;
+    case UITypePad:
+      return 16.0f;
+    default:
+      [ExceptionUtility throwInvalidUIType:uiType];
+      // Dummy return to make compiler happy (compiler does not see that an
+      // exception is thrown)
+      return 0.0f;
+  }
+}
+
++ (CGFloat) annotationViewIconHeightForUiType:(enum UIType)uiType
+{
+  switch (uiType)
+  {
+    case UITypePhonePortraitOnly:
+      return 22.0f;
+    case UITypePhone:
+      return 22.0f;
+    case UITypePad:
+      return [UiElementMetrics customButtonTouchAreaSize].height;
+    default:
+      [ExceptionUtility throwInvalidUIType:uiType];
+      // Dummy return to make compiler happy (compiler does not see that an
+      // exception is thrown)
+      return 0.0f;
+  }
 }
 
 @end
