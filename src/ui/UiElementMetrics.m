@@ -273,6 +273,35 @@
   return CGSizeMake(36.0f, 36.0f);
 }
 
++ (CGFloat) statusLabelFontSizeForUiType:(enum UIType)uiType
+{
+  // Font size must strike a balance between remaining legible and accomodating
+  // the longest possible status text in the most space-constrained application
+  // state. When testing consider this:
+  // - The longest possible status text is the one that includes a player name
+  //   (e.g. "Computer is playing for <name>"), because player names are
+  //   variable and can be entered by the user.
+  // - The longest status text without a variable component is the one in
+  //   scoring mode, when one of the players has resigned.
+  // - When testing, make sure that the longest non-variable text fits, then
+  //   also test with a long player name to make sure an acceptable part of the
+  //   name is still visible before it is truncated.
+  switch (uiType)
+  {
+    case UITypePhonePortraitOnly:
+      return 9.0f;
+    case UITypePhone:
+      return 10.0f;
+    case UITypePad:
+      return 14.0f;
+    default:
+      [ExceptionUtility throwInvalidUIType:uiType];
+      // Dummy return to make compiler happy (compiler does not see that an
+      // exception is thrown)
+      return 0.0f;
+  }
+}
+
 + (CGFloat) annotationViewLabelFontSizeForUiType:(enum UIType)uiType
 {
   switch (uiType)
