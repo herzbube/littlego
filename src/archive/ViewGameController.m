@@ -68,6 +68,7 @@ enum LoadResultSectionItem
 {
   LoadResultItem1,
   LoadResultItem2,
+  LoadResultItem3,
   MaxLoadResultSectionItem
 };
 
@@ -271,7 +272,11 @@ enum LoadResultType
     }
     case LoadResultSection:
     {
-      return self.numberOfLoadResults;
+      bool showNumberOfGamesDetectedItem = (self.numberOfGameInfoItems > 0);
+      if (showNumberOfGamesDetectedItem)
+        return self.numberOfLoadResults + 1;
+      else
+        return self.numberOfLoadResults;
     }
     default:
     {
@@ -374,14 +379,16 @@ enum LoadResultType
         case NameItem:
         {
           cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+          cell.selectionStyle = UITableViewCellSelectionStyleNone;
           cell.textLabel.text = @"Name";
           cell.detailTextLabel.text = self.game.name;
-          cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
           break;
         }
         case LastSavedDateItem:
         {
           cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+          cell.accessoryType = UITableViewCellAccessoryNone;
           cell.selectionStyle = UITableViewCellSelectionStyleNone;
           cell.textLabel.text = @"Last saved";
           cell.detailTextLabel.text = self.game.fileDate;
@@ -401,16 +408,29 @@ enum LoadResultType
       {
         case LoadResultItem1:
         case LoadResultItem2:
+        case LoadResultItem3:
         {
-          cell = [TableViewCellFactory cellWithType:SubtitleCellType tableView:tableView];
-          cell.accessoryType = [self accessoryTypeForLoadResultTableViewRow:indexPath.row];
-          if (cell.accessoryType == UITableViewCellAccessoryNone)
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+          if (indexPath.row == LoadResultItem1 ||
+              (indexPath.row == LoadResultItem2 && self.numberOfLoadResults == 2))
+          {
+            cell = [TableViewCellFactory cellWithType:SubtitleCellType tableView:tableView];
+            cell.accessoryType = [self accessoryTypeForLoadResultTableViewRow:indexPath.row];
+            if (cell.accessoryType == UITableViewCellAccessoryNone)
+              cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            else
+              cell.selectionStyle = UITableViewCellSelectionStyleDefault;
+            cell.textLabel.text = [self textForLoadResultTableViewRow:indexPath.row];
+            cell.detailTextLabel.text = [self subTitleForLoadResultTableViewRow:indexPath.row];
+            cell.imageView.image = [self coloredIndicatorForLoadResultTableViewRow:indexPath.row];
+          }
           else
-            cell.selectionStyle = UITableViewCellSelectionStyleDefault;
-          cell.textLabel.text = [self textForLoadResultTableViewRow:indexPath.row];
-          cell.detailTextLabel.text = [self subTitleForLoadResultTableViewRow:indexPath.row];
-          cell.imageView.image = [self coloredIndicatorForLoadResultTableViewRow:indexPath.row];
+          {
+            cell = [TableViewCellFactory cellWithType:Value1CellType tableView:tableView];
+            cell.accessoryType = UITableViewCellAccessoryNone;
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            cell.textLabel.text = @"Number of games detected";
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"%lu", (unsigned long)self.numberOfGameInfoItems];
+          }
           break;
         }
         default:
