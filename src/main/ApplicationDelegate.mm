@@ -241,6 +241,7 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   // dependent on parts of this sequence having been executed.
 
   // The following steps have no dependencies
+  [self setupRegistry];
   [self setupResourceBundle];
   [self setupLogging];   // reads directly from NSUserDefaults if loggingModel is not available
   [self setupApplicationLaunchMode];
@@ -248,14 +249,13 @@ static std::streambuf* outputPipeStreamBuffer = nullptr;
   // Depends on setupResourceBundle for reading registration domain defaults
   [self setupRegistrationDomain];
   // Depends on setupRegistrationDomain to provide fallback values if no user
-  // preferences exist
+  // preferences exist. Partially depends on modelProvider having been
+  // configured in setupRegistry.
   [self setupUserDefaults];
   // Depends on setupUserDefaults (for boardViewModel)
   [self setupSound];
   // Has no dependencies
   [self setupFuego];
-  // Depends on models having been set up
-  [self setupRegistry];
 
   return YES;
 }
