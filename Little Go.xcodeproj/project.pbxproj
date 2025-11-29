@@ -883,6 +883,10 @@
 		D72FC0462EB66E0C00092C0F /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D72FC0442EB66E0C00092C0F /* SceneDelegate.m */; };
 		D74980BA2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
 		D74980BB2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
+		D79B28082ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */; };
+		D79B28092ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */; };
+		D79B280C2EDB12C900AA71A6 /* FilesystemOperations.mm in Sources */ = {isa = PBXBuildFile; fileRef = D79B280B2EDB12C900AA71A6 /* FilesystemOperations.mm */; };
+		D79B280D2EDB12C900AA71A6 /* FilesystemOperations.mm in Sources */ = {isa = PBXBuildFile; fileRef = D79B280B2EDB12C900AA71A6 /* FilesystemOperations.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1898,6 +1902,10 @@
 		D74980B92EBF87BD00BD595D /* Registry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Registry.m; sourceTree = "<group>"; };
 		D74980BC2EBF902500BD595D /* ModelProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ModelProvider.h; sourceTree = "<group>"; };
 		D74980BD2EBFA19200BD595D /* WindowProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WindowProvider.h; sourceTree = "<group>"; };
+		D79B28062ED3CC0700AA71A6 /* FilesystemMonitor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FilesystemMonitor.h; sourceTree = "<group>"; };
+		D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = FilesystemMonitor.m; sourceTree = "<group>"; };
+		D79B280A2EDB12C900AA71A6 /* FilesystemOperations.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FilesystemOperations.h; sourceTree = "<group>"; };
+		D79B280B2EDB12C900AA71A6 /* FilesystemOperations.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FilesystemOperations.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1945,7 +1953,7 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA = {
+		29B97314FDCFA39411CA2CEA /* Little Go */ = {
 			isa = PBXGroup;
 			children = (
 				CD5B406B25E0A21000C4D947 /* AUTHORS */,
@@ -3515,6 +3523,10 @@
 				CDDD52691485B05C0027476B /* DocumentGenerator.m */,
 				CD7C69EB1AA9F697009EC5AD /* ExceptionUtility.h */,
 				CD7C69EC1AA9F697009EC5AD /* ExceptionUtility.m */,
+				D79B28062ED3CC0700AA71A6 /* FilesystemMonitor.h */,
+				D79B28072ED3CC0700AA71A6 /* FilesystemMonitor.m */,
+				D79B280A2EDB12C900AA71A6 /* FilesystemOperations.h */,
+				D79B280B2EDB12C900AA71A6 /* FilesystemOperations.mm */,
 				CD9A49A917107BC9009E7514 /* FontRange.h */,
 				CD9A49AA17107BC9009E7514 /* FontRange.m */,
 				CD2230B125E661E600187C57 /* LogFormatter.h */,
@@ -3921,7 +3933,7 @@
 				Base,
 				en,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* Little Go */;
 			productRefGroup = 19C28FACFE9D520D11CA2CBB /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -4393,6 +4405,7 @@
 				CDE3013B135CA7D5005235F2 /* UIColorAdditions.m in Sources */,
 				CD1E6EAF2865F9BD00785E23 /* PanGestureHandler.m in Sources */,
 				CDEE19F919433EAC00DF2389 /* BoardViewLayerDelegateBase.m in Sources */,
+				D79B280C2EDB12C900AA71A6 /* FilesystemOperations.mm in Sources */,
 				CD1F503F25B7A5C20098037A /* ViewLoadResultMessageController.m in Sources */,
 				CDD67B6C28DDEC4F00F5196A /* NSObjectAdditions.m in Sources */,
 				CDE302891360BDA4005235F2 /* Player.m in Sources */,
@@ -4593,6 +4606,7 @@
 				CDC8DEFB28EDF2A400619305 /* NodeTreeViewLayerDelegateBase.m in Sources */,
 				CD51227429B26E4F00C249B5 /* NodeNumbersView.m in Sources */,
 				CDEE1A1D19464B7C00DF2389 /* CrossHairLinesLayerDelegate.m in Sources */,
+				D79B28092ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */,
 				CD1311D2171B5857006CE699 /* LoggingModel.m in Sources */,
 				CDF341C617270D0800AEFB20 /* LongRunningActionCounter.m in Sources */,
 				CDD86B4E2827FA2800AA0A6B /* SpacerView.m in Sources */,
@@ -4673,6 +4687,7 @@
 				CDA0970C1A99F77F002FCD78 /* SplitViewController.m in Sources */,
 				CD1E6EC0286755A000785E23 /* MoveMarkupPanGestureHandler.m in Sources */,
 				CD1A7EE1293A5E8100013D80 /* NodeTreeViewDrawingHelper.m in Sources */,
+				D79B28082ED3CC0700AA71A6 /* FilesystemMonitor.m in Sources */,
 				CD7C69EE1AA9F697009EC5AD /* ExceptionUtility.m in Sources */,
 				CD85B5A11401C1E4001715B8 /* GoBoard.m in Sources */,
 				CD85B5A41401C1F0001715B8 /* GoPoint.m in Sources */,
@@ -4874,6 +4889,7 @@
 				CDCBA6D4184228A7003697E2 /* TableViewVariableHeightCell.m in Sources */,
 				CD869F1A285E1B8F00B679FE /* DiscardAllMarkupCommand.m in Sources */,
 				CDFD9F7218F1D3700031CBCF /* DisplaySettingsController.m in Sources */,
+				D79B280D2EDB12C900AA71A6 /* FilesystemOperations.mm in Sources */,
 				CD1311C817180B6D006CE699 /* SoundHandling.m in Sources */,
 				CDACF0B119041C1200A0DAD7 /* AutoLayoutUtility.m in Sources */,
 				CDBDD0962994624200641E3B /* NodeNumbersLayerDelegate.m in Sources */,
