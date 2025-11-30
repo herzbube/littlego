@@ -32,6 +32,7 @@
 #import "../../player/Player.h"
 #import "../../sgf/SgfUtilities.h"
 #import "../../utility/PathUtilities.h"
+#import "../../utility/FilesystemOperations.h"
 
 
 @implementation SaveSgfCommand
@@ -813,19 +814,19 @@
 - (bool) moveTemporaryFilePathToArchiveFilePath:(NSString*)temporaryFilePath
                                    errorMessage:(NSString**)errorMessage
 {
-  NSError* error;
-  BOOL success = [PathUtilities moveItemAtPath:temporaryFilePath
-                                 overwritePath:self.sgfFilePath
-                                         error:&error];
+  int errorCode = 0;
+  bool success = [FilesystemOperations copyItemAtPath:temporaryFilePath
+                                        overwritePath:self.sgfFilePath
+                                            errorCode:&errorCode];
+
+  [PathUtilities deleteItemIfExists:temporaryFilePath];
 
   if (! success)
   {
-    [PathUtilities deleteItemIfExists:temporaryFilePath];
-
     if (self.sgfFileAlreadyExists)
-      *errorMessage = [NSString stringWithFormat:@"Overwriting the archived game failed. Reason:\n\n%@", [error localizedDescription]];
+      *errorMessage = [NSString stringWithFormat:@"Overwriting the archived game failed. Error code: %d", errorCode];
     else
-      *errorMessage = [NSString stringWithFormat:@"Writing to saved game to the archive failed. Reason:\n\n%@", [error localizedDescription]];
+      *errorMessage = [NSString stringWithFormat:@"Writing to saved game to the archive failed. Error code: %d", errorCode];
 
     return false;
   }

@@ -261,4 +261,23 @@
   [navigationController release];
 }
 
+// -----------------------------------------------------------------------------
+/// @brief Dismisses a view controller if this view controller presents any.
+/// Also if this view controller is managed by a UINavigationController, and
+/// any other view controllers are pushed on the navigation stack on top of this
+/// view controller, then pops those view controllers so that this view
+/// controller becomes the top of the navigation stack. The goal of these
+/// actions is to make the view of this view controller visible. Note that it
+/// could still not be visible if, for instance, this view controller is on
+/// another tab of a UITabBarController.
+// -----------------------------------------------------------------------------
+- (void) dismissAnyPresentedOrPopAnyPushedViewControllers
+{
+  if (self.presentedViewController)
+    [self dismissViewControllerAnimated:YES completion:nil];
+
+  if (self.navigationController && self.navigationController.topViewController != self)
+    [self.navigationController popToViewController:self animated:YES];
+}
+
 @end

@@ -58,11 +58,12 @@
 {
   ArchiveViewModel* model = [Registry sharedRegistry].modelProvider.archiveViewModel;
   NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
+
+  // The filesystem operation triggers a model update via filesystem monitoring
   NSFileManager* fileManager = [NSFileManager defaultManager];
   BOOL success = [fileManager removeItemAtPath:filePath error:nil];
   DDLogVerbose(@"%@: Removed game file %@, result = %d", [self shortDescription], filePath, success);
-  if (success)
-    [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
+
   return success;
 }
 

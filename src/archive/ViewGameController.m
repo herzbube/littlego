@@ -119,13 +119,14 @@ enum LoadResultType
   LoadResultTypeFailedWithFatalError
 };
 
-
 // -----------------------------------------------------------------------------
 /// @brief Class extension with private properties for ViewGameController.
 // -----------------------------------------------------------------------------
 @interface ViewGameController()
 @property(nonatomic, retain) UIBarButtonItem* actionButton;
 @property(nonatomic, retain) SgfSettingsModel* sgfSettingsModel;
+@property(nonatomic, assign) bool needsTableViewDataReload;
+@property(nonatomic, assign) bool needsFileDateTableRowDataReload;
 @property(nonatomic, assign) int numberOfLoadResults;
 @property(nonatomic, retain) SGFCDocumentReadResult* sgfDocumentReadResultSingleEncoding;
 @property(nonatomic, retain) SGFCDocumentReadResult* sgfDocumentReadResultMultipleEncodings;
@@ -155,16 +156,9 @@ enum LoadResultType
     controller.game = game;
     controller.model = model;
     controller.sgfSettingsModel = [Registry sharedRegistry].modelProvider.sgfSettingsModel;
-    controller.sgfDocumentReadResultSingleEncoding = nil;
-    controller.sgfDocumentReadResultMultipleEncodings = nil;
-    controller.loadResultType = LoadResultTypeFailedWithFatalError;
-    controller.numberOfGameInfoItems = 0;
-    controller.gameInfoItems = nil;
-    controller.gameInfoNodes = nil;
-    controller.games = nil;
-    controller.gameInfoItemBeingLoaded = nil;
-    controller.gameInfoNodeBeingLoaded = nil;
-    controller.gameBeingLoaded = nil;
+    controller.needsTableViewDataReload = false;
+    controller.needsFileDateTableRowDataReload = false;
+    [controller resetLoadAndParseSgfResults];
   }
   return controller;
 }
@@ -175,6 +169,8 @@ enum LoadResultType
 - (void) dealloc
 {
   [self.game removeObserver:self forKeyPath:@"fileDate"];
+  [self.game removeObserver:self forKeyPath:@"fileContentRevision"];
+  [self.game removeObserver:self forKeyPath:@"fileDeleted"];
   self.game = nil;
   self.model = nil;
   self.sgfSettingsModel = nil;
@@ -208,10 +204,29 @@ enum LoadResultType
 
   // KVO observing
   [self.game addObserver:self forKeyPath:@"fileDate" options:0 context:NULL];
+  [self.game addObserver:self forKeyPath:@"fileContentRevision" options:0 context:NULL];
+  [self.game addObserver:self forKeyPath:@"fileDeleted" options:0 context:NULL];
 
-  [self loadSgf];
-  if (self.loadResultType == LoadResultTypeSuccessful)
-    [self parseSgf];
+  [self loadAndParseSgf];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief UIViewController method.
+// -----------------------------------------------------------------------------
+- (void) viewDidAppear:(BOOL)animated
+{
+  if (self.needsTableViewDataReload)
+  {
+    self.needsTableViewDataReload = false;
+    self.needsFileDateTableRowDataReload = false;
+
+    [self.tableView reloadData];
+  }
+  else if (self.needsFileDateTableRowDataReload)
+  {
+    self.needsFileDateTableRowDataReload = false;
+    [self reloadFileDateTableRowData];
+  }
 }
 
 #pragma mark - UITableViewDataSource overrides
@@ -600,10 +615,38 @@ enum LoadResultType
 // -----------------------------------------------------------------------------
 - (void) observeValueForKeyPath:(NSString*)keyPath ofObject:(id)object change:(NSDictionary*)change context:(void*)context
 {
-  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:LastSavedDateItem
-                                              inSection:ArchiveSection];
-  [self.tableView reloadRowsAtIndexPaths:@[indexPath]
-                        withRowAnimation:UITableViewRowAnimationNone];
+  if ([keyPath isEqualToString:@"fileDate"])
+  {
+    if (self.tableView.window)
+      [self reloadFileDateTableRowData];
+    else
+      self.needsFileDateTableRowDataReload = true;
+  }
+  else if ([keyPath isEqualToString:@"fileContentRevision"])
+  {
+    [self dismissAnyPresentedOrPopAnyPushedViewControllers];
+
+    [self loadAndParseSgf];
+
+    // The number of sections before and after loadAndParseSgf may be different.
+    // Because of that we can't use UITableView's
+    // reloadSections:withRowAnimation(). We have no choice but to reload the
+    // entire table.
+    if (self.tableView.window)
+      [self.tableView reloadData];
+    else
+      self.needsTableViewDataReload = true;
+  }
+  else if ([keyPath isEqualToString:@"fileDeleted"])
+  {
+    // Since the file has been deleted, we should no longer display data for
+    // it. The simplest way to achieve this is to remove this view controller
+    // from the top of the navigation stack. Before we can do this, though, we
+    // first need to dismiss/pop other view controllers that this view
+    // controller has presented/pushed.
+    [self dismissAnyPresentedOrPopAnyPushedViewControllers];
+    [self.navigationController popViewControllerAnimated:YES];
+  }
 }
 
 #pragma mark - Edit game name - Action handlers
@@ -806,7 +849,7 @@ enum LoadResultType
 /// incorrect - if we return an auto-released NSObject the list of activities
 /// presented to the user is empty.
 ///
-// [1] https://stackoverflow.com/a/43441790/1054378
+/// [1] https://stackoverflow.com/a/43441790/1054378
 // -----------------------------------------------------------------------------
 - (id) activityViewControllerPlaceholderItem:(UIActivityViewController*)activityViewController
 {
@@ -1178,11 +1221,43 @@ enum LoadResultType
 #pragma mark - Private helpers - SGF loading and parsing
 
 // -----------------------------------------------------------------------------
+/// @brief Invokes loadSgf() followed by parseSgf()
+// -----------------------------------------------------------------------------
+- (void) loadAndParseSgf
+{
+  [self resetLoadAndParseSgfResults];
+
+  [self loadSgf];
+
+  if (self.loadResultType == LoadResultTypeSuccessful)
+    [self parseSgf];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Resets all results from invoking loadSgf() and parseSgf() to their
+/// initial values.
+// -----------------------------------------------------------------------------
+- (void) resetLoadAndParseSgfResults
+{
+  self.numberOfLoadResults = 0;
+  self.sgfDocumentReadResultSingleEncoding = nil;
+  self.sgfDocumentReadResultMultipleEncodings = nil;
+  self.loadResultType = LoadResultTypeFailedWithFatalError;
+  self.numberOfGameInfoItems = 0;
+  self.gameInfoItems = nil;
+  self.gameInfoNodes = nil;
+  self.games = nil;
+  self.gameInfoItemBeingLoaded = nil;
+  self.gameInfoNodeBeingLoaded = nil;
+  self.gameBeingLoaded = nil;
+}
+
+// -----------------------------------------------------------------------------
 /// @brief Loads the SGF file with which the controller was initialized,
 /// taking SGF user preferences into account. Updates load result related
 /// controller properties.
 ///
-/// This needs to be invoked once when the controller initializes.
+/// This needs to be invoked at least once when the controller initializes.
 ///
 /// If after invoking this method the load  result is #LoadResultTypeSuccessful
 /// then the SGF data must be parsed in a second step to complete the data the
@@ -1212,10 +1287,11 @@ enum LoadResultType
 /// @brief Parses the SGF data returned by effectiveLoadResult(). Updates
 /// game related controller properties.
 ///
-/// This needs to be invoked once, either when the controller initializes when
-/// loadSgf() has determined the load result to be #LoadResultTypeSuccessful,
-/// or at a later time when the user has decided to force loading despite
-/// the load result being #LoadResultTypeFailedWithNonFatalError.
+/// This needs to be invoked at least once, either when the controller
+/// initializes when loadSgf() has determined the load result to be
+/// #LoadResultTypeSuccessful, or at a later time when the user has decided to
+/// force loading despite the load result being
+/// #LoadResultTypeFailedWithNonFatalError.
 // -----------------------------------------------------------------------------
 - (void) parseSgf
 {
@@ -1269,6 +1345,20 @@ enum LoadResultType
   self.gameInfoItems = gameInfoItems;
   self.gameInfoNodes = gameInfoNodes;
   self.games = games;
+}
+
+#pragma mark - Private helpers - Other
+
+// -----------------------------------------------------------------------------
+/// @brief Triggers a reload of #LastSavedDateItem in the table view section
+/// #ArchiveSection.
+// -----------------------------------------------------------------------------
+- (void) reloadFileDateTableRowData
+{
+  NSIndexPath* indexPath = [NSIndexPath indexPathForRow:LastSavedDateItem
+                                              inSection:ArchiveSection];
+  [self.tableView reloadRowsAtIndexPaths:@[indexPath]
+                        withRowAnimation:UITableViewRowAnimationNone];
 }
 
 @end

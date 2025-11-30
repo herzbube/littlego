@@ -61,6 +61,9 @@
   else
     [self updateFileAttributes:fileAttributes];
 
+  self.fileContentRevision = 0;
+  self.fileDeleted = false;
+
   return self;
 }
 
@@ -72,6 +75,7 @@
   self.fileName = nil;
   self.fileDate = nil;
   self.fileSize = nil;
+
   [super dealloc];
 }
 
