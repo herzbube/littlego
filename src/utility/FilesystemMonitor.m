@@ -27,7 +27,7 @@
 @property(nonatomic, assign) id<FilesystemMonitorDelegate> delegate;
 @property(nonatomic, assign) int fileDescriptor;
 @property(nonatomic, assign) dispatch_source_t source;
-@property(nonatomic, assign) bool isMonitoringStarted;
+@property(nonatomic, assign, readwrite) bool isMonitoringStarted;
 @property(nonatomic, assign) bool stopMonitoringInitiated;
 @property(nonatomic, assign) bool restartMonitoringInitiated;
 @property(nonatomic, assign) bool cancelMonitoringInitiated;
@@ -83,21 +83,29 @@
 #pragma mark - Starting/stopping monitoring
 
 // -----------------------------------------------------------------------------
-/// @brief Starts monitoring the URL specified during initialization. Does
-/// nothing if monitoring is already started.
+/// @brief Starts monitoring the URL specified during initialization. Returns
+/// @e true if monitoring could be started, otherwise returns @e false. Does
+/// nothing if monitoring is already started but still returns @e true.
+///
+/// Monitoring cannot be started if the URL specified during initialization
+/// refers to a non-existing filesystem entry.
 ///
 /// Once monitoring is started, it must also be stopped, otherwise this
 /// FilesystemMonitor can never be deallocated.
 // -----------------------------------------------------------------------------
-- (void) startMonitoring
+- (bool) startMonitoring
 {
   @synchronized(self)
   {
     if (self.isMonitoringStarted)
-      return;
-    self.isMonitoringStarted = true;
+      return true;
 
     self.fileDescriptor = open(self.url.path.fileSystemRepresentation, O_EVTONLY);
+    if (self.fileDescriptor == -1)
+    {
+      DDLogError(@"%@: start monitoring failed, open() returned an invalid file descriptor for %@, errno = %d", self, self.url, errno);
+      return false;
+    }
 
     dispatch_queue_t mainQueue = dispatch_get_main_queue();
 
@@ -120,9 +128,7 @@
     // only be deallocated after monitoring has stopped.
     dispatch_source_set_event_handler(self.source, ^{
       dispatch_source_vnode_flags_t eventTypes = dispatch_source_get_data(self.source);
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [self notifyDelegate:eventTypes];
-      });
+      [self notifyDelegate:eventTypes];
     });
 
     // This cancel handler is invoked asynchronously whenever someone calls
@@ -139,6 +145,9 @@
 
     // Start the actual monitoring
     dispatch_resume(self.source);
+
+    self.isMonitoringStarted = true;
+    return true;
   }
 }
 
@@ -245,6 +254,7 @@
 
     if (eventTypes & DISPATCH_VNODE_DELETE)
     {
+      // Mitigate deleting overwrites - see class documentation for details
       restartMonitoring = true;
       [self.delegate filesystemMonitor:self
                         changeOccurred:FilesystemMonitorChangeTypeDeleted
@@ -267,7 +277,11 @@
 
     if (eventTypes & DISPATCH_VNODE_RENAME)
     {
-      restartMonitoring = YES;
+      // Monitoring will continue working after a rename, but self.url will
+      // continue to refer to the old path. There is no way to obtain the new
+      // path from self.fileDescriptor (fstat can provide the inode, but even
+      // searching the whole filesystem for the inode may be inconclusive,
+      // because an inode can have many filesystem entries - see hard links).
       [self.delegate filesystemMonitor:self
                         changeOccurred:FilesystemMonitorChangeTypeRenamed
                                    url:self.url];
@@ -342,6 +356,8 @@
     else
     {
       self.restartMonitoringInitiated = false;
+
+      // Monitoring may not actually be started after this returns.
       [self startMonitoring];
     }
   }
