@@ -474,6 +474,7 @@ enum LoadResultType
             {
               cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
               cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+              cell.selectionStyle = UITableViewCellSelectionStyleDefault;
               cell.textLabel.text = @"Show details";
               break;
             }
@@ -496,6 +497,7 @@ enum LoadResultType
         if (indexPath.section == GamesSection)
         {
           cell = [TableViewCellFactory cellWithType:DefaultCellType tableView:tableView];
+          cell.accessoryType = UITableViewCellAccessoryNone;
           cell.selectionStyle = UITableViewCellSelectionStyleNone;
           cell.textLabel.text = @"No games available.";
         }
