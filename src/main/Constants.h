@@ -995,8 +995,8 @@ extern NSString* computerPlayerGeneratedMoveSuggestion;
 // -----------------------------------------------------------------------------
 //@{
 /// @brief Is sent to indicate that something about the content of the archive
-/// has changed (e.g. a game has been added, removed, renamed etc.).
-extern NSString* archiveContentChanged;
+/// may have changed (e.g. a game has been added, removed, renamed etc.).
+extern NSString* archiveContentMayHaveChanged;
 //@}
 
 // -----------------------------------------------------------------------------

@@ -74,7 +74,7 @@
   [self updateData];
 
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-  [center addObserver:self selector:@selector(archiveContentChanged:) name:archiveContentChanged object:nil];
+  [center addObserver:self selector:@selector(archiveContentMayHaveChanged:) name:archiveContentMayHaveChanged object:nil];
 
   // Monitoring the archive folder is required to detect new files being added.
   // Monitoring of individual files is also required (see udpateData) to detect
@@ -132,9 +132,9 @@
 #pragma mark - Reacting to updates of the archive folder content
 
 // -----------------------------------------------------------------------------
-/// @brief Responds to the #archiveContentChanged notification.
+/// @brief Responds to the #archiveContentMayHaveChanged notification.
 // -----------------------------------------------------------------------------
-- (void) archiveContentChanged:(NSNotification*)notification
+- (void) archiveContentMayHaveChanged:(NSNotification*)notification
 {
   [self updateData];
 }
