@@ -138,7 +138,7 @@
     tabRootViewController = [[[PlayRootViewNavigationController alloc] initWithRootViewController:rootViewController] autorelease];
   else
     tabRootViewController = [[[UINavigationController alloc] initWithRootViewController:rootViewController] autorelease];
-  tabRootViewController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:rootViewController.title
+  tabRootViewController.tabBarItem = [[[UITabBarItem alloc] initWithTitle:[MainUtility titleStringForUIArea:uiArea]
                                                                     image:[UIImage imageNamed:iconResourceName]
                                                                       tag:0] autorelease];
   tabRootViewController.uiArea = uiArea;
@@ -427,7 +427,6 @@
 // -----------------------------------------------------------------------------
 - (void) boardViewPanningGestureWillStart:(NSNotification*)notification
 {
-  // Defensive coding -
   UIWindowSceneGeometry* effectiveGeometry = self.view.window.windowScene.effectiveGeometry;
   if (! effectiveGeometry)
     return;

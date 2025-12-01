@@ -146,8 +146,17 @@
     default:
       return nil;
   }
-  rootViewController.title = [MainUtility titleStringForUIArea:uiArea];
+
+  // In UIAreaPlay we have better uses for the space in the navigation item
+  // than for a bland string "Play". As a consequence, on older iOS versions
+  // the back button shows the generic iOS default text "Back" instead of
+  // "Play", but that is ok. In newer iOS versions the back button anyway
+  // consists of a chevron only, without any text at all.
+  if (uiArea != UIAreaPlay)
+    rootViewController.title = [MainUtility titleStringForUIArea:uiArea];
+
   rootViewController.uiArea = uiArea;
+
   return rootViewController;
 }
 
