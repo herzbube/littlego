@@ -44,8 +44,9 @@
 + (ViewGameController*) controllerWithGame:(ArchiveGame*)game model:(ArchiveViewModel*)model;
 
 /// @brief Reference to the ArchiveGame that this ViewGameController displays
-/// data for.
-@property(nonatomic, assign) ArchiveGame* game;
+/// data for. The reference must be a strong reference, in case the object
+/// goes out of scope due to underlying filesystem changes.
+@property(nonatomic, retain) ArchiveGame* game;
 /// @brief Model that manages all ArchiveGame objects.
 @property(nonatomic, assign) ArchiveViewModel* model;
 

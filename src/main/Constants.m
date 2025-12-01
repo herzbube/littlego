@@ -69,7 +69,7 @@ NSString* computerPlayerThinkingStarts = @"ComputerPlayerThinkingStarts";
 NSString* computerPlayerThinkingStops = @"ComputerPlayerThinkingStops";
 NSString* computerPlayerGeneratedMoveSuggestion = @"ComputerPlayerGeneratedMoveSuggestion";
 // Archive related notifications
-NSString* archiveContentChanged = @"ArchiveContentChanged";
+NSString* archiveContentMayHaveChanged = @"ArchiveContentMayHaveChanged";
 // GTP log related notifications
 NSString* gtpLogContentChanged = @"GtpLogContentChanged";
 NSString* gtpLogItemChanged = @"GtpLogItemChanged";

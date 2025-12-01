@@ -366,21 +366,7 @@ enum DeleteAllSectionItem
   // pow(2, 31) files.
   ArchiveGame* game = [self.archiveViewModel gameAtIndex:(int)indexPath.row];
   DeleteGameCommand* command = [[[DeleteGameCommand alloc] initWithGame:game] autorelease];
-  // Temporarily disable KVO observer mechanism so that no table view update
-  // is triggered during command execution. Purpose: In a minute, we are going
-  // to manipulate the table view ourselves so that a nice animation is shown.
-  [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
-  bool success = [command submit];
-  [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];
-  // Animate item deletion. Requires that in the meantime we have not triggered
-  // a reloadData().
-  if (success)
-  {
-    if (0 == self.archiveViewModel.gameCount)
-      [self updateArchiveViewAfterLastGameWasDeleted];
-    else
-      [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationRight];
-  }
+  [command submit];
 }
 
 #pragma mark - UITableViewDelegate overrides
@@ -466,9 +452,10 @@ enum DeleteAllSectionItem
     // is triggered while we are deleting. When we are finished we will reload
     // all data.
     [self.archiveViewModel removeObserver:self forKeyPath:@"gameList"];
-    while (self.archiveViewModel.gameCount > 0)
+
+    NSArray* gameListCopy = [NSArray arrayWithArray:self.archiveViewModel.gameList];
+    for (ArchiveGame* game in gameListCopy)
     {
-      ArchiveGame* game = [self.archiveViewModel gameAtIndex:0];
       [[[[DeleteGameCommand alloc] initWithGame:game] autorelease] submit];
     }
     [self.archiveViewModel addObserver:self forKeyPath:@"gameList" options:0 context:NULL];

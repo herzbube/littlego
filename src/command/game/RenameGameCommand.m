@@ -58,26 +58,40 @@
 // -----------------------------------------------------------------------------
 - (bool) doIt
 {
+  // The model update will replace the fileName property value in self.game.
+  // To make sure that the old NSString object is not deallocated we do
+  // a retain/autorelease here.
+  NSString* oldFileName = [[self.game.fileName retain] autorelease];
   NSString* newFileName = [self.theNewName stringByAppendingString:@".sgf"];
-  if ([self.game.fileName isEqualToString:newFileName])
+  if ([oldFileName isEqualToString:newFileName])
     return true;
 
   ArchiveViewModel* model = [Registry sharedRegistry].modelProvider.archiveViewModel;
-  NSString* oldPath = [model.archiveFolder stringByAppendingPathComponent:self.game.fileName];
+  bool success = [model archiveGame:self.game willBeRenamedTo:newFileName];
+  if (! success)
+  {
+    DDLogError(@"%@: Model update failed, old file name = %@, new file name = %@", [self shortDescription], oldFileName, newFileName);
+    return false;
+  }
+
+  NSString* oldPath = [model.archiveFolder stringByAppendingPathComponent:oldFileName];
   NSString* newPath = [model.archiveFolder stringByAppendingPathComponent:newFileName];
+  DDLogVerbose(@"%@: Renaming file %@ to %@", [self shortDescription], oldPath, newPath);
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  BOOL success = [fileManager moveItemAtPath:oldPath toPath:newPath error:nil];
-  DDLogVerbose(@"%@: Moved file %@ to %@, result = %d", [self shortDescription], oldPath, newPath, success);
+  success = [fileManager moveItemAtPath:oldPath toPath:newPath error:nil];
   if (success)
-  {
-    // Must update the ArchiveGame before posting the notification. Reason: The
-    // notification triggers an update cycle which tries to match ArchiveGame
-    // objects to filesystem entries via their file names.
-    self.game.fileName = newFileName;
-    [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
-  }
-  return success;
+    return true;
+
+  DDLogError(@"%@: Filesystem rename failed, result = %d", [self shortDescription], success);
+
+  // Since the filesystem operation failed, we also have to undo the model
+  // update
+  success = [model archiveGame:self.game willBeRenamedTo:oldFileName];
+  if (! success)
+    DDLogError(@"%@: Revert of model update failed", [self shortDescription]);
+
+  return false;
 }
 
 @end

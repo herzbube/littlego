@@ -15,6 +15,8 @@
 // -----------------------------------------------------------------------------
 
 
+// Project includes
+#import "../utility/FilesystemMonitor.h"
 
 // Forward declarations
 @class ArchiveGame;
@@ -30,7 +32,7 @@
 /// user should not refer to them as such. With this in mind, most of the public
 /// interface of ArchiveViewModel refers to "games" and "game names".
 // -----------------------------------------------------------------------------
-@interface ArchiveViewModel : NSObject
+@interface ArchiveViewModel : NSObject <FilesystemMonitorDelegate>
 {
 }
 
@@ -42,6 +44,7 @@
 - (NSString*) uniqueGameNameForGame:(GoGame*)game;
 - (NSString*) uniqueGameNameForName:(NSString*)preferredGameName;
 - (NSString*) filePathForGameWithName:(NSString*)name;
+- (bool) archiveGame:(ArchiveGame*)archiveGame willBeRenamedTo:(NSString*)newFileName;
 
 /// @brief Path to folder that contains files with archived games.
 @property(nonatomic, retain) NSString* archiveFolder;

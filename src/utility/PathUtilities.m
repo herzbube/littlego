@@ -84,54 +84,81 @@
 // -----------------------------------------------------------------------------
 /// @brief Copies the source file or folder located at @a sourcePath to the new
 /// location @a destinationPath, overwriting @a destinationPath if it exists.
-///
-/// Overwriting items with the NSFileManager API is rather cumbersome, so this
-/// method conveniently takes care of checking whether @a destinationPath
-/// exists and removing it, before the actual copy operation is invoked.
 // -----------------------------------------------------------------------------
 + (BOOL) copyItemAtPath:(NSString*)sourcePath overwritePath:(NSString*)destinationPath error:(NSError**)error
 {
-  // Get rid of the destination file if it exists, otherwise copyItemAtPath:()
-  // further down will abort the copy attempt.
+  // The goal of this implementation is to have only a single filesystem
+  // operation for destinationPath. The problem is that NSFileManager's
+  // copyItemAtPath:toPath:error:() does not support overwriting an existing
+  // item - to use that method we would have to first delete the existing item,
+  // and only then perform the copy operation. The result would be two
+  // filesystem operations for destinationPath: delete + create.
+  //
+  // Overwriting with only a single filesystem operation can be done with
+  // replaceItemAtURL:withItemAtURL:backupItemName:options:resultingItemURL:error:().
+  // Unfortunately that method does not support copying, it only supports move
+  // operations. So in order to use the method and leave the source item
+  // untouched, we must first copy the source item to a temporary folder, and
+  // only then move the temporary copy to the final destination.
+
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  if ([fileManager fileExistsAtPath:destinationPath])
+
+  NSURL* sourceURL = [NSURL fileURLWithPath:sourcePath];
+  NSURL* temporaryDirectory = [fileManager URLForDirectory:NSItemReplacementDirectory
+                                                  inDomain:NSUserDomainMask
+                                         appropriateForURL:sourceURL
+                                                    create:YES
+                                                     error:error];
+  if (! temporaryDirectory)
   {
-    BOOL success = [fileManager removeItemAtPath:destinationPath error:error];
+    DDLogError(@"Failed to obtain temporary folder, reason: %@", [*error localizedDescription]);
+    return NO;
+  }
+
+  NSString* sourceFileName = [sourceURL lastPathComponent];
+  NSString* temporaryCopyFilePath = [[temporaryDirectory path] stringByAppendingPathComponent:sourceFileName];
+  if ([fileManager fileExistsAtPath:temporaryCopyFilePath])
+  {
+    BOOL success = [fileManager removeItemAtPath:temporaryCopyFilePath error:error];
     if (! success)
     {
-      DDLogError(@"Failed to remove item, reason: %@", [*error localizedDescription]);
+      DDLogError(@"Failed to remove item in temporary folder, reason: %@", [*error localizedDescription]);
       return success;
     }
   }
-  BOOL success = [fileManager copyItemAtPath:sourcePath toPath:destinationPath error:error];
+
+  BOOL success = [fileManager copyItemAtPath:sourcePath toPath:temporaryCopyFilePath error:error];
   if (! success)
-    DDLogError(@"Failed to copy item, reason: %@", [*error localizedDescription]);
+  {
+    DDLogError(@"Failed to create temporary copy, reason: %@", [*error localizedDescription]);
+    return NO;
+  }
+
+  success = [fileManager replaceItemAtURL:[NSURL fileURLWithPath:destinationPath]
+                            withItemAtURL:[NSURL fileURLWithPath:temporaryCopyFilePath]
+                           backupItemName:nil
+                                  options:NSFileManagerItemReplacementUsingNewMetadataOnly
+                         resultingItemURL:nil
+                                    error:error];
+  if (! success)
+    DDLogError(@"Failed to move temporary copy to final destination, reason: %@", [*error localizedDescription]);
   return success;
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Moves the source file or folder located at @a sourcePath to the new
 /// location @a destinationPath, overwriting @a destinationPath if it exists.
-///
-/// Overwriting items with the NSFileManager API is rather cumbersome, so this
-/// method conveniently takes care of checking whether @a destinationPath
-/// exists and removing it, before the actual move operation is invoked.
 // -----------------------------------------------------------------------------
 + (BOOL) moveItemAtPath:(NSString*)sourcePath overwritePath:(NSString*)destinationPath error:(NSError**)error
 {
-  // Get rid of the destination file if it exists, otherwise moveItemAtPath:()
-  // further down will abort the move attempt.
   NSFileManager* fileManager = [NSFileManager defaultManager];
-  if ([fileManager fileExistsAtPath:destinationPath])
-  {
-    BOOL success = [fileManager removeItemAtPath:destinationPath error:error];
-    if (! success)
-    {
-      DDLogError(@"Failed to remove item, reason: %@", [*error localizedDescription]);
-      return success;
-    }
-  }
-  BOOL success = [fileManager moveItemAtPath:sourcePath toPath:destinationPath error:error];
+
+  BOOL success = [fileManager replaceItemAtURL:[NSURL fileURLWithPath:destinationPath]
+                                 withItemAtURL:[NSURL fileURLWithPath:sourcePath]
+                                backupItemName:nil
+                                       options:NSFileManagerItemReplacementUsingNewMetadataOnly
+                              resultingItemURL:nil
+                                         error:error];
   if (! success)
     DDLogError(@"Failed to move item, reason: %@", [*error localizedDescription]);
   return success;

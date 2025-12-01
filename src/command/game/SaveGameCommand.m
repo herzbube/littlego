@@ -66,6 +66,8 @@
   NSString* fileName = [self.gameName stringByAppendingString:@".sgf"];
   NSString* filePath = [model.archiveFolder stringByAppendingPathComponent:fileName];
 
+  // The filesystem operation performed by SaveSgfCommand triggers a model
+  // update in ArchiveViewModel via filesystem monitoring
   SaveSgfCommand* saveSgfCommand = [[[SaveSgfCommand alloc] initWithSgfFilePath:filePath sgfFileAlreadyExists:self.gameAlreadyExists] autorelease];
   bool success = [saveSgfCommand submit];
   if (success)
@@ -83,9 +85,6 @@
     [[Registry sharedRegistry].windowProvider.window.rootViewController presentOkAlertWithTitle:@"Failed to save game"
                                                                                         message:saveSgfCommand.errorMessage];
   }
-
-  if (saveSgfCommand.destinationFolderWasTouched)
-    [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
 
   return true;
 }

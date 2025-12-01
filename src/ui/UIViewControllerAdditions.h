@@ -50,5 +50,6 @@
                                          usingPopoverStyle:(bool)usePopoverStyle
                                          popoverSourceView:(UIView*)sourceView
                                       popoverBarButtonItem:(UIBarButtonItem*)barButtonItem;
+- (void) dismissAnyPresentedOrPopAnyPushedViewControllers;
 
 @end

@@ -105,6 +105,9 @@
     NSString* preferredGameName = [documentInteractionFileName stringByDeletingPathExtension];
     NSString* uniqueGameName = [model uniqueGameNameForName:preferredGameName];
     NSString* uniqueFilePath = [model filePathForGameWithName:uniqueGameName];
+
+    // The filesystem operation triggers a model update via filesystem
+    // monitoring
     NSError* error;
     BOOL success = [PathUtilities moveItemAtPath:documentInteractionFilePath overwritePath:uniqueFilePath error:&error];
     if (success)
@@ -162,7 +165,6 @@
 // -----------------------------------------------------------------------------
 - (void) activateUIAreaArchive
 {
-  [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
   [MainUtility activateUIArea:UIAreaArchive];
 }
 

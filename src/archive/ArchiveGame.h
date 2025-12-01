@@ -33,7 +33,9 @@
 - (NSComparisonResult) compare:(ArchiveGame*)aGame;
 
 /// @brief The name of the archived game. The value of this property should be
-/// displayed in the UI.
+/// displayed in the UI. The value of this property is derived from the value
+/// of @a fileName, i.e. changing @a fileName will automatically change the
+/// value of this property.
 @property(nonatomic, assign, readonly) NSString* name;
 /// @brief The filename of the .sgf file.
 @property(nonatomic, retain) NSString* fileName;
@@ -41,5 +43,30 @@
 @property(nonatomic, retain) NSString* fileDate;
 /// @brief The size of the .sgf file.
 @property(nonatomic, retain) NSString* fileSize;
+/// @brief A monotonically increasing counter indicating how many times the
+/// underlying .sgf file's content has changed since the ArchiveGame object was
+/// created.
+///
+/// When the ArchiveGame object is initialized the property value is 0. The
+/// property value then increases by 1 every time a filesystem operation changes
+/// the underlying .sgf file's content. The typical use case for this is when a
+/// save operation overwrites the file.
+///
+/// KVO can be used on the property to detect content changes. A reaction may
+/// be to reload the file content.
+@property(nonatomic, assign) unsigned long fileContentRevision;
+/// @brief Indicates whether a filesystem operation has deleted the underlying
+/// .sgf file since the ArchiveGame object was created.
+///
+/// When the ArchiveGame object is initialized the property value is @e false.
+/// The property value changes to @e true when a delete filesystem operation
+/// occurs. The property value can never change back to @e false again - if a
+/// new .sgf file with the same name is created, a new ArchiveGame object is
+/// created to represent that new file.
+///
+/// KVO can be used on the property to detect that the ArchiveGame has become
+/// obsolete. A reaction may be to discard the file content associated with.
+/// the ArchiveGame.
+@property(nonatomic, assign) bool fileDeleted;
 
 @end

@@ -183,11 +183,10 @@ willConnectToSession:(UISceneSession*)session
   [Registry sharedRegistry].modelProvider.soundHandling.disabled = false;
 
   // Send this notification just in case something changed in the documents
-  // folder since the app was deactivated. Note: This is not just laziness - if
-  // the user really *DID* change something via the file sharing feature of
-  // iTunes, we won't be notified in any special way. The only thing that
-  // happens in such a case is deactivation and reactivation.
-  [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentChanged object:nil];
+  // folder since the app was deactivated. For instance, the user may have
+  // added or deleted games from outside the app, via a laptop or desktop
+  // machine that the iOS device is connected to (formerly iTunes file sharing).
+  [[NSNotificationCenter defaultCenter] postNotificationName:archiveContentMayHaveChanged object:nil];
 
   if (self.pendingSceneConnectionOptions)
   {
