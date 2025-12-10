@@ -1108,6 +1108,514 @@ Special AGA rules (from [3], [5], [6] and, especially, [7])
 [7] https://www.lifein19x19.com/forum/viewtopic.php?f=45&t=10634
 
 
+Time systems
+------------
+The simplest possible time system is Absolute Timing [1], also known as
+"Sudden Death":
+- Each player is allotted a total time <t> for the entire game.
+- The time a player takes to play their move is deducted from their allotted
+  time, resulting in the remaining time <r>.
+- When it is a player's turn and they take longer to play their move than they
+  have remaining time, they lose.
+
+In contrast to this are what I'm calling "period-based" time systems: There are
+several such time systems, but the generalized mechanism how they work can be
+described like this:
+- The player is allotted <p> time periods.
+- Each time period has the same duration <d>.
+- The player has to play <n> moves within a single time period, i.e. make
+  <n> moves within <d>.
+- If the player manages to play <n> moves within a single time period, they
+  have again a full time period to play their next <n> moves. In other words,
+  the timer of the current period resets. Also, no time period is deducted.
+- If the player takes longer than <d> to play <n> moves>, a time period is
+  deducted.
+- If the player has no time periods left, the player loses.
+- Otherwise, the player must play the remaining moves within <d>. For instance,
+  if <n> is 25 and the player managed to play 15 moves within <d>, after a
+  time period is dedcuted they must now play 10 moves within <d> of the next
+  time period.
+- If the player again takes longer than <d> to play the remaining moves,
+  another time period is deducted. Again, if the player has no time periods
+  left, the player loses.
+- Otherwise, play continues until the player has finally played all of the
+  original <n> moves. When that happens, the timer of the current period is
+  reset, and the player must again play <n> moves within <d>.
+
+The most prominent "period-based" time systems are Canadian Timing [2] and
+Japanese Timing [3].
+
+The way how "period-based" time systems are described above is generally known
+as "Round Down Timing" [4], because when a player finishes playing <n> moves any
+unused time from the current time period is lost (rounded down). Another term
+that is sometimes used is "spilling" [5], because unused time is "spilt".
+"Period-based" time systems that avoid losing unused time are known as
+"Steady Average Timing" [5]. They avoid the loss as follows:
+- Moves beyond <n> within the current time period are made at the player's
+  discretion, but they do not count towards the moves required for the next
+  time period.
+- The next time period does not begin until the full time for the current time
+  period elapses.
+- In other words, players who play <n> moves in less time than <d> get extra
+  time.
+
+Sensei's Library does not list any common time systems that use
+"Steady Average Timing".
+
+Another common time system is Fischer Timing [4], named after the chess player
+Bobby Fischer. The mechanism is similar to Absolute Timing, but with a twist:
+- Each player is allotted an initial amount of time <t>.
+- The time a player takes to play their move is deducted from their allotted
+  time, resulting in the remaining time <r>.
+- When it is a player's turn and they take longer to play their move than they
+  have remaining time, they lose.
+- The twist: An extra amount of time <e> is added to the player's remaining
+  time after they played their move.
+- As a result, if a player stays below <e> to play their move, their remaining
+  time increases. This is likely the case during openings.
+
+The general term for time systems that work like Fischer Timing is
+"Total Average Timing" [8]. Fischer Timing adds extra time after every move,
+but this can be generalized to say that extra time is added only after a batch
+of <n> moves were played - for Fischer Timing <n> = 1. The other generalization
+is that the extra time added by "Total Average Timing" is the same amount as
+the initial period duration <d>.
+
+Here is a table that attempts to summarize the characteristics of the time
+systems discussed above. "Arbitrary" means, players agree on a number before
+play starts.
+
+                                                                    Round down
+                        Time periods   Duration   Number of moves   time after   Extra time
+                        <p>            <d>        <n>               <n> moves    <e>
+-------------------------------------------------------------------------------------------
+Absolute Timing         1              Arbitrary  Unlimited         No           -
+Canadian Timing         1              Arbitrary  Arbitrary         Yes          -
+Japanese Timing         Arbitrary      Arbitrary  1                 Yes          -
+Steady Average Timing   1              Arbitrary  Arbitrary         No           -
+Fischer Timing          1              Arbitrary  1                 No           Arbitrary
+Total Average Timing    1              Arbitrary  Arbitrary         No           <d>
+
+It is common to combine Absolute Timing with one of the other time systems. In
+such a case, the terms used are usually "Main time" for the time period defined
+by Absolute Timing, and "Overtime" for the time period(s) defined by the other
+time system.
+
+Sensei's Library describes three time systems on well-known Go servers [9]:
+- KGS
+  - The 3 properties of this time system are called
+    - Main time
+    - Byo-Yomi Time
+    - Byo-Yomi Periods
+  - In fact, this is a combination of
+    - Absolute Timing with <d> = Main time
+    - Japanese Timing with <p> = Byo-Yomi Periods and <d> = Byo-Yomi Time
+- IGS Pandanet Style
+  - The 2 properties of this time system are called
+    - Initial time
+    - Byoyomi minutes
+  - In this case, "Byoyomi minutes" refers to the amount of time that is
+    available to play 25 moves.
+  - So in fact, this is a combination of
+    - Absolute Timing with <d> = Initial time
+    - Canadian Timing with <n> = 25 and <d> = Byoyomi minutes
+- IGS Byoyomi Style
+  - The 4 properties of this time system are called
+    - Initial time
+    - Byoyomi
+    - Overtime
+    - Periods
+  - The first property refers to Absolute Timing with <d> = Initial time.
+  - The remaining three properties describe a special time system that is
+    similar to but not quite like Japanese Timing:
+    - <p> = "Periods"
+    - "Byoyomi" is the amount of time the player has to make a move to avoid
+      deduction of a period from. If they can play the move no period is
+      deducted and when it is their next turn they again start with
+      "Byoyomi" time. Unused time is lost.
+    - When "Byoyomi" is used up, a time period is deducted. From now on, every
+      time the player fails to play within the amount of time specified by
+      "Overtime", another time period is deducted.
+    - Once the player manages to play a move within "Overtime", on their next
+      turn they again start with "Byoyomi" time.
+    - So when a turn starts, initially <d> = Byoyomi, but afterwards
+      <d> = Overtime.
+  - "Periods" can be set to 0 (zero) to effectively change the time system to
+    Canadian Timing with <n> = 1 and <d> = Byoyomi.
+  - This is also documented on [10], which is the PANDA-glGo manual with a
+    copyright from 2006. Research shows that PANDA-glGo originally was an
+    open source client, but at some point newer versions of the source code
+    were no longer made public and development of the client was based on closed
+    source. [11] seems to be the homepage of PANDA-glGo. This says the latest
+    version is 1.4 / 1.4.1, which according to the Changelog is from 2006.
+
+[1] https://senseis.xmp.net/?AbsoluteTiming
+[2] https://senseis.xmp.net/?CanadianTiming
+[3] https://senseis.xmp.net/?JapaneseTiming
+[4] https://senseis.xmp.net/?RoundDownTiming
+[5] https://senseis.xmp.net/?Spilling
+[6] https://senseis.xmp.net/?SteadyAverageTiming
+[7] https://senseis.xmp.net/?FischerTiming
+[8] https://senseis.xmp.net/?TotalAverageTiming
+[9] https://senseis.xmp.net/?ByoyomiOnGoServers
+[10] https://www.pandanet.co.jp/English/glgo/manual/ch04s04.html#d0e920
+[11] https://www.pandanet.co.jp/English/glgo/index.html
+
+
+Recording time data in SGF
+--------------------------
+TM
+- Provides the time limits of the game. The time limit is given in seconds.
+- Property type = game-info
+- Value type = real
+- Only used for Absolute Timing
+
+OT
+- Describes the method used for overtime (byo-yomi).
+  Examples: "5 mins Japanese style, 1 move / min", "25 moves / 10 min".
+- Property type = game-info
+- Value type = simpletext
+- After much research, I have been unable to find any kind of common notation.
+  Suggestions from [1]
+  - OT[10x1m] - Japanese Timing, 10 periods with 60 seconds duration
+  - OT[30 moves / 10m] - Canadian timing, 30 moves per period with 600 seconds
+    duration
+- Experimentation with existing systems that allow you to generate SGF files
+  showed that many of them don't even include time-related properties in the
+  SGF content they write. Notably this includes IGS/Pandanet.
+- I found that KGS and online-go.com do write time-related SGF properties, and
+  they seem to use the same notation:
+  - OT[5x20 byo-yomi] - Japanese Timinig, 5 periods with 20 seconds duration
+  - OT[25/300 Canadian] - Canadian timing, 25 moves per period with 300 seconds
+    duration
+- Decision: Little Go shall use the following notation for the OT property
+  value:
+  - OT[period-duration/number-of-moves Canadian]
+  - OT[number-of-periodsxperiod-duration byo-yomi]
+  - OT[initial-time-duration/extra-time-duration Fischer]
+  - OT[period-duration/number-of-moves SteadyAverageTiming]
+  - OT[period-duration/number-of-moves TotalAverageTiming]
+- Decision: Little Go shall not support the IGS Byoyomi Style time system.
+  Rationale: Supporting this time system would require extra effort (e.g. it
+  has more parameters than the others). Taking this extra effort does not seem
+  to be worth it, because 1) it is doubtful whether users would want to play
+  with a time system that is even more complicated than others; 2) the time
+  system seems to be not supported anymore by current IGS/Pandanet clients; and
+  3) while it may be hypothesized that the time system could be interesting for
+  competitive play (e.g. IGS/Pandanet), Little Go is not a competitive
+  environment.
+
+BL / WL
+- Time left for black, after the move was made. Value is given in seconds.
+  Time left for white after the move was made. Value is given in seconds.
+- Property type = move
+- Value type = real
+- While Absolute Timing is in effect, the values in these properties refer to
+  that time. After Absolute Timing has expired, the values in these properties
+  refer to the period-based time system.
+
+OB / OW
+- Number of black moves left (after the move of this node was played) to play
+  in this byo-yomi period.
+- Property type = move
+- Value type = number
+- While Absolute Timing is in effect, these properties will be absent. After
+  Absolute Timing has expired, the values in these properties refer to the
+  period-based time system.
+- If Japanese Timing is used, then I was able to observe that KGS and
+  online-go.com write the number of periods left into this property. Although
+  this does not conform to the description of the property in the SGF standard,
+  it's probably a reasonable compromise that many other implementors of SGF
+  readers/writers besides KGS and online-go.com would be willing to make, so
+  Little Go will also do this.
+
+Considerations
+- What to record for BL/WL and OB/OW when the last of the <n> moves in a period
+  was played? Should the values reflect the period that just ended, or should
+  the values reflect already the new period?
+  - The SGF standard is clear about this: The values should reflect the period
+    that just ended.
+  - However, KGS can be observed to write values that reflect the new period.
+  - Clearly this does not make much sense. Given for instance Japanese Timing
+    with 5 period with duration 20 seconds, as long as players don't use up a
+    period the SGF properties will always look like this:
+      WL[20]OW[5]
+    and
+      BL[20]OB[5]
+    In other words, the reader will never know how much time either player used
+    to play their move.
+  - To increase the amount of information in SGF, and also to adhere to the SGF
+    standard, Little Go will write values that reflect the period that just
+    ended.
+
+[1] https://homepages.cwi.nl/~aeb/go/misc/sgf.html
+
+
+Fuego's handling of time-based play
+-----------------------------------
+An important note from the GTP specification:
+
+  "The controller is responsible for measuring time and deciding whether an
+   engine has run out of time. The information given by the time_settings and
+   time_left commands is only to guide the engines about how fast they need
+   to play."
+
+Notes resulting from analysing the Fuego source code in regard to how much time
+Fuego actually uses for a move:
+- Fuego ignores "go_param timelimit <n>" (Little Go calls this parameter
+  fuegoMaxThinkingTime) when a time system is used. Code analysis:
+  - go_param timelimit sets m_timeLimit in GoGtpEngine
+  - In GoGtpEngine::GenMove there is a check that if m_timeSettings.IsUnknown(),
+    then m_timeLimit is used, otherwise the SgTimeRecord from GoGame is used
+  - IsUnknown() can only be true if an overtime system was specified with period
+    duration greater than zero and number of moves equal to 0.
+- So how much time does Fuego get then to think about its move when a time
+  system is used?
+  - The calculation can be found in SgDefaultTimeControl::TimeForCurrentMove.
+  - If overtime is in use, then it's simple:
+    - The time per move is the remaining time in the period divided by the
+      number of moves left.
+    - In other words, every move gets an equal share of the remaining time.
+    - If Fuego takes less time, then subsequent moves in the same period get
+      more time.
+  - If main time is in use, then the algorithm is quite complicated:
+    - The calculation depends on values provided by
+      GoTimeControl::GetPositionInfo, in particular the estimated number of
+      remaining moves for the game. This value depends on the "final_space"
+      parameter that can be set with the GTP command go_param_timecontrol.
+    - The calculation further depends on the other 3 parameters that can be set
+      with the GTP command go_param_timecontrol: remaining_constant,
+      fast_open_moves and fast_open_factor.
+    - In general, the algorithm gives early moves in the game more time than
+      later moves: For each move, the amount of main time that is left is
+      divided by the estimated total number of moves in a game. Assuming that
+      the estimate stays the same, this results in later moves getting less and
+      less time, as the amount of main time dwindles.
+    - remaining_constant can be set to further influence the degree to which
+      early moves are favoured with more time.
+      - remaining_constant is multiplied with the "estimated total number of
+        moves in a game" that was mentioned above, to arrive at the number
+        that should be used as divisor of the remaining main time. The divisor
+        is capped at the minimum of 1 to prevent division-by-zero.
+      - If remaining_constant is 1.0, then the situation is as explained above.
+      - If remaining_constant is 0.5, then the divisor becomes smaller, hence
+        the amount of time early moves get becomes higher.
+      - The closer to 0 remaining_constant becomes, the more skewed the time
+        allocation becomes. According to the documentation in the Fuego source
+        code, the skew is exponential.
+      - When remaining_constant becomes 0, the divisor will be capped at 1 (as
+        explained above), which results in the first move getting the entire
+        main time.
+    - In case Fuego is configured to use overtime after main time, the algorithm
+      contains steps to make sure that Fuego can actually reach overtime. This
+      is achieved by giving moves more time than they would get otherwise, in
+      particular a move in main time can never get less time than the first
+      move will get in overtime.
+    - One final twist are that Fuego can be configured to give opening moves
+      less time, and therefore leave more main time for later moves, under the
+      assumption that opening moves don't require much time to calculate.
+      - The parameter fast_open_moves defines how many moves at the start of a
+        game will get less time.
+      - The parameter fast_open_factor is used to multiply the time the move
+        would get to arrive at the final time. Obviously, if fast_open_moves is
+        zero then fast_open_factor will be ignored.
+    - The estimated amount of remaining moves is calculated according to the
+      following sub algorithm:
+      - Number of intersections that are currently empty
+      - Minus number of intersections that are estimated to be empty at the end
+        of the game
+      - This results in the amount of empty intersections that still need to be
+        filled until the estimated end of the game.
+        - This value is capped at "3 * board size", i.e. it cannot become lower.
+        - The reason why exactly this cap value was chosen is not known, but the
+          cap is important so that the main algorithm will never calculate with
+          an estimated number of remaining moves for the game that is zero.
+      - Divide by 2 because the amount of moves for only 1 player is needed.
+      - The parameter final_space is a percentage that determines how many
+        intersections are estimated to be empty at the end of the game.
+        - Value 1.0 means, no intersections are estimated to be empty, or in
+          other words the whole board is estimated to be filled.
+        - Value 0.0 means, all intersections are estimated to be empty.
+        - So in general, higher values for final_space result in a higher
+          number of estimated remaining moves, which in turn results in less
+          time for a move.
+        - As explained above, there is a cap that makes sure that low values
+          for final_space cannot lead to too low number of estimated remaining
+          moves.
+
+Some types used
+- SgTimeSettings stores the parameters of the time systems in use. Supported:
+  - Main time only
+  - Overtime only
+  - Main time + Overtime
+- SgTimeRecord stores the data referring to the current state of the game,
+  i.e. how much time is left per player and how many moves in the period are
+  left per player. It also represents the clock, which can be stopped, running
+  or suspended. At certain points (e.g. when move calculation starts)
+  SgTimeRecord takes a snapshot of the current time, and when updated (e.g.
+  when move calculation finishes) calculates how much time has passed since
+  the snapshot was taken and deducts the time from the time the player has
+  left.
+
+Time-related GTP commands
+- go_clock
+  - Reports the content of SgTimeRecord
+  - Importantly, updates the clock before reporting the result. This means
+    that sending this command continuously one will see the clock counting
+    down.
+- time_settings
+  - Standard command to set main time duration and overtime (duration of
+    period + number of moves per period).
+  - To only use one of the two, provide value(s) 0 (zero) for the other.
+  - To no longer use any time system, provide the following values (explicitly
+    mentioned in the GTP 2.0 specification):
+    - Main time duration = 0
+    - Overtime duration of period = Any value greater than 0
+    - Overtime number of moves per period = 0
+  - Japanese Timing is not supported because it's not possible to specify
+    the number of periods. The GTP 2.0 specification explicity states:
+       "The protocol has support for Canadian byo yomi, including absolute
+        time (no byo yomi) as a special case."
+  - The command sets the time and starts the clock.
+  - The command must be executed before any moves are played.
+  - But the command can still be executed even after setup stones have been
+    placed with the gogui-setup command.
+    => When that happens, the command starts the clock that was suspended by
+       the gogui-setup command.
+- kgs-time_settings
+  - Non-standard command that allows to set the same values as with the
+    command time_settings, but with a nicer interface.
+  - In addition, the command supports setting Japanese Timing parameters.
+    In practice, Fuego's implementation of the command ignores the number of
+    periods parameter and sets number of moves per period to 1. This works
+    out because - at least in theory - Fuego will never lose on time, because
+    it will always play before it has no time left.
+  - Parameters
+    - none
+    - absolute <main time duration>
+    - byoyomi  <main time duration> <period duration> <number of periods>
+    - canadian <main time duration> <period duration> <number of moves per period>
+  - See comments for the time_settings command for further information.
+- time_left
+  - Standard command to unconditionally set
+    - The time left
+    - The number of moves left
+    During main time the number of moves is given as 0.
+  - If the clock is suspended, does not start it
+- go_param_timecontrol settings
+  - Exposes 4 settings that influence how much time Fuego gets to think about
+    its move.
+  - fast_open_moves <int>
+    - Set how many opening moves should be played quickly.
+    - This is 0 by default, but can be set to a higher value. From comments
+      in the source code it appears that it might make sense to set this to
+      anything up to 10 opening moves.
+  - fast_open_factor <float>
+    - A factor that is applied to the amount of time Fuego would normally get
+      to think about its move.
+    - This factor is applied only for the first <n> opening moves, as set by
+      fast_open_moves.
+  - final_space <float>
+    - A factor that determines how many intersections are estimated to be
+      empty at the end of the game.
+    - Value 1.0 means, no intersections are estimated to be empty, or in
+      other words the whole board is estimated to be filled.
+    - Value 0.0 means, all intersections are estimated to be empty.
+    - In general, higher values for final_space result in a higher number of
+      estimated remaining moves, which in turn results in less time for a move.
+  - remaining_constant <float>
+    - As explained in the source code documentation (SgTimeControl.h), this
+      is supposed to be a fraction between 0 and 1.
+    - See above for details.
+
+Other GTP commands and their effect on the clock
+- clear_board
+  - Resets TimeLeft and MovesLeft
+  - Starts the clock if it was not running or suspended
+- gogui-setup resets the clock and suspends it
+  - If absolute time was running, it resets to the absolute time limit
+  - If overtime was running, it resets TimeLeft and MovesLeft for both players
+    to 0
+    - Behaves differently from when absolute time is running; I would have
+      expected it to leave MovesLeft alone and to reset TimeLeft to the period
+      time limit.
+    - Note that this scenario is only possible if no absolute time was set in
+      the first place, because to go from absolute time to overtime one would
+      need to play at least one move, and after that gogui-setup is no longer
+      possible.
+- gogui-setup_player
+  - If the clock is running, switches the clock to the player who is set with
+    the command
+  - If the clock is suspended, does nothing to the clock.
+- gogui-play_sequence
+  - Actually plays the moves as fast as possible, i.e. TimeLeft and MovesLeft
+    are properly calculated. Because playing the moves takes only a very small
+    amount of time, TimeLeft is hardly reduced.
+  - Starts the clock if it was suspended by gogui-setup.
+- genmove
+  - In overtime, reduces MovesLeft for the player who played the move; if
+    MovesLeft becomes 0, resets both TimeLeft and MovesLeft for the player.
+  - Switches the clock to the other player.
+  - Starts the clock if it was suspended by gogui-setup.
+- reg_genmove
+  - Ignores clock entirely.
+
+Problematic behaviours of Fuego that can lead to time management bugs:
+- Fuego does not reset MovesLeft to 0 in the following scenario
+  - Scenario
+    - time_settings 0 120 5
+      => Sets MovesLeft to 5
+    - time_settings 5 8 15
+      => Sets TimeLeft correctly (to 5)
+      => But does not set MovesLeft to 0 as it should (because we are in main
+         time)
+    - Also, clear_board does not reset MovesLeft to 0
+  - At this point no harm is done yet, because time calculation for main time
+    does not use MovesLeft.
+  - But: When main time is running out and Fuego switches to overtime, Fuego
+    still does ***NOT*** reset MovesLeft to its correct value, which is 8 in
+    the scenario given above.
+  - This means that when we continue to execute genmove commands, Fuego counts
+    down on the existing MovesLeft. Only when MovesLeft reaches 0 does Fuego
+    reset it back to the correct value.
+  - CONCLUSION: To avoid Fuego calculating with wrong values, the command
+    "time_left" needs to be executed immediately after time_settings.
+- Potential bug in implementation of GTP command time_left
+  - The current implementation of the GTP command simply sets TimeLeft in
+    SgTimeRecord, but unlike go_clock does ***NOT*** invoke
+    SgTimeRecord::UpdateTimeLeft().
+  - The consequence is that when SgTimeRecord::UpdateTimeLeft() is executed the
+    next time (e.g. before go_clock reports its result, but also before genmove
+    calculates a move), the elapsed time is calculated ***NOT*** since time_left
+    was executed, but since the last time SgTimeRecord::UpdateTimeLeft() was
+    invoked
+    => Therefore too much time is deducted.
+  - Example
+    - time_settings 0 120 5
+    - go_clock
+      => TimeLeft/B = 120
+      => Because SgTimeRecord::UpdateTimeLeft() is invoked, SgTimeRecord
+         remembers the current timestamp, so that when
+         SgTimeRecord::UpdateTimeLeft() is invoked the next time, SgTimeRecord
+         can now how much time has elapsed.
+    - Wait 10 seconds
+      => If we would execute "go_clock" now, TimeLeft/B would be shown to be 110
+      => But we don't execute "go_clock", so SgTimeRecord::UpdateTimeLeft() is
+         not invoked.
+    - time_left B 100 5
+      => SgTimeRecord::UpdateTimeLeft() is not invoked
+    - go_clock
+      => Expected TimeLeft/B = 100
+      => Actual TimeLeft/B = 90
+      => Reason: SgTimeRecord::UpdateTimeLeft() is invoked. 10 seconds have
+         elapsed since SgTimeRecord::UpdateTimeLeft() was invoked last. 10
+         seconds are deducted from TimeLeft/B that was set by "time_left".
+  - CONCLUSION: To avoid the wrong time being deducted, whenever possible
+    execute time_left only for the player whose clock is not running. If
+    time_left must be executed for the player whose clock is running, only
+    execute time_left immediately after go_clock was executed.
+
+
 Redesigning the drawing mechanism in PlayView (v0.8)
 ----------------------------------------------------
 During development of version 0.8 I decided to revise the implementation of how
