@@ -491,6 +491,13 @@ NSString* goGameSetupFirstMoveColorKey = @"SetupFirstMoveColor";
 // GoPlayer keys
 NSString* goPlayerPlayerUUIDKey = @"PlayerUUID";
 NSString* goPlayerIsBlackKey = @"IsBlack";
+// GoPlayerTimeData keys
+NSString* goPlayerTimeDataTimeSettingsKey = @"TimeSettings";
+NSString* goPlayerTimeDataClockKey = @"Clock";
+NSString* goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey = @"IsRemainingTimeAbsoluteTime";
+NSString* goPlayerTimeDataRemainingTimeInSecondsKey = @"RemainingTimeInSeconds";
+NSString* goPlayerTimeDataRemainingNumberOfMovesKey = @"RemainingNumberOfMoves";
+NSString* goPlayerTimeDataRemainingNumberOfPeriodsKey = @"RemainingNumberOfPeriods";
 // GoMove keys
 NSString* goMoveTypeKey = @"Type";
 NSString* goMovePlayerKey = @"Player";
@@ -547,6 +554,11 @@ NSString* goNodeMarkupSymbolsKey = @"Symbols";
 NSString* goNodeMarkupConnectionsKey = @"Connections";
 NSString* goNodeMarkupLabelsKey = @"Labels";
 NSString* goNodeMarkupDimmingsKey = @"Dimmings";
+// GoNodeTimeData keys
+NSString* goNodeTimeDataIsRemainingTimeAbsoluteTimeKey = @"IsRemainingTimeAbsoluteTime";
+NSString* goNodeTimeDataRemainingTimeInSecondsKey = @"RemainingTimeInSeconds";
+NSString* goNodeTimeDataRemainingNumberOfMovesKey = @"RemainingNumberOfMoves";
+NSString* goNodeTimeDataRemainingNumberOfPeriodsKey = @"RemainingNumberOfPeriods";
 // GoNodeModel keys
 NSString* goNodeModelGameKey = @"Game";
 NSString* goNodeModelRootNodeKey = @"RootNode";
@@ -600,6 +612,22 @@ NSString* goGameRulesScoringSystemKey = @"ScoringSystem";
 NSString* goGameRulesLifeAndDeathSettlingRuleKey = @"LifeAndDeathSettlingRule";
 NSString* goGameRulesDisputeResolutionRuleKey = @"DisputeResolutionRule";
 NSString* goGameRulesFourPassesRuleKey = @"FourPassesRule";
+// GoClock keys
+NSString* goClockStateKey = @"State";
+NSString* goClockSuspendedReasonKey = @"SuspendedReason";
+NSString* goClockStartDateKey = @"StartDate";
+NSString* goClockElapsedTimeInSecondsKey = @"ElapsedTimeInSeconds";
+// GoTimeSystem keys
+NSString* goTimeSystemGoTimeSystemType = @"GoTimeSystemType";
+NSString* goTimeSystemNumberOfPeriods = @"NumberOfPeriods";
+NSString* goTimeSystemPeriodDurationInSeconds = @"PeriodDurationInSeconds";
+NSString* goTimeSystemHasMinimumNumberOfMovesPerPeriod = @"HasMinimumNumberOfMovesPerPeriod";
+NSString* goTimeSystemMinimumNumberOfMovesPerPeriod = @"MinimumNumberOfMovesPerPeriod";
+NSString* goTimeSystemGoUnusedTimeHandling = @"GoUnusedTimeHandling";
+NSString* goTimeSystemExtraTimeDurationInSeconds = @"ExtraTimeDurationInSeconds";
+// GoTimeSettings keys
+NSString* goTimeSettingsAbsoluteTimeSystem = @"AbsoluteTimeSystem";
+NSString* goTimeSettingsPeriodBasedTimeSystem = @"PeriodBasedTimeSystem";
 
 // Constants for UI testing / accessibility
 NSString* statusLabelAccessibilityIdentifier = @"Status label";

@@ -849,6 +849,92 @@ enum GoNewMoveInsertPosition
   GoNewMoveInsertPositionNextBoardPosition,
 };
 
+/// @brief Enumerates time systems that can be used in games with timed play.
+///
+/// @ingroup go
+///
+/// Time systems can be somewhat generalized as follows:
+/// - A time system has a number of time periods <p>.
+/// - A time period has a duration <d>.
+/// - A player has to play a minimum number of moves <n> within a time period.
+/// - If a player runs out of time, a time period is deducted from <p>.
+///   - If <p> is already 0 (zero), deduction fails and the player loses the
+///     game.
+///   - If <p> is still greater than 0 (zero), then deduction works (it can be
+///     said that the player "loses a life") and the player gets additional time
+///     <d> to play the remaining moves.
+/// - Once a player has played <n> moves, what happens next depends on the
+///   time system. See #GoUnusedTimeHandling.
+///   - In some time systems <d> and <n> are reset and unused time is cut off
+///     (aka "rounded down").
+///   - Also possible is that upon reset the unused time is added to <d>.
+///   - Or the player is allowed to play additional moves within the unused
+///     time, and the reset occurs only after the entire time has been used.
+///   - Finally, some time systems don't reset <d> and instead add extra
+///     time <e> to whatever time remains.
+///
+/// In some time systems, <p>, <d>, <n> and/or <e> can be arbitrarily chosen by
+/// players, but in all time systems supported by this app at least one of the
+/// parameters is fixed.
+enum GoTimeSystemType
+{
+  GoTimeSystemTypeAbsolute,        ///< @brief Absolute Timing, aka "Sudden Death". <p> = 1, <d> = arbitrary, <n> = unlimited, <e> = none, round down = no.
+  GoTimeSystemTypeCanadian,        ///< @brief Canadian Timing. <p> = 1, <d> = arbitrary, <n> = arbitrary, <e> = none, round down = yes.
+  GoTimeSystemTypeJapanese,        ///< @brief Japanese Timing. <p> = arbitrary, <d> = arbitrary, <n> = 1, <e> = none, round down = yes.
+  GoTimeSystemTypeFischer,         ///< @brief Fischer Timing. <p> = 1, <d> = arbitrary, <n> = 1, <e> = arbitrary, round down = no.
+  GoTimeSystemTypeSteadyAverage,   ///< @brief Steady Average Timing. <p> = 1, <d> = arbitrary, <n> = arbitrary, <e> = none, round down = no.
+  GoTimeSystemTypeTotalAverage,    ///< @brief Total Average Timing. <p> = 1, <d> = arbitrary, <n> = arbitrary, <e> = <d>, round down = no.
+  GoTimeSystemTypeCustom,          ///< @brief A custom time system the rules of which the app does not know.
+  GoTimeSystemTypeNone,            ///< @brief No time system.
+  GoTimeSystemTypeFirst = GoTimeSystemTypeAbsolute,   ///< @brief Pseudo time system, used as the starting value during a for-loop.
+  GoTimeSystemTypeLast = GoTimeSystemTypeNone         ///< @brief Pseudo time system, used as the end value during a for-loop.
+};
+
+/// @brief Enumerates how a time system can deal with remaining unused time
+/// once a player has played the required minimum number of moves within a time
+/// period.
+///
+/// @ingroup go
+enum GoUnusedTimeHandling
+{
+  GoUnusedTimeHandlingRoundDown,           ///< @brief The period reset occurs immediately and the remaining unused time is cut off, i.e. rounded down.
+  GoUnusedTimeHandlingUseForExtraMoves,    ///< @brief The period reset does not occur. The player can use the remaining unused time to play extra moves.
+  GoUnusedTimeHandlingAddPeriodDuration,   ///< @brief The period reset occurs immediately and the period duration is added to the remaining unused time.
+  GoUnusedTimeHandlingAddExtraTime,        ///< @brief The period reset occurs immediately, but instead of the period duration a separate extra time duration is added to the remaining unused time.
+  GoUnusedTimeHandlingNone,                ///< @brief There is no unused time handling, either because no time system is in force, or because the time system is not period-based.
+};
+
+/// @brief Enumerates the possible states of the clock in games with timed play.
+///
+/// @ingroup go
+enum GoClockState
+{
+  GoClockStateStopped,     ///< @brief The clock is stopped. The game does not use timed play.
+  GoClockStateStarted,     ///< @brief The clock is started and running.
+  GoClockStateSuspended,   ///< @brief The clock is suspended. The game uses timed play, but the clock was temporarily stopped.
+};
+
+/// @brief Enumerates the possible reasons why the clock is currently in state
+/// #GoClockStateSuspended.
+///
+/// @ingroup go
+enum GoClockSuspendedReason
+{
+  GoClockSuspendedReasonAppSuspended,   ///< @brief The clock is suspended because the app was suspended. When the app becomes active again, the app will automatically set the clock to #GoClockStateStarted.
+  GoClockSuspendedReasonUserAction,     ///< @brief The clock is suspended because of a user action (e.g. the user changed the current node). The user has to manually set the clock to #GoClockStateStarted.
+  GoClockSuspendedReasonNotSuspended,   ///< @brief The clock is not suspended. The clock is set to either #GoClockStateStopped or #GoClockStateStarted.
+};
+
+/// @brief Enumerates the possible results when the duration of a player's
+/// current time period has elapsed.
+///
+/// @ingroup go
+enum GoPeriodDurationElapsedResultType
+{
+  GoPeriodDurationElapsedResultTypeGameLostOnTime,   ///< @brief There is no more time left and the player loses the game on time.
+  GoPeriodDurationElapsedResultTypeGameContinues,    ///< @brief There is still time left (e.g. switching from absolute time to overtime, the player has more periods (aka "lifes") left) and the game continues.
+};
+
 extern const enum GoGameType gDefaultGameType;
 extern const enum GoBoardSize gDefaultBoardSize;
 extern const int gNumberOfBoardSizes;
@@ -2218,6 +2304,13 @@ extern NSString* goGameSetupFirstMoveColorKey;
 // GoPlayer keys
 extern NSString* goPlayerPlayerUUIDKey;
 extern NSString* goPlayerIsBlackKey;
+// GoPlayerTimeData keys
+extern NSString* goPlayerTimeDataTimeSettingsKey;
+extern NSString* goPlayerTimeDataClockKey;
+extern NSString* goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey;
+extern NSString* goPlayerTimeDataRemainingTimeInSecondsKey;
+extern NSString* goPlayerTimeDataRemainingNumberOfMovesKey;
+extern NSString* goPlayerTimeDataRemainingNumberOfPeriodsKey;
 // GoMove keys
 extern NSString* goMoveTypeKey;
 extern NSString* goMovePlayerKey;
@@ -2274,6 +2367,11 @@ extern NSString* goNodeMarkupSymbolsKey;
 extern NSString* goNodeMarkupConnectionsKey;
 extern NSString* goNodeMarkupLabelsKey;
 extern NSString* goNodeMarkupDimmingsKey;
+// GoNodeTimeData keys
+extern NSString* goNodeTimeDataIsRemainingTimeAbsoluteTimeKey;
+extern NSString* goNodeTimeDataRemainingTimeInSecondsKey;
+extern NSString* goNodeTimeDataRemainingNumberOfMovesKey;
+extern NSString* goNodeTimeDataRemainingNumberOfPeriodsKey;
 // GoNodeModel keys
 extern NSString* goNodeModelGameKey;
 extern NSString* goNodeModelRootNodeKey;
@@ -2328,6 +2426,22 @@ extern NSString* goGameRulesScoringSystemKey;
 extern NSString* goGameRulesLifeAndDeathSettlingRuleKey;
 extern NSString* goGameRulesDisputeResolutionRuleKey;
 extern NSString* goGameRulesFourPassesRuleKey;
+// GoClock keys
+extern NSString* goClockStateKey;
+extern NSString* goClockSuspendedReasonKey;
+extern NSString* goClockStartDateKey;
+extern NSString* goClockElapsedTimeInSecondsKey;
+// GoTimeSystem keys
+extern NSString* goTimeSystemGoTimeSystemType;
+extern NSString* goTimeSystemNumberOfPeriods;
+extern NSString* goTimeSystemPeriodDurationInSeconds;
+extern NSString* goTimeSystemHasMinimumNumberOfMovesPerPeriod;
+extern NSString* goTimeSystemMinimumNumberOfMovesPerPeriod;
+extern NSString* goTimeSystemGoUnusedTimeHandling;
+extern NSString* goTimeSystemExtraTimeDurationInSeconds;
+// GoTimeSettings keys
+extern NSString* goTimeSettingsAbsoluteTimeSystem;
+extern NSString* goTimeSettingsPeriodBasedTimeSystem;
 //@}
 
 // -----------------------------------------------------------------------------

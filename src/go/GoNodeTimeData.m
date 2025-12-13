@@ -1,0 +1,88 @@
+// -----------------------------------------------------------------------------
+// Copyright 2025 Patrick Näf (herzbube@herzbube.ch)
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// -----------------------------------------------------------------------------
+
+
+// Project includes
+#import "GoNodeTimeData.h"
+
+// TODO xxx Add unit tests
+
+
+@implementation GoNodeTimeData
+
+#pragma mark - Initialization and deallocation
+
+// -----------------------------------------------------------------------------
+/// @brief Initializes a GoNodeTimeData object with zero values.
+///
+/// @note This is the designated initializer of GoNodeTimeData.
+// -----------------------------------------------------------------------------
+- (id) init
+{
+  // Call designated initializer of superclass (NSObject)
+  self = [super init];
+  if (! self)
+    return nil;
+
+  self.isRemainingTimeAbsoluteTime = false;
+  self.remainingTimeInSeconds = 0;
+  self.remainingNumberOfMoves = 0;
+  self.remainingNumberOfPeriods = 0;
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (id) initWithCoder:(NSCoder*)decoder
+{
+  self = [super init];
+  if (! self)
+    return nil;
+
+  if ([decoder decodeIntForKey:nscodingVersionKey] != nscodingVersion)
+    return nil;
+
+  self.isRemainingTimeAbsoluteTime = [decoder decodeBoolForKey:goNodeTimeDataIsRemainingTimeAbsoluteTimeKey];
+  self.remainingTimeInSeconds = [decoder decodeDoubleForKey:goNodeTimeDataRemainingTimeInSecondsKey];
+  self.remainingNumberOfMoves = [decoder decodeIntForKey:goNodeTimeDataRemainingNumberOfMovesKey];
+  self.remainingNumberOfPeriods = [decoder decodeIntForKey:goNodeTimeDataRemainingNumberOfPeriodsKey];
+
+  return self;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSSecureCoding protocol method.
+// -----------------------------------------------------------------------------
++ (BOOL) supportsSecureCoding
+{
+  return YES;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief NSCoding protocol method.
+// -----------------------------------------------------------------------------
+- (void) encodeWithCoder:(NSCoder*)encoder
+{
+  [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
+  [encoder encodeBool:self.isRemainingTimeAbsoluteTime forKey:goNodeTimeDataIsRemainingTimeAbsoluteTimeKey];
+  [encoder encodeDouble:self.remainingTimeInSeconds forKey:goNodeTimeDataRemainingTimeInSecondsKey];
+  [encoder encodeInt:self.remainingNumberOfMoves forKey:goNodeTimeDataRemainingNumberOfMovesKey];
+  [encoder encodeInt:self.remainingNumberOfPeriods forKey:goNodeTimeDataRemainingNumberOfPeriodsKey];
+}
+
+@end
