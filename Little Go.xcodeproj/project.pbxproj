@@ -889,6 +889,12 @@
 		D701A87A2EEC330B0006A962 /* GoNodeTimeData.m in Sources */ = {isa = PBXBuildFile; fileRef = D701A8782EEC330B0006A962 /* GoNodeTimeData.m */; };
 		D701A87D2EECD9EB0006A962 /* GoPlayerTimeData.m in Sources */ = {isa = PBXBuildFile; fileRef = D701A87C2EECD9EB0006A962 /* GoPlayerTimeData.m */; };
 		D701A87E2EECD9EB0006A962 /* GoPlayerTimeData.m in Sources */ = {isa = PBXBuildFile; fileRef = D701A87C2EECD9EB0006A962 /* GoPlayerTimeData.m */; };
+		D70D7A112EEF003200648CBB /* TimeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D70D7A102EEF003200648CBB /* TimeViewController.m */; };
+		D70D7A122EEF003200648CBB /* TimeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D70D7A102EEF003200648CBB /* TimeViewController.m */; };
+		D70D7A1C2EEF1D8600648CBB /* StatusAreaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D70D7A142EEF1D8600648CBB /* StatusAreaViewController.m */; };
+		D70D7A1F2EEF1D8600648CBB /* StatusAreaViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D70D7A142EEF1D8600648CBB /* StatusAreaViewController.m */; };
+		D70D7A222EEF345600648CBB /* TimeView.m in Sources */ = {isa = PBXBuildFile; fileRef = D70D7A212EEF345600648CBB /* TimeView.m */; };
+		D70D7A232EEF345600648CBB /* TimeView.m in Sources */ = {isa = PBXBuildFile; fileRef = D70D7A212EEF345600648CBB /* TimeView.m */; };
 		D72FC0452EB66E0C00092C0F /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D72FC0442EB66E0C00092C0F /* SceneDelegate.m */; };
 		D72FC0462EB66E0C00092C0F /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = D72FC0442EB66E0C00092C0F /* SceneDelegate.m */; };
 		D74980BA2EBF87BD00BD595D /* Registry.m in Sources */ = {isa = PBXBuildFile; fileRef = D74980B92EBF87BD00BD595D /* Registry.m */; };
@@ -1916,6 +1922,12 @@
 		D701A8782EEC330B0006A962 /* GoNodeTimeData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoNodeTimeData.m; sourceTree = "<group>"; };
 		D701A87B2EECD9EB0006A962 /* GoPlayerTimeData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoPlayerTimeData.h; sourceTree = "<group>"; };
 		D701A87C2EECD9EB0006A962 /* GoPlayerTimeData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GoPlayerTimeData.m; sourceTree = "<group>"; };
+		D70D7A0F2EEF003200648CBB /* TimeViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeViewController.h; sourceTree = "<group>"; };
+		D70D7A102EEF003200648CBB /* TimeViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeViewController.m; sourceTree = "<group>"; };
+		D70D7A132EEF1D8600648CBB /* StatusAreaViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StatusAreaViewController.h; sourceTree = "<group>"; };
+		D70D7A142EEF1D8600648CBB /* StatusAreaViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StatusAreaViewController.m; sourceTree = "<group>"; };
+		D70D7A202EEF345600648CBB /* TimeView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeView.h; sourceTree = "<group>"; };
+		D70D7A212EEF345600648CBB /* TimeView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeView.m; sourceTree = "<group>"; };
 		D72FC0432EB66E0C00092C0F /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
 		D72FC0442EB66E0C00092C0F /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
 		D74980B82EBF87BD00BD595D /* Registry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Registry.h; sourceTree = "<group>"; };
@@ -2290,6 +2302,7 @@
 				CDC8DEE628EDE20800619305 /* nodetreeview */,
 				CD3591DC1735A757000E2963 /* rootview */,
 				CD05199216B1C09B002771F7 /* splitview */,
+				D70D7A192EEF1D8600648CBB /* statusarea */,
 			);
 			path = play;
 			sourceTree = "<group>";
@@ -2397,8 +2410,6 @@
 				CD5E6B351D7CCB610089D0B3 /* MoreGameActionsController.m */,
 				CD1E9E5F171806FE00E1B7D1 /* SoundHandling.h */,
 				CD1E9E60171806FE00E1B7D1 /* SoundHandling.m */,
-				CD1311CC17180D57006CE699 /* StatusViewController.h */,
-				CD1311CD17180D57006CE699 /* StatusViewController.m */,
 			);
 			path = controller;
 			sourceTree = "<group>";
@@ -3877,6 +3888,21 @@
 			path = diagnostics;
 			sourceTree = "<group>";
 		};
+		D70D7A192EEF1D8600648CBB /* statusarea */ = {
+			isa = PBXGroup;
+			children = (
+				D70D7A132EEF1D8600648CBB /* StatusAreaViewController.h */,
+				D70D7A142EEF1D8600648CBB /* StatusAreaViewController.m */,
+				CD1311CC17180D57006CE699 /* StatusViewController.h */,
+				CD1311CD17180D57006CE699 /* StatusViewController.m */,
+				D70D7A202EEF345600648CBB /* TimeView.h */,
+				D70D7A212EEF345600648CBB /* TimeView.m */,
+				D70D7A0F2EEF003200648CBB /* TimeViewController.h */,
+				D70D7A102EEF003200648CBB /* TimeViewController.m */,
+			);
+			path = statusarea;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -4420,6 +4446,7 @@
 				CD908DC82B5EF2610058767E /* NodeTreeViewMetricsUpdater.m in Sources */,
 				CDEE1A0B1946081000DF2389 /* CoordinatesLayerDelegate.m in Sources */,
 				D74980BB2EBF87BD00BD595D /* Registry.m in Sources */,
+				D70D7A112EEF003200648CBB /* TimeViewController.m in Sources */,
 				CDBDD0992997F38700641E3B /* NodeNumbersViewCell.m in Sources */,
 				CD4662862960A1A700B58CC9 /* NodeTreeViewBranchTuple.m in Sources */,
 				CD8178FF25D8553100F39091 /* ComputerSuggestMoveCommand.m in Sources */,
@@ -4483,6 +4510,7 @@
 				CDE6C549183D820300186E89 /* SoundSettingsController.m in Sources */,
 				CDB198C72B78E6C600E8512F /* UserManualViewController.m in Sources */,
 				CDEE19F119433EAC00DF2389 /* BoardTileView.m in Sources */,
+				D70D7A232EEF345600648CBB /* TimeView.m in Sources */,
 				CD05AA721423D80500214BBE /* ContinueGameCommand.m in Sources */,
 				CD05AA751423D80C00214BBE /* PauseGameCommand.m in Sources */,
 				CD85068A27BB18D6000D2CCD /* GoNodeModel.m in Sources */,
@@ -4659,6 +4687,7 @@
 				CDF341D3172D609400AEFB20 /* SaveApplicationStateCommand.m in Sources */,
 				CDDC968E25E697B300598CF7 /* PlaceholderView.m in Sources */,
 				CD3591CA17346D25000E2963 /* DiscardFutureNodesAlertController.m in Sources */,
+				D70D7A1C2EEF1D8600648CBB /* StatusAreaViewController.m in Sources */,
 				CD3591DA1735A711000E2963 /* BoardPositionModel.m in Sources */,
 				CD3592021735A757000E2963 /* PlayRootViewController.m in Sources */,
 				CD7C57C721FF8E9500694520 /* HandleBoardSetupInteractionCommand.m in Sources */,
@@ -4841,6 +4870,7 @@
 				CD48ADA615A89DDD004A7096 /* RestoreBugReportApplicationStateCommand.m in Sources */,
 				CD48ADA715A89DE1004A7096 /* RestoreBugReportUserDefaultsCommand.m in Sources */,
 				CDAF171A1968037700271396 /* BoardViewModel.m in Sources */,
+				D70D7A1F2EEF1D8600648CBB /* StatusAreaViewController.m in Sources */,
 				CD12193B2840D5040093A57D /* GoNodeAnnotationTest.m in Sources */,
 				CDBCF1FD282FD5C700411CA6 /* KeyboardHeightAdjustment.m in Sources */,
 				CD48ADA815A89E0E004A7096 /* BugReportUtilities.m in Sources */,
@@ -4848,6 +4878,7 @@
 				CD899E61164875CB00329154 /* CrashReportingModel.m in Sources */,
 				CDD86B4F2827FA2800AA0A6B /* SpacerView.m in Sources */,
 				CD931EE11684E48C002E1262 /* SendBugReportController.m in Sources */,
+				D70D7A222EEF345600648CBB /* TimeView.m in Sources */,
 				CDA096FC1A915085002FCD78 /* LayoutManager.m in Sources */,
 				CD931EE31684E4A6002E1262 /* GenerateDiagnosticsInformationFileCommand.m in Sources */,
 				CD931EED16851E5C002E1262 /* SaveGameCommand.m in Sources */,
@@ -4992,6 +5023,7 @@
 				CD072715180B29E50083B138 /* UpdateTerritoryStatisticsCommand.m in Sources */,
 				CDC97A8B182EEB6000755EB2 /* GoZobristTable.mm in Sources */,
 				CDC97A8F18301CC100755EB2 /* GoGameRules.m in Sources */,
+				D70D7A122EEF003200648CBB /* TimeViewController.m in Sources */,
 				CD0F6BE727B02C91002DBE6B /* GoNodeAnnotation.m in Sources */,
 				CDDB08BB291EB44500B38F91 /* NodeTreeViewModel.m in Sources */,
 				CDFD9F8318F1D5F70031CBCF /* GtpLogViewController.m in Sources */,

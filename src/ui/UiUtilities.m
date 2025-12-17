@@ -360,14 +360,20 @@
 /// @brief Applies a "transparent" style to @a view. The transparency makes it
 /// appear as if the view "floats" on top of its superview. The background
 /// color used depends on the UIUserInterfaceStyle (light/dark mode) in
-/// @a traitCollection.
+/// @a traitCollection. Also applies border width 1 if @a view currently has no
+/// border.
 // -----------------------------------------------------------------------------
 + (void) applyTransparentStyleToView:(UIView*)view traitCollection:(UITraitCollection*)traitCollection
 {
   bool isLightUserInterfaceStyle = [UiUtilities isLightUserInterfaceStyle:traitCollection];
   CGFloat grayScaleValue = isLightUserInterfaceStyle ? 1.0f : 0.0f;
   view.backgroundColor = [UIColor colorWithWhite:grayScaleValue alpha:0.6f];
-  view.layer.borderWidth = 1;
+
+  // Set only once because the border width does not depend on
+  // UIUserInterfaceStyle. Also, the view may already have been set up with a
+  // non-zero border by someone else.
+  if (view.layer.borderWidth == 0.0)
+    view.layer.borderWidth = 1.0;
 }
 
 // -----------------------------------------------------------------------------

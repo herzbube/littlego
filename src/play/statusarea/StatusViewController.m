@@ -49,7 +49,6 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
 /// @brief Class extension with private properties for StatusViewController.
 // -----------------------------------------------------------------------------
 @interface StatusViewController()
-@property(nonatomic, assign) enum SizeOrientation sizeOrientation;
 /// @brief Prevents unregistering by dealloc if registering hasn't happened
 /// yet. Registering may not happen if the controller's view is never loaded.
 @property(nonatomic, assign) bool notificationRespondersAreSetup;
@@ -73,19 +72,17 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
 #pragma mark - Initialization and deallocation
 
 // -----------------------------------------------------------------------------
-/// @brief Initializes a StatusViewController object with a view laid out for
-/// @a sizeOrientation.
+/// @brief Initializes a StatusViewController object.
 ///
 /// @note This is the designated initializer of StatusViewController.
 // -----------------------------------------------------------------------------
-- (id) initWithSizeOrientation:(enum SizeOrientation)sizeOrientation
+- (id) init:(enum SizeOrientation)sizeOrientation
 {
   // Call designated initializer of superclass (NSObject)
   self = [super init];
   if (! self)
     return nil;
 
-  self.sizeOrientation = sizeOrientation;
   [self releaseObjects];
   self.notificationRespondersAreSetup = false;
   self.activityIndicatorNeedsUpdate = false;
@@ -946,7 +943,7 @@ static CGSize statusLabelMinimumSize = { 0.0f, 0.0f };
 + (CGFloat) statusLabelFontSize
 {
   enum UIType uiType = [LayoutManager sharedManager].uiType;
-  return [UiElementMetrics statusLabelFontSizeForUiType:uiType];
+  return [UiElementMetrics statusAreaLabelFontSizeForUiType:uiType];
 }
 
 @end

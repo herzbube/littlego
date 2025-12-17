@@ -273,7 +273,7 @@
   return CGSizeMake(36.0f, 36.0f);
 }
 
-+ (CGFloat) statusLabelFontSizeForUiType:(enum UIType)uiType
++ (CGFloat) statusAreaLabelFontSizeForUiType:(enum UIType)uiType
 {
   // Font size must strike a balance between remaining legible and accomodating
   // the longest possible status text in the most space-constrained application

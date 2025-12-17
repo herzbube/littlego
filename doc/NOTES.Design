@@ -63,11 +63,15 @@ View controller hierarchy for UITypePhone and UITypePad:
     +-- PlayRootViewNavigationController : UINavigationController
         +-- PlayRootViewControllerPhoneAndPad : PlayRootViewController
             +-- Portrait orientation
-            |   +-- StatusViewController (no child view controller)
-            |   |   +-- UILabel
-            |   |   +-- UIActivityIndicatorView
             |   +-- ResizableStackViewController
             |       +-- UIViewController (resizable pane 1)
+            |       |   +-- StatusAreaController
+            |       |   |   +-- StatusViewController (no child view controller)
+            |       |   |   |   +-- UILabel
+            |       |   |   |   +-- UIActivityIndicatorView
+            |       |   |   +-- TimeViewController
+            |       |   |   |   +-- TimeView (for black player)
+            |       |   |   |   +-- TimeView (for white player)
             |       |   +-- BoardViewController
             |       |   |   +-- PanGestureController
             |       |   |   +-- TapGestureController
@@ -94,9 +98,13 @@ View controller hierarchy for UITypePhone and UITypePad:
                         |   +-- ButtonBoxController : UICollectionViewController
                         |       +-- UICollectionView (board position navigation cells)
                         +-- MiddleColumnView
-                        |   +-- StatusViewController (no child view controller)
-                        |   |   +-- UILabel
-                        |   |   +-- UIActivityIndicatorView
+                        |   +-- StatusAreaController
+                        |   |   +-- StatusViewController (no child view controller)
+                        |   |   |   +-- UILabel
+                        |   |   |   +-- UIActivityIndicatorView
+                        |   |   +-- TimeViewController
+                        |   |   |   +-- TimeView (for black player)
+                        |   |   |   +-- TimeView (for white player)
                         |   +-- ResizableStackViewController
                         |       +-- UIViewController (resizable pane 1)
                         |       |   +-- BoardViewController
@@ -119,11 +127,15 @@ View controller hierarchy for UITypePhonePortraitOnly:
     MainTabBarController : UITabBarController
     +-- PlayRootViewNavigationController : UINavigationController
         +-- PlayRootViewControllerPhonePortraitOnly : PlayRootViewController
-            +-- StatusViewController (no child view controller)
-            |   +-- UILabel
-            |   +-- UIActivityIndicatorView
             +-- ResizableStackViewController
                 +-- UIViewController (resizable pane 1)
+                |   +-- StatusAreaController
+                |   |   +-- StatusViewController (no child view controller)
+                |   |   |   +-- UILabel
+                |   |   |   +-- UIActivityIndicatorView
+                |   |   +-- TimeViewController
+                |   |   |   +-- TimeView (for black player)
+                |   |   |   +-- TimeView (for white player)
                 |   +-- BoardViewController
                 |   |   +-- PanGestureController
                 |   |   +-- TapGestureController
