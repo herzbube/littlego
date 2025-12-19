@@ -24,7 +24,7 @@
 /// GoClock starts out in state #GoClockStateStopped. It can then be started,
 /// changing its state to #GoClockStateStarted.
 ///
-/// A started GoClock can also be suspended, changing its state to
+/// A started GoClock can be suspended, changing its state to
 /// #GoClockStateSuspended. GoClock keeps an internal record of how much time
 /// has elapsed since it was last started. A suspended GoClock can be resumed,
 /// changing its state back to #GoClockStateStarted. GoClock keeps track of
@@ -34,8 +34,8 @@
 /// #GoClockStateStopped. When stopped, GoClock discards its internal record of
 /// elapsed time.
 ///
-/// As a convenience, a started GoClock can be restarted. This is equivalent to
-/// stopping and then starting the GoClock.
+/// As a convenience, a started or suspended GoClock can be restarted. This is
+/// equivalent to stopping and then starting the GoClock.
 // -----------------------------------------------------------------------------
 @interface GoClock : NSObject <NSSecureCoding>
 {

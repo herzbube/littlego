@@ -72,6 +72,7 @@
 
   self.state = [decoder decodeIntForKey:goClockStateKey];
   self.suspendedReason = [decoder decodeIntForKey:goClockSuspendedReasonKey];
+  // TODO xxx don't restore the start date - see comment in encodeWithCoder:()
   self.startDate = [decoder decodeObjectOfClass:[NSDate class] forKey:goClockStartDateKey];
   self.elapsedTimeInSeconds = [decoder decodeDoubleForKey:goClockElapsedTimeInSecondsKey];
 
@@ -104,6 +105,11 @@
   [encoder encodeInt:nscodingVersion forKey:nscodingVersionKey];
   [encoder encodeInt:self.state forKey:goClockStateKey];
   [encoder encodeInt:self.suspendedReason forKey:goClockSuspendedReasonKey];
+  // TODO xxx There's no point in placing the start date in the archive: if the
+  // app is suspended, we expect that this clock is also suspended; if the app
+  // crashes, we don't want to restore the start date when the app is started
+  // the next time, because any amount of time could have elapsed since the
+  // crash
   [encoder encodeObject:self.startDate forKey:goClockStartDateKey];
   [encoder encodeDouble:self.elapsedTimeInSeconds forKey:goClockElapsedTimeInSecondsKey];
 }
@@ -187,25 +193,20 @@
 }
 
 // -----------------------------------------------------------------------------
-/// @brief Restarts the clock when it is started. Returns the time in seconds
-/// that has elapsed since the clock was last started (excluding time during
-/// which the clock was suspended).
-///
-/// This method is intended to be invoked when a player has made their move and
-/// it is now the other player's turn.
+/// @brief Restarts the clock when it is started or suspended. Returns the time
+/// in seconds that has elapsed since the clock was last started (excluding time
+/// during which the clock was suspended).
 ///
 /// This method is a convenience method, equivalent to invoking stop() and
-/// then start(). The only difference is that this method can only be invoked
-/// when the clock is started, whereas stop() can be also invoked when the
-/// clock is suspendd.
+/// then start().
 ///
-/// Raises an @e NSInternalInconsistencyException if the clock is not started,
-/// i.e. if it is stopped or suspended.
+/// Raises an @e NSInternalInconsistencyException if the clock is not started or
+/// suspended, i.e. if it is stopped.
 // -----------------------------------------------------------------------------
 - (double) restart
 {
   NSString* operationName = @"restart";
-  [self throwIfClockDoesNotHaveState:GoClockStateStarted operationName:operationName];
+  [self throwIfClockHasState:GoClockStateStopped operationName:operationName];
 
   double totalElapsedTimeInSeconds = [self totalElapsedTimeInSecondsSinceClockWasStarted:operationName];
 
@@ -284,7 +285,7 @@
 /// @a operationName.
 // -----------------------------------------------------------------------------
 - (void) throwIfClockHasState:(enum GoClockState)unexpectedState
-                        operationName:(NSString*)operationName
+                operationName:(NSString*)operationName
 {
   if (self.state != unexpectedState)
     return;

@@ -1454,6 +1454,34 @@ extern NSString* nodeTreeViewNodeSymbolDidChange;
 //@}
 
 // -----------------------------------------------------------------------------
+/// @name Time-based play notifications
+// -----------------------------------------------------------------------------
+//@{
+/// @brief Is sent to indicate that the state of the clock of one of the
+/// players has changed. The GoPlayerTimeData object whose clock state has
+/// changed is associated with the notification.
+///
+/// This notification is guaranteed to be posted on the main thread. Neither
+/// player's clock is running when this notification is posted, to avoid the
+/// player losing time while receivers are handling the notification. Once all
+/// receivers have handled the notification, one of the clocks may be
+/// (re)started.
+extern NSString* playerClockStateHasChanged;
+/// @brief Is sent to indicate that something about the time data of one of the
+/// players has changed (e.g. remaining time has been decreased, remaining moves
+/// or periods have been decreased, switch from main time to overtime). The
+/// GoPlayerTimeData object whose data has changed is associated with the
+/// notification.
+///
+/// This notification is guaranteed to be posted on the main thread. Neither
+/// player's clock is running when this notification is posted, to avoid the
+/// player losing time while receivers are handling the notification. Once all
+/// receivers have handled the notification, one of the clocks may be
+/// (re)started.
+extern NSString* playerTimeDataHasChanged;
+//@}
+
+// -----------------------------------------------------------------------------
 /// @name Other notifications
 // -----------------------------------------------------------------------------
 //@{
@@ -2308,6 +2336,7 @@ extern NSString* goPlayerIsBlackKey;
 extern NSString* goPlayerTimeDataKey;
 // GoPlayerTimeData keys
 extern NSString* goPlayerTimeDataTimeSettingsKey;
+extern NSString* goPlayerTimeDataIsTimeDataForBlackPlayerKey;
 extern NSString* goPlayerTimeDataClockKey;
 extern NSString* goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey;
 extern NSString* goPlayerTimeDataRemainingTimeInSecondsKey;

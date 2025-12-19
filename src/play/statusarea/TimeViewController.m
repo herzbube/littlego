@@ -18,7 +18,10 @@
 // Project includes
 #import "TimeViewController.h"
 #import "TimeView.h"
+#import "../../go/GoClock.h"
 #import "../../go/GoGame.h"
+#import "../../go/GoPlayer.h"
+#import "../../go/GoPlayerTimeData.h"
 #import "../../go/GoTimeSettings.h"
 #import "../../go/GoTimeSystem.h"
 #import "../../shared/LongRunningActionCounter.h"
@@ -36,6 +39,10 @@
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizerTimeViewBlackPlayer;
 @property(nonatomic, retain) UITapGestureRecognizer* tapRecognizerTimeViewWhitePlayer;
 @property(nonatomic, assign) bool timeDataNeedsUpdate;
+@property(nonatomic, assign) bool playerClockStateNeedsUpdate;
+@property(nonatomic, retain) NSMutableArray* playerTimeDataObjectsWithClockStateUpdates;
+@property(nonatomic, assign) bool playerTimeDataNeedsUpdate;
+@property(nonatomic, retain) NSMutableArray* playerTimeDataObjectsWithTimeDataUpdates;
 @end
 
 
@@ -61,6 +68,10 @@
   self.tapRecognizerTimeViewWhitePlayer = nil;
 
   self.timeDataNeedsUpdate = false;
+  self.playerClockStateNeedsUpdate = false;
+  self.playerTimeDataObjectsWithClockStateUpdates = [NSMutableArray array];
+  self.playerTimeDataNeedsUpdate = false;
+  self.playerTimeDataObjectsWithTimeDataUpdates = [NSMutableArray array];
 
   [self setupNotificationResponders];
 
@@ -79,6 +90,9 @@
   self.tapRecognizerTimeViewBlackPlayer = nil;
   self.tapRecognizerTimeViewWhitePlayer = nil;
 
+  self.playerTimeDataObjectsWithClockStateUpdates = nil;
+  self.playerTimeDataObjectsWithTimeDataUpdates = nil;
+
   [super dealloc];
 }
 
@@ -91,6 +105,8 @@
 {
   NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
   [center addObserver:self selector:@selector(goGameDidCreate:) name:goGameDidCreate object:nil];
+  [center addObserver:self selector:@selector(playerClockStateHasChanged:) name:playerClockStateHasChanged object:nil];
+  [center addObserver:self selector:@selector(playerTimeDataHasChanged:) name:playerTimeDataHasChanged object:nil];
   [center addObserver:self selector:@selector(longRunningActionEnds:) name:longRunningActionEnds object:nil];
 }
 
@@ -202,28 +218,27 @@
 // -----------------------------------------------------------------------------
 - (void) viewTapped:(id)sender
 {
-  TimeView* timeView = (sender == self.tapRecognizerTimeViewBlackPlayer
-                        ? self.timeViewBlackPlayer
-                        : self.timeViewWhitePlayer);
+  GoGame* game = [GoGame sharedGame];
+  GoPlayerTimeData* playerTimeData = (sender == self.tapRecognizerTimeViewBlackPlayer
+                                      ? game.playerBlack.timeData
+                                      : game.playerWhite.timeData);
+  GoClock* clock = playerTimeData.goClock;
 
   // TODO xxx implement real handling
-  switch (timeView.clockState)
+  switch (clock.state)
   {
     case GoClockStateStopped:
-      timeView.clockState = GoClockStateStarted;
-      timeView.isRemainingTimeAbsoluteTime = ! timeView.isRemainingTimeAbsoluteTime;
+      [playerTimeData startClock];
       break;
     case GoClockStateStarted:
-      timeView.clockState = GoClockStateSuspended;
-      timeView.isRemainingTimeAbsoluteTime = ! timeView.isRemainingTimeAbsoluteTime;
+      [playerTimeData suspendClock:GoClockSuspendedReasonUserAction];
       break;
     case GoClockStateSuspended:
-      timeView.clockState = GoClockStateStopped;
-      timeView.isRemainingTimeAbsoluteTime = ! timeView.isRemainingTimeAbsoluteTime;
+      [playerTimeData startClock];
       break;
     default:
       [ExceptionUtility throwInvalidArgumentExceptionWithFormat:@"Invalid clock state %d"
-                                                  argumentValue:timeView.clockState];
+                                                  argumentValue:clock.state];
       break;
   }
 }
@@ -236,6 +251,26 @@
 - (void) goGameDidCreate:(NSNotification*)notification
 {
   self.timeDataNeedsUpdate = true;
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #playerClockStateHasChanged notification.
+// -----------------------------------------------------------------------------
+- (void) playerClockStateHasChanged:(NSNotification*)notification
+{
+  self.playerClockStateNeedsUpdate = true;
+  [self.playerTimeDataObjectsWithClockStateUpdates addObject:notification.object];
+  [self delayedUpdate];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Responds to the #playerTimeDataHasChanged notification.
+// -----------------------------------------------------------------------------
+- (void) playerTimeDataHasChanged:(NSNotification*)notification
+{
+  self.playerTimeDataNeedsUpdate = true;
+  [self.playerTimeDataObjectsWithTimeDataUpdates addObject:notification.object];
   [self delayedUpdate];
 }
 
@@ -264,6 +299,8 @@
   }
 
   [self updateTimeData];
+  [self updatePlayerClockState];
+  [self updatePlayerTimeData];
 }
 
 // -----------------------------------------------------------------------------
@@ -276,54 +313,82 @@
   self.timeDataNeedsUpdate = false;
 
   GoGame* game = [GoGame sharedGame];
-  GoTimeSettings* timeSettings = game.timeSettings;
 
-  NSArray* timeSystems = @[timeSettings.absoluteTimeSystem, timeSettings.periodBasedTimeSystem];
-  for (GoTimeSystem* timeSystem in timeSystems)
+  [self updateClockStateInTimeView:self.timeViewBlackPlayer withPlayerTimeData:game.playerBlack.timeData];
+  [self updateTimeDataInTimeView:self.timeViewBlackPlayer withPlayerTimeData:game.playerBlack.timeData];
+
+  [self updateClockStateInTimeView:self.timeViewWhitePlayer withPlayerTimeData:game.playerWhite.timeData];
+  [self updateTimeDataInTimeView:self.timeViewWhitePlayer withPlayerTimeData:game.playerWhite.timeData];
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates TimeView objects to display each player's current clock
+/// state.
+// -----------------------------------------------------------------------------
+- (void) updatePlayerClockState
+{
+  if (! self.playerClockStateNeedsUpdate)
+    return;
+  self.playerClockStateNeedsUpdate = false;
+
+  // Grab a local copy so that we can be sure that nobody updates the array
+  // while we iterate over it
+  NSMutableArray* playerTimeDataObjectsWithClockStateUpdates = [[self.playerTimeDataObjectsWithClockStateUpdates retain] autorelease];
+  self.playerTimeDataObjectsWithTimeDataUpdates = [NSMutableArray array];
+
+  for (GoPlayerTimeData* playerTimeData in playerTimeDataObjectsWithClockStateUpdates)
   {
-    if (timeSystem.goTimeSystemType != GoTimeSystemTypeNone &&
-        timeSystem.goTimeSystemType != GoTimeSystemTypeCustom)
-    {
-      [self updateTimeData:self.timeViewBlackPlayer timeSystem:timeSystem];
-      [self updateTimeData:self.timeViewWhitePlayer timeSystem:timeSystem];
-      break;
-    }
+    TimeView* timeView = (playerTimeData.isTimeDataForBlackPlayer
+                          ? self.timeViewBlackPlayer
+                          : self.timeViewWhitePlayer);
+    [self updateClockStateInTimeView:timeView withPlayerTimeData:playerTimeData];
   }
 }
 
 // -----------------------------------------------------------------------------
 /// @brief Updates TimeView objects to display each player's current time data.
 // -----------------------------------------------------------------------------
-- (void) updateTimeData:(TimeView*)timeView timeSystem:(GoTimeSystem*)timeSystem
+- (void) updatePlayerTimeData
 {
-  timeView.clockState = GoClockStateStopped;
+  if (! self.playerTimeDataNeedsUpdate)
+    return;
+  self.playerTimeDataNeedsUpdate = false;
 
-  if (timeSystem.goTimeSystemType == GoTimeSystemTypeAbsolute)
+  // Grab a local copy so that we can be sure that nobody updates the array
+  // while we iterate over it
+  NSMutableArray* playerTimeDataObjectsWithTimeDataUpdates = [[self.playerTimeDataObjectsWithTimeDataUpdates retain] autorelease];
+  self.playerTimeDataObjectsWithTimeDataUpdates = [NSMutableArray array];
+
+  for (GoPlayerTimeData* playerTimeData in playerTimeDataObjectsWithTimeDataUpdates)
   {
-    timeView.isRemainingTimeAbsoluteTime = true;
-    timeView.remainingTimeInSeconds = timeSystem.periodDurationInSeconds;
-    timeView.remainingNumberOfMovesOrPeriods = 0;
+    TimeView* timeView = (playerTimeData.isTimeDataForBlackPlayer
+                          ? self.timeViewBlackPlayer
+                          : self.timeViewWhitePlayer);
+    [self updateTimeDataInTimeView:timeView withPlayerTimeData:playerTimeData];
   }
-  else
-  {
-    timeView.isRemainingTimeAbsoluteTime = false;
-    if (timeSystem.goTimeSystemType == GoTimeSystemTypeJapanese)
-    {
-      timeView.remainingTimeInSeconds = timeSystem.periodDurationInSeconds;
-      timeView.remainingNumberOfMovesOrPeriods = timeSystem.numberOfPeriods;
-    }
-    else if (timeSystem.goTimeSystemType == GoTimeSystemTypeFischer)
-    {
-      timeView.remainingTimeInSeconds = timeSystem.periodDurationInSeconds;
-      // TODO xxx TimeView should not show anything
-      timeView.remainingNumberOfMovesOrPeriods = 0;
-    }
-    else
-    {
-      timeView.remainingTimeInSeconds = timeSystem.periodDurationInSeconds;
-      timeView.remainingNumberOfMovesOrPeriods = timeSystem.minimumNumberOfMovesPerPeriod;
-    }
-  }
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates @a timeView to display the clock state taken from
+/// @a playerTimeData.
+// -----------------------------------------------------------------------------
+- (void) updateClockStateInTimeView:(TimeView*)timeView
+                 withPlayerTimeData:(GoPlayerTimeData*)playerTimeData
+{
+  timeView.clockState = playerTimeData.goClock.state;
+}
+
+// -----------------------------------------------------------------------------
+/// @brief Updates @a timeView to display the time data taken from
+/// @a playerTimeData.
+// -----------------------------------------------------------------------------
+- (void) updateTimeDataInTimeView:(TimeView*)timeView
+               withPlayerTimeData:(GoPlayerTimeData*)playerTimeData
+{
+  timeView.isRemainingTimeAbsoluteTime = playerTimeData.isRemainingTimeAbsoluteTime;
+  timeView.remainingTimeInSeconds = playerTimeData.remainingTimeInSeconds;
+  // TODO xxx TimeView should not show anything for FischerTiming
+  timeView.remainingNumberOfMovesOrPeriods = playerTimeData.remainingNumberOfMovesOrPeriods;
 }
 
 @end

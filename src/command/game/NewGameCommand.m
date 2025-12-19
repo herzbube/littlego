@@ -201,8 +201,10 @@
                                                                      goUnusedTimeHandling:GoUnusedTimeHandlingRoundDown] autorelease];
     GoTimeSettings* timeSettings = [[[GoTimeSettings alloc] initWithAbsoluteTimeSystem:absoluteTimeSystem
                                                                  periodBasedTimeSystem:periodBasedTimeSystem] autorelease];
-    GoPlayerTimeData* blackPlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:timeSettings] autorelease];
-    GoPlayerTimeData* whitePlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:timeSettings] autorelease];
+    GoPlayerTimeData* blackPlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:timeSettings
+                                                                   isTimeDataForBlackPlayer:true] autorelease];
+    GoPlayerTimeData* whitePlayerTimeData = [[[GoPlayerTimeData alloc] initWithTimeSettings:timeSettings
+                                                                   isTimeDataForBlackPlayer:false] autorelease];
     newGame.timeSettings = timeSettings;
     newGame.playerBlack.timeData = blackPlayerTimeData;
     newGame.playerWhite.timeData = whitePlayerTimeData;

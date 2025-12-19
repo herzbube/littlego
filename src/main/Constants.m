@@ -112,6 +112,9 @@ NSString* nodeTreeViewNodeSelectionStyleDidChange = @"NodeTreeViewNodeSelectionS
 NSString* nodeTreeViewSelectedGameVariationDidChange = @"NodeTreeViewSelectedGameVariationDidChange";
 NSString* nodeTreeViewSelectedNodeDidChange = @"NodeTreeViewSelectedNodeDidChange";
 NSString* nodeTreeViewNodeSymbolDidChange = @"NodeTreeViewNodeSymbolDidChange";
+// Time-based play notifications
+NSString* playerClockStateHasChanged = @"PlayerClockStateHasChanged";
+NSString* playerTimeDataHasChanged = @"PlayerTimeDataHasChanged";
 // Other notifications
 NSString* longRunningActionStarts = @"LongRunningActionStarts";
 NSString* longRunningActionEnds = @"LongRunningActionEnds";
@@ -495,6 +498,7 @@ NSString* goPlayerIsBlackKey = @"IsBlack";
 NSString* goPlayerTimeDataKey = @"TimeData";
 // GoPlayerTimeData keys
 NSString* goPlayerTimeDataTimeSettingsKey = @"TimeSettings";
+NSString* goPlayerTimeDataIsTimeDataForBlackPlayerKey = @"IsTimeDataForBlackPlayer";
 NSString* goPlayerTimeDataClockKey = @"Clock";
 NSString* goPlayerTimeDataIsRemainingTimeAbsoluteTimeKey = @"IsRemainingTimeAbsoluteTime";
 NSString* goPlayerTimeDataRemainingTimeInSecondsKey = @"RemainingTimeInSeconds";
